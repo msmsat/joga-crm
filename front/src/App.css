@@ -1,0 +1,448 @@
+/* ==========================================================================
+   GLOBAL VARIABLES (Design Tokens)
+   ========================================================================== */
+   @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
+
+   :root {
+     --peach: #F9A08B;
+     --peach-light: #FCAE91;
+     --peach-glow: rgba(249,160,139,0.18);
+     --bg: #FDFCFB;
+     --bg-card: #FFFFFF;
+     --onyx: #1A1A1A;
+     --muted: #666666;
+     --border: rgba(26,26,26,0.08);
+     --pistachio: #A3C9A8;
+     --rose: #D88C9A;
+     --shadow: 0 8px 40px -8px rgba(26,26,26,0.10);
+     --shadow-hover: 0 20px 60px -12px rgba(249,160,139,0.22);
+     --font-main: 'Manrope', sans-serif;
+   }
+   
+   /* ==========================================================================
+      BASE STYLES
+      ========================================================================== */
+   *, *::before, *::after {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+   }
+   
+   html {
+     scroll-behavior: smooth;
+   }
+   
+   body {
+     background: var(--bg);
+     font-family: var(--font-main);
+     color: var(--onyx);
+   }
+   
+   ::-webkit-scrollbar { width: 4px; }
+   ::-webkit-scrollbar-track { background: transparent; }
+   ::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.3); border-radius: 4px; }
+   
+   /* ==========================================================================
+      LAYOUT & ORBS
+      ========================================================================== */
+   .page-wrapper {
+     min-height: 100vh;
+     background: var(--bg);
+     overflow-x: hidden;
+     position: relative;
+     display: flex;
+     flex-direction: column;
+   }
+   
+   .orbs-container {
+     position: fixed;
+     inset: 0;
+     pointer-events: none;
+     z-index: 0;
+     overflow: hidden;
+   }
+   
+   .orb {
+     position: absolute;
+     border-radius: 50%;
+   }
+   
+   /* ==========================================================================
+      TYPOGRAPHY & LOGO
+      ========================================================================== */
+   .logo {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+   }
+   
+   .logo-mark {
+     width: 36px;
+     height: 36px;
+     border-radius: 10px;
+     background: linear-gradient(135deg, var(--peach-light) 0%, var(--peach) 100%);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: 0 4px 14px var(--peach-glow);
+   }
+   
+   .logo-text {
+     font-weight: 800;
+     font-size: 19px;
+     letter-spacing: -0.4px;
+     color: var(--onyx);
+   }
+   
+   .logo-text span {
+     color: var(--peach);
+   }
+   
+   /* ==========================================================================
+      COMPONENTS
+      ========================================================================== */
+   
+   /* Navbar */
+   .navbar {
+     position: fixed;
+     top: 16px;
+     left: 50%;
+     transform: translateX(-50%);
+     z-index: 100;
+     width: calc(100% - 48px);
+     max-width: 1200px;
+     padding: 14px 28px;
+     background: rgba(253,252,251,0.6);
+     backdrop-filter: blur(20px);
+     -webkit-backdrop-filter: blur(20px);
+     border-radius: 16px;
+     border: 1px solid var(--border);
+     transition: all 0.3s ease;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+   }
+   
+   .navbar.scrolled {
+     background: rgba(253,252,251,0.85);
+     border-color: rgba(249,160,139,0.18);
+     box-shadow: 0 8px 40px -12px rgba(26,26,26,0.12);
+   }
+   
+   /* Nav Links */
+   .nav-link {
+     font-size: 14px;
+     font-weight: 500;
+     color: var(--muted);
+     text-decoration: none;
+     transition: color 0.2s;
+     position: relative;
+   }
+   
+   .nav-link:hover {
+     color: var(--onyx);
+   }
+   
+   .nav-link::after {
+     content: '';
+     position: absolute;
+     bottom: -3px;
+     left: 0;
+     right: 0;
+     height: 1.5px;
+     background: var(--peach);
+     border-radius: 2px;
+     opacity: 0;
+     transition: opacity 0.2s;
+   }
+   
+   .nav-link:hover::after {
+     opacity: 1;
+   }
+   
+   /* Badges */
+   .badge {
+     display: inline-flex;
+     align-items: center;
+     gap: 6px;
+     padding: 5px 12px;
+     background: linear-gradient(135deg, rgba(249,160,139,0.12), rgba(249,160,139,0.06));
+     border: 1px solid rgba(249,160,139,0.28);
+     border-radius: 100px;
+     font-size: 12px;
+     font-weight: 600;
+     color: var(--peach);
+     letter-spacing: 0.3px;
+   }
+   
+   .badge-dot {
+     width: 6px;
+     height: 6px;
+     border-radius: 50%;
+     background: var(--peach);
+     box-shadow: 0 0 0 3px var(--peach-glow);
+     animation: pulse 2.4s ease-in-out infinite;
+   }
+   
+   /* Buttons */
+   .btn {
+     font-family: var(--font-main);
+     cursor: pointer;
+     letter-spacing: 0.1px;
+     transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+   }
+   
+   .btn-primary {
+     background: linear-gradient(135deg, var(--peach) 0%, #F5866E 100%);
+     border: none;
+     border-radius: 10px;
+     font-weight: 700;
+     color: #fff;
+     box-shadow: 0 4px 20px -4px rgba(249,160,139,0.38);
+   }
+   
+   .btn-primary:hover:not(:disabled) {
+     background: linear-gradient(135deg, var(--peach-light) 0%, var(--peach) 100%);
+     box-shadow: 0 12px 40px -8px rgba(249,160,139,0.52), 0 2px 8px rgba(249,160,139,0.2);
+     transform: translateY(-2px) scale(1.01);
+   }
+   
+   .btn-primary:disabled {
+     cursor: not-allowed;
+     opacity: 0.85;
+     background: linear-gradient(135deg, var(--peach-light), var(--peach));
+   }
+   
+   .btn-ghost {
+     background: transparent;
+     border: 1.5px solid var(--border);
+     border-radius: 10px;
+     font-weight: 600;
+     color: var(--muted);
+   }
+   
+   .btn-ghost:hover {
+     background: rgba(249,160,139,0.07);
+     border-color: var(--peach);
+     color: var(--peach);
+     transform: translateY(-1px);
+   }
+   
+   .btn-google {
+     background: var(--bg-card);
+     border: 1.5px solid var(--border);
+     border-radius: 12px;
+     font-weight: 600;
+     color: var(--onyx);
+     width: 100%;
+     padding: 13px 20px;
+   }
+   
+   .btn-google:hover {
+     background: rgba(26,26,26,0.04);
+     border-color: rgba(26,26,26,0.16);
+     box-shadow: var(--shadow);
+     transform: translateY(-1px);
+   }
+   
+   .btn-size-normal { padding: 12px 26px; font-size: 14px; }
+   .btn-size-large { padding: 16px 36px; font-size: 16px; border-radius: 12px; }
+   
+   /* Form Elements */
+    .input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+    .input-label { font-size: 13px; font-weight: 600; color: var(--muted); transition: color 0.2s; margin-left: 2px; }
+
+    .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    }
+
+    .input-container:focus-within .input-label { color: var(--onyx); }
+
+    /* Идеальное центрирование через Flexbox + оптическая компенсация (+1px) */
+    .input-icon-left, .input-icon-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: 1px; /* Тот самый пиксель оптического баланса */
+    z-index: 2;
+    }
+
+    .input-icon-left {
+    left: 16px;
+    pointer-events: none;
+    }
+
+    .input-icon-right {
+    right: 14px;
+    }
+
+    .input-container:focus-within .input-icon-left {
+    color: var(--peach);
+    transform: scale(1.08); /* Микро-эффект: иконка чуть увеличивается при фокусе */
+    }
+
+    /* Обновленный дизайн самого поля */
+    .input-field {
+    width: 100%;
+    height: 52px; /* Фиксированная высота предотвращает скачки */
+    background: rgba(26,26,26,0.03); /* Мягкая заливка вместо дешевой рамки */
+    border: 1.5px solid transparent;
+    border-radius: 14px; /* Более премиальное скругление */
+    font-family: var(--font-main);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--onyx);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .input-field::placeholder {
+    color: rgba(102,102,102,0.45);
+    }
+
+    .input-field:hover {
+    background: rgba(26,26,26,0.05);
+    }
+
+    .input-field.has-value {
+    background: var(--bg-card);
+    border-color: rgba(26,26,26,0.12);
+    }
+
+    /* Супер-эффект при фокусе */
+    .input-field:focus {
+    background: var(--bg-card);
+    border-color: var(--peach);
+    box-shadow: 0 0 0 4px var(--peach-glow), 0 4px 14px rgba(249,160,139,0.12);
+    transform: translateY(-1px); /* Поле "всплывает" при вводе текста */
+    }
+
+    .input-field.has-error {
+    border-color: var(--rose);
+    background: #FFF9FA;
+    }
+
+    .input-field.has-error:focus {
+    box-shadow: 0 0 0 4px rgba(216,140,154,0.14);
+    }
+
+    /* Оставляем чекбоксы как были дальше... */
+    .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .checkbox-box {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1.5px solid rgba(26,26,26,0.2);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease; flex-shrink: 0;
+    }
+    .checkbox-label input { display: none; }
+    .checkbox-label input:checked + .checkbox-box {
+    border-color: var(--peach);
+    background: linear-gradient(135deg, var(--peach-light), var(--peach));
+    box-shadow: 0 2px 8px var(--peach-glow);
+    }
+    .checkbox-label input:checked + .checkbox-box svg { animation: checkPop 0.22s ease; }
+   
+   /* Cards & Blocks */
+   .card-animate {
+     opacity: 0;
+     transition: opacity 0.6s ease, transform 0.6s ease;
+   }
+   
+   .card-animate.is-visible {
+     opacity: 1;
+     transform: translateY(0) !important; /* Overrides the initial Y transform */
+   }
+   
+   .stat-card {
+     padding: 28px 30px;
+     background: var(--bg-card);
+     border-radius: 16px;
+     border: 1px solid var(--border);
+     box-shadow: var(--shadow);
+     flex: 1;
+     transform: translateY(24px);
+   }
+   
+   .feature-card {
+     padding: 32px;
+     background: var(--bg-card);
+     border-radius: 16px;
+     border: 1px solid var(--border);
+     box-shadow: var(--shadow);
+     transform: translateY(28px);
+     transition: all 0.4s cubic-bezier(0.34,1.2,0.64,1);
+   }
+   
+   .feature-card:hover {
+     background: linear-gradient(135deg, rgba(249,160,139,0.04), transparent);
+     border-color: rgba(249,160,139,0.28);
+     box-shadow: var(--shadow-hover);
+     transform: translateY(-4px) !important;
+   }
+   
+   .feature-icon-wrapper {
+     width: 48px; height: 48px; border-radius: 13px;
+     background: rgba(249,160,139,0.10);
+     display: flex; align-items: center; justify-content: center;
+     font-size: 22px; margin-bottom: 20px;
+     transition: all 0.3s ease;
+   }
+   
+   .feature-card:hover .feature-icon-wrapper {
+     background: linear-gradient(135deg, var(--peach-light), var(--peach));
+     box-shadow: 0 6px 20px var(--peach-glow);
+   }
+   
+   .testimonial-card {
+     padding: 32px; background: var(--bg-card); border-radius: 20px;
+     border: 1px solid var(--border); box-shadow: var(--shadow);
+     transform: translateY(28px);
+   }
+   
+   .login-card {
+     background: var(--bg-card); border-radius: 24px;
+     border: 1px solid var(--border);
+     box-shadow: 0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04);
+     padding: 40px; display: flex; flex-direction: column; gap: 24px;
+   }
+   
+   /* ==========================================================================
+      ANIMATIONS
+      ========================================================================== */
+   @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,30px) scale(1.04)} }
+   @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-40px) scale(1.06)} }
+   @keyframes float3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-20px,20px)} 66%{transform:translate(20px,-15px)} }
+   @keyframes floatLogin1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,20px) scale(1.04)} }
+   @keyframes floatLogin2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-30px) scale(1.06)} }
+   @keyframes floatLogin3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-15px,15px)} 66%{transform:translate(15px,-10px)} }
+   @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 3px rgba(249,160,139,0.18)} 50%{opacity:.8;box-shadow:0 0 0 6px rgba(249,160,139,0.06)} }
+   @keyframes wordIn { from{opacity:0;transform:translateY(20px) scale(0.96)} to{opacity:1;transform:none} }
+   @keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+   @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+   
+   .hero-word { display: inline-block; animation: wordIn 0.7s cubic-bezier(0.34,1.4,0.64,1) both; }
+   .spinner {
+     width: 16px; height: 16px;
+     border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+     border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
+   }
+   
+   /* ==========================================================================
+      MEDIA QUERIES (Mobile responsiveness)
+      ========================================================================== */
+   @media (max-width: 480px) {
+     .navbar, footer { padding-left: 20px; padding-right: 20px; }
+     .login-card { padding: 28px 24px; }
+   }
