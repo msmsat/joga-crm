@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
 const tokens = {
@@ -133,10 +134,11 @@ function Badge({ children }: { children: string }) {
 }
 
 // ─── PRIMARY BUTTON ───────────────────────────────────────────────────────────
-function PrimaryBtn({ children, large }: { children: string; large?: boolean }) {
+function PrimaryBtn({ children, large, onClick }: { children: string; large?: boolean; onClick?: () => void }) {
   const [hov, setHov] = useState(false);
   return (
     <button
+      onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
@@ -164,10 +166,11 @@ function PrimaryBtn({ children, large }: { children: string; large?: boolean }) 
 }
 
 // ─── GHOST BUTTON ─────────────────────────────────────────────────────────────
-function GhostBtn({ children, large }: { children: string; large?: boolean }) {
+function GhostBtn({ children, large, onClick }: { children: string; large?: boolean; onClick?: () => void }) {
   const [hov, setHov] = useState(false);
   return (
     <button
+      onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
@@ -471,6 +474,7 @@ function DashboardMockup() {
 
 // ─── MAIN LANDING ─────────────────────────────────────────────────────────────
 export default function Landing() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
 
@@ -542,8 +546,8 @@ export default function Landing() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <GhostBtn>Войти</GhostBtn>
-          <PrimaryBtn>Начать бесплатно</PrimaryBtn>
+          <GhostBtn onClick={() => navigate('/login')}>Войти</GhostBtn>
+          <PrimaryBtn onClick={() => navigate('/login')}>Начать бесплатно</PrimaryBtn>
         </div>
       </nav>
 
@@ -610,7 +614,7 @@ export default function Landing() {
               transform: heroVisible ? "none" : "translateY(12px)",
               transition: "all 0.6s ease 0.85s",
             }}>
-              <PrimaryBtn large>Попробовать 14 дней бесплатно</PrimaryBtn>
+              <PrimaryBtn large onClick={() => navigate('/login')}>Попробовать 14 дней бесплатно</PrimaryBtn>
               <GhostBtn large>Смотреть демо →</GhostBtn>
             </div>
 

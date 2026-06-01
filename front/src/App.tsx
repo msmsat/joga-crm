@@ -1,45 +1,23 @@
-import React from "react";
-
-// ─── Импорты страниц ─────────────────────────────────────────────────────────
-// Импортируем твой компонент лендинга из файла card-home.tsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from "./pages/Landingpage";
+import LoginPage from './pages/Loginpage'; // Твоя страница логина
+// import RegisterPage from './pages/RegisterPage'; // Раскомментируешь, когда создашь
 
-// Если в будущем ты вынесешь логин в отдельный файл (например, src/pages/Login.tsx):
-// import LoginPage from "./pages/Login";
-
-// ─── Главный компонент App ───────────────────────────────────────────────────
-/**
- * App является точкой входа и координатором приложения.
- * Здесь настраиваются:
- * 1. Роутинг (навигация между страницами)
- * 2. Глобальные провайдеры (Theme, Auth, Store, React Query и т.д.)
- * 3. Глобальные компоненты (Toasts, Modals)
- */
-export default function App() {
+function App() {
   return (
-    // StrictMode помогает отлавливать потенциальные проблемы на этапе разработки
-    <React.StrictMode>
-      
-      {/* ========================================================================
-        Пример того, как это будет выглядеть при подключении react-router-dom:
-        ========================================================================
+    <Router>
+      <Routes>
+        {/* Главная страница (сайт-карточка) по адресу "/" */}
+        <Route path="/" element={<Landing />} />
         
-        <ThemeProvider>
-          <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-              </Routes>
-            </BrowserRouter>
-          </AuthProvider>
-        </ThemeProvider>
-      */}
-
-      {/* Сейчас, пока мы не подключили роутер, мы просто рендерим Landing как главную страницу */}
-      <Landing />
-      
-    </React.StrictMode>
+        {/* Страница логина по адресу "/login" */}
+        <Route path="/login" element={<LoginPage />} />
+        
+        {/* Страница регистрации по адресу "/register" */}
+        {/* <Route path="/register" element={<RegisterPage />} /> */}
+      </Routes>
+    </Router>
   );
 }
+
+export default App;
