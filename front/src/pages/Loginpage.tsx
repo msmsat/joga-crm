@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../App.css"; // Обязательный импорт глобальных стилей
 import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, GoogleBtn, PrimaryBtn, Divider, Checkbox, SocialProof, PasswordStrength } from "../components/UI";
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [identifierMode, setIdentifierMode] = useState<IdentifierMode>("email");
   const [identifier, setIdentifier] = useState("");
@@ -13,6 +15,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
+
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     setTimeout(() => setMounted(true), 50);
@@ -37,10 +41,51 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
+    
+    // Ограничение для нашей B2B панели: вход только по Email
+    if (identifierMode !== "email") {
+      setSubmitError("На данном этапе вход в CRM поддерживается только через Email");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => setLoading(false), 2200);
+    setSubmitError(""); // Очищаем старые ошибки перед новым запросом
+
+    try {
+      // Отправляем запрос на эндпоинт /auth/login нашего FastAPI бэкенда
+      const response = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: identifier, // Передаем введенный email
+          password: password, // Передаем пароль
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Если бэкенд вернул ошибку (например, 401 Unauthorized), выкидываем её в catch
+        throw new Error(data.detail || "Не удалось войти в систему");
+      }
+
+      // 🎉 УСПЕХ: Бэкенд вернул нам { access_token: "...", token_type: "Bearer" }
+      // Сохраняем заветный JWT-токен в память браузера!
+      localStorage.setItem("token", data.access_token);
+
+      // Перенаправляем пользователя в его защищенный рабочий кабинет
+      navigate("/dashboard");
+
+    } catch (err: any) {
+      // Если бэкенд завершился ошибкой или сервер выключен — выводим сообщение на экран
+      setSubmitError(err.message || "Ошибка соединения с сервером");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const placeholders: Record<IdentifierMode, string> = {
@@ -196,6 +241,14 @@ export default function LoginPage() {
 
             {/* Form Fields */}
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              {/* 🔥 ДОБАВИТЬ ЭТОТ БЛОК НИЖЕ */}
+              {submitError && (
+                <div className="error-alert">
+                  ⚠️ {submitError}
+                </div>
+              )}
+
               {/* Identifier Input */}
               <InputField
                 label={
