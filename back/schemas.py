@@ -40,3 +40,7 @@ class TokenResponse(BaseModel):
 
 class GoogleAuthRequest(BaseModel):
     token: str
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str

@@ -11,7 +11,8 @@ from models import User      # твоя модель пользователя и
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from schemas import GoogleAuthRequest # Не забудь импортировать схему!
+from schemas import LoginRequest, RegisterRequest, TokenResponse, VerifyEmailRequest, GoogleAuthRequest
+import random
 import uuid
 
 # Создаем роутер (префикс добавим в main.py)
@@ -50,7 +51,9 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
         new_user = User(
             email=email,
             display_name=display_name,
-            hashed_password=dummy_password
+            hashed_password=dummy_password,
+            is_verified=True,  # 🔥 Google юзерам сразу верим!
+            verification_code=None
         )
         db.add(new_user)
 
@@ -76,27 +79,54 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
     
     # 2. Хэшируем пароль (он уже прошел строгую проверку в schemas.py!)
     hashed_pwd = get_password_hash(request.password)
+
+    verification_code = str(random.randint(1000, 9999))
     
     # 3. Создаем запись нового пользователя со всеми данными
     new_user = User(
         email=request.email,
         display_name=request.display_name, 
-        hashed_password=hashed_pwd
+        hashed_password=hashed_pwd,
+        is_verified=False,                    # Ждем подтверждения
+        verification_code=verification_code   # Сохраняем код в БД
     )
     
     # 4. Сохраняем в PostgreSQL
     db.add(new_user)
     await db.commit()
-    await db.refresh(new_user)
+
+    # 🔥 Имитируем отправку письма в терминале (чтобы ты видел код при тестах)
+    print("\n" + "="*40)
+    print(f"📧 ПИСЬМО ДЛЯ: {new_user.email}")
+    print(f"🔑 ВАШ КОД ПОДТВЕРЖДЕНИЯ: {verification_code}")
+    print("="*40 + "\n")
     
-    # 5. Генерируем JWT-токен
-    access_token = create_access_token(data={"sub": new_user.email})
+    # Токен пока НЕ отдаем
+    return {"message": "Код подтверждения отправлен на почту"}
+
+# ─── ЭНДПОИНТ ПОДТВЕРЖДЕНИЯ КОДА (ВЫДАЕТ ТОКЕН) ──────────────────────────────
+@router.post("/verify-email", response_model=TokenResponse)
+async def verify_email(request: VerifyEmailRequest, db: AsyncSession = Depends(get_db)):
+    query = select(User).where(User.email == request.email)
+    user = (await db.execute(query)).scalar_one_or_none()
     
-    return TokenResponse(
-        access_token=access_token, 
-        token_type="bearer", 
-        message="Пользователь успешно создан"
-    )
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        
+    if user.is_verified:
+        raise HTTPException(status_code=400, detail="Почта уже подтверждена")
+        
+    if user.verification_code != request.code:
+        raise HTTPException(status_code=400, detail="Неверный код подтверждения")
+        
+    # 🔥 Если код совпал: делаем юзера подтвержденным и стираем код
+    user.is_verified = True
+    user.verification_code = None
+    await db.commit()
+    
+    # Только теперь пускаем в систему!
+    access_token = create_access_token(data={"sub": user.email})
+    return TokenResponse(access_token=access_token, token_type="bearer")
 
 # ─── 2. ЭНДПОИНТ ЛОГИНА ───────────────────────────────────────────────────────
 @router.post("/login", response_model=TokenResponse)
@@ -115,6 +145,10 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный email, телефон или пароль"
         )
+    
+    # 🔥 Защита: не даем войти, если юзер не подтвердил почту (закрыл вкладку раньше времени)
+    if not user.is_verified:
+        raise HTTPException(status_code=403, detail="Ваш email не подтвержден. Пожалуйста, зарегистрируйтесь заново или введите код.")
     
     # 3. Проверка пароля
     if not verify_password(request.password, user.hashed_password):

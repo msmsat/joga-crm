@@ -31,6 +31,8 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(100))
     role: Mapped[str] = mapped_column(String(50), default="admin")
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    verification_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
     
     studio: Mapped["Studio"] = relationship(back_populates="users")
 

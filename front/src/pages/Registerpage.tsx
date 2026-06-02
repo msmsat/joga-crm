@@ -9,7 +9,7 @@ import { GoogleLogin } from '@react-oauth/google';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
-type Step = 0 | 1 | 2 | 3; // 0=method, 1=contact, 2=name, 3=password
+type Step = 0 | 1 | 2 | 3 | 4;
 
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
@@ -24,6 +24,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -69,6 +70,10 @@ export default function RegisterPage() {
       else if (password.length < 8) errs.password = "Минимум 8 символов";
       if (!agree) errs.agree = "Необходимо согласие";
     }
+    if (s === 4) {
+      if (!code) errs.code = "Введите код подтверждения";
+      else if (code.length !== 4) errs.code = "Код должен состоять из 4 цифр";
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -78,21 +83,19 @@ export default function RegisterPage() {
     setStep((s) => (s + 1) as Step);
   };
 
-  const handleSubmit = async () => {
+  // 🔥 1. Отправка данных на регистрацию
+  const handleRegister = async () => {
     if (!validateStep(3)) return;
     setLoading(true);
-    setSubmitError(""); // Очищаем старые ошибки перед запросом
+    setSubmitError(""); 
 
     try {
-      // Отправляем запрос на наш эндпоинт регистрации
       const response = await fetch("http://localhost:8000/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email,
-          display_name: displayName,
+          display_name: displayName, 
           password: password,
         }),
       });
@@ -103,11 +106,8 @@ export default function RegisterPage() {
         throw new Error(data.detail || "Не удалось зарегистрироваться");
       }
 
-      // 🎉 УСПЕХ: Сервер создал юзера и вернул токен!
-      localStorage.setItem("token", data.access_token);
-      
-      // Показываем красивый экран успешной регистрации
-      setDone(true);
+      // Если успешно — сервер НЕ дал токен, а отправил код. Переходим на Шаг 4.
+      setStep(4);
 
     } catch (err: any) {
       setSubmitError(err.message || "Ошибка соединения с сервером");
@@ -116,7 +116,39 @@ export default function RegisterPage() {
     }
   };
 
-  const totalSteps = 3;
+  const handleVerify = async () => {
+    if (!validateStep(4)) return;
+    setLoading(true);
+    setSubmitError(""); 
+
+    try {
+      const response = await fetch("http://localhost:8000/auth/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          code: code,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Неверный код подтверждения");
+      }
+
+      // 🎉 УСПЕХ: Код подошел, мы получили токен!
+      localStorage.setItem("token", data.access_token);
+      setDone(true); // Показываем экран "Добро пожаловать"
+
+    } catch (err: any) {
+      setSubmitError(err.message || "Ошибка соединения с сервером");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalSteps = 4;
   const progressStep = step === 0 ? 0 : step - 1;
 
   // ── ICONS ──
@@ -130,6 +162,7 @@ export default function RegisterPage() {
     { title: "Контактные данные", sub: "Введите ваш email для создания аккаунта" },
     { title: "Как вас называть?", sub: "Имя или никнейм — на ваш выбор" },
     { title: "Придумайте пароль", sub: "Минимум 8 символов для надёжной защиты" },
+    { title: "Подтверждение почты", sub: "Мы отправили 4-значный код на ваш email" },
   ];
   
   return (
@@ -237,6 +270,20 @@ export default function RegisterPage() {
                       <PasswordStrength password={password} />
                     </div>
                   )}
+                  {step === 4 && (
+                    <div className="flex-col gap-8">
+                      <InputField
+                        label="Код из письма" type="text" placeholder="1234" maxLength={4}
+                        value={code} 
+                        onChange={(v: string) => { 
+                          // Разрешаем вводить только цифры
+                          setCode(v.replace(/\D/g, '')); 
+                          clearErr("code"); 
+                        }}
+                        icon={<IconLock />} error={errors.code} 
+                      />
+                    </div>
+                  )}
                   <ErrorAlert message={submitError} />
                 </div>
 
@@ -261,9 +308,18 @@ export default function RegisterPage() {
                 )}
 
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button className="btn-back" onClick={() => setStep((s) => (s - 1) as Step)}>←</button>
-                  <button className="btn-gradient" onClick={step === 3 ? handleSubmit : next} disabled={loading} style={{ flex: 1 }}>
-                    {loading ? <><span className="spinner" /> Создаём аккаунт...</> : step === 3 ? "Зарегистрироваться" : "Продолжить →"}
+                  {/* Кнопку "Назад" прячем на 4 шаге, чтобы юзер не отправил дубль */}
+                  {step < 4 && (
+                    <button className="btn-back" onClick={() => setStep((s) => (s - 1) as Step)}>←</button>
+                  )}
+                  
+                  <button 
+                    className="btn-gradient" 
+                    onClick={step === 3 ? handleRegister : step === 4 ? handleVerify : next} 
+                    disabled={loading} 
+                    style={{ flex: 1 }}
+                  >
+                    {loading ? <><span className="spinner" /> Загрузка...</> : step === 3 ? "Зарегистрироваться" : step === 4 ? "Подтвердить →" : "Продолжить →"}
                   </button>
                 </div>
               </div>
