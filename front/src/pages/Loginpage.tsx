@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Обязательный импорт глобальных стилей
-import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, GoogleBtn, PrimaryBtn, Divider, Checkbox, SocialProof, PasswordStrength } from "../components/UI";
+import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn,
+   Divider, Checkbox, SocialProof, PasswordStrength, ErrorAlert, PhoneField } from "../components/UI";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { GoogleLogin } from '@react-oauth/google';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -22,15 +25,36 @@ export default function LoginPage() {
     setTimeout(() => setMounted(true), 50);
   }, []);
 
+  const handleGoogleSuccess = async (credential: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:8000/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: credential }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail);
+      
+      localStorage.setItem("token", data.access_token);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setSubmitError("Ошибка авторизации через Google");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const validateForm = () => {
     const newErrors: { identifier?: string; password?: string } = {};
     if (!identifier.trim()) {
-      const labels = { email: "Email", phone: "Телефон", name: "Имя" };
+      const labels = { email: "Email", phone: "Телефон" }; // Убрали name
       newErrors.identifier = `${labels[identifierMode]} обязателен`;
     } else if (identifierMode === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
       newErrors.identifier = "Введите корректный email";
-    } else if (identifierMode === "phone" && !/^\+?[0-9\s\-()]{7,}$/.test(identifier)) {
-      newErrors.identifier = "Введите корректный номер";
+    } else if (identifierMode === "phone" && !isValidPhoneNumber(identifier)) {
+      // 🔥 Заменили Regex на умную функцию от библиотеки
+      newErrors.identifier = "Введите номер телефона полностью";
     }
     if (mode !== "forgot" && !password) {
       newErrors.password = "Пароль обязателен";
@@ -44,12 +68,6 @@ export default function LoginPage() {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     
-    // Ограничение для нашей B2B панели: вход только по Email
-    if (identifierMode !== "email") {
-      setSubmitError("На данном этапе вход в CRM поддерживается только через Email");
-      return;
-    }
-
     setLoading(true);
     setSubmitError(""); // Очищаем старые ошибки перед новым запросом
 
@@ -61,37 +79,28 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: identifier, // Передаем введенный email
-          password: password, // Передаем пароль
+          identifier: identifier, // 🔥 Передаем строку (email или телефон) в универсальное поле
+          password: password,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Если бэкенд вернул ошибку (например, 401 Unauthorized), выкидываем её в catch
         throw new Error(data.detail || "Не удалось войти в систему");
       }
 
-      // 🎉 УСПЕХ: Бэкенд вернул нам { access_token: "...", token_type: "Bearer" }
-      // Сохраняем заветный JWT-токен в память браузера!
+      // 🎉 УСПЕХ: Сохраняем полученный JWT-токен
       localStorage.setItem("token", data.access_token);
 
       // Перенаправляем пользователя в его защищенный рабочий кабинет
       navigate("/dashboard");
 
     } catch (err: any) {
-      // Если бэкенд завершился ошибкой или сервер выключен — выводим сообщение на экран
       setSubmitError(err.message || "Ошибка соединения с сервером");
     } finally {
       setLoading(false);
     }
-  };
-
-  const placeholders: Record<IdentifierMode, string> = {
-    email: "you@example.com",
-    phone: "+7 (999) 000-00-00",
-    name: "Ваше имя",
   };
 
   const icons: Record<IdentifierMode, React.ReactNode> = {
@@ -106,12 +115,6 @@ export default function LoginPage() {
         <rect x="4" y="1.5" width="8" height="13" rx="2" stroke="currentColor" strokeWidth="1.4" />
         <circle cx="8" cy="12.5" r="0.75" fill="currentColor" />
         <path d="M6.5 3.5H9.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    ),
-    name: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M2 13.5C2 11.0147 4.68629 9 8 9C11.3137 9 14 11.0147 14 13.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
     ),
   };
@@ -151,7 +154,7 @@ export default function LoginPage() {
             <>
               Нет аккаунта?{" "}
               <button
-                onClick={() => { setMode("register"); setErrors({}); }}
+                onClick={() => navigate("/register")} // 🔥 Просто делаем переход вместо setMode
                 style={{
                   background: "none", border: "none", color: "var(--peach)",
                   fontWeight: 700, fontSize: "13px", cursor: "pointer", padding: 0,
@@ -229,7 +232,17 @@ export default function LoginPage() {
             {/* Google Auth (not for forgot) */}
             {mode !== "forgot" && (
               <>
-                <GoogleBtn onClick={() => {}} />
+                <GoogleLogin
+                  onSuccess={(credentialResponse) => {
+                    if (credentialResponse.credential) {
+                      handleGoogleSuccess(credentialResponse.credential);
+                    }
+                  }}
+                  onError={() => {
+                    setSubmitError("Google авторизация не удалась");
+                  }}
+                  useOneTap // Опционально: показывает красивое всплывающее окно справа сверху
+                />
                 <Divider label="или войдите через" />
               </>
             )}
@@ -243,38 +256,28 @@ export default function LoginPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
               {/* 🔥 ДОБАВИТЬ ЭТОТ БЛОК НИЖЕ */}
-              {submitError && (
-                <div className="error-alert">
-                  ⚠️ {submitError}
-                </div>
-              )}
+              <ErrorAlert message={submitError} />
 
-              {/* Identifier Input */}
-              <InputField
-                label={
-                  mode === "forgot"
-                    ? "Email"
-                    : identifierMode === "email"
-                    ? "Email"
-                    : identifierMode === "phone"
-                    ? "Номер телефона"
-                    : "Имя пользователя"
-                }
-                type={
-                  mode === "forgot"
-                    ? "email"
-                    : identifierMode === "email"
-                    ? "email"
-                    : identifierMode === "phone"
-                    ? "tel"
-                    : "text"
-                }
-                placeholder={mode === "forgot" ? "you@example.com" : placeholders[identifierMode]}
-                value={identifier}
-                onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                icon={mode === "forgot" ? icons.email : icons[identifierMode]}
-                error={errors.identifier}
-              />
+              {/* Если режим восстановления пароля ИЛИ вкладка email — показываем обычный InputField */}
+              {(mode === "forgot" || identifierMode === "email") ? (
+                <InputField
+                  label="Email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={identifier}
+                  onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                  icon={icons.email}
+                  error={errors.identifier}
+                />
+              ) : (
+                /* 🔥 Иначе (вкладка телефона) — показываем PhoneField */
+                <PhoneField
+                  label="Номер телефона"
+                  value={identifier}
+                  onChange={(v: string) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                  error={errors.identifier}
+                />
+              )}
 
               {/* Password Field */}
               {mode !== "forgot" && (

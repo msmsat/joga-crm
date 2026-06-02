@@ -446,3 +446,272 @@
      .navbar, footer { padding-left: 20px; padding-right: 20px; }
      .login-card { padding: 28px 24px; }
    }
+
+   /* =========================================
+   АНИМАЦИИ
+   ========================================= */
+@keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,30px) scale(1.04)} }
+@keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-40px) scale(1.06)} }
+@keyframes float3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-20px,20px)} 66%{transform:translate(20px,-15px)} }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 3px rgba(249,160,139,0.18)} 50%{opacity:.8;box-shadow:0 0 0 6px rgba(249,160,139,0.06)} }
+@keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+@keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+@keyframes stepIn { from{opacity:0;transform:translateX(12px)} to{opacity:1;transform:translateX(0)} }
+
+/* =========================================
+   ФОНОВЫЕ СФЕРЫ (ORBS)
+   ========================================= */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 {
+  width: 520px; height: 520px; top: -100px; right: -120px;
+  background: radial-gradient(circle, rgba(249,160,139,0.13) 0%, transparent 70%);
+  animation: float1 18s ease-in-out infinite;
+}
+.orb-2 {
+  width: 400px; height: 400px; bottom: 0; left: -80px;
+  background: radial-gradient(circle, rgba(163,201,168,0.10) 0%, transparent 70%);
+  animation: float2 22s ease-in-out infinite;
+}
+.orb-3 {
+  width: 300px; height: 300px; top: 40%; left: 30%;
+  background: radial-gradient(circle, rgba(249,160,139,0.07) 0%, transparent 70%);
+  animation: float3 26s ease-in-out infinite;
+}
+
+/* =========================================
+   КНОПКИ
+   ========================================= */
+.btn-google {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-weight: 600;
+  color: var(--onyx);
+  width: 100%;
+  padding: 13px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.25s ease;
+}
+.btn-google:hover {
+  background: rgba(26,26,26,0.04);
+  border-color: rgba(26,26,26,0.16);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, var(--peach) 0%, #F5866E 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px -4px rgba(249,160,139,0.38);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+}
+.btn-gradient:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px -8px rgba(249,160,139,0.52);
+}
+.btn-gradient:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink: 0;
+}
+.btn-back:hover {
+  background: rgba(249,160,139,0.07);
+  border-color: var(--peach);
+  color: var(--peach);
+}
+
+.btn-icon-clear {
+  background: none; border: none; cursor: pointer; padding: 0; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s; outline: none;
+}
+
+/* =========================================
+   ПОЛЯ ВВОДА И ФОРМЫ
+   ========================================= */
+.input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+.input-label { font-size: 13px; font-weight: 600; transition: color 0.2s; margin-left: 2px; }
+.input-container { position: relative; display: flex; align-items: center; }
+.input-icon-left { position: absolute; left: 14px; top: 0; bottom: 0; display: flex; align-items: center; transition: all 0.3s; z-index: 2; pointer-events: none; }
+.input-icon-right { position: absolute; right: 14px; top: 0; bottom: 0; display: flex; align-items: center; z-index: 2; }
+.input-error-msg { font-size: 12px; color: var(--rose); font-weight: 500; margin-left: 2px; display: flex; align-items: center; gap: 4px; }
+
+.input-field {
+  width: 100%; height: 52px;
+  background: rgba(26,26,26,0.03);
+  border: 1.5px solid transparent; border-radius: 14px;
+  font-size: 15px; font-weight: 500; color: var(--onyx);
+  outline: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 0 16px 0 44px;
+}
+.input-field.has-right { padding-right: 44px; }
+.input-field::placeholder { color: rgba(102,102,102,0.45); }
+.input-field:hover { background: rgba(26,26,26,0.05); }
+.input-field.has-value { background: var(--bg-card); border-color: rgba(26,26,26,0.12); }
+.input-field:focus {
+  background: var(--bg-card); border-color: var(--peach);
+  box-shadow: 0 0 0 4px var(--peach-glow), 0 4px 14px rgba(249,160,139,0.12);
+  transform: translateY(-1px);
+}
+.input-field.has-error { border-color: var(--rose); background: #FFF9FA; }
+.input-field.has-error:focus { box-shadow: 0 0 0 4px rgba(216,140,154,0.14); border-color: var(--rose); }
+
+/* =========================================
+   ИНДИКАТОР ПАРОЛЯ И ШАГОВ
+   ========================================= */
+.strength-bar-track { height: 3px; border-radius: 4px; background: rgba(26,26,26,0.06); overflow: hidden; flex: 1; }
+.strength-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s cubic-bezier(0.34,1.2,0.64,1), background 0.3s ease; }
+
+.step-dots { display: flex; align-items: center; gap: 6px; justify-content: center; }
+.step-dot {
+  height: 7px; border-radius: 4px;
+  transition: all 0.35s cubic-bezier(0.34,1.4,0.64,1);
+}
+
+/* =========================================
+   ЧЕКБОКС И СТРУКТУРА СТРАНИЦЫ
+   ========================================= */
+.custom-checkbox-wrapper { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none; }
+.custom-checkbox-box {
+  width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+
+.step-enter { animation: stepIn 0.35s cubic-bezier(0.34,1.2,0.64,1) both; }
+.spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+  border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
+}
+
+/* Утилиты раскладки */
+.flex-col { display: flex; flex-direction: column; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-16 { gap: 16px; }
+.gap-24 { gap: 24px; }
+.text-muted { color: var(--muted); }
+.text-link { color: var(--peach); font-weight: 600; text-decoration: none; }
+
+/* =========================================
+   АЛЕРТЫ И ОШИБКИ
+   ========================================= */
+.alert-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(216,140,154,0.08), rgba(216,140,154,0.03));
+  border: 1px solid rgba(216,140,154,0.3);
+  border-radius: 12px;
+  color: #B25D6E; /* Чуть более темный оттенок для хорошей читаемости текста */
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  animation: alertEnter 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.alert-error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+@keyframes alertEnter {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =========================================
+   PHONE INPUT (react-phone-number-input)
+   ========================================= */
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 52px;
+  background: rgba(26,26,26,0.03);
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  padding: 0 16px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.phone-input-wrapper:hover {
+  background: rgba(26,26,26,0.05);
+}
+
+.phone-input-wrapper.has-value {
+  background: var(--bg-card);
+  border-color: rgba(26,26,26,0.12);
+}
+
+.phone-input-wrapper.focused {
+  background: var(--bg-card);
+  border-color: var(--peach);
+  box-shadow: 0 0 0 4px var(--peach-glow), 0 4px 14px rgba(249,160,139,0.12);
+  transform: translateY(-1px);
+}
+
+.phone-input-wrapper.has-error {
+  border-color: var(--rose);
+  background: #FFF9FA;
+}
+
+.phone-input-wrapper.has-error.focused {
+  box-shadow: 0 0 0 4px rgba(216,140,154,0.14);
+}
+
+/* Стилизация флага и выпадающего списка */
+.phone-input-wrapper .PhoneInputCountry {
+  margin-right: 12px;
+  padding-right: 12px;
+  border-right: 1.5px solid var(--border);
+}
+
+.phone-input-wrapper .PhoneInputCountrySelectArrow {
+  opacity: 0.5;
+}
+
+/* Стилизация самого поля ввода внутри компонента */
+.phone-input-wrapper .PhoneInputInput {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--onyx);
+}
+
+.phone-input-wrapper .PhoneInputInput::placeholder {
+  color: rgba(102,102,102,0.45);
+}

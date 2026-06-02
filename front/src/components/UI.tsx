@@ -1,5 +1,10 @@
+// ─── В самом верху UI.tsx ───
 import { GoogleIcon } from "./Icons";
 import { useState, useEffect, useRef } from "react";
+
+// @ts-ignore
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 // ─── FLOATING ORBS ────────────────────────────────────────────────────────────
 export function Orbs() {
@@ -29,42 +34,144 @@ export function Logo() {
   );
 }
 
-// ─── INPUT FIELD (С нашими оптическими правками) ──────────────────────────────
-export function InputField({ label, type = "text", placeholder, value, onChange, icon, rightSlot, error }: any) {
+// ─── INPUT FIELD ──────────────────────────────────────────────────────────────
+export function InputField({ label, type = "text", placeholder, value, onChange, onFocus, icon, rightSlot, error, autoComplete, maxLength }: any) {
+  const [focused, setFocused] = useState(false);
   const hasValue = value.length > 0;
+
   return (
     <div className="input-wrapper">
-      <label className="input-label">{label}</label>
+      <label className="input-label" style={{ color: focused ? "var(--onyx)" : "var(--muted)" }}>
+        {label}
+      </label>
       <div className="input-container">
-        {icon && <div className="input-icon-left">{icon}</div>}
+        {icon && (
+          <div className="input-icon-left" style={{ color: focused ? "var(--peach)" : "var(--muted)", transform: focused ? "scale(1.08)" : "scale(1)" }}>
+            {icon}
+          </div>
+        )}
         <input
+          className={`input-field ${hasValue ? "has-value" : ""} ${error ? "has-error" : ""} ${rightSlot ? "has-right" : ""}`}
           type={type}
           placeholder={placeholder}
           value={value}
+          maxLength={maxLength}
           onChange={(e) => onChange(e.target.value)}
-          className={`input-field ${hasValue ? 'has-value' : ''} ${error ? 'has-error' : ''}`}
-          style={{ paddingLeft: icon ? "48px" : "16px", paddingRight: rightSlot ? "48px" : "16px" }}
+          onFocus={(e) => {
+            setFocused(true);
+            if (onFocus) onFocus(e); // 🔥 Теперь поле сообщает родителю, что по нему кликнули
+          }}
+          onBlur={() => setFocused(false)}
+          autoComplete={autoComplete}
+          style={{ paddingLeft: icon ? "44px" : "16px", paddingRight: rightSlot ? "44px" : "16px" }}
         />
         {rightSlot && <div className="input-icon-right">{rightSlot}</div>}
       </div>
       {error && (
-        <p style={{ fontSize: "12px", color: "var(--rose)", margin: "4px 0 0 2px", display: "flex", alignItems: "center", gap: "4px" }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <circle cx="6" cy="6" r="5.5" stroke="var(--rose)" />
-            <path d="M6 3.5V6.5" stroke="var(--rose)" strokeWidth="1.5" strokeLinecap="round" />
-            <circle cx="6" cy="8.5" r="0.75" fill="var(--rose)" />
-          </svg>
+        <span className="input-error-msg">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="var(--rose)" strokeWidth="1.2"/><path d="M6 3.5V6.5" stroke="var(--rose)" strokeWidth="1.2" strokeLinecap="round"/><circle cx="6" cy="8.5" r="0.6" fill="var(--rose)"/></svg>
           {error}
-        </p>
+        </span>
       )}
     </div>
   );
 }
 
+// ─── PHONE INPUT FIELD (С маской и флагами) ───────────────────────────────────
+export function PhoneField({ label, value, onChange, error }: any) {
+  const [focused, setFocused] = useState(false);
+  const hasValue = value && value.length > 0;
+
+  return (
+    <div className="input-wrapper">
+      <label className="input-label" style={{ color: focused ? "var(--onyx)" : "var(--muted)" }}>
+        {label}
+      </label>
+      <div className="input-container">
+        <PhoneInput
+          international
+          defaultCountry="RU" 
+          value={value}
+          onChange={onChange}
+          limitMaxLength={true} // 🔥 Магия! Блокирует ввод лишних цифр для выбранной страны
+          className={`phone-input-wrapper ${focused ? "focused" : ""} ${hasValue ? "has-value" : ""} ${error ? "has-error" : ""}`}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+      </div>
+      {error && (
+        <span className="input-error-msg">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="var(--rose)" strokeWidth="1.2"/><path d="M6 3.5V6.5" stroke="var(--rose)" strokeWidth="1.2" strokeLinecap="round"/><circle cx="6" cy="8.5" r="0.6" fill="var(--rose)"/></svg>
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function getStrength(pw: string): { score: number; label: string; color: string } {
+  if (!pw) return { score: 0, label: "", color: "transparent" };
+  
+  let score = 0;
+  
+  // 1. Оцениваем длину
+  if (pw.length > 0) score += 1;
+  if (pw.length >= 8) score += 1;
+  if (pw.length >= 12) score += 1;
+  
+  // 2. Оцениваем разнообразие символов
+  let variety = 0;
+  if (/[a-zа-я]/i.test(pw)) variety++; // Буквы
+  if (/[A-ZА-Я]/.test(pw) && /[a-zа-я]/.test(pw)) variety++; // И большие, и маленькие
+  if (/[0-9]/.test(pw)) variety++; // Цифры
+  if (/[^A-Za-zА-Яа-я0-9]/.test(pw)) variety++; // Спецсимволы (!@#$)
+  
+  if (variety === 3) score += 1;
+  if (variety === 4) score += 2;
+  
+  // 3. ШТРАФЫ за популярные глупости
+  if (/(.)\1{2,}/.test(pw)) score -= 1; // Штраф за "aaa", "111"
+  if (/(123|234|345|456|567|678|789|890|098|987|876|765|654|543|432|321)/.test(pw)) score -= 2; // Штраф за цифры по порядку
+  if (/(qwe|wer|ert|asd|sdf|zxc)/i.test(pw)) score -= 1; // Штраф за "йцукен/qwerty"
+  if (/^[0-9]+$/.test(pw)) score = 1; // Если только цифры — строго слабый
+  if (/^[a-zA-Z]+$/.test(pw)) Math.min(score, 2); // Если только буквы — не выше среднего
+
+  // Загоняем результат в рамки от 1 до 4
+  score = Math.max(1, Math.min(score, 4));
+
+  const map = [
+    { label: "", color: "transparent" },
+    { label: "Очень слабый", color: "#D88C9A" }, // score 1
+    { label: "Слабый", color: "#F9C08B" },       // score 2
+    { label: "Хороший", color: "#A3C9A8" },      // score 3
+    { label: "Надёжный", color: "#5DB27F" },     // score 4
+  ];
+  
+  return { score, ...map[score] };
+}
+
+export function StepDots({ current, total }: { current: number; total: number }) {
+  return (
+    <div className="step-dots">
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} className="step-dot" style={{
+          width: i === current ? 20 : 7,
+          background: i === current ? "var(--peach)" : "rgba(26,26,26,0.10)",
+          boxShadow: i === current ? "0 2px 8px var(--peach-glow)" : "none",
+        }} />
+      ))}
+    </div>
+  );
+}
+
 // ─── IDENTIFIER TABS ──────────────────────────────────────────────────────────
-export type IdentifierMode = "email" | "phone" | "name";
+export type IdentifierMode = "email" | "phone";
 export function IdentifierTabs({ active, onChange }: { active: IdentifierMode; onChange: (m: IdentifierMode) => void }) {
-  const tabs: { key: IdentifierMode; label: string }[] = [{ key: "email", label: "Email" }, { key: "phone", label: "Телефон" }, { key: "name", label: "Имя" }];
+  // Оставили только Email и Телефон
+  const tabs: { key: IdentifierMode; label: string }[] = [
+    { key: "email", label: "Email" }, 
+    { key: "phone", label: "Телефон" }
+  ];
   return (
     <div style={{ display: "flex", background: "rgba(26,26,26,0.04)", borderRadius: "10px", padding: "3px", gap: "2px" }}>
       {tabs.map((t) => (
@@ -263,6 +370,31 @@ export function DashboardMockup() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── ICONS ────────────────────────────────────────────────────────────────────
+export const IconEmail = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="9" rx="2" stroke="currentColor" strokeWidth="1.4" /><path d="M1.5 5.5L8 9.5L14.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
+export const IconPhone = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="4" y="1.5" width="8" height="13" rx="2" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="12.5" r="0.75" fill="currentColor" /><path d="M6.5 3.5H9.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
+export const IconUser = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.4" /><path d="M2 13.5C2 11.0147 4.68629 9 8 9C11.3137 9 14 11.0147 14 13.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
+export const IconLock = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4" /><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><circle cx="8" cy="10.5" r="1" fill="currentColor" /></svg>;
+export const IconEyeOpen = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" /><path d="M2 2L14 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
+export const IconEyeClosed = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" /></svg>;
+
+// ─── ERROR ALERT (Красивый блок ошибки) ───────────────────────────────────────
+export function ErrorAlert({ message }: { message?: string }) {
+  if (!message) return null;
+  
+  return (
+    <div className="alert-error">
+      {/* Изящная кастомная иконка вместо обычного эмодзи */}
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="7.5" fill="rgba(216,140,154,0.15)" stroke="var(--rose)" strokeWidth="1.2"/>
+        <path d="M9 5.5V9.5" stroke="var(--rose)" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="9" cy="12.5" r="1" fill="var(--rose)"/>
+      </svg>
+      <span>{message}</span>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List, Optional
-from sqlalchemy import BigInteger, Integer, String, ForeignKey, DateTime, Date, func, CheckConstraint, Boolean
+from sqlalchemy import BigInteger, Integer, String, ForeignKey, DateTime, Date, func, CheckConstraint, Boolean, Column
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
@@ -26,6 +26,8 @@ class User(Base):
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    phone: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)
+    display_name: Mapped[str] = mapped_column(String(100))
     hashed_password: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(100))
     role: Mapped[str] = mapped_column(String(50), default="admin")

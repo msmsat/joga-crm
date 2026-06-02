@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import Dashboard from './pages/Dashboard';
+import RegisterPage from './pages/Registerpage';
 // import RegisterPage from './pages/RegisterPage'; // Раскомментируешь, когда создашь
 
 // ─── 1. ЗАЩИТА КАБИНЕТА (Пускает только с токеном) ──────────────────────────
@@ -55,6 +56,15 @@ function App() {
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/register" 
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
           } 
         />
       </Routes>

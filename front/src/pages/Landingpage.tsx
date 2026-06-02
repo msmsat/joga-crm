@@ -39,7 +39,7 @@ export default function Landing() {
           <button className="btn btn-ghost btn-size-normal" onClick={() => navigate('/login')}>
             Войти
           </button>
-          <button className="btn btn-primary btn-size-normal" onClick={() => navigate('/login')}>
+          <button className="btn btn-primary btn-size-normal" onClick={() => navigate('/register')}>
             Начать бесплатно
           </button>
         </div>
@@ -108,7 +108,7 @@ export default function Landing() {
               transform: heroVisible ? "none" : "translateY(12px)",
               transition: "all 0.6s ease 0.85s",
             }}>
-              <button className="btn btn-primary btn-size-large" onClick={() => navigate('/login')}>
+              <button className="btn btn-primary btn-size-large" onClick={() => navigate('/register')}>
                 Попробовать 14 дней бесплатно
               </button>
               <button className="btn btn-ghost btn-size-large">
@@ -376,7 +376,7 @@ export default function Landing() {
               display:"flex", gap:"12px",
               justifyContent:"center", flexWrap:"wrap",
             }}>
-              <button className="btn btn-primary btn-size-large">
+              <button className="btn btn-primary btn-size-large" onClick={() => navigate('/register')}>
                 Зарегистрироваться бесплатно
               </button>
               <button style={{
