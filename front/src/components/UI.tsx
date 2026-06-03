@@ -342,7 +342,7 @@ export function DashboardMockup() {
       </div>
       <div style={{ display:"flex", height:"380px" }}>
         <div style={{ width:"56px", background:"#F9F8F7", borderRight:`1px solid var(--border)`, display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"20px", gap:"18px" }}>
-          {["⬛","📅","👥","💬","📊","⚙️"].map((ico,i) => <div key={i} style={{ width:"34px",height:"34px",borderRadius:"9px", background: i===0 ? `linear-gradient(135deg, var(--peach-light), var(--peach))` : "transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"15px", cursor:"pointer" }}>{ico}</div>)}
+          {["🏡","📅","👥","💬","📊","⚙️"].map((ico,i) => <div key={i} style={{ width:"34px",height:"34px",borderRadius:"9px", background: i===0 ? `linear-gradient(135deg, var(--peach-light), var(--peach))` : "transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"15px", cursor:"pointer" }}>{ico}</div>)}
         </div>
         <div style={{ flex:1, padding:"24px", overflowY:"auto" }}>
           <div style={{ marginBottom:"20px" }}>

@@ -10,7 +10,7 @@ class LoginRequest(BaseModel):
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    display_name: str 
+    name: str 
     password: str
 
     # Суровая валидация пароля

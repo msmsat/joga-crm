@@ -14,12 +14,17 @@ from google.auth.transport import requests as google_requests
 from schemas import LoginRequest, RegisterRequest, TokenResponse, VerifyEmailRequest, GoogleAuthRequest
 import random
 import uuid
+import os
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения
+load_dotenv()
 
 # Создаем роутер (префикс добавим в main.py)
 router = APIRouter()
 
 
-GOOGLE_CLIENT_ID = "ТВОЙ_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 @router.post("/google", response_model=TokenResponse)
 async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get_db)):
@@ -31,7 +36,7 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
             GOOGLE_CLIENT_ID
         )
         email = idinfo['email']
-        display_name = idinfo.get('name', 'Google User')
+        google_name = idinfo.get('name', 'Google User')
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,12 +55,15 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
         
         new_user = User(
             email=email,
-            display_name=display_name,
+            name=google_name,
             hashed_password=dummy_password,
             is_verified=True,  # 🔥 Google юзерам сразу верим!
             verification_code=None
         )
         db.add(new_user)
+        await db.commit() # 🔥 БАГ ИСПРАВЛЕН: Теперь мы сохраняем его в базу!
+        await db.refresh(new_user)
+        user = new_user
 
     # 4. Выдаем наш системный токен
     access_token = create_access_token(data={"sub": user.email})
@@ -63,29 +71,40 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
 
 # ─── 1. ЭНДПОИНТ РЕГИСТРАЦИИ ──────────────────────────────────────────────────
 # Обрати внимание на response_model=TokenResponse — это подскажет сваггеру формат ответа
-@router.post("/register", response_model=TokenResponse)
+@router.post("/register")
 async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    
-    # 1. Проверяем, нет ли уже пользователя с такой почтой
     query = select(User).where(User.email == request.email)
-    result = await db.execute(query)
-    existing_user = result.scalar_one_or_none()
+    existing_user = (await db.execute(query)).scalar_one_or_none()
+
+    hashed_pwd = get_password_hash(request.password)
+    verification_code = str(random.randint(1000, 9999))
     
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Пользователь с таким email уже зарегистрирован"
-        )
-    
-    # 2. Хэшируем пароль (он уже прошел строгую проверку в schemas.py!)
-    hashed_pwd = get_password_hash(request.password)
-
-    verification_code = str(random.randint(1000, 9999))
+        if existing_user.is_verified:
+            # 🔥 Если юзер есть и УЖЕ подтвержден — тогда точно отклоняем
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Пользователь с таким email уже зарегистрирован"
+            )
+        else:
+            # 🔥 Если юзер есть, но НЕ подтвержден — обновляем его данные и шлем новый код!
+            existing_user.name = request.name
+            existing_user.hashed_password = hashed_pwd
+            existing_user.verification_code = verification_code
+            
+            await db.commit()
+            
+            print("\n" + "="*40)
+            print(f"📧 ПОВТОРНОЕ ПИСЬМО ДЛЯ: {existing_user.email}")
+            print(f"🔑 НОВЫЙ КОД ПОДТВЕРЖДЕНИЯ: {verification_code}")
+            print("="*40 + "\n")
+            
+            return {"message": "Новый код подтверждения отправлен на почту"}
     
     # 3. Создаем запись нового пользователя со всеми данными
     new_user = User(
         email=request.email,
-        display_name=request.display_name, 
+        name=request.name, 
         hashed_password=hashed_pwd,
         is_verified=False,                    # Ждем подтверждения
         verification_code=verification_code   # Сохраняем код в БД
@@ -136,8 +155,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     query = select(User).where(
         (User.email == request.identifier) | (User.phone == request.identifier)
     )
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
+    user = (await db.execute(query)).scalar_one_or_none()
 
     # 2. Проверка существования пользователя
     if not user:
@@ -155,6 +173,25 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный email, телефон или пароль"
+        )
+    
+    if not user.is_verified:
+        # Юзер пытается войти, но он не подтвержден.
+        # Мы заботимся о нем: генерируем новый код прямо сейчас!
+        new_code = str(random.randint(1000, 9999))
+        user.verification_code = new_code
+        await db.commit()
+        
+        # Имитируем отправку письма
+        print("\n" + "="*40)
+        print(f"📧 ПИСЬМО (ПОПЫТКА ВХОДА) ДЛЯ: {user.email}")
+        print(f"🔑 НОВЫЙ КОД ПОДТВЕРЖДЕНИЯ: {new_code}")
+        print("="*40 + "\n")
+        
+        # Отклоняем вход, но выдаем понятную инструкцию
+        raise HTTPException(
+            status_code=403, 
+            detail="Аккаунт не подтвержден! Мы только что отправили новый код на вашу почту. Перейдите во вкладку 'Зарегистрироваться', чтобы ввести его."
         )
 
     # 4. Генерируем токен (внутрь зашиваем email как уникальный субъект)

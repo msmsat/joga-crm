@@ -87,7 +87,12 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Не удалось войти в систему");
+        // Если FastAPI вернул массив ошибок (422), достаем первую понятную ошибку
+        if (Array.isArray(data.detail)) {
+          throw new Error(`Ошибка: ${data.detail[0].loc[1]} - ${data.detail[0].msg}`);
+        }
+        // Иначе выводим обычную текстовую ошибку
+        throw new Error(data.detail || "Не удалось зарегистрироваться");
       }
 
       // 🎉 УСПЕХ: Сохраняем полученный JWT-токен
@@ -232,7 +237,9 @@ export default function LoginPage() {
             {/* Google Auth (not for forgot) */}
             {mode !== "forgot" && (
               <>
+              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}></div>
                 <GoogleLogin
+                  width="280"
                   onSuccess={(credentialResponse) => {
                     if (credentialResponse.credential) {
                       handleGoogleSuccess(credentialResponse.credential);

@@ -23,18 +23,22 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     
+    # 1. Студия теперь необязательна при регистрации (nullable=True)
+    studio_id: Mapped[Optional[int]] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True, nullable=True)
+    
+    # 2. Главные обязательные данные (без nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    phone: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)
-    display_name: Mapped[str] = mapped_column(String(100))
     hashed_password: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(100))
+    
+    # 3. Все остальные поля сделали НЕОБЯЗАТЕЛЬНЫМИ (nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String, unique=True, nullable=True)
     role: Mapped[str] = mapped_column(String(50), default="admin")
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    verification_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    verification_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     
-    studio: Mapped["Studio"] = relationship(back_populates="users")
+    studio: Mapped[Optional["Studio"]] = relationship(back_populates="users")
 
 # ==========================================
 # 2. КЛИЕНТЫ И B2C ЛОГИКА
