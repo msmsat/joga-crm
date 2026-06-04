@@ -17,9 +17,15 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ identifier?: string; password?: string; resetCode?: string }>({});
 
   const [submitError, setSubmitError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  // 🔥 Новые стейты для восстановления пароля
+  const [forgotStep, setForgotStep] = useState<1 | 2>(1);
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
     setTimeout(() => setMounted(true), 50);
@@ -67,40 +73,57 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    
     setLoading(true);
-    setSubmitError(""); // Очищаем старые ошибки перед новым запросом
+    setSubmitError(""); 
+    setSuccessMsg("");
 
     try {
-      // Отправляем запрос на эндпоинт /auth/login нашего FastAPI бэкенда
-      const response = await fetch("http://localhost:8000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: identifier, // 🔥 Передаем строку (email или телефон) в универсальное поле
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Если FastAPI вернул массив ошибок (422), достаем первую понятную ошибку
-        if (Array.isArray(data.detail)) {
-          throw new Error(`Ошибка: ${data.detail[0].loc[1]} - ${data.detail[0].msg}`);
+      // ── ФЛОУ: ОТПРАВКА КОДА ВОССТАНОВЛЕНИЯ (ШАГ 1) ──
+      if (mode === "forgot" && forgotStep === 1) {
+        const response = await fetch("http://localhost:8000/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: identifier }),
+        });
+        if (!response.ok) throw new Error("Не удалось отправить код");
+        setForgotStep(2); // Переходим на шаг 2 (ввод кода)
+      } 
+      
+      // ── ФЛОУ: СОХРАНЕНИЕ НОВОГО ПАРОЛЯ (ШАГ 2) ──
+      else if (mode === "forgot" && forgotStep === 2) {
+        const response = await fetch("http://localhost:8000/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: identifier, code: resetCode, new_password: newPassword }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+           if (Array.isArray(data.detail)) throw new Error(`Ошибка: ${data.detail[0].msg}`);
+           throw new Error(data.detail || "Неверный код");
         }
-        // Иначе выводим обычную текстовую ошибку
-        throw new Error(data.detail || "Не удалось зарегистрироваться");
+        // Пароль изменен! Возвращаем на страницу логина
+        setMode("login");
+        setForgotStep(1);
+        setPassword("");
+        setSuccessMsg("Пароль успешно изменен! Теперь вы можете войти.");
+      } 
+      
+      // ── ФЛОУ: ОБЫЧНЫЙ ЛОГИН ──
+      else {
+        const response = await fetch("http://localhost:8000/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier: identifier, password: password }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          if (Array.isArray(data.detail)) throw new Error(`Ошибка: ${data.detail[0].loc[1]} - ${data.detail[0].msg}`);
+          throw new Error(data.detail || "Ошибка входа");
+        }
+        localStorage.setItem("token", data.access_token);
+        navigate("/dashboard");
       }
-
-      // 🎉 УСПЕХ: Сохраняем полученный JWT-токен
-      localStorage.setItem("token", data.access_token);
-
-      // Перенаправляем пользователя в его защищенный рабочий кабинет
-      navigate("/dashboard");
-
     } catch (err: any) {
       setSubmitError(err.message || "Ошибка соединения с сервером");
     } finally {
@@ -127,13 +150,13 @@ export default function LoginPage() {
   const titles = {
     login: "С возвращением",
     register: "Создать аккаунт",
-    forgot: "Восстановить доступ",
+    forgot: forgotStep === 1 ? "Восстановить доступ" : "Придумайте пароль",
   };
 
   const subtitles = {
     login: "Войдите, чтобы продолжить работу в Velora",
     register: "14 дней бесплатно — без карты",
-    forgot: "Мы пришлём инструкцию на ваш email",
+    forgot: forgotStep === 1 ? "Мы пришлём инструкцию на ваш email" : `Код отправлен на ${identifier}`,
   };
 
   return (
@@ -212,17 +235,14 @@ export default function LoginPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {mode === "forgot" && (
                 <button
-                  onClick={() => { setMode("login"); setErrors({}); }}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: "6px",
-                    background: "none", border: "none", color: "var(--muted)",
-                    fontSize: "12px", fontWeight: 600, cursor: "pointer",
-                    padding: 0, marginBottom: "8px", width: "fit-content",
+                  onClick={() => { 
+                    if (forgotStep === 2) setForgotStep(1);
+                    else { setMode("login"); setForgotStep(1); }
+                    setErrors({}); setSubmitError("");
                   }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", color: "var(--muted)", fontSize: "12px", fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: "8px", width: "fit-content" }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   Назад
                 </button>
               )}
@@ -237,19 +257,20 @@ export default function LoginPage() {
             {/* Google Auth (not for forgot) */}
             {mode !== "forgot" && (
               <>
-              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}></div>
-                <GoogleLogin
-                  width="280"
-                  onSuccess={(credentialResponse) => {
-                    if (credentialResponse.credential) {
-                      handleGoogleSuccess(credentialResponse.credential);
-                    }
-                  }}
-                  onError={() => {
-                    setSubmitError("Google авторизация не удалась");
-                  }}
-                  useOneTap // Опционально: показывает красивое всплывающее окно справа сверху
-                />
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
+                  <GoogleLogin
+                      width="320"
+                      onSuccess={(credentialResponse) => {
+                          if (credentialResponse.credential) {
+                          handleGoogleSuccess(credentialResponse.credential);
+                          }
+                      }}
+                      onError={() => {
+                          setSubmitError("Google авторизация не удалась");
+                      }}
+                      useOneTap 
+                  />
+                </div>
                 <Divider label="или войдите через" />
               </>
             )}
@@ -265,34 +286,64 @@ export default function LoginPage() {
               {/* 🔥 ДОБАВИТЬ ЭТОТ БЛОК НИЖЕ */}
               <ErrorAlert message={submitError} />
 
+              {successMsg && (
+                <div style={{ padding: "12px 16px", background: "#E8F5E9", border: "1px solid #A5D6A7", borderRadius: "10px", color: "#2E7D32", fontSize: "13px", fontWeight: 600 }}>
+                  {successMsg}
+                </div>
+              )}
+
               {/* Если режим восстановления пароля ИЛИ вкладка email — показываем обычный InputField */}
-              {(mode === "forgot" || identifierMode === "email") ? (
-                <InputField
-                  label="Email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={identifier}
-                  onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                  icon={icons.email}
-                  error={errors.identifier}
-                />
-              ) : (
-                /* 🔥 Иначе (вкладка телефона) — показываем PhoneField */
-                <PhoneField
-                  label="Номер телефона"
-                  value={identifier}
-                  onChange={(v: string) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                  error={errors.identifier}
-                />
+              {(mode !== "forgot" || (mode === "forgot" && forgotStep === 1)) && (
+                identifierMode === "email" || mode === "forgot" ? (
+                  <InputField
+                    label="Email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={identifier}
+                    onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                    icon={icons.email}
+                    error={errors.identifier}
+                  />
+                ) : (
+                  <PhoneField
+                    label="Номер телефона"
+                    value={identifier}
+                    onChange={(v: string) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                    error={errors.identifier}
+                  />
+                )
               )}
 
               {/* Password Field */}
-              {mode !== "forgot" && (
+              {mode === "forgot" && forgotStep === 2 && (
+                <>
+                  <InputField 
+                    label="Код из письма" type="text" placeholder="1234" maxLength={4} 
+                    value={resetCode} 
+                    onChange={(v: string) => { setResetCode(v.replace(/\D/g, '')); setErrors((e) => ({ ...e, resetCode: undefined })); }} 
+                    icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
+                    error={errors.resetCode} 
+                  />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <InputField 
+                      label="Новый пароль" type={showPassword ? "text" : "password"} placeholder="Минимум 8 символов" 
+                      value={newPassword} 
+                      onChange={(v: string) => { setNewPassword(v); setErrors((e) => ({ ...e, password: undefined })); }} 
+                      icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
+                      rightSlot={<button onClick={() => setShowPassword(!showPassword)} style={{ background: "none", border: "none", cursor: "pointer", color: showPassword ? "var(--peach)" : "var(--muted)", padding: 0, height: "100%", outline: "none" }}>{showPassword ? "Скрыть" : "Показать"}</button>} 
+                      error={errors.password} 
+                    />
+                    <PasswordStrength password={newPassword} />
+                  </div>
+                </>
+              )}
+
+              {mode === "login" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   <InputField
                     label="Пароль"
                     type={showPassword ? "text" : "password"}
-                    placeholder={mode === "register" ? "Минимум 8 символов" : "Введите пароль"}
+                    placeholder="Введите пароль"
                     value={password}
                     onChange={(v: string) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
                     icon={
@@ -313,23 +364,11 @@ export default function LoginPage() {
                           transition: "color 0.2s", outline: "none"
                         }}
                       >
-                        {showPassword ? (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" />
-                            <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" />
-                            <path d="M2 2L14 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                          </svg>
-                        ) : (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" />
-                            <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" />
-                          </svg>
-                        )}
+                        {showPassword ? "Скрыть" : "Показать"}
                       </button>
                     }
                     error={errors.password}
                   />
-                  {mode === "register" && <PasswordStrength password={password} />}
                 </div>
               )}
             </div>
@@ -348,15 +387,6 @@ export default function LoginPage() {
                   Забыли пароль?
                 </button>
               </div>
-            )}
-
-            {/* Register: Terms checkbox */}
-            {mode === "register" && (
-              <Checkbox
-                checked={remember}
-                onChange={setRemember}
-                label="Я соглашаюсь с условиями использования и политикой конфиденциальности"
-              />
             )}
 
             {/* CTA Button */}

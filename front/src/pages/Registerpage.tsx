@@ -218,19 +218,20 @@ export default function RegisterPage() {
                   <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>Без карты. Без обязательств. Только результат.</p>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}></div>  
-                <GoogleLogin
-                    width="280"
-                    onSuccess={(credentialResponse) => {
-                        if (credentialResponse.credential) {
-                        handleGoogleSuccess(credentialResponse.credential);
-                        }
-                    }}
-                    onError={() => {
-                        setSubmitError("Google авторизация не удалась");
-                    }}
-                    useOneTap // Опционально: показывает красивое всплывающее окно справа сверху
-                />
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
+                  <GoogleLogin
+                      width="320"
+                      onSuccess={(credentialResponse) => {
+                          if (credentialResponse.credential) {
+                          handleGoogleSuccess(credentialResponse.credential);
+                          }
+                      }}
+                      onError={() => {
+                          setSubmitError("Google авторизация не удалась");
+                      }}
+                      useOneTap 
+                  />
+                </div>
 
                 <div className="flex-center gap-12">
                   <div style={{ flex: 1, height: 1, background: "var(--border)" }} />

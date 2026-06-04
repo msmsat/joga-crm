@@ -36,7 +36,17 @@ export default function Landing() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <button className="btn btn-ghost btn-size-normal" onClick={() => navigate('/login')}>
+          <button 
+            className="btn btn-ghost btn-size-normal" 
+            onClick={() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                navigate('/dashboard'); // Если токен есть, кидаем в систему
+              } else {
+                navigate('/login');     // Если нет, кидаем на форму логина
+              }
+            }}
+          >
             Войти
           </button>
           <button className="btn btn-primary btn-size-normal" onClick={() => navigate('/register')}>

@@ -44,3 +44,23 @@ class GoogleAuthRequest(BaseModel):
 class VerifyEmailRequest(BaseModel):
     email: EmailStr
     code: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
+
+    # Используем ту же надежную проверку для нового пароля
+    @field_validator('new_password')
+    @classmethod
+    def validate_password(cls, value):
+        if len(value) < 8:
+            raise ValueError('Пароль должен содержать минимум 8 символов')
+        if not re.search(r'[A-Za-zА-Яа-я]', value):
+            raise ValueError('Пароль должен содержать хотя бы одну букву')
+        if not re.search(r'[0-9]', value):
+            raise ValueError('Пароль должен содержать хотя бы одну цифру')
+        return value

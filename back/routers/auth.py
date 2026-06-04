@@ -11,7 +11,7 @@ from models import User      # твоя модель пользователя и
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from schemas import LoginRequest, RegisterRequest, TokenResponse, VerifyEmailRequest, GoogleAuthRequest
+from schemas import LoginRequest, RegisterRequest, TokenResponse, VerifyEmailRequest, GoogleAuthRequest, ForgotPasswordRequest, ResetPasswordRequest
 import random
 import uuid
 import os
@@ -33,11 +33,15 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
         idinfo = id_token.verify_oauth2_token(
             request.token, 
             google_requests.Request(), 
-            GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10
         )
         email = idinfo['email']
         google_name = idinfo.get('name', 'Google User')
-    except ValueError:
+    except ValueError as e:
+        print("\n" + "!"*40)
+        print(f"🚨 ОШИБКА GOOGLE AUTH: {e}")
+        print("!"*40 + "\n")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Недействительный токен Google"
@@ -201,3 +205,43 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         access_token=access_token, 
         token_type="bearer"
     )
+
+# ─── 3. ВОССТАНОВЛЕНИЕ ПАРОЛЯ: ОТПРАВКА КОДА ──────────────────────────────────
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    query = select(User).where(User.email == request.email)
+    user = (await db.execute(query)).scalar_one_or_none()
+    
+    # В целях безопасности мы ВСЕГДА возвращаем один и тот же ответ, 
+    # чтобы хакеры не могли проверять, есть ли email в базе.
+    if not user:
+        return {"message": "Если email существует, код отправлен"}
+        
+    code = str(random.randint(1000, 9999))
+    user.verification_code = code
+    await db.commit()
+    
+    print("\n" + "="*40)
+    print(f"📧 ВОССТАНОВЛЕНИЕ ПАРОЛЯ ДЛЯ: {user.email}")
+    print(f"🔑 ВАШ КОД ДЛЯ СМЕНЫ ПАРОЛЯ: {code}")
+    print("="*40 + "\n")
+    
+    return {"message": "Если email существует, код отправлен"}
+
+
+# ─── 4. ВОССТАНОВЛЕНИЕ ПАРОЛЯ: СМЕНА ПАРОЛЯ ───────────────────────────────────
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    query = select(User).where(User.email == request.email)
+    user = (await db.execute(query)).scalar_one_or_none()
+    
+    if not user or user.verification_code != request.code:
+        raise HTTPException(status_code=400, detail="Неверный код или email")
+        
+    # Меняем пароль и стираем код
+    user.hashed_password = get_password_hash(request.new_password)
+    user.verification_code = None
+    user.is_verified = True # Заодно подтверждаем почту, раз юзер ввел код
+    await db.commit()
+    
+    return {"message": "Пароль успешно изменен"}
