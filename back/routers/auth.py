@@ -17,12 +17,20 @@ import uuid
 import os
 from dotenv import load_dotenv
 
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
+from models import Studio
+from schemas import OnboardingRequest
+
 # Загружаем переменные окружения
 load_dotenv()
 
+SECRET_KEY = os.getenv("SECRET_KEY", "velora_super_secret_key_2026")
+ALGORITHM = "HS256"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
 # Создаем роутер (префикс добавим в main.py)
 router = APIRouter()
-
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
@@ -245,3 +253,61 @@ async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depen
     await db.commit()
     
     return {"message": "Пароль успешно изменен"}
+
+# Зависимость для получения текущего юзера по токену
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Недействительный токен")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Недействительный токен")
+    
+    query = select(User).where(User.email == email)
+    user = (await db.execute(query)).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    return user
+
+
+# ─── 5. ПРОВЕРКА ПРОФИЛЯ ЮЗЕРА (ДЛЯ ДАШБОРДА) ─────────────────────────────────
+@router.get("/me")
+async def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "email": current_user.email,
+        "name": current_user.name,
+        "is_onboarded": current_user.is_onboarded,
+        "studio_id": current_user.studio_id
+    }
+
+
+# ─── 6. СОХРАНЕНИЕ ОНБОРДИНГА И СОЗДАНИЕ СТУДИИ ────────────────────────────────
+@router.post("/onboarding")
+async def complete_onboarding(
+    request: OnboardingRequest, 
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if current_user.is_onboarded:
+        raise HTTPException(status_code=400, detail="Онбординг уже пройден")
+
+    # 1. Создаем новую студию
+    new_studio = Studio(
+        name=request.studioName,
+        phone=request.phone,
+        business_type=request.businessType,
+        business_subtype=request.businessSubtype,
+        timezone=request.timezone,
+        language=request.language,
+        currency=request.currency
+    )
+    db.add(new_studio)
+    await db.flush() # Получаем ID студии до полного коммита
+
+    # 2. Привязываем юзера к студии и ставим флаг онбординга
+    current_user.studio_id = new_studio.id
+    current_user.is_onboarded = True
+
+    await db.commit()
+    return {"message": "Онбординг успешно пройден!"}

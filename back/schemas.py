@@ -64,3 +64,12 @@ class ResetPasswordRequest(BaseModel):
         if not re.search(r'[0-9]', value):
             raise ValueError('Пароль должен содержать хотя бы одну цифру')
         return value
+
+class OnboardingRequest(BaseModel):
+    studioName: str
+    phone: str
+    businessType: str
+    businessSubtype: str
+    timezone: str
+    language: str
+    currency: str

@@ -15,6 +15,14 @@ class Studio(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(150))
     
+    # 🔥 Добавляем поля для хранения данных из онбординга
+    phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    business_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    business_subtype: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    language: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    currency: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    
     users: Mapped[List["User"]] = relationship(back_populates="studio")
     clients: Mapped[List["Client"]] = relationship(back_populates="studio")
     lessons: Mapped[List["Lesson"]] = relationship(back_populates="studio")
@@ -37,6 +45,8 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(50), default="admin")
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     verification_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+
+    is_onboarded: Mapped[bool] = mapped_column(Boolean, default=False)
     
     studio: Mapped[Optional["Studio"]] = relationship(back_populates="users")
 
