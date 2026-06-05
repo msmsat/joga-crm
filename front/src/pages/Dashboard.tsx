@@ -273,7 +273,7 @@ export default function VeloraCRM() {
                 </div>
                 <div id="dash-chart">
                   <div className="chart-bars">
-                    {weeks.map((w, i) => (
+                    {weeks.map((_, i) => (
                       <div key={i} className={`bar ${i === 7 ? 'active' : ''}`} style={{ height: `${vals[i]}%` }}>
                         <div className="bar-tooltip">₽{(vals[i] * 2.84).toFixed(0)}K</div>
                       </div>

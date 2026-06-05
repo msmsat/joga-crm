@@ -292,10 +292,23 @@ async def complete_onboarding(
     if current_user.is_onboarded:
         raise HTTPException(status_code=400, detail="Онбординг уже пройден")
 
-    # 1. Создаем новую студию
+    # 🔥 ЖЕСТКАЯ ПРОВЕРКА ДАННЫХ (Защита бэкенда)
+    if len(request.studioName.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Название компании слишком короткое")
+        
+    if not request.phone or not request.phone.strip():
+        raise HTTPException(status_code=400, detail="Укажите корректный номер телефона")
+        
+    if not request.businessType or not request.businessSubtype:
+        raise HTTPException(status_code=400, detail="Выберите сферу деятельности")
+        
+    if not request.timezone or not request.language or not request.currency:
+        raise HTTPException(status_code=400, detail="Укажите региональные настройки")
+
+    # 1. Создаем новую студию (используем .strip() чтобы убрать случайные пробелы)
     new_studio = Studio(
-        name=request.studioName,
-        phone=request.phone,
+        name=request.studioName.strip(),
+        phone=request.phone.strip(),
         business_type=request.businessType,
         business_subtype=request.businessSubtype,
         timezone=request.timezone,
@@ -308,6 +321,7 @@ async def complete_onboarding(
     # 2. Привязываем юзера к студии и ставим флаг онбординга
     current_user.studio_id = new_studio.id
     current_user.is_onboarded = True
+    current_user.phone = request.phone.strip()
 
     await db.commit()
     return {"message": "Онбординг успешно пройден!"}
