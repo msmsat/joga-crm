@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import '../App.css';
 
@@ -126,7 +126,7 @@ export default function DashboardLayout() {
           </div>
           <div className="topbar-spacer"></div>
           
-          <button className="topbar-ghost">Фильтр</button>
+          {/*<button className="topbar-ghost">Фильтр</button>*/}
           <button className="topbar-btn" onClick={handlePrimaryBtn}>
             + Создать
           </button>

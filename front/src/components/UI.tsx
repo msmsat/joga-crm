@@ -1,5 +1,5 @@
 // ─── В самом верху UI.tsx ───
-import { GoogleIcon } from "./Icons";
+import { GoogleIcon } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
 import { useState, useEffect, useRef } from "react";
 
 // @ts-ignore
@@ -648,3 +648,36 @@ export function Step3Illustration() {
     </svg>
   );
 }
+
+// 1. УМНАЯ КНОПКА (Единый класс .btn)
+// 1. УМНАЯ КНОПКА (Единый класс .btn)
+interface ButtonProps {
+  children: React.ReactNode;
+  icon?: React.ElementType; // Идеальный тип для иконок-компонентов
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+  style?: React.CSSProperties;
+  danger?: boolean;
+}
+
+export const Button = ({ children, icon: IconComponent, onClick, className = 'btn', style, danger }: ButtonProps) => {
+  return (
+    <button 
+      className={`${className} ${danger ? 'danger' : ''}`}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '8px', 
+        fontSize: '12px', fontWeight: 600,
+        ...style
+      }} 
+      onClick={onClick}
+    >
+      {IconComponent && <IconComponent size={18} />} 
+      {children}
+    </button>
+  );
+};
+
+// 2. УМНАЯ КНОПКА ПРИМАРНАЯ (Единый класс .btn-primary)
+export const PrimaryButton = (props: ButtonProps) => {
+  return <Button {...props} className="btn-primary" />;
+};

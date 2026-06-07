@@ -451,15 +451,23 @@
      transform: translateY(0) !important; /* Overrides the initial Y transform */
    }
    
-   .stat-card {
-     padding: 28px 30px;
-     background: var(--bg-card);
-     border-radius: 16px;
-     border: 1px solid var(--border);
-     box-shadow: var(--shadow);
-     flex: 1;
-     transform: translateY(24px);
-   }
+   .stat-card { 
+      cursor: pointer;
+      position: relative;
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      padding: 20px 22px; 
+      box-shadow: var(--dash-shadow); 
+      transition: all 0.2s ease; 
+      transform: translateY(0); /* Возвращаем карточку на ее законное место (вверх) */
+    }
+
+    .stat-card.active {
+      border-color: var(--active-color, var(--accent));
+      box-shadow: 0 0 0 4px var(--active-glow, rgba(252,174,145,0.15)), var(--dash-shadow);
+      transform: translateY(-2px);
+    }
    
    .feature-card {
      padding: 32px;
@@ -858,7 +866,10 @@
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--dash-shadow); transition: all 0.2s; }
-.stat-card:hover { box-shadow: var(--dash-shadow-lg); transform: translateY(-2px); }
+.stat-card:hover { 
+  box-shadow: var(--dash-shadow-lg); 
+  transform: translateY(-4px); /* Делаем аккуратное поднятие при наведении, без скачков */
+}
 .stat-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.3px; text-transform: uppercase; }
 .stat-value { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 6px 0 4px; color: var(--text); }
 .stat-change { font-size: 11px; font-weight: 600; }
@@ -866,18 +877,112 @@
 .stat-change.down { color: var(--error); }
 .stat-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
 .mb-20 { margin-bottom: 20px; }
-.tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); width: fit-content; margin-bottom: 20px; }
-.tab { padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.18s; color: var(--text3); user-select: none; }
-.tab.active { background: var(--card); color: var(--text); box-shadow: var(--dash-shadow); }
-.tab:hover:not(.active) { color: var(--text2); }
-#dash-chart { height: 140px; position: relative; overflow: hidden; }
-.chart-bars { display: flex; align-items: flex-end; height: 120px; gap: 8px; padding-top: 10px; }
-.bar { flex: 1; border-radius: 4px 4px 0 0; background: rgba(252,174,145,0.2); transition: all 0.6s cubic-bezier(0.34,1.56,0.64,1); position: relative; cursor: pointer; }
-.bar.active, .bar:hover { background: var(--accent); }
-.bar-tooltip { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
-.bar:hover .bar-tooltip { opacity: 1; }
-.chart-labels { display: flex; gap: 8px; margin-top: 6px; }
-.chart-label { flex: 1; text-align: center; font-size: 10px; color: var(--text3); font-weight: 500; }
+
+.tabs { 
+  display: flex; 
+  gap: 4px; 
+  background: rgba(26,26,26,0.03); /* Мягкая заливка вместо жестких границ */
+  padding: 4px; 
+  border-radius: 10px; 
+  width: fit-content; 
+  margin-bottom: 20px; 
+}
+
+.tab { 
+  padding: 6px 16px; 
+  border-radius: 8px; 
+  font-size: 12px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  /* Та самая анимация для кнопок: пружинистая и быстрая */
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+  color: var(--text3); 
+  user-select: none; 
+}
+
+.tab.active { 
+  background: var(--card); 
+  color: var(--text); 
+  /* Премиальная легкая тень для активной кнопки */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); 
+}
+
+.tab:hover:not(.active) { 
+  color: var(--text2); 
+}
+
+/* Эффект реального физического нажатия */
+.tab:active {
+  transform: scale(0.94);
+}
+
+#dash-chart { 
+  height: 300px; /* Даем премиальную высоту всей зоне графика */
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; 
+  /* Ювелирно съедаем лишнюю пустоту снизу, "приземляя" график к краю карточки */
+  margin-bottom: -12px; 
+}
+
+.chart-bars { 
+  display: flex; 
+  align-items: flex-end; 
+  height: 100%; /* Эстетичные, высокие столбцы */
+  gap: 10px; /* Идеальный ритм между столбцами */
+  margin-top: 35px; 
+}
+
+.bar { 
+  flex: 1; 
+  border-radius: 6px 6px 0 0; /* Чуть более мягкое, современное скругление */
+  background: rgba(252,174,145,0.2); 
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); 
+  position: relative; 
+  cursor: pointer; 
+}
+
+.bar.active, .bar:hover { 
+  background: var(--accent); 
+}
+
+.bar-tooltip { 
+  position: absolute; 
+  top: -28px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  background: var(--text); 
+  color: white; 
+  font-size: 10px; 
+  font-weight: 600; 
+  padding: 5px 10px; 
+  border-radius: 6px; /* Тултип тоже делаем чуть мягче */
+  white-space: nowrap; 
+  opacity: 0; 
+  pointer-events: none; 
+  transition: all 0.2s ease;
+  z-index: 10; 
+}
+
+.bar:hover .bar-tooltip { 
+  opacity: 1; 
+  transform: translate(-50%, -4px); 
+}
+
+.chart-labels { 
+  display: flex; 
+  gap: 10px; /* Отступ строго равен gap в .chart-bars для идеальных колонок */
+  margin-top: 14px; /* Элегантный воздух между столбцами и датами */
+}
+
+.chart-label { 
+  flex: 1; 
+  text-align: center; 
+  font-size: 10px; 
+  color: var(--text3); 
+  font-weight: 600; /* Чуть усилили читабельность дат */
+}
 .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .activity-item:last-child { border-bottom: none; }
 .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
@@ -896,12 +1001,52 @@
 .staff-info .role { font-size: 11px; color: var(--text3); }
 .role-sep { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.6px; text-transform: uppercase; padding: 8px 10px 4px; }
 .staff-detail { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--dash-shadow); display: flex; flex-direction: column; }
-.staff-hero { height: 140px; position: relative; overflow: hidden; }
-.staff-hero-bg { position: absolute; inset: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-.staff-hero-info { position: absolute; bottom: -40px; left: 28px; display: flex; align-items: flex-end; gap: 16px; }
-.staff-hero-ava { width: 72px; height: 72px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: white; box-shadow: var(--dash-shadow-lg); flex-shrink: 0; }
+
+/* =========================================
+   ПРОФИЛЬ СОТРУДНИКА (ИСПРАВЛЕНИЯ)
+   ========================================= */
+.staff-hero { 
+  height: 140px; 
+  position: relative; 
+  /* Мы УБРАЛИ overflow: hidden, чтобы аватар мог свободно выходить за рамки */
+}
+
+.staff-hero-bg { 
+  position: absolute; 
+  inset: 0; 
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0; 
+}
+
+.staff-hero-info { 
+  position: absolute; 
+  bottom: -36px; /* Идеальное расположение ровно по центру линии */
+  left: 28px; 
+  display: flex; 
+  align-items: flex-end; 
+  gap: 16px; 
+  z-index: 10; /* Принудительно вытягиваем аватар на передний план */
+}
+
+/* На всякий случай проверяем, что аватарка имеет z-index и фон */
+.staff-hero-ava { 
+  width: 72px; 
+  height: 72px; 
+  border-radius: 50%; 
+  border: 4px solid var(--card); /* Сделали рамку чуть толще в цвет карточки */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 22px; 
+  font-weight: 700; 
+  color: white; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Мягкая премиальная тень */
+  flex-shrink: 0; 
+  position: relative;
+  z-index: 10; 
+}
 .staff-hero-name { font-size: 18px; font-weight: 700; }
 .staff-hero-role { font-size: 12px; color: var(--text2); }
+
 .staff-body { padding: 52px 28px 24px; flex: 1; overflow-y: auto; }
 .staff-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
 .staff-stat { background: var(--bg); border-radius: var(--radius-sm); padding: 14px 16px; text-align: center; }
@@ -1112,3 +1257,534 @@
 }
 .cta-btn:active { transform: translateY(0); }
 .back-btn:hover { background: rgba(0,0,0,0.04) !important; }
+
+/* =========================================
+   КНОПКА "ПОДРОБНЕЕ" В КАРТОЧКАХ
+   ========================================= */
+.stat-more-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--active-color);
+  
+  /* Эффект матового стекла */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  /* Нежная обводка и цветная тень, создающая свечение */
+  border: 1px solid var(--active-glow);
+  box-shadow: 0 4px 12px var(--active-glow), 0 2px 4px rgba(0,0,0,0.04);
+  
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px); /* Чуть большая амплитуда для красивого всплытия */
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.stat-card.active .stat-more-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Эффект при наведении на кнопку */
+.stat-more-btn:hover {
+  background: #ffffff;
+  border-color: var(--active-color);
+  box-shadow: 0 6px 16px var(--active-glow), 0 4px 8px rgba(0,0,0,0.06);
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+/* Подготовка стрелочки к полету */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Магия: Стрелочка "улетает" в угол при наведении на саму кнопку */
+.stat-more-btn:hover .btn-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Эффект приятного физического нажатия */
+.stat-more-btn:active {
+  transform: translateY(0) scale(0.96) !important;
+}
+
+/* =========================================
+   МЕНЮ ДЛЯ ЛЕНТЫ СОБЫТИЙ (ТРИ ТОЧКИ)
+   ========================================= */
+.activity-item {
+  position: relative; /* Чтобы меню позиционировалось относительно события */
+}
+
+/* Сама кнопка с 3 точками */
+.activity-action-btn {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0; /* Прячем по умолчанию, чтобы не мусорить интерфейс */
+  transition: all 0.2s ease;
+}
+
+.activity-item:hover .activity-action-btn,
+.activity-action-btn.is-open {
+  opacity: 1;
+  background: rgba(26,26,26,0.04);
+  color: var(--text);
+}
+
+/* Выпадающее меню действий */
+.activity-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px -4px rgba(26,26,26,0.12);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 180px;
+  z-index: 100;
+  animation: dropDown 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dropdown-item:hover {
+  background: rgba(26,26,26,0.04);
+  color: var(--text);
+}
+
+.dropdown-item.danger {
+  color: var(--rose);
+}
+.dropdown-item.danger:hover {
+  background: #FFF9FA;
+}
+
+/* ==========================================================================
+   PREMIUM STAFF PAGE (Перенос из staff_premium_page.html)
+   ========================================================================== */
+
+/* Left Sidebar (Staff List) */
+.panel-hdr { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.panel-title { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; }
+.add-btn { width: 22px; height: 22px; border-radius: 6px; background: rgba(252,174,145,0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--accent2); font-size: 14px; line-height: 1; transition: all 0.15s; }
+.add-btn:hover { background: var(--accent); color: #fff; }
+.s-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 10px; cursor: pointer; transition: all 0.18s; margin-bottom: 1px; position: relative; }
+.s-item:hover { background: rgba(252,174,145,0.08); }
+.s-item.active { background: rgba(252,174,145,0.15); }
+.s-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 16px; background: var(--accent); border-radius: 0 3px 3px 0; }
+.ava { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; position: relative; }
+.ava-online::after { content: ''; position: absolute; bottom: 1px; right: 1px; width: 8px; height: 8px; background: #5BAB72; border: 2px solid var(--card); border-radius: 50%; }
+.s-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.s-role { font-size: 10px; color: var(--text3); }
+.s-rating { margin-left: auto; font-size: 10px; font-weight: 700; color: #f0a030; }
+
+/* Right Panel (Profile Detail) */
+.premium-right { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--dash-shadow); display: flex; flex-direction: column; }
+.premium-hero { height: 130px; position: relative; flex-shrink: 0; }
+.hero-bg { position: absolute; inset: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.hero-actions { position: absolute; top: 14px; right: 16px; display: flex; gap: 6px; }
+.h-btn { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 8px; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.18s; color: var(--text2); }
+.h-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.h-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.h-btn.primary:hover { background: var(--accent2); box-shadow: 0 4px 14px rgba(252,174,145,0.5); }
+.hero-info { 
+  position: absolute; 
+  bottom: 20px; /* Было -38px. Мы подняли весь блок внутрь цветной шапки! */
+  left: 28px; 
+  display: flex; 
+  align-items: flex-end; 
+  gap: 16px; 
+  z-index: 10; 
+}
+.hero-ava { width: 72px; height: 72px; border-radius: 50%; border: 4px solid var(--card); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.12); flex-shrink: 0; position: relative; }
+.hero-ava .badge-online { position: absolute; bottom: 3px; right: 3px; width: 14px; height: 14px; background: #5BAB72; border: 3px solid var(--card); border-radius: 50%; }
+.hero-name { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+.hero-role { font-size: 11px; color: var(--text2); margin-top: 1px; }
+
+.premium-body { 
+  padding: 24px 28px 20px; /* Было 52px сверху. Убрали лишнюю пустоту, так как аватар больше не торчит вниз */
+  flex: 1; 
+  overflow-y: auto; 
+  scrollbar-width: thin; 
+  scrollbar-color: var(--border2) transparent; 
+}
+.premium-body::-webkit-scrollbar { width: 3px; }
+.premium-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* Stats & Chips */
+.stats-row { display: grid; gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--bg); border-radius: 10px; padding: 12px 14px; text-align: center; border: 1px solid var(--border); transition: all 0.18s; cursor: default; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--dash-shadow); }
+.stat-v { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+.stat-l { font-size: 9.5px; color: var(--text3); margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+.info-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.chip { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border2); font-size: 11px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+.chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(252,174,145,0.06); }
+.chip.status-on { background: rgba(91,171,114,0.1); border-color: rgba(91,171,114,0.3); color: #4a8a52; }
+
+/* Section Headers */
+.sec-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+.sec-btn { font-size: 10px; font-weight: 600; color: var(--accent2); background: rgba(252,174,145,0.1); border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
+.sec-btn:hover { background: rgba(252,174,145,0.2); }
+
+/* Schedule Grid */
+.sch-wrap { background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 16px; }
+.sch-top { display: flex; align-items: center; padding: 10px 12px 8px; border-bottom: 1px solid var(--border); }
+.day-tabs { display: flex; gap: 3px; }
+.day-tab { padding: 4px 9px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; color: var(--text3); user-select: none; }
+.day-tab:hover { color: var(--text2); }
+.day-tab.active { background: var(--card); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.week-label { margin-left: auto; font-size: 10px; color: var(--text3); font-weight: 600; }
+.sch-grid { display: grid; grid-template-columns: 36px repeat(7,1fr); gap: 2px; padding: 8px; }
+.sch-head { font-size: 9.5px; font-weight: 700; color: var(--text3); text-align: center; padding: 2px 0 5px; }
+.sch-time { font-size: 9.5px; color: var(--text3); text-align: right; padding: 1px 5px 1px 0; line-height: 22px; }
+.sch-cell { height: 22px; border-radius: 4px; background: rgba(252,174,145,0.1); transition: all 0.15s; cursor: pointer; position: relative; }
+.sch-cell:hover { background: rgba(252,174,145,0.25); }
+.sch-cell.booked { background: rgba(252,174,145,0.55); border: 1px solid rgba(252,174,145,0.8); }
+.sch-cell.booked:hover { background: var(--accent); }
+.sch-legend { display: flex; gap: 12px; padding: 0 8px 8px; align-items: center; }
+.leg { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text3); }
+.leg-dot { width: 8px; height: 8px; border-radius: 3px; flex-shrink: 0; }
+
+/* Upcoming List */
+.upcoming-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.upcoming-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); transition: all 0.18s; }
+.upcoming-item:hover { box-shadow: var(--dash-shadow); transform: translateX(2px); }
+.up-time { width: 42px; flex-shrink: 0; text-align: center; }
+.up-time-h { font-size: 12px; font-weight: 700; color: var(--text); }
+.up-time-m { font-size: 9px; color: var(--text3); font-weight: 600; }
+.up-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.up-info { flex: 1; min-width: 0; }
+.up-name { font-size: 12px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.up-hall { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+.up-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+.upcoming-item:hover .up-actions { opacity: 1; }
+.up-icon-btn { width: 24px; height: 24px; border-radius: 6px; background: transparent; border: 1px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; color: var(--text3); }
+.up-icon-btn:hover { background: var(--card); color: var(--text); box-shadow: var(--dash-shadow); }
+.up-icon-btn.del:hover { background: #FFF5F5; border-color: rgba(216,140,154,0.4); color: #c05060; }
+
+/* Owner Card & Load Bar */
+.owner-card { background: linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%); border: 1px dashed rgba(252,174,145,0.4); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+.owner-perm { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.perm-badge { padding: 4px 9px; border-radius: 6px; background: rgba(252,174,145,0.15); border: 1px solid rgba(252,174,145,0.3); font-size: 10px; font-weight: 700; color: var(--accent2); }
+.load-bar-wrap { margin-bottom: 16px; }
+.load-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.load-bar-label { font-size: 11px; font-weight: 600; color: var(--text2); }
+.load-bar-pct { font-size: 11px; font-weight: 800; color: var(--text); }
+.load-bar-bg { height: 6px; background: rgba(26,26,26,0.06); border-radius: 6px; overflow: hidden; }
+.load-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1); }
+
+/* Custom Overlays (Modals, Toasts, Tooltips) */
+.slot-tip { position: fixed; background: #1A1A1A; color: #fff; font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 8px; z-index: 1000; pointer-events: none; opacity: 0; transition: opacity 0.15s; white-space: nowrap; line-height: 1.5; box-shadow: 0 4px 14px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
+.slot-tip.show { opacity: 1; }
+.slot-sub { font-size: 9px; color: rgba(255,255,255,0.65); font-weight: 400; margin-top: 1px; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 500; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--card); border-radius: var(--radius-lg); padding: 24px; width: 380px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.15); transform: scale(0.96) translateY(8px); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
+.modal-textarea { width: 100%; min-height: 72px; background: rgba(26,26,26,0.03); border: 1.5px solid transparent; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 500; color: var(--text); outline: none; padding: 10px 12px; transition: all 0.2s; margin-bottom: 12px; resize: none; }
+.modal-textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--peach-glow); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+.mbtn { padding: 8px 16px; border-radius: 9px; font-family: var(--font-main); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: none; }
+.mbtn.cancel { background: var(--bg); color: var(--text2); border: 1px solid var(--border2); }
+.mbtn.cancel:hover { background: rgba(26,26,26,0.06); }
+.mbtn.confirm { background: var(--accent); color: #fff; box-shadow: 0 3px 10px rgba(252,174,145,0.4); }
+.mbtn.confirm:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 5px 14px rgba(252,174,145,0.5); }
+.mbtn.danger { background: #D88C9A; color: #fff; }
+.mbtn.danger:hover { background: #c07080; }
+
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1A1A1A; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 12px; font-weight: 600; z-index: 9999; opacity: 0; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes fadeSlide { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+.fade-in { animation: fadeSlide 0.25s ease both; }
+
+/* Staff — увеличенная левая панель */
+.s-item { 
+  padding: 10px 12px; 
+  border-radius: 10px; 
+  margin-bottom: 2px; 
+}
+
+/* Роль — полный текст, не обрезанный */
+.s-role { 
+  font-size: 11px; 
+  color: var(--text3); 
+  margin-top: 1px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  max-width: 130px; 
+}
+
+/* Hero — увеличенная высота через CSS (дополнительно к inline) */
+.premium-hero { height: 160px; }
+
+/* Stat cards — чуть больше padding для воздуха */
+.stat-card { 
+  padding: 16px 14px; 
+}
+
+.stat-v { 
+  font-size: 20px; 
+}
+
+/* Schedule cells — выше */
+.sch-cell { 
+  height: 26px; 
+  border-radius: 5px; 
+}
+
+/* Upcoming items — чуть больше padding */
+.upcoming-item { 
+  padding: 12px 14px; 
+}
+
+/* role-sep — разделители групп */
+.role-sep { 
+  font-size: 10px; 
+  font-weight: 700; 
+  color: var(--text3); 
+  text-transform: uppercase; 
+  letter-spacing: 0.6px; 
+  padding: 10px 9px 4px; 
+}
+
+/* =========================================
+   КАРТОЧКИ ВЫБОРА (ДЛЯ МОДАЛКИ ЗВОНКА)
+   ========================================= */
+.call-options-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.call-opt-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(26,26,26,0.02);
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.call-opt-card:hover {
+  background: var(--card);
+  border-color: var(--peach);
+  box-shadow: 0 8px 24px -6px rgba(249,160,139,0.25), 0 0 0 4px var(--peach-glow);
+  transform: translateY(-2px);
+}
+
+.call-opt-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.call-opt-card:hover .call-opt-icon {
+  transform: scale(1.05);
+}
+
+.call-opt-text {
+  flex: 1;
+  text-align: left;
+}
+
+.call-opt-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.call-opt-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.call-opt-arrow {
+  color: var(--text3);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.call-opt-card:hover .call-opt-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--peach);
+}
+
+/* =========================================
+   ОБНОВЛЕННЫЕ КНОПКИ ДЛЯ РАСПИСАНИЯ (STAFF)
+   ========================================= */
+.sch-action-btn {
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+/* Кнопка "Очистить" */
+.btn-clear-sch {
+  background: rgba(26,26,26,0.03);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-clear-sch:hover {
+  background: #FFF5F5;
+  border-color: rgba(216,140,154,0.3);
+  color: #B25D6E;
+  transform: translateY(-1px);
+}
+
+/* Кнопка "Авто-заполнить" */
+.btn-magic-sch {
+  background: rgba(252,174,145,0.08);
+  border: 1px solid rgba(252,174,145,0.22);
+  color: var(--accent2);
+}
+.btn-magic-sch:hover {
+  background: rgba(252,174,145,0.18);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px var(--peach-glow);
+  transform: translateY(-1px);
+}
+
+/* Кнопка "+ Добавить" */
+.btn-add-event {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  box-shadow: var(--dash-shadow);
+}
+.btn-add-event:hover {
+  border-color: var(--accent);
+  color: var(--accent2);
+  background: rgba(252,174,145,0.03);
+  box-shadow: 0 4px 12px rgba(252,174,145,0.1);
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   СТИЛИЗАЦИЯ ДЕСТРУКТИВНОЙ МОДАЛКИ (DANGER)
+   ========================================= */
+.modal-danger-alert {
+  border-top: 4px solid var(--rose) !important;
+  box-shadow: 0 24px 64px rgba(216,140,154,0.15), 0 8px 32px rgba(0,0,0,0.08) !important;
+}
+
+/* Кнопка подтверждения удаления */
+.mbtn.danger {
+  background: linear-gradient(135deg, var(--rose) 0%, #B25D6E 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(216,140,154,0.4) !important;
+}
+.mbtn.danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(216,140,154,0.55) !important;
+}
+
+/* Контейнер чекбокса */
+.dont-ask-wrapper {
+  margin: 14px 0 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.dont-ask-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  user-select: none;
+}
+
+/* Кастомный бокс чекбокса */
+.custom-checkbox-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border2);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+.custom-checkbox-box:hover {
+  border-color: var(--rose);
+  background: #FFF9FA;
+}
+
+.custom-checkbox-box.checked {
+  background: linear-gradient(135deg, var(--rose) 0%, #B25D6E 100%);
+  border-color: #B25D6E;
+  box-shadow: 0 2px 8px rgba(216,140,154,0.3);
+}
+
+.custom-checkbox-box svg {
+  animation: checkPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sched-row:hover {
+  background: rgba(252,174,145,0.04) !important;
+  border-radius: 10px;
+}
