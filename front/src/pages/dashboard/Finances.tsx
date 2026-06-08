@@ -1,182 +1,42 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
-// ─── ТИПЫ ────────────────────────────────────────────────────────────────────
+// ─── ТИПЫ ─────────────────────────────────────────────────────────────────────
 type Tab = typeof FINANCE_TABS[number];
+type ToastType = 'success' | 'error' | 'info';
 
-// ─── КОНСТАНТЫ ───────────────────────────────────────────────────────────────
+// ─── КОНСТАНТЫ ────────────────────────────────────────────────────────────────
 const FINANCE_TABS = [
-  'Счета и кассы',
-  'Операции',
-  'Контрагенты',
-  'Документы',
-  'Онлайн-платежи',
-  'Методы оплаты',
-  'Отчёты',
-  'Цели',
+  'Счета и кассы', 'Операции', 'Контрагенты', 'Документы',
+  'Онлайн-платежи', 'Методы оплаты', 'Отчёты', 'Цели',
 ] as const;
 
-// ─── ИКОНКИ SVG ──────────────────────────────────────────────────────────────
-const IconArrowUp = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" />
-  </svg>
-);
-const IconArrowDown = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
-  </svg>
-);
-const IconPlus = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-const IconSearch = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-const IconFilter = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-  </svg>
-);
-const IconDownload = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
-const IconEdit = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-const IconTrash = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-    <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
-  </svg>
-);
-const IconDots = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="12" cy="5" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="19" r="1" fill="currentColor" />
-  </svg>
-);
-const IconTarget = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
-  </svg>
-);
-const IconCheck = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-const IconCreditCard = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" />
-  </svg>
-);
-const IconCash = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" />
-  </svg>
-);
-const IconPhone = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" strokeWidth="2.5" />
-  </svg>
-);
-const IconBarChart = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-  </svg>
-);
-const IconWorld = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" />
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-  </svg>
-);
-const IconChevronRight = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
-const IconFlag = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />
-  </svg>
-);
-const IconTrendUp = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
-  </svg>
-);
-const IconShield = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-const IconLightning = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-  </svg>
-);
-const IconBuilding = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-const IconUser = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-  </svg>
-);
-const IconDoc = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
-  </svg>
-);
-const IconQR = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-    <line x1="14" y1="14" x2="14" y2="14" strokeWidth="3" /><line x1="17" y1="14" x2="21" y2="14" /><line x1="17" y1="17" x2="17" y2="21" /><line x1="14" y1="17" x2="14" y2="21" /><line x1="21" y1="17" x2="21" y2="21" />
-  </svg>
-);
-
-// ─── УТИЛИТЫ ─────────────────────────────────────────────────────────────────
-const formatRub = (n: number) =>
-  '₽' + n.toLocaleString('ru-RU', { minimumFractionDigits: 0 });
-
-// ─── ДОНАЧНЫЕ ДАННЫЕ ──────────────────────────────────────────────────────────
-const ACCOUNTS = [
-  { id: 1, name: 'Основная касса', type: 'cash', balance: 485200, change: 48200, currency: '₽', color: '#FCAE91' },
-  { id: 2, name: 'Расчётный счёт', type: 'bank', balance: 1840000, change: 82400, currency: '₽', color: '#A3C9A8' },
-  { id: 3, name: 'Онлайн-кошелёк', type: 'online', balance: 94100, change: 34100, currency: '₽', color: '#7EB5D6' },
+// ─── ДАННЫЕ ───────────────────────────────────────────────────────────────────
+const ACCOUNTS_DATA = [
+  { id: 1, name: 'Касса студии', type: 'cash', balance: 485200, change: 48200, color: '#FCAE91', isSystem: true },
+  { id: 2, name: 'Расчётный счёт', type: 'bank', balance: 1840000, change: 82400, color: '#A3C9A8', isSystem: true },
+  { id: 3, name: 'Онлайн-эквайринг', type: 'online', balance: 94100, change: 34100, color: '#7EB5D6', isSystem: true },
 ];
 
-const OPERATIONS = [
-  { id: 1, type: 'income', title: 'Оплата абонемента', client: 'Мария Коваленко', amount: 12000, date: 'Сегодня, 14:32', category: 'Абонементы', method: 'Карта', status: 'completed' },
-  { id: 2, type: 'expense', title: 'Возврат средств', client: 'Иван Петров', amount: -2500, date: 'Сегодня, 11:15', category: 'Возврат', method: 'Наличные', status: 'completed' },
-  { id: 3, type: 'income', title: 'Разовая запись', client: 'Елена Соколова', amount: 1200, date: 'Вчера, 18:45', category: 'Услуги', method: 'QR', status: 'completed' },
-  { id: 4, type: 'expense', title: 'Аренда зала', client: 'Контрагент', amount: -8000, date: 'Вчера, 10:00', category: 'Аренда', method: 'Перевод', status: 'completed' },
-  { id: 5, type: 'income', title: 'Оплата сертификата', client: 'Алексей Морозов', amount: 5000, date: '29 июн, 16:20', category: 'Сертификаты', method: 'Карта', status: 'completed' },
-  { id: 6, type: 'income', title: 'Групповое занятие', client: 'Группа — 8 чел.', amount: 9600, date: '29 июн, 12:00', category: 'Услуги', method: 'Карта', status: 'completed' },
-  { id: 7, type: 'expense', title: 'Зарплата тренеров', client: 'Команда', amount: -120000, date: '28 июн, 09:00', category: 'Зарплата', method: 'Перевод', status: 'completed' },
-  { id: 8, type: 'income', title: 'Продление абонемента', client: 'Светлана Иванова', amount: 8500, date: '28 июн, 17:30', category: 'Абонементы', method: 'Карта', status: 'pending' },
+const OPERATIONS_DATA = [
+  { id: 1, type: 'income', title: 'Оплата абонемента', client: 'Мария Коваленко', amount: 12000, date: 'Сегодня, 14:32', category: 'Абонементы', method: 'Карта', status: 'completed', account: 'Расчётный счёт' },
+  { id: 2, type: 'expense', title: 'Возврат средств', client: 'Иван Петров', amount: -2500, date: 'Сегодня, 11:15', category: 'Возврат', method: 'Наличные', status: 'completed', account: 'Основная касса' },
+  { id: 3, type: 'income', title: 'Разовая запись', client: 'Елена Соколова', amount: 1200, date: 'Вчера, 18:45', category: 'Услуги', method: 'QR', status: 'completed', account: 'Онлайн-кошелёк' },
+  { id: 4, type: 'expense', title: 'Аренда зала', client: 'Контрагент', amount: -8000, date: 'Вчера, 10:00', category: 'Аренда', method: 'Перевод', status: 'completed', account: 'Расчётный счёт' },
+  { id: 5, type: 'income', title: 'Оплата сертификата', client: 'Алексей Морозов', amount: 5000, date: '29 июн, 16:20', category: 'Сертификаты', method: 'Карта', status: 'completed', account: 'Расчётный счёт' },
+  { id: 6, type: 'income', title: 'Групповое занятие', client: 'Группа — 8 чел.', amount: 9600, date: '29 июн, 12:00', category: 'Услуги', method: 'Карта', status: 'completed', account: 'Расчётный счёт' },
+  { id: 7, type: 'expense', title: 'Зарплата тренеров', client: 'Команда', amount: -120000, date: '28 июн, 09:00', category: 'Зарплата', method: 'Перевод', status: 'completed', account: 'Основная касса' },
+  { id: 8, type: 'income', title: 'Продление абонемента', client: 'Светлана Иванова', amount: 8500, date: '28 июн, 17:30', category: 'Абонементы', method: 'Карта', status: 'pending', account: 'Расчётный счёт' },
 ];
 
-const COUNTERPARTIES = [
+const COUNTERPARTIES_DATA = [
   { id: 1, name: 'ООО «АрендаСтарт»', type: 'Юр. лицо', inn: '7701234567', category: 'Аренда', balance: -8000, deals: 24, color: '#FCAE91' },
   { id: 2, name: 'ИП Соколов Д.В.', type: 'ИП', inn: '500987654321', category: 'Поставщик', balance: -15400, deals: 8, color: '#7EB5D6' },
   { id: 3, name: 'ООО «КлинингПрофи»', type: 'Юр. лицо', inn: '7809876543', category: 'Клининг', balance: -6200, deals: 12, color: '#A3C9A8' },
   { id: 4, name: 'Власова А.С. (бух)', type: 'Физ. лицо', inn: '500123456789', category: 'Бухгалтерия', balance: -25000, deals: 6, color: '#D88C9A' },
 ];
 
-const DOCUMENTS = [
+const DOCUMENTS_DATA = [
   { id: 1, title: 'Акт выполненных работ №47', type: 'Акт', date: '30 июн 2025', party: 'ООО «АрендаСтарт»', amount: 8000, status: 'signed', ext: 'PDF' },
   { id: 2, title: 'Счёт-фактура №23', type: 'Счёт', date: '29 июн 2025', party: 'ИП Соколов Д.В.', amount: 15400, status: 'pending', ext: 'PDF' },
   { id: 3, title: 'Договор аренды (продление)', type: 'Договор', date: '01 июн 2025', party: 'ООО «АрендаСтарт»', amount: 96000, status: 'signed', ext: 'DOCX' },
@@ -184,323 +44,1539 @@ const DOCUMENTS = [
   { id: 5, title: 'УПД №112', type: 'УПД', date: '28 июн 2025', party: 'ООО «КлинингПрофи»', amount: 6200, status: 'signed', ext: 'PDF' },
 ];
 
-const ONLINE_CHANNELS = [
+const ONLINE_CHANNELS_DATA = [
   { id: 1, name: 'Ссылка на оплату', desc: 'Персональная страница записи и оплаты', icon: 'link', active: true, amount: 124300, sessions: 89 },
   { id: 2, name: 'QR-код', desc: 'Оплата по QR в студии или на сайте', icon: 'qr', active: true, amount: 38500, sessions: 32 },
   { id: 3, name: 'Telegram Pay', desc: 'Встроенная оплата в Telegram-боте', icon: 'telegram', active: false, amount: 0, sessions: 0 },
   { id: 4, name: 'Виджет на сайт', desc: 'JavaScript-виджет для вашего сайта', icon: 'widget', active: true, amount: 57200, sessions: 44 },
 ];
 
-const PAYMENT_METHODS = [
-  { id: 1, name: 'Банковская карта', desc: 'Visa, MasterCard, МИР', icon: 'card', enabled: true, commision: '1.8%', transactions: 312 },
-  { id: 2, name: 'Наличные', desc: 'Приём наличных через кассу', icon: 'cash', enabled: true, commision: '0%', transactions: 87 },
-  { id: 3, name: 'СБП (QR)', desc: 'Система быстрых платежей', icon: 'qr', enabled: true, commision: '0.4%', transactions: 56 },
-  { id: 4, name: 'Apple Pay / Google Pay', desc: 'NFC и мобильные кошельки', icon: 'nfc', enabled: true, commision: '1.8%', transactions: 134 },
-  { id: 5, name: 'Рассрочка (BNPL)', desc: 'Оплата по частям без переплаты', icon: 'bnpl', enabled: false, commision: '3.2%', transactions: 0 },
+const PAYMENT_METHODS_DATA = [
+  { id: 1, name: 'Банковская карта', desc: 'Visa, MasterCard, МИР', icon: 'card', enabled: true, commission: '1.8%', transactions: 312 },
+  { id: 2, name: 'Наличные', desc: 'Приём наличных через кассу', icon: 'cash', enabled: true, commission: '0%', transactions: 87 },
+  { id: 3, name: 'СБП (QR)', desc: 'Система быстрых платежей', icon: 'qr', enabled: true, commission: '0.4%', transactions: 56 },
+  { id: 4, name: 'Apple Pay / Google Pay', desc: 'NFC и мобильные кошельки', icon: 'nfc', enabled: true, commission: '1.8%', transactions: 134 },
+  { id: 5, name: 'Рассрочка (BNPL)', desc: 'Оплата по частям без переплаты', icon: 'bnpl', enabled: false, commission: '3.2%', transactions: 0 },
 ];
 
-const REPORT_PERIODS = ['Сегодня', 'Неделя', 'Месяц', 'Квартал', 'Год'];
-
-const GOALS = [
+const GOALS_DATA = [
   { id: 1, title: 'Выручка — Июль 2025', target: 900000, current: 540200, deadline: '31 июл 2025', category: 'Выручка', color: '#FCAE91', priority: 'high' },
   { id: 2, title: 'Резервный фонд', target: 500000, current: 125000, deadline: '31 дек 2025', category: 'Резервы', color: '#A3C9A8', priority: 'medium' },
   { id: 3, title: 'Снизить расходы на 15%', target: 100, current: 62, deadline: '31 авг 2025', category: 'Оптимизация', color: '#7EB5D6', priority: 'medium' },
   { id: 4, title: 'Инвестиции в оборудование', target: 250000, current: 250000, deadline: '15 июн 2025', category: 'Инвестиции', color: '#D88C9A', priority: 'low' },
 ];
 
-// ─── МАЛЕНЬКИЕ КОМПОНЕНТЫ ────────────────────────────────────────────────────
-function Badge({ text, color, bg }: { text: string; color: string; bg: string }) {
+// ─── УТИЛИТЫ ──────────────────────────────────────────────────────────────────
+const fmt = (n: number) => '₽' + n.toLocaleString('ru-RU');
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function Toast({ msg, type, visible }: { msg: string; type: ToastType; visible: boolean }) {
   return (
-    <span style={{ display: 'inline-block', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, background: bg, color, letterSpacing: '0.2px' }}>
-      {text}
-    </span>
+    <div style={{
+      position: 'fixed', 
+      bottom: '32px', 
+      left: '50%',
+      transform: `translateX(-50%) translateY(${visible ? 0 : 20}px)`,
+      background: '#1A1A1A', // Строгий глубокий чёрный (Оникс)
+      color: '#FFFFFF',
+      padding: '12px 20px',
+      borderRadius: '12px', // Мягкое скругление по дизайн-системе
+      fontSize: '13px', 
+      fontWeight: 600,
+      fontFamily: "'Manrope', sans-serif",
+      boxShadow: '0 16px 40px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)', // Дорогая многослойная тень
+      zIndex: 9999,
+      opacity: visible ? 1 : 0, 
+      transition: 'all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)', // Плавный разгон и торможение
+      pointerEvents: 'none', 
+      whiteSpace: 'nowrap',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px'
+    }}>
+      {/* Элегантные микро-иконки для понимания контекста без заливки всего фона */}
+      {type === 'success' && (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3C9A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+      {type === 'error' && (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D88C9A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      )}
+      {type === 'info' && (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7EB5D6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      )}
+      
+      <span style={{ letterSpacing: '0.2px' }}>{msg}</span>
+    </div>
   );
 }
 
-function ActionBtn({ children, onClick, variant = 'ghost' }: { children: React.ReactNode; onClick?: () => void; variant?: 'ghost' | 'primary' | 'danger' }) {
-  const styles: Record<string, React.CSSProperties> = {
-    ghost: { background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)' },
-    primary: { background: 'var(--accent)', border: '1px solid var(--accent)', color: '#fff' },
-    danger: { background: 'transparent', border: '1px solid var(--error)', color: 'var(--error)' },
+function useToast() {
+  const [state, setState] = useState({ msg: '', type: 'success' as ToastType, visible: false });
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const show = (msg: string, type: ToastType = 'success') => {
+    clearTimeout(timerRef.current);
+    setState({ msg, type, visible: true });
+    timerRef.current = setTimeout(() => setState(s => ({ ...s, visible: false })), 2500);
+  };
+
+  return { toast: state, show };
+}
+
+// ─── МОДАЛКА ПОДТВЕРЖДЕНИЯ ────────────────────────────────────────────────────
+function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = false }: {
+  open: boolean; title: string; text: string;
+  onConfirm: () => void; onCancel: () => void; danger?: boolean;
+}) {
+  if (!open) return null;
+
+  // Используем React Portal, чтобы модалка вырвалась из контейнера таба и заблюрила ВЕСЬ сайт целиком
+  return createPortal(
+    <div style={{
+      position: 'fixed', 
+      inset: 0, 
+      background: 'rgba(18, 18, 18, 0.45)', // Глубокий премиальный графитовый оверлей
+      zIndex: 99999, // Максимальный приоритет над всем сайтом, сайдбаром и шапкой
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      backdropFilter: 'blur(16px)', // Сверхглубокий шёлковый блюр всего экрана
+      WebkitBackdropFilter: 'blur(16px)',
+      animation: 'fadeIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both',
+      padding: '20px',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{
+        background: '#1A1A1A', // Глубокий матовый оникс/графит (Основа брутализма)
+        borderRadius: '16px', 
+        padding: '32px', 
+        width: '400px', 
+        maxWidth: '100%',
+        // Дорогая неоновая персиковая/розовая подсветка (Glow), которая заставляет карточку левитировать
+        boxShadow: danger 
+          ? '0 20px 50px -12px rgba(216, 140, 154, 0.25), 0 0 0 1px rgba(255,255,255,0.04)' 
+          : '0 20px 50px -12px rgba(249, 160, 139, 0.22), 0 0 0 1px rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255, 255, 255, 0.03)', // Тончайшая неоновая нить по краю
+        transform: 'scale(1) translateY(0)',
+        animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.3, 0.64, 1) both',
+        fontFamily: "'Manrope', sans-serif",
+      }}>
+        
+        {/* Анимации для плавного появления */}
+        <style>{`
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes scaleUp { from { transform: scale(0.95) translateY(10px); } to { transform: scale(1) translateY(0); } }
+        `}</style>
+
+        {/* Иконка-предупреждение с точечным неоновым свечением */}
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: danger ? 'rgba(216, 140, 154, 0.12)' : 'rgba(249, 160, 139, 0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: danger ? '#D88C9A' : '#F9A08B', // Пыльная роза или Благородный персик
+          marginBottom: '24px',
+          boxShadow: danger ? '0 0 20px rgba(216, 140, 154, 0.1)' : '0 0 20px rgba(249, 160, 139, 0.1)'
+        }}>
+          {danger ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          )}
+        </div>
+
+        {/* Контентный блок */}
+        <div style={{ marginBottom: '32px' }}>
+          <h3 style={{ 
+            fontSize: '18px', 
+            fontWeight: 800, 
+            color: '#FFFFFF', // Чистый белый для контраста на черном матовом фоне
+            margin: '0 0 10px 0', 
+            letterSpacing: '-0.3px',
+            lineHeight: 1.3
+          }}>
+            {title}
+          </h3>
+          <p style={{ 
+            fontSize: '13.5px', 
+            color: '#999999', // Мягкий рассеянный серый текст, чтобы глаза не уставали
+            margin: 0, 
+            fontWeight: 400, 
+            lineHeight: 1.6 
+          }}>
+            {text}
+          </p>
+        </div>
+
+        {/* Интерактивные кнопки (Геометрия 8px) */}
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          <button 
+            onClick={onCancel} 
+            style={{
+              padding: '12px 22px',
+              background: 'transparent',
+              color: '#CCCCCC',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: "'Manrope', sans-serif",
+              transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'; }}
+          >
+            Отмена
+          </button>
+          
+          <button 
+            onClick={onConfirm} 
+            style={{
+              padding: '12px 24px',
+              background: danger ? '#D88C9A' : '#F9A08B', // Пыльная роза или Персиковый акцент точечно
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontFamily: "'Manrope', sans-serif",
+              // Сильное глубокое неоновое свечение под главной кнопкой действия
+              boxShadow: danger ? '0 8px 24px rgba(216, 140, 154, 0.3)' : '0 8px 24px rgba(249, 160, 139, 0.25)',
+              transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.06)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}
+          >
+            {danger ? 'Удалить' : 'Подтвердить'}
+          </button>
+        </div>
+
+      </div>
+    </div>,
+    document.body // Телепортируем верстку в самый корень приложения, перекрывая сайдбары и весь сайт!
+  );
+}
+
+// ─── ИКОНКИ SVG ───────────────────────────────────────────────────────────────
+const Ico = {
+  Up: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>,
+  Down: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>,
+  Plus: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  Search: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  Filter: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
+  Download: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  Edit: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  Trash: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>,
+  Dots: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>,
+  Target: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+  Check: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  Card: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
+  Cash: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>,
+  Phone: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" strokeWidth="2.5"/></svg>,
+  Bar: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+  World: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
+  Chevron: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
+  Building: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  User: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  Doc: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+  QR: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14" strokeWidth="3"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="17" y1="17" x2="17" y2="21"/><line x1="14" y1="17" x2="14" y2="21"/><line x1="21" y1="17" x2="21" y2="21"/></svg>,
+  Dollar: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+  Flag: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>,
+  Copy: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  X: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+};
+
+// ─── КНОПКИ ───────────────────────────────────────────────────────────────────
+function Btn({ children, onClick, v = 'ghost', size = 'md', style: s }: {
+  children: React.ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  v?: 'ghost' | 'primary' | 'danger' | 'soft';
+  size?: 'sm' | 'md'; style?: React.CSSProperties;
+}) {
+  const base: React.CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', gap: '6px',
+    padding: size === 'sm' ? '5px 10px' : '8px 14px',
+    borderRadius: '8px', fontSize: size === 'sm' ? '11px' : '12px',
+    fontWeight: 600, cursor: 'pointer', transition: 'all 0.18s',
+    fontFamily: 'var(--font)', border: '1px solid', ...s,
+  };
+  const variants = {
+    ghost: { background: 'transparent', borderColor: 'var(--border)', color: 'var(--text2)' } as React.CSSProperties,
+    primary: { background: 'var(--accent)', borderColor: 'var(--accent)', color: '#fff', boxShadow: '0 3px 10px rgba(252,174,145,0.35)' } as React.CSSProperties,
+    danger: { background: 'transparent', borderColor: 'rgba(216,140,154,0.4)', color: '#D88C9A' } as React.CSSProperties,
+    soft: { background: 'rgba(252,174,145,0.1)', borderColor: 'rgba(252,174,145,0.2)', color: 'var(--accent)' } as React.CSSProperties,
   };
   return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: '6px',
-        padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
-        cursor: 'pointer', transition: 'all 0.15s',
-        ...styles[variant],
-      }}
+    <button onClick={onClick} style={{ ...base, ...variants[v] }}
+      onMouseEnter={e => { e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       {children}
     </button>
   );
 }
 
-// ─── TAB: СЧЕТА И КАССЫ ──────────────────────────────────────────────────────
-function TabAccounts() {
-  const [selected, setSelected] = useState<number | null>(null);
-  const total = ACCOUNTS.reduce((s, a) => s + a.balance, 0);
+// ─── ТОГЛ ─────────────────────────────────────────────────────────────────────
+function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
+  return (
+    <div onClick={onChange} style={{
+      width: '44px', height: '24px', borderRadius: '12px', flexShrink: 0,
+      background: on ? 'var(--accent)' : 'rgba(26,26,26,0.12)',
+      position: 'relative', cursor: 'pointer',
+      transition: 'background 0.2s', boxShadow: on ? '0 2px 8px rgba(252,174,145,0.35)' : 'none',
+    }}>
+      <div style={{
+        position: 'absolute', top: '3px',
+        left: on ? '23px' : '3px',
+        width: '18px', height: '18px', borderRadius: '50%',
+        background: 'white', transition: 'left 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+      }} />
+    </div>
+  );
+}
 
-  const donut = { r: 42, cx: 60, cy: 60 };
-  const circumference = 2 * Math.PI * donut.r;
-  const segments = [
-    { pct: ACCOUNTS[0].balance / total, color: '#FCAE91' },
-    { pct: ACCOUNTS[1].balance / total, color: '#A3C9A8' },
-    { pct: ACCOUNTS[2].balance / total, color: '#7EB5D6' },
-  ];
+// ─── BADGE ────────────────────────────────────────────────────────────────────
+function Badge({ text, color, bg }: { text: string; color: string; bg: string }) {
+  return (
+    <span style={{ display: 'inline-block', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, background: bg, color }}>
+      {text}
+    </span>
+  );
+}
+
+// ─── ПОИСК ────────────────────────────────────────────────────────────────────
+function SearchBar({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)', pointerEvents: 'none' }}>
+        <Ico.Search />
+      </div>
+      <input
+        type="text"
+        placeholder={placeholder || 'Поиск...'}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="search-input"
+        style={{ width: '100%', paddingLeft: '38px', height: '38px', boxSizing: 'border-box' }}
+      />
+      {value && (
+        <button onClick={() => onChange('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', padding: '2px' }}>
+          <Ico.X />
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── SPINNING DONUT ILLUSTRATION ─────────────────────────────────────────────
+function DonutIllustration({ total, segments }: { total: number; segments: { pct: number; color: string; label: string }[] }) {
+  const r = 46, cx = 60, cy = 60;
+  const circ = 2 * Math.PI * r;
   let offset = 0;
 
   return (
-    <>
-      {/* Hero-блок */}
-      <div className="finance-illus" style={{ position: 'relative', overflow: 'hidden' }}>
-        {/* Декоративные кольца */}
-        <svg width="120" height="120" viewBox="0 0 120 120" style={{ position: 'absolute', right: '24px', top: '50%', transform: 'translateY(-50%)' }}>
-          {segments.map((seg, i) => {
-            const dash = seg.pct * circumference;
-            const gap = circumference - dash;
-            const el = (
-              <circle key={i} cx={donut.cx} cy={donut.cy} r={donut.r}
-                fill="none" stroke={seg.color} strokeWidth="11"
-                strokeDasharray={`${dash} ${gap}`}
-                strokeDashoffset={-offset * circumference}
-                strokeLinecap="round"
-                transform={`rotate(-90 ${donut.cx} ${donut.cy})`}
-                style={{ opacity: 0.85, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.08))' }}
-              />
-            );
-            offset += seg.pct;
-            return el;
-          })}
-          <circle cx={donut.cx} cy={donut.cy} r={32} fill="white" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.06))' }} />
-          <text x={donut.cx} y={donut.cy - 6} textAnchor="middle" style={{ fontSize: '11px', fontWeight: 800, fill: '#1A1A1A', fontFamily: 'var(--font)' }}>2.4M</text>
-          <text x={donut.cx} y={donut.cy + 10} textAnchor="middle" style={{ fontSize: '8px', fill: '#999', fontFamily: 'var(--font)' }}>₽ всего</text>
-        </svg>
+    <svg width="120" height="120" viewBox="0 0 120 120" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.06))' }}>
+      
+      {/* 1. Серая статичная подложка (СТОИТ НА МЕСТЕ) */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(26,26,26,0.05)" strokeWidth="12" />
+      
+      {/* 2. Группа с цветными сегментами (КРУТЯТСЯ ТОЛЬКО ОНИ) */}
+      <g>
+        {/* Внутренняя анимация SVG, которая вращает только группу с секциями */}
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          from="0 60 60" 
+          to="360 60 60" 
+          dur="25s" 
+          repeatCount="indefinite" 
+        />
+        
+        {segments.map((seg, i) => {
+          const dash = seg.pct * circ;
+          const gap = circ - dash;
+          const el = (
+            <circle key={i} cx={cx} cy={cy} r={r}
+              fill="none" stroke={seg.color} strokeWidth="12"
+              strokeDasharray={`${dash} ${gap}`}
+              strokeDashoffset={-offset * circ}
+              strokeLinecap="round"
+              transform={`rotate(-90 ${cx} ${cy})`}
+              style={{ opacity: 0.9 }}
+            />
+          );
+          offset += seg.pct;
+          return el;
+        })}
+      </g>
 
-        <div style={{ textAlign: 'center', zIndex: 1 }}>
-          <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>
-            Баланс всех счетов
-          </div>
-          <div style={{ fontSize: '44px', fontWeight: 800, letterSpacing: '-2px', color: 'var(--text)' }}>₽2 419 300</div>
-          <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '8px' }}>
-            <span style={{ fontSize: '12px', color: '#5BAB72', fontWeight: 600, background: 'rgba(91,171,114,0.1)', padding: '3px 10px', borderRadius: '12px' }}>
-              ↑ +₽164 700 сегодня
+      {/* 3. Внутренний круг и текст (СТОЯТ НА МЕСТЕ) */}
+      <circle cx={cx} cy={cy} r={32} fill="var(--card)" />
+      <text x={cx} y={cy - 6} textAnchor="middle" style={{ fontSize: '11px', fontWeight: 800, fill: 'var(--text)', fontFamily: 'var(--font)', letterSpacing: '-0.5px' }}>
+        {total >= 1000000 ? `${(total / 1000000).toFixed(1)}M` : `${(total / 1000).toFixed(0)}K`}
+      </text>
+      <text x={cx} y={cy + 9} textAnchor="middle" style={{ fontSize: '8px', fill: 'var(--text3)', fontFamily: 'var(--font)', fontWeight: 600 }}>₽ всего</text>
+    </svg>
+  );
+}
+
+export interface AccountItem {
+  id: number;
+  name: string;
+  type: string;
+  balance: number;
+  change: number;
+  color: string;
+  isSystem: boolean;
+}
+
+// ─── TAB: СЧЕТА И КАССЫ (PREMIUM SEAMLESS UX) ──────────────────────────────────
+function TabAccounts({ showToast, onNavigateToOperations }: { 
+  showToast: (msg: string, t?: ToastType) => void;
+  onNavigateToOperations: (accountName: string) => void;
+}) {
+  // Явно указываем TS, что массив состоит из объектов AccountItem
+  const [accounts, setAccounts] = useState<AccountItem[]>(ACCOUNTS_DATA);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
+
+  // Обучающий блок
+  const [showGuide, setShowGuide] = useState(true);
+
+  // Редактирование
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editBalance, setEditBalance] = useState(''); // Стейт для суммы
+  const [editType, setEditType] = useState('cash');
+  const [isEditInputFocused, setIsEditInputFocused] = useState(false);
+  const [isEditBalanceFocused, setIsEditBalanceFocused] = useState(false);
+
+  // История
+  const [historyId, setHistoryId] = useState<number | null>(null);
+
+  // Создание нового (Пользовательские счета)
+  const [addOpen, setAddOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newBalance, setNewBalance] = useState(''); // Стейт для начальной суммы
+  const [newType, setNewType] = useState('cash');
+  const [isNewInputFocused, setIsNewInputFocused] = useState(false);
+  const [isNewBalanceFocused, setIsNewBalanceFocused] = useState(false);
+
+  const total = accounts.reduce((s, a) => s + a.balance, 0);
+  const segments = accounts.map(a => ({ pct: a.balance / total, color: a.color, label: a.name }));
+
+  const handleDelete = (id: number) => setConfirm({ open: true, id });
+  
+  const confirmDelete = () => {
+    setAccounts(prev => prev.filter(a => a.id !== confirm.id));
+    setConfirm({ open: false, id: null });
+    showToast('Счёт удалён', 'error');
+    setSelected(null);
+  };
+
+  const handleUpdate = (id: number) => {
+    if (!editName.trim()) return;
+    const numBalance = parseInt(editBalance) || 0; // Превращаем строку в число
+    
+    setAccounts(prev => prev.map(a => a.id === id ? { 
+      ...a, 
+      name: editName.trim(), 
+      type: editType,
+      balance: numBalance // Обновляем баланс
+    } : a));
+    
+    setEditingId(null);
+    showToast('Настройки сохранены', 'success');
+  };
+
+  const handleSaveNew = () => {
+    if (!newName.trim()) return;
+    const numBalance = parseInt(newBalance) || 0; // Превращаем строку в число
+    const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
+    
+    setAccounts(prev => [...prev, { 
+      id: Date.now(), 
+      name: newName.trim(), 
+      type: newType, 
+      balance: numBalance, // Ставим начальную сумму
+      change: 0, 
+      color: colors[prev.length % colors.length],
+      isSystem: false // Явно указываем для TS
+    }]);
+    
+    setNewName(''); setNewBalance(''); setNewType('cash'); setAddOpen(false);
+    showToast('Копилка успешно создана', 'success');
+  };
+
+  // Хелпер для ввода только цифр
+  const handleNumberInput = (val: string, setter: (v: string) => void) => {
+    setter(val.replace(/\D/g, '')); // Удаляем всё, кроме цифр
+  };
+
+  return (
+    <>
+      <style>{`
+        @keyframes cardMorph {
+          from { opacity: 0; transform: scale(0.97) translateY(6px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .morph-container {
+          animation: cardMorph 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+      `}</style>
+
+      {/* Hero-иллюстрация */}
+      <div className="finance-illus" style={{ marginBottom: '28px', display: 'flex', alignItems: 'center', padding: '0 32px', gap: '32px' }}>
+        <DonutIllustration total={total} segments={segments} />
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>Общий капитал студии</div>
+          <div style={{ fontSize: '40px', fontWeight: 800, letterSpacing: '-2px', color: '#1A1A1A', lineHeight: 1 }}>{fmt(total)}</div>
+          <div style={{ marginTop: '12px' }}>
+            <span style={{ fontSize: '12px', color: '#5BAB72', fontWeight: 700, background: 'rgba(163,201,168,0.12)', padding: '5px 14px', borderRadius: '20px' }}>
+              ↑ +{fmt(accounts.reduce((s, a) => s + a.change, 0))} за сегодня
             </span>
           </div>
         </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '170px' }}>
+          {accounts.map(a => (
+            <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: a.color, flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#1A1A1A' }}>{a.name}</div>
+                <div style={{ fontSize: '10px', color: '#666666' }}>{total > 0 ? Math.round(a.balance / total * 100) : 0}%</div>
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: a.color }}>{fmt(a.balance)}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Карточки счетов */}
-      <div className="grid-3 mb-20">
-        {ACCOUNTS.map((acc) => (
-          <div
-            key={acc.id}
-            className="card card-sm"
-            onClick={() => setSelected(selected === acc.id ? null : acc.id)}
-            style={{
-              cursor: 'pointer',
-              borderColor: selected === acc.id ? acc.color : 'var(--border)',
-              borderWidth: selected === acc.id ? 2 : 1,
-              transition: 'all 0.2s',
-              position: 'relative',
-              overflow: 'hidden',
+      {/* Сетка карточек счетов */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+        {accounts.map(acc => {
+          const TypeIcon = acc.type === 'cash' ? Ico.Cash : acc.type === 'bank' ? Ico.Card : Ico.World;
+          const isSelected = selected === acc.id;
+          const isEditing = editingId === acc.id;
+          const isHistory = historyId === acc.id;
+
+          return (
+            <div
+              key={acc.id} className="card card-sm"
+              onClick={() => { if (!isEditing && !isHistory) setSelected(isSelected ? null : acc.id); }}
+              style={{
+                cursor: (isEditing || isHistory) ? 'default' : 'pointer', position: 'relative', overflow: 'hidden', padding: '24px', 
+                border: isSelected ? `1.5px solid ${acc.color}` : '1.5px solid rgba(26, 26, 26, 0.06)', background: '#FFFFFF',
+                transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', transform: isSelected ? 'translateY(-2px)' : 'none',
+                boxShadow: isSelected ? `0 16px 32px ${acc.color}15` : '0 4px 12px rgba(26,26,26,0.02)',
+              }}
+            >
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: acc.color }} />
+
+              {/* РЕЖИМ 1: РЕДАКТИРОВАНИЕ */}
+              {isEditing ? (
+                <div className="morph-container" onClick={e => e.stopPropagation()}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Edit /></div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A' }}>Изменить счёт</div>
+                  </div>
+                  
+                  {/* Строка с Названием и Суммой */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                    <input 
+                      type="text" value={editName} placeholder="Название" 
+                      onChange={e => setEditName(e.target.value)} 
+                      onFocus={() => setIsEditInputFocused(true)} onBlur={() => setIsEditInputFocused(false)} 
+                      style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isEditInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A', outline: 'none', boxShadow: isEditInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }}
+                    />
+                    <input 
+                      type="text" value={editBalance} placeholder="Баланс, ₽" 
+                      onChange={e => handleNumberInput(e.target.value, setEditBalance)} 
+                      onFocus={() => setIsEditBalanceFocused(true)} onBlur={() => setIsEditBalanceFocused(false)} 
+                      style={{ width: '90px', padding: '10px 12px', background: '#FDFCFB', border: isEditBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isEditBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }}
+                    />
+                  </div>
+                  
+                  {/* Выбор типа (только для кастомных счетов) */}
+                  {!acc.isSystem && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '16px' }}>
+                      {[ { id: 'cash', icon: <Ico.Cash />, label: 'Наличные' }, { id: 'bank', icon: <Ico.Card />, label: 'Карта' }, { id: 'online', icon: <Ico.World />, label: 'Сеть' } ].map(btn => (
+                        <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : '#666666', transition: 'all 0.15s' }}>
+                          {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={() => handleUpdate(acc.id)} disabled={!editName.trim()} style={{ flex: 1, padding: '10px', background: editName.trim() ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: editName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>Сохранить</button>
+                    <button onClick={() => setEditingId(null)} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666666', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Отмена</button>
+                  </div>
+                </div>
+
+              // РЕЖИМ 2: ИСТОРИЯ
+              ) : isHistory ? (
+                <div className="morph-container" onClick={e => e.stopPropagation()}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => setHistoryId(null)} style={{ width: '28px', height: '28px', borderRadius: '8px', border: '1.5px solid rgba(26,26,26,0.08)', background: '#FDFCFB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1A1A1A', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(26,26,26,0.04)'} onMouseLeave={e => e.currentTarget.style.background = '#FDFCFB'}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A' }}>История: {acc.name}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                    <div style={{ flex: 1, padding: '10px', background: 'rgba(163,201,168,0.1)', borderRadius: '8px', border: '1px solid rgba(163,201,168,0.2)' }}><div style={{ fontSize: '9px', fontWeight: 800, color: '#7AA080', textTransform: 'uppercase', marginBottom: '4px' }}>Приход (30 дн)</div><div style={{ fontSize: '14px', fontWeight: 800, color: '#4E885B', letterSpacing: '-0.3px' }}>+124.5K</div></div>
+                    <div style={{ flex: 1, padding: '10px', background: 'rgba(216,140,154,0.1)', borderRadius: '8px', border: '1px solid rgba(216,140,154,0.2)' }}><div style={{ fontSize: '9px', fontWeight: 800, color: '#BA6D7D', textTransform: 'uppercase', marginBottom: '4px' }}>Расход (30 дн)</div><div style={{ fontSize: '14px', fontWeight: 800, color: '#A5495B', letterSpacing: '-0.3px' }}>-32.1K</div></div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'rgba(163,201,168,0.15)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Up /></div><div style={{ flex: 1 }}><div style={{ fontSize: '12px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>Оплата услуги</div><div style={{ fontSize: '10px', color: '#999999', fontWeight: 500 }}>Сегодня, 14:32</div></div><div style={{ fontSize: '12px', fontWeight: 800, color: '#5BAB72' }}>+2 500</div></div>
+                  </div>
+                  <button onClick={() => { setHistoryId(null); onNavigateToOperations(acc.name); }} style={{ width: '100%', padding: '10px', background: 'transparent', border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#1A1A1A', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; }}>Открыть все операции</button>
+                </div>
+
+              // РЕЖИМ 3: СТАНДАРТНОЕ СОСТОЯНИЕ
+              ) : (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', paddingTop: '4px' }}>
+                    <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {acc.name} 
+                      {acc.isSystem && <span style={{ background: 'rgba(26,26,26,0.05)', color: '#666', padding: '2px 6px', borderRadius: '4px', fontSize: '8.5px', fontWeight: 800 }}>СИСТЕМА</span>}
+                    </div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: acc.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc.color }}><TypeIcon /></div>
+                  </div>
+                  <div style={{ fontSize: '28px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.5px', color: '#1A1A1A' }}>{fmt(acc.balance)}</div>
+                  <div style={{ fontSize: '11px', color: '#5BAB72', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><Ico.Up /> +{fmt(acc.change)} сегодня</div>
+
+                  {isSelected && (
+                    <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(26,26,26,0.05)', display: 'flex', gap: '6px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
+                      <Btn size="sm" onClick={() => { 
+                        setHistoryId(null); 
+                        setEditingId(acc.id); 
+                        setEditName(acc.name); 
+                        setEditBalance(acc.balance.toString()); // Подтягиваем текущий баланс
+                        setEditType(acc.type); 
+                      }}><Ico.Edit />Изменить</Btn>
+                      <Btn size="sm" onClick={() => { setEditingId(null); setHistoryId(acc.id); }}><Ico.Bar />История</Btn>
+                      
+                      {!acc.isSystem && (
+                        <Btn size="sm" v="danger" onClick={() => handleDelete(acc.id)}><Ico.Trash /></Btn>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+
+        {/* ─── ПЛИТКА СОЗДАНИЯ (Копилки) ─── */}
+        <div style={{ border: addOpen ? '1.5px solid #F9A08B' : '1.5px dashed rgba(26,26,26,0.08)', borderRadius: '16px', padding: '24px', background: addOpen ? '#FFFFFF' : 'transparent', boxShadow: addOpen ? '0 12px 28px rgba(249, 160, 139, 0.04)' : 'none', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: "'Manrope', sans-serif", transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box' }}>
+          {addOpen ? (
+            <div className="morph-container">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Plus /></div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A' }}>Новая копилка</div>
+              </div>
+              
+              {/* Строка с Названием и Балансом */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <input 
+                  type="text" value={newName} placeholder="Название" 
+                  onChange={e => setNewName(e.target.value)} 
+                  onFocus={() => setIsNewInputFocused(true)} onBlur={() => setIsNewInputFocused(false)} 
+                  style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isNewInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A', outline: 'none', boxShadow: isNewInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }}
+                />
+                <input 
+                  type="text" value={newBalance} placeholder="Баланс, ₽" 
+                  onChange={e => handleNumberInput(e.target.value, setNewBalance)} 
+                  onFocus={() => setIsNewBalanceFocused(true)} onBlur={() => setIsNewBalanceFocused(false)} 
+                  style={{ width: '90px', padding: '10px 12px', background: '#FDFCFB', border: isNewBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isNewBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '18px' }}>
+                {[ { id: 'cash', icon: <Ico.Cash />, label: 'Наличка' }, { id: 'bank', icon: <Ico.Card />, label: 'Карта' }, { id: 'online', icon: <Ico.World />, label: 'Сеть' } ].map(btn => (
+                  <button key={btn.id} type="button" onClick={() => setNewType(btn.id)} style={{ padding: '8px 4px', background: newType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: newType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: newType === btn.id ? '#F9A08B' : '#666666', transition: 'all 0.15s' }}>
+                    {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button onClick={handleSaveNew} disabled={!newName.trim()} style={{ flex: 1, padding: '10px', background: newName.trim() ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: newName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>Создать</button>
+                <button onClick={() => { setAddOpen(false); setNewName(''); setNewBalance(''); }} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666666', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Отмена</button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setAddOpen(true)} style={{ width: '100%', height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: '#666666', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.parentElement!.style.borderColor = '#F9A08B'; e.currentTarget.parentElement!.style.background = 'rgba(249,160,139,0.02)'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { if(!addOpen) { e.currentTarget.parentElement!.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.parentElement!.style.background = 'transparent'; e.currentTarget.style.color = '#666666'; } }}>
+              <Ico.Plus /> Создать копилку
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Окно подтверждения удаления */}
+      <ConfirmModal open={confirm.open} title="Удалить эту копилку?" text="Все средства с неё будут списаны из общей статистики. Это действие нельзя отменить." onConfirm={confirmDelete} onCancel={() => setConfirm({ open: false, id: null })} danger />
+    </>
+  );
+}
+
+// ─── TAB: ОПЕРАЦИИ ───────────────────────────────────────────────────────────
+// ─── TAB: ОПЕРАЦИИ (PREMIUM MINIMALISM) ───────────────────────────────────────
+function TabOperations({ showToast, initialSearch }: { 
+  showToast: (msg: string, t?: ToastType) => void;
+  initialSearch: string;
+}) {
+  const [search, setSearch] = useState(initialSearch || '');
+  const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const [expanded, setExpanded] = useState<number | null>(null);
+  
+  // Состояние для красивого фокуса поиска
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  const filtered = OPERATIONS_DATA.filter(op => {
+    const matchFilter = filter === 'all' || op.type === filter;
+    const matchSearch = !search || 
+      op.title.toLowerCase().includes(search.toLowerCase()) || 
+      op.client.toLowerCase().includes(search.toLowerCase()) || 
+      op.category.toLowerCase().includes(search.toLowerCase()) ||
+      (op.account && op.account.toLowerCase().includes(search.toLowerCase()));
+    return matchFilter && matchSearch;
+  });
+
+  const totalIncome = OPERATIONS_DATA.filter(o => o.type === 'income').reduce((s, o) => s + Math.abs(o.amount), 0);
+  const totalExpense = OPERATIONS_DATA.filter(o => o.type === 'expense').reduce((s, o) => s + Math.abs(o.amount), 0);
+  const balance = totalIncome - totalExpense;
+
+  return (
+    <>
+      {/* 1. РОСКОШНЫЕ КАРТОЧКИ СВОДКИ */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
+        
+        {/* Карточка: Приход */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s', cursor: 'default' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
+          {/* Мягкий фоновый засвет */}
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(163,201,168,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(163,201,168,0.12)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Ico.Up />
+            </div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Приход сегодня</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>
+            <span style={{ color: '#5BAB72', marginRight: '4px' }}>+</span>{fmt(totalIncome)}
+          </div>
+        </div>
+
+        {/* Карточка: Расход */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s', cursor: 'default' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(216,140,154,0.12) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(216,140,154,0.12)', color: '#D88C9A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Ico.Down />
+            </div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Расход сегодня</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>
+            <span style={{ color: '#D88C9A', marginRight: '4px' }}>−</span>{fmt(totalExpense)}
+          </div>
+        </div>
+
+        {/* Карточка: Баланс */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s', cursor: 'default' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(249,160,139,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(249,160,139,0.12)', color: '#F9A08B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Ico.Dollar />
+            </div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Баланс дня</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>
+            <span style={{ color: balance >= 0 ? '#F9A08B' : '#D88C9A', marginRight: '4px' }}>{balance >= 0 ? '+' : '−'}</span>{fmt(Math.abs(balance))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* 2. ЕДИНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ (ACTION ISLAND) */}
+      <div style={{ 
+        display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', 
+        background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', 
+        border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)',
+        flexWrap: 'wrap'
+      }}>
+        
+        {/* Поиск */}
+        <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
+          <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: isSearchFocused ? '#F9A08B' : '#999999', transition: 'color 0.2s', pointerEvents: 'none' }}>
+            <Ico.Search />
+          </div>
+          <input
+            type="text"
+            placeholder="Поиск по клиентам, счетам и категориям..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            style={{ 
+              width: '100%', height: '48px', paddingLeft: '44px', paddingRight: search ? '40px' : '16px',
+              background: '#FDFCFB', border: isSearchFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)',
+              borderRadius: '12px', fontSize: '14px', fontWeight: 500, color: '#1A1A1A', outline: 'none',
+              boxShadow: isSearchFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none',
+              transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box', fontFamily: "'Manrope', sans-serif"
             }}
-          >
-            {/* Цветная полоса сверху */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: acc.color, opacity: 0.7, borderRadius: '16px 16px 0 0' }} />
+          />
+          {search && (
+            <button onClick={() => setSearch('')} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(26,26,26,0.06)', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background='rgba(26,26,26,0.1)'} onMouseLeave={e => e.currentTarget.style.background='rgba(26,26,26,0.06)'}>
+              <Ico.X />
+            </button>
+          )}
+        </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', paddingTop: '4px' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                {acc.name}
+        {/* Разделитель */}
+        <div style={{ width: '1px', height: '32px', background: 'rgba(26,26,26,0.08)', display: 'none' }} className="desktop-divider" />
+
+        {/* Сегментированные фильтры (iOS style) */}
+        <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', padding: '4px', borderRadius: '12px', flexShrink: 0 }}>
+          {(['all', 'income', 'expense'] as const).map(f => {
+            const isActive = filter === f;
+            return (
+              <button
+                key={f} onClick={() => setFilter(f)}
+                style={{
+                  padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 700,
+                  border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif",
+                  background: isActive ? '#FFFFFF' : 'transparent',
+                  color: isActive ? '#1A1A1A' : '#666666',
+                  boxShadow: isActive ? '0 2px 8px rgba(26,26,26,0.06)' : 'none',
+                  transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                }}
+              >
+                {f === 'all' ? 'Все' : f === 'income' ? 'Приход' : 'Расход'}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Кнопка экспорта */}
+        <button 
+          onClick={() => showToast('Экспорт запущен', 'info')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px', height: '40px', padding: '0 16px',
+            background: 'transparent', border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '10px',
+            color: '#666666', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'Manrope', sans-serif",
+            transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)', flexShrink: 0
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.03)'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; }}
+        >
+          <Ico.Download /> Экспорт
+        </button>
+      </div>
+
+      {/* 3. СПИСОК ОПЕРАЦИЙ */}
+      {filtered.length === 0 ? (
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '64px 20px', textAlign: 'center', border: '1px dashed rgba(26,26,26,0.1)' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(26,26,26,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}>
+            <Ico.Search />
+          </div>
+          <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>Операции не найдены</div>
+          <div style={{ fontSize: '13px', color: '#666666' }}>Попробуйте изменить параметры поиска или фильтры</div>
+        </div>
+      ) : (
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
+          {filtered.map((op, i) => {
+            const isIncome = op.type === 'income';
+            const color = isIncome ? '#5BAB72' : '#D88C9A';
+            const bgLight = isIncome ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)';
+            const isOpen = expanded === op.id;
+            
+            return (
+              <div key={op.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none' }}>
+                <div
+                  onClick={() => setExpanded(isOpen ? null : op.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', cursor: 'pointer',
+                    background: isOpen ? 'rgba(249,160,139,0.02)' : 'transparent', transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'rgba(26,26,26,0.01)'; }}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: bgLight, color: color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {isIncome ? <Ico.Up /> : <Ico.Down />}
+                  </div>
+                  
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {op.title}
+                      {op.status === 'pending' && (
+                        <span style={{ fontSize: '10px', background: '#FFF3CD', color: '#856404', padding: '2px 8px', borderRadius: '20px', fontWeight: 700 }}>Ожидание</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666666' }}>{op.client} <span style={{ opacity: 0.5, margin: '0 4px' }}>•</span> {op.account || op.category}</div>
+                  </div>
+                  
+                  <div style={{ textAlign: 'right', flexShrink: 0, paddingRight: '12px' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: color, letterSpacing: '-0.3px' }}>{isIncome ? '+' : '−'}{fmt(Math.abs(op.amount))}</div>
+                    <div style={{ fontSize: '11px', color: '#999999', marginTop: '3px', fontWeight: 500 }}>{op.date}</div>
+                  </div>
+                  
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: isOpen ? 'rgba(26,26,26,0.06)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s', transform: isOpen ? 'rotate(90deg)' : 'none', flexShrink: 0 }}>
+                    <Ico.Chevron />
+                  </div>
+                </div>
+
+                {/* Раскрывающаяся панель деталей */}
+                {isOpen && (
+                  <div style={{ background: 'rgba(252,174,145,0.03)', padding: '20px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', borderTop: '1px solid rgba(252,174,145,0.1)' }}>
+                    {[['Счёт поступления', op.account || '—'], ['Категория', op.category], ['Метод оплаты', op.method]].map(([l, v]) => (
+                      <div key={l as string}>
+                        <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{l}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A' }}>{v}</div>
+                      </div>
+                    ))}
+                    
+                    <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(26,26,26,0.05)', marginTop: '-4px' }}>
+                      <button onClick={() => showToast('Редактирование открыто')} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Edit /> Изменить</button>
+                      <button onClick={() => showToast('Квитанция скачана', 'success')} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Doc /> Квитанция</button>
+                      <button onClick={() => showToast('Операция удалена', 'error')} style={{ padding: '8px 16px', background: 'transparent', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#D88C9A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', marginLeft: 'auto' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}><Ico.Trash /> Удалить</button>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div style={{
-                width: '28px', height: '28px', borderRadius: '8px',
-                background: acc.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {acc.type === 'cash' && <IconCash />}
-                {acc.type === 'bank' && <IconCreditCard />}
-                {acc.type === 'online' && <IconWorld />}
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+}
+
+// ─── TAB: КОНТРАГЕНТЫ ────────────────────────────────────────────────────────
+function TabCounterparties({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
+  const [counterparties, setCounterparties] = useState(COUNTERPARTIES_DATA);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ name: '', inn: '', type: 'Юр. лицо', category: '' });
+  const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
+
+  const handleAdd = () => {
+    if (!form.name.trim()) { showToast('Введите название', 'error'); return; }
+    const colors = ['#FCAE91', '#7EB5D6', '#A3C9A8', '#D88C9A'];
+    setCounterparties(prev => [...prev, {
+      id: Date.now(), name: form.name, inn: form.inn || '—', type: form.type,
+      category: form.category || 'Прочее', balance: 0, deals: 0,
+      color: colors[prev.length % colors.length],
+    }]);
+    setForm({ name: '', inn: '', type: 'Юр. лицо', category: '' });
+    setAdding(false);
+    showToast('Контрагент добавлен', 'success');
+  };
+
+  const confirmDelete = () => {
+    setCounterparties(prev => prev.filter(c => c.id !== confirm.id));
+    setConfirm({ open: false, id: null });
+    setSelected(null);
+    showToast('Контрагент удалён', 'success');
+  };
+
+  const totalDebt = counterparties.reduce((s, c) => s + Math.abs(c.balance), 0);
+
+  return (
+    <>
+      {/* Хедер */}
+      <div className="card" style={{ padding: '24px 28px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.06) 0%, transparent 60%)' }}>
+        {/* SVG сеть */}
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style={{ flexShrink: 0 }}>
+          <circle cx="40" cy="40" r="38" stroke="var(--border)" strokeWidth="1" strokeDasharray="4 4" />
+          {[{ cx: 40, cy: 12, c: '#FCAE91' }, { cx: 67, cy: 57, c: '#A3C9A8' }, { cx: 13, cy: 57, c: '#7EB5D6' }].map((n, i) => (
+            <g key={i}>
+              <circle cx={n.cx} cy={n.cy} r="9" fill={n.c + '22'} stroke={n.c} strokeWidth="1.5" />
+              <line x1={n.cx} y1={n.cy} x2="40" y2="40" stroke="var(--border)" strokeWidth="1.2" />
+            </g>
+          ))}
+          <circle cx="40" cy="40" r="11" fill="rgba(252,174,145,0.15)" stroke="#FCAE91" strokeWidth="2" />
+          <text x="40" y="44" textAnchor="middle" style={{ fontSize: '9px', fill: '#FCAE91', fontWeight: 800, fontFamily: 'var(--font)' }}>Вы</text>
+        </svg>
+
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, marginBottom: '4px' }}>{counterparties.length} контрагента</div>
+          <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.5 }}>
+            Общая задолженность: <span style={{ color: '#D88C9A', fontWeight: 700 }}>{fmt(totalDebt)}</span>
+          </div>
+        </div>
+
+        <Btn v="primary" onClick={() => setAdding(true)}><Ico.Plus /> Добавить</Btn>
+      </div>
+
+      {/* Форма добавления */}
+      {adding && (
+        <div className="card" style={{ border: '1.5px solid var(--accent)', background: 'rgba(252,174,145,0.03)', marginBottom: '16px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Ico.Building /> Новый контрагент
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+            {[
+              { label: 'Название / ФИО', placeholder: 'ООО «Название»', key: 'name' },
+              { label: 'ИНН', placeholder: '7701234567', key: 'inn' },
+              { label: 'Категория', placeholder: 'Аренда, Поставщик…', key: 'category' },
+            ].map(f => (
+              <div key={f.key}>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{f.label}</div>
+                <input className="search-input" style={{ width: '100%' }} placeholder={f.placeholder}
+                  value={form[f.key as keyof typeof form]}
+                  onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                />
               </div>
+            ))}
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Тип</div>
+              <select className="search-input" style={{ width: '100%', appearance: 'none' }}
+                value={form.type} onChange={e => setForm(prev => ({ ...prev, type: e.target.value }))}>
+                <option>Юр. лицо</option>
+                <option>ИП</option>
+                <option>Физ. лицо</option>
+              </select>
             </div>
-            <div style={{ fontSize: '26px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.5px' }}>
-              {formatRub(acc.balance)}
-            </div>
-            <div style={{ fontSize: '11px', color: '#5BAB72', fontWeight: 600 }}>
-              ↑ +{formatRub(acc.change)} сегодня
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Btn v="primary" onClick={handleAdd}>Сохранить</Btn>
+            <Btn onClick={() => setAdding(false)}>Отмена</Btn>
+          </div>
+        </div>
+      )}
+
+      {/* Список */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        {counterparties.map((cp, i) => (
+          <div key={cp.id}>
+            <div
+              onClick={() => setSelected(selected === cp.id ? null : cp.id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px',
+                borderBottom: i < counterparties.length - 1 ? '1px solid var(--border)' : 'none',
+                cursor: 'pointer', background: selected === cp.id ? 'rgba(252,174,145,0.04)' : 'transparent',
+                transition: 'background 0.15s',
+              }}
+            >
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0, background: cp.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', color: cp.color }}>
+                {cp.type === 'Физ. лицо' ? <Ico.User /> : <Ico.Building />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '2px' }}>{cp.name}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{cp.type} · ИНН {cp.inn}</div>
+              </div>
+              <Badge text={cp.category} color={cp.color} bg={cp.color + '18'} />
+              <div style={{ textAlign: 'right', marginLeft: '8px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#D88C9A' }}>{fmt(Math.abs(cp.balance))}</div>
+                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>{cp.deals} сделок</div>
+              </div>
+              <div style={{ color: 'var(--text3)', transition: 'transform 0.2s', transform: selected === cp.id ? 'rotate(90deg)' : 'none' }}>
+                <Ico.Chevron />
+              </div>
             </div>
 
-            {selected === acc.id && (
-              <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--border)', display: 'flex', gap: '8px' }}>
-                <ActionBtn><IconEdit />Редактировать</ActionBtn>
-                <ActionBtn><IconBarChart />История</ActionBtn>
+            {selected === cp.id && (
+              <div style={{ background: 'rgba(252,174,145,0.03)', padding: '16px 20px', borderBottom: i < counterparties.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '14px' }}>
+                  {[['Сделок', cp.deals], ['Задолженность', fmt(Math.abs(cp.balance))], ['Категория', cp.category]].map(([l, v]) => (
+                    <div key={l as string}>
+                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginBottom: '3px', textTransform: 'uppercase' }}>{l}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 700 }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Btn size="sm" onClick={() => showToast('Документы открыты')}><Ico.Doc />Документы</Btn>
+                  <Btn size="sm" onClick={() => showToast('Редактирование открыто')}><Ico.Edit />Редактировать</Btn>
+                  <Btn size="sm" v="danger" onClick={() => setConfirm({ open: true, id: cp.id })}><Ico.Trash />Удалить</Btn>
+                </div>
               </div>
             )}
           </div>
         ))}
       </div>
 
-      {/* Кнопка добавить счёт */}
-      <button
-        style={{
-          width: '100%', border: '1.5px dashed var(--border)', borderRadius: '16px',
-          padding: '16px', background: 'transparent', cursor: 'pointer', color: 'var(--text3)',
-          fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          transition: 'all 0.15s',
-        }}
-        onClick={() => alert('Добавить счёт')}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)', e.currentTarget.style.color = 'var(--accent)')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)', e.currentTarget.style.color = 'var(--text3)')}
-      >
-        <IconPlus /> Добавить счёт или кассу
-      </button>
+      <ConfirmModal
+        open={confirm.open}
+        title="Удалить контрагента?"
+        text="Все связанные документы и история сделок останутся, но контрагент будет удалён из списка."
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirm({ open: false, id: null })}
+        danger
+      />
     </>
   );
 }
 
-// ─── TAB: ОПЕРАЦИИ ───────────────────────────────────────────────────────────
-function TabOperations() {
+// ─── TAB: ДОКУМЕНТЫ (PREMIUM MINIMALISM & CLOUD STORAGE UX) ────────────────
+function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
+  const [docs, setDocs] = useState(DOCUMENTS_DATA);
+  
+  // Поиск и фильтрация
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [filter, setFilter] = useState<'all' | 'signed' | 'pending'>('all');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  const filtered = OPERATIONS.filter(op => {
-    const matchFilter = filter === 'all' || op.type === filter;
-    const matchSearch = op.title.toLowerCase().includes(search.toLowerCase()) ||
-      op.client.toLowerCase().includes(search.toLowerCase());
+  // Создание
+  const [addOpen, setAddOpen] = useState(false);
+  const [newDoc, setNewDoc] = useState({ title: '', party: '', type: 'Договор', needsSignature: true });
+  const [isDragHover, setIsDragHover] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState<{ [key: string]: boolean }>({});
+
+  const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
+    signed: { label: 'Подписан', color: '#4E885B', bg: 'rgba(163,201,168,0.2)' },
+    pending: { label: 'Ожидает подписи', color: '#D88C9A', bg: 'rgba(216,140,154,0.15)' },
+    draft: { label: 'Без подписи', color: '#666666', bg: 'rgba(26,26,26,0.06)' },
+  };
+  const extColors: Record<string, string> = { PDF: '#D88C9A', DOCX: '#7EB5D6', XLSX: '#A3C9A8' };
+
+  const filtered = docs.filter(d => {
+    const matchFilter = filter === 'all' || d.status === filter;
+    const matchSearch = !search || d.title.toLowerCase().includes(search.toLowerCase()) || d.party.toLowerCase().includes(search.toLowerCase());
     return matchFilter && matchSearch;
   });
 
-  const totalIncome = OPERATIONS.filter(o => o.type === 'income').reduce((s, o) => s + Math.abs(o.amount), 0);
-  const totalExpense = OPERATIONS.filter(o => o.type === 'expense').reduce((s, o) => s + Math.abs(o.amount), 0);
+  const handleCreate = () => {
+    if (!newDoc.title.trim()) { showToast('Загрузите файл или введите название', 'error'); return; }
+    setDocs(prev => [{
+      id: Date.now(), 
+      title: newDoc.title, 
+      type: newDoc.type,
+      date: 'Только что',
+      party: newDoc.party || 'Внутренний документ', 
+      amount: 0,
+      status: newDoc.needsSignature ? 'pending' : 'draft', 
+      ext: 'PDF',
+    }, ...prev]);
+    setNewDoc({ title: '', party: '', type: 'Договор', needsSignature: true });
+    setAddOpen(false);
+    showToast('Документ успешно загружен в базу', 'success');
+  };
+
+  const signedCount = docs.filter(d => d.status === 'signed').length;
+  const pendingCount = docs.filter(d => d.status === 'pending').length;
+  const draftCount = docs.filter(d => d.status === 'draft').length;
 
   return (
     <>
-      {/* Мини-сводка */}
-      <div className="grid-3 mb-20" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-        <div className="card card-sm" style={{ borderLeft: '3px solid #A3C9A8' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, marginBottom: '4px' }}>ПРИХОД СЕГОДНЯ</div>
-          <div style={{ fontSize: '22px', fontWeight: 800, color: '#5BAB72' }}>+{formatRub(totalIncome)}</div>
-        </div>
-        <div className="card card-sm" style={{ borderLeft: '3px solid #D88C9A' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, marginBottom: '4px' }}>РАСХОД СЕГОДНЯ</div>
-          <div style={{ fontSize: '22px', fontWeight: 800, color: '#D88C9A' }}>−{formatRub(totalExpense)}</div>
-        </div>
-        <div className="card card-sm" style={{ borderLeft: '3px solid var(--accent)' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, marginBottom: '4px' }}>БАЛАНС ДНЯ</div>
-          <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--accent)' }}>+{formatRub(totalIncome - totalExpense)}</div>
-        </div>
-      </div>
+      <style>{`
+        @keyframes cardMorph {
+          from { opacity: 0; transform: scale(0.97) translateY(6px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .morph-container { animation: cardMorph 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .doc-row:hover { transform: translateX(4px); box-shadow: 0 4px 12px rgba(26,26,26,0.04); border-color: rgba(249,160,139,0.3) !important; }
+      `}</style>
 
-      {/* Поиск и фильтр */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)' }}>
-            <IconSearch />
+      {/* 1. РОСКОШНЫЕ КАРТОЧКИ СВОДКИ */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
+        
+        {/* Подписано */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(163,201,168,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(163,201,168,0.12)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Check /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Подписано</div>
           </div>
-          <input
-            type="text"
-            placeholder="Поиск операций..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="search-input"
-            style={{ width: '100%', paddingLeft: '36px' }}
-          />
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>{signedCount}</div>
         </div>
-        {(['all', 'income', 'expense'] as const).map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
-              border: '1px solid',
-              borderColor: filter === f ? 'var(--accent)' : 'var(--border)',
-              background: filter === f ? 'var(--accent)' : 'transparent',
-              color: filter === f ? '#fff' : 'var(--text2)',
-              cursor: 'pointer', transition: 'all 0.15s',
-            }}
-          >
-            {f === 'all' ? 'Все' : f === 'income' ? '↑ Приход' : '↓ Расход'}
-          </button>
-        ))}
-        <ActionBtn><IconDownload />Экспорт</ActionBtn>
+
+        {/* Ожидает подписи */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(216,140,154,0.12) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(216,140,154,0.12)', color: '#D88C9A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Edit /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Ждут подписи</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>
+            <span style={{ color: pendingCount > 0 ? '#D88C9A' : '#1A1A1A' }}>{pendingCount}</span>
+          </div>
+        </div>
+
+        {/* Остальные / Черновики */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(126,181,214,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(126,181,214,0.12)', color: '#7EB5D6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Doc /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Внутренние (Без подписи)</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>{draftCount}</div>
+        </div>
       </div>
 
-      {/* Список операций */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        {filtered.map((op, i) => {
-          const isIncome = op.type === 'income';
-          const color = isIncome ? '#5BAB72' : '#D88C9A';
-          const isOpen = expanded === op.id;
+      {/* 2. ПАНЕЛЬ УПРАВЛЕНИЯ (ACTION ISLAND) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)', flexWrap: 'wrap' }}>
+        
+        {/* Поиск */}
+        <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
+          <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: isSearchFocused ? '#F9A08B' : '#999999', transition: 'color 0.2s', pointerEvents: 'none' }}><Ico.Search /></div>
+          <input type="text" placeholder="Искать по названию или контрагенту..." value={search} onChange={e => setSearch(e.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} style={{ width: '100%', height: '48px', paddingLeft: '44px', paddingRight: search ? '40px' : '16px', background: '#FDFCFB', border: isSearchFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '12px', fontSize: '14px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isSearchFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.25s', boxSizing: 'border-box', fontFamily: "'Manrope', sans-serif" }} />
+          {search && (
+            <button onClick={() => setSearch('')} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(26,26,26,0.06)', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}><Ico.X /></button>
+          )}
+        </div>
+
+        {/* Фильтры */}
+        <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', padding: '4px', borderRadius: '12px', flexShrink: 0 }}>
+          {(['all', 'signed', 'pending'] as const).map(f => {
+            const isActive = filter === f;
+            return (
+              <button key={f} onClick={() => setFilter(f)} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: isActive ? '#FFFFFF' : 'transparent', color: isActive ? '#1A1A1A' : '#666666', boxShadow: isActive ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>
+                {f === 'all' ? 'Все' : f === 'signed' ? 'Подписаны' : 'Ждут подписи'}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Кнопка создания (Плюс) */}
+        {!addOpen && (
+          <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '0 20px', background: '#F9A08B', border: 'none', borderRadius: '10px', color: '#FFFFFF', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 6px 16px rgba(249, 160, 139, 0.25)', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.05)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}>
+            <Ico.Plus /> Загрузить
+          </button>
+        )}
+      </div>
+
+      {/* 3. ЗОНА ЗАГРУЗКИ НОВОГО ДОКУМЕНТА (DRAG & DROP) */}
+      {addOpen && (
+        <div className="morph-container card" style={{ padding: '32px', marginBottom: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>Добавить документ в базу</div>
+            <button onClick={() => setAddOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color='#999'}><Ico.X /></button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+            {/* Визуальная зона Drag&Drop */}
+            <div 
+              style={{ border: isDragHover ? '2px dashed #F9A08B' : '2px dashed rgba(26,26,26,0.12)', borderRadius: '16px', background: isDragHover ? 'rgba(249, 160, 139, 0.03)' : 'rgba(26,26,26,0.01)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', cursor: 'pointer', transition: 'all 0.2s' }}
+              onMouseEnter={() => setIsDragHover(true)} onMouseLeave={() => setIsDragHover(false)}
+              onClick={() => showToast('Выбор файла...', 'info')}
+            >
+              <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#FFFFFF', boxShadow: '0 8px 24px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B', marginBottom: '16px' }}>
+                <Ico.Download />
+              </div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A', marginBottom: '4px' }}>Нажмите или перетащите файл</div>
+              <div style={{ fontSize: '12px', color: '#999999' }}>PDF, DOCX, XLSX (до 15 МБ)</div>
+            </div>
+
+            {/* Настройки документа */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Название документа</label>
+                <input type="text" placeholder="Например: Акт сдачи-приемки №48" value={newDoc.title} onChange={e => setNewDoc(p => ({ ...p, title: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, title: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, title: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['title'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['title'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Контрагент (Если есть)</label>
+                <input type="text" placeholder="Название ИП или ООО" value={newDoc.party} onChange={e => setNewDoc(p => ({ ...p, party: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, party: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, party: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['party'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['party'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+              </div>
+
+              {/* Тумблер: Требует подписания */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'rgba(26,26,26,0.02)', borderRadius: '10px', border: '1px solid rgba(26,26,26,0.04)', marginTop: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>Документ требует подписи?</div>
+                  <div style={{ fontSize: '11px', color: '#999999', marginTop: '2px' }}>Статус будет "Ожидает подписи"</div>
+                </div>
+                <Toggle on={newDoc.needsSignature} onChange={() => setNewDoc(p => ({ ...p, needsSignature: !p.needsSignature }))} />
+              </div>
+
+              <button onClick={handleCreate} disabled={!newDoc.title.trim()} style={{ marginTop: 'auto', padding: '14px', background: newDoc.title.trim() ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '10px', color: newDoc.title.trim() ? '#FFFFFF' : '#999999', fontSize: '13px', fontWeight: 700, cursor: newDoc.title.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: newDoc.title.trim() ? '0 6px 20px rgba(249, 160, 139, 0.25)' : 'none' }}>
+                Сохранить в базу
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. СПИСОК ДОКУМЕНТОВ */}
+      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: '64px 20px', textAlign: 'center', background: '#FAFAFA' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}><Ico.Doc /></div>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>В этой папке пусто</div>
+            <div style={{ fontSize: '13px', color: '#666666' }}>Загрузите новый документ или измените фильтры</div>
+          </div>
+        ) : filtered.map((doc, i) => {
+          const sm = statusMeta[doc.status];
+          const extColor = extColors[doc.ext] || '#999';
+          
           return (
-            <div key={op.id}>
-              <div
-                onClick={() => setExpanded(isOpen ? null : op.id)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  padding: '14px 20px',
-                  borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
-                  cursor: 'pointer',
-                  background: isOpen ? 'rgba(252,174,145,0.04)' : 'transparent',
-                  transition: 'background 0.15s',
-                }}
-              >
-                {/* Иконка */}
-                <div style={{
-                  width: '38px', height: '38px', borderRadius: '10px',
-                  background: color + '18', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color,
-                }}>
-                  {isIncome ? <IconArrowUp /> : <IconArrowDown />}
-                </div>
+            <div key={doc.id} className="doc-row" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none', background: 'transparent', transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', borderLeft: '3px solid transparent' }}>
+              
+              {/* Элегантная иконка формата файла */}
+              <div style={{ width: '46px', height: '52px', borderRadius: '10px', background: extColor + '15', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, gap: '4px', color: extColor, border: `1px solid ${extColor}30` }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span style={{ fontSize: '9px', fontWeight: 800, color: extColor, letterSpacing: '0.5px' }}>{doc.ext}</span>
+              </div>
 
-                {/* Инфо */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {op.title}
-                    {op.status === 'pending' && (
-                      <span style={{ fontSize: '10px', background: '#FFF3CD', color: '#856404', padding: '1px 7px', borderRadius: '10px', fontWeight: 700 }}>
-                        Ожидание
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{op.client} · {op.category}</div>
+              {/* Название и контрагент */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {doc.title}
                 </div>
-
-                {/* Сумма и дата */}
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color }}>{isIncome ? '+' : '−'}{formatRub(Math.abs(op.amount))}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>{op.date}</div>
-                </div>
-
-                <div style={{ color: 'var(--text3)', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
-                  <IconChevronRight />
+                <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>
+                  <span style={{ color: '#1A1A1A', fontWeight: 600 }}>{doc.party}</span> <span style={{ opacity: 0.5, margin: '0 4px' }}>•</span> Загружен {doc.date}
                 </div>
               </div>
 
-              {/* Раскрытая детализация */}
-              {isOpen && (
-                <div style={{
-                  background: 'rgba(252,174,145,0.04)', padding: '16px 20px',
-                  borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
-                  display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px',
-                }}>
-                  {[
-                    ['Метод оплаты', op.method],
-                    ['Категория', op.category],
-                    ['Статус', op.status === 'completed' ? 'Завершено' : 'Ожидание'],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginBottom: '3px' }}>{label}</div>
-                      <div style={{ fontSize: '13px', fontWeight: 600 }}>{value}</div>
-                    </div>
-                  ))}
-                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', paddingTop: '8px' }}>
-                    <ActionBtn><IconEdit />Изменить</ActionBtn>
-                    <ActionBtn><IconDoc />Квитанция</ActionBtn>
-                    <ActionBtn variant="danger"><IconTrash />Удалить</ActionBtn>
+              {/* Бейдж статуса */}
+              <div style={{ flexShrink: 0, marginRight: '16px' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: sm.bg, color: sm.color, padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, border: `1px solid ${sm.color}30` }}>
+                  {doc.status === 'signed' ? <Ico.Check /> : doc.status === 'pending' ? <Ico.Edit /> : null}
+                  {sm.label}
+                </span>
+              </div>
+
+              {/* Экшен-кнопки */}
+              <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                <button onClick={() => showToast('Скачивание файла...', 'info')} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#FDFCFB', border: '1px solid rgba(26,26,26,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666666', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.transform = 'translateY(0)'; }} title="Скачать">
+                  <Ico.Download />
+                </button>
+                <button onClick={() => showToast('Опции документа открыты')} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#FDFCFB', border: '1px solid rgba(26,26,26,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666666', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.transform = 'translateY(0)'; }} title="Настройки">
+                  <Ico.Dots />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+// ─── TAB: ОНЛАЙН-ПЛАТЕЖИ (PREMIUM MINIMALISM & CONTEXT ANALYTICS) ────────────
+function TabOnlinePayments({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
+  const [channels, setChannels] = useState(ONLINE_CHANNELS_DATA);
+  const [copied, setCopied] = useState(false);
+  
+  // Состояние: какой именно график сейчас развернут (храним ID шлюза)
+  const [expandedChartId, setExpandedChartId] = useState<number | null>(null);
+
+  const toggle = (id: number) => {
+    setChannels(prev => prev.map(c => c.id === id ? { ...c, active: !c.active } : c));
+    showToast('Настройки шлюза обновлены', 'success');
+  };
+
+  const handleCopy = () => {
+    setCopied(true);
+    showToast('Ссылка скопирована в буфер', 'success');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const total = channels.filter(c => c.active).reduce((s, c) => s + c.amount, 0);
+  const sessions = channels.filter(c => c.active).reduce((s, c) => s + c.sessions, 0);
+
+  // Генератор реалистичных данных для конкретного шлюза
+  const getChartData = (channelAmount: number, isActive: boolean) => {
+    if (!isActive || channelAmount === 0) {
+      return ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'].map(m => ({ m, val: 0 }));
+    }
+    const base = channelAmount / 5; // Базовая точка для математической кривой
+    const curve = [0.4, 0.5, 0.7, 0.6, 0.9, 1.1, 1.4, 1.2, 1.5, 1.8, 2.1, 2.5];
+    return curve.map((multiplier, i) => ({
+      m: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][i],
+      val: Math.round(base * multiplier)
+    }));
+  };
+
+  const IconsMap: Record<string, React.ReactNode> = {
+    link: <Ico.World />, qr: <Ico.QR />,
+    widget: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>,
+    telegram: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>,
+  };
+
+  return (
+    <>
+      <style>{`
+        /* Анимация пульсации центрального узла */
+        @keyframes pulseCore {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(249,160,139,0.3); }
+          50% { box-shadow: 0 0 0 10px rgba(249,160,139,0); }
+        }
+        /* Анимация плавного разворачивания графика внутри карточки */
+        @keyframes expandChartInner {
+          from { opacity: 0; transform: translateY(-8px) scaleY(0.95); max-height: 0; margin-top: 0; }
+          to { opacity: 1; transform: translateY(0) scaleY(1); max-height: 300px; margin-top: 20px; }
+        }
+        .chart-container-inner {
+          animation: expandChartInner 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          transform-origin: top;
+          overflow: hidden;
+        }
+      `}</style>
+
+      {/* 1. ГЛАВНЫЙ БЛОК (СВОДКА И АНИМИРОВАННАЯ ИЛЛЮСТРАЦИЯ) */}
+      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.04)', marginBottom: '24px', overflow: 'hidden' }}>
+        
+        <div style={{ padding: '32px', position: 'relative' }}>
+          {/* Мягкий фоновый засвет */}
+          <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(249,160,139,0.08) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+            <div style={{ zIndex: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.12)', color: '#F9A08B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.World /></div>
+                <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px' }}>Суммарный онлайн-оборот</div>
+              </div>
+              <div style={{ fontSize: '42px', fontWeight: 800, letterSpacing: '-1.5px', color: '#1A1A1A', marginBottom: '6px' }}>{fmt(total)}</div>
+              <div style={{ fontSize: '13px', color: '#666666', fontWeight: 500 }}>Обработано <span style={{ color: '#1A1A1A', fontWeight: 700 }}>{sessions}</span> платежных сессий в этом месяце</div>
+            </div>
+
+            {/* ПРЕМИАЛЬНАЯ АНИМИРОВАННАЯ SVG ИЛЛЮСТРАЦИЯ (Светящиеся частицы) */}
+            <svg width="180" height="110" viewBox="0 0 180 110" fill="none" style={{ zIndex: 2, overflow: 'visible' }}>
+              {/* Провода (полупрозрачные направляющие) */}
+              <path id="pathQR" d="M35 25 L100 55" stroke="rgba(26,26,26,0.04)" strokeWidth="2.5" strokeLinecap="round" />
+              <path id="pathWEB" d="M35 55 L100 55" stroke="rgba(26,26,26,0.04)" strokeWidth="2.5" strokeLinecap="round" />
+              <path id="pathTG" d="M35 85 L100 55" stroke="rgba(26,26,26,0.04)" strokeWidth="2.5" strokeLinecap="round" />
+              <path id="pathOUT" d="M125 55 L165 55" stroke="rgba(26,26,26,0.04)" strokeWidth="2.5" strokeLinecap="round" />
+
+              {/* Летящие пакеты данных (светящиеся точки с animateMotion) */}
+              <circle r="3" fill="#F9A08B" style={{ filter: 'drop-shadow(0 0 6px rgba(249,160,139,0.8))' }}>
+                <animateMotion dur="2.5s" repeatCount="indefinite" path="M35 25 L100 55" />
+              </circle>
+              <circle r="3" fill="#F9A08B" style={{ filter: 'drop-shadow(0 0 6px rgba(249,160,139,0.8))' }}>
+                <animateMotion dur="1.8s" repeatCount="indefinite" path="M35 55 L100 55" />
+              </circle>
+              <circle r="3" fill="#F9A08B" style={{ filter: 'drop-shadow(0 0 6px rgba(249,160,139,0.8))' }}>
+                <animateMotion dur="3.2s" repeatCount="indefinite" path="M35 85 L100 55" />
+              </circle>
+              
+              {/* Успешный выходной пакет (Зеленый) */}
+              <circle r="3" fill="#5BAB72" style={{ filter: 'drop-shadow(0 0 6px rgba(91,171,114,0.8))' }}>
+                <animateMotion dur="1.5s" repeatCount="indefinite" path="M125 55 L165 55" />
+              </circle>
+
+              {/* Крайние узлы */}
+              <g style={{ transformOrigin: '25px 25px' }}><circle cx="25" cy="25" r="14" fill="#FFFFFF" stroke="rgba(249,160,139,0.5)" strokeWidth="1.5" /><text x="25" y="28" textAnchor="middle" style={{ fontSize: '8px', fill: '#1A1A1A', fontWeight: 800, fontFamily: 'var(--font)' }}>QR</text></g>
+              <g style={{ transformOrigin: '25px 55px' }}><circle cx="25" cy="55" r="14" fill="#FFFFFF" stroke="rgba(249,160,139,0.5)" strokeWidth="1.5" /><text x="25" y="58" textAnchor="middle" style={{ fontSize: '8px', fill: '#1A1A1A', fontWeight: 800, fontFamily: 'var(--font)' }}>WEB</text></g>
+              <g style={{ transformOrigin: '25px 85px' }}><circle cx="25" cy="85" r="14" fill="#FFFFFF" stroke="rgba(249,160,139,0.5)" strokeWidth="1.5" /><text x="25" y="88" textAnchor="middle" style={{ fontSize: '8px', fill: '#1A1A1A', fontWeight: 800, fontFamily: 'var(--font)' }}>TG</text></g>
+
+              {/* Центральный хаб (Пульсирующий) */}
+              <circle cx="112" cy="55" r="22" fill="#FFFFFF" stroke="#F9A08B" strokeWidth="2" style={{ animation: 'pulseCore 2.5s infinite' }} />
+              <text x="112" y="51" textAnchor="middle" style={{ fontSize: '12px', fill: '#1A1A1A', fontWeight: 800, fontFamily: 'var(--font)' }}>₽</text>
+              <text x="112" y="62" textAnchor="middle" style={{ fontSize: '7px', fill: '#999999', fontFamily: 'var(--font)', fontWeight: 600 }}>шлюз</text>
+
+              {/* Выходной узел успеха */}
+              <circle cx="170" cy="55" r="10" fill="rgba(91,171,114,0.15)" stroke="#5BAB72" strokeWidth="1.5" />
+              <text x="170" y="58" textAnchor="middle" style={{ fontSize: '8.5px', fill: '#5BAB72', fontWeight: 800, fontFamily: 'var(--font)' }}>✓</text>
+            </svg>
+          </div>
+        </div>
+
+        {/* Нижняя панель: Ссылка */}
+        <div style={{ padding: '20px 32px', borderTop: '1px solid rgba(26,26,26,0.05)', background: '#FAFAFA', display: 'flex', alignItems: 'center' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#FFFFFF', borderRadius: '10px', padding: '6px 6px 6px 16px', border: '1px solid rgba(26,26,26,0.08)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+            <div style={{ flex: 1, fontSize: '13px', color: '#1A1A1A', fontFamily: 'monospace', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              pay.velora.studio/p/velora-pilates
+            </div>
+            <button 
+              onClick={handleCopy}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: copied ? '#A3C9A8' : '#1A1A1A', color: '#FFFFFF', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)' }}
+            >
+              {copied ? <><Ico.Check /> Скопировано</> : <><Ico.Copy /> Копировать</>}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. КАНАЛЫ С ВСТРОЕННОЙ АНАЛИТИКОЙ (CONTEXT UX) */}
+      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '16px', paddingLeft: '4px' }}>
+        Управление шлюзами
+      </div>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {channels.map(ch => {
+          const isChartOpen = expandedChartId === ch.id;
+          const chartData = getChartData(ch.amount, ch.active);
+          const maxVal = Math.max(...chartData.map(d => d.val), 1); // Чтобы избежать деления на ноль
+
+          return (
+            <div 
+              key={ch.id} 
+              style={{ 
+                padding: '24px', borderRadius: '16px',
+                opacity: ch.active ? 1 : 0.6, 
+                background: ch.active ? '#FFFFFF' : 'rgba(26,26,26,0.01)',
+                border: isChartOpen ? '1.5px solid #F9A08B' : (ch.active ? '1.5px solid rgba(26,26,26,0.06)' : '1.5px solid rgba(26,26,26,0.04)'),
+                boxShadow: isChartOpen ? '0 16px 40px -8px rgba(249,160,139,0.15)' : (ch.active ? '0 8px 24px -4px rgba(26,26,26,0.04)' : 'none'),
+                transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Шапка карточки */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0, background: ch.active ? 'rgba(249, 160, 139, 0.12)' : 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: ch.active ? '#F9A08B' : '#999999', transition: 'all 0.3s' }}>
+                  {IconsMap[ch.icon]}
+                </div>
+                
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', marginBottom: '2px' }}>{ch.name}</div>
+                  <div style={{ fontSize: '12px', color: '#666666', lineHeight: 1.4 }}>{ch.desc}</div>
+                </div>
+                
+                <div style={{ textAlign: 'right', marginRight: '16px', flexShrink: 0 }}>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>{fmt(ch.amount)}</div>
+                  <div style={{ fontSize: '11px', color: '#999999', fontWeight: 600 }}>{ch.sessions} сессий</div>
+                </div>
+
+                {/* Кнопка Аналитики (Только если канал активен) */}
+                <button 
+                  onClick={() => ch.active && setExpandedChartId(isChartOpen ? null : ch.id)}
+                  disabled={!ch.active}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', borderRadius: '10px', fontSize: '12px', fontWeight: 700, cursor: ch.active ? 'pointer' : 'not-allowed', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', marginRight: '16px', background: isChartOpen ? '#1A1A1A' : 'transparent', color: isChartOpen ? '#FFFFFF' : '#666666', border: isChartOpen ? '1px solid #1A1A1A' : '1px solid rgba(26,26,26,0.1)' }}
+                  onMouseEnter={e => { if(ch.active && !isChartOpen) { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; } }}
+                  onMouseLeave={e => { if(ch.active && !isChartOpen) { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.color = '#666666'; } }}
+                >
+                  <Ico.Bar /> Аналитика
+                </button>
+                
+                <Toggle on={ch.active} onChange={() => toggle(ch.id)} />
+              </div>
+
+              {/* Разворачивающийся ИНДИВИДУАЛЬНЫЙ график */}
+              {isChartOpen && (
+                <div className="chart-container-inner" style={{ borderTop: '1px dashed rgba(26,26,26,0.08)', padding: '24px 8px 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>Статистика транзакций шлюза «{ch.name}»</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#666666', background: 'rgba(26,26,26,0.04)', padding: '4px 10px', borderRadius: '20px' }}>За последние 12 месяцев</div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', height: '160px' }}>
+                    {chartData.map(d => {
+                      const heightPct = (d.val / maxVal) * 100;
+                      return (
+                        <div key={d.m} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end' }}>
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-end' }}>
+                            <div 
+                              title={`Выручка (${d.m}): ${fmt(d.val)}`}
+                              style={{ width: '100%', height: `${heightPct}%`, background: 'linear-gradient(180deg, #F9A08B 0%, rgba(249,160,139,0.2) 100%)', borderRadius: '6px 6px 0 0', transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)', cursor: 'pointer' }}
+                              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scaleY(1.03)'; e.currentTarget.style.transformOrigin = 'bottom'; }}
+                              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scaleY(1)'; }}
+                            />
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#999999', fontWeight: 700, textTransform: 'uppercase' }}>{d.m}</div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -512,485 +1588,53 @@ function TabOperations() {
   );
 }
 
-// ─── TAB: КОНТРАГЕНТЫ ────────────────────────────────────────────────────────
-function TabCounterparties() {
-  const [selected, setSelected] = useState<number | null>(null);
-  const [adding, setAdding] = useState(false);
-
-  return (
-    <>
-      {/* Иллюстрация-хедер */}
-      <div className="card mb-20" style={{ padding: '24px 28px', display: 'flex', alignItems: 'center', gap: '28px', background: 'linear-gradient(135deg, rgba(252,174,145,0.07) 0%, transparent 60%)' }}>
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-          {/* Стилизованная сеть контрагентов */}
-          <circle cx="40" cy="40" r="38" stroke="var(--border)" strokeWidth="1" strokeDasharray="4 4" />
-          <circle cx="40" cy="14" r="8" fill="rgba(252,174,145,0.2)" stroke="#FCAE91" strokeWidth="1.5" />
-          <circle cx="66" cy="56" r="8" fill="rgba(163,201,168,0.2)" stroke="#A3C9A8" strokeWidth="1.5" />
-          <circle cx="14" cy="56" r="8" fill="rgba(126,181,214,0.2)" stroke="#7EB5D6" strokeWidth="1.5" />
-          <circle cx="40" cy="40" r="10" fill="rgba(252,174,145,0.15)" stroke="#FCAE91" strokeWidth="2" />
-          <line x1="40" y1="22" x2="40" y2="30" stroke="var(--border)" strokeWidth="1.5" />
-          <line x1="58" y1="50" x2="50" y2="46" stroke="var(--border)" strokeWidth="1.5" />
-          <line x1="22" y1="50" x2="30" y2="46" stroke="var(--border)" strokeWidth="1.5" />
-          <text x="40" y="43.5" textAnchor="middle" style={{ fontSize: '9px', fill: '#FCAE91', fontWeight: 700, fontFamily: 'var(--font)' }}>Вы</text>
-        </svg>
-        <div>
-          <div style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>4 контрагента</div>
-          <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.5 }}>
-            Юридические лица, ИП и физические лица с которыми ведётся работа.
-            Общая задолженность: <span style={{ color: '#D88C9A', fontWeight: 700 }}>₽54 600</span>
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
-          <button
-            onClick={() => setAdding(true)}
-            className="topbar-btn"
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <IconPlus /> Добавить
-          </button>
-        </div>
-      </div>
-
-      {adding && (
-        <div className="card mb-20" style={{ border: '1.5px solid var(--accent)', background: 'rgba(252,174,145,0.04)' }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>Новый контрагент</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-            {['Название / ФИО', 'ИНН', 'Тип', 'Категория'].map(label => (
-              <div key={label}>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginBottom: '6px' }}>{label}</div>
-                <input className="search-input" style={{ width: '100%' }} placeholder={label} />
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <ActionBtn variant="primary" onClick={() => setAdding(false)}>Сохранить</ActionBtn>
-            <ActionBtn onClick={() => setAdding(false)}>Отмена</ActionBtn>
-          </div>
-        </div>
-      )}
-
-      {/* Таблица контрагентов */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        {COUNTERPARTIES.map((cp, i) => (
-          <div key={cp.id}>
-            <div
-              onClick={() => setSelected(selected === cp.id ? null : cp.id)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '14px',
-                padding: '16px 20px',
-                borderBottom: i < COUNTERPARTIES.length - 1 ? '1px solid var(--border)' : 'none',
-                cursor: 'pointer',
-                background: selected === cp.id ? 'rgba(252,174,145,0.04)' : 'transparent',
-              }}
-            >
-              {/* Аватар */}
-              <div style={{
-                width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0,
-                background: cp.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '11px', fontWeight: 800, color: cp.color,
-              }}>
-                {cp.type === 'Физ. лицо' ? <IconUser /> : <IconBuilding />}
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '2px' }}>{cp.name}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{cp.type} · ИНН {cp.inn}</div>
-              </div>
-
-              <Badge text={cp.category} color={cp.color} bg={cp.color + '18'} />
-
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#D88C9A' }}>{formatRub(Math.abs(cp.balance))}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>{cp.deals} сделок</div>
-              </div>
-
-              <div style={{ color: 'var(--text3)', transform: selected === cp.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
-                <IconChevronRight />
-              </div>
-            </div>
-
-            {selected === cp.id && (
-              <div style={{ background: 'rgba(252,174,145,0.04)', padding: '16px 20px', borderBottom: i < COUNTERPARTIES.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '14px' }}>
-                  {[
-                    ['Сделок всего', cp.deals],
-                    ['Задолженность', formatRub(Math.abs(cp.balance))],
-                    ['Категория', cp.category],
-                  ].map(([l, v]) => (
-                    <div key={l as string}>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginBottom: '3px' }}>{l}</div>
-                      <div style={{ fontSize: '14px', fontWeight: 700 }}>{v}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <ActionBtn><IconDoc />Документы</ActionBtn>
-                  <ActionBtn><IconEdit />Редактировать</ActionBtn>
-                  <ActionBtn variant="danger"><IconTrash />Удалить</ActionBtn>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-// ─── TAB: ДОКУМЕНТЫ ──────────────────────────────────────────────────────────
-function TabDocuments() {
-  const [search, setSearch] = useState('');
-
-  const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
-    signed: { label: 'Подписан', color: '#2d7a47', bg: 'rgba(163,201,168,0.2)' },
-    pending: { label: 'Ожидание', color: '#856404', bg: 'rgba(255,193,7,0.15)' },
-    draft: { label: 'Черновик', color: '#666', bg: 'rgba(0,0,0,0.06)' },
-  };
-
-  const extColors: Record<string, string> = { PDF: '#D88C9A', DOCX: '#7EB5D6', XLSX: '#A3C9A8' };
-
-  const filtered = DOCUMENTS.filter(d =>
-    d.title.toLowerCase().includes(search.toLowerCase()) ||
-    d.party.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <>
-      {/* Счётчики статусов */}
-      <div className="grid-3 mb-20" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        {[
-          { label: 'Подписано', count: DOCUMENTS.filter(d => d.status === 'signed').length, color: '#A3C9A8' },
-          { label: 'Ожидает подписи', count: DOCUMENTS.filter(d => d.status === 'pending').length, color: '#F0C060' },
-          { label: 'Черновики', count: DOCUMENTS.filter(d => d.status === 'draft').length, color: '#B0B0B0' },
-        ].map(stat => (
-          <div key={stat.label} className="card card-sm" style={{ borderTop: `3px solid ${stat.color}` }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, marginBottom: '4px' }}>{stat.count}</div>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 600 }}>{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Поиск */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)' }}>
-            <IconSearch />
-          </div>
-          <input type="text" placeholder="Поиск документов..." value={search} onChange={e => setSearch(e.target.value)} className="search-input" style={{ width: '100%', paddingLeft: '36px' }} />
-        </div>
-        <ActionBtn><IconFilter />Фильтр</ActionBtn>
-        <ActionBtn><IconDownload />Скачать всё</ActionBtn>
-      </div>
-
-      {/* Список документов */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        {filtered.map((doc, i) => {
-          const sm = statusMeta[doc.status];
-          const extColor = extColors[doc.ext] || '#999';
-          return (
-            <div
-              key={doc.id}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '14px',
-                padding: '16px 20px',
-                borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
-              }}
-            >
-              {/* Иконка формата */}
-              <div style={{
-                width: '42px', height: '48px', borderRadius: '8px', background: extColor + '18',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, gap: '2px',
-              }}>
-                <IconDoc />
-                <span style={{ fontSize: '8px', fontWeight: 800, color: extColor }}>{doc.ext}</span>
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {doc.title}
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{doc.party} · {doc.date}</div>
-              </div>
-
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '4px' }}>{formatRub(doc.amount)}</div>
-                <Badge text={sm.label} color={sm.color} bg={sm.bg} />
-              </div>
-
-              <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                <button style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }} title="Скачать">
-                  <IconDownload />
-                </button>
-                <button style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }} title="Ещё">
-                  <IconDots />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Кнопка создать */}
-      <div style={{ marginTop: '12px' }}>
-        <button
-          onClick={() => alert('Создать документ')}
-          style={{
-            width: '100%', border: '1.5px dashed var(--border)', borderRadius: '16px',
-            padding: '16px', background: 'transparent', cursor: 'pointer', color: 'var(--text3)',
-            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            transition: 'all 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)', e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)', e.currentTarget.style.color = 'var(--text3)')}
-        >
-          <IconPlus /> Создать новый документ
-        </button>
-      </div>
-    </>
-  );
-}
-
-// ─── TAB: ОНЛАЙН-ПЛАТЕЖИ ─────────────────────────────────────────────────────
-function TabOnlinePayments() {
-  const [channels, setChannels] = useState(ONLINE_CHANNELS);
-  const [copied, setCopied] = useState(false);
-
-  const toggleChannel = (id: number) => {
-    setChannels(prev => prev.map(c => c.id === id ? { ...c, active: !c.active } : c));
-  };
-
-  const handleCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const IconsMap: Record<string, React.ReactNode> = {
-    link: <IconWorld />,
-    qr: <IconQR />,
-    widget: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>,
-    telegram: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" /></svg>,
-  };
-
-  const total = channels.filter(c => c.active).reduce((s, c) => s + c.amount, 0);
-
-  return (
-    <>
-      {/* Иллюстрация воронки онлайн-платежей */}
-      <div className="card mb-20" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ padding: '24px 28px 20px', background: 'linear-gradient(135deg, rgba(126,181,214,0.08) 0%, transparent 70%)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>
-                Онлайн-оборот за месяц
-              </div>
-              <div style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-1px', marginBottom: '6px' }}>{formatRub(total)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text2)' }}>
-                {channels.filter(c => c.active).reduce((s, c) => s + c.sessions, 0)} сессий оплаты
-              </div>
-            </div>
-
-            {/* SVG-иллюстрация: воронка каналов */}
-            <svg width="140" height="90" viewBox="0 0 140 90" fill="none">
-              {/* Каналы → центр → деньги */}
-              <circle cx="20" cy="20" r="12" fill="rgba(126,181,214,0.15)" stroke="#7EB5D6" strokeWidth="1.5" />
-              <circle cx="20" cy="45" r="12" fill="rgba(163,201,168,0.15)" stroke="#A3C9A8" strokeWidth="1.5" />
-              <circle cx="20" cy="70" r="12" fill="rgba(252,174,145,0.15)" stroke="#FCAE91" strokeWidth="1.5" />
-              <text x="20" y="24" textAnchor="middle" style={{ fontSize: '7px', fill: '#7EB5D6', fontWeight: 700, fontFamily: 'var(--font)' }}>QR</text>
-              <text x="20" y="49" textAnchor="middle" style={{ fontSize: '7px', fill: '#A3C9A8', fontWeight: 700, fontFamily: 'var(--font)' }}>Link</text>
-              <text x="20" y="74" textAnchor="middle" style={{ fontSize: '7px', fill: '#FCAE91', fontWeight: 700, fontFamily: 'var(--font)' }}>Web</text>
-              <line x1="32" y1="20" x2="68" y2="42" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
-              <line x1="32" y1="45" x2="68" y2="45" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
-              <line x1="32" y1="70" x2="68" y2="48" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
-              <circle cx="80" cy="45" r="18" fill="rgba(252,174,145,0.12)" stroke="#FCAE91" strokeWidth="2" />
-              <text x="80" y="42" textAnchor="middle" style={{ fontSize: '8px', fill: '#FCAE91', fontWeight: 800, fontFamily: 'var(--font)' }}>₽</text>
-              <text x="80" y="53" textAnchor="middle" style={{ fontSize: '7px', fill: 'var(--text3)', fontFamily: 'var(--font)' }}>касса</text>
-              <line x1="98" y1="45" x2="126" y2="45" stroke="#FCAE91" strokeWidth="1.5" markerEnd="url()" strokeDasharray="3 3" />
-              <text x="128" y="42" style={{ fontSize: '8px', fill: '#5BAB72', fontWeight: 700, fontFamily: 'var(--font)' }}>✓</text>
-            </svg>
-          </div>
-        </div>
-
-        {/* Ссылка для оплаты */}
-        <div style={{ padding: '14px 28px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ flex: 1, background: 'var(--bg2)', borderRadius: '8px', padding: '8px 12px', fontSize: '12px', color: 'var(--text3)', fontFamily: 'monospace' }}>
-            pay.velora.studio/p/velora-pilates
-          </div>
-          <ActionBtn onClick={handleCopy} variant={copied ? 'primary' : 'ghost'}>
-            {copied ? <><IconCheck /> Скопировано</> : <>Копировать ссылку</>}
-          </ActionBtn>
-        </div>
-      </div>
-
-      {/* Каналы */}
-      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '12px' }}>
-        Каналы приёма платежей
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {channels.map(ch => (
-          <div
-            key={ch.id}
-            className="card card-sm"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '14px',
-              opacity: ch.active ? 1 : 0.5, transition: 'opacity 0.2s',
-            }}
-          >
-            <div style={{
-              width: '42px', height: '42px', borderRadius: '10px', flexShrink: 0,
-              background: ch.active ? 'rgba(252,174,145,0.15)' : 'rgba(0,0,0,0.04)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: ch.active ? 'var(--accent)' : 'var(--text3)',
-            }}>
-              {IconsMap[ch.icon]}
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '2px' }}>{ch.name}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{ch.desc}</div>
-            </div>
-
-            {ch.active && (
-              <div style={{ textAlign: 'right', marginRight: '12px' }}>
-                <div style={{ fontSize: '14px', fontWeight: 700 }}>{formatRub(ch.amount)}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>{ch.sessions} сессий</div>
-              </div>
-            )}
-
-            {/* Тоггл */}
-            <div
-              onClick={() => toggleChannel(ch.id)}
-              style={{
-                width: '44px', height: '24px', borderRadius: '12px', flexShrink: 0,
-                background: ch.active ? 'var(--accent)' : 'var(--border)',
-                position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
-              }}
-            >
-              <div style={{
-                position: 'absolute', top: '3px',
-                left: ch.active ? '22px' : '3px',
-                width: '18px', height: '18px', borderRadius: '50%',
-                background: 'white', transition: 'left 0.2s',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-              }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
 // ─── TAB: МЕТОДЫ ОПЛАТЫ ──────────────────────────────────────────────────────
-function TabPaymentMethods() {
-  const [methods, setMethods] = useState(PAYMENT_METHODS);
+function TabPaymentMethods({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
+  const [methods, setMethods] = useState(PAYMENT_METHODS_DATA);
 
-  const toggle = (id: number) => setMethods(prev => prev.map(m => m.id === id ? { ...m, enabled: !m.enabled } : m));
-
-  const IconsMap: Record<string, React.ReactNode> = {
-    card: <IconCreditCard />,
-    cash: <IconCash />,
-    qr: <IconQR />,
-    nfc: <IconPhone />,
-    bnpl: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <rect x="1" y="4" width="22" height="16" rx="2" />
-        <path d="M8 10h2l2 4 2-6 2 4" />
-      </svg>
-    ),
+  const toggle = (id: number) => {
+    setMethods(prev => prev.map(m => m.id === id ? { ...m, enabled: !m.enabled } : m));
+    showToast('Настройка сохранена', 'success');
   };
+
+  const icons: Record<string, React.ReactNode> = {
+    card: <Ico.Card />, cash: <Ico.Cash />, qr: <Ico.QR />, nfc: <Ico.Phone />,
+    bnpl: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M8 10h2l2 4 2-6 2 4"/></svg>,
+  };
+
+  const totalTx = methods.filter(m => m.enabled).reduce((s, m) => s + m.transactions, 0);
 
   return (
     <>
-      {/* Статистика */}
-      <div className="grid-3 mb-20" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        {[
-          { label: 'Методов активно', val: methods.filter(m => m.enabled).length + ' из ' + methods.length },
-          { label: 'Транзакций за месяц', val: methods.reduce((s, m) => s + m.transactions, 0).toLocaleString('ru-RU') },
-          { label: 'Средняя комиссия', val: '1.2%' },
-        ].map(s => (
-          <div key={s.label} className="card card-sm">
-            <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600, marginBottom: '6px' }}>{s.label}</div>
-            <div style={{ fontSize: '24px', fontWeight: 800 }}>{s.val}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Иллюстрация: распределение по методам */}
-      <div className="card mb-20" style={{ padding: '20px 24px' }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>Распределение транзакций</div>
-        <div style={{ display: 'flex', gap: '0', height: '10px', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px' }}>
-          {methods.filter(m => m.transactions > 0).map((m, i) => {
-            const total = methods.reduce((s, x) => s + x.transactions, 0);
-            const pct = (m.transactions / total) * 100;
-            const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A', '#B0B8C8'];
-            return <div key={m.id} style={{ width: `${pct}%`, background: colors[i % colors.length], transition: 'width 0.4s' }} />;
-          })}
+      {/* Итог */}
+      <div className="card card-sm" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.06) 0%, transparent 60%)' }}>
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Активных методов</div>
+          <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px' }}>{methods.filter(m => m.enabled).length}</div>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-          {methods.filter(m => m.transactions > 0).map((m, i) => {
-            const total = methods.reduce((s, x) => s + x.transactions, 0);
-            const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A', '#B0B8C8'];
-            return (
-              <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text2)' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: colors[i % colors.length] }} />
-                {m.name.split(' ')[0]} — {m.transactions} ({Math.round(m.transactions / total * 100)}%)
-              </div>
-            );
-          })}
+        <div style={{ width: '1px', height: '40px', background: 'var(--border)' }} />
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Транзакций за месяц</div>
+          <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px' }}>{totalTx}</div>
         </div>
       </div>
 
-      {/* Список методов */}
+      {/* Методы */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {methods.map(m => (
-          <div
-            key={m.id}
-            className="card card-sm"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '14px',
-              opacity: m.enabled ? 1 : 0.5, transition: 'opacity 0.2s',
-            }}
-          >
-            <div style={{
-              width: '42px', height: '42px', borderRadius: '10px', flexShrink: 0,
-              background: m.enabled ? 'rgba(252,174,145,0.15)' : 'rgba(0,0,0,0.04)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: m.enabled ? 'var(--accent)' : 'var(--text3)',
-            }}>
-              {IconsMap[m.icon]}
+          <div key={m.id} className="card card-sm" style={{ display: 'flex', alignItems: 'center', gap: '14px', opacity: m.enabled ? 1 : 0.55, transition: 'all 0.2s' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0, background: m.enabled ? 'rgba(252,174,145,0.15)' : 'rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: m.enabled ? 'var(--accent)' : 'var(--text3)', transition: 'all 0.2s' }}>
+              {icons[m.icon]}
             </div>
-
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '2px' }}>{m.name}</div>
               <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{m.desc}</div>
             </div>
-
-            <div style={{ textAlign: 'center', flexShrink: 0 }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text2)' }}>{m.commision}</div>
-              <div style={{ fontSize: '10px', color: 'var(--text3)' }}>комиссия</div>
+            <div style={{ textAlign: 'right', marginRight: '12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text2)', marginBottom: '2px' }}>Комиссия: {m.commission}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{m.transactions} транзакций</div>
             </div>
-
-            <div style={{ textAlign: 'center', flexShrink: 0, marginLeft: '8px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700 }}>{m.transactions}</div>
-              <div style={{ fontSize: '10px', color: 'var(--text3)' }}>операций</div>
-            </div>
-
-            <div
-              onClick={() => toggle(m.id)}
-              style={{
-                width: '44px', height: '24px', borderRadius: '12px', flexShrink: 0,
-                background: m.enabled ? 'var(--accent)' : 'var(--border)',
-                position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
-              }}
-            >
-              <div style={{
-                position: 'absolute', top: '3px',
-                left: m.enabled ? '22px' : '3px',
-                width: '18px', height: '18px', borderRadius: '50%',
-                background: 'white', transition: 'left 0.2s',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-              }} />
-            </div>
+            <Toggle on={m.enabled} onChange={() => toggle(m.id)} />
           </div>
         ))}
       </div>
@@ -999,121 +1643,82 @@ function TabPaymentMethods() {
 }
 
 // ─── TAB: ОТЧЁТЫ ─────────────────────────────────────────────────────────────
-function TabReports() {
+function TabReports({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
   const [period, setPeriod] = useState('Месяц');
-
-  const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'];
-  const income = [420000, 510000, 480000, 620000, 700000, 760000];
-  const expense = [210000, 240000, 220000, 290000, 310000, 330000];
-  const maxVal = Math.max(...income);
-
-  const cats = [
-    { label: 'Абонементы', val: 340000, pct: 44, color: '#FCAE91' },
-    { label: 'Услуги', val: 220000, pct: 29, color: '#A3C9A8' },
-    { label: 'Сертификаты', val: 100000, pct: 13, color: '#7EB5D6' },
-    { label: 'Аренда', val: 60000, pct: 8, color: '#D88C9A' },
-    { label: 'Прочее', val: 40000, pct: 6, color: '#B0B8C8' },
+  const bars = [
+    { label: 'Пн', income: 45000, expense: 12000 },
+    { label: 'Вт', income: 38000, expense: 8000 },
+    { label: 'Ср', income: 72000, expense: 25000 },
+    { label: 'Чт', income: 55000, expense: 18000 },
+    { label: 'Пт', income: 89000, expense: 15000 },
+    { label: 'Сб', income: 120000, expense: 30000 },
+    { label: 'Вс', income: 63000, expense: 10000 },
   ];
+  const maxVal = Math.max(...bars.map(b => b.income));
 
   return (
     <>
-      {/* Период */}
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
-        {REPORT_PERIODS.map(p => (
-          <button
-            key={p}
-            onClick={() => setPeriod(p)}
-            style={{
-              padding: '7px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
-              border: '1px solid', cursor: 'pointer', transition: 'all 0.15s',
-              borderColor: period === p ? 'var(--accent)' : 'var(--border)',
-              background: period === p ? 'var(--accent)' : 'transparent',
-              color: period === p ? '#fff' : 'var(--text2)',
-            }}
-          >
-            {p}
-          </button>
-        ))}
-        <div style={{ marginLeft: 'auto' }}>
-          <ActionBtn><IconDownload />Скачать отчёт</ActionBtn>
-        </div>
-      </div>
-
-      {/* Сводные KPI */}
-      <div className="grid-3 mb-20" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      {/* Метрики */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
         {[
-          { label: 'ВЫРУЧКА', val: '₽760 000', delta: '+8.6%', good: true },
-          { label: 'РАСХОДЫ', val: '₽330 000', delta: '+6.4%', good: false },
-          { label: 'ПРИБЫЛЬ', val: '₽430 000', delta: '+10.3%', good: true },
-          { label: 'МАРЖА', val: '56.6%', delta: '+1.2 п.п.', good: true },
-        ].map(kpi => (
-          <div key={kpi.label} className="card card-sm">
-            <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '6px' }}>{kpi.label}</div>
-            <div style={{ fontSize: '22px', fontWeight: 800, marginBottom: '4px' }}>{kpi.val}</div>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: kpi.good ? '#5BAB72' : '#D88C9A' }}>{kpi.delta} vs пред.</div>
+          { label: 'Выручка', value: '₽482 000', delta: '+12%', good: true },
+          { label: 'Расходы', value: '₽118 000', delta: '-4%', good: true },
+          { label: 'Прибыль', value: '₽364 000', delta: '+18%', good: true },
+          { label: 'Маржа', value: '75.5%', delta: '+3.2pp', good: true },
+        ].map(m => (
+          <div key={m.label} className="card card-sm">
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{m.label}</div>
+            <div style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '4px' }}>{m.value}</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A' }}>{m.delta}</div>
           </div>
         ))}
       </div>
 
-      {/* Бар-чарт доходы vs расходы */}
-      <div className="card mb-20" style={{ padding: '24px 28px' }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '20px' }}>Динамика доходов и расходов</div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px', height: '140px' }}>
-          {months.map((m, i) => (
-            <div key={m} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', height: '100%' }}>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '3px', width: '100%' }}>
-                {/* Доход */}
-                <div style={{
-                  flex: 1, background: 'rgba(163,201,168,0.6)',
-                  height: `${(income[i] / maxVal) * 100}%`,
-                  borderRadius: '4px 4px 0 0', minHeight: '4px',
-                  transition: 'height 0.4s',
-                  position: 'relative',
-                }}
-                  title={`Доход: ${formatRub(income[i])}`}
-                />
-                {/* Расход */}
-                <div style={{
-                  flex: 1, background: 'rgba(216,140,154,0.5)',
-                  height: `${(expense[i] / maxVal) * 100}%`,
-                  borderRadius: '4px 4px 0 0', minHeight: '4px',
-                  transition: 'height 0.4s',
-                }}
-                  title={`Расход: ${formatRub(expense[i])}`}
-                />
-              </div>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600 }}>{m}</div>
-            </div>
-          ))}
+      {/* График */}
+      <div className="card" style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <div style={{ fontSize: '15px', fontWeight: 700 }}>Доходы и расходы</div>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '3px' }}>
+            {['Неделя', 'Месяц', 'Квартал', 'Год'].map(p => (
+              <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'var(--font)', background: period === p ? 'var(--card)' : 'transparent', color: period === p ? 'var(--text)' : 'var(--text3)', boxShadow: period === p ? 'var(--dash-shadow)' : 'none', transition: 'all 0.15s' }}>{p}</button>
+            ))}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
-          {[['Доходы', 'rgba(163,201,168,0.7)'], ['Расходы', 'rgba(216,140,154,0.6)']].map(([label, color]) => (
-            <div key={label as string} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text2)' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: color as string }} />
-              {label}
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Структура выручки */}
-      <div className="card" style={{ padding: '24px 28px' }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>Структура выручки</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {cats.map(cat => (
-            <div key={cat.label}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 600 }}>{cat.label}</span>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--text3)' }}>{cat.pct}%</span>
-                  <span style={{ fontSize: '13px', fontWeight: 700 }}>{formatRub(cat.val)}</span>
-                </div>
+        {/* Бары */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', height: '180px' }}>
+          {bars.map(b => (
+            <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', height: '100%', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', width: '100%', height: '100%' }}>
+                <div
+                  title={`Доход: ${fmt(b.income)}`}
+                  style={{ flex: 1, height: `${(b.income / maxVal) * 100}%`, background: 'linear-gradient(180deg, rgba(163,201,168,0.9) 0%, rgba(163,201,168,0.6) 100%)', borderRadius: '4px 4px 0 0', transition: 'height 0.4s', cursor: 'pointer', minHeight: '4px' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                />
+                <div
+                  title={`Расход: ${fmt(b.expense)}`}
+                  style={{ flex: 1, height: `${(b.expense / maxVal) * 100}%`, background: 'linear-gradient(180deg, rgba(216,140,154,0.9) 0%, rgba(216,140,154,0.6) 100%)', borderRadius: '4px 4px 0 0', transition: 'height 0.4s', cursor: 'pointer', minHeight: '4px' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                />
               </div>
-              <div style={{ height: '6px', background: 'var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-                <div style={{ width: `${cat.pct}%`, height: '100%', background: cat.color, borderRadius: '10px', transition: 'width 0.5s' }} />
-              </div>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginTop: '6px' }}>{b.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* Легенда */}
+        <div style={{ display: 'flex', gap: '16px', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+          {[{ c: '#A3C9A8', l: 'Доходы' }, { c: '#D88C9A', l: 'Расходы' }].map(l => (
+            <div key={l.l} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: 'var(--text2)' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: l.c }} />
+              {l.l}
+            </div>
+          ))}
+          <div style={{ marginLeft: 'auto' }}>
+            <Btn size="sm" onClick={() => showToast('Отчёт экспортируется...', 'info')}><Ico.Download />Экспорт PDF</Btn>
+          </div>
         </div>
       </div>
     </>
@@ -1121,116 +1726,107 @@ function TabReports() {
 }
 
 // ─── TAB: ЦЕЛИ ───────────────────────────────────────────────────────────────
-function TabGoals() {
-  const [goals, setGoals] = useState(GOALS);
+function TabGoals({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
+  const [goals, setGoals] = useState(GOALS_DATA);
   const [addOpen, setAddOpen] = useState(false);
+  const [form, setForm] = useState({ title: '', target: '', deadline: '', category: '', priority: 'medium' });
+  const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
 
-  const priorityMeta: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    high: { label: 'Высокий', color: '#D88C9A', icon: <IconFlag /> },
-    medium: { label: 'Средний', color: '#F0C060', icon: <IconTrendUp /> },
-    low: { label: 'Низкий', color: '#A3C9A8', icon: <IconShield /> },
+  const handleAdd = () => {
+    if (!form.title.trim() || !form.target) { showToast('Заполните обязательные поля', 'error'); return; }
+    const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
+    setGoals(prev => [...prev, {
+      id: Date.now(), title: form.title, target: parseInt(form.target),
+      current: 0, deadline: form.deadline || '31 дек 2025',
+      category: form.category || 'Прочее', color: colors[prev.length % colors.length],
+      priority: form.priority,
+    }]);
+    setForm({ title: '', target: '', deadline: '', category: '', priority: 'medium' });
+    setAddOpen(false);
+    showToast('Цель создана', 'success');
   };
+
+  const confirmDelete = () => {
+    setGoals(prev => prev.filter(g => g.id !== confirm.id));
+    setConfirm({ open: false, id: null });
+    showToast('Цель удалена', 'success');
+  };
+
+  const priorityColors: Record<string, string> = { high: '#D88C9A', medium: '#F0C060', low: '#A3C9A8' };
+  const priorityLabels: Record<string, string> = { high: 'Высокий', medium: 'Средний', low: 'Низкий' };
 
   return (
     <>
-      {/* Hero: общий прогресс */}
-      <div className="card mb-20" style={{ padding: '28px 32px', background: 'linear-gradient(135deg, rgba(252,174,145,0.08) 0%, rgba(163,201,168,0.06) 100%)', position: 'relative', overflow: 'hidden' }}>
-        {/* Декоративная цель-иллюстрация */}
-        <svg width="100" height="100" viewBox="0 0 100 100" style={{ position: 'absolute', right: '32px', top: '50%', transform: 'translateY(-50%)', opacity: 0.9 }}>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(252,174,145,0.15)" strokeWidth="2" />
-          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(252,174,145,0.2)" strokeWidth="2" />
-          <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(252,174,145,0.3)" strokeWidth="2" />
-          <circle cx="50" cy="50" r="14" fill="none" stroke="rgba(252,174,145,0.5)" strokeWidth="2" />
-          <circle cx="50" cy="50" r="5" fill="#FCAE91" />
-          {/* Стрела */}
-          <line x1="75" y1="25" x2="54" y2="48" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round" />
-          <polygon points="75,25 68,30 79,32" fill="#FCAE91" />
-        </svg>
-
-        <div style={{ maxWidth: '65%' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
-            Финансовые цели бизнеса
+      {/* Сводка целей */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+        {[
+          { label: 'Активных целей', value: goals.filter(g => g.current < g.target).length, color: 'var(--accent)' },
+          { label: 'Выполнено', value: goals.filter(g => g.current >= g.target).length, color: '#5BAB72' },
+          { label: 'Общий прогресс', value: `${Math.round(goals.reduce((s, g) => s + Math.min(g.current / g.target * 100, 100), 0) / goals.length)}%`, color: '#7EB5D6' },
+        ].map(s => (
+          <div key={s.label} className="card card-sm">
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{s.label}</div>
+            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '8px' }}>
-            {goals.filter(g => {
-              const pct = Math.round((g.current / g.target) * 100);
-              return pct >= 100;
-            }).length} из {goals.length}
-          </div>
-          <div style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6 }}>
-            целей достигнуто. Отслеживайте прогресс, ставьте амбициозные планки и контролируйте движение к ним каждый день.
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Список целей */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
         {goals.map(g => {
-          const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+          const pct = Math.min(Math.round(g.current / g.target * 100), 100);
           const done = pct >= 100;
-          const pm = priorityMeta[g.priority];
-
+          const pcol = priorityColors[g.priority] || '#999';
           return (
-            <div key={g.id} className="card" style={{ padding: '20px 24px', borderLeft: `3px solid ${g.color}` }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
-                {/* Иконка цели */}
-                <div style={{
-                  width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
-                  background: g.color + '22',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: g.color,
-                }}>
-                  {done ? <IconCheck /> : <IconTarget />}
-                </div>
-
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px', flexWrap: 'wrap' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 700 }}>{g.title}</div>
-                    {done && <Badge text="Выполнено ✓" color="#2d7a47" bg="rgba(163,201,168,0.2)" />}
-                    <Badge text={pm.label} color={pm.color} bg={pm.color + '18'} />
-                    <Badge text={g.category} color="var(--text3)" bg="var(--bg2)" />
+            <div key={g.id} className="card" style={{ border: done ? '1px solid rgba(163,201,168,0.4)' : '1px solid var(--border)', background: done ? 'rgba(163,201,168,0.03)' : 'var(--card)', transition: 'all 0.2s' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                    {done && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10px', fontWeight: 700, color: '#2d7a47', background: 'rgba(163,201,168,0.2)', padding: '2px 8px', borderRadius: '10px' }}>
+                        <Ico.Check /> Выполнено
+                      </span>
+                    )}
+                    <Badge text={g.category} color={pcol} bg={pcol + '18'} />
+                    <Badge text={priorityLabels[g.priority]} color={pcol} bg={pcol + '12'} />
                   </div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', marginBottom: '2px' }}>{g.title}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text3)' }}>Срок: {g.deadline}</div>
                 </div>
 
-                {/* Процент */}
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>
-                    {pct}%
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
+                  <button
+                    onClick={() => setConfirm({ open: true, id: g.id })}
+                    style={{ width: '28px', height: '28px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D88C9A'; e.currentTarget.style.color = '#D88C9A'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
+                  >
+                    <Ico.Trash />
+                  </button>
                 </div>
               </div>
 
               {/* Прогресс-бар */}
-              <div style={{ position: 'relative', marginBottom: '10px' }}>
-                <div style={{ height: '8px', background: 'var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-                  <div style={{
-                    width: `${pct}%`, height: '100%',
-                    background: done ? '#A3C9A8' : g.color,
-                    borderRadius: '10px',
-                    transition: 'width 0.6s ease',
-                    opacity: 0.85,
-                  }} />
-                </div>
+              <div style={{ height: '8px', background: 'var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '10px' }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: done ? '#A3C9A8' : g.color, borderRadius: '10px', transition: 'width 0.7s cubic-bezier(0.34,1.2,0.64,1)' }} />
               </div>
 
               {/* Суммы */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: '12px', color: 'var(--text2)' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--text)' }}>
-                    {g.category === 'Оптимизация' ? `${g.current}%` : formatRub(g.current)}
+                  <span style={{ fontWeight: 800, color: 'var(--text)' }}>
+                    {g.category === 'Оптимизация' ? `${g.current}%` : fmt(g.current)}
                   </span>
                   {' '}из{' '}
                   <span style={{ color: 'var(--text3)' }}>
-                    {g.category === 'Оптимизация' ? `${g.target}%` : formatRub(g.target)}
+                    {g.category === 'Оптимизация' ? `${g.target}%` : fmt(g.target)}
                   </span>
                 </div>
                 {!done && (
                   <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
                     Осталось: <span style={{ fontWeight: 700, color: g.color }}>
-                      {g.category === 'Оптимизация'
-                        ? `${g.target - g.current}%`
-                        : formatRub(g.target - g.current)}
+                      {g.category === 'Оптимизация' ? `${g.target - g.current}%` : fmt(g.target - g.current)}
                     </span>
                   </div>
                 )}
@@ -1240,43 +1836,50 @@ function TabGoals() {
         })}
       </div>
 
-      {/* Добавить цель */}
+      {/* Форма добавления */}
       {addOpen ? (
-        <div className="card" style={{ border: '1.5px solid var(--accent)', background: 'rgba(252,174,145,0.04)' }}>
+        <div className="card" style={{ border: '1.5px solid var(--accent)', background: 'rgba(252,174,145,0.03)' }}>
           <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <IconTarget /> Новая финансовая цель
+            <Ico.Target /> Новая финансовая цель
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {[
-              { label: 'Название цели', placeholder: 'Например: Резервный фонд' },
-              { label: 'Целевая сумма', placeholder: '₽ 500 000' },
-              { label: 'Дедлайн', placeholder: '31.12.2025' },
-              { label: 'Категория', placeholder: 'Резервы' },
+              { label: 'Название цели', key: 'title', placeholder: 'Резервный фонд' },
+              { label: 'Целевая сумма', key: 'target', placeholder: '500000' },
+              { label: 'Дедлайн', key: 'deadline', placeholder: '31.12.2025' },
+              { label: 'Категория', key: 'category', placeholder: 'Резервы' },
             ].map(f => (
-              <div key={f.label}>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginBottom: '6px' }}>{f.label}</div>
-                <input className="search-input" style={{ width: '100%' }} placeholder={f.placeholder} />
+              <div key={f.key}>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{f.label}</div>
+                <input className="search-input" style={{ width: '100%' }} placeholder={f.placeholder}
+                  value={form[f.key as keyof typeof form]}
+                  onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                />
               </div>
             ))}
           </div>
-          {/* Приоритет */}
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginBottom: '8px' }}>ПРИОРИТЕТ</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Приоритет</div>
             <div style={{ display: 'flex', gap: '8px' }}>
-              {[
-                { val: 'high', label: 'Высокий', color: '#D88C9A' },
-                { val: 'medium', label: 'Средний', color: '#F0C060' },
-                { val: 'low', label: 'Низкий', color: '#A3C9A8' },
-              ].map(p => (
-                <button key={p.val} style={{ padding: '6px 14px', borderRadius: '8px', border: `1px solid ${p.color}44`, background: p.color + '18', color: p.color, fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
-                  {p.label}
-                </button>
-              ))}
+              {(['high', 'medium', 'low'] as const).map(p => {
+                const pc = priorityColors[p];
+                const isActive = form.priority === p;
+                return (
+                  <button key={p} onClick={() => setForm(prev => ({ ...prev, priority: p }))} style={{
+                    padding: '6px 14px', borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--font)',
+                    border: `1.5px solid ${isActive ? pc : pc + '44'}`,
+                    background: isActive ? pc + '22' : 'transparent',
+                    color: pc, fontSize: '12px', fontWeight: 700, transition: 'all 0.15s',
+                  }}>
+                    {priorityLabels[p]}
+                  </button>
+                );
+              })}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <ActionBtn variant="primary" onClick={() => setAddOpen(false)}>Создать цель</ActionBtn>
-            <ActionBtn onClick={() => setAddOpen(false)}>Отмена</ActionBtn>
+            <Btn v="primary" onClick={handleAdd}>Создать цель</Btn>
+            <Btn onClick={() => setAddOpen(false)}>Отмена</Btn>
           </div>
         </div>
       ) : (
@@ -1286,68 +1889,98 @@ function TabGoals() {
             width: '100%', border: '1.5px dashed var(--border)', borderRadius: '16px',
             padding: '18px', background: 'transparent', cursor: 'pointer', color: 'var(--text3)',
             fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            transition: 'all 0.15s',
+            transition: 'all 0.18s', fontFamily: 'var(--font)',
           }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)', e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)', e.currentTarget.style.color = 'var(--text3)')}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(252,174,145,0.04)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.background = 'transparent'; }}
         >
-          <IconPlus />Добавить финансовую цель
+          <Ico.Plus /> Добавить финансовую цель
         </button>
       )}
+
+      <ConfirmModal
+        open={confirm.open}
+        title="Удалить цель?"
+        text="Прогресс по этой цели будет утерян. Действие нельзя отменить."
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirm({ open: false, id: null })}
+        danger
+      />
     </>
   );
 }
 
+// ─── TAB ИКОНКИ ───────────────────────────────────────────────────────────────
+const TAB_ICONS: Record<Tab, React.ReactNode> = {
+  'Счета и кассы': <Ico.Dollar />,
+  'Операции': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  'Контрагенты': <Ico.Building />,
+  'Документы': <Ico.Doc />,
+  'Онлайн-платежи': <Ico.World />,
+  'Методы оплаты': <Ico.Card />,
+  'Отчёты': <Ico.Bar />,
+  'Цели': <Ico.Target />,
+};
+
 // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Finances() {
   const [activeTab, setActiveTab] = useState<Tab>('Счета и кассы');
-
-  const TAB_ICONS: Record<Tab, React.ReactNode> = {
-    'Счета и кассы': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>,
-    'Операции': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>,
-    'Контрагенты': <IconBuilding />,
-    'Документы': <IconDoc />,
-    'Онлайн-платежи': <IconWorld />,
-    'Методы оплаты': <IconCreditCard />,
-    'Отчёты': <IconBarChart />,
-    'Цели': <IconTarget />,
-  };
+  const [operationsSearch, setOperationsSearch] = useState(''); // Общий стейт для сквозного фильтра
+  const { toast, show: showToast } = useToast();
 
   const renderTab = () => {
+    const props = { showToast };
     switch (activeTab) {
-      case 'Счета и кассы': return <TabAccounts />;
-      case 'Операции': return <TabOperations />;
-      case 'Контрагенты': return <TabCounterparties />;
-      case 'Документы': return <TabDocuments />;
-      case 'Онлайн-платежи': return <TabOnlinePayments />;
-      case 'Методы оплаты': return <TabPaymentMethods />;
-      case 'Отчёты': return <TabReports />;
-      case 'Цели': return <TabGoals />;
+      case 'Счета и кассы': 
+        return <TabAccounts 
+          showToast={showToast} 
+          onNavigateToOperations={(name) => {
+            setOperationsSearch(name); // Записываем имя счёта
+            setActiveTab('Операции'); // Переключаем вкладку
+          }} 
+        />;
+      case 'Операции': 
+        return <TabOperations showToast={showToast} initialSearch={operationsSearch} />;
+      case 'Контрагенты': return <TabCounterparties {...props} />;
+      case 'Документы': return <TabDocuments {...props} />;
+      case 'Онлайн-платежи': return <TabOnlinePayments {...props} />;
+      case 'Методы оплаты': return <TabPaymentMethods {...props} />;
+      case 'Отчёты': return <TabReports {...props} />;
+      case 'Цели': return <TabGoals {...props} />;
       default: return null;
     }
   };
 
   return (
     <>
-      {/* Табы */}
+      {/* Вкладки */}
       <div className="finance-tabs-big">
-        {FINANCE_TABS.map((t) => (
+        {FINANCE_TABS.map(t => (
           <div
             key={t}
             className={`ftab ${activeTab === t ? 'active' : ''}`}
-            onClick={() => setActiveTab(t)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            onClick={() => {
+              // Если пользователь кликает на вкладку Операции вручную — сбрасываем старый фильтр счетов
+              if (t === 'Операции' && activeTab !== 'Операции') {
+                setOperationsSearch('');
+              }
+              setActiveTab(t);
+            }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
           >
-            <span style={{ opacity: activeTab === t ? 1 : 0.5 }}>{TAB_ICONS[t]}</span>
+            <span style={{ opacity: activeTab === t ? 1 : 0.5, transition: 'opacity 0.18s' }}>{TAB_ICONS[t]}</span>
             {t}
           </div>
         ))}
       </div>
 
-      {/* Контент */}
-      <div key={activeTab}>
+      {/* Контент с анимацией смены таба */}
+      <div key={activeTab} style={{ animation: 'fadeSlide 0.22s ease both' }}>
         {renderTab()}
       </div>
+
+      {/* Toast */}
+      <Toast msg={toast.msg} type={toast.type} visible={toast.visible} />
     </>
   );
 }
