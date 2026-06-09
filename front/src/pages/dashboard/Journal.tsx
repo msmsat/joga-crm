@@ -419,6 +419,7 @@ const STYLES = `
     cursor: pointer;
     position: relative;
     transition: background 0.15s;
+    overflow: visible;
   }
   .j-empty-slot::after {
     content: '';
@@ -912,7 +913,7 @@ export default function Journal() {
 
   // ── Рендер карточки записи ──
   const renderBookingCard = (b: Booking, colIdx: number) => {
-    const top = b.timeStart * 64 + 4;
+    const top = 4;
     const height = (b.timeEnd - b.timeStart) * 64 - 8;
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
@@ -1145,8 +1146,9 @@ export default function Journal() {
                           key={ci}
                           className="j-empty-slot"
                           style={{ borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', position: 'relative' }}
-                          onClick={() => {
+                          onClick={(e) => {
                             if (!booking) {
+                              e.stopPropagation();
                               const trainerIdx = isTrainerMode ? trainer!.id : 0;
                               openNewSlot(trainerIdx, ti);
                             }
@@ -1342,7 +1344,7 @@ export default function Journal() {
           </div>
 
           <div className="bp-actions">
-            <button className="bp-btn primary" onClick={() => openAddClient(popupBooking)}>
+            <button className="bp-btn primary" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
               <Icons.UserPlus /> Добавить
             </button>
             <button className="bp-btn ghost">

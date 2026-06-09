@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import AddStaffModal from '../../components/modals/AddStaffModal';
+import EditStaffModal from '../../components/modals/EditStaffModal';
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 const icons = {
@@ -158,6 +160,70 @@ const icons = {
     </svg>
   ),
 };
+
+// ─── PREMIUM BUTTON (Стильная кнопка сохранения) ──────────────────────────────
+function PremiumButton({ 
+  onClick, disabled, isSaved, text, savedText = "Сохранено", style 
+}: { 
+  onClick: () => void; disabled?: boolean; isSaved: boolean; text: string; savedText?: string; style?: React.CSSProperties 
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+
+  // 🔥 Люксовый подход: вместо зеленого используем Ghost-стиль с цветом бренда
+  const bg = isSaved ? "rgba(252,174,145,0.12)" : "var(--peach)";
+  const border = isSaved ? "1.5px solid rgba(252,174,145,0.3)" : "1.5px solid transparent";
+  const textColor = isSaved ? "var(--peach)" : "white";
+
+  const shadow = isSaved 
+    ? "none" 
+    : pressed 
+    ? "0 2px 8px rgba(252,174,145,0.3)" 
+    : hovered 
+    ? "0 8px 24px rgba(252,174,145,0.45)" 
+    : "0 4px 16px rgba(252,174,145,0.35)";
+
+  const transform = isSaved 
+    ? "scale(0.98)" 
+    : pressed 
+    ? "scale(0.96) translateY(0)" 
+    : hovered 
+    ? "scale(1) translateY(-2px)" 
+    : "scale(1) translateY(0)";
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled || isSaved}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      style={{
+        display: "flex", alignItems: "center", gap: "7px", justifyContent: "center",
+        padding: "9px 22px", borderRadius: "10px",
+        background: bg,
+        border: border,
+        color: textColor,
+        fontSize: "13px", fontWeight: 700,
+        cursor: (disabled || isSaved) ? "default" : "pointer",
+        transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+        transform: transform,
+        boxShadow: shadow,
+        ...style
+      }}
+    >
+      {isSaved ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "csCheckPop 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {savedText}
+        </div>
+      ) : text}
+    </button>
+  );
+}
 
 // ─── TOAST NOTIFICATION ───────────────────────────────────────────────────────
 function Toast({ message }: { message: string | null }) {
@@ -339,28 +405,33 @@ function DarkSelectRow({ label, value, options, onChange }: { label: string; val
 function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
     <button
-      onClick={onChange}
+      onClick={(e) => {
+        e.stopPropagation(); // 🔥 УБИВАЕТ ДВОЙНОЙ КЛИК (блокирует всплытие события к родителю)
+        e.preventDefault();
+        onChange();
+      }}
       style={{
         width: "44px", height: "24px",
-        background: checked ? "var(--peach)" : "var(--border-strong)",
+        background: checked ? "var(--peach)" : "rgba(160, 160, 165, 0.45)",
         borderRadius: "100px",
         border: "none",
         cursor: "pointer",
         position: "relative",
-        transition: "background 0.25s cubic-bezier(.4,0,.2,1)",
+        transition: "background 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
         flexShrink: 0,
         outline: "none",
+        boxShadow: checked ? "none" : "inset 0 2px 4px rgba(0,0,0,0.06)",
       }}
     >
       <div style={{
         position: "absolute",
-        top: "3px",
-        left: checked ? "23px" : "3px",
-        width: "18px", height: "18px",
+        top: "2px",
+        left: checked ? "22px" : "2px",
+        width: "20px", height: "20px",
         background: "white",
         borderRadius: "50%",
-        transition: "left 0.25s cubic-bezier(.4,0,.2,1)",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
+        transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1)",
       }} />
     </button>
   );
@@ -464,44 +535,33 @@ function SettingsRow({
 // ─── DAY HOURS ROW ────────────────────────────────────────────────────────────
 function DayHoursRow({ day, from, to, active: initActive }: { day: string; from: string; to: string; active: boolean }) {
   const [active, setActive] = useState(initActive);
+  
+  const [fromTime, setFromTime] = useState(from);
+  const [toTime, setToTime] = useState(to);
+
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: "16px",
       padding: "12px 16px", borderRadius: "10px",
-      background: active ? "rgba(252,174,145,0.05)" : "rgba(0,0,0,0.02)",
-      opacity: active ? 1 : 0.5,
+      background: active ? "rgba(252,174,145,0.04)" : "transparent",
+      border: active ? "1px solid rgba(252,174,145,0.15)" : "1px solid transparent",
       transition: "all 0.2s ease",
     }}>
+      {/* Переключатель всегда остается на 100% видимости! */}
       <Toggle checked={active} onChange={() => setActive(!active)} />
-      <div style={{ width: "80px", fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{day}</div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, opacity: active ? 1 : 0.4 }}>
-        <select
-          defaultValue={from}
-          disabled={!active}
-          style={{
-            padding: "6px 10px", borderRadius: "8px",
-            border: "1.5px solid var(--border)",
-            background: "var(--bg-card)", color: "var(--onyx)",
-            fontSize: "12px", fontWeight: 600, cursor: active ? "pointer" : "default",
-            outline: "none", fontFamily: "inherit",
-          }}
-        >
-          {["07:00","08:00","09:00","10:00"].map(t => <option key={t}>{t}</option>)}
-        </select>
+      
+      {/* А вот текст и время уходят в прозрачность и блокируются от кликов, если день выключен */}
+      <div style={{ 
+        display: "flex", alignItems: "center", gap: "8px", flex: 1, 
+        opacity: active ? 1 : 0.35, 
+        pointerEvents: active ? "auto" : "none",
+        transition: "opacity 0.2s ease"
+      }}>
+        <div style={{ width: "90px", fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{day}</div>
+        
+        <DarkTimeSelect value={fromTime} onChange={setFromTime} disabled={!active} />
         <span style={{ color: "var(--muted)", fontSize: "12px" }}>—</span>
-        <select
-          defaultValue={to}
-          disabled={!active}
-          style={{
-            padding: "6px 10px", borderRadius: "8px",
-            border: "1.5px solid var(--border)",
-            background: "var(--bg-card)", color: "var(--onyx)",
-            fontSize: "12px", fontWeight: 600, cursor: active ? "pointer" : "default",
-            outline: "none", fontFamily: "inherit",
-          }}
-        >
-          {["18:00","19:00","20:00","21:00","22:00"].map(t => <option key={t}>{t}</option>)}
-        </select>
+        <DarkTimeSelect value={toTime} onChange={setToTime} disabled={!active} />
       </div>
     </div>
   );
@@ -658,17 +718,174 @@ function IntegrationIllustration() {
   );
 }
 
+// ─── DARK TIME SELECT (Стильное меню для выбора времени) ──────────────────────
+function DarkTimeSelect({ value, onChange, disabled }: { value: string; onChange: (v: string) => void; disabled: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null); // Реф для контейнера скролла
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // 🔥 МАГИЯ АВТОСКРОЛЛА ПРИ ОТКРЫТИИ
+  useLayoutEffect(() => {
+    if (isOpen && scrollContainerRef.current) {
+      const el = scrollContainerRef.current.querySelector('[data-active="true"]') as HTMLElement;
+      if (el) {
+        const container = scrollContainerRef.current;
+        // Мгновенно выставляем скролл ровно по центру до начала отрисовки анимации
+        container.scrollTop = el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
+      }
+    }
+  }, [isOpen]);
+
+  // Генерируем массив времени от 00:00 до 24:00
+  const times = Array.from({ length: 25 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+
+  return (
+    <div ref={dropdownRef} style={{ position: "relative", userSelect: "none" }}>
+      <div
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        style={{
+          display: "flex", alignItems: "center", gap: "8px",
+          padding: "6px 12px", borderRadius: "8px",
+          border: `1.5px solid ${isOpen ? "var(--peach)" : "var(--border)"}`,
+          background: disabled ? "transparent" : "var(--bg-card)",
+          color: disabled ? "var(--muted)" : "var(--onyx)",
+          fontSize: "12px", fontWeight: 700,
+          cursor: disabled ? "default" : "pointer",
+          transition: "all 0.2s ease",
+          boxShadow: isOpen ? "0 0 0 3px rgba(252,174,145,0.15)" : "none"
+        }}
+      >
+        <span>{value}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+             style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.25s ease", opacity: disabled ? 0.4 : 1, color: isOpen ? "var(--peach)" : "inherit" }}>
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+
+      {isOpen && !disabled && (
+        <div 
+          ref={scrollContainerRef} // Привязываем реф к контейнеру со скроллом
+          style={{
+            position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)",
+            width: "100px", maxHeight: "200px",
+            overflowY: "auto",
+            scrollbarWidth: "none", msOverflowStyle: "none",
+            background: "#111111", border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px", padding: "6px",
+            boxShadow: "0 16px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2)",
+            zIndex: 100,
+            animation: "csPopupIn 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both"
+          }}
+        >
+          <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+          
+          {times.map((time) => (
+            <div
+              key={time}
+              data-active={time === value} // 👈 Добавляем метку для поиска активного элемента
+              onClick={() => { onChange(time); setIsOpen(false); }}
+              style={{
+                display: "flex", justifyContent: "center",
+                padding: "8px", borderRadius: "8px",
+                color: time === value ? "var(--peach)" : "rgba(255, 255, 255, 0.7)",
+                fontSize: "12px", fontWeight: time === value ? 800 : 600,
+                cursor: "pointer", transition: "all 0.15s ease",
+                background: time === value ? "rgba(252, 174, 145, 0.15)" : "transparent"
+              }}
+              onMouseOver={(e) => {
+                if (time !== value) { e.currentTarget.style.background = "rgba(252, 174, 145, 0.08)"; e.currentTarget.style.color = "#FFFFFF"; }
+              }}
+              onMouseOut={(e) => {
+                if (time !== value) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255, 255, 255, 0.7)"; }
+              }}
+            >
+              {time}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN SETTINGS COMPONENT ─────────────────────────────────────────────────
 export default function Settings() {
+  // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА БИЛЛИНГ / ПОДПИСКА ──────────────────────────────────
+  const [billingView, setBillingView] = useState<"dashboard" | "tariffs">("dashboard");
+  const [isAddingCard, setIsAddingCard] = useState(false);
+  const [isManagingSub, setIsManagingSub] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
+  
+  // Стейты для живого ввода банковской карты
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
+  const [cardFocused, setCardFocused] = useState("");
+  // ─── СТЕЙТЫ ДЛЯ МЕНЮ "РОЛИ И ПРАВА" (Теперь Inline) ────────────────────────
+  const [expandedRole, setExpandedRole] = useState<string | null>(null);
+  
+  // База данных прав (оставляем как была)
+  const [permissionsMatrix, setPermissionsMatrix] = useState<Record<string, Record<string, boolean>>>({
+    "Администратор": {
+      createBooking: true, cancelBooking: true, editAllSchedules: true,
+      viewContacts: true, exportDatabase: false, deleteClients: false,
+      viewRevenue: true, issueRefunds: true, editPrices: false,
+      editStudioHours: true, manageIntegrations: false
+    },
+    "Тренер": {
+      createBooking: true, cancelBooking: false, editAllSchedules: false,
+      viewContacts: true, exportDatabase: false, deleteClients: false,
+      viewRevenue: false, issueRefunds: false, editPrices: false,
+      editStudioHours: false, manageIntegrations: false
+    },
+    "Владелец": {
+      createBooking: true, cancelBooking: true, editAllSchedules: true,
+      viewContacts: true, exportDatabase: true, deleteClients: true,
+      viewRevenue: true, issueRefunds: true, editPrices: true,
+      editStudioHours: true, manageIntegrations: true
+    }
+  });
+
+  const handlePermissionToggle = (role: string, permissionKey: string) => {
+    if (role === "Владелец") return;
+    setPermissionsMatrix(prev => ({
+      ...prev, [role]: { ...prev[role], [permissionKey]: !prev[role][permissionKey] }
+    }));
+  };
+
+  // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА "КОМАНДА" ───
+  const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
+  const [isEditStaffOpen, setIsEditStaffOpen] = useState(false);
+  const [activeEditStaff, setActiveEditStaff] = useState<any>(null);
+
+  // Делаем список сотрудников "живым"
+  const [teamData, setTeamData] = useState([
+    { id: "1", name: "Анна Морозова", role: "Владелец", email: "anna@studio.ru", status: "active" as const },
+    { id: "2", name: "Ирина Смирнова", role: "Администратор", email: "irina@studio.ru", status: "active" as const },
+    { id: "3", name: "Мария Козлова", role: "Тренер", email: "maria@studio.ru", status: "active" as const },
+    { id: "4", name: "Светлана Новикова", role: "Тренер", email: "svetlana@studio.ru", status: "warning" as const },
+  ]);
+
   const [activeSection, setActiveSection] = useState("general");
-  const [darkMode, setDarkMode] = useState(false);
+  // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА ВНЕШНИЙ ВИД ───
+  const [themeMode, setThemeMode] = useState<"light" | "dark" | "auto">("light");
+  const [accentColor, setAccentColor] = useState("#FCAE91"); // Изначально выбран персиковый
   const [notifications, setNotifications] = useState({
     email: true, sms: false, push: true, marketing: false,
   });
   const [twoFa, setTwoFa] = useState(false);
   const [sessionAlert, setSessionAlert] = useState(true);
-  const [savedIndicator, setSavedIndicator] = useState(false);
-  const [copyFeedback, setCopyFeedback] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // ─── НАШИ НОВЫЕ СТЕЙТЫ ДЛЯ ИНТЕРАКТИВА (ЗАМЕНИ СТАРЫЙ activeSection НА ЭТО) ───
@@ -676,6 +893,13 @@ export default function Settings() {
   const triggerToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const [savedStates, setSavedStates] = useState<Record<string, boolean>>({});
+  const triggerSave = (key: string, msg: string) => {
+    setSavedStates(p => ({ ...p, [key]: true }));
+    triggerToast(msg);
+    setTimeout(() => setSavedStates(p => ({ ...p, [key]: false })), 2000);
   };
 
   // Дефолтные настройки для кнопки Сбросить
@@ -696,19 +920,6 @@ export default function Settings() {
   const [lang, setLang] = useState("Русский");
   const [dateFormat, setDateFormat] = useState("ДД.ММ.ГГГГ");
   const [firstDay, setFirstDay] = useState("Понедельник");
-
-  // Стейт для плотности интерфейса (Внешний вид)
-  const [density, setDensity] = useState<"cozy" | "compact">("cozy");
-
-  const handleSave = () => {
-    setSavedIndicator(true);
-    setTimeout(() => setSavedIndicator(false), 2200);
-  };
-
-  const handleCopy = () => {
-    setCopyFeedback(true);
-    setTimeout(() => setCopyFeedback(false), 1800);
-  };
 
   const handleReset = () => {
     setGeneral(defaultGeneral);
@@ -740,9 +951,7 @@ export default function Settings() {
 
   // Scroll content to top on section change
   useEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.scrollTop = 0;
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeSection]);
 
   // ─── SECTION RENDERERS ───────────────────────────────────────────────────
@@ -799,19 +1008,11 @@ export default function Settings() {
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
           <button onClick={handleReset} className="topbar-ghost" style={{ padding: "9px 18px", fontSize: "12px" }}>Сбросить</button>
-          <button
-            onClick={handleSave}
-            style={{
-              display: "flex", alignItems: "center", gap: "7px",
-              padding: "9px 22px", borderRadius: "10px",
-              background: "var(--peach)", border: "none", color: "white",
-              fontSize: "13px", fontWeight: 700, cursor: "pointer",
-              transition: "all 0.3s ease",
-              boxShadow: "0 4px 16px rgba(252,174,145,0.35)",
-            }}
-          >
-            Сохранить
-          </button>
+          <PremiumButton 
+            isSaved={savedStates['general']} 
+            onClick={() => triggerSave('general', 'Сохранено')} 
+            text="Сохранить" 
+          />
         </div>
       </div>
 
@@ -853,18 +1054,15 @@ export default function Settings() {
         }}>
           <span style={{ color: "var(--peach)" }}>{icons.info}</span>
           <span style={{ fontSize: "12px", color: "var(--muted)", lineHeight: "1.5" }}>
-            Указанные часы отображаются как официальное время работы студии. Запись клиентов вне этого времени будет недоступна.
+            Указанные часы отображаются как официальное время работы студии. Запись клиентов вне этого времени будет доступна.
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={handleSave} style={{
-            padding: "9px 22px", borderRadius: "10px",
-            background: "var(--peach)", border: "none", color: "white",
-            fontSize: "13px", fontWeight: 700, cursor: "pointer",
-            transition: "all 0.3s ease",
-          }}>
-            Сохранить расписание
-          </button>
+          <PremiumButton 
+            isSaved={savedStates['hours']} 
+            onClick={() => triggerSave('hours', 'Расписание обновлено')} 
+            text="Сохранить расписание" 
+          />
         </div>
       </div>
       {/* Блок "Параметры записи" полностью удален отсюда */}
@@ -873,6 +1071,7 @@ export default function Settings() {
 
   const renderAppearance = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Тема оформления */}
       <div className="card" style={{ padding: "28px" }}>
         <SectionHeader icon={icons.palette} title="Тема оформления" subtitle="Выберите визуальный стиль интерфейса" />
         <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
@@ -881,19 +1080,33 @@ export default function Settings() {
             { id: "dark", label: "Тёмная", icon: icons.moon, preview: ["#121212", "#1E1E1E", "#FCAE91"] },
             { id: "auto", label: "Системная", icon: icons.toggle, preview: ["#ECECEC", "#F5F5F5", "#FCAE91"] },
           ].map((t) => {
-            const selected = (t.id === "light" && !darkMode) || (t.id === "dark" && darkMode);
+            // Теперь проверяем точное соответствие выбранному режиму (включая Системную)
+            const selected = themeMode === t.id;
             return (
               <button
                 key={t.id}
-                onClick={() => t.id !== "auto" && setDarkMode(t.id === "dark")}
+                onClick={() => setThemeMode(t.id as "light" | "dark" | "auto")}
                 style={{
                   flex: 1, padding: "16px 12px",
                   borderRadius: "12px",
                   border: `1.5px solid ${selected ? "var(--peach)" : "var(--border)"}`,
                   background: selected ? "rgba(252,174,145,0.07)" : "transparent",
                   cursor: "pointer",
-                  transition: "all 0.2s ease",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
+                  outline: "none"
+                }}
+                onMouseOver={(e) => {
+                  if (!selected) {
+                    e.currentTarget.style.borderColor = "rgba(252,174,145,0.4)";
+                    e.currentTarget.style.background = "rgba(0,0,0,0.02)";
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!selected) {
+                    e.currentTarget.style.borderColor = "var(--border)";
+                    e.currentTarget.style.background = "transparent";
+                  }
                 }}
               >
                 <div style={{ display: "flex", gap: "4px" }}>
@@ -905,24 +1118,34 @@ export default function Settings() {
                     }} />
                   ))}
                 </div>
+                
                 <div style={{ display: "flex", alignItems: "center", gap: "5px", color: selected ? "var(--peach)" : "var(--muted)" }}>
                   {t.icon}
                   <span style={{ fontSize: "12px", fontWeight: 600 }}>{t.label}</span>
                 </div>
-                {selected && (
-                  <div style={{
-                    width: "18px", height: "18px", borderRadius: "50%",
-                    background: "var(--peach)", display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    {icons.check}
-                  </div>
-                )}
+                
+                {/* 🔥 ОЖИВШИЙ ПЕРЕКЛЮЧАТЕЛЬ (Радио-кнопка) */}
+                <div style={{
+                  width: "18px", height: "18px", borderRadius: "50%",
+                  background: selected ? "var(--peach)" : "transparent",
+                  border: selected ? "none" : "1.5px solid var(--border)", // Пустой кружок для невыбранных
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "white",
+                  transition: "all 0.2s ease"
+                }}>
+                  {selected && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "csCheckPop 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  )}
+                </div>
               </button>
             );
           })}
         </div>
       </div>
 
+      {/* Акцентный цвет */}
       <div className="card" style={{ padding: "28px" }}>
         <SectionHeader icon={icons.zap} title="Акцентный цвет" subtitle="Персонализируйте главный цвет интерфейса" />
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
@@ -933,23 +1156,49 @@ export default function Settings() {
             { color: "#D88C9A", label: "Розовый" },
             { color: "#E8C97A", label: "Золотой" },
             { color: "#8BBFBF", label: "Минт" },
-          ].map((c, i) => (
-            <button
-              key={i}
-              title={c.label}
-              style={{
-                width: "36px", height: "36px", borderRadius: "10px",
-                background: c.color,
-                border: i === 0 ? `3px solid ${c.color}` : "3px solid transparent",
-                outline: i === 0 ? `2px solid white` : "none",
-                cursor: "pointer",
-                transition: "transform 0.15s ease",
-                boxShadow: `0 4px 12px ${c.color}50`,
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.15)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-            />
-          ))}
+          ].map((c, i) => {
+            const isSelected = c.color === accentColor;
+            return (
+              <button
+                key={i}
+                title={c.label}
+                onClick={() => setAccentColor(c.color)}
+                style={{
+                  width: "36px", height: "36px", borderRadius: "10px", // Круглые кнопки смотрятся логичнее для цвета
+                  background: c.color,
+                  border: isSelected ? `3px solid ${c.color}` : "3px solid transparent",
+                  outline: isSelected ? `2px solid white` : "none",
+                  cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "white", // Цвет галочки внутри
+                  transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                  transform: isSelected ? "scale(1.12)" : "scale(1)",
+                  boxShadow: isSelected 
+                    ? `0 0 0 2px ${c.color}, 0 8px 24px ${c.color}60` 
+                    : `0 4px 12px ${c.color}25`,
+                }}
+                onMouseOver={(e) => { 
+                  if (!isSelected) {
+                    e.currentTarget.style.transform = "scale(1.15)";
+                    e.currentTarget.style.boxShadow = `0 6px 16px ${c.color}40`;
+                  }
+                }}
+                onMouseOut={(e) => { 
+                  if (!isSelected) {
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.boxShadow = `0 4px 12px ${c.color}25`;
+                  }
+                }}
+              >
+                {/* 🔥 Галочка ВНУТРИ выбранного цвета */}
+                {isSelected && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "csCheckPop 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                )}
+              </button>
+            );
+          })}
         </div>
         <div style={{
           padding: "14px 16px",
@@ -997,13 +1246,11 @@ export default function Settings() {
           <InputRow label="Основной email" defaultValue="hello@studio.ru" type="email" />
           <InputRow label="Резервный email" placeholder="backup@studio.ru" type="email" />
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button onClick={handleSave} style={{
-              padding: "9px 22px", borderRadius: "10px",
-              background: "var(--peach)", border: "none", color: "white",
-              fontSize: "13px", fontWeight: 700, cursor: "pointer",
-            }}>
-              Сохранить
-            </button>
+            <PremiumButton 
+              isSaved={savedStates['notifs']} 
+              onClick={() => triggerSave('notifs', 'Настройки уведомлений сохранены')} 
+              text="Сохранить" 
+            />
           </div>
         </div>
       </div>
@@ -1025,31 +1272,49 @@ export default function Settings() {
               <div style={{ fontSize: "12px", color: "var(--muted)" }}>Управляйте сотрудниками и правами</div>
             </div>
           </div>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "7px",
-            padding: "9px 18px", borderRadius: "10px",
-            background: "var(--peach)", border: "none", color: "white",
-            fontSize: "12px", fontWeight: 700, cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(252,174,145,0.35)",
-          }}>
+          
+          {/* 🔥 ПРЕМИАЛЬНАЯ КНОПКА "ДОБАВИТЬ" */}
+          <button 
+            onClick={() => setIsAddStaffOpen(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: "7px",
+              padding: "9px 18px", borderRadius: "10px",
+              background: "var(--peach)", border: "none", color: "white",
+              fontSize: "12px", fontWeight: 700, cursor: "pointer",
+              transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+              boxShadow: "0 4px 16px rgba(252,174,145,0.35)",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(252,174,145,0.45)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(252,174,145,0.35)";
+            }}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(0.96)"}
+            onMouseUp={e => e.currentTarget.style.transform = "translateY(-2px)"}
+          >
             {icons.plus}
             Добавить сотрудника
           </button>
         </div>
 
-        {[
-          { name: "Анна Морозова", role: "Владелец", email: "anna@studio.ru", status: "active" as const },
-          { name: "Ирина Смирнова", role: "Администратор", email: "irina@studio.ru", status: "active" as const },
-          { name: "Мария Козлова", role: "Тренер", email: "maria@studio.ru", status: "active" as const },
-          { name: "Светлана Новикова", role: "Тренер", email: "svetlana@studio.ru", status: "warning" as const },
-        ].map((member, i) => (
-          <div key={i} style={{
+        {teamData.map((member, i) => (
+          <div key={member.id} style={{
             display: "flex", alignItems: "center", gap: "14px",
-            padding: "14px 16px", borderRadius: "10px",
-            transition: "background 0.2s ease",
+            padding: "14px 16px", borderRadius: "12px",
+            transition: "all 0.2s ease",
+            border: "1px solid transparent",
           }}
-            onMouseOver={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.02)"; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
+            onMouseEnter={(e) => { 
+              e.currentTarget.style.background = "rgba(0,0,0,0.015)"; 
+              e.currentTarget.style.borderColor = "rgba(0,0,0,0.03)";
+            }}
+            onMouseLeave={(e) => { 
+              e.currentTarget.style.background = "transparent"; 
+              e.currentTarget.style.borderColor = "transparent";
+            }}
           >
             <div style={{
               width: "38px", height: "38px", borderRadius: "12px",
@@ -1065,147 +1330,649 @@ export default function Settings() {
               <div style={{ fontSize: "12px", color: "var(--muted)" }}>{member.email}</div>
             </div>
             <StatusBadge type={member.status}>{member.role}</StatusBadge>
-            <button className="topbar-ghost" style={{ padding: "6px 12px", fontSize: "11px" }}>Изменить</button>
+            
+            {/* 🔥 ПРЕМИАЛЬНАЯ КНОПКА "ИЗМЕНИТЬ" */}
+            <button 
+              onClick={() => { setActiveEditStaff(member); setIsEditStaffOpen(true); }}
+              style={{ 
+                display: "flex", alignItems: "center", gap: "5px",
+                padding: "6px 12px", background: "#FFFFFF", color: "var(--onyx)", 
+                border: "1px solid rgba(26,26,26,0.1)", borderRadius: "8px", 
+                fontSize: "11px", fontWeight: 700, cursor: "pointer", 
+                transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)", 
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+              }}
+              onMouseEnter={e => { 
+                e.currentTarget.style.transform = "translateY(-1px)"; 
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)"; 
+                e.currentTarget.style.borderColor = "rgba(26,26,26,0.2)";
+                e.currentTarget.style.color = "var(--peach)";
+              }}
+              onMouseLeave={e => { 
+                e.currentTarget.style.transform = "translateY(0)"; 
+                e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.02)"; 
+                e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)";
+                e.currentTarget.style.color = "var(--onyx)";
+              }}
+            >
+              {icons.edit}
+              Изменить
+            </button>
           </div>
         ))}
       </div>
 
+      {/* Карточка Роли и права (Premium Inline Expansion) */}
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.key} title="Роли и права" subtitle="Настройте уровни доступа для каждой роли" />
-        {[
-          { role: "Владелец", desc: "Полный доступ ко всему", color: "#FCAE91" },
-          { role: "Администратор", desc: "Управление записями, клиентами, финансами", color: "#A3C9A8" },
-          { role: "Тренер", desc: "Расписание и свои клиенты", color: "#9BB5D8" },
-        ].map((r, i) => (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "12px 16px", borderRadius: "10px",
-            background: "rgba(0,0,0,0.015)", marginBottom: "6px",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: r.color }} />
+        <SectionHeader icon={icons.key} title="Роли и права" subtitle="Точная настройка уровней доступа для сотрудников" />
+        
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {[
+            { role: "Владелец", desc: "Полный доступ ко всему, права не подлежат изменению", color: "#FCAE91" },
+            { role: "Администратор", desc: "Управление записями, клиентами и кассой", color: "#A3C9A8" },
+            { role: "Тренер", desc: "Свое расписание и свои клиенты", color: "#9BB5D8" },
+          ].map((r) => {
+            const isExpanded = expandedRole === r.role;
+            const isOwner = r.role === "Владелец";
+            const perms = permissionsMatrix[r.role];
+
+            // SVG иконки без эмодзи для категорий прав
+            const sectionIcons = {
+              book: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+              users: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+              finance: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+              system: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            };
+
+            const sections = [
+              { title: "Записи", icon: sectionIcons.book, items: [
+                { key: "createBooking", label: "Создание и правка", desc: "Ведение календаря записей" },
+                { key: "cancelBooking", label: "Отмена визитов", desc: "Удаление без штрафов" },
+                { key: "editAllSchedules", label: "Своё расписание", desc: "Редактирование смен" },
+              ]},
+              { title: "Клиенты", icon: sectionIcons.users, items: [
+                { key: "viewContacts", label: "Просмотр контактов", desc: "Телефоны и почта в базе" },
+                { key: "exportDatabase", label: "Экспорт базы (Excel)", desc: "Выгрузка всех контактов", danger: true },
+                { key: "deleteClients", label: "Удаление профилей", desc: "Безвозвратное стирание", danger: true },
+              ]},
+              { title: "Финансы", icon: sectionIcons.finance, items: [
+                { key: "viewRevenue", label: "Просмотр выручки", desc: "Доступ к дашборду кассы" },
+                { key: "issueRefunds", label: "Возврат средств", desc: "Отмена транзакций" },
+              ]},
+              { title: "Система", icon: sectionIcons.system, items: [
+                { key: "editStudioHours", label: "Настройки студии", desc: "Смена графика работы" },
+                { key: "manageIntegrations", label: "Интеграции", desc: "WhatsApp, Telegram, API" },
+              ]}
+            ];
+
+            return (
+              <div key={r.role} style={{
+                borderRadius: "14px",
+                background: isExpanded ? "#FFFFFF" : "rgba(0,0,0,0.015)",
+                border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(0,0,0,0.04)"}`,
+                boxShadow: isExpanded ? "0 12px 32px rgba(252,174,145,0.12), 0 2px 6px rgba(252,174,145,0.08)" : "none",
+                transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                overflow: "hidden" // Важно для магии анимации
+              }}>
+                {/* Хедер (Кликабельный) */}
+                <div 
+                  onClick={() => setExpandedRole(isExpanded ? null : r.role)}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "16px 20px", cursor: "pointer",
+                    background: isExpanded ? "rgba(252,174,145,0.03)" : "transparent",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    <div style={{ 
+                      width: "12px", height: "12px", borderRadius: "50%", background: r.color,
+                      boxShadow: `0 0 0 3px ${r.color}30`
+                    }} />
+                    <div>
+                      <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>{r.role}</div>
+                      <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{r.desc}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Пружинящая Кнопка Настроить / Закрыть */}
+                  <button style={{ 
+                    display: "flex", alignItems: "center", gap: "6px",
+                    padding: "6px 14px", borderRadius: "8px", 
+                    background: isExpanded ? "var(--peach)" : "#FFFFFF", 
+                    color: isExpanded ? "#FFFFFF" : "var(--onyx)", 
+                    border: isExpanded ? "1px solid var(--peach)" : "1px solid rgba(26,26,26,0.1)", 
+                    fontSize: "11.5px", fontWeight: 700, cursor: "pointer", 
+                    transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)", 
+                    boxShadow: isExpanded ? "0 4px 12px rgba(252,174,145,0.4)" : "0 2px 6px rgba(0,0,0,0.02)",
+                    pointerEvents: "none" // Клик ловит родитель
+                  }}>
+                    {isExpanded ? "Закрыть" : "Настроить"}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                         style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}>
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Выезжающий Контент (Магия CSS Grid) */}
+                <div style={{
+                  display: "grid",
+                  gridTemplateRows: isExpanded ? "1fr" : "0fr",
+                  transition: "grid-template-rows 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                }}>
+                  <div style={{ minHeight: 0 }}>
+                    <div style={{ 
+                      padding: "0 20px 20px 20px", 
+                      opacity: isExpanded ? 1 : 0, 
+                      transition: "opacity 0.2s ease",
+                      transitionDelay: isExpanded ? "0.1s" : "0s" 
+                    }}>
+                      <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "20px" }} />
+                      
+                      {/* Сетка настроек */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px 32px", opacity: isOwner ? 0.7 : 1, pointerEvents: isOwner ? "none" : "auto" }}>
+                        {sections.map((sec, i) => (
+                          <div key={i}>
+                            {/* Заголовок категории с премиум SVG */}
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", color: "var(--muted)" }}>
+                              <div style={{ color: "var(--peach)" }}>{sec.icon}</div>
+                              <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>{sec.title}</span>
+                            </div>
+                            
+                            {/* Элементы внутри категории */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              {sec.items.map((item) => {
+                                const isChecked = perms[item.key] ?? false;
+                                return (
+                                  <div key={item.key} onClick={() => handlePermissionToggle(r.role, item.key)} style={{
+                                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                                    padding: "8px 10px", borderRadius: "8px", cursor: isOwner ? "default" : "pointer",
+                                    background: isChecked ? "rgba(252,174,145,0.04)" : "transparent",
+                                    transition: "background 0.2s ease", margin: "0 -10px"
+                                  }} onMouseEnter={e => { if(!isOwner) e.currentTarget.style.background = isChecked ? "rgba(252,174,145,0.08)" : "rgba(0,0,0,0.02)"; }}
+                                     onMouseLeave={e => { if(!isOwner) e.currentTarget.style.background = isChecked ? "rgba(252,174,145,0.04)" : "transparent"; }}>
+                                    <div style={{ paddingRight: "16px" }}>
+                                      <div style={{ fontSize: "12.5px", fontWeight: 700, color: item.danger ? "#C0607A" : "var(--onyx)" }}>{item.label}</div>
+                                      <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px", lineHeight: "1.3" }}>{item.desc}</div>
+                                    </div>
+                                    <Toggle checked={isChecked} onChange={() => handlePermissionToggle(r.role, item.key)} />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Кнопка сохранения (если не Владелец) */}
+                      {!isOwner && (
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "24px" }}>
+                          <PremiumButton 
+                            isSaved={savedStates[`perm_${r.role}`]} 
+                            onClick={() => {
+                              triggerSave(`perm_${r.role}`, `Права для роли "${r.role}" обновлены`);
+                              setExpandedRole(null); // Сворачиваем после сохранения
+                            }} 
+                            text="Сохранить права" 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBilling = () => {
+    const sectionIcons = {
+      card: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="3" ry="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
+      plus: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+      arrowLeft: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+      shieldCheck: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 11 13 15 9"/></svg>
+    };
+
+    // Форматирование номера карты по 4 символа с пробелами
+    const formatCardNumber = (value: string) => {
+      const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+      const matches = v.match(/\d{4,16}/g);
+      const match = (matches && matches[0]) || '';
+      const parts = [];
+      for (let i = 0, len = match.length; i < len; i += 4) {
+        parts.push(match.substring(i, i + 4));
+      }
+      if (parts.length > 0) return parts.join(' ');
+      return value;
+    };
+
+    // ─── ВЬЮ СТРАНИЦЫ ТАРИФОВ И ОПЛАТЫ ───
+    if (billingView === "tariffs") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px", animation: "fadeSlideIn 0.3s ease" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <button 
+              onClick={() => setBillingView("dashboard")}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                width: "32px", height: "32px", borderRadius: "50%", background: "#FFFFFF",
+                border: "1px solid rgba(26,26,26,0.08)", cursor: "pointer", color: "var(--onyx)",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(26,26,26,0.08)"; e.currentTarget.style.color = "var(--onyx)"; }}
+            >
+              {sectionIcons.arrowLeft}
+            </button>
+            <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--muted)" }}>Назад в управление подпиской</span>
+          </div>
+
+          <div style={{ textAlign: "center", margin: "10px 0 20px" }}>
+            <h1 style={{ fontSize: "28px", fontWeight: 900, color: "var(--onyx)", marginBottom: "8px", letterSpacing: "-0.5px" }}>Доступные тарифные планы</h1>
+            <p style={{ fontSize: "13px", color: "var(--muted)" }}>Перейдите на Business уровень, чтобы масштабировать ваш бренд без ограничений</p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+            {/* Карточка текущего Pro */}
+            <div style={{ padding: "32px", borderRadius: "16px", background: "#FFFFFF", border: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
               <div>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{r.role}</div>
-                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{r.desc}</div>
+                <div style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)", marginBottom: "6px" }}>Pro Лицензия</div>
+                <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "20px" }}>Идеально для растущих студий и премиум-бутиков</div>
+                <div style={{ fontSize: "32px", fontWeight: 950, color: "var(--onyx)", marginBottom: "24px" }}>4 990 ₽ <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--muted)" }}>/ мес</span></div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {["До 5 активных сотрудников", "До 3 залов синхронизации", "База клиентов без лимитов", "Стандартная аналитика"].map((f, idx) => (
+                    <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "var(--onyx)", fontWeight: 500 }}>
+                      <span style={{ color: "#A3C9A8" }}>✓</span> {f}
+                    </div>
+                  ))}
+                </div>
               </div>
+              <button disabled style={{ width: "100%", padding: "12px", borderRadius: "10px", background: "rgba(26,26,26,0.04)", border: "none", color: "var(--muted)", fontSize: "13px", fontWeight: 700, marginTop: "40px" }}>Ваш текущий тариф</button>
             </div>
-            <button className="topbar-ghost" style={{ padding: "5px 10px", fontSize: "11px" }}>Настроить</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 
-  const renderBilling = () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* Current plan hero */}
-      <div style={{
-        borderRadius: "16px", padding: "32px",
-        background: "linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)",
-        position: "relative", overflow: "hidden",
-      }}>
-        <div style={{
-          position: "absolute", top: "-60px", right: "-60px",
-          width: "220px", height: "220px",
-          background: "radial-gradient(circle, rgba(252,174,145,0.2) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(252,174,145,0.7)", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>Текущий тариф</div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-            <div style={{ fontSize: "28px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>Pro</div>
-            <StatusBadge type="active">Активен до 15 июля</StatusBadge>
-          </div>
-          <div style={{ display: "flex", gap: "32px", marginBottom: "20px" }}>
-            {[{ v: "∞", l: "клиентов" }, { v: "5", l: "сотрудников" }, { v: "API", l: "доступ" }].map((s, i) => (
-              <div key={i}>
-                <div style={{ fontSize: "18px", fontWeight: 800, color: "white" }}>{s.v}</div>
-                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{s.l}</div>
+            {/* Карточка желаемого Business */}
+            <div style={{ 
+              padding: "32px", borderRadius: "16px", background: "linear-gradient(135deg, #121212 0%, #1e1e24 100%)", 
+              border: "2px solid var(--peach)", display: "flex", flexDirection: "column", justifyContent: "space-between",
+              boxShadow: "0 20px 40px rgba(252,174,145,0.15)", position: "relative"
+            }}>
+              <span style={{ position: "absolute", top: "16px", right: "16px", background: "var(--peach)", color: "white", padding: "4px 10px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, letterSpacing: "0.5px" }}>РЕКОМЕНДУЕМ</span>
+              <div>
+                <div style={{ fontSize: "18px", fontWeight: 800, color: "white", marginBottom: "6px" }}>Business План</div>
+                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "20px" }}>Максимальная экосистема для крупных сетей и франшиз</div>
+                <div style={{ fontSize: "32px", fontWeight: 950, color: "white", marginBottom: "24px" }}>9 990 ₽ <span style={{ fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.4)" }}>/ мес</span></div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {["Безлимитное число сотрудников", "Франшизная мульти-сеть (все филиалы)", "Глубокая финансовая AI-аналитика", "Персональный менеджер 24/7", "Кастомное брендирование виджетов"].map((f, idx) => (
+                    <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>
+                      <span style={{ color: "var(--peach)" }}>✓</span> {f}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button style={{
-              padding: "9px 20px", borderRadius: "10px",
-              background: "var(--peach)", border: "none", color: "white",
-              fontSize: "12px", fontWeight: 700, cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(252,174,145,0.4)",
-            }}>Улучшить до Business</button>
-            <button style={{
-              padding: "9px 20px", borderRadius: "10px",
-              background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)",
-              color: "rgba(255,255,255,0.65)", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-            }}>Управление</button>
+              <button 
+                onClick={() => { triggerToast("Заявка на тариф Business успешно подтверждена!"); setBillingView("dashboard"); }}
+                style={{ width: "100%", padding: "12px", borderRadius: "10px", background: "var(--peach)", border: "none", color: "white", fontSize: "13px", fontWeight: 700, cursor: "pointer", marginTop: "40px", boxShadow: "0 4px 16px rgba(252,174,145,0.4)", transition: "transform 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+              >
+                Перейти на Business
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      );
+    }
 
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.creditCard} title="Способ оплаты" subtitle="Данные карты для автопродления подписки" />
+    // ─── ОСНОВНОЙ ДАШБОРД БИЛЛИНГА ───
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {/* Текущий тариф Pro — Премиальный Hero-блок */}
         <div style={{
-          display: "flex", alignItems: "center", gap: "14px",
-          padding: "16px", borderRadius: "12px",
-          background: "rgba(0,0,0,0.025)", border: "1.5px solid var(--border)",
-          marginBottom: "16px",
+          borderRadius: "16px", padding: "32px 40px",
+          background: "linear-gradient(135deg, #16161a 0%, #222226 100%)",
+          border: "1px solid rgba(255,255,255,0.05)",
+          position: "relative", overflow: "hidden",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.12)"
         }}>
-          <div style={{
-            width: "44px", height: "30px", borderRadius: "6px",
-            background: "linear-gradient(135deg, #1A1A1A, #333)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <div style={{ width: "28px", height: "10px", borderRadius: "2px", background: "rgba(255,200,100,0.5)" }} />
-          </div>
-          <div>
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>•••• •••• •••• 4242</div>
-            <div style={{ fontSize: "11px", color: "var(--muted)" }}>Visa · Истекает 08/2027</div>
-          </div>
-          <StatusBadge type="active">Основная</StatusBadge>
-          <button className="topbar-ghost" style={{ marginLeft: "auto", padding: "5px 10px", fontSize: "11px" }}>Заменить</button>
-        </div>
-        <button style={{
-          display: "flex", alignItems: "center", gap: "7px",
-          padding: "9px 16px", borderRadius: "10px",
-          border: "1.5px dashed var(--border)", background: "transparent",
-          color: "var(--muted)", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-          transition: "all 0.2s ease", width: "100%", justifyContent: "center",
-        }}
-          onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; }}
-          onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}
-        >
-          {icons.plus}
-          Добавить карту
-        </button>
-      </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.download} title="История платежей" subtitle="Все транзакции и инвойсы" />
-        {[
-          { date: "15 июня 2026", amount: "4 990 ₽", plan: "Pro — июль", status: "active" as const },
-          { date: "15 мая 2026", amount: "4 990 ₽", plan: "Pro — июнь", status: "active" as const },
-          { date: "15 апреля 2026", amount: "4 990 ₽", plan: "Pro — май", status: "active" as const },
-        ].map((p, i) => (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", gap: "14px",
-            padding: "12px 16px", borderRadius: "10px", marginBottom: "4px",
-          }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{p.plan}</div>
-              <div style={{ fontSize: "11px", color: "var(--muted)" }}>{p.date}</div>
+          <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "200px", height: "200px", background: "radial-gradient(circle, rgba(252,174,145,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: "10.5px", fontWeight: 800, color: "rgba(252,174,145,0.85)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "6px" }}>
+              Ваш план обслуживания
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>{p.amount}</div>
-            <StatusBadge type={p.status}>Оплачено</StatusBadge>
-            <button style={{
-              display: "flex", alignItems: "center", gap: "5px",
-              padding: "5px 10px", borderRadius: "7px",
-              border: "1px solid var(--border)", background: "transparent",
-              color: "var(--muted)", fontSize: "11px", cursor: "pointer",
-            }}>{icons.download} PDF</button>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "24px" }}>
+              <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>Pro Тариф</div>
+              <span style={{ padding: "4px 12px", borderRadius: "100px", fontSize: "11px", fontWeight: 700, background: "rgba(163,201,168,0.15)", color: "#A3C9A8", border: "1px solid rgba(163,201,168,0.25)" }}>Активен до 15 июля</span>
+            </div>
+            
+            <div style={{ display: "flex", gap: "48px", marginBottom: "28px" }}>
+              {[
+                { v: "БЕЗЛИМИТНО", l: "База клиентов", desc: "Без скрытых ограничений" },
+                { v: "5 из 5 мест", l: "Сотрудники студии", desc: "Доступно расширение" },
+                { v: "АКТИВЕН", l: "Полный API доступ", desc: "Синхронизация включена" }
+              ].map((s, i) => (
+                <div key={i} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <div style={{ fontSize: "16px", fontWeight: 800, color: "white", letterSpacing: "-0.2px" }}>{s.v}</div>
+                  <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.5px", marginTop: "2px" }}>{s.l}</div>
+                  <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)" }}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "12px" }}>
+              {/* НАПРАВЛЯЕТ НА СТРАНИЦУ ТАРИФОВ */}
+              <button 
+                onClick={() => setBillingView("tariffs")}
+                style={{
+                  padding: "10px 22px", borderRadius: "10px",
+                  background: "var(--peach)", border: "none", color: "white",
+                  fontSize: "12.5px", fontWeight: 700, cursor: "pointer",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                  boxShadow: "0 4px 16px rgba(252,174,145,0.3)",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1.5px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(252,174,145,0.45)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(252,174,145,0.3)"; }}
+                onMouseDown={e => e.currentTarget.style.transform = "scale(0.96)"}
+                onMouseUp={e => e.currentTarget.style.transform = "translateY(-1.5px)"}
+              >
+                Улучшить до Business
+              </button>
+              
+              {/* ВЫДВИГАЕТ ПАНЕЛЬ УПРАВЛЕНИЯ СНИЗУ БАННЕРА */}
+              <button 
+                onClick={() => setIsManagingSub(!isManagingSub)}
+                style={{
+                  padding: "10px 22px", borderRadius: "10px",
+                  background: isManagingSub ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.06)", 
+                  border: isManagingSub ? "1px solid var(--peach)" : "1px solid rgba(255,255,255,0.12)",
+                  color: isManagingSub ? "var(--peach)" : "rgba(255,255,255,0.75)", 
+                  fontSize: "12.5px", fontWeight: 600, cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={e => { if(!isManagingSub) { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#FFFFFF"; } }}
+                onMouseLeave={e => { if(!isManagingSub) { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "rgba(255,255,255,0.75)"; } }}
+              >
+                {isManagingSub ? "Закрыть управление" : "Управление подпиской"}
+              </button>
+            </div>
           </div>
-        ))}
+        </div>
+
+        {/* ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ УПРАВЛЕНИЯ ПОДПИСКОЙ (CSS Grid магия) */}
+        <div style={{
+          display: "grid",
+          gridTemplateRows: isManagingSub ? "1fr" : "0fr",
+          transition: "grid-template-rows 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)"
+        }}>
+          <div style={{ minHeight: 0, overflow: "hidden" }}>
+            <div style={{ padding: "24px", borderRadius: "14px", background: "#FFFFFF", border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>Период оплаты лицензии</div>
+                  <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "2px" }}>Переключитесь на годовой цикл для экономии бюджета</div>
+                </div>
+                {/* Элегантный переключатель периодов */}
+                <div style={{ display: "flex", gap: "4px", background: "rgba(26,26,26,0.03)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border)" }}>
+                  <button onClick={() => setBillingCycle("monthly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "monthly" ? "#FFFFFF" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "monthly" ? "var(--onyx)" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "monthly" ? "0 2px 6px rgba(0,0,0,0.05)" : "none" }}>Ежемесячно</button>
+                  <button onClick={() => setBillingCycle("yearly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "yearly" ? "var(--peach)" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "yearly" ? "#FFFFFF" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "yearly" ? "0 4px 10px rgba(252,174,145,0.3)" : "none" }}>Ежегодно -30%</button>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
+                <button onClick={() => { triggerToast("Период подписки успешно изменен"); setIsManagingSub(false); }} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(26,26,26,0.05)", border: "none", color: "var(--onyx)", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>Применить настройки</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Способ оплаты — Кастомный хай-энд дизайн */}
+        <div className="card" style={{ padding: "28px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(252,174,145,0.12)", color: "var(--peach)", display: "flex", alignItems: "center", justifyContent: "center" }}>{sectionIcons.card}</div>
+              <div>
+                <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>Способ оплаты</div>
+                <div style={{ fontSize: "12px", color: "var(--muted)" }}>Управление картами автопродления</div>
+              </div>
+            </div>
+
+            {/* ТУМБЛЕР ДЛЯ ОТКРЫТИЯ ЖИВОГО КОНСТРУКТОРА КАРТЫ */}
+            <button 
+              onClick={() => setIsAddingCard(!isAddingCard)}
+              style={{
+                display: "flex", alignItems: "center", gap: "6px",
+                padding: "8px 16px", borderRadius: "9px",
+                background: isAddingCard ? "var(--peach)" : "rgba(252,174,145,0.08)", 
+                border: isAddingCard ? "1px solid var(--peach)" : "1px solid rgba(252,174,145,0.2)",
+                color: isAddingCard ? "white" : "var(--peach)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer",
+                transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                boxShadow: isAddingCard ? "0 4px 12px rgba(252,174,145,0.35)" : "none"
+              }}
+              onMouseEnter={e => { if(!isAddingCard) { e.currentTarget.style.background = "var(--peach)"; e.currentTarget.style.color = "white"; } }}
+              onMouseLeave={e => { if(!isAddingCard) { e.currentTarget.style.background = "rgba(252,174,145,0.08)"; e.currentTarget.style.color = "var(--peach)"; } }}
+            >
+              {sectionIcons.plus}
+              {isAddingCard ? "Закрыть форму" : "Добавить карту"}
+            </button>
+          </div>
+
+          {/* ЖИВОЙ АНИМИРОВАННЫЙ КОНСТРУКТОР КАРТЫ (Inline Разворачивание) */}
+          <div style={{
+            display: "grid",
+            gridTemplateRows: isAddingCard ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
+          }}>
+            <div style={{ minHeight: 0, overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "32px", padding: "12px 4px 32px", alignItems: "center" }}>
+                
+                {/* ЛЕВАЯ ЧАСТЬ: ИНТЕРАКТИВНОЕ ВИЗУАЛЬНОЕ ПРЕВЬЮ КАРТЫ */}
+                <div style={{
+                  width: "240px", height: "150px", borderRadius: "14px",
+                  background: "linear-gradient(135deg, #111111 0%, #1e1e24 100%)",
+                  padding: "20px", boxSizing: "border-box", position: "relative",
+                  display: "flex", flexDirection: "column", justifyContent: "space-between",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)",
+                  transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                  transform: cardFocused ? "scale(1.03) translateY(-2px)" : "scale(1)",
+                }}>
+                  {/* Декоративная Soft-Tech лазерная линия сканирования чипа */}
+                  <div style={{
+                    position: "absolute", inset: 0, borderRadius: "14px",
+                    background: "linear-gradient(to right, transparent, rgba(252,174,145,0.03), transparent)",
+                    animation: "cardLaserScan 3s linear infinite", pointerEvents: "none"
+                  }} />
+                  <style>{`
+                    @keyframes cardLaserScan {
+                      0% { transform: translateX(-100%); }
+                      100% { transform: translateX(100%); }
+                    }
+                  `}</style>
+                  
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+                    {/* SVG Золотой премиум чип */}
+                    <svg width="28" height="22" viewBox="0 0 24 18" fill="none">
+                      <rect width="24" height="18" rx="4" fill="#E8C97A" fillOpacity="0.85"/>
+                      <path d="M0 6h24M0 12h24M8 0v18M16 0v18" stroke="#111111" strokeWidth="0.5" strokeOpacity="0.2"/>
+                    </svg>
+                    <span style={{ fontSize: "10px", fontWeight: 900, color: "white", letterSpacing: "1px" }}>VISA</span>
+                  </div>
+
+                  {/* Живой номер карты */}
+                  <div style={{ 
+                    fontSize: "14px", fontWeight: 700, 
+                    fontFamily: "monospace", letterSpacing: "1.5px",
+                    textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                    transition: "color 0.2s",
+                    color: cardFocused === "number" ? "var(--peach)" : "white"
+                  }}>
+                    {cardNumber || "•••• •••• •••• ••••"}
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}>
+                    <div style={{ transition: "color 0.2s", color: cardFocused === "name" ? "var(--peach)" : "rgba(255,255,255,0.6)" }}>
+                      <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>Держатель</div>
+                      <div style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "130px" }}>{cardName || "CARDHOLDER NAME"}</div>
+                    </div>
+                    <div style={{ transition: "color 0.2s", color: cardFocused === "expiry" ? "var(--peach)" : "rgba(255,255,255,0.6)", textAlign: "right" }}>
+                      <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>Срок</div>
+                      <div style={{ fontSize: "10px", fontWeight: 700, marginTop: "2px" }}>{cardExpiry || "MM/YY"}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ПРАВАЯ ЧАСТЬ: МИНИМАЛИСТИЧНЫЕ ПОЛЯ ВВОДА ФОРМЫ */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <div style={{ gridColumn: "1 / -1" }}>
+                    <InputRow 
+                      label="Номер карты" 
+                      placeholder="4242 4242 4242 4242" 
+                      value={cardNumber} 
+                      onChange={v => setCardNumber(formatCardNumber(v))}
+                    />
+                    <div style={{ display: "none" }}><input onFocus={() => setCardFocused("number")} onBlur={() => setCardFocused("")} /></div>
+                  </div>
+                  <div style={{ gridColumn: "1 / -1" }}>
+                    <InputRow 
+                      label="Имя держателя (LATIN)" 
+                      placeholder="ALEXEY MOROZOV" 
+                      value={cardName} 
+                      onChange={setCardName}
+                    />
+                  </div>
+                  <InputRow 
+                    label="Срок действия" 
+                    placeholder="MM/YY" 
+                    value={cardExpiry} 
+                    onChange={v => {
+                      const sanitized = v.replace(/[^0-9]/g, '');
+                      if (sanitized.length >= 2) {
+                        setCardExpiry(`${sanitized.slice(0, 2)}/${sanitized.slice(2, 4)}`);
+                      } else {
+                        setCardExpiry(sanitized);
+                      }
+                    }}
+                  />
+                  <InputRow 
+                    label="CVC код" 
+                    placeholder="•••" 
+                    type="password"
+                    value={cardCvc} 
+                    onChange={v => setCardCvc(v.slice(0, 3).replace(/[^0-9]/g, ''))}
+                  />
+                  
+                  {/* Кнопка отправки формы */}
+                  <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "6px" }}>
+                    <button onClick={() => setIsAddingCard(false)} className="topbar-ghost" style={{ padding: "8px 16px", fontSize: "12px" }}>Отмена</button>
+                    <button 
+                      onClick={() => { triggerToast("Карта успешно добавлена и привязана"); setIsAddingCard(false); }}
+                      style={{ padding: "9px 20px", borderRadius: "8px", background: "var(--peach)", border: "none", color: "white", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.3)" }}
+                    >
+                      Привязать карту
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {/* Минималистичная основная банковская карта */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "20px 24px", borderRadius: "14px",
+            background: "#FDFCFB",
+            border: "1.5px solid rgba(26,26,26,0.06)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.015)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              <div style={{
+                width: "50px", height: "34px", borderRadius: "8px",
+                background: "linear-gradient(135deg, #111111 0%, #2c2c30 100%)",
+                display: "flex", flexDirection: "column", justifyContent: "space-between",
+                padding: "8px 10px", boxSizing: "border-box", flexShrink: 0,
+                boxShadow: "0 4px 10px rgba(0,0,0,0.15)"
+              }}>
+                <div style={{ width: "10px", height: "8px", borderRadius: "2px", background: "rgba(252,174,145,0.4)" }} />
+                <div style={{ fontSize: "7px", fontWeight: 900, color: "white", textAlign: "right", letterSpacing: "0.5px" }}>VISA</div>
+              </div>
+              
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", fontFamily: "monospace", letterSpacing: "1px" }}>•••• •••• •••• 4242</div>
+                  <span style={{ padding: "2px 8px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, background: "rgba(252,174,145,0.12)", color: "var(--peach)" }}>Основная</span>
+                </div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>Visa Debit · Срок действия до 08/2027</div>
+              </div>
+            </div>
+
+            {/* 🔥 ИНТЕРАКТИВНАЯ КНОПКА "ЗАМЕНИТЬ" С ЧЕТКИМ МИКРО-ОТКЛИКОМ */}
+            <button 
+              onClick={() => { triggerToast("Запуск защищенного обновления реквизитов..."); setIsAddingCard(true); }}
+              style={{ 
+                display: "flex", alignItems: "center", gap: "5px",
+                padding: "7px 14px", background: "#FFFFFF", color: "var(--onyx)", 
+                border: "1px solid rgba(26,26,26,0.1)", borderRadius: "8px", 
+                fontSize: "11.5px", fontWeight: 700, cursor: "pointer", 
+                transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)", 
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+              }}
+              onMouseEnter={e => { 
+                e.currentTarget.style.transform = "translateY(-1px)"; 
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)"; 
+                e.currentTarget.style.borderColor = "var(--peach)";
+                e.currentTarget.style.color = "var(--peach)";
+              }}
+              onMouseLeave={e => { 
+                e.currentTarget.style.transform = "translateY(0)"; 
+                e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.02)"; 
+                e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)";
+                e.currentTarget.style.color = "var(--onyx)";
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              Заменить карту
+            </button>
+          </div>
+        </div>
+
+        {/* История платежей (Оставляем аккуратной таблицей) */}
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={icons.download} title="История платежей" subtitle="Все транзакции и инвойсы" />
+          {[
+            { date: "15 июня 2026", amount: "4 990 ₽", plan: "Pro — июль", status: "active" as const },
+            { date: "15 мая 2026", amount: "4 990 ₽", plan: "Pro — июнь", status: "active" as const },
+            { date: "15 апреля 2026", amount: "4 990 ₽", plan: "Pro — май", status: "active" as const },
+          ].map((p, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "12px 16px", borderRadius: "10px", marginBottom: "4px" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{p.plan}</div>
+                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{p.date}</div>
+              </div>
+              <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", marginRight: "8px" }}>{p.amount}</div>
+              <StatusBadge type={p.status}>Оплачено</StatusBadge>
+              <button 
+                onClick={() => triggerToast(`Скачивание чека за ${p.date.split(' ')[1]}...`)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  padding: "6px 12px", borderRadius: "7px",
+                  border: "1px solid var(--border)", background: "transparent",
+                  color: "var(--muted)", fontSize: "11px", fontWeight: 600, cursor: "pointer",
+                  transition: "all 0.15s"
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}
+              >
+                {icons.download} PDF
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderSecurity = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -1551,9 +2318,8 @@ export default function Settings() {
             padding: "32px 40px",
             width: "100%",
             maxWidth: "100%",
-            boxSizing: "border-box"
-            // 🔥 Внутренние скроллы и высоты полностью удалены!
-            // Контент свободно уходит вниз, вызывая родной скролл браузера.
+            boxSizing: "border-box",
+            minHeight: "100vh" // 🔥 Предотвращает прыжки сайдбара и схлопывание страницы!
           }}
         >
           <div
@@ -1565,6 +2331,56 @@ export default function Settings() {
           </div>
         </div>
       </div>
+      <AddStaffModal 
+        isOpen={isAddStaffOpen} 
+        onClose={() => setIsAddStaffOpen(false)} 
+        onSuccess={(data: any) => {
+          // Имитируем добавление в наш "живой" список
+          setTeamData(prev => [...prev, { 
+            id: Date.now().toString(), 
+            name: data.name || "Новый сотрудник", 
+            role: data.role || "Сотрудник", 
+            email: data.email || "email@studio.ru", 
+            status: "active" 
+          }]);
+          triggerToast(`Сотрудник ${data.name ? data.name.split(' ')[0] : ''} добавлен 🎉`);
+        }}
+      />
+
+      {activeEditStaff && (
+        <EditStaffModal
+          isOpen={isEditStaffOpen}
+          staff={activeEditStaff}
+          onClose={() => setIsEditStaffOpen(false)}
+          onSave={(updatedData: any) => {
+            // Имитируем обновление списка
+            setTeamData(prev => prev.map(m => m.id === activeEditStaff.id ? { ...m, ...updatedData } : m));
+            triggerToast(`Профиль "${updatedData.name || activeEditStaff.name}" сохранен`);
+          }}
+          onDelete={() => {
+            // Имитируем удаление из списка
+            setTeamData(prev => prev.filter(m => m.id !== activeEditStaff.id));
+            triggerToast("Сотрудник успешно удален");
+          }}
+        />
+      )}
+
+      {/* Вызов тоста (уже был у тебя) */}
+      <Toast message={toast} />
+
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes drawerSlideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        .settings-content-anim {
+          animation: fadeSlideIn 0.3s ease forwards;
+        }
+      `}</style>
     </>
   );
 }
