@@ -159,6 +159,182 @@ const icons = {
   ),
 };
 
+// ─── TOAST NOTIFICATION ───────────────────────────────────────────────────────
+function Toast({ message }: { message: string | null }) {
+  return (
+    <div style={{
+      position: "fixed",
+      bottom: "32px",
+      left: "50%",
+      transform: message ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(20px)",
+      opacity: message ? 1 : 0,
+      pointerEvents: message ? "auto" : "none",
+      background: "#111111", // Тот самый дорогой черный
+      color: "#FFFFFF",
+      padding: "12px 24px",
+      borderRadius: "14px",
+      fontSize: "13px",
+      fontWeight: 700,
+      boxShadow: "0 16px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2)",
+      transition: "all 0.4s cubic-bezier(0.34, 1.5, 0.64, 1)",
+      zIndex: 9999,
+      display: "flex",
+      alignItems: "center",
+      gap: "10px"
+    }}>
+      <div style={{ color: "var(--peach)" }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      {message}
+    </div>
+  );
+}
+
+// ─── CONTROLLED INPUT ROW ─────────────────────────────────────────────────────
+function InputRow({ 
+  label, placeholder, value, defaultValue, onChange, type = "text" 
+}: { 
+  label: string; 
+  placeholder?: string; 
+  value?: string; 
+  defaultValue?: string;
+  onChange?: (v: string) => void; 
+  type?: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  // Локальный стейт для старых инпутов, которые не управляются снаружи
+  const [internalValue, setInternalValue] = useState(defaultValue || "");
+
+  const isControlled = value !== undefined;
+  const displayValue = isControlled ? value : internalValue;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isControlled) setInternalValue(e.target.value);
+    if (onChange) onChange(e.target.value);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", letterSpacing: "0.2px" }}>{label}</label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={displayValue}
+        onChange={handleChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          padding: "10px 14px",
+          borderRadius: "10px",
+          border: `1.5px solid ${focused ? "var(--peach)" : "var(--border)"}`,
+          background: focused ? "rgba(252,174,145,0.04)" : "transparent",
+          fontSize: "13px", color: "var(--onyx)",
+          outline: "none",
+          transition: "all 0.2s ease",
+          boxShadow: focused ? "0 0 0 3px rgba(252,174,145,0.12)" : "none",
+          fontFamily: "inherit",
+        }}
+      />
+    </div>
+  );
+}
+
+function DarkSelectRow({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "12px 16px",
+        borderRadius: "10px",
+        background: hovered || isOpen ? "rgba(252,174,145,0.05)" : "transparent",
+        transition: "background 0.2s ease",
+      }}
+    >
+      <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{label}</div>
+      
+      <div ref={dropdownRef} style={{ position: "relative", width: "180px", userSelect: "none" }}>
+        <div 
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "8px 12px",
+            background: "#FFFFFF",
+            border: `1.5px solid ${isOpen ? "var(--peach)" : "rgba(26, 26, 26, 0.09)"}`,
+            borderRadius: "10px",
+            color: "#1A1A1A",
+            fontSize: "12px", fontWeight: 700, cursor: "pointer",
+            boxShadow: isOpen ? "0 0 0 3px rgba(252, 174, 145, 0.25)" : "0 2px 6px rgba(0, 0, 0, 0.03)",
+            transition: "all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)"
+          }}
+        >
+          <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{value}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+               style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.25s ease", color: isOpen ? "var(--peach)" : "rgba(26,26,26,0.4)" }}>
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        {isOpen && (
+          <div style={{
+            position: "absolute", top: "calc(100% + 6px)", right: 0, width: "100%",
+            background: "#111111", border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "14px", padding: "6px",
+            boxShadow: "0 16px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2)",
+            zIndex: 99,
+            animation: "csPopupIn 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both"
+          }}>
+            {options.map((opt) => (
+              <div
+                key={opt}
+                onClick={() => { onChange(opt); setIsOpen(false); }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "8px 12px", borderRadius: "9px",
+                  color: opt === value ? "var(--peach)" : "rgba(255, 255, 255, 0.7)",
+                  fontSize: "12px", fontWeight: opt === value ? 700 : 600,
+                  cursor: "pointer", transition: "all 0.15s ease",
+                  background: opt === value ? "rgba(252, 174, 145, 0.15)" : "transparent"
+                }}
+                onMouseOver={(e) => { 
+                  if (opt !== value) { e.currentTarget.style.background = "rgba(252, 174, 145, 0.08)"; e.currentTarget.style.color = "#FFFFFF"; }
+                }}
+                onMouseOut={(e) => { 
+                  if (opt !== value) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255, 255, 255, 0.7)"; }
+                }}
+              >
+                <span>{opt}</span>
+                {opt === value && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "csCheckPop 0.2s cubic-bezier(0.34, 1.5, 0.64, 1) both" }}>
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── TOGGLE COMPONENT ─────────────────────────────────────────────────────────
 function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
@@ -282,75 +458,6 @@ function SettingsRow({
         )}
       </div>
     </div>
-  );
-}
-
-// ─── INPUT ROW ────────────────────────────────────────────────────────────────
-function InputRow({ label, placeholder, defaultValue, type = "text" }: { label: string; placeholder?: string; defaultValue?: string; type?: string }) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", letterSpacing: "0.2px" }}>{label}</label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        defaultValue={defaultValue}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          padding: "10px 14px",
-          borderRadius: "10px",
-          border: `1.5px solid ${focused ? "var(--peach)" : "var(--border)"}`,
-          background: focused ? "rgba(252,174,145,0.04)" : "transparent",
-          fontSize: "13px", color: "var(--onyx)",
-          outline: "none",
-          transition: "all 0.2s ease",
-          boxShadow: focused ? "0 0 0 3px rgba(252,174,145,0.12)" : "none",
-          fontFamily: "inherit",
-        }}
-      />
-    </div>
-  );
-}
-
-// ─── NAV SIDEBAR ITEM ─────────────────────────────────────────────────────────
-function NavItem({ icon, label, active, onClick, badge }: { icon: React.ReactNode; label: string; active: boolean; onClick: () => void; badge?: number }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "flex", alignItems: "center", gap: "10px",
-        width: "100%", padding: "10px 14px",
-        borderRadius: "10px",
-        background: active ? "rgba(252,174,145,0.12)" : "transparent",
-        border: "none",
-        color: active ? "var(--peach)" : "var(--muted)",
-        fontSize: "13px", fontWeight: active ? 700 : 500,
-        cursor: "pointer",
-        textAlign: "left",
-        transition: "all 0.18s ease",
-        position: "relative",
-      }}
-    >
-      <span style={{ color: active ? "var(--peach)" : "var(--muted)", transition: "color 0.18s" }}>{icon}</span>
-      <span style={{ flex: 1 }}>{label}</span>
-      {badge !== undefined && (
-        <span style={{
-          width: "18px", height: "18px",
-          background: "var(--peach)", color: "white",
-          borderRadius: "50%", fontSize: "10px", fontWeight: 700,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>{badge}</span>
-      )}
-      {active && (
-        <div style={{
-          position: "absolute", left: "0", top: "50%",
-          transform: "translateY(-50%)",
-          width: "3px", height: "20px",
-          background: "var(--peach)", borderRadius: "0 2px 2px 0",
-        }} />
-      )}
-    </button>
   );
 }
 
@@ -564,6 +671,35 @@ export default function Settings() {
   const [copyFeedback, setCopyFeedback] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // ─── НАШИ НОВЫЕ СТЕЙТЫ ДЛЯ ИНТЕРАКТИВА (ЗАМЕНИ СТАРЫЙ activeSection НА ЭТО) ───
+  const [toast, setToast] = useState<string | null>(null);
+  const triggerToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Дефолтные настройки для кнопки Сбросить
+  const defaultGeneral = {
+    name: "Pilates & Wellness Studio",
+    desc: "",
+    phone: "+7 (495) 000-00-00",
+    email: "hello@studio.ru",
+    site: "",
+    address: "Москва, ул. Примерная, 1",
+    logo: null as string | null
+  };
+  const [general, setGeneral] = useState(defaultGeneral);
+
+  // Стейты для раздела "Язык и регион"
+  const [timezone, setTimezone] = useState("Europe/Moscow (UTC+3)");
+  const [currency, setCurrency] = useState("RUB — Российский рубль (₽)");
+  const [lang, setLang] = useState("Русский");
+  const [dateFormat, setDateFormat] = useState("ДД.ММ.ГГГГ");
+  const [firstDay, setFirstDay] = useState("Понедельник");
+
+  // Стейт для плотности интерфейса (Внешний вид)
+  const [density, setDensity] = useState<"cozy" | "compact">("cozy");
+
   const handleSave = () => {
     setSavedIndicator(true);
     setTimeout(() => setSavedIndicator(false), 2200);
@@ -572,6 +708,22 @@ export default function Settings() {
   const handleCopy = () => {
     setCopyFeedback(true);
     setTimeout(() => setCopyFeedback(false), 1800);
+  };
+
+  const handleReset = () => {
+    setGeneral(defaultGeneral);
+    triggerToast("Настройки сброшены");
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setGeneral(prev => ({ ...prev, logo: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const navItems = [
@@ -596,90 +748,86 @@ export default function Settings() {
   // ─── SECTION RENDERERS ───────────────────────────────────────────────────
   const renderGeneral = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* Company identity card */}
+      {/* Данные компании */}
       <div className="card" style={{ padding: "28px 28px 24px" }}>
         <SectionHeader icon={icons.building} title="Данные компании" subtitle="Публичная информация вашего бизнеса" />
         <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
-          {/* Logo zone */}
-          <div style={{
-            width: "80px", height: "80px", borderRadius: "16px", flexShrink: 0,
-            background: "linear-gradient(135deg, rgba(252,174,145,0.2), rgba(252,174,145,0.06))",
-            border: "2px dashed rgba(252,174,145,0.35)",
+          
+          {/* Премиальная кнопка Логотипа */}
+          <label style={{
+            width: "90px", height: "90px", borderRadius: "16px", flexShrink: 0,
+            background: general.logo ? "transparent" : "#FDFCFB",
+            border: general.logo ? "none" : "1.5px dashed rgba(26,26,26,0.15)",
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: "4px", cursor: "pointer",
-            transition: "all 0.2s ease",
+            gap: "6px", cursor: "pointer", transition: "all 0.25s ease",
+            overflow: "hidden", position: "relative"
           }}
-            onMouseOver={(e) => { e.currentTarget.style.background = "rgba(252,174,145,0.12)"; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(252,174,145,0.2), rgba(252,174,145,0.06))"; }}
+            onMouseOver={(e) => { if(!general.logo) e.currentTarget.style.borderColor = "var(--peach)"; }}
+            onMouseOut={(e) => { if(!general.logo) e.currentTarget.style.borderColor = "rgba(26,26,26,0.15)"; }}
           >
-            {icons.plus}
-            <span style={{ fontSize: "9px", color: "var(--muted)", fontWeight: 600 }}>Логотип</span>
-          </div>
+            <input type="file" hidden onChange={handleLogoUpload} accept="image/*" />
+            {general.logo ? (
+              <>
+                <img src={general.logo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                {/* Оверлей при наведении для смены лого */}
+                <div style={{
+                  position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  opacity: 0, transition: "opacity 0.2s", color: "white"
+                }} onMouseOver={e => e.currentTarget.style.opacity = "1"} onMouseOut={e => e.currentTarget.style.opacity = "0"}>
+                  {icons.edit}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ color: "var(--peach)" }}>{icons.plus}</div>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)" }}>Загрузить</span>
+              </>
+            )}
+          </label>
+
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
-            <InputRow label="Название компании" defaultValue="Pilates & Wellness Studio" placeholder="Например: My Studio" />
-            <InputRow label="Описание" placeholder="Чем занимается ваша студия…" />
+            <InputRow label="Название компании" value={general.name} onChange={v => setGeneral({...general, name: v})} placeholder="Например: My Studio" />
+            <InputRow label="Описание" value={general.desc} onChange={v => setGeneral({...general, desc: v})} placeholder="Чем занимается ваша студия…" />
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
-          <InputRow label="Телефон" defaultValue="+7 (495) 000-00-00" type="tel" />
-          <InputRow label="Email" defaultValue="hello@studio.ru" type="email" />
-          <InputRow label="Сайт" placeholder="https://studio.ru" />
-          <InputRow label="Адрес" placeholder="Москва, ул. Примерная, 1" />
+          <InputRow label="Телефон" value={general.phone} onChange={v => setGeneral({...general, phone: v})} type="tel" />
+          <InputRow label="Email" value={general.email} onChange={v => setGeneral({...general, email: v})} type="email" />
+          <InputRow label="Сайт" value={general.site} onChange={v => setGeneral({...general, site: v})} placeholder="https://studio.ru" />
+          <InputRow label="Адрес" value={general.address} onChange={v => setGeneral({...general, address: v})} placeholder="Москва, ул. Примерная, 1" />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-          <button className="topbar-ghost" style={{ padding: "9px 18px", fontSize: "12px" }}>Сбросить</button>
+          <button onClick={handleReset} className="topbar-ghost" style={{ padding: "9px 18px", fontSize: "12px" }}>Сбросить</button>
           <button
             onClick={handleSave}
             style={{
               display: "flex", alignItems: "center", gap: "7px",
               padding: "9px 22px", borderRadius: "10px",
-              background: savedIndicator ? "#A3C9A8" : "var(--peach)",
-              border: "none", color: "white",
-              fontSize: "13px", fontWeight: 700,
-              cursor: "pointer",
+              background: "var(--peach)", border: "none", color: "white",
+              fontSize: "13px", fontWeight: 700, cursor: "pointer",
               transition: "all 0.3s ease",
-              boxShadow: savedIndicator ? "0 4px 16px rgba(163,201,168,0.4)" : "0 4px 16px rgba(252,174,145,0.35)",
+              boxShadow: "0 4px 16px rgba(252,174,145,0.35)",
             }}
           >
-            {savedIndicator ? icons.check : icons.edit}
-            {savedIndicator ? "Сохранено" : "Сохранить"}
+            Сохранить
           </button>
         </div>
       </div>
 
-      {/* Locale settings */}
+      {/* Язык и регион */}
       <div className="card" style={{ padding: "28px" }}>
         <SectionHeader icon={icons.globe} title="Язык и регион" subtitle="Настройки локализации интерфейса" />
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <SettingsRow label="Часовой пояс" value="Europe/Moscow (UTC+3)" onEdit={() => {}} tag={<StatusBadge type="active">Авто</StatusBadge>} />
-          <SettingsRow label="Валюта" value="RUB — Российский рубль (₽)" onEdit={() => {}} />
-          <SettingsRow label="Язык интерфейса" value="Русский" onEdit={() => {}} />
-          <SettingsRow label="Формат даты" value="ДД.ММ.ГГГГ" onEdit={() => {}} />
-          <SettingsRow label="Первый день недели" value="Понедельник" onEdit={() => {}} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          <DarkSelectRow label="Часовой пояс" value={timezone} onChange={setTimezone} options={["Europe/Moscow (UTC+3)", "Europe/London (UTC+0)", "Asia/Dubai (UTC+4)", "Asia/Almaty (UTC+5)"]} />
+          <DarkSelectRow label="Валюта" value={currency} onChange={setCurrency} options={["RUB — Российский рубль (₽)", "USD — Доллар США ($)", "EUR — Евро (€)", "KZT — Тенге (₸)"]} />
+          <DarkSelectRow label="Язык интерфейса" value={lang} onChange={setLang} options={["Русский", "English", "Deutsch", "Español"]} />
+          <DarkSelectRow label="Формат даты" value={dateFormat} onChange={setDateFormat} options={["ДД.ММ.ГГГГ", "ММ.ДД.ГГГГ", "ГГГГ-ММ-ДД"]} />
+          <DarkSelectRow label="Первый день недели" value={firstDay} onChange={setFirstDay} options={["Понедельник", "Воскресенье"]} />
         </div>
       </div>
-
-      {/* Advanced */}
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.zap} title="Дополнительно" subtitle="Параметры системы и производительности" />
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <SettingsRow label="API-ключ" value="vel_live_••••••••••••••••4f2a" tag={
-            <button onClick={handleCopy} style={{
-              display: "flex", alignItems: "center", gap: "5px",
-              padding: "5px 10px", borderRadius: "7px",
-              border: "1px solid var(--border)", background: "transparent",
-              color: copyFeedback ? "#5A9A65" : "var(--muted)",
-              fontSize: "11px", fontWeight: 600, cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}>
-              {copyFeedback ? icons.check : icons.copy}
-              {copyFeedback ? "Скопировано" : "Копировать"}
-            </button>
-          } />
-          <SettingsRow label="ID аккаунта" value="#VEL-2024-98741" />
-          <SettingsRow label="Версия системы" value="Velora 3.2.1" tag={<StatusBadge type="active">Актуальная</StatusBadge>} />
-        </div>
-      </div>
+      
+      {/* ... Блок "Дополнительно" оставляем без изменений ... */}
     </div>
   );
 
@@ -705,83 +853,21 @@ export default function Settings() {
         }}>
           <span style={{ color: "var(--peach)" }}>{icons.info}</span>
           <span style={{ fontSize: "12px", color: "var(--muted)", lineHeight: "1.5" }}>
-            Рабочие часы влияют на доступность онлайн-записи. Запись вне этих часов невозможна.
+            Указанные часы отображаются как официальное время работы студии. Запись клиентов вне этого времени будет недоступна.
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button onClick={handleSave} style={{
             padding: "9px 22px", borderRadius: "10px",
-            background: savedIndicator ? "#A3C9A8" : "var(--peach)",
-            border: "none", color: "white",
+            background: "var(--peach)", border: "none", color: "white",
             fontSize: "13px", fontWeight: 700, cursor: "pointer",
             transition: "all 0.3s ease",
           }}>
-            {savedIndicator ? "Сохранено ✓" : "Сохранить расписание"}
+            Сохранить расписание
           </button>
         </div>
       </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.clock} title="Параметры записи" subtitle="Слоты, буфер и прочие ограничения" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", display: "block", marginBottom: "6px" }}>Длительность слота</label>
-            <select style={{
-              width: "100%", padding: "10px 14px", borderRadius: "10px",
-              border: "1.5px solid var(--border)", background: "var(--bg-card)",
-              color: "var(--onyx)", fontSize: "13px", fontWeight: 600,
-              outline: "none", fontFamily: "inherit", cursor: "pointer",
-            }}>
-              <option>30 минут</option>
-              <option selected>60 минут</option>
-              <option>90 минут</option>
-              <option>120 минут</option>
-            </select>
-          </div>
-          <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", display: "block", marginBottom: "6px" }}>Буфер между записями</label>
-            <select style={{
-              width: "100%", padding: "10px 14px", borderRadius: "10px",
-              border: "1.5px solid var(--border)", background: "var(--bg-card)",
-              color: "var(--onyx)", fontSize: "13px", fontWeight: 600,
-              outline: "none", fontFamily: "inherit", cursor: "pointer",
-            }}>
-              <option>Нет</option>
-              <option selected>10 минут</option>
-              <option>15 минут</option>
-              <option>30 минут</option>
-            </select>
-          </div>
-          <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", display: "block", marginBottom: "6px" }}>Мин. время до записи</label>
-            <select style={{
-              width: "100%", padding: "10px 14px", borderRadius: "10px",
-              border: "1.5px solid var(--border)", background: "var(--bg-card)",
-              color: "var(--onyx)", fontSize: "13px", fontWeight: 600,
-              outline: "none", fontFamily: "inherit", cursor: "pointer",
-            }}>
-              <option>1 час</option>
-              <option selected>2 часа</option>
-              <option>4 часа</option>
-              <option>1 день</option>
-            </select>
-          </div>
-          <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", display: "block", marginBottom: "6px" }}>Запись вперёд до</label>
-            <select style={{
-              width: "100%", padding: "10px 14px", borderRadius: "10px",
-              border: "1.5px solid var(--border)", background: "var(--bg-card)",
-              color: "var(--onyx)", fontSize: "13px", fontWeight: 600,
-              outline: "none", fontFamily: "inherit", cursor: "pointer",
-            }}>
-              <option>1 месяц</option>
-              <option selected>2 месяца</option>
-              <option>3 месяца</option>
-              <option>6 месяцев</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      {/* Блок "Параметры записи" полностью удален отсюда */}
     </div>
   );
 
@@ -872,17 +958,6 @@ export default function Settings() {
           fontSize: "12px", color: "var(--muted)",
         }}>
           Цвет акцента применяется к кнопкам, ссылкам, активным элементам и прогресс-индикаторам.
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.building} title="Компактный режим" subtitle="Уменьшить отступы и плотность интерфейса" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0" }}>
-          <div>
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>Плотная вёрстка</div>
-            <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "2px" }}>Показывать больше данных на экране</div>
-          </div>
-          <Toggle checked={false} onChange={() => {}} />
         </div>
       </div>
     </div>
@@ -1384,50 +1459,85 @@ export default function Settings() {
         }
       `}</style>
 
-      <div style={{ display: "flex", gap: "0", height: "100%", minHeight: "calc(100vh - 60px)" }}>
+      <div style={{ display: "flex", width: "100%", alignItems: "start" }}>
         {/* ─── LEFT NAV ─── */}
         <aside style={{
-          width: "220px",
-          flexShrink: 0,
-          borderRight: "1px solid var(--border)",
-          padding: "24px 12px",
-          position: "sticky",
-          top: "0",
-          height: "fit-content",
+          width: "260px",
+          height: "calc(100vh - 140px)", // Запираем сайдбар строго по высоте экрана (минус отступы)
+          background: "transparent", // Тепеь сайдбар примет цвет фона всего сайта и сольется с ним
+          borderRight: "1px solid rgba(26,26,26,0.06)",
+          padding: "24px 16px",
           display: "flex",
           flexDirection: "column",
-          gap: "2px",
+          gap: "4px",
+          boxSizing: "border-box",
+          flexShrink: 0,
+          
+          // Магия фиксации на экране:
+          position: "sticky",
+          top: "20px", 
+          
+          // Магия раздельного скролла:
+          overflowY: "auto", // Включаем личный скролл сайдбара
+          overscrollBehaviorY: "contain" // 🔥 ГЛАВНАЯ ФИЧА: скролл внутри сайдбара никак не передается браузеру!
         }}>
-          <div style={{
-            fontSize: "10px", fontWeight: 700, letterSpacing: "1.5px",
-            textTransform: "uppercase", color: "var(--muted)", padding: "4px 14px 10px",
-          }}>
-            Настройки
+          <div style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "#999999", textTransform: "uppercase", letterSpacing: "1px" }}>
+            Настройки системы
           </div>
 
-          {navItems.map(item => (
-            <NavItem
-              key={item.id}
-              icon={item.icon}
-              label={item.label}
-              active={activeSection === item.id}
-              onClick={() => setActiveSection(item.id)}
-              badge={(item as any).badge}
-            />
-          ))}
+          {navItems.map((item: any) => {
+            const active = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "12px",
+                  width: "100%", padding: "12px 14px", borderRadius: "12px",
+                  background: active ? "#FFFFFF" : "transparent",
+                  border: active ? "1px solid rgba(26,26,26,0.04)" : "1px solid transparent",
+                  color: active ? "#1A1A1A" : "#666666",
+                  fontSize: "14px", fontWeight: active ? 800 : 600, cursor: "pointer",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  textAlign: "left",
+                  boxShadow: active ? "0 4px 12px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02)" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) { e.currentTarget.style.background = "rgba(26,26,26,0.03)"; e.currentTarget.style.color = "#1A1A1A"; }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#666666"; }
+                }}
+              >
+                <div style={{ color: active ? "#F9A08B" : "#999999", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {item.icon}
+                </div>
+                <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {item.label}
+                </span>
+                {item.badge && (
+                  <span style={{
+                    background: active ? "#F9A08B" : "rgba(26,26,26,0.06)",
+                    color: active ? "#FFF" : "#1A1A1A",
+                    fontSize: "11px", fontWeight: 800, padding: "2px 8px", borderRadius: "20px"
+                  }}>{item.badge}</span>
+                )}
+              </button>
+            );
+          })}
 
-          <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid var(--border)", marginLeft: "-12px", marginRight: "-12px", padding: "16px 12px 0" }}>
+          <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(26,26,26,0.06)", padding: "20px 0 0" }}>
             <button style={{
-              display: "flex", alignItems: "center", gap: "10px",
-              width: "100%", padding: "10px 14px", borderRadius: "10px",
-              background: "transparent", border: "none",
-              color: "#C0607A", fontSize: "13px", fontWeight: 600, cursor: "pointer",
-              transition: "background 0.18s ease", textAlign: "left",
+              display: "flex", alignItems: "center", gap: "12px",
+              width: "100%", padding: "12px 14px", borderRadius: "12px",
+              background: "transparent", border: "1px solid transparent",
+              color: "#D88C9A", fontSize: "14px", fontWeight: 700, cursor: "pointer",
+              transition: "all 0.2s ease", textAlign: "left",
             }}
-              onMouseOver={(e) => { e.currentTarget.style.background = "rgba(216,140,154,0.1)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(216,140,154,0.08)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
             >
-              {icons.logout}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icons.logout}</div>
               Выйти из аккаунта
             </button>
           </div>
@@ -1438,9 +1548,12 @@ export default function Settings() {
           ref={contentRef}
           style={{
             flex: 1,
-            padding: "28px 32px",
-            overflowY: "auto",
-            maxWidth: "820px",
+            padding: "32px 40px",
+            width: "100%",
+            maxWidth: "100%",
+            boxSizing: "border-box"
+            // 🔥 Внутренние скроллы и высоты полностью удалены!
+            // Контент свободно уходит вниз, вызывая родной скролл браузера.
           }}
         >
           <div

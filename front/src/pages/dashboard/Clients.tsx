@@ -233,7 +233,7 @@ function ActivityChart({ c, clientName }: { c: string; clientName: string }) {
       position: 'relative',
       maxWidth: '100%',
       boxSizing: 'border-box',
-      overflow: 'hidden'
+      overflow: 'hidden' // Оставляем hidden, теперь тултип внутри защищен!
     }}
     onClick={() => !expanded && setExpanded(true)}
     >
@@ -262,8 +262,18 @@ function ActivityChart({ c, clientName }: { c: string; clientName: string }) {
             </div>
           </div>
 
-          {/* Гистограмма с красивыми градиентами и тултипами */}
-          <div style={{ height: '160px', display: 'flex', alignItems: 'flex-end', gap: '6px', position: 'relative', marginTop: '10px', maxWidth: '100%', minHeight: '160px' }}>
+          {/* Гистограмма */}
+          <div style={{ 
+            height: '160px', 
+            display: 'flex', 
+            alignItems: 'flex-end', 
+            gap: '6px', 
+            justifyContent: 'center', 
+            position: 'relative', 
+            marginTop: '10px',
+            width: '100%',
+            minWidth: 0, // 🔥 Гарантирует, что график не "разопрет" родителя
+          }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 0 }}>
                <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}></div>
                <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}></div>
@@ -273,20 +283,65 @@ function ActivityChart({ c, clientName }: { c: string; clientName: string }) {
             {detailedData.map((d, i) => {
               const hPct = (d.v / detailedMax) * 100;
               const isHovered = hovered === i;
-              // Если период 3 мес, показываем каждую вторую подпись, чтобы не было тесно
               const showLabel = period === '3 мес' ? i % 2 === 0 : true;
+              
+              // 🔥 УМНАЯ МАТЕМАТИКА ДЛЯ ТУЛТИПА (Чтобы не обрезался по краям)
+              const isFirst = i === 0;
+              const isLast = i === detailedData.length - 1;
 
               return (
-                <div key={i} style={{ flex: 1, maxWidth: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end', position: 'relative', zIndex: 1 }}
+                <div key={i} style={{ 
+                  flex: 1, // 🔥 Эластичный столбик (сожмется если нужно)
+                  maxWidth: '30px', 
+                  minWidth: '10px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  height: '100%', 
+                  justifyContent: 'flex-end', 
+                  position: 'relative', 
+                  zIndex: isHovered ? 10 : 1 
+                }}
                   onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
                 >
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative' }}>
+                    
+                    {/* ТУЛТИП (Внутри столбика) */}
                     {isHovered && (
-                      <div style={{ position: 'absolute', bottom: `calc(${hPct}% + 8px)`, left: '50%', transform: 'translateX(-50%)', background: '#1A1A1A', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, pointerEvents: 'none', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 10 }}>
+                      <div style={{ 
+                        position: 'absolute', 
+                        bottom: `calc(${hPct}% + 8px)`, 
+                        // Сдвигаем тултип в зависимости от того, с краю он или нет
+                        left: isFirst ? '0' : isLast ? '100%' : '50%', 
+                        transform: isFirst ? 'translateX(0)' : isLast ? 'translateX(-100%)' : 'translateX(-50%)', 
+                        background: '#1A1A1A', 
+                        color: '#FFF', 
+                        padding: '6px 10px', 
+                        borderRadius: '8px', 
+                        fontSize: '12px', 
+                        fontWeight: 800, 
+                        pointerEvents: 'none', 
+                        whiteSpace: 'nowrap', 
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)', 
+                        zIndex: 20 
+                      }}>
                         {d.v} визитов
-                        <div style={{ position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: '10px', height: '10px', background: '#1A1A1A', borderRadius: '2px' }} />
+                        {/* Хвостик тултипа тоже динамически смещается */}
+                        <div style={{ 
+                          position: 'absolute', 
+                          bottom: '-4px', 
+                          left: isFirst ? '15px' : isLast ? 'calc(100% - 15px)' : '50%', 
+                          transform: 'translateX(-50%) rotate(45deg)', 
+                          width: '10px', 
+                          height: '10px', 
+                          background: '#1A1A1A', 
+                          borderRadius: '2px' 
+                        }} />
                       </div>
                     )}
+
+                    {/* СТОЛБИК */}
                     <div style={{ 
                       width: '100%', height: `${hPct}%`, 
                       background: `linear-gradient(180deg, ${c} 0%, ${c}20 100%)`, 
