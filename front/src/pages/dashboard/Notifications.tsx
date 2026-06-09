@@ -315,23 +315,25 @@ function ToggleSwitch({ on, onChange }: { on: boolean; onChange: () => void }) {
   );
 }
 
-// ─── MINI CHECKBOX ────────────────────────────────────────────────────────────
-function MiniCheck({ on, onChange }: { on: boolean; onChange: () => void }) {
+// ─── MINI CHECKBOX (С КОНТЕКСТНЫМ ЦВЕТОМ И СВЕЧЕНИЕМ) ─────────────────────────
+function MiniCheck({ on, onChange, color }: { on: boolean; onChange: () => void; color?: string }) {
+  const c = color || 'var(--peach)';
   return (
     <button
       onClick={onChange}
       style={{
-        width: '22px',
-        height: '22px',
-        borderRadius: '6px',
-        border: `1.5px solid ${on ? 'var(--peach)' : '#D8D5CF'}`,
-        background: on ? 'var(--peach)' : 'transparent',
+        width: '24px',
+        height: '24px',
+        borderRadius: '8px',
+        border: `1.5px solid ${on ? c : 'rgba(26,26,26,0.15)'}`,
+        background: on ? c : '#FDFCFB',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
-        transition: 'all 0.18s cubic-bezier(0.4,0,0.2,1)',
-        transform: on ? 'scale(1.08)' : 'scale(1)',
+        transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        transform: on ? 'scale(1.05)' : 'scale(1)',
+        boxShadow: on ? `0 4px 12px ${c}40` : 'inset 0 2px 4px rgba(0,0,0,0.02)',
         flexShrink: 0,
         padding: 0,
       }}
@@ -471,7 +473,6 @@ export default function Notifications() {
   const events = NOTIF_EVENTS[activeRole];
   const activeChannels = CHANNELS.filter(c => channels[c.key]);
 
-  // Счётчик активных
   const countActive = (role: Role) =>
     NOTIF_EVENTS[role].reduce((sum, ev) => {
       const hasActive = CHANNELS.some(ch => channels[ch.key] && toggles[ev.id]?.[ch.key]);
@@ -480,16 +481,18 @@ export default function Notifications() {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px', alignItems: 'start' }}>
+      
+      {/* CSS для премиальных hover-эффектов матрицы */}
+      <style>{`
+        .notif-row { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); border-left: 3px solid transparent; }
+        .notif-row:hover { background: rgba(26,26,26,0.02) !important; transform: translateX(2px); border-left-color: var(--peach); }
+      `}</style>
 
       {/* ─── ЛЕВАЯ КОЛОНКА ─── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-
-        {/* Иллюстрация */}
         <NotifIllustration />
-
-        {/* Каналы */}
         <div className="card" style={{ padding: '20px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: '16px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: '#999999', textTransform: 'uppercase', marginBottom: '16px' }}>
             Каналы доставки
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -497,31 +500,25 @@ export default function Notifications() {
               <div
                 key={ch.key}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  background: channels[ch.key] ? `${ch.color}0D` : 'transparent',
-                  transition: 'background 0.2s',
-                  cursor: 'default',
+                  display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
+                  borderRadius: '12px', background: channels[ch.key] ? `${ch.color}0D` : 'transparent',
+                  transition: 'background 0.2s', cursor: 'default',
                 }}
               >
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '8px',
-                  background: channels[ch.key] ? `${ch.color}18` : '#F0EDE8',
-                  color: channels[ch.key] ? ch.color : '#AAA',
+                  background: channels[ch.key] ? `${ch.color}18` : 'rgba(26,26,26,0.04)',
+                  color: channels[ch.key] ? ch.color : '#999999',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.2s',
-                  flexShrink: 0,
+                  transition: 'all 0.2s', flexShrink: 0,
                 }}>
                   <ch.IconComp />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: channels[ch.key] ? 'var(--text)' : 'var(--text3)' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: channels[ch.key] ? '#1A1A1A' : '#999999' }}>
                     {ch.label}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '11px', color: '#999999', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {ch.sub}
                   </div>
                 </div>
@@ -531,29 +528,16 @@ export default function Notifications() {
           </div>
         </div>
 
-        {/* Подсказка */}
-        <div style={{
-          padding: '14px 16px',
-          borderRadius: '12px',
-          background: 'rgba(249,160,139,0.08)',
-          border: '1px solid rgba(249,160,139,0.2)',
-          fontSize: '12px',
-          color: 'var(--text3)',
-          lineHeight: 1.6,
-        }}>
-          <span style={{ color: '#F9A08B', fontWeight: 600 }}>Совет:</span> Настройте отдельно для каждой роли, что и куда отправлять — Velora учтёт это автоматически.
+        <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(249,160,139,0.08)', border: '1px solid rgba(249,160,139,0.2)', fontSize: '12px', color: '#666666', lineHeight: 1.6 }}>
+          <span style={{ color: '#F9A08B', fontWeight: 800 }}>Совет:</span> Настройте отдельно для каждой роли, что и куда отправлять — Velora учтёт это автоматически.
         </div>
       </div>
 
       {/* ─── ПРАВАЯ КОЛОНКА ─── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-        {/* Табы ролей */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '8px',
-        }}>
+        {/* Табы ролей (ОТЦЕНТРОВАННЫЕ ПО ГОРИЗОНТАЛИ) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
           {ROLES.map(role => {
             const cnt = countActive(role.key);
             const isActive = activeRole === role.key;
@@ -562,37 +546,30 @@ export default function Notifications() {
                 key={role.key}
                 onClick={() => switchRole(role.key)}
                 style={{
-                  padding: '14px 12px',
-                  borderRadius: '14px',
-                  border: isActive ? `1.5px solid ${role.color}50` : '1.5px solid transparent',
-                  background: isActive ? role.bg : 'var(--card)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '8px',
-                  transition: 'all 0.22s cubic-bezier(0.4,0,0.2,1)',
+                  padding: '14px 16px', borderRadius: '16px',
+                  border: isActive ? `1.5px solid ${role.color}50` : '1.5px solid rgba(26,26,26,0.08)',
+                  background: isActive ? role.bg : '#FFFFFF', cursor: 'pointer',
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px',
+                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   transform: isActive ? 'translateY(-2px)' : 'translateY(0)',
-                  boxShadow: isActive ? `0 4px 16px ${role.color}18` : 'none',
-                  fontFamily: 'var(--font)',
-                  textAlign: 'left',
+                  boxShadow: isActive ? `0 12px 24px -8px ${role.color}30` : '0 2px 8px rgba(0,0,0,0.02)',
+                  fontFamily: "'Manrope', sans-serif", textAlign: 'left',
                 }}
               >
                 <div style={{
-                  width: '30px', height: '30px',
-                  borderRadius: '8px',
-                  background: isActive ? `${role.color}22` : 'rgba(0,0,0,0.04)',
-                  color: isActive ? role.color : 'var(--text3)',
+                  width: '38px', height: '38px', borderRadius: '10px',
+                  background: isActive ? `${role.color}22` : 'rgba(26,26,26,0.04)',
+                  color: isActive ? role.color : '#999999',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.22s',
+                  transition: 'all 0.25s', flexShrink: 0
                 }}>
                   <role.IconComp />
                 </div>
-                <div>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: isActive ? 'var(--text)' : 'var(--text3)', lineHeight: 1.2 }}>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: isActive ? '#1A1A1A' : '#666666', lineHeight: 1.2, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     {role.label}
                   </div>
-                  <div style={{ fontSize: '11px', color: isActive ? role.color : 'var(--text3)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11px', color: isActive ? role.color : '#999999', marginTop: '3px', fontWeight: 600 }}>
                     {cnt} активных
                   </div>
                 </div>
@@ -602,134 +579,84 @@ export default function Notifications() {
         </div>
 
         {/* Матрица уведомлений */}
-        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-
-          {/* Шапка */}
-          <div style={{
-            padding: '20px 24px 16px',
-            borderBottom: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '34px', height: '34px',
-                borderRadius: '10px',
-                background: currentRole.bg,
-                color: currentRole.color,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+        <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid rgba(26,26,26,0.08)' }}>
+          <div style={{ padding: '24px', borderBottom: '1px solid rgba(26,26,26,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: currentRole.bg, color: currentRole.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <currentRole.IconComp />
               </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>
-                  {currentRole.label}
+                <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A' }}>
+                  Сценарии для: {currentRole.label}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                  {events.length} типов уведомлений
+                <div style={{ fontSize: '12px', color: '#666666', marginTop: '2px' }}>
+                  Настройте каналы для {events.length} системных триггеров
                 </div>
               </div>
             </div>
-
-            {/* Легенда каналов */}
-            {activeChannels.length > 0 && (
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {activeChannels.map(ch => (
-                  <div key={ch.key} title={ch.label} style={{
-                    width: '28px', height: '28px',
-                    borderRadius: '8px',
-                    background: `${ch.color}15`,
-                    color: ch.color,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <ch.IconComp />
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Строки */}
           <div style={{
             opacity: animating ? 0 : 1,
-            transform: animating
-              ? `translateX(${animDir === 'right' ? '16px' : '-16px'})`
-              : 'translateX(0)',
-            transition: animating
-              ? 'none'
-              : 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.4,0,0.2,1)',
+            transform: animating ? `translateX(${animDir === 'right' ? '16px' : '-16px'})` : 'translateX(0)',
+            transition: animating ? 'none' : 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.4,0,0.2,1)',
           }}>
-            {/* Заголовок столбцов */}
+            
+            {/* Заголовок столбцов (С ИКОНКАМИ ВМЕСТО ТЕКСТА) */}
             {activeChannels.length > 0 && (
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: `1fr repeat(${activeChannels.length}, 40px)`,
-                gap: '8px',
-                padding: '10px 24px 6px',
-                alignItems: 'center',
+                display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
+                gap: '12px', padding: '16px 24px 8px', alignItems: 'center',
               }}>
-                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  Событие
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                  Событие системы
                 </div>
                 {activeChannels.map(ch => (
-                  <div key={ch.key} style={{
-                    fontSize: '10px', fontWeight: 700,
-                    color: ch.color,
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                    textAlign: 'center',
-                  }}>
-                    {ch.label.slice(0, 2)}
+                  <div key={ch.key} title={ch.label} style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: `${ch.color}15`, color: ch.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ch.IconComp />
+                    </div>
                   </div>
                 ))}
               </div>
             )}
 
             {activeChannels.length === 0 && (
-              <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px' }}>
-                Включите хотя бы один канал доставки слева
+              <div style={{ padding: '60px 24px', textAlign: 'center', background: '#FAFAFA' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}><Icon.AlertTriangle /></div>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px' }}>Нет активных каналов</div>
+                <div style={{ fontSize: '12px', color: '#666666' }}>Включите хотя бы один канал доставки в панели слева</div>
               </div>
             )}
 
+            {/* Строки с hover-эффектом и цветными чекбоксами */}
             {activeChannels.length > 0 && events.map((ev, i) => (
-              <div
-                key={ev.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: `1fr repeat(${activeChannels.length}, 40px)`,
-                  gap: '8px',
-                  padding: '10px 24px',
-                  alignItems: 'center',
-                  background: i % 2 === 1 ? 'rgba(0,0,0,0.015)' : 'transparent',
-                  borderBottom: i < events.length - 1 ? '1px solid var(--border)' : 'none',
-                  transition: 'background 0.15s',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: '28px', height: '28px',
-                    borderRadius: '7px',
-                    background: `${ev.color}15`,
-                    color: ev.color,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>
+              <div key={ev.id} className="notif-row" style={{
+                display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
+                gap: '12px', padding: '14px 24px', alignItems: 'center',
+                background: i % 2 === 1 ? 'rgba(26,26,26,0.01)' : 'transparent',
+                borderBottom: i < events.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${ev.color}15`, color: ev.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <ev.icon />
                   </div>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>
                       {ev.title}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)' }}>
+                    <div style={{ fontSize: '11px', color: '#666666' }}>
                       {ev.desc}
                     </div>
                   </div>
                 </div>
                 {activeChannels.map(ch => (
                   <div key={ch.key} style={{ display: 'flex', justifyContent: 'center' }}>
+                    {/* ПЕРЕДАЕМ УНИКАЛЬНЫЙ ЦВЕТ КАНАЛА В ЧЕКБОКС */}
                     <MiniCheck
                       on={toggles[ev.id]?.[ch.key] ?? false}
                       onChange={() => toggleCheck(ev.id, ch.key)}
+                      color={ch.color}
                     />
                   </div>
                 ))}
@@ -739,16 +666,9 @@ export default function Notifications() {
 
           {/* Итог */}
           {activeChannels.length > 0 && (
-            <div style={{
-              padding: '14px 24px',
-              borderTop: '1px solid var(--border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: 'rgba(0,0,0,0.015)',
-            }}>
-              <span style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                Итого включено: <strong style={{ color: 'var(--text)' }}>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FAFAFA' }}>
+              <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>
+                Активных триггеров: <strong style={{ color: '#1A1A1A', fontWeight: 800 }}>
                   {events.reduce((s, ev) => s + activeChannels.filter(ch => toggles[ev.id]?.[ch.key]).length, 0)}
                 </strong> из {events.length * activeChannels.length}
               </span>
@@ -764,21 +684,11 @@ export default function Notifications() {
                     return next;
                   });
                 }}
-                style={{
-                  fontSize: '12px', fontWeight: 600,
-                  color: 'var(--peach)',
-                  background: 'none', border: 'none',
-                  cursor: 'pointer', padding: '4px 8px',
-                  borderRadius: '6px',
-                  fontFamily: 'var(--font)',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(249,160,139,0.08)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.1)', cursor: 'pointer', padding: '8px 14px', borderRadius: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
               >
-                {events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key]))
-                  ? 'Снять все'
-                  : 'Выбрать все'}
+                {events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key])) ? 'Снять все галочки' : 'Активировать всё'}
               </button>
             </div>
           )}

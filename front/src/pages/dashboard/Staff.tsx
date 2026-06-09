@@ -83,7 +83,7 @@ export default function Staff() {
   const toggleSlot = (ti: number, di: number) => {
     const isBooked = schedules[activeStaffId]?.[ti]?.[di];
     if (isBooked) {
-      // Если пользователь просил больше не спрашивать — удаляем сразу
+      // Если стоит галочка "Больше не спрашивать" — удаляем сразу
       if (dontAskDelete) {
         const newSch = { ...schedules };
         newSch[activeStaffId][ti][di] = 0;
@@ -99,6 +99,7 @@ export default function Staff() {
           newSch[activeStaffId][ti][di] = 0;
           setSchedules(newSch);
           showToast('Слот удалён');
+          closeModal(); // 🔥 БАГ БЫЛ ЗДЕСЬ: Окно не закрывалось
         }
       });
     } else {
@@ -120,6 +121,7 @@ export default function Staff() {
         newSch[activeStaffId] = Array(7).fill(null).map(() => Array(7).fill(0));
         setSchedules(newSch);
         showToast('График очищен');
+        closeModal();
       }
     });
   };
@@ -181,7 +183,7 @@ export default function Staff() {
             <div className="hero-bg" style={{ background: activeStaff.bg }}></div>
             
             <div className="hero-actions">
-              <button className="h-btn" onClick={() => setModal({ isOpen: true, title: `Написать ${activeStaff.name.split(' ')[0]}`, sub: 'Сообщение уйдет в рабочий чат', type: 'PROMPT_MESSAGE', confirmText: 'Отправить', onConfirm: () => showToast('Сообщение отправлено') })}>
+              <button className="h-btn" onClick={() => setModal({ isOpen: true, title: `Написать ${activeStaff.name.split(' ')[0]}`, sub: 'Сообщение уйдет в рабочий чат', type: 'PROMPT_MESSAGE', confirmText: 'Отправить', onConfirm: () => { showToast('Сообщение отправлено'); closeModal(); } })}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Написать
               </button>
@@ -198,14 +200,37 @@ export default function Staff() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 Звонок
               </button>
-              {/* 🔥 Теперь используем наш умный компонент PrimaryButton 🔥 */}
+
+              {/* 🔥 ПРЕМИАЛЬНАЯ КНОПКА "РЕДАКТИРОВАТЬ" */}
               {!isOwner && (
-                <PrimaryButton 
-                  style={{ padding: '10px 24px' }} 
-                  onClick={() => setIsEditModalOpen(true)} // 🔥 Открываем модалку по клику
+                <button 
+                  onClick={() => setIsEditModalOpen(true)}
+                  style={{ 
+                    display: 'flex', alignItems: 'center', gap: '8px', 
+                    padding: '10px 20px', background: '#FFFFFF', color: '#1A1A1A', 
+                    border: '1px solid rgba(26,26,26,0.1)', borderRadius: '12px', 
+                    fontSize: '13px', fontWeight: 700, cursor: 'pointer', 
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)', 
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                    fontFamily: "'Manrope', sans-serif" 
+                  }}
+                  onMouseEnter={e => { 
+                    e.currentTarget.style.transform = 'translateY(-2px)'; 
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; 
+                    e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)';
+                  }}
+                  onMouseLeave={e => { 
+                    e.currentTarget.style.transform = 'translateY(0)'; 
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; 
+                    e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)';
+                  }}
                 >
-                  Изменить
-                </PrimaryButton>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  Редактировать
+                </button>
               )}
             </div>
 
@@ -365,6 +390,7 @@ export default function Staff() {
                               newUp[activeStaffId].splice(i, 1);
                               setUpcoming(newUp);
                               showToast('Занятие удалено');
+                              closeModal();
                             }
                           });
                         }}>
@@ -389,86 +415,102 @@ export default function Staff() {
         </div>
       )}
 
-      <div className={`modal-overlay ${modal.isOpen ? 'open' : ''}`} onClick={closeModal}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
-          <div className="modal-title">{modal.title}</div>
-          <div className="modal-sub">{modal.sub}</div>
-          
-          {modal.type === 'PROMPT_MESSAGE' && (
-            <textarea className="modal-textarea" placeholder="Введите сообщение..."></textarea>
-          )}
-
-          {modal.type === 'PROMPT_CALL' && (
-            <div className="call-options-wrap">
-              
-              <div className="call-opt-card" onClick={() => { closeModal(); showToast('Начинаем звонок...'); }}>
-                <div className="call-opt-icon" style={{ background: 'rgba(74,128,196,0.1)', color: '#4A80C4' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                </div>
-                <div className="call-opt-text">
-                  <div className="call-opt-title">Обычный звонок</div>
-                  <div className="call-opt-sub">{modal.phone}</div>
-                </div>
-                <div className="call-opt-arrow">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-              </div>
-
-              <div className="call-opt-card" onClick={() => { closeModal(); showToast('Открываем WhatsApp...'); }}>
-                <div className="call-opt-icon" style={{ background: 'rgba(91,171,114,0.12)', color: '#5BAB72' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                </div>
-                <div className="call-opt-text">
-                  <div className="call-opt-title">Написать в WhatsApp</div>
-                  <div className="call-opt-sub">Перейти в мессенджер</div>
-                </div>
-                <div className="call-opt-arrow">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-              </div>
-
-            </div>
-          )}
-
-          {modal.danger && (
-            <div className="dont-ask-wrapper">
-              <label className="custom-checkbox-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input 
-                  type="checkbox" 
-                  checked={dontAskDelete} 
-                  onChange={(e) => setDontAskDelete(e.target.checked)}
-                  style={{ display: 'none' }}
-                />
-                <div className={`custom-checkbox-box ${dontAskDelete ? 'checked' : ''}`}>
-                  {dontAskDelete && (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  )}
-                </div>
-                <span className="dont-ask-text">Больше не спрашивать при удалении</span>
-              </label>
-            </div>
-          )}
-
-          <div className="modal-btns" style={modal.type === 'PROMPT_CALL' ? { marginTop: '16px' } : {}}>
-            {modal.type === 'PROMPT_CALL' ? (
-              /* Для выбора способа связи нужна только кнопка Закрыть на всю ширину */
-              <button className="mbtn cancel" style={{ width: '100%', margin: 0 }} onClick={closeModal}>Отмена</button>
-            ) : (
-              /* Стандартные кнопки для других модалок */
-              <>
-                <button className="mbtn cancel" onClick={closeModal}>Отмена</button>
-                {modal.confirmText && (
-                  <button className={`mbtn ${modal.danger ? 'danger' : 'confirm'}`} onClick={modal.onConfirm}>
-                    {modal.confirmText}
-                  </button>
+      {modal.isOpen && (
+        <div 
+          onClick={closeModal}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(26,26,26,0.3)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            animation: 'fadeIn 0.2s ease forwards', padding: '20px', boxSizing: 'border-box'
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF', width: '100%', maxWidth: '420px',
+              borderRadius: '24px', padding: '32px',
+              boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
+              animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              display: 'flex', flexDirection: 'column', gap: '24px',
+              fontFamily: "'Manrope', sans-serif"
+            }}
+          >
+            <style>{`
+              @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes scaleUp { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+            `}</style>
+            
+            {/* Иконка и Заголовки */}
+            <div>
+              <div style={{
+                width: '48px', height: '48px', borderRadius: '14px', marginBottom: '20px',
+                background: modal.danger ? 'rgba(216,140,154,0.15)' : 'rgba(74,128,196,0.15)',
+                color: modal.danger ? '#D88C9A' : '#4A80C4',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {modal.danger ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 )}
-              </>
+              </div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '8px' }}>{modal.title}</div>
+              <div style={{ fontSize: '14px', color: '#666666', lineHeight: 1.5 }}>{modal.sub}</div>
+            </div>
+            
+            {/* Доп. контент в зависимости от типа */}
+            {modal.type === 'PROMPT_MESSAGE' && (
+              <textarea placeholder="Введите сообщение..." style={{ width: '100%', height: '100px', padding: '16px', background: '#FDFCFB', border: '1.5px solid rgba(26,26,26,0.1)', borderRadius: '12px', fontSize: '14px', color: '#1A1A1A', outline: 'none', resize: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} autoFocus />
             )}
+
+            {modal.type === 'PROMPT_CALL' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div onClick={() => { closeModal(); showToast('Начинаем звонок...'); }} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: '#FDFCFB', border: '1.5px solid rgba(26,26,26,0.06)', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(74,128,196,0.3)'; e.currentTarget.style.background = '#FFFFFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.06)'; e.currentTarget.style.background = '#FDFCFB'; }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(74,128,196,0.1)', color: '#4A80C4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A' }}>Обычный звонок</div>
+                    <div style={{ fontSize: '13px', color: '#666666' }}>{modal.phone}</div>
+                  </div>
+                </div>
+                <div onClick={() => { closeModal(); showToast('Открываем WhatsApp...'); }} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: '#FDFCFB', border: '1.5px solid rgba(26,26,26,0.06)', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(91,171,114,0.3)'; e.currentTarget.style.background = '#FFFFFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.06)'; e.currentTarget.style.background = '#FDFCFB'; }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(91,171,114,0.12)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A' }}>Написать в WhatsApp</div>
+                    <div style={{ fontSize: '13px', color: '#666666' }}>Перейти в мессенджер</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {modal.danger && (
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '12px 16px', background: 'rgba(26,26,26,0.03)', borderRadius: '12px', border: '1px solid rgba(26,26,26,0.05)' }}>
+                <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: `1.5px solid ${dontAskDelete ? '#1A1A1A' : 'rgba(26,26,26,0.2)'}`, background: dontAskDelete ? '#1A1A1A' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                  {dontAskDelete && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                <input type="checkbox" checked={dontAskDelete} onChange={e => setDontAskDelete(e.target.checked)} style={{ display: 'none' }} />
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>Больше не спрашивать при удалении</span>
+              </label>
+            )}
+
+            {/* Экшены */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={closeModal} style={{ flex: 1, padding: '12px', background: '#FDFCFB', color: '#1A1A1A', border: '1.5px solid rgba(26,26,26,0.1)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background='rgba(26,26,26,0.02)'} onMouseLeave={e => e.currentTarget.style.background='#FDFCFB'}>
+                Отмена
+              </button>
+              {modal.confirmText && (
+                <button onClick={modal.onConfirm} style={{ flex: 1, padding: '12px', background: modal.danger ? '#D88C9A' : '#1A1A1A', color: '#FFFFFF', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: modal.danger ? '0 8px 24px rgba(216,140,154,0.3)' : '0 8px 24px rgba(26,26,26,0.15)' }} onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.filter='brightness(1.05)'; }} onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.filter='none'; }}>
+                  {modal.confirmText}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className={`toast ${toastMsg ? 'show' : ''}`}>
         {toastMsg}

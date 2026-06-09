@@ -113,6 +113,13 @@ const IconMessage = () => (
   </svg>
 );
 
+const IconTrendUp = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
+  </svg>
+);
+
 // ─── ЛОЯЛЬНОСТЬ — ИЛЛЮСТРАЦИЯ SVG ─────────────────────────────────────────────
 function LoyaltyIllus({ points }: { points: number }) {
   const tier = points >= 8000 ? 'Platinum' : points >= 3000 ? 'Gold' : points >= 1000 ? 'Silver' : 'Bronze';
@@ -185,29 +192,157 @@ function AbonementCard({ ab, abMax, c }: { ab: number; abMax: number; c: string 
   );
 }
 
-// ─── АКТИВНОСТЬ МИНИ-ЧАРТ ─────────────────────────────────────────────────────
-function ActivityChart({ c }: { c: string }) {
-  const bars = [40, 65, 30, 80, 55, 90, 45, 70, 85, 60, 75, 95].map(h => Math.round(h * 0.9 + Math.random() * 10));
-  const max = Math.max(...bars);
+// ─── АКТИВНОСТЬ МИНИ-ЧАРТ (PREMIUM INTERACTIVE) ────────────────────────────────
+function ActivityChart({ c, clientName }: { c: string; clientName: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [period, setPeriod] = useState('3 мес');
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  const miniBars = [40, 65, 30, 80, 55, 90, 45, 70, 85, 60, 75, 95].map(h => Math.round(h * 0.9 + Math.random() * 10));
+  const miniMax = Math.max(...miniBars);
+
+  const getDetailedData = () => {
+    if (period === '1 мес') return [
+      { l: 'Нед 1', v: 3 }, { l: 'Нед 2', v: 5 }, { l: 'Нед 3', v: 2 }, { l: 'Нед 4', v: 4 }
+    ];
+    if (period === '3 мес') return [
+      { l: 'Нед 1', v: 2 }, { l: 'Нед 2', v: 4 }, { l: 'Нед 3', v: 3 }, { l: 'Нед 4', v: 5 },
+      { l: 'Нед 5', v: 1 }, { l: 'Нед 6', v: 4 }, { l: 'Нед 7', v: 6 }, { l: 'Нед 8', v: 3 },
+      { l: 'Нед 9', v: 5 }, { l: 'Нед 10', v: 2 }, { l: 'Нед 11', v: 4 }, { l: 'Нед 12', v: 3 },
+    ];
+    return [
+      { l: 'Янв', v: 12 }, { l: 'Фев', v: 15 }, { l: 'Мар', v: 10 }, { l: 'Апр', v: 18 },
+      { l: 'Май', v: 22 }, { l: 'Июн', v: 14 }
+    ];
+  };
+
+  const detailedData = getDetailedData();
+  const detailedMax = Math.max(...detailedData.map(d => d.v), 1);
+  const totalVisits = detailedData.reduce((s, d) => s + d.v, 0);
+
   return (
-    <div style={{ padding: '14px 16px', background: 'rgba(26,26,26,0.02)', borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '12px' }}>
-      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>
-        <span>Активность (3 мес.)</span>
-        <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 500 }}>12 занятий</span>
-      </div>
-      <svg width="100%" height="48" viewBox={`0 0 ${bars.length * 16} 48`} preserveAspectRatio="none">
-        {bars.map((h, i) => {
-          const barH = (h / max) * 38;
-          return (
-            <g key={i}>
-              <rect x={i * 16 + 2} y={44 - barH} width="12" height={barH} rx="3"
-                fill={`${c}30`} />
-              <rect x={i * 16 + 2} y={44 - barH} width="12" height={Math.min(barH, 4)} rx="3"
-                fill={c} />
-            </g>
-          );
-        })}
-      </svg>
+    <div style={{ 
+      padding: expanded ? '24px' : '14px 16px', 
+      background: expanded ? '#FFFFFF' : 'rgba(26,26,26,0.02)', 
+      borderRadius: '16px', 
+      border: expanded ? `1px solid ${c}40` : '1px solid var(--border)', 
+      marginBottom: '14px',
+      cursor: expanded ? 'default' : 'pointer',
+      transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      boxShadow: expanded ? `0 16px 40px -8px ${c}25` : 'none',
+      position: 'relative',
+      maxWidth: '100%',
+      boxSizing: 'border-box',
+      overflow: 'hidden'
+    }}
+    onClick={() => !expanded && setExpanded(true)}
+    >
+      {expanded ? (
+        <div style={{ animation: 'chartFadeIn 0.4s ease both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>Детальная активность</div>
+              <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '2px' }}>{clientName}</div>
+            </div>
+            <button onClick={(e) => { e.stopPropagation(); setExpanded(false); }} style={{ background: 'rgba(26,26,26,0.04)', border: 'none', width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(216,140,154,0.1)'; e.currentTarget.style.color = '#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.04)'; e.currentTarget.style.color = 'var(--text3)'; }}>
+              <IconClose />
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+            <div>
+              <div style={{ fontSize: '32px', fontWeight: 800, color: c, letterSpacing: '-1.5px', lineHeight: 1 }}>{totalVisits}</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: '6px' }}>Визитов за период</div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(26,26,26,0.04)' }}>
+              {['1 мес', '3 мес', '6 мес'].map(p => (
+                <button key={p} onClick={(e) => { e.stopPropagation(); setPeriod(p); }} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: period === p ? '#FFFFFF' : 'transparent', color: period === p ? 'var(--text)' : 'var(--text3)', boxShadow: period === p ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{p}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Гистограмма с красивыми градиентами и тултипами */}
+          <div style={{ height: '160px', display: 'flex', alignItems: 'flex-end', gap: '6px', position: 'relative', marginTop: '10px', maxWidth: '100%', minHeight: '160px' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 0 }}>
+               <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}></div>
+               <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}></div>
+               <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}></div>
+            </div>
+
+            {detailedData.map((d, i) => {
+              const hPct = (d.v / detailedMax) * 100;
+              const isHovered = hovered === i;
+              // Если период 3 мес, показываем каждую вторую подпись, чтобы не было тесно
+              const showLabel = period === '3 мес' ? i % 2 === 0 : true;
+
+              return (
+                <div key={i} style={{ flex: 1, maxWidth: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end', position: 'relative', zIndex: 1 }}
+                  onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
+                >
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative' }}>
+                    {isHovered && (
+                      <div style={{ position: 'absolute', bottom: `calc(${hPct}% + 8px)`, left: '50%', transform: 'translateX(-50%)', background: '#1A1A1A', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, pointerEvents: 'none', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 10 }}>
+                        {d.v} визитов
+                        <div style={{ position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: '10px', height: '10px', background: '#1A1A1A', borderRadius: '2px' }} />
+                      </div>
+                    )}
+                    <div style={{ 
+                      width: '100%', height: `${hPct}%`, 
+                      background: `linear-gradient(180deg, ${c} 0%, ${c}20 100%)`, 
+                      borderRadius: '6px 6px 4px 4px', 
+                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      opacity: hovered !== null && !isHovered ? 0.4 : 1,
+                      transform: isHovered ? 'scaleY(1.05)' : 'scaleY(1)',
+                      transformOrigin: 'bottom',
+                      border: isHovered ? `1px solid ${c}` : '1px solid transparent',
+                      borderBottom: 'none'
+                    }} />
+                  </div>
+                  <div style={{ fontSize: '9px', color: isHovered ? 'var(--text)' : 'var(--text3)', fontWeight: 800, transition: 'color 0.2s', textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: showLabel ? 1 : 0 }}>
+                    {d.l}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* Smart Insight AI Block */}
+          <div style={{ marginTop: '24px', padding: '16px', background: `${c}08`, borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '14px', border: `1px solid ${c}25` }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `linear-gradient(135deg, ${c}, ${c}88)`, color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${c}40` }}>
+              <IconTrendUp />
+            </div>
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text)', marginBottom: '4px' }}>Устойчивый темп посещений</div>
+              <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.5 }}>
+                Клиент посещает студию в среднем <strong>2.5 раза в неделю</strong>. Предпочитает утренние слоты. Вероятность оттока крайне низкая.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      ) : (
+        <>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Активность (3 мес.)</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ opacity: 0.4 }}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </div>
+            <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600 }}>Нажмите для деталей</span>
+          </div>
+          <svg width="100%" height="48" viewBox={`0 0 ${miniBars.length * 16} 48`} preserveAspectRatio="none">
+            {miniBars.map((h, i) => {
+              const barH = (h / miniMax) * 38;
+              return (
+                <g key={i}>
+                  <rect x={i * 16 + 2} y={44 - barH} width="12" height={barH} rx="3" fill={`${c}30`} style={{ transition: 'all 0.3s' }} />
+                  <rect x={i * 16 + 2} y={44 - barH} width="12" height={Math.min(barH, 4)} rx="3" fill={c} style={{ transition: 'all 0.3s' }} />
+                </g>
+              );
+            })}
+          </svg>
+        </>
+      )}
     </div>
   );
 }
@@ -367,7 +502,7 @@ function ClientPanel({ client, onClose }: { client: ClientData; onClose: () => v
 
             <LoyaltyIllus points={client.points} />
             <AbonementCard ab={client.ab} abMax={client.abMax} c={client.c} />
-            <ActivityChart c={client.c} />
+            <ActivityChart c={client.c} clientName={client.n} />
 
             {/* Теги */}
             <div style={{ marginBottom: '14px' }}>
@@ -618,6 +753,11 @@ export default function Clients() {
           opacity: 1;
           transform: translateX(0);
           margin-left: 20px; /* 🔥 Вот тот самый «воздух» между сеткой и панелью */
+        }
+
+        @keyframes chartFadeIn {
+          from { opacity: 0; transform: scale(0.98) translateY(10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
 

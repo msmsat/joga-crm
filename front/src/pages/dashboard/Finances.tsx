@@ -903,7 +903,7 @@ function TabOperations({ showToast, initialSearch }: {
           <div style={{ fontSize: '13px', color: '#666666' }}>Попробуйте изменить параметры поиска или фильтры</div>
         </div>
       ) : (
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
           {filtered.map((op, i) => {
             const isIncome = op.type === 'income';
             const color = isIncome ? '#5BAB72' : '#D88C9A';
@@ -911,7 +911,7 @@ function TabOperations({ showToast, initialSearch }: {
             const isOpen = expanded === op.id;
             
             return (
-              <div key={op.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none' }}>
+              <div key={op.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.12)' : 'none' }}>
                 <div
                   onClick={() => setExpanded(isOpen ? null : op.id)}
                   style={{
@@ -1192,7 +1192,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
         
         {/* Подписано */}
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(163,201,168,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(163,201,168,0.12)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Check /></div>
@@ -1202,7 +1202,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
         </div>
 
         {/* Ожидает подписи */}
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(216,140,154,0.12) 0%, transparent 70%)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(216,140,154,0.12)', color: '#D88C9A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Edit /></div>
@@ -1214,7 +1214,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
         </div>
 
         {/* Остальные / Черновики */}
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(126,181,214,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(126,181,214,0.12)', color: '#7EB5D6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Doc /></div>
@@ -1225,7 +1225,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
       </div>
 
       {/* 2. ПАНЕЛЬ УПРАВЛЕНИЯ (ACTION ISLAND) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)', flexWrap: 'wrap' }}>
         
         {/* Поиск */}
         <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
@@ -1258,7 +1258,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
 
       {/* 3. ЗОНА ЗАГРУЗКИ НОВОГО ДОКУМЕНТА (DRAG & DROP) */}
       {addOpen && (
-        <div className="morph-container card" style={{ padding: '32px', marginBottom: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
+        <div className="morph-container card" style={{ padding: '32px', marginBottom: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>Добавить документ в базу</div>
             <button onClick={() => setAddOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color='#999'}><Ico.X /></button>
@@ -1308,7 +1308,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
       )}
 
       {/* 4. СПИСОК ДОКУМЕНТОВ */}
-      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
         {filtered.length === 0 ? (
           <div style={{ padding: '64px 20px', textAlign: 'center', background: '#FAFAFA' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}><Ico.Doc /></div>
@@ -1320,7 +1320,7 @@ function TabDocuments({ showToast }: { showToast: (msg: string, t?: ToastType) =
           const extColor = extColors[doc.ext] || '#999';
           
           return (
-            <div key={doc.id} className="doc-row" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none', background: 'transparent', transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', borderLeft: '3px solid transparent' }}>
+            <div key={doc.id} className="doc-row" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: i < filtered.length - 1 ? '1px solid rgba(26,26,26,0.12)' : 'none', background: 'transparent', transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', borderLeft: '3px solid transparent' }}>
               
               {/* Элегантная иконка формата файла */}
               <div style={{ width: '46px', height: '52px', borderRadius: '10px', background: extColor + '15', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, gap: '4px', color: extColor, border: `1px solid ${extColor}30` }}>
@@ -1425,7 +1425,7 @@ function TabOnlinePayments({ showToast }: { showToast: (msg: string, t?: ToastTy
       `}</style>
 
       {/* 1. ГЛАВНЫЙ БЛОК (СВОДКА И АНИМИРОВАННАЯ ИЛЛЮСТРАЦИЯ) */}
-      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.04)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.04)', marginBottom: '24px', overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.04)', marginBottom: '24px', overflow: 'hidden' }}>
         
         <div style={{ padding: '32px', position: 'relative' }}>
           {/* Мягкий фоновый засвет */}
@@ -1516,7 +1516,7 @@ function TabOnlinePayments({ showToast }: { showToast: (msg: string, t?: ToastTy
                 padding: '24px', borderRadius: '16px',
                 opacity: ch.active ? 1 : 0.6, 
                 background: ch.active ? '#FFFFFF' : 'rgba(26,26,26,0.01)',
-                border: isChartOpen ? '1.5px solid #F9A08B' : (ch.active ? '1.5px solid rgba(26,26,26,0.06)' : '1.5px solid rgba(26,26,26,0.04)'),
+                border: isChartOpen ? '1.5px solid #F9A08B' : (ch.active ? '1.5px solid rgba(26,26,26,0.15)' : '1.5px solid rgba(26,26,26,0.12)'),
                 boxShadow: isChartOpen ? '0 16px 40px -8px rgba(249,160,139,0.15)' : (ch.active ? '0 8px 24px -4px rgba(26,26,26,0.04)' : 'none'),
                 transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
                 overflow: 'hidden'
@@ -1642,9 +1642,13 @@ function TabPaymentMethods({ showToast }: { showToast: (msg: string, t?: ToastTy
   );
 }
 
-// ─── TAB: ОТЧЁТЫ ─────────────────────────────────────────────────────────────
+// ─── TAB: ОТЧЁТЫ (PREMIUM ANALYTICS & INSIGHTS) ──────────────────────────────
 function TabReports({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
   const [period, setPeriod] = useState('Месяц');
+  const [breakdownView, setBreakdownView] = useState<'income' | 'expense'>('expense');
+  const [hoveredSeg, setHoveredSegment] = useState<number | null>(null);
+
+  // Данные для основного графика
   const bars = [
     { label: 'Пн', income: 45000, expense: 12000 },
     { label: 'Вт', income: 38000, expense: 8000 },
@@ -1654,70 +1658,212 @@ function TabReports({ showToast }: { showToast: (msg: string, t?: ToastType) => 
     { label: 'Сб', income: 120000, expense: 30000 },
     { label: 'Вс', income: 63000, expense: 10000 },
   ];
-  const maxVal = Math.max(...bars.map(b => b.income));
+  const maxVal = Math.max(...bars.map(b => Math.max(b.income, b.expense)));
+
+  // Данные для детализации (Breakdown)
+  const expensesData = [
+    { id: 1, label: 'Зарплата команды', value: 120000, color: '#D88C9A' },
+    { id: 2, label: 'Аренда помещения', value: 80000, color: '#E8A0B0' },
+    { id: 3, label: 'Маркетинг и реклама', value: 35000, color: '#F0B4C0' },
+    { id: 4, label: 'Налоги и взносы', value: 15000, color: '#F8C8D0' },
+  ];
+  const incomeData = [
+    { id: 1, label: 'Абонементы', value: 250000, color: '#5BAB72' },
+    { id: 2, label: 'Разовые визиты', value: 120000, color: '#7AA080' },
+    { id: 3, label: 'Продажа товаров (Вода, Мерч)', value: 45000, color: '#9AB5A0' },
+    { id: 4, label: 'Сдача в субаренду', value: 67000, color: '#B5C9B8' },
+  ];
+
+  const currentBreakdown = breakdownView === 'expense' ? expensesData : incomeData;
+  const breakdownTotal = currentBreakdown.reduce((sum, item) => sum + item.value, 0);
+
+  // Отрисовка интерактивного кольца детализации
+  const renderDonut = () => {
+    const r = 54;
+    const circ = 2 * Math.PI * r;
+    let offset = 0;
+
+    return (
+      <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.06))' }}>
+        <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(26,26,26,0.03)" strokeWidth="22" />
+        {currentBreakdown.map((item) => {
+          const pct = item.value / breakdownTotal;
+          const dash = pct * circ;
+          const gap = circ - dash;
+          const isHovered = hoveredSeg === item.id;
+          const strokeWidth = isHovered ? 26 : 22; // Кольцо "выпячивается" при наведении
+          
+          const el = (
+            <circle 
+              key={item.id} cx="80" cy="80" r={r} fill="none" stroke={item.color} 
+              strokeWidth={strokeWidth} strokeDasharray={`${dash} ${gap}`} strokeDashoffset={-offset * circ}
+              strokeLinecap="round"
+              style={{ transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)', cursor: 'pointer', opacity: hoveredSeg === null || hoveredSeg === item.id ? 1 : 0.3 }}
+              onMouseEnter={() => setHoveredSegment(item.id)}
+              onMouseLeave={() => setHoveredSegment(null)}
+            />
+          );
+          offset += pct;
+          return el;
+        })}
+      </svg>
+    );
+  };
 
   return (
     <>
-      {/* Метрики */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+      <style>{`
+        .report-bar { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; position: relative; }
+        .report-bar:hover { opacity: 0.85; filter: brightness(1.05); }
+        .insight-card { background: linear-gradient(135deg, rgba(249,160,139,0.08) 0%, transparent 100%); border: 1px solid rgba(249,160,139,0.3); border-radius: 16px; padding: 20px 24px; position: relative; overflow: hidden; }
+        .insight-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #F9A08B; }
+      `}</style>
+
+      {/* 1. РОСКОШНЫЕ МЕТРИКИ (TOP CARDS) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
         {[
-          { label: 'Выручка', value: '₽482 000', delta: '+12%', good: true },
-          { label: 'Расходы', value: '₽118 000', delta: '-4%', good: true },
-          { label: 'Прибыль', value: '₽364 000', delta: '+18%', good: true },
-          { label: 'Маржа', value: '75.5%', delta: '+3.2pp', good: true },
+          { label: 'Выручка', value: '₽482 000', delta: '+12%', good: true, c1: '#A3C9A8', c2: 'rgba(163,201,168,0.15)', icon: <Ico.Up /> },
+          { label: 'Расходы', value: '₽118 000', delta: '-4%', good: true, c1: '#D88C9A', c2: 'rgba(216,140,154,0.15)', icon: <Ico.Down /> },
+          { label: 'Прибыль', value: '₽364 000', delta: '+18%', good: true, c1: '#F9A08B', c2: 'rgba(249,160,139,0.15)', icon: <Ico.Dollar /> },
+          { label: 'Рентабельность', value: '75.5%', delta: '+3.2pp', good: true, c1: '#7EB5D6', c2: 'rgba(126,181,214,0.15)', icon: <Ico.Target /> },
         ].map(m => (
-          <div key={m.label} className="card card-sm">
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{m.label}</div>
-            <div style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '4px' }}>{m.value}</div>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A' }}>{m.delta}</div>
+          <div key={m.label} style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '80px', height: '80px', background: `radial-gradient(circle, ${m.c2} 0%, transparent 70%)`, borderRadius: '50%' }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{m.label}</div>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: m.c2, color: m.c1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {m.icon}
+              </div>
+            </div>
+            
+            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#1A1A1A', marginBottom: '8px' }}>{m.value}</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ padding: '2px 6px', background: m.good ? 'rgba(91,171,114,0.1)' : 'rgba(216,140,154,0.1)', borderRadius: '6px' }}>{m.delta}</span> к прошлому периоду
+            </div>
           </div>
         ))}
       </div>
 
-      {/* График */}
-      <div className="card" style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <div style={{ fontSize: '15px', fontWeight: 700 }}>Доходы и расходы</div>
-          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '3px' }}>
-            {['Неделя', 'Месяц', 'Квартал', 'Год'].map(p => (
-              <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'var(--font)', background: period === p ? 'var(--card)' : 'transparent', color: period === p ? 'var(--text)' : 'var(--text3)', boxShadow: period === p ? 'var(--dash-shadow)' : 'none', transition: 'all 0.15s' }}>{p}</button>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        
+        {/* 2. ГЛАВНЫЙ ГРАФИК (REVENUE VS EXPENSE) */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+            <div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '4px' }}>Движение средств</div>
+              <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>Анализ доходов и расходов</div>
+            </div>
+            
+            {/* iOS-style Переключатель периодов */}
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', border: '1px solid rgba(26,26,26,0.04)', borderRadius: '10px', padding: '4px' }}>
+              {['Неделя', 'Месяц', 'Год'].map(p => (
+                <button key={p} onClick={() => setPeriod(p)} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: period === p ? '#FFFFFF' : 'transparent', color: period === p ? '#1A1A1A' : '#666666', boxShadow: period === p ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{p}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Гистограмма */}
+          <div style={{ flex: 1, display: 'flex', gap: '16px', alignItems: 'flex-end', height: '240px' }}>
+            {bars.map(b => (
+              <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end' }}>
+                
+                {/* Группа столбиков (Приход и Расход) */}
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', width: '100%', height: '100%' }}>
+                  <div 
+                    title={`Доход: ${fmt(b.income)}`} 
+                    className="report-bar"
+                    style={{ flex: 1, height: `${(b.income / maxVal) * 100}%`, background: 'linear-gradient(180deg, #A3C9A8 0%, rgba(163,201,168,0.4) 100%)', borderRadius: '6px 6px 4px 4px', minHeight: '4px' }} 
+                  />
+                  <div 
+                    title={`Расход: ${fmt(b.expense)}`} 
+                    className="report-bar"
+                    style={{ flex: 1, height: `${(b.expense / maxVal) * 100}%`, background: 'linear-gradient(180deg, #D88C9A 0%, rgba(216,140,154,0.4) 100%)', borderRadius: '6px 6px 4px 4px', minHeight: '4px' }} 
+                  />
+                </div>
+                <div style={{ fontSize: '11px', color: '#999999', fontWeight: 700, textTransform: 'uppercase' }}>{b.label}</div>
+              </div>
             ))}
+          </div>
+
+          {/* Легенда */}
+          <div style={{ display: 'flex', gap: '20px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(26,26,26,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#A3C9A8' }} /> Доходы
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#D88C9A' }} /> Расходы
+            </div>
+            <div style={{ marginLeft: 'auto' }}>
+              <Btn size="sm" onClick={() => showToast('Отчёт экспортируется...', 'info')}><Ico.Download /> Экспорт PDF</Btn>
+            </div>
           </div>
         </div>
 
-        {/* Бары */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', height: '180px' }}>
-          {bars.map(b => (
-            <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', height: '100%', justifyContent: 'flex-end' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', width: '100%', height: '100%' }}>
-                <div
-                  title={`Доход: ${fmt(b.income)}`}
-                  style={{ flex: 1, height: `${(b.income / maxVal) * 100}%`, background: 'linear-gradient(180deg, rgba(163,201,168,0.9) 0%, rgba(163,201,168,0.6) 100%)', borderRadius: '4px 4px 0 0', transition: 'height 0.4s', cursor: 'pointer', minHeight: '4px' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                />
-                <div
-                  title={`Расход: ${fmt(b.expense)}`}
-                  style={{ flex: 1, height: `${(b.expense / maxVal) * 100}%`, background: 'linear-gradient(180deg, rgba(216,140,154,0.9) 0%, rgba(216,140,154,0.6) 100%)', borderRadius: '4px 4px 0 0', transition: 'height 0.4s', cursor: 'pointer', minHeight: '4px' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                />
-              </div>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginTop: '6px' }}>{b.label}</div>
+        {/* 3. ИНТЕРАКТИВНАЯ ДЕТАЛИЗАЦИЯ (BREAKDOWN) */}
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
+          
+          <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', border: '1px solid rgba(26,26,26,0.12)', borderRadius: '10px', padding: '4px', marginBottom: '24px' }}>
+            <button onClick={() => setBreakdownView('expense')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'expense' ? '#FFFFFF' : 'transparent', color: breakdownView === 'expense' ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'expense' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>Структура расходов</button>
+            <button onClick={() => setBreakdownView('income')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'income' ? '#FFFFFF' : 'transparent', color: breakdownView === 'income' ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'income' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>Структура доходов</button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', position: 'relative' }}>
+            {renderDonut()}
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+              <div style={{ fontSize: '10px', color: '#999999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>Всего</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{fmt(breakdownTotal)}</div>
             </div>
-          ))}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, overflowY: 'auto' }}>
+            {currentBreakdown.map((item) => {
+              const isHovered = hoveredSeg === item.id;
+              const pct = Math.round((item.value / breakdownTotal) * 100);
+              
+              return (
+                <div 
+                  key={item.id}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', background: isHovered ? 'rgba(26,26,26,0.02)' : 'transparent', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid', borderColor: isHovered ? 'rgba(26,26,26,0.06)' : 'transparent' }}
+                  onMouseEnter={() => setHoveredSegment(item.id)}
+                  onMouseLeave={() => setHoveredSegment(null)}
+                >
+                  <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: item.color, flexShrink: 0, transform: isHovered ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.2s' }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{item.label}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A' }}>{fmt(item.value)}</div>
+                    <div style={{ fontSize: '11px', color: '#999999', fontWeight: 600 }}>{pct}%</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Легенда */}
-        <div style={{ display: 'flex', gap: '16px', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-          {[{ c: '#A3C9A8', l: 'Доходы' }, { c: '#D88C9A', l: 'Расходы' }].map(l => (
-            <div key={l.l} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: 'var(--text2)' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: l.c }} />
-              {l.l}
+      </div>
+
+      {/* 4. БЛОК SMART INSIGHTS (AI Аналитика) */}
+      <div className="insight-card">
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #F9A08B 0%, #FCAE91 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flexShrink: 0, boxShadow: '0 8px 24px rgba(249,160,139,0.3)' }}>
+            {/* Иконка "Магии / AI" */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>Финансовая сводка и инсайты</div>
+            <div style={{ fontSize: '13px', color: '#666666', lineHeight: 1.6 }}>
+              Отличный месяц! Ваша <strong>чистая прибыль выросла на 18%</strong>. Мы заметили, что доля оплат абонементов онлайн увеличилась в 2 раза по сравнению с прошлым кварталом. При этом расходы на аренду и зарплату остались в пределах нормы (менее 50% от выручки). Рекомендуем рассмотреть создание резервного фонда.
             </div>
-          ))}
-          <div style={{ marginLeft: 'auto' }}>
-            <Btn size="sm" onClick={() => showToast('Отчёт экспортируется...', 'info')}><Ico.Download />Экспорт PDF</Btn>
+            <div style={{ marginTop: '12px', display: 'flex', gap: '12px' }}>
+              <span style={{ display: 'inline-flex', padding: '4px 10px', background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(249,160,139,0.2)', borderRadius: '6px', fontSize: '11px', fontWeight: 700, color: '#F9A08B' }}>Совет: Открыть копилку</span>
+              <span style={{ display: 'inline-flex', padding: '4px 10px', background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(249,160,139,0.2)', borderRadius: '6px', fontSize: '11px', fontWeight: 700, color: '#F9A08B' }}>Посмотреть план расходов</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1725,187 +1871,247 @@ function TabReports({ showToast }: { showToast: (msg: string, t?: ToastType) => 
   );
 }
 
-// ─── TAB: ЦЕЛИ ───────────────────────────────────────────────────────────────
+// ─── TAB: ЦЕЛИ (PREMIUM GOALS & TRACKING) ────────────────────────────────────
 function TabGoals({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
-  const [goals, setGoals] = useState(GOALS_DATA);
-  const [addOpen, setAddOpen] = useState(false);
-  const [form, setForm] = useState({ title: '', target: '', deadline: '', category: '', priority: 'medium' });
+  // Добавляем к базовым данным режим трекинга для демонстрации
+  const [goals, setGoals] = useState(() => GOALS_DATA.map((g, i) => ({
+    ...g, 
+    trackingMode: (i === 1 || i === 3) ? 'manual' : 'auto' // Для примера некоторые ручные, некоторые авто
+  })));
+  
   const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
 
+  // Создание
+  const [addOpen, setAddOpen] = useState(false);
+  const [form, setForm] = useState({ title: '', target: '', deadline: '', category: '', priority: 'medium', trackingMode: 'auto' });
+  const [isInputFocused, setIsInputFocused] = useState<{ [key: string]: boolean }>({});
+
+  // Ручное пополнение (In-place)
+  const [fundGoalId, setFundGoalId] = useState<number | null>(null);
+  const [fundAmount, setFundAmount] = useState('');
+  const [isFundFocused, setIsFundFocused] = useState(false);
+
   const handleAdd = () => {
-    if (!form.title.trim() || !form.target) { showToast('Заполните обязательные поля', 'error'); return; }
+    if (!form.title.trim() || !form.target) { showToast('Заполните название и сумму', 'error'); return; }
     const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
-    setGoals(prev => [...prev, {
+    setGoals(prev => [{
       id: Date.now(), title: form.title, target: parseInt(form.target),
-      current: 0, deadline: form.deadline || '31 дек 2025',
+      current: 0, deadline: form.deadline || 'Без срока',
       category: form.category || 'Прочее', color: colors[prev.length % colors.length],
-      priority: form.priority,
-    }]);
-    setForm({ title: '', target: '', deadline: '', category: '', priority: 'medium' });
+      priority: form.priority, trackingMode: form.trackingMode as 'auto' | 'manual'
+    }, ...prev]); // Добавляем в начало!
+    setForm({ title: '', target: '', deadline: '', category: '', priority: 'medium', trackingMode: 'auto' });
     setAddOpen(false);
-    showToast('Цель создана', 'success');
+    showToast('Цель успешно создана', 'success');
   };
 
   const confirmDelete = () => {
     setGoals(prev => prev.filter(g => g.id !== confirm.id));
     setConfirm({ open: false, id: null });
-    showToast('Цель удалена', 'success');
+    showToast('Цель удалена', 'error');
   };
 
+  const handleFund = (id: number) => {
+    const val = parseInt(fundAmount) || 0;
+    if (val <= 0) return;
+    setGoals(prev => prev.map(g => g.id === id ? { ...g, current: g.current + val } : g));
+    setFundGoalId(null);
+    setFundAmount('');
+    showToast('Средства успешно внесены', 'success');
+  };
+
+  const handleNumberInput = (val: string, setter: (v: string) => void) => setter(val.replace(/\D/g, ''));
+
   const priorityColors: Record<string, string> = { high: '#D88C9A', medium: '#F0C060', low: '#A3C9A8' };
-  const priorityLabels: Record<string, string> = { high: 'Высокий', medium: 'Средний', low: 'Низкий' };
+  const priorityLabels: Record<string, string> = { high: 'Высокий приоритет', medium: 'Средний приоритет', low: 'Низкий приоритет' };
+
+  // Статистика
+  const activeGoals = goals.filter(g => g.current < g.target).length;
+  const doneGoals = goals.filter(g => g.current >= g.target).length;
+  const avgProgress = Math.round(goals.reduce((s, g) => s + Math.min(g.current / g.target * 100, 100), 0) / (goals.length || 1));
 
   return (
     <>
-      {/* Сводка целей */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-        {[
-          { label: 'Активных целей', value: goals.filter(g => g.current < g.target).length, color: 'var(--accent)' },
-          { label: 'Выполнено', value: goals.filter(g => g.current >= g.target).length, color: '#5BAB72' },
-          { label: 'Общий прогресс', value: `${Math.round(goals.reduce((s, g) => s + Math.min(g.current / g.target * 100, 100), 0) / goals.length)}%`, color: '#7EB5D6' },
-        ].map(s => (
-          <div key={s.label} className="card card-sm">
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{s.label}</div>
-            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>
+      <style>{`
+        @keyframes cardMorph { from { opacity: 0; transform: scale(0.97) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .morph-container { animation: cardMorph 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .goal-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -8px rgba(26,26,26,0.06); }
+      `}</style>
+
+      {/* 1. РОСКОШНЫЕ КАРТОЧКИ СВОДКИ */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(249,160,139,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(249,160,139,0.12)', color: '#F9A08B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Target /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Цели в работе</div>
           </div>
-        ))}
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>{activeGoals}</div>
+        </div>
+
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(163,201,168,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(163,201,168,0.12)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Check /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Выполнено</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>{doneGoals}</div>
+        </div>
+
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(126,181,214,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(126,181,214,0.12)', color: '#7EB5D6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Bar /></div>
+            <div style={{ fontSize: '12px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Общий прогресс</div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-1px' }}>{avgProgress}%</div>
+        </div>
       </div>
 
-      {/* Список целей */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+      {/* 2. ПАНЕЛЬ УПРАВЛЕНИЯ (ACTION ISLAND) С КНОПКОЙ */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)' }}>
+        <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A', paddingLeft: '8px' }}>Отслеживание планов</div>
+        {!addOpen && (
+          <button onClick={() => setAddOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '0 20px', background: '#F9A08B', border: 'none', borderRadius: '10px', color: '#FFFFFF', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 6px 16px rgba(249, 160, 139, 0.25)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.05)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}>
+            <Ico.Plus /> Создать цель
+          </button>
+        )}
+      </div>
+
+      {/* 3. ЗОНА СОЗДАНИЯ ЦЕЛИ (С ВЫБОРОМ ЛОГИКИ ТРЕКИНГА) */}
+      {addOpen && (
+        <div className="morph-container" style={{ padding: '32px', marginBottom: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>Новая финансовая цель</div>
+            <button onClick={() => setAddOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color='#999'}><Ico.X /></button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+            
+            {/* Левая колонка: Основные данные */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Название цели</label>
+                <input type="text" placeholder="Например: Покупка новых реформеров" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, title: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, title: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['title'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['title'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Целевая сумма, ₽</label>
+                  <input type="text" placeholder="500000" value={form.target} onChange={e => handleNumberInput(e.target.value, val => setForm(p => ({ ...p, target: val })))} onFocus={() => setIsInputFocused({ ...isInputFocused, target: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, target: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['target'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['target'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Дедлайн</label>
+                  <input type="text" placeholder="Например: 31 дек 2025" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, deadline: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, deadline: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['deadline'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['deadline'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Правая колонка: Логика трекинга */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '12px' }}>Как отслеживать прогресс?</label>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* Опция 1: Автоматически */}
+                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'auto' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'auto' ? '2px solid #F9A08B' : '2px solid rgba(26,26,26,0.06)', background: form.trackingMode === 'auto' ? 'rgba(249,160,139,0.04)' : '#FDFCFB', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
+                  <div style={{ color: form.trackingMode === 'auto' ? '#F9A08B' : '#999', marginTop: '2px' }}><Ico.Bar /></div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>Автоматически (Метрика CRM)</div>
+                    <div style={{ fontSize: '11px', color: '#666666', lineHeight: 1.4 }}>Свяжите цель с общей выручкой или прибылью. CRM сама будет двигать прогресс-бар.</div>
+                  </div>
+                </div>
+
+                {/* Опция 2: Вручную */}
+                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'manual' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'manual' ? '2px solid #F9A08B' : '2px solid rgba(26,26,26,0.06)', background: form.trackingMode === 'manual' ? 'rgba(249,160,139,0.04)' : '#FDFCFB', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
+                  <div style={{ color: form.trackingMode === 'manual' ? '#F9A08B' : '#999', marginTop: '2px' }}><Ico.Edit /></div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>Вручную (Личная копилка)</div>
+                    <div style={{ fontSize: '11px', color: '#666666', lineHeight: 1.4 }}>В карточке появится кнопка "Внести средства". Прогресс зависит только от вас.</div>
+                  </div>
+                </div>
+              </div>
+
+              <button onClick={handleAdd} disabled={!form.title.trim() || !form.target} style={{ marginTop: 'auto', padding: '14px', background: form.title.trim() && form.target ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '10px', color: form.title.trim() && form.target ? '#FFFFFF' : '#999999', fontSize: '13px', fontWeight: 700, cursor: form.title.trim() && form.target ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: form.title.trim() && form.target ? '0 6px 20px rgba(249, 160, 139, 0.25)' : 'none' }}>
+                Создать цель
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. СПИСОК ЦЕЛЕЙ (GRID LAYOUT) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
         {goals.map(g => {
           const pct = Math.min(Math.round(g.current / g.target * 100), 100);
           const done = pct >= 100;
           const pcol = priorityColors[g.priority] || '#999';
+          const isFunding = fundGoalId === g.id;
+
           return (
-            <div key={g.id} className="card" style={{ border: done ? '1px solid rgba(163,201,168,0.4)' : '1px solid var(--border)', background: done ? 'rgba(163,201,168,0.03)' : 'var(--card)', transition: 'all 0.2s' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
-                    {done && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10px', fontWeight: 700, color: '#2d7a47', background: 'rgba(163,201,168,0.2)', padding: '2px 8px', borderRadius: '10px' }}>
-                        <Ico.Check /> Выполнено
-                      </span>
-                    )}
-                    <Badge text={g.category} color={pcol} bg={pcol + '18'} />
-                    <Badge text={priorityLabels[g.priority]} color={pcol} bg={pcol + '12'} />
+            <div key={g.id} className="goal-card" style={{ background: done ? 'rgba(163,201,168,0.03)' : '#FFFFFF', border: done ? '1px solid rgba(163,201,168,0.4)' : '1px solid rgba(26,26,26,0.15)', borderRadius: '16px', padding: '24px', transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', position: 'relative', overflow: 'hidden' }}>
+              
+              {/* Шапка карточки */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    {done && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 800, color: '#4E885B', background: 'rgba(163,201,168,0.2)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}><Ico.Check /> Цель достигнута</span>}
+                    {!done && <span style={{ fontSize: '10px', fontWeight: 800, color: pcol, background: pcol + '15', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>{priorityLabels[g.priority]}</span>}
+                    {g.trackingMode === 'auto' && !done && <span style={{ fontSize: '10px', fontWeight: 800, color: '#666', background: 'rgba(26,26,26,0.06)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>Авто-сбор</span>}
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', marginBottom: '2px' }}>{g.title}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text3)' }}>Срок: {g.deadline}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px', lineHeight: 1.3 }}>{g.title}</div>
+                  <div style={{ fontSize: '12px', color: '#999999', fontWeight: 500 }}>Крайний срок: {g.deadline}</div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-                  <div style={{ fontSize: '28px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
-                  <button
-                    onClick={() => setConfirm({ open: true, id: g.id })}
-                    style={{ width: '28px', height: '28px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D88C9A'; e.currentTarget.style.color = '#D88C9A'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
-                  >
-                    <Ico.Trash />
-                  </button>
-                </div>
+                <button onClick={() => setConfirm({ open: true, id: g.id })} style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; e.currentTarget.style.color = '#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }} title="Удалить цель">
+                  <Ico.Trash />
+                </button>
               </div>
 
-              {/* Прогресс-бар */}
-              <div style={{ height: '8px', background: 'var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '10px' }}>
-                <div style={{ width: `${pct}%`, height: '100%', background: done ? '#A3C9A8' : g.color, borderRadius: '10px', transition: 'width 0.7s cubic-bezier(0.34,1.2,0.64,1)' }} />
+              {/* Прогресс-бар (Утолщенный, премиальный) */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>
+                  {fmt(g.current)} <span style={{ color: '#999', fontWeight: 500 }}>/ {fmt(g.target)}</span>
+                </div>
+              </div>
+              <div style={{ height: '12px', background: 'rgba(26,26,26,0.04)', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(26,26,26,0.02)' }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: done ? '#5BAB72' : g.color, borderRadius: '12px', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
               </div>
 
-              {/* Суммы */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '12px', color: 'var(--text2)' }}>
-                  <span style={{ fontWeight: 800, color: 'var(--text)' }}>
-                    {g.category === 'Оптимизация' ? `${g.current}%` : fmt(g.current)}
-                  </span>
-                  {' '}из{' '}
-                  <span style={{ color: 'var(--text3)' }}>
-                    {g.category === 'Оптимизация' ? `${g.target}%` : fmt(g.target)}
-                  </span>
+              {/* Подвал карточки: Экшены */}
+              {!done && (
+                <div style={{ borderTop: '1px dashed rgba(26,26,26,0.08)', paddingTop: '16px' }}>
+                  {g.trackingMode === 'manual' ? (
+                    // РЕЖИМ РУЧНОГО ТРЕКИНГА (IN-PLACE MORPHING)
+                    isFunding ? (
+                      <div className="morph-container" style={{ display: 'flex', gap: '8px' }}>
+                        <input 
+                          type="text" value={fundAmount} placeholder="Сумма, ₽" autoFocus
+                          onChange={e => handleNumberInput(e.target.value, setFundAmount)}
+                          onFocus={() => setIsFundFocused(true)} onBlur={() => setIsFundFocused(false)}
+                          style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isFundFocused ? `1.5px solid ${g.color}` : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
+                        />
+                        <button onClick={() => handleFund(g.id)} disabled={!fundAmount} style={{ padding: '0 16px', background: fundAmount ? g.color : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: fundAmount ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>Внести</button>
+                        <button onClick={() => setFundGoalId(null)} style={{ width: '36px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.X /></button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setFundGoalId(g.id)} style={{ width: '100%', padding: '12px', background: g.color + '15', border: 'none', borderRadius: '10px', color: g.color, fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = g.color + '25' } onMouseLeave={e => e.currentTarget.style.background = g.color + '15' }>
+                        <Ico.Plus /> Внести средства
+                      </button>
+                    )
+                  ) : (
+                    // РЕЖИМ АВТОМАТИЧЕСКОГО ТРЕКИНГА
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '11px', fontWeight: 600 }}>
+                      <Ico.Bar /> Значение обновляется автоматически из модуля Отчетов
+                    </div>
+                  )}
                 </div>
-                {!done && (
-                  <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                    Осталось: <span style={{ fontWeight: 700, color: g.color }}>
-                      {g.category === 'Оптимизация' ? `${g.target - g.current}%` : fmt(g.target - g.current)}
-                    </span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Форма добавления */}
-      {addOpen ? (
-        <div className="card" style={{ border: '1.5px solid var(--accent)', background: 'rgba(252,174,145,0.03)' }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Ico.Target /> Новая финансовая цель
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-            {[
-              { label: 'Название цели', key: 'title', placeholder: 'Резервный фонд' },
-              { label: 'Целевая сумма', key: 'target', placeholder: '500000' },
-              { label: 'Дедлайн', key: 'deadline', placeholder: '31.12.2025' },
-              { label: 'Категория', key: 'category', placeholder: 'Резервы' },
-            ].map(f => (
-              <div key={f.key}>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{f.label}</div>
-                <input className="search-input" style={{ width: '100%' }} placeholder={f.placeholder}
-                  value={form[f.key as keyof typeof form]}
-                  onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
-                />
-              </div>
-            ))}
-          </div>
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Приоритет</div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {(['high', 'medium', 'low'] as const).map(p => {
-                const pc = priorityColors[p];
-                const isActive = form.priority === p;
-                return (
-                  <button key={p} onClick={() => setForm(prev => ({ ...prev, priority: p }))} style={{
-                    padding: '6px 14px', borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--font)',
-                    border: `1.5px solid ${isActive ? pc : pc + '44'}`,
-                    background: isActive ? pc + '22' : 'transparent',
-                    color: pc, fontSize: '12px', fontWeight: 700, transition: 'all 0.15s',
-                  }}>
-                    {priorityLabels[p]}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Btn v="primary" onClick={handleAdd}>Создать цель</Btn>
-            <Btn onClick={() => setAddOpen(false)}>Отмена</Btn>
-          </div>
-        </div>
-      ) : (
-        <button
-          onClick={() => setAddOpen(true)}
-          style={{
-            width: '100%', border: '1.5px dashed var(--border)', borderRadius: '16px',
-            padding: '18px', background: 'transparent', cursor: 'pointer', color: 'var(--text3)',
-            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            transition: 'all 0.18s', fontFamily: 'var(--font)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(252,174,145,0.04)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.background = 'transparent'; }}
-        >
-          <Ico.Plus /> Добавить финансовую цель
-        </button>
-      )}
-
-      <ConfirmModal
-        open={confirm.open}
-        title="Удалить цель?"
-        text="Прогресс по этой цели будет утерян. Действие нельзя отменить."
-        onConfirm={confirmDelete}
-        onCancel={() => setConfirm({ open: false, id: null })}
-        danger
-      />
+      <ConfirmModal open={confirm.open} title="Удалить цель?" text="Прогресс по этой цели будет утерян. Действие нельзя отменить." onConfirm={confirmDelete} onCancel={() => setConfirm({ open: false, id: null })} danger />
     </>
   );
 }
