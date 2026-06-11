@@ -4,6 +4,7 @@ import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
+import ChangePassword from './pages/ChangePassword';
 
 import DashboardLayout from './layouts/DashboardLayout';
 
@@ -81,6 +82,15 @@ export default function App() {
               <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
                 <OnboardingPage />
               </div>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/change-password" 
+          element={
+            <ProtectedRoute requireOnboarding={true}>
+              <ChangePassword />
             </ProtectedRoute>
           } 
         />

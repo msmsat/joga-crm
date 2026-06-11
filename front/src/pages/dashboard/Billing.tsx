@@ -235,6 +235,7 @@ export default function Billing() {
   const [selectedPeriod, setSelectedPeriod] = useState<1 | 6 | 12 | 24>(1);
   const [fixedAmount, setFixedAmount] = useState(5000);
   const [percentAmount, setPercentAmount] = useState(5);
+  const [estimatedRevenue, setEstimatedRevenue] = useState(300000);
   const [activeTab, setActiveTab] = useState<"plans" | "invoices" | "method">("plans");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [animateCards, setAnimateCards] = useState(false);
@@ -517,79 +518,199 @@ export default function Billing() {
             </div>
 
             {/* Percent / Fixed amount selectors */}
+            {/* ─── ЖИВОЙ КАЛЬКУЛЯТОР ДЛЯ РЕЖИМА "ПРОЦЕНТ" ─── */}
             {billingMode === "percent" && (
-              <div style={{
-                marginTop: "20px", padding: "20px",
-                background: "rgba(252,174,145,0.05)",
-                borderRadius: "14px", border: "1px solid rgba(252,174,145,0.15)",
-              }}>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)", marginBottom: "14px" }}>
-                  Выберите процент с каждого онлайн-платежа
-                </div>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {[2, 3, 5, 7, 8].map(p => (
-                    <button
-                      key={p}
-                      onClick={() => setPercentAmount(p)}
-                      style={{
-                        padding: "10px 20px",
-                        borderRadius: "10px",
-                        border: `1.5px solid ${percentAmount === p ? "var(--peach)" : "var(--border)"}`,
-                        background: percentAmount === p ? "var(--peach)" : "transparent",
-                        color: percentAmount === p ? "white" : "var(--onyx)",
-                        fontSize: "14px", fontWeight: 700,
-                        cursor: "pointer", fontFamily: "inherit",
-                        transition: "all 0.2s ease",
-                      }}
-                    >{p}%</button>
-                  ))}
-                </div>
-                <div style={{
-                  marginTop: "14px", padding: "12px 16px",
-                  background: "rgba(163,201,168,0.12)",
-                  borderRadius: "10px",
-                  fontSize: "12px", color: "var(--muted)",
-                }}>
-                  При {percentAmount}% и обороте <strong style={{ color: "var(--onyx)" }}>₽100 000</strong> в месяц
-                  вы платите <strong style={{ color: "var(--pistachio)" }}>₽{(100000 * percentAmount / 100).toLocaleString("ru-RU")}</strong>
+              <div style={{ marginTop: "24px", animation: "fadeSlideIn 0.4s ease forwards" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  
+                  {/* Левая панель: Настройки */}
+                  <div style={{ padding: "32px", background: "rgba(252,174,145,0.03)", border: "1px solid rgba(252,174,145,0.15)", borderRadius: "20px" }}>
+                    <div style={{ fontSize: "16px", fontWeight: 800, color: "var(--onyx)", marginBottom: "28px" }}>Параметры расчёта</div>
+                    
+                    <div style={{ marginBottom: "32px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--muted)" }}>Ваш онлайн-оборот в месяц</span>
+                        <span style={{ fontSize: "22px", fontWeight: 900, color: "var(--peach)", letterSpacing: "-0.5px" }}>
+                          ₽{estimatedRevenue.toLocaleString("ru-RU")}
+                        </span>
+                      </div>
+                      <input 
+                        type="range" className="premium-slider"
+                        min="50000" max="3000000" step="50000" 
+                        value={estimatedRevenue} 
+                        onChange={e => setEstimatedRevenue(Number(e.target.value))}
+                      />
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px", fontSize: "11px", fontWeight: 600, color: "var(--muted)" }}>
+                        <span>50 тыс.</span>
+                        <span>3 млн+</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--muted)", marginBottom: "14px" }}>Выберите процент комиссии (влияет на функции)</div>
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        {[
+                          { p: 2, label: "Базовый" }, { p: 3, label: "Стандарт" }, 
+                          { p: 5, label: "Pro" }, { p: 8, label: "Максимум" }
+                        ].map(opt => (
+                          <button
+                            key={opt.p}
+                            onClick={() => setPercentAmount(opt.p)}
+                            style={{
+                              flex: "1 1 calc(50% - 4px)",
+                              padding: "12px 16px", borderRadius: "12px",
+                              border: `1.5px solid ${percentAmount === opt.p ? "var(--peach)" : "var(--border)"}`,
+                              background: percentAmount === opt.p ? "var(--peach)" : "#FFFFFF",
+                              color: percentAmount === opt.p ? "white" : "var(--onyx)",
+                              cursor: "pointer", transition: "all 0.2s ease",
+                              display: "flex", justifyContent: "space-between", alignItems: "center",
+                              boxShadow: percentAmount === opt.p ? "0 4px 12px rgba(252,174,145,0.3)" : "none",
+                            }}
+                          >
+                            <span style={{ fontSize: "12px", fontWeight: 600, opacity: percentAmount === opt.p ? 0.9 : 0.6 }}>{opt.label}</span>
+                            <span style={{ fontSize: "16px", fontWeight: 800 }}>{opt.p}%</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Правая панель: Интерактивный Чек (Receipt) */}
+                  <div style={{ padding: "32px", background: "linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)", borderRadius: "20px", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                    <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "250px", height: "250px", background: "radial-gradient(circle, rgba(252,174,145,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+                    
+                    <div style={{ position: "relative", zIndex: 1, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "32px" }}>
+                        <PercentIcon />
+                        <span style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "1px", color: "rgba(255,255,255,0.5)" }}>ЭКОНОМИКА ТАРИФА</span>
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px dashed rgba(255,255,255,0.15)", paddingBottom: "16px" }}>
+                        <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)" }}>Оборот студии</span>
+                        <span style={{ fontSize: "16px", fontWeight: 600, color: "white" }}>₽{estimatedRevenue.toLocaleString("ru-RU")}</span>
+                      </div>
+                      
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)" }}>Комиссия системы</span>
+                          <span style={{ padding: "2px 8px", background: "rgba(252,174,145,0.2)", borderRadius: "100px", color: "var(--peach)", fontSize: "10px", fontWeight: 800 }}>{percentAmount}%</span>
+                        </div>
+                        <span style={{ fontSize: "16px", fontWeight: 600, color: "var(--peach)" }}>
+                          − ₽{(estimatedRevenue * (percentAmount / 100)).toLocaleString("ru-RU")}
+                        </span>
+                      </div>
+
+                      <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: "16px", padding: "24px", marginBottom: "24px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "8px", letterSpacing: "0.5px" }}>ИТОГОВЫЙ ПЛАТЕЖ В МЕСЯЦ</div>
+                        <div style={{ fontSize: "36px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>
+                          ₽{(estimatedRevenue * (percentAmount / 100)).toLocaleString("ru-RU")}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "12px", color: "var(--pistachio)", fontSize: "12px", fontWeight: 600 }}>
+                          <CheckIcon size={14} color="var(--pistachio)" /> Вы не платите фикс, только за результат
+                        </div>
+                      </div>
+                    </div>
+
+                    <button style={{ width: "100%", padding: "16px", borderRadius: "14px", background: "var(--peach)", color: "white", fontSize: "14px", fontWeight: 800, border: "none", cursor: "pointer", boxShadow: "0 8px 24px rgba(252,174,145,0.3)", transition: "transform 0.2s" }}
+                            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform = "none"}>
+                      Активировать модель за {percentAmount}%
+                    </button>
+                  </div>
+
                 </div>
               </div>
             )}
 
+            {/* ─── ЖИВОЙ КАЛЬКУЛЯТОР ДЛЯ РЕЖИМА "ФИКС + % КОМБО" ─── */}
             {billingMode === "fixed" && (
-              <div style={{
-                marginTop: "20px", padding: "20px",
-                background: "rgba(252,174,145,0.05)",
-                borderRadius: "14px", border: "1px solid rgba(252,174,145,0.15)",
-              }}>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)", marginBottom: "14px" }}>
-                  Фиксированная часть + 3% с платежей
-                </div>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {[990, 1490, 1990].map(a => (
-                    <button
-                      key={a}
-                      onClick={() => setFixedAmount(a)}
-                      style={{
-                        padding: "10px 20px",
-                        borderRadius: "10px",
-                        border: `1.5px solid ${fixedAmount === a ? "var(--peach)" : "var(--border)"}`,
-                        background: fixedAmount === a ? "var(--peach)" : "transparent",
-                        color: fixedAmount === a ? "white" : "var(--onyx)",
-                        fontSize: "14px", fontWeight: 700,
-                        cursor: "pointer", fontFamily: "inherit",
-                        transition: "all 0.2s ease",
-                      }}
-                    >₽{a.toLocaleString("ru-RU")}</button>
-                  ))}
-                </div>
-                <div style={{
-                  marginTop: "14px", padding: "12px 16px",
-                  background: "rgba(163,201,168,0.12)",
-                  borderRadius: "10px",
-                  fontSize: "12px", color: "var(--muted)",
-                }}>
-                  ₽{fixedAmount.toLocaleString("ru-RU")}/мес + 3% от транзакций — лучший вариант при обороте от ₽50 000
+              <div style={{ marginTop: "24px", animation: "fadeSlideIn 0.4s ease forwards" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  
+                  {/* Левая панель */}
+                  <div style={{ padding: "32px", background: "rgba(163,201,168,0.05)", border: "1px solid rgba(163,201,168,0.2)", borderRadius: "20px" }}>
+                    <div style={{ fontSize: "16px", fontWeight: 800, color: "var(--onyx)", marginBottom: "28px" }}>Параметры расчёта</div>
+                    
+                    <div style={{ marginBottom: "32px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--muted)" }}>Ваш онлайн-оборот в месяц</span>
+                        <span style={{ fontSize: "22px", fontWeight: 900, color: "var(--pistachio)", letterSpacing: "-0.5px" }}>
+                          ₽{estimatedRevenue.toLocaleString("ru-RU")}
+                        </span>
+                      </div>
+                      <input 
+                        type="range" className="premium-slider"
+                        style={{ border: "2px solid var(--pistachio)" }} // Акцент на фисташковый
+                        min="50000" max="3000000" step="50000" 
+                        value={estimatedRevenue} 
+                        onChange={e => setEstimatedRevenue(Number(e.target.value))}
+                      />
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--muted)", marginBottom: "14px" }}>Выберите базовую фикс-часть (эквайринг всегда 3%)</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+                        {[
+                          { a: 990, label: "Старт" }, { a: 1490, label: "Оптима" }, { a: 1990, label: "Бизнес" }
+                        ].map(opt => (
+                          <button
+                            key={opt.a}
+                            onClick={() => setFixedAmount(opt.a)}
+                            style={{
+                              padding: "14px 10px", borderRadius: "12px",
+                              border: `1.5px solid ${fixedAmount === opt.a ? "var(--pistachio)" : "var(--border)"}`,
+                              background: fixedAmount === opt.a ? "var(--pistachio)" : "#FFFFFF",
+                              color: fixedAmount === opt.a ? "white" : "var(--onyx)",
+                              cursor: "pointer", transition: "all 0.2s ease",
+                              display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+                              boxShadow: fixedAmount === opt.a ? "0 4px 12px rgba(163,201,168,0.4)" : "none",
+                            }}
+                          >
+                            <span style={{ fontSize: "11px", fontWeight: 600, opacity: fixedAmount === opt.a ? 0.9 : 0.6 }}>{opt.label}</span>
+                            <span style={{ fontSize: "15px", fontWeight: 800 }}>₽{opt.a.toLocaleString("ru-RU")}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Правая панель (Receipt) */}
+                  <div style={{ padding: "32px", background: "linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)", borderRadius: "20px", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                    <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "250px", height: "250px", background: "radial-gradient(circle, rgba(163,201,168,0.1) 0%, transparent 70%)", pointerEvents: "none" }} />
+                    
+                    <div style={{ position: "relative", zIndex: 1, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "32px" }}>
+                        <ZapIcon />
+                        <span style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "1px", color: "rgba(255,255,255,0.5)" }}>ЭКОНОМИКА КОМБО-ТАРИФА</span>
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                        <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)" }}>Базовая подписка (Fix)</span>
+                        <span style={{ fontSize: "16px", fontWeight: 600, color: "white" }}>₽{fixedAmount.toLocaleString("ru-RU")}</span>
+                      </div>
+                      
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", borderBottom: "1px dashed rgba(255,255,255,0.15)", paddingBottom: "16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)" }}>Эквайринг / Комиссия</span>
+                          <span style={{ padding: "2px 8px", background: "rgba(163,201,168,0.2)", borderRadius: "100px", color: "var(--pistachio)", fontSize: "10px", fontWeight: 800 }}>3%</span>
+                        </div>
+                        <span style={{ fontSize: "16px", fontWeight: 600, color: "white" }}>
+                          + ₽{(estimatedRevenue * 0.03).toLocaleString("ru-RU")}
+                        </span>
+                      </div>
+
+                      <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: "16px", padding: "24px", marginBottom: "24px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "8px", letterSpacing: "0.5px" }}>ИТОГОВЫЙ ПЛАТЕЖ В МЕСЯЦ</div>
+                        <div style={{ fontSize: "36px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>
+                          ₽{(fixedAmount + (estimatedRevenue * 0.03)).toLocaleString("ru-RU")}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button style={{ width: "100%", padding: "16px", borderRadius: "14px", background: "var(--pistachio)", color: "white", fontSize: "14px", fontWeight: 800, border: "none", cursor: "pointer", boxShadow: "0 8px 24px rgba(163,201,168,0.3)", transition: "transform 0.2s" }}
+                            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform = "none"}>
+                      Активировать Комбо-тариф
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -679,149 +800,152 @@ export default function Billing() {
           )}
 
           {/* ── PLAN CARDS ── */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "16px", marginBottom: "20px",
-          }}>
-            {(["start", "pro", "business"] as const).map((planId, i) => {
-              const plan = plans[planId];
-              const features = planFeatures[planId];
-              const price = billingMode === "subscription" ? getPrice(planId, selectedPeriod) : plan.monthly;
-              const isSelected = selectedPlan === planId;
-              const isCurrent = planId === "pro";
+          {billingMode === "subscription" && (
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "16px", marginBottom: "20px",
+              animation: "fadeSlideIn 0.4s ease forwards" // Плавное появление при возврате
+            }}>
+              {(["start", "pro", "business"] as const).map((planId, i) => {
+                const plan = plans[planId];
+                const features = planFeatures[planId];
+                const price = getPrice(planId, selectedPeriod); // Убрали лишнюю проверку, так как тут всегда subscription
+                const isSelected = selectedPlan === planId;
+                const isCurrent = planId === "pro";
 
-              return (
-                <div
-                  key={planId}
-                  onClick={() => setSelectedPlan(planId)}
-                  style={{
-                    padding: "28px",
-                    background: "var(--bg-card)",
-                    border: `2px solid ${isSelected ? "var(--peach)" : "var(--border)"}`,
-                    borderRadius: "20px",
-                    cursor: "pointer",
-                    position: "relative",
-                    boxShadow: isSelected
-                      ? "0 8px 40px rgba(252,174,145,0.18)"
-                      : "var(--shadow)",
-                    transition: "all 0.3s cubic-bezier(0.34,1.1,0.64,1)",
-                    transform: isSelected ? "translateY(-3px)" : "none",
-                    opacity: animateCards ? 1 : 0,
-                    transitionDelay: `${i * 0.08}s`,
-                  }}
-                >
-                  {/* Badges */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
-                    <div style={{
-                      width: "40px", height: "40px",
-                      borderRadius: "12px",
-                      background: `${plan.color}20`,
-                      border: `1.5px solid ${plan.color}40`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                      <div style={{
-                        width: "16px", height: "16px",
-                        borderRadius: "50%",
-                        background: plan.color,
-                      }} />
-                    </div>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                      {isCurrent && (
-                        <span style={{
-                          padding: "3px 10px",
-                          background: "rgba(252,174,145,0.15)",
-                          border: "1px solid rgba(252,174,145,0.3)",
-                          borderRadius: "100px",
-                          fontSize: "10px", fontWeight: 700, color: "var(--peach)",
-                        }}>Текущий</span>
-                      )}
-                      {planId === "business" && (
-                        <span style={{
-                          padding: "3px 10px",
-                          background: "rgba(26,26,26,0.08)",
-                          border: "1px solid rgba(26,26,26,0.12)",
-                          borderRadius: "100px",
-                          fontSize: "10px", fontWeight: 700, color: "var(--onyx)",
-                        }}>Enterprise</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)", marginBottom: "4px" }}>
-                    {plan.name}
-                  </div>
-
-                  <div style={{ marginBottom: "4px" }}>
-                    <span style={{ fontSize: "32px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-1px" }}>
-                      ₽{price.toLocaleString("ru-RU")}
-                    </span>
-                    <span style={{ fontSize: "13px", color: "var(--muted)", marginLeft: "4px" }}>/ мес.</span>
-                  </div>
-
-                  {billingMode === "subscription" && selectedPeriod > 1 && (
-                    <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "16px" }}>
-                      <span style={{ textDecoration: "line-through" }}>₽{plan.monthly.toLocaleString("ru-RU")}</span>
-                      <span style={{ color: "var(--pistachio)", fontWeight: 700, marginLeft: "6px" }}>
-                        −{periodDiscounts[selectedPeriod] * 100}%
-                      </span>
-                    </div>
-                  )}
-
-                  <div style={{
-                    height: "1px",
-                    background: "var(--border)",
-                    margin: "16px 0",
-                  }} />
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
-                    {features.map((feat, fi) => (
-                      <div key={fi} style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        opacity: feat.on ? 1 : 0.4,
-                      }}>
-                        {feat.on
-                          ? <CheckIcon size={16} color={plan.color === "#1A1A1A" ? "var(--onyx)" : plan.color} />
-                          : <XIcon size={16} />
-                        }
-                        <span style={{
-                          fontSize: "13px",
-                          color: feat.on ? "var(--onyx)" : "var(--muted)",
-                          fontWeight: feat.on ? 500 : 400,
-                        }}>{feat.text}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPlan(planId);
-                      if (!isCurrent) setShowUpgradeModal(true);
-                    }}
+                return (
+                  <div
+                    key={planId}
+                    onClick={() => setSelectedPlan(planId)}
                     style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "12px",
-                      border: isCurrent ? "1.5px solid var(--border)" : "none",
-                      background: isCurrent
-                        ? "transparent"
-                        : planId === "business"
-                          ? "var(--onyx)"
-                          : "var(--peach)",
-                      color: isCurrent ? "var(--muted)" : "white",
-                      fontSize: "13px", fontWeight: 700,
-                      cursor: "pointer", fontFamily: "inherit",
-                      transition: "all 0.2s ease",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                      padding: "28px",
+                      background: "var(--bg-card)",
+                      border: `2px solid ${isSelected ? "var(--peach)" : "var(--border)"}`,
+                      borderRadius: "20px",
+                      cursor: "pointer",
+                      position: "relative",
+                      boxShadow: isSelected
+                        ? "0 8px 40px rgba(252,174,145,0.18)"
+                        : "var(--shadow)",
+                      transition: "all 0.3s cubic-bezier(0.34,1.1,0.64,1)",
+                      transform: isSelected ? "translateY(-3px)" : "none",
+                      opacity: animateCards ? 1 : 0,
+                      transitionDelay: `${i * 0.08}s`,
                     }}
                   >
-                    {isCurrent ? "Текущий план" : "Выбрать план"}
-                    {!isCurrent && <ArrowRightIcon />}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                    {/* Badges */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+                      <div style={{
+                        width: "40px", height: "40px",
+                        borderRadius: "12px",
+                        background: `${plan.color}20`,
+                        border: `1.5px solid ${plan.color}40`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <div style={{
+                          width: "16px", height: "16px",
+                          borderRadius: "50%",
+                          background: plan.color,
+                        }} />
+                      </div>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                        {isCurrent && (
+                          <span style={{
+                            padding: "3px 10px",
+                            background: "rgba(252,174,145,0.15)",
+                            border: "1px solid rgba(252,174,145,0.3)",
+                            borderRadius: "100px",
+                            fontSize: "10px", fontWeight: 700, color: "var(--peach)",
+                          }}>Текущий</span>
+                        )}
+                        {planId === "business" && (
+                          <span style={{
+                            padding: "3px 10px",
+                            background: "rgba(26,26,26,0.08)",
+                            border: "1px solid rgba(26,26,26,0.12)",
+                            borderRadius: "100px",
+                            fontSize: "10px", fontWeight: 700, color: "var(--onyx)",
+                          }}>Enterprise</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)", marginBottom: "4px" }}>
+                      {plan.name}
+                    </div>
+
+                    <div style={{ marginBottom: "4px" }}>
+                      <span style={{ fontSize: "32px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-1px" }}>
+                        ₽{price.toLocaleString("ru-RU")}
+                      </span>
+                      <span style={{ fontSize: "13px", color: "var(--muted)", marginLeft: "4px" }}>/ мес.</span>
+                    </div>
+
+                    {selectedPeriod > 1 && (
+                      <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "16px" }}>
+                        <span style={{ textDecoration: "line-through" }}>₽{plan.monthly.toLocaleString("ru-RU")}</span>
+                        <span style={{ color: "var(--pistachio)", fontWeight: 700, marginLeft: "6px" }}>
+                          −{periodDiscounts[selectedPeriod] * 100}%
+                        </span>
+                      </div>
+                    )}
+
+                    <div style={{
+                      height: "1px",
+                      background: "var(--border)",
+                      margin: "16px 0",
+                    }} />
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
+                      {features.map((feat, fi) => (
+                        <div key={fi} style={{
+                          display: "flex", alignItems: "center", gap: "10px",
+                          opacity: feat.on ? 1 : 0.4,
+                        }}>
+                          {feat.on
+                            ? <CheckIcon size={16} color={plan.color === "#1A1A1A" ? "var(--onyx)" : plan.color} />
+                            : <XIcon size={16} />
+                          }
+                          <span style={{
+                            fontSize: "13px",
+                            color: feat.on ? "var(--onyx)" : "var(--muted)",
+                            fontWeight: feat.on ? 500 : 400,
+                          }}>{feat.text}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPlan(planId);
+                        if (!isCurrent) setShowUpgradeModal(true);
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: isCurrent ? "1.5px solid var(--border)" : "none",
+                        background: isCurrent
+                          ? "transparent"
+                          : planId === "business"
+                            ? "var(--onyx)"
+                            : "var(--peach)",
+                        color: isCurrent ? "var(--muted)" : "white",
+                        fontSize: "13px", fontWeight: 700,
+                        cursor: "pointer", fontFamily: "inherit",
+                        transition: "all 0.2s ease",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                      }}
+                    >
+                      {isCurrent ? "Текущий план" : "Выбрать план"}
+                      {!isCurrent && <ArrowRightIcon />}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* ── SAVINGS ILLUSTRATION + PERIOD SUMMARY ── */}
           {billingMode === "subscription" && (
@@ -977,40 +1101,79 @@ export default function Billing() {
       {activeTab === "invoices" && (
         <div style={{ padding: "0 32px" }}>
 
-          {/* Spend summary */}
+          {/* Spend summary (Интерактивный дашборд) */}
           <div style={{
-            padding: "28px 32px",
+            padding: "32px 36px",
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
             borderRadius: "20px",
             boxShadow: "var(--shadow)",
-            marginBottom: "20px",
+            marginBottom: "24px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-              <TrendingIcon />
-              <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>
-                Динамика расходов
-              </span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <TrendingIcon />
+                <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--onyx)" }}>
+                  Динамика расходов за 2 года
+                </span>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "24px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.5px" }}>
+                  ₽59 760
+                </div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", marginTop: "2px" }}>
+                  общие траты за 24 месяца
+                </div>
+              </div>
             </div>
 
-            {/* Simple bar chart */}
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", height: "80px" }}>
-              {[990, 2490, 2490, 2490, 2490, 2490].map((val, i) => {
-                const max = 2490;
-                const height = (val / max) * 70;
-                const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн"];
+            {/* 🔥 ВЫСОКИЙ ИНТЕРАКТИВНЫЙ ГРАФИК НА 24 СВЕЧИ */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", height: "180px", position: "relative" }}>
+              {Array.from({ length: 24 }).map((_, i) => {
+                // Генерация правильных дат для последних 24 месяцев
+                const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+                const date = new Date();
+                date.setMonth(date.getMonth() - (23 - i));
+                const label = `${months[date.getMonth()]} '${date.getFullYear().toString().slice(2)}`;
+                
+                // Имитация истории (начинали со Старта 990₽, потом Pro 2490₽, пару раз брали Business 5990₽)
+                let val = 2490;
+                if (i < 8) val = 990; 
+                if (i === 14 || i === 19) val = 5990; 
+                if (i === 23) val = 2490; // Текущий месяц
+
+                const max = 6500; // Потолок графика для расчета высоты
+                const height = Math.max((val / max) * 150, 10); // Минимум 10px высоты, Максимум 150px
+                const isCurrent = i === 23;
+
                 return (
-                  <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-                    <div style={{
-                      width: "100%", height: `${height}px`,
-                      background: i === 5
+                  <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", cursor: "pointer" }}>
+                    
+                    {/* Тултип с точными данными */}
+                    <div className="chart-tooltip">
+                      <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "10px", marginBottom: "4px", fontWeight: 600 }}>{label}</div>
+                      <div style={{ fontSize: "14px" }}>₽{val.toLocaleString("ru-RU")}</div>
+                    </div>
+
+                    {/* Сам столбик (Свеча) */}
+                    <div className="bar-fill" style={{
+                      width: "100%", maxWidth: "24px", height: `${height}px`,
+                      background: isCurrent
                         ? "linear-gradient(180deg, var(--peach), #F9A08B)"
-                        : "rgba(252,174,145,0.2)",
-                      borderRadius: "6px 6px 0 0",
-                      transition: "all 0.3s ease",
-                      boxShadow: i === 5 ? "0 4px 16px rgba(252,174,145,0.3)" : "none",
+                        : val > 3000 ? "rgba(26,26,26,0.3)" : "rgba(252,174,145,0.25)",
+                      borderRadius: "6px 6px 4px 4px",
+                      boxShadow: isCurrent ? "0 4px 16px rgba(252,174,145,0.4)" : "none",
                     }} />
-                    <div style={{ fontSize: "10px", color: "var(--muted)", fontWeight: 600 }}>{months[i]}</div>
+
+                    {/* Подписи оси X (Скрываем часть, чтобы не было визуальной каши) */}
+                    <div style={{ 
+                      fontSize: "10px", color: "var(--muted)", fontWeight: 600, 
+                      opacity: i % 3 === 0 || isCurrent ? 1 : 0, // Показываем каждый 3-й месяц и текущий
+                      whiteSpace: "nowrap" 
+                    }}>
+                      {i % 3 === 0 || isCurrent ? label : "·"}
+                    </div>
+
                   </div>
                 );
               })}
@@ -1102,194 +1265,132 @@ export default function Billing() {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          TAB: PAYMENT METHOD
+          TAB: PAYMENT METHOD (Premium Interactive Morphing Checkout)
       ════════════════════════════════════════════════════════════════════════ */}
       {activeTab === "method" && (
-        <div style={{ padding: "0 32px" }}>
+        <div style={{ padding: "0 32px", animation: "fadeSlideIn 0.4s ease forwards" }}>
+          <PaymentMethodSection triggerToast={(msg: string) => alert(msg)} /> {/* Если у тебя есть кастомный triggerToast в файле, он подхватится автоматически */}
+        </div>
+      )}
+
+      {/* ─── UPGRADE MODAL ─── */}
+      {showUpgradeModal && (
+        <div style={{
+          position: "fixed", inset: 0,
+          background: "rgba(26,26,26,0.6)",
+          backdropFilter: "blur(6px)",
+          zIndex: 1000,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "20px",
+        }} onClick={() => setShowUpgradeModal(false)}>
           <div style={{
-            display: "grid", gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
-          }}>
-            {/* Current card */}
-            <div style={{
-              padding: "28px",
-              background: "linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)",
-              borderRadius: "20px",
-              position: "relative",
-              overflow: "hidden",
-            }}>
+            background: "var(--bg-card)",
+            borderRadius: "24px",
+            padding: "40px",
+            maxWidth: "440px",
+            width: "100%",
+            boxShadow: "0 40px 120px rgba(26,26,26,0.25)",
+            border: "1px solid var(--border)",
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ textAlign: "center", marginBottom: "28px" }}>
               <div style={{
-                position: "absolute", top: "-30%", right: "-10%",
-                width: "200px", height: "200px",
-                background: "radial-gradient(circle, rgba(252,174,145,0.15) 0%, transparent 70%)",
-                pointerEvents: "none",
-              }} />
-
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", letterSpacing: "1px", marginBottom: "4px" }}>
-                      ТЕКУЩАЯ КАРТА
-                    </div>
-                    <div style={{ fontSize: "15px", fontWeight: 700, color: "white" }}>
-                      Основной метод
-                    </div>
-                  </div>
-                  <div style={{
-                    padding: "4px 10px",
-                    background: "rgba(163,201,168,0.2)",
-                    border: "1px solid rgba(163,201,168,0.3)",
-                    borderRadius: "100px",
-                    fontSize: "11px", fontWeight: 700, color: "#A3C9A8",
-                  }}>Активна</div>
-                </div>
-
-                {/* Card number */}
-                <div style={{
-                  fontSize: "22px", fontWeight: 700, color: "white",
-                  letterSpacing: "4px", marginBottom: "24px", fontFamily: "monospace",
-                }}>
-                  •••• •••• •••• 4821
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>ВЛАДЕЛЕЦ</div>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>IVAN PETROV</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>ИСТЕКАЕТ</div>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>09 / 27</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>СИСТЕМА</div>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>Visa</div>
-                  </div>
-                </div>
+                width: "56px", height: "56px",
+                borderRadius: "16px",
+                background: "rgba(252,174,145,0.12)",
+                border: "1.5px solid rgba(252,174,145,0.3)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 16px",
+              }}>
+                <ZapIcon />
               </div>
+              <h2 style={{ fontSize: "22px", fontWeight: 800, color: "var(--onyx)", letterSpacing: "-0.5px", marginBottom: "8px" }}>
+                Переход на {plans[selectedPlan].name}
+              </h2>
+              <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: "1.6" }}>
+                Стоимость ₽{getPrice(selectedPlan, selectedPeriod).toLocaleString("ru-RU")}/мес.
+                {selectedPeriod > 1 && ` Со скидкой ${periodDiscounts[selectedPeriod] * 100}% при оплате за ${selectedPeriod} мес.`}
+              </p>
             </div>
 
-            {/* Add / manage */}
             <div style={{
-              display: "flex", flexDirection: "column", gap: "12px",
+              padding: "16px 20px",
+              background: "rgba(252,174,145,0.06)",
+              borderRadius: "14px",
+              marginBottom: "24px",
             }}>
-              <div style={{
-                padding: "24px",
-                background: "var(--bg-card)",
-                border: "1px solid var(--border)",
-                borderRadius: "20px",
-                boxShadow: "var(--shadow)",
-                flex: 1,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                  <ShieldIcon />
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>
-                    Безопасность платежей
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontSize: "13px", color: "var(--muted)" }}>Тариф</span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{plans[selectedPlan].name}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontSize: "13px", color: "var(--muted)" }}>Период</span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>
+                  {selectedPeriod === 1 ? "1 месяц" : `${selectedPeriod} месяцев`}
+                </span>
+              </div>
+              {selectedPeriod > 1 && (
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "13px", color: "var(--muted)" }}>Скидка</span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--pistachio)" }}>
+                    −{periodDiscounts[selectedPeriod] * 100}% (−₽{savedTotal.toLocaleString("ru-RU")})
                   </span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {[
-                    "Данные карты не хранятся на наших серверах",
-                    "Шифрование PCI DSS Level 1",
-                    "3D Secure на каждой транзакции",
-                    "Автосписание с уведомлением за 3 дня",
-                  ].map((text, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
-                      <CheckIcon size={16} color="var(--pistachio)" />
-                      <span style={{ fontSize: "13px", color: "var(--muted)", lineHeight: "1.4" }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
+              )}
+              <div style={{ height: "1px", background: "var(--border)", margin: "12px 0" }} />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>Итого</span>
+                <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)" }}>
+                  ₽{totalToPay.toLocaleString("ru-RU")}
+                </span>
               </div>
-
-              <button style={{
-                padding: "14px 20px",
-                borderRadius: "14px",
-                border: "2px dashed var(--border)",
-                background: "transparent",
-                color: "var(--muted)",
-                fontSize: "13px", fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                transition: "all 0.2s ease",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--peach)";
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--peach)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)";
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                </svg>
-                Добавить новую карту
-              </button>
             </div>
-          </div>
 
-          {/* Autopay settings */}
-          <div style={{
-            marginTop: "16px",
-            padding: "24px 28px",
-            background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            borderRadius: "20px",
-            boxShadow: "var(--shadow)",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-              <ZapIcon />
-              <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>
-                Настройки автоплатежа
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <button style={{
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                background: "var(--peach)",
+                color: "white",
+                fontSize: "15px", fontWeight: 700,
+                cursor: "pointer", fontFamily: "inherit",
+                boxShadow: "0 4px 20px rgba(252,174,145,0.35)",
+                transition: "all 0.2s ease",
+              }}>
+                Подтвердить и оплатить
+              </button>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                style={{
+                  padding: "14px",
+                  borderRadius: "12px",
+                  border: "1.5px solid var(--border)",
+                  background: "transparent",
+                  color: "var(--muted)",
+                  fontSize: "14px", fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit",
+                  transition: "all 0.2s ease",
+                }}
+              >Отмена</button>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "16px" }}>
+              <InfoIcon />
+              <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                Защищено PCI DSS · Возврат в течение 7 дней
               </span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
-              {[
-                { label: "Автоматическое продление", desc: "Списание происходит без подтверждения", active: true },
-                { label: "Email-уведомления", desc: "Чек на почту после каждого платежа", active: true },
-                { label: "Уведомить за 3 дня", desc: "Напомним перед автоматическим списанием", active: true },
-                { label: "SMS-оповещение", desc: "Сообщение на номер при списании", active: false },
-              ].map((setting, i) => (
-                <div key={i} style={{
-                  padding: "16px 18px",
-                  background: "var(--bg)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "12px",
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                }}>
-                  <div>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)", marginBottom: "2px" }}>
-                      {setting.label}
-                    </div>
-                    <div style={{ fontSize: "11px", color: "var(--muted)" }}>{setting.desc}</div>
-                  </div>
-                  <div style={{
-                    width: "38px", height: "22px",
-                    borderRadius: "11px",
-                    background: setting.active ? "var(--peach)" : "var(--border)",
-                    position: "relative",
-                    cursor: "pointer",
-                    flexShrink: 0,
-                    transition: "background 0.2s ease",
-                    boxShadow: setting.active ? "0 2px 10px rgba(252,174,145,0.3)" : "none",
-                  }}>
-                    <div style={{
-                      width: "16px", height: "16px",
-                      borderRadius: "50%",
-                      background: "white",
-                      position: "absolute",
-                      top: "3px",
-                      left: setting.active ? "19px" : "3px",
-                      transition: "left 0.2s ease",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                    }} />
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          TAB: PAYMENT METHOD (Premium Interactive Morphing Checkout)
+      ════════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "method" && (
+        <div style={{ padding: "0 32px", animation: "fadeSlideIn 0.4s ease forwards" }}>
+          {/* Вызываем нашу вынесенную наружу функцию */}
+          <PaymentMethodSection triggerToast={(msg: string) => alert(msg)} />
         </div>
       )}
 
@@ -1410,7 +1511,386 @@ export default function Billing() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-4px); }
         }
+          .premium-slider {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 8px;
+          background: rgba(26,26,26,0.06);
+          border-radius: 6px;
+          outline: none;
+          transition: background 0.2s;
+        }
+        .premium-slider:hover {
+          background: rgba(26,26,26,0.1);
+        }
+        .premium-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: white;
+          border: 2px solid var(--peach);
+          cursor: grab;
+          box-shadow: 0 4px 12px rgba(252,174,145,0.4), 0 1px 3px rgba(0,0,0,0.1);
+          transition: transform 0.15s cubic-bezier(0.34, 1.5, 0.64, 1);
+        }
+        .premium-slider::-webkit-slider-thumb:active {
+          cursor: grabbing;
+          transform: scale(1.15);
+        }
+          /* 🔥 СТИЛИ ДЛЯ ИНТЕРАКТИВНОГО ГРАФИКА 🔥 */
+        .chart-bar-group {
+          position: relative;
+        }
+        .chart-bar-group > .bar-fill {
+          transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+          transform-origin: bottom;
+        }
+        .chart-bar-group:hover > .bar-fill {
+          filter: brightness(0.85);
+          transform: scaleY(1.03);
+        }
+        .chart-tooltip {
+          position: absolute;
+          bottom: calc(100% + 8px);
+          left: 50%;
+          background: #1A1A1A;
+          color: white;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+          pointer-events: none;
+          opacity: 0;
+          visibility: hidden;
+          transform: translate(-50%, 10px);
+          transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+          z-index: 10;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        /* Треугольник под тултипом */
+        .chart-tooltip::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-width: 5px;
+          border-style: solid;
+          border-color: #1A1A1A transparent transparent transparent;
+        }
+        .chart-bar-group:hover .chart-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, 0);
+        }
+        @keyframes cardLaserScan {
+          0% { transform: translateX(-100%) skewX(-15deg); }
+          100% { transform: translateX(200%) skewX(-15deg); }
+        }
       `}</style>
+    </div>
+  );
+}
+
+// ─── INTERACTIVE PAYMENT METHOD SECTION (VISUAL ORGASM EDITION) ────────────────
+function PaymentMethodSection({ triggerToast }: { triggerToast: (msg: string) => void }) {
+  const [isAddingCard, setIsAddingCard] = useState(false);
+  
+  // Живые стейты интерактивной карты
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    return parts.length > 0 ? parts.join(' ') : value;
+  };
+
+  const formatExpiry = (value: string) => {
+    const v = value.replace(/[^0-9]/g, '');
+    if (v.length >= 2) {
+      return `${v.slice(0, 2)}/${v.slice(2, 4)}`;
+    }
+    return v;
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      
+      {/* Главный контейнер-трансформер */}
+      <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: "32px", alignItems: "start" }}>
+        
+        {/* ЛЕВАЯ КОЛОНКА: ХАЙ-ЭНД БАНКОВСКАЯ КАРТА */}
+        <div style={{
+          width: "340px", height: "210px", borderRadius: "20px",
+          background: "linear-gradient(135deg, #0f0f12 0%, #1b1b22 100%)",
+          padding: "28px", boxSizing: "border-box", position: "relative",
+          display: "flex", flexDirection: "column", justifyContent: "space-between",
+          border: `1.5px solid ${focusedField ? "var(--peach)" : "rgba(255,255,255,0.06)"}`,
+          boxShadow: focusedField 
+            ? "0 30px 60px rgba(252,174,145,0.22), 0 0 20px rgba(252,174,145,0.1), inset 0 1px 1px rgba(255,255,255,0.1)" 
+            : "0 24px 48px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.05)",
+          transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+          transform: focusedField ? "scale(1.02) translateY(-2px)" : "none",
+          overflow: "hidden"
+        }}>
+          {/* Лазерная неоновая нить сканирования безопасности */}
+          <div style={{
+            position: "absolute", inset: 0, borderRadius: "20px",
+            background: "linear-gradient(to right, transparent, rgba(252,174,145,0.04), transparent)",
+            animation: "cardLaserScan 4s linear infinite", pointerEvents: "none"
+          }} />
+
+          {/* Верхний ряд карты */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative", zIndex: 2 }}>
+            <div>
+              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", letterSpacing: "1px", fontWeight: 800 }}>
+                {isAddingCard ? "РЕЖИМ ПРИВЯЗКИ" : "ОСНОВНАЯ КАРТА"}
+              </div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "white", marginTop: "2px" }}>
+                {isAddingCard ? "Новый метод" : "Visa Infinite"}
+              </div>
+            </div>
+            {/* Нарядный монохромный чип */}
+            <div style={{
+              width: "36px", height: "26px", borderRadius: "6px",
+              background: "linear-gradient(135deg, #e6c587 0%, #ba9958 100%)",
+              position: "relative", display: "flex", padding: "6px", boxSizing: "border-box",
+              opacity: 0.85, boxShadow: "0 2px 6px rgba(0,0,0,0.3)"
+            }}>
+              <div style={{ width: "100%", height: "100%", border: "0.5px solid rgba(0,0,0,0.2)", borderRadius: "3px" }} />
+            </div>
+          </div>
+
+          {/* Живой роскошный номер карты */}
+          <div style={{ 
+            fontSize: "20px", fontWeight: 700, 
+            fontFamily: "monospace", letterSpacing: "3px",
+            textShadow: "0 2px 8px rgba(0,0,0,0.6)",
+            transition: "all 0.2s",
+            color: focusedField === "number" ? "var(--peach)" : "white",
+            position: "relative", zIndex: 2
+          }}>
+            {isAddingCard 
+              ? (cardNumber || "•••• •••• •••• ••••")
+              : "•••• •••• •••• 4821"
+            }
+          </div>
+
+          {/* Нижний ряд карты */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 2 }}>
+            <div style={{ transition: "all 0.2s", color: focusedField === "name" ? "var(--peach)" : "white", maxWidth: "180px", overflow: "hidden" }}>
+              <div style={{ fontSize: "8px", fontWeight: 800, color: "rgba(255,255,255,0.3)", letterSpacing: "0.5px" }}>ДЕРЖАТЕЛЬ</div>
+              <div style={{ fontSize: "12px", fontWeight: 600, textTransform: "uppercase", marginTop: "3px", letterSpacing: "0.5px", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                {isAddingCard ? (cardName || "CARDHOLDER NAME") : "IVAN PETROV"}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "24px" }}>
+              <div style={{ transition: "all 0.2s", color: focusedField === "expiry" ? "var(--peach)" : "white", textAlign: "right" }}>
+                <div style={{ fontSize: "8px", fontWeight: 800, color: "rgba(255,255,255,0.3)", letterSpacing: "0.5px" }}>СРОК</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, marginTop: "3px", fontFamily: "monospace" }}>
+                  {isAddingCard ? (cardExpiry || "MM/YY") : "09/27"}
+                </div>
+              </div>
+              <div style={{ transition: "all 0.2s", color: focusedField === "cvc" ? "var(--peach)" : "white", textAlign: "right" }}>
+                <div style={{ fontSize: "8px", fontWeight: 800, color: "rgba(255,255,255,0.3)", letterSpacing: "0.5px" }}>CVC</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, marginTop: "3px", fontFamily: "monospace" }}>
+                  {isAddingCard ? (cardCvc ? "•••" : "— — —") : "•••"}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ПРАВАЯ КОЛОНКА: ИНТЕЛЛЕКТУАЛЬНЫЙ МОРФИНГ-ИНТЕРФЕЙС */}
+        <div style={{ minWidth: 0, width: "100%" }}>
+          
+          {/* СТЕЙТ 1: ОБЫЧНЫЙ РЕЖИМ (ИНФОРМАЦИЯ О БЕЗОПАСНОСТИ + КНОПКА ПРИВЯЗКИ) */}
+          {!isAddingCard ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px", animation: "fadeSlideIn 0.3s ease" }}>
+              <div style={{
+                padding: "24px 28px", background: "var(--bg-card)",
+                border: "1px solid var(--border)", borderRadius: "20px",
+                boxShadow: "var(--shadow)", display: "flex", flexDirection: "column", gap: "14px"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pistachio)" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>Стандарты защиты данных</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                  {["Шифрование по протоколу PCI DSS Level 1", "Защита транзакций через 3D Secure", "Данные карт не оседают на серверах", "Автоматические уведомления за 3 дня"].map((text, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", color: "var(--muted)" }}>
+                      <span style={{ color: "var(--pistachio)", fontWeight: "bold" }}>✓</span> {text}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* РОСКОШНАЯ КНОПКА ЗАМЕНЫ / ПРИВЯЗКИ */}
+              <button 
+                onClick={() => setIsAddingCard(true)}
+                style={{
+                  width: "100%", padding: "16px", borderRadius: "14px",
+                  background: "#FFFFFF", color: "var(--onyx)",
+                  border: "1px solid rgba(26,26,26,0.12)",
+                  fontSize: "13.5px", fontWeight: 700, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.borderColor = "var(--peach)";
+                  e.currentTarget.style.color = "var(--peach)";
+                  e.currentTarget.style.boxShadow = "0 12px 24px rgba(252,174,145,0.12)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.borderColor = "rgba(26,26,26,0.12)";
+                  e.currentTarget.style.color = "var(--onyx)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.02)";
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                Привязать новую банковскую карту
+              </button>
+            </div>
+          ) : (
+            
+            // 🔥 ВОТ ЗДЕСЬ БЫЛ БАГ (Заменил фигурные скобки на обычный JS комментарий)
+            // СТЕЙТ 2: РОСКОШНАЯ ИНЛАЙН-ФОРМА ВВОДА РЕКВИЗИТОВ
+            <div style={{
+              padding: "28px 32px", background: "#FFFFFF",
+              border: "1.5px solid var(--peach)", borderRadius: "20px",
+              boxShadow: "0 16px 40px rgba(252,174,145,0.08)",
+              display: "flex", flexDirection: "column", gap: "20px",
+              animation: "fadeSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+            }}>
+              <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--onyx)", letterSpacing: "-0.2px" }}>Новые платежные реквизиты</div>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                
+                <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11.5px", fontWeight: 600, color: "var(--muted)" }}>Номер карты</label>
+                  <input 
+                    type="text" placeholder="4242 4242 4242 4242" value={cardNumber}
+                    maxLength={19}
+                    onChange={e => setCardNumber(formatCardNumber(e.target.value))}
+                    onFocus={() => setFocusedField("number")} onBlur={() => setFocusedField(null)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1.5px solid var(--border)", outline: "none", fontSize: "13.5px", transition: "all 0.2s", background: focusedField === "number" ? "rgba(252,174,145,0.02)" : "#FFF", borderColor: focusedField === "number" ? "var(--peach)" : "var(--border)" }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11.5px", fontWeight: 600, color: "var(--muted)" }}>Имя держателя (Латиница)</label>
+                  <input 
+                    type="text" placeholder="ALEXEY MOROZOV" value={cardName}
+                    onChange={e => setCardName(e.target.value.toUpperCase().replace(/[^A-Z\s]/g, ""))}
+                    onFocus={() => setFocusedField("name")} onBlur={() => setFocusedField(null)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1.5px solid var(--border)", outline: "none", fontSize: "13.5px", transition: "all 0.2s", background: focusedField === "name" ? "rgba(252,174,145,0.02)" : "#FFF", borderColor: focusedField === "name" ? "var(--peach)" : "var(--border)" }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11.5px", fontWeight: 600, color: "var(--muted)" }}>Срок действия</label>
+                  <input 
+                    type="text" placeholder="MM/YY" value={cardExpiry} maxLength={5}
+                    onChange={e => setCardExpiry(formatExpiry(e.target.value))}
+                    onFocus={() => setFocusedField("expiry")} onBlur={() => setFocusedField(null)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1.5px solid var(--border)", outline: "none", fontSize: "13.5px", transition: "all 0.2s", background: focusedField === "expiry" ? "rgba(252,174,145,0.02)" : "#FFF", borderColor: focusedField === "expiry" ? "var(--peach)" : "var(--border)" }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11.5px", fontWeight: 600, color: "var(--muted)" }}>CVC код</label>
+                  <input 
+                    type="password" placeholder="•••" value={cardCvc} maxLength={3}
+                    onChange={e => setCardCvc(e.target.value.replace(/[^0-9]/g, ""))}
+                    onFocus={() => setFocusedField("cvc")} onBlur={() => setFocusedField(null)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1.5px solid var(--border)", outline: "none", fontSize: "13.5px", transition: "all 0.2s", background: focusedField === "cvc" ? "rgba(252,174,145,0.02)" : "#FFF", borderColor: focusedField === "cvc" ? "var(--peach)" : "var(--border)" }}
+                  />
+                </div>
+
+              </div>
+
+              {/* Экшен-кнопки управления формой */}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button 
+                  onClick={() => { setIsAddingCard(false); setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvc(""); }} 
+                  className="topbar-ghost" style={{ padding: "10px 18px", fontSize: "12.5px" }}
+                >
+                  Отмена
+                </button>
+                <button 
+                  onClick={() => {
+                    if (cardNumber.length < 15) return;
+                    setIsAddingCard(false);
+                    triggerToast("Новая Visa Infinite успешно привязана в качестве основной 🎉");
+                    setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvc("");
+                  }} 
+                  style={{
+                    padding: "10px 22px", borderRadius: "10px",
+                    background: "var(--peach)", border: "none", color: "white",
+                    fontSize: "12.5px", fontWeight: 700, cursor: "pointer",
+                    boxShadow: "0 6px 20px rgba(252,174,145,0.3)"
+                  }}
+                >
+                  Сохранить карту
+                </button>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* НИЖНИЙ БЛОК: НАСТРОЙКИ АВТОПЛАТЕЖА */}
+      <div style={{
+        marginTop: "12px", padding: "24px 28px",
+        background: "var(--bg-card)", border: "1px solid var(--border)",
+        borderRadius: "20px", boxShadow: "var(--shadow)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M11 2L3 11H10L9 18L17 9H10L11 2Z" fill="var(--peach)" fillOpacity="0.2" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>Настройки автоплатежа</span>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
+          {[
+            { label: "Автоматическое продление", desc: "Списание происходит без подтверждения", active: true },
+            { label: "Email-уведомления", desc: "Чек на почту после каждого платежа", active: true },
+            { label: "Уведомить за 3 дня", desc: "Напомним перед автоматическим списанием", active: true },
+            { label: "SMS-оповещение", desc: "Сообщение на номер при списании", active: false },
+          ].map((setting, i) => (
+            <div key={i} style={{ padding: "16px 18px", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)", marginBottom: "2px" }}>{setting.label}</div>
+                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{setting.desc}</div>
+              </div>
+              <div style={{
+                width: "38px", height: "22px", borderRadius: "11px",
+                background: setting.active ? "var(--peach)" : "var(--border)",
+                position: "relative", cursor: "pointer", flexShrink: 0,
+                transition: "background 0.2s ease",
+                boxShadow: setting.active ? "0 2px 10px rgba(252,174,145,0.3)" : "none",
+              }}>
+                <div style={{ width: "16px", height: "16px", borderRadius: "50%", background: "white", position: "absolute", top: "3px", left: setting.active ? "19px" : "3px", transition: "left 0.2s ease", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }

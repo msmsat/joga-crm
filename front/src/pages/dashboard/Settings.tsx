@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import AddStaffModal from '../../components/modals/AddStaffModal';
 import EditStaffModal from '../../components/modals/EditStaffModal';
+import { useNavigate } from "react-router-dom";
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 const icons = {
@@ -820,6 +821,75 @@ function DarkTimeSelect({ value, onChange, disabled }: { value: string; onChange
 
 // ─── MAIN SETTINGS COMPONENT ─────────────────────────────────────────────────
 export default function Settings() {
+  const navigate = useNavigate();
+
+  // ─── СТЕЙТЫ ДЛЯ СИСТЕМНОГО ВЫХОДА И ВЫБОРА СТУДИЙ ──────────────────────────
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [studiosList, setStudiosList] = useState([
+    { id: "1", name: "Pilates & Wellness Studio", theme: "light", desc: "Жемчужно-алебастровый UI · Основное пространство" },
+    { id: "2", name: "Barbershop Blade & Co", theme: "dark", desc: "Матовый глубокий графит · Брутальный стиль" },
+  ]);
+  const [isCreatingNewStudio, setIsCreatingNewStudio] = useState(false);
+  const [createdStudioName, setCreatedStudioName] = useState("");
+  const [createdStudioTheme, setCreatedStudioTheme] = useState<"light" | "dark">("light");
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+
+  const [autoBackup, setAutoBackup] = useState(true);
+  const [backupRetention, setBackupRetention] = useState("30 дней");
+  const [isCreatingBackup, setIsCreatingBackup] = useState(false);
+  const [isDownloadingBackup, setIsDownloadingBackup] = useState(false);
+  const [exportingItem, setExportingItem] = useState<number | null>(null);
+
+  // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА ИНТЕГРАЦИИ ──────────────────────────────────────────
+  const [expandedIntegration, setExpandedIntegration] = useState<string | null>(null);
+  
+  // Живая база данных конфигураций всех интеграций
+  const [integrationsConfig, setIntegrationsConfig] = useState<Record<string, any>>({
+    whatsapp: { connected: true, phone: "+7 (900) 123-45-67", webhook: "https://api.velora.studio/v1/wa/webhook" },
+    telegram: { connected: true, token: "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ", welcomeMsg: "Приветствуем! Выберите удобное время для записи ✨" },
+    instagram: { connected: false, account: "" },
+    google: { connected: false, calendarName: "Основной календарь", syncType: "Двусторонняя" },
+    onec: { connected: false, url: "https://1c.studio.ru/base", login: "" },
+    yandex: { connected: true, shopId: "208492", testMode: false }
+  });
+
+  const updateIntegrationField = (channel: string, field: string, value: any) => {
+    setIntegrationsConfig(prev => ({
+      ...prev,
+      [channel]: { ...prev[channel], [field]: value }
+    }));
+  };
+
+  const toggleIntegrationConnect = (channel: string, name: string) => {
+    const isConnecting = !integrationsConfig[channel].connected;
+    updateIntegrationField(channel, "connected", isConnecting);
+    
+    if (isConnecting) {
+      triggerSave(`int_${channel}`, `Интеграция с ${name} успешно настроена и подключена`);
+    } else {
+      triggerToast(`Интеграция с ${name} отключена`);
+    }
+    setExpandedIntegration(null); // Сворачиваем после действия
+  };
+
+  // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА БЕЗОПАСНОСТЬ ────────────────────────────────────────
+  const [secExpanded, setSecExpanded] = useState<"sessions" | "token" | "export" | null>(null);
+  const [secModal, setSecModal] = useState<"password" | "deleteData" | "deleteAccount" | null>(null);
+  
+  // Живые данные для сессий и токенов
+  const [activeSessions, setActiveSessions] = useState([
+    { id: 1, device: "MacBook Pro 14\"", browser: "Safari", loc: "Москва, РФ", time: "Сейчас активна", current: true, icon: "laptop" },
+    { id: 2, device: "iPhone 13 Pro", browser: "App / iOS", loc: "Санкт-Петербург, РФ", time: "Вчера в 14:20", current: false, icon: "phone" },
+  ]);
+  const [apiTokens, setApiTokens] = useState([
+    { id: 1, name: "Основной API", key: "vel_live_••••4f2a", created: "14 мар 2026" },
+    { id: 2, name: "Telegram Bot", key: "vel_bot_••••9a1c", created: "2 апр 2026" },
+  ]);
+
+  // Стейты для форм безопасности
+  const [newTokenName, setNewTokenName] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
   // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА БИЛЛИНГ / ПОДПИСКА ──────────────────────────────────
   const [billingView, setBillingView] = useState<"dashboard" | "tariffs">("dashboard");
   const [isAddingCard, setIsAddingCard] = useState(false);
@@ -1974,233 +2044,642 @@ export default function Settings() {
     );
   };
 
-  const renderSecurity = () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.shield} title="Безопасность аккаунта" subtitle="Защитите доступ к вашему рабочему пространству" accent />
-        <SecurityIllustration />
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "10px" }}>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>Двухфакторная аутентификация</div>
-              <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "1px" }}>SMS или приложение-аутентификатор</div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {!twoFa && <StatusBadge type="warning">Отключена</StatusBadge>}
-              {twoFa && <StatusBadge type="active">Активна</StatusBadge>}
-              <Toggle checked={twoFa} onChange={() => setTwoFa(!twoFa)} />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "10px" }}>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>Уведомления о входе</div>
-              <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "1px" }}>Email при входе с нового устройства</div>
-            </div>
-            <Toggle checked={sessionAlert} onChange={() => setSessionAlert(!sessionAlert)} />
-          </div>
-          <SettingsRow label="Изменить пароль" sub="Последнее изменение: 3 месяца назад" onEdit={() => {}} />
-          <SettingsRow label="Активные сессии" sub="2 устройства" onEdit={() => {}} tag={<StatusBadge type="info">2 активных</StatusBadge>} />
-        </div>
-      </div>
+  const renderSecurity = () => {
+    // Вспомогательные SVG-иконки для этого раздела
+    const secIcons = {
+      laptop: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>,
+      phone: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,
+      key: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>,
+      archive: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>,
+    };
 
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.key} title="API токены" subtitle="Ключи для интеграции внешних сервисов" />
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
-          {[
-            { name: "Основной API", key: "vel_live_••••4f2a", created: "14 мар 2026" },
-            { name: "Telegram Bot", key: "vel_bot_••••9a1c", created: "2 апр 2026" },
-          ].map((token, i) => (
-            <div key={i} style={{
-              display: "flex", alignItems: "center", gap: "12px",
-              padding: "12px 14px", borderRadius: "10px",
-              background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)",
-            }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)" }}>{token.name}</div>
-                <div style={{ fontSize: "11px", color: "var(--muted)", fontFamily: "monospace" }}>{token.key}</div>
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        
+        {/* БЛОК 1: ДОСТУП И СЕССИИ */}
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={icons.shield} title="Безопасность аккаунта" subtitle="Защитите доступ к вашему рабочему пространству" accent />
+          <SecurityIllustration />
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px" }}>
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Двухфакторная аутентификация</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>SMS или приложение-аутентификатор</div>
               </div>
-              <div style={{ fontSize: "11px", color: "var(--muted)" }}>{token.created}</div>
-              <button style={{ color: "#C0607A", background: "rgba(216,140,154,0.1)", border: "none", borderRadius: "6px", padding: "5px 6px", cursor: "pointer" }}>{icons.trash}</button>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <StatusBadge type={twoFa ? "active" : "warning"}>{twoFa ? "Активна" : "Отключена"}</StatusBadge>
+                <Toggle checked={twoFa} onChange={() => setTwoFa(!twoFa)} />
+              </div>
             </div>
-          ))}
-        </div>
-        <button style={{
-          display: "flex", alignItems: "center", gap: "7px",
-          padding: "9px 16px", borderRadius: "10px",
-          background: "rgba(252,174,145,0.1)", border: "1px solid rgba(252,174,145,0.3)",
-          color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: "pointer",
-          transition: "all 0.2s ease",
-        }}>
-          {icons.plus}
-          Создать токен
-        </button>
-      </div>
 
-      {/* Danger zone */}
-      <div className="card" style={{ padding: "28px", border: "1.5px solid rgba(216,140,154,0.3)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-          <span style={{ color: "#C0607A" }}>{icons.alertTriangle}</span>
-          <div style={{ fontSize: "15px", fontWeight: 700, color: "#C0607A" }}>Опасная зона</div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <SettingsRow label="Экспорт всех данных" sub="Скачать архив с данными аккаунта" onEdit={() => {}} />
-          <SettingsRow label="Удалить все данные" sub="Полная очистка аккаунта — действие необратимо" danger onEdit={() => {}} />
-          <SettingsRow label="Удалить аккаунт" sub="Закрыть подписку и удалить компанию" danger onEdit={() => {}} />
-        </div>
-      </div>
-    </div>
-  );
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Пароль администратора</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Последнее изменение: 3 месяца назад</div>
+              </div>
+              <button 
+                onClick={() => navigate("/change-password")} // 🔥 ИЗМЕНИЛИ ЗДЕСЬ
+                style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid rgba(26,26,26,0.1)", color: "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(0,0,0,0.03)" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; }}
+              >
+                {secIcons.key} Сменить пароль
+              </button>
+            </div>
 
-  const renderIntegrations = () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.link} title="Интеграции" subtitle="Подключите внешние сервисы и каналы" />
-        <IntegrationIllustration />
-        <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-          {[
-            { name: "WhatsApp Business", sub: "Рассылки и уведомления клиентам", color: "#25D366", connected: true },
-            { name: "Telegram Bot", sub: "Онлайн-запись через бота", color: "#229ED9", connected: true },
-            { name: "Instagram Direct", sub: "Входящие сообщения в ленту", color: "#E1306C", connected: false },
-            { name: "Google Calendar", sub: "Синхронизация расписания", color: "#4285F4", connected: false },
-            { name: "1С: Предприятие", sub: "Выгрузка финансов и справочников", color: "#EF3B2C", connected: false },
-            { name: "Яндекс.Касса", sub: "Приём онлайн-платежей", color: "#FFCC00", connected: true },
-          ].map((int, i) => (
-            <div key={i} style={{
-              display: "flex", alignItems: "center", gap: "14px",
-              padding: "14px 16px", borderRadius: "10px",
-              border: `1.5px solid ${int.connected ? `${int.color}25` : "var(--border)"}`,
-              background: int.connected ? `${int.color}06` : "transparent",
-              transition: "all 0.2s ease",
-            }}>
-              <div style={{
-                width: "36px", height: "36px", borderRadius: "10px",
-                background: `${int.color}18`, border: `1.5px solid ${int.color}30`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "10px", fontWeight: 900, color: int.color, flexShrink: 0,
-              }}>
-                {int.name.slice(0, 2).toUpperCase()}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{int.name}</div>
-                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{int.sub}</div>
-              </div>
-              {int.connected ? (
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <StatusBadge type="active">Подключено</StatusBadge>
-                  <button className="topbar-ghost" style={{ padding: "5px 10px", fontSize: "11px" }}>Настроить</button>
+            {/* ИНЛАЙН-ПАНЕЛЬ: Управление сессиями */}
+            <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Активные сессии</div>
+                  <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Где сейчас выполнен вход в аккаунт</div>
                 </div>
-              ) : (
-                <button style={{
-                  padding: "7px 16px", borderRadius: "8px",
-                  background: "transparent", border: `1.5px solid ${int.color}50`,
-                  color: int.color, fontSize: "12px", fontWeight: 700, cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = `${int.color}12`; }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
-                >
-                  Подключить
-                </button>
-              )}
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <StatusBadge type="info">{activeSessions.length} устройства</StatusBadge>
+                  <button 
+                    onClick={() => setSecExpanded(secExpanded === "sessions" ? null : "sessions")}
+                    style={{ padding: "8px 14px", borderRadius: "8px", background: secExpanded === "sessions" ? "var(--peach)" : "rgba(26,26,26,0.05)", border: "none", color: secExpanded === "sessions" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                  >
+                    {secExpanded === "sessions" ? "Скрыть" : "Управление"}
+                  </button>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateRows: secExpanded === "sessions" ? "1fr" : "0fr", transition: "grid-template-rows 0.3s" }}>
+                <div style={{ minHeight: 0 }}>
+                  <div style={{ padding: "0 16px 16px" }}>
+                    <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {activeSessions.map(session => (
+                        <div key={session.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: session.current ? "rgba(163,201,168,0.06)" : "#FFF" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                            <div style={{ color: session.current ? "#5A9A65" : "var(--muted)" }}>{session.icon === "laptop" ? secIcons.laptop : secIcons.phone}</div>
+                            <div>
+                              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)", display: "flex", alignItems: "center", gap: "6px" }}>
+                                {session.device} {session.current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>Текущая</span>}
+                              </div>
+                              <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{session.browser} · {session.loc} · {session.time}</div>
+                            </div>
+                          </div>
+                          {!session.current && (
+                            <button 
+                              onClick={() => { setActiveSessions(prev => prev.filter(s => s.id !== session.id)); triggerToast("Сессия успешно завершена"); }}
+                              style={{ padding: "6px 12px", borderRadius: "6px", background: "rgba(216,140,154,0.1)", color: "#C0607A", border: "none", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                              onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
+                            >
+                              Завершить
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 
-  const renderData = () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.database} title="Хранилище данных" subtitle="Управление данными и резервными копиями" />
-        <div style={{ marginBottom: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>Использовано места</span>
-            <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>2.4 ГБ / 10 ГБ</span>
           </div>
-          <div style={{ height: "8px", borderRadius: "100px", background: "var(--border)", overflow: "hidden" }}>
-            <div style={{
-              height: "100%", width: "24%",
-              background: "linear-gradient(90deg, var(--peach), #f07050)",
-              borderRadius: "100px",
-              transition: "width 0.8s ease",
-            }} />
-          </div>
-          <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
-            {[
-              { label: "Клиенты", size: "0.8 ГБ", color: "var(--peach)" },
-              { label: "Фото", size: "1.4 ГБ", color: "#9BB5D8" },
-              { label: "Документы", size: "0.2 ГБ", color: "#A3C9A8" },
-            ].map((d, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: d.color }} />
-                <span style={{ fontSize: "11px", color: "var(--muted)" }}>{d.label}</span>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--onyx)" }}>{d.size}</span>
+        </div>
+
+        {/* БЛОК 2: API ТОКЕНЫ */}
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={icons.link} title="API токены" subtitle="Ключи для интеграции внешних сервисов" />
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+            {apiTokens.map((token) => (
+              <div key={token.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderRadius: "10px", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)" }}>{token.name}</div>
+                  <div style={{ fontSize: "11.5px", color: "var(--muted)", fontFamily: "monospace", marginTop: "2px" }}>{token.key}</div>
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{token.created}</div>
+                <button 
+                  onClick={() => { setApiTokens(prev => prev.filter(t => t.id !== token.id)); triggerToast("API токен отозван и удален"); }}
+                  style={{ display: "flex", alignItems: "center", gap: "4px", color: "#C0607A", background: "rgba(216,140,154,0.1)", border: "none", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
+                >
+                  {icons.trash} Отозвать
+                </button>
               </div>
             ))}
           </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <SettingsRow label="Автоматический бэкап" sub="Ежедневно в 03:00" onEdit={() => {}} tag={<StatusBadge type="active">Включён</StatusBadge>} />
-          <SettingsRow label="Последний бэкап" sub="Сегодня в 03:14 · 124 МБ" onEdit={() => {}} />
-          <SettingsRow label="Хранить бэкапы" sub="30 дней" onEdit={() => {}} />
-        </div>
-        <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "7px",
-            padding: "9px 18px", borderRadius: "10px",
-            background: "rgba(252,174,145,0.1)", border: "1px solid rgba(252,174,145,0.3)",
-            color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: "pointer",
-          }}>
-            {icons.download} Скачать бэкап
-          </button>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "7px",
-            padding: "9px 18px", borderRadius: "10px",
-            border: "1px solid var(--border)", background: "transparent",
-            color: "var(--muted)", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-          }}>
-            {icons.zap} Создать сейчас
-          </button>
-        </div>
-      </div>
 
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.download} title="Экспорт данных" subtitle="Выгрузите нужные данные в удобном формате" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-          {[
-            { name: "Список клиентов", format: "CSV / XLSX" },
-            { name: "История записей", format: "CSV / PDF" },
-            { name: "Финансовый отчёт", format: "XLSX / PDF" },
-            { name: "Аналитика", format: "PDF" },
-          ].map((e, i) => (
-            <div key={i} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 16px", borderRadius: "10px",
-              border: "1.5px solid var(--border)", background: "rgba(0,0,0,0.01)",
-            }}>
-              <div>
-                <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)" }}>{e.name}</div>
-                <div style={{ fontSize: "11px", color: "var(--muted)" }}>{e.format}</div>
-              </div>
-              <button style={{
-                display: "flex", alignItems: "center", gap: "4px",
-                padding: "6px 10px", borderRadius: "7px",
-                border: "1px solid var(--border)", background: "transparent",
-                color: "var(--muted)", fontSize: "11px", cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-                onMouseOver={(e) => { e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.4)"; }}
-                onMouseOut={(e) => { e.currentTarget.style.color = "var(--muted)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+          {/* ИНЛАЙН-ПАНЕЛЬ: Создание токена */}
+          <div style={{ borderRadius: "12px", background: secExpanded === "token" ? "rgba(252,174,145,0.04)" : "transparent", transition: "all 0.3s", overflow: "hidden" }}>
+            {!secExpanded || secExpanded !== "token" ? (
+              <button 
+                onClick={() => setSecExpanded("token")}
+                style={{ display: "flex", alignItems: "center", gap: "7px", padding: "10px 16px", borderRadius: "10px", background: "rgba(252,174,145,0.1)", border: "1px dashed rgba(252,174,145,0.4)", color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.15)"; e.currentTarget.style.borderStyle = "solid"; }} onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderStyle = "dashed"; }}
               >
-                {icons.download}
+                {icons.plus} Создать новый токен
+              </button>
+            ) : (
+              <div style={{ padding: "16px", border: "1px solid var(--peach)", borderRadius: "12px", display: "flex", alignItems: "flex-end", gap: "12px" }}>
+                <div style={{ flex: 1 }}>
+                  <InputRow label="Название интеграции" placeholder="Например: AmoCRM Синхронизация" value={newTokenName} onChange={setNewTokenName} />
+                </div>
+                <button onClick={() => setSecExpanded(null)} className="topbar-ghost" style={{ padding: "10px 16px", fontSize: "12px" }}>Отмена</button>
+                <button 
+                  onClick={() => {
+                    if(!newTokenName) return;
+                    setApiTokens(prev => [...prev, { id: Date.now(), name: newTokenName, key: `vel_live_${Math.random().toString(36).substr(2, 8)}`, created: "Только что" }]);
+                    setNewTokenName(""); setSecExpanded(null); triggerToast("Новый API ключ сгенерирован");
+                  }}
+                  style={{ padding: "10px 20px", borderRadius: "10px", background: "var(--peach)", border: "none", color: "#FFF", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.3)" }}
+                >
+                  Сгенерировать ключ
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* БЛОК 3: ДАННЫЕ И ОПАСНАЯ ЗОНА */}
+        <div className="card" style={{ padding: "28px", border: "1.5px solid rgba(216,140,154,0.3)", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: "4px", height: "100%", background: "#D88C9A" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
+            <span style={{ color: "#C0607A" }}>{icons.alertTriangle}</span>
+            <div style={{ fontSize: "15px", fontWeight: 800, color: "#C0607A" }}>Управление данными (Опасная зона)</div>
+          </div>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            
+            {/* ИНЛАЙН-ПАНЕЛЬ: Экспорт */}
+            <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Экспорт всех данных</div>
+                  <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Скачать архив с клиентской базой и историей</div>
+                </div>
+                <button 
+                  onClick={() => setSecExpanded(secExpanded === "export" ? null : "export")}
+                  style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: secExpanded === "export" ? "var(--peach)" : "#FFFFFF", border: "1px solid", borderColor: secExpanded === "export" ? "var(--peach)" : "rgba(26,26,26,0.1)", color: secExpanded === "export" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                >
+                  {secExpanded === "export" ? "Скрыть" : <>{secIcons.archive} Подготовить архив</>}
+                </button>
+              </div>
+              <div style={{ display: "grid", gridTemplateRows: secExpanded === "export" ? "1fr" : "0fr", transition: "grid-template-rows 0.3s" }}>
+                <div style={{ minHeight: 0 }}>
+                  <div style={{ padding: "0 16px 16px" }}>
+                    <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
+                    <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> База клиентов (CSV)</label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> Финансовые транзакции</label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> Медиа и фото</label>
+                    </div>
+                    <button 
+                      onClick={() => { triggerToast("Формирование ZIP архива началось. Мы пришлем ссылку на Email."); setSecExpanded(null); }}
+                      style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "rgba(252,174,145,0.15)", color: "var(--peach)", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", transition: "background 0.2s" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(252,174,145,0.25)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(252,174,145,0.15)"}
+                    >
+                      Начать выгрузку
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Модалки Опасной зоны */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "#C0607A" }}>Очистить базу данных</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Удаляет всех клиентов и записи. Настройки сохранятся.</div>
+              </div>
+              <button 
+                onClick={() => setSecModal("deleteData")}
+                style={{ padding: "8px 14px", borderRadius: "8px", background: "rgba(216,140,154,0.1)", border: "none", color: "#C0607A", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
+              >
+                Стереть данные
               </button>
             </div>
-          ))}
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(216,140,154,0.05)", border: "1px solid rgba(216,140,154,0.2)" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 800, color: "#C0607A" }}>Удалить аккаунт компании</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Полное и безвозвратное уничтожение бизнеса в системе</div>
+              </div>
+              <button 
+                onClick={() => setSecModal("deleteAccount")}
+                style={{ padding: "8px 14px", borderRadius: "8px", background: "#D88C9A", border: "none", color: "#FFF", fontSize: "11.5px", fontWeight: 800, cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s", boxShadow: "0 4px 12px rgba(216,140,154,0.4)" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"} onMouseLeave={e => e.currentTarget.style.transform = "none"}
+              >
+                Удалить навсегда
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    );
+  };
+
+  const renderIntegrations = () => {
+    // Кастомные SVG иконки для внутренних разделов интеграций
+    const intIcons = {
+      settings: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+      power: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+    };
+
+    const list = [
+      { id: "whatsapp", name: "WhatsApp Business", sub: "Рассылки сообщений и автоуведомления клиентам", color: "#25D366" },
+      { id: "telegram", name: "Telegram Bot", sub: "Автоматическая круглосуточная запись через чат-бота", color: "#229ED9" },
+      { id: "instagram", name: "Instagram Direct", sub: "Перехват входящих сообщений в CRM-систему", color: "#E1306C" },
+      { id: "google", name: "Google Calendar", sub: "Двусторонняя синхронизация расписания тренеров", color: "#4285F4" },
+      { id: "onec", name: "1С: Предприятие", sub: "Автоматическая выгрузка финансов и аналитики", color: "#EF3B2C" },
+      { id: "yandex", name: "Яндекс.Касса (ЮKassa)", sub: "Безопасный приём онлайн-оплаты и предоплат на сайте", color: "#333333" },
+    ];
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={icons.link} title="Интеграции" subtitle="Подключите внешние каналы и экосистемы в один клик" accent />
+          <IntegrationIllustration />
+          
+          <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+            {list.map((item) => {
+              const config = integrationsConfig[item.id];
+              const isExpanded = expandedIntegration === item.id;
+              const isConnected = config.connected;
+
+              return (
+                <div 
+                  key={item.id} 
+                  style={{
+                    borderRadius: "14px",
+                    background: isExpanded ? "#FFFFFF" : "rgba(0,0,0,0.015)",
+                    border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(0,0,0,0.04)"}`,
+                    boxShadow: isExpanded ? "0 12px 32px rgba(252,174,145,0.1), 0 2px 6px rgba(252,174,145,0.05)" : "none",
+                    transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                    overflow: "hidden"
+                  }}
+                >
+                  {/* Шапка интеграции (Кликабельная строка) */}
+                  <div 
+                    onClick={() => setExpandedIntegration(isExpanded ? null : item.id)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "14px",
+                      padding: "16px 20px", cursor: "pointer",
+                      background: isExpanded ? "rgba(252,174,145,0.02)" : "transparent",
+                    }}
+                  >
+                    {/* Круглая брендовая иконка-заглушка */}
+                    <div style={{
+                      width: "38px", height: "38px", borderRadius: "10px",
+                      background: `${item.color}14`, border: `1.5px solid ${item.color}25`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: "11px", fontWeight: 900, color: item.color, flexShrink: 0,
+                    }}>
+                      {item.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--onyx)" }}>{item.name}</div>
+                      <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.sub}</div>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", pointerEvents: "none" }}>
+                      <StatusBadge type={isConnected ? "active" : "warning"}>
+                        {isConnected ? "Подключено" : "Не активно"}
+                      </StatusBadge>
+                      
+                      {/* Умная пружинящая кнопка */}
+                      <button style={{ 
+                        display: "flex", alignItems: "center", gap: "5px",
+                        padding: "6px 14px", borderRadius: "8px", 
+                        background: isExpanded ? "var(--peach)" : "#FFFFFF", 
+                        color: isExpanded ? "#FFFFFF" : "var(--onyx)", 
+                        border: isExpanded ? "1px solid var(--peach)" : "1px solid rgba(26,26,26,0.1)", 
+                        fontSize: "11.5px", fontWeight: 700, cursor: "pointer", 
+                        transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)", 
+                        boxShadow: isExpanded ? "0 4px 12px rgba(252,174,145,0.35)" : "0 2px 6px rgba(0,0,0,0.02)",
+                      }}>
+                        {isConnected ? "Настроить" : "Подключить"}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" 
+                             style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}>
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ВЫЕЗЖАЮЩИЕ ИНЛАЙН НАСТРОЙКИ (Магия CSS Grid) */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateRows: isExpanded ? "1fr" : "0fr",
+                    transition: "grid-template-rows 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)"
+                  }}>
+                    <div style={{ minHeight: 0 }}>
+                      <div style={{ padding: "0 20px 20px 20px" }}>
+                        <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "20px" }} />
+                        
+                        {/* 🟢 НАСТРОЙКИ WHATSAPP */}
+                        {item.id === "whatsapp" && (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                            <InputRow label="Номер телефона WhatsApp Business" value={config.phone} onChange={v => updateIntegrationField("whatsapp", "phone", v)} />
+                            <InputRow label="Адрес Webhook для синхронизации (Просмотр)" value={config.webhook} type="text" />
+                          </div>
+                        )}
+
+                        {/* 🟢 НАСТРОЙКИ TELEGRAM */}
+                        {item.id === "telegram" && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <InputRow label="API Токен Бота (из @BotFather)" placeholder="123456789:ABCDefGhIJKlmNo..." value={config.token} onChange={v => updateIntegrationField("telegram", "token", v)} />
+                            <InputRow label="Приветственное сообщение в боте" value={config.welcomeMsg} onChange={v => updateIntegrationField("telegram", "welcomeMsg", v)} />
+                          </div>
+                        )}
+
+                        {/* 🟢 НАСТРОЙКИ INSTAGRAM */}
+                        {item.id === "instagram" && (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}>
+                            <InputRow label="Имя привязанного бизнес-аккаунта Meta" placeholder="@your_studio_candles" value={config.account} onChange={v => updateIntegrationField("instagram", "account", v)} />
+                          </div>
+                        )}
+
+                        {/* 🟢 НАСТРОЙКИ GOOGLE CALENDAR */}
+                        {item.id === "google" && (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "flex-end" }}>
+                            <InputRow label="Название календаря" value={config.calendarName} onChange={v => updateIntegrationField("google", "calendarName", v)} />
+                            <DarkSelectRow label="Режим синхронизации" value={config.syncType} options={["Двусторонняя", "Только экспорт", "Только импорт"]} onChange={v => updateIntegrationField("google", "syncType", v)} />
+                          </div>
+                        )}
+
+                        {/* 🟢 НАСТРОЙКИ 1С */}
+                        {item.id === "onec" && (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                            <InputRow label="URL шлюза публикации базы" placeholder="https://1c.company.ru/base" value={config.url} onChange={v => updateIntegrationField("onec", "url", v)} />
+                            <InputRow label="Логин / Идентификатор CRM" placeholder="velora_sync_user" value={config.login} onChange={v => updateIntegrationField("onec", "login", v)} />
+                          </div>
+                        )}
+
+                        {/* 🟢 НАСТРОЙКИ ЮKASSA */}
+                        {item.id === "yandex" && (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "center" }}>
+                            <InputRow label="Идентификатор магазина (ShopID)" value={config.shopId} onChange={v => updateIntegrationField("yandex", "shopId", v)} />
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "rgba(0,0,0,0.015)", borderRadius: "10px", marginTop: "18px", border: "1px solid var(--border)" }}>
+                              <div>
+                                <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--onyx)" }}>Тестовый режим оплаты</div>
+                                <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "1px" }}>Проверка платежей без реального списания денег</div>
+                              </div>
+                              <Toggle checked={config.testMode} onChange={() => updateIntegrationField("yandex", "testMode", !config.testMode)} />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Нижняя панель действий */}
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "24px" }}>
+                          {isConnected && (
+                            <button 
+                              onClick={() => toggleIntegrationConnect(item.id, item.name)}
+                              style={{
+                                display: "flex", alignItems: "center", gap: "5px",
+                                padding: "9px 18px", borderRadius: "10px",
+                                background: "rgba(216,140,154,0.08)", border: "1px solid rgba(216,140,154,0.2)",
+                                color: "#C0607A", fontSize: "12px", fontWeight: 700, cursor: "pointer",
+                                transition: "all 0.2s"
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.15)"}
+                              onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.08)"}
+                            >
+                              {intIcons.power}
+                              Отключить интеграцию
+                            </button>
+                          )}
+                          
+                          <PremiumButton 
+                            isSaved={savedStates[`int_${item.id}`]}
+                            onClick={() => toggleIntegrationConnect(item.id, item.name)}
+                            text={isConnected ? "Сохранить изменения" : "Активировать шлюз"}
+                            savedText="Настройки сохранены"
+                          />
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const renderData = () => {
+    const dataIcons = {
+      database: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>,
+      download: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+      loader: <svg className="spin-anim" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.2" /><path d="M4 12a8 8 0 0 1 8-8" /></svg>,
+      check: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+      clock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    };
+
+    // Имитация создания мгновенного бэкапа
+    const handleCreateBackupNow = () => {
+      setIsCreatingBackup(true);
+      setTimeout(() => {
+        setIsCreatingBackup(false);
+        triggerToast("Резервная копия базы данных успешно создана ✨");
+      }, 2000);
+    };
+
+    // Имитация скачивания последнего бэкапа
+    const handleDownloadBackupFile = () => {
+      setIsDownloadingBackup(true);
+      setTimeout(() => {
+        setIsDownloadingBackup(false);
+        triggerToast("Файл backup_joga_live.sql скачан");
+      }, 1500);
+    };
+
+    // Имитация экспорта отдельного отчета в XLSX/PDF
+    const handleTriggerExport = (id: number, name: string) => {
+      setExportingItem(id);
+      setTimeout(() => {
+        setExportingItem(null);
+        triggerToast(`Документ "${name}" успешно экспортирован`);
+      }, 1800);
+    };
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {/* КАРТОЧКА 1: ХРАНИЛИЩЕ И БЭКАПЫ */}
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={dataIcons.database} title="Хранилище данных" subtitle="Мониторинг дискового пространства и автоматизация бэкапов" accent />
+          
+          {/* Индикатор прогресса диска класса Хай-Энд */}
+          <div style={{ marginBottom: "24px", background: "rgba(0,0,0,0.01)", padding: "18px 20px", borderRadius: "14px", border: "1px solid var(--border)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Использовано дискового пространства</span>
+              <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--onyx)", fontFamily: "monospace" }}>2.4 ГБ / 10 ГБ</span>
+            </div>
+            
+            {/* Нарядная неоновая полоса загрузки */}
+            <div style={{ height: "8px", borderRadius: "100px", background: "rgba(26,26,26,0.06)", overflow: "hidden", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)" }}>
+              <div style={{
+                height: "100%", width: "24%",
+                background: "linear-gradient(90deg, var(--peach) 0%, #f07050 100%)",
+                borderRadius: "100px",
+                boxShadow: "0 2px 8px rgba(252,174,145,0.4)"
+              }} />
+            </div>
+
+            {/* Распределение по интерактивным категориям */}
+            <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
+              {[
+                { label: "Клиенты", size: "0.8 ГБ", color: "var(--peach)" },
+                { label: "Медиа-файлы", size: "1.4 ГБ", color: "#9BB5D8" },
+                { label: "Документы", size: "0.2 ГБ", color: "#A3C9A8" },
+              ].map((d, i) => (
+                <div 
+                  key={i} 
+                  onClick={() => triggerToast(`Детализация категории: ${d.label} (${d.size})`)}
+                  style={{ 
+                    display: "flex", alignItems: "center", gap: "8px", 
+                    padding: "6px 12px", borderRadius: "8px", background: "#FFFFFF",
+                    border: "1px solid rgba(26,26,26,0.04)", cursor: "pointer",
+                    transition: "all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.04)"; }}
+                >
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: d.color }} />
+                  <span style={{ fontSize: "11.5px", color: "var(--muted)", fontWeight: 600 }}>{d.label}</span>
+                  <span style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--onyx)", fontFamily: "monospace" }}>{d.size}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Интерактивные строки конфигурации */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginBottom: "20px" }}>
+            
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px", background: autoBackup ? "rgba(252,174,145,0.03)" : "transparent", transition: "background 0.2s" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Автоматическое резервное копирование</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Ежедневное создание слепка системы в 03:00 ночи</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <StatusBadge type={autoBackup ? "active" : "warning"}>{autoBackup ? "Включён" : "Отключён"}</StatusBadge>
+                <Toggle checked={autoBackup} onChange={() => setAutoBackup(!autoBackup)} />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Последняя успешная копия</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Сегодня в 03:14 · Объём сжатого архива: 124 МБ</div>
+              </div>
+              <span style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--muted)", display: "flex", alignItems: "center", gap: "4px" }}>
+                {dataIcons.clock} 10 часов назад
+              </span>
+            </div>
+
+            <DarkSelectRow 
+              label="Срок хранения архивных бэкапов" 
+              value={backupRetention} 
+              options={["14 дней", "30 дней", "60 дней", "90 дней"]} 
+              onChange={setBackupRetention} 
+            />
+
+          </div>
+
+          {/* Премиум кнопки действий */}
+          <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+            <button 
+              onClick={handleDownloadBackupFile}
+              disabled={isDownloadingBackup}
+              style={{
+                display: "flex", alignItems: "center", gap: "7px",
+                padding: "9px 18px", borderRadius: "10px",
+                background: "rgba(252,174,145,0.08)", border: "1px solid rgba(252,174,145,0.2)",
+                color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: isDownloadingBackup ? "default" : "pointer",
+                transition: "all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)"
+              }}
+              onMouseEnter={e => { if(!isDownloadingBackup) { e.currentTarget.style.background = "var(--peach)"; e.currentTarget.style.color = "white"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+              onMouseLeave={e => { if(!isDownloadingBackup) { e.currentTarget.style.background = "rgba(252,174,145,0.08)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "none"; } }}
+            >
+              {isDownloadingBackup ? dataIcons.loader : dataIcons.download}
+              {isDownloadingBackup ? "Скачивание..." : "Скачать последний бэкап"}
+            </button>
+
+            <button 
+              onClick={handleCreateBackupNow}
+              disabled={isCreatingBackup}
+              style={{
+                display: "flex", alignItems: "center", gap: "7px",
+                padding: "9px 18px", borderRadius: "10px",
+                border: "1px solid rgba(26,26,26,0.1)", background: isCreatingBackup ? "rgba(163,201,168,0.12)" : "#FFFFFF",
+                borderColor: isCreatingBackup ? "rgba(163,201,168,0.3)" : "rgba(26,26,26,0.1)",
+                color: isCreatingBackup ? "#5A9A65" : "var(--onyx)", fontSize: "12px", fontWeight: 700, cursor: isCreatingBackup ? "default" : "pointer",
+                transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)"
+              }}
+              onMouseEnter={e => { if(!isCreatingBackup) { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+              onMouseLeave={e => { if(!isCreatingBackup) { e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; } }}
+            >
+              {isCreatingBackup ? dataIcons.loader : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>}
+              {isCreatingBackup ? "Компиляция таблиц..." : "Сгенерировать бэкап сейчас"}
+            </button>
+          </div>
+        </div>
+
+        {/* КАРТОЧКА 2: МГНОВЕННЫЙ ЭКСПОРТ ДАННЫХ */}
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={dataIcons.download} title="Экспорт отчётов и списков" subtitle="Выгрузите файлы в табличных форматах для бухгалтерии и аналитики" />
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            {[
+              { id: 1, name: "Полный список клиентов", format: "CSV / XLSX (Excel)", size: "4.2 МБ" },
+              { id: 2, name: "История журналов и записей", format: "CSV / PDF Документ", size: "12.8 МБ" },
+              { id: 3, name: "Финансовый отчёт и касса", format: "XLSX / Сводная таблица", size: "1.1 МБ" },
+              { id: 4, name: "Сводная AI-аналитика студии", format: "PDF Презентация", size: "8.4 МБ" },
+            ].map((e) => {
+              const isExporting = exportingItem === e.id;
+              return (
+                <div 
+                  key={e.id} 
+                  onClick={() => !isExporting && handleTriggerExport(e.id, e.name)}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "16px 18px", borderRadius: "12px",
+                    border: isExporting ? "1.5px solid var(--peach)" : "1.5px solid rgba(26,26,26,0.06)", 
+                    background: isExporting ? "rgba(252,174,145,0.02)" : "#FDFCFB",
+                    cursor: isExporting ? "default" : "pointer",
+                    transition: "all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)"
+                  }}
+                  onMouseEnter={el => { if(!isExporting) { el.currentTarget.style.borderColor = "var(--peach)"; el.currentTarget.style.transform = "translateY(-1px)"; el.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.02)"; } }}
+                  onMouseLeave={el => { if(!isExporting) { el.currentTarget.style.borderColor = "rgba(26,26,26,0.06)"; el.currentTarget.style.transform = "none"; el.currentTarget.style.boxShadow = "none"; } }}
+                >
+                  <div>
+                    <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{e.name}</div>
+                    <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>{e.format} · <span style={{ fontFamily: "monospace", fontWeight: 600 }}>{e.size}</span></div>
+                  </div>
+                  
+                  {/* Кнопка-круг с иконкой статуса */}
+                  <div style={{
+                    width: "32px", height: "32px", borderRadius: "50%",
+                    background: isExporting ? "transparent" : "#FFFFFF",
+                    border: "1px solid rgba(26,26,26,0.08)",
+                    color: isExporting ? "var(--peach)" : "var(--muted)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.2s ease"
+                  }}>
+                    {isExporting ? dataIcons.loader : dataIcons.download}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     general: renderGeneral,
@@ -2294,18 +2773,23 @@ export default function Settings() {
           })}
 
           <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(26,26,26,0.06)", padding: "20px 0 0" }}>
-            <button style={{
-              display: "flex", alignItems: "center", gap: "12px",
-              width: "100%", padding: "12px 14px", borderRadius: "12px",
-              background: "transparent", border: "1px solid transparent",
-              color: "#D88C9A", fontSize: "14px", fontWeight: 700, cursor: "pointer",
-              transition: "all 0.2s ease", textAlign: "left",
-            }}
+            <button 
+              onClick={() => {
+                setIsLoggedOut(true);
+                triggerToast("Вы вышли из пространства Pilates Studio");
+              }}
+              style={{
+                display: "flex", alignItems: "center", gap: "12px",
+                width: "100%", padding: "12px 14px", borderRadius: "12px",
+                background: "transparent", border: "1px solid transparent",
+                color: "#D88C9A", fontSize: "14px", fontWeight: 700, cursor: "pointer",
+                transition: "all 0.2s ease", textAlign: "left",
+              }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(216,140,154,0.08)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icons.logout}</div>
-              Выйти из аккаунта
+              Сменить CRM
             </button>
           </div>
         </aside>
@@ -2347,6 +2831,198 @@ export default function Settings() {
         }}
       />
 
+      {/* ─── ПОЛНОЭКРАННЫЙ WORKSPACE SELECTOR (ЭСТЕТИЧЕСКИЙ ОРГАЗМ) ─── */}
+      {isLoggedOut && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 999999,
+          background: "#FDFCFB", // Премиальный Жемчужно-алебастровый фон
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          fontFamily: "inherit", padding: "24px", boxSizing: "border-box",
+          animation: "fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+        }}>
+          {/* Декоративные мягкие размытые сферы на бэкграунде */}
+          <div style={{ position: "absolute", top: "10%", left: "15%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(252,174,145,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: "10%", right: "15%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(155,181,216,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+          <div style={{ width: "100%", maxWidth: "720px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: "32px", animation: "drawerSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }}>
+            
+            {/* Заголовок экрана */}
+            <div style={{ textAlign: "center" }}>
+              <div style={{ display: "inline-flex", padding: "10px", borderRadius: "14px", background: "rgba(252,174,145,0.1)", color: "var(--peach)", marginBottom: "16px" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <h1 style={{ fontSize: "32px", fontWeight: 950, color: "#1A1A1A", margin: 0, letterSpacing: "-1px" }}>Ваши CRM системы</h1>
+              <p style={{ fontSize: "14px", color: "var(--muted)", marginTop: "6px", fontWeight: 500 }}>Выберите рабочее пространство для авторизации или создайте новое</p>
+            </div>
+
+            {/* Сетка Студий / Пространств */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              {studiosList.map((studio) => {
+                const isDark = studio.theme === "dark";
+                return (
+                  <div 
+                    key={studio.id}
+                    onClick={() => {
+                      setIsLoggedOut(false);
+                      triggerToast(`Вход выполнен: ${studio.name}`);
+                    }}
+                    style={{
+                      padding: "28px", borderRadius: "18px", cursor: "pointer",
+                      background: isDark ? "#121212" : "#FFFFFF",
+                      border: isDark ? "1.5px solid rgba(255,255,255,0.04)" : "1.5px solid rgba(26,26,26,0.06)",
+                      boxShadow: isDark 
+                        ? "0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(252,174,145,0.03)" 
+                        : "0 16px 36px rgba(26,26,26,0.03)",
+                      display: "flex", flexDirection: "column", justifyContent: "space-between", height: "160px",
+                      transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                      boxSizing: "border-box"
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.borderColor = "var(--peach)";
+                      if (isDark) e.currentTarget.style.boxShadow = "0 24px 48px rgba(252,174,145,0.15), 0 0 12px rgba(252,174,145,0.1)";
+                      else e.currentTarget.style.boxShadow = "0 24px 48px rgba(26,26,26,0.06)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.04)" : "rgba(26,26,26,0.06)";
+                      e.currentTarget.style.boxShadow = isDark ? "0 20px 40px rgba(0,0,0,0.3)" : "0 16px 36px rgba(26,26,26,0.03)";
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", color: isDark ? "rgba(255,255,255,0.3)" : "var(--muted)" }}>Бизнес-аккаунт</span>
+                        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: isDark ? "var(--peach)" : "#A3C9A8", boxShadow: isDark ? "0 0 8px var(--peach)" : "none" }} />
+                      </div>
+                      <div style={{ fontSize: "16px", fontWeight: 800, color: isDark ? "#FFFFFF" : "#1A1A1A", letterSpacing: "-0.3px" }}>{studio.name}</div>
+                    </div>
+                    <div style={{ fontSize: "11.5px", color: isDark ? "rgba(255,255,255,0.4)" : "var(--muted)", lineHeight: "1.4" }}>{studio.desc}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* БЛОК СОЗДАНИЯ СТУДИИ (Premium Inline-аккордеон с идеальной геометрией) */}
+            <div style={{
+              borderRadius: "18px",
+              background: "#FFFFFF",
+              border: `1.5px dashed ${isCreatingNewStudio ? "var(--peach)" : "rgba(26,26,26,0.15)"}`,
+              boxShadow: isCreatingNewStudio ? "0 16px 36px rgba(252,174,145,0.08)" : "none",
+              transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
+              overflow: isCreatingNewStudio ? "visible" : "hidden"
+            }}>
+              {!isCreatingNewStudio ? (
+                <div 
+                  onClick={() => setIsCreatingNewStudio(true)}
+                  style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", color: "var(--peach)", fontWeight: 700, fontSize: "13.5px", cursor: "pointer" }}
+                  onMouseEnter={e => { e.currentTarget.parentElement!.style.borderColor = "var(--peach)"; e.currentTarget.parentElement!.style.background = "rgba(252,174,145,0.02)"; }}
+                  onMouseLeave={e => { e.currentTarget.parentElement!.style.borderColor = "rgba(26,26,26,0.15)"; e.currentTarget.parentElement!.style.background = "#FFFFFF"; }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  Создать новую CRM-систему
+                </div>
+              ) : (
+                <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "18px", animation: "fadeSlideIn 0.2s ease" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--onyx)", letterSpacing: "-0.2px" }}>Параметры нового пространства</div>
+                  
+                  {/* Идеальная сетка: инпут и вертикальный селектор идут вровень */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "16px", alignItems: "flex-end" }}>
+                    
+                    {/* Название студии */}
+                    <InputRow label="Название студии или салона" placeholder="Например: Stretch & Go" value={createdStudioName} onChange={setCreatedStudioName} />
+                    
+                    {/* 🔥 НОВЫЙ ВЕРТИКАЛЬНЫЙ СЕЛЕКТОР ТЕМЫ (В цвет инпута, без сжатия) */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", position: "relative", userSelect: "none" }}>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--muted)", letterSpacing: "0.2px" }}>Тема оформления</label>
+                      
+                      {/* Красивый триггер, заменяющий Input */}
+                      <div 
+                        onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          padding: "10px 14px",
+                          borderRadius: "10px",
+                          border: `1.5px solid ${isThemeMenuOpen ? "var(--peach)" : "var(--border)"}`,
+                          background: "#FFFFFF",
+                          fontSize: "13px", fontWeight: 700, color: "var(--onyx)",
+                          cursor: "pointer",
+                          boxShadow: isThemeMenuOpen ? "0 0 0 3px rgba(252,174,145,0.12)" : "none",
+                          transition: "all 0.2s ease",
+                          height: "38px", boxSizing: "border-box" // Выравнивание высоты 1-в-1 с InputRow
+                        }}
+                      >
+                        <span>{createdStudioTheme === "light" ? "Светлая" : "Тёмная"}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" 
+                             style={{ transform: isThemeMenuOpen ? "rotate(180deg)" : "none", transition: "transform 0.25s ease", color: "rgba(26,26,26,0.4)" }}>
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </div>
+
+                      {/* Черное выпадающее меню */}
+                      {isThemeMenuOpen && (
+                        <div style={{
+                          position: "absolute", top: "calc(100% + 6px)", right: 0, left: 0,
+                          background: "#111111", border: "1px solid rgba(255, 255, 255, 0.08)",
+                          borderRadius: "12px", padding: "6px",
+                          boxShadow: "0 16px 40px rgba(0, 0, 0, 0.45)", zIndex: 999,
+                          animation: "csPopupIn 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both"
+                        }}>
+                          {[
+                            { id: "light", label: "Светлая тема" },
+                            { id: "dark", label: "Тёмная тема" }
+                          ].map((opt) => (
+                            <div
+                              key={opt.id}
+                              onClick={() => { setCreatedStudioTheme(opt.id as "light" | "dark"); setIsThemeMenuOpen(false); }}
+                              style={{
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                padding: "8px 12px", borderRadius: "8px",
+                                color: createdStudioTheme === opt.id ? "var(--peach)" : "rgba(255, 255, 255, 0.7)",
+                                fontSize: "12px", fontWeight: createdStudioTheme === opt.id ? 700 : 600,
+                                cursor: "pointer", transition: "all 0.15s ease",
+                                background: createdStudioTheme === opt.id ? "rgba(252, 174, 145, 0.15)" : "transparent"
+                              }}
+                              onMouseOver={(e) => { if (createdStudioTheme !== opt.id) e.currentTarget.style.background = "rgba(252, 174, 145, 0.08)"; }}
+                              onMouseOut={(e) => { if (createdStudioTheme !== opt.id) e.currentTarget.style.background = "transparent"; }}
+                            >
+                              <span>{opt.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+
+                  {/* Кнопки действий */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "4px" }}>
+                    <button onClick={() => { setIsCreatingNewStudio(false); setCreatedStudioName(""); setIsThemeMenuOpen(false); }} className="topbar-ghost" style={{ padding: "9px 16px", fontSize: "12px" }}>Отмена</button>
+                    <button 
+                      onClick={() => {
+                        if (!createdStudioName) return;
+                        setStudiosList(prev => [...prev, {
+                          id: Date.now().toString(),
+                          name: createdStudioName,
+                          theme: createdStudioTheme,
+                          desc: createdStudioTheme === "light" ? "Жемчужно-алебастровый UI · Новая студия" : "Матовый глубокий графит · Новая студия"
+                        }]);
+                        triggerToast(`CRM Система "${createdStudioName}" успешно создана!`);
+                        setCreatedStudioName("");
+                        setIsCreatingNewStudio(false);
+                      }}
+                      style={{ padding: "9px 20px", borderRadius: "10px", background: "var(--peach)", border: "none", color: "white", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.35)" }}
+                    >
+                      Инициализировать систему
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {activeEditStaff && (
         <EditStaffModal
           isOpen={isEditStaffOpen}
@@ -2379,6 +3055,13 @@ export default function Settings() {
         }
         .settings-content-anim {
           animation: fadeSlideIn 0.3s ease forwards;
+        }
+          @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin-anim {
+          animation: spin 0.8s linear infinite;
         }
       `}</style>
     </>
