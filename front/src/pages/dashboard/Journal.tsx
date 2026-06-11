@@ -748,6 +748,119 @@ const STYLES = `
     to { opacity: 1; transform: translateY(0); }
   }
   .fade-up { animation: fade-up 0.3s ease forwards; }
+  /* ── СЕТКА РАСПИСАНИЯ ── */
+  .j-grid-wrapper {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background: #FDFCFB;
+  }
+  .j-grid-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
+  .j-grid-wrapper::-webkit-scrollbar-track { background: transparent; }
+  .j-grid-wrapper::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.12); border-radius: 3px; }
+
+  .j-grid {
+    display: grid;
+    min-width: max-content;
+    position: relative;
+  }
+
+  /* 🔥 ИСПРАВЛЕННЫЙ ВЕРХНИЙ ЛЕВЫЙ УГОЛ (Матовое стекло) */
+  .j-top-left-corner {
+    position: sticky;
+    top: 0; left: 0;
+    z-index: 20;
+    background: rgba(253,252,251,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  /* 🔥 РОСКОШНЫЕ ШАПКИ КОЛОНОК (Матовое стекло) */
+  .j-col-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(253,252,251,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border2);
+    padding: 14px 18px;
+    min-width: 170px;
+  }
+
+  .j-time-cell {
+    height: 72px; /* Увеличили высоту для премиального воздуха */
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 8px 12px 0 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    position: sticky;
+    left: 0;
+    background: rgba(253,252,251,0.95);
+    z-index: 5;
+    border-right: 1px solid var(--border);
+  }
+
+  .j-empty-slot {
+    height: 72px; /* Синхронизируем высоту */
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    border-right: 1px solid var(--border2);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    overflow: visible;
+  }
+  .j-empty-slot::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1.5px dashed transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .j-empty-slot:hover { background: rgba(249,160,139,0.02); }
+  .j-empty-slot:hover::after { border-color: rgba(249,160,139,0.3); background: rgba(249,160,139,0.03); }
+  .j-empty-slot:hover .slot-plus { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  .slot-plus {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    color: var(--peach);
+    font-size: 18px;
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    pointer-events: none;
+    width: 28px; height: 28px;
+    background: #FFF; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.2);
+  }
+
+  /* ── КАРТОЧКА ЗАПИСИ ── */
+  .booking-card {
+    position: absolute;
+    left: 6px; right: 6px;
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34,1.5,0.64,1);
+    overflow: hidden;
+    z-index: 2;
+  }
+  .booking-card:hover {
+    transform: scale(1.02) translateY(-2px);
+    z-index: 10;
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
+  }
 `;
 
 // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
@@ -914,7 +1027,7 @@ export default function Journal() {
   // ── Рендер карточки записи ──
   const renderBookingCard = (b: Booking, colIdx: number) => {
     const top = 4;
-    const height = (b.timeEnd - b.timeStart) * 64 - 8;
+    const height = (b.timeEnd - b.timeStart) * 72 - 8;
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
 
@@ -1071,11 +1184,12 @@ export default function Journal() {
             <div className="j-grid-wrapper">
               <div
                 className="j-grid"
-                style={{ gridTemplateColumns: `52px repeat(${columns.length}, minmax(160px, 1fr))` }}
+                style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(170px, 1fr))` }}
               >
-                {/* Заголовки колонок */}
-                <div className="j-col-header j-time-col" style={{ top: 0, zIndex: 15 }} />
+                {/* 🔥 ИСПРАВЛЕННЫЙ ВЕРХНИЙ ЛЕВЫЙ УГОЛ (Теперь он не перекрывает Анну) */}
+                <div className="j-top-left-corner" />
 
+                {/* Заголовки колонок */}
                 {columns.map((col, ci) => {
                   const isTrainerMode = viewMode === 'trainers';
                   const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
@@ -1090,34 +1204,37 @@ export default function Journal() {
                       className="j-col-header"
                       style={{
                         borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
-                        display: 'flex', flexDirection: 'column', gap: 2,
+                        display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center'
                       }}
                     >
                       {trainer ? (
                         <>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {/* Роскошный аватар тренера */}
                             <div style={{
-                              width: 28, height: 28, borderRadius: '50%',
-                              background: trainer.bg,
-                              border: `1.5px solid ${trainer.color}40`,
+                              width: 38, height: 38, borderRadius: '12px',
+                              background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
+                              border: `1.5px solid ${trainer.color}30`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: 9, fontWeight: 800, color: trainer.color, flexShrink: 0,
+                              fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
+                              boxShadow: `0 4px 12px ${trainer.color}15`
                             }}>
                               {trainer.initials}
                             </div>
                             <div>
-                              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--onyx)', lineHeight: 1.2 }}>{trainer.full}</div>
-                              <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 500 }}>{trainer.role}</div>
+                              <div style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
+                              <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
                             </div>
                           </div>
-                          <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>
-                            {colBookings.length} занят. · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
+                          <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
+                            {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
                           </div>
                         </>
                       ) : (
                         <>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{hallName}</div>
-                          <div style={{ fontSize: 10, color: 'var(--muted)' }}>{colBookings.length} занятий</div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
+                          <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
                         </>
                       )}
                     </div>
