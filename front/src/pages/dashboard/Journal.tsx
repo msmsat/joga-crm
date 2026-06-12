@@ -264,7 +264,10 @@ const STYLES = `
     background: var(--bg);
     color: var(--onyx);
     display: flex;
+    /* Убираем глобальный скролл: компенсируем padding 28px из App.css */
     height: calc(100vh - 56px);
+    margin: -28px; 
+    width: calc(100% + 56px); 
     overflow: hidden;
     position: relative;
   }
@@ -285,30 +288,82 @@ const STYLES = `
   }
 
   /* ── КНОПКИ ── */
+  /* =========================================================
+     1. КНОПКИ НАВИГАЦИИ (Тот самый "ВАУ" эффект)
+     ========================================================= */
   .btn-icon {
-    width: 32px; height: 32px;
+    width: 36px; height: 36px; /* Чуть крупнее для идеального тапа */
     display: flex; align-items: center; justify-content: center;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px); /* Эффект матового стекла */
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer; color: var(--muted);
-    transition: all 0.18s ease;
+    border-radius: 12px; /* Премиальное скругление */
+    cursor: pointer; 
+    color: var(--muted);
+    /* Безупречная пружинистая физика */
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
   }
-  .btn-icon:hover { background: var(--bg2); color: var(--onyx); border-color: rgba(26,26,26,0.15); }
 
+  .btn-icon:hover {
+    background: #FFFFFF;
+    color: var(--peach);
+    border-color: rgba(249,160,139,0.4);
+    /* Слоистая тень: объем + мягкое цветное свечение вокруг */
+    box-shadow: 0 8px 24px -4px rgba(249,160,139,0.25), 0 0 0 3px var(--peach-glow);
+    transform: translateY(-2px);
+  }
+
+  .btn-icon:active {
+    transform: translateY(0) scale(0.88); /* Глубокое, приятное прожатие */
+    box-shadow: 0 2px 8px rgba(249,160,139,0.15);
+  }
+
+  /* Сама иконка внутри стрелочки оживает при наведении */
+  .btn-icon svg {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .btn-icon:hover svg {
+    transform: scale(1.15); /* Иконка как бы тянется к тебе */
+  }
+
+  /* Кнопки с текстом (Дата и "Сегодня") */
   .btn-ghost-sm {
-    height: 32px; padding: 0 12px;
-    display: flex; align-items: center; gap: 6px;
-    background: transparent; border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer; color: var(--muted);
-    font-size: 12.5px; font-weight: 600; font-family: var(--font);
-    transition: all 0.18s ease; white-space: nowrap; flex-shrink: 0;
+    height: 36px; padding: 0 16px;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255, 255, 255, 0.6); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer; 
+    color: var(--text2);
+    font-size: 13px; font-weight: 700; font-family: var(--font);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    white-space: nowrap; flex-shrink: 0;
   }
-  .btn-ghost-sm:hover { background: var(--bg2); color: var(--onyx); border-color: rgba(26,26,26,0.15); }
-  .btn-ghost-sm.active { background: var(--onyx); color: white; border-color: var(--onyx); }
 
+  .btn-ghost-sm:hover {
+    background: #FFFFFF;
+    color: var(--onyx);
+    border-color: rgba(26,26,26,0.15);
+    box-shadow: 0 8px 24px -6px rgba(26,26,26,0.12), 0 2px 8px rgba(26,26,26,0.04);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost-sm:active {
+    transform: translateY(0) scale(0.94);
+    box-shadow: none;
+  }
+
+  .btn-ghost-sm.active { 
+    background: var(--onyx); 
+    color: white; 
+    border-color: var(--onyx); 
+  }
   .btn-primary-sm {
     height: 32px; padding: 0 14px;
     display: flex; align-items: center; gap: 6px;
@@ -353,6 +408,8 @@ const STYLES = `
     flex: 1;
     overflow: auto;
     position: relative;
+    background: #FDFCFB;
+    overscroll-behavior: contain; /* Блокирует передачу скролла странице */
   }
   .j-grid-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
   .j-grid-wrapper::-webkit-scrollbar-track { background: transparent; }
@@ -481,6 +538,7 @@ const STYLES = `
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior: contain; /* Блокирует передачу скролла странице */
   }
   .j-right::-webkit-scrollbar { width: 4px; }
   .j-right::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.08); border-radius: 2px; }
@@ -860,6 +918,247 @@ const STYLES = `
     transform: scale(1.02) translateY(-2px);
     z-index: 10;
     box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
+  }
+  /* Базовый квадратик (оригинальная форма) */
+  .mc-day {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500;
+    border-radius: 6px; 
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    position: relative;
+  }
+  .mc-day:hover { background: var(--bg2); }
+
+  /* 1. СЕГОДНЯ (когда НЕ выбрано) — Персиковый */
+  .mc-day.today {
+    background: var(--peach-soft); 
+    color: var(--peach); 
+    font-weight: 800;
+  }
+
+  /* 2. ВЫБРАННЫЙ ДЕНЬ (любой другой) — Темно-серый Оникс */
+  .mc-day.selected { 
+    background: var(--onyx); 
+    color: white; 
+    font-weight: 700;
+  }
+
+  /* 3. ВЫБРАНО СЕГОДНЯ — Абсолютно черный */
+  .mc-day.today.selected {
+    background: var(--peach); 
+    color: white;
+    box-shadow: 0 4px 16px var(--peach-glow);
+  }
+
+  /* Точка под события (чтобы оставалась белой на цветных фонах) */
+  .mc-day.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%; transform: translateX(-50%);
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--peach);
+  }
+  .mc-day.today.has-event::after,
+  .mc-day.selected.has-event::after { 
+    background: white; 
+  }
+  }
+  /* =========================================================
+     💎 ПРЕМИАЛЬНАЯ МОДАЛКА (НОВОЕ ЗАНЯТИЕ) 💎
+     ========================================================= */
+  .premium-modal-overlay {
+    /* Жесткая привязка к краям экрана поверх всего */
+    position: fixed; 
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(18, 18, 18, 0.45); /* Чистая маска без бага backdrop-filter */
+    z-index: 9999; /* Максимальный приоритет */
+    display: flex; align-items: center; justify-content: center;
+    animation: pm-fade-in 0.3s ease;
+  }
+  
+  .premium-modal {
+    background: #FFFFFF;
+    width: 600px; 
+    max-width: 95vw;
+    border-radius: 28px;
+    box-shadow: 0 32px 80px -12px rgba(26, 26, 26, 0.35);
+    display: flex; flex-direction: column;
+    animation: pm-slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    margin: auto; /* Гарантирует центрирование, если flex даст сбой */
+  }
+  
+  @keyframes pm-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pm-slide-up { 
+    from { opacity: 0; transform: translateY(40px) scale(0.96); } 
+    to { opacity: 1; transform: translateY(0) scale(1); } 
+  }
+
+  /* ── Шапка ── */
+  .pm-header {
+    padding: 32px 36px 24px;
+    position: relative;
+    border-bottom: 1px solid rgba(26,26,26,0.04);
+  }
+  .pm-title { font-size: 24px; font-weight: 800; color: var(--onyx); letter-spacing: -0.5px; }
+  .pm-sub { font-size: 14px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+  .pm-close {
+    position: absolute; top: 32px; right: 32px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--bg2); color: var(--muted); border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pm-close:hover { background: #EAEAEA; color: var(--onyx); transform: rotate(90deg) scale(1.1); }
+
+  /* ── Тело ── */
+  .pm-body { 
+    padding: 28px 36px; 
+    display: flex; flex-direction: column; gap: 28px; 
+    max-height: 60vh; overflow-y: auto;
+  }
+  .pm-body::-webkit-scrollbar { width: 4px; }
+  .pm-body::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.1); border-radius: 4px; }
+
+  .pm-field { display: flex; flex-direction: column; gap: 10px; }
+  .pm-label { 
+    font-size: 11px; font-weight: 800; color: var(--muted); 
+    text-transform: uppercase; letter-spacing: 0.8px; 
+  }
+
+  /* ── Поля ввода ── */
+  .pm-input {
+    height: 52px; padding: 0 16px;
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 14px; font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--onyx);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); outline: none;
+  }
+  .pm-input::placeholder { color: #A0A0A0; font-weight: 500; }
+  .pm-input:focus {
+    background: #FFFFFF; border-color: var(--peach);
+    box-shadow: 0 0 0 4px var(--peach-glow), 0 4px 16px rgba(249,160,139,0.15);
+    transform: translateY(-2px);
+  }
+
+  .pm-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ── Карточки тренеров ── */
+  .pm-trainer-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border: 1.5px solid var(--border);
+    border-radius: 16px; background: transparent; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-align: left;
+  }
+  .pm-trainer-btn:hover { 
+    border-color: rgba(26,26,26,0.15); background: var(--bg); 
+    transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,26,26,0.04);
+  }
+  .pm-trainer-btn.active {
+    border-color: var(--peach); background: var(--peach-soft);
+    box-shadow: 0 8px 24px var(--peach-glow);
+    transform: translateY(-2px);
+  }
+  .pm-t-ava {
+    width: 38px; height: 38px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: white; flex-shrink: 0;
+  }
+  .pm-t-name { font-size: 14px; font-weight: 700; color: var(--onyx); margin-bottom: 2px; }
+  .pm-t-role { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+
+  /* ── Выбор времени и зала (Чипсы) ── */
+  .pm-chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pm-chip {
+    padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 14px;
+    font-size: 13.5px; font-weight: 700; color: var(--text2); cursor: pointer;
+    background: transparent; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pm-chip:hover { 
+    background: var(--bg); border-color: rgba(26,26,26,0.2); 
+    transform: translateY(-2px); 
+  }
+  .pm-chip.active {
+    background: var(--onyx); color: white; border-color: var(--onyx);
+    box-shadow: 0 8px 24px rgba(26,26,26,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* ── Футер и Кнопки ── */
+  .pm-footer {
+    padding: 24px 36px 32px; background: #FFFFFF;
+    border-top: 1px solid rgba(26,26,26,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pm-btn-cancel {
+    height: 52px; padding: 0 24px; border-radius: 14px;
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    color: var(--muted); background: transparent; border: none;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .pm-btn-cancel:hover { background: rgba(26,26,26,0.04); color: var(--onyx); }
+  
+  .pm-btn-submit {
+    height: 52px; padding: 0 32px; border-radius: 14px;
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    color: white; background: var(--peach); border: none;
+    box-shadow: 0 8px 24px -4px rgba(249,160,139,0.4);
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .pm-btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02); 
+    box-shadow: 0 16px 40px -6px rgba(249,160,139,0.5);
+  }
+  .pm-btn-submit:active:not(:disabled) { transform: scale(0.96); box-shadow: none; }
+  .pm-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(50%); }
+  /* ── ПРЕМИУМ KEYPAD МОДАЛКА (НОВОЕ ЗАНЯТИЕ) ── */
+  .keypad-modal {
+    background: var(--bg-card);
+    border-radius: 24px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(26,26,26,0.05);
+    width: 640px;
+    overflow: hidden;
+    animation: modal-in 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .kp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 32px;
+    padding: 24px;
+  }
+  .kp-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+  .kp-chip {
+    padding: 8px 0;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--onyx);
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    text-align: center;
+    user-select: none;
+  }
+  .kp-chip:hover { border-color: var(--peach); color: var(--peach); transform: translateY(-1px); }
+  .kp-chip.active { 
+    background: var(--peach); color: white; border-color: var(--peach); 
+    box-shadow: 0 6px 16px rgba(249,160,139,0.3); 
+    transform: translateY(-2px);
   }
 `;
 
@@ -1312,7 +1611,8 @@ export default function Journal() {
                       return (
                         <div
                           key={d}
-                          className={`mc-day ${isToday ? 'today' : ''} ${isSelected && !isToday ? 'selected' : ''} ${hasEv && !isToday ? 'has-event' : ''}`}
+                          // Убрали !isToday, теперь классы могут комбинироваться свободно
+                          className={`mc-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEv ? 'has-event' : ''}`}
                           onClick={() => setSelectedDay(d)}
                         >
                           {d}
@@ -1477,96 +1777,144 @@ export default function Journal() {
         </div>
       )}
 
-      {/* ── ФОРМА НОВОГО ЗАНЯТИЯ ── */}
+      {/* ── ФОРМА НОВОГО ЗАНЯТИЯ (PREMIUM KEYPAD) ── */}
       {showNewForm && (
-        <div className="modal-overlay" onClick={() => setShowNewForm(false)}>
-          <div className="modal-box" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--onyx)' }}>Новое занятие</div>
-              <button className="btn-icon" onClick={() => setShowNewForm(false)}><Icons.X /></button>
+        <div 
+          className="modal-overlay open" 
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setShowNewForm(false);
+          }}
+        >
+          <div className="keypad-modal" onMouseDown={e => e.stopPropagation()}>
+            
+            {/* ── ШАПКА ── */}
+            <div style={{ padding: '24px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icons.Plus />
+                </div>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>Новый слот</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>Добавление занятия в сетку</div>
+                </div>
+              </div>
+              <button type="button" className="btn-icon" onClick={() => setShowNewForm(false)}><Icons.X /></button>
             </div>
-            <div className="modal-body">
-              <label className="modal-label">Название занятия</label>
-              <input
-                className="modal-input"
-                placeholder="Пилатес, йога, стретчинг..."
-                value={newForm.title}
-                onChange={e => setNewForm(f => ({ ...f, title: e.target.value }))}
-                autoFocus
-              />
 
-              <label className="modal-label">Тренер</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-                {TRAINERS.map(t => (
-                  <button
-                    key={t.id}
-                    className="btn-ghost-sm"
-                    style={newBookingSlot?.trainer === t.id ? { background: t.color, color: 'white', border: 'none' } : {}}
-                    onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
-                  >
-                    {t.initials} {t.name}
-                  </button>
-                ))}
+            {/* ── СЕТКА ДАННЫХ (2 Колонки) ── */}
+            <div className="kp-grid">
+              
+              {/* ЛЕВАЯ КОЛОНКА: Название, Вместимость, Залы */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div>
+                  <div className="kp-section-title">Основная инфа</div>
+                  <input
+                    className="modal-input"
+                    style={{ marginBottom: 12, background: 'var(--bg)', border: '1.5px solid var(--border)', height: '44px' }}
+                    placeholder="Название (Йога, Пил...)"
+                    value={newForm.title}
+                    onChange={e => setNewForm(f => ({ ...f, title: e.target.value }))}
+                    autoFocus
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '6px 6px 6px 14px', borderRadius: '12px', border: '1.5px solid var(--border)' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)' }}>Вместимость чел.</span>
+                    <input
+                      className="modal-input"
+                      type="number" min="1" max="50"
+                      style={{ width: 64, height: 32, marginBottom: 0, textAlign: 'center', padding: 0, background: 'white', border: '1.5px solid var(--border)' }}
+                      value={newForm.maxClients}
+                      onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="kp-section-title">Помещение</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    {HALLS.map(h => (
+                      <div
+                        key={h}
+                        className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
+                        style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', boxShadow: '0 6px 16px rgba(26,26,26,0.15)' } : {}}
+                        onClick={() => setNewForm(f => ({ ...f, hall: h }))}
+                      >
+                        {h}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <label className="modal-label">Зал</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-                {HALLS.map(h => (
-                  <button
-                    key={h}
-                    className="btn-ghost-sm"
-                    style={newForm.hall === h ? { background: 'var(--onyx)', color: 'white' } : {}}
-                    onClick={() => setNewForm(f => ({ ...f, hall: h }))}
-                  >
-                    {h}
-                  </button>
-                ))}
-              </div>
+              {/* ПРАВАЯ КОЛОНКА: Тренеры и Время */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div>
+                  <div className="kp-section-title">Тренер</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {TRAINERS.map(t => {
+                      const isActive = newBookingSlot?.trainer === t.id;
+                      return (
+                        <div
+                          key={t.id}
+                          onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
+                          style={{
+                            padding: '4px 14px 4px 4px', borderRadius: '100px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            border: `1.5px solid ${isActive ? t.color : 'var(--border)'}`,
+                            background: isActive ? t.bg : 'var(--bg)',
+                            transition: 'all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)',
+                            boxShadow: isActive ? `0 6px 16px ${t.color}30` : 'none',
+                            transform: isActive ? 'translateY(-1px)' : 'none'
+                          }}
+                        >
+                          <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, transition: 'all 0.2s' }}>{t.initials}</div>
+                          <span style={{ fontSize: 12.5, fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)' }}>{t.name}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-              <label className="modal-label">Время</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-                {TIMES.slice(0, 10).map((t, i) => (
-                  <button
-                    key={i}
-                    className="btn-ghost-sm"
-                    style={newBookingSlot?.time === i ? { background: 'var(--peach)', color: 'white', border: 'none' } : {}}
-                    onClick={() => setNewBookingSlot(s => s ? { ...s, time: i } : s)}
-                  >
-                    {t}
-                  </button>
-                ))}
+                <div>
+                  <div className="kp-section-title">Время старта</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+                    {TIMES.map((t, i) => (
+                      <div
+                        key={i}
+                        className={`kp-chip ${newBookingSlot?.time === i ? 'active' : ''}`}
+                        style={{ padding: '6px 0', fontSize: 11.5 }}
+                        onClick={() => setNewBookingSlot(s => s ? { ...s, time: i } : s)}
+                      >
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-
-              <label className="modal-label">Макс. клиентов</label>
-              <input
-                className="modal-input"
-                type="number"
-                min="1"
-                max="50"
-                value={newForm.maxClients}
-                onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
-              />
             </div>
-            <div className="modal-footer">
-              <button className="btn-ghost-sm" style={{ height: 38, padding: '0 20px', fontSize: 13 }} onClick={() => setShowNewForm(false)}>
+
+            {/* ── ПОДВАЛ ── */}
+            <div style={{ padding: '16px 24px', background: '#FDFCFB', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button type="button" className="btn-ghost-sm" style={{ height: 40, padding: '0 20px', fontSize: 13 }} onClick={() => setShowNewForm(false)}>
                 Отмена
               </button>
               <button
+                type="button"
                 className="btn-primary-sm"
-                style={{ height: 38, padding: '0 24px', fontSize: 13 }}
-                onClick={createBooking}
+                style={{ height: 40, padding: '0 28px', fontSize: 13 }}
+                onClick={(e) => { e.preventDefault(); createBooking(); }}
                 disabled={!newForm.title.trim()}
               >
-                Добавить занятие
+                Создать слот <Icons.Check />
               </button>
             </div>
+
           </div>
         </div>
       )}
 
       {/* ── МОДАЛКА ДОБАВЛЕНИЯ КЛИЕНТА ── */}
       {showAddModal && addModalBooking && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div className="modal-overlay open" onClick={() => setShowAddModal(false)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <div>
