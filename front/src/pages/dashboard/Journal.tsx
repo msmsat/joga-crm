@@ -468,16 +468,6 @@ const STYLES = `
   }
   .j-row-sep:hover { background: rgba(249,160,139,0.02); }
 
-  .j-empty-slot {
-    height: 64px;
-    min-width: 160px;
-    border-bottom: 1px solid var(--border2);
-    border-right: 1px solid var(--border2);
-    cursor: pointer;
-    position: relative;
-    transition: background 0.15s;
-    overflow: visible;
-  }
   .j-empty-slot::after {
     content: '';
     position: absolute;
@@ -489,6 +479,48 @@ const STYLES = `
   .j-empty-slot:hover { background: rgba(249,160,139,0.04); }
   .j-empty-slot:hover::after { border-color: rgba(249,160,139,0.35); }
   .j-empty-slot:hover .slot-plus { opacity: 1; }
+
+  .j-empty-slot {
+    height: 72px;
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+  }
+
+  /* ── ПРЕМИАЛЬНЫЙ ЭФФЕКТ НАВЕДЕНИЯ (Soft Glow Placeholder) ── */
+  .j-empty-slot::before {
+    content: '';
+    position: absolute;
+    inset: 4px; /* Идеальный отступ внутри ячейки */
+    border-radius: 12px;
+    border: 1.5px solid transparent; /* Заменили dashed на solid для дороговизны */
+    background: transparent;
+    /* Пружинистая, плавная анимация в стиле Apple */
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Класс, который добавляется при наведении на ДОСТУПНОЕ время */
+  .j-empty-slot.is-targeted::before {
+    border-color: rgba(249,160,139,0.35); /* Мягкий персиковый контур */
+    /* Дорогой градиент, дающий объем ячейке */
+    background: linear-gradient(180deg, rgba(249,160,139,0.02) 0%, rgba(249,160,139,0.08) 100%);
+    /* Двойная тень: внутреннее мягкое свечение и внешнее парение */
+    box-shadow: 
+      inset 0 4px 12px rgba(255,255,255,0.5), /* Внутренний блик сверху */
+      0 4px 16px rgba(249,160,139,0.12); /* Наружное свечение */
+    transform: scale(1);
+  }
+  
+  /* Чуть-чуть увеличиваем иконку плюса при наведении на слот */
+  .j-empty-slot.is-targeted .slot-plus {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 6px 16px rgba(249,160,139,0.3);
+  }
 
   .slot-plus {
     position: absolute;
@@ -505,7 +537,7 @@ const STYLES = `
   /* ── КАРТОЧКА ЗАПИСИ ── */
   .booking-card {
     position: absolute;
-    left: 6px; right: 6px;
+    left: 0px; right: 28px;
     border-radius: 10px;
     padding: 8px 10px;
     cursor: pointer;
@@ -876,16 +908,9 @@ const STYLES = `
     transition: background 0.15s;
     overflow: visible;
   }
-  .j-empty-slot::after {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border: 1.5px dashed transparent;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-  }
-  .j-empty-slot:hover { background: rgba(249,160,139,0.02); }
-  .j-empty-slot:hover::after { border-color: rgba(249,160,139,0.3); background: rgba(249,160,139,0.03); }
+  .j-empty-slot::after { display: none; }
+  .j-empty-slot:hover { background: transparent; }
+  .j-empty-slot:hover::after { border-color: transparent; background: transparent; box-shadow: none; }
   .j-empty-slot:hover .slot-plus { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
   .slot-plus {
@@ -906,8 +931,8 @@ const STYLES = `
   /* ── КАРТОЧКА ЗАПИСИ ── */
   .booking-card {
     position: absolute;
-    left: 6px; right: 6px;
-    border-radius: 12px;
+    left: 0px; right: 30px;
+    border-radius: 10px;
     padding: 10px 12px;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.34,1.5,0.64,1);
@@ -915,7 +940,7 @@ const STYLES = `
     z-index: 2;
   }
   .booking-card:hover {
-    transform: scale(1.02) translateY(-2px);
+    transform: scale(1.01) translateY(-1px);
     z-index: 10;
     box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
   }
@@ -932,11 +957,11 @@ const STYLES = `
   }
   .mc-day:hover { background: var(--bg2); }
 
-  /* 1. СЕГОДНЯ (когда НЕ выбрано) — Персиковый */
   .mc-day.today {
-    background: var(--peach-soft); 
-    color: var(--peach); 
+    background: var(--peach); 
+    color: white; 
     font-weight: 800;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.35);
   }
 
   /* 2. ВЫБРАННЫЙ ДЕНЬ (любой другой) — Темно-серый Оникс */
@@ -946,11 +971,12 @@ const STYLES = `
     font-weight: 700;
   }
 
-  /* 3. ВЫБРАНО СЕГОДНЯ — Абсолютно черный */
+  /* 3. ВЫБРАНО СЕГОДНЯ (Комбо: черный фон + персиковый текст) */
   .mc-day.today.selected {
-    background: var(--peach); 
-    color: white;
-    box-shadow: 0 4px 16px var(--peach-glow);
+    background: var(--onyx); 
+    color: var(--peach); 
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(26,26,26,0.2);
   }
 
   /* Точка под события (чтобы оставалась белой на цветных фонах) */
@@ -1160,11 +1186,520 @@ const STYLES = `
     box-shadow: 0 6px 16px rgba(249,160,139,0.3); 
     transform: translateY(-2px);
   }
+  /* ── ПРЕМИУМ СИММЕТРИЧНАЯ МОДАЛКА (НОВОЕ ЗАНЯТИЕ) ── */
+  .keypad-modal {
+    background: var(--bg-card);
+    border-radius: 20px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(26,26,26,0.04);
+    width: 580px;
+    overflow: hidden;
+    animation: modal-in 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .kp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 24px;
+  }
+  .kp-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .kp-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+  }
+  .kp-chip {
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--onyx);
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    text-align: center;
+    user-select: none;
+    height: 40px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .kp-chip:hover { border-color: var(--peach); color: var(--peach); transform: translateY(-1px); }
+  .kp-chip.active { 
+    background: var(--peach); color: white; border-color: var(--peach); 
+    box-shadow: 0 6px 16px rgba(249,160,139,0.25); 
+    transform: translateY(-1.5px);
+  }
+  .mc-day.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%; transform: translateX(-50%);
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--peach);
+  }
+  /* Делаем точку белой, если фон стал цветным (чтобы не сливалась) */
+  .mc-day.today.has-event::after,
+  .mc-day.selected.has-event::after { 
+    background: white; 
+  }
+  /* Исключение для комбо (черный фон + персиковый текст = персиковая точка) */
+  .mc-day.today.selected.has-event::after {
+    background: var(--peach);
+  }
+  /* ── КАСТОМНЫЙ ТАЙМ-ПИКЕР (15 МИНУТ) ── */
+  .kp-time-container {
+    position: relative;
+    width: 100%;
+  }
+  .kp-time-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 12px 32px rgba(26,26,26,0.12);
+    padding: 4px;
+  }
+  .kp-time-dropdown::-webkit-scrollbar { width: 4px; }
+  .kp-time-dropdown::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.15); border-radius: 2px; }
+  
+  .kp-time-item {
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--onyx);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+  .kp-time-item:hover {
+    background: var(--bg2);
+    color: var(--peach);
+  }
+  .kp-time-item.active-time-item {
+    background: var(--peach);
+    color: white;
+  }
+  .j-empty-slot {
+    height: 72px;
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    border-right: 1px solid var(--border2);
+    position: relative;
+    /* Убрали cursor: pointer и ховер, теперь за это отвечают суб-слоты */
+  }
+
+  .slot-plus {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    color: var(--peach);
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    pointer-events: none;
+    width: 24px; height: 24px;
+    background: #FFF; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.2);
+  }
+  /* ВЕРНУЛИ ЕДИНУЮ ЯЧЕЙКУ, НО ТЕПЕРЬ ОНА УМНАЯ */
+  .j-empty-slot {
+    height: 72px; 
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    border-right: 1px solid var(--border2);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    overflow: visible;
+  }
+  .j-empty-slot::after {
+    content: '';
+    position: absolute;
+    /* 🔥 МАГИЯ: Рамка динамически сдвигается вниз, если сверху висит карточка! */
+    top: calc(var(--free-top, 0%) + 4px);
+    bottom: 4px; left: 4px; right: 4px;
+    border: 1.5px dashed transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  
+  /* Эффекты при наведении срабатывают, только если ячейка не забита полностью */
+  .j-empty-slot.free-slot:hover { background: rgba(249,160,139,0.02); }
+  .j-empty-slot.free-slot:hover::after { border-color: rgba(249,160,139,0.3); background: rgba(249,160,139,0.03); }
+  .j-empty-slot.free-slot:hover .slot-plus { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  .slot-plus {
+    position: absolute;
+    /* Центруем по горизонтали, а по вертикали позиция прилетит из React */
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    color: var(--peach);
+    font-size: 18px;
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    pointer-events: none;
+    width: 28px; height: 28px;
+    background: #FFF; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.2);
+    z-index: 1;
+  .j-empty-slot {
+    height: 72px;
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    border-right: 1px solid var(--border2);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .j-empty-slot:hover { background: rgba(249,160,139,0.03); }
+  .j-empty-slot:hover .slot-plus { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  .slot-plus {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    color: var(--peach);
+    font-size: 16px;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    width: 28px; height: 28px;
+    background: #FFF; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.2);
+    z-index: 1;
+  }
+  .j-empty-slot::after {
+    content: '';
+    position: absolute;
+    /* 🔥 МАГИЯ: Рамка динамически сжимается и сверху, и снизу! */
+    top: calc(var(--free-top, 0%) + 4px);
+    bottom: calc(var(--free-bottom, 0%) + 4px);
+    left: 4px; right: 4px;
+    border: 1.5px dashed transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .j-empty-slot {
+    height: 72px;
+    min-width: 170px;
+    border-bottom: 1px solid var(--border2);
+    border-right: 1px solid var(--border2);
+    position: relative;
+    cursor: pointer;
+    overflow: visible; /* 🔥 ВАЖНО: Разрешаем рамке выпадать за пределы ячейки */
+  }
+
+  /* Поднимаем ячейку выше остальных при наведении, чтобы рамка перекрывала нижний час */
+  .j-empty-slot:hover {
+    z-index: 5;
+  }
+
+  .j-empty-slot::after {
+    content: '';
+    position: absolute;
+    /* 🔥 Высота и позиция теперь жестко привязаны к минутам через переменные React */
+    top: calc(var(--slot-top, 0%) + 2px);
+    height: calc(var(--slot-height, 100%) - 4px);
+    left: 4px; right: 4px;
+    border: 1.5px dashed transparent;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    pointer-events: none;
+    z-index: 1; /* Под карточками, но над сеткой */
+  }
+
+  .j-empty-slot:hover::after {
+    border-color: rgba(249,160,139,0.5);
+    background: rgba(249,160,139,0.06);
+    box-shadow: 0 4px 12px rgba(249,160,139,0.05);
+  }
+
+  .slot-plus {
+    position: absolute;
+    /* Позиция Y прилетит из React напрямую в элемент */
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    color: var(--peach);
+    font-size: 18px;
+    transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+    pointer-events: none;
+    width: 28px; height: 28px;
+    background: #FFF; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(249,160,139,0.2);
+    z-index: 2;
+  }
+  .j-empty-slot:hover .slot-plus {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  @keyframes preview-drop {
+    from { opacity: 0; transform: scaleY(0.6) translateY(-8px); filter: blur(4px); }
+    to   { opacity: 1; transform: scaleY(1)   translateY(0);    filter: blur(0);   }
+  }
+  @keyframes preview-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+  }
+  @keyframes live-dot {
+    0%, 100% { transform: scale(1);   opacity: 1; }
+    50%       { transform: scale(1.5); opacity: 0.5; }
+  }
+  /* ── ИЗМЕНЕННАЯ КАРТОЧКА ЗАПИСИ (Сценарий 1 и 2) ── */
+  .booking-card {
+    position: absolute;
+    /* Убрано left и right, теперь они управляются через JS */
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    /* Пружинистая анимация как в iOS */
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+    /* Визуальный "нож", разрезающий слипшиеся карточки цветом фона */
+    box-shadow: 0 0 0 2px var(--bg-card); 
+  }
+
+  .booking-card .b-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+  }
+
+  .booking-card .b-meta, .booking-card .b-progress {
+    transition: opacity 0.2s ease;
+  }
+
+  /* ── СЦЕНАРИЙ 5: ПРЕМИАЛЬНОЕ ВЗАИМОДЕЙСТВИЕ ── */
+  /* Если карточка делит пространство с соседями (isTracked), даем ей эффект расширения */
+  .booking-card.is-tracked {
+    padding: 8px 6px; /* Чуть меньше паддинг для зажатых треков */
+  }
+  
+  .booking-card.is-tracked .b-meta, 
+  .booking-card.is-tracked .b-progress {
+    opacity: 0; /* Скрываем детали, чтобы не было каши в узком слоте */
+  }
+
+  .booking-card.is-tracked:hover {
+    width: calc(100% - 28px) !important; /* Разворачивается на всю ширину колонки */
+    min-width: 140px; /* Защита от очень узких экранов */
+    z-index: 50 !important; /* Взлетает над всеми */
+    /* Глубокая тень: отрывает от сетки и соседей */
+    box-shadow: 0 24px 48px -12px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
+    transform: scale(1.02) translateY(-2px);
+    background: #FFFFFF !important; /* Заливаем белым */
+  }
+
+  /* Возвращаем видимость контенту при наведении */
+  .booking-card.is-tracked:hover .b-meta, 
+  .booking-card.is-tracked:hover .b-progress {
+    opacity: 1;
+  }
+  
+  .booking-card.is-tracked:hover .b-title {
+    white-space: normal; /* Позволяем тексту переноситься */
+  }
+
+  /* ── СЦЕНАРИЙ 4: КАСКАД (Массовая давка) ── */
+  .booking-card.is-cascade {
+    box-shadow: -4px 4px 12px rgba(0,0,0,0.08), 0 0 0 2px var(--bg-card);
+  }
+  .booking-card.is-cascade:hover {
+    transform: translateX(12px) translateY(-4px); /* Сдвигаем верхнюю карту чуть в сторону при изучении */
+    z-index: 60 !important;
+  }
+  /* ── СЦЕНАРИЙ 4: ПАТТЕРН "КОЛОДА КАРТ" (APPLE CALENDAR) ── */
+  .booking-card.is-cascade {
+    /* Мягкая тень для отделения слоев друг от друга */
+    box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1.5px var(--bg-card);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* Возвращаем фирменный полупрозрачный оттенок поверх белой базы, 
+     чтобы карточка не выглядела серой, но и не просвечивала соседей */
+  .booking-card.is-cascade::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-color);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* Контент карточки поднимаем над фоном-пленкой */
+  .booking-card.is-cascade > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 💎 ПРЕМИАЛЬНЫЙ HOVER: КАРТОЧКА ВЫРЫВАЕТСЯ ИЗ СТОПКИ 💎 */
+  .booking-card.is-cascade:hover {
+    z-index: 999 !important; /* Безусловный приоритет поверх всей сетки */
+    left: 0 !important; /* Выныривает из лесенки к левому краю колонки */
+    width: calc(100% - 28px) !important; /* Раскрывается на всю ширину трека */
+    transform: translateY(-4px) scale(1.02); /* Слегка поднимается к пользователю */
+    
+    /* Тяжелая многослойная тень, создающая физический объем */
+    box-shadow: 
+      0 32px 80px -16px rgba(26,26,26,0.4), 
+      0 8px 24px -4px rgba(26,26,26,0.15),
+      0 0 0 2px var(--bg-card) !important;
+  }
+
+  /* Возвращаем скрытый контент при раскрытии карты из колоды */
+  .booking-card.is-cascade:hover .b-meta,
+  .booking-card.is-cascade:hover .b-progress {
+    opacity: 1 !important;
+  }
+  .booking-card.is-cascade:hover .b-title {
+    white-space: normal !important;
+  }
+    /* ── БАЗОВЫЕ ЭФФЕКТЫ ХОВЕРА (СПОКОЙНЫЕ) ── */
+  .booking-card:hover {
+    /* Только легкое поднятие, без расширений */
+    transform: scale(1.01) translateY(-1px);
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
+  }
+
+  .booking-card.is-cascade:hover {
+    /* В каскаде чуть сдвигаем карточку вбок, чтобы показать, что это колода */
+    transform: translateX(6px) translateY(-2px); 
+  }
+
+  /* 💎 ПРЕМИАЛЬНОЕ ВЫДЕЛЕНИЕ ПО КЛИКУ (.is-selected) 💎 */
+  /* Этот класс заменяет собой все старые дерганые :hover эффекты */
+  .booking-card.is-selected {
+    left: 0 !important; /* Возвращаем из лесенки к левому краю */
+    width: calc(100% - 28px) !important; /* Разворачиваем на всю колонку */
+    min-width: 140px; 
+    z-index: 999 !important; /* Поверх всей сетки */
+    background: #FFFFFF !important; /* Белый фон, чтобы не сливаться */
+    transform: scale(1.02) translateY(-2px) !important;
+    
+    /* Дорогая, глубокая тень */
+    box-shadow: 
+      0 32px 80px -16px rgba(26,26,26,0.4), 
+      0 8px 24px -4px rgba(26,26,26,0.15),
+      0 0 0 2px var(--bg-card) !important;
+  }
+
+  /* Принудительно показываем весь контент только у выделенной карточки */
+  .booking-card.is-selected .b-meta, 
+  .booking-card.is-selected .b-progress {
+    opacity: 1 !important;
+  }
+  
+  .booking-card.is-selected .b-title {
+    white-space: normal !important; /* Разрешаем тексту переноситься на новые строки */
+  }
+
+  /* Прячем мета-информацию в зажатых треках, пока на них не кликнули */
+  .booking-card.is-tracked:not(.is-selected) .b-meta, 
+  .booking-card.is-tracked:not(.is-selected) .b-progress {
+    opacity: 0; 
+  }
 `;
 
-// ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
+// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ КОЛЛИЗИЙ (CLUSTERS & TRACKS) ──────────────
+// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ КОЛЛИЗИЙ ПО ПРАВИЛУ КНИГИ (50% ПЕРЕКРЫТИЕ) ───
+function getBookingLayouts(bookings: Booking[]) {
+  const layouts = new Map<string, any>();
+  const RIGHT_SPACE = 28; // Отступ справа для клика/создания нового занятия
+
+  // 1. Группируем все занятия колонки по точному времени их начала
+  const groups = new Map<number, Booking[]>();
+  bookings.forEach(b => {
+    if (!groups.has(b.timeStart)) {
+      groups.set(b.timeStart, []);
+    }
+    groups.get(b.timeStart)!.push(b);
+  });
+
+  // 2. Внутри каждой группы временного старта сортируем занятия от длинных к коротким
+  groups.forEach((groupBookings) => {
+    groupBookings.sort((a, b) => {
+      const durA = a.timeEnd - a.timeStart;
+      const durB = b.timeEnd - b.timeStart;
+      return durB - durA; // Длинные уходят вперед (индекс 0)
+    });
+  });
+
+  // 3. Рассчитываем координаты (Одинаковая ширина, 50% налезание друг на друга)
+  groups.forEach((groupBookings) => {
+    const N = groupBookings.length;
+    
+    // Математика: чтобы все N карточек были одинаковой ширины и каждая следующая 
+    // сдвигалась ровно на 50% от этой ширины, не вылезая за пределы 100% колонки.
+    const widthFraction = 1 / (1 + 0.5 * (N - 1));
+
+    groupBookings.forEach((b, indexInGroup) => {
+      // Сдвиг вправо — 50% от расчётной доли ширины карточки
+      const leftFraction = indexInGroup * 0.5 * widthFraction;
+
+      const left = `calc((100% - ${RIGHT_SPACE}px) * ${leftFraction})`;
+      const width = `calc((100% - ${RIGHT_SPACE}px) * ${widthFraction})`;
+      
+      const verticalStep = 18;   // Мягкий шаг вниз для каскада
+      const topOffset = indexInGroup * verticalStep; 
+
+      // Логика z-index: занятие, начавшееся позже, перекроет предыдущее
+      const timeBase = Math.round(b.timeStart * 4);
+      const zIndex = 10 + timeBase + indexInGroup; 
+
+      layouts.set(b.id, {
+        left,
+        width,
+        topOffset,
+        zIndex,
+        isTracked: N > 1,
+        isCascade: true,
+        totalTracks: N,
+        trackIdx: indexInGroup
+      });
+    });
+  });
+
+  return layouts;
+}
+
+  // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
+
+  const previewRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);   // ← добавить
+  const gridWrapperRef = useRef<HTMLDivElement>(null);
+  const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  const [newFormPos, setNewFormPos] = useState({ x: 0, y: 0 });
   const today = new Date();
+
+  // 1. СНАЧАЛА ОБЪЯВЛЯЕМ ВСЕ СТЕЙТЫ (Чтобы TypeScript их видел)
   const [calMonth, setCalMonth] = useState(today.getMonth());
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
@@ -1179,16 +1714,195 @@ export default function Journal() {
   const [searchQuery, setSearchQuery] = useState('');
   const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
   const [toast, setToast] = useState<string | null>(null);
-  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; time: number } | null>(null);
+  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
   const popupRef = useRef<HTMLDivElement>(null);
+
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [dateInputVal, setDateInputVal] = useState("");
+
+  const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
+  const [startInput, setStartInput] = useState('');
+  const [endInput, setEndInput] = useState('');
+  const startScrollRef = useRef<HTMLDivElement>(null);
+  const endScrollRef = useRef<HTMLDivElement>(null);
+
+  // 2. ДАЛЕЕ ИДУТ УТИЛИТЫ И ФУНКЦИИ
+
+  const MODAL_W = 580;
+  const MODAL_H = 480;
+
+  const closeNewForm = () => {
+    setShowNewForm(false);
+    setNewBookingSlot(null);
+  };
+
+  const recalcModalPos = () => {
+    if (!previewRef.current || !newBookingSlot) return;
+    const rect = previewRef.current.getBoundingClientRect();
+
+    const SAFE = 16;
+    const GAP = 12; // Увеличили зазор для премиального "воздуха" между элементами
+    const TOOLBAR_H = 56;
+    const RIGHT_PANEL_W = 264; // Жестко учитываем ширину правого сайдбара из CSS
+
+    // Динамически берем реальные размеры модалки из DOM, если они уже есть
+    const MODAL_W_REAL = modalRef.current ? modalRef.current.offsetWidth : MODAL_W;
+    const MODAL_H_REAL = modalRef.current ? modalRef.current.offsetHeight : MODAL_H;
+
+    // 🔥 КЛЮЧЕВОЙ ФИКС: Вычисляем чистую ширину рабочей зоны сетки (без учета правого сайдбара)
+    const cleanGridWidth = window.innerWidth - RIGHT_PANEL_W;
+    const spaceRight = cleanGridWidth - rect.right - GAP;
+    const spaceLeft  = rect.left - GAP;
+
+    let finalX = 0;
+
+    if (spaceRight >= MODAL_W_REAL) {
+      // Сценарий 1: Справа от превью-карточки (идеальное поведение)
+      finalX = rect.right + GAP;
+    } else if (spaceLeft >= MODAL_W_REAL) {
+      // Сценарий 2: Места справа мало — плавно зеркалим модалку СЛЕВА от карточки
+      finalX = rect.left - MODAL_W_REAL - GAP;
+    } else {
+      // Сценарий 5 (Защитный): Места критически мало с обеих сторон (узкий экран).
+      // Вместо слепого центрирования поверх превью, сдвигаем модалку вплотную к тому краю, 
+      // где места БОЛЬШЕ, оставляя живое превью занятия полностью открытым и читаемым!
+      if (spaceRight > spaceLeft) {
+        finalX = cleanGridWidth - MODAL_W_REAL - SAFE;
+      } else {
+        finalX = SAFE;
+      }
+    }
+
+    // Железобетонный барьер: не даем модалке физически вылететь за границы вьюпорта
+    if (finalX < SAFE) finalX = SAFE;
+    if (finalX + MODAL_W_REAL > window.innerWidth - SAFE) {
+      finalX = window.innerWidth - MODAL_W_REAL - SAFE;
+    }
+
+    // ── Координата Y: Умный вертикальный снаппинг (Коллизии верх/низ) ──
+    let finalY = rect.top;
+
+    // Если модалка вылетает снизу экрана — аккуратно подтягиваем её вверх к безопасной зоне
+    if (finalY + MODAL_H_REAL > window.innerHeight - SAFE) {
+      finalY = window.innerHeight - MODAL_H_REAL - SAFE;
+    }
+    // Если вылетает сверху за тулбар — прижимаем под нижнюю грань тулбара
+    if (finalY < TOOLBAR_H + SAFE) {
+      finalY = TOOLBAR_H + SAFE;
+    }
+
+    setNewFormPos({ x: finalX, y: finalY });
+  };
+
+  // Динамическое перепозиционирование модалки
+  useEffect(() => {
+    if (!showNewForm) return;
+    
+    // 🔥 ФИКС ГОНКИ КАДРОВ: Переносим первый расчет в макротаск (setTimeout 0).
+    // Это дает React ровно 1 кадр, чтобы полностью завершить layout и рендер превью-карточки,
+    // гарантируя абсолютно точные BoundingRect без наложений с первой же миллисекунды!
+    const timer = setTimeout(recalcModalPos, 0);
+    
+    const wrapper = gridWrapperRef.current;
+    
+    // Подписываемся на скролл сетки расписания
+    if (wrapper) wrapper.addEventListener('scroll', recalcModalPos);
+    // Дополнительный премиум-штрих: подписываемся на изменение размеров окна браузера
+    window.addEventListener('resize', recalcModalPos);
+    
+    return () => {
+      if (wrapper) wrapper.removeEventListener('scroll', recalcModalPos);
+      window.removeEventListener('resize', recalcModalPos);
+      clearTimeout(timer);
+    };
+  }, [showNewForm, newBookingSlot?.timeStart, newBookingSlot?.timeEnd, newBookingSlot?.trainer]);
+
+  // Утилиты перевода времени
+  const formatIndexToTimeStr = (idx: number) => {
+    const h = Math.floor(idx) + 7;
+    const m = Math.round((idx % 1) * 60);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
+  const parseTimeToIndex = (timeStr: string) => {
+    const [h, m] = timeStr.split(':').map(Number);
+    return isNaN(h) ? 0 : (h - 7) + (m / 60);
+  };
+
+  // Генерация массива 15-минутных интервалов
+  const KP_INTERVALS: string[] = [];
+  for (let h = 7; h <= 23; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      if (h === 23 && m > 0) break;
+      KP_INTERVALS.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+    }
+  }
+
+  // Синхронизация стейта при открытии/изменении
+  useEffect(() => {
+    if (newBookingSlot) {
+      setStartInput(formatIndexToTimeStr(newBookingSlot.timeStart));
+      setEndInput(formatIndexToTimeStr(newBookingSlot.timeEnd));
+    }
+  }, [newBookingSlot?.timeStart, newBookingSlot?.timeEnd]);
+
+  // ФИКСАЦИЯ ВРЕМЕНИ (Точь-в-точь по минутам, любая минута сохраняется как есть)
+  const commitTime = (type: 'start' | 'end', val: string) => {
+    if (!newBookingSlot) return;
+    let idx = parseTimeToIndex(val);
+    
+    if (type === 'start') {
+      setNewBookingSlot({ ...newBookingSlot, timeStart: idx, timeEnd: Math.max(newBookingSlot.timeEnd, idx + 0.25) });
+    } else {
+      if (idx <= newBookingSlot.timeStart) idx = newBookingSlot.timeStart + 0.25;
+      setNewBookingSlot({ ...newBookingSlot, timeEnd: idx });
+    }
+    setActiveDropdown(null);
+  };
+
+  // ── Открыть форму нового слота (Всегда 1 час или заполнить остаток) ──
+  const openNewSlot = (
+    trainerIdx: number,
+    timeIdx: number,
+  ) => {
+    const relevant = bookings.filter(b => b.trainer === trainerIdx);
+
+    const blockStart = timeIdx;        // начало блока (целый час, например 11)
+    const blockEnd   = timeIdx + 1;    // конец блока (12)
+
+    // Ищем занятия, которые пересекаются с этим блоком
+    const overlap = relevant.filter(b => b.timeStart < blockEnd && b.timeEnd > blockStart);
+
+    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd });
+    setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' });
+    setShowNewForm(true);
+  };
+
+  // Автоматический проскролл
+  useEffect(() => {
+    if (activeDropdown === 'start' && startScrollRef.current) {
+      startScrollRef.current.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' });
+    }
+    if (activeDropdown === 'end' && endScrollRef.current) {
+      endScrollRef.current.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' });
+    }
+  }, [activeDropdown]);
+
+  // Глобальный клик
+  useEffect(() => {
+    const closeAllDps = () => setActiveDropdown(null);
+    document.addEventListener('click', closeAllDps);
+    return () => document.removeEventListener('click', closeAllDps);
+  }, []);
 
   // Закрытие popup при клике вне
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
         setPopupBooking(null);
+        setSelectedCardId(null);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -1209,6 +1923,46 @@ export default function Journal() {
     if (m < 0) { m = 11; y--; }
     setCalMonth(m);
     setCalYear(y);
+  };
+
+  const changeDay = (dir: number) => {
+    // JS Date сам перекинет месяц/год, если мы выйдем за пределы (например, 32 августа станет 1 сентября)
+    const targetDate = new Date(calYear, calMonth, selectedDay + dir);
+    setCalYear(targetDate.getFullYear());
+    setCalMonth(targetDate.getMonth());
+    setSelectedDay(targetDate.getDate());
+  };
+
+  const handleDateInputSubmit = () => {
+    setIsEditingDate(false);
+    const clean = dateInputVal.trim();
+    if (!clean) return;
+
+    // Разделяем ввод по точкам, слэшам, тире или пробелам
+    const parts = clean.split(/[\.\/\-\s]+/);
+    if (parts.length === 0) return;
+
+    let day = parseInt(parts[0], 10);
+    // Если месяц не ввели, берем текущий открытый месяц
+    let month = parts[1] ? parseInt(parts[1], 10) - 1 : calMonth;
+    // Если год не ввели, берем текущий открытый год
+    let year = parts[2] ? parseInt(parts[2], 10) : calYear;
+
+    // Если ввели короткий год (например, 26 вместо 2026), превращаем его в 2026
+    if (parts[2] && parts[2].length === 2) {
+      year = 2000 + year;
+    }
+
+    const parsedDate = new Date(year, month, day);
+
+    // Проверяем, что дата реальная (чтобы не пропустить какой-нибудь 32-й мартобря)
+    if (!isNaN(parsedDate.getTime()) && parsedDate.getDate() === day && parsedDate.getMonth() === month) {
+      setCalYear(parsedDate.getFullYear());
+      setCalMonth(parsedDate.getMonth());
+      setSelectedDay(parsedDate.getDate());
+    } else {
+      showToast("Неверный формат даты");
+    }
   };
 
   const firstDayOffset = () => {
@@ -1253,13 +2007,6 @@ export default function Journal() {
     setPopupBooking(booking);
   };
 
-  // ── Открыть форму нового слота ──
-  const openNewSlot = (trainerIdx: number, timeIdx: number) => {
-    setNewBookingSlot({ trainer: trainerIdx, time: timeIdx });
-    setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' });
-    setShowNewForm(true);
-  };
-
   // ── Создать новую запись ──
   const createBooking = () => {
     if (!newBookingSlot || !newForm.title.trim()) return;
@@ -1267,8 +2014,8 @@ export default function Journal() {
     const nb: Booking = {
       id: `b${Date.now()}`,
       trainer: newBookingSlot.trainer,
-      timeStart: newBookingSlot.time,
-      timeEnd: newBookingSlot.time + 1,
+      timeStart: newBookingSlot.timeStart,
+      timeEnd: newBookingSlot.timeEnd,
       title: newForm.title,
       hall: newForm.hall,
       clients: 0,
@@ -1323,39 +2070,56 @@ export default function Journal() {
     c.phone.includes(searchQuery)
   );
 
-  // ── Рендер карточки записи ──
-  const renderBookingCard = (b: Booking, colIdx: number) => {
-    const top = 4;
-    const height = (b.timeEnd - b.timeStart) * 72 - 8;
+  // ── Рендер карточки записи (Обновленный) ──
+  const renderBookingCard = (b: Booking, layout: any) => {
+    const startOffset = (b.timeStart - Math.floor(b.timeStart)) * 72;
+    const top = startOffset + layout.topOffset; 
+    const height = (b.timeEnd - b.timeStart) * 72 - 1; 
+    
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
+
+    // Проверяем, выделена ли эта карточка прямо сейчас
+    const isSelected = selectedCardId === b.id;
 
     return (
       <div
         key={b.id}
-        className={`booking-card ${b.status}`}
+        // Добавляем класс is-selected
+        className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''}`}
+        onClick={e => {
+          e.stopPropagation(); // 🔥 БЛОКИРУЕТ КЛИК ПО ЯЧЕЙКЕ (не дает создать новое занятие)
+          setSelectedCardId(b.id); // Выделяем карточку
+          openBookingPopup(e, b);  // Открываем попап с деталями
+        }}
         style={{
           top, height,
-          background: `${b.color}18`,
-          border: `1.5px solid ${b.color}40`,
+          left: layout.left,
+          width: layout.width,
+          zIndex: isSelected ? 999 : layout.zIndex, // При клике поднимаем на самый верх
+          // Уменьшили непрозрачность фона до 12, чтобы жирный контур читался лучше
+          background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
+          border: `2px solid ${b.color}`, // 🔥 ЖИРНЫЙ, ЯРКИЙ БОРДЕР (100% непрозрачность)
           color: b.color,
-        }}
-        onClick={e => openBookingPopup(e, b)}
+          '--card-color': b.color,
+        } as React.CSSProperties}
       >
-        <div style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>{b.title}</div>
-        {height > 36 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
-            <Icons.Users />
-            <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
-            {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
-          </div>
-        )}
-        {b.status === 'pending' && height > 48 && (
-          <div style={{ fontSize: '9px', fontWeight: 700, opacity: 0.6, marginTop: 2 }}>ожидает</div>
-        )}
-        {/* Мини прогресс */}
+        <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
+          {b.title}
+        </div>
+        
+        <div className="b-meta">
+          {height > 36 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
+              <Icons.Users />
+              <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
+              {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
+            </div>
+          )}
+        </div>
+
         {b.maxClients > 0 && height > 40 && (
-          <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, height: 2, background: `${b.color}25`, borderRadius: 1 }}>
+          <div className="b-progress" style={{ position: 'absolute', bottom: 6, left: 8, right: 8, height: 2, background: `${b.color}25`, borderRadius: 1 }}>
             <div style={{ height: '100%', width: `${fillRatio * 100}%`, background: b.color, borderRadius: 1, transition: 'width 0.5s ease' }} />
           </div>
         )}
@@ -1373,19 +2137,56 @@ export default function Journal() {
           {/* ── ТУЛБАР ── */}
           <div className="j-toolbar">
             {/* Дата навигация */}
-            <button className="btn-icon" onClick={() => setSelectedDay(d => Math.max(1, d - 1))}>
+            <button className="btn-icon" onClick={() => changeDay(-1)}>
               <Icons.ChevronLeft />
             </button>
 
-            <button
-              className="btn-ghost-sm"
-              style={{ minWidth: 120, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)' }}
-            >
-              <Icons.Calendar />
-              {selectedDay} {MONTH_NAMES[calMonth]} {calYear}
-            </button>
+            {isEditingDate ? (
+              <input
+                type="text"
+                className="btn-ghost-sm"
+                value={dateInputVal}
+                onChange={e => setDateInputVal(e.target.value)}
+                onBlur={handleDateInputSubmit}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleDateInputSubmit();
+                  if (e.key === 'Escape') setIsEditingDate(false);
+                }}
+                autoFocus
+                style={{
+                  width: 180, 
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  color: 'var(--onyx)',
+                  border: '1.5px solid var(--peach)',
+                  boxShadow: '0 0 0 3px var(--peach-glow)', 
+                  background: '#FFFFFF',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  borderRadius: '12px',
+                  padding: '0 16px'
+                }}
+              />
+            ) : (
+              <button
+                type="button"
+                className="btn-ghost-sm"
+                onClick={() => {
+                  const pad = (n: number) => String(n).padStart(2, '0');
+                  setDateInputVal(`${pad(selectedDay)}.${pad(calMonth + 1)}.${calYear}`);
+                  setIsEditingDate(true);
+                }}
+                style={{ width: 180, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)', gap: '10px' }}
+              >
+                <Icons.Calendar />
+                <span style={{ display: 'inline-block', textAlign: 'center' }}>
+                  {selectedDay} {MONTH_NAMES[calMonth]} {calYear}
+                </span>
+              </button>
+            )}
 
-            <button className="btn-icon" onClick={() => setSelectedDay(d => Math.min(daysInMonth, d + 1))}>
+            <button className="btn-icon" onClick={() => changeDay(1)}>
               <Icons.ChevronRight />
             </button>
 
@@ -1447,11 +2248,6 @@ export default function Journal() {
             <button className="btn-ghost-sm">
               <Icons.Filter /> Фильтры
             </button>
-
-            <button className="btn-primary-sm" onClick={() => { setNewBookingSlot({ trainer: 0, time: 2 }); setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' }); setShowNewForm(true); }}>
-              <Icons.Plus />
-              Добавить занятие
-            </button>
           </div>
 
           {/* ── СВОДКА ДНЯ ── */}
@@ -1480,7 +2276,7 @@ export default function Journal() {
 
           {/* ── СЕТКА ── */}
           <div className="j-layout">
-            <div className="j-grid-wrapper">
+            <div className="j-grid-wrapper" ref={gridWrapperRef}>
               <div
                 className="j-grid"
                 style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(170px, 1fr))` }}
@@ -1552,30 +2348,109 @@ export default function Journal() {
                       const colBookings = filteredBookings.filter(b =>
                         isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName
                       );
-                      const booking = colBookings.find(b => b.timeStart === ti);
-                      const occupiedBySpan = colBookings.some(b => b.timeStart < ti && b.timeEnd > ti);
+                      const layouts = getBookingLayouts(colBookings);
+                      const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
 
-                      if (occupiedBySpan) return null;
+                      // 🔥 Умный расчет точного старта в текущем часе
+                      const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
+
+                      const isHoldingHoveredCard = hourBookings.some(b => b.id === hoveredCardId);
 
                       return (
                         <div
                           key={ci}
-                          className="j-empty-slot"
-                          style={{ borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', position: 'relative' }}
+                          className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook ? 'is-targeted' : ''}`}
+                          onMouseEnter={() => { if (canBook && !showNewForm) setHoveredSlot(`${ti}-${ci}`); }}
+                          onMouseLeave={() => setHoveredSlot(null)}
+                          style={{ 
+                            borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
+                            borderRadius: '10px',
+                            // 🔥 МАГИЯ: Если внутри этой ячейки есть карточка под мышкой, 
+                            // мы поднимаем ВСЮ ячейку над остальной сеткой!
+                            zIndex: isHoldingHoveredCard ? 999 : 1,
+                          }}
                           onClick={(e) => {
-                            if (!booking) {
-                              e.stopPropagation();
-                              const trainerIdx = isTrainerMode ? trainer!.id : 0;
-                              openNewSlot(trainerIdx, ti);
-                            }
+                            if (showNewForm) return;
+                            e.stopPropagation();
+                            const trainerIdx = isTrainerMode ? trainer!.id : 0;
+                            openNewSlot(trainerIdx, ti);
                           }}
                         >
-                          {!booking && !occupiedBySpan && (
-                            <div className="slot-plus">
-                              <Icons.Plus />
+                          {/* Передаем layout в рендер */}
+                          {hourBookings.map(booking => renderBookingCard(booking, layouts.get(booking.id)))}
+                          {/* 💎 ПРЕМИАЛЬНОЕ ЖИВОЕ ПРЕВЬЮ НОВОЙ ЗАПИСИ 💎 */}
+                          {newBookingSlot && newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0) &&
+                            newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
+                            <div
+                              ref={previewRef}
+                              style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 28,
+                                top: (newBookingSlot.timeStart - ti) * 72,
+                                height: (newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 - 1,
+                                borderRadius: '10px',
+                                boxSizing: 'border-box',
+                                pointerEvents: 'none',
+                                zIndex: 15,
+                                overflow: 'hidden',
+                                animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
+                                // Стекло
+                                background: 'rgba(255,255,255,0.55)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                // Многослойная тень
+                                boxShadow: `
+                                  0 0 0 1.5px rgba(249,160,139,0.55),
+                                  0 8px 32px -4px rgba(249,160,139,0.28),
+                                  0 2px 8px rgba(249,160,139,0.12),
+                                  inset 0 1px 0 rgba(255,255,255,0.9)
+                                `,
+                              }}
+                            >
+                              {/* Живой градиентный фон — медленно пульсирует */}
+                              <div style={{
+                                position: 'absolute', inset: 0,
+                                background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
+                                animation: 'preview-pulse 2.4s ease-in-out infinite',
+                              }} />
+
+                              {/* Мерцающая точка — "live" индикатор */}
+                              <div style={{
+                                position: 'absolute', top: 8, right: 8,
+                                width: 6, height: 6, borderRadius: '50%',
+                                background: 'var(--peach)',
+                                boxShadow: '0 0 0 3px rgba(249,160,139,0.25)',
+                                animation: 'live-dot 1.4s ease-in-out infinite',
+                              }} />
+
+                              {/* Контент */}
+                              <div style={{
+                                position: 'relative', zIndex: 1,
+                                padding: '8px 18px 8px 12px',
+                                display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%',
+                              }}>
+                                <div style={{
+                                  fontSize: '11.5px', fontWeight: 800,
+                                  color: '#1A1A1A',
+                                  lineHeight: 1.2,
+                                  letterSpacing: '-0.2px',
+                                }}>
+                                  {newForm.title || 'Новое занятие'}
+                                </div>
+
+                                {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (
+                                  <div style={{
+                                    fontSize: '10px', fontWeight: 600,
+                                    color: 'var(--peach)',
+                                    marginTop: 3, opacity: 0.9,
+                                  }}>
+                                    {formatIndexToTimeStr(newBookingSlot.timeStart)} – {formatIndexToTimeStr(newBookingSlot.timeEnd)}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
-                          {booking && renderBookingCard(booking, ci)}
                         </div>
                       );
                     })}
@@ -1628,9 +2503,6 @@ export default function Journal() {
                 <div className="jr-label"><Icons.MapPin /> Залы</div>
                 {HALLS.map((h, i) => {
                   const colors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
-                  const counts = [
-                    bookings.filter(b => b.hall === h).length,
-                  ];
                   return (
                     <div key={h} className={`hall-chip ${activeHalls.includes(h) ? 'active' : ''}`} onClick={() => toggleHall(h)}>
                       <div className="hc-dot" style={{ background: colors[i] }} />
@@ -1779,63 +2651,64 @@ export default function Journal() {
 
       {/* ── ФОРМА НОВОГО ЗАНЯТИЯ (PREMIUM KEYPAD) ── */}
       {showNewForm && (
-        <div 
-          className="modal-overlay open" 
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setShowNewForm(false);
-          }}
-        >
-          <div className="keypad-modal" onMouseDown={e => e.stopPropagation()}>
+        <>
+          {/* Прозрачный backdrop — клик мимо закрывает всё */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+            onMouseDown={() => closeNewForm()}
+          />
+          <div
+            style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 9999 }}
+            onMouseDown={e => e.stopPropagation()}
+          >
+          <div className="keypad-modal" ref={modalRef}>
             
-            {/* ── ШАПКА ── */}
-            <div style={{ padding: '24px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* ШАПКА МОДАЛКИ */}
+            <div style={{ padding: '24px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border2)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(249,160,139,0.1)', color: 'var(--peach)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icons.Plus />
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>Новый слот</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>Добавление занятия в сетку</div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>Новое занятие</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>
+                    Время слота: <span style={{ color: 'var(--peach)', fontWeight: 800 }}>
+                      {newBookingSlot ? [...TIMES, '22:00', '23:00'][newBookingSlot.timeStart] : '00:00'} – {newBookingSlot ? [...TIMES, '22:00', '23:00'][newBookingSlot.timeEnd] : '00:00'}
+                    </span>
+                  </div>
                 </div>
               </div>
               <button type="button" className="btn-icon" onClick={() => setShowNewForm(false)}><Icons.X /></button>
             </div>
 
-            {/* ── СЕТКА ДАННЫХ (2 Колонки) ── */}
+            {/* СЕТКА ДАННЫХ */}
             <div className="kp-grid">
               
-              {/* ЛЕВАЯ КОЛОНКА: Название, Вместимость, Залы */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div>
-                  <div className="kp-section-title">Основная инфа</div>
+              {/* ЛЕВАЯ КОЛОНКА */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* Название */}
+                <div className="kp-section">
+                  <div className="kp-section-title">Название программы</div>
                   <input
                     className="modal-input"
-                    style={{ marginBottom: 12, background: 'var(--bg)', border: '1.5px solid var(--border)', height: '44px' }}
-                    placeholder="Название (Йога, Пил...)"
+                    style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 600 }}
+                    placeholder="Например: Пилатес Реформер"
                     value={newForm.title}
                     onChange={e => setNewForm(f => ({ ...f, title: e.target.value }))}
                     autoFocus
                   />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '6px 6px 6px 14px', borderRadius: '12px', border: '1.5px solid var(--border)' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)' }}>Вместимость чел.</span>
-                    <input
-                      className="modal-input"
-                      type="number" min="1" max="50"
-                      style={{ width: 64, height: 32, marginBottom: 0, textAlign: 'center', padding: 0, background: 'white', border: '1.5px solid var(--border)' }}
-                      value={newForm.maxClients}
-                      onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
-                    />
-                  </div>
                 </div>
 
-                <div>
-                  <div className="kp-section-title">Помещение</div>
+                {/* Залы */}
+                <div className="kp-section">
+                  <div className="kp-section-title">Локация / Зал</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                     {HALLS.map(h => (
                       <div
                         key={h}
                         className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
-                        style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', boxShadow: '0 6px 16px rgba(26,26,26,0.15)' } : {}}
+                        style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {}}
                         onClick={() => setNewForm(f => ({ ...f, hall: h }))}
                       >
                         {h}
@@ -1843,73 +2716,150 @@ export default function Journal() {
                     ))}
                   </div>
                 </div>
-              </div>
 
-              {/* ПРАВАЯ КОЛОНКА: Тренеры и Время */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div>
-                  <div className="kp-section-title">Тренер</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {TRAINERS.map(t => {
-                      const isActive = newBookingSlot?.trainer === t.id;
-                      return (
-                        <div
-                          key={t.id}
-                          onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
-                          style={{
-                            padding: '4px 14px 4px 4px', borderRadius: '100px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            border: `1.5px solid ${isActive ? t.color : 'var(--border)'}`,
-                            background: isActive ? t.bg : 'var(--bg)',
-                            transition: 'all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)',
-                            boxShadow: isActive ? `0 6px 16px ${t.color}30` : 'none',
-                            transform: isActive ? 'translateY(-1px)' : 'none'
-                          }}
-                        >
-                          <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, transition: 'all 0.2s' }}>{t.initials}</div>
-                          <span style={{ fontSize: 12.5, fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)' }}>{t.name}</span>
+                {/* 🔥 НАЧАЛО И КОНЕЦ (Кастомный пикер 15 минут с защитой) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  
+                  {/* Время начала */}
+                  <div className="kp-section" onClick={e => e.stopPropagation()}>
+                    <div className="kp-section-title">Начало</div>
+                    <div className="kp-time-container">
+                      <input
+                        type="text"
+                        className="modal-input kp-time-input"
+                        style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                        value={startInput}
+                        onFocus={(e) => { e.target.select(); setActiveDropdown('start'); }}
+                        onChange={e => setStartInput(e.target.value)}
+                        onBlur={(e) => commitTime('start', e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') commitTime('start', startInput); }}
+                      />
+                      {activeDropdown === 'start' && (
+                        <div className="kp-time-dropdown" ref={startScrollRef}>
+                          {KP_INTERVALS.map(t => {
+                            const isActive = newBookingSlot && formatIndexToTimeStr(newBookingSlot.timeStart) === t;
+                            return (
+                              <div
+                                key={t}
+                                className={`kp-time-item ${isActive ? 'active-time-item' : ''}`}
+                                onMouseDown={(e) => { e.preventDefault(); commitTime('start', t); }}
+                              >
+                                {t}
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Время конца */}
+                  <div className="kp-section" onClick={e => e.stopPropagation()}>
+                    <div className="kp-section-title">Конец</div>
+                    <div className="kp-time-container">
+                      <input
+                        type="text"
+                        className="modal-input kp-time-input"
+                        style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                        value={endInput}
+                        onFocus={(e) => { e.target.select(); setActiveDropdown('end'); }}
+                        onChange={e => setEndInput(e.target.value)}
+                        onBlur={(e) => commitTime('end', e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') commitTime('end', endInput); }}
+                      />
+                      {activeDropdown === 'end' && (
+                        <div className="kp-time-dropdown" ref={endScrollRef}>
+                          {KP_INTERVALS.map(t => {
+                            const idx = parseTimeToIndex(t);
+                            // Прячем только то время, которое раньше или равно времени старта
+                            if (idx <= newBookingSlot!.timeStart) return null;
+
+                            const isActive = newBookingSlot && formatIndexToTimeStr(newBookingSlot.timeEnd) === t;
+                            return (
+                              <div
+                                key={t}
+                                className={`kp-time-item ${isActive ? 'active-time-item' : ''}`}
+                                onMouseDown={(e) => { e.preventDefault(); commitTime('end', t); }}
+                              >
+                                {t}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Вместимость */}
+                <div className="kp-section">
+                  <div className="kp-section-title">Лимит группы</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '0 6px 0 14px', borderRadius: '10px', border: '1px solid var(--border)', height: '40px', boxSizing: 'border-box' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>Максимум мест</span>
+                    <input
+                      className="modal-input"
+                      type="number" min="1" max="50"
+                      style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'white', border: '1px solid var(--border)', borderRadius: '6px', fontWeight: 700 }}
+                      value={newForm.maxClients}
+                      onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
+                    />
                   </div>
                 </div>
 
-                <div>
-                  <div className="kp-section-title">Время старта</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
-                    {TIMES.map((t, i) => (
+              </div>
+
+              {/* ПРАВАЯ КОЛОНКА (Тренеры) */}
+              <div className="kp-section">
+                <div className="kp-section-title">Назначить тренера</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {TRAINERS.map(t => {
+                    const isActive = newBookingSlot?.trainer === t.id;
+                    return (
                       <div
-                        key={i}
-                        className={`kp-chip ${newBookingSlot?.time === i ? 'active' : ''}`}
-                        style={{ padding: '6px 0', fontSize: 11.5 }}
-                        onClick={() => setNewBookingSlot(s => s ? { ...s, time: i } : s)}
+                        key={t.id}
+                        onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
+                        style={{
+                          padding: '0 12px 0 5px', borderRadius: '10px', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', gap: '10px',
+                          border: `1px solid ${isActive ? t.color : 'var(--border)'}`,
+                          background: isActive ? t.bg : 'var(--bg)',
+                          height: '40px', boxSizing: 'border-box',
+                          transition: 'all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)',
+                          boxShadow: isActive ? `0 4px 12px ${t.color}20` : 'none',
+                          transform: isActive ? 'translateY(-1px)' : 'none'
+                        }}
                       >
-                        {t}
+                        <div style={{ width: 28, height: 28, borderRadius: '7px', background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, transition: 'all 0.2s' }}>{t.initials}</div>
+                        <span style={{ fontSize: 13, fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)', flex: 1 }}>{t.name}</span>
+                        {isActive && <span style={{ color: t.color, display: 'flex' }}><Icons.Check /></span>}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
+
             </div>
 
-            {/* ── ПОДВАЛ ── */}
-            <div style={{ padding: '16px 24px', background: '#FDFCFB', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button type="button" className="btn-ghost-sm" style={{ height: 40, padding: '0 20px', fontSize: 13 }} onClick={() => setShowNewForm(false)}>
+            {/* ПОДВАЛ МОДАЛКИ */}
+            <div style={{ padding: '16px 24px', background: '#FDFCFB', borderTop: '1px solid var(--border2)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button type="button" className="btn-ghost-sm" style={{ height: 38, padding: '0 16px', fontSize: 12.5, borderRadius: '8px' }} onClick={() => setShowNewForm(false)}>
                 Отмена
               </button>
               <button
                 type="button"
                 className="btn-primary-sm"
-                style={{ height: 40, padding: '0 28px', fontSize: 13 }}
+                style={{ height: 38, padding: '0 24px', fontSize: 12.5, borderRadius: '8px' }}
                 onClick={(e) => { e.preventDefault(); createBooking(); }}
                 disabled={!newForm.title.trim()}
               >
-                Создать слот <Icons.Check />
+                Создать занятие
               </button>
             </div>
 
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* ── МОДАЛКА ДОБАВЛЕНИЯ КЛИЕНТА ── */}
