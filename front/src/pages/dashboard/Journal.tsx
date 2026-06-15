@@ -535,21 +535,31 @@ const STYLES = `
   }
 
   /* ── КАРТОЧКА ЗАПИСИ ── */
+  /* ── ГЛАВНЫЙ И ЕДИНСТВЕННЫЙ КЛАСС КАРТОЧКИ ── */
   .booking-card {
     position: absolute;
-    left: 0px; right: 28px;
     border-radius: 10px;
     padding: 8px 10px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
     overflow: hidden;
-    z-index: 2;
+    box-shadow: 0 0 0 2px var(--bg-card);
+
+    /* 🔥 ПРОФЕССИОНАЛЬНЫЙ ФИКС БАГА С ИСЧЕЗНОВЕНИЕМ:
+       Строго перечисляем только те свойства, которые меняют геометрию.
+       Мы специально ИСКЛЮЧИЛИ 'background-color' и 'z-index' из анимации.
+       Теперь размеры и позиция анимируются невероятно плавно, 
+       а цвет и слой переключаются мгновенно, не давая браузеру сделать карточку прозрачной! 
+    */
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease;
   }
   .booking-card:hover {
-    transform: scale(1.02) translateY(-1px);
-    z-index: 10;
-    box-shadow: 0 8px 24px rgba(26,26,26,0.12);
+    transform: scale(1.01) translateY(-1px);
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
   }
+
   .booking-card.pending { opacity: 0.75; }
   .booking-card.pending::after {
     content: '';
@@ -926,18 +936,6 @@ const STYLES = `
     background: #FFF; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(249,160,139,0.2);
-  }
-
-  /* ── КАРТОЧКА ЗАПИСИ ── */
-  .booking-card {
-    position: absolute;
-    left: 0px; right: 30px;
-    border-radius: 10px;
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.34,1.5,0.64,1);
-    overflow: hidden;
-    z-index: 2;
   }
   .booking-card:hover {
     transform: scale(1.01) translateY(-1px);
@@ -1467,19 +1465,6 @@ const STYLES = `
     0%, 100% { transform: scale(1);   opacity: 1; }
     50%       { transform: scale(1.5); opacity: 0.5; }
   }
-  /* ── ИЗМЕНЕННАЯ КАРТОЧКА ЗАПИСИ (Сценарий 1 и 2) ── */
-  .booking-card {
-    position: absolute;
-    /* Убрано left и right, теперь они управляются через JS */
-    border-radius: 10px;
-    padding: 8px 10px;
-    cursor: pointer;
-    /* Пружинистая анимация как в iOS */
-    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    overflow: hidden;
-    /* Визуальный "нож", разрезающий слипшиеся карточки цветом фона */
-    box-shadow: 0 0 0 2px var(--bg-card); 
-  }
 
   .booking-card .b-title {
     white-space: nowrap;
@@ -1522,11 +1507,6 @@ const STYLES = `
   .booking-card.is-tracked:hover .b-title {
     white-space: normal; /* Позволяем тексту переноситься */
   }
-
-  /* ── СЦЕНАРИЙ 4: КАСКАД (Массовая давка) ── */
-  .booking-card.is-cascade {
-    box-shadow: -4px 4px 12px rgba(0,0,0,0.08), 0 0 0 2px var(--bg-card);
-  }
   .booking-card.is-cascade:hover {
     transform: translateX(12px) translateY(-4px); /* Сдвигаем верхнюю карту чуть в сторону при изучении */
     z-index: 60 !important;
@@ -1535,7 +1515,6 @@ const STYLES = `
   .booking-card.is-cascade {
     /* Мягкая тень для отделения слоев друг от друга */
     box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1.5px var(--bg-card);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   
   /* Возвращаем фирменный полупрозрачный оттенок поверх белой базы, 
@@ -1622,63 +1601,147 @@ const STYLES = `
   .booking-card.is-tracked:not(.is-selected) .b-progress {
     opacity: 0; 
   }
+  /* Изменяем курсор, чтобы было понятно, что можно тянуть */
+  .booking-card {
+    cursor: grab;
+  }
+  .booking-card:active {
+    cursor: grabbing;
+  }
+
+  /* 💎 ПРЕМИАЛЬНЫЙ ЭФФЕКТ В ПОЛЕТЕ 💎 */
+  .booking-card.is-dragging {
+    transition: none !important; /* Отключаем плавность, чтобы карточка клеилась к мыши */
+    z-index: 9999 !important; /* Парит над всем приложением */
+    opacity: 0.9;
+    box-shadow: 0 32px 80px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
+    cursor: grabbing !important;
+    pointer-events: none !important; /* ПРОПУСКАЕМ КЛИК СКВОЗЬ КАРТОЧКУ К СЕТКЕ */
+  }
 `;
 
-// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ КОЛЛИЗИЙ (CLUSTERS & TRACKS) ──────────────
-// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ КОЛЛИЗИЙ ПО ПРАВИЛУ КНИГИ (50% ПЕРЕКРЫТИЕ) ───
+// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
 function getBookingLayouts(bookings: Booking[]) {
   const layouts = new Map<string, any>();
-  const RIGHT_SPACE = 28; // Отступ справа для клика/создания нового занятия
+  const RIGHT_SPACE = 28; // Отступ справа
+  const GAP = 2; // Зазор
 
-  // 1. Группируем все занятия колонки по точному времени их начала
-  const groups = new Map<number, Booking[]>();
-  bookings.forEach(b => {
-    if (!groups.has(b.timeStart)) {
-      groups.set(b.timeStart, []);
+  // 🔥 ЗОЛОТОЕ ПРАВИЛО: 0.6 (35-40 минут) — безопасная зона шапки
+  const SAFE_HEADER_OFFSET = 0.6; 
+
+  if (bookings.length === 0) return layouts;
+
+  // 1. Сортируем: сначала по времени начала, затем длинные первыми
+  const sortedBookings = [...bookings].sort((a, b) => {
+    if (a.timeStart === b.timeStart) {
+      return (b.timeEnd - b.timeStart) - (a.timeEnd - a.timeStart);
     }
-    groups.get(b.timeStart)!.push(b);
+    return a.timeStart - b.timeStart;
   });
 
-  // 2. Внутри каждой группы временного старта сортируем занятия от длинных к коротким
-  groups.forEach((groupBookings) => {
-    groupBookings.sort((a, b) => {
-      const durA = a.timeEnd - a.timeStart;
-      const durB = b.timeEnd - b.timeStart;
-      return durB - durA; // Длинные уходят вперед (индекс 0)
-    });
+  // 2. ФИЗИЧЕСКИЕ КЛАСТЕРЫ (Собираем всех, кто пересекается по времени)
+  const clusters: Booking[][] = [];
+  let currentCluster: Booking[] = [];
+  let clusterEnd = -1;
+
+  sortedBookings.forEach(b => {
+    if (currentCluster.length === 0) {
+      currentCluster.push(b);
+      clusterEnd = b.timeEnd;
+    } else {
+      // Если начало текущего меньше конца группы — они пересекаются! (Без учета текста)
+      if (b.timeStart < clusterEnd) {
+        currentCluster.push(b);
+        clusterEnd = Math.max(clusterEnd, b.timeEnd);
+      } else {
+        clusters.push(currentCluster);
+        currentCluster = [b];
+        clusterEnd = b.timeEnd;
+      }
+    }
   });
+  if (currentCluster.length > 0) {
+    clusters.push(currentCluster);
+  }
 
-  // 3. Рассчитываем координаты (Одинаковая ширина, 50% налезание друг на друга)
-  groups.forEach((groupBookings) => {
-    const N = groupBookings.length;
-    
-    // Математика: чтобы все N карточек были одинаковой ширины и каждая следующая 
-    // сдвигалась ровно на 50% от этой ширины, не вылезая за пределы 100% колонки.
-    const widthFraction = 1 / (1 + 0.5 * (N - 1));
+  // 3. УПАКОВКА ПО ТРЕКАМ (Применяем Золотое правило)
+  clusters.forEach((cluster) => {
+    const tracks: Booking[][] = []; // Массив колонок (0, 1, 2...)
 
-    groupBookings.forEach((b, indexInGroup) => {
-      // Сдвиг вправо — 50% от расчётной доли ширины карточки
-      const leftFraction = indexInGroup * 0.5 * widthFraction;
-
-      const left = `calc((100% - ${RIGHT_SPACE}px) * ${leftFraction})`;
-      const width = `calc((100% - ${RIGHT_SPACE}px) * ${widthFraction})`;
+    cluster.forEach(b => {
+      let placed = false;
       
-      const verticalStep = 18;   // Мягкий шаг вниз для каскада
-      const topOffset = indexInGroup * verticalStep; 
+      // Ищем самую левую колонку (трек), куда можно безопасно положить карточку
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i];
+        const lastInTrack = track[track.length - 1]; // Последняя карточка в этом треке
 
-      // Логика z-index: занятие, начавшееся позже, перекроет предыдущее
+        // 🛑 ЗОЛОТОЕ ПРАВИЛО: Можно положить сюда, если мы не перекрываем шапку предыдущей!
+        if (b.timeStart >= lastInTrack.timeStart + SAFE_HEADER_OFFSET) {
+          track.push(b);
+          placed = true;
+          break; // Успешно положили, прерываем поиск
+        }
+      }
+
+      // Если все существующие треки в опасной зоне, создаем новую колонку правее
+      if (!placed) {
+        tracks.push([b]);
+      }
+    });
+
+    const N = tracks.length; // Итоговое количество колонок в этом кластере
+
+    // 4. РАСЧЕТ КООРДИНАТ НА ОСНОВЕ ТРЕКА
+    cluster.forEach((b) => {
+      // Находим, в какой колонке оказалась наша карточка
+      let trackIdx = 0;
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks[i].includes(b)) {
+          trackIdx = i;
+          break;
+        }
+      }
+
+      let left, width, isCascade;
+
+      if (N === 1) {
+        // Одна колонка
+        left = '0px';
+        width = `calc(100% - ${RIGHT_SPACE}px)`;
+        isCascade = false;
+      } 
+      else if (N === 2) {
+        // Две колонки
+        width = `calc((100% - ${RIGHT_SPACE}px - ${GAP}px) / 2)`;
+        // Если карточка вернулась в 0-й трек, она получит left: 0!
+        left = trackIdx === 0 
+          ? '0px' 
+          : `calc((100% - ${RIGHT_SPACE}px + ${GAP}px) / 2)`;
+        isCascade = false;
+      } 
+      else {
+        // Три и больше колонок — Лесенка (Книжка)
+        const widthFraction = 1 / (1 + 0.5 * (N - 1));
+        const leftFraction = trackIdx * 0.5 * widthFraction; // Вычисляем сдвиг по треку
+        
+        left = `calc((100% - ${RIGHT_SPACE}px) * ${leftFraction})`;
+        width = `calc((100% - ${RIGHT_SPACE}px) * ${widthFraction})`;
+        isCascade = true;
+      }
+
+      // Логика z-index: Занятие, которое позже, всегда сверху
       const timeBase = Math.round(b.timeStart * 4);
-      const zIndex = 10 + timeBase + indexInGroup; 
+      const zIndex = 10 + timeBase + trackIdx; 
 
       layouts.set(b.id, {
         left,
         width,
-        topOffset,
         zIndex,
         isTracked: N > 1,
-        isCascade: true,
+        isCascade: isCascade,
         totalTracks: N,
-        trackIdx: indexInGroup
+        trackIdx: trackIdx // Теперь это реальный индекс колонки (0, 1 или 2)
       });
     });
   });
@@ -1693,8 +1756,6 @@ export default function Journal() {
   const modalRef = useRef<HTMLDivElement>(null);   // ← добавить
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
-  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const [newFormPos, setNewFormPos] = useState({ x: 0, y: 0 });
   const today = new Date();
@@ -1719,6 +1780,18 @@ export default function Journal() {
   const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
   const popupRef = useRef<HTMLDivElement>(null);
 
+  // 🔥 ДОБАВЛЯЕМ СЮДА: Стейты для умного Drag & Drop
+  const [drag, setDrag] = useState<{
+    id: string;
+    startX: number;
+    startY: number;
+    deltaX: number;
+    deltaY: number;
+    offsetYInsideCard: number;
+    isDragging: boolean;
+  } | null>(null);
+  const [wasDragging, setWasDragging] = useState(false); // Защита от ложного клика
+
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [dateInputVal, setDateInputVal] = useState("");
 
@@ -1729,6 +1802,18 @@ export default function Journal() {
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   // 2. ДАЛЕЕ ИДУТ УТИЛИТЫ И ФУНКЦИИ
+
+  
+  // ── Колонки по режиму ──
+  const columns = viewMode === 'trainers'
+    ? TRAINERS.filter(t => activeTrainers.includes(t.id))
+    : HALLS.filter(h => activeHalls.includes(h));
+
+  // ── Фильтрованные записи ──
+  const filteredBookings = bookings.filter(b => {
+    if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
+    return activeHalls.includes(b.hall);
+  });
 
   const MODAL_W = 580;
   const MODAL_H = 480;
@@ -1795,6 +1880,85 @@ export default function Journal() {
 
     setNewFormPos({ x: finalX, y: finalY });
   };
+
+  // 🔥 ГЛОБАЛЬНЫЙ СЛУШАТЕЛЬ ДЛЯ ПРЕМИАЛЬНОГО DRAG & DROP
+  useEffect(() => {
+    if (!drag) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaX = e.clientX - drag.startX;
+      const deltaY = e.clientY - drag.startY;
+      
+      // Если мышка сдвинулась больше чем на 3 пикселя — значит это тяга, а не клик
+      if (!drag.isDragging && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
+         setDrag(prev => prev ? { ...prev, isDragging: true, deltaX, deltaY } : null);
+         setPopupBooking(null); // Моментально закрываем окно, если оно было открыто
+      } else if (drag.isDragging) {
+         setDrag(prev => prev ? { ...prev, deltaX, deltaY } : null);
+      }
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (drag.isDragging) {
+        // Мы отпустили карточку. Ищем под ней прозрачную ячейку расписания!
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        const slot = target?.closest('.j-empty-slot');
+        
+        if (slot) {
+           const newTi = Number(slot.getAttribute('data-ti'));
+           const newCi = Number(slot.getAttribute('data-ci'));
+           
+           // Математика: вычисляем позицию с точностью до 15 минут
+           const rect = slot.getBoundingClientRect();
+           const cardTopY = e.clientY - drag.offsetYInsideCard;
+           const offsetFromSlotTop = cardTopY - rect.top;
+           let fraction = Math.round(offsetFromSlotTop / 18) * 0.25; // 15 мин = 18px
+           
+           let newTimeStart = newTi + fraction;
+           if (newTimeStart < 0) newTimeStart = 0; // Не даем улететь выше 07:00
+           
+           // Обновляем базу данных
+           setBookings(prev => prev.map(b => {
+             if (b.id !== drag.id) return b;
+             const duration = b.timeEnd - b.timeStart;
+             
+             let finalStart = newTimeStart;
+             let finalEnd = newTimeStart + duration;
+             
+             if (finalEnd > 16) { // Не даем провалиться ниже 23:00
+                finalEnd = 16;
+                finalStart = 16 - duration;
+             }
+             
+             const isTrainerMode = viewMode === 'trainers';
+             const newColVal = columns[newCi];
+             
+             return {
+               ...b,
+               timeStart: finalStart,
+               timeEnd: finalEnd,
+               trainer: isTrainerMode ? (newColVal as any).id : b.trainer,
+               hall: !isTrainerMode ? (newColVal as string) : b.hall,
+               color: isTrainerMode ? (newColVal as any).color : b.color
+             };
+           }));
+           showToast('Занятие перенесено');
+        }
+        
+        // Ставим блок на долю секунды, чтобы при отпускании не выскочило окно
+        setWasDragging(true);
+        setTimeout(() => setWasDragging(false), 50);
+      }
+      setDrag(null);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+       document.removeEventListener('mousemove', handleMouseMove);
+       document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [drag, viewMode, columns]);
 
   // Динамическое перепозиционирование модалки
   useEffect(() => {
@@ -1867,13 +2031,9 @@ export default function Journal() {
     trainerIdx: number,
     timeIdx: number,
   ) => {
-    const relevant = bookings.filter(b => b.trainer === trainerIdx);
 
     const blockStart = timeIdx;        // начало блока (целый час, например 11)
     const blockEnd   = timeIdx + 1;    // конец блока (12)
-
-    // Ищем занятия, которые пересекаются с этим блоком
-    const overlap = relevant.filter(b => b.timeStart < blockEnd && b.timeEnd > blockStart);
 
     setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd });
     setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' });
@@ -1900,10 +2060,17 @@ export default function Journal() {
   // Закрытие popup при клике вне
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        setPopupBooking(null);
-        setSelectedCardId(null);
-      }
+      const target = e.target as Element;
+      
+      // 1. Если кликнули внутри попапа (по кнопке) — не закрываем, пусть кнопка отработает
+      if (popupRef.current && popupRef.current.contains(target)) return;
+
+      // 2. Если кликнули по любой карточке занятия — игнорируем! 
+      // Карточка сама решит: открыться ей или закрыться (см. Шаг 2)
+      if (target.closest('.booking-card')) return;
+
+      // 3. В остальных случаях (клик по фону, пустой сетке, тулбару) — закрываем окно
+      setPopupBooking(null);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -1986,17 +2153,6 @@ export default function Journal() {
     );
   };
 
-  // ── Колонки по режиму ──
-  const columns = viewMode === 'trainers'
-    ? TRAINERS.filter(t => activeTrainers.includes(t.id))
-    : HALLS.filter(h => activeHalls.includes(h));
-
-  // ── Фильтрованные записи ──
-  const filteredBookings = bookings.filter(b => {
-    if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
-    return activeHalls.includes(b.hall);
-  });
-
   // ── Открыть popup записи ──
   const openBookingPopup = (e: React.MouseEvent, booking: Booking) => {
     e.stopPropagation();
@@ -2073,35 +2229,66 @@ export default function Journal() {
   // ── Рендер карточки записи (Обновленный) ──
   const renderBookingCard = (b: Booking, layout: any) => {
     const startOffset = (b.timeStart - Math.floor(b.timeStart)) * 72;
-    const top = startOffset + layout.topOffset; 
-    const height = (b.timeEnd - b.timeStart) * 72 - 1; 
+    const top = startOffset; 
+    const height = (b.timeEnd - b.timeStart) * 72 - 1;
     
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
 
     // Проверяем, выделена ли эта карточка прямо сейчас
-    const isSelected = selectedCardId === b.id;
+    const isSelected = popupBooking?.id === b.id;
+    const isDragging = drag?.id === b.id && drag.isDragging;
 
     return (
       <div
         key={b.id}
-        // Добавляем класс is-selected
-        className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''}`}
-        onClick={e => {
-          e.stopPropagation(); // 🔥 БЛОКИРУЕТ КЛИК ПО ЯЧЕЙКЕ (не дает создать новое занятие)
-          setSelectedCardId(b.id); // Выделяем карточку
-          openBookingPopup(e, b);  // Открываем попап с деталями
+        // Добавляем класс is-dragging
+        className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
+        
+        // 🔥 УМНЫЙ ЗАХВАТ МЫШЬЮ
+        onMouseDown={e => {
+          e.stopPropagation(); 
+          // Запоминаем, за какое место карточки ухватился пользователь
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          const offsetYInsideCard = e.clientY - rect.top;
+          
+          setDrag({
+             id: b.id,
+             startX: e.clientX,
+             startY: e.clientY,
+             deltaX: 0,
+             deltaY: 0,
+             offsetYInsideCard,
+             isDragging: false
+          });
         }}
+
+        // 🔥 КЛИК С ЗАЩИТОЙ
+        onClick={e => {
+          e.stopPropagation();
+          // Если мы только что отпустили карточку после перетаскивания — игнорируем клик!
+          if (wasDragging) return; 
+
+          if (popupBooking?.id === b.id) {
+            setPopupBooking(null);
+          } else {
+            openBookingPopup(e, b);
+          }
+        }}
+        
         style={{
           top, height,
           left: layout.left,
           width: layout.width,
-          zIndex: isSelected ? 999 : layout.zIndex, // При клике поднимаем на самый верх
-          // Уменьшили непрозрачность фона до 12, чтобы жирный контур читался лучше
+          zIndex: isSelected ? 999 : layout.zIndex, 
           background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
-          border: `2px solid ${b.color}`, // 🔥 ЖИРНЫЙ, ЯРКИЙ БОРДЕР (100% непрозрачность)
+          border: `2px solid ${b.color}`,
           color: b.color,
           '--card-color': b.color,
+          // 🔥 ПРИМЕНЯЕМ ФИЗИКУ: Сдвигаем карточку процессором, не ломая верстку
+          ...(isDragging ? {
+             transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
+          } : {})
         } as React.CSSProperties}
       >
         <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
@@ -2354,23 +2541,29 @@ export default function Journal() {
                       // 🔥 Умный расчет точного старта в текущем часе
                       const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
 
-                      const isHoldingHoveredCard = hourBookings.some(b => b.id === hoveredCardId);
-
                       return (
                         <div
                           key={ci}
+                          data-ti={ti} // 🔥 ВАЖНО для координат времени
+                          data-ci={ci} // 🔥 ВАЖНО для колонки
                           className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook ? 'is-targeted' : ''}`}
-                          onMouseEnter={() => { if (canBook && !showNewForm) setHoveredSlot(`${ti}-${ci}`); }}
+                          onMouseEnter={() => { 
+                            if (canBook && !showNewForm && !popupBooking) setHoveredSlot(`${ti}-${ci}`); 
+                          }}
                           onMouseLeave={() => setHoveredSlot(null)}
+                          
                           style={{ 
                             borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
                             borderRadius: '10px',
-                            // 🔥 МАГИЯ: Если внутри этой ячейки есть карточка под мышкой, 
-                            // мы поднимаем ВСЮ ячейку над остальной сеткой!
-                            zIndex: isHoldingHoveredCard ? 999 : 1,
+                            zIndex: 'auto',
                           }}
-                          onClick={(e) => {
-                            if (showNewForm) return;
+                          onMouseDown={(e) => {
+                            // Если окно УЖЕ открыто, мы просто прерываем функцию.
+                            // Обрати внимание: мы НЕ делаем e.stopPropagation() здесь!
+                            // Это позволит клику "просочиться" дальше к фону и закрыть окно.
+                            if (showNewForm || popupBooking) return; 
+                            
+                            // А вот если окон нет — блокируем всплытие и открываем предварительное занятие
                             e.stopPropagation();
                             const trainerIdx = isTrainerMode ? trainer!.id : 0;
                             openNewSlot(trainerIdx, ti);
@@ -2392,23 +2585,24 @@ export default function Journal() {
                                 borderRadius: '10px',
                                 boxSizing: 'border-box',
                                 pointerEvents: 'none',
-                                zIndex: 15,
+                                
+                                // 🔥 ФИКС 1: Высший приоритет. Теперь превью железно поверх всех карточек
+                                zIndex: 9999, 
                                 overflow: 'hidden',
                                 animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
-                                // Стекло
-                                background: 'rgba(255,255,255,0.55)',
-                                backdropFilter: 'blur(16px)',
-                                WebkitBackdropFilter: 'blur(16px)',
-                                // Многослойная тень
+                                
+                                // 🔥 ФИКС 2: 100% плотный белый фон. Сзади ничего не будет видно
+                                background: '#FFFFFF', 
+                                
+                                // Усиленная тень, чтобы визуально оторвать блок от фона
                                 boxShadow: `
-                                  0 0 0 1.5px rgba(249,160,139,0.55),
-                                  0 8px 32px -4px rgba(249,160,139,0.28),
-                                  0 2px 8px rgba(249,160,139,0.12),
-                                  inset 0 1px 0 rgba(255,255,255,0.9)
+                                  0 0 0 1.5px rgba(249,160,139,0.7),
+                                  0 16px 40px -4px rgba(26,26,26,0.15),
+                                  0 4px 12px rgba(249,160,139,0.2)
                                 `,
                               }}
                             >
-                              {/* Живой градиентный фон — медленно пульсирует */}
+                              {/* Живой градиентный фон — медленно пульсирует поверх белого */}
                               <div style={{
                                 position: 'absolute', inset: 0,
                                 background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
