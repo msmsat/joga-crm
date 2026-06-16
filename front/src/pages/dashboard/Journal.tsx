@@ -535,31 +535,21 @@ const STYLES = `
   }
 
   /* ── КАРТОЧКА ЗАПИСИ ── */
-  /* ── ГЛАВНЫЙ И ЕДИНСТВЕННЫЙ КЛАСС КАРТОЧКИ ── */
   .booking-card {
     position: absolute;
+    left: 0px; right: 28px;
     border-radius: 10px;
     padding: 8px 10px;
     cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
     overflow: hidden;
-    box-shadow: 0 0 0 2px var(--bg-card);
-
-    /* 🔥 ПРОФЕССИОНАЛЬНЫЙ ФИКС БАГА С ИСЧЕЗНОВЕНИЕМ:
-       Строго перечисляем только те свойства, которые меняют геометрию.
-       Мы специально ИСКЛЮЧИЛИ 'background-color' и 'z-index' из анимации.
-       Теперь размеры и позиция анимируются невероятно плавно, 
-       а цвет и слой переключаются мгновенно, не давая браузеру сделать карточку прозрачной! 
-    */
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                box-shadow 0.35s ease;
+    z-index: 2;
   }
   .booking-card:hover {
-    transform: scale(1.01) translateY(-1px);
-    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
+    transform: scale(1.02) translateY(-1px);
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(26,26,26,0.12);
   }
-
   .booking-card.pending { opacity: 0.75; }
   .booking-card.pending::after {
     content: '';
@@ -937,6 +927,18 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(249,160,139,0.2);
   }
+
+  /* ── КАРТОЧКА ЗАПИСИ ── */
+  .booking-card {
+    position: absolute;
+    left: 0px; right: 30px;
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34,1.5,0.64,1);
+    overflow: hidden;
+    z-index: 2;
+  }
   .booking-card:hover {
     transform: scale(1.01) translateY(-1px);
     z-index: 10;
@@ -989,8 +991,7 @@ const STYLES = `
   }
   .mc-day.today.has-event::after,
   .mc-day.selected.has-event::after { 
-    background: white; 
-  }
+    background: white;
   }
   /* =========================================================
      💎 ПРЕМИАЛЬНАЯ МОДАЛКА (НОВОЕ ЗАНЯТИЕ) 💎
@@ -1360,6 +1361,7 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(249,160,139,0.2);
     z-index: 1;
+  }
   .j-empty-slot {
     height: 72px;
     min-width: 170px;
@@ -1465,6 +1467,19 @@ const STYLES = `
     0%, 100% { transform: scale(1);   opacity: 1; }
     50%       { transform: scale(1.5); opacity: 0.5; }
   }
+  /* ── ИЗМЕНЕННАЯ КАРТОЧКА ЗАПИСИ (Сценарий 1 и 2) ── */
+  .booking-card {
+    position: absolute;
+    /* Убрано left и right, теперь они управляются через JS */
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    /* Пружинистая анимация как в iOS */
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+    /* Визуальный "нож", разрезающий слипшиеся карточки цветом фона */
+    box-shadow: 0 0 0 2px var(--bg-card); 
+  }
 
   .booking-card .b-title {
     white-space: nowrap;
@@ -1507,6 +1522,11 @@ const STYLES = `
   .booking-card.is-tracked:hover .b-title {
     white-space: normal; /* Позволяем тексту переноситься */
   }
+
+  /* ── СЦЕНАРИЙ 4: КАСКАД (Массовая давка) ── */
+  .booking-card.is-cascade {
+    box-shadow: -4px 4px 12px rgba(0,0,0,0.08), 0 0 0 2px var(--bg-card);
+  }
   .booking-card.is-cascade:hover {
     transform: translateX(12px) translateY(-4px); /* Сдвигаем верхнюю карту чуть в сторону при изучении */
     z-index: 60 !important;
@@ -1515,6 +1535,7 @@ const STYLES = `
   .booking-card.is-cascade {
     /* Мягкая тень для отделения слоев друг от друга */
     box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1.5px var(--bg-card);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   
   /* Возвращаем фирменный полупрозрачный оттенок поверх белой базы, 
@@ -1601,147 +1622,462 @@ const STYLES = `
   .booking-card.is-tracked:not(.is-selected) .b-progress {
     opacity: 0; 
   }
-  /* Изменяем курсор, чтобы было понятно, что можно тянуть */
-  .booking-card {
-    cursor: grab;
+  /* =========================================================
+     💎 ПРЕМИАЛЬНЫЙ POPUP КАРТОЧКИ ЗАПИСИ (SOFT TECH STYLE) 💎
+     ========================================================= */
+  .booking-popup {
+    position: fixed;
+    /* Жемчужно-алебастровый фон с идеальным стеклом */
+    background: rgba(253, 252, 251, 0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.6);
+    /* Парящая мягкая тень + внутренний блик света */
+    box-shadow: 0 32px 80px -16px rgba(26,26,26,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
+    width: 360px; /* Увеличили для "воздуха" */
+    z-index: 1000;
+    overflow: hidden;
+    animation: popup-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex;
+    flex-direction: column;
   }
-  .booking-card:active {
-    cursor: grabbing;
+  
+  @keyframes popup-in {
+    from { opacity: 0; transform: scale(0.92) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  
+  /* Убрали жесткие линии, добавили пространство */
+  .bp-header { padding: 24px 24px 16px; }
+  .bp-body { padding: 0 24px 16px; display: flex; flex-direction: column; gap: 16px; }
+  
+  .bp-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 14px; color: var(--onyx); font-weight: 600;
   }
 
-  /* 💎 ПРЕМИАЛЬНЫЙ ЭФФЕКТ В ПОЛЕТЕ 💎 */
-  .booking-card.is-dragging {
-    transition: none !important; /* Отключаем плавность, чтобы карточка клеилась к мыши */
-    z-index: 9999 !important; /* Парит над всем приложением */
-    opacity: 0.9;
-    box-shadow: 0 32px 80px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
-    cursor: grabbing !important;
-    pointer-events: none !important; /* ПРОПУСКАЕМ КЛИК СКВОЗЬ КАРТОЧКУ К СЕТКЕ */
+  /* Иконки теперь живут в аккуратных мягких контейнерах */
+  .bp-icon-box {
+    width: 36px; height: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(26,26,26,0.03); color: var(--muted);
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(26,26,26,0.02);
+  }
+  
+  /* Сетка кнопок */
+  .bp-actions {
+    display: grid;
+    grid-template-columns: 1fr 44px 44px; /* Увеличили зоны тапа */
+    gap: 12px; 
+    padding: 16px 24px 24px;
+  }
+  
+  .bp-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 14px; font-size: 14px; font-weight: 700; font-family: var(--font);
+    cursor: pointer; border: none; outline: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap; height: 44px;
+  }
+  
+  /* Персиковая акцентная кнопка с мягким свечением */
+  .bp-btn.primary { 
+    background: var(--peach); color: white; 
+    box-shadow: 0 8px 24px -6px rgba(249,160,139,0.5);
+  }
+  .bp-btn.primary:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 12px 32px -6px rgba(249,160,139,0.6);
+  }
+  .bp-btn.primary:active { transform: translateY(0) scale(0.96); }
+
+  /* Вторичные кнопки (Clean style) */
+  .bp-btn.ghost { 
+    background: #FFFFFF; color: var(--onyx); 
+    box-shadow: 0 2px 8px rgba(26,26,26,0.03), 0 0 0 1px var(--border);
+  }
+  .bp-btn.ghost:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(26,26,26,0.08), 0 0 0 1.5px rgba(26,26,26,0.1);
+  }
+  .bp-btn.ghost:active { transform: translateY(0) scale(0.92); }
+
+  /* Опасное действие (Пыльная роза) */
+  .bp-btn.danger { 
+    background: rgba(216,140,154,0.08); color: #D88C9A; 
+  }
+  .bp-btn.danger:hover { 
+    background: #FFF9FA; color: #c05050;
+    box-shadow: 0 0 0 1.5px rgba(216,140,154,0.3);
+    transform: translateY(-2px);
+  }
+  .bp-btn.danger:active { transform: translateY(0) scale(0.92); }
+  /* ── ИДЕАЛЬНАЯ СЕТКА КНОПОК ── */
+  .bp-actions {
+    display: flex; /* Перешли с Grid на гибкий Flex */
+    align-items: center;
+    gap: 10px; 
+    padding: 16px 24px 24px;
+    animation: fade-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards;
+  }
+  
+  .bp-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 14px; font-size: 13.5px; font-weight: 700; font-family: var(--font);
+    cursor: pointer; border: none; outline: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap; height: 44px;
+    position: relative; overflow: hidden;
+  }
+
+  /* Текстовые кнопки делят пространство (1.2 дает чуть больше места первой кнопке) */
+  .bp-btn.text-btn { flex: 1.2; }
+  .bp-btn.text-btn.ghost { flex: 1; }
+
+  /* Кнопка-квадрат (Удалить) */
+  .bp-btn.icon-only {
+    flex: 0 0 44px; width: 44px; padding: 0;
+  }
+  
+  /* Персиковая акцентная кнопка */
+  .bp-btn.primary { 
+    background: var(--peach); color: white; 
+    box-shadow: 0 8px 24px -6px rgba(249,160,139,0.5);
+  }
+  /* 💎 Эффект пробегающего блика света (Shine) */
+  .bp-btn.primary::after {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-20deg); transition: 0s;
+  }
+  .bp-btn.primary:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 12px 32px -6px rgba(249,160,139,0.6);
+  }
+  .bp-btn.primary:hover::after { left: 150%; transition: 0.6s ease-in-out; }
+  .bp-btn.primary:active { transform: translateY(0) scale(0.96); }
+
+  /* Вторичная кнопка */
+  .bp-btn.ghost { 
+    background: #FFFFFF; color: var(--onyx); 
+    box-shadow: 0 2px 8px rgba(26,26,26,0.03), 0 0 0 1px rgba(26,26,26,0.06);
+  }
+  .bp-btn.ghost:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(26,26,26,0.08), 0 0 0 1.5px rgba(26,26,26,0.1);
+  }
+  .bp-btn.ghost:active { transform: translateY(0) scale(0.96); }
+
+  /* Опасное действие (Пыльная роза) */
+  .bp-btn.danger { 
+    background: rgba(216,140,154,0.08); color: #D88C9A; 
+  }
+  .bp-btn.danger:hover { 
+    background: #FFF9FA; color: #c05050;
+    box-shadow: 0 0 0 1.5px rgba(216,140,154,0.3);
+    transform: translateY(-2px);
+  }
+  .bp-btn.danger:active { transform: translateY(0) scale(0.92); }
+
+  /* 💎 Микро-анимация тряски корзины */
+  @keyframes shake-trash {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+  .bp-btn.danger:hover svg { animation: shake-trash 0.4s ease-in-out; }
+
+  /* 💎 Каскадная анимация появления контента */
+  .bp-header { animation: fade-slide-down 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+  .bp-body { animation: fade-slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s backwards; }
+  
+  @keyframes fade-slide-down {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-slide-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* =========================================================
+     💎 ОБНОВЛЕННЫЕ КНОПКИ ДЕЙСТВИЙ (PREMIUM MINIMALISM) 💎
+     ========================================================= */
+  .bp-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Аккуратный отступ между кнопками */
+    padding: 16px 24px 24px;
+    background: transparent;
+  }
+  
+  .bp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 44px;
+    border-radius: 12px; /* Благородное скругление, не "мыльное" */
+    font-size: 13.5px;
+    font-weight: 600; /* Убрали излишнюю жирность текста */
+    font-family: var(--font);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    /* Упругая, плавная физика в стиле iOS */
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+
+  /* Текстовые кнопки делят пространство поровну, текст больше не растягивается */
+  .bp-btn.text-btn {
+    flex: 1;
+    padding: 0 16px;
+  }
+
+  /* Кнопка-квадрат (Удалить) — строго фиксированный размер */
+  .bp-btn.icon-only {
+    flex: 0 0 44px;
+    width: 44px;
+    padding: 0;
+  }
+  
+  /* ── Акцентная кнопка (Добавить) ── */
+  .bp-btn.primary { 
+    background: var(--peach); 
+    color: #FFFFFF; 
+    box-shadow: 0 4px 12px rgba(249,160,139,0.25); /* Мягкое свечение */
+  }
+  .bp-btn.primary:hover { 
+    transform: translateY(-1px); /* Легкое парение, а не прыжок */
+    box-shadow: 0 6px 16px rgba(249,160,139,0.35);
+  }
+  .bp-btn.primary:active { 
+    transform: scale(0.96); /* Дорогое "вдавливание" */
+    box-shadow: 0 2px 6px rgba(249,160,139,0.15); 
+  }
+
+  /* ── Вторичная кнопка (Изменить) — Clean UI ── */
+  .bp-btn.ghost { 
+    background: rgba(26, 26, 26, 0.04); 
+    color: var(--onyx); 
+  }
+  .bp-btn.ghost:hover { 
+    background: rgba(26, 26, 26, 0.08);
+    transform: translateY(-1px);
+  }
+  .bp-btn.ghost:active { 
+    transform: scale(0.96); 
+    background: rgba(26, 26, 26, 0.1);
+  }
+
+  /* ── Опасное действие (Удалить) — Пыльная роза ── */
+  .bp-btn.danger { 
+    background: transparent; 
+    color: #D88C9A; 
+    border: 1px solid rgba(216,140,154,0.3); /* Очерченный контур по умолчанию */
+  }
+  .bp-btn.danger:hover { 
+    background: rgba(216,140,154,0.1); 
+    color: #c05050;
+    border-color: transparent;
+    transform: translateY(-1px);
+  }
+  .bp-btn.danger:active { 
+    transform: scale(0.92); /* Чуть более глубокое прожатие для маленькой кнопки */
+    background: rgba(216,140,154,0.15); 
+  }
+  /* =========================================================
+     💎 ФИНАЛЬНЫЙ FIX ДЛЯ КНОПОК ДЕЙСТВИЙ (БЕЗ ДУБЛИКАТОВ) 💎
+     ========================================================= */
+  
+  /* Перебиваем старую сетку: фиксируем отступы */
+  .booking-popup .bp-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 16px 24px 24px !important;
+  }
+  
+  /* Базовый стиль кнопок: убираем flex: 1 по умолчанию, чтобы текст не тянулся */
+  .booking-popup .bp-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 44px !important;
+    border-radius: 12px !important; /* Премиальное скругление */
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    font-family: var(--font) !important;
+    cursor: pointer !important;
+    border: none !important;
+    outline: none !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    white-space: nowrap !important;
+    flex: none !important; /* Сбрасываем бездумное растяжение */
+  }
+
+  /* Текстовые кнопки делят место поровну, но текст внутри аккуратно центрируется */
+  .booking-popup .bp-btn.text-btn {
+    flex: 1 !important;
+    padding: 0 16px !important;
+  }
+
+  /* Кнопка удаления (мусорка) — становится идеальным строгим квадратом */
+  .booking-popup .bp-btn.icon-only {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    padding: 0 !important;
+  }
+  
+  /* ── Эффекты для Главной кнопки (Добавить) ── */
+  .booking-popup .bp-btn.primary { 
+    background: var(--peach) !important; 
+    color: #FFFFFF !important; 
+    box-shadow: 0 4px 12px rgba(249,160,139,0.25) !important;
+  }
+  .booking-popup .bp-btn.primary:hover { 
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(249,160,139,0.35) !important;
+  }
+  .booking-popup .bp-btn.primary:active { 
+    transform: scale(0.96) !important; /* Упругий премиальный клик */
+    box-shadow: 0 2px 6px rgba(249,160,139,0.15) !important; 
+  }
+
+  /* ── Эффекты для кнопки Изменить ── */
+  .booking-popup .bp-btn.ghost { 
+    background: rgba(26, 26, 26, 0.04) !important; 
+    color: var(--onyx) !important; 
+    box-shadow: none !important;
+  }
+  .booking-popup .bp-btn.ghost:hover { 
+    background: rgba(26, 26, 26, 0.08) !important;
+    transform: translateY(-1px) !important;
+  }
+  .booking-popup .bp-btn.ghost:active { 
+    transform: scale(0.96) !important; 
+  }
+
+  /* ── Эффекты для Мусорки (Пыльная роза) ── */
+  .booking-popup .bp-btn.danger { 
+    background: transparent !important; 
+    color: #D88C9A !important; 
+    border: 1px solid rgba(216,140,154,0.3) !important;
+    box-shadow: none !important;
+  }
+  .booking-popup .bp-btn.danger:hover { 
+    background: rgba(216,140,154,0.1) !important; 
+    border-color: transparent !important;
+    color: #c05050 !important;
+    transform: translateY(-1px) !important;
+  }
+  .booking-popup .bp-btn.danger:active { 
+    transform: scale(0.92) !important; 
+  }
+  /* =========================================================
+     🚀 ULTRA-PREMIUM HOVER EFFECTS (MICRO-INTERACTIONS) 🚀
+     ========================================================= */
+
+  /* Задаем кнопкам благородную физику движения */
+  .booking-popup .bp-actions .bp-btn {
+    /* Кастомная кривая анимации (с легким пружинящим эффектом на финише) */
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                background-color 0.25s ease, 
+                box-shadow 0.35s ease, 
+                border-color 0.25s ease,
+                color 0.25s ease !important;
+  }
+
+  /* 🟠 КНОПКА «ДОБАВИТЬ» (Primary) — Эффект объемного персикового свечения */
+  .booking-popup .bp-actions .bp-btn.primary:hover {
+    transform: translateY(-3px) scale(1.02) !important; /* Кнопка изящно всплывает */
+    background-color: #FCAE91 !important; /* Персик становится сочнее */
+    box-shadow: 0 12px 28px rgba(252, 174, 145, 0.45) !important; /* Мягкий дорогой неон */
+  }
+
+  /* ⚪ КНОПКА «ИЗМЕНИТЬ» (Ghost) — Эффект левитирующего глянца */
+  .booking-popup .bp-actions .bp-btn.ghost:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    background: #FFFFFF !important; /* Проявляется чистый белый цвет карточки */
+    color: #1A1A1A !important; /* Текст становится глубже */
+    box-shadow: 0 12px 24px rgba(26, 26, 26, 0.06) !important; /* Воздушная незаметная тень */
+  }
+
+  /* 🔴 КНОПКА «УДАЛИТЬ» (Danger) — Эффект благородного предупреждения */
+  .booking-popup .bp-actions .bp-btn.danger:hover {
+    transform: translateY(-3px) scale(1.05) !important; /* Маленький квадрат тянется чуть активнее */
+    background: #D88C9A !important; /* Мягко заливается пыльной розой */
+    color: #FFFFFF !important; /* Иконка мусорки вспыхивает белым */
+    border-color: transparent !important;
+    box-shadow: 0 12px 24px rgba(216, 140, 154, 0.4) !important; /* Розовое свечение */
+  }
+
+  /* 🎯 ЭФФЕКТ НАЖАТИЯ (Active State) — Единый упругий клик для всех кнопок */
+  .booking-popup .bp-actions .bp-btn:active {
+    transform: translateY(1px) scale(0.96) !important; /* Физическое вдавливание в экран */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04) !important; /* Тень мгновенно исчезает */
+    transition: transform 0.08s ease !important; /* Супер-быстрый тактильный отклик */
   }
 `;
 
-// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
+// ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ КОЛЛИЗИЙ ПО ПРАВИЛУ КНИГИ (50% ПЕРЕКРЫТИЕ) ───
 function getBookingLayouts(bookings: Booking[]) {
   const layouts = new Map<string, any>();
-  const RIGHT_SPACE = 28; // Отступ справа
-  const GAP = 2; // Зазор
+  const RIGHT_SPACE = 28; // Отступ справа для клика/создания нового занятия
 
-  // 🔥 ЗОЛОТОЕ ПРАВИЛО: 0.6 (35-40 минут) — безопасная зона шапки
-  const SAFE_HEADER_OFFSET = 0.6; 
-
-  if (bookings.length === 0) return layouts;
-
-  // 1. Сортируем: сначала по времени начала, затем длинные первыми
-  const sortedBookings = [...bookings].sort((a, b) => {
-    if (a.timeStart === b.timeStart) {
-      return (b.timeEnd - b.timeStart) - (a.timeEnd - a.timeStart);
+  // 1. Группируем все занятия колонки по точному времени их начала
+  const groups = new Map<number, Booking[]>();
+  bookings.forEach(b => {
+    if (!groups.has(b.timeStart)) {
+      groups.set(b.timeStart, []);
     }
-    return a.timeStart - b.timeStart;
+    groups.get(b.timeStart)!.push(b);
   });
 
-  // 2. ФИЗИЧЕСКИЕ КЛАСТЕРЫ (Собираем всех, кто пересекается по времени)
-  const clusters: Booking[][] = [];
-  let currentCluster: Booking[] = [];
-  let clusterEnd = -1;
-
-  sortedBookings.forEach(b => {
-    if (currentCluster.length === 0) {
-      currentCluster.push(b);
-      clusterEnd = b.timeEnd;
-    } else {
-      // Если начало текущего меньше конца группы — они пересекаются! (Без учета текста)
-      if (b.timeStart < clusterEnd) {
-        currentCluster.push(b);
-        clusterEnd = Math.max(clusterEnd, b.timeEnd);
-      } else {
-        clusters.push(currentCluster);
-        currentCluster = [b];
-        clusterEnd = b.timeEnd;
-      }
-    }
-  });
-  if (currentCluster.length > 0) {
-    clusters.push(currentCluster);
-  }
-
-  // 3. УПАКОВКА ПО ТРЕКАМ (Применяем Золотое правило)
-  clusters.forEach((cluster) => {
-    const tracks: Booking[][] = []; // Массив колонок (0, 1, 2...)
-
-    cluster.forEach(b => {
-      let placed = false;
-      
-      // Ищем самую левую колонку (трек), куда можно безопасно положить карточку
-      for (let i = 0; i < tracks.length; i++) {
-        const track = tracks[i];
-        const lastInTrack = track[track.length - 1]; // Последняя карточка в этом треке
-
-        // 🛑 ЗОЛОТОЕ ПРАВИЛО: Можно положить сюда, если мы не перекрываем шапку предыдущей!
-        if (b.timeStart >= lastInTrack.timeStart + SAFE_HEADER_OFFSET) {
-          track.push(b);
-          placed = true;
-          break; // Успешно положили, прерываем поиск
-        }
-      }
-
-      // Если все существующие треки в опасной зоне, создаем новую колонку правее
-      if (!placed) {
-        tracks.push([b]);
-      }
+  // 2. Внутри каждой группы временного старта сортируем занятия от длинных к коротким
+  groups.forEach((groupBookings) => {
+    groupBookings.sort((a, b) => {
+      const durA = a.timeEnd - a.timeStart;
+      const durB = b.timeEnd - b.timeStart;
+      return durB - durA; // Длинные уходят вперед (индекс 0)
     });
+  });
 
-    const N = tracks.length; // Итоговое количество колонок в этом кластере
+  // 3. Рассчитываем координаты (Одинаковая ширина, 50% налезание друг на друга)
+  groups.forEach((groupBookings) => {
+    const N = groupBookings.length;
+    
+    // Математика: чтобы все N карточек были одинаковой ширины и каждая следующая 
+    // сдвигалась ровно на 50% от этой ширины, не вылезая за пределы 100% колонки.
+    const widthFraction = 1 / (1 + 0.5 * (N - 1));
 
-    // 4. РАСЧЕТ КООРДИНАТ НА ОСНОВЕ ТРЕКА
-    cluster.forEach((b) => {
-      // Находим, в какой колонке оказалась наша карточка
-      let trackIdx = 0;
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].includes(b)) {
-          trackIdx = i;
-          break;
-        }
-      }
+    groupBookings.forEach((b, indexInGroup) => {
+      // Сдвиг вправо — 50% от расчётной доли ширины карточки
+      const leftFraction = indexInGroup * 0.5 * widthFraction;
 
-      let left, width, isCascade;
+      const left = `calc((100% - ${RIGHT_SPACE}px) * ${leftFraction})`;
+      const width = `calc((100% - ${RIGHT_SPACE}px) * ${widthFraction})`;
+      
+      const verticalStep = 18;   // Мягкий шаг вниз для каскада
+      const topOffset = indexInGroup * verticalStep; 
 
-      if (N === 1) {
-        // Одна колонка
-        left = '0px';
-        width = `calc(100% - ${RIGHT_SPACE}px)`;
-        isCascade = false;
-      } 
-      else if (N === 2) {
-        // Две колонки
-        width = `calc((100% - ${RIGHT_SPACE}px - ${GAP}px) / 2)`;
-        // Если карточка вернулась в 0-й трек, она получит left: 0!
-        left = trackIdx === 0 
-          ? '0px' 
-          : `calc((100% - ${RIGHT_SPACE}px + ${GAP}px) / 2)`;
-        isCascade = false;
-      } 
-      else {
-        // Три и больше колонок — Лесенка (Книжка)
-        const widthFraction = 1 / (1 + 0.5 * (N - 1));
-        const leftFraction = trackIdx * 0.5 * widthFraction; // Вычисляем сдвиг по треку
-        
-        left = `calc((100% - ${RIGHT_SPACE}px) * ${leftFraction})`;
-        width = `calc((100% - ${RIGHT_SPACE}px) * ${widthFraction})`;
-        isCascade = true;
-      }
-
-      // Логика z-index: Занятие, которое позже, всегда сверху
+      // Логика z-index: занятие, начавшееся позже, перекроет предыдущее
       const timeBase = Math.round(b.timeStart * 4);
-      const zIndex = 10 + timeBase + trackIdx; 
+      const zIndex = 10 + timeBase + indexInGroup; 
 
       layouts.set(b.id, {
         left,
         width,
+        topOffset,
         zIndex,
         isTracked: N > 1,
-        isCascade: isCascade,
+        isCascade: true,
         totalTracks: N,
-        trackIdx: trackIdx // Теперь это реальный индекс колонки (0, 1 или 2)
+        trackIdx: indexInGroup
       });
     });
   });
@@ -1756,6 +2092,8 @@ export default function Journal() {
   const modalRef = useRef<HTMLDivElement>(null);   // ← добавить
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const [newFormPos, setNewFormPos] = useState({ x: 0, y: 0 });
   const today = new Date();
@@ -1769,6 +2107,7 @@ export default function Journal() {
   const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
+  const [popupTarget, setPopupTarget] = useState<HTMLElement | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalBooking, setAddModalBooking] = useState<Booking | null>(null);
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
@@ -1780,18 +2119,6 @@ export default function Journal() {
   const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // 🔥 ДОБАВЛЯЕМ СЮДА: Стейты для умного Drag & Drop
-  const [drag, setDrag] = useState<{
-    id: string;
-    startX: number;
-    startY: number;
-    deltaX: number;
-    deltaY: number;
-    offsetYInsideCard: number;
-    isDragging: boolean;
-  } | null>(null);
-  const [wasDragging, setWasDragging] = useState(false); // Защита от ложного клика
-
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [dateInputVal, setDateInputVal] = useState("");
 
@@ -1802,18 +2129,6 @@ export default function Journal() {
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   // 2. ДАЛЕЕ ИДУТ УТИЛИТЫ И ФУНКЦИИ
-
-  
-  // ── Колонки по режиму ──
-  const columns = viewMode === 'trainers'
-    ? TRAINERS.filter(t => activeTrainers.includes(t.id))
-    : HALLS.filter(h => activeHalls.includes(h));
-
-  // ── Фильтрованные записи ──
-  const filteredBookings = bookings.filter(b => {
-    if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
-    return activeHalls.includes(b.hall);
-  });
 
   const MODAL_W = 580;
   const MODAL_H = 480;
@@ -1881,85 +2196,6 @@ export default function Journal() {
     setNewFormPos({ x: finalX, y: finalY });
   };
 
-  // 🔥 ГЛОБАЛЬНЫЙ СЛУШАТЕЛЬ ДЛЯ ПРЕМИАЛЬНОГО DRAG & DROP
-  useEffect(() => {
-    if (!drag) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaX = e.clientX - drag.startX;
-      const deltaY = e.clientY - drag.startY;
-      
-      // Если мышка сдвинулась больше чем на 3 пикселя — значит это тяга, а не клик
-      if (!drag.isDragging && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
-         setDrag(prev => prev ? { ...prev, isDragging: true, deltaX, deltaY } : null);
-         setPopupBooking(null); // Моментально закрываем окно, если оно было открыто
-      } else if (drag.isDragging) {
-         setDrag(prev => prev ? { ...prev, deltaX, deltaY } : null);
-      }
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (drag.isDragging) {
-        // Мы отпустили карточку. Ищем под ней прозрачную ячейку расписания!
-        const target = document.elementFromPoint(e.clientX, e.clientY);
-        const slot = target?.closest('.j-empty-slot');
-        
-        if (slot) {
-           const newTi = Number(slot.getAttribute('data-ti'));
-           const newCi = Number(slot.getAttribute('data-ci'));
-           
-           // Математика: вычисляем позицию с точностью до 15 минут
-           const rect = slot.getBoundingClientRect();
-           const cardTopY = e.clientY - drag.offsetYInsideCard;
-           const offsetFromSlotTop = cardTopY - rect.top;
-           let fraction = Math.round(offsetFromSlotTop / 18) * 0.25; // 15 мин = 18px
-           
-           let newTimeStart = newTi + fraction;
-           if (newTimeStart < 0) newTimeStart = 0; // Не даем улететь выше 07:00
-           
-           // Обновляем базу данных
-           setBookings(prev => prev.map(b => {
-             if (b.id !== drag.id) return b;
-             const duration = b.timeEnd - b.timeStart;
-             
-             let finalStart = newTimeStart;
-             let finalEnd = newTimeStart + duration;
-             
-             if (finalEnd > 16) { // Не даем провалиться ниже 23:00
-                finalEnd = 16;
-                finalStart = 16 - duration;
-             }
-             
-             const isTrainerMode = viewMode === 'trainers';
-             const newColVal = columns[newCi];
-             
-             return {
-               ...b,
-               timeStart: finalStart,
-               timeEnd: finalEnd,
-               trainer: isTrainerMode ? (newColVal as any).id : b.trainer,
-               hall: !isTrainerMode ? (newColVal as string) : b.hall,
-               color: isTrainerMode ? (newColVal as any).color : b.color
-             };
-           }));
-           showToast('Занятие перенесено');
-        }
-        
-        // Ставим блок на долю секунды, чтобы при отпускании не выскочило окно
-        setWasDragging(true);
-        setTimeout(() => setWasDragging(false), 50);
-      }
-      setDrag(null);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-       document.removeEventListener('mousemove', handleMouseMove);
-       document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [drag, viewMode, columns]);
-
   // Динамическое перепозиционирование модалки
   useEffect(() => {
     if (!showNewForm) return;
@@ -2026,14 +2262,87 @@ export default function Journal() {
     setActiveDropdown(null);
   };
 
+  // 🔥 УМНОЕ ПОЗИЦИОНИРОВАНИЕ POPUP КАРТОЧКИ (Как у предварительного окна)
+  const recalcPopupPos = () => {
+    if (!popupTarget || !popupRef.current) return;
+    
+    const rect = popupTarget.getBoundingClientRect(); // Узнаем, где сейчас карточка
+    const SAFE = 16;
+    const GAP = 12; // Премиальный отступ от карточки до модалки
+    const TOOLBAR_H = 56;
+    const RIGHT_PANEL_W = 264; // Ширина правого меню
+
+    // Берем реальные размеры модалки
+    const POPUP_W = popupRef.current.offsetWidth;
+    const POPUP_H = popupRef.current.offsetHeight;
+
+    const cleanGridWidth = window.innerWidth - RIGHT_PANEL_W;
+    const spaceRight = cleanGridWidth - rect.right - GAP;
+    const spaceLeft  = rect.left - GAP;
+
+    let finalX = 0;
+
+    // Математика: справа или слева?
+    if (spaceRight >= POPUP_W) {
+      finalX = rect.right + GAP; // Идеально: ставим справа
+    } else if (spaceLeft >= POPUP_W) {
+      finalX = rect.left - POPUP_W - GAP; // Места нет: зеркалим влево
+    } else {
+      // Если экран узкий: жмем к безопасному краю
+      finalX = spaceRight > spaceLeft ? cleanGridWidth - POPUP_W - SAFE : SAFE;
+    }
+
+    // Защита от вылета за экран по горизонтали
+    if (finalX < SAFE) finalX = SAFE;
+    if (finalX + POPUP_W > window.innerWidth - SAFE) {
+      finalX = window.innerWidth - POPUP_W - SAFE;
+    }
+
+    // Вычисляем Y (Умное выравнивание по вертикали)
+    let finalY = rect.top;
+    if (finalY + POPUP_H > window.innerHeight - SAFE) {
+      finalY = window.innerHeight - POPUP_H - SAFE; // Не даем провалиться под экран
+    }
+    if (finalY < TOOLBAR_H + SAFE) {
+      finalY = TOOLBAR_H + SAFE; // Не даем залететь под верхний тулбар
+    }
+
+    setPopupPos({ x: finalX, y: finalY });
+  };
+
+  // Слушаем скролл и изменение размера окна
+  useEffect(() => {
+    if (!popupBooking) {
+      setPopupTarget(null); // Очищаем цель при закрытии
+      return;
+    }
+    
+    // Ждем 1 миллисекунду, чтобы React успел отрендерить модалку и мы узнали ее размер
+    const timer = setTimeout(recalcPopupPos, 0); 
+    const wrapper = gridWrapperRef.current;
+    
+    if (wrapper) wrapper.addEventListener('scroll', recalcPopupPos);
+    window.addEventListener('resize', recalcPopupPos);
+    
+    return () => {
+      if (wrapper) wrapper.removeEventListener('scroll', recalcPopupPos);
+      window.removeEventListener('resize', recalcPopupPos);
+      clearTimeout(timer);
+    };
+  }, [popupBooking, popupTarget]);
+
   // ── Открыть форму нового слота (Всегда 1 час или заполнить остаток) ──
   const openNewSlot = (
     trainerIdx: number,
     timeIdx: number,
   ) => {
+    const relevant = bookings.filter(b => b.trainer === trainerIdx);
 
     const blockStart = timeIdx;        // начало блока (целый час, например 11)
     const blockEnd   = timeIdx + 1;    // конец блока (12)
+
+    // Ищем занятия, которые пересекаются с этим блоком
+    const overlap = relevant.filter(b => b.timeStart < blockEnd && b.timeEnd > blockStart);
 
     setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd });
     setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' });
@@ -2060,17 +2369,10 @@ export default function Journal() {
   // Закрытие popup при клике вне
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      const target = e.target as Element;
-      
-      // 1. Если кликнули внутри попапа (по кнопке) — не закрываем, пусть кнопка отработает
-      if (popupRef.current && popupRef.current.contains(target)) return;
-
-      // 2. Если кликнули по любой карточке занятия — игнорируем! 
-      // Карточка сама решит: открыться ей или закрыться (см. Шаг 2)
-      if (target.closest('.booking-card')) return;
-
-      // 3. В остальных случаях (клик по фону, пустой сетке, тулбару) — закрываем окно
-      setPopupBooking(null);
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setPopupBooking(null);
+        setSelectedCardId(null);
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -2153,13 +2455,23 @@ export default function Journal() {
     );
   };
 
+  // ── Колонки по режиму ──
+  const columns = viewMode === 'trainers'
+    ? TRAINERS.filter(t => activeTrainers.includes(t.id))
+    : HALLS.filter(h => activeHalls.includes(h));
+
+  // ── Фильтрованные записи ──
+  const filteredBookings = bookings.filter(b => {
+    if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
+    return activeHalls.includes(b.hall);
+  });
+
   // ── Открыть popup записи ──
   const openBookingPopup = (e: React.MouseEvent, booking: Booking) => {
     e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = Math.min(rect.right + 8, window.innerWidth - 296);
-    const y = Math.min(rect.top, window.innerHeight - 280);
-    setPopupPos({ x, y });
+    // Мы больше не считаем жесткие пиксели тут.
+    // Просто запоминаем карточку, по которой кликнули!
+    setPopupTarget(e.currentTarget as HTMLElement);
     setPopupBooking(booking);
   };
 
@@ -2229,66 +2541,35 @@ export default function Journal() {
   // ── Рендер карточки записи (Обновленный) ──
   const renderBookingCard = (b: Booking, layout: any) => {
     const startOffset = (b.timeStart - Math.floor(b.timeStart)) * 72;
-    const top = startOffset; 
-    const height = (b.timeEnd - b.timeStart) * 72 - 1;
+    const top = startOffset + layout.topOffset; 
+    const height = (b.timeEnd - b.timeStart) * 72 - 1; 
     
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
 
     // Проверяем, выделена ли эта карточка прямо сейчас
-    const isSelected = popupBooking?.id === b.id;
-    const isDragging = drag?.id === b.id && drag.isDragging;
+    const isSelected = selectedCardId === b.id;
 
     return (
       <div
         key={b.id}
-        // Добавляем класс is-dragging
-        className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
-        
-        // 🔥 УМНЫЙ ЗАХВАТ МЫШЬЮ
-        onMouseDown={e => {
-          e.stopPropagation(); 
-          // Запоминаем, за какое место карточки ухватился пользователь
-          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-          const offsetYInsideCard = e.clientY - rect.top;
-          
-          setDrag({
-             id: b.id,
-             startX: e.clientX,
-             startY: e.clientY,
-             deltaX: 0,
-             deltaY: 0,
-             offsetYInsideCard,
-             isDragging: false
-          });
-        }}
-
-        // 🔥 КЛИК С ЗАЩИТОЙ
+        // Добавляем класс is-selected
+        className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''}`}
         onClick={e => {
-          e.stopPropagation();
-          // Если мы только что отпустили карточку после перетаскивания — игнорируем клик!
-          if (wasDragging) return; 
-
-          if (popupBooking?.id === b.id) {
-            setPopupBooking(null);
-          } else {
-            openBookingPopup(e, b);
-          }
+          e.stopPropagation(); // 🔥 БЛОКИРУЕТ КЛИК ПО ЯЧЕЙКЕ (не дает создать новое занятие)
+          setSelectedCardId(b.id); // Выделяем карточку
+          openBookingPopup(e, b);  // Открываем попап с деталями
         }}
-        
         style={{
           top, height,
           left: layout.left,
           width: layout.width,
-          zIndex: isSelected ? 999 : layout.zIndex, 
+          zIndex: isSelected ? 999 : layout.zIndex, // При клике поднимаем на самый верх
+          // Уменьшили непрозрачность фона до 12, чтобы жирный контур читался лучше
           background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
-          border: `2px solid ${b.color}`,
+          border: `2px solid ${b.color}`, // 🔥 ЖИРНЫЙ, ЯРКИЙ БОРДЕР (100% непрозрачность)
           color: b.color,
           '--card-color': b.color,
-          // 🔥 ПРИМЕНЯЕМ ФИЗИКУ: Сдвигаем карточку процессором, не ломая верстку
-          ...(isDragging ? {
-             transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
-          } : {})
         } as React.CSSProperties}
       >
         <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
@@ -2541,29 +2822,23 @@ export default function Journal() {
                       // 🔥 Умный расчет точного старта в текущем часе
                       const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
 
+                      const isHoldingHoveredCard = hourBookings.some(b => b.id === hoveredCardId);
+
                       return (
                         <div
                           key={ci}
-                          data-ti={ti} // 🔥 ВАЖНО для координат времени
-                          data-ci={ci} // 🔥 ВАЖНО для колонки
                           className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook ? 'is-targeted' : ''}`}
-                          onMouseEnter={() => { 
-                            if (canBook && !showNewForm && !popupBooking) setHoveredSlot(`${ti}-${ci}`); 
-                          }}
+                          onMouseEnter={() => { if (canBook && !showNewForm) setHoveredSlot(`${ti}-${ci}`); }}
                           onMouseLeave={() => setHoveredSlot(null)}
-                          
                           style={{ 
                             borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
                             borderRadius: '10px',
-                            zIndex: 'auto',
+                            // 🔥 МАГИЯ: Если внутри этой ячейки есть карточка под мышкой, 
+                            // мы поднимаем ВСЮ ячейку над остальной сеткой!
+                            zIndex: isHoldingHoveredCard ? 999 : 1,
                           }}
-                          onMouseDown={(e) => {
-                            // Если окно УЖЕ открыто, мы просто прерываем функцию.
-                            // Обрати внимание: мы НЕ делаем e.stopPropagation() здесь!
-                            // Это позволит клику "просочиться" дальше к фону и закрыть окно.
-                            if (showNewForm || popupBooking) return; 
-                            
-                            // А вот если окон нет — блокируем всплытие и открываем предварительное занятие
+                          onClick={(e) => {
+                            if (showNewForm) return;
                             e.stopPropagation();
                             const trainerIdx = isTrainerMode ? trainer!.id : 0;
                             openNewSlot(trainerIdx, ti);
@@ -2585,24 +2860,23 @@ export default function Journal() {
                                 borderRadius: '10px',
                                 boxSizing: 'border-box',
                                 pointerEvents: 'none',
-                                
-                                // 🔥 ФИКС 1: Высший приоритет. Теперь превью железно поверх всех карточек
-                                zIndex: 9999, 
+                                zIndex: 15,
                                 overflow: 'hidden',
                                 animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
-                                
-                                // 🔥 ФИКС 2: 100% плотный белый фон. Сзади ничего не будет видно
-                                background: '#FFFFFF', 
-                                
-                                // Усиленная тень, чтобы визуально оторвать блок от фона
+                                // Стекло
+                                background: 'rgba(255,255,255,0.55)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                // Многослойная тень
                                 boxShadow: `
-                                  0 0 0 1.5px rgba(249,160,139,0.7),
-                                  0 16px 40px -4px rgba(26,26,26,0.15),
-                                  0 4px 12px rgba(249,160,139,0.2)
+                                  0 0 0 1.5px rgba(249,160,139,0.55),
+                                  0 8px 32px -4px rgba(249,160,139,0.28),
+                                  0 2px 8px rgba(249,160,139,0.12),
+                                  inset 0 1px 0 rgba(255,255,255,0.9)
                                 `,
                               }}
                             >
-                              {/* Живой градиентный фон — медленно пульсирует поверх белого */}
+                              {/* Живой градиентный фон — медленно пульсирует */}
                               <div style={{
                                 position: 'absolute', inset: 0,
                                 background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
@@ -2770,75 +3044,111 @@ export default function Journal() {
         </div>
       </div>
 
-      {/* ── POPUP КАРТОЧКИ ЗАПИСИ ── */}
+      {/* ── ПРЕМИАЛЬНЫЙ POPUP КАРТОЧКИ ЗАПИСИ ── */}
       {popupBooking && (
         <div
           ref={popupRef}
           className="booking-popup"
           style={{ left: popupPos.x, top: popupPos.y }}
         >
-          {/* Цветная полоска сверху */}
-          <div style={{ height: 4, background: popupBooking.color, opacity: 0.7 }} />
-          
-          <div className="bp-header">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* 💎 Магическое свечение от цвета тренера (заменяет старую плоскую полоску) */}
+          <div style={{
+            position: 'absolute', top: -30, left: -30, right: -30, height: 160,
+            background: `radial-gradient(ellipse at top, ${popupBooking.color}35 0%, transparent 65%)`,
+            pointerEvents: 'none', zIndex: 0, opacity: 0.8
+          }} />
+
+          {/* ШАПКА */}
+          <div className="bp-header" style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{popupBooking.title}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.4px', lineHeight: 1.2 }}>
+                  {popupBooking.title}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Icons.Clock />
                   {TIMES[popupBooking.timeStart]} – {TIMES[popupBooking.timeEnd]}
                 </div>
               </div>
+              
+              {/* Статус-пил (Используем цвета из брендбука: Фисташковый и Пыльная роза) */}
               <div style={{
-                padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 700,
-                background: popupBooking.status === 'confirmed' ? 'rgba(91,171,114,0.12)' : 'rgba(224,128,96,0.12)',
-                color: popupBooking.status === 'confirmed' ? '#5BAB72' : '#e08060',
+                padding: '6px 12px', borderRadius: '12px', fontSize: 11, fontWeight: 800,
+                background: popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
+                color: popupBooking.status === 'confirmed' ? '#86b08c' : '#D88C9A',
+                display: 'flex', alignItems: 'center', gap: 4, letterSpacing: '0.3px', textTransform: 'uppercase'
               }}>
+                {popupBooking.status === 'confirmed' && <span style={{ transform: 'scale(0.85)' }}><Icons.Check /></span>}
                 {popupBooking.status === 'confirmed' ? 'Подтверждено' : 'Ожидает'}
               </div>
             </div>
           </div>
 
-          <div className="bp-body">
+          {/* ТЕЛО С ИНФОРМАЦИЕЙ */}
+          <div className="bp-body" style={{ position: 'relative', zIndex: 1 }}>
+            
             <div className="bp-row">
-              <Icons.Users />
-              <span>{popupBooking.clients} из {popupBooking.maxClients} мест занято</span>
+              <div className="bp-icon-box"><Icons.Users /></div>
+              <div style={{ flex: 1, paddingTop: 2 }}>
+                <span style={{ fontSize: 15, fontWeight: 800 }}>{popupBooking.clients} / {popupBooking.maxClients}</span>
+                <span style={{ color: 'var(--muted)', marginLeft: 6, fontWeight: 600 }}>мест занято</span>
+              </div>
             </div>
+            
             <div className="bp-row">
-              <Icons.MapPin />
-              <span>{popupBooking.hall}</span>
+              <div className="bp-icon-box"><Icons.MapPin /></div>
+              <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
             </div>
+            
             <div className="bp-row">
-              <span style={{ width: 13, height: 13, borderRadius: '50%', background: popupBooking.color, display: 'inline-block', flexShrink: 0 }} />
-              <span>{TRAINERS.find(t => t.id === popupBooking.trainer)?.full}</span>
+              <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
+              </div>
+              <div style={{ fontWeight: 700 }}>{TRAINERS.find(t => t.id === popupBooking.trainer)?.full}</div>
             </div>
 
-            {/* Прогресс заполнения */}
+            {/* Роскошный прогресс-бар в своем мягком контейнере */}
             {popupBooking.maxClients > 0 && (
-              <div style={{ marginTop: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--muted)', marginBottom: 4 }}>
-                  <span>Заполненность</span>
-                  <span style={{ fontWeight: 700 }}>{Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%</span>
+              <div style={{ marginTop: 8, background: 'rgba(26,26,26,0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.03)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Заполненность
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--onyx)' }}>
+                    {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
+                  </span>
                 </div>
-                <div style={{ height: 5, background: 'var(--bg2)', borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`, background: popupBooking.color, borderRadius: 100 }} />
+                <div style={{ height: 6, background: 'rgba(26,26,26,0.06)', borderRadius: 100, overflow: 'hidden' }}>
+                  <div style={{ 
+                    height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`, 
+                    background: popupBooking.color, borderRadius: 100,
+                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                  }} />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bp-actions">
-            <button className="bp-btn primary" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
+          {/* КНОПКИ ДЕЙСТВИЙ */}
+          <div className="bp-actions" style={{ position: 'relative', zIndex: 1 }}>
+            
+            <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
               <Icons.UserPlus /> Добавить
             </button>
-            <button className="bp-btn ghost">
+            
+            <button className="bp-btn ghost text-btn" title="Изменить занятие">
               <Icons.Edit /> Изменить
             </button>
-            <button className="bp-btn ghost">
-              <Icons.Bell />
-            </button>
-            <button className="bp-btn danger" onClick={() => deleteBooking(popupBooking.id)}>
+            
+            <button 
+              className="bp-btn danger icon-only" 
+              title="Удалить занятие" 
+              onClick={() => deleteBooking(popupBooking.id)}
+              style={{ flex: '0 0 44px', maxWidth: '44px', padding: 0 }} 
+            >
               <Icons.Trash />
             </button>
+            
           </div>
         </div>
       )}
