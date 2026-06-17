@@ -1477,116 +1477,52 @@ const STYLES = `
     transition: opacity 0.2s ease;
   }
 
-  /* ── СЦЕНАРИЙ 5: ПРЕМИАЛЬНОЕ ВЗАИМОДЕЙСТВИЕ ── */
-  /* Если карточка делит пространство с соседями (isTracked), даем ей эффект расширения */
-  .booking-card.is-tracked {
-    padding: 8px 6px; /* Чуть меньше паддинг для зажатых треков */
-  }
+  /* ── ИДЕАЛЬНАЯ ЛОГИКА ОТОБРАЖЕНИЯ (БЕЗ РЕЗКИХ СКАЧКОВ) ── */
   
-  .booking-card.is-tracked .b-meta, 
-  .booking-card.is-tracked .b-progress {
-    opacity: 0; /* Скрываем детали, чтобы не было каши в узком слоте */
+  /* 1. Прячем лишние детали, если карточки зажаты (но не выделены) */
+  .booking-card.is-tracked:not(.is-selected) .b-meta, 
+  .booking-card.is-tracked:not(.is-selected) .b-progress {
+    opacity: 0; 
   }
 
-  .booking-card.is-tracked:hover {
-    width: calc(100% - 28px) !important; /* Разворачивается на всю ширину колонки */
-    min-width: 140px; /* Защита от очень узких экранов */
-    z-index: 50 !important; /* Взлетает над всеми */
-    /* Глубокая тень: отрывает от сетки и соседей */
-    box-shadow: 0 24px 48px -12px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
-    transform: scale(1.02) translateY(-2px);
-    background: #FFFFFF !important; /* Заливаем белым */
+  /* 2. Базовый спокойный ховер (мышка просто сверху) */
+  .booking-card:hover {
+    transform: scale(1.01) translateY(-1px);
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
+    z-index: 10;
   }
 
-  /* Возвращаем видимость контенту при наведении */
-  .booking-card.is-tracked:hover .b-meta, 
-  .booking-card.is-tracked:hover .b-progress {
-    opacity: 1;
-  }
-  
-  .booking-card.is-tracked:hover .b-title {
-    white-space: normal; /* Позволяем тексту переноситься */
-  }
-  .booking-card.is-cascade:hover {
-    transform: translateX(12px) translateY(-4px); /* Сдвигаем верхнюю карту чуть в сторону при изучении */
-    z-index: 60 !important;
-  }
-  /* ── СЦЕНАРИЙ 4: ПАТТЕРН "КОЛОДА КАРТ" (APPLE CALENDAR) ── */
+  /* 3. Оформление карточек в "колоде" (Лесенке) */
   .booking-card.is-cascade {
-    /* Мягкая тень для отделения слоев друг от друга */
     box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1.5px var(--bg-card);
   }
   
-  /* Возвращаем фирменный полупрозрачный оттенок поверх белой базы, 
-     чтобы карточка не выглядела серой, но и не просвечивала соседей */
+  /* Легкая пленочка цвета тренера, чтобы карточки не сливались */
   .booking-card.is-cascade::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--card-color);
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
+    content: ''; position: absolute; inset: 0; 
+    background: var(--card-color); opacity: 0.12; 
+    pointer-events: none; z-index: 0;
   }
+  .booking-card.is-cascade > * { position: relative; z-index: 1; }
   
-  /* Контент карточки поднимаем над фоном-пленкой */
-  .booking-card.is-cascade > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* 💎 ПРЕМИАЛЬНЫЙ HOVER: КАРТОЧКА ВЫРЫВАЕТСЯ ИЗ СТОПКИ 💎 */
+  /* 🔥 ИСПРАВЛЕНИЕ: Мягкий ховер для лесенки (карточка просто выглядывает вправо) */
   .booking-card.is-cascade:hover {
-    z-index: 999 !important; /* Безусловный приоритет поверх всей сетки */
-    left: 0 !important; /* Выныривает из лесенки к левому краю колонки */
-    width: calc(100% - 28px) !important; /* Раскрывается на всю ширину трека */
-    transform: translateY(-4px) scale(1.02); /* Слегка поднимается к пользователю */
-    
-    /* Тяжелая многослойная тень, создающая физический объем */
-    box-shadow: 
-      0 32px 80px -16px rgba(26,26,26,0.4), 
-      0 8px 24px -4px rgba(26,26,26,0.15),
-      0 0 0 2px var(--bg-card) !important;
+    transform: translateX(8px) translateY(-2px) scale(1.01);
+    z-index: 50 !important; /* Всплывает, но НЕ ломает свою ширину! */
   }
 
-  /* Возвращаем скрытый контент при раскрытии карты из колоды */
-  .booking-card.is-cascade:hover .b-meta,
-  .booking-card.is-cascade:hover .b-progress {
-    opacity: 1 !important;
-  }
-  .booking-card.is-cascade:hover .b-title {
-    white-space: normal !important;
-  }
-    /* ── БАЗОВЫЕ ЭФФЕКТЫ ХОВЕРА (СПОКОЙНЫЕ) ── */
-  .booking-card:hover {
-    /* Только легкое поднятие, без расширений */
-    transform: scale(1.01) translateY(-1px);
-    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 4px 8px rgba(26,26,26,0.04);
-  }
-
-  .booking-card.is-cascade:hover {
-    /* В каскаде чуть сдвигаем карточку вбок, чтобы показать, что это колода */
-    transform: translateX(6px) translateY(-2px); 
-  }
-
-  /* 💎 ПРЕМИАЛЬНОЕ ВЫДЕЛЕНИЕ ПО КЛИКУ (.is-selected) 💎 */
-  /* Этот класс заменяет собой все старые дерганые :hover эффекты */
+  /* 💎 ВЫДЕЛЕНИЕ ПО КЛИКУ (ТОЛЬКО ТУТ ОНА РАСШИРЯЕТСЯ НА 100%) 💎 */
   .booking-card.is-selected {
-    left: 0 !important; /* Возвращаем из лесенки к левому краю */
-    width: calc(100% - 28px) !important; /* Разворачиваем на всю колонку */
+    left: 0 !important; 
+    width: calc(100% - 28px) !important; 
     min-width: 140px; 
-    z-index: 999 !important; /* Поверх всей сетки */
-    background: #FFFFFF !important; /* Белый фон, чтобы не сливаться */
+    z-index: 999 !important; 
+    background: #FFFFFF !important; 
     transform: scale(1.02) translateY(-2px) !important;
-    
-    /* Дорогая, глубокая тень */
-    box-shadow: 
-      0 32px 80px -16px rgba(26,26,26,0.4), 
-      0 8px 24px -4px rgba(26,26,26,0.15),
-      0 0 0 2px var(--bg-card) !important;
+    box-shadow: 0 32px 80px -16px rgba(26,26,26,0.4), 0 8px 24px -4px rgba(26,26,26,0.15), 0 0 0 2px var(--bg-card) !important;
   }
 
-  /* Принудительно показываем весь контент только у выделенной карточки */
+  /* Возвращаем текст и прогресс-бар при клике */
   .booking-card.is-selected .b-meta, 
   .booking-card.is-selected .b-progress {
     opacity: 1 !important;
@@ -1594,12 +1530,6 @@ const STYLES = `
   
   .booking-card.is-selected .b-title {
     white-space: normal !important; /* Разрешаем тексту переноситься на новые строки */
-  }
-
-  /* Прячем мета-информацию в зажатых треках, пока на них не кликнули */
-  .booking-card.is-tracked:not(.is-selected) .b-meta, 
-  .booking-card.is-tracked:not(.is-selected) .b-progress {
-    opacity: 0; 
   }
   /* Изменяем курсор, чтобы было понятно, что можно тянуть */
   .booking-card {
@@ -1821,6 +1751,161 @@ const STYLES = `
     z-index: 800; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
     border-right: 1px solid var(--border);
   }
+  /* Добавьте это внутрь существующих стилей .booking-card */
+  .booking-card {
+    position: absolute;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: grab;
+    overflow: visible;
+    box-shadow: 0 0 0 2px var(--bg-card);
+    user-select: none; /* 🔥 ЗАПРЕЩАЕМ ВЫДЕЛЕНИЕ ТЕКСТА В КАРТОЧКЕ */
+    -webkit-user-select: none;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), /* ... остальной ваш код ... */
+  }
+
+  /* 🔥 ДОБАВЬТЕ НОВЫЙ ГЛОБАЛЬНЫЙ КЛАСС В КОНЕЦ СТИЛЕЙ */
+  .is-dragging-global {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  /* Делаем так, чтобы во время тяги курсор везде был "кулачком" */
+  .is-dragging-global * {
+    cursor: grabbing !important;
+  }
+  /* 🔥 СТИЛИ ДЛЯ ЖИВОГО ПРЕВЬЮ ВРЕМЕНИ ПРИ ПЕРЕТАСКИВАНИИ */
+  .drag-tooltip {
+    position: absolute;
+    left: -58px; /* Выносим за пределы карточки влево */
+    background: var(--onyx);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 8px 16px rgba(26,26,26,0.25);
+    pointer-events: none;
+    z-index: 10000;
+    /* Упругая анимация появления */
+    animation: drag-tt-in 0.25s cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+
+  .drag-tooltip.start { top: -12px; }
+  .drag-tooltip.end { bottom: -12px; }
+
+  /* Маленький треугольник (хвостик), указывающий на карточку */
+  .drag-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 4px 0 4px 4px;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--onyx);
+  }
+
+  /* Стильная соединительная линия между ярлычками */
+  .drag-line {
+    position: absolute;
+    left: -12px; /* Чуть левее самой карточки */
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--onyx);
+    border-radius: 2px;
+    opacity: 0.3;
+    pointer-events: none;
+    animation: drag-tt-in 0.25s ease;
+  }
+
+  @keyframes drag-tt-in {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  /* 🔥 СТИЛИ ЖЕСТКОЙ ЛИНИИ ВРЕМЕНИ НА ГРАНИЦЕ КОЛОНКИ */
+  .drag-column-marker {
+    position: absolute;
+    left: -1px; /* Ложится ровно на границу между колонками */
+    width: 2px;
+    background: var(--onyx);
+    z-index: 9999;
+    pointer-events: none;
+    animation: fade-in 0.2s ease;
+  }
+
+  .drag-col-tooltip {
+    position: absolute;
+    left: -8px; /* Отступ влево от самой линии */
+    transform: translateX(-100%); /* Сдвигаем текст полностью влево от линии */
+    background: var(--onyx);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 8px 16px rgba(26,26,26,0.15);
+    white-space: nowrap;
+  }
+
+  .drag-col-tooltip.start { top: -12px; }
+  .drag-col-tooltip.end { bottom: -12px; }
+
+  /* Хвостик, указывающий на линию */
+  .drag-col-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 4px 0 4px 4px;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--onyx);
+  }
+  /* ── ИДЕАЛЬНАЯ ЛОГИКА ОТОБРАЖЕНИЯ (БЕЗ РЕЗКИХ СКАЧКОВ) ── */
+  
+  /* 1. Прячем лишние детали в узких колонках (пока не кликнули) */
+  .booking-card.is-tracked:not(.is-selected) .b-meta, 
+  .booking-card.is-tracked:not(.is-selected) .b-progress {
+    opacity: 0; 
+  }
+
+  /* 2. Максимально спокойный Hover (наведение мыши) */
+  .booking-card:hover {
+    transform: scale(1.02); /* Чуть-чуть увеличиваем, без прыжков вбок */
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12), 0 0 0 1.5px var(--peach);
+    z-index: 50 !important;
+  }
+
+  /* 3. Оформление лесенки */
+  .booking-card.is-cascade {
+    box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1.5px var(--bg-card);
+  }
+  .booking-card.is-cascade::before {
+    content: ''; position: absolute; inset: 0; 
+    background: var(--card-color); opacity: 0.12; 
+    pointer-events: none; z-index: 0;
+  }
+  .booking-card.is-cascade > * { position: relative; z-index: 1; }
+
+  /* 💎 ВЫДЕЛЕНИЕ ПО КЛИКУ (БОЛЬШЕ НЕ ЛОМАЕТ РАЗМЕРЫ) 💎 */
+  .booking-card.is-selected {
+    z-index: 999 !important; 
+    /* Карточка остается на своем законном месте и своих размеров! */
+    transform: scale(1.04) !important;
+    /* Красивая толстая рамка и глубокая тень, чтобы показать фокус */
+    box-shadow: 0 24px 48px -12px rgba(26,26,26,0.3), 0 0 0 2px var(--peach) !important;
+  }
+
+  /* Возвращаем текст и делаем его читаемым при клике */
+  .booking-card.is-selected .b-meta, 
+  .booking-card.is-selected .b-progress {
+    opacity: 1 !important;
+  }
+  .booking-card.is-selected .b-title {
+    white-space: normal !important; 
+  }
 `;
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
@@ -1867,27 +1952,26 @@ function getBookingLayouts(bookings: Booking[]) {
     clusters.push(currentCluster);
   }
 
-  // 3. УПАКОВКА ПО ТРЕКАМ (Применяем Золотое правило)
+  // 3. УПАКОВКА ПО ТРЕКАМ (Строгое распределение)
   clusters.forEach((cluster) => {
     const tracks: Booking[][] = []; // Массив колонок (0, 1, 2...)
 
     cluster.forEach(b => {
       let placed = false;
       
-      // Ищем самую левую колонку (трек), куда можно безопасно положить карточку
       for (let i = 0; i < tracks.length; i++) {
         const track = tracks[i];
-        const lastInTrack = track[track.length - 1]; // Последняя карточка в этом треке
+        const lastInTrack = track[track.length - 1];
 
-        // 🛑 ЗОЛОТОЕ ПРАВИЛО: Можно положить сюда, если мы не перекрываем шапку предыдущей!
-        if (b.timeStart >= lastInTrack.timeStart + SAFE_HEADER_OFFSET) {
+        // 🛑 СТРОГОЕ ПРАВИЛО: Кладем в эту же колонку, ТОЛЬКО если прошлое занятие полностью закончилось.
+        // Если они пересекаются хоть на 1 миллисекунду — они пойдут в разные колонки (лесенку)!
+        if (b.timeStart >= lastInTrack.timeEnd) {
           track.push(b);
           placed = true;
-          break; // Успешно положили, прерываем поиск
+          break; 
         }
       }
 
-      // Если все существующие треки в опасной зоне, создаем новую колонку правее
       if (!placed) {
         tracks.push([b]);
       }
@@ -1910,7 +1994,7 @@ function getBookingLayouts(bookings: Booking[]) {
 
       if (N === 1) {
         // Одна колонка
-        left = '0px';
+        left = '1px';
         width = `calc(100% - ${RIGHT_SPACE}px)`;
         isCascade = false;
       } 
@@ -1993,6 +2077,9 @@ export default function Journal() {
     deltaY: number;
     offsetYInsideCard: number;
     isDragging: boolean;
+    previewStart?: number; // 🔥 НОВОЕ: Живое время начала
+    previewEnd?: number;   // 🔥 НОВОЕ: Живое время конца
+    previewColumnIndex?: number;
   } | null>(null);
   const [wasDragging, setWasDragging] = useState(false); // Защита от ложного клика
 
@@ -2166,12 +2253,47 @@ export default function Journal() {
       const deltaX = e.clientX - drag.startX;
       const deltaY = e.clientY - drag.startY;
       
-      // Если мышка сдвинулась больше чем на 3 пикселя — значит это тяга, а не клик
       if (!drag.isDragging && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
          setDrag(prev => prev ? { ...prev, isDragging: true, deltaX, deltaY } : null);
-         setPopupBooking(null); // Моментально закрываем окно, если оно было открыто
+         setPopupBooking(null);
       } else if (drag.isDragging) {
-         setDrag(prev => prev ? { ...prev, deltaX, deltaY } : null);
+         // 🔥 МАГИЯ ЗДЕСЬ: Ищем слот под мышкой в реальном времени
+         const target = document.elementFromPoint(e.clientX, e.clientY);
+         const slot = target?.closest('.j-empty-slot');
+         
+         let previewStart = drag.previewStart;
+         let previewEnd = drag.previewEnd;
+         let previewColumnIndex = drag.previewColumnIndex;
+
+         if (slot) {
+           const newTi = Number(slot.getAttribute('data-ti'));
+           const newCi = Number(slot.getAttribute('data-ci')); // 🔥 ПОЛУЧАЕМ КОЛОНКУ
+           previewColumnIndex = newCi; // 🔥 ЗАПОМИНАЕМ ЕЁ
+           const rect = slot.getBoundingClientRect();
+           const cardTopY = e.clientY - drag.offsetYInsideCard;
+           const offsetFromSlotTop = cardTopY - rect.top;
+           let fraction = Math.round(offsetFromSlotTop / 18) * 0.25; 
+           
+           let newTimeStart = newTi + fraction;
+           if (newTimeStart < 0) newTimeStart = 0; 
+           
+           // Берем оригинальную карточку, чтобы узнать её длительность
+           const draggedBooking = bookings.find(b => b.id === drag.id);
+           if (draggedBooking) {
+             const duration = draggedBooking.timeEnd - draggedBooking.timeStart;
+             let finalStart = newTimeStart;
+             let finalEnd = newTimeStart + duration;
+             
+             if (finalEnd > 16) { 
+                finalEnd = 16;
+                finalStart = 16 - duration;
+             }
+             previewStart = finalStart;
+             previewEnd = finalEnd;
+           }
+         }
+
+         setDrag(prev => prev ? { ...prev, deltaX, deltaY, previewStart, previewEnd, previewColumnIndex } : null);
       }
     };
 
@@ -2235,7 +2357,7 @@ export default function Journal() {
        document.removeEventListener('mousemove', handleMouseMove);
        document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [drag, viewMode, columns]);
+  }, [drag, viewMode, columns, bookings]);
 
   // Динамическое перепозиционирование модалки
   useEffect(() => {
@@ -2504,8 +2626,8 @@ export default function Journal() {
   // ── Рендер карточки записи (Обновленный) ──
   const renderBookingCard = (b: Booking, layout: any) => {
     const startOffset = (b.timeStart - Math.floor(b.timeStart)) * 72;
-    const top = startOffset; 
-    const height = (b.timeEnd - b.timeStart) * 72 - 1;
+    const top = startOffset + 1; 
+    const height = (b.timeEnd - b.timeStart) * 72 - 2;
     
     const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
     const isFull = fillRatio >= 1;
@@ -2513,6 +2635,15 @@ export default function Journal() {
     // Проверяем, выделена ли эта карточка прямо сейчас
     const isSelected = popupBooking?.id === b.id;
     const isDragging = drag?.id === b.id && drag.isDragging;
+
+    // 🔥 Получаем строки времени (либо текущее из карточки, либо живое из drag-стейта)
+    const displayStart = isDragging && drag.previewStart !== undefined 
+      ? formatIndexToTimeStr(drag.previewStart) 
+      : formatIndexToTimeStr(b.timeStart);
+      
+    const displayEnd = isDragging && drag.previewEnd !== undefined 
+      ? formatIndexToTimeStr(drag.previewEnd) 
+      : formatIndexToTimeStr(b.timeEnd);
 
     return (
       <div
@@ -2566,6 +2697,7 @@ export default function Journal() {
           } : {})
         } as React.CSSProperties}
       >
+
         <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
           {b.title}
         </div>
@@ -2593,7 +2725,8 @@ export default function Journal() {
     <>
       <style>{STYLES}</style>
 
-      <div className="j-root">
+      {/* Стало: */}
+      <div className={`j-root ${drag ? 'is-dragging-global' : ''}`}>
         <div className="j-main">
 
           {/* ── ТУЛБАР ── */}
@@ -2833,12 +2966,10 @@ export default function Journal() {
                             zIndex: 'auto',
                           }}
                           onMouseDown={(e) => {
-                            // Если окно УЖЕ открыто, мы просто прерываем функцию.
-                            // Обрати внимание: мы НЕ делаем e.stopPropagation() здесь!
-                            // Это позволит клику "просочиться" дальше к фону и закрыть окно.
-                            if (showNewForm || popupBooking) return; 
+                            // 🔥 ДОБАВЛЕНО: || drag
+                            // Теперь, если карточка прилипла к мышке (drag активен), мы блокируем открытие формы!
+                            if (showNewForm || popupBooking || drag) return; 
                             
-                            // А вот если окон нет — блокируем всплытие и открываем предварительное занятие
                             e.stopPropagation();
                             const trainerIdx = isTrainerMode ? trainer!.id : 0;
                             openNewSlot(trainerIdx, ti);
@@ -2847,6 +2978,15 @@ export default function Journal() {
                           {/* Передаем layout в рендер */}
                           {hourBookings.map(booking => renderBookingCard(booking, layouts.get(booking.id)))}
                           {/* 💎 ПРЕМИАЛЬНОЕ ЖИВОЕ ПРЕВЬЮ НОВОЙ ЗАПИСИ 💎 */}
+                          {ti === 0 && drag?.isDragging && drag.previewColumnIndex === ci && drag.previewStart !== undefined && drag.previewEnd !== undefined && (
+                            <div className="drag-column-marker" style={{
+                              top: drag.previewStart * 72,
+                              height: (drag.previewEnd - drag.previewStart) * 72
+                            }}>
+                              <div className="drag-col-tooltip start">{formatIndexToTimeStr(drag.previewStart)}</div>
+                              <div className="drag-col-tooltip end">{formatIndexToTimeStr(drag.previewEnd)}</div>
+                            </div>
+                          )}
                           {newBookingSlot && newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0) &&
                             newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
                             <div
