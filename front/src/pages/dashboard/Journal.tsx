@@ -2569,9 +2569,10 @@ export default function Journal() {
 
   // Глобальный клик
   useEffect(() => {
-    const closeAllDps = () => {
+    const closeAllDps = (e: MouseEvent) => {
+      if ((e.target as HTMLElement)?.closest('.kp-time-container')) return;
       setActiveDropdown(null);
-      setEditActiveDropdown(null); // 🔥 Добавили закрытие для режима редактирования
+      setEditActiveDropdown(null);
     };
     document.addEventListener('click', closeAllDps);
     return () => document.removeEventListener('click', closeAllDps);
