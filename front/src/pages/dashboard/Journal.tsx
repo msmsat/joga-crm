@@ -142,8 +142,11 @@ const Icons = {
     </svg>
   ),
   Trash: () => (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+    <svg className="icon-trash" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      {/* Крышка корзины (с ручкой) */}
+      <path className="trash-lid" d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      {/* Само ведро */}
+      <path className="trash-bin" d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
     </svg>
   ),
   Bell: () => (
@@ -865,7 +868,7 @@ const STYLES = `
   .j-top-left-corner {
     position: sticky;
     top: 0; left: 0;
-    z-index: 20;
+    z-index: 200;
     background: rgba(253,252,251,0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -877,7 +880,7 @@ const STYLES = `
   .j-col-header {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100;
     background: rgba(253,252,251,0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -900,7 +903,7 @@ const STYLES = `
     position: sticky;
     left: 0;
     background: rgba(253,252,251,0.95);
-    z-index: 5;
+    z-index: 500;
     border-right: 1px solid var(--border);
   }
 
@@ -1521,16 +1524,14 @@ const STYLES = `
      ========================================================= */
   .booking-popup {
     position: fixed;
-    /* Жемчужно-алебастровый фон с идеальным стеклом */
     background: rgba(253, 252, 251, 0.85);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.6);
-    /* Парящая мягкая тень + внутренний блик света */
     box-shadow: 0 32px 80px -16px rgba(26,26,26,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
-    width: 360px; /* Увеличили для "воздуха" */
-    z-index: 1000;
+    width: 360px; 
+    z-index: 9000;
     overflow: hidden;
     animation: popup-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
     display: flex;
@@ -1542,8 +1543,7 @@ const STYLES = `
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
   
-  /* Убрали жесткие линии, добавили пространство */
-  .bp-header { padding: 24px 24px 16px; }
+  .bp-header { padding: 24px 24px 16px; border-bottom: none; }
   .bp-body { padding: 0 24px 16px; display: flex; flex-direction: column; gap: 16px; }
   
   .bp-row {
@@ -1551,7 +1551,6 @@ const STYLES = `
     font-size: 14px; color: var(--onyx); font-weight: 600;
   }
 
-  /* Иконки теперь живут в аккуратных мягких контейнерах */
   .bp-icon-box {
     width: 36px; height: 36px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
@@ -1560,57 +1559,9 @@ const STYLES = `
     box-shadow: inset 0 0 0 1px rgba(26,26,26,0.02);
   }
   
-  /* Сетка кнопок */
-  .bp-actions {
-    display: grid;
-    grid-template-columns: 1fr 44px 44px; /* Увеличили зоны тапа */
-    gap: 12px; 
-    padding: 16px 24px 24px;
-  }
-  
-  .bp-btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    border-radius: 14px; font-size: 14px; font-weight: 700; font-family: var(--font);
-    cursor: pointer; border: none; outline: none;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    white-space: nowrap; height: 44px;
-  }
-  
-  /* Персиковая акцентная кнопка с мягким свечением */
-  .bp-btn.primary { 
-    background: var(--peach); color: white; 
-    box-shadow: 0 8px 24px -6px rgba(249,160,139,0.5);
-  }
-  .bp-btn.primary:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 12px 32px -6px rgba(249,160,139,0.6);
-  }
-  .bp-btn.primary:active { transform: translateY(0) scale(0.96); }
-
-  /* Вторичные кнопки (Clean style) */
-  .bp-btn.ghost { 
-    background: #FFFFFF; color: var(--onyx); 
-    box-shadow: 0 2px 8px rgba(26,26,26,0.03), 0 0 0 1px var(--border);
-  }
-  .bp-btn.ghost:hover { 
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px -6px rgba(26,26,26,0.08), 0 0 0 1.5px rgba(26,26,26,0.1);
-  }
-  .bp-btn.ghost:active { transform: translateY(0) scale(0.92); }
-
-  /* Опасное действие (Пыльная роза) */
-  .bp-btn.danger { 
-    background: rgba(216,140,154,0.08); color: #D88C9A; 
-  }
-  .bp-btn.danger:hover { 
-    background: #FFF9FA; color: #c05050;
-    box-shadow: 0 0 0 1.5px rgba(216,140,154,0.3);
-    transform: translateY(-2px);
-  }
-  .bp-btn.danger:active { transform: translateY(0) scale(0.92); }
   /* ── ИДЕАЛЬНАЯ СЕТКА КНОПОК ── */
   .bp-actions {
-    display: flex; /* Переходим с жесткого Grid на умный Flexbox */
+    display: flex; 
     align-items: center;
     gap: 10px; 
     padding: 16px 24px 24px;
@@ -1621,59 +1572,57 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center; gap: 8px;
     border-radius: 14px; font-size: 13.5px; font-weight: 700; font-family: var(--font);
     cursor: pointer; border: none; outline: none;
-    /* Пружинистая анимация Apple (Cubic Bezier) */
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     white-space: nowrap;
+    
+    /* 🔥 ФИКС ЛАГОВ: Строгая анимация только нужных свойств + Аппаратное ускорение (GPU) */
+    will-change: transform, box-shadow;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.3s ease, 
+                background-color 0.3s ease, 
+                color 0.3s ease;
   }
 
-  /* Текстовые кнопки делят основное пространство */
-  .bp-btn.text-btn { 
-    flex: 1; 
-    padding: 0 16px; 
-  }
+  .bp-btn.text-btn { flex: 1; padding: 0 16px; }
+  .bp-btn.icon-only { flex: 0 0 44px; width: 44px; padding: 0; }
 
-  /* 💎 Кнопка-квадрат (Удалить) */
-  .bp-btn.icon-only {
-    flex: 0 0 44px; /* Жестко фиксируем размер 44x44 пикселя */
-    width: 44px; 
-    padding: 0;
-  }
-
-  /* 💎 ТАКТИЛЬНЫЙ ОТКЛИК (Вдавливание при клике для ВСЕХ кнопок) */
-  .bp-btn:active {
-    transform: scale(0.92) !important;
-  }
+  /* Тактильный отклик при нажатии */
+  .bp-btn:active { transform: scale(0.92) !important; }
   
-  /* Персиковая акцентная кнопка */
+  /* 1. Персиковая акцентная кнопка */
   .bp-btn.primary { 
     background: var(--peach); color: white; 
     box-shadow: 0 8px 24px -6px rgba(249,160,139,0.5);
   }
   .bp-btn.primary:hover { 
     transform: translateY(-2px); 
+    background: #f08070;
     box-shadow: 0 12px 32px -6px rgba(249,160,139,0.6);
   }
 
-  /* Вторичная кнопка */
+  /* 2. Вторичная кнопка (Изменить) - 🔥 ФИКС МЕРЦАНИЯ */
   .bp-btn.ghost { 
     background: #FFFFFF; color: var(--onyx); 
-    box-shadow: 0 2px 8px rgba(26,26,26,0.04), 0 0 0 1px rgba(26,26,26,0.06);
+    box-shadow: 0 2px 8px rgba(26,26,26,0.04), 0 0 0 1px var(--border);
   }
   .bp-btn.ghost:hover { 
     transform: translateY(-2px);
+    /* Заменили скачущий цвет на очень мягкий оттенок, чтобы не было мерцания */
+    background: #FDFCFB; 
     box-shadow: 0 8px 24px -6px rgba(26,26,26,0.08), 0 0 0 1.5px rgba(26,26,26,0.1);
   }
 
-  /* Опасная кнопка (Корзина) */
+  /* 3. Опасная кнопка (Удалить) - 🔥 ФИКС ЛАГОВ */
   .bp-btn.danger { 
     background: rgba(216,140,154,0.1); color: #D88C9A; 
   }
   .bp-btn.danger:hover { 
-    background: #FFF9FA; color: #E03E5C; /* Становится ярче при наведении */
-    box-shadow: 0 8px 24px -6px rgba(224,62,92,0.25), 0 0 0 1.5px rgba(224,62,92,0.15);
     transform: translateY(-2px);
+    background: rgba(224,62,92,0.08); 
+    color: #E03E5C; 
+    box-shadow: 0 8px 24px -6px rgba(224,62,92,0.25), 0 0 0 1.5px rgba(224,62,92,0.15);
   }
-  /* Микро-анимация иконки корзины: она чуть увеличивается и наклоняется */
+  
+  /* Идеально плавная микро-анимация иконки корзины */
   .bp-btn.danger svg {
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
@@ -1684,7 +1633,7 @@ const STYLES = `
   .j-top-left-corner {
     position: sticky;
     top: 0; left: 0;
-    z-index: 805; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
+    z-index: 8050; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
     background: #FFFFFF;
     border-bottom: 1px solid var(--border);
     border-right: 1px solid var(--border);
@@ -1694,7 +1643,7 @@ const STYLES = `
   .j-col-header {
     position: sticky;
     top: 0;
-    z-index: 800; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
+    z-index: 8000; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
     background: #FFFFFF;
     border-bottom: 1px solid var(--border);
     border-right: 1px solid var(--border2);
@@ -1716,7 +1665,7 @@ const STYLES = `
     position: sticky;
     left: 0;
     background: #FDFCFB; 
-    z-index: 800; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
+    z-index: 8000; /* 🔥 МАГИЯ ЗДЕСЬ: Подняли слой над всеми карточками */
     border-right: 1px solid var(--border);
   }
   /* Добавьте это внутрь существующих стилей .booking-card */
@@ -1870,16 +1819,14 @@ const STYLES = `
     opacity: 0; 
   }
 
-  /* 1. СПОКОЙНЫЙ HOVER (Просто навели мышку) */
   .booking-card:hover {
-    transform: scale(1.02); /* Лишь легкое упругое увеличение */
-    box-shadow: 0 8px 24px rgba(26,26,26,0.08), 0 0 0 1.5px var(--peach);
-    /* 🔥 УБРАЛИ Z-INDEX! Теперь карточка НЕ будет выпрыгивать поверх других при наведении */
+    transform: translateY(-2px); /* Заменили scale на плавное поднятие вверх */
+    box-shadow: 0 12px 24px rgba(26,26,26,0.12); /* Убрали фейковый бордер, оставили только мягкую тень */
   }
   
   /* Отменяем старые дергания для карточек в "лесенке" при наведении */
   .booking-card.is-cascade:hover {
-    transform: scale(1.02);
+    transform: translateY(-2px);
   }
 
   /* Оформление самой лесенки (затемнение фона неактивных карточек) */
@@ -1917,6 +1864,86 @@ const STYLES = `
   }
   .booking-card.is-selected .b-title {
     white-space: normal !important; 
+  }
+  /* 💎 ПРЕМИАЛЬНАЯ АНИМАЦИЯ МУСОРКИ (С открывающейся крышкой) */
+  .icon-trash {
+    overflow: visible;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .icon-trash .trash-lid {
+    /* Точка вращения крышки (центр нижней кромки) */
+    transform-origin: center 6px; 
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .icon-trash .trash-bin {
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Что происходит при наведении на красную кнопку: */
+  .bp-btn.danger:hover .icon-trash {
+    transform: scale(1.1); /* Сама иконка мягко увеличивается */
+  }
+  
+  .bp-btn.danger:hover .trash-lid {
+    /* 🔥 МАГИЯ: Крышка отпрыгивает вверх и элегантно наклоняется */
+    transform: translateY(-3px) rotate(-12deg); 
+  }
+  
+  .bp-btn.danger:hover .trash-bin {
+    /* Ведро под тяжестью "клика" слегка оседает вниз */
+    transform: translateY(1px); 
+  }
+  /* 🔥 ПРЕМИАЛЬНЫЙ ПЕРЕКЛЮЧАТЕЛЬ ШАГА (С плавающей анимацией как в iOS) */
+  .premium-step-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(26,26,26,0.03);
+    padding: 4px;
+    border-radius: 12px;
+    position: relative; /* Обязательно для позиционирования слайдера */
+  }
+
+  /* 🔥 ТА САМАЯ ПЛАВАЮЩАЯ ПОДЛОЖКА */
+  .premium-step-slider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: 54px; /* Должна точно совпадать с шириной кнопки */
+    background: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px -4px rgba(26,26,26,0.08), 0 2px 6px rgba(26,26,26,0.04);
+    /* Роскошная пружинистая анимация переезда */
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
+  }
+
+  .premium-step-btn {
+    position: relative;
+    z-index: 2; /* Текст всегда строго поверх плавающей подложки */
+    height: 28px;
+    width: 54px; /* Фиксированная ширина для идеальной математики */
+    border: none;
+    background: transparent !important; /* Убираем фон, за него теперь отвечает слайдер */
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .premium-step-btn:hover {
+    color: var(--onyx);
+  }
+
+  /* Активная кнопка просто меняет цвет текста на персиковый */
+  .premium-step-btn.active {
+    color: var(--peach);
   }
 `;
 
@@ -1960,25 +1987,37 @@ function getBookingLayouts(bookings: Booking[]) {
     clusters.push(currentCluster);
   }
 
-  // 3. УПАКОВКА ПО ТРЕКАМ (Строгое распределение)
+  // 3. УПАКОВКА ПО ТРЕКАМ (Умное наложение Apple/Google)
   clusters.forEach((cluster) => {
     const tracks: Booking[][] = []; 
+    
+    // 🔥 БЕЗОПАСНАЯ ЗОНА ШАПКИ (В часах). 
+    // 0.6 часа = ~43px (Идеально хватает для названия, иконок и зазора)
+    const SAFE_HEADER_OFFSET = 0.6; 
 
     cluster.forEach(b => {
       let placed = false;
+      
+      // Алгоритм всегда пытается положить блок как можно левее (начиная с i = 0)
       for (let i = 0; i < tracks.length; i++) {
         const track = tracks[i];
         const lastInTrack = track[track.length - 1];
 
-        // 🛑 СТРОГОЕ ПРАВИЛО: никаких наложений в колонке.
-        // Кладем в эту же колонку, ТОЛЬКО если прошлое занятие полностью закончилось.
-        if (b.timeStart >= lastInTrack.timeEnd) {
+        // 🛑 УМНОЕ ПРАВИЛО: 
+        // Кладем в эту же колонку (наслаиваем поверх), ТОЛЬКО если:
+        // 1. Прошлое занятие полностью закончилось
+        // ИЛИ 2. Наше занятие начинается ниже безопасной зоны шапки прошлого!
+        if (
+          b.timeStart >= lastInTrack.timeEnd || 
+          b.timeStart >= lastInTrack.timeStart + SAFE_HEADER_OFFSET
+        ) {
           track.push(b);
           placed = true;
           break; 
         }
       }
 
+      // Если перекрывает шапки ВО ВСЕХ существующих колонках - создаем новую колонку правее
       if (!placed) {
         tracks.push([b]);
       }
@@ -2011,20 +2050,21 @@ function getBookingLayouts(bookings: Booking[]) {
         }
       } 
       else {
-        // ── ЕСЛИ БОЛЬШЕ 3-х — ВКЛЮЧАЕМ КНИЖКУ ──
+        // ── ЕСЛИ БОЛЬШЕ 3-х — ВКЛЮЧАЕМ КНИЖКУ (Умное сжатие) ──
         isCascade = true;
-        const VISIBLE_PX = 44; // 🔥 ТА САМАЯ ШИРОТА (44px), чтобы было видно название
         
-        // Каждая следующая карточка смещается вправо ровно на 44px, накрывая предыдущую
-        left = `calc(${trackIdx * VISIBLE_PX}px)`;
+        // 🔥 МАГИЯ CSS: Пытаемся дать идеальные 44px. 
+        // Но если карточек (N) слишком много, браузер динамически сожмет этот шаг, 
+        // чтобы последняя карточка 100% влезла и была не тоньше 40px!
+        const MIN_CARD_WIDTH = 40;
+        const dynamicStep = `min(44px, (100% - ${RIGHT_SPACE + MIN_CARD_WIDTH}px) / ${N - 1})`;
         
-        // Используем css max(), чтобы карточки не ломались на узких экранах
-        width = `max(40px, calc(100% - ${RIGHT_SPACE}px - ${trackIdx * VISIBLE_PX}px))`;
+        left = `calc(${dynamicStep} * ${trackIdx})`;
+        width = `calc(100% - ${RIGHT_SPACE}px - (${dynamicStep} * ${trackIdx}))`;
       }
 
       // Логика z-index: Занятие, которое правее или ниже, всегда сверху
-      const timeBase = Math.round(b.timeStart * 4);
-      const zIndex = 10 + (trackIdx * 100) + timeBase; 
+      const zIndex = 10 + Math.round(b.timeStart * 100) + trackIdx;
 
       layouts.set(b.id, {
         left,
@@ -2072,6 +2112,25 @@ export default function Journal() {
   const [showNewForm, setShowNewForm] = useState(false);
   const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
   const popupRef = useRef<HTMLDivElement>(null);
+  const [isEditingBooking, setIsEditingBooking] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8', timeStart: 0, timeEnd: 0 });
+  const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
+  // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
+  const [editStartInput, setEditStartInput] = useState('');
+  const [editEndInput, setEditEndInput] = useState('');
+
+  // Синхронизируем инпуты при открытии модалки редактирования
+  useEffect(() => {
+    if (isEditingBooking) {
+      setEditStartInput(formatIndexToTimeStr(editForm.timeStart));
+      setEditEndInput(formatIndexToTimeStr(editForm.timeEnd));
+    }
+  }, [isEditingBooking, editForm.timeStart, editForm.timeEnd]);
+
+  // Сбрасываем режим редактирования при закрытии карточки
+  useEffect(() => {
+    if (!popupBooking) setIsEditingBooking(false);
+  }, [popupBooking]);
 
   // 🔥 ДОБАВЛЯЕМ СЮДА: Стейты для умного Drag & Drop
   const [drag, setDrag] = useState<{
@@ -2097,6 +2156,7 @@ export default function Journal() {
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [startInput, setStartInput] = useState('');
   const [endInput, setEndInput] = useState('');
+  const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
 
@@ -2257,6 +2317,11 @@ export default function Journal() {
   useEffect(() => {
     if (!drag) return;
 
+    // 🔥 Динамически рассчитываем пиксели и часы на основе выбранного шага
+    // 1 час = 72px. Значит 1 минута = 1.2px (72 / 60)
+    const stepPx = timeStep * 1.2; 
+    const stepHours = timeStep / 60;
+
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - drag.startX;
       const deltaY = e.clientY - drag.startY;
@@ -2280,7 +2345,9 @@ export default function Journal() {
              const rect = slot.getBoundingClientRect();
              const cardTopY = e.clientY - drag.offsetYInsideCard;
              const offsetFromSlotTop = cardTopY - rect.top;
-             let fraction = Math.round(offsetFromSlotTop / 18) * 0.25; 
+             
+             // 🔥 Считаем сдвиг с учетом НОВОГО ШАГА
+             let fraction = Math.round(offsetFromSlotTop / stepPx) * stepHours; 
              
              let newTimeStart = newTi + fraction;
              if (newTimeStart < 0) newTimeStart = 0; 
@@ -2291,7 +2358,6 @@ export default function Journal() {
                let finalStart = newTimeStart;
                let finalEnd = newTimeStart + duration;
                
-               // 🔥 ИСПРАВЛЕНИЕ: Жесткий лимит низа — 15 (22:00)
                if (finalEnd > 15) { 
                   finalEnd = 15;
                   finalStart = 15 - duration;
@@ -2303,20 +2369,22 @@ export default function Journal() {
            setDrag(prev => prev ? { ...prev, deltaX, deltaY, previewStart, previewEnd, previewColumnIndex } : null);
          } 
          else if (drag.type === 'resize-bottom') {
-           let deltaHours = Math.round(deltaY / 18) * 0.25; 
+           // 🔥 Меняем размер низа с учетом НОВОГО ШАГА
+           let deltaHours = Math.round(deltaY / stepPx) * stepHours; 
            let newEnd = drag.originalEnd! + deltaHours;
            
-           if (newEnd <= drag.previewStart! + 0.25) newEnd = drag.previewStart! + 0.25;
+           // Минимальная длина занятия = 1 шаг (например 1 мин, 5 мин)
+           if (newEnd <= drag.previewStart! + stepHours) newEnd = drag.previewStart! + stepHours;
            if (newEnd > 15) newEnd = 15;
            
            setDrag(prev => prev ? { ...prev, deltaY, previewEnd: newEnd } : null);
          }
          else if (drag.type === 'resize-top') {
-           let deltaHours = Math.round(deltaY / 18) * 0.25; 
+           // 🔥 Меняем размер верха с учетом НОВОГО ШАГА
+           let deltaHours = Math.round(deltaY / stepPx) * stepHours; 
            let newStart = drag.originalStart! + deltaHours;
            
-           // Защита: не даем верху опуститься ниже конца и подняться выше 07:00 (индекс 0)
-           if (newStart >= drag.previewEnd! - 0.25) newStart = drag.previewEnd! - 0.25;
+           if (newStart >= drag.previewEnd! - stepHours) newStart = drag.previewEnd! - stepHours;
            if (newStart < 0) newStart = 0;
            
            setDrag(prev => prev ? { ...prev, deltaY, previewStart: newStart } : null);
@@ -2335,7 +2403,9 @@ export default function Journal() {
                const newCi = Number(slot.getAttribute('data-ci'));
                const rect = slot.getBoundingClientRect();
                const cardTopY = e.clientY - drag.offsetYInsideCard;
-               let fraction = Math.round((cardTopY - rect.top) / 18) * 0.25; 
+               
+               // 🔥 Считаем финальный сдвиг
+               let fraction = Math.round((cardTopY - rect.top) / stepPx) * stepHours; 
                
                let newTimeStart = newTi + fraction;
                if (newTimeStart < 0) newTimeStart = 0; 
@@ -2346,7 +2416,6 @@ export default function Journal() {
                  let finalStart = newTimeStart;
                  let finalEnd = newTimeStart + duration;
                  
-                 // 🔥 ИСПРАВЛЕНИЕ: При сохранении тоже учитываем лимит
                  if (finalEnd > 15) { finalEnd = 15; finalStart = 15 - duration; }
                  
                  const isTrainerMode = viewMode === 'trainers';
@@ -2384,7 +2453,7 @@ export default function Journal() {
        document.removeEventListener('mousemove', handleMouseMove);
        document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [drag, viewMode, columns, bookings]);
+  }, [drag, viewMode, columns, bookings, timeStep]); // 🔥 ВАЖНО: Добавили timeStep в зависимости!
 
   // Динамическое перепозиционирование модалки
   useEffect(() => {
@@ -2417,8 +2486,29 @@ export default function Journal() {
   };
 
   const parseTimeToIndex = (timeStr: string) => {
-    const [h, m] = timeStr.split(':').map(Number);
-    return isNaN(h) ? 0 : (h - 7) + (m / 60);
+    // 🔥 УМНЫЙ ПАРСЕР: Понимает "15", "1530", "15:30", "0945"
+    const clean = timeStr.replace(/[^\d:]/g, '');
+    let h = 0, m = 0;
+    if (clean.includes(':')) {
+      const parts = clean.split(':');
+      h = Number(parts[0]);
+      m = Number(parts[1]);
+    } else if (clean.length > 0) {
+      if (clean.length <= 2) {
+        h = Number(clean);
+      } else if (clean.length === 3) {
+        h = Number(clean.slice(0, 1));
+        m = Number(clean.slice(1, 3));
+      } else {
+        h = Number(clean.slice(0, 2));
+        m = Number(clean.slice(2, 4));
+      }
+    }
+    if (isNaN(h)) h = 0;
+    if (isNaN(m)) m = 0;
+    if (h > 23) h = 23;
+    if (m > 59) m = 59;
+    return (h - 7) + (m / 60);
   };
 
   // Генерация массива 15-минутных интервалов
@@ -2467,18 +2557,22 @@ export default function Journal() {
   };
 
   // Автоматический проскролл
+  // Автоматический проскролл (теперь работает и для создания, и для редактирования)
   useEffect(() => {
-    if (activeDropdown === 'start' && startScrollRef.current) {
-      startScrollRef.current.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' });
+    if ((activeDropdown === 'start' || editActiveDropdown === 'start') && startScrollRef.current) {
+      setTimeout(() => startScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
     }
-    if (activeDropdown === 'end' && endScrollRef.current) {
-      endScrollRef.current.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' });
+    if ((activeDropdown === 'end' || editActiveDropdown === 'end') && endScrollRef.current) {
+      setTimeout(() => endScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
     }
-  }, [activeDropdown]);
+  }, [activeDropdown, editActiveDropdown]);
 
   // Глобальный клик
   useEffect(() => {
-    const closeAllDps = () => setActiveDropdown(null);
+    const closeAllDps = () => {
+      setActiveDropdown(null);
+      setEditActiveDropdown(null); // 🔥 Добавили закрытие для режима редактирования
+    };
     document.addEventListener('click', closeAllDps);
     return () => document.removeEventListener('click', closeAllDps);
   }, []);
@@ -2756,11 +2850,37 @@ export default function Journal() {
           return (
             <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10000 }}>
               
-              {/* Умная линия-связка (тянется туда, куда мы сжимаем карточку) */}
+              {/* 1. 💎 КАРТОЧКА-ПРИЗРАК (Остается на старом месте полупрозрачной) */}
+              <div style={{
+                position: 'absolute',
+                left: 0, right: 0,
+                /* Математика: вычисляем разницу между тянущимся краем и оригинальным */
+                top: (drag.originalStart! - activeStart) * 72,
+                height: (drag.originalEnd! - drag.originalStart!) * 72 - 2,
+                background: b.color,
+                opacity: 0.15, /* Полупрозрачная */
+                borderRadius: '8px',
+                border: `2px dashed ${b.color}`,
+                pointerEvents: 'none',
+                zIndex: -1 /* Прячем под текущую карточку */
+              }} />
+
+              {/* 2. 💎 ИСПРАВЛЕННАЯ ЛИНИЯ-СВЯЗКА (Соединяет призрак и реальность) */}
               <div style={{ 
-                position: 'absolute', left: -1, width: 2, background: 'var(--onyx)',
-                top: isResizeTop && drag.originalStart! < drag.previewStart! ? (drag.originalStart! - activeStart) * 72 : 0,
-                bottom: isResizeBottom && drag.originalEnd! > drag.previewEnd! ? -(drag.originalEnd! - activeEnd) * 72 : 0
+                position: 'absolute',
+                left: -2, /* Чуть отодвинули влево, чтобы не сливалась с бордером */
+                width: 2, 
+                background: 'var(--onyx)',
+                borderRadius: '2px',
+                /* Умная математика: линия рисуется ТОЛЬКО между оригинальным краем и новым. 
+                   +4 и -8 нужны, чтобы линия была чуть короче и не наезжала на скругления (border-radius) */
+                ...(isResizeTop ? {
+                  top: Math.min((drag.originalStart! - activeStart) * 72, 0) + 4,
+                  height: Math.max(Math.abs(drag.originalStart! - activeStart) * 72 - 8, 0)
+                } : {
+                  top: Math.min((drag.originalEnd! - activeStart) * 72, (activeEnd - activeStart) * 72) + 4,
+                  height: Math.max(Math.abs(activeEnd - drag.originalEnd!) * 72 - 8, 0)
+                })
               }} />
               
               {/* Статичное окошко нетронутого края */}
@@ -2991,9 +3111,27 @@ export default function Journal() {
 
             <div style={{ flex: 1 }} />
 
-            <button className="btn-ghost-sm">
-              <Icons.Filter /> Фильтры
-            </button>
+            {/* 🔥 НОВЫЙ СТИЛЬНЫЙ 2x2 ВИДЖЕТ ШАГА СЕТКИ */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="premium-step-toggle">
+                {/* 🔥 МАГИЯ ЗДЕСЬ: Подложка вычисляет свой отступ слева умножая индекс на ширину кнопки (54px) 
+                */}
+                <div 
+                  className="premium-step-slider" 
+                  style={{ transform: `translateX(${[1, 2, 5, 15].indexOf(timeStep) * 54}px)` }} 
+                />
+                
+                {[1, 2, 5, 15].map(step => (
+                  <button
+                    key={step}
+                    className={`premium-step-btn ${timeStep === step ? 'active' : ''}`}
+                    onClick={() => setTimeStep(step)}
+                  >
+                    {step} {step === 1 || step === 2 ? 'м' : 'мин'}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* ── СВОДКА ДНЯ ── */}
@@ -3377,65 +3515,246 @@ export default function Journal() {
             </div>
           </div>
 
-          {/* ТЕЛО С ИНФОРМАЦИЕЙ */}
-          <div className="bp-body" style={{ position: 'relative', zIndex: 1 }}>
+          {/* ТЕЛО С ИНФОРМАЦИЕЙ ИЛИ ФОРМА РЕДАКТИРОВАНИЯ */}
+          {/* minHeight: 180px гарантирует, что модалка не будет прыгать в размерах при переключении! */}
+          <div className="bp-body" style={{ position: 'relative', zIndex: 10, minHeight: '180px' }}>
             
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.Users /></div>
-              <div style={{ flex: 1, paddingTop: 2 }}>
-                <span style={{ fontSize: 15, fontWeight: 800 }}>{popupBooking.clients} / {popupBooking.maxClients}</span>
-                <span style={{ color: 'var(--muted)', marginLeft: 6, fontWeight: 600 }}>мест занято</span>
-              </div>
-            </div>
-            
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.MapPin /></div>
-              <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
-            </div>
-            
-            <div className="bp-row">
-              <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
-              </div>
-              <div style={{ fontWeight: 700 }}>{TRAINERS.find(t => t.id === popupBooking.trainer)?.full}</div>
-            </div>
+            {isEditingBooking ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
+                
+                {/* 1. Название */}
+                <input
+                  className="modal-input"
+                  style={{ margin: 0, height: '42px', fontSize: '14px', borderRadius: '12px', fontWeight: 700 }}
+                  value={editForm.title}
+                  onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="Название занятия"
+                  autoFocus
+                />
+                
+                {/* 2. 🔥 КАСТОМНЫЕ ДРОПДАУНЫ ВРЕМЕНИ (С РУЧНЫМ ВВОДОМ) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  
+                  {/* Начало */}
+                  <div className="kp-time-container" style={{ position: 'relative' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'start' ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>С</span>
+                      <input
+                        type="text"
+                        style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
+                        value={editStartInput}
+                        onFocus={(e) => { e.target.select(); setEditActiveDropdown('start'); }}
+                        onChange={e => setEditStartInput(e.target.value)}
+                        onBlur={(e) => {
+                          let idx = parseTimeToIndex(e.target.value);
+                          setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
+                          setEditActiveDropdown(null);
+                        }}
+                        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                      />
+                    </div>
+                    {editActiveDropdown === 'start' && (
+                      <div className="kp-time-dropdown" ref={startScrollRef}>
+                        {KP_INTERVALS.map(t => (
+                          <div
+                            key={`s-${t}`}
+                            className={`kp-time-item ${formatIndexToTimeStr(editForm.timeStart) === t ? 'active-time-item' : ''}`}
+                            onMouseDown={(e) => {
+                              e.preventDefault(); // 🔥 ОЧЕНЬ ВАЖНО: Предотвращает потерю фокуса у инпута!
+                              let idx = parseTimeToIndex(t);
+                              setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
+                              setEditActiveDropdown(null);
+                            }}
+                          >
+                            {t}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-            {/* Роскошный прогресс-бар в своем мягком контейнере */}
-            {popupBooking.maxClients > 0 && (
-              <div style={{ marginTop: 8, background: 'rgba(26,26,26,0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.03)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Заполненность
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--onyx)' }}>
-                    {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
-                  </span>
+                  {/* Конец */}
+                  <div className="kp-time-container" style={{ position: 'relative' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'end' ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>До</span>
+                      <input
+                        type="text"
+                        style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
+                        value={editEndInput}
+                        onFocus={(e) => { e.target.select(); setEditActiveDropdown('end'); }}
+                        onChange={e => setEditEndInput(e.target.value)}
+                        onBlur={(e) => {
+                          let idx = parseTimeToIndex(e.target.value);
+                          if (idx <= editForm.timeStart) idx = editForm.timeStart + 0.25;
+                          setEditForm(f => ({ ...f, timeEnd: idx }));
+                          setEditActiveDropdown(null);
+                        }}
+                        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                      />
+                    </div>
+                    {editActiveDropdown === 'end' && (
+                      <div className="kp-time-dropdown" ref={endScrollRef}>
+                        {KP_INTERVALS.map(t => {
+                          const idx = parseTimeToIndex(t);
+                          if (idx <= editForm.timeStart) return null;
+                          return (
+                            <div
+                              key={`e-${t}`}
+                              className={`kp-time-item ${formatIndexToTimeStr(editForm.timeEnd) === t ? 'active-time-item' : ''}`}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                setEditForm(f => ({ ...f, timeEnd: idx }));
+                                setEditActiveDropdown(null);
+                              }}
+                            >
+                              {t}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div style={{ height: 6, background: 'rgba(26,26,26,0.06)', borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{ 
-                    height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`, 
-                    background: popupBooking.color, borderRadius: 100,
-                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' 
-                  }} />
+
+                {/* 3. 🔥 ЗАЛЫ (ЧИПСЫ) И ВМЕСТИМОСТЬ В ОДИН ИДЕАЛЬНЫЙ РЯД */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  
+                  {/* Залы (Сжатые чипсы) */}
+                  <div style={{ display: 'flex', gap: '4px', flex: 1 }}>
+                    {HALLS.map(h => (
+                      <div
+                        key={h}
+                        className={`kp-chip ${editForm.hall === h ? 'active' : ''}`}
+                        style={{
+                          flex: 1, height: '42px', padding: 0, margin: 0,
+                          fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          ...(editForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'white', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {})
+                        }}
+                        onClick={(e) => { e.stopPropagation(); setEditForm(f => ({ ...f, hall: h })); }}
+                      >
+                        {/* Сокращаем длинные слова, чтобы всё влезло в 1 ряд */}
+                        {h.replace('Зал ', 'Зал ')}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Вместимость */}
+                  <div style={{ width: '80px', display: 'flex', alignItems: 'center', background: 'var(--bg)', border: '1.5px solid var(--border)', borderRadius: '10px', padding: '0 8px', height: '42px', boxSizing: 'border-box' }}>
+                    <span style={{ color: 'var(--muted)', display: 'flex', transform: 'scale(0.9)' }}><Icons.Users /></span>
+                    <input
+                      type="number" min="1"
+                      style={{ width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', padding: 0 }}
+                      value={editForm.maxClients}
+                      onChange={e => setEditForm(f => ({ ...f, maxClients: e.target.value }))}
+                    />
+                  </div>
+
                 </div>
               </div>
+            ) : (
+              <>
+                <div className="bp-row">
+                  <div className="bp-icon-box"><Icons.Users /></div>
+                  {/* 🔥 ИСПРАВЛЕНИЕ 1: Убрали кривой отступ. Теперь текст идеально по центру по вертикали */}
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontSize: 16, fontWeight: 900, lineHeight: 1 }}>{popupBooking.clients} / {popupBooking.maxClients}</span>
+                    <span style={{ color: 'var(--muted)', marginLeft: 8, fontWeight: 600, fontSize: 13, lineHeight: 1 }}>мест занято</span>
+                  </div>
+                </div>
+                
+                <div className="bp-row">
+                  <div className="bp-icon-box"><Icons.MapPin /></div>
+                  <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
+                </div>
+                
+                <div className="bp-row">
+                  <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
+                  </div>
+                  <div style={{ fontWeight: 700 }}>{TRAINERS.find(t => t.id === popupBooking.trainer)?.full}</div>
+                </div>
+
+                {popupBooking.maxClients > 0 && (
+                  <div style={{ marginTop: 8, background: 'rgba(26,26,26,0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.03)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Заполненность
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--onyx)' }}>
+                        {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
+                      </span>
+                    </div>
+                    <div style={{ height: 6, background: 'rgba(26,26,26,0.06)', borderRadius: 100, overflow: 'hidden' }}>
+                      <div style={{ 
+                        height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`, 
+                        background: popupBooking.color, borderRadius: 100,
+                        transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                      }} />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
           {/* КНОПКИ ДЕЙСТВИЙ */}
           <div className="bp-actions" style={{ position: 'relative', zIndex: 1 }}>
             
-            <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
-              <Icons.UserPlus /> Добавить
-            </button>
-            
-            <button className="bp-btn ghost text-btn" title="Изменить занятие">
-              <Icons.Edit /> Изменить
-            </button>
-            
-            <button className="bp-btn danger icon-only" title="Удалить занятие" onClick={() => deleteBooking(popupBooking.id)}>
-              <Icons.Trash />
-            </button>
+            {isEditingBooking ? (
+              <>
+                <button className="bp-btn ghost text-btn" onClick={(e) => { e.stopPropagation(); setIsEditingBooking(false); }}>
+                  Отмена
+                </button>
+                
+                <button className="bp-btn primary text-btn" onClick={(e) => { 
+                  e.stopPropagation(); 
+                  const updatedMax = parseInt(editForm.maxClients) || 8;
+                  
+                  // 🔥 Сохраняем всё, включая новое время
+                  setBookings(prev => prev.map(b => b.id === popupBooking.id ? { 
+                    ...b, title: editForm.title, hall: editForm.hall, maxClients: updatedMax, 
+                    timeStart: editForm.timeStart, timeEnd: editForm.timeEnd 
+                  } : b));
+                  
+                  // 🔥 Обновляем саму модалку налету
+                  setPopupBooking({ 
+                    ...popupBooking, title: editForm.title, hall: editForm.hall, maxClients: updatedMax, 
+                    timeStart: editForm.timeStart, timeEnd: editForm.timeEnd 
+                  });
+                  
+                  setIsEditingBooking(false);
+                  showToast('Занятие обновлено');
+                }}>
+                  Сохранить
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
+                  <Icons.UserPlus /> Добавить
+                </button>
+                
+                {/* 🔥 ИСПРАВЛЕНИЕ 2: Оживили кнопку Изменить (Больше не лагает) */}
+                <button className="bp-btn ghost text-btn" title="Изменить занятие" onClick={(e) => {
+                  e.stopPropagation();
+                  // Копируем данные карточки в форму и включаем режим редактирования
+                  setEditForm({ 
+                    title: popupBooking.title, 
+                    hall: popupBooking.hall, 
+                    maxClients: String(popupBooking.maxClients),
+                    timeStart: popupBooking.timeStart, // 🔥 Добавили
+                    timeEnd: popupBooking.timeEnd      // 🔥 Добавили
+                  });
+                  setIsEditingBooking(true);
+                }}>
+                  <Icons.Edit /> Изменить
+                </button>
+                
+                <button className="bp-btn danger icon-only" title="Удалить занятие" onClick={() => deleteBooking(popupBooking.id)}>
+                  <Icons.Trash />
+                </button>
+              </>
+            )}
 
           </div>
         </div>
