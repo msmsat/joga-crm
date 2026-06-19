@@ -264,9 +264,6 @@ function CandleChart({ period }: { period: Period }) {
 
 // ─── ВИЗУАЛИЗАЦИЯ RETENTION ───────────────────────────────────────────────────
 function RetentionArc({ value }: { value: number }) {
-  const r = 44;
-  const circumference = 2 * Math.PI * r;
-  const filled = (value / 100) * circumference;
   return (
     <svg width="110" height="60" viewBox="0 0 110 60">
       <path d="M 8 58 A 47 47 0 0 1 102 58" fill="none" stroke="rgba(26,26,26,0.06)" strokeWidth="10" strokeLinecap="round" />
@@ -361,31 +358,6 @@ function EventIllus({ color }: { color: string }) {
       <rect x="10" y="24" width="8" height="8" rx="2" fill={`${color}60`} />
       <rect x="22" y="24" width="8" height="8" rx="2" fill={`${color}30`} />
     </svg>
-  );
-}
-
-// ─── ВКЛ/ВЫКЛ СТРОК ──────────────────────────────────────────────────────────
-function ExpandRow({ children, label }: { children: React.ReactNode; label: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <div onClick={() => setOpen(!open)} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        cursor: 'pointer', padding: '12px 0', borderBottom: '1px solid var(--border)',
-        userSelect: 'none',
-      }}>
-        <span style={{ fontSize: '13px', fontWeight: 600 }}>{label}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2"
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </div>
-      {open && (
-        <div style={{ padding: '12px 0 8px', animation: 'fadeSlide 0.2s ease' }}>
-          {children}
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -793,7 +765,7 @@ function TabTrenery({ period }: { period: Period }) {
 // ═══════════════════════════════════════════════════════════════════════
 // ─── ТАБ: ПО УСЛУГАМ ──────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════
-function TabUslugi({ period }: { period: Period }) {
+function TabUslugi({ period: _period }: { period: Period }) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
@@ -948,7 +920,7 @@ function TabAll({ period }: { period: Period }) {
 // ═══════════════════════════════════════════════════════════════════════
 // ─── ТАБ: СОБЫТИЯ ─────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════
-function TabSobytiya({ period }: { period: Period }) {
+function TabSobytiya({ period: _period }: { period: Period }) {
   const [expanded, setExpanded] = useState<number | null>(null);
 
   return (

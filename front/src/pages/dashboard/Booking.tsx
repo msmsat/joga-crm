@@ -466,11 +466,6 @@ export default function Booking() {
   const [cancelTime, setCancelTime] = useState('4 часа');
   const [language, setLanguage] = useState('Русский');
 
-  const copyLink = () => {
-    navigator.clipboard?.writeText('https://book.velora.studio/your-studio');
-    alert('Ссылка скопирована: https://book.velora.studio/your-studio');
-  };
-
   return (
     <>
       {/* ─── ROW 2: КАНАЛЫ ─── */}

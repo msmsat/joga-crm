@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import '../App.css';
 
@@ -28,6 +28,7 @@ export default function DashboardLayout() {
   }, [location.pathname]);
 
   const handlePrimaryBtn = () => alert('Создать новую запись');
+  const [isAiOpen, setAiOpen] = useState(false);
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', fontFamily: 'var(--font)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', lineHeight: 1.5 }}>
@@ -126,14 +127,54 @@ export default function DashboardLayout() {
           </div>
           <div className="topbar-spacer"></div>
           
-          {/*<button className="topbar-ghost">Фильтр</button>*/}
+          {/* 🔥 НОВАЯ КНОПКА ИИ */}
+          <button 
+            onClick={() => setAiOpen(!isAiOpen)}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px',
+              padding: '0 16px',
+              height: '38px', // Выравниваем по высоте с соседней кнопкой
+              borderRadius: '10px',
+              border: '1.5px solid rgba(123, 108, 212, 0.4)', // Приятный фиолетовый оттенок
+              background: 'linear-gradient(135deg, rgba(123,108,212,0.05) 0%, rgba(123,108,212,0.12) 100%)',
+              color: '#7B6CD4', // Фиолетовый текст
+              fontSize: '13.5px',
+              fontWeight: 700,
+              fontFamily: 'var(--font)',
+              cursor: 'pointer',
+              transition: 'all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)',
+              marginRight: '10px' // Отступ от кнопки "Создать"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(123,108,212,0.1) 0%, rgba(123,108,212,0.2) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(123, 108, 212, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px -4px rgba(123, 108, 212, 0.3)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(123,108,212,0.05) 0%, rgba(123,108,212,0.12) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(123, 108, 212, 0.4)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            {/* Иконка искры (Sparkles), типичная для ИИ */}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>
+            </svg>
+            AI
+          </button>
+
+          {/* Оригинальная кнопка */}
           <button className="topbar-btn" onClick={handlePrimaryBtn}>
             + Создать
           </button>
         </div>
 
         <div className="content">
-          <Outlet /> 
+          <Outlet context={{ isAiOpen, setAiOpen }} />
         </div>
       </div>
       

@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 
 // ─── ТИПЫ ────────────────────────────────────────────────────────────────────
 interface Booking {
@@ -747,11 +748,13 @@ const STYLES = `
   .bp-btn.danger:hover { background: rgba(216,140,154,0.2); }
 
   /* ── МОДАЛКА ДОБАВЛЕНИЯ КЛИЕНТА ── */
+  /* ── МОДАЛКА ДОБАВЛЕНИЯ КЛИЕНТА ── */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(26,26,26,0.3);
     backdrop-filter: blur(4px);
-    z-index: 2000; /* 🔥 ПОДНЯЛИ ВЫШЕ ШАПОК РАСПИСАНИЯ */
+    /* 🔥 ИСПРАВЛЕНИЕ: Ставим 10000, чтобы перекрыть шапки с их z-index 8050 */
+    z-index: 10000; 
     display: flex; align-items: center; justify-content: center;
     animation: overlay-in 0.2s ease;
   }
@@ -762,6 +765,8 @@ const STYLES = `
     box-shadow: 0 24px 64px rgba(26,26,26,0.16);
     width: 420px; max-height: 80vh;
     overflow-y: auto;
+    position: relative; /* Добавляем позиционирование */
+    z-index: 10001; /* Ставим выше оверлея */
     animation: modal-in 0.25s cubic-bezier(0.34,1.2,0.64,1);
   }
   @keyframes modal-in { from{opacity:0;transform:scale(0.9) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
@@ -815,6 +820,9 @@ const STYLES = `
     box-shadow: 0 8px 24px rgba(26,26,26,0.2);
     z-index: 999;
     display: flex; align-items: center; gap: 8px;
+    
+    opacity: 1 !important; /* 🔥 ДОБАВИТЬ ЭТО: Блокируем невидимость из App.css */
+    
     animation: toast-in 0.3s cubic-bezier(0.34,1.2,0.64,1);
   }
   @keyframes toast-in { from{opacity:0;transform:translate(-50%,12px)} to{opacity:1;transform:translate(-50%,0)} }
@@ -1945,6 +1953,167 @@ const STYLES = `
   .premium-step-btn.active {
     color: var(--peach);
   }
+    /* 🔥 СТАТУС ГРАФИКА (Рабочий / Черновик) */
+  .status-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .status-badge.live { background: rgba(91,171,114,0.1); color: #5BAB72; }
+  .status-badge.draft { background: var(--peach-soft); color: var(--peach); }
+  
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; transition: all 0.4s; }
+  .status-dot.live { background: #5BAB72; box-shadow: 0 0 0 3px rgba(91,171,114,0.2); }
+  .status-dot.draft { background: var(--peach); animation: pulse-draft 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+  
+  @keyframes pulse-draft { 
+    0%, 100% { box-shadow: 0 0 0 2px rgba(249,160,139,0.4); } 
+    50% { box-shadow: 0 0 0 6px rgba(249,160,139,0); } 
+  }
+
+  /* Анимация появления кнопок */
+  .draft-actions {
+    display: flex; gap: 8px; align-items: center;
+    animation: slide-draft-btns 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes slide-draft-btns {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+    /* 🔥 ПЕРЕКЛЮЧАТЕЛЬ ВИДА КАЛЕНДАРЯ (День / Неделя / Месяц) */
+  .view-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(26,26,26,0.04); /* Чуть-чуть плотнее, чем у шага сетки */
+    padding: 4px;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .view-slider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: 76px; /* 🔥 Шире, чем у шага сетки, чтобы красиво влезло слово "Неделя" */
+    background: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px -4px rgba(26,26,26,0.08), 0 2px 6px rgba(26,26,26,0.04);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
+  }
+
+  .view-btn {
+    position: relative;
+    z-index: 2;
+    height: 28px;
+    width: 76px;
+    border: none;
+    background: transparent !important;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .view-btn:hover {
+    color: var(--onyx);
+  }
+
+  .view-btn.active {
+    color: var(--peach);
+  }
+    /* ── 🔥 AI CHAT В ПРАВОЙ ПАНЕЛИ ── */
+  .ai-chat-container {
+    display: flex; flex-direction: column; height: 100%;
+    background: linear-gradient(180deg, #FDFCFB 0%, rgba(123,108,212,0.03) 100%);
+  }
+  .ai-chat-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .ai-chat-body {
+    flex: 1; overflow-y: auto; padding: 20px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .ai-chat-body::-webkit-scrollbar { width: 4px; }
+  .ai-chat-body::-webkit-scrollbar-thumb { background: rgba(123,108,212,0.2); border-radius: 4px; }
+  
+  .ai-msg {
+    padding: 12px 16px; border-radius: 16px; font-size: 13.5px; line-height: 1.4;
+    max-width: 88%; font-weight: 500;
+    animation: ai-msg-in 0.3s cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  @keyframes ai-msg-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .ai-msg.user {
+    align-self: flex-end; background: var(--onyx); color: #FFF;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 8px 24px -4px rgba(26,26,26,0.2);
+  }
+  .ai-msg.ai {
+    align-self: flex-start; background: #FFF; color: var(--onyx);
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(123,108,212,0.2);
+    box-shadow: 0 8px 24px -4px rgba(123,108,212,0.12);
+  }
+  
+  .ai-chat-input-wrap {
+    padding: 16px 20px 24px; border-top: 1px solid var(--border);
+    background: #FFF;
+  }
+  .ai-input-box {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 100px; padding: 6px 6px 6px 16px;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .ai-input-box:focus-within {
+    border-color: rgba(123,108,212,0.5);
+    box-shadow: 0 0 0 4px rgba(123,108,212,0.1);
+    background: #FFF;
+  }
+  .ai-input-field {
+    flex: 1; border: none; background: transparent; outline: none;
+    font-size: 13.5px; font-family: var(--font); color: var(--onyx);
+    font-weight: 600;
+  }
+  .ai-input-field::placeholder { color: var(--muted); font-weight: 500; }
+  .ai-send-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: linear-gradient(135deg, #7B6CD4 0%, #6352b8 100%);
+    color: white; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform 0.2s; flex-shrink: 0;
+  }
+  .ai-send-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 12px rgba(123,108,212,0.3); }
+  .ai-send-btn:active:not(:disabled) { transform: scale(0.95); }
+  .ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(100%); }
+  /* 🔥 АНИМАЦИЯ ПЕРЕКЛЮЧЕНИЯ ВИДА (Apple Style) */
+  .anim-view {
+    animation: view-switch-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes view-switch-in {
+    0% { 
+      opacity: 0; 
+      transform: translateY(16px) scale(0.98); 
+      filter: blur(8px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0) scale(1); 
+      filter: blur(0); 
+    }
+  }
 `;
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
@@ -1972,7 +2141,7 @@ function getBookingLayouts(bookings: Booking[]) {
       currentCluster.push(b);
       clusterEnd = b.timeEnd;
     } else {
-      // Если начало текущего меньше конца группы — они пересекаются! (Без учета текста)
+      // 🔥 ЖЕСТКОЕ ПРАВИЛО: Если начало нового СТРОГО МЕНЬШЕ конца группы (даже на 1 минуту) — это наложение!
       if (b.timeStart < clusterEnd) {
         currentCluster.push(b);
         clusterEnd = Math.max(clusterEnd, b.timeEnd);
@@ -1987,30 +2156,22 @@ function getBookingLayouts(bookings: Booking[]) {
     clusters.push(currentCluster);
   }
 
-  // 3. УПАКОВКА ПО ТРЕКАМ (Умное наложение Apple/Google)
+  // 3. УПАКОВКА ПО ТРЕКАМ (Идеальные колонки без наложений)
   clusters.forEach((cluster) => {
     const tracks: Booking[][] = []; 
-    
-    // 🔥 БЕЗОПАСНАЯ ЗОНА ШАПКИ (В часах). 
-    // 0.6 часа = ~43px (Идеально хватает для названия, иконок и зазора)
-    const SAFE_HEADER_OFFSET = 0.6; 
 
     cluster.forEach(b => {
       let placed = false;
       
-      // Алгоритм всегда пытается положить блок как можно левее (начиная с i = 0)
+      // Ищем свободную колонку
       for (let i = 0; i < tracks.length; i++) {
         const track = tracks[i];
         const lastInTrack = track[track.length - 1];
 
-        // 🛑 УМНОЕ ПРАВИЛО: 
-        // Кладем в эту же колонку (наслаиваем поверх), ТОЛЬКО если:
-        // 1. Прошлое занятие полностью закончилось
-        // ИЛИ 2. Наше занятие начинается ниже безопасной зоны шапки прошлого!
-        if (
-          b.timeStart >= lastInTrack.timeEnd || 
-          b.timeStart >= lastInTrack.timeStart + SAFE_HEADER_OFFSET
-        ) {
+        // 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: 
+        // Занятие ложится в эту же колонку ТОЛЬКО если предыдущее ПОЛНОСТЬЮ закончилось.
+        // Никаких пересечений в одной колонке быть не может!
+        if (b.timeStart >= lastInTrack.timeEnd) {
           track.push(b);
           placed = true;
           break; 
@@ -2042,7 +2203,7 @@ function getBookingLayouts(bookings: Booking[]) {
         isCascade = false;
         if (N === 1) {
           left = '0px';
-          width = `calc(100% - ${RIGHT_SPACE}px)`;
+          width = `calc(100% - ${RIGHT_SPACE}px - ${trackIdx * 20}px)`;
         } else {
           // Делим ширину ровно на количество колонок (2 или 3)
           left = `calc(((100% - ${RIGHT_SPACE}px) / ${N}) * ${trackIdx})`;
@@ -2063,8 +2224,10 @@ function getBookingLayouts(bookings: Booking[]) {
         width = `calc(100% - ${RIGHT_SPACE}px - (${dynamicStep} * ${trackIdx}))`;
       }
 
-      // Логика z-index: Занятие, которое правее или ниже, всегда сверху
-      const zIndex = 10 + Math.round(b.timeStart * 100) + trackIdx;
+      // 🔥 НОВАЯ Логика z-index: Занятие, которое ПРАВЕЕ и ВЫШЕ, теперь всегда сверху
+      // trackIdx * 1000 — абсолютный приоритет правой стороне (каждая следующая колонка жестко ложится поверх предыдущей)
+      // - Math.round(...) — инверсия времени: чем раньше началось занятие (чем оно выше на экране), тем больше его z-index
+      const zIndex = 10000 + (trackIdx * 1000) - Math.round(b.timeStart * 10);
 
       layouts.set(b.id, {
         left,
@@ -2108,7 +2271,7 @@ export default function Journal() {
   const [searchQuery, setSearchQuery] = useState('');
   const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
   const [toast, setToast] = useState<string | null>(null);
-  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number } | null>(null);
+  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; colIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
   const popupRef = useRef<HTMLDivElement>(null);
@@ -2116,8 +2279,53 @@ export default function Journal() {
   const [editForm, setEditForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8', timeStart: 0, timeEnd: 0 });
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
+  const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('day');
   const [editStartInput, setEditStartInput] = useState('');
   const [editEndInput, setEditEndInput] = useState('');
+  const [isDraftMode, setIsDraftMode] = useState(false); // Режим черновика
+  const outletContext = useOutletContext<{ isAiOpen: boolean, setAiOpen: (v: boolean) => void }>();
+  const isAiOpen = outletContext?.isAiOpen || false;
+  const setAiOpen = outletContext?.setAiOpen || (() => {});
+
+  // ── Вспомогательная функция для расчета дат выбранной недели ──
+  const getWeekDates = (year: number, month: number, day: number) => {
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay() === 0 ? 6 : date.getDay() - 1; // 0 = Пн, 6 = Вс
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - dayOfWeek);
+    
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      return d;
+    });
+  };
+
+  // 🔥 ЛОГИКА ИИ ЧАТА
+  const [aiMessages, setAiMessages] = useState([
+    { role: 'ai', text: 'Привет! ✨ Я ваш умный ассистент Velora. Могу помочь с анализом расписания, поиском «окон» или статистикой тренеров. Что вас интересует?' }
+  ]);
+  const [aiInput, setAiInput] = useState('');
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Автоскролл чата вниз при новых сообщениях
+  useEffect(() => {
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [aiMessages, isAiOpen]);
+
+  const handleAiSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiInput.trim()) return;
+    
+    // Добавляем сообщение пользователя
+    setAiMessages(prev => [...prev, { role: 'user', text: aiInput }]);
+    setAiInput('');
+    
+    // Имитируем ответ нейросети (пока демо-заглушка)
+    setTimeout(() => {
+      setAiMessages(prev => [...prev, { role: 'ai', text: 'Пока я работаю в демо-режиме 🤖 Скоро я научусь выполнять реальные команды, например: "перенеси Пилатес на час позже" или "кто самый загруженный тренер сегодня?".' }]);
+    }, 800);
+  };
 
   // Синхронизируем инпуты при открытии модалки редактирования
   useEffect(() => {
@@ -2164,12 +2372,33 @@ export default function Journal() {
 
   
   // ── Колонки по режиму ──
-  const columns = viewMode === 'trainers'
+  // 🔥 УМНАЯ ЛОГИКА КОЛОНОК (День или Неделя)
+  const baseColumns = viewMode === 'trainers'
     ? TRAINERS.filter(t => activeTrainers.includes(t.id))
     : HALLS.filter(h => activeHalls.includes(h));
 
+  const weekDates = getWeekDates(calYear, calMonth, selectedDay);
+  
+  // Если выбрана неделя - показываем даты, иначе тренеров/залы
+  const columns = calendarView === 'week' ? weekDates : baseColumns;
+  
+  const activeBookings = bookings.map(b => {
+    // Подменяем данные на лету, если карточка сейчас редактируется
+    if (isEditingBooking && popupBooking && b.id === popupBooking.id) {
+      return { 
+        ...b, 
+        title: editForm.title, 
+        hall: editForm.hall, 
+        maxClients: parseInt(editForm.maxClients) || 8, 
+        timeStart: editForm.timeStart, 
+        timeEnd: editForm.timeEnd 
+      };
+    }
+    return b;
+  });
+
   // ── Фильтрованные записи ──
-  const filteredBookings = bookings.filter(b => {
+  const filteredBookings = activeBookings.filter(b => {
     if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
     return activeHalls.includes(b.hall);
   });
@@ -2240,56 +2469,85 @@ export default function Journal() {
     setNewFormPos({ x: finalX, y: finalY });
   };
 
-  // 🔥 УМНОЕ ПОЗИЦИОНИРОВАНИЕ POPUP КАРТОЧКИ ЗАНЯТИЯ
+  // 🔥 ПРОФЕССИОНАЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ (Динамический поиск свежей карточки)
   const recalcPopupPos = () => {
-    if (!popupTarget || !popupRef.current) return;
+    if (!popupBooking || !popupRef.current) return;
     
-    const rect = popupTarget.getBoundingClientRect(); // Узнаем, где сейчас карточка
-    const SAFE = 16;
-    const GAP = 12; // Премиальный отступ от карточки до модалки
-    const TOOLBAR_H = 56;
-    const RIGHT_PANEL_W = 264; // Ширина правого меню
+    // 🔥 МАГИЯ ЗДЕСЬ: Ищем карточку в DOM прямо сейчас!
+    // Если ты изменил время и карточка перепрыгнула, старый узел умер. 
+    // Но по ID мы всегда найдем актуальную карточку с правильными координатами.
+    const activeCard = document.querySelector(`[data-booking-id="${popupBooking.id}"]`);
+    if (!activeCard) return;
 
-    // Берем реальные размеры модалки из DOM
-    const POPUP_W = popupRef.current.offsetWidth;
-    const POPUP_H = popupRef.current.offsetHeight;
+    const card = activeCard.getBoundingClientRect();
+    const popup = popupRef.current;
+    
+    const popupW = popup.offsetWidth;
+    const popupH = popup.offsetHeight;
 
-    const cleanGridWidth = window.innerWidth - RIGHT_PANEL_W;
-    const spaceRight = cleanGridWidth - rect.right - GAP;
-    const spaceLeft  = rect.left - GAP;
+    const GAP = 12; 
+    const SAFE_Y = 16; 
+    const TOOLBAR_H = 56; 
+    const RIGHT_PANEL_W = 264; 
+    const TIME_COL_W = 56; 
+
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+
+    const minX = TIME_COL_W + GAP; 
+    const maxX = viewportW - RIGHT_PANEL_W - GAP; 
 
     let finalX = 0;
+    let finalY = 0;
 
-    // Математика: справа или слева?
-    if (spaceRight >= POPUP_W) {
-      finalX = rect.right + GAP; // Идеально: ставим справа
-    } else if (spaceLeft >= POPUP_W) {
-      finalX = rect.left - POPUP_W - GAP; // Места нет: зеркалим влево
+    // ── 1. ВЫСЧИТЫВАЕМ ОСЬ X ──
+    if (card.right + GAP + popupW <= maxX) {
+      finalX = card.right + GAP;
+    } else if (card.left - GAP - popupW >= minX) {
+      finalX = card.left - popupW - GAP;
     } else {
-      // Если экран узкий: жмем к безопасному краю
-      finalX = spaceRight > spaceLeft ? cleanGridWidth - POPUP_W - SAFE : SAFE;
+      finalX = maxX - popupW;
     }
 
-    // Защита от вылета за экран по горизонтали
-    if (finalX < SAFE) finalX = SAFE;
-    if (finalX + POPUP_W > window.innerWidth - SAFE) {
-      finalX = window.innerWidth - POPUP_W - SAFE;
+    // ── 2. ВЫСЧИТЫВАЕМ ОСЬ Y ──
+    finalY = card.top;
+
+    if (finalY + popupH > viewportH - SAFE_Y) {
+      finalY = card.bottom - popupH - 2; 
     }
 
-    // 🔥 УМНОЕ ВЫРАВНИВАНИЕ ПО ВЕРТИКАЛИ (Решение твоей проблемы)
-    let finalY = rect.top;
-    
-    // Если модалка вылетает СНИЗУ за экран — поднимаем её вверх
-    if (finalY + POPUP_H > window.innerHeight - SAFE) {
-      finalY = window.innerHeight - POPUP_H - SAFE; 
-    }
-    // Если залетает СВЕРХУ под тулбар — опускаем
-    if (finalY < TOOLBAR_H + SAFE) {
-      finalY = TOOLBAR_H + SAFE; 
+    if (finalY < TOOLBAR_H + SAFE_Y) {
+      finalY = TOOLBAR_H + SAFE_Y;
     }
 
     setPopupPos({ x: finalX, y: finalY });
   };
+
+  // 🔥 СИНХРОННЫЙ РЕНДЕР
+  useLayoutEffect(() => {
+    if (!popupBooking) return;
+    
+    recalcPopupPos(); 
+    
+    const wrapper = gridWrapperRef.current;
+    const popupEl = popupRef.current;
+    
+    if (wrapper) wrapper.addEventListener('scroll', recalcPopupPos);
+    window.addEventListener('resize', recalcPopupPos);
+    
+    let ro: ResizeObserver | null = null;
+    if (popupEl) {
+      ro = new ResizeObserver(() => recalcPopupPos());
+      ro.observe(popupEl);
+    }
+    
+    return () => {
+      if (wrapper) wrapper.removeEventListener('scroll', recalcPopupPos);
+      window.removeEventListener('resize', recalcPopupPos);
+      if (ro && popupEl) ro.unobserve(popupEl);
+    };
+  // Обрати внимание: мы убрали popupTarget из зависимостей, так как он больше не нужен!
+  }, [popupBooking, isEditingBooking, editForm.timeStart, editForm.timeEnd, editForm.hall]);
 
   // Слушаем скролл и изменение размера окна
   useEffect(() => {
@@ -2301,17 +2559,26 @@ export default function Journal() {
     // Ждем 1 кадр, чтобы React отрендерил модалку и мы узнали ее высоту
     const timer = setTimeout(recalcPopupPos, 0); 
     const wrapper = gridWrapperRef.current;
+    const popupEl = popupRef.current;
     
-    // Модалка будет ездить за карточкой при скролле!
     if (wrapper) wrapper.addEventListener('scroll', recalcPopupPos);
     window.addEventListener('resize', recalcPopupPos);
+
+    let ro: ResizeObserver | null = null;
+    if (popupEl) {
+      ro = new ResizeObserver(() => {
+        recalcPopupPos();
+      });
+      ro.observe(popupEl);
+    }
     
     return () => {
       if (wrapper) wrapper.removeEventListener('scroll', recalcPopupPos);
       window.removeEventListener('resize', recalcPopupPos);
       clearTimeout(timer);
     };
-  }, [popupBooking, popupTarget]);
+  // 🔥 ФИКС: Добавляем параметры editForm, чтобы модалка синхронно переезжала за карточкой
+  }, [popupBooking, popupTarget, isEditingBooking, editForm.timeStart, editForm.timeEnd, editForm.hall]);
 
   // 🔥 ГЛОБАЛЬНЫЙ СЛУШАТЕЛЬ ДЛЯ ПРЕМИАЛЬНОГО DRAG & DROP И RESIZE
   useEffect(() => {
@@ -2546,12 +2813,13 @@ export default function Journal() {
   const openNewSlot = (
     trainerIdx: number,
     timeIdx: number,
+    colIndex?: number,
   ) => {
 
     const blockStart = timeIdx;        // начало блока (целый час, например 11)
     const blockEnd   = timeIdx + 1;    // конец блока (12)
 
-    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd });
+    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd, colIndex });
     setNewForm({ title: '', hall: 'Зал 1', maxClients: '8' });
     setShowNewForm(true);
   };
@@ -2583,11 +2851,13 @@ export default function Journal() {
     const handler = (e: MouseEvent) => {
       const target = e.target as Element;
       
+      // 🔥 ФИКС: Если мы кликнули по элементу (например, времени), и он тут же исчез из DOM — игнорируем!
+      if (!document.contains(target)) return;
+
       // 1. Если кликнули внутри попапа (по кнопке) — не закрываем, пусть кнопка отработает
       if (popupRef.current && popupRef.current.contains(target)) return;
 
       // 2. Если кликнули по любой карточке занятия — игнорируем! 
-      // Карточка сама решит: открыться ей или закрыться (см. Шаг 2)
       if (target.closest('.booking-card')) return;
 
       // 3. В остальных случаях (клик по фону, пустой сетке, тулбару) — закрываем окно
@@ -2597,14 +2867,32 @@ export default function Journal() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Тост
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
+  const showToast = React.useCallback((msg: string) => {
+    if (toastTimer.current) {
+      window.clearTimeout(toastTimer.current as any);
+    }
+
+    // 🔥 Сбрасываем стейт на 10 миллисекунд, чтобы React "пересоздал" тост 
+    // и заново проиграл красивую анимацию появления
+    setToast(null);
+    setTimeout(() => {
+      setToast(msg);
+    }, 10);
+
+    toastTimer.current = window.setTimeout(() => {
+      setToast(null);
+    }, 4000) as any;
+  }, []);
 
   // ── Мини-календарь ──
   const changeMonth = (dir: number) => {
+    if (!isDraftMode) {
+      showToast("Переключитесь в режим черновика для изменения календаря");
+      return;
+    }
     let m = calMonth + dir;
     let y = calYear;
     if (m > 11) { m = 0; y++; }
@@ -2614,6 +2902,10 @@ export default function Journal() {
   };
 
   const changeDay = (dir: number) => {
+    if (!isDraftMode) {
+      showToast("Переключитесь в режим черновика для изменения календаря");
+      return;
+    }
     // JS Date сам перекинет месяц/год, если мы выйдем за пределы (например, 32 августа станет 1 сентября)
     const targetDate = new Date(calYear, calMonth, selectedDay + dir);
     setCalYear(targetDate.getFullYear());
@@ -2745,18 +3037,14 @@ export default function Journal() {
     c.phone.includes(searchQuery)
   );
 
-  // ── Рендер карточки записи (Обновленный) ──
-  // ── Рендер карточки записи (Обновленный) ──
-  const renderBookingCard = (b: Booking, layout: any, ci: number = 0) => {
+  const renderBookingCard = (b: Booking, layout: any) => {
     const isResizeTop = drag?.type === 'resize-top' && drag?.id === b.id;
     const isResizeBottom = drag?.type === 'resize-bottom' && drag?.id === b.id;
     const isResize = isResizeTop || isResizeBottom;
 
-    // Живые координаты
     const activeStart = isResizeTop ? drag.previewStart! : b.timeStart;
     const activeEnd = isResizeBottom ? drag.previewEnd! : b.timeEnd;
     
-    // 🔥 МАГИЯ: Карточка меняет позицию Y (top) на лету, если мы тянем верх!
     const startOffset = (activeStart - Math.floor(b.timeStart)) * 72;
     const top = startOffset + 1; 
     const height = (activeEnd - activeStart) * 72 - 2;
@@ -2770,60 +3058,46 @@ export default function Journal() {
     return (
       <div
         key={b.id}
-        // Добавляем класс is-dragging
+        data-booking-id={b.id}
         className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
-        
-        // 🔥 УМНЫЙ ЗАХВАТ МЫШЬЮ
-        // 🔥 УМНЫЙ ЗАХВАТ МЫШЬЮ ДЛЯ ПЕРЕМЕЩЕНИЯ
         onMouseDown={e => {
+          if (!isDraftMode) {
+            showToast("Для перемещения занятий включите режим черновика");
+            return; 
+          }
           e.stopPropagation(); 
           const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
           const offsetYInsideCard = e.clientY - rect.top;
-          
           setDrag({
-             id: b.id,
-             type: 'move', // 🔥 УКАЗЫВАЕМ, ЧТО ЭТО MOVE
-             startX: e.clientX,
-             startY: e.clientY,
+             id: b.id, type: 'move', startX: e.clientX, startY: e.clientY,
              deltaX: 0, deltaY: 0, offsetYInsideCard, isDragging: false
           });
         }}
-
-        // 🔥 КЛИК С ЗАЩИТОЙ
         onClick={e => {
           e.stopPropagation();
-          // Если мы только что отпустили карточку после перетаскивания — игнорируем клик!
           if (wasDragging) return; 
-
-          if (popupBooking?.id === b.id) {
-            setPopupBooking(null);
-          } else {
-            openBookingPopup(e, b);
-          }
+          if (popupBooking?.id === b.id) setPopupBooking(null);
+          else openBookingPopup(e, b);
         }}
-        
         style={{
-          top, height,
-          left: layout.left,
-          width: layout.width,
-          // 🔥 ИСПРАВЛЕНИЕ: Выдаем карточке Максимальный индекс (9999), чтобы она вырвалась поверх всех панелей!
+          top, height, left: layout.left, width: layout.width,
           zIndex: isDragging ? 9999 : (isSelected ? 999 : layout.zIndex), 
           background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
           border: `2px solid ${b.color}`,
           color: b.color,
-          // 🔥 ИСПРАВЛЕНИЕ: Отключили scale(1.02) для ресайза! Теперь верх карточки будет стоять намертво!
+          cursor: isDraftMode ? 'grab' : 'pointer',
           ...(isDragging && drag.type === 'move' ? {
              transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
           } : {})
         } as React.CSSProperties}
       >
-
         <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
           {b.title}
         </div>
         
+        {/* 🔥 Исправлено: теперь isDraftMode корректно проверяется снаружи JSX */}
         <div className="b-meta">
-          {height > 36 && (
+          {height > 36 && isDraftMode && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
               <Icons.Users />
               <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
@@ -2837,158 +3111,24 @@ export default function Journal() {
             <div style={{ height: '100%', width: `${fillRatio * 100}%`, background: b.color, borderRadius: 1, transition: 'width 0.5s ease' }} />
           </div>
         )}
-        {/* 🔥 УНИВЕРСАЛЬНЫЕ ИНДИКАТОРЫ И ДЕЛЬТА ПРИ РЕСАЙЗЕ (ВЕРХ И НИЗ) */}
-        {isResize && isDragging && (() => {
-          // Если тянем верх ВВЕРХ, время уменьшается, значит продолжительность РАСТЕТ
-          const diffHours = isResizeBottom 
-            ? drag.previewEnd! - drag.originalEnd! 
-            : drag.originalStart! - drag.previewStart!;
-            
-          const diffMins = Math.round(diffHours * 60);
-          const sign = diffMins > 0 ? '+' : '';
-          const hasChanged = diffMins !== 0;
 
-          return (
-            <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10000 }}>
-              
-              {/* 1. 💎 КАРТОЧКА-ПРИЗРАК (Остается на старом месте полупрозрачной) */}
-              <div style={{
-                position: 'absolute',
-                left: 0, right: 0,
-                /* Математика: вычисляем разницу между тянущимся краем и оригинальным */
-                top: (drag.originalStart! - activeStart) * 72,
-                height: (drag.originalEnd! - drag.originalStart!) * 72 - 2,
-                background: b.color,
-                opacity: 0.15, /* Полупрозрачная */
-                borderRadius: '8px',
-                border: `2px dashed ${b.color}`,
-                pointerEvents: 'none',
-                zIndex: -1 /* Прячем под текущую карточку */
-              }} />
-
-              {/* 2. 💎 ИСПРАВЛЕННАЯ ЛИНИЯ-СВЯЗКА (Соединяет призрак и реальность) */}
-              <div style={{ 
-                position: 'absolute',
-                left: -2, /* Чуть отодвинули влево, чтобы не сливалась с бордером */
-                width: 2, 
-                background: 'var(--onyx)',
-                borderRadius: '2px',
-                /* Умная математика: линия рисуется ТОЛЬКО между оригинальным краем и новым. 
-                   +4 и -8 нужны, чтобы линия была чуть короче и не наезжала на скругления (border-radius) */
-                ...(isResizeTop ? {
-                  top: Math.min((drag.originalStart! - activeStart) * 72, 0) + 4,
-                  height: Math.max(Math.abs(drag.originalStart! - activeStart) * 72 - 8, 0)
-                } : {
-                  top: Math.min((drag.originalEnd! - activeStart) * 72, (activeEnd - activeStart) * 72) + 4,
-                  height: Math.max(Math.abs(activeEnd - drag.originalEnd!) * 72 - 8, 0)
-                })
-              }} />
-              
-              {/* Статичное окошко нетронутого края */}
-              <div className="drag-col-tooltip" style={{ 
-                left: -8, 
-                top: isResizeBottom ? 0 : 'auto', 
-                bottom: isResizeTop ? 0 : 'auto',
-                transform: isResizeBottom ? 'translate(-100%, -50%)' : 'translate(-100%, 50%)', 
-                opacity: 1 
-              }}>
-                 {formatIndexToTimeStr(isResizeBottom ? b.timeStart : b.timeEnd)}
-              </div>
-
-              {/* Призрак исходного времени */}
-              {hasChanged && (
-                <div className="drag-col-tooltip" style={{ 
-                  left: -8, 
-                  top: isResizeBottom ? (drag.originalEnd! - activeStart) * 72 : (drag.originalStart! - activeStart) * 72, 
-                  transform: 'translate(-100%, -50%)', 
-                  opacity: 0.4 
-                }}>
-                   {formatIndexToTimeStr(isResizeBottom ? drag.originalEnd! : drag.originalStart!)}
-                </div>
-              )}
-
-              {/* 🔥 ДИНАМИЧНОЕ ОКОШКО ВРЕМЕНИ (Вернули обратно налево, к линии времени) */}
-              <div className="drag-col-tooltip" style={{ 
-                left: -8, 
-                top: isResizeTop ? 0 : 'auto',
-                bottom: isResizeBottom ? 0 : 'auto', 
-                transform: isResizeTop ? 'translate(-100%, -50%)' : 'translate(-100%, 50%)', 
-                opacity: 1 
-              }}>
-                 {formatIndexToTimeStr(isResizeTop ? drag.previewStart! : drag.previewEnd!)}
-              </div>
-
-              {/* 🔥 БЕЙДЖ ДЕЛЬТЫ (Висит по центру тянущегося края) */}
-              {hasChanged && (
-                <div style={{
-                   position: 'absolute',
-                   left: '50%',
-                   top: isResizeTop ? 0 : 'auto',
-                   /* 🔥 МАГИЯ ЗДЕСЬ: Если тянем низ - бейдж остается ВНУТРИ карточки (отступ 8px от низа) */
-                   bottom: isResizeBottom ? '8px' : 'auto',
-                   /* Если верх - выносим НАД карточкой. Если низ - просто центруем по горизонтали */
-                   transform: isResizeTop ? 'translate(-50%, calc(-100% - 8px))' : 'translateX(-50%)',
-                   background: 'var(--peach)', color: 'white', padding: '4px 8px',
-                   borderRadius: '6px', fontSize: '11px', fontWeight: 800,
-                   boxShadow: '0 4px 12px rgba(249,160,139,0.3)', whiteSpace: 'nowrap',
-                   zIndex: 10001
-                }}>
-                  {sign}{diffMins} мин
-                </div>
-              )}
-
-            </div>
-          );
-        })()}
-
-        {/* 🔥 НЕВИДИМАЯ ЗОНА ИЗМЕНЕНИЯ РАЗМЕРА (ВЕРХ) */}
-        {isSelected && !isDragging && (
-          <div
-            style={{
-              /* Полоса на всю ширину карточки, высотой 24px для удобного захвата */
-              position: 'absolute', top: 0, left: 0, right: 0, height: 24, 
-              cursor: 'ns-resize', /* Стандартный курсор растягивания вверх-вниз */
-              zIndex: 1000
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              setPopupBooking(null);
-              setDrag({
-                id: b.id, type: 'resize-top',
-                startX: e.clientX, startY: e.clientY,
-                deltaX: 0, deltaY: 0, offsetYInsideCard: 0,
-                isDragging: true,
-                previewStart: b.timeStart, previewEnd: b.timeEnd,
-                originalStart: b.timeStart, originalEnd: b.timeEnd,
-              });
-            }}
-          />
+        {isResize && isDragging && (
+          <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10000 }}>
+             <div style={{ position: 'absolute', left: 0, right: 0, top: (drag.originalStart! - activeStart) * 72, height: (drag.originalEnd! - drag.originalStart!) * 72 - 2, background: b.color, opacity: 0.15, borderRadius: '8px', border: `2px dashed ${b.color}`, pointerEvents: 'none', zIndex: -1 }} />
+             <div style={{ 
+                position: 'absolute', left: -2, width: 2, background: 'var(--onyx)', borderRadius: '2px',
+                ...(isResizeTop ? { top: Math.min((drag.originalStart! - activeStart) * 72, 0) + 4, height: Math.max(Math.abs(drag.originalStart! - activeStart) * 72 - 8, 0) } 
+                               : { top: Math.min((drag.originalEnd! - activeStart) * 72, (activeEnd - activeStart) * 72) + 4, height: Math.max(Math.abs(activeEnd - drag.originalEnd!) * 72 - 8, 0) })
+             }} />
+          </div>
         )}
 
-        {/* 🔥 НЕВИДИМАЯ ЗОНА ИЗМЕНЕНИЯ РАЗМЕРА (НИЗ) */}
-        {isSelected && !isDragging && (
-          <div
-            style={{
-              /* Полоса на всю ширину карточки, высотой 24px для удобного захвата */
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: 24, 
-              cursor: 'ns-resize', /* Стандартный курсор растягивания вверх-вниз */
-              zIndex: 1000
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              setPopupBooking(null);
-              setDrag({
-                id: b.id, type: 'resize-bottom',
-                startX: e.clientX, startY: e.clientY,
-                deltaX: 0, deltaY: 0, offsetYInsideCard: 0,
-                isDragging: true,
-                previewStart: b.timeStart, previewEnd: b.timeEnd,
-                originalStart: b.timeStart, originalEnd: b.timeEnd,
-              });
-            }}
-          />
+        {isSelected && !isDragging && isDraftMode && (
+          <>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} onMouseDown={(e) => { e.stopPropagation(); setPopupBooking(null); setDrag({ id: b.id, type: 'resize-top', startX: e.clientX, startY: e.clientY, deltaX: 0, deltaY: 0, offsetYInsideCard: 0, isDragging: true, previewStart: b.timeStart, previewEnd: b.timeEnd, originalStart: b.timeStart, originalEnd: b.timeEnd }); }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} onMouseDown={(e) => { e.stopPropagation(); setPopupBooking(null); setDrag({ id: b.id, type: 'resize-bottom', startX: e.clientX, startY: e.clientY, deltaX: 0, deltaY: 0, offsetYInsideCard: 0, isDragging: true, previewStart: b.timeStart, previewEnd: b.timeEnd, originalStart: b.timeStart, originalEnd: b.timeEnd }); }} />
+          </>
         )}
-
       </div>
     );
   };
@@ -3003,6 +3143,7 @@ export default function Journal() {
 
           {/* ── ТУЛБАР ── */}
           <div className="j-toolbar">
+            
             {/* Дата навигация */}
             <button className="btn-icon" onClick={() => changeDay(-1)}>
               <Icons.ChevronLeft />
@@ -3112,26 +3253,31 @@ export default function Journal() {
 
             <div style={{ flex: 1 }} />
 
-            {/* 🔥 НОВЫЙ СТИЛЬНЫЙ 2x2 ВИДЖЕТ ШАГА СЕТКИ */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div className="premium-step-toggle">
-                {/* 🔥 МАГИЯ ЗДЕСЬ: Подложка вычисляет свой отступ слева умножая индекс на ширину кнопки (54px) 
-                */}
-                <div 
-                  className="premium-step-slider" 
-                  style={{ transform: `translateX(${[1, 2, 5, 15].indexOf(timeStep) * 54}px)` }} 
-                />
-                
-                {[1, 2, 5, 15].map(step => (
-                  <button
-                    key={step}
-                    className={`premium-step-btn ${timeStep === step ? 'active' : ''}`}
-                    onClick={() => setTimeStep(step)}
-                  >
-                    {step} {step === 1 || step === 2 ? 'м' : 'мин'}
-                  </button>
-                ))}
-              </div>
+            {/* 🔥 НОВЫЙ БЛОК: День / Неделя / Месяц (В самом левом углу) */}
+            <div className="view-toggle">
+              {/* Плавающая белая подложка */}
+              <div 
+                className="view-slider" 
+                style={{ transform: `translateX(${['day', 'week', 'month'].indexOf(calendarView) * 76}px)` }} 
+              />
+              <button 
+                className={`view-btn ${calendarView === 'day' ? 'active' : ''}`} 
+                onClick={() => setCalendarView('day')}
+              >
+                День
+              </button>
+              <button 
+                className={`view-btn ${calendarView === 'week' ? 'active' : ''}`} 
+                onClick={() => setCalendarView('week')}
+              >
+                Неделя
+              </button>
+              <button 
+                className={`view-btn ${calendarView === 'month' ? 'active' : ''}`} 
+                onClick={() => setCalendarView('month')}
+              >
+                Месяц
+              </button>
             </div>
           </div>
 
@@ -3157,20 +3303,116 @@ export default function Journal() {
               <div className="ds-val">{TRAINERS.filter(t => activeTrainers.includes(t.id)).length}</div>
               <div className="ds-key">тренеров активно</div>
             </div>
+
+            {/* 🔥 ПЕРЕНЕСЕННЫЙ ПЕРЕКЛЮЧАТЕЛЬ ШАГА (Теперь в нижней панели) */}
+            {isDraftMode && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Шаг сетки</span>
+                <div className="premium-step-toggle">
+                  <div 
+                    className="premium-step-slider" 
+                    style={{ transform: `translateX(${[1, 2, 5, 15].indexOf(timeStep) * 54}px)` }} 
+                  />
+                  {[1, 2, 5, 15].map(step => (
+                    <button
+                      key={step}
+                      className={`premium-step-btn ${timeStep === step ? 'active' : ''}`}
+                      onClick={() => setTimeStep(step)}
+                    >
+                      {step} {step === 1 || step === 2 ? 'м' : 'мин'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 🔥 НОВЫЙ БЛОК: СТАТУС И УПРАВЛЕНИЕ ЧЕРНОВИКОМ */}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px', paddingRight: '16px' }}>
+              
+              {/* Красивый индикатор статуса */}
+              <div className={`status-badge ${isDraftMode ? 'draft' : 'live'}`}>
+                <div className={`status-dot ${isDraftMode ? 'draft' : 'live'}`} />
+                {isDraftMode ? 'Режим черновика' : 'Рабочий график'}
+              </div>
+              
+              <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+
+              {/* Кнопки управления */}
+              {!isDraftMode ? (
+                <button 
+                  className="bp-btn ghost text-btn draft-actions" 
+                  style={{ height: 34, padding: '0 16px', fontSize: 12.5 }} 
+                  onClick={() => setIsDraftMode(true)}
+                >
+                  <Icons.Edit /> Изменить график
+                </button>
+              ) : (
+                <div className="draft-actions">
+                  <button 
+                    className="bp-btn ghost text-btn" 
+                    style={{ height: 34, padding: '0 16px', fontSize: 12.5 }} 
+                    onClick={() => setIsDraftMode(false)}
+                  >
+                    Отменить
+                  </button>
+                  <button 
+                    className="bp-btn primary text-btn" 
+                    style={{ height: 34, padding: '0 20px', fontSize: 12.5, boxShadow: '0 4px 12px rgba(249,160,139,0.3)' }} 
+                    onClick={() => { setIsDraftMode(false); showToast('График успешно опубликован!'); }}
+                  >
+                    <Icons.Check /> Опубликовать
+                  </button>
+                </div>
+              )}
+            </div>
+
           </div>
 
           {/* ── СЕТКА ── */}
           <div className="j-layout">
             <div className="j-grid-wrapper" ref={gridWrapperRef}>
               <div
-                className="j-grid"
-                style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(170px, 1fr))` }}
+                key={calendarView} // 🔥 МАГИЯ: Ключ заставляет React полностью перерисовать сетку с анимацией
+                className="j-grid anim-view"
+                style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(${calendarView === 'week' ? '140px' : '170px'}, 1fr))` }}
               >
-                {/* 🔥 ИСПРАВЛЕННЫЙ ВЕРХНИЙ ЛЕВЫЙ УГОЛ (Теперь он не перекрывает Анну) */}
                 <div className="j-top-left-corner" />
 
-                {/* Заголовки колонок */}
+                {/* ── ЗАГОЛОВКИ КОЛОНОК ── */}
                 {columns.map((col, ci) => {
+                  
+                  // 1. РЕЖИМ "НЕДЕЛЯ"
+                  if (calendarView === 'week') {
+                    const date = col as Date;
+                    const isToday = date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+                    const dayName = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'][ci];
+                    
+                    // Умное распределение тестовых занятий по дням недели
+                    const dayBookings = filteredBookings.filter(b => (parseInt(b.id.replace(/\D/g, '')) || 0) % 7 === ci);
+
+                    return (
+                      <div key={ci} className="j-col-header" style={{ borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 8px', minWidth: '140px' }}>
+                         <div style={{ fontSize: 11, fontWeight: 800, color: isToday ? 'var(--peach)' : 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8 }}>
+                           {dayName}
+                         </div>
+                         <div style={{ 
+                           fontSize: 22, fontWeight: 900, 
+                           color: isToday ? '#FFF' : 'var(--onyx)', 
+                           background: isToday ? 'var(--peach)' : 'transparent',
+                           width: 42, height: 42, borderRadius: '50%',
+                           display: 'flex', alignItems: 'center', justifyContent: 'center',
+                           boxShadow: isToday ? '0 8px 24px -4px rgba(249,160,139,0.5)' : 'none'
+                         }}>
+                           {date.getDate()}
+                         </div>
+                         <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 8 }}>
+                           {dayBookings.length} занятий
+                         </div>
+                      </div>
+                    );
+                  }
+
+                  // 2. РЕЖИМ "ДЕНЬ" (Тренеры / Залы)
                   const isTrainerMode = viewMode === 'trainers';
                   const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
                   const hallName = !isTrainerMode ? (col as string) : null;
@@ -3179,26 +3421,11 @@ export default function Journal() {
                   );
 
                   return (
-                    <div
-                      key={ci}
-                      className="j-col-header"
-                      style={{
-                        borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
-                        display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center'
-                      }}
-                    >
+                    <div key={ci} className="j-col-header" style={{ borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center' }}>
                       {trainer ? (
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            {/* Роскошный аватар тренера */}
-                            <div style={{
-                              width: 38, height: 38, borderRadius: '12px',
-                              background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
-                              border: `1.5px solid ${trainer.color}30`,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
-                              boxShadow: `0 4px 12px ${trainer.color}15`
-                            }}>
+                            <div style={{ width: 38, height: 38, borderRadius: '12px', background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`, border: `1.5px solid ${trainer.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0, boxShadow: `0 4px 12px ${trainer.color}15` }}>
                               {trainer.initials}
                             </div>
                             <div>
@@ -3221,133 +3448,64 @@ export default function Journal() {
                   );
                 })}
 
-                {/* Ряды времени */}
+                {/* ── РЯДЫ ВРЕМЕНИ ── */}
                 {TIMES.map((t, ti) => (
                   <React.Fragment key={ti}>
                     <div className="j-time-cell">{t}</div>
+                    
                     {columns.map((col, ci) => {
+                      let colBookings = [];
+                      let trainer: any = null;
                       const isTrainerMode = viewMode === 'trainers';
-                      const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
-                      const hallName = !isTrainerMode ? (col as string) : null;
 
-                      const colBookings = filteredBookings.filter(b =>
-                        isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName
-                      );
+                      // 🔥 Распределение занятий
+                      if (calendarView === 'week') {
+                        colBookings = filteredBookings.filter(b => (parseInt(b.id.replace(/\D/g, '')) || 0) % 7 === ci);
+                      } else {
+                        trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
+                        const hallName = !isTrainerMode ? (col as string) : null;
+                        colBookings = filteredBookings.filter(b =>
+                          isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName
+                        );
+                      }
+
                       const layouts = getBookingLayouts(colBookings);
                       const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
-
-                      // 🔥 Умный расчет точного старта в текущем часе
                       const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
 
                       return (
                         <div
-                          key={ci}
-                          data-ti={ti} // 🔥 ВАЖНО для координат времени
-                          data-ci={ci} // 🔥 ВАЖНО для колонки
-                          className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook ? 'is-targeted' : ''}`}
-                          onMouseEnter={() => { 
-                            if (canBook && !showNewForm && !popupBooking) setHoveredSlot(`${ti}-${ci}`); 
-                          }}
+                          key={ci} data-ti={ti} data-ci={ci}
+                          className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook && isDraftMode ? 'is-targeted' : ''}`}
+                          onMouseEnter={() => { if (canBook && !showNewForm && !popupBooking && isDraftMode) setHoveredSlot(`${ti}-${ci}`); }}
                           onMouseLeave={() => setHoveredSlot(null)}
-                          
-                          style={{ 
-                            borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
-                            borderRadius: '10px',
-                            zIndex: 'auto',
-                          }}
+                          style={{ borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', borderRadius: '10px', zIndex: 'auto' }}
                           onMouseDown={(e) => {
-                            // 🔥 ДОБАВЛЕНО: || drag
-                            // Теперь, если карточка прилипла к мышке (drag активен), мы блокируем открытие формы!
-                            if (showNewForm || popupBooking || drag || wasDragging) return;
-                            
+                            if (!isDraftMode || showNewForm || popupBooking || drag || wasDragging) return;
                             e.stopPropagation();
-                            const trainerIdx = isTrainerMode ? trainer!.id : 0;
-                            openNewSlot(trainerIdx, ti);
+                            const trainerIdx = (calendarView === 'week' || !isTrainerMode) ? 0 : trainer!.id;
+                            openNewSlot(trainerIdx, ti, ci); // Передаем колонку!
                           }}
                         >
-                          {/* Передаем layout в рендер */}
-                          {/* Передаем layout и индекс колонки в рендер */}
-                          {hourBookings.map(booking => renderBookingCard(booking, layouts.get(booking.id), ci))}
-                          {/* 💎 ПРЕМИАЛЬНОЕ ЖИВОЕ ПРЕВЬЮ НОВОЙ ЗАПИСИ 💎 */}
-                          {ti === 0 && drag?.isDragging && drag.previewColumnIndex === ci && drag.previewStart !== undefined && drag.previewEnd !== undefined && (
-                            <div className="drag-column-marker" style={{
-                              top: drag.previewStart * 72,
-                              height: (drag.previewEnd - drag.previewStart) * 72
-                            }}>
-                              <div className="drag-col-tooltip start">{formatIndexToTimeStr(drag.previewStart)}</div>
-                              <div className="drag-col-tooltip end">{formatIndexToTimeStr(drag.previewEnd)}</div>
-                            </div>
-                          )}
-                          {newBookingSlot && newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0) &&
-                            newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
+                          {hourBookings.map(booking => renderBookingCard(booking, layouts.get(booking.id)))}
+                          
+                          {/* ПРЕВЬЮ НОВОЙ ЗАПИСИ (С учетом недели) */}
+                          {newBookingSlot && showNewForm && 
+                            (calendarView === 'week' ? newBookingSlot.colIndex === ci : newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0)) &&
+                            newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && (
                             <div
                               ref={previewRef}
                               style={{
-                                position: 'absolute',
-                                left: 0,
-                                right: 28,
-                                top: (newBookingSlot.timeStart - ti) * 72,
-                                height: (newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 - 1,
-                                borderRadius: '10px',
-                                boxSizing: 'border-box',
-                                pointerEvents: 'none',
-                                
-                                // 🔥 ФИКС 1: Высший приоритет. Теперь превью железно поверх всех карточек
-                                zIndex: 9999, 
-                                overflow: 'hidden',
-                                animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
-                                
-                                // 🔥 ФИКС 2: 100% плотный белый фон. Сзади ничего не будет видно
-                                background: '#FFFFFF', 
-                                
-                                // Усиленная тень, чтобы визуально оторвать блок от фона
-                                boxShadow: `
-                                  0 0 0 1.5px rgba(249,160,139,0.7),
-                                  0 16px 40px -4px rgba(26,26,26,0.15),
-                                  0 4px 12px rgba(249,160,139,0.2)
-                                `,
+                                position: 'absolute', left: 0, right: 28, top: (newBookingSlot.timeStart - ti) * 72, height: (newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 - 1,
+                                borderRadius: '10px', boxSizing: 'border-box', pointerEvents: 'none', zIndex: 9999, overflow: 'hidden',
+                                animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)', background: '#FFFFFF',
+                                boxShadow: `0 0 0 1.5px rgba(249,160,139,0.7), 0 16px 40px -4px rgba(26,26,26,0.15), 0 4px 12px rgba(249,160,139,0.2)`
                               }}
                             >
-                              {/* Живой градиентный фон — медленно пульсирует поверх белого */}
-                              <div style={{
-                                position: 'absolute', inset: 0,
-                                background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
-                                animation: 'preview-pulse 2.4s ease-in-out infinite',
-                              }} />
-
-                              {/* Мерцающая точка — "live" индикатор */}
-                              <div style={{
-                                position: 'absolute', top: 8, right: 8,
-                                width: 6, height: 6, borderRadius: '50%',
-                                background: 'var(--peach)',
-                                boxShadow: '0 0 0 3px rgba(249,160,139,0.25)',
-                                animation: 'live-dot 1.4s ease-in-out infinite',
-                              }} />
-
-                              {/* Контент */}
-                              <div style={{
-                                position: 'relative', zIndex: 1,
-                                padding: '8px 18px 8px 12px',
-                                display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%',
-                              }}>
-                                <div style={{
-                                  fontSize: '11.5px', fontWeight: 800,
-                                  color: '#1A1A1A',
-                                  lineHeight: 1.2,
-                                  letterSpacing: '-0.2px',
-                                }}>
-                                  {newForm.title || 'Новое занятие'}
-                                </div>
-
-                                {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (
-                                  <div style={{
-                                    fontSize: '10px', fontWeight: 600,
-                                    color: 'var(--peach)',
-                                    marginTop: 3, opacity: 0.9,
-                                  }}>
-                                    {formatIndexToTimeStr(newBookingSlot.timeStart)} – {formatIndexToTimeStr(newBookingSlot.timeEnd)}
-                                  </div>
-                                )}
+                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)', animation: 'preview-pulse 2.4s ease-in-out infinite' }} />
+                              <div style={{ position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: '50%', background: 'var(--peach)', boxShadow: '0 0 0 3px rgba(249,160,139,0.25)', animation: 'live-dot 1.4s ease-in-out infinite' }} />
+                              <div style={{ position: 'relative', zIndex: 1, padding: '8px 18px 8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                                <div style={{ fontSize: '11.5px', fontWeight: 800, color: '#1A1A1A', lineHeight: 1.2, letterSpacing: '-0.2px' }}>{newForm.title || 'Новое занятие'}</div>
                               </div>
                             </div>
                           )}
@@ -3360,117 +3518,162 @@ export default function Journal() {
             </div>
 
             {/* ── ПРАВАЯ ПАНЕЛЬ ── */}
+            {/* ── ПРАВАЯ ПАНЕЛЬ ── */}
             <div className="j-right">
-
-              {/* Мини-иллюстрация расписания */}
-              <div style={{ padding: '14px 16px 8px' }}>
-                <ScheduleIllustration />
-              </div>
-
-              {/* Мини-календарь */}
-              <div className="jr-section">
-                <div className="jr-label"><Icons.Calendar /> {MONTH_NAMES[calMonth]}</div>
-                <div className="mini-cal">
-                  <div className="mc-header">
-                    <button className="mc-nav" onClick={() => changeMonth(-1)}><Icons.ChevronLeft /></button>
-                    <div className="mc-month">{MONTH_NAMES[calMonth]} {calYear}</div>
-                    <button className="mc-nav" onClick={() => changeMonth(1)}><Icons.ChevronRight /></button>
+              
+              {isAiOpen ? (
+                // 🔥 ИНТЕРФЕЙС ИИ ЧАТА
+                <div className="ai-chat-container">
+                  <div className="ai-chat-header">
+                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(123,108,212,0.1)', color: '#7B6CD4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>
+                          </svg>
+                        </div>
+                        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--onyx)' }}>AI Ассистент</div>
+                     </div>
+                     <button className="btn-icon" style={{ width: 32, height: 32 }} onClick={() => setAiOpen(false)}>
+                       <Icons.X />
+                     </button>
                   </div>
-                  <div className="mc-days-grid">
-                    {DAY_NAMES_SHORT.map(d => <div key={d} className="mc-day-name">{d}</div>)}
-                    {Array.from({ length: firstDayOffset() }).map((_, i) => <div key={`e${i}`} />)}
-                    {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => {
-                      const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
-                      const isSelected = d === selectedDay;
-                      const hasEv = hasEventDays.includes(d);
+                  
+                  <div className="ai-chat-body">
+                     {aiMessages.map((m, i) => (
+                        <div key={i} className={`ai-msg ${m.role}`}>
+                           {m.text}
+                        </div>
+                     ))}
+                     <div ref={chatEndRef} />
+                  </div>
+
+                  <div className="ai-chat-input-wrap">
+                     <form className="ai-input-box" onSubmit={handleAiSubmit}>
+                        <input 
+                          className="ai-input-field" 
+                          placeholder="Спросите что-нибудь..." 
+                          value={aiInput}
+                          onChange={e => setAiInput(e.target.value)}
+                        />
+                        <button type="submit" className="ai-send-btn" disabled={!aiInput.trim()}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                     </form>
+                  </div>
+                </div>
+              ) : (
+                
+                <>
+                  {/* Мини-иллюстрация расписания */}
+                  <div style={{ padding: '14px 16px 8px' }}>
+                    <ScheduleIllustration />
+                  </div>
+
+                  {/* Мини-календарь */}
+                  <div className="jr-section">
+                    <div className="jr-label"><Icons.Calendar /> {MONTH_NAMES[calMonth]}</div>
+                    <div className="mini-cal">
+                      <div className="mc-header">
+                        <button className="mc-nav" onClick={() => changeMonth(-1)}><Icons.ChevronLeft /></button>
+                        <div className="mc-month">{MONTH_NAMES[calMonth]} {calYear}</div>
+                        <button className="mc-nav" onClick={() => changeMonth(1)}><Icons.ChevronRight /></button>
+                      </div>
+                      <div className="mc-days-grid">
+                        {DAY_NAMES_SHORT.map(d => <div key={d} className="mc-day-name">{d}</div>)}
+                        {Array.from({ length: firstDayOffset() }).map((_, i) => <div key={`e${i}`} />)}
+                        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => {
+                          const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+                          const isSelected = d === selectedDay;
+                          const hasEv = hasEventDays.includes(d);
+                          return (
+                            <div
+                              key={d}
+                              // Убрали !isToday, теперь классы могут комбинироваться свободно
+                              className={`mc-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEv ? 'has-event' : ''}`}
+                              onClick={() => setSelectedDay(d)}
+                            >
+                              {d}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Залы */}
+                  <div className="jr-section">
+                    <div className="jr-label"><Icons.MapPin /> Залы</div>
+                    {HALLS.map((h, i) => {
+                      const colors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
                       return (
-                        <div
-                          key={d}
-                          // Убрали !isToday, теперь классы могут комбинироваться свободно
-                          className={`mc-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEv ? 'has-event' : ''}`}
-                          onClick={() => setSelectedDay(d)}
-                        >
-                          {d}
+                        <div key={h} className={`hall-chip ${activeHalls.includes(h) ? 'active' : ''}`} onClick={() => toggleHall(h)}>
+                          <div className="hc-dot" style={{ background: colors[i] }} />
+                          <span style={{ flex: 1 }}>{h}</span>
+                          <span style={{ fontSize: 10, opacity: 0.6 }}>{activeBookings.filter(b => b.hall === h).length}</span>
+                          {activeHalls.includes(h) && <span style={{ color: 'var(--peach)' }}><Icons.Check /></span>}
                         </div>
                       );
                     })}
                   </div>
-                </div>
-              </div>
 
-              {/* Залы */}
-              <div className="jr-section">
-                <div className="jr-label"><Icons.MapPin /> Залы</div>
-                {HALLS.map((h, i) => {
-                  const colors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
-                  return (
-                    <div key={h} className={`hall-chip ${activeHalls.includes(h) ? 'active' : ''}`} onClick={() => toggleHall(h)}>
-                      <div className="hc-dot" style={{ background: colors[i] }} />
-                      <span style={{ flex: 1 }}>{h}</span>
-                      <span style={{ fontSize: 10, opacity: 0.6 }}>{bookings.filter(b => b.hall === h).length}</span>
-                      {activeHalls.includes(h) && <span style={{ color: 'var(--peach)' }}><Icons.Check /></span>}
+                  {/* Загрузка тренеров */}
+                  <div className="jr-section">
+                    <div className="jr-label" style={{ justifyContent: 'space-between' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><LoadingBarsIllustration /></span>
+                      <span>Загрузка</span>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Загрузка тренеров */}
-              <div className="jr-section">
-                <div className="jr-label" style={{ justifyContent: 'space-between' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><LoadingBarsIllustration /></span>
-                  <span>Загрузка</span>
-                </div>
-                <div className="trainer-load">
-                  {TRAINERS.map(t => {
-                    const tBookings = bookings.filter(b => b.trainer === t.id);
-                    const filled = tBookings.reduce((s, b) => s + b.clients, 0);
-                    const cap = tBookings.reduce((s, b) => s + b.maxClients, 0);
-                    const pct = cap > 0 ? Math.round(filled / cap * 100) : 0;
-                    return (
-                      <div key={t.id} className="tl-item">
-                        <div className="tl-row">
-                          <div className="tl-ava" style={{ background: t.color }}>{t.initials}</div>
-                          <div className="tl-name">{t.name}</div>
-                          <div className="tl-pct">{pct}%</div>
-                        </div>
-                        <div className="tl-bar-bg">
-                          <div className="tl-bar-fill" style={{ width: `${pct}%`, background: t.color }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Ближайшие записи */}
-              <div className="jr-section">
-                <div className="jr-label"><Icons.Clock /> Ближайшие</div>
-                {filteredBookings.slice(0, 4).map(b => {
-                  const trainer = TRAINERS.find(t => t.id === b.trainer);
-                  return (
-                    <div
-                      key={b.id}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        padding: '7px 8px', borderRadius: 8,
-                        cursor: 'pointer', marginBottom: 4,
-                        border: '1px solid var(--border)',
-                        transition: 'background 0.15s',
-                      }}
-                      onMouseOver={e => (e.currentTarget.style.background = 'var(--bg2)')}
-                      onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      <div style={{ width: 4, height: 28, borderRadius: 2, background: b.color, flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--onyx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.title}</div>
-                        <div style={{ fontSize: 10, color: 'var(--muted)' }}>{TIMES[b.timeStart]} · {trainer?.name}</div>
-                      </div>
-                      <div style={{ fontSize: 10, color: b.color, fontWeight: 700 }}>{b.clients}/{b.maxClients}</div>
+                    <div className="trainer-load">
+                      {TRAINERS.map(t => {
+                        const tBookings = activeBookings.filter(b => b.trainer === t.id);
+                        const filled = tBookings.reduce((s, b) => s + b.clients, 0);
+                        const cap = tBookings.reduce((s, b) => s + b.maxClients, 0);
+                        const pct = cap > 0 ? Math.round(filled / cap * 100) : 0;
+                        return (
+                          <div key={t.id} className="tl-item">
+                            <div className="tl-row">
+                              <div className="tl-ava" style={{ background: t.color }}>{t.initials}</div>
+                              <div className="tl-name">{t.name}</div>
+                              <div className="tl-pct">{pct}%</div>
+                            </div>
+                            <div className="tl-bar-bg">
+                              <div className="tl-bar-fill" style={{ width: `${pct}%`, background: t.color }} />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
 
+                  {/* Ближайшие записи */}
+                  <div className="jr-section">
+                    <div className="jr-label"><Icons.Clock /> Ближайшие</div>
+                    {filteredBookings.slice(0, 4).map(b => {
+                      const trainer = TRAINERS.find(t => t.id === b.trainer);
+                      return (
+                        <div
+                          key={b.id}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            padding: '7px 8px', borderRadius: 8,
+                            cursor: 'pointer', marginBottom: 4,
+                            border: '1px solid var(--border)',
+                            transition: 'background 0.15s',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.background = 'var(--bg2)')}
+                          onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <div style={{ width: 4, height: 28, borderRadius: 2, background: b.color, flexShrink: 0 }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--onyx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.title}</div>
+                            <div style={{ fontSize: 10, color: 'var(--muted)' }}>{formatIndexToTimeStr(b.timeStart)} · {trainer?.name}</div>
+                          </div>
+                          <div style={{ fontSize: 10, color: b.color, fontWeight: 700 }}>{b.clients}/{b.maxClients}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -3495,15 +3698,16 @@ export default function Journal() {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.4px', lineHeight: 1.2 }}>
-                  {popupBooking.title}
+                  {/* 🔥 Динамический заголовок */}
+                  {isEditingBooking ? (editForm.title || 'Без названия') : popupBooking.title}
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Icons.Clock />
-                  {TIMES[popupBooking.timeStart]} – {TIMES[popupBooking.timeEnd]}
+                  {/* 🔥 Динамическое время через безопасную утилиту */}
+                  {formatIndexToTimeStr(isEditingBooking ? editForm.timeStart : popupBooking.timeStart)} – {formatIndexToTimeStr(isEditingBooking ? editForm.timeEnd : popupBooking.timeEnd)}
                 </div>
               </div>
               
-              {/* Статус-пил (Используем цвета из брендбука: Фисташковый и Пыльная роза) */}
               <div style={{
                 padding: '6px 12px', borderRadius: '12px', fontSize: 11, fontWeight: 800,
                 background: popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
@@ -3735,25 +3939,28 @@ export default function Journal() {
                   <Icons.UserPlus /> Добавить
                 </button>
                 
-                {/* 🔥 ИСПРАВЛЕНИЕ 2: Оживили кнопку Изменить (Больше не лагает) */}
-                <button className="bp-btn ghost text-btn" title="Изменить занятие" onClick={(e) => {
-                  e.stopPropagation();
-                  // Копируем данные карточки в форму и включаем режим редактирования
-                  setEditForm({ 
-                    title: popupBooking.title, 
-                    hall: popupBooking.hall, 
-                    maxClients: String(popupBooking.maxClients),
-                    timeStart: popupBooking.timeStart, // 🔥 Добавили
-                    timeEnd: popupBooking.timeEnd      // 🔥 Добавили
-                  });
-                  setIsEditingBooking(true);
-                }}>
-                  <Icons.Edit /> Изменить
-                </button>
-                
-                <button className="bp-btn danger icon-only" title="Удалить занятие" onClick={() => deleteBooking(popupBooking.id)}>
-                  <Icons.Trash />
-                </button>
+                {/* 🔥 Эти кнопки показываются ТОЛЬКО в режиме черновика */}
+                {isDraftMode && (
+                  <>
+                    <button className="bp-btn ghost text-btn" title="Изменить занятие" onClick={(e) => {
+                      e.stopPropagation();
+                      setEditForm({ 
+                        title: popupBooking.title, 
+                        hall: popupBooking.hall, 
+                        maxClients: String(popupBooking.maxClients),
+                        timeStart: popupBooking.timeStart, 
+                        timeEnd: popupBooking.timeEnd      
+                      });
+                      setIsEditingBooking(true);
+                    }}>
+                      <Icons.Edit /> Изменить
+                    </button>
+                    
+                    <button className="bp-btn danger icon-only" title="Удалить занятие" onClick={() => deleteBooking(popupBooking.id)}>
+                      <Icons.Trash />
+                    </button>
+                  </>
+                )}
               </>
             )}
 

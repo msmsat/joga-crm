@@ -113,20 +113,6 @@ const IconLock = () => (
   </svg>
 );
 
-// ─── SVG ИЛЛЮСТРАЦИЯ для "не настроено" ──────────────────────────────────────
-const EmptyIllustration = ({ color }: { color: string }) => (
-  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="32" cy="32" r="32" fill={color} fillOpacity="0.08" />
-    <rect x="16" y="20" width="32" height="24" rx="4" fill={color} fillOpacity="0.15" />
-    <rect x="16" y="20" width="32" height="24" rx="4" stroke={color} strokeOpacity="0.4" strokeWidth="1.5" />
-    <circle cx="32" cy="32" r="6" fill="white" fillOpacity="0.6" />
-    <path d="M29 32l2 2 4-4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.0" />
-    <circle cx="32" cy="32" r="2.5" fill={color} fillOpacity="0.5" />
-    <line x1="27" y1="42" x2="37" y2="42" stroke={color} strokeWidth="2" strokeOpacity="0.25" strokeLinecap="round" />
-    <line x1="23" y1="46" x2="41" y2="46" stroke={color} strokeWidth="2" strokeOpacity="0.15" strokeLinecap="round" />
-  </svg>
-);
-
 // ─── SVG МИНИ-ГРАФИК ─────────────────────────────────────────────────────────
 const MiniChart = ({ data, color }: { data: number[]; color: string }) => {
   const max = Math.max(...data);
@@ -289,18 +275,14 @@ const LineChart = ({ data, color, valueKey }: { data: typeof chartData; color: s
 
 // ─── DRAWER КОНФИГУРАЦИИ ───────────────────────────────────────────────────────
 const DrawerContent = ({
-  drawerKey, onSave, onClose
+  drawerKey
 }: {
   drawerKey: ProgramKey;
-  onSave: () => void;
-  onClose: () => void;
 }) => {
   const [loyaltyExpiry, setLoyaltyExpiry] = useState('1 год');
   const [discountType, setDiscountType] = useState('Процент (%)');
   const [certType, setCertType] = useState('Подарочный');
   const [referralBonus, setReferralBonus] = useState('На депозит');
-  const [referralCondition, setReferralCondition] = useState(0);
-  const [referralPay, setReferralPay] = useState('На депозит');
   const configs: Record<ProgramKey, React.JSX.Element> = {
     loyalty: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -1027,7 +1009,7 @@ export default function Loyalty() {
             </div>
 
             <div className="drawer-body">
-              <DrawerContent drawerKey={drawer.key} onSave={() => handleSave(drawer.key)} onClose={closeDrawer} />
+              <DrawerContent drawerKey={drawer.key}/>
             </div>
 
             <div className="drawer-footer">

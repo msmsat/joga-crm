@@ -481,58 +481,6 @@ function SectionHeader({ icon, title, subtitle, accent }: { icon: React.ReactNod
   );
 }
 
-// ─── SETTINGS ROW ─────────────────────────────────────────────────────────────
-function SettingsRow({
-  label, value, sub, onEdit, tag, danger,
-}: {
-  label: string; value?: string; sub?: string; onEdit?: () => void; tag?: React.ReactNode; danger?: boolean;
-}) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "14px 16px",
-        borderRadius: "10px",
-        background: hovered ? "rgba(252,174,145,0.05)" : "transparent",
-        transition: "background 0.2s ease",
-        cursor: "default",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <div style={{ fontSize: "13px", fontWeight: 600, color: danger ? "#C0607A" : "var(--onyx)" }}>{label}</div>
-        {(value || sub) && (
-          <div style={{ fontSize: "12px", color: "var(--muted)" }}>{value || sub}</div>
-        )}
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        {tag}
-        {onEdit && (
-          <button
-            onClick={onEdit}
-            style={{
-              display: "flex", alignItems: "center", gap: "5px",
-              padding: "6px 12px",
-              borderRadius: "8px",
-              background: hovered ? "rgba(252,174,145,0.12)" : "transparent",
-              border: `1px solid ${hovered ? "rgba(252,174,145,0.35)" : "var(--border)"}`,
-              color: hovered ? "var(--peach)" : "var(--muted)",
-              fontSize: "11px", fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            {icons.edit}
-            Изменить
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── DAY HOURS ROW ────────────────────────────────────────────────────────────
 function DayHoursRow({ day, from, to, active: initActive }: { day: string; from: string; to: string; active: boolean }) {
   const [active, setActive] = useState(initActive);
@@ -874,7 +822,7 @@ export default function Settings() {
 
   // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА БЕЗОПАСНОСТЬ ────────────────────────────────────────
   const [secExpanded, setSecExpanded] = useState<"sessions" | "token" | "export" | null>(null);
-  const [secModal, setSecModal] = useState<"password" | "deleteData" | "deleteAccount" | null>(null);
+  const [, setSecModal] = useState<"password" | "deleteData" | "deleteAccount" | null>(null);
   
   // Живые данные для сессий и токенов
   const [activeSessions, setActiveSessions] = useState([
@@ -888,7 +836,6 @@ export default function Settings() {
 
   // Стейты для форм безопасности
   const [newTokenName, setNewTokenName] = useState("");
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   // ─── СТЕЙТЫ ДЛЯ РАЗДЕЛА БИЛЛИНГ / ПОДПИСКА ──────────────────────────────────
   const [billingView, setBillingView] = useState<"dashboard" | "tariffs">("dashboard");
@@ -955,7 +902,6 @@ export default function Settings() {
     email: true, sms: false, push: true, marketing: false,
   });
   const [twoFa, setTwoFa] = useState(false);
-  const [sessionAlert, setSessionAlert] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // ─── НАШИ НОВЫЕ СТЕЙТЫ ДЛЯ ИНТЕРАКТИВА (ЗАМЕНИ СТАРЫЙ activeSection НА ЭТО) ───

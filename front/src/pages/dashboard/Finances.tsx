@@ -366,30 +366,6 @@ function Badge({ text, color, bg }: { text: string; color: string; bg: string })
   );
 }
 
-// ─── ПОИСК ────────────────────────────────────────────────────────────────────
-function SearchBar({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
-  return (
-    <div style={{ position: 'relative', flex: 1 }}>
-      <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)', pointerEvents: 'none' }}>
-        <Ico.Search />
-      </div>
-      <input
-        type="text"
-        placeholder={placeholder || 'Поиск...'}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        className="search-input"
-        style={{ width: '100%', paddingLeft: '38px', height: '38px', boxSizing: 'border-box' }}
-      />
-      {value && (
-        <button onClick={() => onChange('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', padding: '2px' }}>
-          <Ico.X />
-        </button>
-      )}
-    </div>
-  );
-}
-
 // ─── SPINNING DONUT ILLUSTRATION ─────────────────────────────────────────────
 function DonutIllustration({ total, segments }: { total: number; segments: { pct: number; color: string; label: string }[] }) {
   const r = 46, cx = 60, cy = 60;
@@ -461,9 +437,6 @@ function TabAccounts({ showToast, onNavigateToOperations }: {
   const [accounts, setAccounts] = useState<AccountItem[]>(ACCOUNTS_DATA);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
-
-  // Обучающий блок
-  const [showGuide, setShowGuide] = useState(true);
 
   // Редактирование
   const [editingId, setEditingId] = useState<number | null>(null);

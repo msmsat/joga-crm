@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import type { MouseEvent } from 'react';
 import AddStaffModal from '../../components/modals/AddStaffModal'; // 🔥 ВЫХОДИМ НА 2 УРОВНЯ ВВЕРХ
 import EditStaffModal from '../../components/modals/EditStaffModal'; // 🔥 Импортируем модалку редактирования
-import { PrimaryButton } from '../../components/UI';
 
 // ─── БАЗЫ ДАННЫХ И КОНФИГУРАЦИЯ (Словари) ────────────────────────────────────
 const halls: Record<string, { name: string, color: string }> = {
