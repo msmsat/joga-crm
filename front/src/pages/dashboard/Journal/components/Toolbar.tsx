@@ -1,0 +1,190 @@
+// src/components/Toolbar.tsx
+import React from 'react';
+import * as Icons from '../../../../components/Icons';
+// Обратите внимание на пути импорта констант. Скорректируйте их, если структура папок отличается.
+import { TRAINERS, HALLS, MONTH_NAMES } from '../constants';
+
+interface ToolbarProps {
+  selectedDay: number;
+  calMonth: number;
+  calYear: number;
+  viewMode: 'trainers' | 'halls';
+  activeTrainers: number[];
+  activeHalls: string[];
+  calendarView: 'day' | 'week' | 'month';
+  isEditingDate: boolean;
+  dateInputVal: string;
+  
+  // Основные функции
+  changeDay: (dir: number) => void;
+  setViewMode: (mode: 'trainers' | 'halls') => void;
+  toggleTrainer: (id: number) => void;
+  toggleHall: (h: string) => void;
+  handleDateInputSubmit: () => void;
+  
+  // Дополнительные сеттеры для работы внутренних инпутов и кнопок
+  setIsEditingDate: (val: boolean) => void;
+  setDateInputVal: (val: string) => void;
+  setCalendarView: (val: 'day' | 'week' | 'month') => void;
+  onGoToToday: () => void;
+}
+
+export const Toolbar: React.FC<ToolbarProps> = ({
+  selectedDay,
+  calMonth,
+  calYear,
+  viewMode,
+  activeTrainers,
+  activeHalls,
+  calendarView,
+  isEditingDate,
+  dateInputVal,
+  changeDay,
+  setViewMode,
+  toggleTrainer,
+  toggleHall,
+  handleDateInputSubmit,
+  setIsEditingDate,
+  setDateInputVal,
+  setCalendarView,
+  onGoToToday
+}) => {
+  return (
+    <div className="j-toolbar">
+      {/* Дата навигация */}
+      <button className="btn-icon" onClick={() => changeDay(-1)}>
+        <Icons.ChevronLeft />
+      </button>
+
+      {isEditingDate ? (
+        <input
+          type="text"
+          className="btn-ghost-sm"
+          value={dateInputVal}
+          onChange={e => setDateInputVal(e.target.value)}
+          onBlur={handleDateInputSubmit}
+          onKeyDown={e => {
+            if (e.key === 'Enter') handleDateInputSubmit();
+            if (e.key === 'Escape') setIsEditingDate(false);
+          }}
+          autoFocus
+          style={{
+            width: 180,
+            textAlign: 'center',
+            fontWeight: 700,
+            fontSize: 13,
+            color: 'var(--onyx)',
+            border: '1.5px solid var(--peach)',
+            boxShadow: '0 0 0 3px var(--peach-glow)',
+            background: '#FFFFFF',
+            outline: 'none',
+            boxSizing: 'border-box',
+            borderRadius: '12px',
+            padding: '0 16px'
+          }}
+        />
+      ) : (
+        <button
+          type="button"
+          className="btn-ghost-sm"
+          onClick={() => {
+            const pad = (n: number) => String(n).padStart(2, '0');
+            setDateInputVal(`${pad(selectedDay)}.${pad(calMonth + 1)}.${calYear}`);
+            setIsEditingDate(true);
+          }}
+          style={{ width: 180, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)', gap: '10px' }}
+        >
+          <Icons.Calendar />
+          <span style={{ display: 'inline-block', textAlign: 'center' }}>
+            {selectedDay} {MONTH_NAMES[calMonth]} {calYear}
+          </span>
+        </button>
+      )}
+
+      <button className="btn-icon" onClick={() => changeDay(1)}>
+        <Icons.ChevronRight />
+      </button>
+
+      <button
+        className="btn-ghost-sm"
+        onClick={onGoToToday}
+      >
+        <Icons.Today />
+        Сегодня
+      </button>
+
+      <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+
+      {/* Вид: тренеры / залы */}
+      <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
+        <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
+          <Icons.Users /> Тренеры
+        </button>
+        <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
+          <Icons.Grid /> Залы
+        </button>
+      </div>
+
+      <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+
+      {/* Фильтры тренеров */}
+      {viewMode === 'trainers' && (
+        <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+          {TRAINERS.map(t => (
+            <button
+              key={t.id}
+              className={`pill-tab ${activeTrainers.includes(t.id) ? 'active' : ''}`}
+              style={activeTrainers.includes(t.id) ? { background: t.color, color: 'white' } : {}}
+              onClick={() => toggleTrainer(t.id)}
+            >
+              {t.initials}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Фильтры залов */}
+      {viewMode === 'halls' && (
+        <div style={{ display: 'flex', gap: 5 }}>
+          {HALLS.map(h => (
+            <button
+              key={h}
+              className={`pill-tab ${activeHalls.includes(h) ? 'active' : ''}`}
+              onClick={() => toggleHall(h)}
+            >
+              {h}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div style={{ flex: 1 }} />
+
+      {/* Переключатель: День / Неделя / Месяц */}
+      <div className="view-toggle">
+        <div
+          className="view-slider"
+          style={{ transform: `translateX(${['day', 'week', 'month'].indexOf(calendarView) * 76}px)` }}
+        />
+        <button
+          className={`view-btn ${calendarView === 'day' ? 'active' : ''}`}
+          onClick={() => setCalendarView('day')}
+        >
+          День
+        </button>
+        <button
+          className={`view-btn ${calendarView === 'week' ? 'active' : ''}`}
+          onClick={() => setCalendarView('week')}
+        >
+          Неделя
+        </button>
+        <button
+          className={`view-btn ${calendarView === 'month' ? 'active' : ''}`}
+          onClick={() => setCalendarView('month')}
+        >
+          Месяц
+        </button>
+      </div>
+    </div>
+  );
+};

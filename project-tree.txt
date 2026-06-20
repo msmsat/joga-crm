@@ -1,0 +1,58 @@
+C:\projects\freelance\joga_crm\
+├── .gitignore
+├── back\
+│   ├── .env
+│   ├── alembic.ini
+│   ├── database.py
+│   ├── main.py
+│   ├── models.py
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── requirements.txt
+│   ├── schemas.py
+│   ├── security.py
+│   ├── migrations\
+│   │   ├── README
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions\
+│   │       ├── 2abc41bab61e_add_onboarding.py
+│   │       ├── 62f13cc54540_clean_user_model_drop_display_name.py
+│   │       ├── 7d6b29d0683f_init_database_structures.py
+│   │       ├── b684eb699fc2_add_email_verification_fields.py
+│   │       └── f87731d7999f_add_phone_and_display_name_to_users.py
+│   ├── routers\
+│   │   └── auth.py
+│   └── venv\
+├── front\
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public\
+│   │   ├── favicon.svg
+│   │   └── icons.svg
+│   ├── src\
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── assets\
+│   │   ├── components\
+│   │   │   ├── Icons.tsx
+│   │   │   ├── UI.tsx
+│   │   │   └── modals\
+│   │   ├── index.css
+│   │   ├── layouts\
+│   │   │   └── DashboardLayout.tsx
+│   │   ├── main.tsx
+│   │   └── pages\
+│   │       ├── ChangePassword.tsx
+│   │       ├── Dashboard.tsx
+│   │       ├── Landingpage.tsx
+│   │       ├── Loginpage.tsx
+│   │       ├── Registerpage.tsx
+│   │       └── dashboard\
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts

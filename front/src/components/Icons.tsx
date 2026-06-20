@@ -145,3 +145,197 @@ export const Icon = {
     <svg width={size} height={size} className={className} {...defaultProps} strokeWidth="2.5" stroke={color}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   ),
 };
+
+// ─── ИКОНКИ ЖУРНАЛА (JOURNAL ICONS) ─────────────────────────────────────────
+
+export const Calendar = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+
+export const ChevronLeft = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="15 18 9 12 15 6"/>
+  </svg>
+);
+
+export const ChevronRight = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="9 18 15 12 9 6"/>
+  </svg>
+);
+
+// Переопределяем Plus индивидуально для Журнала (в объекте Icon уже есть свой Plus, конфликта не будет)
+export const Plus = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" {...props}>
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+export const Filter = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+  </svg>
+);
+
+export const Users = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
+export const Clock = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+export const Search = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+);
+
+export const X = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...props}>
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+);
+
+export const MapPin = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
+export const Check = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+export const Today = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+export const List = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" {...props}>
+    <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+  </svg>
+);
+
+export const Grid = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" {...props}>
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </svg>
+);
+
+export const Edit = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+);
+
+export const Trash = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
+  <svg 
+    className={`icon-trash ${className || ''}`.trim()} 
+    width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+    strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}
+  >
+    <path className="trash-lid" d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <path className="trash-bin" d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+  </svg>
+);
+
+export const Bell = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+  </svg>
+);
+
+export const UserPlus = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+  </svg>
+);
+
+// ─── СЛОЖНЫЕ ИЛЛЮСТРАЦИИ С АНИМАЦИЯМИ (ANIMATED ILLUSTRATIONS) ──────────────
+
+export const EmptyIllustration = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="120" height="100" viewBox="0 0 120 100" fill="none" {...props}>
+    <style>{`
+      @keyframes float-empty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+      @keyframes pulse-dot { 0%,100%{opacity:0.3} 50%{opacity:1} }
+      .empty-float { animation: float-empty 3s ease-in-out infinite; }
+      .pdot1 { animation: pulse-dot 1.5s ease-in-out infinite; }
+      .pdot2 { animation: pulse-dot 1.5s ease-in-out 0.5s infinite; }
+      .pdot3 { animation: pulse-dot 1.5s ease-in-out 1s infinite; }
+    `}</style>
+    <g className="empty-float">
+      <rect x="20" y="20" width="80" height="60" rx="10" fill="rgba(252,174,145,0.08)" stroke="rgba(252,174,145,0.3)" strokeWidth="1.5"/>
+      <line x1="35" y1="38" x2="85" y2="38" stroke="rgba(252,174,145,0.3)" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="35" y1="50" x2="70" y2="50" stroke="rgba(252,174,145,0.2)" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="35" y1="62" x2="60" y2="62" stroke="rgba(252,174,145,0.2)" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="60" cy="22" r="10" fill="rgba(252,174,145,0.15)" stroke="rgba(252,174,145,0.4)" strokeWidth="1.5"/>
+      <line x1="60" y1="18" x2="60" y2="26" stroke="rgba(252,174,145,0.6)" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="56" y1="22" x2="64" y2="22" stroke="rgba(252,174,145,0.6)" strokeWidth="2" strokeLinecap="round"/>
+    </g>
+    <circle className="pdot1" cx="46" cy="90" r="3" fill="rgba(252,174,145,0.4)"/>
+    <circle className="pdot2" cx="60" cy="90" r="3" fill="rgba(252,174,145,0.4)"/>
+    <circle className="pdot3" cx="74" cy="90" r="3" fill="rgba(252,174,145,0.4)"/>
+  </svg>
+);
+
+export const LoadingBarsIllustration = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="48" height="32" viewBox="0 0 48 32" fill="none" {...props}>
+    <style>{`
+      @keyframes bar-grow { 0%{transform:scaleY(0.3)} 50%{transform:scaleY(1)} 100%{transform:scaleY(0.3)} }
+      .bar1{animation:bar-grow 1.4s ease-in-out infinite;transform-origin:bottom;animation-delay:0s}
+      .bar2{animation:bar-grow 1.4s ease-in-out infinite;transform-origin:bottom;animation-delay:0.2s}
+      .bar3{animation:bar-grow 1.4s ease-in-out infinite;transform-origin:bottom;animation-delay:0.4s}
+      .bar4{animation:bar-grow 1.4s ease-in-out infinite;transform-origin:bottom;animation-delay:0.6s}
+      .bar5{animation:bar-grow 1.4s ease-in-out infinite;transform-origin:bottom;animation-delay:0.8s}
+    `}</style>
+    <rect className="bar1" x="2" y="8" width="6" height="24" rx="3" fill="rgba(249,160,139,0.7)"/>
+    <rect className="bar2" x="11" y="4" width="6" height="28" rx="3" fill="rgba(91,171,114,0.7)"/>
+    <rect className="bar3" x="20" y="12" width="6" height="20" rx="3" fill="rgba(64,168,160,0.7)"/>
+    <rect className="bar4" x="29" y="6" width="6" height="26" rx="3" fill="rgba(74,128,196,0.7)"/>
+    <rect className="bar5" x="38" y="10" width="6" height="22" rx="3" fill="rgba(123,108,212,0.7)"/>
+  </svg>
+);
+
+export const ScheduleIllustration = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="100%" height="56" viewBox="0 0 200 56" fill="none" preserveAspectRatio="xMidYMid meet" {...props}>
+    <style>{`
+      @keyframes slide-in { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+      .si1{animation:slide-in 0.5s ease forwards;animation-delay:0.1s;opacity:0}
+      .si2{animation:slide-in 0.5s ease forwards;animation-delay:0.3s;opacity:0}
+      .si3{animation:slide-in 0.5s ease forwards;animation-delay:0.5s;opacity:0}
+      .si4{animation:slide-in 0.5s ease forwards;animation-delay:0.7s;opacity:0}
+    `}</style>
+    <rect x="0" y="4" width="200" height="48" rx="8" fill="rgba(252,174,145,0.05)"/>
+    <g className="si1">
+      <rect x="8" y="10" width="44" height="18" rx="4" fill="rgba(249,160,139,0.25)"/>
+      <rect x="10" y="13" width="24" height="3" rx="1.5" fill="rgba(249,160,139,0.6)"/>
+      <rect x="10" y="19" width="14" height="2" rx="1" fill="rgba(249,160,139,0.35)"/>
+    </g>
+    <g className="si2">
+      <rect x="58" y="28" width="44" height="18" rx="4" fill="rgba(91,171,114,0.25)"/>
+      <rect x="60" y="31" width="24" height="3" rx="1.5" fill="rgba(91,171,114,0.6)"/>
+      <rect x="60" y="37" width="14" height="2" rx="1" fill="rgba(91,171,114,0.35)"/>
+    </g>
+    <g className="si3">
+      <rect x="108" y="10" width="44" height="18" rx="4" fill="rgba(64,168,160,0.25)"/>
+      <rect x="110" y="13" width="24" height="3" rx="1.5" fill="rgba(64,168,160,0.6)"/>
+      <rect x="110" y="19" width="14" height="2" rx="1" fill="rgba(64,168,160,0.35)"/>
+    </g>
+    <g className="si4">
+      <rect x="156" y="20" width="36" height="18" rx="4" fill="rgba(123,108,212,0.25)"/>
+      <rect x="158" y="23" width="20" height="3" rx="1.5" fill="rgba(123,108,212,0.6)"/>
+      <rect x="158" y="29" width="12" height="2" rx="1" fill="rgba(123,108,212,0.35)"/>
+    </g>
+  </svg>
+);

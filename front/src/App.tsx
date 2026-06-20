@@ -19,7 +19,7 @@ import Notifications from './pages/dashboard/Notifications';
 import Loyalty from './pages/dashboard/Loyalty';
 import Settings from './pages/dashboard/Settings';
 import Billing from './pages/dashboard/Billing';
-import Journal from './pages/dashboard/Journal';
+import Journal from './pages/dashboard/Journal/Journal';
 import Profile from './pages/dashboard/Profile';
 // import RegisterPage from './pages/RegisterPage'; // Раскомментируешь, когда создашь
 

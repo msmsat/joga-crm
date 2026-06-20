@@ -1,0 +1,238 @@
+// src/components/ScheduleGrid/Grid.tsx
+import React from 'react';
+import { BookingCard } from './BookingCard';
+import type { Booking } from '../../types';
+import { TRAINERS, TIMES, DAY_NAMES_SHORT } from '../../constants';
+import { getBookingLayouts, formatIndexToTimeStr } from '../../utils';
+import type { DragState } from '../../hooks/useDragAndDrop';
+
+interface GridProps {
+  calendarView: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
+  columns: any[];
+  viewMode: 'trainers' | 'halls';
+  filteredBookings: Booking[];
+  hoveredSlot: string | null;
+  setHoveredSlot: (slot: string | null) => void;
+  isDraftMode: boolean;
+  showNewForm: boolean;
+  popupBooking: Booking | null;
+  drag: DragState | null;
+  wasDragging: boolean;
+  openNewSlot: (trainerIdx: number, timeIdx: number) => void;
+  newBookingSlot: { trainer: number; timeStart: number; timeEnd: number } | null;
+  newForm: { title: string; hall: string; maxClients: string };
+  previewRef: React.RefObject<HTMLDivElement | null>;
+  initDrag: (e: React.MouseEvent, id: string, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
+  setPopupBooking: (b: Booking | null) => void;
+  openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
+  showToast: (msg: string) => void;
+}
+
+export const Grid: React.FC<GridProps> = ({
+  calendarView,
+  columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
+  isDraftMode, showNewForm, popupBooking, drag, wasDragging,
+  openNewSlot, newBookingSlot, newForm, previewRef,
+  initDrag, setPopupBooking, openBookingPopup, showToast
+}) => {
+  return (
+    <div
+      className="j-grid"
+      style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(170px, 1fr))` }}
+    >
+      <div className="j-top-left-corner" />
+
+      {/* Заголовки колонок */}
+      {columns.map((col, ci) => {
+        const isTrainerMode = viewMode === 'trainers';
+        const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
+        const hallName = !isTrainerMode ? (col as string) : null;
+        const colBookings = filteredBookings.filter(b => {
+            if (calendarView === 'week') {
+                const dateObj = col as Date;
+                // Формируем YYYY-MM-DD для проверки
+                const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+                
+                // ВАЖНО: Так как в ваших моках пока нет поля date, 
+                // для ДЕМО мы просто закинем все текущие занятия в сегодняшний день:
+                const bDate = (b as any).date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+                
+                return bDate === dateStr;
+            }
+            // Логика для вида "День"
+            return isTrainerMode ? b.trainer === (trainer!.id) : b.hall === hallName;
+        });
+
+        return (
+          <div
+            key={ci}
+            className="j-col-header"
+            style={{
+              borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
+              display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center'
+            }}
+          >
+            {/* 🔥 ЕСЛИ РЕЖИМ НЕДЕЛИ: РИСУЕМ ДАТЫ */}
+            {calendarView === 'week' ? (() => {
+              const dateObj = col as Date;
+              const isToday = dateObj.getDate() === new Date().getDate() && dateObj.getMonth() === new Date().getMonth();
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4px 0' }}>
+                  <div style={{ fontSize: 11, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    {DAY_NAMES_SHORT[ci]}
+                  </div>
+                  <div style={{ 
+                    fontSize: 22, fontWeight: 900, marginTop: 4,
+                    color: isToday ? 'white' : 'var(--onyx)', 
+                    background: isToday ? 'var(--peach)' : 'transparent',
+                    width: 38, height: 38, borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: isToday ? '0 4px 12px rgba(249,160,139,0.3)' : 'none'
+                  }}>
+                    {dateObj.getDate()}
+                  </div>
+                </div>
+              );
+            })() : (
+                trainer ? (
+                <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{
+                        width: 38, height: 38, borderRadius: '12px',
+                        background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
+                        border: `1.5px solid ${trainer.color}30`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
+                        boxShadow: `0 4px 12px ${trainer.color}15`
+                    }}>
+                        {trainer.initials}
+                    </div>
+                    <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
+                    </div>
+                    </div>
+                    <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
+                    {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
+                    </div>
+                </>
+                ) : (
+                <>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
+                </>
+            ))}
+          </div>
+        );
+      })}
+
+      {/* Ряды времени */}
+      {TIMES.map((t, ti) => (
+        <React.Fragment key={ti}>
+          <div className="j-time-cell">{t}</div>
+          {columns.map((col, ci) => {
+            const isTrainerMode = viewMode === 'trainers';
+            const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
+            const hallName = !isTrainerMode ? (col as string) : null;
+
+            const colBookings = filteredBookings.filter(b =>
+              isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName
+            );
+            const layouts = getBookingLayouts(colBookings);
+            const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
+            const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
+
+            return (
+              <div
+                key={ci}
+                data-ti={ti}
+                data-ci={ci}
+                className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook && isDraftMode ? 'is-targeted' : ''}`}
+                onMouseEnter={() => { 
+                  if (canBook && !showNewForm && !popupBooking && isDraftMode) setHoveredSlot(`${ti}-${ci}`); 
+                }}
+                onMouseLeave={() => setHoveredSlot(null)}
+                style={{ 
+                  borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
+                  borderRadius: '10px',
+                  zIndex: 'auto',
+                }}
+                onMouseDown={(e) => {
+                  if (!isDraftMode || showNewForm || popupBooking || drag || wasDragging) return;
+                  e.stopPropagation();
+                  const trainerIdx = isTrainerMode ? trainer!.id : 0;
+                  openNewSlot(trainerIdx, ti);
+                }}
+              >
+                {/* Карточки занятий */}
+                {hourBookings.map(booking => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    layout={layouts.get(booking.id)}
+                    drag={drag}
+                    isDraftMode={isDraftMode}
+                    popupBooking={popupBooking}
+                    wasDragging={wasDragging}
+                    initDrag={initDrag}
+                    setPopupBooking={setPopupBooking}
+                    openBookingPopup={openBookingPopup}
+                    showToast={showToast}
+                  />
+                ))}
+
+                {/* Живое превью новой записи (drag колонки) */}
+                {ti === 0 && drag?.isDragging && drag.previewColumnIndex === ci && drag.previewStart !== undefined && drag.previewEnd !== undefined && (
+                  <div className="drag-column-marker" style={{ top: drag.previewStart * 72, height: (drag.previewEnd - drag.previewStart) * 72 }}>
+                    <div className="drag-col-tooltip start">{formatIndexToTimeStr(drag.previewStart)}</div>
+                    <div className="drag-col-tooltip end">{formatIndexToTimeStr(drag.previewEnd)}</div>
+                  </div>
+                )}
+
+                {/* Живое превью новой записи (модалка) */}
+                {newBookingSlot && newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0) &&
+                  newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
+                  <div
+                    ref={previewRef}
+                    style={{
+                      position: 'absolute', left: 0, right: 28,
+                      top: (newBookingSlot.timeStart - ti) * 72,
+                      height: (newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 - 1,
+                      borderRadius: '10px', boxSizing: 'border-box', pointerEvents: 'none',
+                      zIndex: 9999, overflow: 'hidden',
+                      animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
+                      background: '#FFFFFF', 
+                      boxShadow: `0 0 0 1.5px rgba(249,160,139,0.7), 0 16px 40px -4px rgba(26,26,26,0.15), 0 4px 12px rgba(249,160,139,0.2)`
+                    }}
+                  >
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
+                      animation: 'preview-pulse 2.4s ease-in-out infinite',
+                    }} />
+                    <div style={{
+                      position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: '50%',
+                      background: 'var(--peach)', boxShadow: '0 0 0 3px rgba(249,160,139,0.25)',
+                      animation: 'live-dot 1.4s ease-in-out infinite',
+                    }} />
+                    <div style={{ position: 'relative', zIndex: 1, padding: '8px 18px 8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                      <div style={{ fontSize: '11.5px', fontWeight: 800, color: '#1A1A1A', lineHeight: 1.2, letterSpacing: '-0.2px' }}>
+                        {newForm.title || 'Новое занятие'}
+                      </div>
+                      {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (
+                        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--peach)', marginTop: 3, opacity: 0.9 }}>
+                          {formatIndexToTimeStr(newBookingSlot.timeStart)} – {formatIndexToTimeStr(newBookingSlot.timeEnd)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
