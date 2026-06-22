@@ -1,0 +1,119 @@
+@keyframes messagePop {
+  0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulseStatus {
+  0% { box-shadow: 0 0 0 0 rgba(163, 201, 168, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(163, 201, 168, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(163, 201, 168, 0); }
+}
+
+.aiChatScroll::-webkit-scrollbar { width: 4px; }
+.aiChatScroll::-webkit-scrollbar-track { background: transparent; }
+.aiChatScroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+.aiHistoryItem:hover {
+  transform: translateX(4px);
+  border-color: var(--peach) !important;
+  background: var(--bg-card) !important;
+}
+
+/* ─── TASK ROW HOVER ───────────────────────────────────────── */
+.taskRow {
+  border-radius: 10px;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.taskRow:hover {
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1px #F9A08B, 0 4px 16px rgba(249, 160, 139, 0.12);
+  transform: translateY(-1px);
+}
+
+/* ─── TASK ENTRY ANIMATION ─────────────────────────────────── */
+.taskEntryAnimate {
+  animation: taskEntry 0.5s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes taskEntry {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── EVENTS GRID (1-row horizontal scroll) ──────────────── */
+.eventsGrid {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.eventsGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.eventsGrid > * {
+  flex: 0 0 240px;
+  min-width: 240px;
+}
+
+/* ─── INLINE SELECT DROPDOWN (dark) ────────────────────────── */
+@keyframes csPopupIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.inlineSelectDrop {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: csPopupIn 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+
+.inlineSelectItem {
+  padding: 8px 12px;
+  border-radius: 9px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.inlineSelectItem:hover {
+  background: rgba(252, 174, 145, 0.08);
+  color: #FFFFFF;
+  padding-left: 15px;
+}
+
+.inlineSelectItemActive {
+  background: rgba(252, 174, 145, 0.15);
+  color: #FCAE91;
+  font-weight: 700;
+}
+
+.inlineSelectItemActive:hover {
+  background: rgba(252, 174, 145, 0.2);
+  padding-left: 15px;
+}
+
+.inlineSelectCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  flex-shrink: 0;
+  color: #FCAE91;
+}

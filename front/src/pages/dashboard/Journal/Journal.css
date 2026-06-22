@@ -1309,3 +1309,41 @@
       filter: blur(0); 
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   22. АНИМАЦИИ СМЕНЫ ДАННЫХ (СВАЙПЫ)
+   ════════════════════════════════════════════════════════════ */
+.header-content-anim.slide-out-left,
+.cell-content-anim.slide-out-left {
+  /* Уходит влево: начинает медленно, заканчивает быстро (ускорение) */
+  animation: slide-out-left 0.2s cubic-bezier(0.32, 0, 0.67, 0) forwards !important;
+}
+
+.header-content-anim.slide-in-right,
+.cell-content-anim.slide-in-right {
+  /* Появляется справа: влетает быстро, мягко тормозит на месте (замедление) */
+  animation: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+@keyframes slide-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-40px); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.header-content-anim, .cell-content-anim {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cell-content-anim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}

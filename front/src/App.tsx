@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, type ReactNode } from 'react';
+import { AIDrawerProvider } from './contexts/AIDrawerContext';
 import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import RegisterPage from './pages/Registerpage';
@@ -9,18 +10,19 @@ import ChangePassword from './pages/ChangePassword';
 import DashboardLayout from './layouts/DashboardLayout';
 
 // ─── СТРАНИЦЫ ДАШБОРДА (все 12 штук) ──────────────────────────────────────────
-import Overview from './pages/dashboard/Overview';
-import Staff from './pages/dashboard/Staff';
-import Clients from './pages/dashboard/Clients';
-import Reports from './pages/dashboard/Reports';
+import Overview from './pages/dashboard/Overview/Overview';
+import Staff from './pages/dashboard/Staff/Staff';
+import Clients from './pages/dashboard/Clients/Clients';
+import Reports from './pages/dashboard/Reports/Reports';
 import Booking from './pages/dashboard/Booking';
-import Finances from './pages/dashboard/Finances';
-import Notifications from './pages/dashboard/Notifications';
-import Loyalty from './pages/dashboard/Loyalty';
-import Settings from './pages/dashboard/Settings';
-import Billing from './pages/dashboard/Billing';
+import Finances from './pages/dashboard/Finances/Finances';
+import Notifications from './pages/dashboard/Notifications/Notifications';
+import Loyalty from './pages/dashboard/Loyalty/Loyalty';
+import Settings from './pages/dashboard/Settings/Settings';
+import Billing from './pages/dashboard/Billing/Billing';
 import Journal from './pages/dashboard/Journal/Journal';
 import Profile from './pages/dashboard/Profile';
+import AIPage from './pages/dashboard/AI';
 // import RegisterPage from './pages/RegisterPage'; // Раскомментируешь, когда создашь
 
 // ─── 1. ЗАЩИТА КАБИНЕТА (Пускает только с токеном) ──────────────────────────
@@ -66,6 +68,7 @@ const PublicRoute = ({ children }: { children: ReactNode }) => {
 // ─── ГЛАВНЫЙ КОМПОНЕНТ APP ──────────────────────────────────────────────────
 export default function App() {
   return (
+    <AIDrawerProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -113,6 +116,7 @@ export default function App() {
           <Route path="finances" element={<Finances />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="loyalty" element={<Loyalty />} />
+          <Route path="ai" element={<AIPage />} />
           <Route path="settings" element={<Settings />} />
           <Route path="billing" element={<Billing />} />
           <Route path="journal" element={<Journal />} />
@@ -121,5 +125,6 @@ export default function App() {
 
       </Routes>
     </Router>
+    </AIDrawerProvider>
   );
 }

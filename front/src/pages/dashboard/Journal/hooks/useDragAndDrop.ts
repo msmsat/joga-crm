@@ -25,6 +25,7 @@ interface UseDragAndDropProps {
   columns: any[]; 
   timeStep: number;
   showToast: (msg: string) => void;
+  calendarView?: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
 }
 
 export function useDragAndDrop({
@@ -33,7 +34,8 @@ export function useDragAndDrop({
   viewMode,
   columns,
   timeStep,
-  showToast
+  showToast,
+  calendarView // 🔥 Приняли пропс
 }: UseDragAndDropProps) {
   
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -135,14 +137,28 @@ export function useDragAndDrop({
                  
                  if (finalEnd > 15) { finalEnd = 15; finalStart = 15 - duration; }
                  
-                 const isTrainerMode = viewMode === 'trainers';
                  const newColVal = columns[newCi];
-                 return {
-                   ...b, timeStart: finalStart, timeEnd: finalEnd,
-                   trainer: isTrainerMode ? (newColVal as any).id : b.trainer,
-                   hall: !isTrainerMode ? (newColVal as string) : b.hall,
-                   color: isTrainerMode ? (newColVal as any).color : b.color
-                 };
+
+                 // 🔥 ВОТ ОНО! УМНАЯ ПРОВЕРКА РЕЖИМА
+                 if (calendarView === 'week') {
+                   // Если мы в Неделе, меняем дату занятия!
+                   const dateObj = newColVal as Date;
+                   const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+                   
+                   return {
+                     ...b, timeStart: finalStart, timeEnd: finalEnd,
+                     date: dateStr // меняем только дату
+                   };
+                 } else {
+                   // Старая логика для режима "День": меняем тренера или зал
+                   const isTrainerMode = viewMode === 'trainers';
+                   return {
+                     ...b, timeStart: finalStart, timeEnd: finalEnd,
+                     trainer: isTrainerMode ? (newColVal as any).id : b.trainer,
+                     hall: !isTrainerMode ? (newColVal as string) : b.hall,
+                     color: isTrainerMode ? (newColVal as any).color : b.color
+                   };
+                 }
                }));
                showToast('Занятие перенесено');
             }
@@ -170,14 +186,13 @@ export function useDragAndDrop({
        document.removeEventListener('mousemove', handleMouseMove);
        document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [drag, viewMode, columns, bookings, timeStep, setBookings, showToast]); 
+  }, [drag, viewMode, calendarView, columns, bookings, timeStep, setBookings, showToast]); // 🔥 Добавили calendarView в зависимости
 
-  // 🔥 НОВЫЙ МЕТОД: Чистая инициализация перетаскивания и ресайза
   const initDrag = (
     e: React.MouseEvent,
     id: string,
     type: 'move' | 'resize-top' | 'resize-bottom',
-    booking?: Booking // Передаем booking только для ресайза
+    booking?: Booking
   ) => {
     e.stopPropagation();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -191,7 +206,7 @@ export function useDragAndDrop({
       deltaX: 0,
       deltaY: 0,
       offsetYInsideCard,
-      isDragging: type !== 'move', // Ресайз начинается мгновенно, а move ждет сдвига на 3px
+      isDragging: type !== 'move',
       ...(booking && type !== 'move' ? {
         previewStart: booking.timeStart,
         previewEnd: booking.timeEnd,
@@ -201,6 +216,5 @@ export function useDragAndDrop({
     });
   };
 
-  // Возвращаем initDrag вместо setDrag
   return { drag, wasDragging, initDrag };
 }

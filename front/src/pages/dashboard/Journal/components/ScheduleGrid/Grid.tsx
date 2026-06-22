@@ -7,7 +7,9 @@ import { getBookingLayouts, formatIndexToTimeStr } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
 interface GridProps {
-  calendarView: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
+  isTransitioning?: boolean; // Стейт для запуска анимации свайпа
+  transitionReason?: 'date' | 'mode' | 'view' | null;
+  calendarView: 'day' | 'week' | 'month'; 
   columns: any[];
   viewMode: 'trainers' | 'halls';
   filteredBookings: Booking[];
@@ -18,8 +20,8 @@ interface GridProps {
   popupBooking: Booking | null;
   drag: DragState | null;
   wasDragging: boolean;
-  openNewSlot: (trainerIdx: number, timeIdx: number) => void;
-  newBookingSlot: { trainer: number; timeStart: number; timeEnd: number } | null;
+  openNewSlot: (trainerIdx: number, timeIdx: number, columnIndex: number) => void; // 🔥 Добавили columnIndex
+  newBookingSlot: { trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null; // 🔥 Добавили columnIndex
   newForm: { title: string; hall: string; maxClients: string };
   previewRef: React.RefObject<HTMLDivElement | null>;
   initDrag: (e: React.MouseEvent, id: string, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
@@ -29,7 +31,7 @@ interface GridProps {
 }
 
 export const Grid: React.FC<GridProps> = ({
-  calendarView,
+  isTransitioning, transitionReason, calendarView,
   columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
   isDraftMode, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
@@ -47,21 +49,20 @@ export const Grid: React.FC<GridProps> = ({
         const isTrainerMode = viewMode === 'trainers';
         const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
         const hallName = !isTrainerMode ? (col as string) : null;
+        
         const colBookings = filteredBookings.filter(b => {
             if (calendarView === 'week') {
                 const dateObj = col as Date;
-                // Формируем YYYY-MM-DD для проверки
                 const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                
-                // ВАЖНО: Так как в ваших моках пока нет поля date, 
-                // для ДЕМО мы просто закинем все текущие занятия в сегодняшний день:
                 const bDate = (b as any).date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
                 
                 return bDate === dateStr;
             }
-            // Логика для вида "День"
             return isTrainerMode ? b.trainer === (trainer!.id) : b.hall === hallName;
         });
+
+        const avoidHeaderAnimation = calendarView === 'week' && transitionReason === 'mode';
+        const animClass = avoidHeaderAnimation ? '' : (isTransitioning ? 'slide-out-left' : 'slide-in-right');
 
         return (
           <div
@@ -69,60 +70,112 @@ export const Grid: React.FC<GridProps> = ({
             className="j-col-header"
             style={{
               borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
-              display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center'
+              overflow: 'hidden',
+              height: 94, // 🔥 ЖЕСТКАЯ ФИКСАЦИЯ ВЫСОТЫ: Теперь ряд всегда одного размера
+              padding: '0 18px', // Убрали вертикальный padding, чтобы flex-центрирование работало чисто
+              display: 'flex',
+              alignItems: 'center',
+              boxSizing: 'border-box'
             }}
           >
-            {/* 🔥 ЕСЛИ РЕЖИМ НЕДЕЛИ: РИСУЕМ ДАТЫ */}
-            {calendarView === 'week' ? (() => {
-              const dateObj = col as Date;
-              const isToday = dateObj.getDate() === new Date().getDate() && dateObj.getMonth() === new Date().getMonth();
-              return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4px 0' }}>
-                  <div style={{ fontSize: 11, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    {DAY_NAMES_SHORT[ci]}
-                  </div>
-                  <div style={{ 
-                    fontSize: 22, fontWeight: 900, marginTop: 4,
-                    color: isToday ? 'white' : 'var(--onyx)', 
-                    background: isToday ? 'var(--peach)' : 'transparent',
-                    width: 38, height: 38, borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: isToday ? '0 4px 12px rgba(249,160,139,0.3)' : 'none'
-                  }}>
-                    {dateObj.getDate()}
-                  </div>
-                </div>
-              );
-            })() : (
-                trainer ? (
-                <>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{
-                        width: 38, height: 38, borderRadius: '12px',
-                        background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
-                        border: `1.5px solid ${trainer.color}30`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
-                        boxShadow: `0 4px 12px ${trainer.color}15`
+            {/* Обертка с анимацией для шапки */}
+            <div 
+              className={`header-content-anim ${animClass}`}
+              style={{ 
+                height: '100%', 
+                width: '100%',
+                justifyContent: 'center', 
+                alignItems: 'center',
+                // Убрали transform: 'translateZ(0)', который ломал CSS свайп, 
+                // и добавили willChange для плавности:
+                willChange: 'transform, opacity', 
+                WebkitFontSmoothing: 'antialiased' 
+              }}
+            >
+              {calendarView === 'week' ? (() => {
+                const dateObj = col as Date;
+                const isToday = dateObj.getDate() === new Date().getDate() && dateObj.getMonth() === new Date().getMonth();
+                
+                // Расчет статистики для конкретного дня недели
+                const colClients = colBookings.reduce((s, b) => s + b.clients, 0);
+                const colLoad = colBookings.length > 0
+                  ? Math.round(colBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / colBookings.length * 100)
+                  : 0;
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
+                    {/* Уменьшили день недели */}
+                    <div style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {DAY_NAMES_SHORT[ci]}
+                    </div>
+                    
+                    {/* Уменьшили и жестко зафиксировали размеры кружка даты */}
+                    <div style={{ 
+                      fontSize: 15, fontWeight: 900, marginTop: 3,
+                      color: isToday ? 'white' : 'var(--onyx)', 
+                      background: isToday ? 'var(--peach)' : 'transparent',
+                      width: 30, height: 30, borderRadius: '20%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: isToday ? '0 4px 10px rgba(249,160,139,0.25)' : 'none',
+                      flexShrink: 0,
+                      boxSizing: 'border-box'
                     }}>
-                        {trainer.initials}
+                      {dateObj.getDate()}
                     </div>
-                    <div>
-                        <div style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
+
+                    {/* Микро-виджет статистики дня (зан., чел., % загрузки) */}
+                    <div style={{ 
+                      fontSize: 10.5, 
+                      color: 'var(--muted)', 
+                      fontWeight: 600, 
+                      marginTop: 6, 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      gap: 1,
+                      whiteSpace: 'nowrap'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
+                        {colBookings.length} зан. · {colClients} чел.
+                      </div>
+                      <div style={{ fontSize: 9.5, fontWeight: 700, color: colBookings.length > 0 ? 'var(--onyx)' : 'var(--muted)', opacity: 0.8 }}>
+                        Загрузка: {colLoad}%
+                      </div>
                     </div>
-                    </div>
-                    <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                    {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
-                    </div>
-                </>
-                ) : (
-                <>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
-                </>
-            ))}
+                  </div>
+                );
+              })() : (
+                  trainer ? (
+                  <>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
+                      <div style={{
+                          width: 38, height: 38, borderRadius: '12px',
+                          background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
+                          border: `1.5px solid ${trainer.color}30`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
+                          boxShadow: `0 4px 12px ${trainer.color}15`
+                      }}>
+                          {trainer.initials}
+                      </div>
+                      <div>
+                          <div style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
+                          <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
+                      </div>
+                      </div>
+                      <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
+                      {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
+                      </div>
+                  </>
+                  ) : (
+                  <>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
+                  </>
+              ))}
+            </div>
           </div>
         );
       })}
@@ -136,9 +189,17 @@ export const Grid: React.FC<GridProps> = ({
             const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
             const hallName = !isTrainerMode ? (col as string) : null;
 
-            const colBookings = filteredBookings.filter(b =>
-              isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName
-            );
+            // Исправленная фильтрация ячеек времени для корректной работы недельного вида
+            const colBookings = filteredBookings.filter(b => {
+              if (calendarView === 'week') {
+                const dateObj = col as Date;
+                const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+                const bDate = (b as any).date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+                return bDate === dateStr;
+              }
+              return isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName;
+            });
+
             const layouts = getBookingLayouts(colBookings);
             const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
             const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
@@ -157,30 +218,37 @@ export const Grid: React.FC<GridProps> = ({
                   borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
                   borderRadius: '10px',
                   zIndex: 'auto',
+                  overflow: isTransitioning ? 'hidden' : 'visible'
                 }}
                 onMouseDown={(e) => {
                   if (!isDraftMode || showNewForm || popupBooking || drag || wasDragging) return;
                   e.stopPropagation();
                   const trainerIdx = isTrainerMode ? trainer!.id : 0;
-                  openNewSlot(trainerIdx, ti);
+                  openNewSlot(trainerIdx, ti, ci);
                 }}
               >
-                {/* Карточки занятий */}
-                {hourBookings.map(booking => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    layout={layouts.get(booking.id)}
-                    drag={drag}
-                    isDraftMode={isDraftMode}
-                    popupBooking={popupBooking}
-                    wasDragging={wasDragging}
-                    initDrag={initDrag}
-                    setPopupBooking={setPopupBooking}
-                    openBookingPopup={openBookingPopup}
-                    showToast={showToast}
-                  />
-                ))}
+                {/* Обертка для карточек с анимацией */}
+                <div 
+                  className={`cell-content-anim ${isTransitioning ? 'slide-out-left' : 'slide-in-right'}`}
+                  style={{ zIndex: drag ? 'auto' : 10 }}
+                >
+                  {hourBookings.map(booking => (
+                    <div key={booking.id} style={{ pointerEvents: 'auto' }}>
+                      <BookingCard
+                        booking={booking}
+                        layout={layouts.get(booking.id)}
+                        drag={drag}
+                        isDraftMode={isDraftMode}
+                        popupBooking={popupBooking}
+                        wasDragging={wasDragging}
+                        initDrag={initDrag}
+                        setPopupBooking={setPopupBooking}
+                        openBookingPopup={openBookingPopup}
+                        showToast={showToast}
+                      />
+                    </div>
+                  ))}
+                </div>
 
                 {/* Живое превью новой записи (drag колонки) */}
                 {ti === 0 && drag?.isDragging && drag.previewColumnIndex === ci && drag.previewStart !== undefined && drag.previewEnd !== undefined && (
@@ -191,7 +259,7 @@ export const Grid: React.FC<GridProps> = ({
                 )}
 
                 {/* Живое превью новой записи (модалка) */}
-                {newBookingSlot && newBookingSlot.trainer === (isTrainerMode ? trainer!.id : 0) &&
+                {newBookingSlot && newBookingSlot.columnIndex === ci && // 🔥 ТЕПЕРЬ СМОТРИМ ТОЛЬКО НА КОЛОНКУ
                   newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
                   <div
                     ref={previewRef}

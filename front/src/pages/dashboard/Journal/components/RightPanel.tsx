@@ -5,8 +5,6 @@ import type { Booking } from '../types';
 import { MONTH_NAMES, DAY_NAMES_SHORT, HALLS, TRAINERS } from '../constants';
 import { formatIndexToTimeStr } from '../utils';
 
-const { ScheduleIllustration, LoadingBarsIllustration } = Icons;
-
 // ─── 1. МИКРО-КОМПОНЕНТ: МИНИ-КАЛЕНДАРЬ ──────────────────────────────────────
 interface MiniCalendarProps {
   calMonth: number;
@@ -15,20 +13,32 @@ interface MiniCalendarProps {
   today: Date;
   changeMonth: (dir: number) => void;
   setSelectedDay: (d: number) => void;
+  calendarView: 'day' | 'week' | 'month';
 }
 
-const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay }) => {
-  // Локальные вычисления, изолированные от глобального стора
+const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView }) => {
   const firstDayOffset = () => {
     const d = new Date(calYear, calMonth, 1).getDay();
     return d === 0 ? 6 : d - 1;
   };
+  
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate(); // 🔥 Дней в прошлом месяце
   const hasEventDays = [3, 7, 9, 12, 15, 17, 22, 24, 28];
+
+  // Математика для плавающего квадрата и сетки
+  const offset = firstDayOffset();
+  const totalCells = offset + daysInMonth;
+  const nextMonthDaysCount = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7); // 🔥 Сколько дней из след. месяца надо показать
+  const totalGridCells = totalCells + nextMonthDaysCount;
+  const rowCount = totalGridCells / 7; // Теперь рядов всегда ровное количество!
+
+  const index = offset + selectedDay - 1;
+  const row = Math.floor(index / 7);
+  const col = index % 7;
 
   return (
     <div className="jr-section">
-      <div className="jr-label"><Icons.Calendar /> {MONTH_NAMES[calMonth]}</div>
       <div className="mini-cal">
         <div className="mc-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <button className="mc-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => changeMonth(-1)}>
@@ -41,23 +51,93 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selected
             <Icons.ChevronRight />
           </button>
         </div>
-        <div className="mc-days-grid">
+        
+        <div className="mc-days-grid" style={{ marginBottom: 2 }}>
           {DAY_NAMES_SHORT.map(d => <div key={d} className="mc-day-name">{d}</div>)}
-          {Array.from({ length: firstDayOffset() }).map((_, i) => <div key={`e${i}`} />)}
-          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => {
-            const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
-            const isSelected = d === selectedDay;
-            const hasEv = hasEventDays.includes(d);
-            return (
-              <div
-                key={d}
-                className={`mc-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEv ? 'has-event' : ''}`}
-                onClick={() => setSelectedDay(d)}
-              >
-                {d}
-              </div>
-            );
-          })}
+        </div>
+        
+        <div style={{ position: 'relative' }}>
+          {/* 🔥 МАГИЯ 2.0: Идеально точная анимация через абсолютные координаты */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+            <div style={{
+              position: 'absolute',
+              // Высчитываем жесткие координаты вместо transform
+              top: `calc(${row} * (100% - ${(rowCount - 1) * 2}px) / ${rowCount} + ${row * 2}px)`,
+              left: calendarView === 'week' ? '0px' : `calc(${col} * (100% - 12px) / 7 + ${col * 2}px)`,
+              width: calendarView === 'week' ? '100%' : 'calc((100% - 12px) / 7)',
+              height: `calc((100% - ${(rowCount - 1) * 2}px) / ${rowCount})`,
+              background: 'var(--onyx)',
+              borderRadius: '6px',
+              // Плавная и строгая анимация изменения размеров и позиции (без эффекта желе)
+              transition: 'all 0.35s cubic-bezier(0.22, 1, 0.36, 1)'
+            }} />
+          </div>
+
+          <div className="mc-days-grid" style={{ position: 'relative', zIndex: 1 }}>
+            
+            {/* 🔥 Активные тусклые дни ПРОШЛОГО месяца */}
+            {Array.from({ length: offset }).map((_, i) => {
+              const prevDay = daysInPrevMonth - offset + i + 1;
+              return (
+                <div 
+                  key={`prev-${i}`} 
+                  className="mc-day" 
+                  style={{ opacity: 0.35, cursor: 'pointer' }}
+                  onClick={() => {
+                    changeMonth(-1); // Переключаем на месяц назад
+                    setSelectedDay(prevDay); // Выбираем этот день
+                  }}
+                >
+                  {prevDay}
+                </div>
+              );
+            })}
+
+            {/* Активные дни ТЕКУЩЕГО месяца */}
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => {
+              const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+              const isSelected = d === selectedDay;
+              const hasEv = hasEventDays.includes(d);
+              
+              const inSelectedWeek = calendarView === 'week' && Math.floor((offset + d - 1) / 7) === row;
+              const isHighlighted = isSelected || inSelectedWeek;
+
+              return (
+                <div
+                  key={`cur-${d}`}
+                  className={`mc-day ${isToday ? 'today' : ''} ${hasEv ? 'has-event' : ''}`}
+                  onClick={() => setSelectedDay(d)}
+                  style={{
+                    background: isHighlighted ? 'transparent' : undefined,
+                    color: isHighlighted ? (isToday ? 'var(--peach)' : 'white') : undefined,
+                    fontWeight: isHighlighted ? 700 : undefined,
+                    boxShadow: isHighlighted && isToday ? 'none' : undefined,
+                  }}
+                >
+                  {d}
+                </div>
+              );
+            })}
+
+            {/* 🔥 Активные тусклые дни СЛЕДУЮЩЕГО месяца */}
+            {Array.from({ length: nextMonthDaysCount }).map((_, i) => {
+              const nextDay = i + 1;
+              return (
+                <div 
+                  key={`next-${i}`} 
+                  className="mc-day" 
+                  style={{ opacity: 0.35, cursor: 'pointer' }}
+                  onClick={() => {
+                    changeMonth(1); // Переключаем на месяц вперед
+                    setSelectedDay(nextDay); // Выбираем этот день
+                  }}
+                >
+                  {nextDay}
+                </div>
+              );
+            })}
+
+          </div>
         </div>
       </div>
     </div>
@@ -96,10 +176,8 @@ interface TrainerStatsProps {
 const TrainerStats: React.FC<TrainerStatsProps> = ({ activeBookings }) => {
   return (
     <div className="jr-section">
-      <div className="jr-label" style={{ justifyContent: 'space-between' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><LoadingBarsIllustration /></span>
-        <span>Загрузка</span>
-      </div>
+      {/* 🔥 Убрали отвлекающую анимацию, поставили строгую иконку Users */}
+      <div className="jr-label"><Icons.Users /> Загрузка</div>
       <div className="trainer-load">
         {TRAINERS.map(t => {
           const tBookings = activeBookings.filter(b => b.trainer === t.id);
@@ -173,20 +251,32 @@ interface RightPanelProps {
   changeMonth: (dir: number) => void;
   setSelectedDay: (d: number) => void;
   toggleHall: (h: string) => void;
+  calendarView: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
 }
 
 export const RightPanel: React.FC<RightPanelProps> = ({
   calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
-  changeMonth, setSelectedDay, toggleHall
+  changeMonth, setSelectedDay, toggleHall, calendarView // 🔥 Вытащили пропс
 }) => {
+
+  const dateObj = new Date(calYear, calMonth, selectedDay);
+  const dayName = dateObj.toLocaleDateString('ru-RU', { weekday: 'long' });
+  const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+
   return (
     <>
-      <div style={{ padding: '14px 16px 8px' }}>
-        <ScheduleIllustration />
+      <div style={{ padding: '24px 20px 8px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+          {capitalizedDay}
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--peach)', fontWeight: 700 }}>
+          {selectedDay} {MONTH_NAMES[calMonth].toLowerCase()} {calYear}
+        </div>
       </div>
       <MiniCalendar 
         calMonth={calMonth} calYear={calYear} selectedDay={selectedDay} 
         today={today} changeMonth={changeMonth} setSelectedDay={setSelectedDay} 
+        calendarView={calendarView} // 🔥 Передали внутрь
       />
       <HallsFilter 
         activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall} 

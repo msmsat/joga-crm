@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import './Journal.css';
 import type { Booking } from './types';
 import { TRAINERS, HALLS, BOOKINGS } from './constants';
@@ -7,7 +6,6 @@ import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { usePopupPosition } from './hooks/usePopupPosition';
 import { Toolbar } from './components/Toolbar';
 import { DaySummary } from './components/DaySummary';
-import { AiChat } from './components/AiChat';
 import { RightPanel } from './components/RightPanel';
 import { Grid } from './components/ScheduleGrid/Grid';
 import { BookingPopup } from './components/BookingPopup';
@@ -32,15 +30,15 @@ export default function Journal() {
   const [addModalBooking, setAddModalBooking] = useState<Booking | null>(null);
   const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
   const [toast, setToast] = useState<string | null>(null);
-  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number } | null>(null);
+  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
   const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('day');
   const [isDraftMode, setIsDraftMode] = useState(false); // Режим черновика
-  const outletContext = useOutletContext<{ isAiOpen: boolean, setAiOpen: (v: boolean) => void }>();
-  const isAiOpen = outletContext?.isAiOpen || false;
-  const setAiOpen = outletContext?.setAiOpen || (() => {});
+
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionReason, setTransitionReason] = useState<'date' | 'mode' | 'view' | null>(null);
 
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [dateInputVal, setDateInputVal] = useState("");
@@ -57,6 +55,15 @@ export default function Journal() {
     showNewForm,
     newBookingSlot
   });
+
+  const withAnimation = (reason: 'date' | 'mode' | 'view', action: () => void) => {
+    setTransitionReason(reason);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      action();
+      setIsTransitioning(false);
+    }, 250);
+  };
 
   // 🔥 Генерируем 7 дней текущей недели
   const getWeekDays = () => {
@@ -96,12 +103,13 @@ export default function Journal() {
   const openNewSlot = (
     trainerIdx: number,
     timeIdx: number,
+    columnIndex: number // 🔥 ДОБАВИЛИ ЭТОТ ПАРАМЕТР
   ) => {
+    const blockStart = timeIdx;
+    const blockEnd   = timeIdx + 1;
 
-    const blockStart = timeIdx;        // начало блока (целый час, например 11)
-    const blockEnd   = timeIdx + 1;    // конец блока (12)
-
-    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd });
+    // 🔥 Сохраняем индекс колонки в стейт
+    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd, columnIndex });
     setShowNewForm(true);
   };
 
@@ -158,8 +166,10 @@ export default function Journal() {
   };
 
   const changeDay = (dir: number) => {
-    // JS Date сам перекинет месяц/год, если мы выйдем за пределы
-    const targetDate = new Date(calYear, calMonth, selectedDay + dir);
+    // 🔥 Если режим недели, то шагаем по 7 дней, иначе по 1
+    const step = calendarView === 'week' ? dir * 7 : dir; 
+    const targetDate = new Date(calYear, calMonth, selectedDay + step);
+    
     setCalYear(targetDate.getFullYear());
     setCalMonth(targetDate.getMonth());
     setSelectedDay(targetDate.getDate());
@@ -169,6 +179,7 @@ export default function Journal() {
     bookings,
     setBookings,
     viewMode,
+    calendarView,
     columns,
     timeStep,
     showToast
@@ -279,19 +290,19 @@ export default function Journal() {
             calendarView={calendarView}
             isEditingDate={isEditingDate}
             dateInputVal={dateInputVal}
-            changeDay={changeDay}
-            setViewMode={setViewMode}
+            changeDay={(dir) => withAnimation('date', () => changeDay(dir))}
+            setViewMode={(m) => withAnimation('mode', () => setViewMode(m))}
+            setCalendarView={(v) => withAnimation('view', () => setCalendarView(v))}
+            onGoToToday={() => withAnimation('date', () => {
+              setSelectedDay(today.getDate());
+              setCalMonth(today.getMonth());
+              setCalYear(today.getFullYear());
+            })}
             toggleTrainer={toggleTrainer}
             toggleHall={toggleHall}
             handleDateInputSubmit={handleDateInputSubmit}
             setIsEditingDate={setIsEditingDate}
             setDateInputVal={setDateInputVal}
-            setCalendarView={setCalendarView}
-            onGoToToday={() => {
-              setSelectedDay(today.getDate());
-              setCalMonth(today.getMonth());
-              setCalYear(today.getFullYear());
-            }}
           />
 
           {/* ── СВОДКА ДНЯ ── */}
@@ -312,6 +323,8 @@ export default function Journal() {
           <div className="j-layout">
             <div className="j-grid-wrapper" ref={gridWrapperRef}>
               <Grid
+                isTransitioning={isTransitioning}
+                transitionReason={transitionReason} // 🔥 Передаем причину в Сетку
                 calendarView={calendarView}
                 columns={columns}
                 viewMode={viewMode}
@@ -336,25 +349,19 @@ export default function Journal() {
 
             {/* ── ПРАВАЯ ПАНЕЛЬ ── */}
             <div className="j-right">
-              
-              {isAiOpen ? (
-                <AiChat setAiOpen={setAiOpen} />
-              ) : (
-                <>
-                  <RightPanel
-                    calMonth={calMonth}
-                    calYear={calYear}
-                    selectedDay={selectedDay}
-                    today={today}
-                    activeHalls={activeHalls}
-                    activeBookings={activeBookings}
-                    filteredBookings={filteredBookings}
-                    changeMonth={changeMonth}
-                    setSelectedDay={setSelectedDay}
-                    toggleHall={toggleHall}
-                  />
-                </>
-              )}
+              <RightPanel
+                calMonth={calMonth}
+                calYear={calYear}
+                selectedDay={selectedDay}
+                today={today}
+                activeHalls={activeHalls}
+                activeBookings={activeBookings}
+                filteredBookings={filteredBookings}
+                changeMonth={changeMonth}
+                setSelectedDay={setSelectedDay}
+                toggleHall={toggleHall}
+                calendarView={calendarView}
+              />
             </div>
           </div>
         </div>

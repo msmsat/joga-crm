@@ -178,12 +178,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           Неделя
         </button>
-        <button
-          className={`view-btn ${calendarView === 'month' ? 'active' : ''}`}
-          onClick={() => setCalendarView('month')}
-        >
-          Месяц
-        </button>
       </div>
     </div>
   );

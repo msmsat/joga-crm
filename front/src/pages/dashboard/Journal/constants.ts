@@ -14,22 +14,29 @@ export const TRAINERS = [
 export const HALLS = ['Зал 1', 'Зал 2', 'Студия', 'Онлайн'];
 export const TIMES = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
 
+// В файле src/constants.ts найдите массив BOOKINGS и замените его на этот:
 export const BOOKINGS: Booking[] = [
-  { id:'b1', trainer:0, timeStart:2, timeEnd:3, title:'Пилатес', hall:'Зал 1', clients:6, maxClients:8, color:'#F9A08B', status:'confirmed', date: '2026-06-20' },
-  { id:'b2', trainer:0, timeStart:4, timeEnd:5, title:'Пил. Advanced', hall:'Зал 1', clients:4, maxClients:6, color:'#F9A08B', status:'confirmed', date: '2026-06-20' },
+  { id:'b1', trainer:0, timeStart:2, timeEnd:3, title:'Пилатес', hall:'Зал 1', clients:6, maxClients:8, color:'#F9A08B', status:'confirmed', date: '2026-06-18' },
+  { id:'b2', trainer:0, timeStart:4, timeEnd:5, title:'Пил. Advanced', hall:'Зал 1', clients:4, maxClients:6, color:'#F9A08B', status:'confirmed', date: '2026-06-19' },
   { id:'b3', trainer:0, timeStart:8, timeEnd:9, title:'Персональный', hall:'Студия', clients:1, maxClients:1, color:'#F9A08B', status:'confirmed', date: '2026-06-20' },
-  { id:'b4', trainer:0, timeStart:12, timeEnd:13, title:'Вечерний', hall:'Зал 1', clients:7, maxClients:8, color:'#F9A08B', status:'pending', date: '2026-06-20' },
-  { id:'b5', trainer:1, timeStart:1, timeEnd:2, title:'Йога Хатха', hall:'Зал 2', clients:10, maxClients:12, color:'#5BAB72', status:'confirmed', date: '2026-06-20' },
-  { id:'b6', trainer:1, timeStart:5, timeEnd:6, title:'Флоу', hall:'Зал 2', clients:8, maxClients:12, color:'#5BAB72', status:'confirmed', date: '2026-06-20' },
+  { id:'b4', trainer:0, timeStart:12, timeEnd:13, title:'Вечерний', hall:'Зал 1', clients:7, maxClients:8, color:'#F9A08B', status:'pending', date: '2026-06-21' },
+  { id:'b5', trainer:1, timeStart:1, timeEnd:2, title:'Йога Хатха', hall:'Зал 2', clients:10, maxClients:12, color:'#5BAB72', status:'confirmed', date: '2026-06-16' },
+  { id:'b6', trainer:1, timeStart:5, timeEnd:6, title:'Флоу', hall:'Зал 2', clients:8, maxClients:12, color:'#5BAB72', status:'confirmed', date: '2026-06-17' },
   { id:'b7', trainer:1, timeStart:10, timeEnd:11, title:'Аштанга', hall:'Зал 2', clients:5, maxClients:10, color:'#5BAB72', status:'confirmed', date: '2026-06-20' },
-  { id:'b8', trainer:2, timeStart:3, timeEnd:4, title:'Стретчинг', hall:'Студия', clients:3, maxClients:4, color:'#40a8a0', status:'confirmed', date: '2026-06-20' },
-  { id:'b9', trainer:2, timeStart:7, timeEnd:8, title:'Стретч+', hall:'Студия', clients:4, maxClients:4, color:'#40a8a0', status:'confirmed', date: '2026-06-20' },
-  { id:'b10', trainer:2, timeStart:11, timeEnd:12, title:'Вечерний', hall:'Зал 1', clients:6, maxClients:8, color:'#40a8a0', status:'pending', date: '2026-06-20' },
-  { id:'b11', trainer:3, timeStart:0, timeEnd:1, title:'Открытие', hall:'Зал 1', clients:0, maxClients:0, color:'#4A80C4', status:'confirmed', date: '2026-06-20' },
+  { id:'b8', trainer:2, timeStart:3, timeEnd:4, title:'Стретчинг', hall:'Студия', clients:3, maxClients:4, color:'#40a8a0', status:'confirmed', date: '2026-06-15' },
+  { id:'b9', trainer:2, timeStart:7, timeEnd:8, title:'Стретч+', hall:'Студия', clients:4, maxClients:4, color:'#40a8a0', status:'confirmed', date: '2026-06-19' },
+  { id:'b10', trainer:2, timeStart:11, timeEnd:12, title:'Вечерний', hall:'Зал 1', clients:6, maxClients:8, color:'#40a8a0', status:'pending', date: '2026-06-21' },
+  { id:'b11', trainer:3, timeStart:0, timeEnd:1, title:'Открытие', hall:'Зал 1', clients:0, maxClients:0, color:'#4A80C4', status:'confirmed', date: '2026-06-18' },
   { id:'b12', trainer:3, timeStart:9, timeEnd:10, title:'Планёрка', hall:'Онлайн', clients:5, maxClients:10, color:'#4A80C4', status:'confirmed', date: '2026-06-20' },
-  { id:'b13', trainer:4, timeStart:2, timeEnd:3, title:'Фитбол', hall:'Зал 2', clients:9, maxClients:12, color:'#7B6CD4', status:'confirmed', date: '2026-06-20' },
-  { id:'b14', trainer:4, timeStart:8, timeEnd:9, title:'Роллинг', hall:'Зал 1', clients:5, maxClients:8, color:'#7B6CD4', status:'confirmed', date: '2026-06-20' },
+  { id:'b13', trainer:4, timeStart:2, timeEnd:3, title:'Фитбол', hall:'Зал 2', clients:9, maxClients:12, color:'#7B6CD4', status:'confirmed', date: '2026-06-17' },
+  { id:'b14', trainer:4, timeStart:8, timeEnd:9, title:'Роллинг', hall:'Зал 1', clients:5, maxClients:8, color:'#7B6CD4', status:'confirmed', date: '2026-06-21' },
   { id:'b15', trainer:4, timeStart:13, timeEnd:14, title:'Кросс-тренинг', hall:'Зал 2', clients:7, maxClients:10, color:'#7B6CD4', status:'pending', date: '2026-06-20' },
+  
+  // 🔥 Новые занятия для красивого недельного вида
+  { id:'b16', trainer:0, timeStart:9, timeEnd:10, title:'Пилатес Утро', hall:'Зал 1', clients:5, maxClients:8, color:'#F9A08B', status:'confirmed', date: '2026-06-15' },
+  { id:'b17', trainer:1, timeStart:13, timeEnd:14, title:'Йога Релакс', hall:'Зал 2', clients:8, maxClients:12, color:'#5BAB72', status:'confirmed', date: '2026-06-16' },
+  { id:'b18', trainer:4, timeStart:6, timeEnd:7, title:'Кроссфит', hall:'Зал 1', clients:10, maxClients:10, color:'#7B6CD4', status:'confirmed', date: '2026-06-19' },
+  { id:'b19', trainer:3, timeStart:4, timeEnd:5, title:'Функционал', hall:'Зал 2', clients:6, maxClients:12, color:'#4A80C4', status:'confirmed', date: '2026-06-21' },
 ];
 
 export const CLIENTS_DB: Client[] = [

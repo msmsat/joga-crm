@@ -1,0 +1,800 @@
+/* ==========================================================================
+   STAFF PAGE COMPONENT STYLES
+   ========================================================================== */
+
+/* ─── 1. ГЛАВНЫЙ ЛЕЙАУТ ──────────────────────────────────────────────────── */
+.staff-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  
+  /* 🔥 Главная магия: вычисляем идеальную высоту с точностью до пикселя */
+  height: calc(100vh - 128px); 
+  
+  /* Блокируем скролл самого каркаса */
+  overflow: hidden; 
+}
+
+/* ─── 2. ЛЕВАЯ ПАНЕЛЬ: СПИСОК КОМАНДЫ ────────────────────────────────────── */
+.staff-list-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 24px rgba(26, 26, 26, 0.06);
+}
+
+.panel-hdr {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(252, 174, 145, 0.04) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.add-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(252, 174, 145, 0.15);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent2);
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s;
+}
+
+.add-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.staff-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px;
+  scrollbar-width: none;
+}
+
+.role-sep {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 12px 12px 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.s-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.s-item:hover {
+  background: rgba(252, 174, 145, 0.07);
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(252, 174, 145, 0.08);
+}
+
+.s-item.active {
+  background: rgba(252, 174, 145, 0.12);
+  transform: translateX(3px);
+  box-shadow: 0 2px 12px rgba(252, 174, 145, 0.12);
+}
+
+.s-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.ava {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.ava-online::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 8px;
+  height: 8px;
+  background: #5BAB72;
+  border: 2px solid var(--card);
+  border-radius: 50%;
+}
+
+.s-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.s-role {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+/* ─── 3. ПРАВАЯ ПАНЕЛЬ: ПРОФИЛЬ (HERO) ───────────────────────────────────── */
+.premium-right {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--dash-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-hero {
+  height: 160px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.hero-actions {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+}
+
+.h-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--text2);
+}
+
+.h-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hero-info {
+  position: absolute;
+  bottom: 20px;
+  left: 28px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  z-index: 10;
+}
+
+.hero-ava {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.badge-online {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  background: #5BAB72;
+  border: 3px solid var(--card);
+  border-radius: 50%;
+}
+
+.hero-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+
+.hero-role {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 1px;
+}
+
+/* ─── 4. ПРАВАЯ ПАНЕЛЬ: КОНТЕНТ (СТАТИСТИКА, ЧИПЫ) ───────────────────────── */
+.premium-body {
+  padding: 24px 28px 20px;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+.premium-body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.premium-body::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 4px;
+}
+
+.stats-row {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 16px 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: all 0.18s;
+  cursor: default;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--dash-shadow);
+}
+
+.stat-v {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.stat-l {
+  font-size: 9.5px;
+  color: var(--text3);
+  margin-top: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(252, 174, 145, 0.06);
+}
+
+.chip.status-on {
+  background: rgba(91, 171, 114, 0.1);
+  border-color: rgba(91, 171, 114, 0.3);
+  color: #4a8a52;
+}
+
+/* ─── 5. КАРТОЧКА ВЛАДЕЛЬЦА И ЗАГРУЗКА ───────────────────────────────────── */
+.owner-card {
+  background: linear-gradient(135deg, rgba(252, 174, 145, 0.12) 0%, rgba(249, 160, 139, 0.06) 100%);
+  border: 1px dashed rgba(252, 174, 145, 0.4);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.owner-perm {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.perm-badge {
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(252, 174, 145, 0.15);
+  border: 1px solid rgba(252, 174, 145, 0.3);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent2);
+}
+
+.load-bar-wrap {
+  margin-bottom: 16px;
+}
+
+.load-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.load-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.load-bar-pct {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.load-bar-bg {
+  height: 6px;
+  background: rgba(26, 26, 26, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.load-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+/* ─── 6. СЕТКА РАСПИСАНИЯ ────────────────────────────────────────────────── */
+.sec-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sch-wrap {
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.sch-top {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(26, 26, 26, 0.05);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.day-tab {
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: var(--text3);
+  user-select: none;
+  border: none;
+  background: none;
+  font-family: var(--font-main);
+}
+
+.day-tab:hover:not(.active) {
+  color: var(--text2);
+}
+
+.day-tab.active {
+  background: var(--card);
+  color: var(--onyx);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08), 0 1px 3px rgba(26, 26, 26, 0.05);
+}
+
+.week-label {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 600;
+}
+
+.sch-grid {
+  display: grid;
+  grid-template-columns: 36px repeat(7, 1fr);
+  gap: 2px;
+  padding: 8px;
+}
+
+.sch-head {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text3);
+  text-align: center;
+  padding: 2px 0 5px;
+}
+
+.sch-time {
+  font-size: 9px;
+  color: var(--text3);
+  text-align: right;
+  padding: 1px 5px 1px 0;
+  line-height: 20px;
+}
+
+.sch-cell {
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(252, 174, 145, 0.1);
+  transition: all 0.15s;
+  cursor: pointer;
+  position: relative;
+}
+
+.sch-cell:hover {
+  background: rgba(252, 174, 145, 0.25);
+}
+
+.sch-cell.booked {
+  background: rgba(252, 174, 145, 0.55);
+  border: 1px solid rgba(252, 174, 145, 0.8);
+}
+
+.sch-cell.booked:hover {
+  background: var(--accent);
+}
+
+.sch-legend {
+  display: flex;
+  gap: 12px;
+  padding: 0 8px 8px;
+  align-items: center;
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Экшены расписания (кнопки) */
+.sch-action-btn {
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.btn-clear-sch {
+  background: transparent;
+  border: 1.5px solid rgba(216, 140, 154, 0.3);
+  color: #B25D6E;
+  border-radius: 10px;
+  padding: 6px 14px;
+}
+
+.btn-clear-sch:hover {
+  background: rgba(216, 140, 154, 0.08);
+  border-color: rgba(216, 140, 154, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.15);
+}
+
+.btn-magic-sch {
+  background: rgba(252, 174, 145, 0.08);
+  border: 1px solid rgba(252, 174, 145, 0.22);
+  color: var(--accent2);
+}
+
+.btn-magic-sch:hover {
+  background: rgba(252, 174, 145, 0.18);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px var(--peach-glow);
+  transform: translateY(-1px);
+}
+
+.btn-add-event {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  box-shadow: var(--dash-shadow);
+}
+
+.btn-add-event:hover {
+  border-color: var(--accent);
+  color: var(--accent2);
+  background: rgba(252, 174, 145, 0.03);
+  box-shadow: 0 4px 12px rgba(252, 174, 145, 0.1);
+  transform: translateY(-1px);
+}
+
+/* ─── 7. БЛИЖАЙШИЕ ЗАПИСИ (UPCOMING) ─────────────────────────────────────── */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: all 0.18s;
+}
+
+.upcoming-item:hover {
+  box-shadow: var(--dash-shadow);
+  transform: translateX(2px);
+}
+
+.up-time {
+  width: 42px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.up-time-h {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.up-time-m {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+}
+
+.up-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.up-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.up-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.up-sub {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.up-hall {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.up-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.upcoming-item:hover .up-actions {
+  opacity: 1;
+}
+
+.up-icon-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.15s;
+  color: var(--text3);
+}
+
+.up-icon-btn:hover {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--dash-shadow);
+}
+
+.up-icon-btn.del:hover {
+  background: #FFF5F5;
+  border-color: rgba(216, 140, 154, 0.4);
+  color: #c05060;
+}
+
+/* ─── 8. ТУЛТИПЫ, ТОСТЫ И АНИМАЦИИ ───────────────────────────────────────── */
+.slot-tip {
+  position: fixed;
+  background: #1A1A1A;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  line-height: 1.5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.slot-tip.show {
+  opacity: 1;
+}
+
+.slot-sub {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1A1A1A;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in {
+  animation: fadeSlide 0.25s ease both;
+}
