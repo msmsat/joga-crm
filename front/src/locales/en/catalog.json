@@ -1,0 +1,82 @@
+{
+  "tabs": {
+    "studios": "Studios",
+    "services": "Services"
+  },
+  "studios": {
+    "title": "STUDIOS",
+    "addStudio": "Add studio",
+    "addHall": "Add hall",
+    "infoTab": "General info",
+    "hallsTitle": "Studio halls",
+    "hallCount_one": "{{count}} hall",
+    "hallCount_other": "{{count}} halls",
+    "stats": {
+      "halls": "Halls",
+      "totalSeats": "Total seats",
+      "fromPerHour": "From / hour"
+    },
+    "hall": {
+      "seats": "seats",
+      "schedule": "Working hours",
+      "closed": "Closed",
+      "stats": {
+        "seats": "Seats",
+        "area": "Area",
+        "perHour": "Per hour"
+      },
+      "equipment": "Equipment",
+      "actions": "Actions",
+      "edit": "Edit hall",
+      "delete": "Delete hall"
+    },
+    "empty": {
+      "title": "No studios",
+      "subtitle": "Add your first studio"
+    },
+    "toasts": {
+      "deleted": "Studio deleted",
+      "hallDeleted": "Hall deleted",
+      "edit": "Edit: {{name}}"
+    }
+  },
+  "services": {
+    "title": "SERVICES",
+    "addService": "Add service",
+    "types": {
+      "group": "Group",
+      "individual": "Ind.",
+      "groupFull": " · Group",
+      "individualFull": " · Individual"
+    },
+    "stats": {
+      "price": "Price",
+      "duration": "Duration",
+      "bookings": "Bookings",
+      "revenue": "Revenue"
+    },
+    "details": {
+      "description": "Description",
+      "details": "Details",
+      "minutes": "minutes",
+      "upTo": "Up to {{count}} pers.",
+      "personal": "Personal",
+      "bookingsPerMonth": "bookings / month",
+      "schedule": "Class schedule"
+    },
+    "empty": {
+      "title": "No services",
+      "subtitle": "Add your first service"
+    },
+    "toasts": {
+      "deleted": "Service deleted",
+      "edit": "Edit: {{name}}"
+    },
+    "categories": {
+      "Йога": "Yoga",
+      "Пилатес": "Pilates",
+      "Стретчинг": "Stretching",
+      "Индивидуальные": "Individual"
+    }
+  }
+}

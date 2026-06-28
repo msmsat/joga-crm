@@ -16,7 +16,30 @@ export function useLoyalty() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  useEffect(() => {
+    const el = drawerRef.current;
+    if (!el) return;
+    const preventScroll = (e: WheelEvent) => e.preventDefault();
+    el.addEventListener('wheel', preventScroll, { passive: false });
+    return () => el.removeEventListener('wheel', preventScroll);
+  }, [drawer]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDrawerVisible(false);
+        setTimeout(() => setDrawer(null), 300);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   const openDrawer = (key: ProgramKey, title: string) => {
+    if (drawer?.key === key && drawerVisible) {
+      closeDrawer();
+      return;
+    }
     setDrawer({ key, title });
     requestAnimationFrame(() => setDrawerVisible(true));
   };

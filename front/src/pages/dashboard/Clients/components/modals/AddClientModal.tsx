@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
+import { clientsApi } from '../../../../../api/clients';
 
 export interface AddClientModalProps {
   isOpen: boolean;
@@ -178,10 +179,21 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
   };
 
   const handleFinish = () => {
-    onSuccess(form);
-    reset();
-    setStep(1);
-    onClose();
+    const parts = form.name.trim().split(' ');
+    clientsApi.create({
+      name:      parts[0],
+      last_name: parts.slice(1).join(' ') || null,
+      phone:     form.phone || null,
+      email:     form.email || null,
+      city:      form.city  || null,
+      tags:      form.tags.length ? form.tags : undefined,
+      note:      form.note  || null,
+    }).then(() => {
+      onSuccess(form);
+      reset();
+      setStep(1);
+      onClose();
+    });
   };
 
   const handleClose = () => {

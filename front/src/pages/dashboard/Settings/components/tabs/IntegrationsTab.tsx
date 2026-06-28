@@ -56,7 +56,6 @@ export default function IntegrationsTab({
                   border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(0,0,0,0.04)"}`,
                   boxShadow: isExpanded ? "0 12px 32px rgba(252,174,145,0.1), 0 2px 6px rgba(252,174,145,0.05)" : "none",
                   transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
-                  overflow: "hidden",
                 }}
               >
                 <div
@@ -84,7 +83,7 @@ export default function IntegrationsTab({
                 </div>
 
                 <div style={{ display: "grid", gridTemplateRows: isExpanded ? "1fr" : "0fr", transition: "grid-template-rows 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
-                  <div style={{ minHeight: 0 }}>
+                  <div style={{ minHeight: 0, overflow: "hidden" }}>
                     <div style={{ padding: "0 20px 20px 20px" }}>
                       <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "20px" }} />
 

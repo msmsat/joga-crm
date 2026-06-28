@@ -399,6 +399,51 @@ export function ErrorAlert({ message }: { message?: string }) {
   );
 }
 
+export const ACTIVITY_TYPES = [
+  {
+    id: "yoga",
+    label: "Йога",
+    description: "Хатха, аштанга, виньяса",
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
+        <path d="M18 10.5 L18 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M18 15 L11 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M18 15 L25 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M7 30 C10 23 15 22 18 22 C21 22 26 23 29 30" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+      </svg>
+    ),
+  },
+  {
+    id: "pilates",
+    label: "Пилатес",
+    description: "Реформер, матовый пилатес",
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="5.5" cy="20" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
+        <path d="M9 20 L22 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M22 20 L22 10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M19 10 L25 10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M13 20 L13 27" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M10 27 L16 27" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M3 26 L33 26" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.35"/>
+      </svg>
+    ),
+  },
+];
+
+export const DATE_FORMATS = [
+  { value: "DD.MM.YYYY", label: "31.12.2026" },
+  { value: "MM/DD/YYYY", label: "12/31/2026" },
+  { value: "YYYY-MM-DD", label: "2026-12-31" },
+];
+
+export const WEEK_START_OPTIONS = [
+  { value: "monday", label: "Понедельник" },
+  { value: "sunday", label: "Воскресенье" },
+];
+
 export const BUSINESS_CATEGORIES = [
   { id: "fitness", icon: "🏋️", label: "Фитнес и спорт", subtypes: ["Тренажёрный зал", "CrossFit", "Бокс / MMA", "Йога", "Пилатес", "Стретчинг", "Танцы", "Плавание / бассейн", "Теннис", "Гольф"] },
   { id: "beauty", icon: "💆", label: "Красота и уход", subtypes: ["Салон красоты", "Барбершоп", "Nail-студия", "Татуировки / пирсинг", "Брови и ресницы", "SPA-студия", "Массаж", "Эпиляция / шугаринг"] },
@@ -509,27 +554,30 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
-          background: "white", border: "1.5px solid #EEEBE6", borderRadius: "14px",
+          background: "#1E1E1E", border: "1.5px solid rgba(255,255,255,0.08)", borderRadius: "14px",
           zIndex: 100, maxHeight: "200px", overflowY: "auto",
-          boxShadow: "0 16px 48px rgba(26,26,26,0.12)", animation: "dropDown 0.15s cubic-bezier(0.34,1.1,0.64,1)",
+          boxShadow: "0 16px 48px rgba(0,0,0,0.4)", animation: "dropDown 0.15s cubic-bezier(0.34,1.1,0.64,1)",
         }}>
           {options.map((opt) => (
             <button
               key={opt.value} type="button" onClick={() => { onChange(opt.value); setOpen(false); }}
               style={{
-                width: "100%", padding: "10px 14px", background: opt.value === value ? "rgba(252,174,145,0.08)" : "transparent",
-                border: "none", textAlign: "left", cursor: "pointer", fontSize: "14px", color: "#1A1A1A",
+                width: "100%", padding: "10px 14px",
+                background: opt.value === value ? "rgba(252,174,145,0.15)" : "transparent",
+                border: "none", textAlign: "left", cursor: "pointer", fontSize: "14px",
+                color: opt.value === value ? "#FCAE91" : "rgba(255,255,255,0.85)",
                 display: "flex", alignItems: "center", gap: "8px", fontFamily: "inherit", transition: "background 0.15s ease",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = opt.value === value ? "rgba(252,174,145,0.1)" : "rgba(0,0,0,0.03)")}
-              onMouseLeave={e => (e.currentTarget.style.background = opt.value === value ? "rgba(252,174,145,0.08)" : "transparent")}
+              onMouseEnter={e => (e.currentTarget.style.background = opt.value === value ? "rgba(252,174,145,0.22)" : "rgba(255,255,255,0.06)")}
+              onMouseLeave={e => (e.currentTarget.style.background = opt.value === value ? "rgba(252,174,145,0.15)" : "transparent")}
             >
               {opt.flag && <span>{opt.flag}</span>}
               {opt.symbol && (
                 <span style={{
-                  width: "22px", height: "22px", background: opt.value === value ? "rgba(252,174,145,0.2)" : "rgba(0,0,0,0.05)",
+                  width: "22px", height: "22px",
+                  background: opt.value === value ? "rgba(252,174,145,0.2)" : "rgba(255,255,255,0.08)",
                   borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "11px", fontWeight: 700, color: opt.value === value ? "#F9A08B" : "#888",
+                  fontSize: "11px", fontWeight: 700, color: opt.value === value ? "#FCAE91" : "rgba(255,255,255,0.5)",
                 }}>{opt.symbol}</span>
               )}
               {opt.label}
@@ -546,106 +594,220 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
   );
 }
 
-export function Step1Illustration() {
-  return (
-    <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
-      <defs>
-        <radialGradient id="bg-glow" cx="50%" cy="55%" r="50%">
-          <stop offset="0%" stopColor="#FCAE91" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#FCAE91" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="card-shine" cx="30%" cy="20%" r="70%">
-          <stop offset="0%" stopColor="white" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="white" stopOpacity="0.7" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="160" cy="160" rx="140" ry="120" fill="url(#bg-glow)" />
-      <circle cx="52" cy="68" r="6" fill="#FCAE91" opacity="0.4"><animateTransform attributeName="transform" type="translate" values="0,0;0,-8;0,0" dur="3s" repeatCount="indefinite" /></circle>
-      <circle cx="268" cy="200" r="4" fill="#FCAE91" opacity="0.3"><animateTransform attributeName="transform" type="translate" values="0,0;0,6;0,0" dur="4s" repeatCount="indefinite" /></circle>
-      <circle cx="290" cy="80" r="8" fill="#A3C9A8" opacity="0.25"><animateTransform attributeName="transform" type="translate" values="0,0;4,0;0,0" dur="5s" repeatCount="indefinite" /></circle>
-      <g>
-        <rect x="54" y="72" width="212" height="136" rx="18" fill="url(#card-shine)" />
-        <rect x="54" y="72" width="212" height="136" rx="18" stroke="#F0EDE8" strokeWidth="1" />
-        <rect x="64" y="82" width="212" height="136" rx="18" fill="#1A1A1A" opacity="0.06" />
-        <rect x="72" y="92" width="120" height="10" rx="5" fill="#1A1A1A" opacity="0.12" />
-        <rect x="72" y="108" width="80" height="7" rx="3.5" fill="#FCAE91" opacity="0.5" />
-        <line x1="72" y1="126" x2="248" y2="126" stroke="#F0EDE8" strokeWidth="1" />
-        <rect x="72" y="136" width="14" height="14" rx="4" fill="#FCAE91" opacity="0.3" />
-        <rect x="94" y="139" width="90" height="7" rx="3.5" fill="#1A1A1A" opacity="0.1" />
-        <rect x="72" y="158" width="14" height="14" rx="4" fill="#A3C9A8" opacity="0.4" />
-        <rect x="94" y="161" width="70" height="7" rx="3.5" fill="#1A1A1A" opacity="0.1" />
-        <rect x="168" y="152" width="72" height="24" rx="8" fill="#1A1A1A" opacity="0.06" />
-        <rect x="176" y="158" width="56" height="7" rx="3.5" fill="#1A1A1A" opacity="0.12" />
-        <circle cx="236" cy="104" r="16" fill="#F5F0EB" />
-        <circle cx="236" cy="100" r="6" fill="#FCAE91" opacity="0.5" />
-        <ellipse cx="236" cy="116" rx="10" ry="6" fill="#FCAE91" opacity="0.3" />
-      </g>
-      <g opacity="0.85"><animateTransform attributeName="transform" type="translate" values="0,0;3,-5;0,0" dur="4s" repeatCount="indefinite" additive="sum" /><rect x="210" y="44" width="88" height="44" rx="12" fill="white" /><rect x="210" y="44" width="88" height="44" rx="12" stroke="#F0EDE8" strokeWidth="1" /><rect x="222" y="56" width="40" height="6" rx="3" fill="#1A1A1A" opacity="0.12" /><rect x="222" y="66" width="28" height="5" rx="2.5" fill="#FCAE91" opacity="0.6" /><circle cx="279" cy="62" r="8" fill="#F5F0EB" /><path d="M276 62 L279 65 L283 59" stroke="#A3C9A8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></g>
-      <g opacity="0.8"><animateTransform attributeName="transform" type="translate" values="0,0;-4,4;0,0" dur="5s" repeatCount="indefinite" additive="sum" /><rect x="24" y="180" width="76" height="40" rx="10" fill="white" /><rect x="24" y="180" width="76" height="40" rx="10" stroke="#F0EDE8" strokeWidth="1" /><rect x="34" y="190" width="34" height="5" rx="2.5" fill="#1A1A1A" opacity="0.1" /><rect x="34" y="199" width="24" height="5" rx="2.5" fill="#FCAE91" opacity="0.4" /><rect x="34" y="208" width="44" height="4" rx="2" fill="#1A1A1A" opacity="0.07" /></g>
-      <g fill="#FCAE91">
-        <path d="M36 120 L38 114 L40 120 L46 122 L40 124 L38 130 L36 124 L30 122 Z" opacity="0.35"><animateTransform attributeName="transform" type="rotate" values="0 38 122;360 38 122" dur="8s" repeatCount="indefinite" /></path>
-        <path d="M270 136 L271.5 132 L273 136 L277 137.5 L273 139 L271.5 143 L270 139 L266 137.5 Z" opacity="0.25"><animateTransform attributeName="transform" type="rotate" values="360 271.5 137.5;0 271.5 137.5" dur="10s" repeatCount="indefinite" /></path>
-      </g>
-    </svg>
-  );
-}
+// ─── ONBOARDING ILLUSTRATIONS (Live, reactive) ────────────────────────────────
 
-export function Step2Illustration({ selected }: { selected: string }) {
-  const icons: Record<string, string> = { fitness: "🏋️", beauty: "💆", medical: "🏥", education: "📚", pets: "🐾", auto: "🚗", other: "✦" };
-  const selectedIcon = icons[selected] || "✦";
+export function Illustration1({ studioName, logoPreviewUrl }: { studioName: string; logoPreviewUrl: string }) {
+  const initial = studioName.trim().charAt(0).toUpperCase() || '';
   return (
-    <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
-      <defs><radialGradient id="bg-glow2" cx="50%" cy="50%" r="55%"><stop offset="0%" stopColor="#FCAE91" stopOpacity="0.15" /><stop offset="100%" stopColor="#FCAE91" stopOpacity="0" /></radialGradient></defs>
-      <ellipse cx="160" cy="145" rx="130" ry="110" fill="url(#bg-glow2)" />
-      <circle cx="160" cy="140" r="52" fill="white" /><circle cx="160" cy="140" r="52" stroke="#F0EDE8" strokeWidth="1.5" /><circle cx="160" cy="140" r="40" fill="#FDFCFB" />
-      <text x="160" y="155" textAnchor="middle" fontSize="34">{selectedIcon}</text>
-      {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-        const angle = (i / 7) * Math.PI * 2 - Math.PI / 2; const r = 90; const x = 160 + Math.cos(angle) * r; const y = 140 + Math.sin(angle) * r;
-        const cat = BUSINESS_CATEGORIES[i]; const isSelected = selected === cat?.id;
-        return (
-          <g key={i}>
-            <circle cx={x} cy={y} r={isSelected ? 20 : 15} fill={isSelected ? "#FCAE91" : "white"} stroke={isSelected ? "#F9A08B" : "#F0EDE8"} strokeWidth={isSelected ? 2 : 1} opacity={isSelected ? 1 : 0.7} />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={isSelected ? "14" : "12"}>{cat?.icon}</text>
-          </g>
-        );
-      })}
-      {selected && BUSINESS_CATEGORIES.map((cat, i) => {
-        if (cat.id !== selected) return null;
-        const angle = (i / 7) * Math.PI * 2 - Math.PI / 2; const r = 70; const x = 160 + Math.cos(angle) * r; const y = 140 + Math.sin(angle) * r;
-        return <line key={cat.id} x1="160" y1="140" x2={x} y2={y} stroke="#FCAE91" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.5" />;
-      })}
-      {selected && (
-        <g><rect x="90" y="215" width="140" height="28" rx="8" fill="#FCAE91" opacity="0.12" /><text x="160" y="233" textAnchor="middle" fontSize="12" fill="#1A1A1A" fontWeight="600" opacity="0.6">{BUSINESS_CATEGORIES.find(c => c.id === selected)?.label}</text></g>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div style={{
+        width: '200px', background: 'white', borderRadius: '18px',
+        boxShadow: '0 20px 50px rgba(26,26,26,0.10), 0 4px 12px rgba(26,26,26,0.06)',
+        border: '1px solid #F0EDE8', overflow: 'hidden',
+        animation: 'floatLogin1 5s ease-in-out infinite',
+      }}>
+        <div style={{ padding: '14px 16px', borderBottom: '1px solid #F5F3F0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+            background: logoPreviewUrl ? 'transparent' : 'linear-gradient(135deg, #FCAE91, #F9A08B)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', fontSize: '15px', fontWeight: 900, color: 'white',
+          }}>
+            {logoPreviewUrl
+              ? <img src={logoPreviewUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : initial || <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1.5" fill="white" opacity="0.9"/><rect x="9" y="2" width="5" height="5" rx="1.5" fill="white" opacity="0.5"/><rect x="2" y="9" width="5" height="5" rx="1.5" fill="white" opacity="0.5"/><rect x="9" y="9" width="5" height="5" rx="1.5" fill="white" opacity="0.9"/></svg>
+            }
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <div style={{ fontWeight: 800, fontSize: '12px', color: studioName ? '#1A1A1A' : '#AAAAAA', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {studioName || 'Название студии'}
+            </div>
+            <div style={{ fontSize: '10px', color: '#AAAAAA', marginTop: '1px' }}>Velora CRM</div>
+          </div>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#A3C9A8', animation: 'stepPulse 2s infinite' }} />
+        </div>
+        <div style={{ padding: '12px 16px 10px' }}>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+            {[{ v: '248', l: 'Клиентов', c: '#FCAE91' }, { v: '94%', l: 'Посещ.', c: '#A3C9A8' }].map((s, i) => (
+              <div key={i} style={{ flex: 1, padding: '8px', background: '#FDFCFB', borderRadius: '8px', border: '1px solid #F0EDE8' }}>
+                <div style={{ fontWeight: 800, fontSize: '14px', color: s.c }}>{s.v}</div>
+                <div style={{ fontSize: '9px', color: '#AAAAAA', marginTop: '1px' }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '28px' }}>
+            {[35, 60, 45, 80, 55, 90, 65].map((h, i) => (
+              <div key={i} style={{ flex: 1, borderRadius: '3px 3px 2px 2px', height: `${h * 0.28}px`, background: i === 5 ? 'linear-gradient(180deg, #FCAE91, #F9A08B)' : `rgba(252,174,145,${0.1 + i * 0.04})` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+      {studioName.trim().length > 0 && (
+        <div style={{ padding: '5px 12px', background: 'rgba(163,201,168,0.15)', borderRadius: '100px', border: '1px solid rgba(163,201,168,0.3)', fontSize: '11px', fontWeight: 700, color: '#5A8A60', animation: 'slideInRight 0.3s ease', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#A3C9A8' }} />
+          Студия создана
+        </div>
       )}
+    </div>
+  );
+}
+
+export function Illustration2({ activityType }: { activityType: string }) {
+  if (activityType === 'yoga') {
+    return (
+      <svg viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxHeight: '190px' }}>
+        <ellipse cx="140" cy="110" rx="90" ry="70" fill="rgba(252,174,145,0.07)"/>
+        <circle cx="140" cy="110" r="68" stroke="#FCAE91" strokeWidth="1" strokeDasharray="4 8" opacity="0.2">
+          <animateTransform attributeName="transform" type="rotate" values="0 140 110;360 140 110" dur="16s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="140" cy="110" r="94" stroke="#A3C9A8" strokeWidth="1" strokeDasharray="3 12" opacity="0.12">
+          <animateTransform attributeName="transform" type="rotate" values="360 140 110;0 140 110" dur="28s" repeatCount="indefinite"/>
+        </circle>
+        <g>
+          <animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="4s" repeatCount="indefinite" additive="sum"/>
+          <circle cx="140" cy="58" r="14" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
+          <circle cx="140" cy="58" r="8" fill="#FDFCFB"/>
+          <path d="M140 72 L140 100" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M140 84 L122 98" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M140 84 L158 98" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M140 100 C128 104 108 104 100 116" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M140 100 C152 104 172 104 180 116" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M94 120 Q140 132 186 120" stroke="#FCAE91" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+        </g>
+        <circle cx="198" cy="56" r="4" fill="#FCAE91" opacity="0.35"><animateTransform attributeName="transform" type="translate" values="0,0;4,-5;0,0" dur="3s" repeatCount="indefinite" additive="sum"/></circle>
+        <circle cx="82" cy="82" r="3" fill="#A3C9A8" opacity="0.4"><animateTransform attributeName="transform" type="translate" values="0,0;-3,4;0,0" dur="4.5s" repeatCount="indefinite" additive="sum"/></circle>
+        <circle cx="210" cy="148" r="5" fill="#FCAE91" opacity="0.2"><animateTransform attributeName="transform" type="translate" values="0,0;5,4;0,0" dur="5s" repeatCount="indefinite" additive="sum"/></circle>
+        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">Йога</text>
+      </svg>
+    );
+  }
+  if (activityType === 'pilates') {
+    return (
+      <svg viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxHeight: '190px' }}>
+        <ellipse cx="140" cy="118" rx="100" ry="60" fill="rgba(163,201,168,0.08)"/>
+        <circle cx="140" cy="110" r="88" stroke="#A3C9A8" strokeWidth="0.8" strokeDasharray="3 14" opacity="0.18">
+          <animateTransform attributeName="transform" type="rotate" values="0 140 110;360 140 110" dur="32s" repeatCount="indefinite"/>
+        </circle>
+        <rect x="48" y="140" width="184" height="8" rx="4" fill="#F0EDE8"/>
+        <rect x="58" y="128" width="164" height="16" rx="5" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
+        {[0,1,2,3].map(i => <line key={i} x1={136 + i * 18} y1="128" x2={136 + i * 18} y2="144" stroke="#E8E4DF" strokeWidth="1.5" strokeDasharray="2 2"/>)}
+        <rect x="68" y="120" width="62" height="13" rx="4" fill="rgba(252,174,145,0.18)" stroke="#FCAE91" strokeWidth="1.5">
+          <animate attributeName="x" values="68;106;68" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.45,0,0.55,1;0.45,0,0.55,1"/>
+        </rect>
+        <g>
+          <animateTransform attributeName="transform" type="translate" values="0,0;38,0;0,0" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.45,0,0.55,1;0.45,0,0.55,1" additive="sum"/>
+          <circle cx="84" cy="114" r="11" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
+          <circle cx="84" cy="114" r="6" fill="#FDFCFB"/>
+          <path d="M84 125 L84 136" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M84 130 L73 125" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M84 130 L97 128" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
+        </g>
+        <circle cx="68" cy="74" r="3.5" fill="#FCAE91" opacity="0.3"><animateTransform attributeName="transform" type="translate" values="0,0;-3,-5;0,0" dur="4s" repeatCount="indefinite" additive="sum"/></circle>
+        <circle cx="216" cy="90" r="5" fill="#A3C9A8" opacity="0.25"><animateTransform attributeName="transform" type="translate" values="0,0;4,4;0,0" dur="5s" repeatCount="indefinite" additive="sum"/></circle>
+        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">Пилатес</text>
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxHeight: '190px' }}>
+      <circle cx="140" cy="108" r="60" stroke="#FCAE91" strokeWidth="1" strokeDasharray="4 8" opacity="0.2"><animateTransform attributeName="transform" type="rotate" values="0 140 108;360 140 108" dur="20s" repeatCount="indefinite"/></circle>
+      <circle cx="140" cy="108" r="42" stroke="#FCAE91" strokeWidth="1.2" strokeDasharray="3 6" opacity="0.15"><animateTransform attributeName="transform" type="rotate" values="360 140 108;0 140 108" dur="14s" repeatCount="indefinite"/></circle>
+      <circle cx="140" cy="108" r="26" fill="rgba(252,174,145,0.06)" stroke="#FCAE91" strokeWidth="1" opacity="0.3">
+        <animate attributeName="r" values="26;30;26" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.3;0.5;0.3" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text x="140" y="116" textAnchor="middle" fontSize="22" fill="#FCAE91" opacity="0.35">?</text>
+      <text x="140" y="185" textAnchor="middle" fontSize="11" fill="#CCCCCC" fontWeight="500" fontFamily="inherit">Выберите направление</text>
     </svg>
   );
 }
 
-export function Step3Illustration() {
+export function Illustration3({ phone, email, address }: { phone: string; email: string; address: string }) {
+  const hasPhone = !!phone && phone.length > 5;
+  const hasEmail = !!email && email.includes('@');
+  const hasAddress = !!address && address.length > 2;
   return (
-    <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
-      <defs>
-        <radialGradient id="globe-grad" cx="40%" cy="35%" r="60%"><stop offset="0%" stopColor="#E8F5FF" /><stop offset="100%" stopColor="#C5E4FF" /></radialGradient>
-        <radialGradient id="bg-glow3" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#FCAE91" stopOpacity="0.12" /><stop offset="100%" stopColor="#FCAE91" stopOpacity="0" /></radialGradient>
-        <clipPath id="globe-clip"><circle cx="160" cy="132" r="72" /></clipPath>
-      </defs>
-      <ellipse cx="160" cy="145" rx="140" ry="115" fill="url(#bg-glow3)" />
-      <circle cx="160" cy="132" r="72" fill="url(#globe-grad)" /><circle cx="160" cy="132" r="72" stroke="#D0E8F8" strokeWidth="1.5" />
-      <g clipPath="url(#globe-clip)" opacity="0.6">
-        <path d="M152 90 C165 84 185 86 198 92 C208 96 212 106 210 114 C208 122 200 126 190 124 C178 122 168 128 162 124 C154 120 148 112 150 104 C152 98 150 94 152 90 Z" fill="#A3C9A8" opacity="0.5" />
-        <path d="M148 118 C152 114 160 116 164 122 C168 130 166 142 160 146 C154 150 146 146 144 138 C142 130 144 122 148 118 Z" fill="#A3C9A8" opacity="0.45" />
-        <path d="M110 96 C116 92 122 96 124 104 C126 112 122 122 116 126 C110 130 104 126 104 118 C104 110 106 100 110 96 Z" fill="#A3C9A8" opacity="0.4" />
-        <path d="M194 136 C200 134 206 138 206 144 C206 150 200 154 194 152 C188 150 186 144 190 140 L194 136 Z" fill="#A3C9A8" opacity="0.4" />
-      </g>
-      <g clipPath="url(#globe-clip)" opacity="0.2">{[-40, -20, 0, 20, 40].map((lat, i) => <ellipse key={i} cx="160" cy={132 + lat} rx={Math.sqrt(72 * 72 - lat * lat) * 0.98} ry="4" fill="none" stroke="#4A9CD6" strokeWidth="0.5" />)}</g>
-      <g clipPath="url(#globe-clip)" opacity="0.15">{[-40, -20, 0, 20, 40].map((lon, i) => <ellipse key={i} cx="160" cy="132" rx="4" ry="72" fill="none" stroke="#4A9CD6" strokeWidth="0.5" transform={`rotate(${(lon / 90) * 45} 160 132)`} />)}</g>
-      <circle cx="135" cy="110" r="20" fill="white" opacity="0.15" />
-      <g><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="2s" repeatCount="indefinite" additive="sum" /><path d="M160 92 C153 92 148 97 148 104 C148 114 160 124 160 124 C160 124 172 114 172 104 C172 97 167 92 160 92 Z" fill="#FCAE91" /><circle cx="160" cy="104" r="5" fill="white" /></g>
-      <g opacity="0.9"><animateTransform attributeName="transform" type="translate" values="0,0;-3,-4;0,0" dur="3.5s" repeatCount="indefinite" additive="sum" /><rect x="20" y="84" width="68" height="26" rx="8" fill="white" /><rect x="20" y="84" width="68" height="26" rx="8" stroke="#F0EDE8" strokeWidth="1" /><text x="32" y="100" fontSize="13">🇷🇺</text><rect x="50" y="93" width="30" height="5" rx="2.5" fill="#1A1A1A" opacity="0.15" /></g>
-      <g opacity="0.85"><animateTransform attributeName="transform" type="translate" values="0,0;4,-3;0,0" dur="4.5s" repeatCount="indefinite" additive="sum" /><rect x="232" y="68" width="72" height="26" rx="8" fill="white" /><rect x="232" y="68" width="72" height="26" rx="8" stroke="#F0EDE8" strokeWidth="1" /><text x="244" y="84" fontSize="13">💰</text><text x="264" y="84" fontSize="10" fill="#1A1A1A" opacity="0.4" fontWeight="600">RUB ₽</text></g>
-      <g opacity="0.8"><animateTransform attributeName="transform" type="translate" values="0,0;3,5;0,0" dur="5s" repeatCount="indefinite" additive="sum" /><rect x="238" y="168" width="72" height="26" rx="8" fill="white" /><rect x="238" y="168" width="72" height="26" rx="8" stroke="#F0EDE8" strokeWidth="1" /><text x="250" y="184" fontSize="13">🕐</text><rect x="270" y="179" width="32" height="5" rx="2.5" fill="#1A1A1A" opacity="0.15" /></g>
-      <rect x="100" y="222" width="120" height="28" rx="8" fill="#1A1A1A" opacity="0.04" /><text x="160" y="240" textAnchor="middle" fontSize="11" fill="#1A1A1A" opacity="0.35" fontWeight="500">Ваши настройки региона</text>
-    </svg>
+    <div style={{ width: '100%', height: '200px', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, rgba(252,174,145,0.12), rgba(163,201,168,0.08))', border: '1.5px solid rgba(252,174,145,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2 C6.5 2 4 4.8 4 8 C4 12.8 10 18 10 18 C10 18 16 12.8 16 8 C16 4.8 13.5 2 10 2 Z" fill="#FCAE91" opacity="0.7"/><circle cx="10" cy="8" r="3" fill="white"/></svg>
+      </div>
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} viewBox="0 0 280 200" preserveAspectRatio="none">
+        <line x1="140" y1="100" x2="70" y2="48" stroke="#F0EDE8" strokeWidth="1" strokeDasharray="3 4"/>
+        <line x1="140" y1="100" x2="210" y2="48" stroke="#F0EDE8" strokeWidth="1" strokeDasharray="3 4"/>
+        <line x1="140" y1="100" x2="140" y2="162" stroke="#F0EDE8" strokeWidth="1" strokeDasharray="3 4"/>
+      </svg>
+      <div style={{ position: 'absolute', top: '8px', left: '8px', transition: 'all 0.4s ease', opacity: hasPhone ? 1 : 0.4, animation: 'floatLogin2 5s ease-in-out infinite' }}>
+        <div style={{ background: 'white', border: `1.5px solid ${hasPhone ? 'rgba(252,174,145,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasPhone ? '0 8px 24px rgba(252,174,145,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Телефон</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasPhone ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasPhone ? (phone.length > 13 ? phone.slice(0, 13) : phone) : '+7 (___) ___'}</div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', top: '8px', right: '8px', transition: 'all 0.4s ease', opacity: hasEmail ? 1 : 0.4, animation: 'floatLogin1 6s ease-in-out infinite' }}>
+        <div style={{ background: 'white', border: `1.5px solid ${hasEmail ? 'rgba(163,201,168,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasEmail ? '0 8px 24px rgba(163,201,168,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Email</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasEmail ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasEmail ? (email.length > 15 ? email.slice(0, 12) + '…' : email) : 'studio@mail.ru'}</div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', transition: 'all 0.4s ease', opacity: hasAddress ? 1 : 0.4, animation: 'floatLogin3 7s ease-in-out infinite' }}>
+        <div style={{ background: 'white', border: `1.5px solid ${hasAddress ? 'rgba(252,174,145,0.35)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasAddress ? '0 8px 24px rgba(252,174,145,0.12)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Адрес</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasAddress ? '#1A1A1A' : '#CCCCCC' }}>{hasAddress ? (address.length > 18 ? address.slice(0, 15) + '…' : address) : 'ул. Пушкина, 1'}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Illustration4({ timezone, currency, language }: { timezone: string; currency: string; language: string }) {
+  const curr = CURRENCIES.find(c => c.value === currency);
+  const lang = LANGUAGES.find(l => l.value === language);
+  const tz = TIMEZONES.find(t => t.value === timezone);
+  return (
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '4px 0' }}>
+      <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'white', border: '2px solid #F0EDE8', boxShadow: '0 8px 24px rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', animation: 'floatLogin1 5s ease-in-out infinite', flexShrink: 0 }}>
+        <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+          <circle cx="21" cy="21" r="18" stroke="#F0EDE8" strokeWidth="1.5"/>
+          <path d="M21 9 L21 21 L30 21" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="21" cy="21" r="2.5" fill="#FCAE91"/>
+        </svg>
+        <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#1A1A1A', borderRadius: '8px', padding: '3px 7px', fontSize: '10px', fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
+          {timezone || 'UTC+3'}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+        <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin2 6s ease-in-out infinite' }}>
+          <div style={{ fontSize: '22px', fontWeight: 900, color: '#FCAE91', lineHeight: '1' }}>{curr?.symbol || '₽'}</div>
+          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{curr?.label || 'Рубль'}</div>
+        </div>
+        <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin3 7s ease-in-out infinite' }}>
+          <div style={{ fontSize: '20px', lineHeight: '1' }}>{lang?.flag || '🇷🇺'}</div>
+          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{lang?.label?.slice(0, 8) || 'Русский'}</div>
+        </div>
+      </div>
+      {tz && <div style={{ fontSize: '11px', color: '#AAAAAA', fontWeight: 500 }}>{tz.label}</div>}
+    </div>
+  );
+}
+
+export function Illustration5({ workingHours }: { workingHours: Array<{ dayOfWeek: number; isOpen: boolean; openTime: string; closeTime: string }> }) {
+  const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  return (
+    <div style={{ width: '100%', padding: '0 4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      {workingHours.map((day, idx) => (
+        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}>
+          <span style={{ width: '22px', fontSize: '10px', fontWeight: 700, color: day.isOpen ? '#1A1A1A' : '#CCCCCC', flexShrink: 0, transition: 'color 0.3s ease' }}>
+            {dayNames[idx]}
+          </span>
+          <div style={{ flex: 1, height: '20px', borderRadius: '6px', background: day.isOpen ? 'linear-gradient(90deg, rgba(252,174,145,0.28), rgba(252,174,145,0.12))' : 'rgba(26,26,26,0.04)', transition: 'all 0.35s cubic-bezier(0.34,1.1,0.64,1)', display: 'flex', alignItems: 'center', paddingLeft: '8px' }}>
+            {day.isOpen
+              ? <span style={{ fontSize: '9px', fontWeight: 600, color: '#F9A08B', whiteSpace: 'nowrap' }}>{day.openTime} – {day.closeTime}</span>
+              : <span style={{ fontSize: '9px', color: '#CCCCCC', fontStyle: 'italic' }}>выходной</span>
+            }
+          </div>
+          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: day.isOpen ? '#FCAE91' : '#E8E4DF', flexShrink: 0, transition: 'all 0.3s ease', boxShadow: day.isOpen ? '0 2px 6px rgba(252,174,145,0.4)' : 'none' }} />
+        </div>
+      ))}
+    </div>
   );
 }
 

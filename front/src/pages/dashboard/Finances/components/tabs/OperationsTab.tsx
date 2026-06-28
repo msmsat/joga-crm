@@ -1,29 +1,89 @@
 import { useState } from 'react';
-import type { ToastType } from '../../types';
+import type { ToastType, Operation } from '../../types';
 import { OPERATIONS_DATA, fmt } from '../../constants';
 import { Ico } from '../ui/FinanceIcons';
+import styles from '../../Finances.module.css';
 
 export default function OperationsTab({ showToast, initialSearch }: {
   showToast: (msg: string, t?: ToastType) => void;
   initialSearch: string;
 }) {
+  const [operations, setOperations] = useState<Operation[]>(OPERATIONS_DATA);
   const [search, setSearch] = useState(initialSearch || '');
-  const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const [filter, setFilter] = useState<'all' | 'in' | 'out'>('all');
   const [expanded, setExpanded] = useState<number | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  const filtered = OPERATIONS_DATA.filter(op => {
+  // Inline edit state
+  const [editingOpId, setEditingOpId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editFocused, setEditFocused] = useState<string | null>(null);
+
+  const parseSmartDate = (raw: string): string => {
+    const digits = raw.replace(/\D/g, '');
+    const year = new Date().getFullYear().toString();
+    if (digits.length === 4) return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${year}`;
+    if (digits.length === 6) return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.20${digits.slice(4, 6)}`;
+    if (digits.length === 8) return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
+    return raw;
+  };
+
+  const handleDateChange = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    let formatted = digits;
+    if (digits.length > 4) formatted = `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+    else if (digits.length > 2) formatted = `${digits.slice(0, 2)}.${digits.slice(2)}`;
+    setEditDate(formatted);
+  };
+
+  const toggleOpEdit = (op: Operation) => {
+    if (editingOpId === op.id) { setEditingOpId(null); return; }
+    setEditingOpId(op.id);
+    setEditTitle(op.title);
+    setEditAmount(String(Math.abs(op.amount)));
+    setEditCategory(op.category ?? '');
+    setEditDate(op.op_date);
+  };
+
+  const saveOpEdit = (op: Operation) => {
+    if (!editTitle.trim()) { showToast('Введите название', 'error'); return; }
+    const amount = parseFloat(editAmount) || Math.abs(op.amount);
+    setOperations(prev => prev.map(o => o.id === op.id ? {
+      ...o,
+      title: editTitle.trim(),
+      amount: op.type === 'in' ? amount : -amount,
+      category: editCategory.trim() || o.category,
+      op_date: editDate.trim() || o.op_date,
+    } : o));
+    setEditingOpId(null);
+    showToast('Операция обновлена', 'success');
+  };
+
+  const eInp = (key: string): React.CSSProperties => ({
+    width: '100%', padding: '8px 12px', background: '#FDFCFB',
+    border: editFocused === key ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)',
+    borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A',
+    outline: 'none',
+    boxShadow: editFocused === key ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
+    transition: 'border-color 0.18s, box-shadow 0.18s',
+    fontFamily: 'var(--font)', boxSizing: 'border-box',
+  });
+
+  const filtered = operations.filter(op => {
     const matchFilter = filter === 'all' || op.type === filter;
     const matchSearch = !search ||
       op.title.toLowerCase().includes(search.toLowerCase()) ||
-      op.client.toLowerCase().includes(search.toLowerCase()) ||
-      op.category.toLowerCase().includes(search.toLowerCase()) ||
-      (op.account && op.account.toLowerCase().includes(search.toLowerCase()));
+      (op.client_name ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (op.category ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (op.account_name ? op.account_name.toLowerCase().includes(search.toLowerCase()) : false);
     return matchFilter && matchSearch;
   });
 
-  const totalIncome = OPERATIONS_DATA.filter(o => o.type === 'income').reduce((s, o) => s + Math.abs(o.amount), 0);
-  const totalExpense = OPERATIONS_DATA.filter(o => o.type === 'expense').reduce((s, o) => s + Math.abs(o.amount), 0);
+  const totalIncome = OPERATIONS_DATA.filter(o => o.type === 'in').reduce((s, o) => s + Math.abs(o.amount), 0);
+  const totalExpense = OPERATIONS_DATA.filter(o => o.type === 'out').reduce((s, o) => s + Math.abs(o.amount), 0);
   const balance = totalIncome - totalExpense;
 
   return (
@@ -77,11 +137,11 @@ export default function OperationsTab({ showToast, initialSearch }: {
         </div>
 
         <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', padding: '4px', borderRadius: '12px', flexShrink: 0 }}>
-          {(['all', 'income', 'expense'] as const).map(f => {
+          {(['all', 'in', 'out'] as const).map(f => {
             const isActive = filter === f;
             return (
               <button key={f} onClick={() => setFilter(f)} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: isActive ? '#FFFFFF' : 'transparent', color: isActive ? '#1A1A1A' : '#666666', boxShadow: isActive ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)' }}>
-                {f === 'all' ? 'Все' : f === 'income' ? 'Приход' : 'Расход'}
+                {f === 'all' ? 'Все' : f === 'in' ? 'Приход' : 'Расход'}
               </button>
             );
           })}
@@ -102,7 +162,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
       ) : (
         <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', overflow: 'hidden' }}>
           {filtered.map((op, i) => {
-            const isIncome = op.type === 'income';
+            const isIncome = op.type === 'in';
             const color = isIncome ? '#5BAB72' : '#D88C9A';
             const bgLight = isIncome ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)';
             const isOpen = expanded === op.id;
@@ -125,11 +185,11 @@ export default function OperationsTab({ showToast, initialSearch }: {
                         <span style={{ fontSize: '10px', background: '#FFF3CD', color: '#856404', padding: '2px 8px', borderRadius: '20px', fontWeight: 700 }}>Ожидание</span>
                       )}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#666666' }}>{op.client} <span style={{ opacity: 0.5, margin: '0 4px' }}>•</span> {op.account || op.category}</div>
+                    <div style={{ fontSize: '12px', color: '#666666' }}>{op.client_name ?? ''} <span style={{ opacity: 0.5, margin: '0 4px' }}>•</span> {op.account_name || op.category}</div>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0, paddingRight: '12px' }}>
                     <div style={{ fontSize: '15px', fontWeight: 800, color, letterSpacing: '-0.3px' }}>{isIncome ? '+' : '−'}{fmt(Math.abs(op.amount))}</div>
-                    <div style={{ fontSize: '11px', color: '#999999', marginTop: '3px', fontWeight: 500 }}>{op.date}</div>
+                    <div style={{ fontSize: '11px', color: '#999999', marginTop: '3px', fontWeight: 500 }}>{op.op_date}</div>
                   </div>
                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: isOpen ? 'rgba(26,26,26,0.06)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s', transform: isOpen ? 'rotate(90deg)' : 'none', flexShrink: 0 }}>
                     <Ico.Chevron />
@@ -137,18 +197,91 @@ export default function OperationsTab({ showToast, initialSearch }: {
                 </div>
 
                 {isOpen && (
-                  <div style={{ background: 'rgba(252,174,145,0.03)', padding: '20px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', borderTop: '1px solid rgba(252,174,145,0.1)' }}>
-                    {[['Счёт поступления', op.account || '—'], ['Категория', op.category], ['Метод оплаты', op.method]].map(([l, v]) => (
-                      <div key={l as string}>
-                        <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{l}</div>
-                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A' }}>{v}</div>
+                  <div style={{ borderTop: '1px solid rgba(252,174,145,0.1)' }}>
+                    {editingOpId === op.id ? (
+                      <div key="edit" className={styles.morphContainer} style={{ padding: '20px 24px', background: 'rgba(249,160,139,0.02)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Название</div>
+                            <input
+                              value={editTitle}
+                              onChange={e => setEditTitle(e.target.value)}
+                              onFocus={() => setEditFocused('title')}
+                              onBlur={() => setEditFocused(null)}
+                              placeholder="Название операции"
+                              style={eInp('title')}
+                            />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Сумма, ₽</div>
+                            <input
+                              type="number"
+                              value={editAmount}
+                              onChange={e => setEditAmount(e.target.value)}
+                              onFocus={() => setEditFocused('amount')}
+                              onBlur={() => setEditFocused(null)}
+                              placeholder="0"
+                              min="0"
+                              style={eInp('amount')}
+                            />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Категория</div>
+                            <input
+                              value={editCategory}
+                              onChange={e => setEditCategory(e.target.value)}
+                              onFocus={() => setEditFocused('category')}
+                              onBlur={() => setEditFocused(null)}
+                              placeholder="Категория"
+                              style={eInp('category')}
+                            />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Дата</div>
+                            <input
+                              value={editDate}
+                              onChange={e => handleDateChange(e.target.value)}
+                              onFocus={() => setEditFocused('date')}
+                              onBlur={() => { setEditFocused(null); if (editDate) setEditDate(parseSmartDate(editDate)); }}
+                              placeholder="дд.мм.гггг"
+                              style={eInp('date')}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', paddingTop: '14px', borderTop: '1px solid rgba(26,26,26,0.05)' }}>
+                          <button
+                            onClick={() => toggleOpEdit(op)}
+                            style={{ padding: '8px 16px', background: '#1A1A1A', border: '1px solid #1A1A1A', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}
+                          ><Ico.Edit /> Изменить</button>
+                          <button
+                            onClick={() => saveOpEdit(op)}
+                            style={{ padding: '8px 18px', background: '#F9A08B', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#f08070'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#F9A08B'}
+                          >Сохранить</button>
+                          <button
+                            onClick={() => setEditingOpId(null)}
+                            style={{ padding: '8px 16px', background: 'transparent', border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#666666', cursor: 'pointer', transition: 'all 0.2s' }}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)'}
+                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'}
+                          >Отмена</button>
+                        </div>
                       </div>
-                    ))}
-                    <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(26,26,26,0.05)', marginTop: '-4px' }}>
-                      <button onClick={() => showToast('Редактирование открыто')} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Edit /> Изменить</button>
-                      <button onClick={() => showToast('Квитанция скачана', 'success')} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Doc /> Квитанция</button>
-                      <button onClick={() => showToast('Операция удалена', 'error')} style={{ padding: '8px 16px', background: 'transparent', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#D88C9A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', marginLeft: 'auto' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}><Ico.Trash /> Удалить</button>
-                    </div>
+                    ) : (
+                      <div key="view" className={styles.morphContainer} style={{ padding: '20px 24px', background: 'rgba(252,174,145,0.03)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+                        {[['Счёт поступления', op.account_name ?? '—'], ['Категория', op.category ?? '—'], ['Метод оплаты', op.method ?? '—']].map(([l, v]) => (
+                          <div key={l as string}>
+                            <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{l}</div>
+                            <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A' }}>{v}</div>
+                          </div>
+                        ))}
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(26,26,26,0.05)', marginTop: '-4px' }}>
+                          <button onClick={() => toggleOpEdit(op)} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Edit /> Изменить</button>
+                          <button onClick={() => showToast('Квитанция скачана', 'success')} style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#F9A08B'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#1A1A1A'; }}><Ico.Doc /> Квитанция</button>
+                          <button onClick={() => { setOperations(prev => prev.filter(o => o.id !== op.id)); setExpanded(null); showToast('Операция удалена', 'error'); }} style={{ padding: '8px 16px', background: 'transparent', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#D88C9A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s', marginLeft: 'auto' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}><Ico.Trash /> Удалить</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

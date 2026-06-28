@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAIChat } from './hooks/useAIChat';
 import { useAIAgent } from './hooks/useAIAgent';
 import LeftPanel from './components/LeftPanel';
@@ -33,7 +34,7 @@ export default function AIPage() {
         onSend={sendMessage}
       />
 
-      {agentModalOpen && (
+      {agentModalOpen && createPortal(
         <AgentSetupModal
           config={agentConfig}
           saved={saved}
@@ -42,7 +43,8 @@ export default function AIPage() {
           onToggleChannel={toggleChannel}
           onSave={saveConfig}
           onClose={() => setAgentModalOpen(false)}
-        />
+        />,
+        document.body
       )}
     </div>
   );

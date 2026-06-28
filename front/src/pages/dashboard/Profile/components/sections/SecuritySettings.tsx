@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { icons } from '../ui/ProfileIcons';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 
 export default function SecuritySettings({ handleLogoutAll }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation("profile");
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -32,7 +34,7 @@ export default function SecuritySettings({ handleLogoutAll }: Props) {
           e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.015)';
         }}
       >
-        <span style={{ color: 'var(--muted)' }}>{icons.key}</span> Сменить пароль
+        <span style={{ color: 'var(--muted)' }}>{icons.key}</span> {t("security.changePassword")}
       </button>
 
       <button
@@ -55,7 +57,7 @@ export default function SecuritySettings({ handleLogoutAll }: Props) {
           e.currentTarget.style.transform = 'none';
         }}
       >
-        {icons.logout} Завершить все сеансы
+        {icons.logout} {t("security.logoutAll")}
       </button>
     </div>
   );

@@ -1,5 +1,8 @@
+import type { UserSession, ApiToken } from '../../../api/settings/settings.types';
+export type { UserSession, ApiToken };
+
 export interface UserAccount {
-  id: string;
+  id: number;
   name: string;
   email: string;
   role: string;

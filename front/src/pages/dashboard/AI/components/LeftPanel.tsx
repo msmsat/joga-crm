@@ -1,4 +1,4 @@
-import type { ChatSession, AISettings } from '../types';
+import type { ChatSession, AIUISettings } from '../types';
 import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
 import AgentConfigCard from './AgentConfigCard';
 import CustomSelect from './CustomSelect';
@@ -6,13 +6,13 @@ import styles from '../AI.module.css';
 
 interface LeftPanelProps {
   sessions: ChatSession[];
-  activeSessionId: string | null;
-  aiSettings: AISettings;
+  activeSessionId: number | null;
+  aiSettings: AIUISettings;
   telegramEnabled: boolean;
   instagramEnabled: boolean;
   onNewChat: () => void;
-  onLoadSession: (id: string) => void;
-  onUpdateSettings: (patch: Partial<AISettings>) => void;
+  onLoadSession: (id: number) => void;
+  onUpdateSettings: (patch: Partial<AIUISettings>) => void;
   onToggleTelegram: () => void;
   onToggleInstagram: () => void;
   onOpenAgentSetup: () => void;
@@ -100,7 +100,7 @@ export default function LeftPanel({
           <CustomSelect
             value={aiSettings.model}
             options={MODEL_OPTIONS}
-            onChange={v => onUpdateSettings({ model: v as AISettings['model'] })}
+            onChange={v => onUpdateSettings({ model: v as AIUISettings['model'] })}
           />
         </div>
 
@@ -109,7 +109,7 @@ export default function LeftPanel({
           <CustomSelect
             value={aiSettings.language}
             options={LANGUAGE_OPTIONS}
-            onChange={v => onUpdateSettings({ language: v as AISettings['language'] })}
+            onChange={v => onUpdateSettings({ language: v as AIUISettings['language'] })}
           />
         </div>
 

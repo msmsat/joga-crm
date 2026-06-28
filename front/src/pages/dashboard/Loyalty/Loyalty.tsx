@@ -6,6 +6,7 @@ import ProgramsGrid from './components/sections/ProgramsGrid';
 import StatsBoard from './components/sections/StatsBoard';
 import LoyaltyDrawer from './components/drawer/LoyaltyDrawer';
 import type { Program } from './types';
+import styles from './Loyalty.module.css';
 
 export default function Loyalty() {
   const { programs, drawer, drawerVisible, mounted, drawerRef, openDrawer, closeDrawer, handleSave } = useLoyalty();
@@ -20,9 +21,11 @@ export default function Loyalty() {
 
   return (
     <>
-      <ProgressHeader configuredCount={configuredCount} openDrawer={openDrawer} />
-      <ProgramsGrid programsList={programsList} openDrawer={openDrawer} />
-      <StatsBoard configuredCount={configuredCount} mounted={mounted} />
+      <div className={`${styles.pageContent}${drawerVisible ? ` ${styles.pageContentPushed}` : ''}`}>
+        <ProgressHeader configuredCount={configuredCount} openDrawer={openDrawer} />
+        <ProgramsGrid programsList={programsList} openDrawer={openDrawer} />
+        <StatsBoard configuredCount={configuredCount} mounted={mounted} />
+      </div>
       {drawer && (
         <LoyaltyDrawer
           drawer={drawer}

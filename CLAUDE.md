@@ -75,3 +75,11 @@
 - **CORS / Auth:** If UI gets 401/403/CORS, verify JWT format (`Bearer ${token}`) and FastAPI `CORSMiddleware` config (ports 5173 <-> 8000).
 - **Types:** Strictly resolve TS errors. Use Optional Chaining (`client?.phone`) and type guards to prevent undefined crashes.
 - **Backend Debug:** Use `engine = create_async_engine(URL, echo=True)` to debug SQLAlchemy queries. Rely on Pydantic `ValidationError` logs for bad inputs.
+
+---
+
+## 🧩 7. Data Flow & API Integration (Frontend-Backend Sync)
+- **Single Source of Truth:** Бэкенд (Pydantic схемы) всегда диктует структуру данных. TypeScript интерфейсы на фронтенде (`types.ts`) ДОЛЖНЫ строго совпадать с JSON-ответами API (например, `first_name`, `last_name`, `total_spent`).
+- **No UI-specific Keys in Core Types:** ЗАПРЕЩЕНО использовать в базовых интерфейсах сокращенные или специфичные для UI ключи (вроде `n` для имени, `i` для инициалов, `spent` для отформатированных денег).
+- **Adapters & Computed Data:** При переходе с тестовых данных (mocks) на реальный API, полностью переписывай интерфейсы под бэкенд. Любые производные данные для UI (инициалы, форматирование валюты типа "₽15K", перевод статусов) должны вычисляться "на лету" внутри компонента или через хелперы (например, `getInitials(name, last_name)`, `formatCurrency(total_spent)`).
+- **Graceful Fallbacks:** При маппинге данных с бэкенда всегда используй optional chaining и дефолтные значения (например, `data.last_name || ''`), чтобы UI не падал при отсутствии части полей.

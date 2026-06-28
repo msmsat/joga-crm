@@ -9,12 +9,12 @@ export const plans: Record<PlanType, { name: string; monthly: number; color: str
 export const periodDiscounts: Record<number, number> = { 1: 0, 6: 0.20, 12: 0.30, 24: 0.40 };
 
 export const invoices: Invoice[] = [
-  { date: '01.06.2025', amount: '₽2 490', status: 'paid', desc: 'Pro — июнь 2025' },
-  { date: '01.05.2025', amount: '₽2 490', status: 'paid', desc: 'Pro — май 2025' },
-  { date: '01.04.2025', amount: '₽2 490', status: 'paid', desc: 'Pro — апрель 2025' },
-  { date: '01.03.2025', amount: '₽2 490', status: 'paid', desc: 'Pro — март 2025' },
-  { date: '01.02.2025', amount: '₽2 490', status: 'paid', desc: 'Pro — февраль 2025' },
-  { date: '01.01.2025', amount: '₽990',   status: 'paid', desc: 'Старт — январь 2025' },
+  { id: 6, plan_name: 'Pro — июнь 2025',    amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-06-01', pdf_url: null },
+  { id: 5, plan_name: 'Pro — май 2025',     amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-05-01', pdf_url: null },
+  { id: 4, plan_name: 'Pro — апрель 2025',  amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-04-01', pdf_url: null },
+  { id: 3, plan_name: 'Pro — март 2025',    amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-03-01', pdf_url: null },
+  { id: 2, plan_name: 'Pro — февраль 2025', amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-02-01', pdf_url: null },
+  { id: 1, plan_name: 'Старт — январь 2025', amount: 990, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-01-01', pdf_url: null },
 ];
 
 export const planFeatures: Record<PlanType, Feature[]> = {

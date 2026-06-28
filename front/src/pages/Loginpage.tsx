@@ -5,6 +5,7 @@ import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn
    Divider, Checkbox, SocialProof, PasswordStrength, ErrorAlert, PhoneField } from "../components/UI";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { GoogleLogin } from '@react-oauth/google';
+import { authApi, ApiError } from '../api';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -34,17 +35,10 @@ export default function LoginPage() {
   const handleGoogleSuccess = async (credential: string) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: credential }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail);
-      
+      const data = await authApi.google({ token: credential });
       localStorage.setItem("token", data.access_token);
       navigate("/dashboard");
-    } catch (err: any) {
+    } catch {
       setSubmitError("Ошибка авторизации через Google");
     } finally {
       setLoading(false);
@@ -80,52 +74,27 @@ export default function LoginPage() {
     try {
       // ── ФЛОУ: ОТПРАВКА КОДА ВОССТАНОВЛЕНИЯ (ШАГ 1) ──
       if (mode === "forgot" && forgotStep === 1) {
-        const response = await fetch("http://localhost:8000/auth/forgot-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: identifier }),
-        });
-        if (!response.ok) throw new Error("Не удалось отправить код");
-        setForgotStep(2); // Переходим на шаг 2 (ввод кода)
-      } 
-      
+        await authApi.forgotPassword({ email: identifier });
+        setForgotStep(2);
+      }
+
       // ── ФЛОУ: СОХРАНЕНИЕ НОВОГО ПАРОЛЯ (ШАГ 2) ──
       else if (mode === "forgot" && forgotStep === 2) {
-        const response = await fetch("http://localhost:8000/auth/reset-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: identifier, code: resetCode, new_password: newPassword }),
-        });
-        const data = await response.json();
-        if (!response.ok) {
-           if (Array.isArray(data.detail)) throw new Error(`Ошибка: ${data.detail[0].msg}`);
-           throw new Error(data.detail || "Неверный код");
-        }
-        // Пароль изменен! Возвращаем на страницу логина
+        await authApi.resetPassword({ email: identifier, code: resetCode, new_password: newPassword });
         setMode("login");
         setForgotStep(1);
         setPassword("");
         setSuccessMsg("Пароль успешно изменен! Теперь вы можете войти.");
-      } 
-      
+      }
+
       // ── ФЛОУ: ОБЫЧНЫЙ ЛОГИН ──
       else {
-        const response = await fetch("http://localhost:8000/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier: identifier, password: password }),
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          if (Array.isArray(data.detail)) throw new Error(`Ошибка: ${data.detail[0].loc[1]} - ${data.detail[0].msg}`);
-          throw new Error(data.detail || "Ошибка входа");
-        }
+        const data = await authApi.login({ identifier, password });
         localStorage.setItem("token", data.access_token);
         navigate("/dashboard");
       }
-    } catch (err: any) {
-      setSubmitError(err.message || "Ошибка соединения с сервером");
+    } catch (err: unknown) {
+      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
     } finally {
       setLoading(false);
     }

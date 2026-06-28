@@ -1,9 +1,10 @@
+import { createPortal } from 'react-dom';
 import { IconWeb } from '../ui/BookingIcons'
 
 interface Props { onClose(): void }
 
 export function WebModal({ onClose }: Props) {
-  return (
+  return createPortal(
     <div className="tg-modal-overlay open" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div className="tg-modal">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -33,6 +34,7 @@ export function WebModal({ onClose }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+  document.body
   )
 }

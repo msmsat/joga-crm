@@ -30,7 +30,7 @@ export default function Reports() {
         onTabChange={setActiveTab}
         period={period}
         onPeriodChange={setPeriod}
-        showPeriod={activeTab !== 'Основные'}
+        showPeriod={true}
         onExport={exportCSV}
       />
 

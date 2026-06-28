@@ -1,0 +1,84 @@
+{
+  "tabs": {
+    "studios": "Студии",
+    "services": "Услуги"
+  },
+  "studios": {
+    "title": "СТУДИИ",
+    "addStudio": "Добавить студию",
+    "addHall": "Добавить зал",
+    "infoTab": "Общая информация",
+    "hallsTitle": "Залы студии",
+    "hallCount_one": "{{count}} зал",
+    "hallCount_few": "{{count}} зала",
+    "hallCount_many": "{{count}} залов",
+    "hallCount_other": "{{count}} залов",
+    "stats": {
+      "halls": "Залов",
+      "totalSeats": "Мест всего",
+      "fromPerHour": "От / час"
+    },
+    "hall": {
+      "seats": "мест",
+      "schedule": "График работы",
+      "closed": "Закр.",
+      "stats": {
+        "seats": "Мест",
+        "area": "Площадь",
+        "perHour": "В час"
+      },
+      "equipment": "Оборудование",
+      "actions": "Действия",
+      "edit": "Изменить зал",
+      "delete": "Удалить зал"
+    },
+    "empty": {
+      "title": "Нет студий",
+      "subtitle": "Добавьте первую студию"
+    },
+    "toasts": {
+      "deleted": "Студия удалена",
+      "hallDeleted": "Зал удалён",
+      "edit": "Изменить: {{name}}"
+    }
+  },
+  "services": {
+    "title": "УСЛУГИ",
+    "addService": "Добавить услугу",
+    "types": {
+      "group": "Группа",
+      "individual": "Инд.",
+      "groupFull": " · Групповая",
+      "individualFull": " · Индивидуальная"
+    },
+    "stats": {
+      "price": "Цена",
+      "duration": "Длительность",
+      "bookings": "Записей",
+      "revenue": "Выручка"
+    },
+    "details": {
+      "description": "Описание",
+      "details": "Детали",
+      "minutes": "минут",
+      "upTo": "До {{count}} чел.",
+      "personal": "Персонально",
+      "bookingsPerMonth": "записей / мес",
+      "schedule": "Расписание занятий"
+    },
+    "empty": {
+      "title": "Нет услуг",
+      "subtitle": "Добавьте первую услугу"
+    },
+    "toasts": {
+      "deleted": "Услуга удалена",
+      "edit": "Изменить: {{name}}"
+    },
+    "categories": {
+      "Йога": "Йога",
+      "Пилатес": "Пилатес",
+      "Стретчинг": "Стретчинг",
+      "Индивидуальные": "Индивидуальные"
+    }
+  }
+}

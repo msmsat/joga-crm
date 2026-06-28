@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 
 export interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -14,15 +16,17 @@ export function DeleteConfirmModal({
   isOpen,
   title,
   message,
-  confirmText = 'Удалить',
+  confirmText,
   dontAsk,
   onDontAskChange,
   onConfirm,
   onClose,
 }: DeleteConfirmModalProps) {
+  const { t } = useTranslation(['staff', 'common']);
+  const resolvedConfirmText = confirmText ?? t('common:buttons.delete');
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       style={{
@@ -98,7 +102,7 @@ export function DeleteConfirmModal({
               style={{ display: 'none' }}
             />
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>
-              Больше не спрашивать при удалении
+              {t('deleteModal.dontAsk')}
             </span>
           </label>
         )}
@@ -116,7 +120,7 @@ export function DeleteConfirmModal({
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.07)'; e.currentTarget.style.color = '#1A1A1A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.04)'; e.currentTarget.style.color = '#666666'; }}
           >
-            Отмена
+            {t('common:buttons.cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -131,10 +135,11 @@ export function DeleteConfirmModal({
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(216,140,154,0.4)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(216,140,154,0.3)'; }}
           >
-            {confirmText}
+            {resolvedConfirmText}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+  document.body
   );
 }

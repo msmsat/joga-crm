@@ -3,6 +3,8 @@ import type { Period } from '../../types';
 import { SERVICE_DATA } from '../../constants';
 import { DetailedTable } from '../DetailedTable';
 
+const fmtK = (n: number): string => `₽${Math.round(n / 1000)}K`;
+
 export interface TabUslugiProps {
   period: Period;
 }
@@ -34,7 +36,7 @@ export function TabUslugi({ period: _period }: TabUslugiProps) {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <div style={{ background: 'var(--bg)', borderRadius: '8px', padding: '8px 10px' }}>
-                <div style={{ fontSize: '16px', fontWeight: 800, color: svc.color }}>{svc.revenue}</div>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: svc.color }}>{fmtK(svc.revenue)}</div>
                 <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600 }}>выручка</div>
               </div>
               <div style={{ background: 'var(--bg)', borderRadius: '8px', padding: '8px 10px' }}>

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import "../../App.css";
 import { Logo, InputField, PhoneField } from '../UI';
 
@@ -615,7 +616,7 @@ export default function AddStaffModal({ isOpen, onClose, onSuccess }: AddStaffMo
 
   const current = stepMeta[step - 1];
 
-  return (
+  return createPortal(
     <div
       style={{
         position: "fixed", inset: 0,
@@ -1336,6 +1337,7 @@ export default function AddStaffModal({ isOpen, onClose, onSuccess }: AddStaffMo
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

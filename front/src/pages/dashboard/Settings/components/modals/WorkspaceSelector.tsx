@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import InputRow from "../ui/form/InputRow";
 import type { Studio } from "../../types";
 
@@ -17,12 +18,12 @@ export default function WorkspaceSelector({
   const [createdStudioTheme, setCreatedStudioTheme] = useState<"light" | "dark">("light");
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
 
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 999999, background: "#FDFCFB", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "inherit", padding: "24px", boxSizing: "border-box", animation: "fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}>
+  return createPortal(
+    <div style={{ position: "fixed", inset: 0, zIndex: 999999, background: "#FDFCFB", overflowY: "auto", fontFamily: "inherit", padding: "60px 24px", boxSizing: "border-box" }}>
       <div style={{ position: "absolute", top: "10%", left: "15%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(252,174,145,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: "10%", right: "15%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(155,181,216,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-      <div style={{ width: "100%", maxWidth: "720px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: "32px", animation: "drawerSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }}>
+      <div style={{ width: "100%", maxWidth: "720px", margin: "0 auto", position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: "32px", animation: "drawerSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ display: "inline-flex", padding: "10px", borderRadius: "14px", background: "rgba(252,174,145,0.1)", color: "var(--peach)", marginBottom: "16px" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -136,6 +137,7 @@ export default function WorkspaceSelector({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

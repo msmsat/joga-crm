@@ -23,6 +23,7 @@
 .reportBar:hover {
   opacity: 0.85;
   filter: brightness(1.05);
+  box-shadow: inset 0 0 0 2px #1A1A1A;
 }
 
 /* Инсайт-карточка в отчётах */
@@ -55,6 +56,17 @@
 }
 .chartContainerInner {
   animation: expandChartInner 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: top;
+  overflow: hidden;
+}
+
+/* Анимация скрытия expanded-панели (зарплаты и др.) */
+@keyframes expandChartInnerClose {
+  from { opacity: 1; transform: translateY(0) scaleY(1); max-height: 700px; }
+  to   { opacity: 0; transform: translateY(-6px) scaleY(0.95); max-height: 0; }
+}
+.chartContainerInnerClose {
+  animation: expandChartInnerClose 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   transform-origin: top;
   overflow: hidden;
 }

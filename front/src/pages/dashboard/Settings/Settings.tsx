@@ -21,12 +21,13 @@ import SecurityTab from "./components/tabs/SecurityTab";
 import IntegrationsTab from "./components/tabs/IntegrationsTab";
 import DataTab from "./components/tabs/DataTab";
 import WorkspaceSelector from "./components/modals/WorkspaceSelector";
+import DeleteDataModal from "./components/modals/DeleteDataModal";
 
 import type { Studio } from "./types";
 import { INITIAL_STUDIOS_LIST } from "./constants";
 
 export default function Settings() {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const rightPanelRef = useRef<HTMLDivElement>(null);
 
   const { toast, triggerToast, savedStates, triggerSave } = useSettingsToast();
   const team = useTeam(triggerToast, triggerSave);
@@ -40,7 +41,7 @@ export default function Settings() {
   const [studiosList, setStudiosList] = useState<Studio[]>(INITIAL_STUDIOS_LIST);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    rightPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
 
   const navItems = [
@@ -127,11 +128,11 @@ export default function Settings() {
         }
       `}</style>
 
-      <div style={{ display: "flex", width: "100%", alignItems: "start" }}>
+      <div style={{ display: "flex", width: "100%", alignItems: "start", height: "100%", overflow: "hidden" }}>
         {/* ─── LEFT NAV ─── */}
         <aside style={{
           width: "260px",
-          height: "calc(100vh - 140px)",
+          height: "100%",
           background: "transparent",
           borderRight: "1px solid rgba(26,26,26,0.06)",
           padding: "24px 16px",
@@ -140,10 +141,7 @@ export default function Settings() {
           gap: "4px",
           boxSizing: "border-box",
           flexShrink: 0,
-          position: "sticky",
-          top: "20px",
           overflowY: "auto",
-          overscrollBehaviorY: "contain",
         }}>
           <div style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "#999999", textTransform: "uppercase", letterSpacing: "1px" }}>
             Настройки системы
@@ -199,8 +197,8 @@ export default function Settings() {
 
         {/* ─── CONTENT ─── */}
         <div
-          ref={contentRef}
-          style={{ flex: 1, padding: "32px 40px", width: "100%", maxWidth: "100%", boxSizing: "border-box", minHeight: "100vh" }}
+          ref={rightPanelRef}
+          style={{ flex: 1, padding: "32px 40px", width: "100%", maxWidth: "100%", boxSizing: "border-box", height: "100%", overflowY: "auto" }}
         >
           <div key={activeSection} className="settings-content-anim" style={{ display: "flex", flexDirection: "column", gap: "0" }}>
             {sectionContent[activeSection] ?? sectionContent["general"]}
@@ -221,6 +219,20 @@ export default function Settings() {
           onClose={() => team.setIsEditStaffOpen(false)}
           onSave={team.handleEditStaffSave}
           onDelete={team.handleEditStaffDelete}
+        />
+      )}
+
+      {(security.secModal === "deleteData" || security.secModal === "deleteAccount") && (
+        <DeleteDataModal
+          type={security.secModal}
+          onClose={() => security.setSecModal(null)}
+          onConfirm={() => {
+            const msg = security.secModal === "deleteData"
+              ? "База данных успешно очищена"
+              : "Аккаунт компании удалён без возможности восстановления";
+            security.setSecModal(null);
+            triggerToast(msg);
+          }}
         />
       )}
 

@@ -1,0 +1,56 @@
+from schemas.clients.clients import (
+    ClientCreate,
+    ClientFreezeUpdate,
+    ClientRegistrationDateUpdate,
+    ClientStatusUpdate,
+    ClientTagAction,
+    ClientUpdate,
+    MessageSend,
+)
+from schemas.clients.notes import NoteCreate, NoteUpdate
+from schemas.clients.responses import (
+    ActionMessageOut,
+    ActiveSubscriptionOut,
+    ActivityPointOut,
+    BookingCreatedOut,
+    CategoryStatOut,
+    ClientCreatedOut,
+    ClientListItemOut,
+    ClientProfileOut,
+    CountOut,
+    EventRecordOut,
+    NoteCreatedOut,
+    NoteOut,
+    OkFrozenOut,
+    OkOut,
+    TagsOut,
+)
+
+__all__ = [
+    # inputs
+    "ClientCreate",
+    "ClientFreezeUpdate",
+    "ClientRegistrationDateUpdate",
+    "ClientStatusUpdate",
+    "ClientTagAction",
+    "ClientUpdate",
+    "MessageSend",
+    "NoteCreate",
+    "NoteUpdate",
+    # responses
+    "ActionMessageOut",
+    "ActiveSubscriptionOut",
+    "ActivityPointOut",
+    "BookingCreatedOut",
+    "CategoryStatOut",
+    "ClientCreatedOut",
+    "ClientListItemOut",
+    "ClientProfileOut",
+    "CountOut",
+    "EventRecordOut",
+    "NoteCreatedOut",
+    "NoteOut",
+    "OkFrozenOut",
+    "OkOut",
+    "TagsOut",
+]

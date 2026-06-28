@@ -600,21 +600,226 @@
   color: #FFF; font-size: 10px; padding: 4px 8px; cursor: pointer;
 }
 
-/* ── WHATSAPP PREVIEW ── */
+/* ── WHATSAPP PREVIEW (legacy, kept for safety) ── */
 .wa-preview {
   background: #E5DDD5; padding: 20px; border-radius: 16px;
   display: flex; flex-direction: column; gap: 10px;
 }
+
+/* ── WHATSAPP PHONE ILLUSTRATION ── */
+.wa-modal-wide { max-width: 420px; }
+
+.wa-phone-wrap {
+  position: relative;
+  display: flex; justify-content: center;
+  margin: 4px 0 4px;
+}
+
+.wa-phone-glow {
+  position: absolute;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(37,211,102,0.18) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.wa-phone-frame {
+  width: 200px;
+  background: #ECE5DD;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,0.22);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(0,0,0,0.12);
+  position: relative;
+  z-index: 1;
+}
+
+.wa-phone-status {
+  background: #075E54;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 14px 4px;
+  font-size: 9px; color: white; font-weight: 600;
+}
+
+.wa-phone-chat-header {
+  background: #075E54;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px 10px;
+}
+
+.wa-phone-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.wa-phone-body {
+  background: #ECE5DD;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c5b9ae' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  min-height: 130px;
+  padding: 12px 8px;
+  display: flex; flex-direction: column; gap: 6px;
+  border-radius: 0 0 26px 26px;
+}
+
+/* Chat bubbles */
 .wa-bubble {
-  max-width: 85%; padding: 8px 12px; border-radius: 10px;
-  font-size: 12px; line-height: 1.4; position: relative;
-  background: white; color: #000; align-self: flex-start;
+  max-width: 85%; padding: 6px 9px; border-radius: 10px;
+  font-size: 10px; line-height: 1.4; position: relative;
+  background: white; color: #111; align-self: flex-start;
 }
 .wa-bubble.bot {
   background: #DCF8C6; align-self: flex-end;
 }
 
+.wa-bubble-in {
+  animation: waBubbleIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  transform-origin: bottom left;
+}
+.wa-typing-dots {
+  align-self: flex-end;
+  background: #DCF8C6;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex; gap: 4px; align-items: center;
+  animation: waBubbleIn 0.3s 0.5s cubic-bezier(0.34,1.56,0.64,1) both, waDotsOut 0.2s 1.3s forwards;
+}
+.wa-typing-dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  animation: waDot 0.9s 0.5s infinite;
+}
+.wa-typing-dots span:nth-child(2) { animation-delay: 0.65s; }
+.wa-typing-dots span:nth-child(3) { animation-delay: 0.8s; }
+
+.wa-bubble-out {
+  animation: waBubbleIn 0.35s 1.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  transform-origin: bottom right;
+}
+
 .wa-time {
-  display: block; text-align: right; font-size: 8px; color: rgba(0,0,0,0.4);
-  margin-top: 6px; line-height: 1;
+  display: block; text-align: right; font-size: 7px; color: rgba(0,0,0,0.4);
+  margin-top: 4px; line-height: 1;
+}
+
+@keyframes waBubbleIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes waDotsOut {
+  to { opacity: 0; transform: scale(0.8); }
+}
+@keyframes waDot {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%            { transform: translateY(-4px); }
+}
+
+/* ── TELEGRAM CONNECTED VIEW ── */
+.tg-connected-view {
+  display: flex; flex-direction: column; align-items: center;
+  animation: tgViewIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.tg-check-circle {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #5BAB72, #3D8A57);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(91,171,114,0.35);
+  animation: tgCheckPop 0.5s 0.05s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.tg-connected-info {
+  width: 100%;
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tg-info-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text2);
+}
+
+@keyframes tgViewIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes tgCheckPop {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── WHATSAPP QR VIEW ── */
+.wa-qr-view {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  animation: tgViewIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.wa-qr-wrap {
+  position: relative;
+  width: 180px; height: 180px;
+  background: var(--bg);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+}
+
+.wa-qr-svg {
+  color: var(--text);
+  position: relative; z-index: 1;
+}
+
+.wa-qr-scan-line {
+  position: absolute;
+  left: 10px; right: 10px; height: 2px;
+  background: linear-gradient(90deg, transparent, #25D366, transparent);
+  border-radius: 2px;
+  animation: waQrScan 1.8s ease-in-out infinite;
+  z-index: 2;
+  box-shadow: 0 0 8px rgba(37,211,102,0.6);
+}
+
+/* Green corner brackets */
+.wa-qr-corner {
+  position: absolute;
+  width: 18px; height: 18px;
+  border-color: #25D366;
+  border-style: solid;
+  z-index: 3;
+}
+.wa-qr-corner-tl { top: 8px; left: 8px;  border-width: 3px 0 0 3px; border-radius: 3px 0 0 0; }
+.wa-qr-corner-tr { top: 8px; right: 8px; border-width: 3px 3px 0 0; border-radius: 0 3px 0 0; }
+.wa-qr-corner-bl { bottom: 8px; left: 8px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 3px; }
+.wa-qr-corner-br { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; border-radius: 0 0 3px 0; }
+
+.wa-qr-progress {
+  width: 100%; height: 3px;
+  background: var(--bg2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.wa-qr-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #25D366, #128C7E);
+  border-radius: 3px;
+  animation: waQrProgress 3s linear forwards;
+}
+
+@keyframes waQrScan {
+  0%   { top: 10px; }
+  50%  { top: calc(100% - 12px); }
+  100% { top: 10px; }
+}
+@keyframes waQrProgress {
+  from { width: 0%; }
+  to   { width: 100%; }
 }

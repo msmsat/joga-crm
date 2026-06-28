@@ -12,10 +12,12 @@ import OnlinePaymentsTab from './components/tabs/OnlinePaymentsTab';
 import PaymentMethodsTab from './components/tabs/PaymentMethodsTab';
 import ReportsTab from './components/tabs/ReportsTab';
 import GoalsTab from './components/tabs/GoalsTab';
+import SalariesTab from './components/tabs/SalariesTab';
 
 const TAB_ICONS: Record<Tab, React.ReactNode> = {
   'Счета и кассы': <Ico.Dollar />,
   'Операции': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  'Зарплаты': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   'Контрагенты': <Ico.Building />,
   'Документы': <Ico.Doc />,
   'Онлайн-платежи': <Ico.World />,
@@ -41,6 +43,7 @@ export default function Finances() {
         return <AccountsTab showToast={showToast} onNavigateToOperations={(name) => { setOperationsSearch(name); setActiveTab('Операции'); }} />;
       case 'Операции':
         return <OperationsTab showToast={showToast} initialSearch={operationsSearch} />;
+      case 'Зарплаты': return <SalariesTab {...props} />;
       case 'Контрагенты': return <CounterpartiesTab {...props} />;
       case 'Документы': return <DocumentsTab {...props} />;
       case 'Онлайн-платежи': return <OnlinePaymentsTab {...props} />;

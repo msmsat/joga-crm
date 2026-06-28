@@ -1,3 +1,5 @@
+import { createPortal } from 'react-dom';
+
 export interface DeleteClientModalProps {
   isOpen: boolean;
   clientName: string;
@@ -8,7 +10,7 @@ export interface DeleteClientModalProps {
 export function DeleteClientModal({ isOpen, clientName, onConfirm, onClose }: DeleteClientModalProps) {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <style>{`
         @keyframes dcFadeIn  { from { opacity: 0 } to { opacity: 1 } }
@@ -94,6 +96,7 @@ export function DeleteClientModal({ isOpen, clientName, onConfirm, onClose }: De
           </div>
         </div>
       </div>
-    </>
+    </>,
+  document.body
   );
 }

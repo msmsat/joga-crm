@@ -13,12 +13,14 @@ interface Props {
   toggles: Toggles;
   toggleCheck: (evId: string, chKey: ChannelKey) => void;
   setToggles: Dispatch<SetStateAction<Toggles>>;
-  animating: boolean;
-  animDir: 'left' | 'right';
+  isDirty: boolean;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export default function NotificationMatrix({
-  currentRole, events, activeChannels, toggles, toggleCheck, setToggles, animating, animDir,
+  currentRole, events, activeChannels, toggles, toggleCheck, setToggles,
+  isDirty, onSave, onCancel,
 }: Props) {
   const allOn = events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key]));
 
@@ -40,11 +42,7 @@ export default function NotificationMatrix({
         </div>
       </div>
 
-      <div style={{
-        opacity: animating ? 0 : 1,
-        transform: animating ? `translateX(${animDir === 'right' ? '16px' : '-16px'})` : 'translateX(0)',
-        transition: animating ? 'none' : 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.4,0,0.2,1)',
-      }}>
+      <div>
         {activeChannels.length > 0 && (
           <div style={{
             display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
@@ -113,23 +111,62 @@ export default function NotificationMatrix({
               {events.reduce((s, ev) => s + activeChannels.filter(ch => toggles[ev.id]?.[ch.key]).length, 0)}
             </strong> из {events.length * activeChannels.length}
           </span>
-          <button
-            onClick={() => {
-              setToggles(prev => {
-                const next = { ...prev };
-                events.forEach(ev => {
-                  next[ev.id] = { ...prev[ev.id] };
-                  activeChannels.forEach(ch => { next[ev.id][ch.key] = !allOn; });
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              onClick={onCancel}
+              disabled={!isDirty}
+              style={{
+                fontSize: '12px', fontWeight: 700, color: isDirty ? '#666666' : '#BBBBBB',
+                background: 'transparent', border: `1px solid ${isDirty ? 'rgba(26,26,26,0.15)' : 'rgba(26,26,26,0.06)'}`,
+                cursor: isDirty ? 'pointer' : 'default',
+                padding: '8px 14px', borderRadius: '8px',
+                fontFamily: "'Manrope', sans-serif",
+                transition: 'all 0.18s ease',
+              }}
+              onMouseEnter={e => { if (isDirty) e.currentTarget.style.borderColor = '#999999'; }}
+              onMouseLeave={e => { if (isDirty) e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; }}
+            >
+              Отмена
+            </button>
+
+            <button
+              onClick={onSave}
+              disabled={!isDirty}
+              style={{
+                fontSize: '12px', fontWeight: 800,
+                color: isDirty ? '#FFFFFF' : '#CCCCCC',
+                background: isDirty ? '#FCAE91' : 'rgba(26,26,26,0.05)',
+                border: 'none', cursor: isDirty ? 'pointer' : 'default',
+                padding: '8px 16px', borderRadius: '8px',
+                fontFamily: "'Manrope', sans-serif",
+                transition: 'all 0.18s ease',
+                boxShadow: isDirty ? '0 4px 12px rgba(252,174,145,0.35)' : 'none',
+              }}
+              onMouseEnter={e => { if (isDirty) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(252,174,145,0.45)'; } }}
+              onMouseLeave={e => { if (isDirty) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(252,174,145,0.35)'; } }}
+            >
+              Сохранить
+            </button>
+
+            <button
+              onClick={() => {
+                setToggles(prev => {
+                  const next = { ...prev };
+                  events.forEach(ev => {
+                    next[ev.id] = { ...prev[ev.id] };
+                    activeChannels.forEach(ch => { next[ev.id][ch.key] = !allOn; });
+                  });
+                  return next;
                 });
-                return next;
-              });
-            }}
-            style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.1)', cursor: 'pointer', padding: '8px 14px', borderRadius: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            {allOn ? 'Снять все галочки' : 'Активировать всё'}
-          </button>
+              }}
+              style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.1)', cursor: 'pointer', padding: '8px 14px', borderRadius: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+            >
+              {allOn ? 'Снять все галочки' : 'Активировать всё'}
+            </button>
+          </div>
         </div>
       )}
     </div>

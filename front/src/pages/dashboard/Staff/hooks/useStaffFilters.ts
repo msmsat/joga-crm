@@ -1,84 +1,67 @@
 /**
  * @file useStaffFilters.ts
- * @description Кастомный хук для поиска, фильтрации и сортировки списка сотрудников
+ * @description Тупой и чистый хук. Работает с уже переведенными данными (ViewModel).
  */
-
 import { useState, useMemo } from 'react';
-import type { Employee } from '../types';
 
 export type SortOption = 'default' | 'name_asc' | 'name_desc';
 
-export function useStaffFilters(initialStaff: Employee[]) {
-  // ─── СОСТОЯНИЯ ФИЛЬТРОВ ─────────────────────────────────────────────────────
+// Принимаем any[], так как сюда прилетает расширенный Employee из Staff.tsx
+export function useStaffFilters(initialStaff: any[]) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeGroup, setActiveGroup] = useState<string | 'ALL'>('ALL');
+  const [activeGroup, setActiveGroup] = useState<string | 'ALL'>('ALL'); // Хранит сырой ключ (например, 'pilates')
   const [sortBy, setSortBy] = useState<SortOption>('default');
 
-  // ─── ЛОГИКА ФИЛЬТРАЦИИ И СОРТИРОВКИ ─────────────────────────────────────────
-
-  // Используем useMemo, чтобы пересчитывать массив только при изменении зависимостей,
-  // а не при каждом рендере компонента (экономим ресурсы).
   const filteredAndSortedStaff = useMemo(() => {
-    // 1. Нормализация групп
-    // Так как в исходных данных group может быть null (наследование от предыдущего),
-    // нам нужно явно присвоить каждому сотруднику его фактическую группу перед фильтрацией.
-    let currentGroup = 'Без группы';
-    const normalizedStaff = initialStaff.map(emp => {
-      if (emp.group) {
-        currentGroup = emp.group;
-      }
-      // Добавляем временное поле _resolvedGroup для внутренней фильтрации
-      return { ...emp, _resolvedGroup: currentGroup };
-    });
+    let result = initialStaff.filter(emp => {
+      // 1. Фильтр по табам (группам) - сравниваем сырые ключи!
+      const matchesGroup = activeGroup === 'ALL' || emp._resolvedGroupKey === activeGroup;
 
-    // 2. Применение фильтров и поиска
-    let result = normalizedStaff.filter(emp => {
-      // Проверка по отделу (группе)
-      const matchesGroup = activeGroup === 'ALL' || emp._resolvedGroup === activeGroup;
-      
-      // Проверка по поисковому запросу (ищем по имени, роли, email и телефону)
+      // 2. Текстовый поиск
       const query = searchQuery.toLowerCase().trim();
-      const matchesSearch = !query || 
-        emp.name.toLowerCase().includes(query) ||
-        emp.role.toLowerCase().includes(query) ||
-        emp.email.toLowerCase().includes(query) ||
-        emp.phone.includes(query);
+      const fullName = [emp.name, emp.last_name].filter(Boolean).join(' ').toLowerCase();
+
+      // 🔥 ИЩЕМ ПО УЖЕ ПЕРЕВЕДЕННЫМ ПОЛЯМ, которые мы собрали в Staff.tsx
+      const matchesSearch = !query ||
+        fullName.includes(query) ||
+        (emp._translatedRole && emp._translatedRole.toLowerCase().includes(query)) ||
+        (emp._translatedGroup && emp._translatedGroup.toLowerCase().includes(query)) ||
+        (emp.email && emp.email.toLowerCase().includes(query)) ||
+        (emp.phone && emp.phone.includes(query));
 
       return matchesGroup && matchesSearch;
     });
 
-    // 3. Применение сортировки
+    // 3. Сортировка
     if (sortBy === 'name_asc') {
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortBy === 'name_desc') {
       result.sort((a, b) => b.name.localeCompare(a.name));
     }
-    // Если 'default', оставляем исходный порядок из моков
 
     return result;
   }, [initialStaff, searchQuery, activeGroup, sortBy]);
 
-  // ─── ВОЗВРАЩАЕМЫЙ ИНТЕРФЕЙС ХУКА ──────────────────────────────────────────
   return {
-    // Отфильтрованные данные
     staffList: filteredAndSortedStaff,
-    
-    // Текущие значения стейтов
     searchQuery,
     activeGroup,
     sortBy,
-    
-    // Функции для изменения стейтов
     setSearchQuery,
     setActiveGroup,
     setSortBy,
     
-    // Вспомогательная функция: получить уникальный список всех доступных групп
-    // (полезно для рендера кнопок-табов фильтрации)
+    // Возвращаем список СЫРЫХ ключей для кнопок-табов (['ALL', 'pilates', 'management'])
     availableGroups: useMemo(() => {
-      const groups = new Set<string>();
-      initialStaff.forEach(emp => { if (emp.group) groups.add(emp.group); });
-      return ['ALL', ...Array.from(groups)];
+      const seen = new Set<string>();
+      const groups: string[] = [];
+      initialStaff.forEach(emp => {
+        if (emp._resolvedGroupKey && !seen.has(emp._resolvedGroupKey)) {
+          seen.add(emp._resolvedGroupKey);
+          groups.push(emp._resolvedGroupKey);
+        }
+      });
+      return ['ALL', ...groups];
     }, [initialStaff])
   };
 }

@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
-import type { AgentConfig, AISettings, AgentTone } from '../types';
+import type { AgentConfig, AIUISettings, AgentTone } from '../types';
 import { DEFAULT_AGENT_CONFIG, DEFAULT_AI_SETTINGS } from '../constants';
 
 export function useAIAgent() {
   const [agentConfig, setAgentConfig] = useState<AgentConfig>(DEFAULT_AGENT_CONFIG);
-  const [aiSettings, setAISettings] = useState<AISettings>(DEFAULT_AI_SETTINGS);
+  const [aiSettings, setAISettings] = useState<AIUISettings>(DEFAULT_AI_SETTINGS);
   const [saved, setSaved] = useState(false);
 
   const toggleChannel = useCallback((channel: 'telegram' | 'instagram') => {
@@ -28,7 +28,7 @@ export function useAIAgent() {
     setAgentConfig(prev => ({ ...prev, systemPrompt: prompt }));
   }, []);
 
-  const updateAISettings = useCallback((patch: Partial<AISettings>) => {
+  const updateAISettings = useCallback((patch: Partial<AIUISettings>) => {
     setAISettings(prev => ({ ...prev, ...patch }));
   }, []);
 

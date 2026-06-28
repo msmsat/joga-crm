@@ -88,7 +88,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     const finalTitle = newForm.title.trim() || 'Новое занятие';
     const trainerObj = TRAINERS.find(t => t.id === newBookingSlot.trainer) || TRAINERS[0];
     const nb: Booking = {
-      id: `b${Date.now()}`,
+      id: Date.now(),
       trainer: newBookingSlot.trainer,
       timeStart: newBookingSlot.timeStart,
       timeEnd: newBookingSlot.timeEnd,

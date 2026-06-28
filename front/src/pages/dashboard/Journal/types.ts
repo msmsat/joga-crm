@@ -1,7 +1,9 @@
-// types.ts
+import type { Lesson, Hall, Reservation } from '../../../api/schedule/schedule.types';
+import type { ClientListItem } from '../../../api/clients/clients.types';
+export type { Lesson, Hall, Reservation, ClientListItem };
 
 export interface Booking {
-  id: string;
+  id: number;
   trainer: number;
   timeStart: number;
   timeEnd: number;
@@ -12,12 +14,4 @@ export interface Booking {
   color: string;
   status: 'confirmed' | 'pending' | 'cancelled';
   date?: string;
-}
-
-export interface Client {
-  id: string;
-  name: string;
-  phone: string;
-  visits: number;
-  avatar: string;
 }

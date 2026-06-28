@@ -14,6 +14,8 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
   const [newDoc, setNewDoc] = useState({ title: '', party: '', type: 'Договор', needsSignature: true });
   const [isDragHover, setIsDragHover] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState<{ [key: string]: boolean }>({});
+  const [popoverDoc, setPopoverDoc] = useState<number | null>(null);
+  const [popoverPos, setPopoverPos] = useState({ x: 0, y: 0, up: false });
 
   const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
     signed: { label: 'Подписан', color: '#4E885B', bg: 'rgba(163,201,168,0.2)' },
@@ -182,12 +184,59 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
               </div>
               <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                 <button onClick={() => showToast('Скачивание файла...', 'info')} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#FDFCFB', border: '1px solid rgba(26,26,26,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666666', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.transform = 'translateY(0)'; }} title="Скачать"><Ico.Download /></button>
-                <button onClick={() => showToast('Опции документа открыты')} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#FDFCFB', border: '1px solid rgba(26,26,26,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666666', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.transform = 'translateY(0)'; }} title="Настройки"><Ico.Dots /></button>
+                <button onClick={(e) => { e.stopPropagation(); const rect = e.currentTarget.getBoundingClientRect(); const up = window.innerHeight - rect.bottom < 180; setPopoverDoc(popoverDoc === doc.id ? null : doc.id); setPopoverPos({ x: rect.right, y: up ? rect.top : rect.bottom, up }); }} style={{ width: '36px', height: '36px', borderRadius: '10px', background: popoverDoc === doc.id ? '#1A1A1A' : '#FDFCFB', border: '1px solid rgba(26,26,26,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: popoverDoc === doc.id ? '#FFFFFF' : '#666666', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }} onMouseEnter={e => { if (popoverDoc !== doc.id) { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; } }} onMouseLeave={e => { if (popoverDoc !== doc.id) { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; e.currentTarget.style.transform = 'translateY(0)'; } }} title="Опции"><Ico.Dots /></button>
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Dark popover */}
+      {popoverDoc !== null && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setPopoverDoc(null)} />
+          <div style={{ position: 'fixed', ...(popoverPos.up ? { bottom: window.innerHeight - popoverPos.y + 6 } : { top: popoverPos.y + 6 }), right: window.innerWidth - popoverPos.x, background: '#111111', borderRadius: '14px', padding: '8px', zIndex: 999, boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minWidth: '210px' }}>
+            <div style={{ padding: '4px 12px 6px', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>Статус</div>
+            {([
+              { status: 'signed' as const, label: 'Подписан', color: '#A3C9A8' },
+              { status: 'pending' as const, label: 'Ожидает подписи', color: '#D88C9A' },
+              { status: 'draft' as const, label: 'Без подписи', color: 'rgba(255,255,255,0.4)' },
+            ]).map(opt => {
+              const isActive = docs.find(d => d.id === popoverDoc)?.status === opt.status;
+              return (
+                <button
+                  key={opt.status}
+                  onClick={() => {
+                    setDocs(prev => prev.map(d => d.id === popoverDoc ? { ...d, status: opt.status } : d));
+                    showToast(`Статус: ${opt.label}`, 'success');
+                    setPopoverDoc(null);
+                  }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: isActive ? opt.color : 'rgba(255,255,255,0.65)', fontSize: '13px', fontWeight: isActive ? 700 : 500, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", textAlign: 'left', transition: 'background 0.12s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: opt.color, flexShrink: 0 }} />
+                  {opt.label}
+                  {isActive && <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.45)', fontSize: '12px' }}>✓</span>}
+                </button>
+              );
+            })}
+            <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '4px 8px' }} />
+            <button
+              onClick={() => {
+                setDocs(prev => prev.filter(d => d.id !== popoverDoc));
+                showToast('Документ удалён', 'error');
+                setPopoverDoc(null);
+              }}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: '#D88C9A', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", textAlign: 'left', transition: 'background 0.12s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(216,140,154,0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <Ico.Trash /> Удалить
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -5,11 +5,10 @@ export interface DetailedTableProps {
   title?: string;
 }
 
+const fmtK = (n: number): string => `₽${Math.round(n / 1000)}K`;
+
 export function DetailedTable({ rows, title = 'Детализация по услугам' }: DetailedTableProps) {
-  const avgCheck = (svc: ServiceRecord) => {
-    const rev = parseInt(svc.revenue.replace(/[₽K]/g, '')) * 1000;
-    return `₽${Math.round(rev / svc.sessions)}`;
-  };
+  const avgCheck = (svc: ServiceRecord) => `₽${Math.round(svc.revenue / svc.sessions)}`;
 
   return (
     <div className="card">
@@ -55,7 +54,7 @@ export function DetailedTable({ rows, title = 'Детализация по ус�
             <span style={{ fontSize: '13px', fontWeight: 600 }}>{svc.name}</span>
           </div>
           <span style={{ fontSize: '13px', fontWeight: 700, textAlign: 'right' }}>{svc.sessions}</span>
-          <span style={{ fontSize: '13px', fontWeight: 700, textAlign: 'right' }}>{svc.revenue}</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, textAlign: 'right' }}>{fmtK(svc.revenue)}</span>
           <span style={{ fontSize: '13px', fontWeight: 700, textAlign: 'right', color: 'var(--text2)' }}>{avgCheck(svc)}</span>
           <div style={{ textAlign: 'right', fontSize: '11px', fontWeight: 800, color: svc.trend.startsWith('+') ? '#5BAB72' : '#D88C9A' }}>
             {svc.trend}

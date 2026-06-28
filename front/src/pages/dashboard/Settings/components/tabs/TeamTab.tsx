@@ -26,26 +26,52 @@ export default function TeamTab({
     users: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
     finance: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
     system: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+    staff: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    reports: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
   };
 
   const sections = [
     { title: "Записи", icon: sectionIcons.book, items: [
-      { key: "createBooking", label: "Создание и правка", desc: "Ведение календаря записей" },
-      { key: "cancelBooking", label: "Отмена визитов", desc: "Удаление без штрафов" },
-      { key: "editAllSchedules", label: "Своё расписание", desc: "Редактирование смен" },
+      { key: "createBooking",      label: "Создание и редактирование", desc: "Ведение календаря записей" },
+      { key: "cancelBooking",      label: "Отмена визитов",            desc: "Удаление записи без штрафов" },
+      { key: "editOwnSchedule",    label: "Своё расписание",           desc: "Редактирование своих смен" },
+      { key: "editOthersSchedules",label: "Расписание тренеров",       desc: "Редактирование чужих смен", warn: true },
+      { key: "viewAllBookings",    label: "Все записи студии",         desc: "Полный журнал без фильтрации" },
     ]},
     { title: "Клиенты", icon: sectionIcons.users, items: [
-      { key: "viewContacts", label: "Просмотр контактов", desc: "Телефоны и почта в базе" },
-      { key: "exportDatabase", label: "Экспорт базы (Excel)", desc: "Выгрузка всех контактов", danger: true },
-      { key: "deleteClients", label: "Удаление профилей", desc: "Безвозвратное стирание", danger: true },
+      { key: "viewContacts",      label: "Просмотр контактов",      desc: "Телефоны и email в базе" },
+      { key: "editClientProfiles",label: "Редактирование профилей", desc: "Изменение данных клиента" },
+      { key: "viewClientHistory", label: "История клиента",         desc: "Посещения и платежи" },
+      { key: "manageAbonements",  label: "Управление абонементами", desc: "Выдача, заморозка, списание" },
+      { key: "applyDiscounts",    label: "Скидки и спецусловия",    desc: "Применение скидок к оплате" },
+      { key: "sendMessages",      label: "Рассылки клиентам",       desc: "Ручные и шаблонные сообщения" },
+      { key: "exportDatabase",    label: "Экспорт базы (Excel)",    desc: "Выгрузка всех контактов", danger: true },
+      { key: "deleteClients",     label: "Удаление профилей",       desc: "Безвозвратное стирание данных", danger: true },
     ]},
     { title: "Финансы", icon: sectionIcons.finance, items: [
-      { key: "viewRevenue", label: "Просмотр выручки", desc: "Доступ к дашборду кассы" },
-      { key: "issueRefunds", label: "Возврат средств", desc: "Отмена транзакций" },
+      { key: "viewRevenue",          label: "Просмотр выручки",     desc: "Дашборд кассы и итоги" },
+      { key: "viewDetailedFinances", label: "Детальная аналитика",  desc: "P&L, движение средств, прогнозы" },
+      { key: "issueRefunds",         label: "Возврат средств",      desc: "Отмена и возврат транзакций" },
+      { key: "editPrices",           label: "Изменение цен",        desc: "Цены на услуги и пакеты", warn: true },
+      { key: "viewSalaries",         label: "Зарплаты сотрудников", desc: "Просмотр ФОТ и начислений" },
+      { key: "editSalaries",         label: "Управление зарплатами",desc: "Изменение ставок и выплат", danger: true },
     ]},
     { title: "Система", icon: sectionIcons.system, items: [
-      { key: "editStudioHours", label: "Настройки студии", desc: "Смена графика работы" },
-      { key: "manageIntegrations", label: "Интеграции", desc: "WhatsApp, Telegram, API" },
+      { key: "editStudioSettings",  label: "Настройки студии",    desc: "График работы и параметры" },
+      { key: "manageIntegrations",  label: "Интеграции",          desc: "WhatsApp, Telegram, API", warn: true },
+      { key: "managePricelist",     label: "Прайс-лист",          desc: "Услуги и пакеты абонементов" },
+      { key: "manageNotifications", label: "Шаблоны уведомлений", desc: "Тексты рассылок и автосообщений" },
+      { key: "accessAI",            label: "ИИ-ассистент",        desc: "Velora AI и автоматизация" },
+      { key: "manageRoles",         label: "Роли и права",        desc: "Управление доступом команды", danger: true },
+    ]},
+    { title: "Сотрудники", icon: sectionIcons.staff, items: [
+      { key: "viewStaff",   label: "Просмотр команды",    desc: "Список, роли и контакты" },
+      { key: "manageStaff", label: "Управление командой", desc: "Добавление и редактирование", warn: true },
+    ]},
+    { title: "Отчёты", icon: sectionIcons.reports, items: [
+      { key: "viewBasicReports", label: "Базовая аналитика", desc: "Ключевые метрики и сводки" },
+      { key: "viewFullReports",  label: "Полная аналитика",  desc: "Динамика, когорты, воронки" },
+      { key: "exportReports",    label: "Экспорт отчётов",   desc: "Выгрузка в Excel и PDF" },
     ]},
   ];
 
@@ -132,9 +158,9 @@ export default function TeamTab({
         <SectionHeader icon={icons.key} title="Роли и права" subtitle="Точная настройка уровней доступа для сотрудников" />
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {[
-            { role: "Владелец", desc: "Полный доступ ко всему, права не подлежат изменению", color: "#FCAE91" },
-            { role: "Администратор", desc: "Управление записями, клиентами и кассой", color: "#A3C9A8" },
-            { role: "Тренер", desc: "Своё расписание и свои клиенты", color: "#9BB5D8" },
+            { role: "Владелец",      desc: "Полный доступ ко всему, права не подлежат изменению", color: "#FCAE91" },
+            { role: "Администратор", desc: "Управление записями, клиентами и кассой",              color: "#A3C9A8" },
+            { role: "Тренер",        desc: "Своё расписание и своя клиентская база",               color: "#9BB5D8" },
           ].map((r) => {
             const isExpanded = expandedRole === r.role;
             const isOwner = r.role === "Владелец";
@@ -186,7 +212,7 @@ export default function TeamTab({
                   <div style={{ minHeight: 0 }}>
                     <div style={{ padding: "0 20px 20px 20px", opacity: isExpanded ? 1 : 0, transition: "opacity 0.2s ease", transitionDelay: isExpanded ? "0.1s" : "0s" }}>
                       <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "20px" }} />
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px 32px", opacity: isOwner ? 0.7 : 1, pointerEvents: isOwner ? "none" : "auto" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px 32px", alignItems: "start", opacity: isOwner ? 0.7 : 1, pointerEvents: isOwner ? "none" : "auto" }}>
                         {sections.map((sec, i) => (
                           <div key={i}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", color: "var(--muted)" }}>
@@ -207,7 +233,7 @@ export default function TeamTab({
                                     onMouseLeave={e => { if (!isOwner) e.currentTarget.style.background = isChecked ? "rgba(252,174,145,0.04)" : "transparent"; }}
                                   >
                                     <div style={{ paddingRight: "16px" }}>
-                                      <div style={{ fontSize: "12.5px", fontWeight: 700, color: (item as any).danger ? "#C0607A" : "var(--onyx)" }}>{item.label}</div>
+                                      <div style={{ fontSize: "12.5px", fontWeight: 700, color: (item as any).danger ? "#C0607A" : (item as any).warn ? "#C08030" : "var(--onyx)" }}>{item.label}</div>
                                       <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px", lineHeight: "1.3" }}>{item.desc}</div>
                                     </div>
                                     <Toggle checked={isChecked} onChange={() => handlePermissionToggle(r.role, item.key)} />

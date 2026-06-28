@@ -1,0 +1,74 @@
+{
+  "buttons": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveChanges": "Save changes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "send": "Send",
+    "copy": "Copy",
+    "back": "Back",
+    "continue": "Continue",
+    "finish": "Finish",
+    "done": "Done, close",
+    "saving": "Saving…",
+    "saved": "Saved!",
+    "upload": "Upload"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Active",
+    "inactive": "Not online",
+    "loading": "Loading...",
+    "notFound": "Not found",
+    "new": "NEW"
+  },
+  "fields": {
+    "fullName": "Full name",
+    "phone": "Phone",
+    "email": "Email",
+    "photo": "Profile photo",
+    "salary": "Salary",
+    "schedule": "Schedule",
+    "services": "Services",
+    "position": "Position",
+    "role": "Role",
+    "status": "Status",
+    "size": "Amount"
+  },
+  "days": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "sat": "Saturday",
+    "sun": "Sunday",
+    "short": {
+      "mon": "Mo",
+      "tue": "Tu",
+      "wed": "We",
+      "thu": "Th",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "Su"
+    }
+  },
+  "salary": {
+    "fixed": "Fixed",
+    "percent": "% of revenue",
+    "hourly": "Hourly"
+  },
+  "toasts": {
+    "phoneCopied": "Phone copied",
+    "emailCopied": "Email copied"
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  }
+}

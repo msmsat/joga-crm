@@ -2,6 +2,15 @@ import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { RecentEvent } from '../../types';
 
+function toRelative(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
+  if (diff < 1)   return 'только что';
+  if (diff < 60)  return `${diff} мин. назад`;
+  const h = Math.floor(diff / 60);
+  if (h < 24)    return `${h} ч назад`;
+  return `${Math.floor(h / 24)} дн. назад`;
+}
+
 interface Props {
   event: RecentEvent;
 }
@@ -45,9 +54,9 @@ export default function EventCard({ event }: Props) {
       <div className="activity-dot" style={{ background: event.color }} />
       <div style={{ flex: 1 }}>
         <div className="activity-text" style={{ fontSize: '12px' }}>
-          <strong>{event.actor}</strong> {event.action}
+          <strong>{event.actor_name}</strong> {event.title}
         </div>
-        <div className="activity-time">{event.time}</div>
+        <div className="activity-time">{toRelative(event.created_at)}</div>
       </div>
 
       <div style={{ position: 'relative' }}>
@@ -77,7 +86,7 @@ export default function EventCard({ event }: Props) {
               </svg>
               Открыть профиль
             </div>
-            {event.type === 'booking' && (
+            {event.event_type === 'booking' && (
               <div className="dropdown-item">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
@@ -85,7 +94,7 @@ export default function EventCard({ event }: Props) {
                 Написать в WhatsApp
               </div>
             )}
-            {event.type === 'payment' && (
+            {event.event_type === 'payment' && (
               <div className="dropdown-item">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
@@ -93,7 +102,7 @@ export default function EventCard({ event }: Props) {
                 Отправить чек
               </div>
             )}
-            {(event.type === 'booking' || event.type === 'cancel') && (
+            {(event.event_type === 'booking' || event.event_type === 'cancel') && (
               <div className="dropdown-item danger">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>

@@ -1,0 +1,27 @@
+{
+  "page": {
+    "title": "Your profile",
+    "sub": "Manage personal data and sessions"
+  },
+  "personalInfo": {
+    "heading": "Personal details"
+  },
+  "security": {
+    "changePassword": "Change password",
+    "logoutAll": "End all sessions"
+  },
+  "accounts": {
+    "title": "Linked accounts",
+    "count": "{{count}} account",
+    "enter": "Sign in",
+    "createNew": "Create new account"
+  },
+  "session": {
+    "current": "Current session"
+  },
+  "toasts": {
+    "switchedAs": "Signed in as {{email}}",
+    "logoutAll": "Logging out of all accounts...",
+    "infoSaved": "Personal data updated successfully"
+  }
+}

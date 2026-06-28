@@ -1,5 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import type { Employee } from "../../types";
+import { getPresetServices } from "../../constants";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type TabId = "profile" | "role" | "salary" | "schedule";
@@ -7,11 +10,11 @@ type TabId = "profile" | "role" | "salary" | "schedule";
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
 
 interface FormState {
-  id: string; name: string; phone: string; email: string;
-  role: string; initials: string; grad: string; online: boolean;
-  services: string[]; salary: string; salaryType: "fixed" | "percent" | "hourly" | "";
+  id: number; name: string; last_name: string; phone: string; email: string;
+  role: string; avatar_gradient: string; is_online: boolean;
+  services: string[]; salary: string; rate_type: "fixed" | "percent" | "hourly" | "";
   schedule: Record<string, ScheduleDay>;
-  photo?: string;
+  photo_url?: string;
 }
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -63,36 +66,26 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-const PRESET_ROLES = [
-  { id: "trainer",       label: "Тренер"          },
-  { id: "barber",        label: "Барбер"           },
-  { id: "stylist",       label: "Стилист"          },
-  { id: "admin",         label: "Администратор"    },
-  { id: "masseur",       label: "Массажист"        },
-  { id: "cosmetologist", label: "Косметолог"       },
-  { id: "yoga",          label: "Инструктор йоги"  },
-  { id: "nail",          label: "Мастер маникюра"  },
+const PRESET_ROLES: { id: string }[] = [
+  { id: "trainer" },
+  { id: "barber" },
+  { id: "stylist" },
+  { id: "admin" },
+  { id: "masseur" },
+  { id: "cosmetologist" },
+  { id: "yoga" },
+  { id: "nail" },
 ];
 
-const PRESET_SERVICES: Record<string, string[]> = {
-  trainer:       ["Персональная тренировка", "Групповое занятие", "Консультация", "Стретчинг"],
-  barber:        ["Мужская стрижка", "Борода", "Бритьё", "Укладка", "Комплекс"],
-  stylist:       ["Женская стрижка", "Окрашивание", "Укладка", "Кератин"],
-  admin:         ["Консультация", "Администрирование"],
-  masseur:       ["Классический массаж", "Антицеллюлитный", "Расслабляющий", "Спортивный"],
-  cosmetologist: ["Чистка лица", "Пилинг", "Биоревитализация", "Ботокс"],
-  yoga:          ["Хатха йога", "Виньяса", "Кундалини", "Медитация"],
-  nail:          ["Маникюр", "Педикюр", "Гель-лак", "Наращивание"],
-};
 
-const DAYS = [
-  { key: "mon", label: "Понедельник", short: "Пн" },
-  { key: "tue", label: "Вторник",     short: "Вт" },
-  { key: "wed", label: "Среда",       short: "Ср" },
-  { key: "thu", label: "Четверг",     short: "Чт" },
-  { key: "fri", label: "Пятница",     short: "Пт" },
-  { key: "sat", label: "Суббота",     short: "Сб" },
-  { key: "sun", label: "Воскресенье", short: "Вс" },
+const DAYS: { key: string }[] = [
+  { key: "mon" },
+  { key: "tue" },
+  { key: "wed" },
+  { key: "thu" },
+  { key: "fri" },
+  { key: "sat" },
+  { key: "sun" },
 ];
 
 const TIME_OPTIONS = [
@@ -111,21 +104,17 @@ const defaultSchedule: Record<string, ScheduleDay> = {
   sun: { enabled: false, from: "10:00", to: "16:00" },
 };
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: "profile",  label: "Профиль"  },
-  { id: "role",     label: "Роль"     },
-  { id: "salary",   label: "Зарплата" },
-  { id: "schedule", label: "График"   },
-];
+const TABS: TabId[] = ["profile", "role", "salary", "schedule"];
 
 // ─── LIVE IDENTITY ILLUS ──────────────────────────────────────────────────────
-function IdentityIllus({ name, role, online, grad, photo }: {
-  name: string; role: string; online: boolean; grad: string; photo?: string;
+function IdentityIllus({ name, role, is_online, avatar_gradient, photo }: {
+  name: string; role: string; is_online: boolean; avatar_gradient: string; photo?: string;
 }) {
+  const { t } = useTranslation(["staff", "common"]);
   const initials = name.trim().length >= 2
     ? name.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
     : "?";
-  const displayRole = PRESET_ROLES.find(r => r.id === role)?.label || role || "Без роли";
+  const displayRole = role ? t(`staff:roles.${role}`, { defaultValue: role }) : t("staff:profile.noRole");
   const enabledCount = 5;
 
   return (
@@ -133,7 +122,7 @@ function IdentityIllus({ name, role, online, grad, photo }: {
       <div style={{ position: "relative" }}>
         <div style={{
           width: "90px", height: "90px", borderRadius: "50%",
-          background: photo ? "transparent" : grad || "linear-gradient(135deg, #FCAE91, #F9A08B)",
+          background: photo ? "transparent" : avatar_gradient || "linear-gradient(135deg, #FCAE91, #F9A08B)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: "28px", fontWeight: 900, color: "white",
           fontFamily: "Manrope, sans-serif",
@@ -149,16 +138,16 @@ function IdentityIllus({ name, role, online, grad, photo }: {
         <div style={{
           position: "absolute", bottom: "4px", right: "4px",
           width: "16px", height: "16px", borderRadius: "50%",
-          background: online ? "#5BAB72" : "#DDD",
+          background: is_online ? "#5BAB72" : "#DDD",
           border: "2.5px solid white",
-          boxShadow: online ? "0 0 8px rgba(91,171,114,0.5)" : "none",
+          boxShadow: is_online ? "0 0 8px rgba(91,171,114,0.5)" : "none",
           transition: "all 0.3s",
         }}/>
       </div>
 
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "17px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.5px", marginBottom: "4px", transition: "all 0.2s", fontFamily: "Manrope, sans-serif" }}>
-          {name || "Имя не указано"}
+          {name || t("staff:profile.noName")}
         </div>
         <div style={{ fontSize: "12px", fontWeight: 600, color: "#AAA", transition: "all 0.2s", fontFamily: "Manrope, sans-serif" }}>
           {displayRole}
@@ -167,14 +156,14 @@ function IdentityIllus({ name, role, online, grad, photo }: {
 
       <div style={{ width: "100%", padding: "12px 14px", background: "rgba(26,26,26,0.025)", borderRadius: "12px", border: "1px solid rgba(26,26,26,0.06)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-          <span style={{ fontSize: "10px", fontWeight: 700, color: "#BBBB", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>Статус</span>
-          <span style={{ fontSize: "10px", fontWeight: 700, color: online ? "#5BAB72" : "#AAA", fontFamily: "Manrope, sans-serif" }}>
-            {online ? "Активен" : "Не в сети"}
+          <span style={{ fontSize: "10px", fontWeight: 700, color: "#BBBB", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>{t("common:fields.status")}</span>
+          <span style={{ fontSize: "10px", fontWeight: 700, color: is_online ? "#5BAB72" : "#AAA", fontFamily: "Manrope, sans-serif" }}>
+            {is_online ? t("common:status.active") : t("common:status.inactive")}
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: "10px", fontWeight: 700, color: "#BBBB", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>График</span>
-          <span style={{ fontSize: "10px", fontWeight: 700, color: "#1A1A1A", fontFamily: "Manrope, sans-serif" }}>{enabledCount}/7 дней</span>
+          <span style={{ fontSize: "10px", fontWeight: 700, color: "#BBBB", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>{t("common:fields.schedule")}</span>
+          <span style={{ fontSize: "10px", fontWeight: 700, color: "#1A1A1A", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.status.daysCount", { count: enabledCount })}</span>
         </div>
       </div>
 
@@ -186,7 +175,7 @@ function IdentityIllus({ name, role, online, grad, photo }: {
             color: ["mon","tue","wed","thu","fri"].includes(day.key) ? "#C07060" : "#CCC",
             border: ["mon","tue","wed","thu","fri"].includes(day.key) ? "1px solid rgba(252,174,145,0.3)" : "1px solid transparent",
           }}>
-            {day.short}
+            {t(`common:days.short.${day.key}`)}
           </div>
         ))}
       </div>
@@ -235,10 +224,11 @@ export interface EditEmployeeModalProps {
   staff: Employee;
   onClose: () => void;
   onSave: (data: { name: string; role: string; phone: string; email: string }) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: EditEmployeeModalProps) {
+  const { t } = useTranslation(["staff", "common"]);
   const [activeTab, setActiveTab]           = useState<TabId>("profile");
   const [form, setForm]                     = useState<FormState>({ ...buildInitialForm(staff) });
   const [saving, setSaving]                 = useState(false);
@@ -250,10 +240,19 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
 
   function buildInitialForm(s: Employee): FormState {
     return {
-      id: s.id, name: s.name, phone: s.phone, email: s.email,
-      role: s.role, initials: s.initials, grad: s.grad, online: s.online,
-      services: [], salary: "", salaryType: "",
+      id: s.id,
+      name: s.name,
+      last_name: s.last_name ?? "",
+      phone: s.phone ?? "",
+      email: s.email,
+      role: s.role,
+      avatar_gradient: s.avatar_gradient ?? "",
+      is_online: s.is_online,
+      services: [],
+      salary: s.rate != null ? String(s.rate) : "",
+      rate_type: s.rate_type ?? "",
       schedule: { ...defaultSchedule },
+      photo_url: s.photo_url,
     };
   }
 
@@ -310,7 +309,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
     set("schedule", { ...form.schedule, [key]: { ...form.schedule[key], [field]: val } });
   }
 
-  const presetServices = form.role ? (PRESET_SERVICES[form.role] || []) : [];
+  const presetServices = form.role ? getPresetServices(t, form.role) : [];
 
   const selectStyle: React.CSSProperties = {
     padding: "7px 6px", background: "rgba(26,26,26,0.03)",
@@ -322,7 +321,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
 
   if (!isOpen || !staff) return null;
 
-  return (
+  return createPortal(
     <div
       style={{
         position: "fixed", inset: 0,
@@ -387,40 +386,40 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
               <IdentityIllus
                 name={form.name}
                 role={form.role}
-                online={form.online}
-                grad={form.grad}
+                is_online={form.is_online}
+                avatar_gradient={form.avatar_gradient}
                 photo={photoPreview}
               />
             </div>
 
             <div style={{ padding: "14px 0 0", borderTop: "1px solid #F5F2EE" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "#AAAAAA", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>Статус</span>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "#AAAAAA", letterSpacing: "0.5px", textTransform: "uppercase", fontFamily: "Manrope, sans-serif" }}>{t("common:fields.status")}</span>
                 <div
-                  onClick={() => set("online", !form.online)}
+                  onClick={() => set("is_online", !form.is_online)}
                   style={{
                     display: "flex", alignItems: "center", gap: "8px", cursor: "pointer",
                     padding: "5px 10px", borderRadius: "8px",
-                    background: form.online ? "rgba(91,171,114,0.1)" : "rgba(26,26,26,0.04)",
-                    border: form.online ? "1px solid rgba(91,171,114,0.25)" : "1px solid rgba(26,26,26,0.07)",
+                    background: form.is_online ? "rgba(91,171,114,0.1)" : "rgba(26,26,26,0.04)",
+                    border: form.is_online ? "1px solid rgba(91,171,114,0.25)" : "1px solid rgba(26,26,26,0.07)",
                     transition: "all 0.2s",
                   }}
                 >
                   <div style={{
                     width: "28px", height: "15px", borderRadius: "7.5px",
-                    background: form.online ? "#5BAB72" : "rgba(26,26,26,0.1)",
+                    background: form.is_online ? "#5BAB72" : "rgba(26,26,26,0.1)",
                     display: "flex", alignItems: "center", padding: "1.5px",
                     transition: "background 0.2s",
                   }}>
                     <div style={{
                       width: "12px", height: "12px", borderRadius: "50%",
                       background: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                      transform: form.online ? "translateX(13px)" : "translateX(0)",
+                      transform: form.is_online ? "translateX(13px)" : "translateX(0)",
                       transition: "transform 0.2s cubic-bezier(0.34,1.2,0.64,1)",
                     }}/>
                   </div>
-                  <span style={{ fontSize: "11px", fontWeight: 700, color: form.online ? "#4A8A52" : "#AAA", fontFamily: "Manrope, sans-serif", transition: "color 0.2s" }}>
-                    {form.online ? "Онлайн" : "Офлайн"}
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: form.is_online ? "#4A8A52" : "#AAA", fontFamily: "Manrope, sans-serif", transition: "color 0.2s" }}>
+                    {form.is_online ? t("staff:editModal.status.online") : t("staff:editModal.status.offline")}
                   </span>
                 </div>
               </div>
@@ -440,19 +439,19 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
                   </svg>
-                  Удалить сотрудника
+                  {t("staff:editModal.deleteEmployee")}
                 </button>
               ) : (
                 <div style={{ padding: "12px", background: "rgba(216,140,154,0.08)", borderRadius: "10px", border: "1.5px solid rgba(216,140,154,0.25)", animation: "eiSlideIn 0.2s ease" }}>
                   <p style={{ fontSize: "11px", fontWeight: 600, color: "#D88C9A", margin: "0 0 10px", lineHeight: 1.5, fontFamily: "Manrope, sans-serif" }}>
-                    Удалить {form.name.split(" ")[0] || "сотрудника"} из команды?
+                    {t("staff:editModal.deleteConfirm", { name: form.name.split(" ")[0] || t("staff:editModal.defaultName") })}
                   </p>
                   <div style={{ display: "flex", gap: "6px" }}>
                     <button type="button" onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, padding: "7px", background: "transparent", border: "1.5px solid rgba(26,26,26,0.1)", borderRadius: "8px", fontSize: "11px", fontWeight: 700, color: "#888", cursor: "pointer", fontFamily: "Manrope, sans-serif" }}>
-                      Отмена
+                      {t("common:buttons.cancel")}
                     </button>
                     <button type="button" onClick={handleDelete} style={{ flex: 1, padding: "7px", background: "#D88C9A", border: "none", borderRadius: "8px", fontSize: "11px", fontWeight: 700, color: "white", cursor: "pointer", fontFamily: "Manrope, sans-serif", boxShadow: "0 4px 12px rgba(216,140,154,0.3)" }}>
-                      Удалить
+                      {t("common:buttons.delete")}
                     </button>
                   </div>
                 </div>
@@ -478,20 +477,20 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
 
           {/* ── TABS ── */}
           <div style={{ display: "flex", borderBottom: "1px solid #F0EDE8", padding: "0 28px", flexShrink: 0 }}>
-            {TABS.map(tab => (
-              <button key={tab.id} type="button" className="ei-tab"
-                onClick={() => setActiveTab(tab.id)}
+            {TABS.map(tabId => (
+              <button key={tabId} type="button" className="ei-tab"
+                onClick={() => setActiveTab(tabId)}
                 style={{
                   padding: "18px 16px 14px",
                   background: "transparent", border: "none",
-                  fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500,
-                  color: activeTab === tab.id ? "#1A1A1A" : "#AAAAAA",
+                  fontSize: "13px", fontWeight: activeTab === tabId ? 700 : 500,
+                  color: activeTab === tabId ? "#1A1A1A" : "#AAAAAA",
                   cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                  borderBottom: activeTab === tab.id ? "2px solid #FCAE91" : "2px solid transparent",
+                  borderBottom: activeTab === tabId ? "2px solid #FCAE91" : "2px solid transparent",
                   marginBottom: "-1px", position: "relative",
                 }}
               >
-                {tab.label}
+                {t(`staff:editModal.tabs.${tabId}`)}
               </button>
             ))}
           </div>
@@ -505,16 +504,16 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
             {activeTab === "profile" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                 <div>
-                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>Личные данные</p>
-                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>Обновите контактную информацию сотрудника</p>
+                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.profile.heading")}</p>
+                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.profile.sub")}</p>
                 </div>
 
                 <div>
-                  <FieldLabel>Фото профиля</FieldLabel>
+                  <FieldLabel>{t("common:fields.photo")}</FieldLabel>
                   <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                     <div style={{
                       width: "64px", height: "64px", borderRadius: "50%", flexShrink: 0,
-                      background: photoPreview ? "transparent" : (form.grad || "linear-gradient(135deg, #FCAE91, #F9A08B)"),
+                      background: photoPreview ? "transparent" : (form.avatar_gradient || "linear-gradient(135deg, #FCAE91, #F9A08B)"),
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: "20px", fontWeight: 800, color: "white",
                       overflow: "hidden", border: "3px solid white",
@@ -522,7 +521,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     }}>
                       {photoPreview
                         ? <img src={photoPreview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
-                        : (form.initials || form.name.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?")
+                        : (form.name.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?")
                       }
                     </div>
                     <div>
@@ -542,23 +541,23 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                           <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
-                        Загрузить фото
+                        {t("staff:editModal.profile.uploadPhoto")}
                       </button>
-                      <p style={{ fontSize: "10.5px", color: "#CCC", margin: "5px 0 0", fontFamily: "Manrope, sans-serif" }}>JPG, PNG — до 5 МБ</p>
+                      <p style={{ fontSize: "10.5px", color: "#CCC", margin: "5px 0 0", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.profile.photoHint")}</p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <FieldLabel>Полное имя</FieldLabel>
-                  <FocusInput value={form.name} onChange={v => set("name", v)} placeholder="Имя Фамилия"/>
+                  <FieldLabel>{t("common:fields.fullName")}</FieldLabel>
+                  <FocusInput value={form.name} onChange={v => set("name", v)} placeholder={t("staff:editModal.profile.namePlaceholder")}/>
                 </div>
                 <div>
-                  <FieldLabel>Телефон</FieldLabel>
+                  <FieldLabel>{t("common:fields.phone")}</FieldLabel>
                   <FocusInput type="tel" value={form.phone} onChange={v => set("phone", v)} placeholder="+7 (___) ___-__-__"/>
                 </div>
                 <div>
-                  <FieldLabel>Email</FieldLabel>
+                  <FieldLabel>{t("common:fields.email")}</FieldLabel>
                   <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@example.com"/>
                 </div>
               </div>
@@ -568,11 +567,11 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
             {activeTab === "role" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                 <div>
-                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>Роль и специализация</p>
-                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>Должность сотрудника и список предоставляемых услуг</p>
+                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.role.heading")}</p>
+                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.role.sub")}</p>
                 </div>
                 <div>
-                  <FieldLabel>Должность</FieldLabel>
+                  <FieldLabel>{t("common:fields.position")}</FieldLabel>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px", marginBottom: "10px" }}>
                     {PRESET_ROLES.map(r => {
                       const isSelected = form.role === r.id;
@@ -581,7 +580,8 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                           onClick={() => {
                             const newRole = form.role === r.id ? "" : r.id;
                             set("role", newRole);
-                            if (newRole && PRESET_SERVICES[newRole]) set("services", [...PRESET_SERVICES[newRole]]);
+                            const autoServices = newRole ? getPresetServices(t, newRole) : [];
+                            if (autoServices.length) set("services", autoServices);
                           }}
                           style={{
                             padding: "11px 6px",
@@ -608,7 +608,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                             {ROLE_ICONS[r.id]}
                           </span>
                           <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "#1A1A1A" : "#888", textAlign: "center", lineHeight: 1.2 }}>
-                            {r.label}
+                            {t(`staff:roles.${r.id}`)}
                           </span>
                         </button>
                       );
@@ -617,12 +617,12 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                   <FocusInput
                     value={PRESET_ROLES.find(r => r.id === form.role) ? "" : form.role}
                     onChange={val => set("role", val)}
-                    placeholder="Или введите свою должность..."
+                    placeholder={t("staff:editModal.role.positionPlaceholder")}
                   />
                 </div>
 
                 <div>
-                  <FieldLabel>Услуги</FieldLabel>
+                  <FieldLabel>{t("common:fields.services")}</FieldLabel>
                   {presetServices.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
                       {presetServices.map(svc => {
@@ -649,7 +649,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     <FocusInput
                       value={customServiceInput}
                       onChange={setCustomServiceInput}
-                      placeholder="Добавить услугу — нажмите Enter"
+                      placeholder={t("staff:editModal.role.addServicePlaceholder")}
                     />
                     {customServiceInput && (
                       <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "10px", fontWeight: 700, color: "#FCAE91", background: "rgba(252,174,145,0.12)", padding: "3px 7px", borderRadius: "6px", pointerEvents: "none" }}>
@@ -665,23 +665,22 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
             {activeTab === "salary" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                 <div>
-                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>Зарплата</p>
-                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>Укажите тип оплаты и размер вознаграждения</p>
+                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.salary.heading")}</p>
+                  <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.salary.sub")}</p>
                 </div>
                 <div>
-                  <FieldLabel>Тип оплаты</FieldLabel>
+                  <FieldLabel>{t("staff:editModal.salary.typeLabel")}</FieldLabel>
                   <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
                     {(["fixed", "percent", "hourly"] as const).map(type => {
-                      const labels: Record<string, string> = { fixed: "Оклад", percent: "% от выручки", hourly: "Почасовая" };
                       const icons: Record<string, React.ReactNode> = {
                         fixed: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>,
                         percent: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>,
                         hourly: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
                       };
-                      const isOn = form.salaryType === type;
+                      const isOn = form.rate_type === type;
                       return (
                         <button key={type} type="button"
-                          onClick={() => set("salaryType", type)}
+                          onClick={() => set("rate_type", type)}
                           style={{
                             flex: 1, padding: "14px 10px",
                             background: isOn ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.025)",
@@ -694,37 +693,37 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                           <span style={{ color: isOn ? "#FCAE91" : "#CCC", transition: "color 0.15s" }}>
                             {icons[type]}
                           </span>
-                          <span style={{ fontSize: "11px", fontWeight: isOn ? 700 : 500, color: isOn ? "#1A1A1A" : "#888" }}>{labels[type]}</span>
+                          <span style={{ fontSize: "11px", fontWeight: isOn ? 700 : 500, color: isOn ? "#1A1A1A" : "#888" }}>{t(`common:salary.${type}`)}</span>
                         </button>
                       );
                     })}
                   </div>
 
-                  {form.salaryType && (
+                  {form.rate_type && (
                     <div style={{ animation: "eiSlideIn 0.2s ease" }}>
-                      <FieldLabel>Размер</FieldLabel>
+                      <FieldLabel>{t("common:fields.size")}</FieldLabel>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <input
                           type="number" value={form.salary}
                           onChange={e => set("salary", e.target.value)}
-                          placeholder={form.salaryType === "percent" ? "25" : form.salaryType === "hourly" ? "500" : "50000"}
+                          placeholder={form.rate_type === "percent" ? "25" : form.rate_type === "hourly" ? "500" : "50000"}
                           style={{ flex: 1, padding: "13px 15px", background: "rgba(26,26,26,0.025)", border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "11px", fontSize: "16px", fontWeight: 700, color: "#1A1A1A", outline: "none", fontFamily: "Manrope, sans-serif" }}
                         />
                         <div style={{ padding: "12px 16px", background: "rgba(252,174,145,0.1)", border: "1.5px solid rgba(252,174,145,0.3)", borderRadius: "11px", fontSize: "14px", fontWeight: 800, color: "#FCAE91", minWidth: "50px", textAlign: "center" }}>
-                          {form.salaryType === "percent" ? "%" : form.salaryType === "hourly" ? "₽/ч" : "₽"}
+                          {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? "₽/ч" : "₽"}
                         </div>
                       </div>
-                      {form.salary && form.salaryType === "fixed" && (
+                      {form.salary && form.rate_type === "fixed" && (
                         <p style={{ fontSize: "11px", color: "#AAAAAA", marginTop: "8px", fontFamily: "Manrope, sans-serif" }}>
-                          ≈ {Math.round(Number(form.salary) / 4.3).toLocaleString("ru-RU")} ₽ / нед.
+                          ≈ {Math.round(Number(form.salary) / 4.3).toLocaleString("ru-RU")} {t("staff:editModal.salary.perWeek")}
                         </p>
                       )}
                     </div>
                   )}
 
-                  {!form.salaryType && (
+                  {!form.rate_type && (
                     <div style={{ padding: "20px", textAlign: "center", background: "rgba(26,26,26,0.02)", borderRadius: "14px", border: "1.5px dashed rgba(26,26,26,0.08)" }}>
-                      <p style={{ fontSize: "12px", color: "#CCCCCC", margin: 0, fontFamily: "Manrope, sans-serif" }}>Выберите тип оплаты выше</p>
+                      <p style={{ fontSize: "12px", color: "#CCCCCC", margin: 0, fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.salary.selectTypeHint")}</p>
                     </div>
                   )}
                 </div>
@@ -735,9 +734,9 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
             {activeTab === "schedule" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div>
-                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>Рабочий график</p>
+                  <p style={{ fontSize: "16px", fontWeight: 800, color: "#1A1A1A", letterSpacing: "-0.4px", margin: "0 0 4px", fontFamily: "Manrope, sans-serif" }}>{t("staff:editModal.schedule.heading")}</p>
                   <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 16px", fontFamily: "Manrope, sans-serif" }}>
-                    Активных дней: {Object.values(form.schedule).filter(d => d.enabled).length} из 7
+                    {t("staff:editModal.schedule.activeDays", { count: Object.values(form.schedule).filter(d => d.enabled).length })}
                   </p>
                 </div>
                 <div style={{ border: "1.5px solid rgba(26,26,26,0.08)", borderRadius: "14px", overflow: "hidden" }}>
@@ -765,7 +764,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                           }}/>
                         </div>
                         <span style={{ width: "90px", fontSize: "12px", fontWeight: d.enabled ? 600 : 400, color: d.enabled ? "#1A1A1A" : "#C0C0C0", flexShrink: 0, transition: "all 0.15s", fontFamily: "Manrope, sans-serif" }}>
-                          {day.label}
+                          {t(`common:days.${day.key}`)}
                         </span>
                         {d.enabled ? (
                           <div style={{ display: "flex", alignItems: "center", gap: "5px", flex: 1 }}>
@@ -778,7 +777,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                             </select>
                           </div>
                         ) : (
-                          <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1, fontFamily: "Manrope, sans-serif" }}>Выходной</span>
+                          <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1, fontFamily: "Manrope, sans-serif" }}>{t("staff:schedule.dayOff")}</span>
                         )}
                       </div>
                     );
@@ -790,7 +789,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
                   <p style={{ fontSize: "11.5px", color: "#666", margin: 0, lineHeight: 1.5, fontFamily: "Manrope, sans-serif" }}>
-                    График синхронизируется с журналом записей и расписанием занятий.
+                    {t("staff:editModal.schedule.syncHint")}
                   </p>
                 </div>
               </div>
@@ -826,14 +825,14 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
                     <path d="M12 2a10 10 0 0 1 10 10"/>
                   </svg>
-                  Сохранение…
+                  {t("common:buttons.saving")}
                 </>
               ) : saved ? (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "eiCheckPop 0.3s ease" }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  Сохранено!
+                  {t("common:buttons.saved")}
                 </>
               ) : (
                 <>
@@ -842,7 +841,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
                     <polyline points="17 21 17 13 7 13 7 21"/>
                     <polyline points="7 3 7 8 15 8"/>
                   </svg>
-                  Сохранить изменения
+                  {t("common:buttons.saveChanges")}
                 </>
               )}
             </button>
@@ -854,6 +853,7 @@ export function EditEmployeeModal({ isOpen, staff, onClose, onSave, onDelete }: 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }

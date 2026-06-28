@@ -2,13 +2,13 @@ import { useState, useCallback, useRef } from 'react';
 import type { Message, ChatSession } from '../types';
 import { MOCK_AI_RESPONSES, MOCK_SESSIONS } from '../constants';
 
-function generateId() {
-  return Math.random().toString(36).slice(2, 10);
+function generateId(): number {
+  return Date.now() + Math.floor(Math.random() * 10000);
 }
 
 export function useAIChat() {
   const [sessions, setSessions] = useState<ChatSession[]>(MOCK_SESSIONS);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
 
@@ -20,7 +20,7 @@ export function useAIChat() {
     if (typingRef.current) window.clearInterval(typingRef.current);
   };
 
-  const typewriteMessage = useCallback((msgId: string, fullText: string, onDone: () => void) => {
+  const typewriteMessage = useCallback((msgId: number, fullText: string, onDone: () => void) => {
     let i = 0;
     typingRef.current = window.setInterval(() => {
       i += 4;
@@ -55,7 +55,7 @@ export function useAIChat() {
     const aiMsgId = generateId();
     const aiMsg: Message = {
       id: aiMsgId,
-      role: 'ai',
+      role: 'assistant',
       text: '',
       timestamp: new Date(),
       status: 'thinking',
@@ -90,7 +90,7 @@ export function useAIChat() {
     setIsThinking(false);
   }, []);
 
-  const loadSession = useCallback((sessionId: string) => {
+  const loadSession = useCallback((sessionId: number) => {
     clearTimers();
     setActiveSessionId(sessionId);
     setIsThinking(false);
@@ -104,7 +104,7 @@ export function useAIChat() {
       },
       {
         id: generateId(),
-        role: 'ai',
+        role: 'assistant',
         text: 'Это загруженная сессия из истории. В реальном сценарии здесь будут все сообщения из базы данных.',
         timestamp: new Date(Date.now() - 1000 * 60 * 9),
         status: 'done',

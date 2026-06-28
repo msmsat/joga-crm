@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Employee } from '../types';
 
 export interface StaffStatsProps {
@@ -27,11 +28,18 @@ function Divider() {
   return <div style={{ width: '1px', height: '32px', background: 'var(--border)', flexShrink: 0 }} />;
 }
 
+const TRAINER_ROLE_IDS = new Set([
+  'master_trainer','reformer_trainer','mat_trainer','stretching',
+  'mfr','healthy_back','yoga','rehab','masseur','osteopath','trainer',
+]);
+const ADMIN_ROLE_IDS = new Set(['admin','manager']);
+
 export function StaffStats({ staff }: StaffStatsProps) {
+  const { t } = useTranslation('staff');
   const total    = staff.length;
-  const online   = staff.filter(s => s.online).length;
-  const trainers = staff.filter(s => s.id.startsWith('trainer')).length;
-  const admins   = staff.filter(s => s.id.startsWith('admin')).length;
+  const online   = staff.filter(s => s.is_online).length;
+  const trainers = staff.filter(s => TRAINER_ROLE_IDS.has(s.role)).length;
+  const admins   = staff.filter(s => ADMIN_ROLE_IDS.has(s.role)).length;
 
   return (
     <div style={{
@@ -40,13 +48,13 @@ export function StaffStats({ staff }: StaffStatsProps) {
       borderRadius: 'var(--radius-lg)', boxShadow: 'var(--dash-shadow)',
       overflow: 'hidden', flexShrink: 0,
     }}>
-      <StatItem value={total}    label="Всего в команде" />
+      <StatItem value={total}    label={t('stats.totalInTeam')} />
       <Divider />
-      <StatItem value={online}   label="На смене"        color="#5BAB72" />
+      <StatItem value={online}   label={t('stats.onShift')} color="#5BAB72" />
       <Divider />
-      <StatItem value={trainers} label="Тренеров" />
+      <StatItem value={trainers} label={t('stats.trainers')} />
       <Divider />
-      <StatItem value={admins}   label="Администраторов" />
+      <StatItem value={admins}   label={t('stats.administrators')} />
 
       <div style={{ marginLeft: 'auto', padding: '0 20px' }}>
         <div style={{
@@ -60,7 +68,7 @@ export function StaffStats({ staff }: StaffStatsProps) {
             animation: 'pulse 2s ease-in-out infinite',
           }} />
           <span style={{ fontSize: '11px', fontWeight: 700, color: '#4a8a52' }}>
-            {online} онлайн сейчас
+            {t('stats.onlineNow', { count: online })}
           </span>
         </div>
       </div>

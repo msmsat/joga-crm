@@ -238,7 +238,7 @@ export default function Journal() {
   };
 
   // ── Удалить запись ──
-  const deleteBooking = (id: string) => {
+  const deleteBooking = (id: number) => {
     setBookings(prev => prev.filter(b => b.id !== id));
     setPopupBooking(null);
     showToast('Занятие удалено');
@@ -251,7 +251,7 @@ export default function Journal() {
     setShowAddModal(true);
   };
 
-  const confirmAddClients = (clientIds: string[]) => {
+  const confirmAddClients = (clientIds: number[]) => {
     if (!addModalBooking) return;
     
     setBookings(prev => prev.map(b =>

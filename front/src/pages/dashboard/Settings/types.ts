@@ -1,3 +1,9 @@
+import type { GeneralSettings, UserSession, ApiToken } from '../../../api/settings/settings.types';
+export type { GeneralSettings, UserSession, ApiToken };
+
+// Session extends API UserSession with UI-only icon field
+export type Session = UserSession & { icon: string };
+
 export interface Studio {
   id: string;
   name: string;
@@ -6,28 +12,11 @@ export interface Studio {
 }
 
 export interface TeamMember {
-  id: string;
+  id: number;
   name: string;
   role: string;
   email: string;
   status: "active" | "warning" | "info";
-}
-
-export interface Session {
-  id: number;
-  device: string;
-  browser: string;
-  loc: string;
-  time: string;
-  current: boolean;
-  icon: string;
-}
-
-export interface ApiToken {
-  id: number;
-  name: string;
-  key: string;
-  created: string;
 }
 
 export type IntegrationsConfig = Record<string, any>;

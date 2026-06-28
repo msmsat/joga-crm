@@ -6,13 +6,10 @@
 .staff-layout {
   display: grid;
   grid-template-columns: 220px 1fr;
+  grid-template-rows: 1fr;
   gap: 20px;
-  
-  /* 🔥 Главная магия: вычисляем идеальную высоту с точностью до пикселя */
-  height: calc(100vh - 128px); 
-  
-  /* Блокируем скролл самого каркаса */
-  overflow: hidden; 
+  height: calc(100vh - 128px);
+  overflow: hidden;
 }
 
 /* ─── 2. ЛЕВАЯ ПАНЕЛЬ: СПИСОК КОМАНДЫ ────────────────────────────────────── */
@@ -177,6 +174,7 @@
   box-shadow: var(--dash-shadow);
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .premium-hero {
@@ -275,6 +273,7 @@
 .premium-body {
   padding: 24px 28px 20px;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border2) transparent;

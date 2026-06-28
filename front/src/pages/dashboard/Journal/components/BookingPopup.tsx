@@ -13,7 +13,7 @@ interface BookingPopupProps {
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-  deleteBooking: (id: string) => void;
+  deleteBooking: (id: number) => void;
   openAddClient: (b: Booking) => void;
   showToast: (msg: string) => void;
 }

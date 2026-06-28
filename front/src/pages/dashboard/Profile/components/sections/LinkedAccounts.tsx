@@ -1,23 +1,25 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from '../../Profile.module.css';
 import type { UserAccount } from '../../types';
 import { icons } from '../ui/ProfileIcons';
 
 interface Props {
   accounts: UserAccount[];
-  isSwitching: string | null;
-  handleSwitchAccount: (id: string) => void;
+  isSwitching: number | null;
+  handleSwitchAccount: (id: number) => void;
 }
 
 export default function LinkedAccounts({ accounts, isSwitching, handleSwitchAccount }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation(["profile", "common"]);
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', padding: '0 4px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--onyx)', margin: 0 }}>Связанные аккаунты</h3>
+        <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--onyx)', margin: 0 }}>{t("profile:accounts.title")}</h3>
         <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', background: 'rgba(0,0,0,0.04)', padding: '3px 10px', borderRadius: '100px' }}>
-          {accounts.length} профиля
+          {t("profile:accounts.count", { count: accounts.length })}
         </span>
       </div>
 
@@ -69,10 +71,10 @@ export default function LinkedAccounts({ accounts, isSwitching, handleSwitchAcco
                     </svg>
                   </div>
                 ) : acc.active ? (
-                  <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--peach)' }}>Активен</span>
+                  <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--peach)' }}>{t("common:status.active")}</span>
                 ) : (
                   <div className={styles.accAction}>
-                    Войти {icons.arrowRight}
+                    {t("profile:accounts.enter")} {icons.arrowRight}
                   </div>
                 )}
               </div>
@@ -82,7 +84,7 @@ export default function LinkedAccounts({ accounts, isSwitching, handleSwitchAcco
 
         <div className={styles.addAccountBtn} onClick={() => navigate('/register')}>
           <div className={styles.iconWrapper}>{icons.plus}</div>
-          <span style={{ flex: 1 }}>Создать новую учетную запись</span>
+          <span style={{ flex: 1 }}>{t("profile:accounts.createNew")}</span>
           <div className={styles.addArrow}>{icons.arrowRight}</div>
         </div>
       </div>

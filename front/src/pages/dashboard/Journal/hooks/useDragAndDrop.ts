@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import type { Booking } from '../types';
 
 export interface DragState {
-  id: string;
+  id: number;
   type: 'move' | 'resize-bottom' | 'resize-top';
   startX: number;
   startY: number;
@@ -190,7 +190,7 @@ export function useDragAndDrop({
 
   const initDrag = (
     e: React.MouseEvent,
-    id: string,
+    id: number,
     type: 'move' | 'resize-top' | 'resize-bottom',
     booking?: Booking
   ) => {

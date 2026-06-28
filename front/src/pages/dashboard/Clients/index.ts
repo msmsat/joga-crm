@@ -1,2 +1,2 @@
 export { default } from './Clients';
-export type { ClientData, VisitRecord } from './types';
+export type { ClientData, EventRecord } from './types';

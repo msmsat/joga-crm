@@ -1,4 +1,4 @@
-import type { ChatSession, AgentConfig, AISettings, AIModel, AILanguage } from './types';
+import type { ChatSession, AgentConfig, AIUISettings, AIModel, AILanguage } from './types';
 
 export const MODEL_OPTIONS: { value: AIModel; label: string }[] = [
   { value: 'gpt-4o', label: 'GPT-4o' },
@@ -16,28 +16,28 @@ export const LANGUAGE_OPTIONS: { value: AILanguage; label: string }[] = [
 
 export const MOCK_SESSIONS: ChatSession[] = [
   {
-    id: '1',
+    id: 1,
     title: 'Анализ выручки за май',
     preview: 'Покажи динамику выручки и основные метрики...',
     timestamp: new Date(Date.now() - 1000 * 60 * 20),
     messageCount: 8,
   },
   {
-    id: '2',
+    id: 2,
     title: 'Шаблоны SMS для клиентов',
     preview: 'Составь три варианта напоминания о записи...',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
     messageCount: 5,
   },
   {
-    id: '3',
+    id: 3,
     title: 'Идеи для программы лояльности',
     preview: 'Предложи механику бонусной программы...',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 26),
     messageCount: 12,
   },
   {
-    id: '4',
+    id: 4,
     title: 'Описание услуг для сайта',
     preview: 'Напиши продающие тексты для 5 направлений...',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 50),
@@ -69,7 +69,7 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   systemPrompt: 'Ты — вежливый ассистент студии Velora. Отвечай кратко, по делу, помогай клиентам с записью и вопросами об услугах.',
 };
 
-export const DEFAULT_AI_SETTINGS: AISettings = {
+export const DEFAULT_AI_SETTINGS: AIUISettings = {
   model: 'gpt-4o',
   language: 'auto',
 };

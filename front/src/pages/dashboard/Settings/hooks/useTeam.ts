@@ -19,7 +19,7 @@ export function useTeam(triggerToast: (msg: string) => void, triggerSave: (key: 
 
   const handleAddStaffSuccess = (data: any) => {
     setTeamData(prev => [...prev, {
-      id: Date.now().toString(),
+      id: Date.now(),
       name: data.name || "Новый сотрудник",
       role: data.role || "Сотрудник",
       email: data.email || "email@studio.ru",

@@ -1,99 +1,134 @@
-/**
- * @file types.ts
- * @description Контракты данных и типы для модуля управления сотрудниками
- */
+// ─── BACKEND DATA TYPES ─────────────────────────────────────────────────────
 
-// ─── БАЗОВЫЕ СЛОВАРИ И СУЩНОСТИ ─────────────────────────────────────────────
+export interface RoleCard {
+  id: string;
+  label: string;
+  api: string;
+  field: string | null;
+  format: 'currency' | 'rating' | 'percent' | 'number' | 'text';
+  icon: string;
+  category: 'finance' | 'performance' | 'schedule' | 'clients';
+}
 
-/**
- * Описание зала/студии
- */
+export interface StaffStats {
+  total_bookings: number;
+  total_attended: number;
+  load_percent: number;
+  total_revenue: number;
+}
+
+export interface StaffHall {
+  id: number;
+  name: string;
+  color?: string;
+}
+
+export interface StaffWorkingHoursItem {
+  day_of_week: number;
+  is_open: boolean;
+  open_time: string;
+  close_time: string;
+}
+
+export interface StaffTodayLesson {
+  id: number;
+  name: string;
+  start_time: string;
+  duration_min: number;
+  booked_count: number;
+  total_spots: number;
+  hall: StaffHall | null;
+}
+
+export interface StaffMonthLesson {
+  id: number;
+  name: string;
+  start_time: string;
+  duration_min: number;
+  status: string;
+  total_spots: number;
+  booked_count: number;
+  hall: StaffHall | null;
+}
+
+export interface Employee {
+  id: number;
+  name: string;
+  last_name?: string;
+  email: string;
+  phone?: string;
+  role: string;
+  department?: string | null;
+  is_online: boolean;
+  photo_url?: string;
+  avatar_gradient?: string;
+  salary?: number;
+  rate?: number;
+  rate_type?: 'fixed' | 'percent' | 'hourly' | null;
+  avg_rating?: number;
+  stats: StaffStats;
+}
+
+export interface StaffProfileResponse extends Employee {
+  is_active: boolean;
+  halls: StaffHall[];
+  today_schedule: StaffTodayLesson[];
+  week_working_hours: StaffWorkingHoursItem[];
+}
+
+// ─── API REQUEST TYPES ───────────────────────────────────────────────────────
+
+export interface StaffCreate {
+  name: string;
+  last_name?: string;
+  email: string;
+  phone?: string;
+  role: string;
+  department?: string;
+  salary?: number;
+  rate?: number;
+  rate_type?: 'fixed' | 'percent' | 'hourly';
+}
+
+export type StaffUpdate = StaffCreate;
+
+// ─── API RESPONSE TYPES ──────────────────────────────────────────────────────
+
+export interface StaffSummary {
+  total: number;
+  online: number;
+  by_role: Record<string, number>;
+}
+
+export interface StaffListResponse {
+  summary: StaffSummary;
+  staff: Employee[];
+}
+
+export interface StaffMutateResponse {
+  ok: boolean;
+  staff: Employee;
+}
+
+// ─── UI-ONLY TYPES ───────────────────────────────────────────────────────────
+
 export interface Hall {
   name: string;
   color: string;
 }
 
-/**
- * Словарь всех залов
- */
 export type HallsMap = Record<string, Hall>;
 
-/**
- * Статистика сотрудника (выручка, рейтинг, загрузка и т.д.)
- */
-export interface StaffStat {
-  /** Значение метрики (например, '₽284K', '5.0★') */
-  v: string;
-  /** Описание метрики (например, 'Выручка') */
-  l: string;
-}
-
-/**
- * Главная модель сотрудника
- */
-export interface Employee {
-  id: string;
-  /** Группа (Отдел), null означает принадлежность к предыдущей группе в списке */
-  group: string | null;
-  name: string;
-  role: string;
-  initials: string;
-  /** Градиент для аватара */
-  grad: string;
-  /** Градиент для фона профиля */
-  bg: string;
-  stats: StaffStat[];
-  online: boolean;
-  phone: string;
-  email: string;
-}
-
-// ─── РАСПИСАНИЕ И СОБЫТИЯ ───────────────────────────────────────────────────
-
-/**
- * Событие в расписании (тренировка, смена и т.д.)
- */
-export interface UpcomingEvent {
-  /** Время начала в формате 'HH:mm' */
-  time: string;
-  /** Продолжительность в минутах (в исходнике передано как строка, но логичнее number) */
-  dur: string | number;
-  /** Название события */
-  name: string;
-  /** Количество записанных клиентов (null, если это личное событие/смена) */
-  clients: number | null;
-  /** ID зала (ключ из HallsMap) */
-  hall: string;
-  /** Цвет события для UI */
-  color: string;
-}
-
-/**
- * Матрица расписания.
- * Массив из 7 элементов (слоты времени), каждый из которых массив из 7 дней (0 - свободно, 1 - занято)
- */
 export type ScheduleMatrix = (0 | 1 | number)[][];
 
-/**
- * Графики работы с привязкой к ID сотрудника
- */
-export type SchedulesMap = Record<string, ScheduleMatrix>;
+export type SchedulesMap = Record<number, ScheduleMatrix>;
 
-/**
- * Ближайшие события с привязкой к ID сотрудника
- */
-export type UpcomingMap = Record<string, UpcomingEvent[]>;
+export type UpcomingMap = Record<number, StaffTodayLesson[]>;
 
-// ─── СОСТОЯНИЯ UI (State Types) ─────────────────────────────────────────────
+// ─── UI STATE TYPES ──────────────────────────────────────────────────────────
 
-/**
- * Типы действий для универсального модального окна
- */
 export type ModalActionType = 'ALERT' | 'PROMPT_MESSAGE' | 'PROMPT_CALL' | string;
 
-/**
- * Состояние универсального модального окна
- */
 export interface ModalState {
   isOpen: boolean;
   title: string;
@@ -105,9 +140,6 @@ export interface ModalState {
   onConfirm?: () => void;
 }
 
-/**
- * Состояние всплывающей подсказки (Tooltip) в сетке расписания
- */
 export interface TooltipState {
   show: boolean;
   x: number;

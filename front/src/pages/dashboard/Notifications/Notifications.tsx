@@ -17,8 +17,9 @@ export default function Notifications() {
           toggles={h.toggles}
           toggleCheck={h.toggleCheck}
           setToggles={h.setToggles}
-          animating={h.animating}
-          animDir={h.animDir}
+          isDirty={h.isDirty}
+          onSave={h.saveChanges}
+          onCancel={h.cancelChanges}
         />
       </div>
     </div>

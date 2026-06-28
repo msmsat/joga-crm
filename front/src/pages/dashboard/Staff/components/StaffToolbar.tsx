@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 
 export interface StaffToolbarProps {
   count: number;
@@ -18,11 +19,13 @@ export function StaffToolbar({
   availableGroups,
   onAddClick,
 }: StaffToolbarProps) {
+  const { t } = useTranslation('staff');
+  
   return (
     <>
       <div className="panel-hdr">
-        <span className="panel-title">Команда · {count} чел.</span>
-        <button className="add-btn" onClick={onAddClick} title="Добавить сотрудника">+</button>
+        <span className="panel-title">{t('toolbar.teamTitle', { count })}</span>
+        <button className="add-btn" onClick={onAddClick} title={t('toolbar.addEmployee')}>+</button>
       </div>
 
       <div style={{ padding: '8px 10px 0' }}>
@@ -37,7 +40,7 @@ export function StaffToolbar({
           </svg>
           <input
             type="text"
-            placeholder="Поиск..."
+            placeholder={t('toolbar.searchPlaceholder')}
             value={searchQuery}
             onChange={e => onSearch(e.target.value)}
             style={{
@@ -68,7 +71,8 @@ export function StaffToolbar({
                 cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap', fontFamily: 'inherit',
               }}
             >
-              {g === 'ALL' ? 'Все' : g}
+              {/* 🔥 МАГИЯ: Если "ALL", берем спец. слово. Иначе переводим сырой ключ отдела! */}
+              {g === 'ALL' ? t('toolbar.allGroup') : t(`departments.${g}`, { defaultValue: g })}
             </button>
           ))}
         </div>

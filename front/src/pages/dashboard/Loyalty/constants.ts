@@ -21,7 +21,7 @@ interface ProgramMeta {
   accentColor: string;
   accentBg: string;
   accentBorder: string;
-  stats: { value: string; label: string };
+  stats: { value: number; label: string };
 }
 
 export const PROGRAM_METADATA: ProgramMeta[] = [
@@ -32,7 +32,7 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     accentColor: '#FCAE91',
     accentBg: 'rgba(252,174,145,0.08)',
     accentBorder: 'rgba(252,174,145,0.25)',
-    stats: { value: '89', label: 'клиентов' },
+    stats: { value: 89, label: 'клиентов' },
   },
   {
     key: 'discounts',
@@ -41,7 +41,7 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     accentColor: '#5BAB72',
     accentBg: 'rgba(91,171,114,0.08)',
     accentBorder: 'rgba(91,171,114,0.25)',
-    stats: { value: '18', label: 'активных' },
+    stats: { value: 18, label: 'активных' },
   },
   {
     key: 'certificates',
@@ -50,7 +50,7 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     accentColor: '#4A80C4',
     accentBg: 'rgba(74,128,196,0.08)',
     accentBorder: 'rgba(74,128,196,0.25)',
-    stats: { value: '34', label: 'продано' },
+    stats: { value: 34, label: 'продано' },
   },
   {
     key: 'subscriptions',
@@ -59,7 +59,7 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     accentColor: '#D88C9A',
     accentBg: 'rgba(216,140,154,0.08)',
     accentBorder: 'rgba(216,140,154,0.25)',
-    stats: { value: '67', label: 'активных' },
+    stats: { value: 67, label: 'активных' },
   },
   {
     key: 'referral',
@@ -68,6 +68,6 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     accentColor: '#9B8EC4',
     accentBg: 'rgba(155,142,196,0.08)',
     accentBorder: 'rgba(155,142,196,0.25)',
-    stats: { value: '24', label: 'реферала' },
+    stats: { value: 24, label: 'реферала' },
   },
 ];

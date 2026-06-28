@@ -1,0 +1,99 @@
+{
+  "master_trainer": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "reformer_trainer": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "mat_trainer": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "stretching": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "mfr": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "healthy_back": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "yoga": [
+    { "id": "revenue",  "label": "Выручка",  "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",   "label": "Рейтинг",  "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings", "label": "Записей",   "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "load",     "label": "Загрузка",  "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "masseur": [
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",    "label": "Рейтинг",    "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings",  "label": "Сессий",     "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Завершено",  "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" }
+  ],
+
+  "osteopath": [
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",    "label": "Рейтинг",    "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings",  "label": "Приёмов",    "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Завершено",  "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" }
+  ],
+
+  "rehab": [
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "rating",    "label": "Рейтинг",    "api": "GET /api/staff/{id}/rating","field": "avg_rating",     "format": "rating",   "icon": "star",         "category": "performance" },
+    { "id": "bookings",  "label": "Занятий",    "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Завершено",  "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" }
+  ],
+
+  "admin": [
+    { "id": "bookings",  "label": "Записей",    "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Обработано", "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" },
+    { "id": "revenue",   "label": "Касса",      "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "dollar-sign",  "category": "finance"     },
+    { "id": "load",      "label": "Загрузка",   "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "manager": [
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "bookings",  "label": "Записей",    "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Посещений",  "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" },
+    { "id": "load",      "label": "Загрузка",   "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ],
+
+  "owner": [
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats",          "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "attended",  "label": "Посещений",  "api": "GET /api/staff/{id}/stats",          "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" },
+    { "id": "load",      "label": "Загрузка",   "api": "GET /api/staff/{id}/stats",          "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" },
+    { "id": "staff",     "label": "Сотрудников","api": "GET /api/staff/count",               "field": null,             "format": "number",   "icon": "briefcase",    "category": "clients"     }
+  ],
+
+  "default": [
+    { "id": "bookings",  "label": "Записей",    "api": "GET /api/staff/{id}/stats", "field": "total_bookings", "format": "number",   "icon": "calendar",     "category": "schedule"    },
+    { "id": "attended",  "label": "Посещений",  "api": "GET /api/staff/{id}/stats", "field": "total_attended", "format": "number",   "icon": "check-circle", "category": "performance" },
+    { "id": "revenue",   "label": "Выручка",    "api": "GET /api/staff/{id}/stats", "field": "total_revenue",  "format": "currency", "icon": "trending-up",  "category": "finance"     },
+    { "id": "load",      "label": "Загрузка",   "api": "GET /api/staff/{id}/stats", "field": "load_percent",   "format": "percent",  "icon": "activity",     "category": "performance" }
+  ]
+}

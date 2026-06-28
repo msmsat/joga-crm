@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import { CustomSelect } from '../ui/CustomSelect'
 
 interface Props {
@@ -5,9 +6,12 @@ interface Props {
   openDays: string;   setOpenDays(v: string): void
   cancelTime: string; setCancelTime(v: string): void
   language: string;   setLanguage(v: string): void
+  activeColor: number; setActiveColor(i: number): void
 }
 
-export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays, cancelTime, setCancelTime, language, setLanguage }: Props) {
+export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays, cancelTime, setCancelTime, language, setLanguage, activeColor, setActiveColor }: Props) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [logoName, setLogoName] = useState('')
   return (
     <div className="grid-2" style={{ gap: '24px' }}>
 
@@ -137,7 +141,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
           <div className="bcp-label">Акцентный цвет</div>
           <div className="bcp-swatches">
             {['#FCAE91', '#5BAB72', '#4A80C4', '#C96B9E', '#F4A261', '#2A9D8F'].map((c, i) => (
-              <div key={i} className={`bcp-swatch${i === 0 ? ' active' : ''}`} style={{ background: c }}></div>
+              <div key={i} className={`bcp-swatch${i === activeColor ? ' active' : ''}`} style={{ background: c }} onClick={() => setActiveColor(i)}></div>
             ))}
           </div>
         </div>
@@ -147,10 +151,24 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Логотип студии</div>
             <div className="sub">Отображается в шапке виджета</div>
           </div>
-          <button className="settings-upload-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Загрузить
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {logoName && (
+              <span style={{ fontSize: '11px', color: 'var(--text2)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={logoName}>
+                {logoName.length > 20 ? logoName.slice(0, 17) + '…' : logoName}
+              </span>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml,image/webp"
+              style={{ display: 'none' }}
+              onChange={e => setLogoName(e.target.files?.[0]?.name ?? '')}
+            />
+            <button className="settings-upload-btn" onClick={() => fileRef.current?.click()}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Загрузить
+            </button>
+          </div>
         </div>
 
         <div className="settings-row">

@@ -1,23 +1,27 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { getPresetServices } from "../../pages/dashboard/Staff/constants";
 import "../../App.css";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
 
 export interface StaffMember {
-  id: string;
+  id: number;
   name: string;
+  last_name?: string;
   phone: string;
   email: string;
   role: string;
-  initials: string;
-  grad: string;
-  online: boolean;
+  department?: string;
+  avatar_gradient?: string;
+  is_online: boolean;
   services?: string[];
-  salary?: string;
-  salaryType?: "fixed" | "percent" | "hourly" | "";
+  rate?: number;
+  rate_type?: "fixed" | "percent" | "hourly" | "";
   schedule?: Record<string, ScheduleDay>;
-  photo?: string;
+  photo_url?: string;
 }
 
 interface EditStaffModalProps {
@@ -25,10 +29,22 @@ interface EditStaffModalProps {
   staff: StaffMember | null;
   onClose: () => void;
   onSave?: (updated: StaffMember) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: number) => Promise<void> | void;
+  ownerCount?: number;
 }
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const ROLE_TO_DEPT_KEY: Record<string, string> = {
+  trainer:       "trainers",
+  barber:        "masters",
+  stylist:       "masters",
+  admin:         "management",
+  masseur:       "masters",
+  cosmetologist: "masters",
+  yoga:          "trainers",
+  nail:          "masters",
+};
+
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   trainer: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -77,36 +93,25 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-const PRESET_ROLES = [
-  { id: "trainer",       label: "Тренер"          },
-  { id: "barber",        label: "Барбер"           },
-  { id: "stylist",       label: "Стилист"          },
-  { id: "admin",         label: "Администратор"    },
-  { id: "masseur",       label: "Массажист"        },
-  { id: "cosmetologist", label: "Косметолог"       },
-  { id: "yoga",          label: "Инструктор йоги"  },
-  { id: "nail",          label: "Мастер маникюра"  },
+const PRESET_ROLES: { id: string }[] = [
+  { id: "trainer" },
+  { id: "barber" },
+  { id: "stylist" },
+  { id: "admin" },
+  { id: "masseur" },
+  { id: "cosmetologist" },
+  { id: "yoga" },
+  { id: "nail" },
 ];
 
-const PRESET_SERVICES: Record<string, string[]> = {
-  trainer:       ["Персональная тренировка", "Групповое занятие", "Консультация", "Стретчинг"],
-  barber:        ["Мужская стрижка", "Борода", "Бритьё", "Укладка", "Комплекс"],
-  stylist:       ["Женская стрижка", "Окрашивание", "Укладка", "Кератин"],
-  admin:         ["Консультация", "Администрирование"],
-  masseur:       ["Классический массаж", "Антицеллюлитный", "Расслабляющий", "Спортивный"],
-  cosmetologist: ["Чистка лица", "Пилинг", "Биоревитализация", "Ботокс"],
-  yoga:          ["Хатха йога", "Виньяса", "Кундалини", "Медитация"],
-  nail:          ["Маникюр", "Педикюр", "Гель-лак", "Наращивание"],
-};
-
-const DAYS = [
-  { key: "mon", label: "Понедельник" },
-  { key: "tue", label: "Вторник" },
-  { key: "wed", label: "Среда" },
-  { key: "thu", label: "Четверг" },
-  { key: "fri", label: "Пятница" },
-  { key: "sat", label: "Суббота" },
-  { key: "sun", label: "Воскресенье" },
+const DAYS: { key: string }[] = [
+  { key: "mon" },
+  { key: "tue" },
+  { key: "wed" },
+  { key: "thu" },
+  { key: "fri" },
+  { key: "sat" },
+  { key: "sun" },
 ];
 
 const TIME_OPTIONS = [
@@ -138,13 +143,8 @@ const TAB_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-const TABS = [
-  { id: "profile",  label: "Профиль"  },
-  { id: "role",     label: "Роль"     },
-  { id: "salary",   label: "Зарплата" },
-  { id: "schedule", label: "График"   },
-] as const;
-type TabId = typeof TABS[number]["id"];
+const TABS = ["profile", "role", "salary", "schedule"] as const;
+type TabId = typeof TABS[number];
 
 const defaultSchedule: Record<string, ScheduleDay> = {
   mon: { enabled: true,  from: "09:00", to: "18:00" },
@@ -160,19 +160,22 @@ const defaultSchedule: Record<string, ScheduleDay> = {
 
 // Left panel: Live "identity card" that updates as you type
 function IdentityIllus({
-  name, role, photo, online, services, salary, salaryType, schedule
+  name, role, photo, is_online, services, salary, rate_type, schedule
 }: {
-  name: string; role: string; photo?: string; online: boolean;
-  services: string[]; salary: string; salaryType: string;
+  name: string; role: string; photo?: string; is_online: boolean;
+  services: string[]; salary: string; rate_type: string;
   schedule: Record<string, ScheduleDay>;
 }) {
+  const { t } = useTranslation(["staff", "common"]);
   const initials = name.trim().length >= 2
     ? name.trim().split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase()
     : "?";
   const enabledDays = Object.values(schedule).filter(d => d.enabled).length;
-  const effectiveRole = PRESET_ROLES.find(r => r.id === role)?.label || role || "Не указана";
+  const effectiveRole = role
+    ? t(`staff:roles.${role}`, { defaultValue: role })
+    : t("staff:editModal.positionFallback");
   const salaryLabel = salary
-    ? `${salary} ${salaryType === "percent" ? "%" : salaryType === "hourly" ? "₽/ч" : "₽"}`
+    ? `${salary} ${rate_type === "percent" ? "%" : rate_type === "hourly" ? "₽/ч" : "₽"}`
     : "—";
 
   return (
@@ -236,7 +239,7 @@ function IdentityIllus({
 
       {/* Online dot */}
       <circle cx="147" cy="96" r="7.5" fill="white" />
-      <circle cx="147" cy="96" r="5" fill={online ? "#A3C9A8" : "#CCCCCC"} />
+      <circle cx="147" cy="96" r="5" fill={is_online ? "#A3C9A8" : "#CCCCCC"} />
 
       {/* Name */}
       {name.trim().length >= 2 ? (
@@ -261,9 +264,9 @@ function IdentityIllus({
 
       {/* Stats row */}
       {[
-        { label: "Услуги",  value: String(services.length) },
-        { label: "Дней",    value: String(enabledDays) },
-        { label: "Зарплата",value: salaryLabel.length > 6 ? salaryLabel.slice(0,6) + "…" : salaryLabel },
+        { label: t("common:fields.services"), value: String(services.length) },
+        { label: t("staff:editModal.schedule.daysLabel"), value: String(enabledDays) },
+        { label: t("common:fields.salary"), value: salaryLabel.length > 6 ? salaryLabel.slice(0,6) + "…" : salaryLabel },
       ].map((s, i) => {
         const cx = 56 + i * 66;
         return (
@@ -301,7 +304,7 @@ function IdentityIllus({
       {/* Active days label */}
       <text x="122" y="254" textAnchor="middle" fontSize="9" fontWeight="600"
         fill="#BBBBBB" fontFamily="Manrope, sans-serif">
-        {enabledDays} рабочих {enabledDays === 1 ? "день" : enabledDays < 5 ? "дня" : "дней"}
+        {t("staff:editModal.schedule.workDays", { count: enabledDays })}
       </text>
 
       {/* Salary gradient bar */}
@@ -374,23 +377,34 @@ function FocusInput({
 }
 
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
-export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete }: EditStaffModalProps) {
+export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount }: EditStaffModalProps) {
+  const { t } = useTranslation(["staff", "common"]);
   const [activeTab, setActiveTab]     = useState<TabId>("profile");
   const [saving, setSaving]           = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [saved, setSaved]             = useState(false);
   const [customSvcInput, setCustomSvcInput] = useState("");
-  const [photoPreview, setPhotoPreview] = useState<string | undefined>(staff?.photo);
+  const [photoPreview, setPhotoPreview] = useState<string | undefined>(staff?.photo_url);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState<StaffMember & {
+  const [form, setForm] = useState<{
+    id: number;
+    name: string;
+    last_name: string;
+    phone: string;
+    email: string;
+    role: string;
+    department: string;
+    avatar_gradient: string;
+    is_online: boolean;
     services: string[];
     salary: string;
-    salaryType: "fixed" | "percent" | "hourly" | "";
+    rate_type: "fixed" | "percent" | "hourly" | "";
     schedule: Record<string, ScheduleDay>;
+    photo_url?: string;
   }>({
-    id: "", name: "", phone: "", email: "", role: "",
-    initials: "", grad: "", online: true, services: [], salary: "", salaryType: "",
+    id: 0, name: "", last_name: "", phone: "", email: "", role: "", department: "",
+    avatar_gradient: "", is_online: true, services: [], salary: "", rate_type: "",
     schedule: { ...defaultSchedule },
   });
 
@@ -398,13 +412,22 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   useEffect(() => {
     if (staff) {
       setForm({
-        ...staff,
-        services:   staff.services   ?? [],
-        salary:     staff.salary     ?? "",
-        salaryType: staff.salaryType ?? "",
-        schedule:   staff.schedule   ?? { ...defaultSchedule },
+        id:             staff.id,
+        name:           staff.name,
+        last_name:      staff.last_name ?? "",
+        phone:          staff.phone,
+        email:          staff.email,
+        role:           staff.role,
+        department:     staff.department ?? ROLE_TO_DEPT_KEY[staff.role] ?? "",
+        avatar_gradient: staff.avatar_gradient ?? "",
+        is_online:      staff.is_online,
+        services:       staff.services ?? [],
+        salary:         staff.rate != null ? String(staff.rate) : "",
+        rate_type:      staff.rate_type ?? "",
+        schedule:       staff.schedule ?? { ...defaultSchedule },
+        photo_url:      staff.photo_url,
       });
-      setPhotoPreview(staff.photo);
+      setPhotoPreview(staff.photo_url);
       setShowDeleteConfirm(false);
       setSaved(false);
       setActiveTab("profile");
@@ -459,7 +482,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   async function handleSave() {
     setSaving(true);
     await new Promise(r => setTimeout(r, 700));
-    onSave?.({ ...form, initials: form.name.trim().split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase() });
+    const finalDepartment = form.department || ROLE_TO_DEPT_KEY[form.role] || form.role;
+    onSave?.({ ...form, department: finalDepartment, rate: form.salary ? parseFloat(form.salary) : undefined });
     setSaving(false);
     setSaved(true);
     setTimeout(() => { setSaved(false); onClose(); }, 1200);
@@ -470,7 +494,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     onClose();
   }
 
-  const presetSvcs = PRESET_SERVICES[form.role] ?? [];
+  const presetSvcs = getPresetServices(t, form.role);
   const enabledDays = Object.values(form.schedule).filter(d => d.enabled).length;
 
   const selectStyle: React.CSSProperties = {
@@ -483,7 +507,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
   if (!isOpen || !staff) return null;
 
-  return (
+  return createPortal(
     <div
       style={{
         position: "fixed", inset: 0,
@@ -550,13 +574,13 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           {/* Header */}
           <div style={{ position: "relative", zIndex: 1, marginBottom: "16px" }}>
             <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 4px" }}>
-              РЕДАКТИРОВАНИЕ
+              {t("staff:editModal.header")}
             </p>
             <h2 style={{ fontSize: "16px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.4px", margin: 0, lineHeight: 1.3 }}>
-              {form.name || "Сотрудник"}
+              {form.name || t("staff:editModal.employeeFallback")}
             </h2>
             <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "3px 0 0" }}>
-              {PRESET_ROLES.find(r => r.id === form.role)?.label || form.role || "Должность не указана"}
+              {form.role ? t(`staff:roles.${form.role}`, { defaultValue: form.role }) : t("staff:editModal.positionFallback")}
             </p>
           </div>
 
@@ -566,10 +590,10 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               name={form.name}
               role={form.role}
               photo={photoPreview}
-              online={form.online}
+              is_online={form.is_online}
               services={form.services}
               salary={form.salary}
-              salaryType={form.salaryType}
+              rate_type={form.rate_type}
               schedule={form.schedule}
             />
           </div>
@@ -586,22 +610,22 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <div style={{
                   width: "7px", height: "7px", borderRadius: "50%", flexShrink: 0,
-                  background: form.online ? "#A3C9A8" : "#DDDDDD",
-                  animation: form.online ? "eiPulse 2.2s infinite" : "none",
+                  background: form.is_online ? "#A3C9A8" : "#DDDDDD",
+                  animation: form.is_online ? "eiPulse 2.2s infinite" : "none",
                 }} />
                 <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
-                  {form.online ? "Онлайн сейчас" : "Не в сети"}
+                  {form.is_online ? t("staff:editModal.status.onlineNow") : t("staff:editModal.status.notOnline")}
                 </span>
               </div>
               {/* Toggle */}
-              <div onClick={() => set("online", !form.online)} style={{
+              <div onClick={() => set("is_online", !form.is_online)} style={{
                 width: "30px", height: "17px", borderRadius: "8.5px",
-                background: form.online ? "#FCAE91" : "rgba(26,26,26,0.12)",
+                background: form.is_online ? "#FCAE91" : "rgba(26,26,26,0.12)",
                 position: "relative", cursor: "pointer", transition: "background 0.2s",
               }}>
                 <div style={{
                   position: "absolute", top: "1.5px",
-                  left: form.online ? "14.5px" : "1.5px",
+                  left: form.is_online ? "14.5px" : "1.5px",
                   width: "14px", height: "14px", borderRadius: "50%",
                   background: "white", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
                   transition: "left 0.2s cubic-bezier(0.34,1.2,0.64,1)",
@@ -610,7 +634,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             </div>
 
             {/* Delete */}
-            {!showDeleteConfirm ? (
+            {staff?.role === 'owner' && (ownerCount ?? 1) <= 1 ? (
+              <div style={{
+                padding: "11px 13px", borderRadius: "10px",
+                background: "rgba(216,140,154,0.07)",
+                border: "1.5px solid rgba(216,140,154,0.22)",
+                display: "flex", alignItems: "center", gap: "8px",
+              }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C06070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span style={{ fontSize: "11px", fontWeight: 600, color: "#C06070", fontFamily: "Manrope, sans-serif", lineHeight: 1.4 }}>
+                  {t("staff:editModal.cannotDeleteLastOwner")}
+                </span>
+              </div>
+            ) : !showDeleteConfirm ? (
               <button type="button" className="ei-del-btn" onClick={() => setShowDeleteConfirm(true)} style={{
                 width: "100%", padding: "10px",
                 background: "rgba(216,140,154,0.08)",
@@ -623,7 +661,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="3,6 5,6 21,6" /><path d="M19,6l-1,14H6L5,6" /><path d="M10,11v6M14,11v6" /><path d="M9,6V4h6v2" />
                 </svg>
-                Удалить сотрудника
+                {t("staff:editModal.deleteEmployee")}
               </button>
             ) : (
               <div style={{
@@ -633,7 +671,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 animation: "eiSlideIn 0.2s ease",
               }}>
                 <p style={{ fontSize: "11px", fontWeight: 700, color: "#C06070", margin: "0 0 8px", textAlign: "center" }}>
-                  Удалить {form.name.split(" ")[0]}?
+                  {t("staff:editModal.deleteConfirm", { name: form.name.split(" ")[0] || t("staff:editModal.defaultName") })}
                 </p>
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button onClick={() => setShowDeleteConfirm(false)} style={{
@@ -641,14 +679,14 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     border: "1px solid #EEEBE6", borderRadius: "8px",
                     fontSize: "11px", fontWeight: 600, color: "#888",
                     cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                  }}>Отмена</button>
+                  }}>{t("common:buttons.cancel")}</button>
                   <button onClick={handleDelete} style={{
                     flex: 1, padding: "7px",
                     background: "linear-gradient(135deg, #D88C9A, #C07080)",
                     border: "none", borderRadius: "8px",
                     fontSize: "11px", fontWeight: 700, color: "white",
                     cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                  }}>Удалить</button>
+                  }}>{t("common:buttons.delete")}</button>
                 </div>
               </div>
             )}
@@ -676,13 +714,13 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             display: "flex", gap: "2px", padding: "16px 24px 0",
             borderBottom: "1px solid #F0EDE8", flexShrink: 0,
           }}>
-            {TABS.map(tab => {
-              const isActive = activeTab === tab.id;
+            {TABS.map(tabId => {
+              const isActive = activeTab === tabId;
               return (
                 <button
-                  key={tab.id}
+                  key={tabId}
                   className={`ei-tab${isActive ? " ei-tab-active" : ""}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setActiveTab(tabId)}
                   style={{
                     padding: "9px 14px 10px",
                     background: isActive ? "rgba(252,174,145,0.1)" : "transparent",
@@ -698,9 +736,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   }}
                 >
                   <span style={{ display: "flex", alignItems: "center", color: isActive ? "#FCAE91" : "#CCCCCC", transition: "color 0.15s" }}>
-                    {TAB_ICONS[tab.id]}
+                    {TAB_ICONS[tabId]}
                   </span>
-                  {tab.label}
+                  {t(`staff:editModal.tabs.${tabId}`)}
                 </button>
               );
             })}
@@ -715,7 +753,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {/* Photo upload */}
                   <div>
-                    <FieldLabel>Фото</FieldLabel>
+                    <FieldLabel>{t("common:fields.photo")}</FieldLabel>
                     <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                       {/* Avatar preview */}
                       <div style={{
@@ -739,7 +777,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           borderRadius: "10px", fontSize: "12px", fontWeight: 600, color: "#555",
                           cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
                         }}>
-                          {photoPreview ? "Заменить фото" : "Загрузить фото"}
+                          {photoPreview ? t("staff:editModal.profile.replacePhoto") : t("staff:editModal.profile.uploadPhoto")}
                         </button>
                         {photoPreview && (
                           <button type="button" onClick={removePhoto} style={{
@@ -748,7 +786,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             fontSize: "11px", fontWeight: 600, color: "#D88C9A",
                             cursor: "pointer", fontFamily: "Manrope, sans-serif",
                           }}>
-                            Удалить фото
+                            {t("staff:editModal.profile.removePhoto")}
                           </button>
                         )}
                       </div>
@@ -757,18 +795,18 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
                   {/* Name */}
                   <div>
-                    <FieldLabel>Полное имя *</FieldLabel>
-                    <FocusInput value={form.name} onChange={v => set("name", v)} placeholder="Имя Фамилия" />
+                    <FieldLabel>{t("common:fields.fullName")} *</FieldLabel>
+                    <FocusInput value={form.name} onChange={v => set("name", v)} placeholder={t("staff:editModal.profile.namePlaceholder")} />
                   </div>
 
                   {/* Phone + Email in a row */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                     <div>
-                      <FieldLabel>Телефон</FieldLabel>
+                      <FieldLabel>{t("common:fields.phone")}</FieldLabel>
                       <FocusInput type="tel" value={form.phone} onChange={v => set("phone", v)} placeholder="+7 900 000-00-00" />
                     </div>
                     <div>
-                      <FieldLabel>Email</FieldLabel>
+                      <FieldLabel>{t("common:fields.email")}</FieldLabel>
                       <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" />
                     </div>
                   </div>
@@ -783,7 +821,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
                     <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
-                      Сотруднику придёт уведомление об изменениях на указанный телефон или email.
+                      {t("staff:editModal.profile.notifyHint")}
                     </p>
                   </div>
                 </div>
@@ -793,7 +831,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               {activeTab === "role" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                   <div>
-                    <FieldLabel>Должность</FieldLabel>
+                    <FieldLabel>{t("common:fields.position")}</FieldLabel>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px", marginBottom: "10px" }}>
                       {PRESET_ROLES.map(r => {
                         const isSelected = form.role === r.id;
@@ -802,7 +840,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             onClick={() => {
                               const nr = form.role === r.id ? "" : r.id;
                               set("role", nr);
-                              if (nr && PRESET_SERVICES[nr]) set("services", [...PRESET_SERVICES[nr]]);
+                              set("department", nr ? (ROLE_TO_DEPT_KEY[nr] ?? "") : "");
+                              const autoSvcs = nr ? getPresetServices(t, nr) : [];
+                              if (autoSvcs.length) set("services", autoSvcs);
                             }}
                             style={{
                               padding: "11px 6px",
@@ -835,7 +875,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               {ROLE_ICONS[r.id]}
                             </span>
                             <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "#1A1A1A" : "#888", textAlign: "center", lineHeight: 1.2 }}>
-                              {r.label}
+                              {t(`staff:roles.${r.id}`)}
                             </span>
                           </button>
                         );
@@ -844,13 +884,13 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <FocusInput
                       value={PRESET_ROLES.find(r => r.id === form.role) ? "" : form.role}
                       onChange={v => set("role", v)}
-                      placeholder="Или введите свою должность..."
+                      placeholder={t("staff:editModal.role.positionPlaceholder")}
                     />
                   </div>
 
                   {/* Services */}
                   <div>
-                    <FieldLabel>Услуги ({form.services.length})</FieldLabel>
+                    <FieldLabel>{t("common:fields.services")} ({form.services.length})</FieldLabel>
                     {presetSvcs.length > 0 && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
                         {presetSvcs.map(svc => {
@@ -895,7 +935,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       <FocusInput
                         value={customSvcInput} onChange={setCustomSvcInput}
                         onKeyDown={handleSvcKeyDown}
-                        placeholder="Добавить услугу — Enter ↵"
+                        placeholder={t("staff:editModal.role.addServicePlaceholder")}
                       />
                       {customSvcInput && (
                         <div style={{
@@ -921,44 +961,44 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     textAlign: "center",
                   }}>
                     <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAAAAA", textTransform: "uppercase", letterSpacing: "0.6px", margin: "0 0 6px" }}>
-                      Текущее вознаграждение
+                      {t("staff:editModal.salary.currentLabel")}
                     </p>
                     <div style={{ fontSize: "36px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-1.5px", lineHeight: 1 }}>
                       {form.salary || "—"}
                       <span style={{ fontSize: "16px", fontWeight: 600, color: "#AAAAAA", marginLeft: "6px" }}>
-                        {form.salaryType === "percent" ? "%" : form.salaryType === "hourly" ? "₽/ч" : form.salary ? "₽" : ""}
+                        {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? "₽/ч" : form.salary ? "₽" : ""}
                       </span>
                     </div>
                     <p style={{ fontSize: "12px", color: "#BBBBBB", margin: "6px 0 0" }}>
-                      {form.salaryType === "fixed" ? "Ежемесячный оклад"
-                        : form.salaryType === "percent" ? "Процент от выручки"
-                        : form.salaryType === "hourly" ? "Почасовая оплата"
-                        : "Тип не выбран"}
+                      {form.rate_type === "fixed" ? t("staff:editModal.salary.typeFixed")
+                        : form.rate_type === "percent" ? t("staff:editModal.salary.typePercent")
+                        : form.rate_type === "hourly" ? t("staff:editModal.salary.typeHourly")
+                        : t("staff:editModal.salary.typeNotSet")}
                     </p>
                   </div>
 
                   {/* Type selector */}
                   <div>
-                    <FieldLabel>Тип вознаграждения</FieldLabel>
+                    <FieldLabel>{t("staff:editModal.salary.typeLabel")}</FieldLabel>
                     <div style={{ display: "flex", gap: "8px" }}>
                       {[
                         {
-                          id: "fixed", label: "Оклад", sub: "Фиксированный",
+                          id: "fixed", label: t("common:salary.fixed"), sub: t("staff:editModal.salary.cardFixedSub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
                         },
                         {
-                          id: "percent", label: "Процент", sub: "% от выручки",
+                          id: "percent", label: t("common:salary.percent"), sub: t("staff:editModal.salary.cardPercentSub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>,
                         },
                         {
-                          id: "hourly", label: "Почасовая", sub: "За каждый час",
+                          id: "hourly", label: t("common:salary.hourly"), sub: t("staff:editModal.salary.cardHourlySub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
                         },
                       ].map(({ id, label, sub, icon }) => { // Деструктурируем свойства сразу здесь
-                        const isOn = form.salaryType === id;
+                        const isOn = form.rate_type === id;
                         return (
                           <button key={id} type="button" className="ei-salary-type"
-                            onClick={() => set("salaryType", id as any)} // id передаем сюда
+                            onClick={() => set("rate_type", id as any)} // id передаем сюда
                             style={{
                               flex: 1, padding: "13px 10px",
                               background: isOn ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.02)",
@@ -978,19 +1018,19 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   </div>
 
                   {/* Amount input */}
-                  {form.salaryType && (
+                  {form.rate_type && (
                     <div style={{ animation: "eiSlideIn 0.2s ease" }}>
                       <FieldLabel>
-                        {form.salaryType === "fixed" ? "Сумма в месяц (₽)"
-                          : form.salaryType === "percent" ? "Процент от выручки (%)"
-                          : "Ставка в час (₽)"}
+                        {form.rate_type === "fixed" ? t("staff:editModal.salary.amountFixed")
+                          : form.rate_type === "percent" ? t("staff:editModal.salary.amountPercent")
+                          : t("staff:editModal.salary.amountHourly")}
                       </FieldLabel>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <div style={{ flex: 1, position: "relative" }}>
                           <FocusInput
                             type="number" value={form.salary}
                             onChange={v => set("salary", v)}
-                            placeholder={form.salaryType === "percent" ? "25" : form.salaryType === "hourly" ? "500" : "50000"}
+                            placeholder={form.rate_type === "percent" ? "25" : form.rate_type === "hourly" ? "500" : "50000"}
                           />
                         </div>
                         <div style={{
@@ -1000,7 +1040,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           borderRadius: "12px", fontSize: "16px", fontWeight: 800, color: "#C07060",
                           flexShrink: 0, minWidth: "50px", textAlign: "center",
                         }}>
-                          {form.salaryType === "percent" ? "%" : form.salaryType === "hourly" ? "₽/ч" : "₽"}
+                          {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? "₽/ч" : "₽"}
                         </div>
                       </div>
                     </div>
@@ -1016,7 +1056,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
                     <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
-                      Зарплата отображается в финансовых отчётах. Сотрудник видит только своё вознаграждение.
+                      {t("staff:editModal.salary.reportHint")}
                     </p>
                   </div>
                 </div>
@@ -1028,8 +1068,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   {/* Stats row */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                     {[
-                      { label: "Рабочих дней",  value: `${enabledDays} из 7` },
-                      { label: "Общих часов",   value: (() => {
+                      { label: t("staff:editModal.schedule.workDaysLabel"), value: `${enabledDays} / 7` },
+                      { label: t("staff:editModal.schedule.totalHoursLabel"), value: (() => {
                         let total = 0;
                         Object.values(form.schedule).forEach(d => {
                           if (!d.enabled) return;
@@ -1037,9 +1077,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           const [th, tm] = d.to.split(":").map(Number);
                           total += (th * 60 + tm - fh * 60 - fm);
                         });
-                        return `${Math.round(total / 60)}ч`;
+                        return `${Math.round(total / 60)}${t("staff:editModal.schedule.hoursSuffix")}`;
                       })() },
-                      { label: "Выходных",      value: `${7 - enabledDays}` },
+                      { label: t("staff:editModal.schedule.daysOffLabel"), value: `${7 - enabledDays}` },
                     ].map(s => (
                       <div key={s.label} style={{
                         padding: "12px 10px", borderRadius: "12px",
@@ -1085,7 +1125,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             fontWeight: d.enabled ? 600 : 400,
                             color: d.enabled ? "#1A1A1A" : "#C0C0C0",
                             transition: "all 0.15s",
-                          }}>{day.label}</span>
+                          }}>{t(`common:days.${day.key}`)}</span>
 
                           {/* Time */}
                           {d.enabled ? (
@@ -1113,7 +1153,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               </div>
                             </div>
                           ) : (
-                            <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1 }}>Выходной</span>
+                            <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1 }}>{t("staff:schedule.dayOff")}</span>
                           )}
                         </div>
                       );
@@ -1138,7 +1178,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               fontSize: "13px", fontWeight: 600, color: "#888",
               cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
             }}>
-              Отмена
+              {t("common:buttons.cancel")}
             </button>
 
             <button
@@ -1166,15 +1206,15 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" style={{ animation: "spin 0.8s linear infinite" }}>
                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                   </svg>
-                  Сохраняем...
+                  {t("common:buttons.saving")}
                 </>
               ) : saved ? (
                 <span style={{ animation: "eiSavedIn 0.3s cubic-bezier(0.34,1.1,0.64,1)" }}>
-                  ✓ Изменения сохранены
+                  ✓ {t("common:buttons.saved")}
                 </span>
               ) : (
                 <>
-                  Сохранить изменения
+                  {t("common:buttons.saveChanges")}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                     <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -1188,6 +1228,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
       <style>{`
         @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }

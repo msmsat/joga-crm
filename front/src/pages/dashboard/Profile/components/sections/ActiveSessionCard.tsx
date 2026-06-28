@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { UserAccount } from '../../types';
 
 interface Props {
@@ -5,6 +6,7 @@ interface Props {
 }
 
 export default function ActiveSessionCard({ accounts }: Props) {
+  const { t } = useTranslation(["profile", "staff"]);
   return (
     <div style={{
       padding: '32px', borderRadius: '24px',
@@ -28,13 +30,13 @@ export default function ActiveSessionCard({ accounts }: Props) {
 
           <div style={{ flex: 1 }}>
             <div style={{ display: 'inline-block', padding: '4px 12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '100px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.9)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Текущая сессия
+              {t("profile:session.current")}
             </div>
             <div style={{ fontSize: '24px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.5px' }}>{activeAcc.name}</div>
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               {activeAcc.email}
               <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'rgba(255,255,255,0.3)' }} />
-              {activeAcc.role}
+              {t(`staff:roles.${activeAcc.role}`, { defaultValue: activeAcc.role })}
             </div>
           </div>
         </div>

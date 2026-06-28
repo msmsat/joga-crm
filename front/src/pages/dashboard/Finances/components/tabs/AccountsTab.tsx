@@ -57,7 +57,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
     const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
     setAccounts(prev => [...prev, {
       id: Date.now(), name: newName.trim(), type: newType,
-      balance: numBalance, change: 0, color: colors[prev.length % colors.length], isSystem: false,
+      balance: numBalance, daily_change: 0, color: colors[prev.length % colors.length], is_system: false,
     }]);
     setNewName(''); setNewBalance(''); setNewType('cash'); setAddOpen(false);
     showToast('Копилка успешно создана', 'success');
@@ -79,7 +79,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
           <div style={{ fontSize: '40px', fontWeight: 800, letterSpacing: '-2px', color: '#1A1A1A', lineHeight: 1 }}>{fmt(total)}</div>
           <div style={{ marginTop: '12px' }}>
             <span style={{ fontSize: '12px', color: '#5BAB72', fontWeight: 700, background: 'rgba(163,201,168,0.12)', padding: '5px 14px', borderRadius: '20px' }}>
-              ↑ +{fmt(accounts.reduce((s, a) => s + a.change, 0))} за сегодня
+              ↑ +{fmt(accounts.reduce((s, a) => s + a.daily_change, 0))} за сегодня
             </span>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
                     <input type="text" value={editName} placeholder="Название" onChange={e => setEditName(e.target.value)} onFocus={() => setIsEditInputFocused(true)} onBlur={() => setIsEditInputFocused(false)} style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isEditInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A', outline: 'none', boxShadow: isEditInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }} />
                     <input type="text" value={editBalance} placeholder="Баланс, ₽" onChange={e => handleNumberInput(e.target.value, setEditBalance)} onFocus={() => setIsEditBalanceFocused(true)} onBlur={() => setIsEditBalanceFocused(false)} style={{ width: '90px', padding: '10px 12px', background: '#FDFCFB', border: isEditBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isEditBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }} />
                   </div>
-                  {!acc.isSystem && (
+                  {!acc.is_system && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '16px' }}>
                       {[{ id: 'cash', icon: <Ico.Cash />, label: 'Наличные' }, { id: 'bank', icon: <Ico.Card />, label: 'Карта' }, { id: 'online', icon: <Ico.World />, label: 'Сеть' }].map(btn => (
                         <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : '#666666', transition: 'all 0.15s' }}>
@@ -166,18 +166,18 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', paddingTop: '4px' }}>
                     <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       {acc.name}
-                      {acc.isSystem && <span style={{ background: 'rgba(26,26,26,0.05)', color: '#666', padding: '2px 6px', borderRadius: '4px', fontSize: '8.5px', fontWeight: 800 }}>СИСТЕМА</span>}
+                      {acc.is_system && <span style={{ background: 'rgba(26,26,26,0.05)', color: '#666', padding: '2px 6px', borderRadius: '4px', fontSize: '8.5px', fontWeight: 800 }}>СИСТЕМА</span>}
                     </div>
                     <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: acc.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc.color }}><TypeIcon /></div>
                   </div>
                   <div style={{ fontSize: '28px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.5px', color: '#1A1A1A' }}>{fmt(acc.balance)}</div>
-                  <div style={{ fontSize: '11px', color: '#5BAB72', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><Ico.Up /> +{fmt(acc.change)} сегодня</div>
+                  <div style={{ fontSize: '11px', color: '#5BAB72', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><Ico.Up /> +{fmt(acc.daily_change)} сегодня</div>
 
                   {isSelected && (
                     <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(26,26,26,0.05)', display: 'flex', gap: '6px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
                       <Btn size="sm" onClick={() => { setHistoryId(null); setEditingId(acc.id); setEditName(acc.name); setEditBalance(acc.balance.toString()); setEditType(acc.type); }}><Ico.Edit />Изменить</Btn>
                       <Btn size="sm" onClick={() => { setEditingId(null); setHistoryId(acc.id); }}><Ico.Bar />История</Btn>
-                      {!acc.isSystem && (
+                      {!acc.is_system && (
                         <Btn size="sm" v="danger" onClick={() => handleDelete(acc.id)}><Ico.Trash /></Btn>
                       )}
                     </div>

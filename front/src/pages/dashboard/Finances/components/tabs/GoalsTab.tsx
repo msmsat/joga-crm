@@ -19,12 +19,34 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   const [fundAmount, setFundAmount] = useState('');
   const [isFundFocused, setIsFundFocused] = useState(false);
 
+  const [editingGoalId, setEditingGoalId] = useState<number | null>(null);
+  const [editGTitle, setEditGTitle] = useState('');
+  const [editGTarget, setEditGTarget] = useState('');
+  const [editGDeadline, setEditGDeadline] = useState('');
+  const [editGFocused, setEditGFocused] = useState<string | null>(null);
+
+  const openGoalEdit = (g: typeof goals[0]) => { setEditingGoalId(g.id); setEditGTitle(g.title); setEditGTarget(String(g.target_amount)); setEditGDeadline(g.deadline ?? ''); };
+  const saveGoalEdit = (g: typeof goals[0]) => {
+    if (!editGTitle.trim()) { showToast('Введите название', 'error'); return; }
+    const target_amount = parseInt(editGTarget) || g.target_amount;
+    setGoals(prev => prev.map(goal => goal.id === g.id ? { ...goal, title: editGTitle.trim(), target_amount, deadline: editGDeadline.trim() || goal.deadline } : goal));
+    setEditingGoalId(null);
+    showToast('Цель обновлена', 'success');
+  };
+  const gInp = (key: string): React.CSSProperties => ({
+    width: '100%', padding: '8px 12px', background: '#FDFCFB',
+    border: editGFocused === key ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)',
+    borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A',
+    outline: 'none', boxShadow: editGFocused === key ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
+    transition: 'border-color 0.18s, box-shadow 0.18s', fontFamily: 'var(--font)', boxSizing: 'border-box' as const,
+  });
+
   const handleAdd = () => {
     if (!form.title.trim() || !form.target) { showToast('Заполните название и сумму', 'error'); return; }
     const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
     setGoals(prev => [{
-      id: Date.now(), title: form.title, target: parseInt(form.target),
-      current: 0, deadline: form.deadline || 'Без срока',
+      id: Date.now(), title: form.title, target_amount: parseInt(form.target),
+      current_amount: 0, deadline: form.deadline || null,
       category: form.category || 'Прочее', color: colors[prev.length % colors.length],
       priority: form.priority, trackingMode: form.trackingMode as 'auto' | 'manual'
     }, ...prev]);
@@ -42,7 +64,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   const handleFund = (id: number) => {
     const val = parseInt(fundAmount) || 0;
     if (val <= 0) return;
-    setGoals(prev => prev.map(g => g.id === id ? { ...g, current: g.current + val } : g));
+    setGoals(prev => prev.map(g => g.id === id ? { ...g, current_amount: g.current_amount + val } : g));
     setFundGoalId(null);
     setFundAmount('');
     showToast('Средства успешно внесены', 'success');
@@ -53,9 +75,9 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   const priorityColors: Record<string, string> = { high: '#D88C9A', medium: '#F0C060', low: '#A3C9A8' };
   const priorityLabels: Record<string, string> = { high: 'Высокий приоритет', medium: 'Средний приоритет', low: 'Низкий приоритет' };
 
-  const activeGoals = goals.filter(g => g.current < g.target).length;
-  const doneGoals = goals.filter(g => g.current >= g.target).length;
-  const avgProgress = Math.round(goals.reduce((s, g) => s + Math.min(g.current / g.target * 100, 100), 0) / (goals.length || 1));
+  const activeGoals = goals.filter(g => g.current_amount < g.target_amount).length;
+  const doneGoals = goals.filter(g => g.current_amount >= g.target_amount).length;
+  const avgProgress = Math.round(goals.reduce((s, g) => s + Math.min(g.current_amount / g.target_amount * 100, 100), 0) / (goals.length || 1));
 
   return (
     <>
@@ -154,58 +176,91 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
       {/* 4. Список целей */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
         {goals.map(g => {
-          const pct = Math.min(Math.round(g.current / g.target * 100), 100);
+          const pct = Math.min(Math.round(g.current_amount / g.target_amount * 100), 100);
           const done = pct >= 100;
           const pcol = priorityColors[g.priority] || '#999';
           const isFunding = fundGoalId === g.id;
 
           return (
             <div key={g.id} className={styles.goalCard} style={{ background: done ? 'rgba(163,201,168,0.03)' : '#FFFFFF', border: done ? '1px solid rgba(163,201,168,0.4)' : '1px solid rgba(26,26,26,0.15)', borderRadius: '16px', padding: '24px', transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    {done && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 800, color: '#4E885B', background: 'rgba(163,201,168,0.2)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}><Ico.Check /> Цель достигнута</span>}
-                    {!done && <span style={{ fontSize: '10px', fontWeight: 800, color: pcol, background: pcol + '15', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>{priorityLabels[g.priority]}</span>}
-                    {g.trackingMode === 'auto' && !done && <span style={{ fontSize: '10px', fontWeight: 800, color: '#666', background: 'rgba(26,26,26,0.06)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>Авто-сбор</span>}
-                  </div>
-                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px', lineHeight: 1.3 }}>{g.title}</div>
-                  <div style={{ fontSize: '12px', color: '#999999', fontWeight: 500 }}>Крайний срок: {g.deadline}</div>
-                </div>
-                <button onClick={() => setConfirm({ open: true, id: g.id })} style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; e.currentTarget.style.color = '#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }} title="Удалить цель">
-                  <Ico.Trash />
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{fmt(g.current)} <span style={{ color: '#999', fontWeight: 500 }}>/ {fmt(g.target)}</span></div>
-              </div>
-              <div style={{ height: '12px', background: 'rgba(26,26,26,0.04)', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(26,26,26,0.02)' }}>
-                <div style={{ width: `${pct}%`, height: '100%', background: done ? '#5BAB72' : g.color, borderRadius: '12px', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
-              </div>
-
-              {!done && (
-                <div style={{ borderTop: '1px dashed rgba(26,26,26,0.08)', paddingTop: '16px' }}>
-                  {g.trackingMode === 'manual' ? (
-                    isFunding ? (
-                      <div className={styles.morphContainer} style={{ display: 'flex', gap: '8px' }}>
-                        <input
-                          type="text" value={fundAmount} placeholder="Сумма, ₽" autoFocus
-                          onChange={e => handleNumberInput(e.target.value, setFundAmount)}
-                          onFocus={() => setIsFundFocused(true)} onBlur={() => setIsFundFocused(false)}
-                          style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isFundFocused ? `1.5px solid ${g.color}` : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
-                        />
-                        <button onClick={() => handleFund(g.id)} disabled={!fundAmount} style={{ padding: '0 16px', background: fundAmount ? g.color : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: fundAmount ? 'pointer' : 'not-allowed', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }}>Внести</button>
-                        <button onClick={() => setFundGoalId(null)} style={{ width: '36px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.X /></button>
+              {editingGoalId === g.id ? (
+                <div key="edit" className={styles.morphContainer}>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', marginBottom: '14px' }}>Редактировать цель</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                    <div>
+                      <div style={{ fontSize: '10px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>Название</div>
+                      <input value={editGTitle} onChange={e => setEditGTitle(e.target.value)} onFocus={() => setEditGFocused('title')} onBlur={() => setEditGFocused(null)} placeholder="Название цели" style={gInp('title')} />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '10px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>Сумма, ₽</div>
+                        <input type="number" value={editGTarget} onChange={e => setEditGTarget(e.target.value)} onFocus={() => setEditGFocused('target')} onBlur={() => setEditGFocused(null)} placeholder="0" min="0" style={gInp('target')} />
                       </div>
-                    ) : (
-                      <button onClick={() => setFundGoalId(g.id)} style={{ width: '100%', padding: '12px', background: g.color + '15', border: 'none', borderRadius: '10px', color: g.color, fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = g.color + '25'} onMouseLeave={e => e.currentTarget.style.background = g.color + '15'}>
-                        <Ico.Plus /> Внести средства
+                      <div>
+                        <div style={{ fontSize: '10px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>Дедлайн</div>
+                        <input value={editGDeadline} onChange={e => setEditGDeadline(e.target.value)} onFocus={() => setEditGFocused('deadline')} onBlur={() => setEditGFocused(null)} placeholder="Без срока" style={gInp('deadline')} />
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => saveGoalEdit(g)} style={{ padding: '8px 16px', background: '#F9A08B', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = '#f08070'} onMouseLeave={e => e.currentTarget.style.background = '#F9A08B'}>Сохранить</button>
+                    <button onClick={() => setEditingGoalId(null)} style={{ padding: '8px 12px', background: 'transparent', border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: '#666666', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'}>Отмена</button>
+                  </div>
+                </div>
+              ) : (
+                <div key="view">
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        {done && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 800, color: '#4E885B', background: 'rgba(163,201,168,0.2)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}><Ico.Check /> Цель достигнута</span>}
+                        {!done && <span style={{ fontSize: '10px', fontWeight: 800, color: pcol, background: pcol + '15', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>{priorityLabels[g.priority]}</span>}
+                        {g.trackingMode === 'auto' && !done && <span style={{ fontSize: '10px', fontWeight: 800, color: '#666', background: 'rgba(26,26,26,0.06)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>Авто-сбор</span>}
+                      </div>
+                      <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px', lineHeight: 1.3 }}>{g.title}</div>
+                      <div style={{ fontSize: '12px', color: '#999999', fontWeight: 500 }}>Крайний срок: {g.deadline ?? 'Без срока'}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button onClick={() => openGoalEdit(g)} style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,160,139,0.1)'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }} title="Редактировать">
+                        <Ico.Edit />
                       </button>
-                    )
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '11px', fontWeight: 600 }}>
-                      <Ico.Bar /> Значение обновляется автоматически из модуля Отчетов
+                      <button onClick={() => setConfirm({ open: true, id: g.id })} style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#FFF5F5'; e.currentTarget.style.color = '#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }} title="Удалить цель">
+                        <Ico.Trash />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{fmt(g.current_amount)} <span style={{ color: '#999', fontWeight: 500 }}>/ {fmt(g.target_amount)}</span></div>
+                  </div>
+                  <div style={{ height: '12px', background: 'rgba(26,26,26,0.04)', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(26,26,26,0.02)' }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: done ? '#5BAB72' : g.color, borderRadius: '12px', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
+                  </div>
+
+                  {!done && (
+                    <div style={{ borderTop: '1px dashed rgba(26,26,26,0.08)', paddingTop: '16px' }}>
+                      {g.trackingMode === 'manual' ? (
+                        isFunding ? (
+                          <div className={styles.morphContainer} style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                              type="text" value={fundAmount} placeholder="Сумма, ₽" autoFocus
+                              onChange={e => handleNumberInput(e.target.value, setFundAmount)}
+                              onFocus={() => setIsFundFocused(true)} onBlur={() => setIsFundFocused(false)}
+                              style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isFundFocused ? `1.5px solid ${g.color}` : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
+                            />
+                            <button onClick={() => handleFund(g.id)} disabled={!fundAmount} style={{ padding: '0 16px', background: fundAmount ? g.color : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: fundAmount ? 'pointer' : 'not-allowed', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }}>Внести</button>
+                            <button onClick={() => setFundGoalId(null)} style={{ width: '36px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.X /></button>
+                          </div>
+                        ) : (
+                          <button onClick={() => setFundGoalId(g.id)} style={{ width: '100%', padding: '12px', background: g.color + '15', border: 'none', borderRadius: '10px', color: g.color, fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = g.color + '25'} onMouseLeave={e => e.currentTarget.style.background = g.color + '15'}>
+                            <Ico.Plus /> Внести средства
+                          </button>
+                        )
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '11px', fontWeight: 600 }}>
+                          <Ico.Bar /> Значение обновляется автоматически из модуля Отчетов
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

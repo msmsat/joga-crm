@@ -24,7 +24,7 @@ interface GridProps {
   newBookingSlot: { trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null; // 🔥 Добавили columnIndex
   newForm: { title: string; hall: string; maxClients: string };
   previewRef: React.RefObject<HTMLDivElement | null>;
-  initDrag: (e: React.MouseEvent, id: string, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
+  initDrag: (e: React.MouseEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;

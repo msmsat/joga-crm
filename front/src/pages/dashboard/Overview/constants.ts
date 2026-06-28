@@ -1,4 +1,4 @@
-import type { MetricConfig, RecentEvent } from './types';
+import type { MetricConfig, RecentEvent, Task } from './types';
 
 export const METRICS: MetricConfig[] = [
   {
@@ -67,20 +67,22 @@ export const chartData = {
   },
 };
 
+const ago = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
+
 export const RECENT_EVENTS: RecentEvent[] = [
-  { id: 1,  type: 'booking', actor: 'Мария К.',        action: 'записалась на пилатес',     time: '2 мин. назад',  color: '#FCAE91' },
-  { id: 2,  type: 'payment', actor: 'Оплата ₽3 500',   action: 'от Елены Соколовой',        time: '14 мин. назад', color: '#5BAB72' },
-  { id: 3,  type: 'system',  actor: 'Дмитрий П.',      action: 'активировал абонемент',      time: '38 мин. назад', color: '#4A80C4' },
-  { id: 4,  type: 'cancel',  actor: 'Отмена записи',   action: '— Наталья Б. (18:00)',       time: '1 час назад',   color: '#D88C9A' },
-  { id: 5,  type: 'system',  actor: 'Новый VIP клиент',action: '— Алексей Морозов',          time: '2 часа назад',  color: '#f0c040' },
-  { id: 6,  type: 'booking', actor: 'Анна С.',          action: 'записалась на стретчинг',    time: '3 ч назад',     color: '#FCAE91' },
-  { id: 7,  type: 'payment', actor: 'Оплата ₽5 000',   action: 'от Ирины Власовой',          time: '4 ч назад',     color: '#5BAB72' },
-  { id: 8,  type: 'cancel',  actor: 'Отмена записи',   action: '— Кирилл Н. (10:00)',        time: '5 ч назад',     color: '#D88C9A' },
-  { id: 9,  type: 'system',  actor: 'Виктория Л.',      action: 'активировала безлимит',      time: '6 ч назад',     color: '#4A80C4' },
-  { id: 10, type: 'booking', actor: 'Полина М.',        action: 'записалась на йогу',          time: '7 ч назад',     color: '#FCAE91' },
-  { id: 11, type: 'payment', actor: 'Оплата ₽2 200',   action: 'от Максима Сидорова',        time: '8 ч назад',     color: '#5BAB72' },
-  { id: 12, type: 'system',  actor: 'Новый клиент',     action: '— Светлана Козлова',         time: '9 ч назад',     color: '#f0c040' },
-  { id: 13, type: 'cancel',  actor: 'Отмена записи',   action: '— Елена Г. (14:30)',         time: '10 ч назад',    color: '#D88C9A' },
+  { id: 1,  event_type: 'booking', actor_name: 'Мария К.',        title: 'записалась на пилатес',     created_at: ago(2),    color: '#FCAE91', entity_type: null },
+  { id: 2,  event_type: 'payment', actor_name: 'Оплата ₽3 500',   title: 'от Елены Соколовой',        created_at: ago(14),   color: '#5BAB72', entity_type: null },
+  { id: 3,  event_type: 'system',  actor_name: 'Дмитрий П.',      title: 'активировал абонемент',      created_at: ago(38),   color: '#4A80C4', entity_type: null },
+  { id: 4,  event_type: 'cancel',  actor_name: 'Отмена записи',   title: '— Наталья Б. (18:00)',       created_at: ago(60),   color: '#D88C9A', entity_type: null },
+  { id: 5,  event_type: 'system',  actor_name: 'Новый VIP клиент',title: '— Алексей Морозов',          created_at: ago(120),  color: '#f0c040', entity_type: null },
+  { id: 6,  event_type: 'booking', actor_name: 'Анна С.',         title: 'записалась на стретчинг',    created_at: ago(180),  color: '#FCAE91', entity_type: null },
+  { id: 7,  event_type: 'payment', actor_name: 'Оплата ₽5 000',  title: 'от Ирины Власовой',          created_at: ago(240),  color: '#5BAB72', entity_type: null },
+  { id: 8,  event_type: 'cancel',  actor_name: 'Отмена записи',   title: '— Кирилл Н. (10:00)',        created_at: ago(300),  color: '#D88C9A', entity_type: null },
+  { id: 9,  event_type: 'system',  actor_name: 'Виктория Л.',     title: 'активировала безлимит',      created_at: ago(360),  color: '#4A80C4', entity_type: null },
+  { id: 10, event_type: 'booking', actor_name: 'Полина М.',       title: 'записалась на йогу',         created_at: ago(420),  color: '#FCAE91', entity_type: null },
+  { id: 11, event_type: 'payment', actor_name: 'Оплата ₽2 200',  title: 'от Максима Сидорова',        created_at: ago(480),  color: '#5BAB72', entity_type: null },
+  { id: 12, event_type: 'system',  actor_name: 'Новый клиент',    title: '— Светлана Козлова',         created_at: ago(540),  color: '#f0c040', entity_type: null },
+  { id: 13, event_type: 'cancel',  actor_name: 'Отмена записи',   title: '— Елена Г. (14:30)',         created_at: ago(600),  color: '#D88C9A', entity_type: null },
 ];
 
 export const svcs: [string, number, string][] = [
@@ -96,11 +98,11 @@ export const trainers: [string, string, number][] = [
   ['Михаил В.',  '#40a8a0', 68],
 ];
 
-export const TASKS = [
-  { id: 1, text: 'Позвонить клиентке Анне П. по вопросу продления', priority: 'high'   as const, tag: 'Клиент'   },
-  { id: 2, text: 'Продлить абонемент #445 — Елена Соколова',        priority: 'high'   as const, tag: 'Финансы'  },
-  { id: 3, text: 'Ответить на заявку из Instagram (3 новых)',        priority: 'medium' as const, tag: 'Лиды'     },
-  { id: 4, text: 'Сформировать недельный отчёт по загрузке',        priority: 'medium' as const, tag: 'Отчёты'   },
-  { id: 5, text: 'Обновить расписание на июль',                     priority: 'low'    as const, tag: 'Журнал'   },
-  { id: 6, text: 'Написать Михаилу В. про замену в пятницу',        priority: 'low'    as const, tag: 'Персонал' },
+export const TASKS: Task[] = [
+  { id: 1, text: 'Позвонить клиентке Анне П. по вопросу продления', priority: 'high',   tag: 'Клиент',   is_done: false, done_at: null, created_at: ago(1440) },
+  { id: 2, text: 'Продлить абонемент #445 — Елена Соколова',        priority: 'high',   tag: 'Финансы',  is_done: false, done_at: null, created_at: ago(1380) },
+  { id: 3, text: 'Ответить на заявку из Instagram (3 новых)',        priority: 'medium', tag: 'Лиды',     is_done: false, done_at: null, created_at: ago(1320) },
+  { id: 4, text: 'Сформировать недельный отчёт по загрузке',        priority: 'medium', tag: 'Отчёты',   is_done: false, done_at: null, created_at: ago(1260) },
+  { id: 5, text: 'Обновить расписание на июль',                     priority: 'low',    tag: 'Журнал',   is_done: false, done_at: null, created_at: ago(1200) },
+  { id: 6, text: 'Написать Михаилу В. про замену в пятницу',        priority: 'low',    tag: 'Персонал', is_done: false, done_at: null, created_at: ago(1140) },
 ];

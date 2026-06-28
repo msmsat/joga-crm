@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAccounts } from './hooks/useAccounts';
 import { useProfileForm } from './hooks/useProfileForm';
 import LinkedAccounts from './components/sections/LinkedAccounts';
@@ -9,6 +10,7 @@ import Toast from './components/ui/Toast';
 import { icons } from './components/ui/ProfileIcons';
 
 export default function Profile() {
+  const { t } = useTranslation(["profile", "common"]);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const triggerToast = (msg: string) => {
@@ -36,8 +38,8 @@ export default function Profile() {
             {icons.shield}
           </div>
           <div>
-            <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.8px', margin: '0 0 4px 0' }}>Ваш профиль</h1>
-            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, fontWeight: 500 }}>Управление личными данными и сессиями</p>
+            <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.8px', margin: '0 0 4px 0' }}>{t("profile:page.title")}</h1>
+            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, fontWeight: 500 }}>{t("profile:page.sub")}</p>
           </div>
         </div>
 

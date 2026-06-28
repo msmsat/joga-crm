@@ -10,7 +10,7 @@ function formatTime(date: Date) {
 }
 
 export default function MessageBubble({ message }: MessageBubbleProps) {
-  const isAI = message.role === 'ai';
+  const isAI = message.role === 'assistant';
 
   if (isAI) {
     if (!message.text) return null;

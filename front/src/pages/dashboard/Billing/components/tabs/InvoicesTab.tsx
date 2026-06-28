@@ -2,6 +2,16 @@ import styles from '../../Billing.module.css';
 import { TrendingIcon, HistoryIcon, DownloadIcon } from '../ui/BillingIcons';
 import { invoices } from '../../constants';
 
+function fmtAmount(n: number): string {
+  return `₽${n.toLocaleString('ru-RU')}`;
+}
+
+function fmtDate(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+}
+
 const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
 function getBarValue(i: number): number {
@@ -65,7 +75,19 @@ export default function InvoicesTab() {
             <HistoryIcon />
             <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>История платежей</span>
           </div>
-          <button style={{ padding: '8px 16px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s ease' }}>
+          <button
+            onClick={() => {
+              const headers = ['Дата', 'Описание', 'Сумма', 'Статус'];
+              const rows = invoices.map(inv => [fmtDate(inv.paid_at), inv.plan_name, fmtAmount(inv.amount), 'Оплачено']);
+              const csv = '﻿' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url; a.download = 'velora_invoices.csv';
+              document.body.appendChild(a); a.click(); document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}
+            style={{ padding: '8px 16px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s ease' }}>
             <DownloadIcon />Экспорт CSV
           </button>
         </div>
@@ -83,11 +105,19 @@ export default function InvoicesTab() {
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(252,174,145,0.03)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{inv.date}</div>
-            <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>{inv.desc}</div>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{inv.amount}</div>
+            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{fmtDate(inv.paid_at)}</div>
+            <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>{inv.plan_name}</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{fmtAmount(inv.amount)}</div>
             <div>
-              <button style={{ padding: '5px 12px', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                onClick={() => {
+                  const win = window.open('', '_blank');
+                  if (!win) return;
+                  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Счёт — ${inv.plan_name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',Arial,sans-serif;padding:48px;color:#1A1A1A;max-width:600px}h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}h1 span{color:#F9A08B}.sub{color:#666;font-size:13px;margin-bottom:40px;margin-top:2px}.divider{height:1px;background:#eee;margin:28px 0}table{width:100%;border-collapse:collapse}td{padding:13px 0;border-bottom:1px solid #f0f0f0;font-size:14px}td:last-child{text-align:right;font-weight:700}.total td{font-size:16px;font-weight:800;border-bottom:none;padding-top:22px}.badge{display:inline-block;padding:3px 10px;border-radius:20px;background:#A3C9A822;color:#2A6B35;font-size:11px;font-weight:700;border:1px solid #A3C9A8}.footer{margin-top:40px;font-size:11px;color:#999;line-height:1.6}@media print{body{padding:32px}}</style></head><body><h1>Velora <span>CRM</span></h1><div class="sub">Квитанция об оплате · ${new Date().toLocaleDateString('ru-RU')}</div><div class="divider"></div><table><tr><td style="color:#666">Описание</td><td>${inv.plan_name}</td></tr><tr><td style="color:#666">Дата списания</td><td>${fmtDate(inv.paid_at)}</td></tr><tr><td style="color:#666">Способ оплаты</td><td>${inv.payment_method ?? 'Visa •••• 4242'}</td></tr><tr><td style="color:#666">Статус</td><td><span class="badge">Оплачено</span></td></tr><tr class="total"><td>Итого</td><td>${fmtAmount(inv.amount)}</td></tr></table><div class="footer">Velora CRM · velora.studio<br>Поддержка: support@velora.studio</div></body></html>`);
+                  win.document.close();
+                  setTimeout(() => win.print(), 350);
+                }}
+                style={{ padding: '5px 12px', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <DownloadIcon />PDF
               </button>
             </div>

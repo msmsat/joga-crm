@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import type { PlanType } from '../../types';
 import { ZapIcon, InfoIcon } from '../ui/BillingIcons';
 import { plans } from '../../constants';
@@ -15,7 +16,7 @@ interface Props {
 export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDiscounts, getPrice, savedTotal, totalToPay, onClose }: Props) {
   const plan = plans[selectedPlan];
 
-  return (
+  return createPortal(
     <div
       style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,26,0.6)', backdropFilter: 'blur(6px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
       onClick={onClose}
@@ -77,6 +78,7 @@ export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDisco
           <span style={{ fontSize: '11px', color: 'var(--muted)' }}>Защищено PCI DSS · Возврат в течение 7 дней</span>
         </div>
       </div>
-    </div>
+    </div>,
+  document.body
   );
 }

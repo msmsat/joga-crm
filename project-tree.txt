@@ -1,58 +1,577 @@
-C:\projects\freelance\joga_crm\
-├── .gitignore
-├── back\
-│   ├── .env
-│   ├── alembic.ini
-│   ├── database.py
-│   ├── main.py
-│   ├── models.py
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── requirements.txt
-│   ├── schemas.py
-│   ├── security.py
-│   ├── migrations\
-│   │   ├── README
-│   │   ├── env.py
-│   │   ├── script.py.mako
-│   │   └── versions\
-│   │       ├── 2abc41bab61e_add_onboarding.py
-│   │       ├── 62f13cc54540_clean_user_model_drop_display_name.py
-│   │       ├── 7d6b29d0683f_init_database_structures.py
-│   │       ├── b684eb699fc2_add_email_verification_fields.py
-│   │       └── f87731d7999f_add_phone_and_display_name_to_users.py
-│   ├── routers\
-│   │   └── auth.py
-│   └── venv\
-├── front\
-│   ├── README.md
-│   ├── eslint.config.js
-│   ├── index.html
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── public\
-│   │   ├── favicon.svg
-│   │   └── icons.svg
-│   ├── src\
-│   │   ├── App.css
-│   │   ├── App.tsx
-│   │   ├── assets\
-│   │   ├── components\
-│   │   │   ├── Icons.tsx
-│   │   │   ├── UI.tsx
-│   │   │   └── modals\
-│   │   ├── index.css
-│   │   ├── layouts\
-│   │   │   └── DashboardLayout.tsx
-│   │   ├── main.tsx
-│   │   └── pages\
-│   │       ├── ChangePassword.tsx
-│   │       ├── Dashboard.tsx
-│   │       ├── Landingpage.tsx
-│   │       ├── Loginpage.tsx
-│   │       ├── Registerpage.tsx
-│   │       └── dashboard\
-│   ├── tsconfig.app.json
-│   ├── tsconfig.json
-│   ├── tsconfig.node.json
-│   └── vite.config.ts
+﻿C:\PROJECTS\FREELANCE\JOGA_CRM
++-- back
+|   +-- models
+|   |   +-- ai.py
+|   |   +-- analytics.py
+|   |   +-- base.py
+|   |   +-- client.py
+|   |   +-- events.py
+|   |   +-- finances.py
+|   |   +-- loyalty.py
+|   |   +-- products.py
+|   |   +-- reports.py
+|   |   +-- schedule.py
+|   |   +-- service.py
+|   |   +-- settings.py
+|   |   +-- staff.py
+|   |   +-- studio.py
+|   |   +-- studio_member.py
+|   |   +-- user.py
+|   |   +-- __init__.py
+|   +-- routers
+|   |   +-- ai
+|   |   |   +-- chat.py
+|   |   |   +-- router.py
+|   |   |   +-- __init__.py
+|   |   +-- analytics
+|   |   |   +-- reports.py
+|   |   |   +-- router.py
+|   |   |   +-- __init__.py
+|   |   +-- auth
+|   |   |   +-- login.py
+|   |   |   +-- onboarding.py
+|   |   |   +-- password.py
+|   |   |   +-- profile.py
+|   |   |   +-- register.py
+|   |   |   +-- router.py
+|   |   |   +-- _helpers.py
+|   |   |   +-- __init__.py
+|   |   +-- clients
+|   |   |   +-- loyalty.py
+|   |   |   +-- profiles.py
+|   |   |   +-- router.py
+|   |   |   +-- subscriptions.py
+|   |   |   +-- __init__.py
+|   |   +-- finances
+|   |   |   +-- accounts.py
+|   |   |   +-- operations.py
+|   |   |   +-- router.py
+|   |   |   +-- salary.py
+|   |   |   +-- __init__.py
+|   |   +-- schedule
+|   |   |   +-- halls.py
+|   |   |   +-- lessons.py
+|   |   |   +-- reservations.py
+|   |   |   +-- router.py
+|   |   |   +-- __init__.py
+|   |   +-- settings
+|   |   |   +-- general.py
+|   |   |   +-- integrations.py
+|   |   |   +-- router.py
+|   |   |   +-- security.py
+|   |   |   +-- team.py
+|   |   |   +-- __init__.py
+|   |   +-- staff
+|   |   |   +-- actions.py
+|   |   |   +-- profiles.py
+|   |   |   +-- router.py
+|   |   |   +-- schedule.py
+|   |   |   +-- __init__.py
+|   |   +-- studio
+|   |   |   +-- media.py
+|   |   |   +-- router.py
+|   |   |   +-- __init__.py
+|   |   +-- __init__.py
+|   +-- schemas
+|   |   +-- ai
+|   |   |   +-- chat.py
+|   |   |   +-- settings.py
+|   |   |   +-- __init__.py
+|   |   +-- analytics
+|   |   |   +-- reports.py
+|   |   |   +-- tasks.py
+|   |   |   +-- __init__.py
+|   |   +-- auth
+|   |   |   +-- requests.py
+|   |   |   +-- responses.py
+|   |   |   +-- __init__.py
+|   |   +-- clients
+|   |   |   +-- clients.py
+|   |   |   +-- notes.py
+|   |   |   +-- responses.py
+|   |   |   +-- subscriptions.py
+|   |   |   +-- __init__.py
+|   |   +-- finances
+|   |   |   +-- accounts.py
+|   |   |   +-- operations.py
+|   |   |   +-- salary.py
+|   |   |   +-- __init__.py
+|   |   +-- loyalty
+|   |   |   +-- certificates.py
+|   |   |   +-- loyalty.py
+|   |   |   +-- __init__.py
+|   |   +-- products
+|   |   |   +-- products.py
+|   |   |   +-- __init__.py
+|   |   +-- schedule
+|   |   |   +-- halls.py
+|   |   |   +-- lessons.py
+|   |   |   +-- reservations.py
+|   |   |   +-- __init__.py
+|   |   +-- settings
+|   |   |   +-- billing.py
+|   |   |   +-- booking.py
+|   |   |   +-- general.py
+|   |   |   +-- team.py
+|   |   |   +-- __init__.py
+|   |   +-- staff
+|   |   |   +-- staff.py
+|   |   |   +-- __init__.py
+|   |   +-- studio
+|   |   |   +-- studio.py
+|   |   |   +-- __init__.py
+|   |   +-- common.py
+|   |   +-- _base.py
+|   |   +-- __init__.py
+|   +-- static
+|   |   +-- logos
+|   +-- alembic.ini
+|   +-- database.py
+|   +-- dependencies.py
+|   +-- main.py
+|   +-- package-lock.json
+|   +-- package.json
+|   +-- requirements.txt
+|   +-- security.py
++-- front
+|   +-- public
+|   |   +-- favicon.svg
+|   |   +-- icons.svg
+|   +-- src
+|   |   +-- api
+|   |   |   +-- ai
+|   |   |   |   +-- ai.api.ts
+|   |   |   |   +-- ai.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- analytics
+|   |   |   |   +-- analytics.api.ts
+|   |   |   |   +-- analytics.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- auth
+|   |   |   |   +-- auth.api.ts
+|   |   |   |   +-- auth.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- billing
+|   |   |   |   +-- billing.api.ts
+|   |   |   |   +-- billing.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- booking
+|   |   |   |   +-- booking.api.ts
+|   |   |   |   +-- booking.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- clients
+|   |   |   |   +-- clients.api.ts
+|   |   |   |   +-- clients.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- finances
+|   |   |   |   +-- finances.api.ts
+|   |   |   |   +-- finances.types.ts
+|   |   |   |   +-- index.ts
+|   |   |   +-- loyalty
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- loyalty.api.ts
+|   |   |   |   +-- loyalty.types.ts
+|   |   |   +-- notifications
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- notifications.api.ts
+|   |   |   |   +-- notifications.types.ts
+|   |   |   +-- schedule
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- schedule.api.ts
+|   |   |   |   +-- schedule.types.ts
+|   |   |   +-- settings
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- settings.api.ts
+|   |   |   |   +-- settings.types.ts
+|   |   |   +-- staff
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- staff.api.ts
+|   |   |   |   +-- staff.types.ts
+|   |   |   +-- studio
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- studio.api.ts
+|   |   |   |   +-- studio.types.ts
+|   |   |   +-- client.ts
+|   |   |   +-- index.ts
+|   |   +-- assets
+|   |   |   +-- hero.png
+|   |   |   +-- react.svg
+|   |   |   +-- vite.svg
+|   |   +-- components
+|   |   |   +-- AIDrawer
+|   |   |   |   +-- components
+|   |   |   |   |   +-- ChatView.tsx
+|   |   |   |   |   +-- DrawerHeader.tsx
+|   |   |   |   |   +-- EmptyStateSVG.tsx
+|   |   |   |   |   +-- HistoryView.tsx
+|   |   |   |   |   +-- InputBar.tsx
+|   |   |   |   |   +-- MessageBubble.tsx
+|   |   |   |   |   +-- ThinkingStateSVG.tsx
+|   |   |   |   +-- hooks
+|   |   |   |   |   +-- useDrawerChat.ts
+|   |   |   |   |   +-- useDrawerHistory.ts
+|   |   |   |   +-- AIDrawer.module.css
+|   |   |   |   +-- AIDrawer.tsx
+|   |   |   |   +-- constants.ts
+|   |   |   |   +-- index.ts
+|   |   |   |   +-- types.ts
+|   |   |   +-- modals
+|   |   |   |   +-- onboarding
+|   |   |   |   |   +-- StepActivity.tsx
+|   |   |   |   |   +-- StepContact.tsx
+|   |   |   |   |   +-- StepIdentity.tsx
+|   |   |   |   |   +-- StepSchedule.tsx
+|   |   |   |   |   +-- StepSettings.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- AddStaffModal.tsx
+|   |   |   |   +-- EditStaffModal.tsx
+|   |   |   |   +-- Onboarding.tsx
+|   |   |   +-- Icons.tsx
+|   |   |   +-- UI.tsx
+|   |   +-- contexts
+|   |   |   +-- AIDrawerContext.tsx
+|   |   +-- layouts
+|   |   |   +-- DashboardLayout.tsx
+|   |   +-- pages
+|   |   |   +-- dashboard
+|   |   |   |   +-- AI
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- animations
+|   |   |   |   |   |   |   +-- NeuralNetSVG.tsx
+|   |   |   |   |   |   |   +-- PulseRingSVG.tsx
+|   |   |   |   |   |   |   +-- WaveformSVG.tsx
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- AgentSetupModal.tsx
+|   |   |   |   |   |   +-- AgentConfigCard.tsx
+|   |   |   |   |   |   +-- ChatPanel.tsx
+|   |   |   |   |   |   +-- CustomSelect.tsx
+|   |   |   |   |   |   +-- LeftPanel.tsx
+|   |   |   |   |   |   +-- MessageBubble.tsx
+|   |   |   |   |   |   +-- ThinkingIndicator.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useAIAgent.ts
+|   |   |   |   |   |   +-- useAIChat.ts
+|   |   |   |   |   +-- AI.module.css
+|   |   |   |   |   +-- AI.tsx
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Billing
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- UpgradeModal.tsx
+|   |   |   |   |   |   +-- sections
+|   |   |   |   |   |   |   +-- BillingHeader.tsx
+|   |   |   |   |   |   +-- tabs
+|   |   |   |   |   |   |   +-- InvoicesTab.tsx
+|   |   |   |   |   |   |   +-- PaymentMethodTab.tsx
+|   |   |   |   |   |   |   +-- PlansTab.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- AnimatedCounter.tsx
+|   |   |   |   |   |       +-- BillingIcons.tsx
+|   |   |   |   |   |       +-- SavingsIllustration.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useBillingCalculator.ts
+|   |   |   |   |   |   +-- usePaymentCard.ts
+|   |   |   |   |   +-- Billing.module.css
+|   |   |   |   |   +-- Billing.tsx
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Booking
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- InstaModal.tsx
+|   |   |   |   |   |   |   +-- StudioMockup.tsx
+|   |   |   |   |   |   |   +-- TgModal.tsx
+|   |   |   |   |   |   |   +-- WaModal.tsx
+|   |   |   |   |   |   |   +-- WebModal.tsx
+|   |   |   |   |   |   +-- sections
+|   |   |   |   |   |   |   +-- BookingChannels.tsx
+|   |   |   |   |   |   |   +-- BookingSettings.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- BookingIcons.tsx
+|   |   |   |   |   |       +-- ChannelCard.tsx
+|   |   |   |   |   |       +-- CustomSelect.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useBookingModals.ts
+|   |   |   |   |   |   +-- useBookingSettings.ts
+|   |   |   |   |   |   +-- useTgBot.ts
+|   |   |   |   |   +-- steps
+|   |   |   |   |   +-- Booking.css
+|   |   |   |   |   +-- Booking.tsx
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Catalog
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- ServiceSection.tsx
+|   |   |   |   |   |   +-- StudioSection.tsx
+|   |   |   |   |   +-- Catalog.css
+|   |   |   |   |   +-- Catalog.tsx
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Clients
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- AddClientModal.tsx
+|   |   |   |   |   |   |   +-- DeleteClientModal.tsx
+|   |   |   |   |   |   +-- ClientProfileSlider.tsx
+|   |   |   |   |   |   +-- ClientsTable.tsx
+|   |   |   |   |   |   +-- ClientsToolbar.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useClientActions.ts
+|   |   |   |   |   |   +-- useClientForm.ts
+|   |   |   |   |   |   +-- useClientsFilters.ts
+|   |   |   |   |   +-- utils
+|   |   |   |   |   |   +-- mapClient.ts
+|   |   |   |   |   +-- Clients.module.css
+|   |   |   |   |   +-- Clients.tsx
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Finances
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- tabs
+|   |   |   |   |   |   |   +-- AccountsTab.tsx
+|   |   |   |   |   |   |   +-- CounterpartiesTab.tsx
+|   |   |   |   |   |   |   +-- DocumentsTab.tsx
+|   |   |   |   |   |   |   +-- GoalsTab.tsx
+|   |   |   |   |   |   |   +-- OnlinePaymentsTab.tsx
+|   |   |   |   |   |   |   +-- OperationsTab.tsx
+|   |   |   |   |   |   |   +-- PaymentMethodsTab.tsx
+|   |   |   |   |   |   |   +-- ReportsTab.tsx
+|   |   |   |   |   |   |   +-- SalariesTab.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- Badge.tsx
+|   |   |   |   |   |       +-- Btn.tsx
+|   |   |   |   |   |       +-- ConfirmModal.tsx
+|   |   |   |   |   |       +-- DonutIllustration.tsx
+|   |   |   |   |   |       +-- FinanceIcons.tsx
+|   |   |   |   |   |       +-- Toast.tsx
+|   |   |   |   |   |       +-- Toggle.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useToast.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- Finances.module.css
+|   |   |   |   |   +-- Finances.tsx
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Journal
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- AddClientModal.tsx
+|   |   |   |   |   |   |   +-- NewBookingModal.tsx
+|   |   |   |   |   |   +-- ScheduleGrid
+|   |   |   |   |   |   |   +-- BookingCard.tsx
+|   |   |   |   |   |   |   +-- Grid.tsx
+|   |   |   |   |   |   +-- AiChat.tsx
+|   |   |   |   |   |   +-- BookingPopup.tsx
+|   |   |   |   |   |   +-- DaySummary.tsx
+|   |   |   |   |   |   +-- RightPanel.tsx
+|   |   |   |   |   |   +-- Toolbar.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useDragAndDrop.ts
+|   |   |   |   |   |   +-- usePopupPosition.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Journal.css
+|   |   |   |   |   +-- Journal.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   |   +-- utils.ts
+|   |   |   |   +-- Loyalty
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- drawer
+|   |   |   |   |   |   |   +-- configs
+|   |   |   |   |   |   |   |   +-- CertificatesConfig.tsx
+|   |   |   |   |   |   |   |   +-- DiscountsConfig.tsx
+|   |   |   |   |   |   |   |   +-- LoyaltyConfig.tsx
+|   |   |   |   |   |   |   |   +-- ReferralConfig.tsx
+|   |   |   |   |   |   |   |   +-- SubscriptionsConfig.tsx
+|   |   |   |   |   |   |   +-- LoyaltyDrawer.tsx
+|   |   |   |   |   |   +-- sections
+|   |   |   |   |   |   |   +-- ProgramsGrid.tsx
+|   |   |   |   |   |   |   +-- ProgressHeader.tsx
+|   |   |   |   |   |   |   +-- StatsBoard.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- LineChart.tsx
+|   |   |   |   |   |       +-- LoyaltyIcons.tsx
+|   |   |   |   |   |       +-- MiniChart.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useLoyalty.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Loyalty.module.css
+|   |   |   |   |   +-- Loyalty.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Notifications
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- sections
+|   |   |   |   |   |   |   +-- ChannelsSidebar.tsx
+|   |   |   |   |   |   |   +-- NotificationMatrix.tsx
+|   |   |   |   |   |   |   +-- RolesSelector.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- MiniCheck.tsx
+|   |   |   |   |   |       +-- NotificationIcons.tsx
+|   |   |   |   |   |       +-- NotifIllustration.tsx
+|   |   |   |   |   |       +-- ToggleSwitch.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useNotifications.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Notifications.css
+|   |   |   |   |   +-- Notifications.module.css
+|   |   |   |   |   +-- Notifications.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   |   +-- utils.ts
+|   |   |   |   +-- Overview
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |   |   +-- EventCard.tsx
+|   |   |   |   |   |   |   +-- MetricCard.tsx
+|   |   |   |   |   |   |   +-- OverviewIcons.tsx
+|   |   |   |   |   |   +-- widgets
+|   |   |   |   |   |       +-- AnalyticsChart.tsx
+|   |   |   |   |   |       +-- MetricsRow.tsx
+|   |   |   |   |   |       +-- RecentEventsBoard.tsx
+|   |   |   |   |   |       +-- SummaryWidgets.tsx
+|   |   |   |   |   |       +-- TodayTasksWidget.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useDashboardChart.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Overview.module.css
+|   |   |   |   |   +-- Overview.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Profile
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- sections
+|   |   |   |   |   |   |   +-- ActiveSessionCard.tsx
+|   |   |   |   |   |   |   +-- LinkedAccounts.tsx
+|   |   |   |   |   |   |   +-- PersonalInfoForm.tsx
+|   |   |   |   |   |   |   +-- SecuritySettings.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- PremiumInput.tsx
+|   |   |   |   |   |       +-- ProfileIcons.tsx
+|   |   |   |   |   |       +-- Toast.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useAccounts.ts
+|   |   |   |   |   |   +-- useProfileForm.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Profile.module.css
+|   |   |   |   |   +-- Profile.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Reports
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- charts
+|   |   |   |   |   |   |   +-- AttendanceChart.tsx
+|   |   |   |   |   |   |   +-- IncomeExpenseChart.tsx
+|   |   |   |   |   |   |   +-- RevenueChart.tsx
+|   |   |   |   |   |   +-- tabs
+|   |   |   |   |   |   |   +-- TabAll.tsx
+|   |   |   |   |   |   |   +-- TabOsnovnye.tsx
+|   |   |   |   |   |   |   +-- TabProdazhi.tsx
+|   |   |   |   |   |   |   +-- TabSobytiya.tsx
+|   |   |   |   |   |   |   +-- TabTrenery.tsx
+|   |   |   |   |   |   |   +-- TabUslugi.tsx
+|   |   |   |   |   |   +-- DetailedTable.tsx
+|   |   |   |   |   |   +-- ProgressBar.tsx
+|   |   |   |   |   |   +-- ReportsToolbar.tsx
+|   |   |   |   |   |   +-- SummaryMetrics.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useDateRange.ts
+|   |   |   |   |   |   +-- useExport.ts
+|   |   |   |   |   |   +-- useReportData.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Reports.module.css
+|   |   |   |   |   +-- Reports.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Settings
+|   |   |   |   |   +-- components
+|   |   |   |   |   |   +-- illustrations
+|   |   |   |   |   |   |   +-- IntegrationIllustration.tsx
+|   |   |   |   |   |   |   +-- NotificationIllustration.tsx
+|   |   |   |   |   |   |   +-- SecurityIllustration.tsx
+|   |   |   |   |   |   +-- modals
+|   |   |   |   |   |   |   +-- DeleteDataModal.tsx
+|   |   |   |   |   |   |   +-- WorkspaceSelector.tsx
+|   |   |   |   |   |   +-- tabs
+|   |   |   |   |   |   |   +-- AppearanceTab.tsx
+|   |   |   |   |   |   |   +-- BillingTab.tsx
+|   |   |   |   |   |   |   +-- DataTab.tsx
+|   |   |   |   |   |   |   +-- GeneralTab.tsx
+|   |   |   |   |   |   |   +-- HoursTab.tsx
+|   |   |   |   |   |   |   +-- IntegrationsTab.tsx
+|   |   |   |   |   |   |   +-- NotificationsTab.tsx
+|   |   |   |   |   |   |   +-- SecurityTab.tsx
+|   |   |   |   |   |   |   +-- TeamTab.tsx
+|   |   |   |   |   |   +-- ui
+|   |   |   |   |   |       +-- form
+|   |   |   |   |   |       |   +-- DarkSelectRow.tsx
+|   |   |   |   |   |       |   +-- DarkTimeSelect.tsx
+|   |   |   |   |   |       |   +-- InputRow.tsx
+|   |   |   |   |   |       |   +-- Toggle.tsx
+|   |   |   |   |   |       +-- PremiumButton.tsx
+|   |   |   |   |   |       +-- SectionHeader.tsx
+|   |   |   |   |   |       +-- SettingsIcons.tsx
+|   |   |   |   |   |       +-- StatusBadge.tsx
+|   |   |   |   |   |       +-- Toast.tsx
+|   |   |   |   |   +-- hooks
+|   |   |   |   |   |   +-- useBilling.ts
+|   |   |   |   |   |   +-- useIntegrations.ts
+|   |   |   |   |   |   +-- useSecurity.ts
+|   |   |   |   |   |   +-- useSettingsToast.ts
+|   |   |   |   |   |   +-- useTeam.ts
+|   |   |   |   |   +-- constants.ts
+|   |   |   |   |   +-- index.ts
+|   |   |   |   |   +-- Settings.module.css
+|   |   |   |   |   +-- Settings.tsx
+|   |   |   |   |   +-- types.ts
+|   |   |   |   +-- Staff
+|   |   |   |       +-- components
+|   |   |   |       |   +-- modals
+|   |   |   |       |   |   +-- AddEmployeeModal.tsx
+|   |   |   |       |   |   +-- DeleteConfirmModal.tsx
+|   |   |   |       |   |   +-- EditEmployeeModal.tsx
+|   |   |   |       |   |   +-- EmployeeModal.tsx
+|   |   |   |       |   +-- EmployeeCard.tsx
+|   |   |   |       |   +-- StaffList.tsx
+|   |   |   |       |   +-- StaffStats.tsx
+|   |   |   |       |   +-- StaffToolbar.tsx
+|   |   |   |       +-- hooks
+|   |   |   |       |   +-- useStaffFilters.ts
+|   |   |   |       |   +-- useStaffList.ts
+|   |   |   |       |   +-- useStaffProfile.ts
+|   |   |   |       +-- constants.ts
+|   |   |   |       +-- index.ts
+|   |   |   |       +-- Staff.css
+|   |   |   |       +-- Staff.tsx
+|   |   |   |       +-- types.ts
+|   |   |   +-- ChangePassword.tsx
+|   |   |   +-- Dashboard.tsx
+|   |   |   +-- Landingpage.tsx
+|   |   |   +-- Loginpage.tsx
+|   |   |   +-- Registerpage.tsx
+|   |   +-- utils
+|   |   |   +-- auth.ts
+|   |   +-- App.css
+|   |   +-- App.tsx
+|   |   +-- index.css
+|   |   +-- main.tsx
+|   +-- eslint.config.js
+|   +-- finances-refactor-plan.md
+|   +-- index.html
+|   +-- package-lock.json
+|   +-- package.json
+|   +-- README.md
+|   +-- tsconfig.app.json
+|   +-- tsconfig.json
+|   +-- tsconfig.node.json
+|   +-- vite.config.ts
++-- CLAUDE.md
++-- package-lock.json
++-- package.json
++-- project-tree.txt

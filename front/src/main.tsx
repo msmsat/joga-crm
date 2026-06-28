@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import './i18n';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 

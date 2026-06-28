@@ -25,6 +25,12 @@ export default function BillingTab({
   triggerToast,
   savedStates: _savedStates,
 }: BillingTabProps) {
+  const PAYMENTS = [
+    { date: "15 июня 2026", amount: "4 990 ₽", plan: "Pro — июль", status: "active" as const },
+    { date: "15 мая 2026", amount: "4 990 ₽", plan: "Pro — июнь", status: "active" as const },
+    { date: "15 апреля 2026", amount: "4 990 ₽", plan: "Pro — май", status: "active" as const },
+  ];
+
   const sectionIcons = {
     card: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="3" ry="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
     plus: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
@@ -293,12 +299,28 @@ export default function BillingTab({
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.download} title="История платежей" subtitle="Все транзакции и инвойсы" />
-        {[
-          { date: "15 июня 2026", amount: "4 990 ₽", plan: "Pro — июль", status: "active" as const },
-          { date: "15 мая 2026", amount: "4 990 ₽", plan: "Pro — июнь", status: "active" as const },
-          { date: "15 апреля 2026", amount: "4 990 ₽", plan: "Pro — май", status: "active" as const },
-        ].map((p, i) => (
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "4px" }}>
+          <SectionHeader icon={icons.download} title="История платежей" subtitle="Все транзакции и инвойсы" />
+          <button
+            onClick={() => {
+              const header = "Дата,Тариф,Сумма,Статус";
+              const rows = PAYMENTS.map(p => `${p.date},${p.plan},${p.amount},Оплачено`);
+              const csv = "﻿" + [header, ...rows].join("\n");
+              const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url; a.download = "velora_payments.csv"; a.click();
+              URL.revokeObjectURL(url);
+              triggerToast("История платежей экспортирована в CSV");
+            }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: "rgba(252,174,145,0.1)", border: "1px solid rgba(252,174,145,0.3)", color: "var(--peach)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s", flexShrink: 0, marginTop: "2px" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.18)"; e.currentTarget.style.borderColor = "var(--peach)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
+          >
+            {icons.download} Экспорт CSV
+          </button>
+        </div>
+        {PAYMENTS.map((p, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "12px 16px", borderRadius: "10px", marginBottom: "4px" }}>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{p.plan}</div>
@@ -307,7 +329,12 @@ export default function BillingTab({
             <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", marginRight: "8px" }}>{p.amount}</div>
             <StatusBadge type={p.status}>Оплачено</StatusBadge>
             <button
-              onClick={() => triggerToast(`Скачивание чека за ${p.date.split(' ')[1]}...`)}
+              onClick={() => {
+                const win = window.open("", "_blank");
+                if (!win) { triggerToast("Разрешите всплывающие окна для скачивания PDF"); return; }
+                win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Чек — ${p.plan}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',Arial,sans-serif;padding:48px;color:#1A1A1A;max-width:600px}h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}h1 span{color:#F9A08B}.sub{color:#666;font-size:13px;margin-bottom:40px;margin-top:2px}.divider{height:1px;background:#eee;margin:28px 0}table{width:100%;border-collapse:collapse}td{padding:13px 0;border-bottom:1px solid #f0f0f0;font-size:14px}td:last-child{text-align:right;font-weight:700}.total td{font-size:16px;font-weight:800;border-bottom:none;padding-top:22px;color:#1A1A1A}.badge{display:inline-block;padding:3px 10px;border-radius:20px;background:#A3C9A814;color:#2A6B35;font-size:11px;font-weight:700;border:1px solid #A3C9A8}.footer{margin-top:40px;font-size:11px;color:#999;line-height:1.6}@media print{body{padding:32px}}</style></head><body><h1>Velora <span>CRM</span></h1><div class="sub">Квитанция об оплате · ${new Date().toLocaleDateString("ru-RU")}</div><div class="divider"></div><table><tr><td style="color:#666">Тариф</td><td>${p.plan}</td></tr><tr><td style="color:#666">Дата списания</td><td>${p.date}</td></tr><tr><td style="color:#666">Способ оплаты</td><td>Visa •••• 4242</td></tr><tr><td style="color:#666">Статус</td><td><span class="badge">Оплачено</span></td></tr><tr class="total"><td>Итого</td><td>${p.amount}</td></tr></table><div class="footer">Velora CRM · velora.studio<br>По вопросам оплаты: support@velora.studio</div><script>window.onload=function(){window.print();}</script></body></html>`);
+                win.document.close();
+              }}
               style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "7px", border: "1px solid var(--border)", background: "transparent", color: "var(--muted)", fontSize: "11px", fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}

@@ -7,7 +7,7 @@ import { CLIENTS_DB, TIMES } from '../../constants';
 interface AddClientModalProps {
   booking: Booking;
   onClose: () => void;
-  onAdd: (clientIds: string[]) => void;
+  onAdd: (clientIds: number[]) => void;
 }
 
 export const AddClientModal: React.FC<AddClientModalProps> = ({
@@ -17,14 +17,14 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
 }) => {
   // Локальные стейты модалки
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
+  const [selectedClients, setSelectedClients] = useState<number[]>([]);
 
   // 🔥 Мемоизация поиска: пересчитывается только если изменился запрос
   const filteredClients = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return CLIENTS_DB.filter(c =>
       c.name.toLowerCase().includes(q) ||
-      c.phone.includes(searchQuery)
+      (c.phone ?? '').includes(searchQuery)
     );
   }, [searchQuery]);
 
@@ -84,10 +84,10 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
                       isSelected ? prev.filter(x => x !== c.id) : [...prev, c.id]
                     )}
                   >
-                    <div className="client-ava">{c.avatar}</div>
+                    <div className="client-ava">{[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('')}</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{c.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone} · {c.visits} визитов</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{c.name} {c.last_name ?? ''}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone ?? ''} · {c.visit_count} визитов</div>
                     </div>
                     {isSelected && (
                       <div style={{ color: 'var(--peach)' }}><Icons.Check /></div>

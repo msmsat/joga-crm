@@ -78,6 +78,9 @@ export default function TodayTasksWidget({ tasks: initialTasks }: Props) {
       text,
       priority: newTaskPriority,
       tag: newTaskTag,
+      is_done: false,
+      done_at: null,
+      created_at: new Date().toISOString(),
     };
     setTasks(prev => [newTask, ...prev]);
     setNewlyAddedId(newTask.id);
@@ -445,13 +448,15 @@ function TaskRow({ task, done, onToggle, isNew }: RowProps) {
       </div>
 
       {/* Tag */}
-      <div style={{
-        fontSize: 10, fontWeight: 700, color: TAG_TEXT[task.tag] ?? 'var(--muted)',
-        background: TAG_COLORS[task.tag] ?? 'var(--bg2)',
-        padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-      }}>
-        {task.tag}
-      </div>
+      {task.tag && (
+        <div style={{
+          fontSize: 10, fontWeight: 700, color: TAG_TEXT[task.tag] ?? 'var(--muted)',
+          background: TAG_COLORS[task.tag] ?? 'var(--bg2)',
+          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+        }}>
+          {task.tag}
+        </div>
+      )}
 
       {/* Priority dot */}
       <div

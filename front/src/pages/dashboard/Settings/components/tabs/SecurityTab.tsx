@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
@@ -23,6 +24,24 @@ interface SecurityTabProps {
   triggerToast: (msg: string) => void;
 }
 
+function fmtLastActive(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
+  if (diff < 1)  return 'Сейчас активна';
+  if (diff < 60) return `${diff} мин. назад`;
+  const h = Math.floor(diff / 60);
+  if (h < 24)   return `${h} ч назад`;
+  return `${Math.floor(h / 24)} дн. назад`;
+}
+
+function fmtLoc(city: string | null, country: string | null): string {
+  return [city, country].filter(Boolean).join(', ') || 'Неизвестно';
+}
+
+function fmtCreated(iso: string): string {
+  try { return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  catch { return iso; }
+}
+
 export default function SecurityTab({
   secExpanded, setSecExpanded, setSecModal,
   activeSessions, apiTokens, newTokenName, setNewTokenName,
@@ -30,6 +49,7 @@ export default function SecurityTab({
   twoFa, setTwoFa, triggerToast,
 }: SecurityTabProps) {
   const navigate = useNavigate();
+  const [exportChecked, setExportChecked] = useState({ clients: true, finances: true, media: true });
 
   const secIcons = {
     laptop: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>,
@@ -93,17 +113,17 @@ export default function SecurityTab({
                   <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {activeSessions.map(session => (
-                      <div key={session.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: session.current ? "rgba(163,201,168,0.06)" : "#FFF" }}>
+                      <div key={session.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: session.is_current ? "rgba(163,201,168,0.06)" : "#FFF" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                          <div style={{ color: session.current ? "#5A9A65" : "var(--muted)" }}>{session.icon === "laptop" ? secIcons.laptop : secIcons.phone}</div>
+                          <div style={{ color: session.is_current ? "#5A9A65" : "var(--muted)" }}>{session.icon === "laptop" ? secIcons.laptop : secIcons.phone}</div>
                           <div>
                             <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)", display: "flex", alignItems: "center", gap: "6px" }}>
-                              {session.device} {session.current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>Текущая</span>}
+                              {session.device} {session.is_current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>Текущая</span>}
                             </div>
-                            <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{session.browser} · {session.loc} · {session.time}</div>
+                            <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{session.browser} · {fmtLoc(session.location_city, session.location_country)} · {fmtLastActive(session.last_active)}</div>
                           </div>
                         </div>
-                        {!session.current && (
+                        {!session.is_current && (
                           <button
                             onClick={() => terminateSession(session.id)}
                             style={{ padding: "6px 12px", borderRadius: "6px", background: "rgba(216,140,154,0.1)", color: "#C0607A", border: "none", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
@@ -129,9 +149,9 @@ export default function SecurityTab({
             <div key={token.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderRadius: "10px", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)" }}>{token.name}</div>
-                <div style={{ fontSize: "11.5px", color: "var(--muted)", fontFamily: "monospace", marginTop: "2px" }}>{token.key}</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", fontFamily: "monospace", marginTop: "2px" }}>{token.token_prefix}</div>
               </div>
-              <div style={{ fontSize: "11px", color: "var(--muted)" }}>{token.created}</div>
+              <div style={{ fontSize: "11px", color: "var(--muted)" }}>{fmtCreated(token.created_at)}</div>
               <button
                 onClick={() => revokeToken(token.id)}
                 style={{ display: "flex", alignItems: "center", gap: "4px", color: "#C0607A", background: "rgba(216,140,154,0.1)", border: "none", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
@@ -195,14 +215,39 @@ export default function SecurityTab({
                 <div style={{ padding: "0 16px 16px" }}>
                   <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
                   <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> База клиентов (CSV)</label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> Финансовые транзакции</label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}><input type="checkbox" defaultChecked /> Медиа и фото</label>
+                    {([
+                      ["clients", "База клиентов (CSV)"],
+                      ["finances", "Финансовые транзакции"],
+                      ["media", "Медиа и фото"],
+                    ] as [keyof typeof exportChecked, string][]).map(([key, label]) => (
+                      <label
+                        key={key}
+                        onClick={() => setExportChecked(prev => ({ ...prev, [key]: !prev[key] }))}
+                        style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 600, color: "var(--onyx)", cursor: "pointer" }}
+                      >
+                        <div style={{
+                          width: "16px", height: "16px", borderRadius: "5px", flexShrink: 0,
+                          border: `1.5px solid ${exportChecked[key] ? "var(--peach)" : "rgba(26,26,26,0.2)"}`,
+                          background: exportChecked[key] ? "var(--peach)" : "#FFF",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          transition: "all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                          boxShadow: exportChecked[key] ? "0 2px 8px rgba(252,174,145,0.35)" : "none",
+                        }}>
+                          {exportChecked[key] && (
+                            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#FFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="2 6 5 9 10 3" />
+                            </svg>
+                          )}
+                        </div>
+                        {label}
+                      </label>
+                    ))}
                   </div>
                   <button
-                    onClick={() => { triggerToast("Формирование ZIP архива началось. Мы пришлем ссылку на Email."); setSecExpanded(null); }}
-                    style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "rgba(252,174,145,0.15)", color: "var(--peach)", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", transition: "background 0.2s" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(252,174,145,0.25)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(252,174,145,0.15)"}
+                    onClick={() => { triggerToast("Формирование ZIP архива началось. Мы пришлём ссылку на Email."); setSecExpanded(null); }}
+                    style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "var(--peach)", color: "#FFF", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 14px rgba(252,174,145,0.35)" }}
+                    onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.06)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.filter = "none"; e.currentTarget.style.transform = "none"; }}
                   >
                     Начать выгрузку
                   </button>

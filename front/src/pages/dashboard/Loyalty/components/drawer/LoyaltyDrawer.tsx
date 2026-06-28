@@ -30,7 +30,6 @@ interface Props {
 export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, closeDrawer, handleSave, programsList }: Props) {
   return (
     <>
-      <div className={styles.drawerOverlay} onClick={closeDrawer} />
       <div className={`${styles.drawer} ${drawerVisible ? styles.drawerEntering : styles.drawerExiting}`} ref={drawerRef}>
         <div className={styles.drawerHeader}>
           <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'rgba(252,174,145,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FCAE91', flexShrink: 0 }}>
@@ -59,3 +58,4 @@ export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, closeD
     </>
   );
 }
+

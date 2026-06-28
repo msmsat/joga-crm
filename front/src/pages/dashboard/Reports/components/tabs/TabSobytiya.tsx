@@ -2,6 +2,9 @@ import { useState } from 'react';
 import type { Period, EventRecord } from '../../types';
 import { EVENTS_DATA } from '../../constants';
 
+const fmtRevenue = (r: number | null): string =>
+  r === null ? '—' : r === 0 ? '₽0' : `₽${Math.round(r / 1000)}K`;
+
 function EventIllus({ color }: { color: string }) {
   return (
     <svg width="44" height="44" viewBox="0 0 44 44">
@@ -37,7 +40,7 @@ function EventDetail({ ev }: { ev: EventRecord }) {
           { l: 'Тип',        v: ev.type         },
           { l: 'Статус',     v: ev.status       },
           { l: 'Участников', v: `${ev.attendees}`},
-          { l: 'Выручка',    v: ev.revenue      },
+          { l: 'Выручка',    v: fmtRevenue(ev.revenue) },
           { l: 'Тренер',     v: 'Анна Смирнова' },
         ].map(({ l, v }) => (
           <div key={l} style={{ background: 'var(--bg)', borderRadius: '8px', padding: '10px 12px' }}>
@@ -100,7 +103,7 @@ export function TabSobytiya({ period: _period }: TabSobytiyaProps) {
                 <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{ev.date} · {ev.type}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '14px', fontWeight: 800, color: ev.color }}>{ev.revenue}</div>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: ev.color }}>{fmtRevenue(ev.revenue)}</div>
                 <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{ev.attendees} участников</div>
               </div>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2" style={{ transform: expanded === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>

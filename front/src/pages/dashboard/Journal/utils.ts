@@ -3,7 +3,7 @@ import type { Booking } from './types';
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
 export function getBookingLayouts(bookings: Booking[]) {
-  const layouts = new Map<string, any>();
+  const layouts = new Map<number, any>();
   const RIGHT_SPACE = 28; // Отступ справа
 
   if (bookings.length === 0) return layouts;

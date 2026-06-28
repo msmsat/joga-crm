@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from '../../Profile.module.css';
 import type { UserInfo } from '../../types';
 import PremiumInput from '../ui/PremiumInput';
@@ -17,27 +18,28 @@ const spinnerSvg = (
 );
 
 export default function PersonalInfoForm({ userInfo, setUserInfo, isSavingInfo, handleSaveInfo }: Props) {
+  const { t } = useTranslation(["profile", "common"]);
   return (
     <div style={{ padding: '32px', background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>
       <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '24px', letterSpacing: '-0.2px' }}>
-        Личные данные
+        {t("profile:personalInfo.heading")}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <PremiumInput
-          label="Полное Имя"
+          label={t("common:fields.fullName")}
           value={userInfo.name}
           onChange={v => setUserInfo({ ...userInfo, name: v })}
         />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <PremiumInput
-            label="Email адрес"
+            label={t("common:fields.email")}
             type="email"
             value={userInfo.email}
             onChange={v => setUserInfo({ ...userInfo, email: v })}
           />
           <PremiumInput
-            label="Телефон"
+            label={t("common:fields.phone")}
             value={userInfo.phone}
             onChange={v => setUserInfo({ ...userInfo, phone: v })}
           />
@@ -60,7 +62,7 @@ export default function PersonalInfoForm({ userInfo, setUserInfo, isSavingInfo, 
           onMouseEnter={e => { if (!isSavingInfo) e.currentTarget.style.transform = 'translateY(-2px)'; }}
           onMouseLeave={e => { if (!isSavingInfo) e.currentTarget.style.transform = 'none'; }}
         >
-          {isSavingInfo ? spinnerSvg : 'Сохранить изменения'}
+          {isSavingInfo ? spinnerSvg : t("common:buttons.saveChanges")}
         </button>
       </div>
     </div>

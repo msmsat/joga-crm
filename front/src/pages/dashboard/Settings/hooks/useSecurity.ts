@@ -24,8 +24,9 @@ export function useSecurity(triggerToast: (msg: string) => void) {
     setApiTokens(prev => [...prev, {
       id: Date.now(),
       name: newTokenName,
-      key: `vel_live_${Math.random().toString(36).substr(2, 8)}`,
-      created: "Только что",
+      token_prefix: `vel_live_${Math.random().toString(36).substr(2, 8)}`,
+      created_at: new Date().toISOString(),
+      is_active: true,
     }]);
     setNewTokenName("");
     setSecExpanded(null);

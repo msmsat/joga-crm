@@ -1,9 +1,8 @@
-export interface Task {
-  id: number;
-  text: string;
-  priority: 'high' | 'medium' | 'low';
-  tag: string;
-}
+import type { StudioTask, ActivityLog } from '../../../api/analytics/analytics.types';
+export type { StudioTask, ActivityLog };
+
+export type Task = StudioTask;
+export type RecentEvent = ActivityLog;
 
 export interface MetricConfig {
   id: string;
@@ -14,13 +13,4 @@ export interface MetricConfig {
   glow: string;
   route: string;
   formatTooltip: (v: number) => string;
-}
-
-export interface RecentEvent {
-  id: number;
-  type: string;
-  actor: string;
-  action: string;
-  time: string;
-  color: string;
 }

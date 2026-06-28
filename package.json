@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/msmsat/joga-crm#readme",
   "dependencies": {
-    "openai": "^6.44.0"
+    "i18next": "^26.3.3",
+    "openai": "^6.44.0",
+    "react-i18next": "^17.0.8"
   }
 }

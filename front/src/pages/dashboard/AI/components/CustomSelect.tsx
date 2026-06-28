@@ -12,7 +12,9 @@ interface CustomSelectProps {
 
 export default function CustomSelect({ value, options, onChange, placeholder }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0, width: 0 });
   const wrapRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const current = options.find(o => o.value === value);
 
   useEffect(() => {
@@ -24,11 +26,20 @@ export default function CustomSelect({ value, options, onChange, placeholder }: 
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  const handleOpen = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setDropPos({ top: rect.bottom + 5, left: rect.left, width: rect.width });
+    }
+    setOpen(v => !v);
+  };
+
   return (
     <div ref={wrapRef} className={styles.customSelectWrap}>
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(v => !v)}
+        onClick={handleOpen}
         className={`${styles.customSelectBtn} ${open ? styles.customSelectBtnOpen : ''}`}
       >
         <span className={styles.customSelectValue}>{current?.label ?? placeholder ?? value}</span>
@@ -41,7 +52,10 @@ export default function CustomSelect({ value, options, onChange, placeholder }: 
         </svg>
       </button>
       {open && (
-        <div className={styles.customSelectDropdown}>
+        <div
+          className={styles.customSelectDropdown}
+          style={{ position: 'fixed', top: dropPos.top, left: dropPos.left, width: dropPos.width }}
+        >
           {options.map(o => (
             <div
               key={o.value}

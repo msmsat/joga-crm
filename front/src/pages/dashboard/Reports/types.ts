@@ -15,28 +15,35 @@ export interface TrainerRecord {
   name: string;
   role: string;
   sessions: number;
-  revenue: string;
+  revenue: number;
   rating: number;
   retention: number;
   color: string;
-  initials: string;
 }
 
 export interface ServiceRecord {
   name: string;
   sessions: number;
-  revenue: string;
+  revenue: number;
   share: number;
   color: string;
   trend: string;
 }
 
+export interface SalesBuyerPayment {
+  label: string;
+  pct: number;
+  color: string;
+}
+
 export interface SalesRecord {
   label: string;
   count: number;
-  revenue: string;
-  avg: string;
+  revenue: number;
+  avg: number;
   badge: string;
+  buyers: { newPct: number; retPct: number };
+  payments: SalesBuyerPayment[];
 }
 
 export interface EventRecord {
@@ -44,7 +51,7 @@ export interface EventRecord {
   title: string;
   type: string;
   attendees: number;
-  revenue: string;
+  revenue: number | null;
   status: string;
   color: string;
 }

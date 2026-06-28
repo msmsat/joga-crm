@@ -8,9 +8,10 @@ export function useNotifications() {
     telegram: true, instagram: false, whatsapp: true, email: true, sms: false, push: false,
   });
   const [activeRole, setActiveRole] = useState<Role>('client');
-  const [animDir, setAnimDir] = useState<'left' | 'right'>('right');
-  const [animating, setAnimating] = useState(false);
   const [toggles, setToggles] = useState<Toggles>(buildInitialToggles);
+  const [savedToggles, setSavedToggles] = useState<Toggles>(buildInitialToggles);
+
+  const isDirty = JSON.stringify(toggles) !== JSON.stringify(savedToggles);
 
   const toggleChannel = (key: ChannelKey) =>
     setChannels(prev => ({ ...prev, [key]: !prev[key] }));
@@ -22,16 +23,13 @@ export function useNotifications() {
     }));
 
   const switchRole = (role: Role) => {
-    if (role === activeRole || animating) return;
-    const idx = ROLES.findIndex(r => r.key === role);
-    const curIdx = ROLES.findIndex(r => r.key === activeRole);
-    setAnimDir(idx > curIdx ? 'right' : 'left');
-    setAnimating(true);
-    setTimeout(() => {
-      setActiveRole(role);
-      setAnimating(false);
-    }, 200);
+    if (role === activeRole) return;
+    setActiveRole(role);
   };
+
+  const saveChanges = () => setSavedToggles(toggles);
+
+  const cancelChanges = () => setToggles(savedToggles);
 
   const countActive = (role: Role) =>
     NOTIF_EVENTS[role].reduce((sum, ev) => {
@@ -48,6 +46,6 @@ export function useNotifications() {
     activeRole, switchRole, countActive,
     currentRole, events, activeChannels,
     toggles, toggleCheck, setToggles,
-    animating, animDir,
+    isDirty, saveChanges, cancelChanges,
   };
 }

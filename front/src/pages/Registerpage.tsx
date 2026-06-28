@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import "../App.css";
-import { 
-  Orbs, Logo, InputField, PasswordStrength, StepDots, 
+import {
+  Orbs, Logo, InputField, PasswordStrength, StepDots,
   IconEmail, IconUser, IconLock, IconEyeOpen, IconEyeClosed, ErrorAlert
 } from "../components/UI"; // 🔥 Весь UI подтягивается отсюда
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
+import { authApi, ApiError } from '../api';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -38,17 +39,10 @@ export default function RegisterPage() {
   const handleGoogleSuccess = async (credential: string) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: credential }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail);
-      
+      const data = await authApi.google({ token: credential });
       localStorage.setItem("token", data.access_token);
       navigate("/dashboard");
-    } catch (err: any) {
+    } catch {
       setSubmitError("Ошибка авторизации через Google");
     } finally {
       setLoading(false);
@@ -87,35 +81,13 @@ export default function RegisterPage() {
   const handleRegister = async () => {
     if (!validateStep(3)) return;
     setLoading(true);
-    setSubmitError(""); 
+    setSubmitError("");
 
     try {
-      const response = await fetch("http://localhost:8000/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          name: displayName, 
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Если FastAPI вернул массив ошибок (422), достаем первую понятную ошибку
-        if (Array.isArray(data.detail)) {
-          throw new Error(`Ошибка: ${data.detail[0].loc[1]} - ${data.detail[0].msg}`);
-        }
-        // Иначе выводим обычную текстовую ошибку
-        throw new Error(data.detail || "Не удалось зарегистрироваться");
-      }
-
-      // Если успешно — сервер НЕ дал токен, а отправил код. Переходим на Шаг 4.
+      await authApi.register({ email, name: displayName, password });
       setStep(4);
-
-    } catch (err: any) {
-      setSubmitError(err.message || "Ошибка соединения с сервером");
+    } catch (err: unknown) {
+      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
     } finally {
       setLoading(false);
     }
@@ -124,30 +96,14 @@ export default function RegisterPage() {
   const handleVerify = async () => {
     if (!validateStep(4)) return;
     setLoading(true);
-    setSubmitError(""); 
+    setSubmitError("");
 
     try {
-      const response = await fetch("http://localhost:8000/auth/verify-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          code: code,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Неверный код подтверждения");
-      }
-
-      // 🎉 УСПЕХ: Код подошел, мы получили токен!
+      const data = await authApi.verifyEmail({ email, code });
       localStorage.setItem("token", data.access_token);
-      setDone(true); // Показываем экран "Добро пожаловать"
-
-    } catch (err: any) {
-      setSubmitError(err.message || "Ошибка соединения с сервером");
+      setDone(true);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,13 @@
-export type MessageRole = 'user' | 'ai';
+export type { AIChatSession, AIChatMessage, AISettings } from '../../../api/ai/ai.types';
+
+export type MessageRole = 'user' | 'assistant';
 export type MessageStatus = 'sending' | 'thinking' | 'typing' | 'done';
 export type AgentTone = 'friendly' | 'formal' | 'neutral';
 export type AIModel = 'gpt-4o' | 'gpt-4o-mini' | 'claude-3-5-sonnet' | 'gemini-1.5-pro';
 export type AILanguage = 'auto' | 'ru' | 'en' | 'uk';
 
 export interface Message {
-  id: string;
+  id: number;
   role: MessageRole;
   text: string;
   timestamp: Date;
@@ -13,7 +15,7 @@ export interface Message {
 }
 
 export interface ChatSession {
-  id: string;
+  id: number;
   title: string;
   preview: string;
   timestamp: Date;
@@ -37,7 +39,7 @@ export interface AgentConfig {
   systemPrompt: string;
 }
 
-export interface AISettings {
+export interface AIUISettings {
   model: AIModel;
   language: AILanguage;
 }
