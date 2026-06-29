@@ -80,3 +80,31 @@ Desktop.ini
 !.vscode/extensions.json
 *.swp
 *.swo
+
+# ==========================================
+# 10. Python (Бэкенд)
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Виртуальные окружения Python
+venv/
+.venv/
+env/
+.env_python/
+
+# Сборки и кэш пакетов Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
