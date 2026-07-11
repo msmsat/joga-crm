@@ -26,10 +26,10 @@
   background: var(--bg);
   color: var(--onyx);
   display: flex;
-  /* Убираем глобальный скролл: компенсируем padding 28px из App.css */
-  height: calc(100vh - 56px);
-  margin: -28px;
-  width: calc(100% + 56px);
+  /* Убираем глобальный скролл: компенсируем padding контента из App.css */
+  height: calc(100vh - var(--topbar-h, 72px));
+  margin: calc(-1 * var(--content-pad, 28px));
+  width: calc(100% + 2 * var(--content-pad, 28px));
   overflow: hidden;
   position: relative;
 }
@@ -960,7 +960,10 @@
   border-radius: 20px;
   box-shadow: 0 32px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(26,26,26,0.04);
   width: 580px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 48px);
   overflow: hidden;
+  overflow-y: auto;
   animation: modal-in 0.3s cubic-bezier(0.34,1.2,0.64,1);
 }
 .kp-grid {
@@ -1261,6 +1264,48 @@
 }
 .ai-send-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 12px rgba(123,108,212,0.3); }
 .ai-send-btn:active:not(:disabled) { transform: scale(0.95); }
+
+/* ════════════════════════════════════════════════════════════
+   АДАПТИВ: компактный режим для маленьких ноутбуков (≤1280px).
+   Блок в конце файла, чтобы побеждать базовые правила по каскаду.
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 1280px) {
+  .j-root { --j-col-min: 150px; }
+  .j-right { width: 240px; }
+  .j-toolbar { gap: 8px; padding: 0 14px; }
+  /* Вместо max-content: колонки могут ужаться до --j-col-min,
+     и 5 тренеров влезают без горизонтального скролла */
+  .j-grid { min-width: 100%; }
+  .j-col-header, .j-empty-slot { min-width: var(--j-col-min, 150px); }
+}
+
+/* ── Сжатие шапки колонок при скролле расписания (компактные экраны) ──
+   Класс .j-hdr-compact вешается на .j-grid-wrapper из React по scrollTop.
+   При скролле вниз аватар/роль/статистика прячутся, остаётся имя
+   (тренер/зал) или день+дата — понятно, что за колонка, но шапка тонкая. */
+@media (max-width: 1440px), (max-height: 860px) {
+  .j-col-header { transition: height 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+  .j-hdr-compact { --j-header-h: 44px; }
+  /* !important: перебиваем инлайновый display:flex у аватара/статистики */
+  .j-hdr-compact .j-hdr-avatar,
+  .j-hdr-compact .j-hdr-sub,
+  .j-hdr-compact .j-hdr-stats { display: none !important; }
+  .j-hdr-compact .j-hdr-namewrap { min-width: 0; width: 100%; text-align: center; }
+  .j-hdr-compact .j-hdr-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12.5px !important;
+  }
+  /* Недельный вид: день и дата в одну строку */
+  .j-hdr-compact .j-hdr-weekwrap { flex-direction: row !important; justify-content: center; gap: 7px; }
+  .j-hdr-compact .j-hdr-date {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 13px !important;
+    margin-top: 0 !important;
+  }
+}
 .ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(100%); }
 
 /* ════════════════════════════════════════════════════════════

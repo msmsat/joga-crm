@@ -82,7 +82,14 @@
   transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .pageContentPushed {
-  padding-right: 440px;
+  padding-right: calc(var(--drawer-w, 420px) + 20px);
+}
+/* На ≤1600px drawer ложится поверх контента (overlay), не отодвигая его —
+   консистентно с глобальной AI-панелью */
+@media (max-width: 1600px) {
+  .pageContentPushed {
+    padding-right: 0;
+  }
 }
 
 /* ─── Drawer ─── */
@@ -94,10 +101,10 @@
 }
 .drawer {
   position: fixed;
-  top: 72px;
+  top: var(--topbar-h, 72px);
   right: 0;
   bottom: 0;
-  width: 420px;
+  width: var(--drawer-w, 420px);
   background: var(--card);
   border-left: 1px solid var(--border);
   border-top: 1px solid var(--border);
@@ -120,6 +127,7 @@
 }
 .drawerBody {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 24px 28px;
   overscroll-behavior: contain;

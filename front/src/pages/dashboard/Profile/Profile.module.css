@@ -3,6 +3,37 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Page layout (адаптив под маленькие desktop-экраны) ─── */
+.page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 1440px) {
+  .page { padding: 28px; }
+}
+
+@media (max-width: 1280px) {
+  .page { padding: 24px 20px; }
+  .grid { grid-template-columns: minmax(320px, 360px) 1fr; gap: 24px; }
+}
+
+@media (max-height: 820px) {
+  .page { padding-top: 24px; padding-bottom: 24px; }
+}
+
 @keyframes spin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

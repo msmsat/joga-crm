@@ -10,3 +10,10 @@
   overflow: hidden;
   margin-bottom: 20px;
 }
+
+@media (max-width: 1280px) {
+  .financeIllus {
+    padding: 20px 24px;
+    gap: 24px;
+  }
+}

@@ -8,6 +8,7 @@ import ActiveSessionCard from './components/sections/ActiveSessionCard';
 import PersonalInfoForm from './components/sections/PersonalInfoForm';
 import Toast from './components/ui/Toast';
 import { icons } from './components/ui/ProfileIcons';
+import styles from './Profile.module.css';
 
 export default function Profile() {
   const { t } = useTranslation(["profile", "common"]);
@@ -22,11 +23,7 @@ export default function Profile() {
   const { userInfo, setUserInfo, isSavingInfo, handleSaveInfo } = useProfileForm(triggerToast, setAccounts);
 
   return (
-    <div style={{
-      width: '100%', minHeight: 'calc(100vh - 80px)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      padding: '40px', boxSizing: 'border-box',
-    }}>
+    <div className={styles.page}>
       <div style={{
         width: '100%', maxWidth: '980px',
         display: 'flex', flexDirection: 'column', gap: '32px',
@@ -44,7 +41,7 @@ export default function Profile() {
         </div>
 
         {/* Two-column grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '40px', alignItems: 'start' }}>
+        <div className={styles.grid}>
           {/* Left column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <LinkedAccounts

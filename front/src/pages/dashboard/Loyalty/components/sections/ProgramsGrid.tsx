@@ -9,7 +9,7 @@ interface Props {
 
 export default function ProgramsGrid({ programsList, openDrawer }: Props) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', marginBottom: '24px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
       {programsList.map((prog, i) => (
         <div
           key={prog.key}

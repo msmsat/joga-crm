@@ -948,10 +948,10 @@ export function ClientProfileSlider({ client, profile, isOpen, onClose, onDelete
           border-radius: 16px;
         }
         .right-panel-wrapper.is-open {
-          width: 420px; opacity: 1; margin-left: 20px;
+          width: var(--drawer-w, 420px); opacity: 1; margin-left: 20px;
         }
         .right-panel-inner {
-          width: 420px;
+          width: var(--drawer-w, 420px);
           height: 100%;
           display: flex; flex-direction: column;
           overscroll-behavior: contain;

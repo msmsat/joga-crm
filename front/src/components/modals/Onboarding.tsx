@@ -169,7 +169,7 @@ export default function OnboardingPage() {
     <div
       className="velora-modal"
       style={{
-        width: "100%", maxWidth: "920px", minHeight: "560px",
+        width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100vh - 40px))", maxHeight: "calc(100vh - 40px)",
         background: "#FDFCFB", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
         display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden",
@@ -236,7 +236,7 @@ export default function OnboardingPage() {
       {/* ── RIGHT PANEL ── */}
       <div style={{
         padding: "44px 40px", display: "flex", flexDirection: "column",
-        justifyContent: "space-between", position: "relative", overflow: "hidden",
+        justifyContent: "space-between", position: "relative", overflowX: "hidden", overflowY: "auto",
       }}>
         <div key={step} style={animStyle}>
           {step === 1 && <StepIdentity data={data} onChange={patch} />}

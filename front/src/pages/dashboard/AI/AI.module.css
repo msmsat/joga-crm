@@ -19,6 +19,13 @@
   overflow: hidden;
 }
 
+@media (max-width: 1280px) {
+  .leftPanel {
+    width: 264px;
+    min-width: 264px;
+  }
+}
+
 .leftPanelHeader {
   display: flex;
   align-items: center;
@@ -58,6 +65,7 @@
 /* ─── SESSION LIST ───────────────────────────────────────────────────────────── */
 .sessionList {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 0 8px;
   scrollbar-width: none;
@@ -376,8 +384,9 @@
 
 .messagesArea {
   flex: 1;
+  min-height: 0; /* сжимается на низких окнах, иначе инпут выталкивается за экран */
   overflow-y: auto;
-  padding: 28px 28px 16px;
+  padding: var(--content-pad, 28px) var(--content-pad, 28px) 16px;
   scrollbar-width: thin;
   scrollbar-color: rgba(26,26,26,0.07) transparent;
 }
@@ -797,6 +806,7 @@
 
 .modalBody {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 20px 24px;
   scrollbar-width: thin;

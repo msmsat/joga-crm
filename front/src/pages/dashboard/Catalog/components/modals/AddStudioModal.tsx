@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import "../../../../../App.css";
 import { Logo, InputField, PhoneField } from "../../../../../components/UI";
+import { studioApi } from "../../../../../api/studio/studio.api";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3;
@@ -258,7 +259,9 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   const [animating, setAnimating] = useState(false);
   const [dir, setDir] = useState<1 | -1>(1);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoHover, setPhotoHover] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState<StudioFormData>({
@@ -294,6 +297,8 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   function handleClose() {
     setStep(1);
     setPhotoPreview(null);
+    setPhotoFile(null);
+    setSubmitError(null);
     setData({ name: "", phone: "", email: "", country: "", city: "", address: "", photo_url: null });
     onClose();
   }
@@ -301,11 +306,24 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   async function handleFinish() {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setSubmitError(null);
+
+    let photo_url: string | null = null;
+    if (photoFile) {
+      try {
+        photo_url = (await studioApi.uploadBranchPhoto(photoFile)).url;
+      } catch {
+        setSubmitError("Не удалось загрузить фото. Попробуйте другой файл или удалите его.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     try {
-      await onSuccess?.(data);
+      await onSuccess?.({ ...data, photo_url });
       handleClose();
     } catch {
-      // ошибки обрабатывает родитель
+      // ошибку показывает родитель (тост)
     } finally {
       setIsSubmitting(false);
     }
@@ -314,18 +332,17 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPhotoFile(file);
     const reader = new FileReader();
     reader.onload = ev => {
-      const url = ev.target?.result as string;
-      setPhotoPreview(url);
-      set("photo_url", url);
+      setPhotoPreview(ev.target?.result as string);
     };
     reader.readAsDataURL(file);
   }
 
   function removePhoto() {
     setPhotoPreview(null);
-    set("photo_url", null);
+    setPhotoFile(null);
     if (fileRef.current) fileRef.current.value = "";
   }
 
@@ -367,7 +384,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
 
       <div
         style={{
-          width: "100%", maxWidth: "860px", height: "580px",
+          width: "100%", maxWidth: "860px", height: "min(580px, calc(100vh - 32px))",
           background: "#FDFCFB", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "280px 1fr",
@@ -829,6 +846,15 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               )}
             </button>
           </div>
+
+          {submitError && (
+            <p style={{
+              textAlign: "center", fontSize: "12px", fontWeight: 600,
+              color: "#D88C9A", margin: "10px 0 0",
+            }}>
+              {submitError}
+            </p>
+          )}
 
           {step === 3 && (
             <p

@@ -3,8 +3,8 @@
   align-items: flex-start;
   gap: 0;
   transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-  /* 🔥 Фиксируем высоту контейнера (вычитаем Topbar и отступы) */
-  height: calc(100vh - 190px); 
+  /* 🔥 Фиксируем высоту контейнера (вычитаем Topbar, паддинги контента и шапку страницы) */
+  height: calc(100vh - var(--topbar-h, 72px) - 2 * var(--content-pad, 28px) - 62px);
   overflow: hidden;
 }
 

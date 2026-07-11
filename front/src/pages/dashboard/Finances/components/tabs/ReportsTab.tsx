@@ -165,18 +165,18 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px', alignItems: 'start' }}>
         {/* 2. Линейный график движения средств */}
         <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
 
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: '12px', marginBottom: '20px', gap: '12px' }}>
             <div style={{ flexShrink: 0 }}>
               <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '4px' }}>Движение средств</div>
               <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>Анализ доходов и расходов</div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-end', rowGap: '10px' }}>
               {/* Мини-статистика */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', paddingRight: '16px', borderRight: '1px solid rgba(26,26,26,0.07)' }}>
 
@@ -187,7 +187,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 </div>
 
                 {/* Доход */}
-                <div style={{ minWidth: '88px' }}>
+                <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Доход</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispIncome)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: incDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
@@ -196,7 +196,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 </div>
 
                 {/* Расход */}
-                <div style={{ minWidth: '88px' }}>
+                <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Расход</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispExpense)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: expDelta >= 0 ? '#D88C9A' : '#5BAB72', visibility: isSelection ? 'hidden' : 'visible' }}>
@@ -205,7 +205,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 </div>
 
                 {/* Прибыль */}
-                <div style={{ minWidth: '88px' }}>
+                <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Прибыль</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispProfit)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: profitDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
@@ -227,9 +227,9 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
             </div>
           </div>
 
-          {/* SVG Chart */}
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+          {/* SVG Chart: высота ограничена clamp'ом, а не высотой соседней карточки */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: 'clamp(180px, 30vh, 320px)', position: 'relative' }}>
               <svg
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', cursor: dragStart !== null ? 'col-resize' : 'crosshair', userSelect: 'none' }}
                 viewBox={`0 0 ${SVG_W} ${SVG_H}`}

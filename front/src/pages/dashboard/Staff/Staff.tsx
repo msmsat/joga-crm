@@ -267,7 +267,7 @@ export default function Staff() {
 
           {profile && (
             <>
-              <div className="premium-hero" style={{ height: '160px' }}>
+              <div className="premium-hero">
                 <div className="hero-bg" style={{ background: 'rgba(252,174,145,0.08)' }} />
 
                 <div className="hero-actions">

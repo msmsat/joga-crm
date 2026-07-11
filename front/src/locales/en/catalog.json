@@ -35,6 +35,8 @@
       "subtitle": "Add your first studio"
     },
     "toasts": {
+      "created": "Studio created",
+      "createError": "Failed to create studio",
       "deleted": "Studio deleted",
       "hallDeleted": "Hall deleted",
       "edit": "Edit: {{name}}"

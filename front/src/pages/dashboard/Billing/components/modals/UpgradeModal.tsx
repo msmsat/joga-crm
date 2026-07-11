@@ -22,7 +22,7 @@ export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDisco
       onClick={onClose}
     >
       <div
-        style={{ background: 'var(--bg-card)', borderRadius: '24px', padding: '40px', maxWidth: '440px', width: '100%', boxShadow: '0 40px 120px rgba(26,26,26,0.25)', border: '1px solid var(--border)' }}
+        style={{ background: 'var(--bg-card)', borderRadius: '24px', padding: '40px', maxWidth: '440px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', boxShadow: '0 40px 120px rgba(26,26,26,0.25)', border: '1px solid var(--border)' }}
         onClick={e => e.stopPropagation()}
       >
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>

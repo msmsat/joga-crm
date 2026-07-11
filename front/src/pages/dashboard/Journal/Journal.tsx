@@ -42,6 +42,8 @@ export default function Journal() {
 
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [dateInputVal, setDateInputVal] = useState("");
+  // Компактная шапка колонок при скролле расписания (гистерезис против дребезга)
+  const [compactHeaders, setCompactHeaders] = useState(false);
 
 
   // 2. ДАЛЕЕ ИДУТ УТИЛИТЫ И ФУНКЦИИ
@@ -321,7 +323,14 @@ export default function Journal() {
 
           {/* ── СЕТКА ── */}
           <div className="j-layout">
-            <div className="j-grid-wrapper" ref={gridWrapperRef}>
+            <div
+              className={`j-grid-wrapper${compactHeaders ? ' j-hdr-compact' : ''}`}
+              ref={gridWrapperRef}
+              onScroll={e => {
+                const st = e.currentTarget.scrollTop;
+                setCompactHeaders(prev => (prev ? st > 8 : st > 56));
+              }}
+            >
               <Grid
                 isTransitioning={isTransitioning}
                 transitionReason={transitionReason} // 🔥 Передаем причину в Сетку

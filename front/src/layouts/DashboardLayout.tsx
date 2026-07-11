@@ -106,7 +106,7 @@ export default function DashboardLayout() {
   }, []);
 
   return (
-    <div style={{
+    <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
       display: 'flex',
       height: '100vh',
       overflow: 'hidden',
@@ -115,7 +115,6 @@ export default function DashboardLayout() {
       color: 'var(--text)',
       fontSize: '14px',
       lineHeight: 1.5,
-      paddingRight: isDrawerOpen ? '420px' : '0',
       transition: 'padding-right 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     }}>
       
@@ -303,7 +302,7 @@ export default function DashboardLayout() {
           alignItems: 'center', 
           justifyContent: 'space-between',
           padding: '0 24px',
-          height: '72px',
+          height: 'var(--topbar-h)',
           background: 'var(--bg-card, #FFFFFF)',
           borderBottom: '1px solid rgba(26,26,26,0.04)',
           zIndex: 100 /* Теперь это реально работает */
@@ -316,7 +315,7 @@ export default function DashboardLayout() {
           </div>
           
           {/* 2. ЦЕНТРАЛЬНАЯ ЧАСТЬ (Премиальный AI-Инпут) */}
-          <div ref={aiSearchRef} style={{ flex: '0 1 540px', padding: '0 24px', position: 'relative' }}>
+          <div ref={aiSearchRef} style={{ flex: '0 1 var(--ai-search-w)', padding: '0 24px', position: 'relative' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { KeyboardEvent } from 'react';
 import { useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
@@ -206,7 +207,9 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
     ? form.name.trim().split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
     : '';
 
-  return (
+  // Портал на document.body: внутри .content (position:relative + zIndex:1) оверлей
+  // попадает в его stacking context и сайдбар/топбар рисуются поверх затемнения
+  return createPortal(
     <>
       <style>{`
         @keyframes acOverlayIn { from { opacity: 0 } to { opacity: 1 } }
@@ -230,7 +233,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            width: '860px', height: '596px', maxWidth: 'calc(100vw - 32px)',
+            width: 'min(780px, calc(100vw - 48px))', height: 'min(556px, calc(100vh - 32px))',
             background: '#fff', borderRadius: '24px', overflow: 'hidden',
             display: 'flex', boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
             animation: 'acModalIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both',
@@ -238,7 +241,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
         >
           {/* ─ LEFT PANEL ─ */}
           <div style={{
-            width: '260px', flexShrink: 0, padding: '36px 28px',
+            width: '236px', flexShrink: 0, padding: '30px 24px',
             background: 'linear-gradient(160deg, #fff9f6 0%, #fff4ef 60%, #fdeee8 100%)',
             borderRight: '1px solid rgba(252,174,145,0.18)',
             display: 'flex', flexDirection: 'column',
@@ -296,7 +299,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
           {/* ─ RIGHT PANEL ─ */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             {/* Header */}
-            <div style={{ padding: '24px 32px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '20px' }}>
+            <div style={{ padding: '20px 26px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
               <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>Новый клиент</div>
               <button
                 onClick={handleClose}
@@ -314,7 +317,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             <div
               key={step}
               style={{
-                flex: 1, overflowY: 'auto', padding: '28px 32px',
+                flex: 1, overflowY: 'auto', padding: '22px 26px',
                 animation: 'acStepIn 0.3s ease both',
                 ['--ac-dir' as string]: dir,
               }}
@@ -464,7 +467,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '20px 32px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(26,26,26,0.01)' }}>
+            <div style={{ padding: '16px 26px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(26,26,26,0.01)' }}>
               <button
                 onClick={step === 1 ? handleClose : goBack}
                 style={{ padding: '10px 20px', borderRadius: '10px', border: '1px solid var(--border)', background: 'transparent', fontSize: '13px', fontWeight: 700, color: 'var(--text3)', cursor: 'pointer', fontFamily: "'Manrope',sans-serif", transition: 'all 0.2s' }}
@@ -516,6 +519,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

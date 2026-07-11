@@ -131,7 +131,7 @@ export default function Settings() {
       <div style={{ display: "flex", width: "100%", alignItems: "start", height: "100%", overflow: "hidden" }}>
         {/* ─── LEFT NAV ─── */}
         <aside style={{
-          width: "260px",
+          width: "clamp(224px, 18vw, 260px)",
           height: "100%",
           background: "transparent",
           borderRight: "1px solid rgba(26,26,26,0.06)",

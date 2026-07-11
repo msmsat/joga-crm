@@ -40,7 +40,7 @@ export const Grid: React.FC<GridProps> = ({
   return (
     <div
       className="j-grid"
-      style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(170px, 1fr))` }}
+      style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(var(--j-col-min, 170px), 1fr))` }}
     >
       <div className="j-top-left-corner" />
 
@@ -71,7 +71,7 @@ export const Grid: React.FC<GridProps> = ({
             style={{
               borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
               overflow: 'hidden',
-              height: 94, // 🔥 ЖЕСТКАЯ ФИКСАЦИЯ ВЫСОТЫ: Теперь ряд всегда одного размера
+              height: 'var(--j-header-h, 94px)', // 🔥 ЖЕСТКАЯ ФИКСАЦИЯ ВЫСОТЫ: ряд одного размера; на компактных экранах сжимается при скролле
               padding: '0 18px', // Убрали вертикальный padding, чтобы flex-центрирование работало чисто
               display: 'flex',
               alignItems: 'center',
@@ -103,14 +103,14 @@ export const Grid: React.FC<GridProps> = ({
                   : 0;
 
                 return (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
+                  <div className="j-hdr-weekwrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
                     {/* Уменьшили день недели */}
                     <div style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       {DAY_NAMES_SHORT[ci]}
                     </div>
-                    
+
                     {/* Уменьшили и жестко зафиксировали размеры кружка даты */}
-                    <div style={{ 
+                    <div className="j-hdr-date" style={{
                       fontSize: 15, fontWeight: 900, marginTop: 3,
                       color: isToday ? 'white' : 'var(--onyx)', 
                       background: isToday ? 'var(--peach)' : 'transparent',
@@ -124,14 +124,14 @@ export const Grid: React.FC<GridProps> = ({
                     </div>
 
                     {/* Микро-виджет статистики дня (зан., чел., % загрузки) */}
-                    <div style={{ 
-                      fontSize: 10.5, 
-                      color: 'var(--muted)', 
-                      fontWeight: 600, 
-                      marginTop: 6, 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center', 
+                    <div className="j-hdr-stats" style={{
+                      fontSize: 10.5,
+                      color: 'var(--muted)',
+                      fontWeight: 600,
+                      marginTop: 6,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
                       gap: 1,
                       whiteSpace: 'nowrap'
                     }}>
@@ -149,7 +149,7 @@ export const Grid: React.FC<GridProps> = ({
                   trainer ? (
                   <>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-                      <div style={{
+                      <div className="j-hdr-avatar" style={{
                           width: 38, height: 38, borderRadius: '12px',
                           background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
                           border: `1.5px solid ${trainer.color}30`,
@@ -159,20 +159,20 @@ export const Grid: React.FC<GridProps> = ({
                       }}>
                           {trainer.initials}
                       </div>
-                      <div>
-                          <div style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
-                          <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
+                      <div className="j-hdr-namewrap">
+                          <div className="j-hdr-name" style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
+                          <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
                       </div>
                       </div>
-                      <div style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
                       {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
                       </div>
                   </>
                   ) : (
                   <>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
+                      <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
+                      <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
                   </>
               ))}
             </div>

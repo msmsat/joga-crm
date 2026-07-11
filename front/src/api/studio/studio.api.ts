@@ -8,6 +8,12 @@ export const studioApi = {
     return client.postForm<UploadLogoResponse>('/studio/upload-logo', form)
   },
 
+  uploadBranchPhoto: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return client.postForm<UploadLogoResponse>('/studio/upload-branch-photo', form)
+  },
+
   get: () =>
     client.get<StudioRead>('/studio'),
 

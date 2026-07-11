@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ApiError } from '../../../../api/client';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
 import AddStudioModal from './modals/AddStudioModal';
 
@@ -316,15 +317,20 @@ export function StudioSection({ showToast }: Props) {
       isOpen={isAddModalOpen}
       onClose={() => setIsAddModalOpen(false)}
       onSuccess={async (data) => {
-        await createBranch({
-          name: data.name,
-          phone: data.phone || null,
-          email: data.email || null,
-          country: data.country || null,
-          city: data.city || null,
-          address: data.address || null,
-          photo_url: data.photo_url,
-        });
+        try {
+          await createBranch({
+            name: data.name,
+            phone: data.phone || null,
+            email: data.email || null,
+            country: data.country || null,
+            city: data.city || null,
+            address: data.address || null,
+            photo_url: data.photo_url,
+          });
+        } catch (error) {
+          showToast(error instanceof ApiError ? error.message : t('catalog:studios.toasts.createError'));
+          throw error;
+        }
         setIsAddModalOpen(false);
         showToast(t('catalog:studios.toasts.created'));
       }}

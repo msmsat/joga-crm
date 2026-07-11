@@ -797,3 +797,17 @@
 .fade-in {
   animation: fadeSlide 0.25s ease both;
 }
+
+/* ─── 9. НИЗКИЕ ЭКРАНЫ (ноутбуки 720-820px): компактный hero ─────────────────
+   Инфо-блок (аватар + имя + роль) поднимается вверх, вровень с кнопками
+   «Написать»/«Звонок». Скоуп .staff-layout перебивает дубли классов в App.css. */
+@media (max-height: 820px) {
+  .staff-layout .premium-hero {
+    height: 104px; /* 14 + аватар 72 + 18 */
+  }
+
+  .staff-layout .hero-info {
+    top: 14px; /* верх = top кнопок .hero-actions */
+    bottom: auto;
+  }
+}

@@ -548,7 +548,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
       <div
         style={{
-          width: "100%", maxWidth: "860px", height: "596px",
+          width: "100%", maxWidth: "860px", height: "min(596px, calc(100vh - 32px))",
           background: "#FDFCFB", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "280px 1fr",

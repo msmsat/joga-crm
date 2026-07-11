@@ -686,3 +686,19 @@
 }
 
 .cat-fade { animation: catFadeIn 0.28s ease both; }
+
+/* ─── НИЗКИЕ ЭКРАНЫ (ноутбуки 720-820px): компактный hero ────────────────────
+   Инфо-блок (лого + название) поднимается вверх, вровень с кнопками действий. */
+@media (max-height: 820px) {
+  .cat-hero {
+    height: auto;                /* ~92px вместо 148px */
+    flex-direction: row-reverse; /* инфо слева, кнопки справа */
+    justify-content: space-between;
+    align-items: flex-start;     /* верх инфо-блока = верх кнопок */
+    gap: 12px;
+  }
+
+  .cat-hero-info {
+    min-width: 0; /* длинное название не выталкивает кнопки */
+  }
+}
