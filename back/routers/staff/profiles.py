@@ -1,34 +1,27 @@
 from datetime import date, datetime, timedelta
-from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
-from jose import jwt
-from sqlalchemy import func, select
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from database import get_db
-from dependencies import get_current_user, oauth2_scheme, SECRET_KEY, ALGORITHM
+from dependencies import require_role, StudioContext
 from models import (
-    Hall, Lesson, Reservation, StaffWorkingHours, StudioMember, User,
+    Hall, Lesson, Reservation, Service, StaffWorkingHours, StudioMember, User,
 )
 from schemas import (
     StaffCreate, StaffUpdate,
     StaffListResponse, StaffProfileResponse, StaffMutateResponse,
 )
+from schemas.staff.staff import StaffWorkingHoursItem
+from security import get_password_hash
+from services.plan_limits import check_plan_limit
 
 router = APIRouter()
 
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────────
-
-def _studio_id_from_token(token: str) -> int:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    studio_id = payload.get("studio_id")
-    if not studio_id:
-        raise HTTPException(status_code=401, detail="studio_id не найден в токене")
-    return int(studio_id)
-
 
 async def _get_staff_member(
     staff_id: int, studio_id: int, db: AsyncSession
@@ -44,6 +37,41 @@ async def _get_staff_member(
     return row[0], row[1]
 
 
+async def _resolve_services(service_ids: list[int], studio_id: int, db: AsyncSession) -> list[Service]:
+    """Услуги по id, скоуп студии. Чужой/несуществующий id → 404."""
+    if not service_ids:
+        return []
+    result = await db.execute(
+        select(Service).where(Service.id.in_(service_ids), Service.studio_id == studio_id)
+    )
+    services = result.scalars().all()
+    if len(services) != len(set(service_ids)):
+        raise HTTPException(status_code=404, detail="Услуга не найдена")
+    return list(services)
+
+
+async def _replace_schedule(
+    user_id: int, schedule: list[StaffWorkingHoursItem], db: AsyncSession
+) -> None:
+    """Полная замена рабочего графика сотрудника (пришёл список — он и есть истина)."""
+    await db.execute(
+        delete(StaffWorkingHours).where(StaffWorkingHours.user_id == user_id)
+    )
+    for item in schedule:
+        db.add(StaffWorkingHours(
+            user_id=user_id,
+            day_of_week=item.day_of_week,
+            is_open=item.is_open,
+            open_time=item.open_time,
+            close_time=item.close_time,
+        ))
+
+
+def _is_online(user: User) -> bool:
+    """Онлайн = сегодня заходил в CRM (задача 12); полночь сбрасывает статус сама."""
+    return user.last_online_at == date.today()
+
+
 def _staff_list_item(user: User, role: str) -> dict:
     return {
         "id": user.id,
@@ -53,7 +81,7 @@ def _staff_list_item(user: User, role: str) -> dict:
         "phone": user.phone,
         "role": role,
         "department": user.department,
-        "is_online": user.is_online,
+        "is_online": _is_online(user),
         "photo_url": user.photo_url,
         "avatar_gradient": user.avatar_gradient,
     }
@@ -63,10 +91,12 @@ def _staff_list_item(user: User, role: str) -> dict:
 
 @router.get("/", response_model=StaffListResponse)
 async def list_staff(
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
+    offset: int = Query(0, ge=0),
+    limit: int = Query(40, ge=1, le=100),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
 
     result = await db.execute(
         select(User, StudioMember)
@@ -76,14 +106,17 @@ async def list_staff(
     )
     rows = result.all()
 
-    staff_list = [_staff_list_item(u, sm.role) for u, sm in rows]
-
+    # summary считаем по всей студии, страницу вырезаем из уже загруженных строк.
+    # ponytail: срез в Python ок на десятках сотрудников; тысячи — тогда offset/limit в SQL.
     by_role: dict[str, int] = {}
     online_count = 0
     for u, sm in rows:
         by_role[sm.role] = by_role.get(sm.role, 0) + 1
-        if u.is_online:
+        if _is_online(u):
             online_count += 1
+
+    page_rows = rows[offset:offset + limit]
+    staff_items = [_staff_list_item(u, sm.role) for u, sm in page_rows]
 
     return {
         "summary": {
@@ -91,7 +124,12 @@ async def list_staff(
             "online": online_count,
             "by_role": by_role,
         },
-        "staff": staff_list,
+        "staff": {
+            "items": staff_items,
+            "total": len(rows),
+            "offset": offset,
+            "limit": limit,
+        },
     }
 
 
@@ -100,11 +138,18 @@ async def list_staff(
 @router.get("/{staff_id}", response_model=StaffProfileResponse)
 async def get_staff_profile(
     staff_id: int,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     user, membership = await _get_staff_member(staff_id, studio_id, db)
+
+    services_result = await db.execute(
+        select(Service)
+        .join(Service.users)
+        .where(User.id == staff_id, Service.studio_id == studio_id)
+    )
+    services = [{"id": s.id, "name": s.name} for s in services_result.scalars().all()]
 
     today = date.today()
     today_start = datetime.combine(today, datetime.min.time())
@@ -173,7 +218,6 @@ async def get_staff_profile(
         {"id": h.id, "name": h.name, "color": h.color}
         for h in halls_result.scalars().all()
     ]
-
     # Today's schedule
     today_lessons_result = await db.execute(
         select(Lesson)
@@ -225,7 +269,7 @@ async def get_staff_profile(
         "phone": user.phone,
         "role": membership.role,
         "department": user.department,
-        "is_online": user.is_online,
+        "is_online": _is_online(user),
         "is_active": user.is_verified,
         "photo_url": user.photo_url,
         "avatar_gradient": user.avatar_gradient,
@@ -240,6 +284,7 @@ async def get_staff_profile(
             "total_revenue": total_revenue,
         },
         "halls": halls,
+        "services": services,
         "today_schedule": today_schedule,
         "week_working_hours": week_working_hours,
     }
@@ -250,10 +295,20 @@ async def get_staff_profile(
 @router.post("/", status_code=201, response_model=StaffMutateResponse)
 async def create_staff(
     data: StaffCreate,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
+    await check_plan_limit(db, studio_id, "staff")
+    existing = (await db.execute(
+        select(User).where(User.email == data.email)
+    )).scalars().first()
+    if existing:
+        # ponytail: MVP — существующий email отклоняем; переиспользование чужого
+        # аккаунта как сотрудника другой студии — отдельная фича (Эпик 4).
+        raise HTTPException(status_code=409, detail="Пользователь с таким email уже существует")
+
+    services = await _resolve_services(data.service_ids, studio_id, db)
 
     user = User(
         email=data.email,
@@ -264,16 +319,18 @@ async def create_staff(
         salary=data.salary,
         rate=data.rate,
         rate_type=data.rate_type,
-        hashed_password="",
-        is_verified=False,
-        is_onboarded=False,
-        is_online=False,
+        photo_url=data.photo_url,
+        hashed_password=get_password_hash(data.password),
+        is_verified=True,       # вход по временному паролю — без email-подтверждения
+        is_onboarded=True,      # онбординг только для владельца новой студии
+        services=services,
     )
     db.add(user)
     await db.flush()
 
     membership = StudioMember(user_id=user.id, studio_id=studio_id, role=data.role)
     db.add(membership)
+    await _replace_schedule(user.id, data.schedule, db)
     await db.commit()
     await db.refresh(user)
 
@@ -286,11 +343,29 @@ async def create_staff(
 async def update_staff(
     staff_id: int,
     data: StaffUpdate,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
-    user, membership = await _get_staff_member(staff_id, studio_id, db)
+    studio_id = ctx.studio_id
+    user_result = await db.execute(
+        select(User, StudioMember)
+        .join(StudioMember, StudioMember.user_id == User.id)
+        .options(selectinload(User.services))
+        .where(StudioMember.studio_id == studio_id, User.id == staff_id)
+    )
+    row = user_result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Сотрудник не найден")
+    user, membership = row
+
+    if data.email != user.email:
+        existing = (await db.execute(
+            select(User).where(User.email == data.email)
+        )).scalars().first()
+        if existing:
+            raise HTTPException(status_code=409, detail="Пользователь с таким email уже существует")
+
+    services = await _resolve_services(data.service_ids, studio_id, db)
 
     user.name = data.name
     user.last_name = data.last_name
@@ -300,8 +375,10 @@ async def update_staff(
     user.salary = data.salary
     user.rate = data.rate
     user.rate_type = data.rate_type
+    user.photo_url = data.photo_url
+    user.services = services
     membership.role = data.role
-
+    await _replace_schedule(user.id, data.schedule, db)
     await db.commit()
     await db.refresh(user)
 
@@ -313,10 +390,10 @@ async def update_staff(
 @router.delete("/{staff_id}", response_model=dict)
 async def delete_staff(
     staff_id: int,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     _, membership = await _get_staff_member(staff_id, studio_id, db)
 
     if membership.role == 'owner':

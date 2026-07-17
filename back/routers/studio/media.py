@@ -8,6 +8,7 @@ router = APIRouter()
 
 LOGOS_DIR = "static/logos"
 BRANCH_PHOTOS_DIR = "static/branches"
+STAFF_PHOTOS_DIR = "static/staff"
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
 MIME_TO_EXT = {
     "image/jpeg": "jpg",
@@ -59,4 +60,14 @@ async def upload_branch_photo(
     _token: str = Depends(oauth2_scheme),
 ):
     url = await _save_image(file, BRANCH_PHOTOS_DIR, max_size_mb=10)
+    return {"url": url}
+
+
+@router.post("/upload-staff-photo")
+async def upload_staff_photo(
+    file: UploadFile = File(...),
+    _token: str = Depends(oauth2_scheme),
+):
+    print(f"[upload-staff-photo] filename={file.filename!r}  content_type={file.content_type!r}")
+    url = await _save_image(file, STAFF_PHOTOS_DIR, max_size_mb=5)
     return {"url": url}

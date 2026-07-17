@@ -1,7 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { getPresetServices } from "../../constants";
+import { useNavigate } from "react-router-dom";
+import { DAYS_KEYS, TIME_OPTIONS } from "../../constants";
+import { servicesApi, type ServiceRead } from "../../../../../api/studio/services.api";
+import { settingsApi } from "../../../../../api/settings/settings.api";
+import { getCurrencySymbol } from "../../../../../components/UI";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -9,80 +13,18 @@ type Step = 1 | 2 | 3 | 4;
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
 
 interface StaffData {
-  name: string; last_name: string; phone: string; email: string;
-  role: string; department: string; services: string[];
+  name: string; last_name: string; phone: string; email: string; password: string;
+  role: string;
+  serviceIds: number[];
   salary: string; rate_type: "fixed" | "percent" | "hourly" | "";
   schedule: Record<string, ScheduleDay>;
 }
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-
-// 1. Привязываем роли к отделам (для красивых заголовков в списке)
-const ROLE_TO_DEPT_KEY: Record<string, string> = {
-  master_trainer: "pilates",
-  reformer_trainer: "pilates",
-  mat_trainer: "pilates",
-  stretching: "mind_body",
-  mfr: "mind_body",
-  healthy_back: "mind_body",
-  yoga: "mind_body",
-  masseur: "wellness",
-  osteopath: "wellness",
-  rehab: "wellness",
-  admin: "service",
-  manager: "management",
-};
-
 // 2. Иконки для каждой профессии (в едином минималистичном стиле)
 const ROLE_ICONS: Record<string, React.ReactNode> = {
-  master_trainer: (
+  trainer: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  ),
-  reformer_trainer: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="10" width="20" height="4" rx="1"/><line x1="5" y1="14" x2="5" y2="18"/><line x1="19" y1="14" x2="19" y2="18"/><circle cx="12" cy="7" r="2"/>
-    </svg>
-  ),
-  mat_trainer: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="16" width="18" height="2" rx="1"/><circle cx="12" cy="8" r="3"/><path d="M8 16v-3a4 4 0 0 1 8 0v3"/>
-    </svg>
-  ),
-  stretching: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 4h12M6 20h12M8 4v16M16 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/>
-    </svg>
-  ),
-  mfr: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/>
-    </svg>
-  ),
-  healthy_back: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v18" strokeDasharray="3 3"/><circle cx="12" cy="12" r="9"/>
-    </svg>
-  ),
-  yoga: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="4" r="1.5"/><path d="M12 6v6M9 9l-3 4h12l-3-4M7 19c1.5-1.5 3-2.5 5-2.5s3.5 1 5 2.5"/>
-    </svg>
-  ),
-  masseur: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 18c0-3 1.5-6 4-8l2-2a4 4 0 0 1 5.66 5.66l-2 2c-2 2-3 4.5-3 6"/><circle cx="14" cy="6" r="2.5"/>
-    </svg>
-  ),
-  osteopath: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 11a6 6 0 0 0-12 0c0 4 3 6 6 10 3-4 6-6 6-10z"/><circle cx="12" cy="11" r="2"/>
-    </svg>
-  ),
-  rehab: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
     </svg>
   ),
   admin: (
@@ -90,47 +32,11 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
       <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
     </svg>
   ),
-  manager: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-    </svg>
-  ),
 };
 
-// 3. Каталог плиток для выбора в модалке (Сетка 4x3)
 const PRESET_ROLES = [
-  // Блок: Пилатес
-  { id: "master_trainer",   label: "Мастер-тренер" },
-  { id: "reformer_trainer", label: "Тренер Реформер" },
-  { id: "mat_trainer",      label: "Тренер Мат-пилатес" },
-  { id: "yoga",             label: "Инструктор йоги" },
-  // Блок: Здоровье и гибкость
-  { id: "stretching",       label: "Стретчинг" },
-  { id: "mfr",              label: "МФР" },
-  { id: "healthy_back",     label: "Здоровая спина" },
-  { id: "rehab",            label: "Реабилитолог" },
-  // Блок: Терапия и сервис
-  { id: "masseur",          label: "Массажист" },
-  { id: "osteopath",        label: "Остеопат" },
-  { id: "admin",            label: "Администратор" },
-  { id: "manager",          label: "Управляющий" },
-];
-
-
-const DAYS = [
-  { key: "mon", label: "Понедельник" },
-  { key: "tue", label: "Вторник"    },
-  { key: "wed", label: "Среда"      },
-  { key: "thu", label: "Четверг"    },
-  { key: "fri", label: "Пятница"    },
-  { key: "sat", label: "Суббота"    },
-  { key: "sun", label: "Воскресенье"},
-];
-
-const TIME_OPTIONS = [
-  "06:00","07:00","08:00","09:00","10:00","11:00","12:00",
-  "13:00","14:00","15:00","16:00","17:00","18:00",
-  "19:00","20:00","21:00","22:00","23:00",
+  { id: "trainer" },
+  { id: "admin" },
 ];
 
 const defaultSchedule: Record<string, ScheduleDay> = {
@@ -381,26 +287,32 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown }: {
+function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown, error }: {
   value: string; onChange: (v: string) => void; placeholder: string;
   type?: string; onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  error?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
-    <input
-      type={type} value={value} onChange={e => onChange(e.target.value)}
-      placeholder={placeholder} onKeyDown={onKeyDown}
-      onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-      style={{
-        width: "100%", padding: "12px 15px",
-        background: focused ? "#fff" : "rgba(26,26,26,0.025)",
-        border: focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
-        borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
-        outline: "none", fontFamily: "Manrope, sans-serif",
-        boxShadow: focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
-        transition: "all 0.18s ease", boxSizing: "border-box" as const,
-      }}
-    />
+    <div>
+      <input
+        type={type} value={value} onChange={e => onChange(e.target.value)}
+        placeholder={placeholder} onKeyDown={onKeyDown}
+        onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+        style={{
+          width: "100%", padding: "12px 15px",
+          background: focused ? "#fff" : "rgba(26,26,26,0.025)",
+          border: error ? "1.5px solid #D88C9A" : focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
+          borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
+          outline: "none", fontFamily: "Manrope, sans-serif",
+          boxShadow: error ? "0 0 0 3px rgba(216,140,154,0.14)" : focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
+          transition: "all 0.18s ease", boxSizing: "border-box" as const,
+        }}
+      />
+      {error && (
+        <p style={{ fontSize: "11px", color: "#D88C9A", margin: "6px 0 0", fontWeight: 500 }}>{error}</p>
+      )}
+    </div>
   );
 }
 
@@ -408,21 +320,33 @@ function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown }: 
 export interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: (data: StaffData) => void;
+  onSuccess?: (data: StaffData) => Promise<void> | void;
 }
 
 export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModalProps) {
   const { t } = useTranslation(["staff", "common"]);
+  const navigate = useNavigate();
   const [step, setStep]       = useState<Step>(1);
   const [animating, setAnimating] = useState(false);
   const [dir, setDir]         = useState<1 | -1>(1);
-  const [customServiceInput, setCustomServiceInput] = useState("");
+  const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
   const [inviteLink]          = useState(`https://velora.studio/join/k9x2a-${Math.random().toString(36).slice(2, 8)}`);
+  const [availableServices, setAvailableServices] = useState<ServiceRead[]>([]);
+  const [currency, setCurrency] = useState<string>();
+
+  useEffect(() => {
+    if (isOpen) {
+      servicesApi.list().then(setAvailableServices).catch(() => setAvailableServices([]));
+      settingsApi.getGeneral().then(s => setCurrency(s.currency)).catch(() => {});
+    }
+  }, [isOpen]);
+
+  const currencySymbol = getCurrencySymbol(currency);
 
   const [data, setData] = useState<StaffData>({
-    name: "", last_name: "", phone: "", email: "",
-    role: "", department: "", services: [],
-    salary: "", rate_type: "",
+    name: "", last_name: "", phone: "", email: "", password: "",
+    role: "", serviceIds: [],
+    salary: "", rate_type: "fixed",
     schedule: { ...defaultSchedule },
   });
 
@@ -444,34 +368,17 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   function handleClose() {
     setStep(1);
-    setData({ name: "", last_name: "", phone: "", email: "", role: "", department: "", services: [], salary: "", rate_type: "", schedule: { ...defaultSchedule } });
+    setShowCatalogConfirm(false);
+    setData({ name: "", last_name: "", phone: "", email: "", password: "", role: "", serviceIds: [], salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
     onClose();
   }
 
-  function handleFinish() {
-    // 1. Ищем отдел в нашем справочнике
-    // 2. Если его там нет (вернулся undefined), используем оператор || и берем саму роль!
-    const finalDepartment = ROLE_TO_DEPT_KEY[data.role] || data.role;
-
-    onSuccess?.({
-      ...data,
-      department: finalDepartment, // Отправляем на бэк готовое слово
-    });
-    handleClose();
-  }
-
-  function toggleService(svc: string) {
-    set("services", data.services.includes(svc)
-      ? data.services.filter(s => s !== svc)
-      : [...data.services, svc]
-    );
-  }
-
-  function handleServiceKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && customServiceInput.trim()) {
-      const t = customServiceInput.trim();
-      if (!data.services.includes(t)) set("services", [...data.services, t]);
-      setCustomServiceInput("");
+  async function handleFinish() {
+    try {
+      await onSuccess?.({ ...data, serviceIds: data.role === "trainer" ? data.serviceIds : [] });
+      handleClose();
+    } catch {
+      // Ошибка уже показана тостом выше по стеку (Staff.tsx onSuccess) — модалка остаётся открытой.
     }
   }
 
@@ -483,28 +390,48 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     set("schedule", { ...data.schedule, [key]: { ...data.schedule[key], [field]: val } });
   }
 
+  function toggleService(serviceId: number) {
+    set("serviceIds", data.serviceIds.includes(serviceId)
+      ? data.serviceIds.filter(id => id !== serviceId)
+      : [...data.serviceIds, serviceId]);
+  }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const nameError     = data.name.trim().length > 0 && data.name.trim().length < 2 ? t("addModal.step1.errors.name") : undefined;
+  const emailError    = data.email.trim().length > 0 && !EMAIL_RE.test(data.email.trim()) ? t("addModal.step1.errors.email") : undefined;
+  const passwordError = data.password.length > 0 && data.password.length < 6 ? t("addModal.step1.errors.password") : undefined;
+
   const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
-  const canStep1         = data.name.trim().length >= 2 && data.email.trim().includes("@") && data.email.trim().includes(".");
+  const canStep1         = data.name.trim().length >= 2
+    && EMAIL_RE.test(data.email.trim())
+    && data.password.length >= 6
+    && !nameError && !emailError && !passwordError;
   const canStep2         = data.role.trim().length >= 2;
   const canStep3         = Object.values(data.schedule).some(d => d.enabled);
-  const presetServices   = data.role ? getPresetServices(t, data.role) : [];
   const enabledDays      = Object.values(data.schedule).filter(d => d.enabled).length;
 
   const DAYS_ORDER = ["mon","tue","wed","thu","fri","sat","sun"];
   const dayAbbrs   = DAYS_ORDER.map(k => t(`common:days.short.${k}`));
   const roleChips  = [
     { label: t("staff:roles.trainer") },
-    { label: t("staff:roles.barber") },
-    { label: t("staff:roles.stylist") },
-    { label: t("staff:roles.cosmetologist") },
+    { label: t("staff:roles.admin") },
   ];
 
   const selectStyle: React.CSSProperties = {
-    padding: "7px 6px", background: "rgba(26,26,26,0.03)",
-    border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "8px",
-    fontSize: "12px", fontWeight: 600, color: "#1A1A1A", outline: "none",
-    fontFamily: "Manrope, sans-serif", cursor: "pointer", width: "76px",
+    padding: "7px 10px", 
+    background: "#FFFFFF",
+    border: "1.5px solid rgba(26,26,26,0.12)", 
+    borderRadius: "8px",
+    fontSize: "12px", 
+    fontWeight: 700, 
+    color: "#1A1A1A", 
+    outline: "none",
+    fontFamily: "Manrope, sans-serif", 
+    cursor: "pointer", 
+    width: "78px",
     appearance: "none" as const,
+    textAlign: "center",
+    boxShadow: "0 2px 6px rgba(26,26,26,0.02)",
   };
 
   if (!isOpen) return null;
@@ -544,6 +471,33 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
         .as-back-btn:hover  { background: rgba(26,26,26,0.04) !important; border-color: #DDD !important; }
         .as-scroll::-webkit-scrollbar { width: 3px; }
         .as-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
+        .as-role-card { transition: all 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); }
+        .as-role-card:hover { 
+          border-color: rgba(26, 26, 26, 0.15) !important; 
+          transform: translateY(-2px); 
+          box-shadow: 0 8px 24px rgba(26, 26, 26, 0.06) !important; 
+        }
+
+        .as-svc-pill { transition: all 0.2s ease; cursor: pointer; }
+        .as-svc-pill:hover { 
+          border-color: #1A1A1A !important; 
+          background: #FFFFFF !important; 
+          color: #1A1A1A !important; 
+        }
+
+        .as-add-svc-btn { transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .as-add-svc-btn:hover { 
+          border: 1.5px solid #1A1A1A !important; 
+          background: #FFFFFF !important; 
+          color: #1A1A1A !important; 
+          transform: translateY(-2px); 
+          box-shadow: 0 8px 20px rgba(26, 26, 26, 0.08); 
+        }
+          .as-time-select { transition: all 0.2s ease; }
+        .as-time-select:hover, .as-time-select:focus {
+          border-color: #1A1A1A !important;
+          box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
+        }
       `}</style>
 
       <div
@@ -664,7 +618,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     <div>
                       <FieldLabel>{t("common:fields.fullName")} *</FieldLabel>
-                      <FocusInput value={data.name} onChange={v => set("name", v)} placeholder={t("addModal.step1.namePlaceholder")}/>
+                      <FocusInput value={data.name} onChange={v => set("name", v)} placeholder={t("addModal.step1.namePlaceholder")} error={nameError}/>
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.phoneLabel")}</FieldLabel>
@@ -672,7 +626,11 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.emailLabel")}</FieldLabel>
-                      <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio"/>
+                      <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError}/>
+                    </div>
+                    <div>
+                      <FieldLabel>{t("addModal.step1.passwordLabel")} *</FieldLabel>
+                      <FocusInput type="password" value={data.password} onChange={v => set("password", v)} placeholder={t("addModal.step1.passwordPlaceholder")} error={passwordError}/>
                     </div>
                     {data.name.trim().length >= 2 && (
                       <div style={{
@@ -714,98 +672,154 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
               {step === 2 && (
                 <div>
                   <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>{t("addModal.step2.heading")}</h3>
-                  <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 20px" }}>{t("addModal.step2.sub")}</p>
-                  <div style={{ marginBottom: "18px" }}>
+                  <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 24px" }}>{t("addModal.step2.sub")}</p>
+                  
+                  <div style={{ marginBottom: "20px" }}>
                     <FieldLabel>{t("addModal.step2.positionLabel")}</FieldLabel>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px", marginBottom: "10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "16px" }}>
                       {PRESET_ROLES.map(r => {
                         const isSelected = data.role === r.id;
                         return (
                           <button key={r.id} type="button" className="as-role-card"
-                            onClick={() => {
-                              const newRole = data.role === r.id ? "" : r.id;
-                              set("role", newRole);
-                              set("department", newRole ? (ROLE_TO_DEPT_KEY[newRole] ?? "") : "");
-                              const autoServices = newRole ? getPresetServices(t, newRole) : [];
-                              if (autoServices.length) set("services", autoServices);
-                            }}
+                            onClick={() => set("role", data.role === r.id ? "" : r.id)}
                             style={{
-                              padding: "11px 6px",
-                              background: isSelected ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.02)",
-                              border: isSelected ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.08)",
+                              padding: "14px 8px", // Чуть больше воздуха для премиальности
+                              background: isSelected ? "rgba(26,26,26,0.02)" : "#FFFFFF",
+                              border: isSelected ? "1.5px solid #1A1A1A" : "1.5px solid rgba(26,26,26,0.08)",
                               borderRadius: "12px", cursor: "pointer",
-                              display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
-                              boxShadow: isSelected ? "0 4px 16px rgba(252,174,145,0.15)" : "none",
+                              display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
+                              boxShadow: isSelected ? "0 4px 16px rgba(26,26,26,0.04)" : "none",
                               fontFamily: "Manrope, sans-serif", position: "relative",
                             }}
                           >
                             {isSelected && (
                               <div style={{
-                                position: "absolute", top: "4px", right: "5px",
-                                width: "12px", height: "12px",
-                                background: "#FCAE91", borderRadius: "50%",
+                                position: "absolute", top: "6px", right: "6px",
+                                width: "14px", height: "14px",
+                                background: "#1A1A1A", borderRadius: "50%",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 animation: "checkpop 0.25s cubic-bezier(0.34,1.1,0.64,1)",
                               }}>
-                                <svg width="6" height="6" viewBox="0 0 8 8" fill="none"><path d="M1.5 4 L3 5.5 L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4 L3 5.5 L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                               </div>
                             )}
-                            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", color: isSelected ? "#FCAE91" : "#CCCCCC", transition: "color 0.18s" }}>
+                            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", color: isSelected ? "#1A1A1A" : "#888888", transition: "color 0.18s" }}>
                               {ROLE_ICONS[r.id]}
                             </span>
-                            <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "#1A1A1A" : "#888", textAlign: "center", lineHeight: 1.2 }}>
-                              {t(`roles.${r.id}`)}
+                            <span style={{ fontSize: "10px", fontWeight: isSelected ? 800 : 600, color: isSelected ? "#1A1A1A" : "#888888", textAlign: "center", lineHeight: 1.2 }}>
+                              {t(`staff:roles.${r.id}`)}
                             </span>
                           </button>
                         );
                       })}
                     </div>
-                    <FocusInput
-                      value={PRESET_ROLES.find(r => r.id === data.role) ? "" : data.role}
-                      onChange={val => set("role", val)}
-                      placeholder={t("addModal.step2.positionPlaceholder")}
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel>{t("common:fields.services")}</FieldLabel>
-                    {presetServices.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                        {presetServices.map(svc => {
-                          const isOn = data.services.includes(svc);
-                          return (
-                            <button key={svc} type="button" className="as-svc-pill"
-                              onClick={() => toggleService(svc)}
-                              style={{
-                                padding: "6px 12px",
-                                background: isOn ? "rgba(252,174,145,0.14)" : "rgba(26,26,26,0.04)",
-                                border: isOn ? "1.5px solid rgba(252,174,145,0.5)" : "1.5px solid transparent",
-                                borderRadius: "20px", fontSize: "12px",
-                                fontWeight: isOn ? 700 : 500, color: isOn ? "#C07060" : "#666",
-                                fontFamily: "Manrope, sans-serif",
-                              }}
-                            >
-                              {isOn ? "✓ " : ""}{svc}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <div style={{ position: "relative" }}>
-                      <FocusInput value={customServiceInput} onChange={setCustomServiceInput} onKeyDown={handleServiceKeyDown} placeholder={t("addModal.step2.addServicePlaceholder")}/>
-                      {customServiceInput && (
-                        <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "10px", fontWeight: 700, color: "#FCAE91", background: "rgba(252,174,145,0.12)", padding: "3px 7px", borderRadius: "6px", pointerEvents: "none" }}>
-                          Enter ↵
+
+                    {data.role === "trainer" && (
+                      <div style={{ animation: "stepIn 0.25s ease" }}>
+                        <FieldLabel>{t("common:fields.services")}</FieldLabel>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                          {availableServices.map(service => {
+                            const isSelected = data.serviceIds.includes(service.id);
+                            return (
+                              <button key={service.id} type="button" className="as-svc-pill"
+                                onClick={() => toggleService(service.id)}
+                                style={{
+                                  padding: "8px 14px", borderRadius: "20px", cursor: "pointer",
+                                  background: isSelected ? "#1A1A1A" : "rgba(26,26,26,0.02)",
+                                  border: isSelected ? "1.5px solid #1A1A1A" : "1.5px solid rgba(26,26,26,0.08)",
+                                  color: isSelected ? "#FFFFFF" : "#666666", fontSize: "12px",
+                                  fontWeight: isSelected ? 700 : 600, fontFamily: "Manrope, sans-serif",
+                                  display: "flex", alignItems: "center", gap: "6px"
+                                }}
+                              >
+                                {isSelected && (
+                                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                                    <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  </svg>
+                                )}
+                                {service.name}
+                              </button>
+                            );
+                          })}
                         </div>
-                      )}
-                    </div>
-                    {data.services.filter(s => !presetServices.includes(s)).length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
-                        {data.services.filter(s => !presetServices.includes(s)).map(svc => (
-                          <div key={svc} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px 5px 12px", background: "rgba(163,201,168,0.12)", border: "1.5px solid rgba(163,201,168,0.35)", borderRadius: "20px", fontSize: "12px", fontWeight: 600, color: "#5A8A60" }}>
-                            {svc}
-                            <span onClick={() => toggleService(svc)} style={{ cursor: "pointer", opacity: 0.6, fontSize: "11px", lineHeight: 1 }}>✕</span>
+                        <div style={{ width: "100%" }}>
+                          {!showCatalogConfirm && (
+                            <button type="button" className="as-add-svc-btn" onClick={() => setShowCatalogConfirm(true)} style={{
+                              padding: "8px 14px", borderRadius: "20px", cursor: "pointer",
+                              background: "transparent", border: "1.5px dashed rgba(26,26,26,0.2)",
+                              color: "#888888", fontSize: "12px", fontWeight: 600, fontFamily: "Manrope, sans-serif",
+                              transition: "border-color 0.2s ease, color 0.2s ease, transform 0.2s ease",
+                            }}>
+                              + {t("staff:editModal.role.addService")}
+                            </button>
+                          )}
+                          <div aria-hidden={!showCatalogConfirm} style={{
+                            maxHeight: showCatalogConfirm ? "160px" : "0", opacity: showCatalogConfirm ? 1 : 0,
+                            overflow: "hidden", transform: showCatalogConfirm ? "translateY(0)" : "translateY(-8px)",
+                            transition: "max-height 0.3s ease, opacity 0.2s ease, transform 0.3s ease",
+                          }}>
+                            
+                            {/* 🔥 Новый премиальный дизайн подтверждения */}
+                            <div style={{
+                              marginTop: "12px", padding: "16px", borderRadius: "14px",
+                              background: "#FFFFFF", border: "1px solid rgba(26,26,26,0.06)",
+                              boxShadow: "0 6px 16px rgba(26,26,26,0.04)",
+                              display: "flex", flexDirection: "column", gap: "14px"
+                            }}>
+                              
+                              {/* Верхняя часть: Иконка + Текст */}
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                                <div style={{
+                                  width: "32px", height: "32px", borderRadius: "10px", flexShrink: 0,
+                                  background: "rgba(252,174,145,0.12)", color: "#FCAE91",
+                                  display: "flex", alignItems: "center", justifyContent: "center"
+                                }}>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  </svg>
+                                </div>
+                                <p style={{ margin: "2px 0 0", color: "#1A1A1A", fontSize: "12.5px", fontWeight: 700, lineHeight: 1.4, letterSpacing: "-0.2px" }}>
+                                  {t("staff:editModal.role.catalogConfirm")}
+                                </p>
+                              </div>
+
+                              {/* Нижняя часть: Кнопки */}
+                              <div style={{ display: "flex", gap: "8px" }}>
+                                <button 
+                                  type="button" 
+                                  onClick={() => setShowCatalogConfirm(false)} 
+                                  style={{
+                                    flex: 1, padding: "10px", 
+                                    border: "1.5px solid rgba(26,26,26,0.08)", borderRadius: "10px", cursor: "pointer",
+                                    background: "transparent", color: "#666", 
+                                    fontSize: "12px", fontWeight: 700, fontFamily: "Manrope, sans-serif",
+                                    transition: "all 0.2s ease"
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(26,26,26,0.03)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.15)"; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.08)"; }}
+                                >
+                                  {t("common:buttons.cancel")}
+                                </button>
+                                <button 
+                                  type="button" 
+                                  onClick={() => { handleClose(); navigate("/dashboard/catalog?tab=services"); }} 
+                                  style={{
+                                    flex: 1, padding: "10px", border: "none", borderRadius: "10px", cursor: "pointer",
+                                    background: "#1A1A1A", color: "#FFFFFF", 
+                                    fontSize: "12px", fontWeight: 700, fontFamily: "Manrope, sans-serif",
+                                    boxShadow: "0 4px 12px rgba(26,26,26,0.15)", transition: "all 0.2s ease"
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(26,26,26,0.25)"; }}
+                                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(26,26,26,0.15)"; }}
+                                >
+                                  {t("common:buttons.yes", { defaultValue: "Да, перейти" })}
+                                </button>
+                              </div>
+
+                            </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -817,22 +831,69 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                 <div>
                   <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>{t("addModal.step3.heading")}</h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 20px" }}>{t("addModal.step3.sub")}</p>
+                  
+                  {/* Блок зарплаты (теперь тоже строго черно-белый) */}
                   <div style={{ marginBottom: "20px" }}>
+                    <FieldLabel>{t("addModal.step3.salaryLabel")}</FieldLabel>
+                    <div style={{ display: "flex", gap: "7px", marginBottom: "10px" }}>
+                      {(["fixed", "percent", "hourly"] as const).map(type => {
+                        const isOn = data.rate_type === type;
+                        return (
+                          <button key={type} type="button" onClick={() => set("rate_type", type)} style={{
+                            flex: 1, padding: "10px 8px",
+                            background: isOn ? "#1A1A1A" : "rgba(26,26,26,0.02)",
+                            border: isOn ? "1.5px solid #1A1A1A" : "1.5px solid rgba(26,26,26,0.08)",
+                            borderRadius: "10px", fontSize: "11.5px", fontWeight: isOn ? 700 : 600,
+                            color: isOn ? "#FFFFFF" : "#666666", cursor: "pointer",
+                            fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
+                            boxShadow: isOn ? "0 4px 12px rgba(26,26,26,0.15)" : "none"
+                          }}>
+                            {t(`common:salary.${type}`)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {data.rate_type && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", animation: "stepIn 0.2s ease" }}>
+                        <input
+                          type="text" inputMode="numeric" value={data.salary}
+                          onChange={e => {
+                            const v = e.target.value;
+                            if (v === "" || /^\d+$/.test(v)) set("salary", v);
+                          }}
+                          placeholder={t("addModal.step3.salaryPlaceholder")}
+                          style={{
+                            flex: 1, padding: "11px 13px", background: "rgba(26,26,26,0.025)",
+                            border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "12px",
+                            fontSize: "14px", fontWeight: 600, color: "#1A1A1A", outline: "none",
+                            fontFamily: "Manrope, sans-serif"
+                          }}
+                        />
+                        <span style={{ fontSize: "13px", fontWeight: 700, color: "#AAAAAA", padding: "0 6px" }}>
+                          {data.rate_type === "percent" ? "%" : data.rate_type === "hourly" ? `${currencySymbol}/ч` : currencySymbol}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
                     <FieldLabel>{t("addModal.step3.scheduleLabel")}</FieldLabel>
                     <div style={{ border: "1.5px solid rgba(26,26,26,0.08)", borderRadius: "14px", overflow: "hidden" }}>
-                      {DAYS.map((day, idx) => {
-                        const d = data.schedule[day.key];
-                        const isLast = idx === DAYS.length - 1;
+                      {DAYS_KEYS.map((key, idx) => {
+                        const d = data.schedule[key];
+                        const isLast = idx === DAYS_KEYS.length - 1;
                         return (
-                          <div key={day.key} className="as-sched-row" style={{
+                          <div key={key} className="as-sched-row" style={{
                             display: "flex", alignItems: "center", gap: "10px",
                             padding: "9px 14px",
+                            minHeight: "54px", boxSizing: "border-box", // 🔥 Фиксация высоты от прыжков
                             borderBottom: isLast ? "none" : "1px solid rgba(26,26,26,0.05)",
-                            background: d.enabled ? "rgba(252,174,145,0.02)" : "transparent",
+                            background: d.enabled ? "rgba(26,26,26,0.02)" : "transparent",
                           }}>
-                            <div onClick={() => toggleDay(day.key)} style={{
+                            {/* Строгий черный свитчер */}
+                            <div onClick={() => toggleDay(key)} style={{
                               width: "32px", height: "18px", borderRadius: "9px",
-                              background: d.enabled ? "#FCAE91" : "rgba(26,26,26,0.1)",
+                              background: d.enabled ? "#1A1A1A" : "rgba(26,26,26,0.1)",
                               display: "flex", alignItems: "center", padding: "2px",
                               cursor: "pointer", flexShrink: 0, transition: "background 0.2s",
                             }}>
@@ -844,58 +905,60 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                               }}/>
                             </div>
                             <span style={{ width: "90px", fontSize: "12px", fontWeight: d.enabled ? 600 : 400, color: d.enabled ? "#1A1A1A" : "#C0C0C0", flexShrink: 0, transition: "all 0.15s" }}>
-                              {t(`common:days.${day.key}`)}
+                              {t(`common:days.${key}`)}
                             </span>
+
+                            {/* Поля времени или бейдж DAY OFF */}
                             {d.enabled ? (
-                              <div style={{ display: "flex", alignItems: "center", gap: "5px", flex: 1 }}>
-                                <select value={d.from} onChange={e => updateDayTime(day.key, "from", e.target.value)} style={selectStyle}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px", flex: 1 }}>
+                                <select className="as-time-select" value={d.from} onChange={e => updateDayTime(key, "from", e.target.value)} style={selectStyle}>
                                   {TIME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
-                                <span style={{ fontSize: "11px", color: "#CCC", fontWeight: 700 }}>—</span>
-                                <select value={d.to} onChange={e => updateDayTime(day.key, "to", e.target.value)} style={selectStyle}>
+                                <span style={{ fontSize: "12px", color: "#AAAAAA", fontWeight: 600 }}>—</span>
+                                <select className="as-time-select" value={d.to} onChange={e => updateDayTime(key, "to", e.target.value)} style={selectStyle}>
                                   {TIME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
+
+                                {/* Белая пилюля итоговых часов */}
+                                <div style={{
+                                  marginLeft: "auto",
+                                  fontSize: "11px", fontWeight: 700, color: "#1A1A1A",
+                                  background: "#FFFFFF",
+                                  border: "1px solid rgba(26,26,26,0.12)",
+                                  boxShadow: "0 2px 8px rgba(26,26,26,0.04)",
+                                  padding: "5px 12px",
+                                  borderRadius: "20px",
+                                  letterSpacing: "-0.2px"
+                                }}>
+                                  {(() => {
+                                    const [fh, fm] = d.from.split(":").map(Number);
+                                    const [th, tm] = d.to.split(":").map(Number);
+                                    const h = Math.round((th * 60 + tm - fh * 60 - fm) / 60 * 10) / 10;
+                                    return `${h}${t("staff:editModal.schedule.hoursSuffix", { defaultValue: "ч" })}`;
+                                  })()}
+                                </div>
                               </div>
                             ) : (
-                              <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1 }}>{t("staff:schedule.dayOff")}</span>
+                              <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                                <span style={{
+                                  fontSize: "10px",
+                                  fontWeight: 700,
+                                  color: "#999999",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.8px",
+                                  background: "rgba(26,26,26,0.02)",
+                                  border: "1px dashed rgba(26,26,26,0.12)",
+                                  padding: "4px 10px",
+                                  borderRadius: "8px"
+                                }}>
+                                  {t("staff:schedule.dayOff")}
+                                </span>
+                              </div>
                             )}
                           </div>
                         );
                       })}
                     </div>
-                  </div>
-                  <div>
-                    <FieldLabel>{t("addModal.step3.salaryLabel")}</FieldLabel>
-                    <div style={{ display: "flex", gap: "7px", marginBottom: "10px" }}>
-                      {(["fixed", "percent", "hourly"] as const).map(type => {
-                        const isOn = data.rate_type === type;
-                        return (
-                          <button key={type} type="button" onClick={() => set("rate_type", type)} style={{
-                            flex: 1, padding: "9px 8px",
-                            background: isOn ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.03)",
-                            border: isOn ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.08)",
-                            borderRadius: "10px", fontSize: "11px", fontWeight: isOn ? 700 : 500,
-                            color: isOn ? "#1A1A1A" : "#888", cursor: "pointer",
-                            fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
-                          }}>
-                            {t(`common:salary.${type}`)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {data.rate_type && (
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", animation: "stepIn 0.2s ease" }}>
-                        <input
-                          type="number" value={data.salary}
-                          onChange={e => set("salary", e.target.value)}
-                          placeholder={data.rate_type === "percent" ? "25" : data.rate_type === "hourly" ? "500" : "50000"}
-                          style={{ flex: 1, padding: "11px 13px", background: "rgba(26,26,26,0.025)", border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "12px", fontSize: "14px", fontWeight: 600, color: "#1A1A1A", outline: "none", fontFamily: "Manrope, sans-serif" }}
-                        />
-                        <span style={{ fontSize: "13px", fontWeight: 700, color: "#AAAAAA", padding: "0 6px" }}>
-                          {data.rate_type === "percent" ? "%" : data.rate_type === "hourly" ? "₽/ч" : "₽"}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}

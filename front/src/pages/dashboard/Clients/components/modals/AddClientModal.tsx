@@ -194,6 +194,9 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
       reset();
       setStep(1);
       onClose();
+    }).catch(() => {
+      // Ошибку (в т.ч. лимит тарифа → глобальная модалка апселла) показываем не тут;
+      // модалку добавления не закрываем, чтобы юзер не потерял введённые данные.
     });
   };
 

@@ -1,8 +1,8 @@
 // src/components/ScheduleGrid/Grid.tsx
 import React from 'react';
 import { BookingCard } from './BookingCard';
-import type { Booking } from '../../types';
-import { TRAINERS, TIMES, DAY_NAMES_SHORT } from '../../constants';
+import type { Booking, Trainer } from '../../types';
+import { TIMES, DAY_NAMES_SHORT } from '../../constants';
 import { getBookingLayouts, formatIndexToTimeStr } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
@@ -47,7 +47,7 @@ export const Grid: React.FC<GridProps> = ({
       {/* Заголовки колонок */}
       {columns.map((col, ci) => {
         const isTrainerMode = viewMode === 'trainers';
-        const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
+        const trainer = isTrainerMode ? (col as Trainer) : null;
         const hallName = !isTrainerMode ? (col as string) : null;
         
         const colBookings = filteredBookings.filter(b => {
@@ -186,7 +186,7 @@ export const Grid: React.FC<GridProps> = ({
           <div className="j-time-cell">{t}</div>
           {columns.map((col, ci) => {
             const isTrainerMode = viewMode === 'trainers';
-            const trainer = isTrainerMode ? (col as typeof TRAINERS[0]) : null;
+            const trainer = isTrainerMode ? (col as Trainer) : null;
             const hallName = !isTrainerMode ? (col as string) : null;
 
             // Исправленная фильтрация ячеек времени для корректной работы недельного вида

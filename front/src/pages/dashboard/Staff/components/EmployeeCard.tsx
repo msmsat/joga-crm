@@ -1,8 +1,9 @@
 import type { Employee } from '../types';
+import { resolveImageUrl } from '../../../../api/client';
 
 export interface EmployeeCardProps {
-  employee: Employee & { 
-    _resolvedGroupKey: string; 
+  employee: Employee & {
+    _resolvedGroupKey: string;
     _translatedGroup: string;
     _translatedRole: string; // Наша новая переведенная роль!
   };
@@ -12,7 +13,7 @@ export interface EmployeeCardProps {
 
 export function EmployeeCard({ employee: s, isActive, onSelect }: EmployeeCardProps) {
   // Хук useTranslation удален, он тут больше не нужен!
-  
+
   const initials = [s.name, s.last_name]
     .filter(Boolean)
     .map(n => n![0])
@@ -20,14 +21,18 @@ export function EmployeeCard({ employee: s, isActive, onSelect }: EmployeeCardPr
     .toUpperCase();
 
   const gradient = s.avatar_gradient ?? 'linear-gradient(135deg, #FCAE91, #F9A08B)';
+  const photoUrl = resolveImageUrl(s.photo_url);
 
   return (
     <div className={`s-item ${isActive ? 'active' : ''}`} onClick={onSelect}>
       <div
         className={`ava ${s.is_online ? 'ava-online' : ''}`}
-        style={{ background: gradient, width: '40px', height: '40px', fontSize: '13px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+        style={{
+          background: photoUrl ? `url(${photoUrl}) center/cover no-repeat` : gradient,
+          width: '40px', height: '40px', fontSize: '13px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        }}
       >
-        {initials}
+        {!photoUrl && initials}
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>

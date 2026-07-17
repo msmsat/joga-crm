@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Journal.css';
 import type { Booking } from './types';
-import { TRAINERS, HALLS, BOOKINGS } from './constants';
+import type { LessonCreate } from '../../../api/schedule/schedule.types';
+import { scheduleApi } from '../../../api/schedule';
+import { indexToDateTime, toDateStr, lessonToBooking } from './utils';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
+import { useSchedule } from './hooks/useSchedule';
 import { usePopupPosition } from './hooks/usePopupPosition';
 import { Toolbar } from './components/Toolbar';
 import { DaySummary } from './components/DaySummary';
@@ -22,13 +25,12 @@ export default function Journal() {
   const [calMonth, setCalMonth] = useState(today.getMonth());
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
-  const [activeTrainers, setActiveTrainers] = useState<number[]>([0, 1, 2, 3, 4]);
-  const [activeHalls, setActiveHalls] = useState<string[]>(['Зал 1', 'Зал 2', 'Студия', 'Онлайн']);
+  const [activeTrainers, setActiveTrainers] = useState<number[]>([]);
+  const [activeHalls, setActiveHalls] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalBooking, setAddModalBooking] = useState<Booking | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
   const [toast, setToast] = useState<string | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
@@ -47,6 +49,14 @@ export default function Journal() {
 
 
   // 2. ДАЛЕЕ ИДУТ УТИЛИТЫ И ФУНКЦИИ
+
+  // Реальные данные: тренеры (Сотрудники), залы, занятия за видимый диапазон
+  const { trainers, halls, bookings, setBookings } = useSchedule(calYear, calMonth, selectedDay, calendarView);
+  const hallNames = halls.map(h => h.name);
+
+  // При загрузке данных включаем все колонки/залы в фильтрах
+  useEffect(() => { setActiveTrainers(trainers.map(t => t.id)); }, [trainers]);
+  useEffect(() => { setActiveHalls(halls.map(h => h.name)); }, [halls]);
 
   const { previewRef, modalRef, gridWrapperRef, popupRef, newFormPos, popupPos } = usePopupPosition({
     popupBooking,
@@ -85,8 +95,8 @@ export default function Journal() {
   const columns = calendarView === 'week' 
     ? getWeekDays()
     : (viewMode === 'trainers'
-      ? TRAINERS.filter(t => activeTrainers.includes(t.id))
-      : HALLS.filter(h => activeHalls.includes(h)));
+      ? trainers.filter(t => activeTrainers.includes(t.id))
+      : hallNames.filter(h => activeHalls.includes(h)));
   
   const activeBookings = bookings;
 
@@ -177,6 +187,28 @@ export default function Journal() {
     setSelectedDay(targetDate.getDate());
   };
 
+  // ── Прямое сохранение переноса/растягивания: diff → PATCH, при ошибке откат ──
+  const commitBookingChange = React.useCallback((prev: Booking, next: Booking) => {
+    const payload: Partial<LessonCreate> = {};
+    if (next.date && (next.timeStart !== prev.timeStart || next.date !== prev.date)) {
+      payload.start_time = indexToDateTime(next.date, next.timeStart);
+    }
+    if (next.timeEnd - next.timeStart !== prev.timeEnd - prev.timeStart) {
+      payload.duration_min = Math.round((next.timeEnd - next.timeStart) * 60);
+    }
+    if (next.trainer !== prev.trainer) payload.teacher_id = next.trainer;
+    if (next.hall !== prev.hall) {
+      const hall = halls.find(h => h.name === next.hall);
+      if (hall) payload.hall_id = hall.id;
+    }
+    if (Object.keys(payload).length === 0) return;
+
+    scheduleApi.updateLesson(next.id, payload).catch(() => {
+      setBookings(bs => bs.map(b => (b.id === prev.id ? prev : b)));
+      showToast('Не удалось сохранить — изменение отменено');
+    });
+  }, [halls, setBookings, showToast]);
+
   const { drag, wasDragging, initDrag } = useDragAndDrop({
     bookings,
     setBookings,
@@ -184,7 +216,8 @@ export default function Journal() {
     calendarView,
     columns,
     timeStep,
-    showToast
+    showToast,
+    onCommit: commitBookingChange
   });
 
   const handleDateInputSubmit = () => {
@@ -239,11 +272,42 @@ export default function Journal() {
     setPopupBooking(booking);
   };
 
-  // ── Удалить запись ──
+  // ── Отменить занятие (сервер помечает cancelled + снимает записи каскадом) ──
   const deleteBooking = (id: number) => {
-    setBookings(prev => prev.filter(b => b.id !== id));
     setPopupBooking(null);
-    showToast('Занятие удалено');
+    scheduleApi.cancelLesson(id)
+      .then(() => {
+        setBookings(prev => prev.map(b => (b.id === id ? { ...b, status: 'cancelled' as const, clients: 0 } : b)));
+        showToast('Занятие отменено');
+      })
+      .catch((e: Error) => showToast(e.message || 'Не удалось отменить занятие'));
+  };
+
+  // ── Создать занятие на сервере (данные формы приходят из модалки) ──
+  const createLessonFromModal = (form: { title: string; hall: string; maxClients: number }) => {
+    if (!newBookingSlot) return;
+    if (!trainers.some(t => t.id === newBookingSlot.trainer)) {
+      showToast('Выберите тренера');
+      return;
+    }
+    // В недельном виде колонка слота — дата, в дневном — выбранный день
+    const col = newBookingSlot.columnIndex != null ? columns[newBookingSlot.columnIndex] : null;
+    const dateStr = col instanceof Date ? toDateStr(col) : toDateStr(new Date(calYear, calMonth, selectedDay));
+
+    scheduleApi.createLesson({
+      name: form.title,
+      teacher_id: newBookingSlot.trainer,
+      hall_id: halls.find(h => h.name === form.hall)?.id ?? null,
+      start_time: indexToDateTime(dateStr, newBookingSlot.timeStart),
+      duration_min: Math.round((newBookingSlot.timeEnd - newBookingSlot.timeStart) * 60),
+      total_spots: form.maxClients,
+    })
+      .then(lesson => {
+        const colorByTeacher = new Map(trainers.map(t => [t.id, t.color]));
+        setBookings(prev => [...prev, lessonToBooking(lesson, halls, colorByTeacher)]);
+        showToast('Занятие добавлено');
+      })
+      .catch((e: Error) => showToast(e.message || 'Не удалось создать занятие'));
   };
 
   // ── Добавить клиента ──
@@ -253,17 +317,27 @@ export default function Journal() {
     setShowAddModal(true);
   };
 
-  const confirmAddClients = (clientIds: number[]) => {
+  const confirmAddClients = async (clientIds: number[]) => {
     if (!addModalBooking) return;
-    
-    setBookings(prev => prev.map(b =>
-      b.id === addModalBooking.id
-        ? { ...b, clients: Math.min(b.clients + clientIds.length, b.maxClients) }
-        : b
-    ));
-    
     setShowAddModal(false);
-    showToast(`${clientIds.length} клиент(а) добавлено`);
+
+    const results = await Promise.allSettled(
+      clientIds.map(id => scheduleApi.createReservation(id, addModalBooking.id))
+    );
+    const ok = results.filter(r => r.status === 'fulfilled').length;
+
+    if (ok > 0) {
+      setBookings(prev => prev.map(b =>
+        b.id === addModalBooking.id ? { ...b, clients: b.clients + ok } : b
+      ));
+    }
+
+    if (ok === clientIds.length) {
+      showToast(`Записано: ${ok} клиент(а)`);
+    } else {
+      const firstError = results.find(r => r.status === 'rejected') as PromiseRejectedResult;
+      showToast(`Записано ${ok} из ${clientIds.length}: ${firstError.reason?.message ?? 'ошибка'}`);
+    }
   };
 
   // ── Статистика дня ──
@@ -283,6 +357,8 @@ export default function Journal() {
 
           {/* ── ТУЛБАР ── */}
           <Toolbar
+            trainers={trainers}
+            halls={hallNames}
             selectedDay={selectedDay}
             calMonth={calMonth}
             calYear={calYear}
@@ -313,7 +389,7 @@ export default function Journal() {
             totalClients={totalClients}
             avgLoad={avgLoad}
             pending={pending}
-            activeTrainersCount={TRAINERS.filter(t => activeTrainers.includes(t.id)).length}
+            activeTrainersCount={trainers.filter(t => activeTrainers.includes(t.id)).length}
             timeStep={timeStep}
             setTimeStep={setTimeStep}
             isDraftMode={isDraftMode}
@@ -347,7 +423,7 @@ export default function Journal() {
                 wasDragging={wasDragging}
                 openNewSlot={openNewSlot}
                 newBookingSlot={newBookingSlot}
-                newForm={{ title: '', hall: 'Зал 1', maxClients: '8' }}
+                newForm={{ title: '', hall: hallNames[0] ?? '', maxClients: '8' }}
                 previewRef={previewRef}
                 initDrag={initDrag}
                 setPopupBooking={setPopupBooking}
@@ -359,6 +435,8 @@ export default function Journal() {
             {/* ── ПРАВАЯ ПАНЕЛЬ ── */}
             <div className="j-right">
               <RightPanel
+                trainers={trainers}
+                halls={halls}
                 calMonth={calMonth}
                 calYear={calYear}
                 selectedDay={selectedDay}
@@ -379,6 +457,8 @@ export default function Journal() {
       {/* ── ПРЕМИАЛЬНЫЙ POPUP КАРТОЧКИ ЗАПИСИ ── */}
       {popupBooking && (
         <BookingPopup
+          trainers={trainers}
+          halls={hallNames}
           popupBooking={popupBooking}
           popupRef={popupRef}
           popupPos={popupPos}
@@ -395,14 +475,15 @@ export default function Journal() {
       {/* ── ФОРМА НОВОГО ЗАНЯТИЯ (PREMIUM KEYPAD) ── */}
       {showNewForm && newBookingSlot && (
         <NewBookingModal
+          trainers={trainers}
+          halls={hallNames}
           newBookingSlot={newBookingSlot}
           setNewBookingSlot={setNewBookingSlot}
           newFormPos={newFormPos}
           modalRef={modalRef}
           timeStep={timeStep}
           closeNewForm={closeNewForm}
-          setBookings={setBookings}
-          showToast={showToast}
+          onCreate={createLessonFromModal}
         />
       )}
 

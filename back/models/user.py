@@ -1,5 +1,6 @@
+from datetime import date
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, ForeignKey
+from sqlalchemy import Integer, String, Float, Boolean, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -26,7 +27,7 @@ class User(Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     verification_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     is_onboarded: Mapped[bool] = mapped_column(Boolean, default=False)
-    is_online: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_online_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
     two_fa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 

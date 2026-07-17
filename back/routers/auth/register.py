@@ -1,3 +1,4 @@
+import logging
 import random
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,9 +8,23 @@ from database import get_db
 from models import User
 from schemas import RegisterRequest, TokenResponse, VerifyEmailRequest
 from security import get_password_hash
+from services.mailer import send_email
 from ._helpers import _build_token_for_user
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+async def _send_verification_code(email: str, code: str) -> None:
+    """Отправка кода подтверждения. Ошибка отправки не валит регистрацию."""
+    try:
+        await send_email(
+            email,
+            "Код подтверждения Velora",
+            f"<p>Ваш код подтверждения: <b>{code}</b></p>",
+        )
+    except Exception:
+        logger.exception("Не удалось отправить код подтверждения на %s", email)
 
 
 @router.post("/register")
@@ -32,10 +47,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
         existing_user.verification_code = verification_code
         await db.commit()
 
-        print("\n" + "=" * 40)
-        print(f"ПОВТОРНОЕ ПИСЬМО ДЛЯ: {existing_user.email}")
-        print(f"КОД ПОДТВЕРЖДЕНИЯ: {verification_code}")
-        print("=" * 40 + "\n")
+        await _send_verification_code(existing_user.email, verification_code)
         return {"message": "Новый код подтверждения отправлен на почту"}
 
     new_user = User(
@@ -48,10 +60,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
     db.add(new_user)
     await db.commit()
 
-    print("\n" + "=" * 40)
-    print(f"ПИСЬМО ДЛЯ: {new_user.email}")
-    print(f"КОД ПОДТВЕРЖДЕНИЯ: {verification_code}")
-    print("=" * 40 + "\n")
+    await _send_verification_code(new_user.email, verification_code)
     return {"message": "Код подтверждения отправлен на почту"}
 
 

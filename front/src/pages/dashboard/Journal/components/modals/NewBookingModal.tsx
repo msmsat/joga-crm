@@ -1,33 +1,35 @@
 // src/components/modals/NewBookingModal.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as Icons from '../../../../../components/Icons';
-import type { Booking } from '../../types';
-import { TRAINERS, HALLS, TIMES } from '../../constants';
+import type { Trainer } from '../../types';
+import { TIMES } from '../../constants';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../../utils';
 
 interface NewBookingModalProps {
+  trainers: Trainer[];
+  halls: string[];
   newBookingSlot: { trainer: number; timeStart: number; timeEnd: number };
   setNewBookingSlot: React.Dispatch<React.SetStateAction<{ trainer: number; timeStart: number; timeEnd: number } | null>>;
   newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   timeStep: number;
   closeNewForm: () => void;
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-  showToast: (msg: string) => void;
+  onCreate: (form: { title: string; hall: string; maxClients: number }) => void;
 }
 
 export const NewBookingModal: React.FC<NewBookingModalProps> = ({
+  trainers,
+  halls,
   newBookingSlot,
   setNewBookingSlot,
   newFormPos,
   modalRef,
   timeStep,
   closeNewForm,
-  setBookings,
-  showToast
+  onCreate
 }) => {
   // 🔥 ЛОКАЛЬНЫЕ СТЕЙТЫ ФОРМЫ СОЗДАНИЯ
-  const [newForm, setNewForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8' });
+  const [newForm, setNewForm] = useState({ title: '', hall: halls[0] ?? '', maxClients: '8' });
   const [startInput, setStartInput] = useState('');
   const [endInput, setEndInput] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
@@ -82,26 +84,15 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     setActiveDropdown(null);
   };
 
-  // ФУНКЦИЯ СОЗДАНИЯ (Теперь живет внутри модалки)
+  // СОЗДАНИЕ: форма уходит наверх, Journal шлёт её на сервер
   const createBooking = () => {
     if (!newForm.title.trim()) return;
-    const finalTitle = newForm.title.trim() || 'Новое занятие';
-    const trainerObj = TRAINERS.find(t => t.id === newBookingSlot.trainer) || TRAINERS[0];
-    const nb: Booking = {
-      id: Date.now(),
-      trainer: newBookingSlot.trainer,
-      timeStart: newBookingSlot.timeStart,
-      timeEnd: newBookingSlot.timeEnd,
-      title: finalTitle, // <-- используем новую переменную
+    onCreate({
+      title: newForm.title.trim(),
       hall: newForm.hall,
-      clients: 0,
       maxClients: parseInt(newForm.maxClients) || 8,
-      color: trainerObj.color,
-      status: 'confirmed',
-    };
-    setBookings(prev => [...prev, nb]);
+    });
     closeNewForm();
-    showToast('Занятие добавлено');
   };
 
   return (
@@ -151,7 +142,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
               <div className="kp-section">
                 <div className="kp-section-title">Локация / Зал</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {HALLS.map(h => (
+                  {halls.map(h => (
                     <div
                       key={h}
                       className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
@@ -246,7 +237,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
             <div className="kp-section">
               <div className="kp-section-title">Назначить тренера</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {TRAINERS.map(t => {
+                {trainers.map(t => {
                   const isActive = newBookingSlot.trainer === t.id;
                   return (
                     <div

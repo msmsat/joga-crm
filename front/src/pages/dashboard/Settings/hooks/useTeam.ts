@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { INITIAL_TEAM_DATA, INITIAL_PERMISSIONS_MATRIX } from "../constants";
 import type { TeamMember } from "../types";
+import { staffApi } from "../../../../api/staff/staff.api";
+import { ApiError } from "../../../../api/client";
 
 export function useTeam(triggerToast: (msg: string) => void, triggerSave: (key: string, msg: string) => void) {
   const [teamData, setTeamData] = useState<TeamMember[]>(INITIAL_TEAM_DATA);
@@ -11,21 +13,35 @@ export function useTeam(triggerToast: (msg: string) => void, triggerSave: (key: 
   const [permissionsMatrix, setPermissionsMatrix] = useState<Record<string, Record<string, boolean>>>(INITIAL_PERMISSIONS_MATRIX);
 
   const handlePermissionToggle = (role: string, permissionKey: string) => {
-    if (role === "Владелец") return;
+    if (role === "admin") return;
     setPermissionsMatrix(prev => ({
       ...prev, [role]: { ...prev[role], [permissionKey]: !prev[role][permissionKey] }
     }));
   };
 
-  const handleAddStaffSuccess = (data: any) => {
-    setTeamData(prev => [...prev, {
-      id: Date.now(),
-      name: data.name || "Новый сотрудник",
-      role: data.role || "Сотрудник",
-      email: data.email || "email@studio.ru",
-      status: "active" as const,
-    }]);
-    triggerToast(`Сотрудник ${data.name ? data.name.split(' ')[0] : ''} добавлен 🎉`);
+  const handleAddStaffSuccess = async (data: any) => {
+    try {
+      const result = await staffApi.create({
+        name: data.name,
+        last_name: data.last_name || undefined,
+        email: data.email,
+        phone: data.phone || undefined,
+        password: data.password,
+        role: data.role,
+        salary: data.salary ? Number(data.salary) : undefined,
+        rate_type: data.rate_type || undefined,
+      });
+      setTeamData(prev => [...prev, {
+        id: result.staff.id,
+        name: result.staff.name,
+        role: result.staff.role,
+        email: result.staff.email,
+        status: "active" as const,
+      }]);
+      triggerToast(`Сотрудник ${data.name.split(' ')[0]} добавлен`);
+    } catch (err) {
+      triggerToast(err instanceof ApiError ? err.message : "Не удалось добавить сотрудника");
+    }
   };
 
   const handleEditStaffSave = (updatedData: any) => {

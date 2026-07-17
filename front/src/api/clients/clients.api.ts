@@ -11,10 +11,12 @@ import type {
   ClientProfile,
   ClientsCountOut,
   ClientsListParams,
+  ClientsPage,
   EventRecord,
   NoteCreatedOut,
   OkFrozenOut,
   OkOut,
+  PointsBalanceOut,
   TagsOut,
 } from './clients.types'
 
@@ -30,7 +32,7 @@ function buildQuery(params?: Record<string, unknown>): string {
 export const clientsApi = {
   // ─── LIST & COUNTS ────────────────────────────────────────────────────────
   getList: (params?: ClientsListParams) =>
-    client.get<ClientListItem[]>(`/clients${buildQuery(params as Record<string, unknown>)}`),
+    client.get<ClientsPage<ClientListItem>>(`/clients${buildQuery(params as Record<string, unknown>)}`),
 
   getCount: () =>
     client.get<ClientsCountOut>('/clients/count'),
@@ -97,4 +99,7 @@ export const clientsApi = {
 
   book: (id: number, lesson_id: number) =>
     client.post<BookingCreatedOut>(`/clients/${id}/booking`, { lesson_id }),
+
+  addBonus: (id: number, amount: number, description?: string) =>
+    client.post<PointsBalanceOut>(`/clients/${id}/bonus`, { amount, ...(description ? { description } : {}) }),
 }

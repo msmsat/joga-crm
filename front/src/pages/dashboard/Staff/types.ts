@@ -83,6 +83,7 @@ export interface StaffCreate {
   last_name?: string;
   email: string;
   phone?: string;
+  password: string;  // временный пароль для входа сотрудника
   role: string;
   department?: string;
   salary?: number;
@@ -90,7 +91,7 @@ export interface StaffCreate {
   rate_type?: 'fixed' | 'percent' | 'hourly';
 }
 
-export type StaffUpdate = StaffCreate;
+export type StaffUpdate = Omit<StaffCreate, 'password'>;
 
 // ─── API RESPONSE TYPES ──────────────────────────────────────────────────────
 
@@ -100,9 +101,16 @@ export interface StaffSummary {
   by_role: Record<string, number>;
 }
 
+export interface Page<T> {
+  items: T[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
 export interface StaffListResponse {
   summary: StaffSummary;
-  staff: Employee[];
+  staff: Page<Employee>;
 }
 
 export interface StaffMutateResponse {

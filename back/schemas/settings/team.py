@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Optional, Literal
 from pydantic import EmailStr
 
 from schemas._base import BaseSchema
+from schemas.staff.staff import StaffWorkingHoursItem
 
 
 class StaffCreate(BaseSchema):
@@ -9,11 +10,15 @@ class StaffCreate(BaseSchema):
     last_name: Optional[str] = None
     email: EmailStr
     phone: Optional[str] = None
-    role: str
+    password: str  # временный пароль, сотрудник сменит через flow смены пароля
+    role: Literal["admin", "trainer"]
     department: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None
     rate_type: Optional[str] = None  # "fixed" | "percent" | "hourly"
+    service_ids: list[int] = []
+    photo_url: Optional[str] = None
+    schedule: list[StaffWorkingHoursItem] = []
 
 
 class StaffUpdate(BaseSchema):
@@ -21,11 +26,14 @@ class StaffUpdate(BaseSchema):
     last_name: Optional[str] = None
     email: EmailStr
     phone: Optional[str] = None
-    role: str
+    role: Literal["admin", "trainer"]
     department: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None
     rate_type: Optional[str] = None
+    service_ids: list[int] = []
+    photo_url: Optional[str] = None
+    schedule: list[StaffWorkingHoursItem] = []
 
 
 class StaffMessageRequest(BaseSchema):

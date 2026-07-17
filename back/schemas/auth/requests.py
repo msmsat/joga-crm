@@ -65,6 +65,12 @@ class SelectStudioRequest(BaseSchema):
     studio_id: int
 
 
+class ProfileUpdate(BaseSchema):
+    name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+
+
 class WorkingHoursInput(BaseSchema):
     dayOfWeek: int
     isOpen: bool

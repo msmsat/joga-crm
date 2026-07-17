@@ -1,19 +1,5 @@
 import type { ProgramKey } from './types';
 
-export const chartData = [
-  { month: 'Янв', revenue: 82000,  clients: 64  },
-  { month: 'Фев', revenue: 91000,  clients: 71  },
-  { month: 'Мар', revenue: 88000,  clients: 68  },
-  { month: 'Апр', revenue: 107000, clients: 85  },
-  { month: 'Май', revenue: 124000, clients: 98  },
-  { month: 'Июн', revenue: 139000, clients: 112 },
-];
-
-export const totalGrowth = '+41%';
-export const revenueFromLoyalty = '₽139K';
-export const retentionRate = '78%';
-export const avgCheck = '₽4 820';
-
 interface ProgramMeta {
   key: ProgramKey;
   title: string;

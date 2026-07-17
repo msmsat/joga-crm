@@ -1,7 +1,13 @@
 import { client } from '../client'
-import type { BillingPlan, Invoice, PaymentCard } from './billing.types'
+import type {
+  PlansCatalog, BillingPlan, Invoice, PaymentCard,
+  CheckoutRequest, CheckoutResponse, RenewResponse,
+} from './billing.types'
 
 export const billingApi = {
+  getPlans: () =>
+    client.get<PlansCatalog>('/billing/plans'),
+
   getPlan: () =>
     client.get<BillingPlan>('/billing/plan'),
 
@@ -11,15 +17,14 @@ export const billingApi = {
   getPaymentCards: () =>
     client.get<PaymentCard[]>('/billing/cards'),
 
-  addPaymentCard: (payload: Omit<PaymentCard, 'id'>) =>
-    client.post<PaymentCard>('/billing/cards', payload),
+  // Оплата через ссылку Fondy: сумму считает сервер, редирект на checkout_url.
+  checkout: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
+    client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
 
-  removePaymentCard: (id: number) =>
-    client.delete<void>(`/billing/cards/${id}`),
+  // Продление по сохранённой карте (rectoken) — статус придёт в вебхук.
+  renew: () =>
+    client.post<RenewResponse>('/billing/renew', {}),
 
-  upgradePlan: (planName: string, billingCycle: string) =>
-    client.post<BillingPlan>('/billing/upgrade', { plan_name: planName, billing_cycle: billingCycle }),
-
-  cancelPlan: () =>
-    client.post<void>('/billing/cancel', {}),
+  refundInvoice: (id: number) =>
+    client.post<void>(`/billing/invoices/${id}/refund`, {}),
 }

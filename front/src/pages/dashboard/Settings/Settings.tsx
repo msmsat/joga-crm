@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import AddStaffModal from "../../../components/modals/AddStaffModal";
+import { AddEmployeeModal } from "../Staff/components/modals/AddEmployeeModal";
 import EditStaffModal from "../../../components/modals/EditStaffModal";
 
 import { useSettingsToast } from "./hooks/useSettingsToast";
@@ -206,7 +206,7 @@ export default function Settings() {
         </div>
       </div>
 
-      <AddStaffModal
+      <AddEmployeeModal
         isOpen={team.isAddStaffOpen}
         onClose={() => team.setIsAddStaffOpen(false)}
         onSuccess={team.handleAddStaffSuccess}

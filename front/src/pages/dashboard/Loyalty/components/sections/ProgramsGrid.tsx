@@ -5,9 +5,10 @@ import { IconSettings, IconLock } from '../ui/LoyaltyIcons';
 interface Props {
   programsList: Program[];
   openDrawer: (key: ProgramKey, title: string) => void;
+  toggleProgram: (key: ProgramKey, enabled: boolean) => void;
 }
 
-export default function ProgramsGrid({ programsList, openDrawer }: Props) {
+export default function ProgramsGrid({ programsList, openDrawer, toggleProgram }: Props) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
       {programsList.map((prog, i) => (
@@ -42,13 +43,19 @@ export default function ProgramsGrid({ programsList, openDrawer }: Props) {
                 {prog.stats?.value}
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{prog.stats?.label}</div>
-              <div style={{ marginTop: '12px' }}>
+              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className={styles.badgeConfigured}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   Активна
                 </span>
+                <button
+                  onClick={e => { e.stopPropagation(); toggleProgram(prog.key, false); }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, textDecoration: 'underline' }}
+                >
+                  Выключить
+                </button>
               </div>
             </div>
           ) : (

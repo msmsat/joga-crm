@@ -9,7 +9,7 @@ import type { Program } from './types';
 import styles from './Loyalty.module.css';
 
 export default function Loyalty() {
-  const { programs, drawer, drawerVisible, mounted, drawerRef, openDrawer, closeDrawer, handleSave } = useLoyalty();
+  const { programs, configs, patchConfig, drawer, drawerVisible, mounted, saving, drawerRef, openDrawer, closeDrawer, handleSave, toggleProgram } = useLoyalty();
 
   const programsList: Program[] = PROGRAM_METADATA.map(meta => ({
     ...meta,
@@ -23,7 +23,7 @@ export default function Loyalty() {
     <>
       <div className={`${styles.pageContent}${drawerVisible ? ` ${styles.pageContentPushed}` : ''}`}>
         <ProgressHeader configuredCount={configuredCount} openDrawer={openDrawer} />
-        <ProgramsGrid programsList={programsList} openDrawer={openDrawer} />
+        <ProgramsGrid programsList={programsList} openDrawer={openDrawer} toggleProgram={toggleProgram} />
         <StatsBoard configuredCount={configuredCount} mounted={mounted} />
       </div>
       {drawer && (
@@ -31,6 +31,9 @@ export default function Loyalty() {
           drawer={drawer}
           drawerVisible={drawerVisible}
           drawerRef={drawerRef}
+          configs={configs}
+          patchConfig={patchConfig}
+          saving={saving}
           closeDrawer={closeDrawer}
           handleSave={handleSave}
           programsList={programsList}

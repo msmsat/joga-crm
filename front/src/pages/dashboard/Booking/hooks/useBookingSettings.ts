@@ -1,11 +1,41 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { bookingApi } from '../../../../api/booking/booking.api'
+import type { BookingSettings } from '../../../../api/booking/booking.types'
+import {
+  advanceLabel, advanceMin, windowLabel, windowDays,
+  cancelLabel, cancelMin, langLabel, langCode,
+  colorIndex, WIDGET_COLORS,
+} from '../mapping'
 
 export function useBookingSettings() {
-  const [limitTime,    setLimitTime]    = useState('2 часа')
-  const [openDays,     setOpenDays]     = useState('7 дней')
-  const [cancelTime,   setCancelTime]   = useState('4 часа')
-  const [language,     setLanguage]     = useState('Русский')
-  const [activeColor,  setActiveColor]  = useState(0)
+  const [settings, setSettings] = useState<BookingSettings | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  return { limitTime, setLimitTime, openDays, setOpenDays, cancelTime, setCancelTime, language, setLanguage, activeColor, setActiveColor }
+  useEffect(() => {
+    let cancelled = false
+    bookingApi.getSettings()
+      .then(s => { if (!cancelled) setSettings(s) })
+      .catch((e: unknown) => { if (!cancelled) setError(e instanceof Error ? e.message : 'Ошибка загрузки') })
+    return () => { cancelled = true }
+  }, [])
+
+  // Оптимистично: применяем локально, PATCH-им; при ошибке откатываем.
+  function patch<K extends keyof BookingSettings>(field: K, value: BookingSettings[K]) {
+    setSettings(prev => {
+      if (!prev) return prev
+      const prevValue = prev[field]
+      bookingApi.updateSettings({ [field]: value }).catch((e: unknown) => {
+        setSettings(cur => (cur ? { ...cur, [field]: prevValue } : cur))
+        setError(e instanceof Error ? e.message : 'Не удалось сохранить')
+      })
+      return { ...prev, [field]: value }
+    })
+  }
+
+  return { settings, error, patch,
+    // Хелперы UI-строк ↔ числовые поля для селектов.
+    advanceLabel, advanceMin, windowLabel, windowDays,
+    cancelLabel, cancelMin, langLabel, langCode,
+    colorIndex, WIDGET_COLORS,
+  }
 }

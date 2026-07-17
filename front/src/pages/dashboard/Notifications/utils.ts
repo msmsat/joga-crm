@@ -1,4 +1,4 @@
-import type { Role, ChannelKey, NotifEvent, Toggles } from './types';
+import type { Role, ChannelKey, NotifEvent, Toggles, EventToggle } from './types';
 import { NOTIF_EVENTS, CHANNELS } from './constants';
 
 const INITIAL: Record<Role, Partial<Record<ChannelKey, string[]>>> = {
@@ -20,4 +20,38 @@ export function buildInitialToggles(): Toggles {
     });
   });
   return result;
+}
+
+// event_id → role (id-ы уникальны глобально: c1, t1, a1, o1 — по первой букве).
+export const EVENT_ROLE: Record<string, Role> = Object.fromEntries(
+  (Object.entries(NOTIF_EVENTS) as [Role, NotifEvent[]][]).flatMap(
+    ([role, events]) => events.map(ev => [ev.id, role] as const),
+  ),
+);
+
+// Накладываем сохранённые серверные тумблеры поверх дефолтов.
+export function mergeToggles(base: Toggles, server: EventToggle[]): Toggles {
+  const result: Toggles = structuredClone(base);
+  for (const t of server) {
+    const ch = t.channel_key as ChannelKey;
+    if (result[t.event_id] && ch in result[t.event_id]) {
+      result[t.event_id][ch] = t.is_enabled;
+    }
+  }
+  return result;
+}
+
+// Тумблеры, отличающиеся от сохранённых, → плоский список EventToggle для PATCH.
+export function diffToggles(next: Toggles, prev: Toggles): EventToggle[] {
+  const changes: EventToggle[] = [];
+  for (const evId of Object.keys(next)) {
+    const role = EVENT_ROLE[evId];
+    if (!role) continue;
+    for (const ch of Object.keys(next[evId]) as ChannelKey[]) {
+      if (next[evId][ch] !== prev[evId]?.[ch]) {
+        changes.push({ role, event_id: evId, channel_key: ch, is_enabled: next[evId][ch] });
+      }
+    }
+  }
+  return changes;
 }

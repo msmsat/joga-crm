@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import type { Tab } from './types';
+import { useState, useCallback } from 'react';
+import type { Tab, ToastType } from './types';
 import { FINANCE_TABS } from './types';
-import { useToast } from './hooks/useToast';
-import { Toast } from './components/ui/Toast';
+import { useToast } from '../../../components/ui/Toast';
 import { Ico } from './components/ui/FinanceIcons';
 import AccountsTab from './components/tabs/AccountsTab';
 import OperationsTab from './components/tabs/OperationsTab';
@@ -29,7 +28,8 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
 export default function Finances() {
   const [activeTab, setActiveTab] = useState<Tab>('Счета и кассы');
   const [operationsSearch, setOperationsSearch] = useState('');
-  const { toast, show: showToast } = useToast();
+  const toast = useToast();
+  const showToast = useCallback((msg: string, type: ToastType = 'success') => toast[type](msg), [toast]);
 
   const handleTabClick = (t: Tab) => {
     if (t === 'Операции' && activeTab !== 'Операции') setOperationsSearch('');
@@ -88,8 +88,6 @@ export default function Finances() {
       >
         {renderTab()}
       </div>
-
-      <Toast msg={toast.msg} type={toast.type} visible={toast.visible} />
     </div>
   );
 }

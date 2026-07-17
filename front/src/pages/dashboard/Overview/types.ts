@@ -1,16 +1,28 @@
-import type { StudioTask, ActivityLog } from '../../../api/analytics/analytics.types';
-export type { StudioTask, ActivityLog };
+import type {
+  ActivityLog,
+  PeriodSummary,
+  SeriesPoint,
+  ServiceReportRow,
+  StudioTask,
+  TrainerReportRow,
+} from '../../../api/analytics';
+
+export type { ActivityLog, PeriodSummary, SeriesPoint, ServiceReportRow, TrainerReportRow, StudioTask };
 
 export type Task = StudioTask;
 export type RecentEvent = ActivityLog;
 
-export interface MetricConfig {
-  id: string;
+/** Статическая презентация метрики (иконка, цвет, роут). Значение и тренд — из API. */
+export interface MetricPresenter {
+  id: 'revenue' | 'clients' | 'bookings' | 'retention';
   title: string;
-  value: string;
-  change: string;
   color: string;
   glow: string;
   route: string;
-  formatTooltip: (v: number) => string;
+}
+
+/** MetricPresenter + рассчитанные из summary value/change для карточки. */
+export interface MetricConfig extends MetricPresenter {
+  value: string;
+  change: string;
 }

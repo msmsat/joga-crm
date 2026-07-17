@@ -3,8 +3,8 @@ import MetricCard from '../ui/MetricCard';
 
 interface Props {
   metrics: MetricConfig[];
-  activeMetric: string;
-  setActiveMetric: (id: string) => void;
+  activeMetric: MetricConfig['id'];
+  setActiveMetric: (id: MetricConfig['id']) => void;
 }
 
 export default function MetricsRow({ metrics, activeMetric, setActiveMetric }: Props) {

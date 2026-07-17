@@ -1,10 +1,39 @@
-export interface DailyMetric {
-  date: string
+export interface SummaryTrends {
+  revenue_pct: number | null
+  expenses_pct: number | null
+  active_clients_pct: number | null
+  bookings_pct: number | null
+  retention_pct: number | null
+}
+
+export interface PeriodSummary {
   revenue: number
-  new_clients: number
-  total_bookings: number
-  cancelled_bookings: number
-  retention_rate: number
+  expenses: number
+  profit: number
+  avg_check: number
+  active_clients: number
+  bookings: number
+  retention: number
+  attendance: number
+  trends: SummaryTrends
+}
+
+export interface SeriesPoint {
+  period: string
+  value: number
+}
+
+export interface TrainerReportRow {
+  trainer_id: number
+  name: string
+  lessons_count: number
+  revenue: number
+}
+
+export interface ServiceReportRow {
+  service: string
+  revenue: number
+  share_pct: number
 }
 
 export interface StudioReview {
@@ -42,4 +71,11 @@ export interface StudioTaskCreate {
   text: string
   priority?: 'low' | 'medium' | 'high'
   tag?: string | null
+}
+
+export interface StudioTaskUpdate {
+  text?: string
+  priority?: 'low' | 'medium' | 'high'
+  tag?: string | null
+  is_done?: boolean
 }

@@ -1,11 +1,14 @@
 // src/components/modals/BookingPopup.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as Icons from '../../../../components/Icons';
-import type { Booking } from '../types';
-import { TRAINERS, HALLS } from '../constants';
+import type { Booking, Trainer } from '../types';
+import type { BookedClient } from '../../../../api/schedule/schedule.types';
+import { scheduleApi } from '../../../../api/schedule';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../utils';
 
 interface BookingPopupProps {
+  trainers: Trainer[];
+  halls: string[];
   popupBooking: Booking;
   popupRef: React.RefObject<HTMLDivElement | null>;
   popupPos: { x: number; y: number };
@@ -19,6 +22,8 @@ interface BookingPopupProps {
 }
 
 export const BookingPopup: React.FC<BookingPopupProps> = ({
+  trainers,
+  halls,
   popupBooking,
   popupRef,
   popupPos,
@@ -41,6 +46,46 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
+
+  // Записанные клиенты занятия (с сервера, для галочки «Пришёл» и снятия).
+  // Привязаны к id занятия — при открытии другого попапа старый список не мелькает.
+  const [booked, setBooked] = useState<{ lessonId: number; clients: BookedClient[] } | null>(null);
+  const bookedClients = booked?.lessonId === popupBooking.id ? booked.clients : null;
+
+  useEffect(() => {
+    let stale = false;
+    scheduleApi.getLesson(popupBooking.id)
+      .then(d => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: d.booked_clients }); })
+      .catch(() => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: [] }); });
+    return () => { stale = true; };
+  }, [popupBooking.id]);
+
+  const patchBooked = (fn: (list: BookedClient[]) => BookedClient[]) =>
+    setBooked(b => b && { ...b, clients: fn(b.clients) });
+
+  const markAttended = (c: BookedClient) => {
+    if (c.status === 'attended') return; // на сервере тоже идемпотентно
+    scheduleApi.attendReservation(c.reservation_id)
+      .then(() => {
+        patchBooked(list => list.map(x =>
+          x.reservation_id === c.reservation_id ? { ...x, status: 'attended' as const } : x
+        ));
+        showToast('Посещение отмечено');
+      })
+      .catch((e: Error) => showToast(e.message || 'Не удалось отметить посещение'));
+  };
+
+  const removeClient = (c: BookedClient) => {
+    scheduleApi.cancelReservation(c.reservation_id)
+      .then(() => {
+        patchBooked(list => list.filter(x => x.reservation_id !== c.reservation_id));
+        const clients = Math.max(0, popupBooking.clients - 1);
+        setBookings(prev => prev.map(b => (b.id === popupBooking.id ? { ...b, clients } : b)));
+        setPopupBooking({ ...popupBooking, clients });
+        showToast('Клиент снят с занятия');
+      })
+      .catch((e: Error) => showToast(e.message || 'Не удалось снять клиента'));
+  };
 
   // Синхронизируем инпуты при открытии модалки редактирования
   useEffect(() => {
@@ -211,7 +256,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
             {/* 3. ЗАЛЫ (ЧИПСЫ) И ВМЕСТИМОСТЬ */}
             <div style={{ display: 'flex', gap: '8px' }}>
               <div style={{ display: 'flex', gap: '4px', flex: 1 }}>
-                {HALLS.map(h => (
+                {halls.map(h => (
                   <div
                     key={h}
                     className={`kp-chip ${editForm.hall === h ? 'active' : ''}`}
@@ -257,7 +302,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
               </div>
-              <div style={{ fontWeight: 700 }}>{TRAINERS.find(t => t.id === popupBooking.trainer)?.full}</div>
+              <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
             </div>
 
             {popupBooking.maxClients > 0 && (
@@ -271,11 +316,53 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                   </span>
                 </div>
                 <div style={{ height: 6, background: 'rgba(26,26,26,0.06)', borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{ 
-                    height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`, 
+                  <div style={{
+                    height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`,
                     background: popupBooking.color, borderRadius: 100,
-                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }} />
+                </div>
+              </div>
+            )}
+
+            {/* Записанные клиенты: галочка «Пришёл» + снятие с занятия */}
+            {bookedClients && bookedClients.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
+                  Записаны
+                </div>
+                <div style={{ maxHeight: 168, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {bookedClients.map(c => (
+                    <div key={c.reservation_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(26,26,26,0.02)' }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                        background: c.avatar_color ?? 'var(--peach)', color: 'white',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 10, fontWeight: 800
+                      }}>
+                        {[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase()}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700, color: 'var(--onyx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {c.name} {c.last_name ?? ''}
+                      </div>
+                      <button
+                        className="btn-icon"
+                        title={c.status === 'attended' ? 'Пришёл' : 'Отметить посещение'}
+                        style={{ color: c.status === 'attended' ? '#86b08c' : 'var(--border)', cursor: c.status === 'attended' ? 'default' : 'pointer' }}
+                        onClick={(e) => { e.stopPropagation(); markAttended(c); }}
+                      >
+                        <Icons.Check />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        title="Снять с занятия"
+                        style={{ color: 'var(--muted)' }}
+                        onClick={(e) => { e.stopPropagation(); removeClient(c); }}
+                      >
+                        <Icons.X />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

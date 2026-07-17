@@ -4,13 +4,14 @@
  */
 import { useState, useMemo } from 'react';
 
-export type SortOption = 'default' | 'name_asc' | 'name_desc';
+// Владелец → администратор → тренер. Внутри роли порядок с бэкенда сохраняется.
+const ROLE_ORDER: Record<string, number> = { owner: 0, admin: 1, trainer: 2 };
+const roleRank = (role: string) => ROLE_ORDER[role] ?? 99;
 
 // Принимаем any[], так как сюда прилетает расширенный Employee из Staff.tsx
 export function useStaffFilters(initialStaff: any[]) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeGroup, setActiveGroup] = useState<string | 'ALL'>('ALL'); // Хранит сырой ключ (например, 'pilates')
-  const [sortBy, setSortBy] = useState<SortOption>('default');
 
   const filteredAndSortedStaff = useMemo(() => {
     let result = initialStaff.filter(emp => {
@@ -32,25 +33,20 @@ export function useStaffFilters(initialStaff: any[]) {
       return matchesGroup && matchesSearch;
     });
 
-    // 3. Сортировка
-    if (sortBy === 'name_asc') {
-      result.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'name_desc') {
-      result.sort((a, b) => b.name.localeCompare(a.name));
-    }
+    // 3. Сортировка по рангу роли: владелец → администратор → тренер.
+    // Внутри одной роли порядок с бэкенда сохраняется (стабильная сортировка).
+    result.sort((a, b) => roleRank(a.role) - roleRank(b.role));
 
     return result;
-  }, [initialStaff, searchQuery, activeGroup, sortBy]);
+  }, [initialStaff, searchQuery, activeGroup]);
 
   return {
     staffList: filteredAndSortedStaff,
     searchQuery,
     activeGroup,
-    sortBy,
     setSearchQuery,
     setActiveGroup,
-    setSortBy,
-    
+
     // Возвращаем список СЫРЫХ ключей для кнопок-табов (['ALL', 'pilates', 'management'])
     availableGroups: useMemo(() => {
       const seen = new Set<string>();

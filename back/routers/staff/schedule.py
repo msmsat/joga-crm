@@ -3,13 +3,12 @@ from datetime import date, datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from jose import jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from database import get_db
-from dependencies import oauth2_scheme, SECRET_KEY, ALGORITHM
+from dependencies import require_role, StudioContext
 from models import Hall, Lesson, Reservation, StaffWorkingHours, StudioMember, User
 from schemas import (
     StaffWeekScheduleResponse, StaffMonthScheduleResponse,
@@ -17,16 +16,6 @@ from schemas import (
 )
 
 router = APIRouter()
-
-
-# ─── HELPER ───────────────────────────────────────────────────────────────────
-
-def _studio_id_from_token(token: str) -> int:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    studio_id = payload.get("studio_id")
-    if not studio_id:
-        raise HTTPException(status_code=401, detail="studio_id не найден в токене")
-    return int(studio_id)
 
 
 async def _assert_staff_in_studio(staff_id: int, studio_id: int, db: AsyncSession) -> None:
@@ -45,10 +34,10 @@ async def _assert_staff_in_studio(staff_id: int, studio_id: int, db: AsyncSessio
 @router.get("/{staff_id}/schedule/week", response_model=StaffWeekScheduleResponse)
 async def get_week_schedule(
     staff_id: int,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
     result = await db.execute(
@@ -79,10 +68,10 @@ async def get_month_schedule(
     staff_id: int,
     year: Optional[int] = Query(default=None),
     month: Optional[int] = Query(default=None),
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
     today = date.today()
@@ -132,10 +121,10 @@ async def get_month_schedule(
 @router.get("/{staff_id}/schedule/today", response_model=StaffTodayScheduleResponse)
 async def get_today_schedule(
     staff_id: int,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
     today = date.today()
@@ -181,10 +170,10 @@ async def get_today_schedule(
 async def cancel_lesson(
     staff_id: int,
     lesson_id: int,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
     result = await db.execute(

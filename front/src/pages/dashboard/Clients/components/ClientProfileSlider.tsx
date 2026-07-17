@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { ClientData, EventRecord } from '../types';
 import type { ClientProfile } from '../../../../api/clients/clients.types';
-import { STATUSES, STATUS_COLORS, EVENT_FILTER_TABS, SUGGESTED_TAGS, BONUS_OPTIONS, SERVICES } from '../constants';
+import { STATUSES, STATUS_COLORS, EVENT_FILTER_TABS, SUGGESTED_TAGS, BONUS_OPTIONS } from '../constants';
 import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { clientsApi } from '../../../../api/clients';
 import { STATUS_TO_LABEL, BL_TO_STATUS, formatDate, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -342,83 +342,6 @@ function ActivityChart({ c, clientName }: { c: string; clientName: string }) {
   );
 }
 
-// ─── SERVICE DROPDOWN (DarkSelectRow style) ───────────────────────────────────
-function ServiceDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div ref={ref} style={{ position: 'relative', marginBottom: '10px', userSelect: 'none' }}>
-      <div
-        onClick={() => setIsOpen(o => !o)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '9px 12px', background: '#fff',
-          border: `1.5px solid ${isOpen ? 'var(--peach)' : 'rgba(26,26,26,0.09)'}`,
-          borderRadius: '10px',
-          color: value ? '#1A1A1A' : '#999',
-          fontSize: '12px', fontWeight: 700, cursor: 'pointer',
-          boxShadow: isOpen ? '0 0 0 3px rgba(252,174,145,0.25)' : '0 2px 6px rgba(0,0,0,0.03)',
-          transition: 'all 0.2s cubic-bezier(0.2,0.8,0.2,1)',
-        }}
-      >
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {value || 'Выберите услугу...'}
-        </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s ease', color: isOpen ? 'var(--peach)' : 'rgba(26,26,26,0.4)', flexShrink: 0 }}>
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </div>
-
-      {isOpen && (
-        <div style={{
-          position: 'absolute', bottom: 'calc(100% + 6px)', left: 0, right: 0,
-          background: '#111111', border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '14px', padding: '6px',
-          boxShadow: '0 16px 40px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.2)',
-          zIndex: 200, animation: 'fadeSlide 0.2s cubic-bezier(0.34,1.3,0.64,1) both',
-        }}>
-          {SERVICES.map(s => (
-            <div
-              key={s}
-              onClick={() => { onChange(s); setIsOpen(false); }}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '8px 12px', borderRadius: '9px',
-                color: s === value ? 'var(--peach)' : 'rgba(255,255,255,0.7)',
-                fontSize: '12px', fontWeight: s === value ? 700 : 600,
-                cursor: 'pointer', transition: 'all 0.15s ease',
-                background: s === value ? 'rgba(252,174,145,0.15)' : 'transparent',
-              }}
-              onMouseEnter={e => { if (s !== value) { e.currentTarget.style.background='rgba(252,174,145,0.08)'; e.currentTarget.style.color='#fff'; } }}
-              onMouseLeave={e => { if (s !== value) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.7)'; } }}
-            >
-              <span>{s}</span>
-              {s === value && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── TIME SLOTS ───────────────────────────────────────────────────────────────
-const TIME_SLOTS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
-
 // ─── CLIENT PANEL ─────────────────────────────────────────────────────────────
 function ClientPanel({ client, profile, onClose, onDelete, onFreezeChange }: {
   client: ClientData;
@@ -645,7 +568,7 @@ function ClientPanel({ client, profile, onClose, onDelete, onFreezeChange }: {
               ))}
             </div>
 
-            <LoyaltyIllus points={client.loyalty_points}/>
+            <LoyaltyIllus points={client.loyalty_points + actions.bonusPoints}/>
             <AbonementCard used={client.active_subscription?.used ?? 0} total={client.active_subscription?.total ?? 0} color={actions.frozen ? '#93b5d8' : (client.avatar_color ?? '#999')}/>
             <ActivityChart c={client.avatar_color ?? '#999'} clientName={client.name}/>
 
@@ -863,23 +786,36 @@ function ClientPanel({ client, profile, onClose, onDelete, onFreezeChange }: {
             ))}
           </div>
 
-          {/* Time grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '5px', marginBottom: '12px' }}>
-            {TIME_SLOTS.map(t => (
-              <button
-                key={t}
-                onClick={() => actions.setBookingTime(t)}
-                style={{ padding: '7px 4px', borderRadius: '8px', border: `1px solid ${actions.bookingTime === t ? 'var(--peach)' : 'var(--border)'}`, background: actions.bookingTime === t ? 'rgba(249,160,139,0.12)' : 'transparent', fontSize: '11px', fontWeight: 700, color: actions.bookingTime === t ? 'var(--peach)' : 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}
-              >{t}</button>
-            ))}
+          {/* Занятия на выбранный день (реальное расписание) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '12px' }}>
+            {actions.bookingLessons.length === 0 && (
+              <div style={{ fontSize: '12px', color: 'var(--text3)', textAlign: 'center', padding: '12px 0' }}>
+                Нет занятий в этот день
+              </div>
+            )}
+            {actions.bookingLessons.map(l => {
+              const full = l.booked_count >= l.total_spots;
+              const disabled = full || l.status === 'cancelled';
+              const active = actions.bookingLessonId === l.id;
+              return (
+                <button
+                  key={l.id}
+                  disabled={disabled}
+                  onClick={() => actions.setBookingLessonId(l.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '10px', border: `1px solid ${active ? 'var(--peach)' : 'var(--border)'}`, background: active ? 'rgba(249,160,139,0.12)' : 'transparent', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.45 : 1, fontFamily: 'Manrope', transition: 'all 0.2s', textAlign: 'left' }}
+                >
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: active ? 'var(--peach)' : 'var(--text)' }}>{l.start_time.slice(11, 16)}</span>
+                  <span style={{ flex: 1, fontSize: '12px', fontWeight: 600, color: 'var(--text2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.name}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)' }}>{full ? 'Мест нет' : `${l.booked_count}/${l.total_spots}`}</span>
+                </button>
+              );
+            })}
           </div>
-
-          {/* Service select — DarkSelectRow style */}
-          <ServiceDropdown value={actions.bookingService} onChange={actions.setBookingService}/>
 
           <button
             onClick={actions.confirmBooking}
-            style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg,var(--peach),#F5866E)', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', boxShadow: '0 4px 14px -2px rgba(249,160,139,0.4)', transition: 'all 0.2s' }}
+            disabled={actions.bookingLessonId == null}
+            style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg,var(--peach),#F5866E)', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: actions.bookingLessonId == null ? 'default' : 'pointer', opacity: actions.bookingLessonId == null ? 0.5 : 1, fontFamily: 'Manrope', boxShadow: '0 4px 14px -2px rgba(249,160,139,0.4)', transition: 'all 0.2s' }}
           >Записать →</button>
         </div>
       )}
@@ -898,7 +834,7 @@ function ClientPanel({ client, profile, onClose, onDelete, onFreezeChange }: {
                 <button
                   key={opt.id}
                   className="cl-bonus-opt"
-                  onClick={() => actions.selectBonus(opt.id, opt.label)}
+                  onClick={() => actions.selectBonus(opt.id, opt.label, opt.points)}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', border: `1px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, background: isSelected ? 'rgba(249,160,139,0.08)' : 'transparent', cursor: 'pointer', fontFamily: 'Manrope', textAlign: 'left', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
                 >
                   <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: isSelected ? 'rgba(249,160,139,0.2)' : 'rgba(240,192,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isSelected ? 'var(--peach)' : '#c8a84b', flexShrink: 0, transition: 'all 0.2s' }}>

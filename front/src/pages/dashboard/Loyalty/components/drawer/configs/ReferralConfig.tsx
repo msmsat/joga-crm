@@ -1,12 +1,19 @@
-import { useState } from 'react';
 import styles from '../../../Loyalty.module.css';
+import type { ReferralConfig as ReferralConfigType } from '../../../../../../api/loyalty/loyalty.types';
+
+interface Props {
+  value: ReferralConfigType | null;
+  onChange: (patch: Partial<ReferralConfigType>) => void;
+}
 
 const CONDITIONS = ['После первого визита', 'После первой оплаты', 'Сразу при регистрации'];
 const BONUS_TYPES = ['Баллами', 'На депозит', 'Скидкой'];
 
-export default function ReferralConfig() {
-  const [condition, setCondition] = useState('После первого визита');
-  const [referralBonus, setReferralBonus] = useState('На депозит');
+export default function ReferralConfig({ value, onChange }: Props) {
+  const referrerBonus = value?.referrer_bonus ?? 500;
+  const newClientDiscount = value?.new_client_discount ?? 15;
+  const condition = value?.trigger_condition ?? 'После первого визита';
+  const bonusType = value?.bonus_type ?? 'На депозит';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -15,11 +22,11 @@ export default function ReferralConfig() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>Бонус рефереру (₽)</label>
-            <input type="number" defaultValue="500" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            <input type="number" value={referrerBonus} onChange={e => onChange({ referrer_bonus: Number(e.target.value) })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>Скидка новому клиенту (%)</label>
-            <input type="number" defaultValue="15" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            <input type="number" value={newClientDiscount} onChange={e => onChange({ new_client_discount: Number(e.target.value) })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
         </div>
       </div>
@@ -32,7 +39,7 @@ export default function ReferralConfig() {
             return (
               <label
                 key={opt}
-                onClick={() => setCondition(opt)}
+                onClick={() => onChange({ trigger_condition: opt })}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '10px 12px', borderRadius: 'var(--radius-sm)',
@@ -62,13 +69,13 @@ export default function ReferralConfig() {
           {BONUS_TYPES.map(t => (
             <button
               key={t}
-              onClick={() => setReferralBonus(t)}
+              onClick={() => onChange({ bonus_type: t })}
               className={styles.btnOption}
               style={{
                 padding: '8px 14px',
-                border: `1px solid ${referralBonus === t ? 'rgba(252,174,145,0.4)' : 'var(--border)'}`,
-                background: referralBonus === t ? 'rgba(252,174,145,0.12)' : 'var(--bg)',
-                color: referralBonus === t ? '#FCAE91' : 'var(--text2)',
+                border: `1px solid ${bonusType === t ? 'rgba(252,174,145,0.4)' : 'var(--border)'}`,
+                background: bonusType === t ? 'rgba(252,174,145,0.12)' : 'var(--bg)',
+                color: bonusType === t ? '#FCAE91' : 'var(--text2)',
               }}
             >
               {t}

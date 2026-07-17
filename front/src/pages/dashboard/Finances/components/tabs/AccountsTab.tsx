@@ -1,17 +1,22 @@
-import { useState } from 'react';
-import type { ToastType, AccountItem } from '../../types';
-import { ACCOUNTS_DATA, fmt } from '../../constants';
+import { useEffect, useRef, useState } from 'react';
+import type { ToastType } from '../../types';
+import type { Account } from '../../../../../api/finances/finances.types';
+import { financesApi } from '../../../../../api/finances/finances.api';
+import { fmt } from '../../constants';
 import { Ico } from '../ui/FinanceIcons';
 import { Btn } from '../ui/Btn';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { DonutIllustration } from '../ui/DonutIllustration';
 import styles from '../../Finances.module.css';
 
+const ACCOUNT_COLORS = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
+
 export default function AccountsTab({ showToast, onNavigateToOperations }: {
   showToast: (msg: string, t?: ToastType) => void;
   onNavigateToOperations: (accountName: string) => void;
 }) {
-  const [accounts, setAccounts] = useState<AccountItem[]>(ACCOUNTS_DATA);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
 
@@ -28,44 +33,78 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
   const [newName, setNewName] = useState('');
   const [newBalance, setNewBalance] = useState('');
   const [newType, setNewType] = useState('cash');
+  const [saving, setSaving] = useState(false);
   const [isNewInputFocused, setIsNewInputFocused] = useState(false);
   const [isNewBalanceFocused, setIsNewBalanceFocused] = useState(false);
 
+  // showToast — новая ссылка каждый рендер родителя; держим в ref, чтобы эффект не перезапускался
+  const toastRef = useRef(showToast);
+  toastRef.current = showToast;
+
+  useEffect(() => {
+    financesApi.getAccounts()
+      .then(setAccounts)
+      .catch(() => toastRef.current('Не удалось загрузить счета', 'error'))
+      .finally(() => setLoading(false));
+  }, []);
+
   const total = accounts.reduce((s, a) => s + a.balance, 0);
-  const segments = accounts.map(a => ({ pct: a.balance / total, color: a.color, label: a.name }));
+  const segments = total > 0 ? accounts.map(a => ({ pct: a.balance / total, color: a.color, label: a.name })) : [];
 
   const handleDelete = (id: number) => setConfirm({ open: true, id });
 
-  const confirmDelete = () => {
-    setAccounts(prev => prev.filter(a => a.id !== confirm.id));
+  const confirmDelete = async () => {
+    const id = confirm.id;
     setConfirm({ open: false, id: null });
-    showToast('Счёт удалён', 'error');
-    setSelected(null);
+    if (id == null) return;
+    try {
+      await financesApi.deleteAccount(id);
+      setAccounts(prev => prev.filter(a => a.id !== id));
+      showToast('Счёт удалён', 'error');
+      setSelected(null);
+    } catch {
+      showToast('Не удалось удалить счёт', 'error');
+    }
   };
 
-  const handleUpdate = (id: number) => {
+  const handleUpdate = async (id: number) => {
     if (!editName.trim()) return;
     const numBalance = parseInt(editBalance) || 0;
-    setAccounts(prev => prev.map(a => a.id === id ? { ...a, name: editName.trim(), type: editType, balance: numBalance } : a));
-    setEditingId(null);
-    showToast('Настройки сохранены', 'success');
+    try {
+      const updated = await financesApi.updateAccount(id, { name: editName.trim(), type: editType, balance: numBalance });
+      setAccounts(prev => prev.map(a => a.id === id ? updated : a));
+      setEditingId(null);
+      showToast('Настройки сохранены', 'success');
+    } catch {
+      showToast('Не удалось сохранить счёт', 'error');
+    }
   };
 
-  const handleSaveNew = () => {
-    if (!newName.trim()) return;
-    const numBalance = parseInt(newBalance) || 0;
-    const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
-    setAccounts(prev => [...prev, {
-      id: Date.now(), name: newName.trim(), type: newType,
-      balance: numBalance, daily_change: 0, color: colors[prev.length % colors.length], is_system: false,
-    }]);
-    setNewName(''); setNewBalance(''); setNewType('cash'); setAddOpen(false);
-    showToast('Копилка успешно создана', 'success');
+  const handleSaveNew = async () => {
+    if (!newName.trim() || saving) return;
+    setSaving(true);
+    const color = ACCOUNT_COLORS[accounts.length % ACCOUNT_COLORS.length];
+    try {
+      const created = await financesApi.createAccount({
+        name: newName.trim(), type: newType, color, balance: parseInt(newBalance) || 0,
+      });
+      setAccounts(prev => [...prev, created]);
+      setNewName(''); setNewBalance(''); setNewType('cash'); setAddOpen(false);
+      showToast('Копилка успешно создана', 'success');
+    } catch {
+      showToast('Не удалось создать счёт', 'error');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleNumberInput = (val: string, setter: (v: string) => void) => {
     setter(val.replace(/\D/g, ''));
   };
+
+  if (loading) {
+    return <div style={{ padding: '64px 20px', textAlign: 'center', color: '#999999', fontSize: '14px', fontWeight: 600 }}>Загрузка счетов…</div>;
+  }
 
   return (
     <>

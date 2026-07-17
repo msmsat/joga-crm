@@ -1,11 +1,17 @@
 from typing import Optional, List, Dict
 from schemas._base import BaseSchema
+from schemas.common import Page
 
 
 class StaffHall(BaseSchema):
     id: int
     name: str
     color: Optional[str] = None
+
+
+class StaffServiceItem(BaseSchema):
+    id: int
+    name: str
 
 
 class StaffWorkingHoursItem(BaseSchema):
@@ -64,7 +70,7 @@ class StaffSummary(BaseSchema):
 
 class StaffListResponse(BaseSchema):
     summary: StaffSummary
-    staff: List[StaffListItem]
+    staff: Page[StaffListItem]
 
 
 class StaffProfileResponse(BaseSchema):
@@ -85,6 +91,7 @@ class StaffProfileResponse(BaseSchema):
     avg_rating: Optional[float] = None
     stats: StaffStats
     halls: List[StaffHall]
+    services: List[StaffServiceItem]
     today_schedule: List[StaffTodayLesson]
     week_working_hours: List[StaffWorkingHoursItem]
 

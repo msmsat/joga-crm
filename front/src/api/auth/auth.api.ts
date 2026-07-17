@@ -8,6 +8,7 @@ import type {
   RegisterPayload,
   ResetPasswordPayload,
   TokenResponse,
+  UpdateProfilePayload,
   UserMe,
   VerifyEmailPayload,
 } from './auth.types'
@@ -33,6 +34,9 @@ export const authApi = {
 
   getMe: (signal?: AbortSignal) =>
     client.get<UserMe>('/auth/me', { signal }),
+
+  updateMe: (payload: UpdateProfilePayload) =>
+    client.patch<UserMe>('/auth/me', payload),
 
   checkPhone: (phone: string) =>
     client.get<CheckPhoneResponse>(`/auth/check-phone?phone=${encodeURIComponent(phone)}`),

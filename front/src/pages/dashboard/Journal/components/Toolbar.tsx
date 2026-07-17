@@ -1,10 +1,12 @@
 // src/components/Toolbar.tsx
 import React from 'react';
 import * as Icons from '../../../../components/Icons';
-// Обратите внимание на пути импорта констант. Скорректируйте их, если структура папок отличается.
-import { TRAINERS, HALLS, MONTH_NAMES } from '../constants';
+import { MONTH_NAMES } from '../constants';
+import type { Trainer } from '../types';
 
 interface ToolbarProps {
+  trainers: Trainer[];
+  halls: string[];
   selectedDay: number;
   calMonth: number;
   calYear: number;
@@ -30,6 +32,8 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
+  trainers,
+  halls,
   selectedDay,
   calMonth,
   calYear,
@@ -130,7 +134,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Фильтры тренеров */}
       {viewMode === 'trainers' && (
         <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-          {TRAINERS.map(t => (
+          {trainers.map(t => (
             <button
               key={t.id}
               className={`pill-tab ${activeTrainers.includes(t.id) ? 'active' : ''}`}
@@ -146,7 +150,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Фильтры залов */}
       {viewMode === 'halls' && (
         <div style={{ display: 'flex', gap: 5 }}>
-          {HALLS.map(h => (
+          {halls.map(h => (
             <button
               key={h}
               className={`pill-tab ${activeHalls.includes(h) ? 'active' : ''}`}

@@ -16,6 +16,17 @@ export default function Billing() {
         animateCards={h.animateCards}
       />
 
+      {h.paymentReturn && (
+        <div style={{ margin: '0 32px 20px', padding: '16px 20px', background: 'rgba(163,201,168,0.12)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pistachio)', flexShrink: 0 }} />
+          <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 600 }}>
+            {h.plan?.status === 'active'
+              ? `Оплата прошла — тариф ${h.plan.plan_name} активен.`
+              : 'Обрабатываем оплату — подписка активируется в течение пары минут.'}
+          </span>
+        </div>
+      )}
+
       {h.activeTab === 'plans' && (
         <PlansTab
           billingMode={h.billingMode}        setBillingMode={h.setBillingMode}
@@ -26,11 +37,14 @@ export default function Billing() {
           estimatedRevenue={h.estimatedRevenue} setEstimatedRevenue={h.setEstimatedRevenue}
           getPrice={h.getPrice}
           periodDiscounts={h.periodDiscounts}
+          plans={h.plans}
           currentMonthly={h.currentMonthly}
           discountedPrice={h.discountedPrice}
           totalToPay={h.totalToPay}
           animateCards={h.animateCards}
           setShowUpgradeModal={h.setShowUpgradeModal}
+          startCheckout={h.startCheckout}
+          checkoutBusy={h.checkoutBusy}
         />
       )}
 
@@ -43,10 +57,13 @@ export default function Billing() {
           selectedPlan={h.selectedPlan}
           selectedPeriod={h.selectedPeriod}
           periodDiscounts={h.periodDiscounts}
+          plans={h.plans}
           getPrice={h.getPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
           onClose={() => h.setShowUpgradeModal(false)}
+          startCheckout={h.startCheckout}
+          checkoutBusy={h.checkoutBusy}
         />
       )}
     </div>

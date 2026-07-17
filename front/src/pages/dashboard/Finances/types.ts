@@ -6,31 +6,6 @@ export const FINANCE_TABS = [
 export type Tab = typeof FINANCE_TABS[number];
 export type ToastType = 'success' | 'error' | 'info';
 
-export interface AccountItem {
-  id: number;
-  name: string;
-  type: string;
-  balance: number;
-  daily_change: number;
-  color: string;
-  is_system: boolean;
-}
-
-export interface Operation {
-  id: number;
-  type: 'in' | 'out';
-  title: string;
-  client_name?: string;
-  client_id: number | null;
-  amount: number;
-  op_date: string;
-  category: string | null;
-  method: string | null;
-  status: 'completed' | 'pending';
-  account_name?: string;
-  account_id: number | null;
-}
-
 export interface Counterparty {
   id: number;
   name: string;
@@ -73,30 +48,3 @@ export interface PaymentMethod {
   transactions: number;
 }
 
-export interface Goal {
-  id: number;
-  title: string;
-  target_amount: number;
-  current_amount: number;
-  deadline: string | null;
-  category: string | null;
-  color: string;
-  priority: string;
-  trackingMode?: 'auto' | 'manual';
-}
-
-export interface TrainerSalary {
-  id: number;
-  name: string;
-  role: string;
-  color: string;
-  revenue: number;
-  sessions: number;
-  hours: number;
-  rate: number;
-  rate_type: 'hourly' | 'fixed';
-  salary: number;
-  weeklyData: number[];
-  topClass: string;
-  rating: number;
-}

@@ -1,8 +1,17 @@
-import { useState } from 'react';
 import styles from '../../../Loyalty.module.css';
+import type { LoyaltyConfig as LoyaltyConfigType } from '../../../../../../api/loyalty/loyalty.types';
 
-export default function LoyaltyConfig() {
-  const [loyaltyExpiry, setLoyaltyExpiry] = useState('1 год');
+interface Props {
+  value: LoyaltyConfigType | null;
+  onChange: (patch: Partial<LoyaltyConfigType>) => void;
+}
+
+const EXPIRY_OPTIONS = ['3 мес', '6 мес', '1 год', 'Бессрочно'];
+
+export default function LoyaltyConfig({ value, onChange }: Props) {
+  const programName = value?.program_name ?? 'Velora Club';
+  const rate = value?.points_exchange_rate ?? 100;
+  const expiry = value?.expiry_period ?? '1 год';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -11,11 +20,11 @@ export default function LoyaltyConfig() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>Название программы</label>
-            <input defaultValue="Velora Club" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            <input value={programName} onChange={e => onChange({ program_name: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>Начисление баллов (₽ за 1 балл)</label>
-            <input type="number" defaultValue="100" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            <input type="number" value={rate} onChange={e => onChange({ points_exchange_rate: Number(e.target.value) })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
         </div>
       </div>
@@ -52,12 +61,12 @@ export default function LoyaltyConfig() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {['3 мес', '6 мес', '1 год', 'Бессрочно'].map(opt => (
-            <button key={opt} onClick={() => setLoyaltyExpiry(opt)} style={{
+          {EXPIRY_OPTIONS.map(opt => (
+            <button key={opt} onClick={() => onChange({ expiry_period: opt })} style={{
               padding: '8px 14px', borderRadius: 'var(--radius-sm)',
-              border: `1px solid ${loyaltyExpiry === opt ? 'rgba(252,174,145,0.4)' : 'var(--border)'}`,
-              background: loyaltyExpiry === opt ? 'rgba(252,174,145,0.12)' : 'var(--bg)',
-              color: loyaltyExpiry === opt ? '#FCAE91' : 'var(--text2)',
+              border: `1px solid ${expiry === opt ? 'rgba(252,174,145,0.4)' : 'var(--border)'}`,
+              background: expiry === opt ? 'rgba(252,174,145,0.12)' : 'var(--bg)',
+              color: expiry === opt ? '#FCAE91' : 'var(--text2)',
               fontSize: '12px', fontWeight: 600, cursor: 'pointer',
             }}>
               {opt}

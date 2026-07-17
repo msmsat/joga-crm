@@ -1,8 +1,14 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { getPresetServices } from "../../pages/dashboard/Staff/constants";
+import { useNavigate } from "react-router-dom";
 import "../../App.css";
+import { DAYS_KEYS, TIME_OPTIONS } from "../../pages/dashboard/Staff/constants";
+import { servicesApi, type ServiceRead } from "../../api/studio/services.api";
+import { studioApi } from "../../api/studio/studio.api";
+import { settingsApi } from "../../api/settings/settings.api";
+import { resolveImageUrl } from "../../api/client";
+import { getCurrencySymbol } from "../UI";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
@@ -14,36 +20,23 @@ export interface StaffMember {
   phone: string;
   email: string;
   role: string;
-  department?: string;
   avatar_gradient?: string;
   is_online: boolean;
-  services?: string[];
   rate?: number;
   rate_type?: "fixed" | "percent" | "hourly" | "";
   schedule?: Record<string, ScheduleDay>;
   photo_url?: string;
+  service_ids?: number[];
 }
 
 interface EditStaffModalProps {
   isOpen: boolean;
   staff: StaffMember | null;
   onClose: () => void;
-  onSave?: (updated: StaffMember) => void;
+  onSave?: (updated: StaffMember) => Promise<void> | void;
   onDelete?: (id: number) => Promise<void> | void;
   ownerCount?: number;
 }
-
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const ROLE_TO_DEPT_KEY: Record<string, string> = {
-  trainer:       "trainers",
-  barber:        "masters",
-  stylist:       "masters",
-  admin:         "management",
-  masseur:       "masters",
-  cosmetologist: "masters",
-  yoga:          "trainers",
-  nail:          "masters",
-};
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   trainer: (
@@ -51,73 +44,17 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
       <path d="M6 4h12M6 20h12M8 4v16M16 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/>
     </svg>
   ),
-  barber: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
-      <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"/>
-    </svg>
-  ),
-  stylist: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2a5 5 0 0 1 5 5c0 3-2 5-5 7-3-2-5-4-5-7a5 5 0 0 1 5-5z"/>
-      <path d="M12 14v8M8 22h8"/>
-    </svg>
-  ),
   admin: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
       <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
     </svg>
-  ),
-  masseur: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  ),
-  cosmetologist: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-    </svg>
-  ),
-  yoga: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="4" r="1.5"/>
-      <path d="M12 6v5l-3 3M12 11l3 3M7 19c1.5-1 3-3 5-3s3.5 2 5 3"/>
-    </svg>
-  ),
-  nail: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2C9 2 7 5 7 8c0 4 2 7 5 9 3-2 5-5 5-9 0-3-2-6-5-6z"/>
-      <path d="M12 11v7M9 20h6"/>
-    </svg>
-  ),
+  )
 };
 
-const PRESET_ROLES: { id: string }[] = [
+const PRESET_ROLES = [
   { id: "trainer" },
-  { id: "barber" },
-  { id: "stylist" },
   { id: "admin" },
-  { id: "masseur" },
-  { id: "cosmetologist" },
-  { id: "yoga" },
-  { id: "nail" },
-];
-
-const DAYS: { key: string }[] = [
-  { key: "mon" },
-  { key: "tue" },
-  { key: "wed" },
-  { key: "thu" },
-  { key: "fri" },
-  { key: "sat" },
-  { key: "sun" },
-];
-
-const TIME_OPTIONS = [
-  "06:00","07:00","08:00","09:00","10:00","11:00","12:00",
-  "13:00","14:00","15:00","16:00","17:00","18:00",
-  "19:00","20:00","21:00","22:00","23:00",
 ];
 
 const TAB_ICONS: Record<string, React.ReactNode> = {
@@ -160,11 +97,11 @@ const defaultSchedule: Record<string, ScheduleDay> = {
 
 // Left panel: Live "identity card" that updates as you type
 function IdentityIllus({
-  name, role, photo, is_online, services, salary, rate_type, schedule
+  name, role, photo, is_online, services, salary, rate_type, schedule, currencySymbol
 }: {
   name: string; role: string; photo?: string; is_online: boolean;
   services: string[]; salary: string; rate_type: string;
-  schedule: Record<string, ScheduleDay>;
+  schedule: Record<string, ScheduleDay>; currencySymbol: string;
 }) {
   const { t } = useTranslation(["staff", "common"]);
   const initials = name.trim().length >= 2
@@ -175,7 +112,7 @@ function IdentityIllus({
     ? t(`staff:roles.${role}`, { defaultValue: role })
     : t("staff:editModal.positionFallback");
   const salaryLabel = salary
-    ? `${salary} ${rate_type === "percent" ? "%" : rate_type === "hourly" ? "₽/ч" : "₽"}`
+    ? `${salary} ${rate_type === "percent" ? "%" : rate_type === "hourly" ? `${currencySymbol}/ч` : currencySymbol}`
     : "—";
 
   return (
@@ -222,9 +159,10 @@ function IdentityIllus({
       {/* Peach header strip */}
       <path d="M20,44 a20,20 0 0 1 20,-20 h164 a20,20 0 0 1 20,20 v36 h-204 Z" fill="rgba(252,174,145,0.06)" />
 
-      {/* Edit badge top-right */}
+      {/* Edit badge top-right — pencil icon */}
       <circle cx="202" cy="38" r="12" fill="white" stroke="#F0EDE8" strokeWidth="1" />
-      <path d="M197 41 L200 36 L205 41 L200 46 Z" fill="rgba(249,160,139,0.8)" />
+      <path d="M198.5 41.5 L197.5 44.5 L200.5 43.5 L205.5 38.5 C206 38 206 37.3 205.5 36.8 L205.2 36.5 C204.7 36 204 36 203.5 36.5 Z"
+        fill="none" stroke="rgba(249,160,139,0.9)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Avatar */}
       {photo ? (
@@ -285,17 +223,17 @@ function IdentityIllus({
       <line x1="40" y1="208" x2="204" y2="208" stroke="#F0EDE8" strokeWidth="1" />
 
       {/* Schedule mini-week */}
-      {DAYS.map((d, i) => {
-        const enabled = schedule[d.key]?.enabled ?? false;
+      {DAYS_KEYS.map((key, i) => {
+        const enabled = schedule[key]?.enabled ?? false;
         const cx = 44 + i * 24;
         return (
-          <g key={d.key}>
+          <g key={key}>
             <rect x={cx - 9} y="218" width="18" height="18" rx="5"
-              fill={enabled ? "rgba(252,174,145,0.5)" : "rgba(26,26,26,0.05)"}
-              stroke={enabled ? "rgba(252,174,145,0.7)" : "transparent"} strokeWidth="1" />
+              fill={enabled ? "#1A1A1A" : "rgba(26,26,26,0.02)"}
+              stroke={enabled ? "#1A1A1A" : "rgba(26,26,26,0.08)"} strokeWidth="1" />
             {enabled && (
               <path d={`M${cx-3.5} 227 L${cx} 231 L${cx+5} 223`}
-                stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             )}
           </g>
         );
@@ -320,17 +258,14 @@ function IdentityIllus({
       {/* Services tags */}
       {services.slice(0,3).map((svc, i) => (
         <g key={svc}>
-          <rect x={40 + i * 58} y="272" width="50" height="12" rx="6"
-            fill="rgba(163,201,168,0.15)" />
-          <text x={65 + i * 58} y="281.5" textAnchor="middle" fontSize="6.5" fontWeight="700"
-            fill="#6A9E72" fontFamily="Manrope, sans-serif">
+          <rect x={40 + i * 58} y="272" width="50" height="12" rx="6" fill="rgba(163,201,168,0.15)" />
+          <text x={65 + i * 58} y="281.5" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#6A9E72" fontFamily="Manrope, sans-serif">
             {svc.length > 7 ? svc.slice(0,6) + "…" : svc}
           </text>
         </g>
       ))}
       {services.length > 3 && (
-        <text x="196" y="281.5" textAnchor="middle" fontSize="6.5" fontWeight="700"
-          fill="#CCCCCC" fontFamily="Manrope, sans-serif">+{services.length - 3}</text>
+        <text x="196" y="281.5" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#CCCCCC" fontFamily="Manrope, sans-serif">+{services.length - 3}</text>
       )}
     </svg>
   );
@@ -349,43 +284,59 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 function FocusInput({
-  value, onChange, placeholder, type = "text", onKeyDown, disabled
+  value, onChange, placeholder, type = "text", onKeyDown, disabled, error
 }: {
   value: string; onChange: (v: string) => void; placeholder: string;
   type?: string; onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  disabled?: boolean;
+  disabled?: boolean; error?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
-    <input
-      type={type} value={value} disabled={disabled}
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder} onKeyDown={onKeyDown}
-      onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-      style={{
-        width: "100%", padding: "11px 14px",
-        background: disabled ? "rgba(26,26,26,0.02)" : focused ? "#fff" : "rgba(26,26,26,0.025)",
-        border: focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
-        borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
-        outline: "none", fontFamily: "Manrope, sans-serif",
-        boxShadow: focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
-        transition: "all 0.18s ease", boxSizing: "border-box" as const,
-        opacity: disabled ? 0.5 : 1,
-      }}
-    />
+    <div>
+      <input
+        type={type} value={value} disabled={disabled}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder} onKeyDown={onKeyDown}
+        onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+        style={{
+          width: "100%", padding: "11px 14px",
+          background: disabled ? "rgba(26,26,26,0.02)" : focused ? "#fff" : "rgba(26,26,26,0.025)",
+          border: error ? "1.5px solid #D88C9A" : focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
+          borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
+          outline: "none", fontFamily: "Manrope, sans-serif",
+          boxShadow: error ? "0 0 0 3px rgba(216,140,154,0.14)" : focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
+          transition: "all 0.18s ease", boxSizing: "border-box" as const,
+          opacity: disabled ? 0.5 : 1,
+        }}
+      />
+      {error && (
+        <p style={{ fontSize: "11px", color: "#D88C9A", margin: "6px 0 0", fontWeight: 500 }}>{error}</p>
+      )}
+    </div>
   );
 }
 
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
 export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount }: EditStaffModalProps) {
   const { t } = useTranslation(["staff", "common"]);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab]     = useState<TabId>("profile");
   const [saving, setSaving]           = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
   const [saved, setSaved]             = useState(false);
-  const [customSvcInput, setCustomSvcInput] = useState("");
-  const [photoPreview, setPhotoPreview] = useState<string | undefined>(staff?.photo_url);
+  const [photoPreview, setPhotoPreview] = useState<string | undefined>(resolveImageUrl(staff?.photo_url));
+  const [availableServices, setAvailableServices] = useState<ServiceRead[]>([]);
+  const [currency, setCurrency] = useState<string>();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      settingsApi.getGeneral().then(s => setCurrency(s.currency)).catch(() => {});
+    }
+  }, [isOpen]);
+
+  const currencySymbol = getCurrencySymbol(currency);
 
   const [form, setForm] = useState<{
     id: number;
@@ -394,23 +345,29 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     phone: string;
     email: string;
     role: string;
-    department: string;
     avatar_gradient: string;
     is_online: boolean;
-    services: string[];
     salary: string;
     rate_type: "fixed" | "percent" | "hourly" | "";
     schedule: Record<string, ScheduleDay>;
     photo_url?: string;
+    serviceIds: number[];
   }>({
-    id: 0, name: "", last_name: "", phone: "", email: "", role: "", department: "",
-    avatar_gradient: "", is_online: true, services: [], salary: "", rate_type: "",
-    schedule: { ...defaultSchedule },
+    id: 0, name: "", last_name: "", phone: "", email: "", role: "",
+    avatar_gradient: "", is_online: true, salary: "", rate_type: "",
+    schedule: { ...defaultSchedule }, serviceIds: [],
   });
+
+  // Загрузка услуг студии для пилюль вкладки «Роль»
+  useEffect(() => {
+    if (isOpen) {
+      servicesApi.list().then(setAvailableServices).catch(() => setAvailableServices([]));
+    }
+  }, [isOpen]);
 
   // Sync when staff changes
   useEffect(() => {
-    if (staff) {
+    if (isOpen && staff) {
       setForm({
         id:             staff.id,
         name:           staff.name,
@@ -418,57 +375,43 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         phone:          staff.phone,
         email:          staff.email,
         role:           staff.role,
-        department:     staff.department ?? ROLE_TO_DEPT_KEY[staff.role] ?? "",
         avatar_gradient: staff.avatar_gradient ?? "",
         is_online:      staff.is_online,
-        services:       staff.services ?? [],
         salary:         staff.rate != null ? String(staff.rate) : "",
         rate_type:      staff.rate_type ?? "",
         schedule:       staff.schedule ?? { ...defaultSchedule },
         photo_url:      staff.photo_url,
+        serviceIds:     staff.service_ids ?? [],
       });
-      setPhotoPreview(staff.photo_url);
+      setPhotoPreview(resolveImageUrl(staff.photo_url));
       setShowDeleteConfirm(false);
+      setShowCatalogConfirm(false);
       setSaved(false);
       setActiveTab("profile");
     }
-  }, [staff]);
+  }, [isOpen, staff]);
 
   const set = useCallback(<K extends keyof typeof form>(k: K, v: typeof form[K]) => {
     setForm(d => ({ ...d, [k]: v }));
   }, []);
 
-  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const url = ev.target?.result as string;
-      setPhotoPreview(url);
-      set("photo" as any, url);
-    };
-    reader.readAsDataURL(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    try {
+      const { url } = await studioApi.uploadStaffPhoto(file);
+      set("photo_url", url);
+      setPhotoPreview(resolveImageUrl(url));
+    } catch {
+      setPhotoPreview(resolveImageUrl(form.photo_url));
+    }
   }
 
   function removePhoto() {
     setPhotoPreview(undefined);
-    set("photo" as any, undefined);
+    set("photo_url", undefined);
     if (fileRef.current) fileRef.current.value = "";
-  }
-
-  function toggleService(svc: string) {
-    set("services", form.services.includes(svc)
-      ? form.services.filter(s => s !== svc)
-      : [...form.services, svc]
-    );
-  }
-
-  function handleSvcKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && customSvcInput.trim()) {
-      const t = customSvcInput.trim();
-      if (!form.services.includes(t)) set("services", [...form.services, t]);
-      setCustomSvcInput("");
-    }
   }
 
   function toggleDay(key: string) {
@@ -481,29 +424,57 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
   async function handleSave() {
     setSaving(true);
-    await new Promise(r => setTimeout(r, 700));
-    const finalDepartment = form.department || ROLE_TO_DEPT_KEY[form.role] || form.role;
-    onSave?.({ ...form, department: finalDepartment, rate: form.salary ? parseFloat(form.salary) : undefined });
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => { setSaved(false); onClose(); }, 1200);
+    try {
+      await onSave?.({
+        ...form,
+        rate: form.salary ? parseFloat(form.salary) : undefined,
+        service_ids: form.role === "trainer" ? form.serviceIds : [],
+      });
+      setSaving(false);
+      setSaved(true);
+      setTimeout(() => { setSaved(false); onClose(); }, 1200);
+    } catch {
+      setSaving(false);
+    }
+  }
+
+  function toggleService(serviceId: number) {
+    set("serviceIds", form.serviceIds.includes(serviceId)
+      ? form.serviceIds.filter(id => id !== serviceId)
+      : [...form.serviceIds, serviceId]);
   }
 
   function handleDelete() {
     onDelete?.(form.id);
     onClose();
   }
-
-  const presetSvcs = getPresetServices(t, form.role);
   const enabledDays = Object.values(form.schedule).filter(d => d.enabled).length;
 
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const nameError = form.name.trim().length > 0 && form.name.trim().length < 2 ? t("staff:editModal.profile.errors.name") : undefined;
+  const emailError = form.email.trim().length > 0 && !EMAIL_RE.test(form.email.trim()) ? t("staff:editModal.profile.errors.email") : undefined;
+  const canSave = form.name.trim().length >= 2 && EMAIL_RE.test(form.email.trim());
+
   const selectStyle: React.CSSProperties = {
-    padding: "7px 6px", background: "rgba(26,26,26,0.03)",
-    border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "8px",
-    fontSize: "12px", fontWeight: 600, color: "#1A1A1A", outline: "none",
-    fontFamily: "Manrope, sans-serif", cursor: "pointer", width: "76px",
+    padding: "7px 10px", 
+    background: "#FFFFFF",
+    border: "1.5px solid rgba(26,26,26,0.12)", 
+    borderRadius: "8px",
+    fontSize: "12px", 
+    fontWeight: 700, 
+    color: "#1A1A1A", 
+    outline: "none",
+    fontFamily: "Manrope, sans-serif", 
+    cursor: "pointer", 
+    width: "78px",
     appearance: "none" as const,
+    textAlign: "center",
+    boxShadow: "0 2px 6px rgba(26,26,26,0.02)",
   };
+
+  const selectedServiceNames = availableServices
+    .filter(s => form.serviceIds.includes(s.id))
+    .map(s => s.name);
 
   if (!isOpen || !staff) return null;
 
@@ -527,25 +498,107 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         @keyframes eiPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.6)} }
         @keyframes eiSavedIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
 
-        .ei-tab { transition: all 0.18s ease; cursor: pointer; }
-        .ei-tab:hover:not(.ei-tab-active) { background: rgba(252,174,145,0.06) !important; }
-        .ei-role-card { transition: all 0.18s cubic-bezier(0.34,1.1,0.64,1); cursor: pointer; }
-        .ei-role-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(252,174,145,0.14) !important; }
-        .ei-svc-pill { transition: all 0.15s ease; cursor: pointer; }
-        .ei-svc-pill:hover { border-color: rgba(252,174,145,0.6) !important; }
-        .ei-sched-row { transition: background 0.15s; }
-        .ei-sched-row:hover { background: rgba(252,174,145,0.03) !important; }
-        .ei-close:hover { background: rgba(26,26,26,0.1) !important; }
-        .ei-save:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
-        .ei-del-btn:hover { background: rgba(216,140,154,0.15) !important; border-color: rgba(216,140,154,0.5) !important; }
-        .ei-photo-btn:hover { border-color: #FCAE91 !important; background: rgba(252,174,145,0.05) !important; }
-        .ei-scroll::-webkit-scrollbar { width: 3px; }
-        .ei-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
-        .ei-salary-type:hover { border-color: rgba(252,174,145,0.5) !important; }
+        * 1. Табы (вкладки сверху) */
+        .ei-tab { transition: all 0.25s ease; cursor: pointer; }
+        .ei-tab:hover:not(.ei-tab-active) { 
+          background: rgba(26, 26, 26, 0.03) !important; /* Убрали розовый, сделали стильный светло-серый */
+          color: #1A1A1A !important; 
+        }
+
+        /* 2. Карточки ролей (Владелец, Админ, Тренер) */
+        .ei-role-card { transition: all 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); cursor: pointer; }
+        .ei-role-card:hover { 
+          transform: translateY(-2px); 
+          border-color: rgba(26, 26, 26, 0.15) !important; /* Четкая серая граница */
+          box-shadow: 0 8px 24px rgba(26, 26, 26, 0.06) !important; /* Дорогая нейтральная тень вместо цветной */
+        }
+
+        /* 3. Пилюли услуг (теги) */
+        .ei-svc-pill { transition: all 0.2s ease; cursor: pointer; }
+        .ei-svc-pill:hover { 
+          border-color: #1A1A1A !important; /* Строгий черный контур при наведении */
+          background: #FFFFFF !important;
+          color: #1A1A1A !important; 
+        }
+
+        /* 4. Строки расписания */
+        .ei-sched-row { transition: background 0.2s ease; }
+        .ei-sched-row:hover { 
+          background: rgba(26, 26, 26, 0.02) !important; /* Едва заметное чистое затемнение */
+        }
+
+        /* 5. Кнопка закрытия модалки (крестик) */
+        .ei-close { transition: all 0.2s ease; }
+        .ei-close:hover { 
+          background: rgba(26, 26, 26, 0.08) !important; 
+          color: #1A1A1A !important; 
+        }
+
+        /* 6. Главная кнопка "Сохранить" (оставляем персиковой, но делаем тень благороднее) */
+        .ei-save { transition: all 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); }
+        .ei-save:hover:not(:disabled) { 
+          transform: translateY(-2px); 
+          box-shadow: 0 10px 24px rgba(252, 174, 145, 0.3) !important; 
+        }
+
+        /* 7. Кнопка удаления сотрудника */
+        .ei-del-btn { transition: all 0.25s ease; }
+        .ei-del-btn:hover { 
+          background: #FFFFFF !important; /* Белый фон */
+          border-color: #C06070 !important; /* Чистый красный контур */
+          box-shadow: 0 4px 12px rgba(192, 96, 112, 0.1) !important; 
+        }
+
+        /* 8. Кнопка загрузки фото */
+        .ei-photo-btn { transition: all 0.2s ease; }
+        .ei-photo-btn:hover { 
+          border-color: #1A1A1A !important; 
+          background: #FFFFFF !important; 
+          color: #1A1A1A !important; 
+          box-shadow: 0 4px 12px rgba(26, 26, 26, 0.05);
+        }
+
+        /* 9. Скроллбар (полоса прокрутки) */
+        .ei-scroll::-webkit-scrollbar { width: 4px; }
+        .ei-scroll::-webkit-scrollbar-thumb { 
+          background: rgba(26, 26, 26, 0.12); /* Минималистичный серый вместо рыжего */
+          border-radius: 4px; 
+        }
+        .ei-scroll::-webkit-scrollbar-thumb:hover { 
+          background: rgba(26, 26, 26, 0.25); 
+        }
+
+        /* 10. Карточки типа зарплаты (Фикс, Процент, Часовая) */
+        .ei-salary-type { transition: all 0.25s ease; }
+        .ei-salary-type:hover { 
+          border-color: #1A1A1A !important; /* Жесткий контрастный фокус */
+          box-shadow: 0 6px 16px rgba(26, 26, 26, 0.06) !important; 
+          transform: translateY(-1px);
+        }
+        .ei-add-svc-btn {
+          transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .ei-add-svc-btn:hover {
+          border: 1.5px solid #1A1A1A !important;
+          background: #FFFFFF !important;
+          color: #1A1A1A !important;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(26, 26, 26, 0.08);
+        }
+
+        .ei-time-select {
+          transition: all 0.2s ease;
+        }
+        .ei-time-select:hover, .ei-time-select:focus {
+          border-color: #1A1A1A !important;
+          box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
+        }
       `}</style>
 
       <div
         style={{
+          position: "relative",
           width: "100%", maxWidth: "860px", height: "min(600px, calc(100vh - 32px))",
           background: "#FDFCFB", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
@@ -591,20 +644,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               role={form.role}
               photo={photoPreview}
               is_online={form.is_online}
-              services={form.services}
+              services={selectedServiceNames}
               salary={form.salary}
               rate_type={form.rate_type}
               schedule={form.schedule}
+              currencySymbol={currencySymbol}
             />
           </div>
 
-          {/* Bottom: status + online toggle */}
+          {/* Bottom: status (read-only — вычисляется сервером, задача 12) */}
           <div style={{ position: "relative", zIndex: 1 }}>
             <div style={{
               padding: "11px 13px", borderRadius: "10px",
               background: "rgba(26,26,26,0.025)",
               border: "1px solid rgba(26,26,26,0.07)",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
+              display: "flex", alignItems: "center",
               marginBottom: "10px",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -616,20 +670,6 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
                   {form.is_online ? t("staff:editModal.status.onlineNow") : t("staff:editModal.status.notOnline")}
                 </span>
-              </div>
-              {/* Toggle */}
-              <div onClick={() => set("is_online", !form.is_online)} style={{
-                width: "30px", height: "17px", borderRadius: "8.5px",
-                background: form.is_online ? "#FCAE91" : "rgba(26,26,26,0.12)",
-                position: "relative", cursor: "pointer", transition: "background 0.2s",
-              }}>
-                <div style={{
-                  position: "absolute", top: "1.5px",
-                  left: form.is_online ? "14.5px" : "1.5px",
-                  width: "14px", height: "14px", borderRadius: "50%",
-                  background: "white", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
-                  transition: "left 0.2s cubic-bezier(0.34,1.2,0.64,1)",
-                }} />
               </div>
             </div>
 
@@ -796,7 +836,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   {/* Name */}
                   <div>
                     <FieldLabel>{t("common:fields.fullName")} *</FieldLabel>
-                    <FocusInput value={form.name} onChange={v => set("name", v)} placeholder={t("staff:editModal.profile.namePlaceholder")} />
+                    <FocusInput value={form.name} onChange={v => set("name", v)} placeholder={t("staff:editModal.profile.namePlaceholder")} error={nameError} />
                   </div>
 
                   {/* Phone + Email in a row */}
@@ -807,7 +847,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     </div>
                     <div>
                       <FieldLabel>{t("common:fields.email")}</FieldLabel>
-                      <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" />
+                      <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} />
                     </div>
                   </div>
 
@@ -837,13 +877,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         const isSelected = form.role === r.id;
                         return (
                           <button key={r.id} type="button" className="ei-role-card"
-                            onClick={() => {
-                              const nr = form.role === r.id ? "" : r.id;
-                              set("role", nr);
-                              set("department", nr ? (ROLE_TO_DEPT_KEY[nr] ?? "") : "");
-                              const autoSvcs = nr ? getPresetServices(t, nr) : [];
-                              if (autoSvcs.length) set("services", autoSvcs);
-                            }}
+                            onClick={() => set("role", form.role === r.id ? "" : r.id)}
                             style={{
                               padding: "11px 6px",
                               background: isSelected ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.02)",
@@ -881,72 +915,140 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         );
                       })}
                     </div>
-                    <FocusInput
-                      value={PRESET_ROLES.find(r => r.id === form.role) ? "" : form.role}
-                      onChange={v => set("role", v)}
-                      placeholder={t("staff:editModal.role.positionPlaceholder")}
-                    />
                   </div>
-
-                  {/* Services */}
-                  <div>
-                    <FieldLabel>{t("common:fields.services")} ({form.services.length})</FieldLabel>
-                    {presetSvcs.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                        {presetSvcs.map(svc => {
-                          const on = form.services.includes(svc);
+                  {form.role === "trainer" && (
+                    <div>
+                      <FieldLabel>{t("common:fields.services")}</FieldLabel>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "10px" }}>
+                        {availableServices.map(service => {
+                          const isSelected = form.serviceIds.includes(service.id);
                           return (
-                            <button key={svc} type="button" className="ei-svc-pill"
-                              onClick={() => toggleService(svc)}
+                            <button key={service.id} type="button" className="ei-svc-pill"
+                              onClick={() => toggleService(service.id)}
                               style={{
-                                padding: "6px 12px",
-                                background: on ? "rgba(252,174,145,0.14)" : "rgba(26,26,26,0.04)",
-                                border: on ? "1.5px solid rgba(252,174,145,0.5)" : "1.5px solid transparent",
-                                borderRadius: "20px", fontSize: "12px",
-                                fontWeight: on ? 700 : 500, color: on ? "#C07060" : "#666",
-                                cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                                transition: "all 0.15s",
+                                padding: "7px 12px", borderRadius: "20px", cursor: "pointer",
+                                background: isSelected ? "rgba(252,174,145,0.14)" : "rgba(26,26,26,0.04)",
+                                border: isSelected ? "1.5px solid rgba(252,174,145,0.55)" : "1.5px solid transparent",
+                                color: isSelected ? "#C07060" : "#666", fontSize: "12px",
+                                fontWeight: isSelected ? 700 : 500, fontFamily: "Manrope, sans-serif",
                               }}
-                            >
-                              {on ? "✓ " : ""}{svc}
-                            </button>
+                            >{isSelected ? "✓ " : ""}{service.name}</button>
                           );
                         })}
                       </div>
-                    )}
-                    {/* Custom services */}
-                    {form.services.filter(s => !presetSvcs.includes(s)).length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                        {form.services.filter(s => !presetSvcs.includes(s)).map(svc => (
-                          <div key={svc} style={{
-                            display: "flex", alignItems: "center", gap: "5px",
-                            padding: "5px 10px 5px 12px",
-                            background: "rgba(163,201,168,0.12)",
-                            border: "1.5px solid rgba(163,201,168,0.35)",
-                            borderRadius: "20px", fontSize: "12px", fontWeight: 600, color: "#5A8A60",
+                      <div style={{ width: "100%" }}>
+                        {!showCatalogConfirm && (
+                          <button
+                            type="button"
+                            className="ei-add-svc-btn"
+                            onClick={() => setShowCatalogConfirm(true)}
+                            style={{
+                              padding: "7px 12px", borderRadius: "20px", cursor: "pointer",
+                              background: "transparent", border: "1.5px dashed rgba(26,26,26,0.2)",
+                              color: "#888", fontSize: "12px", fontWeight: 600, fontFamily: "Manrope, sans-serif",
+                              transition: "border-color 0.2s ease, color 0.2s ease, transform 0.2s ease",
+                            }}
+                          >
+                            + {t("staff:editModal.role.addService")}
+                          </button>
+                        )}
+                        <div
+                          aria-hidden={!showCatalogConfirm}
+                          style={{
+                            maxHeight: showCatalogConfirm ? "132px" : "0",
+                            opacity: showCatalogConfirm ? 1 : 0,
+                            overflow: "hidden",
+                            transform: showCatalogConfirm ? "translateY(0)" : "translateY(-8px)",
+                            transition: "max-height 0.3s ease, opacity 0.2s ease, transform 0.3s ease",
+                          }}
+                        >
+                          <div style={{
+                            marginTop: "12px", 
+                            padding: "16px", 
+                            borderRadius: "14px",
+                            background: "#FFFFFF", // Чистый белый фон для контраста
+                            border: "1px solid rgba(26,26,26,0.06)", // Едва заметная граница
+                            boxShadow: "0 6px 16px rgba(26,26,26,0.04)", // Мягкая премиальная тень
+                            display: "flex", 
+                            flexDirection: "column", 
+                            gap: "14px"
                           }}>
-                            {svc}
-                            <span onClick={() => toggleService(svc)} style={{ cursor: "pointer", opacity: 0.6, fontSize: "11px" }}>✕</span>
+                            
+                            {/* Верхняя часть: Иконка + Текст */}
+                            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                              
+                              {/* Стильная персиковая иконка-акцент */}
+                              <div style={{
+                                width: "32px", height: "32px", borderRadius: "10px", flexShrink: 0,
+                                background: "rgba(252,174,145,0.12)", color: "#FCAE91",
+                                display: "flex", alignItems: "center", justifyContent: "center"
+                              }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </div>
+
+                              <p style={{ margin: "2px 0 0", color: "#1A1A1A", fontSize: "12.5px", fontWeight: 700, lineHeight: 1.4, letterSpacing: "-0.2px" }}>
+                                {t("staff:editModal.role.catalogConfirm")}
+                              </p>
+                            </div>
+
+                            {/* Нижняя часть: Кнопки */}
+                            <div style={{ display: "flex", gap: "8px" }}>
+                              
+                              {/* Второстепенная кнопка (Отмена) */}
+                              <button 
+                                type="button" 
+                                onClick={() => setShowCatalogConfirm(false)} 
+                                style={{
+                                  flex: 1, padding: "10px", 
+                                  border: "1.5px solid rgba(26,26,26,0.08)", 
+                                  borderRadius: "10px", cursor: "pointer",
+                                  background: "transparent", 
+                                  color: "#666", 
+                                  fontSize: "12px", fontWeight: 700, 
+                                  fontFamily: "Manrope, sans-serif",
+                                  transition: "all 0.2s ease"
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(26,26,26,0.03)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.15)"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.08)"; }}
+                              >
+                                {t("common:buttons.cancel")}
+                              </button>
+
+                              {/* Главная кнопка (Да, перейти) - Дорогой черный цвет */}
+                              <button 
+                                type="button" 
+                                onClick={() => { onClose(); navigate("/dashboard/catalog?tab=services"); }} 
+                                style={{
+                                  flex: 1, padding: "10px", 
+                                  border: "none", 
+                                  borderRadius: "10px", cursor: "pointer",
+                                  background: "#1A1A1A", // Глубокий премиальный черный
+                                  color: "#FFFFFF", 
+                                  fontSize: "12px", fontWeight: 700, 
+                                  fontFamily: "Manrope, sans-serif",
+                                  boxShadow: "0 4px 12px rgba(26,26,26,0.15)",
+                                  transition: "all 0.2s ease"
+                                }}
+                                onMouseEnter={e => { 
+                                  e.currentTarget.style.transform = "translateY(-1px)"; 
+                                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(26,26,26,0.25)"; 
+                                }}
+                                onMouseLeave={e => { 
+                                  e.currentTarget.style.transform = "none"; 
+                                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(26,26,26,0.15)"; 
+                                }}
+                              >
+                                {t("common:buttons.yes", { defaultValue: "Да, перейти" })}
+                              </button>
+                            </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    )}
-                    <div style={{ position: "relative" }}>
-                      <FocusInput
-                        value={customSvcInput} onChange={setCustomSvcInput}
-                        onKeyDown={handleSvcKeyDown}
-                        placeholder={t("staff:editModal.role.addServicePlaceholder")}
-                      />
-                      {customSvcInput && (
-                        <div style={{
-                          position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
-                          fontSize: "10px", fontWeight: 700, color: "#FCAE91",
-                          background: "rgba(252,174,145,0.12)", padding: "3px 7px", borderRadius: "6px",
-                          pointerEvents: "none",
-                        }}>Enter ↵</div>
-                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
@@ -966,7 +1068,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <div style={{ fontSize: "36px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-1.5px", lineHeight: 1 }}>
                       {form.salary || "—"}
                       <span style={{ fontSize: "16px", fontWeight: 600, color: "#AAAAAA", marginLeft: "6px" }}>
-                        {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? "₽/ч" : form.salary ? "₽" : ""}
+                        {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? `${currencySymbol}/ч` : form.salary ? currencySymbol : ""}
                       </span>
                     </div>
                     <p style={{ fontSize: "12px", color: "#BBBBBB", margin: "6px 0 0" }}>
@@ -1040,7 +1142,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           borderRadius: "12px", fontSize: "16px", fontWeight: 800, color: "#C07060",
                           flexShrink: 0, minWidth: "50px", textAlign: "center",
                         }}>
-                          {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? "₽/ч" : "₽"}
+                          {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? `${currencySymbol}/ч` : currencySymbol}
                         </div>
                       </div>
                     </div>
@@ -1094,18 +1196,20 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
                   {/* Schedule rows */}
                   <div style={{ border: "1.5px solid rgba(26,26,26,0.08)", borderRadius: "14px", overflow: "hidden" }}>
-                    {DAYS.map((day, idx) => {
-                      const d = form.schedule[day.key];
-                      const isLast = idx === DAYS.length - 1;
+                    {DAYS_KEYS.map((key, idx) => {
+                      const d = form.schedule[key];
+                      const isLast = idx === DAYS_KEYS.length - 1;
                       return (
-                        <div key={day.key} className="ei-sched-row" style={{
+                        <div key={key} className="ei-sched-row" style={{
                           display: "flex", alignItems: "center", gap: "10px",
                           padding: "9px 14px",
+                          minHeight: "54px", // 🔥 Секрет здесь: фиксируем высоту, чтобы строка не прыгала
+                          boxSizing: "border-box", 
                           borderBottom: isLast ? "none" : "1px solid rgba(26,26,26,0.05)",
-                          background: d.enabled ? "rgba(252,174,145,0.02)" : "transparent",
+                          background: d.enabled ? "rgba(26,26,26,0.02)" : "transparent", // Строгий серый фон вместо персикового
                         }}>
                           {/* Toggle */}
-                          <div onClick={() => toggleDay(day.key)} style={{
+                          <div onClick={() => toggleDay(key)} style={{
                             width: "30px", height: "17px", borderRadius: "8.5px",
                             background: d.enabled ? "#FCAE91" : "rgba(26,26,26,0.1)",
                             position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s",
@@ -1125,35 +1229,59 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             fontWeight: d.enabled ? 600 : 400,
                             color: d.enabled ? "#1A1A1A" : "#C0C0C0",
                             transition: "all 0.15s",
-                          }}>{t(`common:days.${day.key}`)}</span>
+                          }}>{t(`common:days.${key}`)}</span>
 
                           {/* Time */}
                           {d.enabled ? (
-                            <div style={{ display: "flex", alignItems: "center", gap: "5px", flex: 1 }}>
-                              <select value={d.from} onChange={e => updateTime(day.key, "from", e.target.value)} style={selectStyle}>
-                                {TIME_OPTIONS.map(t => <option key={t}>{t}</option>)}
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", flex: 1 }}>
+                              {/* Селект "От" */}
+                              <select className="ei-time-select" value={d.from} onChange={e => updateTime(key, "from", e.target.value)} style={selectStyle}>
+                                {TIME_OPTIONS.map(opt => <option key={opt}>{opt}</option>)}
                               </select>
-                              <span style={{ fontSize: "11px", color: "#CCC", fontWeight: 700 }}>—</span>
-                              <select value={d.to} onChange={e => updateTime(day.key, "to", e.target.value)} style={selectStyle}>
-                                {TIME_OPTIONS.map(t => <option key={t}>{t}</option>)}
+                              
+                              {/* Строгое тире */}
+                              <span style={{ fontSize: "12px", color: "#AAAAAA", fontWeight: 600 }}>—</span>
+                              
+                              {/* Селект "До" */}
+                              <select className="ei-time-select" value={d.to} onChange={e => updateTime(key, "to", e.target.value)} style={selectStyle}>
+                                {TIME_OPTIONS.map(opt => <option key={opt}>{opt}</option>)}
                               </select>
-                              {/* Hours badge */}
+                              
+                              {/* Бейдж итоговых часов — Дорогая белая пилюля */}
                               <div style={{
                                 marginLeft: "auto",
-                                fontSize: "10px", fontWeight: 700, color: "#FCAE91",
-                                background: "rgba(252,174,145,0.12)",
-                                padding: "2px 7px", borderRadius: "6px",
+                                fontSize: "11px", fontWeight: 700, color: "#1A1A1A",
+                                background: "#FFFFFF",
+                                border: "1px solid rgba(26,26,26,0.12)",
+                                boxShadow: "0 2px 8px rgba(26,26,26,0.04)",
+                                padding: "5px 12px", 
+                                borderRadius: "20px", 
+                                letterSpacing: "-0.2px"
                               }}>
                                 {(() => {
                                   const [fh, fm] = d.from.split(":").map(Number);
                                   const [th, tm] = d.to.split(":").map(Number);
                                   const h = Math.round((th * 60 + tm - fh * 60 - fm) / 60 * 10) / 10;
-                                  return `${h}ч`;
+                                  return `${h}${t("staff:editModal.schedule.hoursSuffix")}`;
                                 })()}
                               </div>
                             </div>
                           ) : (
-                            <span style={{ fontSize: "11px", color: "#CCC", fontStyle: "italic", flex: 1 }}>{t("staff:schedule.dayOff")}</span>
+                            <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                              <span style={{ 
+                                fontSize: "10px", 
+                                fontWeight: 700, 
+                                color: "#999999", 
+                                textTransform: "uppercase", 
+                                letterSpacing: "0.8px",
+                                background: "rgba(26,26,26,0.02)",
+                                border: "1px dashed rgba(26,26,26,0.12)",
+                                padding: "4px 10px",
+                                borderRadius: "8px"
+                              }}>
+                                {t("staff:schedule.dayOff")}
+                              </span>
+                            </div>
                           )}
                         </div>
                       );
@@ -1184,7 +1312,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             <button
               type="button"
               className="ei-save"
-              disabled={saving || !form.name.trim()}
+              disabled={saving || !canSave}
               onClick={handleSave}
               style={{
                 flex: 1, padding: "12px 22px",
@@ -1193,11 +1321,11 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   : "linear-gradient(135deg, #FCAE91, #F9A08B)",
                 border: "none", borderRadius: "12px",
                 fontSize: "14px", fontWeight: 700, color: "white",
-                cursor: saving || !form.name.trim() ? "not-allowed" : "pointer",
+                cursor: saving || !canSave ? "not-allowed" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                 boxShadow: saved ? "0 8px 24px rgba(163,201,168,0.3)" : "0 8px 24px rgba(252,174,145,0.3)",
                 transition: "all 0.2s ease", fontFamily: "Manrope, sans-serif",
-                opacity: !form.name.trim() ? 0.4 : 1,
+                opacity: saving || !canSave ? 0.7 : 1,
                 letterSpacing: "-0.1px",
               }}
             >

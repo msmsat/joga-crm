@@ -6,8 +6,8 @@ export const initialAccounts: UserAccount[] = [
   { id: 3, name: 'Morozov Personal',  email: 'alexey@yandex.ru',      role: 'Личный профиль',       active: false, color: '#A3C9A8' },
 ];
 
-export const initialUserInfo: UserInfo = {
-  name:  'Алексей Морозов',
-  email: 'admin@velora.studio',
-  phone: '+7 (999) 123-45-67',
+export const emptyUserInfo: UserInfo = {
+  name:  '',
+  email: '',
+  phone: '',
 };

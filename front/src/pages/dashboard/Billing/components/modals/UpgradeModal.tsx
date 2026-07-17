@@ -1,19 +1,21 @@
 import { createPortal } from 'react-dom';
 import type { PlanType } from '../../types';
 import { ZapIcon, InfoIcon } from '../ui/BillingIcons';
-import { plans } from '../../constants';
 
 interface Props {
   selectedPlan: PlanType;
   selectedPeriod: number;
   periodDiscounts: Record<number, number>;
+  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
   getPrice: (plan: PlanType, period: number) => number;
   savedTotal: number;
   totalToPay: number;
   onClose: () => void;
+  startCheckout: () => void;
+  checkoutBusy: boolean;
 }
 
-export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDiscounts, getPrice, savedTotal, totalToPay, onClose }: Props) {
+export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, checkoutBusy }: Props) {
   const plan = plans[selectedPlan];
 
   return createPortal(
@@ -65,8 +67,8 @@ export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDisco
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button style={{ padding: '14px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '15px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', transition: 'all 0.2s ease' }}>
-            Подтвердить и оплатить
+          <button onClick={startCheckout} disabled={checkoutBusy} style={{ padding: '14px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '15px', fontWeight: 700, cursor: checkoutBusy ? 'wait' : 'pointer', opacity: checkoutBusy ? 0.7 : 1, fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', transition: 'all 0.2s ease' }}>
+            {checkoutBusy ? 'Переходим к оплате…' : 'Подтвердить и оплатить'}
           </button>
           <button onClick={onClose} style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease' }}>
             Отмена

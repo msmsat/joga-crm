@@ -18,20 +18,17 @@ export default function Booking() {
   return (
     <>
       <BookingChannels
-        tgStatus={tgBot.connected ? 'connected' : null}
+        tgStatus={tgBot.statusOf('telegram')}
+        instaStatus={tgBot.statusOf('instagram')}
+        webStatus={tgBot.statusOf('web')}
+        waStatus={tgBot.statusOf('whatsapp')}
         onOpenTg={()    => modals.setTgModalOpen(true)}
         onOpenInsta={()  => modals.setInstaModalOpen(true)}
         onOpenWeb={()    => modals.setWebModalOpen(true)}
         onOpenWa={()     => modals.setWaModalOpen(true)}
       />
 
-      <BookingSettings
-        limitTime={settings.limitTime}   setLimitTime={settings.setLimitTime}
-        openDays={settings.openDays}     setOpenDays={settings.setOpenDays}
-        cancelTime={settings.cancelTime} setCancelTime={settings.setCancelTime}
-        language={settings.language}     setLanguage={settings.setLanguage}
-        activeColor={settings.activeColor} setActiveColor={settings.setActiveColor}
-      />
+      <BookingSettings {...settings} />
 
       {modals.isTgModalOpen    && (
         <TgModal

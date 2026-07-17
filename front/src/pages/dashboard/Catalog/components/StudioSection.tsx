@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ApiError } from '../../../../api/client';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
 import AddStudioModal from './modals/AddStudioModal';
+import { EditStudioModal, HallModal } from './modals/EditStudio';
+import type { HallBrief } from '../../../../api/studio/studio.types';
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
@@ -12,7 +14,7 @@ interface Props {
 
 export function StudioSection({ showToast }: Props) {
   const { t } = useTranslation(['catalog', 'common']);
-  const { studios, isLoading, createBranch } = useStudioList();
+  const { studios, isLoading, createBranch, updateBranch, deleteBranch } = useStudioList();
 
   const [activeStudioId, setActiveStudioId] = useState<number | null>(null);
   const [activeHallId, setActiveHallId] = useState<number | null>(null);
@@ -23,8 +25,12 @@ export function StudioSection({ showToast }: Props) {
     }
   }, [studios, activeStudioId]);
 
-  const { branch: activeStudio } = useBranchDetail(activeStudioId);
+  const { branch: activeStudio, createHall, updateHall, deleteHall } = useBranchDetail(activeStudioId);
   const activeHall = activeStudio?.halls.find(h => h.id === activeHallId) ?? null;
+
+  const [isEditStudioOpen, setIsEditStudioOpen] = useState(false);
+  // null → нет модалки зала; { hall: null } → создание; { hall } → редактирование
+  const [hallModal, setHallModal] = useState<{ hall: HallBrief | null } | null>(null);
 
   const groups = useMemo(() => {
     const countries = [...new Set(studios.map(s => s.country).filter((c): c is string => Boolean(c)))];
@@ -40,14 +46,28 @@ export function StudioSection({ showToast }: Props) {
     setActiveHallId(null);
   };
 
-  const handleDeleteStudio = () => {
-    showToast(t('catalog:studios.toasts.deleted'));
+  const handleDeleteStudio = async () => {
+    if (!activeStudio) return;
+    if (!window.confirm(t('catalog:studios.confirmDelete', { name: activeStudio.name }))) return;
+    try {
+      await deleteBranch(activeStudio.id);
+      setActiveStudioId(null);
+      showToast(t('catalog:studios.toasts.deleted'));
+    } catch (error) {
+      showToast(error instanceof ApiError ? error.message : t('catalog:studios.toasts.createError'));
+    }
   };
 
-  const handleDeleteHall = () => {
+  const handleDeleteHall = async () => {
     if (!activeHall) return;
-    setActiveHallId(null);
-    showToast(t('catalog:studios.toasts.hallDeleted'));
+    if (!window.confirm(t('catalog:studios.confirmDeleteHall', { name: activeHall.name }))) return;
+    try {
+      await deleteHall(activeHall.id);
+      setActiveHallId(null);
+      showToast(t('catalog:studios.toasts.hallDeleted'));
+    } catch (error) {
+      showToast(error instanceof ApiError ? error.message : t('catalog:studios.toasts.createError'));
+    }
   };
 
   const [hoverAdd, setHoverAdd] = useState(false);
@@ -101,7 +121,7 @@ export function StudioSection({ showToast }: Props) {
             <div className="cat-hero">
               <div className="cat-hero-bg" />
               <div className="cat-hero-actions">
-                <button className="cat-h-btn" onClick={() => showToast(t('catalog:studios.toasts.edit', { name: activeStudio.name }))}>
+                <button className="cat-h-btn" onClick={() => setIsEditStudioOpen(true)}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   {t('common:buttons.edit')}
                 </button>
@@ -141,7 +161,7 @@ export function StudioSection({ showToast }: Props) {
                     {hall.name}
                   </button>
                 ))}
-                <button className="cat-hall-btn cat-add-hall" onClick={() => showToast(t('catalog:studios.addHall'))}>
+                <button className="cat-hall-btn cat-add-hall" onClick={() => setHallModal({ hall: null })}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   {t('catalog:studios.addHall')}
                 </button>
@@ -254,7 +274,7 @@ export function StudioSection({ showToast }: Props) {
 
                   <div className="cat-sec-title">{t('catalog:studios.hall.actions')}</div>
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="cat-action-btn" onClick={() => showToast(t('catalog:studios.toasts.edit', { name: activeHall.name }))}>
+                    <button className="cat-action-btn" onClick={() => setHallModal({ hall: activeHall })}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       {t('catalog:studios.hall.edit')}
                     </button>
@@ -335,6 +355,43 @@ export function StudioSection({ showToast }: Props) {
         showToast(t('catalog:studios.toasts.created'));
       }}
     />
+
+    {isEditStudioOpen && activeStudio && (
+      <EditStudioModal
+        branch={activeStudio}
+        onClose={() => setIsEditStudioOpen(false)}
+        onSubmit={async (data) => {
+          try {
+            await updateBranch(activeStudio.id, data);
+            showToast(t('catalog:studios.toasts.saved'));
+          } catch (error) {
+            showToast(error instanceof ApiError ? error.message : t('catalog:studios.toasts.createError'));
+            throw error;
+          }
+        }}
+      />
+    )}
+
+    {hallModal && (
+      <HallModal
+        key={hallModal.hall?.id ?? 'new'}
+        hall={hallModal.hall}
+        onClose={() => setHallModal(null)}
+        onSubmit={async (data) => {
+          try {
+            if (hallModal.hall) {
+              await updateHall(hallModal.hall.id, data);
+            } else {
+              await createHall(data);
+            }
+            showToast(t('catalog:studios.toasts.saved'));
+          } catch (error) {
+            showToast(error instanceof ApiError ? error.message : t('catalog:studios.toasts.createError'));
+            throw error;
+          }
+        }}
+      />
+    )}
     </>
   );
 }

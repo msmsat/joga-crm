@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import styles from '../../Loyalty.module.css';
 import type { DrawerConfig, Program, ProgramKey } from '../../types';
+import type { ProgramConfigs } from '../../hooks/useLoyalty';
 import { IconClose } from '../ui/LoyaltyIcons';
 import LoyaltyConfig from './configs/LoyaltyConfig';
 import DiscountsConfig from './configs/DiscountsConfig';
@@ -8,26 +9,34 @@ import CertificatesConfig from './configs/CertificatesConfig';
 import SubscriptionsConfig from './configs/SubscriptionsConfig';
 import ReferralConfig from './configs/ReferralConfig';
 
-function DrawerBody({ drawerKey }: { drawerKey: ProgramKey }) {
-  switch (drawerKey) {
-    case 'loyalty':       return <LoyaltyConfig />;
-    case 'discounts':     return <DiscountsConfig />;
-    case 'certificates':  return <CertificatesConfig />;
-    case 'subscriptions': return <SubscriptionsConfig />;
-    case 'referral':      return <ReferralConfig />;
-  }
-}
-
 interface Props {
   drawer: DrawerConfig;
   drawerVisible: boolean;
   drawerRef: RefObject<HTMLDivElement | null>;
+  configs: ProgramConfigs;
+  patchConfig: <K extends ProgramKey>(key: K, patch: Partial<ProgramConfigs[K]>) => void;
+  saving: boolean;
   closeDrawer: () => void;
   handleSave: (key: ProgramKey) => void;
   programsList: Program[];
 }
 
-export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, closeDrawer, handleSave, programsList }: Props) {
+function DrawerBody({ drawer, configs, patchConfig }: Pick<Props, 'drawer' | 'configs' | 'patchConfig'>) {
+  switch (drawer.key) {
+    case 'loyalty':
+      return <LoyaltyConfig value={configs.loyalty} onChange={p => patchConfig('loyalty', p)} />;
+    case 'discounts':
+      return <DiscountsConfig value={configs.discounts} onChange={p => patchConfig('discounts', p)} />;
+    case 'certificates':
+      return <CertificatesConfig value={configs.certificates} onChange={p => patchConfig('certificates', p)} />;
+    case 'subscriptions':
+      return <SubscriptionsConfig value={configs.subscriptions} onChange={p => patchConfig('subscriptions', p)} />;
+    case 'referral':
+      return <ReferralConfig value={configs.referral} onChange={p => patchConfig('referral', p)} />;
+  }
+}
+
+export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, configs, patchConfig, saving, closeDrawer, handleSave, programsList }: Props) {
   return (
     <>
       <div className={`${styles.drawer} ${drawerVisible ? styles.drawerEntering : styles.drawerExiting}`} ref={drawerRef}>
@@ -45,12 +54,12 @@ export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, closeD
         </div>
 
         <div className={styles.drawerBody}>
-          <DrawerBody drawerKey={drawer.key} />
+          <DrawerBody drawer={drawer} configs={configs} patchConfig={patchConfig} />
         </div>
 
         <div className={styles.drawerFooter}>
-          <button className={styles.topbarBtn} style={{ flex: 1 }} onClick={() => handleSave(drawer.key)}>
-            Сохранить и активировать
+          <button className={styles.topbarBtn} style={{ flex: 1 }} disabled={saving} onClick={() => handleSave(drawer.key)}>
+            {saving ? 'Сохранение…' : 'Сохранить и активировать'}
           </button>
           <button className={styles.ghostBtn} onClick={closeDrawer}>Отмена</button>
         </div>
@@ -58,4 +67,3 @@ export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, closeD
     </>
   );
 }
-

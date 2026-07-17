@@ -25,19 +25,41 @@
     "minutesSuffix": "min",
     "clientsSuffix": "clients",
     "hall": "Hall",
+    "staffHalls": "Staff halls",
     "noName": "Name not set",
     "noRole": "No role",
     "addEventStub": "Add event form..."
   },
   "cards": {
-    "revenue": "Revenue",
-    "rating": "Rating",
-    "bookings": "Bookings",
-    "load": "Workload"
+    "trainer": {
+      "revenue": "Revenue",
+      "rating": "Rating",
+      "bookings": "Bookings",
+      "load": "Workload"
+    },
+    "admin": {
+      "bookings": "Bookings",
+      "attended": "Handled",
+      "revenue": "Cash register",
+      "load": "Workload"
+    },
+    "owner": {
+      "revenue": "Revenue",
+      "attended": "Visits",
+      "load": "Workload",
+      "staff": "Staff"
+    },
+    "default": {
+      "bookings": "Bookings",
+      "attended": "Visits",
+      "revenue": "Revenue",
+      "load": "Workload"
+    }
   },
   "schedule": {
     "week": "Week",
     "month": "Month",
+    "working": "Working hours",
     "free": "Free",
     "busy": "Busy",
     "dayOff": "Day off",
@@ -52,23 +74,8 @@
     "settings": "Settings"
   },
   "roles": {
-    "master_trainer": "Master Trainer",
-    "reformer_trainer": "Reformer Trainer",
-    "mat_trainer": "Mat Pilates Trainer",
-    "yoga": "Yoga Instructor",
-    "stretching": "Stretching",
-    "mfr": "MFR",
-    "healthy_back": "Healthy Back",
-    "rehab": "Rehabilitation Specialist",
-    "masseur": "Masseur",
-    "osteopath": "Osteopath",
     "admin": "Administrator",
-    "manager": "Manager",
     "trainer": "Trainer",
-    "barber": "Barber",
-    "stylist": "Stylist",
-    "cosmetologist": "Cosmetologist",
-    "nail": "Nail Technician",
     "owner": "Owner"
   },
   "actionModal": {
@@ -85,13 +92,27 @@
     "cancelLesson": "Cancel class?",
     "dontAsk": "Don't ask again when deleting"
   },
+  "addEvent": {
+    "title": "New class",
+    "sub": "The class will be assigned to {{name}} and appear in the Journal",
+    "namePlaceholder": "Class name — e.g. Hatha Yoga",
+    "time": "Start",
+    "duration": "Duration, min",
+    "spots": "Spots",
+    "price": "Price, ₽",
+    "hall": "Hall",
+    "create": "Create"
+  },
   "toasts": {
+    "lessonAdded": "Class created",
+    "errorAdd": "Error creating class",
     "lessonCanceled": "Class canceled",
     "errorCancel": "Error canceling",
     "employeeAdded": "Employee {{name}} added",
     "changesSaved": "Changes saved",
     "employeeDeleted": "Employee deleted",
     "errorDelete": "Error deleting",
+    "errorSave": "Failed to save changes",
     "messageSent": "Message sent",
     "calling": "Starting call...",
     "openingWhatsapp": "Opening WhatsApp...",
@@ -115,8 +136,15 @@
       "namePlaceholder": "E.g. Anna Smith",
       "phoneLabel": "Phone number",
       "emailLabel": "Email address",
+      "passwordLabel": "Temporary password",
+      "passwordPlaceholder": "At least 6 characters",
       "contactsNotSet": "No contacts provided",
-      "inviteHint": "Provide phone or email — an invitation to log in will be sent there."
+      "inviteHint": "The employee logs in with their email and this temporary password — they can change it after signing in.",
+      "errors": {
+        "name": "Name is required",
+        "email": "Invalid email",
+        "password": "Password must be at least 6 characters"
+      }
     },
     "step2": {
       "heading": "Role & services",
@@ -129,7 +157,8 @@
       "heading": "Schedule & salary",
       "sub": "Set working days and compensation",
       "scheduleLabel": "Working schedule",
-      "salaryLabel": "Salary (optional)"
+      "salaryLabel": "Salary (optional)",
+      "salaryPlaceholder": "Enter a number"
     },
     "step4": {
       "exclaim": "Great!",
@@ -158,27 +187,6 @@
       "daysCount": "{{count}} of 7"
     }
   },
-  "departments": {
-    "pilates": "Pilates",
-    "mind_body": "Health & Flexibility",
-    "wellness": "Therapy & Massage",
-    "service": "Service",
-    "management": "Management"
-  },
-  "presetServices": {
-    "master_trainer": ["Personal training", "Split training", "Trainer education", "Posture diagnostics"],
-    "reformer_trainer": ["Group Reformer", "Personal on equipment", "Chair/Cadillac", "Split training"],
-    "mat_trainer": ["Mat Pilates (group)", "Pilates with small equipment", "Personal training"],
-    "stretching": ["Aerial stretching", "Group flexibility", "Splits", "Back flexibility"],
-    "mfr": ["Group MFR", "Myofascial release with rollers", "Recovery"],
-    "healthy_back": ["Physical therapy", "Healthy back (group)", "Postural gymnastics", "Personal session"],
-    "yoga": ["Hatha yoga", "Vinyasa", "Yoga therapy", "Meditation"],
-    "masseur": ["Classic massage", "Sports massage", "Anti-cellulite", "Lymphatic drainage"],
-    "osteopath": ["Osteopath appointment", "Manual therapy", "Diagnostics"],
-    "rehab": ["Rehabilitation training", "Kinesio taping", "Post-injury recovery"],
-    "admin": ["Client greeting", "Membership sales", "Consultation", "Service"],
-    "manager": ["Staff management", "Reporting", "Conflict resolution"]
-  },
   "editModal": {
     "header": "EDITING",
     "employeeFallback": "Employee",
@@ -197,13 +205,17 @@
       "removePhoto": "Remove photo",
       "photoHint": "JPG, PNG — up to 5 MB",
       "namePlaceholder": "First Last",
-      "notifyHint": "The employee will be notified about changes at the specified phone or email."
+      "notifyHint": "The employee will be notified about changes at the specified phone or email.",
+      "errors": {
+        "name": "Name is required",
+        "email": "Invalid email"
+      }
     },
     "role": {
       "heading": "Role & specialization",
       "sub": "Employee position and list of services",
-      "positionPlaceholder": "Or enter a custom position...",
-      "addServicePlaceholder": "Add service — press Enter"
+      "addService": "Add service",
+      "catalogConfirm": "Do you want to open the Services section in Catalog?"
     },
     "salary": {
       "heading": "Salary",
@@ -247,10 +259,5 @@
     "deleteConfirm": "Remove {{name}} from the team?",
     "defaultName": "employee",
     "cannotDeleteLastOwner": "Cannot remove the only owner"
-  },
-  "halls": {
-    "main": "Main Hall",
-    "personal": "Personal Studio",
-    "massage": "Massage Room"
   }
 }

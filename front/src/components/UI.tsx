@@ -479,6 +479,10 @@ export const CURRENCIES = [
   { value: "AED", label: "Дирхам", symbol: "د.إ" }, { value: "TRY", label: "Лира", symbol: "₺" },
 ];
 
+export function getCurrencySymbol(code: string | undefined): string {
+  return CURRENCIES.find(c => c.value === code)?.symbol ?? "₽";
+}
+
 export function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

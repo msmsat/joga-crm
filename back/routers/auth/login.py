@@ -24,7 +24,7 @@ async def google_auth(request: GoogleAuthRequest, db: AsyncSession = Depends(get
             request.token,
             google_requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=10,
+            clock_skew_in_seconds=30,
         )
         email = idinfo["email"]
         google_name = idinfo.get("name", "Google User")
@@ -67,7 +67,6 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             .join(StudioMember, StudioMember.user_id == User.id)
             .where(
                 (User.email == request.identifier) | (User.phone == request.identifier),
-                StudioMember.role == 'owner',
             )
         )
     ).scalars().first()

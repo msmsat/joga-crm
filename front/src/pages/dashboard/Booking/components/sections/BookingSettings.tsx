@@ -1,17 +1,17 @@
 import { useRef, useState } from 'react'
 import { CustomSelect } from '../ui/CustomSelect'
+import type { useBookingSettings } from '../../hooks/useBookingSettings'
+import { ADVANCE_OPTS, WINDOW_OPTS, CANCEL_OPTS, LANG_OPTS } from '../../mapping'
 
-interface Props {
-  limitTime: string;  setLimitTime(v: string): void
-  openDays: string;   setOpenDays(v: string): void
-  cancelTime: string; setCancelTime(v: string): void
-  language: string;   setLanguage(v: string): void
-  activeColor: number; setActiveColor(i: number): void
-}
+type Props = ReturnType<typeof useBookingSettings>
 
-export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays, cancelTime, setCancelTime, language, setLanguage, activeColor, setActiveColor }: Props) {
+export function BookingSettings(s: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [logoName, setLogoName] = useState('')
+  const { settings, patch } = s
+
+  if (!settings) return <div className="card" style={{ opacity: 0.6 }}>Загрузка настроек…</div>
+
   return (
     <div className="grid-2" style={{ gap: '24px' }}>
 
@@ -45,7 +45,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Предоплата при записи</div>
             <div className="sub">Требовать оплату до подтверждения</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.prefill_on_booking} onChange={e => patch('prefill_on_booking', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -53,7 +53,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Подтверждение тренером</div>
             <div className="sub">Запись ожидает ручного одобрения</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.trainer_confirmation_required} onChange={e => patch('trainer_confirmation_required', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -61,7 +61,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Напоминание клиенту</div>
             <div className="sub">За 24 и 2 часа до занятия</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.client_reminder_enabled} onChange={e => patch('client_reminder_enabled', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -69,7 +69,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Онлайн-запись активна</div>
             <div className="sub">Показывать виджет клиентам</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.booking_active} onChange={e => patch('booking_active', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
       </div>
 
@@ -104,7 +104,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Запрет записи менее чем за</div>
             <div className="sub">Минимум времени до занятия</div>
           </div>
-          <CustomSelect options={['1 час', '2 часа', '4 часа', '12 часов', '24 часа']} value={limitTime} onChange={setLimitTime} />
+          <CustomSelect options={[...ADVANCE_OPTS]} value={s.advanceLabel(settings.min_booking_advance_min)} onChange={v => patch('min_booking_advance_min', s.advanceMin(v))} />
         </div>
 
         <div className="settings-row" style={{ position: 'relative' }}>
@@ -112,7 +112,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Запись открывается за</div>
             <div className="sub">Сколько дней вперёд</div>
           </div>
-          <CustomSelect options={['7 дней', '14 дней', '30 дней', '60 дней']} value={openDays} onChange={setOpenDays} />
+          <CustomSelect options={[...WINDOW_OPTS]} value={s.windowLabel(settings.booking_window_days)} onChange={v => patch('booking_window_days', s.windowDays(v))} />
         </div>
 
         <div className="settings-row" style={{ position: 'relative' }}>
@@ -120,7 +120,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Отмена без штрафа за</div>
             <div className="sub">До занятия клиент может отменить</div>
           </div>
-          <CustomSelect options={['2 часа', '4 часа', '12 часов', '24 часа']} value={cancelTime} onChange={setCancelTime} />
+          <CustomSelect options={[...CANCEL_OPTS]} value={s.cancelLabel(settings.cancellation_deadline_min)} onChange={v => patch('cancellation_deadline_min', s.cancelMin(v))} />
         </div>
 
         <div className="settings-row">
@@ -128,7 +128,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Повторная запись</div>
             <div className="sub">Разрешить клиенту записаться дважды</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.repeat_booking_allowed} onChange={e => patch('repeat_booking_allowed', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
       </div>
 
@@ -140,8 +140,8 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
         <div className="brand-color-preview">
           <div className="bcp-label">Акцентный цвет</div>
           <div className="bcp-swatches">
-            {['#FCAE91', '#5BAB72', '#4A80C4', '#C96B9E', '#F4A261', '#2A9D8F'].map((c, i) => (
-              <div key={i} className={`bcp-swatch${i === activeColor ? ' active' : ''}`} style={{ background: c }} onClick={() => setActiveColor(i)}></div>
+            {s.WIDGET_COLORS.map((c, i) => (
+              <div key={i} className={`bcp-swatch${c === settings.widget_accent_color ? ' active' : ''}`} style={{ background: c }} onClick={() => patch('widget_accent_color', c)}></div>
             ))}
           </div>
         </div>
@@ -176,7 +176,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Тёмная тема</div>
             <div className="sub">Виджет в тёмном оформлении</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.widget_dark_mode} onChange={e => patch('widget_dark_mode', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row" style={{ position: 'relative' }}>
@@ -184,7 +184,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Язык по умолчанию</div>
             <div className="sub">Основной язык интерфейса</div>
           </div>
-          <CustomSelect options={['Русский', 'English', 'Deutsch']} value={language} onChange={setLanguage} />
+          <CustomSelect options={[...LANG_OPTS]} value={s.langLabel(settings.widget_language)} onChange={v => patch('widget_language', s.langCode(v))} />
         </div>
       </div>
 
@@ -219,7 +219,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">SMS-подтверждение</div>
             <div className="sub">При успешной записи</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.sms_confirmation} onChange={e => patch('sms_confirmation', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -227,7 +227,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Напоминание за 24 ч</div>
             <div className="sub">Утром перед занятием</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.reminder_24h} onChange={e => patch('reminder_24h', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -235,7 +235,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Напоминание за 2 ч</div>
             <div className="sub">Незадолго до занятия</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.reminder_2h} onChange={e => patch('reminder_2h', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">
@@ -243,7 +243,7 @@ export function BookingSettings({ limitTime, setLimitTime, openDays, setOpenDays
             <div className="label">Запрос отзыва</div>
             <div className="sub">После посещения через 1 час</div>
           </div>
-          <label className="toggle-switch"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.review_request} onChange={e => patch('review_request', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
       </div>
     </div>

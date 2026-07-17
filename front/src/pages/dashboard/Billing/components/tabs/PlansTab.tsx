@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import styles from '../../Billing.module.css';
 import type { BillingMode, PlanType } from '../../types';
-import { plans, planFeatures } from '../../constants';
+import { planFeatures } from '../../constants';
 import {
   CheckIcon, XIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
   PercentIcon, CalendarIcon, ArrowRightIcon, HistoryIcon,
@@ -23,11 +23,14 @@ interface Props {
   setEstimatedRevenue: Dispatch<SetStateAction<number>>;
   getPrice: (plan: PlanType, period: number) => number;
   periodDiscounts: Record<number, number>;
+  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
   currentMonthly: number;
   discountedPrice: number;
   totalToPay: number;
   animateCards: boolean;
   setShowUpgradeModal: Dispatch<SetStateAction<boolean>>;
+  startCheckout: () => void;
+  checkoutBusy: boolean;
 }
 
 export default function PlansTab({
@@ -37,9 +40,10 @@ export default function PlansTab({
   fixedAmount, setFixedAmount,
   percentAmount, setPercentAmount,
   estimatedRevenue, setEstimatedRevenue,
-  getPrice, periodDiscounts,
+  getPrice, periodDiscounts, plans,
   currentMonthly, discountedPrice, totalToPay,
   animateCards, setShowUpgradeModal,
+  startCheckout, checkoutBusy,
 }: Props) {
   return (
     <div style={{ padding: '0 32px' }}>
@@ -302,8 +306,8 @@ export default function PlansTab({
               <span style={{ fontSize: '13px', color: 'var(--muted)' }}>Итого к оплате</span>
               <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>₽{totalToPay.toLocaleString('ru-RU')}</span>
             </div>
-            <button style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <ZapIcon /> Оплатить {selectedPeriod > 1 ? `${selectedPeriod} месяцев` : ''}
+            <button onClick={startCheckout} disabled={checkoutBusy} style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: checkoutBusy ? 'wait' : 'pointer', opacity: checkoutBusy ? 0.7 : 1, fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <ZapIcon /> {checkoutBusy ? 'Переходим к оплате…' : `Оплатить ${selectedPeriod > 1 ? `${selectedPeriod} месяцев` : ''}`}
             </button>
           </div>
         </div>

@@ -197,6 +197,7 @@ class PaymentCard(Base):
     card_expiry: Mapped[str] = mapped_column(String(5))
     cardholder_name: Mapped[str] = mapped_column(String(100))
     is_primary: Mapped[bool] = mapped_column(Boolean, default=True)
+    rectoken: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="payment_cards")
 
@@ -207,11 +208,13 @@ class BillingInvoice(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    order_id: Mapped[Optional[str]] = mapped_column(String(100), unique=True, index=True, nullable=True)
     plan_name: Mapped[str] = mapped_column(String(100))
+    period_months: Mapped[int] = mapped_column(Integer, default=1)
     amount: Mapped[int] = mapped_column(Integer)
     payment_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
-    status: Mapped[str] = mapped_column(String(20), default="paid")
+    status: Mapped[str] = mapped_column(String(20), default="pending")
     pdf_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="billing_invoices")

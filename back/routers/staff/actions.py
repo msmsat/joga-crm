@@ -1,24 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from jose import jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import oauth2_scheme, SECRET_KEY, ALGORITHM
+from dependencies import require_role, StudioContext
 from models import StudioMember, User
 from schemas import StaffCallRequest, StaffMessageRequest, StaffMessageResponse, StaffCallResponse
 
 router = APIRouter()
-
-
-# ─── HELPER ───────────────────────────────────────────────────────────────────
-
-def _studio_id_from_token(token: str) -> int:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    studio_id = payload.get("studio_id")
-    if not studio_id:
-        raise HTTPException(status_code=401, detail="studio_id не найден в токене")
-    return int(studio_id)
 
 
 async def _get_staff_user(staff_id: int, studio_id: int, db: AsyncSession) -> User:
@@ -39,10 +28,10 @@ async def _get_staff_user(staff_id: int, studio_id: int, db: AsyncSession) -> Us
 async def message_staff(
     staff_id: int,
     data: StaffMessageRequest,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     user = await _get_staff_user(staff_id, studio_id, db)
 
     if data.channel == "email" and not user.email:
@@ -65,10 +54,10 @@ async def message_staff(
 async def call_staff(
     staff_id: int,
     data: StaffCallRequest,
-    token: str = Depends(oauth2_scheme),
+    ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_token(token)
+    studio_id = ctx.studio_id
     user = await _get_staff_user(staff_id, studio_id, db)
 
     if not user.phone:

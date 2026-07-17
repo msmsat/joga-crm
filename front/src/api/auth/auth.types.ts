@@ -59,14 +59,19 @@ export interface TokenResponse {
 }
 
 export interface UserMe {
-  id: number
   name: string
+  last_name: string | null
   email: string | null
   phone: string | null
-  photo_url: string | null
   is_onboarded: boolean
-  is_verified: boolean
-  role_id: number | null
+  studio_id: number | null
+  role: string | null
+}
+
+export interface UpdateProfilePayload {
+  name?: string
+  last_name?: string | null
+  phone?: string | null
 }
 
 export interface CheckPhoneResponse {

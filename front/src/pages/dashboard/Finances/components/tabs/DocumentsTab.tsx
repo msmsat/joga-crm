@@ -1,12 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ToastType, FinDocument } from '../../types';
-import { DOCUMENTS_DATA } from '../../constants';
+import type { FinDocument as ApiDocument, Counterparty } from '../../../../../api/finances/finances.types';
+import { financesApi } from '../../../../../api/finances/finances.api';
 import { Ico } from '../ui/FinanceIcons';
 import { Toggle } from '../ui/Toggle';
 import styles from '../../Finances.module.css';
 
+// Бэкенд отдаёт doc_type/file_ext/counterparty_id/created_at — вид ждёт type/ext/party/date.
+// UI-статусы: signed | pending | draft (бэкенд хранит их же строкой).
+const toStatus = (s: string): FinDocument['status'] =>
+  s === 'signed' || s === 'pending' ? s : 'draft';
+
+const adapt = (d: ApiDocument, partyName: string): FinDocument => ({
+  id: d.id,
+  title: d.title,
+  type: d.doc_type,
+  date: new Date(d.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }),
+  party: partyName || 'Внутренний документ',
+  amount: d.amount ?? 0,
+  status: toStatus(d.status),
+  ext: (d.file_ext || 'PDF').toUpperCase(),
+});
+
 export default function DocumentsTab({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
-  const [docs, setDocs] = useState<FinDocument[]>(DOCUMENTS_DATA);
+  const [docs, setDocs] = useState<FinDocument[]>([]);
+  const [parties, setParties] = useState<Counterparty[]>([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'signed' | 'pending'>('all');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -16,6 +34,16 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
   const [isInputFocused, setIsInputFocused] = useState<{ [key: string]: boolean }>({});
   const [popoverDoc, setPopoverDoc] = useState<number | null>(null);
   const [popoverPos, setPopoverPos] = useState({ x: 0, y: 0, up: false });
+
+  useEffect(() => {
+    Promise.all([financesApi.getDocuments(), financesApi.getCounterparties()])
+      .then(([docList, cpList]) => {
+        setParties(cpList);
+        const byId = new Map(cpList.map(c => [c.id, c.name]));
+        setDocs(docList.map(d => adapt(d, d.counterparty_id != null ? byId.get(d.counterparty_id) ?? '' : '')));
+      })
+      .catch(() => showToast('Не удалось загрузить документы', 'error'));
+  }, [showToast]);
 
   const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
     signed: { label: 'Подписан', color: '#4E885B', bg: 'rgba(163,201,168,0.2)' },
@@ -30,16 +58,27 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
     return matchFilter && matchSearch;
   });
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newDoc.title.trim()) { showToast('Загрузите файл или введите название', 'error'); return; }
-    setDocs(prev => [{
-      id: Date.now(), title: newDoc.title, type: newDoc.type,
-      date: 'Только что', party: newDoc.party || 'Внутренний документ',
-      amount: 0, status: newDoc.needsSignature ? 'pending' : 'draft', ext: 'PDF',
-    }, ...prev]);
-    setNewDoc({ title: '', party: '', type: 'Договор', needsSignature: true });
-    setAddOpen(false);
-    showToast('Документ успешно загружен в базу', 'success');
+    // Контрагент по имени → id; нет совпадения → внутренний документ (null).
+    const match = newDoc.party.trim()
+      ? parties.find(p => p.name.toLowerCase() === newDoc.party.trim().toLowerCase())
+      : undefined;
+    try {
+      const created = await financesApi.createDocument({
+        title: newDoc.title.trim(),
+        doc_type: newDoc.type,
+        file_ext: 'PDF',
+        status: newDoc.needsSignature ? 'pending' : 'draft',
+        counterparty_id: match?.id ?? null,
+      });
+      setDocs(prev => [adapt(created, match?.name ?? ''), ...prev]);
+      setNewDoc({ title: '', party: '', type: 'Договор', needsSignature: true });
+      setAddOpen(false);
+      showToast('Документ успешно загружен в базу', 'success');
+    } catch {
+      showToast('Не удалось сохранить документ', 'error');
+    }
   };
 
   const signedCount = docs.filter(d => d.status === 'signed').length;
@@ -206,10 +245,17 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
               return (
                 <button
                   key={opt.status}
-                  onClick={() => {
-                    setDocs(prev => prev.map(d => d.id === popoverDoc ? { ...d, status: opt.status } : d));
-                    showToast(`Статус: ${opt.label}`, 'success');
+                  onClick={async () => {
+                    const id = popoverDoc;
                     setPopoverDoc(null);
+                    if (id == null) return;
+                    try {
+                      await financesApi.updateDocument(id, { status: opt.status });
+                      setDocs(prev => prev.map(d => d.id === id ? { ...d, status: opt.status } : d));
+                      showToast(`Статус: ${opt.label}`, 'success');
+                    } catch {
+                      showToast('Не удалось изменить статус', 'error');
+                    }
                   }}
                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: isActive ? opt.color : 'rgba(255,255,255,0.65)', fontSize: '13px', fontWeight: isActive ? 700 : 500, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", textAlign: 'left', transition: 'background 0.12s' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
@@ -223,10 +269,17 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
             })}
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '4px 8px' }} />
             <button
-              onClick={() => {
-                setDocs(prev => prev.filter(d => d.id !== popoverDoc));
-                showToast('Документ удалён', 'error');
+              onClick={async () => {
+                const id = popoverDoc;
                 setPopoverDoc(null);
+                if (id == null) return;
+                try {
+                  await financesApi.deleteDocument(id);
+                  setDocs(prev => prev.filter(d => d.id !== id));
+                  showToast('Документ удалён', 'error');
+                } catch {
+                  showToast('Не удалось удалить документ', 'error');
+                }
               }}
               style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: '#D88C9A', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", textAlign: 'left', transition: 'background 0.12s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(216,140,154,0.1)'}

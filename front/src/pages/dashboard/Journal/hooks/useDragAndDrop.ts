@@ -1,6 +1,7 @@
 // src/hooks/useDragAndDrop.ts
 import { useState, useEffect } from 'react';
-import type { Booking } from '../types';
+import type { Booking, Trainer } from '../types';
+import { toDateStr } from '../utils';
 
 export interface DragState {
   id: number;
@@ -26,6 +27,7 @@ interface UseDragAndDropProps {
   timeStep: number;
   showToast: (msg: string) => void;
   calendarView?: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
+  onCommit: (prev: Booking, next: Booking) => void; // сохранение на сервер после дропа
 }
 
 export function useDragAndDrop({
@@ -35,7 +37,8 @@ export function useDragAndDrop({
   columns,
   timeStep,
   showToast,
-  calendarView // 🔥 Приняли пропс
+  calendarView, // 🔥 Приняли пропс
+  onCommit
 }: UseDragAndDropProps) {
   
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -114,63 +117,65 @@ export function useDragAndDrop({
 
     const handleMouseUp = (e: MouseEvent) => {
       if (drag.isDragging) {
+        // Пре-драг версия карточки — для отката, если сервер ответит ошибкой
+        const original = bookings.find(b => b.id === drag.id);
+
+        // Применить оптимистично и сразу отправить на сервер
+        const apply = (updated: Booking, toastMsg: string) => {
+          setBookings(prev => prev.map(b => (b.id === drag.id ? updated : b)));
+          onCommit(original!, updated);
+          showToast(toastMsg);
+        };
+
         if (drag.type === 'move') {
             const target = document.elementFromPoint(e.clientX, e.clientY);
             const slot = target?.closest('.j-empty-slot');
-            
-            if (slot) {
+
+            if (slot && original) {
                const newTi = Number(slot.getAttribute('data-ti'));
                const newCi = Number(slot.getAttribute('data-ci'));
                const rect = slot.getBoundingClientRect();
                const cardTopY = e.clientY - drag.offsetYInsideCard;
-               
-               let fraction = Math.round((cardTopY - rect.top) / stepPx) * stepHours; 
-               
-               let newTimeStart = newTi + fraction;
-               if (newTimeStart < 0) newTimeStart = 0; 
-               
-               setBookings(prev => prev.map(b => {
-                 if (b.id !== drag.id) return b;
-                 const duration = b.timeEnd - b.timeStart;
-                 let finalStart = newTimeStart;
-                 let finalEnd = newTimeStart + duration;
-                 
-                 if (finalEnd > 15) { finalEnd = 15; finalStart = 15 - duration; }
-                 
-                 const newColVal = columns[newCi];
 
-                 // 🔥 ВОТ ОНО! УМНАЯ ПРОВЕРКА РЕЖИМА
-                 if (calendarView === 'week') {
-                   // Если мы в Неделе, меняем дату занятия!
-                   const dateObj = newColVal as Date;
-                   const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                   
-                   return {
-                     ...b, timeStart: finalStart, timeEnd: finalEnd,
-                     date: dateStr // меняем только дату
-                   };
-                 } else {
-                   // Старая логика для режима "День": меняем тренера или зал
-                   const isTrainerMode = viewMode === 'trainers';
-                   return {
-                     ...b, timeStart: finalStart, timeEnd: finalEnd,
-                     trainer: isTrainerMode ? (newColVal as any).id : b.trainer,
-                     hall: !isTrainerMode ? (newColVal as string) : b.hall,
-                     color: isTrainerMode ? (newColVal as any).color : b.color
-                   };
-                 }
-               }));
-               showToast('Занятие перенесено');
+               const fraction = Math.round((cardTopY - rect.top) / stepPx) * stepHours;
+
+               let newTimeStart = newTi + fraction;
+               if (newTimeStart < 0) newTimeStart = 0;
+
+               const duration = original.timeEnd - original.timeStart;
+               let finalStart = newTimeStart;
+               let finalEnd = newTimeStart + duration;
+               if (finalEnd > 15) { finalEnd = 15; finalStart = 15 - duration; }
+
+               const newColVal = columns[newCi];
+
+               // 🔥 ВОТ ОНО! УМНАЯ ПРОВЕРКА РЕЖИМА
+               let updated: Booking;
+               if (calendarView === 'week') {
+                 // Если мы в Неделе, меняем дату занятия!
+                 updated = {
+                   ...original, timeStart: finalStart, timeEnd: finalEnd,
+                   date: toDateStr(newColVal as Date) // меняем только дату
+                 };
+               } else {
+                 // Старая логика для режима "День": меняем тренера или зал
+                 const isTrainerMode = viewMode === 'trainers';
+                 updated = {
+                   ...original, timeStart: finalStart, timeEnd: finalEnd,
+                   trainer: isTrainerMode ? (newColVal as Trainer).id : original.trainer,
+                   hall: !isTrainerMode ? (newColVal as string) : original.hall,
+                   color: isTrainerMode ? (newColVal as Trainer).color : original.color
+                 };
+               }
+               apply(updated, 'Занятие перенесено');
             }
         } else if (drag.type === 'resize-bottom') {
-            if (drag.previewEnd !== drag.originalEnd) {
-              setBookings(prev => prev.map(b => b.id === drag.id ? { ...b, timeEnd: drag.previewEnd! } : b));
-              showToast('Время окончания изменено');
+            if (original && drag.previewEnd !== drag.originalEnd) {
+              apply({ ...original, timeEnd: drag.previewEnd! }, 'Время окончания изменено');
             }
         } else if (drag.type === 'resize-top') {
-            if (drag.previewStart !== drag.originalStart) {
-              setBookings(prev => prev.map(b => b.id === drag.id ? { ...b, timeStart: drag.previewStart! } : b));
-              showToast('Время начала изменено');
+            if (original && drag.previewStart !== drag.originalStart) {
+              apply({ ...original, timeStart: drag.previewStart! }, 'Время начала изменено');
             }
         }
         
@@ -186,7 +191,7 @@ export function useDragAndDrop({
        document.removeEventListener('mousemove', handleMouseMove);
        document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [drag, viewMode, calendarView, columns, bookings, timeStep, setBookings, showToast]); // 🔥 Добавили calendarView в зависимости
+  }, [drag, viewMode, calendarView, columns, bookings, timeStep, setBookings, showToast, onCommit]); // 🔥 Добавили calendarView в зависимости
 
   const initDrag = (
     e: React.MouseEvent,

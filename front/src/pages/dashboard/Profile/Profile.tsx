@@ -19,8 +19,8 @@ export default function Profile() {
     setTimeout(() => setToastMsg(null), 3000);
   };
 
-  const { accounts, setAccounts, isSwitching, handleSwitchAccount, handleLogoutAll } = useAccounts(triggerToast);
-  const { userInfo, setUserInfo, isSavingInfo, handleSaveInfo } = useProfileForm(triggerToast, setAccounts);
+  const { accounts, isSwitching, handleSwitchAccount, handleLogoutAll } = useAccounts(triggerToast);
+  const { userInfo, setUserInfo, isSavingInfo, handleSaveInfo } = useProfileForm(triggerToast);
 
   return (
     <div className={styles.page}>

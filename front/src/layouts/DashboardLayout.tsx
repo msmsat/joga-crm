@@ -1,16 +1,27 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, Navigate } from 'react-router-dom';
 import '../App.css';
 import { useAIDrawer } from '../contexts/AIDrawerContext';
 import AIDrawer from '../components/AIDrawer';
+import PlanLimitModal from '../components/PlanLimitModal';
 import { getUserRoleFromToken } from '../utils/auth';
+import { clientsApi } from '../api/clients/clients.api';
+import { billingApi } from '../api/billing/billing.api';
+import type { BillingPlan } from '../api/billing/billing.types';
+import SubscriptionBanner from '../components/SubscriptionBanner';
+import { ToastProvider } from '../components/ui/Toast';
+
+// Активная подписка = trial или active; всё прочее (none, истёкшая) → пейволл.
+const ACTIVE_STATUSES = ['trial', 'active'];
+// Разделы, доступные без активной подписки: тариф (чтобы оплатить) и профиль.
+const PAYWALL_ALLOWED = ['/dashboard/billing', '/dashboard/profile'];
 
 // ─── КОНФИГУРАЦИЯ ЗАГОЛОВКОВ ─────────────────────────────────────────────────
 const ROUTE_META: Record<string, [string, string]> = {
   '/dashboard': ['Дашборд', 'Добро пожаловать в Velora CRM'],
   '/dashboard/staff': ['Сотрудники', 'Управление командой'],
   '/dashboard/catalog': ['Каталог', 'Студии, залы и услуги'],
-  '/dashboard/clients': ['Клиенты', '142 клиента · 89 активных'],
+  '/dashboard/clients': ['Клиенты', 'База клиентов студии'],
   '/dashboard/reports': ['Отчёты', 'Аналитика и статистика'],
   '/dashboard/booking': ['Онлайн-запись', 'Управление каналами записи'],
   '/dashboard/finances': ['Финансы', 'Счета, операции, документы'],
@@ -38,6 +49,35 @@ export default function DashboardLayout() {
 
   const [isAiFocused, setIsAiFocused] = useState(false); // Для Glow-эффекта
   const [aiQuery, setAiQuery] = useState(''); // Для текста в инпуте
+
+  // Счётчик клиентов для бейджа меню — реальные данные, не хардкод
+  const [clientsCount, setClientsCount] = useState<number | null>(null);
+  useEffect(() => {
+    clientsApi.getCount()
+      .then((res) => setClientsCount(res.count))
+      .catch(() => setClientsCount(null));
+  }, []);
+
+  // Пейволл (задача 12b): подписка не активна → пускаем только на «Тариф» и «Профиль».
+  // /billing/plan — только для owner; admin/trainer план не тянут (undefined = не блокируем,
+  // их отсекает 402-гейт на данных → редирект из api/client.ts). Возврат с оплаты
+  // (?payment=return) не блокируем — Billing сам перезапросит план после вебхука.
+  const currentPath = location.pathname.replace(/\/$/, '');
+  const paymentReturn = new URLSearchParams(location.search).get('payment') === 'return';
+
+  const [plan, setPlan] = useState<BillingPlan | null | undefined>(undefined);
+  useEffect(() => {
+    if (role !== 'owner') return;
+    // Перечитываем и при возврате с оплаты: вебхук мог активировать подписку, иначе
+    // после ухода со страницы биллинга стухший план ложно вернул бы юзера на пейволл.
+    billingApi.getPlan()
+      .then(setPlan)
+      .catch(() => setPlan(null)); // ошибку глотаем — не запираем на сбое сети
+  }, [role, paymentReturn]);
+  const subActive = plan ? ACTIVE_STATUSES.includes(plan.status) : undefined;
+
+  const paywalled =
+    subActive === false && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
 
   // 🔥 Выпадающая AI-панель прямо под поисковиком (Spotlight-стиль)
   const [aiPanel, setAiPanel] = useState<{
@@ -106,6 +146,7 @@ export default function DashboardLayout() {
   }, []);
 
   return (
+    <ToastProvider>
     <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
       display: 'flex',
       height: '100vh',
@@ -201,7 +242,7 @@ export default function DashboardLayout() {
           <NavLink to="/dashboard/clients" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.85" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
             Клиенты
-            <span className="nav-badge">142</span>
+            {clientsCount !== null && <span className="nav-badge">{clientsCount}</span>}
           </NavLink>
           
           {role === 'owner' && (
@@ -229,7 +270,6 @@ export default function DashboardLayout() {
           <NavLink to="/dashboard/notifications" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
             Уведомления
-            <span className="nav-badge">3</span>
           </NavLink>
           )}
 
@@ -535,19 +575,23 @@ export default function DashboardLayout() {
           </div>
         </div>
 
-        <div className="content" style={{ 
-          flex: 1, 
+        <SubscriptionBanner plan={plan} />
+
+        <div className="content" style={{
+          flex: 1,
           overflowY: 'auto', 
           display: 'flex', 
           flexDirection: 'column',
           position: 'relative', // 🔥 Включает контекст наложения для этой области
           zIndex: 1             // 🔥 Делает весь контент и графики ниже уровня topbar
         }}>
-          <Outlet />
+          {paywalled ? <Navigate to="/dashboard/billing" replace /> : <Outlet />}
         </div>
       </div>
 
       <AIDrawer />
+      <PlanLimitModal />
     </div>
+    </ToastProvider>
   );
 }

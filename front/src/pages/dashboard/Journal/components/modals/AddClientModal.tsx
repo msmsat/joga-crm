@@ -1,8 +1,9 @@
 // src/components/modals/AddClientModal.tsx
 import React, { useState, useMemo, useEffect } from 'react';
 import * as Icons from '../../../../../components/Icons'; // Убедитесь в правильности пути
-import type { Booking } from '../../types';
-import { CLIENTS_DB, TIMES } from '../../constants';
+import type { Booking, ClientListItem } from '../../types';
+import { clientsApi } from '../../../../../api/clients/clients.api';
+import { formatIndexToTimeStr } from '../../utils';
 
 interface AddClientModalProps {
   booking: Booking;
@@ -18,15 +19,23 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
   // Локальные стейты модалки
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
+  const [clients, setClients] = useState<ClientListItem[]>([]);
+
+  // Реальные клиенты студии; поиск — локально по загруженному списку
+  useEffect(() => {
+    clientsApi.getList({ limit: 100 })
+      .then(page => setClients(page.items))
+      .catch(err => console.error('Не удалось загрузить клиентов', err));
+  }, []);
 
   // 🔥 Мемоизация поиска: пересчитывается только если изменился запрос
   const filteredClients = useMemo(() => {
     const q = searchQuery.toLowerCase();
-    return CLIENTS_DB.filter(c =>
-      c.name.toLowerCase().includes(q) ||
+    return clients.filter(c =>
+      `${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
       (c.phone ?? '').includes(searchQuery)
     );
-  }, [searchQuery]);
+  }, [clients, searchQuery]);
 
   // Закрытие по клавише Esc
   useEffect(() => {
@@ -44,7 +53,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
           <div>
             <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--onyx)' }}>Добавить клиента</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
-              {booking.title} · {TIMES[booking.timeStart] || '00:00'}
+              {booking.title} · {formatIndexToTimeStr(booking.timeStart)}
             </div>
           </div>
           <button type="button" className="btn-icon" onClick={onClose}><Icons.X /></button>

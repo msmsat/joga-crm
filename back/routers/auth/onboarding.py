@@ -1,14 +1,19 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
-from models import User, Studio, StudioWorkingHours, StudioMember
+from models import User, Studio, StudioWorkingHours, StudioMember, StudioBillingPlan
+from routers.billing.plans import PLANS
 from schemas import OnboardingRequest, SelectStudioRequest, TokenResponse
 from security import create_access_token
 from dependencies import get_current_user
 
 router = APIRouter()
+
+TRIAL_DAYS = 14  # бесплатный период после онбординга (задача 8b)
 
 
 @router.post("/onboarding")
@@ -67,6 +72,16 @@ async def complete_onboarding(
         user_id=current_user.id,
         studio_id=new_studio.id,
         role="owner",
+    ))
+
+    # Бесплатный триал на 14 дней с лимитами Pro (задача 8b). До онбординга строки
+    # нет вовсе → GET /billing/plan отдаёт none; здесь она появляется впервые.
+    db.add(StudioBillingPlan(
+        studio_id=new_studio.id,
+        plan_name="free_trial",
+        status="trial",
+        expires_at=datetime.utcnow() + timedelta(days=TRIAL_DAYS),
+        max_staff=PLANS["pro"]["limits"]["staff"],
     ))
 
     current_user.is_onboarded = True

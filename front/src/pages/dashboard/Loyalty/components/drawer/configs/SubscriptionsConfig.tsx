@@ -1,31 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconCheck } from '../../ui/LoyaltyIcons';
+import { loyaltyApi } from '../../../../../../api/loyalty/loyalty.api';
+import type {
+  SubscriptionPackage,
+  SubscriptionProgramConfig as SubscriptionConfigType,
+} from '../../../../../../api/loyalty/loyalty.types';
 
-const PACKAGES = [
-  { name: 'Мини',     count: '8',  price: '7 200',  perVisit: '900' },
-  { name: 'Стандарт', count: '12', price: '9 600',  perVisit: '800' },
-  { name: 'Макси',    count: '20', price: '14 000', perVisit: '700' },
+interface Props {
+  value: SubscriptionConfigType | null;
+  onChange: (patch: Partial<SubscriptionConfigType>) => void;
+}
+
+const SETTINGS: { label: string; key: keyof Omit<SubscriptionConfigType, 'is_enabled'> }[] = [
+  { label: 'Заморозка абонемента', key: 'allow_freeze' },
+  { label: 'Перенос на другого клиента', key: 'allow_transfer' },
+  { label: 'Автопродление', key: 'auto_renewal' },
 ];
 
-const SETTINGS = ['Заморозка абонемента', 'Перенос на другого клиента', 'Автопродление'];
+const fmt = (n: number) => n.toLocaleString('ru-RU');
 
-export default function SubscriptionsConfig() {
+export default function SubscriptionsConfig({ value, onChange }: Props) {
+  const [packages, setPackages] = useState<SubscriptionPackage[]>([]);
   const [selectedPkg, setSelectedPkg] = useState<number | null>(null);
-  const [settings, setSettings] = useState([true, false, false]);
 
-  const toggleSetting = (i: number) =>
-    setSettings(prev => prev.map((v, idx) => (idx === i ? !v : v)));
+  useEffect(() => {
+    loyaltyApi.getSubscriptionPackages().then(setPackages).catch(() => {});
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       <div>
         <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Пакеты занятий</div>
-        {PACKAGES.map((pkg, i) => {
-          const isSelected = selectedPkg === i;
+        {packages.length === 0 && (
+          <div style={{ fontSize: '12px', color: 'var(--text3)', padding: '4px 0 12px' }}>Пакетов пока нет</div>
+        )}
+        {packages.map(pkg => {
+          const isSelected = selectedPkg === pkg.id;
           return (
             <div
-              key={i}
-              onClick={() => setSelectedPkg(i)}
+              key={pkg.id}
+              onClick={() => setSelectedPkg(pkg.id)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: '12px 14px', borderRadius: 'var(--radius-sm)',
@@ -40,40 +54,41 @@ export default function SubscriptionsConfig() {
             >
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: isSelected ? '#FCAE91' : 'var(--text)' }}>
-                  {pkg.name} — {pkg.count} занятий
+                  {pkg.name} — {pkg.class_count} занятий
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>₽{pkg.perVisit} за визит</div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>₽{fmt(pkg.per_visit_price)} за визит</div>
               </div>
-              <div style={{ fontSize: '14px', fontWeight: 800, color: '#FCAE91' }}>₽{pkg.price}</div>
+              <div style={{ fontSize: '14px', fontWeight: 800, color: '#FCAE91' }}>₽{fmt(pkg.price)}</div>
             </div>
           );
         })}
-        <button style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px dashed var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '13px', cursor: 'pointer', marginTop: '4px', transition: 'color 0.15s, border-color 0.15s' }}>
-          + Добавить пакет
-        </button>
+        {/* ponytail: пакеты read-only; CRUD-форма добавления — отдельная задача, API готов (loyaltyApi.createSubscriptionPackage) */}
       </div>
 
       <div>
         <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Настройки</div>
-        {SETTINGS.map((opt, i) => (
-          <label
-            key={i}
-            onClick={() => toggleSetting(i)}
-            style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', cursor: 'pointer', borderBottom: i < 2 ? '1px solid var(--border)' : 'none', userSelect: 'none' }}
-          >
-            <div style={{
-              width: '18px', height: '18px', borderRadius: '5px',
-              background: settings[i] ? '#FCAE91' : 'var(--bg)',
-              border: `1px solid ${settings[i] ? '#FCAE91' : 'var(--border)'}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, color: 'white',
-              transition: 'background 0.15s, border-color 0.15s',
-            }}>
-              {settings[i] && <IconCheck />}
-            </div>
-            <span style={{ fontSize: '13px', fontWeight: 500 }}>{opt}</span>
-          </label>
-        ))}
+        {SETTINGS.map((opt, i) => {
+          const checked = value?.[opt.key] ?? (opt.key === 'allow_freeze');
+          return (
+            <label
+              key={opt.key}
+              onClick={() => onChange({ [opt.key]: !checked } as Partial<SubscriptionConfigType>)}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', cursor: 'pointer', borderBottom: i < 2 ? '1px solid var(--border)' : 'none', userSelect: 'none' }}
+            >
+              <div style={{
+                width: '18px', height: '18px', borderRadius: '5px',
+                background: checked ? '#FCAE91' : 'var(--bg)',
+                border: `1px solid ${checked ? '#FCAE91' : 'var(--border)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, color: 'white',
+                transition: 'background 0.15s, border-color 0.15s',
+              }}>
+                {checked && <IconCheck />}
+              </div>
+              <span style={{ fontSize: '13px', fontWeight: 500 }}>{opt.label}</span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );

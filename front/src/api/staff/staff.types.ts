@@ -5,14 +5,18 @@ export interface StaffCreate {
   last_name?: string | null
   email: string
   phone?: string | null
+  password: string  // временный пароль для входа сотрудника
   role: string
   department?: string | null
   salary?: number | null
   rate?: number | null
   rate_type?: 'fixed' | 'percent' | 'hourly' | null
+  service_ids?: number[]
+  photo_url?: string | null
+  schedule?: StaffWorkingHoursItem[]
 }
 
-export type StaffUpdate = StaffCreate
+export type StaffUpdate = Omit<StaffCreate, 'password'>
 
 export interface StaffMessagePayload {
   text: string
@@ -29,6 +33,11 @@ export interface StaffHall {
   id: number
   name: string
   color: string | null
+}
+
+export interface StaffService {
+  id: number
+  name: string
 }
 
 export interface StaffWorkingHoursItem {
@@ -87,9 +96,17 @@ export interface StaffSummary {
   by_role: Record<string, number>
 }
 
+// Локальный тип пагинации; экспортируемый Page живёт в finances.types (идентичен).
+interface Page<T> {
+  items: T[]
+  total: number
+  offset: number
+  limit: number
+}
+
 export interface StaffListResponse {
   summary: StaffSummary
-  staff: StaffListItem[]
+  staff: Page<StaffListItem>
 }
 
 // ─── Profile ──────────────────────────────────────────────────────────────────
@@ -102,6 +119,7 @@ export interface StaffProfile extends StaffListItem {
   avg_rating: number | null
   stats: StaffStats
   halls: StaffHall[]
+  services: StaffService[]
   today_schedule: StaffTodayLesson[]
   week_working_hours: StaffWorkingHoursItem[]
 }

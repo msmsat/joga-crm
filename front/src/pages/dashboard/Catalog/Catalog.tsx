@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import './Catalog.css';
 import type { CatalogTab } from './types';
 import { StudioSection } from './components/StudioSection';
@@ -7,7 +8,8 @@ import { ServiceSection } from './components/ServiceSection';
 
 export default function Catalog() {
   const { t } = useTranslation(['catalog']);
-  const [tab, setTab] = useState<CatalogTab>('studios');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<CatalogTab>(searchParams.get('tab') === 'services' ? 'services' : 'studios');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {

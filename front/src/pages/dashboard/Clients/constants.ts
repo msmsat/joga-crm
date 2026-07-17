@@ -105,16 +105,9 @@ export const EVENT_FILTER_TABS = ['Все', 'Оплаты', 'Посещения'
 export const SUGGESTED_TAGS = ['Пробное', 'VIP', 'Рекомендация', 'Онлайн', 'Групповой', 'Персональный'];
 
 export const BONUS_OPTIONS: BonusOption[] = [
-  { id: 'points',   label: '+500 баллов',             description: 'Начислить на баланс лояльности' },
+  { id: 'points',   label: '+500 баллов',             description: 'Начислить на баланс лояльности', points: 500 },
   { id: 'discount', label: 'Скидка 10% на продление', description: 'На следующую покупку абонемента' },
   { id: 'gift',     label: 'Подарочное занятие',       description: 'Бесплатное дополнительное занятие' },
 ];
 
 export const VISITS_HISTORY = EVENTS_HISTORY;
-
-export const SERVICES = [
-  'Йога (60 мин)',
-  'Пилатес (45 мин)',
-  'Растяжка (60 мин)',
-  'Медитация (30 мин)',
-];

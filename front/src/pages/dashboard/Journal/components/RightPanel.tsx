@@ -1,8 +1,8 @@
 // src/components/RightPanel.tsx
 import React from 'react';
 import * as Icons from '../../../../components/Icons';
-import type { Booking } from '../types';
-import { MONTH_NAMES, DAY_NAMES_SHORT, HALLS, TRAINERS } from '../constants';
+import type { Booking, Trainer, Hall } from '../types';
+import { MONTH_NAMES, DAY_NAMES_SHORT } from '../constants';
 import { formatIndexToTimeStr } from '../utils';
 
 // ─── 1. МИКРО-КОМПОНЕНТ: МИНИ-КАЛЕНДАРЬ ──────────────────────────────────────
@@ -146,22 +146,23 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selected
 
 // ─── 2. МИКРО-КОМПОНЕНТ: ФИЛЬТР ЗАЛОВ ────────────────────────────────────────
 interface HallsFilterProps {
+  halls: Hall[];
   activeHalls: string[];
   activeBookings: Booking[];
   toggleHall: (h: string) => void;
 }
 
-const HallsFilter: React.FC<HallsFilterProps> = ({ activeHalls, activeBookings, toggleHall }) => {
-  const colors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
+const HallsFilter: React.FC<HallsFilterProps> = ({ halls, activeHalls, activeBookings, toggleHall }) => {
+  const fallbackColors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
   return (
     <div className="jr-section">
       <div className="jr-label"><Icons.MapPin /> Залы</div>
-      {HALLS.map((h, i) => (
-        <div key={h} className={`hall-chip ${activeHalls.includes(h) ? 'active' : ''}`} onClick={() => toggleHall(h)}>
-          <div className="hc-dot" style={{ background: colors[i] }} />
-          <span style={{ flex: 1 }}>{h}</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>{activeBookings.filter(b => b.hall === h).length}</span>
-          {activeHalls.includes(h) && <span style={{ color: 'var(--peach)' }}><Icons.Check /></span>}
+      {halls.map((h, i) => (
+        <div key={h.id} className={`hall-chip ${activeHalls.includes(h.name) ? 'active' : ''}`} onClick={() => toggleHall(h.name)}>
+          <div className="hc-dot" style={{ background: h.color || fallbackColors[i % fallbackColors.length] }} />
+          <span style={{ flex: 1 }}>{h.name}</span>
+          <span style={{ fontSize: 10, opacity: 0.6 }}>{activeBookings.filter(b => b.hall === h.name).length}</span>
+          {activeHalls.includes(h.name) && <span style={{ color: 'var(--peach)' }}><Icons.Check /></span>}
         </div>
       ))}
     </div>
@@ -170,16 +171,17 @@ const HallsFilter: React.FC<HallsFilterProps> = ({ activeHalls, activeBookings, 
 
 // ─── 3. МИКРО-КОМПОНЕНТ: ЗАГРУЗКА ТРЕНЕРОВ ───────────────────────────────────
 interface TrainerStatsProps {
+  trainers: Trainer[];
   activeBookings: Booking[];
 }
 
-const TrainerStats: React.FC<TrainerStatsProps> = ({ activeBookings }) => {
+const TrainerStats: React.FC<TrainerStatsProps> = ({ trainers, activeBookings }) => {
   return (
     <div className="jr-section">
       {/* 🔥 Убрали отвлекающую анимацию, поставили строгую иконку Users */}
       <div className="jr-label"><Icons.Users /> Загрузка</div>
       <div className="trainer-load">
-        {TRAINERS.map(t => {
+        {trainers.map(t => {
           const tBookings = activeBookings.filter(b => b.trainer === t.id);
           const filled = tBookings.reduce((s, b) => s + b.clients, 0);
           const cap = tBookings.reduce((s, b) => s + b.maxClients, 0);
@@ -204,15 +206,16 @@ const TrainerStats: React.FC<TrainerStatsProps> = ({ activeBookings }) => {
 
 // ─── 4. МИКРО-КОМПОНЕНТ: БЛИЖАЙШИЕ ЗАПИСИ ────────────────────────────────────
 interface UpcomingListProps {
+  trainers: Trainer[];
   filteredBookings: Booking[];
 }
 
-const UpcomingList: React.FC<UpcomingListProps> = ({ filteredBookings }) => {
+const UpcomingList: React.FC<UpcomingListProps> = ({ trainers, filteredBookings }) => {
   return (
     <div className="jr-section">
       <div className="jr-label"><Icons.Clock /> Ближайшие</div>
       {filteredBookings.slice(0, 4).map(b => {
-        const trainer = TRAINERS.find(t => t.id === b.trainer);
+        const trainer = trainers.find(t => t.id === b.trainer);
         return (
           <div
             key={b.id}
@@ -241,6 +244,8 @@ const UpcomingList: React.FC<UpcomingListProps> = ({ filteredBookings }) => {
 
 // ─── ГЛАВНЫЙ КОМПОНЕНТ ПАНЕЛИ ────────────────────────────────────────────────
 interface RightPanelProps {
+  trainers: Trainer[];
+  halls: Hall[];
   calMonth: number;
   calYear: number;
   selectedDay: number;
@@ -255,7 +260,7 @@ interface RightPanelProps {
 }
 
 export const RightPanel: React.FC<RightPanelProps> = ({
-  calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
+  trainers, halls, calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
   changeMonth, setSelectedDay, toggleHall, calendarView // 🔥 Вытащили пропс
 }) => {
 
@@ -278,14 +283,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({
         today={today} changeMonth={changeMonth} setSelectedDay={setSelectedDay} 
         calendarView={calendarView} // 🔥 Передали внутрь
       />
-      <HallsFilter 
-        activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall} 
+      <HallsFilter
+        halls={halls} activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall}
       />
-      <TrainerStats 
-        activeBookings={activeBookings} 
+      <TrainerStats
+        trainers={trainers} activeBookings={activeBookings}
       />
-      <UpcomingList 
-        filteredBookings={filteredBookings} 
+      <UpcomingList
+        trainers={trainers} filteredBookings={filteredBookings}
       />
     </>
   );

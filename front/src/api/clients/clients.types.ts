@@ -87,6 +87,13 @@ export interface ClientsListParams {
   limit?: number
 }
 
+export interface ClientsPage<T> {
+  items: T[]
+  total: number
+  offset: number
+  limit: number
+}
+
 // ─── Ответы ───────────────────────────────────────────────────────────────────
 
 export interface ClientsCountOut {
@@ -125,4 +132,8 @@ export interface BookingCreatedOut {
 export interface ActionMessageOut {
   ok: boolean
   message: string
+}
+
+export interface PointsBalanceOut {
+  points_balance: number
 }

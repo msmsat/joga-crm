@@ -1,26 +1,40 @@
-import { useState } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { UserAccount, UserInfo } from '../types';
-import { initialUserInfo } from '../constants';
+import { authApi, ApiError } from '../../../../api';
+import type { UserInfo } from '../types';
+import { emptyUserInfo } from '../constants';
 
-export function useProfileForm(
-  triggerToast: (msg: string) => void,
-  setAccounts: Dispatch<SetStateAction<UserAccount[]>>,
-) {
+export function useProfileForm(triggerToast: (msg: string) => void) {
   const { t } = useTranslation("profile");
-  const [userInfo, setUserInfo] = useState<UserInfo>(initialUserInfo);
+  const [userInfo, setUserInfo] = useState<UserInfo>(emptyUserInfo);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
 
-  const handleSaveInfo = () => {
+  useEffect(() => {
+    const controller = new AbortController();
+    authApi.getMe(controller.signal)
+      .then(me => setUserInfo({
+        name: me.name ?? '',
+        email: me.email ?? '',
+        phone: me.phone ?? '',
+      }))
+      .catch(() => { /* 401 обрабатывает клиент; иначе остаётся пустая форма */ });
+    return () => controller.abort();
+  }, []);
+
+  const handleSaveInfo = async () => {
     setIsSavingInfo(true);
-    setTimeout(() => {
-      setIsSavingInfo(false);
+    try {
+      const me = await authApi.updateMe({
+        name: userInfo.name,
+        phone: userInfo.phone || null,
+      });
+      setUserInfo({ name: me.name ?? '', email: me.email ?? '', phone: me.phone ?? '' });
       triggerToast(t("toasts.infoSaved"));
-      setAccounts(prev =>
-        prev.map(a => a.id === 1 ? { ...a, name: userInfo.name, email: userInfo.email } : a),
-      );
-    }, 1000);
+    } catch (error) {
+      triggerToast(error instanceof ApiError ? error.message : t("toasts.infoSaveError"));
+    } finally {
+      setIsSavingInfo(false);
+    }
   };
 
   return { userInfo, setUserInfo, isSavingInfo, handleSaveInfo };

@@ -1,21 +1,12 @@
-import type { PlanType, Invoice, Feature } from './types';
+import type { PlanType, Feature } from './types';
 
-export const plans: Record<PlanType, { name: string; monthly: number; color: string }> = {
-  start:    { name: 'Старт',    monthly: 990,  color: '#A3C9A8' },
-  pro:      { name: 'Pro',      monthly: 2490, color: '#FCAE91' },
-  business: { name: 'Business', monthly: 5990, color: '#1A1A1A' },
+// Цвет карточки тарифа — чисто UI, сервер каталога его не отдаёт (CLAUDE.md §8).
+// Имена и цены живут на сервере: GET /billing/plans (см. useBillingCalculator).
+export const PLAN_COLORS: Record<PlanType, string> = {
+  start:    '#A3C9A8',
+  pro:      '#FCAE91',
+  business: '#1A1A1A',
 };
-
-export const periodDiscounts: Record<number, number> = { 1: 0, 6: 0.20, 12: 0.30, 24: 0.40 };
-
-export const invoices: Invoice[] = [
-  { id: 6, plan_name: 'Pro — июнь 2025',    amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-06-01', pdf_url: null },
-  { id: 5, plan_name: 'Pro — май 2025',     amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-05-01', pdf_url: null },
-  { id: 4, plan_name: 'Pro — апрель 2025',  amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-04-01', pdf_url: null },
-  { id: 3, plan_name: 'Pro — март 2025',    amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-03-01', pdf_url: null },
-  { id: 2, plan_name: 'Pro — февраль 2025', amount: 2490, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-02-01', pdf_url: null },
-  { id: 1, plan_name: 'Старт — январь 2025', amount: 990, status: 'paid', payment_method: 'Visa •••• 4242', paid_at: '2025-01-01', pdf_url: null },
-];
 
 export const planFeatures: Record<PlanType, Feature[]> = {
   start: [

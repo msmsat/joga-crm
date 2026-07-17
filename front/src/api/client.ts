@@ -1,12 +1,23 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
+// Бэкенд отдаёт загруженные файлы (лого, фото филиала/сотрудника) как относительный
+// путь ("/static/..."). Без префикса браузер запросит его у фронтенд dev-сервера,
+// а не у бэкенда — картинка "битая". Абсолютный URL (http...) пропускаем как есть.
+export function resolveImageUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined
+  if (/^https?:\/\//.test(path)) return path
+  return `${BASE_URL}${path}`
+}
+
 export class ApiError extends Error {
   status: number
+  code?: string   // detail-код с бэкенда (limit_exceeded, subscription_expired и т.п.)
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, code?: string) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.code = code
   }
 }
 
@@ -22,8 +33,23 @@ function normalizeError(data: unknown): string {
       return first.msg ?? String(first)
     }
     if (typeof detail === 'string') return detail
+    // detail-объект от бэкенда: {code, message} (лимиты тарифа, истёкшая подписка)
+    if (detail && typeof detail === 'object' && 'message' in detail) {
+      return String((detail as { message: unknown }).message)
+    }
   }
   return 'Неизвестная ошибка'
+}
+
+// Код из detail-объекта {code, message}, если бэкенд его прислал.
+function detailCode(data: unknown): string | undefined {
+  if (data && typeof data === 'object' && 'detail' in data) {
+    const detail = (data as { detail: unknown }).detail
+    if (detail && typeof detail === 'object' && 'code' in detail) {
+      return String((detail as { code: unknown }).code)
+    }
+  }
+  return undefined
 }
 
 interface RequestOptions {
@@ -56,6 +82,36 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     localStorage.removeItem('token')
     window.location.href = '/login'
     throw new ApiError(401, 'Сессия истекла')
+  }
+
+  // 402 — глобальный гейт подписки (задача 8b/12b): подписка неактивна. Страховка на
+  // случай, если роутинг-гард в DashboardLayout не сработал (напр. admin/trainer на
+  // разделе данных) — уводим на «Тариф и оплата». Не на самой странице биллинга.
+  if (res.status === 402) {
+    const data: unknown = await res.json().catch(() => null)
+    if (!window.location.pathname.startsWith('/dashboard/billing')) {
+      window.location.href = '/dashboard/billing'
+    }
+    throw new ApiError(402, data ? normalizeError(data) : 'Подписка неактивна', detailCode(data))
+  }
+
+  // 403 — читаем тело: это может быть отказ доступа ИЛИ лимит тарифа {code, message}.
+  if (res.status === 403) {
+    const data: unknown = await res.json().catch(() => null)
+    const code = detailCode(data)
+    const message = data ? normalizeError(data) : 'Нет доступа'
+    // Лимит тарифа — не голая ошибка, а точка продажи апгрейда: глобальный листенер в
+    // DashboardLayout покажет модалку «Улучшить тариф» (ловим один раз тут, а не в каждой форме).
+    if (code === 'limit_exceeded') {
+      window.dispatchEvent(new CustomEvent('velora:plan-limit', { detail: { message } }))
+    }
+    throw new ApiError(403, message, code)
+  }
+
+  // 204 / пустое тело (например DELETE) — парсить нечего.
+  if (res.status === 204) {
+    if (!res.ok) throw new ApiError(res.status, 'Ошибка запроса')
+    return undefined as T
   }
 
   const data: unknown = await res.json()

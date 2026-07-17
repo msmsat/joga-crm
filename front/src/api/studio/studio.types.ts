@@ -43,6 +43,16 @@ export interface BranchCreate {
   photo_url?: string | null
 }
 
+export interface BranchUpdate {
+  name?: string
+  phone?: string | null
+  email?: string | null
+  country?: string | null
+  city?: string | null
+  address?: string | null
+  photo_url?: string | null
+}
+
 export interface BranchListItem {
   id: number
   name: string
@@ -50,6 +60,26 @@ export interface BranchListItem {
   city: string | null
   country: string | null
   hall_count: number
+}
+
+export interface HallCreate {
+  name: string
+  capacity?: number
+  area?: number | null
+  color?: string | null
+  equipment?: string[] | null
+  hourly_rate?: number | null
+  is_online?: boolean
+}
+
+export interface HallUpdate {
+  name?: string
+  capacity?: number
+  area?: number | null
+  color?: string | null
+  equipment?: string[] | null
+  hourly_rate?: number | null
+  is_online?: boolean
 }
 
 export interface HallBrief {

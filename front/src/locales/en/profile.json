@@ -22,6 +22,7 @@
   "toasts": {
     "switchedAs": "Signed in as {{email}}",
     "logoutAll": "Logging out of all accounts...",
-    "infoSaved": "Personal data updated successfully"
+    "infoSaved": "Personal data updated successfully",
+    "infoSaveError": "Failed to save changes"
   }
 }

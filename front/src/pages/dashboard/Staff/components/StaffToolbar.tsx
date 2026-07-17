@@ -72,7 +72,7 @@ export function StaffToolbar({
               }}
             >
               {/* 🔥 МАГИЯ: Если "ALL", берем спец. слово. Иначе переводим сырой ключ отдела! */}
-              {g === 'ALL' ? t('toolbar.allGroup') : t(`departments.${g}`, { defaultValue: g })}
+              {g === 'ALL' ? t('toolbar.allGroup') : t(`roles.${g}`, { defaultValue: g })}
             </button>
           ))}
         </div>

@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import type { ToastType, Counterparty } from '../../types';
-import { COUNTERPARTIES_DATA, fmt } from '../../constants';
+import { useEffect, useState } from 'react';
+import type { ToastType } from '../../types';
+import type { Counterparty as ApiCounterparty } from '../../../../../api/finances/finances.types';
+import { financesApi } from '../../../../../api/finances/finances.api';
+import { fmt } from '../../constants';
 import { Ico } from '../ui/FinanceIcons';
 import { Btn } from '../ui/Btn';
 import { Badge } from '../ui/Badge';
@@ -13,8 +15,13 @@ const TYPE_OPTIONS = [
   { value: 'Физ. лицо', label: 'Физ. лицо', desc: 'Частное лицо', icon: <Ico.User /> },
 ];
 
+const CP_COLORS = ['#FCAE91', '#7EB5D6', '#A3C9A8', '#D88C9A'];
+// Бэкенд не хранит цвет контрагента — назначаем стабильно по индексу.
+type Counterparty = ApiCounterparty & { color: string };
+const withColor = (cp: ApiCounterparty, i: number): Counterparty => ({ ...cp, color: CP_COLORS[i % CP_COLORS.length] });
+
 export default function CounterpartiesTab({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
-  const [counterparties, setCounterparties] = useState<Counterparty[]>(COUNTERPARTIES_DATA);
+  const [counterparties, setCounterparties] = useState<Counterparty[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ name: '', inn: '', type: 'Юр. лицо', category: '' });
@@ -29,6 +36,12 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
   const [editType, setEditType] = useState('');
   const [editFocused, setEditFocused] = useState<string | null>(null);
 
+  useEffect(() => {
+    financesApi.getCounterparties()
+      .then(list => setCounterparties(list.map(withColor)))
+      .catch(() => showToast('Не удалось загрузить контрагентов', 'error'));
+  }, [showToast]);
+
   const openEdit = (cp: Counterparty) => {
     setEditingId(cp.id);
     setEditName(cp.name);
@@ -37,14 +50,22 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
     setEditType(cp.counterparty_type);
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editName.trim()) { showToast('Введите название', 'error'); return; }
-    setCounterparties(prev => prev.map(c => c.id === editingId
-      ? { ...c, name: editName.trim(), inn: editInn.trim() || null, category: editCategory.trim() || c.category, counterparty_type: editType }
-      : c
-    ));
-    setEditingId(null);
-    showToast('Изменения сохранены', 'success');
+    if (editingId == null) return;
+    try {
+      const updated = await financesApi.updateCounterparty(editingId, {
+        name: editName.trim(),
+        inn: editInn.trim() || null,
+        category: editCategory.trim() || null,
+        counterparty_type: editType,
+      });
+      setCounterparties(prev => prev.map(c => c.id === editingId ? { ...updated, color: c.color } : c));
+      setEditingId(null);
+      showToast('Изменения сохранены', 'success');
+    } catch {
+      showToast('Не удалось сохранить', 'error');
+    }
   };
 
   const cancelEdit = () => setEditingId(null);
@@ -73,24 +94,36 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
     },
   });
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.name.trim()) { showToast('Введите название', 'error'); return; }
-    const colors = ['#FCAE91', '#7EB5D6', '#A3C9A8', '#D88C9A'];
-    setCounterparties(prev => [...prev, {
-      id: Date.now(), name: form.name, inn: form.inn || null, counterparty_type: form.type,
-      category: form.category || 'Прочее', balance: 0, deals_count: 0,
-      color: colors[prev.length % colors.length],
-    }]);
-    setForm({ name: '', inn: '', type: 'Юр. лицо', category: '' });
-    setAdding(false);
-    showToast('Контрагент добавлен', 'success');
+    try {
+      const created = await financesApi.createCounterparty({
+        name: form.name.trim(),
+        inn: form.inn || null,
+        counterparty_type: form.type,
+        category: form.category || null,
+      });
+      setCounterparties(prev => [...prev, withColor(created, prev.length)]);
+      setForm({ name: '', inn: '', type: 'Юр. лицо', category: '' });
+      setAdding(false);
+      showToast('Контрагент добавлен', 'success');
+    } catch {
+      showToast('Не удалось добавить контрагента', 'error');
+    }
   };
 
-  const confirmDelete = () => {
-    setCounterparties(prev => prev.filter(c => c.id !== confirm.id));
+  const confirmDelete = async () => {
+    const id = confirm.id;
     setConfirm({ open: false, id: null });
-    setSelected(null);
-    showToast('Контрагент удалён', 'success');
+    if (id == null) return;
+    try {
+      await financesApi.deleteCounterparty(id);
+      setCounterparties(prev => prev.filter(c => c.id !== id));
+      setSelected(null);
+      showToast('Контрагент удалён', 'success');
+    } catch {
+      showToast('Не удалось удалить контрагента', 'error');
+    }
   };
 
   const totalDebt = counterparties.reduce((s, c) => s + Math.abs(c.balance), 0);

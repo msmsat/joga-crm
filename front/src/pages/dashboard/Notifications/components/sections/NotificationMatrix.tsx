@@ -14,13 +14,14 @@ interface Props {
   toggleCheck: (evId: string, chKey: ChannelKey) => void;
   setToggles: Dispatch<SetStateAction<Toggles>>;
   isDirty: boolean;
+  saving: boolean;
   onSave: () => void;
   onCancel: () => void;
 }
 
 export default function NotificationMatrix({
   currentRole, events, activeChannels, toggles, toggleCheck, setToggles,
-  isDirty, onSave, onCancel,
+  isDirty, saving, onSave, onCancel,
 }: Props) {
   const allOn = events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key]));
 
@@ -132,21 +133,22 @@ export default function NotificationMatrix({
 
             <button
               onClick={onSave}
-              disabled={!isDirty}
+              disabled={!isDirty || saving}
               style={{
                 fontSize: '12px', fontWeight: 800,
                 color: isDirty ? '#FFFFFF' : '#CCCCCC',
                 background: isDirty ? '#FCAE91' : 'rgba(26,26,26,0.05)',
-                border: 'none', cursor: isDirty ? 'pointer' : 'default',
+                border: 'none', cursor: isDirty && !saving ? 'pointer' : 'default',
+                opacity: saving ? 0.7 : 1,
                 padding: '8px 16px', borderRadius: '8px',
                 fontFamily: "'Manrope', sans-serif",
                 transition: 'all 0.18s ease',
                 boxShadow: isDirty ? '0 4px 12px rgba(252,174,145,0.35)' : 'none',
               }}
-              onMouseEnter={e => { if (isDirty) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(252,174,145,0.45)'; } }}
-              onMouseLeave={e => { if (isDirty) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(252,174,145,0.35)'; } }}
+              onMouseEnter={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(252,174,145,0.45)'; } }}
+              onMouseLeave={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(252,174,145,0.35)'; } }}
             >
-              Сохранить
+              {saving ? 'Сохранение…' : 'Сохранить'}
             </button>
 
             <button

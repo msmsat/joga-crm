@@ -1,5 +1,6 @@
 // utils.ts
-import type { Booking } from './types';
+import type { Booking, Trainer, Lesson, Hall } from './types';
+import type { StaffListItem } from '../../../api/staff/staff.types';
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
 export function getBookingLayouts(bookings: Booking[]) {
@@ -156,3 +157,73 @@ export const generateTimeIntervals = (stepMinutes: number = 15): string[] => {
   }
   return intervals;
 };
+
+// ─── ПЕРЕХОДНИК API ↔ СЕТКА ЖУРНАЛА ──────────────────────────────────────
+// Сетка живёт на индексах времени: 0 = 07:00, 1 единица = 1 час.
+
+export const TRAINER_COLORS = ['#F9A08B', '#5BAB72', '#40a8a0', '#4A80C4', '#7B6CD4'];
+
+const hexToBg = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0.12)`;
+};
+
+// Сотрудник из API → колонка журнала. Цвет назначается по порядку из палитры.
+export const staffToTrainer = (s: StaffListItem, i: number): Trainer => {
+  const color = TRAINER_COLORS[i % TRAINER_COLORS.length];
+  const first = s.name || '';
+  const last = s.last_name || '';
+  return {
+    id: s.id,
+    name: last ? `${first} ${last[0]}.` : first,
+    full: `${first} ${last}`.trim(),
+    role: s.department || s.role,
+    color,
+    bg: hexToBg(color),
+    initials: (`${first[0] ?? ''}${last[0] ?? ''}`).toUpperCase() || '?',
+  };
+};
+
+// Локальная дата YYYY-MM-DD (toISOString сдвинул бы день из-за UTC)
+export const toDateStr = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+// Занятие из API → карточка сетки. start_time от бэка — naive ISO (локальное время студии).
+export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<number, string>): Booking => {
+  const start = new Date(l.start_time);
+  const timeStart = start.getHours() - 7 + start.getMinutes() / 60;
+  return {
+    id: l.id,
+    trainer: l.teacher_id ?? -1,
+    timeStart,
+    timeEnd: timeStart + l.duration_min / 60,
+    title: l.name,
+    hall: halls.find(h => h.id === l.hall_id)?.name ?? '',
+    clients: l.booked_count ?? 0,
+    maxClients: l.total_spots,
+    color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? TRAINER_COLORS[0],
+    status: l.status,
+    date: toDateStr(start),
+  };
+};
+
+// Обратный переходник: дата + индекс сетки → naive ISO (для create/update занятия)
+export const indexToDateTime = (dateStr: string, idx: number) => {
+  const h = Math.floor(idx) + 7;
+  const m = Math.round((idx % 1) * 60);
+  return `${dateStr}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+};
+
+// Самопроверка переходника (только dev-сборка)
+if (import.meta.env.DEV) {
+  const b = lessonToBooking(
+    { id: 1, name: 'Т', teacher_id: 5, teacher_name: null, hall_id: 2, start_time: '2026-07-12T08:30:00', duration_min: 90, price: 0, total_spots: 8, booked_count: 3, status: 'confirmed', level: null },
+    [{ id: 2, name: 'Зал 1', color: '', capacity: 8, is_online: false, is_active: true }],
+    new Map([[5, '#5BAB72']]),
+  );
+  console.assert(
+    b.timeStart === 1.5 && b.timeEnd === 3 && b.hall === 'Зал 1' && b.date === '2026-07-12' && b.clients === 3,
+    'lessonToBooking сломан:', b,
+  );
+  console.assert(indexToDateTime('2026-07-12', 1.5) === '2026-07-12T08:30:00', 'indexToDateTime сломан');
+}

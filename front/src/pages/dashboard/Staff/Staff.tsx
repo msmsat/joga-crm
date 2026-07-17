@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import './Staff.css';
 import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
-import { HALLS_CONFIG, TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS } from './constants';
+import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS } from './constants';
 import { useStaffList } from './hooks/useStaffList';
 import { useStaffProfile } from './hooks/useStaffProfile';
 import { useStaffFilters } from './hooks/useStaffFilters';
@@ -12,6 +12,10 @@ import { StaffStats } from './components/StaffStats';
 import { AddEmployeeModal }  from './components/modals/AddEmployeeModal';
 import EditStaffModal from '../../../components/modals/EditStaffModal';
 import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
+import { useToast } from '../../../components/ui/Toast';
+import { ApiError, resolveImageUrl } from '../../../api/client';
+import { settingsApi } from '../../../api/settings/settings.api';
+import { getCurrencySymbol } from '../../../components/UI';
 import type { StaffListItem, StaffWorkingHoursItem, StaffProfile } from '../../../api/staff/staff.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -34,8 +38,36 @@ function toEmployee(item: StaffListItem): Employee {
   };
 }
 
+function scheduleToWorkingHours(
+  schedule: Record<string, { enabled: boolean; from: string; to: string }> | undefined
+): StaffWorkingHoursItem[] {
+  if (!schedule) return [];
+  return DAYS_KEYS.map((key, dayOfWeek) => ({
+    day_of_week: dayOfWeek,
+    is_open: schedule[key]?.enabled ?? false,
+    open_time: schedule[key]?.from ?? '09:00',
+    close_time: schedule[key]?.to ?? '18:00',
+  }));
+}
+
+function workingHoursToSchedule(
+  hours: StaffWorkingHoursItem[]
+): Record<string, { enabled: boolean; from: string; to: string }> {
+  const byDay = new Map(hours.map(wh => [wh.day_of_week, wh]));
+  const schedule: Record<string, { enabled: boolean; from: string; to: string }> = {};
+  DAYS_KEYS.forEach((key, dayOfWeek) => {
+    const wh = byDay.get(dayOfWeek);
+    schedule[key] = {
+      enabled: wh?.is_open ?? false,
+      from: wh?.open_time ?? '09:00',
+      to: wh?.close_time ?? '18:00',
+    };
+  });
+  return schedule;
+}
+
 function hoursToMatrix(hours: StaffWorkingHoursItem[]): ScheduleMatrix {
-  const matrix: ScheduleMatrix = Array.from({ length: 13 }, () => Array(7).fill(0));
+  const matrix: ScheduleMatrix = Array.from({ length: TIME_OPTIONS.length }, () => Array(7).fill(0));
   for (const wh of hours) {
     if (!wh.is_open) continue;
     for (let ti = 0; ti < TIME_OPTIONS.length; ti++) {
@@ -55,6 +87,7 @@ interface ActionModal {
   sub: string;
   type?: 'PROMPT_MESSAGE' | 'PROMPT_CALL';
   phone?: string;
+  email?: string;
   onConfirm?: () => void;
 }
 
@@ -78,21 +111,21 @@ export default function Staff() {
     const saved = localStorage.getItem('staff_active_id');
     return saved ? Number(saved) : null;
   });
-  const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson } = useStaffProfile(activeStaffId);
+  const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson, createLesson } = useStaffProfile(activeStaffId);
 
   // Создаем "Подготовленные данные для интерфейса" (ViewModel)
   const adaptedStaff = useMemo(() => rawStaff.map(item => {
     const emp = toEmployee(item);
     
     // Определяем сырой ключ отдела (если его нет, берем роль)
-    const rawGroup = emp.department || emp.role;
+    const rawGroup = emp.role;
 
     return {
       ...emp,
       // 🔥 Вот твоя идея в действии! Переводим заранее:
       _translatedRole: t(`staff:roles.${emp.role}`, { defaultValue: emp.role }),
       _resolvedGroupKey: rawGroup, // Оставляем сырой ключ для логики React (key)
-      _translatedGroup: t(`staff:departments.${rawGroup}`, { defaultValue: rawGroup })
+      _translatedGroup: t(`staff:roles.${rawGroup}`, { defaultValue: rawGroup })
     };
   }), [rawStaff, t]); // t в зависимостях: при смене языка массив пересоберется сам!
 
@@ -117,9 +150,14 @@ export default function Staff() {
     useStaffFilters(adaptedStaff);
 
   // ── Core UI state ─────────────────────────────────────────────────────────
-  const [toastMsg,      setToastMsg]      = useState<string | null>(null);
+  const toast = useToast();
   const [dontAskDelete, setDontAskDelete] = useState(false);
   const [scheduleView,  setScheduleView]  = useState<'week' | 'month'>('week');
+  const [currency, setCurrency] = useState<string>();
+
+  useEffect(() => {
+    settingsApi.getGeneral().then(s => setCurrency(s.currency)).catch(() => {});
+  }, []);
 
   // ── Employee modals ───────────────────────────────────────────────────────
   const [isAddModalOpen,  setIsAddModalOpen]  = useState(false);
@@ -134,6 +172,12 @@ export default function Staff() {
     isOpen: false, title: '', message: '', onConfirm: () => {},
   });
   const closeDeleteModal = () => setDeleteModal(m => ({ ...m, isOpen: false }));
+
+  // ── Add-event modal (создание занятия для сотрудника) ─────────────────────
+  const [addEvent, setAddEvent] = useState<{
+    name: string; time: string; duration: string; hallId: number | null; spots: string; price: string;
+  } | null>(null);
+  const [addEventBusy, setAddEventBusy] = useState(false);
 
   // ── Schedule local state (initialized from profile) ───────────────────────
   const [schedules, setSchedules] = useState<SchedulesMap>({});
@@ -165,6 +209,7 @@ export default function Staff() {
     ? [profile.name, profile.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase()
     : '';
   const heroGradient = profile?.avatar_gradient ?? FALLBACK_GRADIENT;
+  const heroPhotoUrl = resolveImageUrl(profile?.photo_url);
 
   const roleCards: RoleCard[] = profile
     ? (ROLE_CARDS[profile.role] ?? ROLE_CARDS['default'] ?? [])
@@ -173,17 +218,18 @@ export default function Staff() {
   const hasLoadCard = roleCards.some(c => c.id === 'load');
 
   function resolveCardValue(card: RoleCard, p: StaffProfile): string {
+    const currencySymbol = getCurrencySymbol(currency);
     if (!card.field) return '—';
     const statsVal = (p.stats as unknown as Record<string, number | undefined>)[card.field];
     if (statsVal !== undefined) {
-      if (card.format === 'currency') return `₽${(statsVal / 1000).toFixed(0)}K`;
+      if (card.format === 'currency') return `${currencySymbol}${(statsVal / 1000).toFixed(0)}K`;
       if (card.format === 'percent')  return `${statsVal}%`;
       return String(statsVal);
     }
     const empVal = (p as unknown as Record<string, unknown>)[card.field];
     if (empVal == null) return '—';
     if (card.format === 'rating')   return `${empVal}★`;
-    if (card.format === 'currency') return `₽${((empVal as number) / 1000).toFixed(0)}K`;
+    if (card.format === 'currency') return `${currencySymbol}${((empVal as number) / 1000).toFixed(0)}K`;
     if (card.format === 'percent')  return `${empVal}%`;
     return String(empVal);
   }
@@ -208,11 +254,7 @@ export default function Staff() {
     return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(new Date());
   }, [i18n.language]);
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2500);
-  };
+  const showToast = toast.success;
 
   const deleteEvent = (i: number) => {
     const lesson = activeUpcoming[i];
@@ -232,6 +274,46 @@ export default function Staff() {
       showDontAsk: true,
       onConfirm: () => { doCancel(); closeDeleteModal(); },
     });
+  };
+
+  const openAddEvent = () => {
+    setAddEvent({
+      name: '',
+      time: '10:00',
+      duration: '60',
+      hallId: profile?.halls[0]?.id ?? null,
+      spots: '8',
+      price: '0',
+    });
+  };
+
+  const submitAddEvent = async () => {
+    if (!addEvent || !activeStaffId || addEventBusy) return;
+    if (!addEvent.name.trim() || !/^\d{1,2}:\d{2}$/.test(addEvent.time)) return;
+    setAddEventBusy(true);
+    try {
+      // start_time — сегодня в выбранное время (локально), как ISO без TZ-сдвига.
+      const now = new Date();
+      const ymd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const startIso = `${ymd}T${addEvent.time.padStart(5, '0')}:00`;
+      await createLesson({
+        name: addEvent.name.trim(),
+        teacher_id: activeStaffId,
+        hall_id: addEvent.hallId,
+        start_time: startIso,
+        duration_min: parseInt(addEvent.duration) || 60,
+        total_spots: parseInt(addEvent.spots) || 8,
+        price: parseInt(addEvent.price) || 0,
+        level: '',
+        equipment: '',
+      });
+      setAddEvent(null);
+      showToast(t('staff:toasts.lessonAdded'));
+    } catch {
+      showToast(t('staff:toasts.errorAdd'));
+    } finally {
+      setAddEventBusy(false);
+    }
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -276,7 +358,15 @@ export default function Staff() {
                     onClick={() => setActionModal({
                       isOpen: true, title: t('staff:actionModal.writeTitle', { name: profile.name }),
                       sub: t('staff:actionModal.writeSub'), type: 'PROMPT_MESSAGE',
-                      onConfirm: () => { showToast(t('staff:toasts.messageSent')); closeActionModal(); },
+                      email: profile.email ?? undefined,
+                      onConfirm: () => {
+                        const el = document.getElementById('staff-msg-body') as HTMLTextAreaElement | null;
+                        const body = el?.value.trim();
+                        const email = profile.email;
+                        if (!email) { showToast(t('staff:toasts.messageSent')); closeActionModal(); return; }
+                        window.location.href = `mailto:${email}${body ? `?body=${encodeURIComponent(body)}` : ''}`;
+                        closeActionModal();
+                      },
                     })}
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -319,8 +409,13 @@ export default function Staff() {
                 </div>
 
                 <div className="hero-info">
-                  <div className="hero-ava" style={{ background: heroGradient }}>
-                    {heroInitials}
+                  <div
+                    className="hero-ava"
+                    style={{
+                      background: heroPhotoUrl ? `url(${heroPhotoUrl}) center/cover no-repeat` : heroGradient,
+                    }}
+                  >
+                    {!heroPhotoUrl && heroInitials}
                     {profile.is_online && <div className="badge-online" />}
                   </div>
                   <div>
@@ -342,7 +437,9 @@ export default function Staff() {
                   {roleCards.map((card) => (
                     <div key={card.id} className="stat-card">
                       <div className="stat-v">{resolveCardValue(card, profile)}</div>
-                      <div className="stat-l">{card.label}</div>
+                      <div className="stat-l">
+                        {t(`staff:cards.${profile.role}.${card.id}`, { defaultValue: t(`staff:cards.default.${card.id}`, { defaultValue: card.id }) })}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -435,18 +532,29 @@ export default function Staff() {
                           </div>
 
                           <div className="sch-legend">
-                            {Object.entries(HALLS_CONFIG).map(([key, config]) => (
-                              <div key={key} className="leg">
-                                <div className="leg-dot" style={{ background: config.color }} />
-                                {/* Достаем название зала из JSON! */}
-                                {t(`staff:halls.${key}`, { defaultValue: key })} 
-                              </div>
-                            ))}
+                            <div className="leg">
+                              <div className="leg-dot" style={{ background: 'var(--accent)' }} />
+                              {t('staff:schedule.working')}
+                            </div>
                             <div className="leg">
                               <div className="leg-dot" style={{ background: 'rgba(252,174,145,.12)', border: '1px solid var(--border2)' }} />
                               {t('staff:schedule.free')}
                             </div>
                           </div>
+
+                          {(profile?.halls.length ?? 0) > 0 && (
+                            <div className="sch-legend" style={{ marginTop: '8px' }}>
+                              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)' }}>
+                                {t('staff:profile.staffHalls')}
+                              </span>
+                              {profile!.halls.map(h => (
+                                <div key={h.id} className="leg">
+                                  <div className="leg-dot" style={{ background: h.color ?? '#F9A08B' }} />
+                                  {h.name}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </>
                       ) : (
                         <div style={{ padding: '8px 10px 10px' }}>
@@ -509,7 +617,7 @@ export default function Staff() {
                   <>
                     <div className="sec-title" style={{ marginTop: '24px' }}>
                       <span>{t('staff:profile.todaySchedule')}</span>
-                      <button className="sch-action-btn btn-add-event" onClick={() => showToast(t('staff:profile.addEventStub'))}>
+                      <button className="sch-action-btn btn-add-event" onClick={openAddEvent}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '4px' }}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         {t('common:buttons.add')}
                       </button>
@@ -580,6 +688,7 @@ export default function Staff() {
 
             {actionModal.type === 'PROMPT_MESSAGE' && (
               <textarea
+                id="staff-msg-body"
                 placeholder={t('staff:actionModal.messagePlaceholder')}
                 autoFocus
                 style={{ width:'100%',height:'100px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',color:'#1A1A1A',outline:'none',resize:'none',fontFamily:'inherit',boxSizing:'border-box' }}
@@ -588,7 +697,7 @@ export default function Staff() {
 
             {actionModal.type === 'PROMPT_CALL' && (
               <div style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
-                <div onClick={() => { closeActionModal(); showToast(t('staff:toasts.calling')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(74,128,196,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
+                <div onClick={() => { const p = actionModal.phone?.replace(/\s/g, ''); closeActionModal(); if (p) window.location.href = `tel:${p}`; else showToast(t('staff:toasts.calling')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(74,128,196,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
                   <div style={{ width:'40px',height:'40px',borderRadius:'10px',background:'rgba(74,128,196,0.1)',color:'#4A80C4',display:'flex',alignItems:'center',justifyContent:'center' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                   </div>
@@ -597,7 +706,7 @@ export default function Staff() {
                     <div style={{ fontSize:'13px',color:'#666' }}>{actionModal.phone}</div>
                   </div>
                 </div>
-                <div onClick={() => { closeActionModal(); showToast(t('staff:toasts.openingWhatsapp')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(91,171,114,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
+                <div onClick={() => { const d = actionModal.phone?.replace(/\D/g, ''); closeActionModal(); if (d) window.open(`https://wa.me/${d}`, '_blank', 'noopener'); else showToast(t('staff:toasts.openingWhatsapp')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(91,171,114,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
                   <div style={{ width:'40px',height:'40px',borderRadius:'10px',background:'rgba(91,171,114,0.12)',color:'#5BAB72',display:'flex',alignItems:'center',justifyContent:'center' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                   </div>
@@ -624,6 +733,104 @@ export default function Staff() {
         document.body
       )}
 
+      {/* ── ADD EVENT MODAL (создание занятия для сотрудника) ─────────────── */}
+      {addEvent && createPortal(
+        <div
+          onClick={() => setAddEvent(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(26,26,26,0.3)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            animation: 'fadeIn 0.2s ease forwards', padding: '20px', boxSizing: 'border-box',
+          }}
+        >
+          <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes scaleUp{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}`}</style>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF', width: '100%', maxWidth: '440px',
+              borderRadius: '24px', padding: '32px',
+              boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
+              animation: 'scaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards',
+              display: 'flex', flexDirection: 'column', gap: '24px',
+              fontFamily: "'Manrope', sans-serif",
+            }}
+          >
+            <div>
+              <div style={{ width:'48px',height:'48px',borderRadius:'14px',marginBottom:'20px',background:'rgba(249,160,139,0.15)',color:'#F9A08B',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div style={{ fontSize:'20px',fontWeight:800,color:'#1A1A1A',letterSpacing:'-0.3px',marginBottom:'8px' }}>{t('staff:addEvent.title')}</div>
+              <div style={{ fontSize:'14px',color:'#666',lineHeight:1.5 }}>{t('staff:addEvent.sub', { name: profile?.name ?? '' })}</div>
+            </div>
+
+            <input
+              autoFocus
+              placeholder={t('staff:addEvent.namePlaceholder')}
+              value={addEvent.name}
+              onChange={e => setAddEvent(s => s && { ...s, name: e.target.value })}
+              onKeyDown={e => { if (e.key === 'Enter') submitAddEvent(); }}
+              style={{ width:'100%',padding:'14px 16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }}
+            />
+
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px' }}>
+              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
+                {t('staff:addEvent.time')}
+                <input type="time" value={addEvent.time} onChange={e => setAddEvent(s => s && { ...s, time: e.target.value })}
+                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
+              </label>
+              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
+                {t('staff:addEvent.duration')}
+                <input type="number" min="15" step="15" value={addEvent.duration} onChange={e => setAddEvent(s => s && { ...s, duration: e.target.value })}
+                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
+              </label>
+              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
+                {t('staff:addEvent.spots')}
+                <input type="number" min="1" max="50" value={addEvent.spots} onChange={e => setAddEvent(s => s && { ...s, spots: e.target.value })}
+                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
+              </label>
+              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
+                {t('staff:addEvent.price')}
+                <input type="number" min="0" value={addEvent.price} onChange={e => setAddEvent(s => s && { ...s, price: e.target.value })}
+                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
+              </label>
+            </div>
+
+            {(profile?.halls.length ?? 0) > 0 && (
+              <div style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
+                <div style={{ fontSize:'12px',fontWeight:700,color:'#666' }}>{t('staff:addEvent.hall')}</div>
+                <div style={{ display:'flex',flexWrap:'wrap',gap:'8px' }}>
+                  {profile!.halls.map(h => {
+                    const active = addEvent.hallId === h.id;
+                    const color = h.color ?? '#F9A08B';
+                    return (
+                      <button key={h.id} onClick={() => setAddEvent(s => s && { ...s, hallId: h.id })}
+                        style={{ padding:'8px 14px',borderRadius:'10px',fontSize:'13px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',transition:'all 0.2s',
+                          border:`1.5px solid ${active ? color : 'rgba(26,26,26,0.1)'}`,
+                          background: active ? `${color}18` : '#FDFCFB',
+                          color: active ? color : '#1A1A1A' }}>
+                        {h.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div style={{ display:'flex',gap:'12px' }}>
+              <button onClick={() => setAddEvent(null)} style={{ flex:1,padding:'12px',background:'#FDFCFB',color:'#1A1A1A',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor:'pointer',fontFamily:'inherit' }}>
+                {t('common:buttons.cancel')}
+              </button>
+              <button onClick={submitAddEvent} disabled={!addEvent.name.trim() || addEventBusy}
+                style={{ flex:1,padding:'12px',background:'#1A1A1A',color:'#FFFFFF',border:'none',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor: (!addEvent.name.trim() || addEventBusy) ? 'not-allowed' : 'pointer',opacity: (!addEvent.name.trim() || addEventBusy) ? 0.5 : 1,fontFamily:'inherit',boxShadow:'0 8px 24px rgba(26,26,26,0.15)' }}>
+                {t('staff:addEvent.create')}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* ── DELETE CONFIRM ────────────────────────────────────────────────── */}
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}
@@ -641,19 +848,31 @@ export default function Staff() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={async (data) => {
-          const result = await create({
-            name: data.name,
-            last_name: data.last_name || undefined,
-            email: data.email,
-            phone: data.phone || undefined,
-            role: data.role,
-            department: data.department || undefined,
-            salary: data.salary ? Number(data.salary) : undefined,
-            rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
-          });
-          if (result?.staff?.id) setActiveStaffId(result.staff.id);
-          setIsAddModalOpen(false);
-          showToast(t('staff:toasts.employeeAdded', { name: data.name }));
+          try {
+            const result = await create({
+              name: data.name,
+              last_name: data.last_name || undefined,
+              email: data.email,
+              phone: data.phone || undefined,
+              password: data.password,
+              role: data.role,
+              salary: data.salary ? Number(data.salary) : undefined,
+              rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
+              service_ids: data.serviceIds,
+              schedule: scheduleToWorkingHours(data.schedule),
+            });
+            if (result?.staff?.id) setActiveStaffId(result.staff.id);
+            setIsAddModalOpen(false);
+            showToast(t('staff:toasts.employeeAdded', { name: data.name }));
+          } catch (err) {
+            // 402 (лимит тарифа) уже показан глобальной модалкой апселла — закрываем молча.
+            if (err instanceof ApiError && err.status === 402) {
+              setIsAddModalOpen(false);
+              return;
+            }
+            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+            throw err;
+          }
         }}
       />
 
@@ -667,28 +886,37 @@ export default function Staff() {
           phone: profile.phone ?? '',
           email: profile.email,
           role: profile.role,
-          department: profile.department ?? undefined,
           avatar_gradient: profile.avatar_gradient ?? undefined,
           is_online: profile.is_online,
           rate: profile.rate ?? undefined,
           rate_type: profile.rate_type ?? '',
+          service_ids: profile.services.map(s => s.id),
+          photo_url: profile.photo_url ?? undefined,
+          schedule: workingHoursToSchedule(profile.week_working_hours),
         } : null}
         onClose={() => setIsEditModalOpen(false)}
         onSave={async (updated) => {
           if (!activeStaffId) return;
-          await update(activeStaffId, {
-            name: updated.name,
-            last_name: updated.last_name,
-            email: updated.email,
-            phone: updated.phone || undefined,
-            role: updated.role,
-            department: updated.department || undefined,
-            rate: updated.rate,
-            rate_type: (updated.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
-          });
-          refetchProfile();
-          setIsEditModalOpen(false);
-          showToast(t('staff:toasts.changesSaved'));
+          try {
+            await update(activeStaffId, {
+              name: updated.name,
+              last_name: updated.last_name,
+              email: updated.email,
+              phone: updated.phone || undefined,
+              role: updated.role,
+              rate: updated.rate,
+              rate_type: (updated.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
+              service_ids: updated.service_ids ?? [],
+              photo_url: updated.photo_url,
+              schedule: scheduleToWorkingHours(updated.schedule),
+            });
+            refetchProfile();
+            setIsEditModalOpen(false);
+            showToast(t('staff:toasts.changesSaved'));
+          } catch (err) {
+            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+            throw err;
+          }
         }}
         ownerCount={ownerCount}
         onDelete={async (id) => {
@@ -696,23 +924,11 @@ export default function Staff() {
             await deleteStaff(id);
             selectStaff(null);
             showToast(t('staff:toasts.employeeDeleted'));
-          } catch {
-            showToast(t('staff:toasts.errorDelete'));
+          } catch (err) {
+            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorDelete'));
           }
         }}
       />
-
-      {/* ── TOAST ────────────────────────────────────────────────────────── */}
-      <div
-        className={`toast ${toastMsg ? 'show' : ''}`}
-        style={{
-          opacity: toastMsg ? 1 : 0,
-          visibility: toastMsg ? 'visible' : 'hidden',
-          pointerEvents: 'none'
-        }}
-      >
-        {toastMsg}
-      </div>
 
     </div>
   );

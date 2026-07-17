@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ApiError } from '../../../../api/client';
 import type { Service } from '../types';
-import { MOCK_SERVICES, SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
+import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
+import { useServiceList } from '../hooks/useCatalogList';
+import { ServiceModal } from './modals/EditService';
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
@@ -12,10 +15,19 @@ interface Props {
 export function ServiceSection({ showToast }: Props) {
   const { t } = useTranslation(['catalog', 'common']);
   const tCat = (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat });
-  const [services, setServices] = useState<Service[]>(MOCK_SERVICES);
-  const [activeServiceId, setActiveServiceId] = useState<number>(MOCK_SERVICES[0]?.id ?? 0);
+  const { services, createService, updateService, deleteService } = useServiceList();
+  const [activeServiceId, setActiveServiceId] = useState<number>(0);
+
+  useEffect(() => {
+    if (services.length > 0 && !services.some(s => s.id === activeServiceId)) {
+      setActiveServiceId(services[0].id);
+    }
+  }, [services, activeServiceId]);
 
   const activeService = services.find(s => s.id === activeServiceId) ?? null;
+
+  // null → нет модалки; { service: null } → создание; { service } → редактирование
+  const [serviceModal, setServiceModal] = useState<{ service: Service | null } | null>(null);
 
   const groups = useMemo(() => {
     return SERVICE_CATEGORIES
@@ -23,11 +35,15 @@ export function ServiceSection({ showToast }: Props) {
       .map(cat => ({ label: cat, items: services.filter(s => s.category === cat) }));
   }, [services]);
 
-  const handleDeleteService = () => {
-    const remaining = services.filter(s => s.id !== activeServiceId);
-    setServices(remaining);
-    setActiveServiceId(remaining[0]?.id ?? 0);
-    showToast(t('catalog:services.toasts.deleted'));
+  const handleDeleteService = async () => {
+    if (!activeService) return;
+    if (!window.confirm(t('catalog:services.confirmDelete', { name: activeService.name }))) return;
+    try {
+      await deleteService(activeService.id);
+      showToast(t('catalog:services.toasts.deleted'));
+    } catch (error) {
+      showToast(error instanceof ApiError ? error.message : t('catalog:services.toasts.deleteError'));
+    }
   };
 
   const avgPerMonth = activeService
@@ -40,7 +56,7 @@ export function ServiceSection({ showToast }: Props) {
       <div className="cat-list-panel">
         <div className="cat-panel-hdr">
           <span className="cat-panel-title">{t('catalog:services.title')}</span>
-          <button className="cat-add-btn" title={t('catalog:services.addService')} onClick={() => showToast(t('catalog:services.addService'))}>
+          <button className="cat-add-btn" title={t('catalog:services.addService')} onClick={() => setServiceModal({ service: null })}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
@@ -75,7 +91,7 @@ export function ServiceSection({ showToast }: Props) {
           <>
             <div className="cat-hero" style={{ background: `linear-gradient(135deg, ${activeService.color}12, transparent 70%)` }}>
               <div className="cat-hero-actions">
-                <button className="cat-h-btn" onClick={() => showToast(t('catalog:services.toasts.edit', { name: activeService.name }))}>
+                <button className="cat-h-btn" onClick={() => setServiceModal({ service: activeService })}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   {t('common:buttons.edit')}
                 </button>
@@ -186,6 +202,27 @@ export function ServiceSection({ showToast }: Props) {
           </div>
         )}
       </div>
+
+      {serviceModal && (
+        <ServiceModal
+          key={serviceModal.service?.id ?? 'new'}
+          service={serviceModal.service}
+          onClose={() => setServiceModal(null)}
+          onSubmit={async (data) => {
+            try {
+              if (serviceModal.service) {
+                await updateService(serviceModal.service.id, data);
+              } else {
+                await createService(data);
+              }
+              showToast(t('catalog:services.toasts.saved'));
+            } catch (error) {
+              showToast(error instanceof ApiError ? error.message : t('catalog:services.toasts.saveError'));
+              throw error;
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

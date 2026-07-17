@@ -30,5 +30,5 @@ export function useStaffList() {
     await refetch()
   }
 
-  return { summary: data?.summary, rawStaff: data?.staff ?? [], isLoading, create, update, deleteStaff }
+  return { summary: data?.summary, rawStaff: data?.staff.items ?? [], isLoading, create, update, deleteStaff }
 }

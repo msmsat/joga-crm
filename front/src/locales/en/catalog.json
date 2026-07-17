@@ -39,8 +39,11 @@
       "createError": "Failed to create studio",
       "deleted": "Studio deleted",
       "hallDeleted": "Hall deleted",
+      "saved": "Saved",
       "edit": "Edit: {{name}}"
-    }
+    },
+    "confirmDelete": "Delete branch \"{{name}}\"? This cannot be undone.",
+    "confirmDeleteHall": "Delete hall \"{{name}}\"?"
   },
   "services": {
     "title": "SERVICES",
@@ -72,8 +75,12 @@
     },
     "toasts": {
       "deleted": "Service deleted",
+      "deleteError": "Failed to delete service",
+      "saved": "Saved",
+      "saveError": "Failed to save service",
       "edit": "Edit: {{name}}"
     },
+    "confirmDelete": "Delete service \"{{name}}\"?",
     "categories": {
       "Йога": "Yoga",
       "Пилатес": "Pilates",

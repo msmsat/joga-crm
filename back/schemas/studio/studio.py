@@ -30,6 +30,16 @@ class BranchCreate(BaseSchema):
     photo_url: Optional[str] = None
 
 
+class BranchUpdate(BaseSchema):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    country: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
+    photo_url: Optional[str] = None
+
+
 class BranchListItem(BaseSchema):
     id: int
     name: str
@@ -54,6 +64,42 @@ class WorkingHoursRead(BaseSchema):
     is_open: bool
     open_time: str
     close_time: str
+
+
+class ServiceRead(BaseSchema):
+    id: int
+    name: str
+    description: Optional[str] = None
+    price: int
+    duration_min: int
+    category: Optional[str] = None
+    service_type: Optional[str] = None
+    color: Optional[str] = None
+    max_clients: Optional[int] = None
+    bookings_count: int
+    revenue_total: int
+
+
+class ServiceCreate(BaseSchema):
+    name: str
+    price: int
+    duration_min: int = 60
+    description: Optional[str] = None
+    category: Optional[str] = None
+    service_type: Optional[str] = None
+    color: Optional[str] = None
+    max_clients: Optional[int] = None
+
+
+class ServiceUpdate(BaseSchema):
+    name: Optional[str] = None
+    price: Optional[int] = None
+    duration_min: Optional[int] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    service_type: Optional[str] = None
+    color: Optional[str] = None
+    max_clients: Optional[int] = None
 
 
 class BranchDetail(BaseSchema):

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { analyticsApi } from '../../../../../api';
 import type { Task } from '../../types';
 import styles from '../../Overview.module.css';
 
@@ -42,11 +43,10 @@ const PRIORITY_OPTIONS: { value: Task['priority']; label: string }[] = [
 
 interface Props {
   tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
 }
 
-export default function TodayTasksWidget({ tasks: initialTasks }: Props) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [doneIds, setDoneIds] = useState<Set<number>>(new Set());
+export default function TodayTasksWidget({ tasks, setTasks }: Props) {
   const [showDone, setShowDone] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<number | null>(null);
 
@@ -63,34 +63,34 @@ export default function TodayTasksWidget({ tasks: initialTasks }: Props) {
     }
   }, [isAddingTask]);
 
-  const toggle = (id: number) =>
-    setDoneIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
+  // Оптимистично переключаем is_done; при ошибке откатываем.
+  const toggle = (id: number) => {
+    const target = tasks.find(t => t.id === id);
+    if (!target) return;
+    const next = !target.is_done;
+    setTasks(prev => prev.map(t => (t.id === id ? { ...t, is_done: next } : t)));
+    analyticsApi.updateTask(id, { is_done: next }).catch(() => {
+      setTasks(prev => prev.map(t => (t.id === id ? { ...t, is_done: !next } : t)));
     });
-
-  const addTask = () => {
-    const text = newTaskText.trim();
-    if (!text) return;
-    const newTask: Task = {
-      id: Date.now(),
-      text,
-      priority: newTaskPriority,
-      tag: newTaskTag,
-      is_done: false,
-      done_at: null,
-      created_at: new Date().toISOString(),
-    };
-    setTasks(prev => [newTask, ...prev]);
-    setNewlyAddedId(newTask.id);
-    setTimeout(() => setNewlyAddedId(null), 600);
-    setIsAddingTask(false);
-    setNewTaskText('');
   };
 
-  const pending = tasks.filter(t => !doneIds.has(t.id));
-  const done    = tasks.filter(t => doneIds.has(t.id));
+  const addTask = async () => {
+    const text = newTaskText.trim();
+    if (!text) return;
+    setIsAddingTask(false);
+    setNewTaskText('');
+    try {
+      const created = await analyticsApi.createTask({ text, priority: newTaskPriority, tag: newTaskTag });
+      setTasks(prev => [created, ...prev]);
+      setNewlyAddedId(created.id);
+      setTimeout(() => setNewlyAddedId(null), 600);
+    } catch {
+      // молча: задача не создалась, список не тронут
+    }
+  };
+
+  const pending = tasks.filter(t => !t.is_done);
+  const done    = tasks.filter(t => t.is_done);
 
   return (
     <div

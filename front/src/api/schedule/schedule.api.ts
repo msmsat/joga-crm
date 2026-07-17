@@ -1,14 +1,16 @@
 import { client } from '../client'
-import type { Hall, Lesson, LessonCreate, Reservation } from './schedule.types'
+import type { Hall, Lesson, LessonCreate, LessonDetail, Reservation } from './schedule.types'
 
 export const scheduleApi = {
-  getLessons: (params?: { date?: string; hall_id?: number }) => {
-    const q = new URLSearchParams(params as Record<string, string>).toString()
-    return client.get<Lesson[]>(`/schedule/lessons${q ? `?${q}` : ''}`)
+  getLessons: (params: { date_from: string; date_to: string; hall_id?: number }) => {
+    const q = new URLSearchParams(
+      Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
+    ).toString()
+    return client.get<Lesson[]>(`/schedule/lessons?${q}`)
   },
 
   getLesson: (id: number) =>
-    client.get<Lesson>(`/schedule/lessons/${id}`),
+    client.get<LessonDetail>(`/schedule/lessons/${id}`),
 
   createLesson: (payload: LessonCreate) =>
     client.post<Lesson>('/schedule/lessons', payload),
@@ -28,9 +30,12 @@ export const scheduleApi = {
   updateHall: (id: number, payload: Partial<Omit<Hall, 'id'>>) =>
     client.patch<Hall>(`/schedule/halls/${id}`, payload),
 
-  createReservation: (lessonId: number) =>
-    client.post<Reservation>('/schedule/reservations', { lesson_id: lessonId }),
+  createReservation: (clientId: number, lessonId: number) =>
+    client.post<Reservation>('/schedule/reservations', { client_id: clientId, lesson_id: lessonId }),
 
-  cancelReservation: (id: number, reason?: string) =>
-    client.patch<void>(`/schedule/reservations/${id}/cancel`, { cancellation_reason: reason }),
+  cancelReservation: (id: number) =>
+    client.patch<Reservation>(`/schedule/reservations/${id}/cancel`, {}),
+
+  attendReservation: (id: number) =>
+    client.patch<Reservation>(`/schedule/reservations/${id}/attend`, {}),
 }

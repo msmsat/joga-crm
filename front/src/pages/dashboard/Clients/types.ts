@@ -41,4 +41,5 @@ export interface BonusOption {
   id: string;
   label: string;
   description: string;
+  points?: number; // задан только у бонуса-начисления баллов; остальные — символические
 }

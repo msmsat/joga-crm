@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ToastType } from '../../types';
-import { GOALS_DATA, fmt } from '../../constants';
+import type { FinancialGoal } from '../../../../../api/finances/finances.types';
+import { financesApi } from '../../../../../api/finances/finances.api';
+import { fmt } from '../../constants';
 import { Ico } from '../ui/FinanceIcons';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import styles from '../../Finances.module.css';
 
+const GOAL_COLORS = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
+const goalColor = (id: number) => GOAL_COLORS[id % GOAL_COLORS.length];
+
 export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
-  const [goals, setGoals] = useState(() => GOALS_DATA.map((g, i) => ({
-    ...g,
-    trackingMode: (i === 1 || i === 3) ? 'manual' : 'auto' as 'auto' | 'manual'
-  })));
+  const [goals, setGoals] = useState<FinancialGoal[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
   const [addOpen, setAddOpen] = useState(false);
@@ -25,13 +28,31 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   const [editGDeadline, setEditGDeadline] = useState('');
   const [editGFocused, setEditGFocused] = useState<string | null>(null);
 
-  const openGoalEdit = (g: typeof goals[0]) => { setEditingGoalId(g.id); setEditGTitle(g.title); setEditGTarget(String(g.target_amount)); setEditGDeadline(g.deadline ?? ''); };
-  const saveGoalEdit = (g: typeof goals[0]) => {
+  const toastRef = useRef(showToast);
+  toastRef.current = showToast;
+
+  useEffect(() => {
+    financesApi.getGoals()
+      .then(setGoals)
+      .catch(() => toastRef.current('Не удалось загрузить цели', 'error'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const openGoalEdit = (g: FinancialGoal) => { setEditingGoalId(g.id); setEditGTitle(g.title); setEditGTarget(String(g.target_amount)); setEditGDeadline(g.deadline ?? ''); };
+  const saveGoalEdit = async (g: FinancialGoal) => {
     if (!editGTitle.trim()) { showToast('Введите название', 'error'); return; }
-    const target_amount = parseInt(editGTarget) || g.target_amount;
-    setGoals(prev => prev.map(goal => goal.id === g.id ? { ...goal, title: editGTitle.trim(), target_amount, deadline: editGDeadline.trim() || goal.deadline } : goal));
-    setEditingGoalId(null);
-    showToast('Цель обновлена', 'success');
+    try {
+      const updated = await financesApi.updateGoal(g.id, {
+        title: editGTitle.trim(),
+        target_amount: parseInt(editGTarget) || g.target_amount,
+        deadline: editGDeadline.trim() || null,
+      });
+      setGoals(prev => prev.map(goal => goal.id === g.id ? updated : goal));
+      setEditingGoalId(null);
+      showToast('Цель обновлена', 'success');
+    } catch {
+      showToast('Не удалось обновить цель', 'error');
+    }
   };
   const gInp = (key: string): React.CSSProperties => ({
     width: '100%', padding: '8px 12px', background: '#FDFCFB',
@@ -41,33 +62,51 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
     transition: 'border-color 0.18s, box-shadow 0.18s', fontFamily: 'var(--font)', boxSizing: 'border-box' as const,
   });
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.title.trim() || !form.target) { showToast('Заполните название и сумму', 'error'); return; }
-    const colors = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
-    setGoals(prev => [{
-      id: Date.now(), title: form.title, target_amount: parseInt(form.target),
-      current_amount: 0, deadline: form.deadline || null,
-      category: form.category || 'Прочее', color: colors[prev.length % colors.length],
-      priority: form.priority, trackingMode: form.trackingMode as 'auto' | 'manual'
-    }, ...prev]);
-    setForm({ title: '', target: '', deadline: '', category: '', priority: 'medium', trackingMode: 'auto' });
-    setAddOpen(false);
-    showToast('Цель успешно создана', 'success');
+    try {
+      const created = await financesApi.createGoal({
+        title: form.title.trim(),
+        target_amount: parseInt(form.target),
+        tracking_mode: form.trackingMode as 'auto' | 'manual',
+        deadline: form.deadline || null,
+        category: form.category || null,
+        priority: form.priority,
+      });
+      setGoals(prev => [...prev, created]);
+      setForm({ title: '', target: '', deadline: '', category: '', priority: 'medium', trackingMode: 'auto' });
+      setAddOpen(false);
+      showToast('Цель успешно создана', 'success');
+    } catch {
+      showToast('Не удалось создать цель', 'error');
+    }
   };
 
-  const confirmDelete = () => {
-    setGoals(prev => prev.filter(g => g.id !== confirm.id));
+  const confirmDelete = async () => {
+    const id = confirm.id;
     setConfirm({ open: false, id: null });
-    showToast('Цель удалена', 'error');
+    if (id == null) return;
+    try {
+      await financesApi.deleteGoal(id);
+      setGoals(prev => prev.filter(g => g.id !== id));
+      showToast('Цель удалена', 'error');
+    } catch {
+      showToast('Не удалось удалить цель', 'error');
+    }
   };
 
-  const handleFund = (id: number) => {
+  const handleFund = async (g: FinancialGoal) => {
     const val = parseInt(fundAmount) || 0;
     if (val <= 0) return;
-    setGoals(prev => prev.map(g => g.id === id ? { ...g, current_amount: g.current_amount + val } : g));
-    setFundGoalId(null);
-    setFundAmount('');
-    showToast('Средства успешно внесены', 'success');
+    try {
+      const updated = await financesApi.updateGoal(g.id, { current_amount: g.current_amount + val });
+      setGoals(prev => prev.map(goal => goal.id === g.id ? updated : goal));
+      setFundGoalId(null);
+      setFundAmount('');
+      showToast('Средства успешно внесены', 'success');
+    } catch {
+      showToast('Не удалось внести средства', 'error');
+    }
   };
 
   const handleNumberInput = (val: string, setter: (v: string) => void) => setter(val.replace(/\D/g, ''));
@@ -78,6 +117,10 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   const activeGoals = goals.filter(g => g.current_amount < g.target_amount).length;
   const doneGoals = goals.filter(g => g.current_amount >= g.target_amount).length;
   const avgProgress = Math.round(goals.reduce((s, g) => s + Math.min(g.current_amount / g.target_amount * 100, 100), 0) / (goals.length || 1));
+
+  if (loading) {
+    return <div style={{ padding: '64px 20px', textAlign: 'center', color: '#999999', fontSize: '14px', fontWeight: 600 }}>Загрузка целей…</div>;
+  }
 
   return (
     <>
@@ -142,7 +185,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Дедлайн</label>
-                  <input type="text" placeholder="Например: 31 дек 2025" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, deadline: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, deadline: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['deadline'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['deadline'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+                  <input type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, deadline: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, deadline: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['deadline'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['deadline'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
                 </div>
               </div>
             </div>
@@ -154,7 +197,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                   <div style={{ color: form.trackingMode === 'auto' ? '#F9A08B' : '#999', marginTop: '2px' }}><Ico.Bar /></div>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>Автоматически (Метрика CRM)</div>
-                    <div style={{ fontSize: '11px', color: '#666666', lineHeight: 1.4 }}>Свяжите цель с общей выручкой или прибылью. CRM сама будет двигать прогресс-бар.</div>
+                    <div style={{ fontSize: '11px', color: '#666666', lineHeight: 1.4 }}>Свяжите цель с доходами выбранной категории. CRM сама будет двигать прогресс-бар.</div>
                   </div>
                 </div>
                 <div onClick={() => setForm(p => ({ ...p, trackingMode: 'manual' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'manual' ? '2px solid #F9A08B' : '2px solid rgba(26,26,26,0.06)', background: form.trackingMode === 'manual' ? 'rgba(249,160,139,0.04)' : '#FDFCFB', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
@@ -165,6 +208,12 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                   </div>
                 </div>
               </div>
+              {form.trackingMode === 'auto' && (
+                <div style={{ marginTop: '10px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Категория доходов</label>
+                  <input type="text" placeholder="Например: Абонементы" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} onFocus={() => setIsInputFocused({ ...isInputFocused, category: true })} onBlur={() => setIsInputFocused({ ...isInputFocused, category: false })} style={{ width: '100%', padding: '12px 16px', background: '#FDFCFB', border: isInputFocused['category'] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A', outline: 'none', boxShadow: isInputFocused['category'] ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', boxSizing: 'border-box' }} />
+                </div>
+              )}
               <button onClick={handleAdd} disabled={!form.title.trim() || !form.target} style={{ marginTop: 'auto', padding: '14px', background: form.title.trim() && form.target ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '10px', color: form.title.trim() && form.target ? '#FFFFFF' : '#999999', fontSize: '13px', fontWeight: 700, cursor: form.title.trim() && form.target ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: form.title.trim() && form.target ? '0 6px 20px rgba(249, 160, 139, 0.25)' : 'none', fontFamily: "'Manrope', sans-serif" }}>
                 Создать цель
               </button>
@@ -176,6 +225,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
       {/* 4. Список целей */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
         {goals.map(g => {
+          const color = goalColor(g.id);
           const pct = Math.min(Math.round(g.current_amount / g.target_amount * 100), 100);
           const done = pct >= 100;
           const pcol = priorityColors[g.priority] || '#999';
@@ -198,7 +248,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                       </div>
                       <div>
                         <div style={{ fontSize: '10px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>Дедлайн</div>
-                        <input value={editGDeadline} onChange={e => setEditGDeadline(e.target.value)} onFocus={() => setEditGFocused('deadline')} onBlur={() => setEditGFocused(null)} placeholder="Без срока" style={gInp('deadline')} />
+                        <input type="date" value={editGDeadline} onChange={e => setEditGDeadline(e.target.value)} onFocus={() => setEditGFocused('deadline')} onBlur={() => setEditGFocused(null)} style={gInp('deadline')} />
                       </div>
                     </div>
                   </div>
@@ -214,7 +264,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                         {done && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 800, color: '#4E885B', background: 'rgba(163,201,168,0.2)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}><Ico.Check /> Цель достигнута</span>}
                         {!done && <span style={{ fontSize: '10px', fontWeight: 800, color: pcol, background: pcol + '15', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>{priorityLabels[g.priority]}</span>}
-                        {g.trackingMode === 'auto' && !done && <span style={{ fontSize: '10px', fontWeight: 800, color: '#666', background: 'rgba(26,26,26,0.06)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>Авто-сбор</span>}
+                        {g.tracking_mode === 'auto' && !done && <span style={{ fontSize: '10px', fontWeight: 800, color: '#666', background: 'rgba(26,26,26,0.06)', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>Авто-сбор</span>}
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px', lineHeight: 1.3 }}>{g.title}</div>
                       <div style={{ fontSize: '12px', color: '#999999', fontWeight: 500 }}>Крайний срок: {g.deadline ?? 'Без срока'}</div>
@@ -230,35 +280,35 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : g.color, letterSpacing: '-0.5px' }}>{pct}%</div>
+                    <div style={{ fontSize: '24px', fontWeight: 800, color: done ? '#5BAB72' : color, letterSpacing: '-0.5px' }}>{pct}%</div>
                     <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{fmt(g.current_amount)} <span style={{ color: '#999', fontWeight: 500 }}>/ {fmt(g.target_amount)}</span></div>
                   </div>
                   <div style={{ height: '12px', background: 'rgba(26,26,26,0.04)', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(26,26,26,0.02)' }}>
-                    <div style={{ width: `${pct}%`, height: '100%', background: done ? '#5BAB72' : g.color, borderRadius: '12px', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
+                    <div style={{ width: `${pct}%`, height: '100%', background: done ? '#5BAB72' : color, borderRadius: '12px', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
                   </div>
 
                   {!done && (
                     <div style={{ borderTop: '1px dashed rgba(26,26,26,0.08)', paddingTop: '16px' }}>
-                      {g.trackingMode === 'manual' ? (
+                      {g.tracking_mode === 'manual' ? (
                         isFunding ? (
                           <div className={styles.morphContainer} style={{ display: 'flex', gap: '8px' }}>
                             <input
                               type="text" value={fundAmount} placeholder="Сумма, ₽" autoFocus
                               onChange={e => handleNumberInput(e.target.value, setFundAmount)}
                               onFocus={() => setIsFundFocused(true)} onBlur={() => setIsFundFocused(false)}
-                              style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isFundFocused ? `1.5px solid ${g.color}` : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
+                              style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isFundFocused ? `1.5px solid ${color}` : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
                             />
-                            <button onClick={() => handleFund(g.id)} disabled={!fundAmount} style={{ padding: '0 16px', background: fundAmount ? g.color : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: fundAmount ? 'pointer' : 'not-allowed', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }}>Внести</button>
+                            <button onClick={() => handleFund(g)} disabled={!fundAmount} style={{ padding: '0 16px', background: fundAmount ? color : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: fundAmount ? 'pointer' : 'not-allowed', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }}>Внести</button>
                             <button onClick={() => setFundGoalId(null)} style={{ width: '36px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.X /></button>
                           </div>
                         ) : (
-                          <button onClick={() => setFundGoalId(g.id)} style={{ width: '100%', padding: '12px', background: g.color + '15', border: 'none', borderRadius: '10px', color: g.color, fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = g.color + '25'} onMouseLeave={e => e.currentTarget.style.background = g.color + '15'}>
+                          <button onClick={() => setFundGoalId(g.id)} style={{ width: '100%', padding: '12px', background: color + '15', border: 'none', borderRadius: '10px', color, fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s', fontFamily: "'Manrope', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = color + '25'} onMouseLeave={e => e.currentTarget.style.background = color + '15'}>
                             <Ico.Plus /> Внести средства
                           </button>
                         )
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '11px', fontWeight: 600 }}>
-                          <Ico.Bar /> Значение обновляется автоматически из модуля Отчетов
+                          <Ico.Bar /> Значение обновляется автоматически из доходов категории
                         </div>
                       )}
                     </div>

@@ -4,16 +4,11 @@ from pydantic import BaseModel
 T = TypeVar("T")
 
 
-class Pagination(BaseModel):
-    page: int = 1
-    per_page: int = 20
-    total: int
-    total_pages: int
-
-
-class PaginatedResponse(BaseModel, Generic[T]):
+class Page(BaseModel, Generic[T]):
     items: List[T]
-    pagination: Pagination
+    total: int
+    offset: int = 0
+    limit: int = 20
 
 
 class ErrorDetail(BaseModel):
