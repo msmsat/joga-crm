@@ -22,7 +22,7 @@ export default function Loyalty() {
   return (
     <>
       <div className={`${styles.pageContent}${drawerVisible ? ` ${styles.pageContentPushed}` : ''}`}>
-        <ProgressHeader configuredCount={configuredCount} openDrawer={openDrawer} />
+        <ProgressHeader configuredCount={configuredCount} total={PROGRAM_METADATA.length} openDrawer={openDrawer} />
         <ProgramsGrid programsList={programsList} openDrawer={openDrawer} toggleProgram={toggleProgram} />
         <StatsBoard configuredCount={configuredCount} mounted={mounted} />
       </div>

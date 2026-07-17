@@ -5,6 +5,11 @@ import type { Booking, Trainer } from '../types';
 import type { BookedClient } from '../../../../api/schedule/schedule.types';
 import { scheduleApi } from '../../../../api/schedule';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../utils';
+import { TIMES } from '../constants';
+
+// Сетка часов идёт 07:00..23:00 (TIMES + два часа хвоста в NewBookingModal) — indexToDateTime/drag клампят к тем же границам.
+const MIN_TIME_IDX = 0;
+const MAX_TIME_IDX = TIMES.length + 1;
 
 interface BookingPopupProps {
   trainers: Trainer[];
@@ -12,10 +17,11 @@ interface BookingPopupProps {
   popupBooking: Booking;
   popupRef: React.RefObject<HTMLDivElement | null>;
   popupPos: { x: number; y: number };
-  isDraftMode: boolean;
+  canEdit: boolean;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
+  onSave: (prev: Booking, next: Booking) => void;
   deleteBooking: (id: number) => void;
   openAddClient: (b: Booking) => void;
   showToast: (msg: string) => void;
@@ -27,17 +33,18 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   popupBooking,
   popupRef,
   popupPos,
-  isDraftMode,
+  canEdit,
   timeStep,
   setPopupBooking,
   setBookings,
+  onSave,
   deleteBooking,
   openAddClient,
   showToast
 }) => {
   // 🔥 ВСЕ СТЕЙТЫ РЕДАКТИРОВАНИЯ ТЕПЕРЬ ЖИВУТ ТОЛЬКО ЗДЕСЬ
   const [isEditingBooking, setIsEditingBooking] = useState(false);
-  const [editForm, setEditForm] = useState({ title: '', hall: 'Зал 1', maxClients: '8', timeStart: 0, timeEnd: 0 });
+  const [editForm, setEditForm] = useState({ title: '', hall: popupBooking.hall, maxClients: '8', timeStart: 0, timeEnd: 0 });
   const [editStartInput, setEditStartInput] = useState('');
   const [editEndInput, setEditEndInput] = useState('');
   const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
@@ -353,14 +360,16 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       >
                         <Icons.Check />
                       </button>
-                      <button
-                        className="btn-icon"
-                        title="Снять с занятия"
-                        style={{ color: 'var(--muted)' }}
-                        onClick={(e) => { e.stopPropagation(); removeClient(c); }}
-                      >
-                        <Icons.X />
-                      </button>
+                      {canEdit && (
+                        <button
+                          className="btn-icon"
+                          title="Снять с занятия"
+                          style={{ color: 'var(--muted)' }}
+                          onClick={(e) => { e.stopPropagation(); removeClient(c); }}
+                        >
+                          <Icons.X />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -379,34 +388,38 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               Отмена
             </button>
             
-            <button className="bp-btn primary text-btn" onClick={(e) => { 
-              e.stopPropagation(); 
+            <button className="bp-btn primary text-btn" onClick={(e) => {
+              e.stopPropagation();
               const updatedMax = parseInt(editForm.maxClients) || 8;
-              
-              setBookings(prev => prev.map(b => b.id === popupBooking.id ? { 
-                ...b, title: editForm.title, hall: editForm.hall, maxClients: updatedMax, 
-                timeStart: editForm.timeStart, timeEnd: editForm.timeEnd 
-              } : b));
-              
-              setPopupBooking({ 
-                ...popupBooking, title: editForm.title, hall: editForm.hall, maxClients: updatedMax, 
-                timeStart: editForm.timeStart, timeEnd: editForm.timeEnd 
-              });
-              
+              const timeStart = Math.min(Math.max(editForm.timeStart, MIN_TIME_IDX), MAX_TIME_IDX - 0.25);
+              const timeEnd = Math.min(Math.max(editForm.timeEnd, timeStart + 0.25), MAX_TIME_IDX);
+
+              const next: Booking = {
+                ...popupBooking,
+                title: editForm.title,
+                hall: editForm.hall,
+                maxClients: updatedMax,
+                timeStart,
+                timeEnd,
+              };
+
+              setBookings(prev => prev.map(b => (b.id === popupBooking.id ? next : b)));
+              setPopupBooking(next);
+              onSave(popupBooking, next);
+
               setIsEditingBooking(false);
-              showToast('Занятие обновлено');
             }}>
               Сохранить
             </button>
           </>
         ) : (
           <>
-            <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
-              <Icons.UserPlus /> Добавить
-            </button>
-            
-            {isDraftMode && (
+            {canEdit && (
               <>
+                <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
+                  <Icons.UserPlus /> Добавить
+                </button>
+
                 <button className="bp-btn ghost text-btn" title="Изменить занятие" onClick={(e) => {
                   e.stopPropagation();
                   setEditForm({ 

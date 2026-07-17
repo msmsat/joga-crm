@@ -112,6 +112,8 @@ class SubscriptionPackageRead(BaseSchema):
     per_visit_price: int
     is_active: bool
     sort_order: int
+    duration_days: int
+    service_ids: Optional[list] = None
 
 
 class SubscriptionPackageCreate(BaseSchema):
@@ -121,6 +123,8 @@ class SubscriptionPackageCreate(BaseSchema):
     per_visit_price: int
     is_active: bool = True
     sort_order: int = 0
+    duration_days: int = 90
+    service_ids: Optional[list] = None
 
 
 class SubscriptionPackageUpdate(BaseSchema):
@@ -130,6 +134,8 @@ class SubscriptionPackageUpdate(BaseSchema):
     per_visit_price: Optional[int] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
+    duration_days: Optional[int] = None
+    service_ids: Optional[list] = None
 
 
 # --- Referral program ---

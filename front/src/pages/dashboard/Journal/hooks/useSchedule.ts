@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { scheduleApi } from '../../../../api/schedule';
 import { staffApi } from '../../../../api/staff';
-import type { Booking, Trainer, Hall } from '../types';
-import { lessonToBooking, staffToTrainer, toDateStr } from '../utils';
+import type { StaffListItem } from '../../../../api/staff/staff.types';
+import type { Booking, Hall } from '../types';
+import { colorForStaffId, lessonToBooking, staffToTrainer, toDateStr } from '../utils';
 
-// Диапазон видимых дат: день / неделя (Пн–Вс) / месяц
+// Диапазон видимых дат: день / неделя (Пн–Вс)
 export function visibleRange(
-  view: 'day' | 'week' | 'month',
+  view: 'day' | 'week',
   year: number,
   month: number,
   day: number,
@@ -18,9 +19,6 @@ export function visibleRange(
     sunday.setDate(monday.getDate() + 6);
     return [toDateStr(monday), toDateStr(sunday)];
   }
-  if (view === 'month') {
-    return [toDateStr(new Date(year, month, 1)), toDateStr(new Date(year, month + 1, 0))];
-  }
   const d = toDateStr(new Date(year, month, day));
   return [d, d];
 }
@@ -30,9 +28,9 @@ export function useSchedule(
   calYear: number,
   calMonth: number,
   selectedDay: number,
-  calendarView: 'day' | 'week' | 'month',
+  calendarView: 'day' | 'week',
 ) {
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [staff, setStaff] = useState<StaffListItem[]>([]); // весь штат — источник колонок
   const [halls, setHalls] = useState<Hall[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loaded, setLoaded] = useState(false); // тренеры и залы загружены
@@ -40,26 +38,35 @@ export function useSchedule(
   useEffect(() => {
     Promise.all([staffApi.getList(), scheduleApi.getHalls()])
       .then(([staffRes, hallsRes]) => {
-        setTrainers(staffRes.staff.items.map(staffToTrainer));
+        setStaff(staffRes.staff.items);
         setHalls(hallsRes);
         setLoaded(true);
       })
       .catch(err => console.error('Журнал: не удалось загрузить тренеров/залы', err));
   }, []);
 
+  // Колонки — тренеры, плюс любой сотрудник (включая владельца), ведущий занятие
+  // в загруженном диапазоне: занятие не должно остаться без колонки.
+  const trainers = useMemo(() => {
+    const teacherIdsWithLessons = new Set(bookings.map(b => b.trainer));
+    return staff
+      .filter(s => s.role === 'trainer' || teacherIdsWithLessons.has(s.id))
+      .map(staffToTrainer);
+  }, [staff, bookings]);
+
   const [dateFrom, dateTo] = visibleRange(calendarView, calYear, calMonth, selectedDay);
 
   useEffect(() => {
     if (!loaded) return;
     let stale = false; // защита от гонки при быстром листании дней
-    const colorByTeacher = new Map(trainers.map(t => [t.id, t.color]));
+    const colorByTeacher = new Map(staff.map(s => [s.id, colorForStaffId(s.id)]));
     scheduleApi.getLessons({ date_from: dateFrom, date_to: dateTo })
       .then(lessons => {
         if (!stale) setBookings(lessons.map(l => lessonToBooking(l, halls, colorByTeacher)));
       })
       .catch(err => console.error('Журнал: не удалось загрузить занятия', err));
     return () => { stale = true; };
-  }, [loaded, dateFrom, dateTo, trainers, halls]);
+  }, [loaded, dateFrom, dateTo, staff, halls]);
 
   return { trainers, halls, bookings, setBookings };
 }

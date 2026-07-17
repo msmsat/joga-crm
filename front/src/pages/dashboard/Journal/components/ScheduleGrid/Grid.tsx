@@ -9,13 +9,13 @@ import type { DragState } from '../../hooks/useDragAndDrop';
 interface GridProps {
   isTransitioning?: boolean; // Стейт для запуска анимации свайпа
   transitionReason?: 'date' | 'mode' | 'view' | null;
-  calendarView: 'day' | 'week' | 'month'; 
+  calendarView: 'day' | 'week';
   columns: any[];
   viewMode: 'trainers' | 'halls';
   filteredBookings: Booking[];
   hoveredSlot: string | null;
   setHoveredSlot: (slot: string | null) => void;
-  isDraftMode: boolean;
+  canEdit: boolean;
   showNewForm: boolean;
   popupBooking: Booking | null;
   drag: DragState | null;
@@ -33,7 +33,7 @@ interface GridProps {
 export const Grid: React.FC<GridProps> = ({
   isTransitioning, transitionReason, calendarView,
   columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
-  isDraftMode, showNewForm, popupBooking, drag, wasDragging,
+  canEdit, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
   initDrag, setPopupBooking, openBookingPopup, showToast
 }) => {
@@ -209,19 +209,19 @@ export const Grid: React.FC<GridProps> = ({
                 key={ci}
                 data-ti={ti}
                 data-ci={ci}
-                className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook && isDraftMode ? 'is-targeted' : ''}`}
-                onMouseEnter={() => { 
-                  if (canBook && !showNewForm && !popupBooking && isDraftMode) setHoveredSlot(`${ti}-${ci}`); 
+                className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook && canEdit ? 'is-targeted' : ''}`}
+                onMouseEnter={() => {
+                  if (canBook && !showNewForm && !popupBooking && canEdit) setHoveredSlot(`${ti}-${ci}`);
                 }}
                 onMouseLeave={() => setHoveredSlot(null)}
-                style={{ 
-                  borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none', 
+                style={{
+                  borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none',
                   borderRadius: '10px',
                   zIndex: 'auto',
                   overflow: isTransitioning ? 'hidden' : 'visible'
                 }}
                 onMouseDown={(e) => {
-                  if (!isDraftMode || showNewForm || popupBooking || drag || wasDragging) return;
+                  if (!canEdit || showNewForm || popupBooking || drag || wasDragging) return;
                   e.stopPropagation();
                   const trainerIdx = isTrainerMode ? trainer!.id : 0;
                   openNewSlot(trainerIdx, ti, ci);
@@ -238,7 +238,7 @@ export const Grid: React.FC<GridProps> = ({
                         booking={booking}
                         layout={layouts.get(booking.id)}
                         drag={drag}
-                        isDraftMode={isDraftMode}
+                        canEdit={canEdit}
                         popupBooking={popupBooking}
                         wasDragging={wasDragging}
                         initDrag={initDrag}

@@ -22,9 +22,12 @@ async def create_reservation(
     """Записать клиента на занятие. Лимит мест и запрет двойной записи —
     та же логика, что в POST /clients/{id}/booking (book_lesson).
 
-    Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
+    Записывать/снимать клиентов могут только владелец и администратор (ТЗ 2.3).
     Клиент проверяется по studio_id — чужой клиент даёт 404.
     """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Записывать клиентов могут владелец и администратор")
+
     lesson = await get_scoped_lesson(body.lesson_id, ctx, db)
 
     client = (await db.execute(
@@ -79,15 +82,18 @@ async def cancel_reservation(
 ):
     """Снять клиента с занятия — освобождает место (booked_count уменьшится).
 
-    Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
+    Снимать клиентов могут только владелец и администратор (ТЗ 2.3).
     """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Снимать клиентов могут владелец и администратор")
+
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()
     if reservation is None:
         raise HTTPException(status_code=404, detail="Запись не найдена")
 
-    await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404/403 по студии/роли
+    await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
 
     if reservation.status == "cancelled":
         raise HTTPException(status_code=409, detail="Запись уже отменена")

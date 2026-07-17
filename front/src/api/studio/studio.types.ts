@@ -51,6 +51,7 @@ export interface BranchUpdate {
   city?: string | null
   address?: string | null
   photo_url?: string | null
+  working_hours?: WorkingHoursRead[]
 }
 
 export interface BranchListItem {
@@ -70,6 +71,7 @@ export interface HallCreate {
   equipment?: string[] | null
   hourly_rate?: number | null
   is_online?: boolean
+  photo_url?: string | null
 }
 
 export interface HallUpdate {
@@ -80,6 +82,7 @@ export interface HallUpdate {
   equipment?: string[] | null
   hourly_rate?: number | null
   is_online?: boolean
+  photo_url?: string | null
 }
 
 export interface HallBrief {
@@ -90,6 +93,8 @@ export interface HallBrief {
   area: number | null
   hourly_rate: number | null
   equipment: string[] | null
+  is_online: boolean
+  photo_url: string | null
 }
 
 export interface WorkingHoursRead {
@@ -102,6 +107,7 @@ export interface WorkingHoursRead {
 export interface BranchDetail {
   id: number
   name: string
+  country: string | null
   city: string | null
   phone: string | null
   email: string | null

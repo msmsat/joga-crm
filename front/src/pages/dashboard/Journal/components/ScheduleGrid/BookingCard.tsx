@@ -9,7 +9,7 @@ interface BookingCardProps {
   booking: Booking;
   layout: any;
   drag: DragState | null;
-  isDraftMode: boolean;
+  canEdit: boolean;
   popupBooking: Booking | null;
   wasDragging: boolean;
   initDrag: (e: React.MouseEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
@@ -19,7 +19,7 @@ interface BookingCardProps {
 }
 
 export const BookingCard: React.FC<BookingCardProps> = ({
-  booking: b, layout, drag, isDraftMode, popupBooking, wasDragging,
+  booking: b, layout, drag, canEdit, popupBooking, wasDragging,
   initDrag, setPopupBooking, openBookingPopup, showToast
 }) => {
   const isResizeTop = drag?.type === 'resize-top' && drag?.id === b.id;
@@ -44,9 +44,9 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
       onMouseDown={e => {
-        if (!isDraftMode) {
-          showToast("Для перемещения занятий включите режим черновика");
-          return; 
+        if (!canEdit) {
+          showToast("Недостаточно прав для изменения расписания");
+          return;
         }
         initDrag(e, b.id, 'move');
       }}
@@ -62,7 +62,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
         border: `2px solid ${b.color}`,
         color: b.color,
-        cursor: isDraftMode ? 'grab' : 'pointer',
+        cursor: canEdit ? 'grab' : 'pointer',
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
@@ -73,7 +73,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       </div>
       
       <div className="b-meta">
-        {height > 36 && isDraftMode && (
+        {height > 36 && canEdit && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
             <Icons.Users />
             <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
@@ -101,7 +101,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </div>
       )}
 
-      {isSelected && !isDragging && isDraftMode && (
+      {isSelected && !isDragging && canEdit && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

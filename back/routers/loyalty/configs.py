@@ -17,14 +17,12 @@ from models import (
     StudioLoyaltyConfig,
     StudioDiscountConfig,
     StudioCertificateConfig,
-    StudioSubscriptionProgramConfig,
     StudioReferralConfig,
 )
 from schemas.loyalty import (
     LoyaltyConfigRead, LoyaltyConfigUpdate,
     DiscountConfigRead, DiscountConfigUpdate,
     CertificateConfigRead, CertificateConfigUpdate,
-    SubscriptionProgramConfigRead, SubscriptionProgramConfigUpdate,
     ReferralConfigRead, ReferralConfigUpdate,
 )
 
@@ -109,22 +107,8 @@ async def update_certificate_config(
     return await _patch(StudioCertificateConfig, body, ctx.studio_id, db)
 
 
-# ─── Абонементы ─────────────────────────────────────────────────────────────────
-@router.get("/subscriptions-config", response_model=SubscriptionProgramConfigRead)
-async def get_subscription_config(
-    ctx: StudioContext = Depends(require_role("owner")),
-    db: AsyncSession = Depends(get_db),
-):
-    return await _get_or_create(StudioSubscriptionProgramConfig, ctx.studio_id, db)
-
-
-@router.patch("/subscriptions-config", response_model=SubscriptionProgramConfigRead)
-async def update_subscription_config(
-    body: SubscriptionProgramConfigUpdate,
-    ctx: StudioContext = Depends(require_role("owner")),
-    db: AsyncSession = Depends(get_db),
-):
-    return await _patch(StudioSubscriptionProgramConfig, body, ctx.studio_id, db)
+# Абонементы переехали в routers/loyalty/packages.py под /catalog (задача 19,
+# V3-3) — раздел «Абонементы» теперь живёт в Каталоге, а не в Лояльности.
 
 
 # ─── Рефералка ──────────────────────────────────────────────────────────────────

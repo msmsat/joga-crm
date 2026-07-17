@@ -17,6 +17,7 @@ from routers.ai import router as ai_router
 from routers.analytics import router as analytics_router
 from routers.staff import router as staff_router
 from routers.loyalty import router as loyalty_router
+from routers.loyalty.packages import router as catalog_subscriptions_router
 from routers.booking import router as booking_router
 from routers.billing import router as billing_router
 from dependencies import require_active_subscription
@@ -51,6 +52,7 @@ app.include_router(ai_router, prefix="/ai", tags=["AI"], dependencies=_sub_gate)
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"], dependencies=_sub_gate)
 app.include_router(staff_router, prefix="/staff", tags=["Staff"], dependencies=_sub_gate)
 app.include_router(loyalty_router, prefix="/loyalty", tags=["Loyalty"], dependencies=_sub_gate)
+app.include_router(catalog_subscriptions_router, prefix="/catalog", tags=["Catalog"], dependencies=_sub_gate)
 # /booking смешивает публичные (без JWT) и owner-настройки в одном роутере — гейт вешаем
 # на settings-подроутер внутри booking/router.py, НЕ на весь префикс.
 app.include_router(booking_router, prefix="/booking", tags=["Booking"])

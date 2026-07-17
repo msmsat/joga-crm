@@ -1,8 +1,11 @@
-"""Пакеты абонементов для продажи: CRUD (задача 5).
+"""Пакеты абонементов для продажи: CRUD (задача 5, V3-3 задача 19: /catalog).
 
 Пакеты живут под конфигом абонементов студии (StudioSubscriptionProgramConfig) —
 при первом создании конфиг создаётся get-or-create. DELETE — мягкий (is_active=false),
 чтобы не осиротить проданные абонементы. Всё — только owner, скоуп по ctx.studio_id.
+
+Раздел «Абонементы» переехал из Лояльности в Каталог — эндпоинты и пути тоже:
+/catalog/subscriptions*, /catalog/subscriptions-config (подключение в main.py).
 """
 from typing import List
 
@@ -17,7 +20,10 @@ from schemas.loyalty import (
     SubscriptionPackageCreate,
     SubscriptionPackageRead,
     SubscriptionPackageUpdate,
+    SubscriptionProgramConfigRead,
+    SubscriptionProgramConfigUpdate,
 )
+from routers.loyalty.configs import _get_or_create, _patch
 
 router = APIRouter()
 
@@ -104,3 +110,20 @@ async def delete_package(
     pkg = await _get_package(package_id, ctx.studio_id, db)
     pkg.is_active = False
     await db.commit()
+
+
+@router.get("/subscriptions-config", response_model=SubscriptionProgramConfigRead)
+async def get_subscription_config(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _get_or_create(StudioSubscriptionProgramConfig, ctx.studio_id, db)
+
+
+@router.patch("/subscriptions-config", response_model=SubscriptionProgramConfigRead)
+async def update_subscription_config(
+    body: SubscriptionProgramConfigUpdate,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _patch(StudioSubscriptionProgramConfig, body, ctx.studio_id, db)

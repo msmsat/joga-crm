@@ -138,6 +138,8 @@ class SubscriptionPackage(Base):
     per_visit_price: Mapped[int] = mapped_column(Integer)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    duration_days: Mapped[int] = mapped_column(Integer, default=90)
+    service_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # null = все занятия
 
     config: Mapped["StudioSubscriptionProgramConfig"] = relationship(back_populates="packages")
 

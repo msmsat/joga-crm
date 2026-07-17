@@ -1,22 +1,31 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApiError } from '../../../../api/client';
 import type { Service } from '../types';
 import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
-import { useServiceList } from '../hooks/useCatalogList';
+import { useServiceList, useServiceWeek } from '../hooks/useCatalogList';
+import { useStudioCurrency } from '../hooks/useStudioCurrency';
+import { useToast } from '../../../../components/ui/Toast';
+import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
+import { errorMessage } from '../../../../api/errorMessage';
+import { getCurrencySymbol } from '../../../../components/UI';
 import { ServiceModal } from './modals/EditService';
+import { CatalogListSkeleton, CatalogRightSkeleton, CatalogError } from './CatalogSkeleton';
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
-interface Props {
-  showToast: (msg: string) => void;
-}
-
-export function ServiceSection({ showToast }: Props) {
+export function ServiceSection() {
   const { t } = useTranslation(['catalog', 'common']);
+  const toast = useToast();
   const tCat = (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat });
-  const { services, createService, updateService, deleteService } = useServiceList();
+  const studioCurrency = useStudioCurrency();
+  const currency = getCurrencySymbol(studioCurrency);
+  const { services, isLoading, error: loadError, refetch, createService, updateService, deleteService } = useServiceList();
   const [activeServiceId, setActiveServiceId] = useState<number>(0);
+
+  useEffect(() => {
+    if (loadError) toast.error(errorMessage(loadError, t));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadError]);
 
   useEffect(() => {
     if (services.length > 0 && !services.some(s => s.id === activeServiceId)) {
@@ -25,6 +34,7 @@ export function ServiceSection({ showToast }: Props) {
   }, [services, activeServiceId]);
 
   const activeService = services.find(s => s.id === activeServiceId) ?? null;
+  const { slots: weekSlots } = useServiceWeek(activeService?.id ?? null);
 
   // null → нет модалки; { service: null } → создание; { service } → редактирование
   const [serviceModal, setServiceModal] = useState<{ service: Service | null } | null>(null);
@@ -35,20 +45,24 @@ export function ServiceSection({ showToast }: Props) {
       .map(cat => ({ label: cat, items: services.filter(s => s.category === cat) }));
   }, [services]);
 
-  const handleDeleteService = async () => {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const doDeleteService = async () => {
     if (!activeService) return;
-    if (!window.confirm(t('catalog:services.confirmDelete', { name: activeService.name }))) return;
     try {
       await deleteService(activeService.id);
-      showToast(t('catalog:services.toasts.deleted'));
+      toast.success(t('catalog:services.toasts.deleted'));
     } catch (error) {
-      showToast(error instanceof ApiError ? error.message : t('catalog:services.toasts.deleteError'));
+      toast.error(errorMessage(error, t));
+      throw error; // держим модалку открытой
     }
   };
 
-  const avgPerMonth = activeService
-    ? Math.round(activeService.bookings_total / 6)
-    : 0;
+  // Множество занятых слотов «час:день» реальных занятий этой недели — быстрый lookup для сетки.
+  const bookedSlots = useMemo(
+    () => new Set(weekSlots.map(s => `${s.hour}:${s.day_of_week}`)),
+    [weekSlots]
+  );
 
   return (
     <div className="cat-layout">
@@ -60,6 +74,7 @@ export function ServiceSection({ showToast }: Props) {
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        {isLoading && services.length === 0 ? <CatalogListSkeleton /> : (
         <div className="cat-list">
           {groups.map(group => (
             <div key={group.label}>
@@ -73,7 +88,7 @@ export function ServiceSection({ showToast }: Props) {
                   <div className="cat-item-dot" style={{ background: svc.color }} />
                   <div className="cat-item-info">
                     <div className="cat-item-name">{svc.name}</div>
-                    <div className="cat-item-sub">₽{svc.price.toLocaleString()} · {svc.duration_min} {t('common:units.min')}</div>
+                    <div className="cat-item-sub">{currency}{svc.price.toLocaleString()} · {svc.duration_min} {t('common:units.min')}</div>
                   </div>
                   <span className={`cat-type-badge ${svc.type}`}>
                     {svc.type === 'group' ? t('catalog:services.types.group') : t('catalog:services.types.individual')}
@@ -83,6 +98,7 @@ export function ServiceSection({ showToast }: Props) {
             </div>
           ))}
         </div>
+        )}
       </div>
 
       {/* ── RIGHT PANEL ──────────────────────────────────────────────────── */}
@@ -95,7 +111,7 @@ export function ServiceSection({ showToast }: Props) {
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   {t('common:buttons.edit')}
                 </button>
-                <button className="cat-h-btn del" onClick={handleDeleteService}>
+                <button className="cat-h-btn del" onClick={() => setConfirmDelete(true)}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
                   {t('common:buttons.delete')}
                 </button>
@@ -120,7 +136,7 @@ export function ServiceSection({ showToast }: Props) {
               {/* Stats */}
               <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                 <div className="cat-stat-card">
-                  <div className="cat-stat-v">₽{activeService.price.toLocaleString()}</div>
+                  <div className="cat-stat-v">{currency}{activeService.price.toLocaleString()}</div>
                   <div className="cat-stat-l">{t('catalog:services.stats.price')}</div>
                 </div>
                 <div className="cat-stat-card">
@@ -132,7 +148,7 @@ export function ServiceSection({ showToast }: Props) {
                   <div className="cat-stat-l">{t('catalog:services.stats.bookings')}</div>
                 </div>
                 <div className="cat-stat-card">
-                  <div className="cat-stat-v">₽{(activeService.revenue_total / 1000).toFixed(0)}K</div>
+                  <div className="cat-stat-v">{currency}{(activeService.revenue_total / 1000).toFixed(0)}K</div>
                   <div className="cat-stat-l">{t('catalog:services.stats.revenue')}</div>
                 </div>
               </div>
@@ -162,38 +178,49 @@ export function ServiceSection({ showToast }: Props) {
                 )}
                 <div className="cat-chip">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                  {avgPerMonth} {t('catalog:services.details.bookingsPerMonth')}
+                  {activeService.bookings_last_30d} {t('catalog:services.details.bookingsPerMonth')}
                 </div>
                 <div className="cat-chip" style={{ background: `${activeService.color}10`, borderColor: `${activeService.color}30`, color: activeService.color }}>
                   {tCat(activeService.category)}
                 </div>
               </div>
 
-              {/* Schedule grid */}
-              <div className="cat-sec-title">{t('catalog:services.details.schedule')}</div>
-              <div className="cat-sch-wrap">
-                <div className="cat-sch-grid">
-                  <div className="cat-sch-head" />
-                  {DAY_KEYS.map(dk => <div key={dk} className="cat-sch-head">{t(`common:days.short.${dk}`)}</div>)}
-                  {SCH_TIMES.map((time, ti) => (
-                    <>
-                      <div key={`t${ti}`} className="cat-sch-time">{time}</div>
-                      {[0,1,2,3,4,5,6].map(di => {
-                        const booked = activeService.schedule[ti]?.[di] === 1;
+              {/* Schedule grid — реальные занятия текущей недели; нет занятий — секции нет */}
+              {weekSlots.length > 0 && (
+                <>
+                  <div className="cat-sec-title">{t('catalog:services.details.schedule')}</div>
+                  <div className="cat-sch-wrap">
+                    <div className="cat-sch-grid">
+                      <div className="cat-sch-head" />
+                      {DAY_KEYS.map(dk => <div key={dk} className="cat-sch-head">{t(`common:days.short.${dk}`)}</div>)}
+                      {SCH_TIMES.map((time, ti) => {
+                        const hour = Number(time.split(':')[0]);
                         return (
-                          <div
-                            key={`${ti}-${di}`}
-                            className={`cat-sch-cell ${booked ? 'booked' : ''}`}
-                            style={booked ? { background: activeService.color } : undefined}
-                          />
+                          <>
+                            <div key={`t${ti}`} className="cat-sch-time">{time}</div>
+                            {[0,1,2,3,4,5,6].map(di => {
+                              const booked = bookedSlots.has(`${hour}:${di}`);
+                              return (
+                                <div
+                                  key={`${ti}-${di}`}
+                                  className={`cat-sch-cell ${booked ? 'booked' : ''}`}
+                                  style={booked ? { background: activeService.color } : undefined}
+                                />
+                              );
+                            })}
+                          </>
                         );
                       })}
-                    </>
-                  ))}
-                </div>
-              </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </>
+        ) : loadError ? (
+          <CatalogError message={errorMessage(loadError, t)} onRetry={() => refetch()} />
+        ) : isLoading && services.length === 0 ? (
+          <CatalogRightSkeleton />
         ) : (
           <div className="cat-empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DDD" strokeWidth="1.2" style={{ marginBottom: '16px' }}><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -215,12 +242,22 @@ export function ServiceSection({ showToast }: Props) {
               } else {
                 await createService(data);
               }
-              showToast(t('catalog:services.toasts.saved'));
+              toast.success(t('catalog:services.toasts.saved'));
             } catch (error) {
-              showToast(error instanceof ApiError ? error.message : t('catalog:services.toasts.saveError'));
+              toast.error(errorMessage(error, t));
               throw error;
             }
           }}
+        />
+      )}
+
+      {confirmDelete && activeService && (
+        <ConfirmModal
+          danger
+          title={t('catalog:services.confirmDeleteTitle')}
+          message={t('catalog:services.confirmDelete', { name: activeService.name })}
+          onConfirm={doDeleteService}
+          onClose={() => setConfirmDelete(false)}
         />
       )}
     </div>

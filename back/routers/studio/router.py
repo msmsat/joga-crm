@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Studio, StudioMember, StudioBranch, BranchWorkingHours, Hall
+from models import Studio, StudioMember, StudioBranch, BranchWorkingHours, StudioWorkingHours, Hall
 from schemas.studio import StudioRead, BranchCreate, BranchUpdate, BranchListItem, BranchDetail, HallBrief, WorkingHoursRead
 from schemas.schedule import HallCreate, HallUpdate
 from .media import router as media_router
@@ -14,6 +15,30 @@ from .services import router as services_router
 router = APIRouter()
 router.include_router(media_router)
 router.include_router(services_router)
+
+# Fallback-график, если у студии нет часов из онбординга: пн–пт 09:00–21:00, сб–вс закрыто.
+_DEFAULT_HOURS = [
+    {"is_open": True, "open_time": "09:00", "close_time": "21:00"} if d < 5
+    else {"is_open": False, "open_time": "09:00", "close_time": "21:00"}
+    for d in range(7)
+]
+
+
+async def _default_branch_hours(studio_id: int, branch_id: int, db: AsyncSession) -> list[BranchWorkingHours]:
+    studio_hours = (await db.execute(
+        select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id)
+    )).scalars().all()
+    by_day = {h.day_of_week: h for h in studio_hours}
+    return [
+        BranchWorkingHours(
+            branch_id=branch_id,
+            day_of_week=d,
+            is_open=by_day[d].is_open if d in by_day else _DEFAULT_HOURS[d]["is_open"],
+            open_time=by_day[d].open_time if d in by_day else _DEFAULT_HOURS[d]["open_time"],
+            close_time=by_day[d].close_time if d in by_day else _DEFAULT_HOURS[d]["close_time"],
+        )
+        for d in range(7)
+    ]
 
 
 @router.post("/branches", response_model=BranchListItem, status_code=201)
@@ -25,6 +50,9 @@ async def create_branch(
     studio_id = ctx.studio_id
     branch = StudioBranch(studio_id=studio_id, **data.model_dump())
     db.add(branch)
+    await db.flush()
+    for wh in await _default_branch_hours(studio_id, branch.id, db):
+        db.add(wh)
     await db.commit()
     await db.refresh(branch)
     return BranchListItem(
@@ -56,8 +84,24 @@ async def update_branch(
     db: AsyncSession = Depends(get_db),
 ):
     branch = await _get_branch_or_404(branch_id, ctx.studio_id, db)
-    for field, value in data.model_dump(exclude_unset=True).items():
+    fields = data.model_dump(exclude_unset=True, exclude={"working_hours"})
+    for field, value in fields.items():
         setattr(branch, field, value)
+    if not branch.phone and not branch.email:
+        raise HTTPException(status_code=422, detail="Укажите телефон или email")
+
+    if data.working_hours is not None:
+        await db.execute(
+            delete(BranchWorkingHours).where(BranchWorkingHours.branch_id == branch_id)
+        )
+        for wh in data.working_hours:
+            db.add(BranchWorkingHours(
+                branch_id=branch_id,
+                day_of_week=wh.day_of_week,
+                is_open=wh.is_open,
+                open_time=wh.open_time,
+                close_time=wh.close_time,
+            ))
     await db.commit()
     await db.refresh(branch, attribute_names=["halls"])
     return BranchListItem(
@@ -114,6 +158,8 @@ def _hall_brief(hall: Hall) -> HallBrief:
         area=hall.area,
         hourly_rate=hall.hourly_rate,
         equipment=hall.equipment,
+        is_online=hall.is_online,
+        photo_url=hall.photo_url,
     )
 
 
@@ -164,6 +210,7 @@ async def get_branch(
     return BranchDetail(
         id=branch.id,
         name=branch.name,
+        country=branch.country,
         city=branch.city,
         phone=branch.phone,
         email=branch.email,
@@ -178,6 +225,8 @@ async def get_branch(
                 area=h.area,
                 hourly_rate=h.hourly_rate,
                 equipment=h.equipment,
+                is_online=h.is_online,
+                photo_url=h.photo_url,
             )
             for h in branch.halls
         ],

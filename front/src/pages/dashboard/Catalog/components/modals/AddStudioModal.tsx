@@ -1,8 +1,13 @@
-import React, { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import "../../../../../App.css";
-import { Logo, InputField, PhoneField } from "../../../../../components/UI";
+import { Logo, PhoneField } from "../../../../../components/UI";
+import { Input, PhotoUpload } from "../../../../../components/ui/modal";
 import { studioApi } from "../../../../../api/studio/studio.api";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3;
@@ -19,7 +24,7 @@ interface StudioFormData {
 
 // ─── ILLUSTRATIONS ─────────────────────────────────────────────────────────────
 
-function Illus1({ name }: { name: string }) {
+function Illus1({ name, contactsLabel, newBranchLabel }: { name: string; contactsLabel: string; newBranchLabel: string }) {
   const hasName = name.trim().length >= 2;
   return (
     <svg viewBox="0 0 260 240" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 260 }}>
@@ -68,14 +73,14 @@ function Illus1({ name }: { name: string }) {
 
       {/* Bottom chips */}
       <rect x="48" y="154" width="68" height="12" rx="6" fill="rgba(252,174,145,0.15)" stroke="rgba(252,174,145,0.3)" strokeWidth="1" />
-      <text x="82" y="163.5" textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#D07A5A" fontFamily="Manrope, sans-serif">Контакты</text>
+      <text x="82" y="163.5" textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#D07A5A" fontFamily="Manrope, sans-serif">{contactsLabel}</text>
       <rect x="124" y="154" width="80" height="12" rx="6" fill="rgba(163,201,168,0.15)" stroke="rgba(163,201,168,0.3)" strokeWidth="1" />
-      <text x="164" y="163.5" textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#5A8A60" fontFamily="Manrope, sans-serif">Новый филиал</text>
+      <text x="164" y="163.5" textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#5A8A60" fontFamily="Manrope, sans-serif">{newBranchLabel}</text>
     </svg>
   );
 }
 
-function Illus2({ city, country }: { city: string; country: string }) {
+function Illus2({ city, country, cityLabel, newBranchStudioLabel }: { city: string; country: string; cityLabel: string; newBranchStudioLabel: string }) {
   const hasCity = city.trim().length >= 1;
   return (
     <svg viewBox="0 0 260 240" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 260 }}>
@@ -119,9 +124,9 @@ function Illus2({ city, country }: { city: string; country: string }) {
       {hasCity ? (
         <>
           <text x="60" y="166" fontSize="10" fontWeight="800" fill="#1A1A1A" fontFamily="Manrope, sans-serif">
-            {(hasCity ? city : "Город") + (country ? ", " + country : "")}
+            {(hasCity ? city : cityLabel) + (country ? ", " + country : "")}
           </text>
-          <text x="60" y="180" fontSize="8.5" fontWeight="500" fill="#AAAAAA" fontFamily="Manrope, sans-serif">Новый филиал студии</text>
+          <text x="60" y="180" fontSize="8.5" fontWeight="500" fill="#AAAAAA" fontFamily="Manrope, sans-serif">{newBranchStudioLabel}</text>
         </>
       ) : (
         <>
@@ -209,43 +214,6 @@ function StepDots({ current, total }: { current: number; total: number }) {
   );
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label style={{
-      display: "block", fontSize: "11px", fontWeight: 700,
-      color: "#999", letterSpacing: "0.6px",
-      textTransform: "uppercase" as const, marginBottom: "7px",
-    }}>
-      {children}
-    </label>
-  );
-}
-
-function FocusInput({ value, onChange, placeholder, type = "text" }: {
-  value: string; onChange: (v: string) => void; placeholder: string; type?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      style={{
-        width: "100%", padding: "12px 15px",
-        background: focused ? "#fff" : "rgba(26,26,26,0.025)",
-        border: focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
-        borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
-        outline: "none", fontFamily: "Manrope, sans-serif",
-        boxShadow: focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
-        transition: "all 0.18s ease", boxSizing: "border-box" as const,
-      }}
-    />
-  );
-}
-
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
 interface AddStudioModalProps {
   isOpen: boolean;
@@ -254,15 +222,14 @@ interface AddStudioModalProps {
 }
 
 export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudioModalProps) {
+  const { t } = useTranslation(["catalog", "common"]);
   const [step, setStep] = useState<Step>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [dir, setDir] = useState<1 | -1>(1);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoHover, setPhotoHover] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState<StudioFormData>({
     name: "", phone: "", email: "",
@@ -313,7 +280,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
       try {
         photo_url = (await studioApi.uploadBranchPhoto(photoFile)).url;
       } catch {
-        setSubmitError("Не удалось загрузить фото. Попробуйте другой файл или удалите его.");
+        setSubmitError(t("catalog:modals.addStudio.step3.uploadError"));
         setIsSubmitting(false);
         return;
       }
@@ -329,9 +296,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
     }
   }
 
-  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  function pickPhoto(file: File) {
     setPhotoFile(file);
     const reader = new FileReader();
     reader.onload = ev => {
@@ -343,16 +308,21 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   function removePhoto() {
     setPhotoPreview(null);
     setPhotoFile(null);
-    if (fileRef.current) fileRef.current.value = "";
   }
 
-  const canStep1 = data.name.trim().length >= 2;
+  // Обязательный контакт: имя ≥ 2 И (валидный телефон ИЛИ валидный email);
+  // если email заполнен — он должен быть валидным (нельзя пройти с кривым email).
+  const phoneValid = !!data.phone && isValidPhoneNumber(data.phone);
+  const emailFilled = data.email.trim().length > 0;
+  const emailValid = EMAIL_RE.test(data.email.trim());
+  const contactOk = phoneValid || emailValid;
+  const canStep1 = data.name.trim().length >= 2 && contactOk && (!emailFilled || emailValid);
   const canStep2 = data.city.trim().length >= 2 && data.address.trim().length >= 2;
 
   const stepMeta = [
-    { title: "О студии",       sub: "Название и контактные данные",    trustLabel: "Данные шифруются и не передаются третьим лицам" },
-    { title: "Расположение",   sub: "Где находится этот филиал?",      trustLabel: "Адрес используется в расписании и картах" },
-    { title: "Фото",           sub: "Обложка студии — по желанию",     trustLabel: "Можно добавить позже в настройках филиала" },
+    { title: t("catalog:modals.addStudio.steps.about.title"),    sub: t("catalog:modals.addStudio.steps.about.sub"),    trustLabel: t("catalog:modals.addStudio.steps.about.trust") },
+    { title: t("catalog:modals.addStudio.steps.location.title"), sub: t("catalog:modals.addStudio.steps.location.sub"), trustLabel: t("catalog:modals.addStudio.steps.location.trust") },
+    { title: t("catalog:modals.addStudio.steps.photo.title"),    sub: t("catalog:modals.addStudio.steps.photo.sub"),    trustLabel: t("catalog:modals.addStudio.steps.photo.trust") },
   ];
   const current = stepMeta[step - 1];
 
@@ -379,7 +349,6 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
         .asm-back-btn:hover { background: rgba(26,26,26,0.04) !important; border-color: #DDD !important; }
         .asm-scroll::-webkit-scrollbar { width: 3px; }
         .asm-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
-        .asm-photo-zone:hover { border-color: #FCAE91 !important; background: rgba(252,174,145,0.06) !important; }
       `}</style>
 
       <div
@@ -412,7 +381,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
           <div style={{ position: "relative", zIndex: 1 }}>
             <div style={{ marginBottom: "28px" }}><Logo /></div>
             <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
-              Шаг {step} из 3
+              {t("catalog:modals.addStudio.stepCounter", { current: step, total: 3 })}
             </p>
             <h2 style={{ fontSize: "19px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
               {current.title}
@@ -427,8 +396,8 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
             padding: "12px 0", position: "relative", zIndex: 1,
           }}>
-            {step === 1 && <Illus1 name={data.name} />}
-            {step === 2 && <Illus2 city={data.city} country={data.country} />}
+            {step === 1 && <Illus1 name={data.name} contactsLabel={t("catalog:modals.addStudio.illus.contacts")} newBranchLabel={t("catalog:modals.addStudio.illus.newBranch")} />}
+            {step === 2 && <Illus2 city={data.city} country={data.country} cityLabel={t("catalog:modals.addStudio.illus.city")} newBranchStudioLabel={t("catalog:modals.addStudio.illus.newBranchStudio")} />}
             {step === 3 && <Illus3 hasPhoto={!!photoPreview} />}
           </div>
 
@@ -452,9 +421,9 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                 {[
-                  { l: "Название", v: data.name },
-                  { l: "Город",    v: data.city },
-                  { l: "Адрес",    v: data.address },
+                  { l: t("catalog:modals.addStudio.summaryRows.name"),    v: data.name },
+                  { l: t("catalog:modals.addStudio.summaryRows.city"),    v: data.city },
+                  { l: t("catalog:modals.addStudio.summaryRows.address"), v: data.address },
                 ].map(row => (
                   <div key={row.l} style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ fontSize: "11px", color: "#AAAAAA" }}>{row.l}</span>
@@ -496,37 +465,37 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {step === 1 && (
                 <div>
                   <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
-                    Основная информация
+                    {t("catalog:modals.addStudio.step1.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 24px" }}>
-                    Как называется студия и как с ней связаться?
+                    {t("catalog:modals.addStudio.step1.subheading")}
                   </p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                    <div>
-                      <FieldLabel>Название студии *</FieldLabel>
-                      <InputField
-                        value={data.name}
-                        onChange={(v: string) => set("name", v)}
-                        placeholder="Например: Velora Studio"
-                      />
-                    </div>
-                    <div>
-                      <FieldLabel>Телефон</FieldLabel>
-                      <PhoneField
-                        value={data.phone}
-                        onChange={(v: string | undefined) => set("phone", v || "")}
-                      />
-                    </div>
-                    <div>
-                      <FieldLabel>Email</FieldLabel>
-                      <InputField
-                        type="email"
-                        value={data.email}
-                        onChange={(v: string) => set("email", v)}
-                        placeholder="studio@velora.ru"
-                      />
-                    </div>
+                    <Input
+                      label={t("catalog:modals.addStudio.step1.name")}
+                      value={data.name}
+                      onChange={(v: string) => set("name", v)}
+                      placeholder={t("catalog:modals.addStudio.step1.namePlaceholder")}
+                    />
+                    <PhoneField
+                      label={t("catalog:modals.addStudio.step1.phone")}
+                      value={data.phone}
+                      onChange={(v: string | undefined) => set("phone", v || "")}
+                    />
+                    <Input
+                      label={t("catalog:modals.addStudio.step1.email")}
+                      type="email"
+                      value={data.email}
+                      onChange={(v: string) => set("email", v)}
+                      placeholder="studio@velora.ru"
+                    />
+
+                    {!contactOk && (
+                      <p style={{ fontSize: "11.5px", color: "#D88C9A", fontWeight: 600, margin: "-6px 0 0" }}>
+                        {t("catalog:modals.addStudio.step1.contactHint")}
+                      </p>
+                    )}
 
                     {data.name.trim().length >= 2 && (
                       <div style={{
@@ -553,7 +522,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                             {data.name}
                           </div>
                           <div style={{ fontSize: "11px", color: "#AAA", marginTop: "2px" }}>
-                            {data.phone || data.email || "Контакты не указаны"}
+                            {data.phone || data.email || t("catalog:modals.addStudio.step1.noContacts")}
                           </div>
                         </div>
                         <div style={{
@@ -561,7 +530,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                           background: "rgba(163,201,168,0.18)",
                           fontSize: "9px", fontWeight: 700, color: "#5A8A60", letterSpacing: "0.5px",
                         }}>
-                          НОВЫЙ
+                          {t("catalog:modals.addStudio.step1.new")}
                         </div>
                       </div>
                     )}
@@ -573,39 +542,33 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {step === 2 && (
                 <div>
                   <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
-                    Расположение
+                    {t("catalog:modals.addStudio.step2.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 24px" }}>
-                    Укажите, где находится этот филиал
+                    {t("catalog:modals.addStudio.step2.subheading")}
                   </p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                      <div>
-                        <FieldLabel>Страна</FieldLabel>
-                        <FocusInput
-                          value={data.country}
-                          onChange={v => set("country", v)}
-                          placeholder="Россия"
-                        />
-                      </div>
-                      <div>
-                        <FieldLabel>Город *</FieldLabel>
-                        <FocusInput
-                          value={data.city}
-                          onChange={v => set("city", v)}
-                          placeholder="Москва"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <FieldLabel>Адрес *</FieldLabel>
-                      <FocusInput
-                        value={data.address}
-                        onChange={v => set("address", v)}
-                        placeholder="ул. Тверская, д. 12, офис 301"
+                      <Input
+                        label={t("catalog:modals.addStudio.step2.country")}
+                        value={data.country}
+                        onChange={v => set("country", v)}
+                        placeholder={t("catalog:modals.addStudio.step2.countryPlaceholder")}
+                      />
+                      <Input
+                        label={t("catalog:modals.addStudio.step2.city")}
+                        value={data.city}
+                        onChange={v => set("city", v)}
+                        placeholder={t("catalog:modals.addStudio.step2.cityPlaceholder")}
                       />
                     </div>
+                    <Input
+                      label={t("catalog:modals.addStudio.step2.address")}
+                      value={data.address}
+                      onChange={v => set("address", v)}
+                      placeholder={t("catalog:modals.addStudio.step2.addressPlaceholder")}
+                    />
 
                     {data.city.trim().length >= 1 && (
                       <div style={{
@@ -631,7 +594,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                             {data.city}{data.country ? `, ${data.country}` : ""}
                           </div>
                           <div style={{ fontSize: "11px", color: "#AAA", marginTop: "2px" }}>
-                            {data.address || "Адрес не указан"}
+                            {data.address || t("catalog:modals.addStudio.step2.noAddress")}
                           </div>
                         </div>
                       </div>
@@ -650,7 +613,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                         <line x1="12" y1="16" x2="12.01" y2="16"/>
                       </svg>
                       <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
-                        Поля «Страна» и «Город» используются для группировки филиалов в списке.
+                        {t("catalog:modals.addStudio.step2.groupHint")}
                       </p>
                     </div>
                   </div>
@@ -661,102 +624,24 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {step === 3 && (
                 <div>
                   <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
-                    Фото студии
+                    {t("catalog:modals.addStudio.step3.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 22px" }}>
-                    Загрузите обложку — это необязательно, можно пропустить
+                    {t("catalog:modals.addStudio.step3.subheading")}
                   </p>
 
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    style={{ display: "none" }}
-                  />
-
-                  {!photoPreview ? (
-                    <div
-                      className="asm-photo-zone"
-                      onClick={() => fileRef.current?.click()}
-                      onMouseEnter={() => setPhotoHover(true)}
-                      onMouseLeave={() => setPhotoHover(false)}
-                      style={{
-                        border: "2px dashed rgba(26,26,26,0.12)",
-                        borderRadius: "16px",
-                        padding: "36px 24px",
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center", gap: "10px",
-                        cursor: "pointer",
-                        transition: "all 0.18s ease",
-                        background: photoHover ? "rgba(252,174,145,0.06)" : "rgba(26,26,26,0.015)",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      <div style={{
-                        width: "52px", height: "52px", borderRadius: "14px",
-                        background: photoHover ? "rgba(252,174,145,0.18)" : "rgba(26,26,26,0.05)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transition: "all 0.18s ease",
-                        transform: photoHover ? "scale(1.08)" : "scale(1)",
-                      }}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={photoHover ? "#FCAE91" : "#CCCCCC"} strokeWidth="1.8" style={{ transition: "stroke 0.18s ease" }}>
-                          <rect x="3" y="3" width="18" height="18" rx="4"/>
-                          <circle cx="8.5" cy="8.5" r="1.5"/>
-                          <polyline points="21 15 16 10 5 21"/>
-                        </svg>
-                      </div>
-                      <div style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: "13px", fontWeight: 700, color: photoHover ? "#FCAE91" : "#888", transition: "color 0.18s" }}>
-                          Нажмите для загрузки
-                        </div>
-                        <div style={{ fontSize: "11px", color: "#BBBBBB", marginTop: "3px" }}>
-                          JPG, PNG до 10 МБ
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ position: "relative", marginBottom: "16px", animation: "stepIn 0.25s ease" }}>
-                      <img
-                        src={photoPreview}
-                        alt="Превью"
-                        style={{
-                          width: "100%", height: "180px",
-                          objectFit: "cover", borderRadius: "16px",
-                          display: "block",
-                          boxShadow: "0 8px 24px rgba(26,26,26,0.10)",
-                        }}
-                      />
-                      <div style={{ position: "absolute", top: "10px", right: "10px", display: "flex", gap: "6px" }}>
-                        <button
-                          type="button"
-                          onClick={() => fileRef.current?.click()}
-                          style={{
-                            padding: "7px 12px",
-                            background: "rgba(253,252,251,0.92)", backdropFilter: "blur(8px)",
-                            border: "1px solid rgba(26,26,26,0.1)", borderRadius: "10px",
-                            fontSize: "11px", fontWeight: 700, color: "#444",
-                            cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                          }}
-                        >
-                          Заменить
-                        </button>
-                        <button
-                          type="button"
-                          onClick={removePhoto}
-                          style={{
-                            padding: "7px 12px",
-                            background: "rgba(253,252,251,0.92)", backdropFilter: "blur(8px)",
-                            border: "1px solid rgba(216,140,154,0.3)", borderRadius: "10px",
-                            fontSize: "11px", fontWeight: 700, color: "#C06070",
-                            cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                          }}
-                        >
-                          Удалить
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <div style={{ marginBottom: "16px" }}>
+                    <PhotoUpload
+                      preview={photoPreview}
+                      onFile={pickPhoto}
+                      onRemove={removePhoto}
+                      ctaText={t("catalog:modals.addStudio.step3.uploadCta")}
+                      hintText={t("catalog:modals.addStudio.step3.uploadHint")}
+                      replaceText={t("catalog:modals.addStudio.step3.replace")}
+                      removeText={t("catalog:modals.addStudio.step3.remove")}
+                      previewAlt={t("catalog:modals.addStudio.step3.previewAlt")}
+                    />
+                  </div>
 
                   {/* Summary of previous steps */}
                   <div style={{
@@ -766,7 +651,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                     border: "1.5px solid rgba(26,26,26,0.07)",
                   }}>
                     <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 10px" }}>
-                      Итог
+                      {t("catalog:modals.addStudio.step3.summary")}
                     </p>
                     {[
                       { icon: <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FCAE91" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>, label: data.name },
@@ -805,7 +690,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                   <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Назад
+                {t("common:buttons.back")}
               </button>
             )}
 
@@ -834,11 +719,11 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  Создать студию
+                  {t("catalog:modals.addStudio.submit")}
                 </>
               ) : (
                 <>
-                  {step === 2 ? "Далее — фото" : "Продолжить"}
+                  {step === 2 ? t("catalog:modals.addStudio.nextPhoto") : t("common:buttons.continue")}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                     <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -867,7 +752,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               onMouseEnter={e => (e.currentTarget.style.color = "#AAA")}
               onMouseLeave={e => (e.currentTarget.style.color = "#CCCCCC")}
             >
-              Пропустить фото и создать
+              {t("catalog:modals.addStudio.skipPhoto")}
             </p>
           )}
         </div>

@@ -4,11 +4,12 @@ import type { ProgramKey } from '../../types';
 
 interface Props {
   configuredCount: number;
+  total: number;
   openDrawer: (key: ProgramKey, title: string) => void;
 }
 
-export default function ProgressHeader({ configuredCount, openDrawer }: Props) {
-  if (configuredCount === 5) {
+export default function ProgressHeader({ configuredCount, total, openDrawer }: Props) {
+  if (configuredCount === total) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', gap: '16px',
@@ -40,16 +41,16 @@ export default function ProgressHeader({ configuredCount, openDrawer }: Props) {
         <svg width="40" height="40" viewBox="0 0 40 40">
           <circle cx="20" cy="20" r="16" fill="none" stroke="var(--border)" strokeWidth="3" />
           <circle cx="20" cy="20" r="16" fill="none" stroke="#FCAE91" strokeWidth="3"
-            strokeDasharray={`${(configuredCount / 5) * 100.5} 100.5`}
+            strokeDasharray={`${(configuredCount / total) * 100.5} 100.5`}
             strokeDashoffset="25" strokeLinecap="round"
             style={{ transition: 'stroke-dasharray 0.5s ease' }}
           />
-          <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="700" fill="#FCAE91">{configuredCount}/5</text>
+          <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="700" fill="#FCAE91">{configuredCount}/{total}</text>
         </svg>
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px' }}>Настройте программы лояльности</div>
-        <div style={{ fontSize: '12px', color: 'var(--text2)' }}>Настроено {configuredCount} из 5 программ · Каждая программа увеличивает удержание клиентов</div>
+        <div style={{ fontSize: '12px', color: 'var(--text2)' }}>Настроено {configuredCount} из {total} программ · Каждая программа увеличивает удержание клиентов</div>
       </div>
       {configuredCount === 0 && (
         <button

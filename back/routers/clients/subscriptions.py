@@ -18,10 +18,6 @@ from schemas.clients.subscriptions import ClientSubscriptionRead, SubscriptionSa
 
 router = APIRouter()
 
-# ponytail: у SubscriptionPackage нет поля длительности — фиксированное окно 90 дней.
-# Добавить duration_days в пакет и брать оттуда, если студиям понадобятся разные сроки.
-_SUBSCRIPTION_VALID_DAYS = 90
-
 
 def _to_read(sub: ClientSubscription) -> ClientSubscriptionRead:
     return ClientSubscriptionRead(
@@ -72,7 +68,7 @@ async def sell_subscription(
         type=package.name,
         total_classes=package.class_count,
         used_classes=0,
-        expires_at=date.today() + timedelta(days=_SUBSCRIPTION_VALID_DAYS),
+        expires_at=date.today() + timedelta(days=package.duration_days),
         status="active",
     )
     db.add(sub)

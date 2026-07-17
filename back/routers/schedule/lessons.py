@@ -165,14 +165,14 @@ async def create_lesson(
     db: AsyncSession = Depends(get_db),
 ):
     """Создать занятие в текущей студии. teacher_name денормализуется из teacher_id."""
+    # Расписание меняют только владелец и администратор (ТЗ 2.3) — тренер строго просмотр.
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
+
     if not 1 <= body.total_spots <= 50:
         raise HTTPException(status_code=400, detail="Число мест должно быть от 1 до 50")
     if body.duration_min <= 0:
         raise HTTPException(status_code=400, detail="Конец занятия должен быть позже начала")
-
-    # Тренер создаёт занятия только на себя (ТЗ 2.3).
-    if ctx.role == "trainer" and body.teacher_id != ctx.user.id:
-        raise HTTPException(status_code=403, detail="Тренер может создавать занятия только на себя")
 
     teacher_name = await _teacher_name_in_studio(body.teacher_id, ctx.studio_id, db)
     if body.hall_id is not None:
@@ -209,7 +209,10 @@ async def update_lesson(
     db: AsyncSession = Depends(get_db),
 ):
     """Изменить/перенести/растянуть занятие. Меняются только присланные поля.
-    Скоуп тренера — через get_scoped_lesson (403/404)."""
+    Расписание меняют только владелец и администратор (ТЗ 2.3)."""
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
+
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     fields = body.model_dump(exclude_unset=True)
 
@@ -229,9 +232,6 @@ async def update_lesson(
 
     if "teacher_id" in fields:
         new_teacher_id = fields["teacher_id"]
-        # Тренер может переназначить занятие только на себя (ТЗ 2.3).
-        if ctx.role == "trainer" and new_teacher_id != ctx.user.id:
-            raise HTTPException(status_code=403, detail="Тренер может назначать занятия только на себя")
         lesson.teacher_name = await _teacher_name_in_studio(new_teacher_id, ctx.studio_id, db)
 
     if fields.get("hall_id") is not None:
@@ -254,10 +254,13 @@ async def cancel_lesson(
 ):
     """Отменить занятие: статус cancelled + каскадная отмена активных резерваций.
 
-    Скоуп/403/404 — общий get_scoped_lesson. Образец каскада — staff/schedule.py
-    cancel_lesson. Резервации отменяем UPDATE-запросом (без lazy-load relationship
-    в async-контексте).
+    Расписание меняют только владелец и администратор (ТЗ 2.3). Образец каскада —
+    staff/schedule.py cancel_lesson. Резервации отменяем UPDATE-запросом (без
+    lazy-load relationship в async-контексте).
     """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
+
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     if lesson.status == "cancelled":
         raise HTTPException(status_code=409, detail="Занятие уже отменено")

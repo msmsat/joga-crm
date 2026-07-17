@@ -13,6 +13,7 @@ export interface ServiceRead {
   max_clients: number | null
   bookings_count: number
   revenue_total: number
+  bookings_last_30d: number
 }
 
 export interface ServiceCreate {
@@ -27,6 +28,12 @@ export interface ServiceCreate {
 }
 
 export type ServiceUpdate = Partial<ServiceCreate>
+
+// Слот реального занятия услуги на текущей неделе (day_of_week: 0=Пн…6=Вс).
+export interface ServiceWeekSlot {
+  day_of_week: number
+  hour: number
+}
 
 export const servicesApi = {
   list: () =>
@@ -43,4 +50,7 @@ export const servicesApi = {
 
   delete: (serviceId: number) =>
     client.delete<void>(`/studio/services/${serviceId}`),
+
+  getWeek: (serviceId: number) =>
+    client.get<ServiceWeekSlot[]>(`/studio/services/${serviceId}/week`),
 }

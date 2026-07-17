@@ -23,12 +23,9 @@ export interface CertificateConfig {
   service_name: string | null
 }
 
-export interface SubscriptionProgramConfig {
-  is_enabled: boolean
-  allow_freeze: boolean
-  allow_transfer: boolean
-  auto_renewal: boolean
-}
+// Абонементы переехали в Каталог (задача 19) — реэкспорт для страницы Лояльности,
+// пока задача 23 не уберёт оттуда раздел целиком.
+export type { SubscriptionProgramConfig, SubscriptionPackage } from '../catalog/catalog.types'
 
 export interface ReferralConfig {
   is_enabled: boolean
@@ -73,14 +70,4 @@ export interface GiftCertificate {
   recipient_name: string | null
   issued_at: string
   expires_at: string | null
-}
-
-export interface SubscriptionPackage {
-  id: number
-  name: string
-  class_count: number
-  price: number
-  per_visit_price: number
-  is_active: boolean
-  sort_order: number
 }

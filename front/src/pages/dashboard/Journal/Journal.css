@@ -1085,35 +1085,6 @@
 .ds-accent { color: var(--peach); }
 
 /* ════════════════════════════════════════════════════════════
-   18. СТАТУС ГРАФИКА (Рабочий / Черновик)
-   ════════════════════════════════════════════════════════════ */
-.status-badge {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 100px;
-  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.status-badge.live { background: rgba(91,171,114,0.1); color: #5BAB72; }
-.status-badge.draft { background: var(--peach-soft); color: var(--peach); }
-
-.status-dot { width: 6px; height: 6px; border-radius: 50%; transition: all 0.4s; }
-.status-dot.live { background: #5BAB72; box-shadow: 0 0 0 3px rgba(91,171,114,0.2); }
-.status-dot.draft { background: var(--peach); animation: pulse-draft 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
-@keyframes pulse-draft {
-  0%, 100% { box-shadow: 0 0 0 2px rgba(249,160,139,0.4); }
-  50% { box-shadow: 0 0 0 6px rgba(249,160,139,0); }
-}
-
-.draft-actions {
-  display: flex; gap: 8px; align-items: center;
-  animation: slide-draft-btns 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes slide-draft-btns {
-  from { opacity: 0; transform: translateX(10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* ════════════════════════════════════════════════════════════
    19. ПЕРЕКЛЮЧАТЕЛИ (ШАГ СЕТКИ / ВИД КАЛЕНДАРЯ)
    ════════════════════════════════════════════════════════════ */
 .premium-step-toggle {

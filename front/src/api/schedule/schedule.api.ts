@@ -24,12 +24,6 @@ export const scheduleApi = {
   getHalls: () =>
     client.get<Hall[]>('/schedule/halls'),
 
-  createHall: (payload: Omit<Hall, 'id'>) =>
-    client.post<Hall>('/schedule/halls', payload),
-
-  updateHall: (id: number, payload: Partial<Omit<Hall, 'id'>>) =>
-    client.patch<Hall>(`/schedule/halls/${id}`, payload),
-
   createReservation: (clientId: number, lessonId: number) =>
     client.post<Reservation>('/schedule/reservations', { client_id: clientId, lesson_id: lessonId }),
 

@@ -39,15 +39,6 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     stats: { value: 34, label: 'продано' },
   },
   {
-    key: 'subscriptions',
-    title: 'Абонементы',
-    desc: 'Пакеты на 8, 12, 20 занятий',
-    accentColor: '#D88C9A',
-    accentBg: 'rgba(216,140,154,0.08)',
-    accentBorder: 'rgba(216,140,154,0.25)',
-    stats: { value: 67, label: 'активных' },
-  },
-  {
     key: 'referral',
     title: 'Реферальная',
     desc: 'Программа «Приведи друга»',

@@ -6,7 +6,6 @@ import { IconClose } from '../ui/LoyaltyIcons';
 import LoyaltyConfig from './configs/LoyaltyConfig';
 import DiscountsConfig from './configs/DiscountsConfig';
 import CertificatesConfig from './configs/CertificatesConfig';
-import SubscriptionsConfig from './configs/SubscriptionsConfig';
 import ReferralConfig from './configs/ReferralConfig';
 
 interface Props {
@@ -29,8 +28,6 @@ function DrawerBody({ drawer, configs, patchConfig }: Pick<Props, 'drawer' | 'co
       return <DiscountsConfig value={configs.discounts} onChange={p => patchConfig('discounts', p)} />;
     case 'certificates':
       return <CertificatesConfig value={configs.certificates} onChange={p => patchConfig('certificates', p)} />;
-    case 'subscriptions':
-      return <SubscriptionsConfig value={configs.subscriptions} onChange={p => patchConfig('subscriptions', p)} />;
     case 'referral':
       return <ReferralConfig value={configs.referral} onChange={p => patchConfig('referral', p)} />;
   }

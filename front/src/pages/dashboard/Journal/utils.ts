@@ -168,9 +168,12 @@ const hexToBg = (hex: string) => {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0.12)`;
 };
 
-// Сотрудник из API → колонка журнала. Цвет назначается по порядку из палитры.
-export const staffToTrainer = (s: StaffListItem, i: number): Trainer => {
-  const color = TRAINER_COLORS[i % TRAINER_COLORS.length];
+// Цвет по id — стабилен между заходами, не съезжает при фильтрации/увольнении других сотрудников.
+export const colorForStaffId = (id: number) => TRAINER_COLORS[id % TRAINER_COLORS.length];
+
+// Сотрудник из API → колонка журнала.
+export const staffToTrainer = (s: StaffListItem): Trainer => {
+  const color = colorForStaffId(s.id);
   const first = s.name || '';
   const last = s.last_name || '';
   return {

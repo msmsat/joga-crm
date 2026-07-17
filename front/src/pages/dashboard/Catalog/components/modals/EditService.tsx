@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import "../../../../../App.css";
-import { InputField } from "../../../../../components/UI";
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ColorPicker } from "../../../../../components/ui/modal";
+import { Select } from "../../../../../components/ui/Select";
+import { getCurrencySymbol } from "../../../../../components/UI";
+import { useStudioCurrency } from "../../hooks/useStudioCurrency";
+import { useValidation } from "./useValidation";
 import type { Service } from "../../types";
 import type { ServiceCreate } from "../../../../../api/studio/services.api";
 import { SERVICE_CATEGORIES } from "../../constants";
@@ -14,6 +18,12 @@ interface ServiceModalProps {
 }
 
 export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) {
+  const { t } = useTranslation(["catalog", "common"]);
+  // Перевод значения категории по ключу с fallback (значения-ключи мигрируют в задаче 14).
+  const tCat = (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat });
+  const studioCurrency = useStudioCurrency();
+  const currency = getCurrencySymbol(studioCurrency);
+
   // Компонент пересоздаётся по key при открытии (см. родителя),
   // поэтому начальные значения из service корректны без useEffect.
   const [name, setName] = useState(service?.name ?? "");
@@ -26,10 +36,16 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
   const [description, setDescription] = useState(service?.description ?? "");
   const [saving, setSaving] = useState(false);
 
-  const canSave = name.trim().length >= 1 && Number(price) > 0 && !saving;
+  const errors = {
+    name: name.trim().length < 1 ? t("common:validation.required") : null,
+    price: Number(price) > 0 ? null : t("common:validation.positive"),
+    duration: Number(duration) > 0 ? null : t("common:validation.positive"),
+    maxClients: type === "group" && maxClients.trim() && Number(maxClients) < 1 ? t("common:validation.min", { n: 1 }) : null,
+  };
+  const { touch, show, hasErrors, trySubmit } = useValidation(errors);
 
   async function handleSave() {
-    if (!canSave) return;
+    if (!trySubmit() || saving) return;
     setSaving(true);
     try {
       await onSubmit({
@@ -50,118 +66,52 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
     }
   }
 
-  return createPortal(
-    <div
-      style={{
-        position: "fixed", inset: 0, background: "rgba(26,26,26,0.42)",
-        backdropFilter: "blur(10px)", display: "flex", alignItems: "center",
-        justifyContent: "center", zIndex: 1000, padding: "16px",
-        animation: "overlayIn 0.22s ease",
-      }}
-      onClick={onClose}
-    >
-      <style>{`
-        @keyframes overlayIn { from { opacity:0 } to { opacity:1 } }
-        @keyframes modalIn { from { opacity:0; transform: scale(0.94) translateY(16px) } to { opacity:1; transform: scale(1) translateY(0) } }
-      `}</style>
-      <div
-        style={{
-          width: "100%", maxWidth: "480px", maxHeight: "calc(100vh - 32px)",
-          background: "#FDFCFB", borderRadius: "20px",
-          boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
-          display: "flex", flexDirection: "column", overflow: "hidden",
-          animation: "modalIn 0.32s cubic-bezier(0.34,1.1,0.64,1)",
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "22px 24px 16px", borderBottom: "1px solid #F0EDE8",
-        }}>
-          <h2 style={{ fontSize: "18px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.5px", margin: 0 }}>
-            {service ? "Редактировать услугу" : "Новая услуга"}
-          </h2>
-          <button
-            onClick={onClose}
-            style={{
-              width: "28px", height: "28px", background: "rgba(26,26,26,0.05)",
-              border: "none", borderRadius: "8px", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", color: "#AAA",
-            }}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+  return (
+    <ModalShell size="sm" onClose={onClose}>
+      <ModalHeader title={service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")} />
+      <ModalBody>
+        <Input label={t("catalog:modals.service.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.service.namePlaceholder")} />
 
-        <div style={{ padding: "20px 24px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <InputField label="Название услуги" value={name} onChange={setName} placeholder="Хатха-йога" />
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <div>
-              <label style={fieldLabel}>Категория</label>
-              <select value={category} onChange={e => setCategory(e.target.value)} style={selectStyle}>
-                {SERVICE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={fieldLabel}>Тип</label>
-              <select value={type} onChange={e => setType(e.target.value as "group" | "individual")} style={selectStyle}>
-                <option value="group">Групповая</option>
-                <option value="individual">Индивидуальная</option>
-              </select>
-            </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div>
+            <label style={fieldLabel}>{t("catalog:modals.service.category")}</label>
+            <Select
+              value={category}
+              options={SERVICE_CATEGORIES.map(c => ({ value: c, label: tCat(c) }))}
+              onChange={setCategory}
+            />
           </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <InputField label="Цена, ₽" type="number" value={price} onChange={setPrice} placeholder="1200" />
-            <InputField label="Длительность, мин" type="number" value={duration} onChange={setDuration} placeholder="60" />
-          </div>
-
-          {type === "group" && (
-            <InputField label="Макс. клиентов" type="number" value={maxClients} onChange={setMaxClients} placeholder="15" />
-          )}
-
-          <InputField label="Описание" value={description} onChange={setDescription} placeholder="Короткое описание услуги" />
-
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <label style={fieldLabel}>Цвет</label>
-            <input type="color" value={color} onChange={e => setColor(e.target.value)} style={{ width: "40px", height: "32px", border: "1.5px solid rgba(26,26,26,0.09)", borderRadius: "8px", cursor: "pointer", background: "none" }} />
+          <div>
+            <label style={fieldLabel}>{t("catalog:modals.service.type")}</label>
+            <Select
+              value={type}
+              options={[
+                { value: "group", label: t("catalog:modals.service.typeGroup") },
+                { value: "individual", label: t("catalog:modals.service.typeIndividual") },
+              ]}
+              onChange={v => setType(v as "group" | "individual")}
+            />
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", padding: "16px 24px", borderTop: "1px solid #F0EDE8" }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: "12px 18px", background: "transparent",
-              border: "1.5px solid #EEEBE6", borderRadius: "12px",
-              fontSize: "13px", fontWeight: 600, color: "#888",
-              cursor: "pointer", fontFamily: "Manrope, sans-serif",
-            }}
-          >
-            Отмена
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={!canSave}
-            style={{
-              flex: 1, padding: "12px 20px",
-              background: "linear-gradient(135deg, #FCAE91, #F9A08B)",
-              border: "none", borderRadius: "12px",
-              fontSize: "14px", fontWeight: 700, color: "white",
-              cursor: canSave ? "pointer" : "not-allowed",
-              fontFamily: "Manrope, sans-serif", opacity: canSave ? 1 : 0.5,
-              boxShadow: "0 8px 24px rgba(252,174,145,0.3)",
-            }}
-          >
-            {service ? "Сохранить" : "Создать"}
-          </button>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <Input label={t("catalog:modals.service.price", { currency })} type="number" value={price} onChange={setPrice} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} />
+          <Input label={t("catalog:modals.service.duration")} type="number" value={duration} onChange={setDuration} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} />
         </div>
-      </div>
-    </div>,
-    document.body
+
+        {type === "group" && (
+          <Input label={t("catalog:modals.service.maxClients")} type="number" value={maxClients} onChange={setMaxClients} onBlur={touch("maxClients")} error={show("maxClients")} placeholder={t("catalog:modals.service.maxClientsPlaceholder")} />
+        )}
+
+        <Input label={t("catalog:modals.service.description")} value={description} onChange={setDescription} placeholder={t("catalog:modals.service.descriptionPlaceholder")} />
+
+        <ColorPicker label={t("catalog:modals.service.color")} value={color} onChange={setColor} />
+      </ModalBody>
+      <ModalFooter>
+        <GhostButton>{t("common:buttons.cancel")}</GhostButton>
+        <PrimaryButton onClick={handleSave} disabled={hasErrors} loading={saving}>{service ? t("common:buttons.save") : t("common:buttons.create")}</PrimaryButton>
+      </ModalFooter>
+    </ModalShell>
   );
 }
 
@@ -169,13 +119,4 @@ const fieldLabel: React.CSSProperties = {
   display: "block", fontSize: "11px", fontWeight: 700,
   color: "#999", letterSpacing: "0.6px",
   textTransform: "uppercase", marginBottom: "7px",
-};
-
-const selectStyle: React.CSSProperties = {
-  width: "100%", padding: "12px 15px",
-  background: "rgba(26,26,26,0.025)",
-  border: "1.5px solid rgba(26,26,26,0.09)",
-  borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
-  outline: "none", fontFamily: "Manrope, sans-serif", boxSizing: "border-box",
-  cursor: "pointer",
 };

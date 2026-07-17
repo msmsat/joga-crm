@@ -11,6 +11,7 @@ class HallCreate(BaseSchema):
     equipment: Optional[list] = None
     hourly_rate: Optional[float] = None
     is_online: bool = False
+    photo_url: Optional[str] = None
 
 
 class HallUpdate(BaseSchema):
@@ -21,6 +22,7 @@ class HallUpdate(BaseSchema):
     equipment: Optional[list] = None
     hourly_rate: Optional[float] = None
     is_online: Optional[bool] = None
+    photo_url: Optional[str] = None
 
 
 class HallRead(BaseSchema):

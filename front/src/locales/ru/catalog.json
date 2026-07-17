@@ -1,12 +1,131 @@
 {
   "tabs": {
     "studios": "Студии",
-    "services": "Услуги"
+    "services": "Услуги",
+    "subscriptions": "Абонементы"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": { "title": "О студии", "sub": "Название и контактные данные", "trust": "Данные шифруются и не передаются третьим лицам" },
+        "location": { "title": "Расположение", "sub": "Где находится этот филиал?", "trust": "Адрес используется в расписании и картах" },
+        "photo": { "title": "Фото", "sub": "Обложка студии — по желанию", "trust": "Можно добавить позже в настройках филиала" }
+      },
+      "stepCounter": "Шаг {{current}} из {{total}}",
+      "step1": {
+        "heading": "Основная информация",
+        "subheading": "Как называется студия и как с ней связаться?",
+        "name": "Название студии *",
+        "namePlaceholder": "Например: Velora Studio",
+        "phone": "Телефон *",
+        "email": "Email *",
+        "contactHint": "Укажите телефон или email — одно из двух",
+        "noContacts": "Контакты не указаны",
+        "new": "НОВЫЙ"
+      },
+      "step2": {
+        "heading": "Расположение",
+        "subheading": "Укажите, где находится этот филиал",
+        "country": "Страна",
+        "countryPlaceholder": "Россия",
+        "city": "Город *",
+        "cityPlaceholder": "Москва",
+        "address": "Адрес *",
+        "addressPlaceholder": "ул. Тверская, д. 12, офис 301",
+        "noAddress": "Адрес не указан",
+        "groupHint": "Поля «Страна» и «Город» используются для группировки филиалов в списке."
+      },
+      "step3": {
+        "heading": "Фото студии",
+        "subheading": "Загрузите обложку — это необязательно, можно пропустить",
+        "uploadCta": "Нажмите для загрузки",
+        "uploadHint": "JPG, PNG до 10 МБ",
+        "replace": "Заменить",
+        "remove": "Удалить",
+        "previewAlt": "Превью",
+        "summary": "Итог",
+        "uploadError": "Не удалось загрузить фото. Попробуйте другой файл или удалите его."
+      },
+      "summaryRows": { "name": "Название", "city": "Город", "address": "Адрес" },
+      "nextPhoto": "Далее — фото",
+      "submit": "Создать студию",
+      "skipPhoto": "Пропустить фото и создать",
+      "illus": { "contacts": "Контакты", "newBranch": "Новый филиал", "city": "Город", "newBranchStudio": "Новый филиал студии" }
+    },
+    "editBranch": {
+      "title": "Редактировать филиал",
+      "name": "Название филиала",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Телефон",
+      "email": "Email",
+      "emailPlaceholder": "studio@velora.ru",
+      "country": "Страна",
+      "countryPlaceholder": "Россия",
+      "city": "Город",
+      "cityPlaceholder": "Москва",
+      "address": "Адрес",
+      "addressPlaceholder": "ул. Тверская, д. 12",
+      "photo": "Фото филиала",
+      "contactHint": "Укажите телефон или email",
+      "workingHours": "Часы работы"
+    },
+    "hall": {
+      "titleNew": "Новый зал",
+      "titleEdit": "Редактировать зал",
+      "name": "Название зала",
+      "namePlaceholder": "Зал А",
+      "capacity": "Вместимость",
+      "area": "Площадь, м²",
+      "hourlyRate": "Цена за час, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Оборудование",
+      "equipmentPlaceholder": "Добавьте оборудование",
+      "color": "Цвет",
+      "isOnline": "Онлайн-зал",
+      "photo": "Фото зала"
+    },
+    "service": {
+      "titleNew": "Новая услуга",
+      "titleEdit": "Редактировать услугу",
+      "name": "Название услуги",
+      "namePlaceholder": "Хатха-йога",
+      "category": "Категория",
+      "type": "Тип",
+      "typeGroup": "Групповая",
+      "typeIndividual": "Индивидуальная",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Длительность, мин",
+      "durationPlaceholder": "60",
+      "maxClients": "Макс. клиентов",
+      "maxClientsPlaceholder": "15",
+      "description": "Описание",
+      "descriptionPlaceholder": "Короткое описание услуги",
+      "color": "Цвет"
+    },
+    "package": {
+      "titleNew": "Новый пакет",
+      "titleEdit": "Редактировать пакет",
+      "name": "Название пакета",
+      "namePlaceholder": "8 занятий",
+      "classCount": "Число занятий",
+      "classCountPlaceholder": "8",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Цена за визит",
+      "durationDays": "Срок действия, дней",
+      "durationDaysPlaceholder": "60",
+      "services": "Услуги",
+      "servicesHint": "Ничего не выбрано — пакет действует на все занятия",
+      "isActive": "В продаже"
+    }
   },
   "studios": {
     "title": "СТУДИИ",
     "addStudio": "Добавить студию",
     "addHall": "Добавить зал",
+    "editBranch": "Редактировать филиал",
+    "deleteBranch": "Удалить филиал",
     "infoTab": "Общая информация",
     "hallsTitle": "Залы студии",
     "hallCount_one": "{{count}} зал",
@@ -45,7 +164,9 @@
       "edit": "Изменить: {{name}}"
     },
     "confirmDelete": "Удалить филиал «{{name}}»? Это действие нельзя отменить.",
-    "confirmDeleteHall": "Удалить зал «{{name}}»?"
+    "confirmDeleteTitle": "Удалить филиал?",
+    "confirmDeleteHall": "Удалить зал «{{name}}»?",
+    "confirmDeleteHallTitle": "Удалить зал?"
   },
   "services": {
     "title": "УСЛУГИ",
@@ -68,7 +189,7 @@
       "minutes": "минут",
       "upTo": "До {{count}} чел.",
       "personal": "Персонально",
-      "bookingsPerMonth": "записей / мес",
+      "bookingsPerMonth": "записей за 30 дней",
       "schedule": "Расписание занятий"
     },
     "empty": {
@@ -83,11 +204,51 @@
       "edit": "Изменить: {{name}}"
     },
     "confirmDelete": "Удалить услугу «{{name}}»?",
+    "confirmDeleteTitle": "Удалить услугу?",
     "categories": {
-      "Йога": "Йога",
-      "Пилатес": "Пилатес",
-      "Стретчинг": "Стретчинг",
-      "Индивидуальные": "Индивидуальные"
+      "yoga": "Йога",
+      "pilates": "Пилатес",
+      "stretching": "Стретчинг",
+      "individual": "Индивидуальные"
     }
+  },
+  "subscriptions": {
+    "title": "АБОНЕМЕНТЫ",
+    "addPackage": "Добавить пакет",
+    "card": {
+      "classCount_one": "{{count}} занятие",
+      "classCount_few": "{{count}} занятия",
+      "classCount_many": "{{count}} занятий",
+      "classCount_other": "{{count}} занятий",
+      "duration": "{{count}} дней",
+      "allServices": "Все занятия",
+      "serviceCount_one": "{{count}} услуга",
+      "serviceCount_few": "{{count}} услуги",
+      "serviceCount_many": "{{count}} услуг",
+      "serviceCount_other": "{{count}} услуг",
+      "inactiveBadge": "Снят с продажи"
+    },
+    "settings": {
+      "title": "Настройки программы",
+      "allowFreeze": "Заморозка абонемента",
+      "allowTransfer": "Перенос на другого клиента",
+      "autoRenewal": "Автопродление"
+    },
+    "empty": {
+      "title": "Пакетов пока нет",
+      "cta": "Создать пакет"
+    },
+    "toasts": {
+      "created": "Пакет создан",
+      "saved": "Сохранено",
+      "saveError": "Не удалось сохранить пакет",
+      "deactivated": "Пакет снят с продажи",
+      "restored": "Пакет возвращён в продажу",
+      "actionError": "Не удалось выполнить действие"
+    },
+    "deactivate": "Снять с продажи",
+    "restore": "Вернуть в продажу",
+    "confirmDeactivateTitle": "Снять пакет с продажи?",
+    "confirmDeactivate": "Проданные абонементы продолжат действовать."
   }
 }

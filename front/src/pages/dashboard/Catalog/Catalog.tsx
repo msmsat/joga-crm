@@ -5,17 +5,15 @@ import './Catalog.css';
 import type { CatalogTab } from './types';
 import { StudioSection } from './components/StudioSection';
 import { ServiceSection } from './components/ServiceSection';
+import { SubscriptionSection } from './components/SubscriptionSection';
+
+const VALID_TABS: CatalogTab[] = ['studios', 'services', 'subscriptions'];
 
 export default function Catalog() {
   const { t } = useTranslation(['catalog']);
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState<CatalogTab>(searchParams.get('tab') === 'services' ? 'services' : 'studios');
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2500);
-  };
+  const initialTab = searchParams.get('tab') as CatalogTab | null;
+  const [tab, setTab] = useState<CatalogTab>(initialTab && VALID_TABS.includes(initialTab) ? initialTab : 'studios');
 
   return (
     <div className="cat-page">
@@ -36,18 +34,20 @@ export default function Catalog() {
           </svg>
           {t('catalog:tabs.services')}
         </button>
+        <button className={`cat-tab ${tab === 'subscriptions' ? 'active' : ''}`} onClick={() => setTab('subscriptions')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18"/>
+          </svg>
+          {t('catalog:tabs.subscriptions')}
+        </button>
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, minHeight: 0 }}>
-        {tab === 'studios'
-          ? <StudioSection showToast={showToast} />
-          : <ServiceSection showToast={showToast} />
-        }
+        {tab === 'studios' && <StudioSection />}
+        {tab === 'services' && <ServiceSection />}
+        {tab === 'subscriptions' && <SubscriptionSection />}
       </div>
-
-      {/* Toast */}
-      <div className={`cat-toast ${toastMsg ? 'show' : ''}`}>{toastMsg}</div>
     </div>
   );
 }

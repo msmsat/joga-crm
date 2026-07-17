@@ -20,6 +20,7 @@ class Hall(Base):
     hourly_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     is_online: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    photo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="halls")
     branch: Mapped[Optional["StudioBranch"]] = relationship(back_populates="halls")

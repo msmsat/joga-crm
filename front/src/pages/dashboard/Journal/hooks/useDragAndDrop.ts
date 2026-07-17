@@ -26,7 +26,7 @@ interface UseDragAndDropProps {
   columns: any[]; 
   timeStep: number;
   showToast: (msg: string) => void;
-  calendarView?: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
+  calendarView?: 'day' | 'week';
   onCommit: (prev: Booking, next: Booking) => void; // сохранение на сервер после дропа
 }
 

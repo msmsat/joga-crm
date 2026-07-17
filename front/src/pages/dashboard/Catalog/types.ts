@@ -1,4 +1,4 @@
-export type CatalogTab = 'studios' | 'services';
+export type CatalogTab = 'studios' | 'services' | 'subscriptions';
 
 export interface Hall {
   id: number;
@@ -44,5 +44,5 @@ export interface Service {
   max_clients?: number;
   bookings_total: number;
   revenue_total: number;
-  schedule: number[][];
+  bookings_last_30d: number;
 }

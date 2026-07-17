@@ -6,6 +6,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "create": "Create",
     "close": "Close",
     "send": "Send",
     "copy": "Copy",
@@ -16,6 +17,15 @@
     "saving": "Saving…",
     "saved": "Saved!",
     "upload": "Upload"
+  },
+  "validation": {
+    "required": "Required field",
+    "minLength": "At least {{n}} characters",
+    "email": "Invalid email",
+    "phone": "Invalid phone",
+    "contactRequired": "Enter a phone or email",
+    "min": "Must be at least {{n}}",
+    "positive": "Must be greater than 0"
   },
   "status": {
     "online": "Online",
@@ -64,7 +74,17 @@
   },
   "toasts": {
     "phoneCopied": "Phone copied",
-    "emailCopied": "Email copied"
+    "emailCopied": "Email copied",
+    "copyFailed": "Failed to copy"
+  },
+  "errors": {
+    "403": "Access denied",
+    "404": "Not found",
+    "500": "Server error, try again later",
+    "network": "No connection to server",
+    "unknown": "Something went wrong",
+    "loadFailed": "Failed to load",
+    "retry": "Retry"
   },
   "units": {
     "min": "min",

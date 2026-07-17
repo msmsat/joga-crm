@@ -1,4 +1,5 @@
 from typing import Optional
+from pydantic import EmailStr, model_validator
 from schemas._base import BaseSchema
 
 
@@ -23,21 +24,47 @@ class StudioRead(BaseSchema):
 class BranchCreate(BaseSchema):
     name: str
     phone: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     country: Optional[str] = None
     city: Optional[str] = None
     address: Optional[str] = None
     photo_url: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _require_contact(self) -> "BranchCreate":
+        if not self.phone and not self.email:
+            raise ValueError("Укажите телефон или email")
+        return self
+
+
+class WorkingHoursWrite(BaseSchema):
+    day_of_week: int   # 0=Пн … 6=Вс
+    is_open: bool
+    open_time: str     # "HH:MM"
+    close_time: str    # "HH:MM"
 
 
 class BranchUpdate(BaseSchema):
     name: Optional[str] = None
     phone: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     country: Optional[str] = None
     city: Optional[str] = None
     address: Optional[str] = None
     photo_url: Optional[str] = None
+    working_hours: Optional[list[WorkingHoursWrite]] = None
+
+    @model_validator(mode="after")
+    def _validate_working_hours(self) -> "BranchUpdate":
+        if self.working_hours is None:
+            return self
+        days = [wh.day_of_week for wh in self.working_hours]
+        if sorted(days) != list(range(7)):
+            raise ValueError("working_hours должен содержать все 7 дней (0–6) без повторов")
+        for wh in self.working_hours:
+            if wh.is_open and wh.open_time >= wh.close_time:
+                raise ValueError("Время открытия должно быть раньше времени закрытия")
+        return self
 
 
 class BranchListItem(BaseSchema):
@@ -57,6 +84,8 @@ class HallBrief(BaseSchema):
     area: Optional[float] = None
     hourly_rate: Optional[float] = None
     equipment: Optional[list] = None
+    is_online: bool = False
+    photo_url: Optional[str] = None
 
 
 class WorkingHoursRead(BaseSchema):
@@ -78,6 +107,7 @@ class ServiceRead(BaseSchema):
     max_clients: Optional[int] = None
     bookings_count: int
     revenue_total: int
+    bookings_last_30d: int = 0
 
 
 class ServiceCreate(BaseSchema):
@@ -102,9 +132,15 @@ class ServiceUpdate(BaseSchema):
     max_clients: Optional[int] = None
 
 
+class ServiceWeekSlot(BaseSchema):
+    day_of_week: int   # 0=Пн … 6=Вс (текущая неделя)
+    hour: int          # час начала занятия (0-23)
+
+
 class BranchDetail(BaseSchema):
     id: int
     name: str
+    country: Optional[str] = None
     city: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[str] = None

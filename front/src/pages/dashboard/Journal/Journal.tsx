@@ -15,6 +15,7 @@ import { BookingPopup } from './components/BookingPopup';
 import { NewBookingModal } from './components/modals/NewBookingModal';
 import { AddClientModal } from './components/modals/AddClientModal';
 import * as Icons from '../../../components/Icons';
+import { getUserRoleFromToken } from '../../../utils/auth';
 
   // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
@@ -36,8 +37,9 @@ export default function Journal() {
   const [showNewForm, setShowNewForm] = useState(false);
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
-  const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('day');
-  const [isDraftMode, setIsDraftMode] = useState(false); // Режим черновика
+  const [calendarView, setCalendarView] = useState<'day' | 'week'>('day');
+  // Владелец и администратор редактируют журнал напрямую; тренер — только просмотр (ТЗ 2.3).
+  const canEdit = getUserRoleFromToken() !== 'trainer';
 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionReason, setTransitionReason] = useState<'date' | 'mode' | 'view' | null>(null);
@@ -201,12 +203,17 @@ export default function Journal() {
       const hall = halls.find(h => h.name === next.hall);
       if (hall) payload.hall_id = hall.id;
     }
+    if (next.title !== prev.title) payload.name = next.title;
+    if (next.maxClients !== prev.maxClients) payload.total_spots = next.maxClients;
     if (Object.keys(payload).length === 0) return;
 
-    scheduleApi.updateLesson(next.id, payload).catch(() => {
-      setBookings(bs => bs.map(b => (b.id === prev.id ? prev : b)));
-      showToast('Не удалось сохранить — изменение отменено');
-    });
+    scheduleApi.updateLesson(next.id, payload)
+      .then(() => showToast('Занятие обновлено'))
+      .catch((e: Error) => {
+        setBookings(bs => bs.map(b => (b.id === prev.id ? prev : b)));
+        setPopupBooking(pb => (pb && pb.id === prev.id ? prev : pb));
+        showToast(e.message || 'Не удалось сохранить — изменение отменено');
+      });
   }, [halls, setBookings, showToast]);
 
   const { drag, wasDragging, initDrag } = useDragAndDrop({
@@ -346,7 +353,6 @@ export default function Journal() {
   const avgLoad = filteredBookings.length > 0
     ? Math.round(filteredBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / filteredBookings.length * 100)
     : 0;
-  const pending = filteredBookings.filter(b => b.status === 'pending').length;
 
   return (
     <>
@@ -388,13 +394,9 @@ export default function Journal() {
             totalClasses={totalClasses}
             totalClients={totalClients}
             avgLoad={avgLoad}
-            pending={pending}
             activeTrainersCount={trainers.filter(t => activeTrainers.includes(t.id)).length}
             timeStep={timeStep}
             setTimeStep={setTimeStep}
-            isDraftMode={isDraftMode}
-            setIsDraftMode={setIsDraftMode}
-            showToast={showToast}
           />
 
           {/* ── СЕТКА ── */}
@@ -416,7 +418,7 @@ export default function Journal() {
                 filteredBookings={filteredBookings}
                 hoveredSlot={hoveredSlot}
                 setHoveredSlot={setHoveredSlot}
-                isDraftMode={isDraftMode}
+                canEdit={canEdit}
                 showNewForm={showNewForm}
                 popupBooking={popupBooking}
                 drag={drag}
@@ -462,10 +464,11 @@ export default function Journal() {
           popupBooking={popupBooking}
           popupRef={popupRef}
           popupPos={popupPos}
-          isDraftMode={isDraftMode}
+          canEdit={canEdit}
           timeStep={timeStep}
           setPopupBooking={setPopupBooking}
           setBookings={setBookings}
+          onSave={commitBookingChange}
           deleteBooking={deleteBooking}
           openAddClient={openAddClient}
           showToast={showToast}

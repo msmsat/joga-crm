@@ -13,7 +13,7 @@ interface ToolbarProps {
   viewMode: 'trainers' | 'halls';
   activeTrainers: number[];
   activeHalls: string[];
-  calendarView: 'day' | 'week' | 'month';
+  calendarView: 'day' | 'week';
   isEditingDate: boolean;
   dateInputVal: string;
   
@@ -27,7 +27,7 @@ interface ToolbarProps {
   // Дополнительные сеттеры для работы внутренних инпутов и кнопок
   setIsEditingDate: (val: boolean) => void;
   setDateInputVal: (val: string) => void;
-  setCalendarView: (val: 'day' | 'week' | 'month') => void;
+  setCalendarView: (val: 'day' | 'week') => void;
   onGoToToday: () => void;
 }
 
@@ -164,11 +164,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div style={{ flex: 1 }} />
 
-      {/* Переключатель: День / Неделя / Месяц */}
+      {/* Переключатель: День / Неделя */}
       <div className="view-toggle">
         <div
           className="view-slider"
-          style={{ transform: `translateX(${['day', 'week', 'month'].indexOf(calendarView) * 76}px)` }}
+          style={{ transform: `translateX(${['day', 'week'].indexOf(calendarView) * 76}px)` }}
         />
         <button
           className={`view-btn ${calendarView === 'day' ? 'active' : ''}`}

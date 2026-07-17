@@ -233,6 +233,52 @@
   background: rgba(252, 174, 145, 0.06);
 }
 
+.cat-hero-photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  animation: cat-hero-photo-in 0.3s ease;
+}
+
+@keyframes cat-hero-photo-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cat-hero-scrim {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(to top, rgba(26, 26, 26, 0.55), transparent);
+  transition: opacity 0.3s ease;
+}
+
+.cat-hero.has-photo .cat-hero-scrim {
+  opacity: 1;
+}
+
+.cat-hero.has-photo .cat-hero-name,
+.cat-hero.has-photo .cat-hero-sub {
+  color: #FFFFFF;
+}
+
+.cat-hero.has-photo .cat-hero-sub {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cat-hero.has-photo .cat-h-btn {
+  background: rgba(26, 26, 26, 0.35);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+.cat-hero.has-photo .cat-h-btn:hover {
+  background: rgba(26, 26, 26, 0.5);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 .cat-hero-actions {
   display: flex;
   gap: 8px;
@@ -377,6 +423,28 @@
   border-color: #FCAE91;
   color: #FCAE91;
   background: rgba(252, 174, 145, 0.06);
+}
+
+.cat-online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(163, 201, 168, 0.18);
+  color: #5A8A60;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.cat-online-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A3C9A8;
+  flex-shrink: 0;
 }
 
 .cat-hall-dot {
@@ -653,32 +721,6 @@
   border-bottom: 1px solid rgba(26, 26, 26, 0.05);
 }
 
-/* ─── TOAST ────────────────────────────────────────────────────────────────── */
-.cat-toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  background: #1A1A1A;
-  color: #FFFFFF;
-  padding: 12px 22px;
-  border-radius: 12px;
-  font-size: 13.5px;
-  font-weight: 700;
-  font-family: var(--font);
-  box-shadow: 0 8px 28px rgba(26, 26, 26, 0.22);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 9999;
-  white-space: nowrap;
-}
-
-.cat-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
 /* ─── FADE IN ───────────────────────────────────────────────────────────────── */
 @keyframes catFadeIn {
   from { opacity: 0; transform: translateY(6px); }
@@ -686,6 +728,43 @@
 }
 
 .cat-fade { animation: catFadeIn 0.28s ease both; }
+
+/* ─── СКЕЛЕТОНЫ (только первая загрузка, пока кэш пуст) ──────────────────────
+   Мягкий shimmer в тонах дизайн-системы; повторные заходы рисуются из кэша
+   мгновенно и скелетон не показывают. */
+@keyframes catSkelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.cat-skel {
+  background: linear-gradient(
+    90deg,
+    rgba(26, 26, 26, 0.04) 25%,
+    rgba(26, 26, 26, 0.07) 37%,
+    rgba(26, 26, 26, 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: catSkelShimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
+
+.cat-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px;
+}
+
+.cat-skel-icon { width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0; }
+.cat-skel-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.cat-skel-line { height: 10px; }
+.cat-skel-hero { height: 148px; margin: 24px; border-radius: 14px; }
+.cat-skel-stat { height: 78px; border-radius: 12px; }
+
+@media (max-height: 820px) {
+  .cat-skel-hero { height: 92px; }
+}
 
 /* ─── НИЗКИЕ ЭКРАНЫ (ноутбуки 720-820px): компактный hero ────────────────────
    Инфо-блок (лого + название) поднимается вверх, вровень с кнопками действий. */

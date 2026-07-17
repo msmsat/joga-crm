@@ -6,27 +6,24 @@ import type {
   DiscountConfig,
   LoyaltyConfig,
   ReferralConfig,
-  SubscriptionProgramConfig,
 } from '../../../../api/loyalty/loyalty.types';
 
 export interface ProgramConfigs {
   loyalty: LoyaltyConfig | null;
   discounts: DiscountConfig | null;
   certificates: CertificateConfig | null;
-  subscriptions: SubscriptionProgramConfig | null;
   referral: ReferralConfig | null;
 }
 
 const EMPTY_CONFIGS: ProgramConfigs = {
-  loyalty: null, discounts: null, certificates: null, subscriptions: null, referral: null,
+  loyalty: null, discounts: null, certificates: null, referral: null,
 };
 
-// Каждый ключ знает свой get/patch — один диспетчер вместо пяти веток.
+// Каждый ключ знает свой get/patch — один диспетчер вместо четырёх веток.
 const API = {
   loyalty:       { get: loyaltyApi.getConfig,             patch: loyaltyApi.updateConfig },
   discounts:     { get: loyaltyApi.getDiscountConfig,     patch: loyaltyApi.updateDiscountConfig },
   certificates:  { get: loyaltyApi.getCertificateConfig,  patch: loyaltyApi.updateCertificateConfig },
-  subscriptions: { get: loyaltyApi.getSubscriptionConfig, patch: loyaltyApi.updateSubscriptionConfig },
   referral:      { get: loyaltyApi.getReferralConfig,     patch: loyaltyApi.updateReferralConfig },
 } as const;
 
@@ -45,10 +42,9 @@ export function useLoyalty() {
       loyaltyApi.getConfig(),
       loyaltyApi.getDiscountConfig(),
       loyaltyApi.getCertificateConfig(),
-      loyaltyApi.getSubscriptionConfig(),
       loyaltyApi.getReferralConfig(),
-    ]).then(([loyalty, discounts, certificates, subscriptions, referral]) =>
-      setConfigs({ loyalty, discounts, certificates, subscriptions, referral })
+    ]).then(([loyalty, discounts, certificates, referral]) =>
+      setConfigs({ loyalty, discounts, certificates, referral })
     ).catch(() => {/* дровер откроется на дефолтах формы, если конфиг не загрузился */});
   }, []);
 
@@ -56,7 +52,6 @@ export function useLoyalty() {
     loyalty: configs.loyalty?.is_enabled ?? false,
     discounts: configs.discounts?.is_enabled ?? false,
     certificates: configs.certificates?.is_enabled ?? false,
-    subscriptions: configs.subscriptions?.is_enabled ?? false,
     referral: configs.referral?.is_enabled ?? false,
   };
 

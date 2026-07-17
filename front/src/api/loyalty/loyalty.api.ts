@@ -1,4 +1,5 @@
 import { client } from '../client'
+import { catalogApi } from '../catalog/catalog.api'
 import type {
   CertificateConfig,
   DiscountConfig,
@@ -8,8 +9,6 @@ import type {
   LoyaltyLevel,
   LoyaltyStats,
   ReferralConfig,
-  SubscriptionPackage,
-  SubscriptionProgramConfig,
 } from './loyalty.types'
 
 export interface GiftCertificateCreate {
@@ -39,11 +38,11 @@ export const loyaltyApi = {
   updateCertificateConfig: (payload: Partial<CertificateConfig>) =>
     client.patch<CertificateConfig>('/loyalty/certificates-config', payload),
 
-  getSubscriptionConfig: () =>
-    client.get<SubscriptionProgramConfig>('/loyalty/subscriptions-config'),
+  // Абонементы переехали в Каталог (/catalog/subscriptions*, задача 19) — здесь
+  // временный мост для страницы Лояльности, пока задача 23 не уберёт оттуда раздел.
+  getSubscriptionConfig: catalogApi.getSubscriptionConfig,
 
-  updateSubscriptionConfig: (payload: Partial<SubscriptionProgramConfig>) =>
-    client.patch<SubscriptionProgramConfig>('/loyalty/subscriptions-config', payload),
+  updateSubscriptionConfig: catalogApi.updateSubscriptionConfig,
 
   getReferralConfig: () =>
     client.get<ReferralConfig>('/loyalty/referral'),
@@ -69,15 +68,11 @@ export const loyaltyApi = {
   redeemCertificate: (id: number) =>
     client.post<GiftCertificate>(`/loyalty/certificates/${id}/redeem`),
 
-  getSubscriptionPackages: () =>
-    client.get<SubscriptionPackage[]>('/loyalty/subscriptions'),
+  getSubscriptionPackages: catalogApi.getSubscriptionPackages,
 
-  createSubscriptionPackage: (payload: Omit<SubscriptionPackage, 'id'>) =>
-    client.post<SubscriptionPackage>('/loyalty/subscriptions', payload),
+  createSubscriptionPackage: catalogApi.createSubscriptionPackage,
 
-  updateSubscriptionPackage: (id: number, payload: Partial<Omit<SubscriptionPackage, 'id'>>) =>
-    client.patch<SubscriptionPackage>(`/loyalty/subscriptions/${id}`, payload),
+  updateSubscriptionPackage: catalogApi.updateSubscriptionPackage,
 
-  deleteSubscriptionPackage: (id: number) =>
-    client.delete<void>(`/loyalty/subscriptions/${id}`),
+  deleteSubscriptionPackage: catalogApi.deleteSubscriptionPackage,
 }

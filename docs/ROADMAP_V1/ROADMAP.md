@@ -142,7 +142,7 @@
 
 **Когда:** стартует **после Эпика 3, параллельно Эпикам 4–5** — Fondy-верификации (Эпик 5) нужен живой сайт с офертой, а вебхуки удобнее тестировать на реальном домене.
 
-**Ключевые работы** (детально — [`docs/EPIC_7_BACKLOG.md`](EPIC_7_BACKLOG.md)):
+**Ключевые работы** (детально — [`docs/BACKLOG/EPIC_7_BACKLOG.md`](../BACKLOG/EPIC_7_BACKLOG.md)):
 - Инфраструктура: домен + DNS, VPS (без GPU — GPU-сервер для LLM отдельно в Эпике 6), прод-PostgreSQL + `alembic upgrade head`.
 - Деплой: uvicorn + systemd + nginx, статика фронта (`try_files` для SPA), SSL (certbot), боевой .env (новый SECRET_KEY, CORS на домен, боевые URL Fondy), `deploy.sh` одной командой.
 - Внешние сервисы: боевые Google OAuth креды (consent screen → Production), SPF/DKIM — чтобы письма не падали в спам.

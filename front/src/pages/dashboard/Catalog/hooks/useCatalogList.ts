@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { studioApi } from '../../../../api/studio/studio.api'
-import type { BranchListItem, BranchDetail, BranchCreate, BranchUpdate, HallCreate, HallUpdate } from '../../../../api/studio/studio.types'
+import type { BranchListItem, BranchCreate, BranchUpdate, HallCreate, HallUpdate } from '../../../../api/studio/studio.types'
 import { servicesApi } from '../../../../api/studio/services.api'
-import type { ServiceRead, ServiceCreate, ServiceUpdate } from '../../../../api/studio/services.api'
+import type { ServiceRead, ServiceCreate, ServiceUpdate, ServiceWeekSlot } from '../../../../api/studio/services.api'
 import type { Service } from '../types'
+import { queryKeys } from '../../../../api/queryKeys'
 
 // Бэкенд диктует структуру (ServiceRead); UI-поля вычисляем здесь на лету.
 function toUiService(s: ServiceRead): Service {
@@ -19,126 +20,111 @@ function toUiService(s: ServiceRead): Service {
     max_clients: s.max_clients ?? undefined,
     bookings_total: s.bookings_count,
     revenue_total: s.revenue_total,
-    schedule: [], // бэкенд не хранит слоты расписания услуги (вне Эпика 1)
+    bookings_last_30d: s.bookings_last_30d,
   }
 }
 
 export function useStudioList() {
-  const [studios, setStudios] = useState<BranchListItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const qc = useQueryClient()
+  const { data: studios = [], isLoading, error, refetch } = useQuery({
+    queryKey: queryKeys.branches,
+    queryFn: () => studioApi.getBranches(),
+  })
 
-  const refetch = async () => {
-    setIsLoading(true)
-    try {
-      // Вызываем твой метод из API
-      const response = await studioApi.getBranches()
-      
-      setStudios(response)
-    } catch (error) {
-      console.error('Ошибка при загрузке списка студий:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  // Правка филиала меняет и список, и его деталь — инвалидируем оба.
+  const invalidateBranch = (branchId: number) => {
+    qc.invalidateQueries({ queryKey: queryKeys.branches })
+    qc.invalidateQueries({ queryKey: queryKeys.branch(branchId) })
   }
 
-  // Автоматически загружаем данные при монтировании (открытии страницы)
-  useEffect(() => {
-    refetch()
-  }, [])
+  const createMut = useMutation({
+    mutationFn: (data: BranchCreate) => studioApi.createBranch(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.branches }),
+  })
+  const updateMut = useMutation({
+    mutationFn: ({ branchId, data }: { branchId: number; data: BranchUpdate }) => studioApi.updateBranch(branchId, data),
+    onSuccess: (_r, { branchId }) => invalidateBranch(branchId),
+  })
+  const deleteMut = useMutation({
+    mutationFn: (branchId: number) => studioApi.deleteBranch(branchId),
+    onSuccess: (_r, branchId) => invalidateBranch(branchId),
+  })
 
-  const createBranch = async (data: BranchCreate): Promise<BranchListItem> => {
-    const branch = await studioApi.createBranch(data)
-    await refetch()
-    return branch
-  }
+  // Интерфейс для компонентов прежний: async-функции, кидающие ApiError.
+  const createBranch = (data: BranchCreate): Promise<BranchListItem> => createMut.mutateAsync(data)
+  const updateBranch = (branchId: number, data: BranchUpdate) => updateMut.mutateAsync({ branchId, data })
+  const deleteBranch = (branchId: number) => deleteMut.mutateAsync(branchId)
 
-  const updateBranch = async (branchId: number, data: BranchUpdate) => {
-    await studioApi.updateBranch(branchId, data)
-    await refetch()
-  }
-
-  const deleteBranch = async (branchId: number) => {
-    await studioApi.deleteBranch(branchId)
-    await refetch()
-  }
-
-  return { studios, isLoading, refetch, createBranch, updateBranch, deleteBranch }
+  return { studios, isLoading, error, refetch, createBranch, updateBranch, deleteBranch }
 }
 
 export function useBranchDetail(branchId: number | null) {
-  const [branch, setBranch] = useState<BranchDetail | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const qc = useQueryClient()
+  const { data: branch = null, isLoading, error, refetch } = useQuery({
+    queryKey: queryKeys.branch(branchId ?? 0),
+    queryFn: () => studioApi.getBranch(branchId!),
+    enabled: branchId != null,
+  })
 
-  const refetch = async () => {
-    if (!branchId) return
-    setIsLoading(true)
-    try {
-      const response = await studioApi.getBranch(branchId)
-      setBranch(response)
-    } catch (error) {
-      console.error('Ошибка при загрузке филиала:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  // Залы влияют и на деталь филиала, и на счётчик hall_count в списке филиалов.
+  const invalidateHall = () => {
+    if (branchId != null) qc.invalidateQueries({ queryKey: queryKeys.branch(branchId) })
+    qc.invalidateQueries({ queryKey: queryKeys.branches })
   }
 
-  useEffect(() => {
-    refetch()
-  }, [branchId])
+  const createMut = useMutation({
+    mutationFn: (data: HallCreate) => studioApi.createHall(branchId!, data),
+    onSuccess: invalidateHall,
+  })
+  const updateMut = useMutation({
+    mutationFn: ({ hallId, data }: { hallId: number; data: HallUpdate }) => studioApi.updateHall(hallId, data),
+    onSuccess: invalidateHall,
+  })
+  const deleteMut = useMutation({
+    mutationFn: (hallId: number) => studioApi.deleteHall(hallId),
+    onSuccess: invalidateHall,
+  })
 
-  const createHall = async (data: HallCreate) => {
-    if (!branchId) return
-    await studioApi.createHall(branchId, data)
-    await refetch()
+  const createHall = (data: HallCreate) => {
+    if (branchId == null) return Promise.resolve()
+    return createMut.mutateAsync(data)
   }
+  const updateHall = (hallId: number, data: HallUpdate) => updateMut.mutateAsync({ hallId, data })
+  const deleteHall = (hallId: number) => deleteMut.mutateAsync(hallId)
 
-  const updateHall = async (hallId: number, data: HallUpdate) => {
-    await studioApi.updateHall(hallId, data)
-    await refetch()
-  }
-
-  const deleteHall = async (hallId: number) => {
-    await studioApi.deleteHall(hallId)
-    await refetch()
-  }
-
-  return { branch, isLoading, refetch, createHall, updateHall, deleteHall }
+  return { branch, isLoading, error, refetch, createHall, updateHall, deleteHall }
 }
 
 export function useServiceList() {
-  const [services, setServices] = useState<Service[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const qc = useQueryClient()
+  const { data: services = [], isLoading, error, refetch } = useQuery({
+    queryKey: queryKeys.services,
+    queryFn: () => servicesApi.list(),
+    select: (rows) => rows.map(toUiService),
+  })
 
-  const refetch = async () => {
-    setIsLoading(true)
-    try {
-      const response = await servicesApi.list()
-      setServices(response.map(toUiService))
-    } catch (error) {
-      console.error('Ошибка при загрузке услуг:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.services })
 
-  useEffect(() => {
-    refetch()
-  }, [])
+  const createMut = useMutation({ mutationFn: (data: ServiceCreate) => servicesApi.create(data), onSuccess: invalidate })
+  const updateMut = useMutation({
+    mutationFn: ({ serviceId, data }: { serviceId: number; data: ServiceUpdate }) => servicesApi.update(serviceId, data),
+    onSuccess: invalidate,
+  })
+  const deleteMut = useMutation({ mutationFn: (serviceId: number) => servicesApi.delete(serviceId), onSuccess: invalidate })
 
-  const createService = async (data: ServiceCreate) => {
-    await servicesApi.create(data)
-    await refetch()
-  }
+  const createService = (data: ServiceCreate) => createMut.mutateAsync(data)
+  const updateService = (serviceId: number, data: ServiceUpdate) => updateMut.mutateAsync({ serviceId, data })
+  const deleteService = (serviceId: number) => deleteMut.mutateAsync(serviceId)
 
-  const updateService = async (serviceId: number, data: ServiceUpdate) => {
-    await servicesApi.update(serviceId, data)
-    await refetch()
-  }
+  return { services, isLoading, error, refetch, createService, updateService, deleteService }
+}
 
-  const deleteService = async (serviceId: number) => {
-    await servicesApi.delete(serviceId)
-    await refetch()
-  }
-
-  return { services, isLoading, refetch, createService, updateService, deleteService }
+// Реальные занятия услуги на текущей неделе — честная сетка «Расписание», без выдумки.
+export function useServiceWeek(serviceId: number | null) {
+  const { data: slots = [], isLoading } = useQuery<ServiceWeekSlot[]>({
+    queryKey: queryKeys.serviceWeek(serviceId ?? 0),
+    queryFn: () => servicesApi.getWeek(serviceId!),
+    enabled: serviceId != null,
+  })
+  return { slots, isLoading }
 }

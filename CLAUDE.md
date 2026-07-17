@@ -204,6 +204,27 @@
 **Backend (Layered API):**
 - `routers/` (Endpoints) -> `schemas.py` (Pydantic validation) -> `models.py` (SQLAlchemy ORM) -> `database.py`.
 
+### 🧱 UI-кит (`front/src/components/ui/`) — ОБЯЗАТЕЛЕН к использованию
+Вся базовая UI-механика уже написана и выглядит идеально. **ЗАПРЕЩЕНО писать свои кнопки, инпуты, карточки, модалки, тултипы и селекты** — только компоненты кита:
+
+| Компонент | Импорт | Назначение |
+|---|---|---|
+| `Button` | `components/ui/index` | 4 варианта: `primary` (персиковый градиент), `dark` (оникс), `ghost`, `danger`; `loading`, `icon`, `size` |
+| `Card` | `components/ui/index` | Карточка-поверхность: radius 16, мягкая тень, `hover` для кликабельных |
+| `Input` | `components/ui/index` | Поле с label, glow-фокусом персиковым и состоянием `error` |
+| `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита |
+| `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: blur-оверлей, пружинный вход/выход, Esc |
+| `ConfirmModal` | `components/ui/index` | Замена `window.confirm` (danger-режим для удалений) |
+| `Tooltip` | `components/ui/index` | Ониксовая капсула, `side: top/bottom/left/right` |
+| `Toast` (`useToast`) | `components/ui/index` | Уведомления об успехе/ошибке |
+| `Sidebar`, `Navbar` | `components/ui/index` | Каркас приложения (используются только в `DashboardLayout`) |
+
+Правила:
+1. Нужной вариации нет → **расширь компонент кита** (новый variant/prop), не создавай локальную копию.
+2. Главный акцент ВСЕГДА персиковый `#FCAE91` / `#F9A08B` — CTA, фокус, активные состояния. Новые компоненты кита обязаны использовать его как primary.
+3. Импорт строго через `components/ui/index` (не через папку `components/ui` — на Windows путь сталкивается по регистру со старым `components/UI.tsx`, который остаётся только для лендинга/авторизации/онбординга).
+4. Новый общий компонент → кладём в `components/ui/`, экспортируем из `index.ts`, добавляем строку в эту таблицу.
+
 ---
 
 ## 🎨 6. UI/UX Design System (Strict adherence required)

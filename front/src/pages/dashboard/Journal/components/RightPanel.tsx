@@ -13,7 +13,7 @@ interface MiniCalendarProps {
   today: Date;
   changeMonth: (dir: number) => void;
   setSelectedDay: (d: number) => void;
-  calendarView: 'day' | 'week' | 'month';
+  calendarView: 'day' | 'week';
 }
 
 const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView }) => {
@@ -256,7 +256,7 @@ interface RightPanelProps {
   changeMonth: (dir: number) => void;
   setSelectedDay: (d: number) => void;
   toggleHall: (h: string) => void;
-  calendarView: 'day' | 'week' | 'month'; // 🔥 Добавили пропс
+  calendarView: 'day' | 'week'; // 🔥 Добавили пропс
 }
 
 export const RightPanel: React.FC<RightPanelProps> = ({

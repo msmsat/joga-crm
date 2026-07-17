@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, type ReactNode } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './api/queryClient';
 import { authApi, type UserMe } from './api';
 import { AIDrawerProvider } from './contexts/AIDrawerContext';
 import Landing from "./pages/Landingpage";
@@ -79,6 +81,7 @@ const PublicRoute = ({ children }: { children: ReactNode }) => {
 // ─── ГЛАВНЫЙ КОМПОНЕНТ APP ──────────────────────────────────────────────────
 export default function App() {
   return (
+    <QueryClientProvider client={queryClient}>
     <AIDrawerProvider>
     <Router>
       <Routes>
@@ -139,5 +142,6 @@ export default function App() {
       </Routes>
     </Router>
     </AIDrawerProvider>
+    </QueryClientProvider>
   );
 }

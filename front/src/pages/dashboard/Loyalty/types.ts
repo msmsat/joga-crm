@@ -1,8 +1,8 @@
 import type { JSX } from 'react';
 
-export type { LoyaltyConfig, LoyaltyLevel, GiftCertificate, SubscriptionPackage } from '../../../api/loyalty/loyalty.types';
+export type { LoyaltyConfig, LoyaltyLevel, GiftCertificate } from '../../../api/loyalty/loyalty.types';
 
-export type ProgramKey = 'loyalty' | 'discounts' | 'certificates' | 'subscriptions' | 'referral';
+export type ProgramKey = 'loyalty' | 'discounts' | 'certificates' | 'referral';
 
 export interface Program {
   key: ProgramKey;

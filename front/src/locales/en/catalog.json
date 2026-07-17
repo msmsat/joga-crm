@@ -1,12 +1,131 @@
 {
   "tabs": {
     "studios": "Studios",
-    "services": "Services"
+    "services": "Services",
+    "subscriptions": "Subscriptions"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": { "title": "About the studio", "sub": "Name and contact details", "trust": "Your data is encrypted and never shared with third parties" },
+        "location": { "title": "Location", "sub": "Where is this branch located?", "trust": "The address is used in the schedule and maps" },
+        "photo": { "title": "Photo", "sub": "Studio cover — optional", "trust": "You can add it later in branch settings" }
+      },
+      "stepCounter": "Step {{current}} of {{total}}",
+      "step1": {
+        "heading": "Basic information",
+        "subheading": "What is the studio called and how to reach it?",
+        "name": "Studio name *",
+        "namePlaceholder": "E.g. Velora Studio",
+        "phone": "Phone *",
+        "email": "Email *",
+        "contactHint": "Enter a phone or email — at least one",
+        "noContacts": "No contacts provided",
+        "new": "NEW"
+      },
+      "step2": {
+        "heading": "Location",
+        "subheading": "Specify where this branch is located",
+        "country": "Country",
+        "countryPlaceholder": "United States",
+        "city": "City *",
+        "cityPlaceholder": "New York",
+        "address": "Address *",
+        "addressPlaceholder": "5th Avenue 12, suite 301",
+        "noAddress": "No address provided",
+        "groupHint": "The \"Country\" and \"City\" fields are used to group branches in the list."
+      },
+      "step3": {
+        "heading": "Studio photo",
+        "subheading": "Upload a cover — optional, you can skip it",
+        "uploadCta": "Click to upload",
+        "uploadHint": "JPG, PNG up to 10 MB",
+        "replace": "Replace",
+        "remove": "Remove",
+        "previewAlt": "Preview",
+        "summary": "Summary",
+        "uploadError": "Failed to upload the photo. Try another file or remove it."
+      },
+      "summaryRows": { "name": "Name", "city": "City", "address": "Address" },
+      "nextPhoto": "Next — photo",
+      "submit": "Create studio",
+      "skipPhoto": "Skip photo and create",
+      "illus": { "contacts": "Contacts", "newBranch": "New branch", "city": "City", "newBranchStudio": "New studio branch" }
+    },
+    "editBranch": {
+      "title": "Edit branch",
+      "name": "Branch name",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Phone",
+      "email": "Email",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Country",
+      "countryPlaceholder": "United States",
+      "city": "City",
+      "cityPlaceholder": "New York",
+      "address": "Address",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Branch photo",
+      "contactHint": "Enter a phone or email",
+      "workingHours": "Working hours"
+    },
+    "hall": {
+      "titleNew": "New hall",
+      "titleEdit": "Edit hall",
+      "name": "Hall name",
+      "namePlaceholder": "Hall A",
+      "capacity": "Capacity",
+      "area": "Area, m²",
+      "hourlyRate": "Price per hour, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Equipment",
+      "equipmentPlaceholder": "Add equipment",
+      "color": "Color",
+      "isOnline": "Online hall",
+      "photo": "Hall photo"
+    },
+    "service": {
+      "titleNew": "New service",
+      "titleEdit": "Edit service",
+      "name": "Service name",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Category",
+      "type": "Type",
+      "typeGroup": "Group",
+      "typeIndividual": "Individual",
+      "price": "Price, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Duration, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Max clients",
+      "maxClientsPlaceholder": "15",
+      "description": "Description",
+      "descriptionPlaceholder": "Short service description",
+      "color": "Color"
+    },
+    "package": {
+      "titleNew": "New package",
+      "titleEdit": "Edit package",
+      "name": "Package name",
+      "namePlaceholder": "8 classes",
+      "classCount": "Number of classes",
+      "classCountPlaceholder": "8",
+      "price": "Price, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Price per visit",
+      "durationDays": "Valid for, days",
+      "durationDaysPlaceholder": "60",
+      "services": "Services",
+      "servicesHint": "Nothing selected — package applies to all classes",
+      "isActive": "For sale"
+    }
   },
   "studios": {
     "title": "STUDIOS",
     "addStudio": "Add studio",
     "addHall": "Add hall",
+    "editBranch": "Edit branch",
+    "deleteBranch": "Delete branch",
     "infoTab": "General info",
     "hallsTitle": "Studio halls",
     "hallCount_one": "{{count}} hall",
@@ -43,7 +162,9 @@
       "edit": "Edit: {{name}}"
     },
     "confirmDelete": "Delete branch \"{{name}}\"? This cannot be undone.",
-    "confirmDeleteHall": "Delete hall \"{{name}}\"?"
+    "confirmDeleteTitle": "Delete branch?",
+    "confirmDeleteHall": "Delete hall \"{{name}}\"?",
+    "confirmDeleteHallTitle": "Delete hall?"
   },
   "services": {
     "title": "SERVICES",
@@ -66,7 +187,7 @@
       "minutes": "minutes",
       "upTo": "Up to {{count}} pers.",
       "personal": "Personal",
-      "bookingsPerMonth": "bookings / month",
+      "bookingsPerMonth": "bookings in 30 days",
       "schedule": "Class schedule"
     },
     "empty": {
@@ -81,11 +202,47 @@
       "edit": "Edit: {{name}}"
     },
     "confirmDelete": "Delete service \"{{name}}\"?",
+    "confirmDeleteTitle": "Delete service?",
     "categories": {
-      "Йога": "Yoga",
-      "Пилатес": "Pilates",
-      "Стретчинг": "Stretching",
-      "Индивидуальные": "Individual"
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "individual": "Individual"
     }
+  },
+  "subscriptions": {
+    "title": "SUBSCRIPTIONS",
+    "addPackage": "Add package",
+    "card": {
+      "classCount_one": "{{count}} class",
+      "classCount_other": "{{count}} classes",
+      "duration": "{{count}} days",
+      "allServices": "All classes",
+      "serviceCount_one": "{{count}} service",
+      "serviceCount_other": "{{count}} services",
+      "inactiveBadge": "Delisted"
+    },
+    "settings": {
+      "title": "Program settings",
+      "allowFreeze": "Subscription freeze",
+      "allowTransfer": "Transfer to another client",
+      "autoRenewal": "Auto-renewal"
+    },
+    "empty": {
+      "title": "No packages yet",
+      "cta": "Create package"
+    },
+    "toasts": {
+      "created": "Package created",
+      "saved": "Saved",
+      "saveError": "Failed to save package",
+      "deactivated": "Package delisted",
+      "restored": "Package relisted",
+      "actionError": "Failed to complete the action"
+    },
+    "deactivate": "Delist",
+    "restore": "Relist",
+    "confirmDeactivateTitle": "Delist this package?",
+    "confirmDeactivate": "Already sold subscriptions will keep working."
   }
 }

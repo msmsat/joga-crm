@@ -20,6 +20,12 @@ export const studioApi = {
     return client.postForm<UploadLogoResponse>('/studio/upload-staff-photo', form)
   },
 
+  uploadHallPhoto: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return client.postForm<UploadLogoResponse>('/studio/upload-hall-photo', form)
+  },
+
   get: () =>
     client.get<StudioRead>('/studio'),
 
