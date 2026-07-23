@@ -14,7 +14,7 @@ from sqlalchemy.future import select
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import GiftCertificate, StudioCertificateConfig
+from models import Account, GiftCertificate, Operation, StudioCertificateConfig
 from schemas.loyalty import GiftCertificateCreate, GiftCertificateRead
 
 router = APIRouter()
@@ -62,6 +62,14 @@ async def create_certificate(
         expiry_days = cfg.expiry_days if cfg else 365
         expires_at = date.today() + timedelta(days=expiry_days)
 
+    account = None
+    if body.account_id is not None:
+        account = (await db.execute(
+            select(Account).where(Account.id == body.account_id, Account.studio_id == ctx.studio_id)
+        )).scalar_one_or_none()
+        if account is None:
+            raise HTTPException(status_code=404, detail="Счёт не найден")
+
     cert = GiftCertificate(
         studio_id=ctx.studio_id,
         client_id=body.client_id,
@@ -73,6 +81,21 @@ async def create_certificate(
         expires_at=expires_at,
     )
     db.add(cert)
+
+    if account is not None:
+        db.add(Operation(
+            studio_id=ctx.studio_id,
+            type="in",
+            title=f"Сертификат «{cert.code}»",
+            amount=body.amount,
+            op_date=date.today(),
+            category="Сертификаты",
+            method="",
+            account_id=account.id,
+            client_id=body.client_id,
+        ))
+        account.balance += body.amount
+
     await db.commit()
     await db.refresh(cert)
     return cert
@@ -94,6 +117,11 @@ async def redeem_certificate(
         raise HTTPException(status_code=404, detail="Сертификат не найден")
     if cert.status != "active":
         raise HTTPException(status_code=409, detail="Сертификат уже погашен или недействителен")
+    if cert.expires_at and cert.expires_at < date.today():
+        # ponytail: ленивый expire при обращении, без крон-джобы
+        cert.status = "expired"
+        await db.commit()
+        raise HTTPException(status_code=400, detail={"code": "loyalty.cert_expired", "message": "Срок действия сертификата истёк"})
 
     cert.status = "used"
     cert.used_at = datetime.utcnow()

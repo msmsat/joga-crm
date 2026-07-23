@@ -4,6 +4,7 @@
 Каналы — upsert по (studio_id, channel_type); при активации проставляется
 connected_at. Всё — только owner, скоуп по ctx.studio_id.
 """
+import re
 from datetime import datetime
 from typing import List
 
@@ -22,6 +23,7 @@ from schemas.settings.booking import (
 router = APIRouter()
 
 _CHANNEL_TYPES = {"telegram", "instagram", "whatsapp", "web"}
+_TG_TOKEN_RE = re.compile(r"^\d{6,12}:[A-Za-z0-9_-]{30,50}$")
 
 
 @router.get("/settings", response_model=BookingSettingsRead)
@@ -79,6 +81,11 @@ async def update_channel(
 ):
     if channel_type not in _CHANNEL_TYPES:
         raise HTTPException(status_code=400, detail="Неизвестный тип канала")
+
+    if channel_type == "telegram" and body.config and "token" in body.config:
+        token = body.config["token"]
+        if not isinstance(token, str) or not _TG_TOKEN_RE.match(token):
+            raise HTTPException(status_code=400, detail="Неверный формат токена")
 
     row = (await db.execute(
         select(BookingChannelConfig).where(

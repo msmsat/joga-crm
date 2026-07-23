@@ -1,95 +1,77 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Clients.module.css';
 import type { ClientData } from './types';
-import type { ClientFormState } from './hooks/useClientForm';
-import { useClientsList } from './hooks/useClientsList';
+import { useClientsList, useClientCategories, useClientProfile, useClientMutations } from './hooks/useClientsList';
 import { ClientsToolbar } from './components/ClientsToolbar';
 import { ClientsTable } from './components/ClientsTable';
 import { ClientProfileSlider } from './components/ClientProfileSlider';
 import { AddClientModal } from './components/modals/AddClientModal';
-import { DeleteClientModal } from './components/modals/DeleteClientModal';
-import { clientsApi } from '../../../api/clients';
-import type { ClientProfile, CategoryStat } from '../../../api/clients/clients.types';
+import { ConfirmModal, useToast } from '../../../components/ui/index';
 import { mapProfile } from './utils/mapClient';
 
 export default function Clients() {
-  // Категории с сервера: храним и label (для табов), и key (для фильтра на бэке).
-  const [categories, setCategories] = useState<CategoryStat[]>([{ key: 'all', label: 'Все', count: 0 }]);
+  const { t } = useTranslation('clients');
+  const toast = useToast();
+  // Категории с сервера: используем только key + count, label серверный (ru) игнорируем.
+  const categories = useClientCategories();
   const [activeCatKey, setActiveCatKey] = useState('all');
-  const [activeProfile, setActiveProfile] = useState<ClientProfile | null>(null);
+  const mutations = useClientMutations();
 
   const {
     clients, hasMore, isLoading,
     rawSearch, setRawSearch,
     setCategory,
-    reload, loadMore, patchLocal, removeLocal,
+    loadMore,
   } = useClientsList();
 
-  const [activeClient,   setActiveClient]   = useState<ClientData | null>(null);
+  const [activeClientId, setActiveClientId] = useState<number | null>(null);
   const [isPanelOpen,    setIsPanelOpen]    = useState(false);
   const [removingId,     setRemovingId]     = useState<number | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [deleteTarget,   setDeleteTarget]   = useState<ClientData | null>(null);
 
-  const loadCategories = useCallback(() => {
-    clientsApi.getCategories().then(setCategories);
-  }, []);
+  const { profile: activeProfile } = useClientProfile(isPanelOpen ? activeClientId : null);
+  const activeClient = activeProfile ? mapProfile(activeProfile) : (clients.find(c => c.id === activeClientId) ?? null);
 
-  useEffect(() => { loadCategories(); }, [loadCategories]);
-
-  // Таб-строки для тулбара ("VIP (12)") и активная строка.
-  const categoryLabels = categories.map(c => `${c.label} (${c.count})`);
-  const activeCatLabel = categoryLabels[categories.findIndex(c => c.key === activeCatKey)] ?? categoryLabels[0] ?? '';
-
-  const handleCatChange = useCallback((label: string) => {
-    const idx = categoryLabels.indexOf(label);
-    const key = categories[idx]?.key ?? 'all';
+  const handleCatChange = useCallback((key: string) => {
     setActiveCatKey(key);
     setCategory(key);
-  }, [categoryLabels, categories, setCategory]);
+  }, [setCategory]);
 
   const handleCardSelect = useCallback((cl: ClientData) => {
-    if (activeClient?.id === cl.id && isPanelOpen) {
+    if (activeClientId === cl.id && isPanelOpen) {
       setIsPanelOpen(false);
     } else {
-      setActiveClient(cl);
+      setActiveClientId(cl.id);
       setIsPanelOpen(true);
-      setActiveProfile(null);
-      clientsApi.getProfile(cl.id).then(p => {
-        setActiveProfile(p);
-        const mapped = mapProfile(p);
-        patchLocal(prev => prev.map(c => c.id === cl.id ? mapped : c));
-        setActiveClient(mapped);
-      });
     }
-  }, [activeClient, isPanelOpen, patchLocal]);
+  }, [activeClientId, isPanelOpen]);
 
   const handlePanelClose = useCallback(() => setIsPanelOpen(false), []);
 
-  const handleAddSuccess = useCallback((_form: ClientFormState) => {
+  const handleAddSuccess = useCallback(() => {
+    // Инвалидацию списка/категорий уже сделал useClientMutations().create — здесь только UI.
     setIsAddModalOpen(false);
-    reload();
-    loadCategories();
-  }, [reload, loadCategories]);
+  }, []);
 
-  const handleDelete = useCallback((id: number) => {
-    clientsApi.delete(id).then(() => {
-      setRemovingId(id);
-      setTimeout(() => {
-        removeLocal(id);
-        setRemovingId(null);
-        setActiveClient(null);
-        setActiveProfile(null);
-        setIsPanelOpen(false);
-      }, 320);
-    });
-  }, [removeLocal]);
+  const handleDeleteRequest = useCallback((id: number) => {
+    const target = clients.find(c => c.id === id) ?? (activeClientId === id ? activeClient : null);
+    if (target) setDeleteTarget(target);
+  }, [clients, activeClientId, activeClient]);
 
-  const handleFreezeChange = useCallback((id: number, frozen: boolean) => {
-    patchLocal(prev => prev.map(c =>
-      c.id === id ? { ...c, frozen, status: frozen ? 'frozen' : 'active' } : c
-    ));
-  }, [patchLocal]);
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
+    const id = deleteTarget.id;
+    await mutations.delete(id);
+    setRemovingId(id);
+    setTimeout(() => {
+      setRemovingId(null);
+      setActiveClientId(null);
+      setIsPanelOpen(false);
+    }, 320);
+    toast.success(t('deleteModal.success'));
+  }, [deleteTarget, mutations, toast, t]);
 
   return (
     <>
@@ -100,8 +82,8 @@ export default function Clients() {
       `}</style>
 
       <ClientsToolbar
-        categories={categoryLabels}
-        activeCat={activeCatLabel}
+        categories={categories}
+        activeCatKey={activeCatKey}
         onCatChange={handleCatChange}
         searchQuery={rawSearch}
         onSearch={setRawSearch}
@@ -109,10 +91,10 @@ export default function Clients() {
       />
 
       <div className={styles.panelContainer}>
-        <div className={styles.gridWrap}>
+        <div className={`${styles.gridWrap} ${isPanelOpen ? styles.gridWrapShifted : ''}`}>
           <ClientsTable
             clients={clients}
-            activeClientId={activeClient?.id ?? null}
+            activeClientId={activeClientId}
             isPanelOpen={isPanelOpen}
             onSelect={handleCardSelect}
             removingId={removingId}
@@ -120,7 +102,7 @@ export default function Clients() {
           {hasMore && (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
               <button
-                onClick={loadMore}
+                onClick={() => loadMore()}
                 disabled={isLoading}
                 style={{
                   padding: '10px 24px',
@@ -132,7 +114,7 @@ export default function Clients() {
                   fontFamily: 'var(--font)', opacity: isLoading ? 0.6 : 1,
                 }}
               >
-                {isLoading ? 'Загрузка…' : 'Загрузить ещё'}
+                {isLoading ? t('loading') : t('loadMore')}
               </button>
             </div>
           )}
@@ -143,8 +125,7 @@ export default function Clients() {
           profile={activeProfile}
           isOpen={isPanelOpen}
           onClose={handlePanelClose}
-          onDelete={handleDelete}
-          onFreezeChange={handleFreezeChange}
+          onDelete={handleDeleteRequest}
         />
       </div>
 
@@ -154,12 +135,17 @@ export default function Clients() {
         onSuccess={handleAddSuccess}
       />
 
-      <DeleteClientModal
-        isOpen={deleteTarget !== null}
-        clientName={deleteTarget ? `${deleteTarget.name}${deleteTarget.last_name ? ' ' + deleteTarget.last_name : ''}` : ''}
-        onConfirm={() => setDeleteTarget(null)}
-        onClose={() => setDeleteTarget(null)}
-      />
+      {deleteTarget && (
+        <ConfirmModal
+          title={t('deleteModal.title')}
+          message={`${t('deleteModal.body')} «${deleteTarget.name}${deleteTarget.last_name ? ' ' + deleteTarget.last_name : ''}». ${t('deleteModal.warning')}`}
+          confirmText={t('deleteModal.confirm')}
+          cancelText={t('deleteModal.cancel')}
+          danger
+          onConfirm={handleDeleteConfirm}
+          onClose={() => setDeleteTarget(null)}
+        />
+      )}
     </>
   );
 }

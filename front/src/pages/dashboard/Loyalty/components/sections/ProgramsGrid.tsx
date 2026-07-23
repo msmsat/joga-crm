@@ -1,17 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import styles from '../../Loyalty.module.css';
-import type { Program, ProgramKey } from '../../types';
+import type { ConfigProgramKey, Program, ProgramKey } from '../../types';
 import { IconSettings, IconLock } from '../ui/LoyaltyIcons';
 
 interface Props {
   programsList: Program[];
   openDrawer: (key: ProgramKey, title: string) => void;
-  toggleProgram: (key: ProgramKey, enabled: boolean) => void;
+  toggleProgram: (key: ConfigProgramKey, enabled: boolean) => void;
 }
 
 export default function ProgramsGrid({ programsList, openDrawer, toggleProgram }: Props) {
+  const { t } = useTranslation('loyalty');
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-      {programsList.map((prog, i) => (
+      {programsList.map((prog, i) => {
+        const configKey = prog.key === 'promocodes' || prog.key === 'deposit' ? null : prog.key;
+        return (
         <div
           key={prog.key}
           className={`${styles.programCard} ${prog.configured ? styles.programCardConfigured : ''}`}
@@ -39,30 +43,36 @@ export default function ProgramsGrid({ programsList, openDrawer, toggleProgram }
 
           {prog.configured ? (
             <div style={{ marginTop: 'auto' }}>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: prog.accentColor, marginBottom: '2px' }}>
-                {prog.stats?.value}
-              </div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{prog.stats?.label}</div>
+              {prog.stats && (
+                <>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: prog.accentColor, marginBottom: '2px' }}>
+                    {prog.stats.value}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{prog.stats.label}</div>
+                </>
+              )}
               <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className={styles.badgeConfigured}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  Активна
+                  {t('card.active')}
                 </span>
-                <button
-                  onClick={e => { e.stopPropagation(); toggleProgram(prog.key, false); }}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, textDecoration: 'underline' }}
-                >
-                  Выключить
-                </button>
+                {configKey && (
+                  <button
+                    onClick={e => { e.stopPropagation(); toggleProgram(configKey, false); }}
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, textDecoration: 'underline' }}
+                  >
+                    {t('card.disable')}
+                  </button>
+                )}
               </div>
             </div>
           ) : (
             <div style={{ marginTop: 'auto' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text3)', marginBottom: '12px' }}>
                 <IconLock />
-                <span style={{ fontSize: '12px', fontWeight: 600 }}>Не настроена</span>
+                <span style={{ fontSize: '12px', fontWeight: 600 }}>{t('card.notConfigured')}</span>
               </div>
               <button
                 className={styles.configureBtn}
@@ -70,12 +80,13 @@ export default function ProgramsGrid({ programsList, openDrawer, toggleProgram }
                 onClick={e => { e.stopPropagation(); openDrawer(prog.key, prog.title); }}
               >
                 <IconSettings />
-                Настроить
+                {t('card.configure')}
               </button>
             </div>
           )}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

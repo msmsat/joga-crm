@@ -1,4 +1,6 @@
 import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +8,8 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 
 from ratelimit import limiter
+from database import async_session_maker
+from services.scenario_runner import start_scenario_loop
 
 from routers.auth import router as auth_router
 from routers.studio import router as studio_router
@@ -20,6 +24,7 @@ from routers.loyalty import router as loyalty_router
 from routers.loyalty.packages import router as catalog_subscriptions_router
 from routers.booking import router as booking_router
 from routers.billing import router as billing_router
+from routers.checkout import router as checkout_router
 from dependencies import require_active_subscription
 from fastapi import Depends
 
@@ -27,7 +32,17 @@ from fastapi import Depends
 # /billing, вебхук и /booking/public — иначе не войти, не оплатить, не записаться извне.
 _sub_gate = [Depends(require_active_subscription)]
 
-app = FastAPI(title="Velora CRM API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Фоновый исполнитель умных сценариев лояльности (V5-4, задача 2).
+    task = start_scenario_loop(async_session_maker)
+    try:
+        yield
+    finally:
+        task.cancel()
+
+
+app = FastAPI(title="Velora CRM API", lifespan=lifespan)
 
 # Rate-limit публичных эндпоинтов (задача 11b). Лимиты вешаются декораторами
 # на сами публичные роуты; на JWT-роутеры ничего не навешивается.
@@ -53,6 +68,7 @@ app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"], de
 app.include_router(staff_router, prefix="/staff", tags=["Staff"], dependencies=_sub_gate)
 app.include_router(loyalty_router, prefix="/loyalty", tags=["Loyalty"], dependencies=_sub_gate)
 app.include_router(catalog_subscriptions_router, prefix="/catalog", tags=["Catalog"], dependencies=_sub_gate)
+app.include_router(checkout_router, tags=["Checkout"], dependencies=_sub_gate)
 # /booking смешивает публичные (без JWT) и owner-настройки в одном роутере — гейт вешаем
 # на settings-подроутер внутри booking/router.py, НЕ на весь префикс.
 app.include_router(booking_router, prefix="/booking", tags=["Booking"])

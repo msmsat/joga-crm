@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Service } from '../types';
 import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
 import { useServiceList, useServiceWeek } from '../hooks/useCatalogList';
-import { useStudioCurrency } from '../hooks/useStudioCurrency';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 import { errorMessage } from '../../../../api/errorMessage';

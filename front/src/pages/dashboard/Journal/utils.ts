@@ -1,6 +1,17 @@
 // utils.ts
 import type { Booking, Trainer, Lesson, Hall } from './types';
 import type { StaffListItem } from '../../../api/staff/staff.types';
+import { TIMES } from './constants';
+
+// Название месяца/дня недели на выбранном языке — нативный Intl вместо
+// захардкоженных русских массивов (месяцы i18next переводить не надо).
+export const monthName = (month: number, lang: string, year = 2024) =>
+  new Date(year, month, 1).toLocaleDateString(lang, { month: 'long' });
+
+// Понедельник = индекс 0 (бизнес-решение, не зависит от локали) — 2024-01-01
+// это понедельник, отсюда и старт диапазона.
+export const weekdayShort = (dayIdx: number, lang: string) =>
+  new Date(2024, 0, 1 + dayIdx).toLocaleDateString(lang, { weekday: 'short' });
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
 export function getBookingLayouts(bookings: Booking[]) {
@@ -97,7 +108,9 @@ export function getBookingLayouts(bookings: Booking[]) {
         width = `calc(100% - ${RIGHT_SPACE}px - (${dynamicStep} * ${trackIdx}))`;
       }
 
-      const zIndex = 100 + (trackIdx * 1000) - Math.round(b.timeStart * 10);
+      // База 500: слагаемое -timeStart*10 не должно увести z-index в минус,
+      // иначе карточка провалится под ячейки сетки (макс. индекс времени 15 → -150)
+      const zIndex = 500 + (trackIdx * 1000) - Math.round(b.timeStart * 10);
 
       layouts.set(b.id, {
         left,
@@ -122,6 +135,12 @@ export const formatIndexToTimeStr = (idx: number) => {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 
+// Сетка часов идёт 07:00..23:00 (TIMES + два часа хвоста в NewBookingModal) —
+// та же граница, что MAX_TIME_IDX в BookingPopup. Кривой ввод («06:30», «02:00»)
+// тихо прилипает к ближайшей границе, как делают все календари (задача 5 V4-4).
+export const MIN_TIME_INDEX = 0;
+export const MAX_TIME_INDEX = TIMES.length + 1;
+
 export const parseTimeToIndex = (timeStr: string) => {
   const clean = timeStr.replace(/[^\d:]/g, '');
   let h = 0, m = 0;
@@ -144,7 +163,8 @@ export const parseTimeToIndex = (timeStr: string) => {
   if (isNaN(m)) m = 0;
   if (h > 23) h = 23;
   if (m > 59) m = 59;
-  return (h - 7) + (m / 60);
+  const idx = (h - 7) + (m / 60);
+  return Math.min(Math.max(idx, MIN_TIME_INDEX), MAX_TIME_INDEX);
 };
 
 export const generateTimeIntervals = (stepMinutes: number = 15): string[] => {
@@ -207,6 +227,9 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? TRAINER_COLORS[0],
     status: l.status,
     date: toDateStr(start),
+    cancelReason: l.cancel_reason,
+    clientsNotified: l.clients_notified,
+    serviceId: l.service_id,
   };
 };
 
@@ -220,7 +243,7 @@ export const indexToDateTime = (dateStr: string, idx: number) => {
 // Самопроверка переходника (только dev-сборка)
 if (import.meta.env.DEV) {
   const b = lessonToBooking(
-    { id: 1, name: 'Т', teacher_id: 5, teacher_name: null, hall_id: 2, start_time: '2026-07-12T08:30:00', duration_min: 90, price: 0, total_spots: 8, booked_count: 3, status: 'confirmed', level: null },
+    { id: 1, name: 'Т', teacher_id: 5, teacher_name: null, hall_id: 2, start_time: '2026-07-12T08:30:00', duration_min: 90, price: 0, total_spots: 8, booked_count: 3, status: 'confirmed', level: null, cancel_reason: null, clients_notified: false, service_id: 3, service_color: '#F9A08B' },
     [{ id: 2, name: 'Зал 1', color: '', capacity: 8, is_online: false, is_active: true }],
     new Map([[5, '#5BAB72']]),
   );

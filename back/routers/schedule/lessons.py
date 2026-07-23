@@ -7,20 +7,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
-from models import Client, Hall, Lesson, Reservation, StudioMember, User
+from models import Client, Hall, Lesson, Reservation, Service, StudioMember, User
 from schemas.schedule.lessons import (
-    LessonCreateRequest, LessonDetail, LessonRead, LessonUpdateRequest,
+    EligibleClient, LessonCancelRequest, LessonCreateRequest, LessonDaysResponse, LessonDetail,
+    LessonRead, LessonUpdateRequest,
 )
+from services.booking_access import can_book
 from services.notifier import notify
+
+MIN_CREATE_LEAD = timedelta(hours=3)
+MIN_CHANGE_LEAD = timedelta(hours=2)
+
+
+_LESSON_FIELDS = (
+    "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
+    "duration_min", "price", "level", "equipment", "total_spots",
+    "service_id", "status", "cancel_reason", "clients_notified",
+)
 
 
 def _lesson_read(lesson: Lesson, booked_count: int) -> LessonRead:
     return LessonRead.model_validate({
-        **{c: getattr(lesson, c) for c in (
-            "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
-            "duration_min", "price", "level", "equipment", "total_spots",
-            "service_id", "status",
-        )},
+        **{c: getattr(lesson, c) for c in _LESSON_FIELDS},
         "booked_count": booked_count,
     })
 
@@ -61,9 +69,12 @@ async def list_lessons(
             Lesson.id, Lesson.name, Lesson.teacher_name, Lesson.teacher_id,
             Lesson.hall_id, Lesson.start_time, Lesson.duration_min, Lesson.price,
             Lesson.level, Lesson.equipment, Lesson.total_spots, Lesson.service_id,
-            Lesson.status, func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
+            Lesson.status, Lesson.cancel_reason, Lesson.clients_notified,
+            Service.color.label("service_color"),
+            func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
         )
         .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
+        .outerjoin(Service, Service.id == Lesson.service_id)
         .where(
             Lesson.studio_id == ctx.studio_id,
             Lesson.start_time >= window_start,
@@ -78,6 +89,39 @@ async def list_lessons(
 
     rows = (await db.execute(stmt)).mappings().all()
     return [LessonRead.model_validate(row) for row in rows]
+
+
+@router.get("/lessons/days", response_model=LessonDaysResponse)
+async def list_lesson_days(
+    month: str = Query(..., pattern=r"^\d{4}-\d{2}$"),
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Даты месяца, в которых есть неотменённые занятия — точки мини-календаря
+    Журнала (задача 5 V4-5). Гонять полный список занятий месяца ради точек
+    расточительно, поэтому отдельный лёгкий эндпоинт с DISTINCT по дате.
+
+    Тренер видит точки только своих занятий — тот же скоуп, что list_lessons.
+    """
+    year, mon = (int(p) for p in month.split("-"))
+    window_start = datetime(year, mon, 1)
+    window_end = datetime(year + 1, 1, 1) if mon == 12 else datetime(year, mon + 1, 1)
+
+    stmt = (
+        select(func.date(Lesson.start_time).distinct())
+        .where(
+            Lesson.studio_id == ctx.studio_id,
+            Lesson.status != "cancelled",
+            Lesson.start_time >= window_start,
+            Lesson.start_time < window_end,
+        )
+    )
+    if ctx.role == "trainer":
+        stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
+
+    rows = (await db.execute(stmt)).scalars().all()
+    days = sorted({d.isoformat() if hasattr(d, "isoformat") else str(d) for d in rows})
+    return LessonDaysResponse(days=days)
 
 
 @router.get("/lessons/{lesson_id}", response_model=LessonDetail)
@@ -100,13 +144,14 @@ async def get_lesson(
         )
     )).scalar() or 0
 
-    lesson_data = {
-        c: getattr(lesson, c) for c in (
-            "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
-            "duration_min", "price", "level", "equipment", "total_spots",
-            "service_id", "status",
-        )
-    }
+    service_color = None
+    if lesson.service_id is not None:
+        service_color = (await db.execute(
+            select(Service.color).where(Service.id == lesson.service_id)
+        )).scalar_one_or_none()
+
+    lesson_data = {c: getattr(lesson, c) for c in _LESSON_FIELDS}
+    lesson_data["service_color"] = service_color
 
     clients = (await db.execute(
         select(
@@ -127,6 +172,51 @@ async def get_lesson(
     return LessonDetail.model_validate(
         {**lesson_data, "booked_count": booked_count, "booked_clients": list(clients)}
     )
+
+
+@router.get("/lessons/{lesson_id}/eligible-clients", response_model=List[EligibleClient])
+async def get_eligible_clients(
+    lesson_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Клиенты студии, которых можно записать на это занятие (CL-6.4) — только те,
+    для кого пройдёт assert_can_book (право по абонементу, ядро — CL-6.1). Zero
+    Trust: фронт не решает, кто подходит, только рисует то, что вернул бэк.
+
+    Доступ через get_scoped_lesson: не своя студия — 404, тренер на чужом — 403.
+    Уже записанные на это занятие (кроме отменённых) в список не попадают.
+    """
+    lesson = await get_scoped_lesson(lesson_id, ctx, db)
+
+    already_booked = (await db.execute(
+        select(Reservation.client_id).where(
+            Reservation.lesson_id == lesson_id,
+            Reservation.status != "cancelled",
+        )
+    )).scalars().all()
+
+    clients = (await db.execute(
+        select(Client).where(
+            Client.studio_id == ctx.studio_id,
+            Client.id.notin_(already_booked) if already_booked else True,
+        )
+    )).scalars().all()
+
+    # ponytail: N клиентов × запрос абонементов — приемлемо для MVP-объёмов;
+    # при росте — один JOIN. Ядро гейта (find_eligible_subscription) переиспользуется
+    # как булева-проверка can_book, без исключений в цикле.
+    eligible = []
+    for client in clients:
+        if await can_book(db, client.id, lesson):
+            eligible.append(EligibleClient(
+                id=client.id,
+                name=client.name,
+                last_name=client.last_name,
+                phone=client.phone,
+                avatar_color=client.avatar_color,
+            ))
+    return eligible
 
 
 async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSession) -> str:
@@ -158,6 +248,16 @@ async def _booked_count(lesson_id: int, db: AsyncSession) -> int:
     )).scalar() or 0
 
 
+async def _service_in_studio(service_id: int, studio_id: int, db: AsyncSession) -> Service:
+    """Услуга должна принадлежать студии — иначе 404 (образец: _assert_hall_in_studio)."""
+    service = (await db.execute(
+        select(Service).where(Service.id == service_id, Service.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if service is None:
+        raise HTTPException(status_code=404, detail="Услуга не найдена в студии")
+    return service
+
+
 @router.post("/lessons", response_model=LessonRead, status_code=status.HTTP_201_CREATED)
 async def create_lesson(
     body: LessonCreateRequest,
@@ -173,14 +273,20 @@ async def create_lesson(
         raise HTTPException(status_code=400, detail="Число мест должно быть от 1 до 50")
     if body.duration_min <= 0:
         raise HTTPException(status_code=400, detail="Конец занятия должен быть позже начала")
+    if body.start_time < datetime.now() + MIN_CREATE_LEAD:
+        raise HTTPException(
+            status_code=400,
+            detail="Создавать занятие можно не позднее чем за 3 часа до начала",
+        )
 
     teacher_name = await _teacher_name_in_studio(body.teacher_id, ctx.studio_id, db)
     if body.hall_id is not None:
         await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
+    service = await _service_in_studio(body.service_id, ctx.studio_id, db)
 
     lesson = Lesson(
         studio_id=ctx.studio_id,
-        name=body.name,
+        name=service.name,
         teacher_id=body.teacher_id,
         teacher_name=teacher_name,
         hall_id=body.hall_id,
@@ -216,6 +322,22 @@ async def update_lesson(
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     fields = body.model_dump(exclude_unset=True)
 
+    # Правка только причины отмены (задача 9, инфо-вид отменённого занятия) —
+    # правило времени не применяется: занятие уже прошло/отменено, ничего не переносим.
+    if set(fields.keys()) != {"cancel_reason"}:
+        now = datetime.now()
+        if lesson.start_time < now + MIN_CHANGE_LEAD:
+            raise HTTPException(
+                status_code=400,
+                detail="Изменять занятие можно не позднее чем за 2 часа до начала",
+            )
+        new_start = fields.get("start_time")
+        if new_start is not None and new_start < now + MIN_CHANGE_LEAD:
+            raise HTTPException(
+                status_code=400,
+                detail="Изменять занятие можно не позднее чем за 2 часа до начала",
+            )
+
     if "duration_min" in fields and fields["duration_min"] <= 0:
         raise HTTPException(status_code=400, detail="Конец занятия должен быть позже начала")
 
@@ -234,8 +356,15 @@ async def update_lesson(
         new_teacher_id = fields["teacher_id"]
         lesson.teacher_name = await _teacher_name_in_studio(new_teacher_id, ctx.studio_id, db)
 
+    if "service_id" in fields and fields["service_id"] is not None:
+        service = await _service_in_studio(fields["service_id"], ctx.studio_id, db)
+        lesson.name = service.name
+
     if fields.get("hall_id") is not None:
         await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
+
+    reschedule_fields = {"start_time", "duration_min", "hall_id"}
+    is_reschedule = reschedule_fields & fields.keys()
 
     for key, value in fields.items():
         setattr(lesson, key, value)
@@ -243,12 +372,61 @@ async def update_lesson(
     await db.commit()
     await db.refresh(lesson)
 
+    if is_reschedule:
+        # Перенос времени/зала/длительности — уведомляем записанных клиентов (c11).
+        # Образец сбора client_id — cancel_lesson. Второй короткий commit только
+        # clients_notified: notify идёт после основного commit (подводный камень задачи 3).
+        booked_client_ids = (await db.execute(
+            select(Reservation.client_id).where(
+                Reservation.lesson_id == lesson_id, Reservation.status != "cancelled"
+            )
+        )).scalars().all()
+        results = [
+            await notify(db, ctx.studio_id, "client", "c11", {
+                "client_id": client_id,
+                "lesson_name": lesson.name,
+                "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            })
+            for client_id in booked_client_ids
+        ]
+        lesson.clients_notified = any(results)
+        await db.commit()
+        await db.refresh(lesson)
+
     return _lesson_read(lesson, await _booked_count(lesson_id, db))
+
+
+@router.delete("/lessons/{lesson_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_lesson(
+    lesson_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Настоящее удаление занятия — для отката только что созданного (undo, V4-3).
+
+    Не подменяет cancel: пользовательская отмена оставляет занятие в базе со
+    статусом cancelled. DELETE существует для цикла «создал-передумал», чтобы не
+    копить мусорные отменённые занятия, а не для стирания истории — поэтому
+    занятие с активными записями удалить нельзя.
+    """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
+
+    lesson = await get_scoped_lesson(lesson_id, ctx, db)
+    if await _booked_count(lesson_id, db) > 0:
+        raise HTTPException(
+            status_code=409,
+            detail="На занятие записаны клиенты — сначала снимите их или отмените занятие",
+        )
+
+    await db.delete(lesson)
+    await db.commit()
 
 
 @router.patch("/lessons/{lesson_id}/cancel", response_model=LessonRead)
 async def cancel_lesson(
     lesson_id: int,
+    body: LessonCancelRequest = LessonCancelRequest(),
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ):
@@ -264,6 +442,11 @@ async def cancel_lesson(
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     if lesson.status == "cancelled":
         raise HTTPException(status_code=409, detail="Занятие уже отменено")
+    if lesson.start_time < datetime.now() + MIN_CHANGE_LEAD:
+        raise HTTPException(
+            status_code=400,
+            detail="Отменять занятие можно не позднее чем за 2 часа до начала",
+        )
 
     # Записанных фиксируем до каскада — им уйдёт уведомление об отмене (c3).
     booked_client_ids = (await db.execute(
@@ -273,6 +456,7 @@ async def cancel_lesson(
     )).scalars().all()
 
     lesson.status = "cancelled"
+    lesson.cancel_reason = body.reason
     await db.execute(
         update(Reservation)
         .where(Reservation.lesson_id == lesson_id, Reservation.status != "cancelled")
@@ -280,12 +464,16 @@ async def cancel_lesson(
     )
     await db.commit()
 
-    for client_id in booked_client_ids:
+    results = [
         await notify(db, ctx.studio_id, "client", "c3", {
             "client_id": client_id,
             "lesson_name": lesson.name,
             "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
+        for client_id in booked_client_ids
+    ]
+    lesson.clients_notified = any(results)
+    await db.commit()
 
     # После отмены все записи отменены — booked_count = 0.
     return _lesson_read(lesson, 0)

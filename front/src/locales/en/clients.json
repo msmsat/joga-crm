@@ -1,0 +1,311 @@
+{
+  "categories": {
+    "all": "All",
+    "vip": "VIP",
+    "active": "Active",
+    "new": "New",
+    "has_subscription": "With subscription",
+    "inactive": "Inactive",
+    "frozen": "Frozen",
+    "birthday": "Birthday"
+  },
+  "status": {
+    "active": "Active",
+    "vip": "VIP",
+    "new": "New",
+    "inactive": "Inactive",
+    "frozen": "Frozen"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search client...",
+    "addClient": "Add client"
+  },
+  "table": {
+    "visits": "visits",
+    "frozenBadge": "❄ frozen",
+    "totalSpent": "Total spent",
+    "subscription": "Subscription",
+    "of": "of",
+    "noSubscription": "No subscription"
+  },
+  "loadMore": "Load more",
+  "loading": "Loading…",
+  "panel": {
+    "tabs": {
+      "info": "Profile",
+      "events": "Events",
+      "notes": "Notes",
+      "wallet": "Purchases"
+    },
+    "actions": {
+      "call": "Call",
+      "message": "Message",
+      "book": "Book",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Click to edit",
+    "since": "since {{date}}",
+    "contacts": {
+      "title": "Contacts",
+      "phone": "Phone",
+      "email": "Email",
+      "telegram": "Telegram",
+      "birthDate": "Birth date",
+      "city": "City",
+      "copyHint": " · click to copy"
+    },
+    "stats": {
+      "visits": "Visits",
+      "spent": "Spent",
+      "subscription": "Subscription"
+    },
+    "loyalty": {
+      "points": "points",
+      "level": "{{tier}} level",
+      "toNext": "To next level: {{points}} points",
+      "multiplier": "×{{value}} points multiplier"
+    },
+    "referral": {
+      "title": "Invite a friend",
+      "copy": "Copy"
+    },
+    "abonement": {
+      "title": "Subscription",
+      "lessons": "{{remaining}}/{{total}} lessons",
+      "noSubscription": "No active subscription",
+      "noSubscriptionWarning": "The client has no subscription — offer one",
+      "lowWarning": "Few lessons left — offer a renewal",
+      "finishedWarning": "No lessons left — offer a renewal",
+      "remind": "Remind client",
+      "reminderSent": "Reminder sent to client"
+    },
+    "wallet": {
+      "buy": "Buy",
+      "active": "Active",
+      "archived": "Archived",
+      "singles": "Single visits",
+      "subscriptions": "Subscriptions",
+      "noSingles": "No single visits yet",
+      "emptyActive": "No active products",
+      "emptyArchived": "No archived products",
+      "emptyCatalog": "This studio has no subscription packages yet",
+      "subscriptionsDisabled": "The subscriptions program is disabled — enable it in the Catalog section",
+      "lessons": "{{remaining}}/{{total}} lessons",
+      "lessonsCount": "{{count}} lessons",
+      "perVisit": "Per single visit",
+      "until": "until {{date}}",
+      "frozenBadge": "Frozen",
+      "loadFailed": "Failed to load wallet",
+      "back": "← Back",
+      "catalogTitle": "Catalog",
+      "showAll": "All",
+      "posTitle": "Checkout",
+      "promoLabel": "Promo code",
+      "promoPlaceholder": "Enter promo code",
+      "promoInvalid": "Promo code is invalid",
+      "useBonuses": "Redeem bonuses ({{count}})",
+      "useDeposit": "Pay from deposit ({{amount}})",
+      "certLabel": "Certificate code",
+      "certPlaceholder": "Enter certificate code",
+      "certApplied": "Certificate",
+      "depositApplied": "Deposit",
+      "base": "Base price",
+      "discount": "Discount",
+      "bonuses": "Bonuses",
+      "total": "Total",
+      "cash": "Cash",
+      "card": "Card",
+      "cardStub": "Card processing integration is coming soon",
+      "confirmPay": "Confirm payment",
+      "confirmPayCovered": "Confirm (already paid)",
+      "confirmTitle": "Confirm payment received?",
+      "confirmMessage": "This will record income of {{amount}} and grant the product to the client.",
+      "confirmMessageCovered": "Payment is fully covered by deposit/certificate. The product will be granted to the client.",
+      "paySuccess": "Payment recorded",
+      "transfer": "Transfer",
+      "transferTitle": "Transfer subscription",
+      "transferSearchLabel": "Transfer to",
+      "transferSearchPlaceholder": "Client name or phone",
+      "transferSelectPlaceholder": "Select client",
+      "transferConfirm": "Transfer",
+      "transferSuccess": "Subscription transferred"
+    },
+    "offers": {
+      "title": "Personal discount",
+      "empty": "No active discounts",
+      "grant": "Grant discount",
+      "cancel": "Cancel",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "until {{date}}",
+      "noExpiry": "no expiry",
+      "scopeRenewal": "for renewal",
+      "grantTitle": "Grant a personal discount",
+      "grantValue": "Discount size",
+      "grantType": { "percent": "Percent (%)", "amount": "Amount (₽)" },
+      "grantValidUntil": "Valid until",
+      "grantSubmit": "Grant",
+      "cancelConfirmTitle": "Cancel discount?",
+      "cancelConfirmMessage": "The client will no longer be able to use this offer.",
+      "toasts": {
+        "granted": "Discount granted",
+        "cancelled": "Discount cancelled",
+        "loadFailed": "Failed to load discounts"
+      }
+    },
+    "activity": {
+      "compactTitle": "Activity (3 mo.)",
+      "clickForDetails": "Click for details",
+      "detailedTitle": "Detailed activity",
+      "periods": { "month3": "3 mo", "month6": "6 mo" },
+      "visitsInPeriod": "Visits in period",
+      "visitsTooltip": "{{count}} visits",
+      "emptyState": "No visits in this period",
+      "insightTitle": "Average attendance",
+      "insightBody": "{{avg}} visits per month on average over the selected period.",
+      "months": {
+        "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr", "may": "May", "jun": "Jun",
+        "jul": "Jul", "aug": "Aug", "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec"
+      }
+    },
+    "tags": {
+      "title": "Tags",
+      "add": "Add",
+      "close": "Close",
+      "customPlaceholder": "Custom tag + Enter..."
+    },
+    "danger": {
+      "freeze": "Freeze",
+      "unfreeze": "Unfreeze",
+      "delete": "Delete"
+    },
+    "events": {
+      "filterTabs": { "all": "All", "payment": "Payments", "visit": "Visits", "booking": "Bookings", "cancel": "Cancellations", "bonus": "Bonuses", "freeze": "Freezes" },
+      "empty": "No events"
+    },
+    "notes": {
+      "title": "Admin notes",
+      "prefix": "Note · {{date}}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "addPlaceholder": "Enter a note...",
+      "add": "Add note",
+      "justNow": "just now",
+      "deleteTitle": "Delete note?",
+      "deleteMessage": "This note cannot be recovered."
+    },
+    "messagePanel": {
+      "title": "Message to client",
+      "placeholder": "Type a message...",
+      "send": "Send message"
+    },
+    "bookingPanel": {
+      "title": "Quick booking",
+      "today": "Today",
+      "noLessons": "No lessons on this day",
+      "full": "No spots",
+      "confirm": "Book →",
+      "noSubscription": "Client has no available subscription for booking"
+    },
+    "bonusPanel": {
+      "title": "Grant bonus"
+    },
+    "toasts": {
+      "noPhone": "Client has no phone number",
+      "copied": "Copied successfully",
+      "bookingCreated": "Booking created",
+      "bookingFailed": "Failed to book",
+      "bonusFailed": "Failed to grant points",
+      "bonusApplied": "Bonus granted: {{label}}",
+      "clientAdded": "Client added"
+    },
+    "bonusOptions": {
+      "p200": { "label": "+200 points", "description": "Add to loyalty balance" },
+      "p500": { "label": "+500 points", "description": "Add to loyalty balance" },
+      "p1000": { "label": "+1000 points", "description": "Add to loyalty balance" }
+    }
+  },
+  "tags": {
+    "suggested": ["Trial", "VIP", "Referral", "Online", "Group", "Personal"]
+  },
+  "addModal": {
+    "title": "New client",
+    "cancel": "Cancel",
+    "back": "← Back",
+    "continue": "Continue →",
+    "submit": "Add client ✓",
+    "stepCounter": "Step {{current}} of {{total}}",
+    "trustSignal": "Data is protected and visible only to administrators",
+    "steps": {
+      "1": { "title": "Personal details", "sub": "Enter the client's contact information" },
+      "2": { "title": "Profile details", "sub": "Additional information (optional)" },
+      "3": { "title": "Subscription", "sub": "Choose a subscription type and add a note" },
+      "4": { "title": "All set!", "sub": "Review the details and add the client" }
+    },
+    "step1": {
+      "previewLabel": "New client · Preview",
+      "name": "Full name *",
+      "namePlaceholder": "John Smith",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 555 000-0000",
+      "email": "Email",
+      "emailPlaceholder": "client@example.com"
+    },
+    "step2": {
+      "bday": "Birth date",
+      "bdayPlaceholder": "April 12, 1990",
+      "city": "City",
+      "cityPlaceholder": "New York",
+      "tags": "Tags",
+      "tagsPlaceholder": "Pilates, VIP, Rehab... (Enter)",
+      "tagsHint": "Press Enter to add a tag",
+      "inviteCode": "Referrer's invite code",
+      "inviteCodePlaceholder": "Optional",
+      "inviteCodeHint": "If provided, both of you get a bonus"
+    },
+    "step3": {
+      "classCount": "Subscription",
+      "classesUnit": "lessons",
+      "classesCount": "{{count}} lessons",
+      "selected": "Selected",
+      "noPackage": "No subscription",
+      "noPackages": "This studio has no subscription packages yet",
+      "noPackagesLink": "Create packages in Catalog →",
+      "alreadyPaid": "Has the client already paid for this subscription?",
+      "yes": "Yes",
+      "no": "No",
+      "note": "Note",
+      "notePlaceholder": "Special requests, contraindications, preferences..."
+    },
+    "step4": {
+      "readyTitle": "Details filled in!",
+      "readySub": "Review the information and confirm adding",
+      "newClient": "New client",
+      "fields": {
+        "phone": "Phone",
+        "email": "Email",
+        "bday": "Birth date",
+        "city": "City",
+        "subscription": "Subscription",
+        "tags": "Tags"
+      },
+      "subscriptionValue": "{{count}} lessons",
+      "smsTitle": "Send SMS greeting",
+      "smsSub": "The client will receive an invitation message"
+    },
+    "errors": {
+      "name": "Enter a name (at least 2 characters)",
+      "phone": "Invalid phone number",
+      "email": "Invalid email",
+      "city": "Enter a city"
+    }
+  },
+  "deleteModal": {
+    "title": "Delete client?",
+    "body": "You are about to delete client",
+    "warning": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "success": "Client deleted"
+  }
+}

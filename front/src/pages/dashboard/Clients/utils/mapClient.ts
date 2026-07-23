@@ -1,22 +1,10 @@
 import type { ClientListItem, ClientProfile } from '../../../../api/clients/clients.types'
 import type { ClientData } from '../types'
-
-// ─── Status helpers ───────────────────────────────────────────────────────────
-
-export const STATUS_TO_LABEL: Record<string, string> = {
-  active: 'Активный', vip: 'VIP', new: 'Новый',
-  inactive: 'Неактивный', frozen: 'Заморожен',
-}
-
-export const BL_TO_STATUS: Record<string, string> = {
-  'Активный': 'active', 'VIP': 'vip', 'Новый': 'new',
-  'Неактивный': 'inactive', 'Заморожен': 'frozen',
-}
+import i18n from '../../../../i18n'
 
 // ─── Display helpers ──────────────────────────────────────────────────────────
 
 export const DEFAULT_COLORS = ['#E8825A', '#5BAA8C', '#C4975A', '#6B8CC4', '#C47888', '#8878B8']
-const RU_MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
 
 export function getInitials(name: string, lastName?: string | null): string {
   return ((name[0] ?? '') + ((lastName ?? '')[0] ?? '')).toUpperCase() || '?'
@@ -30,17 +18,17 @@ export function getAvatarColor(id: number, color?: string | null): string {
   return color ?? DEFAULT_COLORS[id % DEFAULT_COLORS.length]
 }
 
-export function formatSpent(n: number): string {
-  if (n >= 1_000_000) return `₽${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `₽${Math.round(n / 1_000)}K`
-  return `₽${n}`
+export function formatMoney(n: number, symbol = '₽'): string {
+  if (n >= 1_000_000) return `${symbol}${(n / 1_000_000).toFixed(1).replace('.0', '')}M`
+  if (n >= 1_000) return `${symbol}${Math.round(n / 1_000)}K`
+  return `${symbol}${n}`
 }
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—'
   const d = new Date(iso)
   if (isNaN(d.getTime())) return '—'
-  return `${d.getDate()} ${RU_MONTHS[d.getMonth()]} ${d.getFullYear()}`
+  return d.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export function getSubscription(sub?: { used: number; total: number } | null) {
@@ -71,6 +59,7 @@ export function mapProfile(profile: ClientProfile): ClientData {
     birth_date: profile.birth_date ?? undefined,
     city:       profile.city       ?? undefined,
     source:     profile.source     ?? undefined,
+    subscription_alert: profile.subscription_alert ?? undefined,
     notes: profile.notes,
   }
 }

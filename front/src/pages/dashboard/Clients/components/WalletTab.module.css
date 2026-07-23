@@ -1,0 +1,344 @@
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.backRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.section {
+  margin-bottom: 18px;
+}
+
+.sectionTitle {
+  composes: sectionLabel;
+  margin-bottom: 10px;
+}
+
+.sectionTitleSpaced {
+  composes: sectionTitle;
+  margin-top: 18px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.emptyCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(26, 26, 26, 0.04);
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyCardText {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listSpaced {
+  composes: list;
+  margin-bottom: 18px;
+}
+
+.productIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(249, 160, 139, 0.12);
+  color: var(--peach);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.walletCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.walletCardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.walletCardInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.walletCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.walletCardMeta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+.progressTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--peach);
+  transition: width 0.3s ease;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badgeFrozen {
+  composes: badge;
+  background: rgba(147, 181, 216, 0.18);
+  color: #4a7ca8;
+  border: 1px solid rgba(147, 181, 216, 0.3);
+}
+
+.transferBtn {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--peach);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0 4px 8px;
+  white-space: nowrap;
+}
+
+.transferBtn:hover {
+  text-decoration: underline;
+}
+
+/* Продуктовая карточка каталога */
+.productCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.productCardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.productCardInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.productCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.productCardMeta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+.productCardPrice {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--peach);
+  flex-shrink: 0;
+}
+
+/* Верхние табы (каталог / режим просмотра) */
+.tabRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.tabRowInline {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabActive {
+  composes: tab;
+  border-color: var(--peach);
+  background: rgba(249, 160, 139, 0.08);
+  color: var(--peach);
+}
+
+/* POS: строка бонусов */
+.bonusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.bonusLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* POS: методы оплаты — сегмент-переключатель */
+.methodRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.methodSeg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* POS-чек */
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceRowLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+}
+
+.priceRowLabelTotal {
+  composes: priceRowLabel;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.priceRowValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.priceRowValueDiscount {
+  composes: priceRowValue;
+  color: #5BAB72;
+}
+
+.priceRowValueTotal {
+  composes: priceRowValue;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--peach);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* Скелетоны — тот же shimmer-паттерн, что в Каталоге (cat-skel) */
+@keyframes walletSkelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(26, 26, 26, 0.04) 25%,
+    rgba(26, 26, 26, 0.07) 37%,
+    rgba(26, 26, 26, 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: walletSkelShimmer 1.4s ease infinite;
+  border-radius: 12px;
+}
+
+.skeletonCard {
+  composes: skeleton;
+  height: 58px;
+  margin-bottom: 8px;
+}

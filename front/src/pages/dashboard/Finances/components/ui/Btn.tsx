@@ -1,18 +1,19 @@
 import type { ReactNode, CSSProperties, MouseEvent } from 'react';
 
-export function Btn({ children, onClick, v = 'ghost', size = 'md', style: s }: {
+export function Btn({ children, onClick, v = 'ghost', size = 'md', style: s, disabled }: {
   children: ReactNode;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   v?: 'ghost' | 'primary' | 'danger' | 'soft';
   size?: 'sm' | 'md';
   style?: CSSProperties;
+  disabled?: boolean;
 }) {
   const base: CSSProperties = {
     display: 'inline-flex', alignItems: 'center', gap: '6px',
     padding: size === 'sm' ? '5px 10px' : '8px 14px',
     borderRadius: '8px', fontSize: size === 'sm' ? '11px' : '12px',
-    fontWeight: 600, cursor: 'pointer', transition: 'all 0.18s',
-    fontFamily: 'var(--font)', border: '1px solid', ...s,
+    fontWeight: 600, cursor: disabled ? 'default' : 'pointer', transition: 'all 0.18s',
+    fontFamily: 'var(--font)', border: '1px solid', opacity: disabled ? 0.6 : 1, ...s,
   };
   const variants: Record<string, CSSProperties> = {
     ghost: { background: 'transparent', borderColor: 'var(--border)', color: 'var(--text2)' },
@@ -23,9 +24,10 @@ export function Btn({ children, onClick, v = 'ghost', size = 'md', style: s }: {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       style={{ ...base, ...variants[v] }}
-      onMouseEnter={e => { e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-      onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+      onMouseEnter={e => { if (disabled) return; e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.opacity = disabled ? '0.6' : '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       {children}
     </button>

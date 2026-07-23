@@ -25,4 +25,7 @@ export interface Booking {
   color: string;
   status: 'confirmed' | 'pending' | 'cancelled';
   date?: string;
+  cancelReason: string | null;
+  clientsNotified: boolean;
+  serviceId: number | null;
 }

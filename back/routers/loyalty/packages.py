@@ -56,7 +56,7 @@ async def _get_package(package_id: int, studio_id: int, db: AsyncSession) -> Sub
 
 @router.get("/subscriptions", response_model=List[SubscriptionPackageRead])
 async def list_packages(
-    ctx: StudioContext = Depends(require_role("owner")),
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
     rows = (await db.execute(

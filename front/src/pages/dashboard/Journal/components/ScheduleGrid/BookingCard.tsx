@@ -1,5 +1,6 @@
 // src/components/ScheduleGrid/BookingCard.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Booking } from '../../types';
 import { formatIndexToTimeStr } from '../../utils';
@@ -16,18 +17,22 @@ interface BookingCardProps {
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
+  editDraft: { bookingId: number; title: string; timeStart: number; timeEnd: number } | null;
 }
 
 export const BookingCard: React.FC<BookingCardProps> = ({
   booking: b, layout, drag, canEdit, popupBooking, wasDragging,
-  initDrag, setPopupBooking, openBookingPopup, showToast
+  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
 }) => {
+  const { t } = useTranslation('journal');
   const isResizeTop = drag?.type === 'resize-top' && drag?.id === b.id;
   const isResizeBottom = drag?.type === 'resize-bottom' && drag?.id === b.id;
   const isResize = isResizeTop || isResizeBottom;
 
-  const activeStart = isResizeTop ? drag.previewStart! : b.timeStart;
-  const activeEnd = isResizeBottom ? drag.previewEnd! : b.timeEnd;
+  // Черновик редактирования (попап открыт, форма правки активна) растягивает
+  // карточку на глазах — колонку не меняем, только текст/время (задача 4 V4-4).
+  const activeStart = isResizeTop ? drag.previewStart! : (editDraft?.timeStart ?? b.timeStart);
+  const activeEnd = isResizeBottom ? drag.previewEnd! : (editDraft?.timeEnd ?? b.timeEnd);
   
   const startOffset = (activeStart - Math.floor(b.timeStart)) * 72;
   const top = startOffset + 1; 
@@ -45,7 +50,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
       onMouseDown={e => {
         if (!canEdit) {
-          showToast("Недостаточно прав для изменения расписания");
+          showToast(t('toasts.noPermission'));
           return;
         }
         initDrag(e, b.id, 'move');
@@ -59,8 +64,8 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       style={{
         top, height, left: layout.left, width: layout.width,
         zIndex: isDragging ? 99999 : (isSelected ? 9999 : layout.zIndex),
-        background: layout.isCascade ? '#FFFFFF' : `${b.color}12`, 
-        border: `2px solid ${b.color}`,
+        background: layout.isCascade ? '#FFFFFF' : `${b.color}12`,
+        border: editDraft ? '2px dashed var(--peach)' : `2px solid ${b.color}`,
         color: b.color,
         cursor: canEdit ? 'grab' : 'pointer',
         ...(isDragging && drag.type === 'move' ? {
@@ -69,7 +74,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       } as React.CSSProperties}
     >
       <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
-        {b.title}
+        {editDraft?.title || b.title}
       </div>
       
       <div className="b-meta">

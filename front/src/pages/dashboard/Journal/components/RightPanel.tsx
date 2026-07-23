@@ -1,9 +1,9 @@
 // src/components/RightPanel.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import type { Booking, Trainer, Hall } from '../types';
-import { MONTH_NAMES, DAY_NAMES_SHORT } from '../constants';
-import { formatIndexToTimeStr } from '../utils';
+import { formatIndexToTimeStr, monthName, toDateStr, weekdayShort } from '../utils';
 
 // ─── 1. МИКРО-КОМПОНЕНТ: МИНИ-КАЛЕНДАРЬ ──────────────────────────────────────
 interface MiniCalendarProps {
@@ -14,17 +14,21 @@ interface MiniCalendarProps {
   changeMonth: (dir: number) => void;
   setSelectedDay: (d: number) => void;
   calendarView: 'day' | 'week';
+  eventDays: string[];
 }
 
-const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView }) => {
+const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView, eventDays }) => {
+  const { i18n } = useTranslation('journal');
   const firstDayOffset = () => {
     const d = new Date(calYear, calMonth, 1).getDay();
     return d === 0 ? 6 : d - 1;
   };
-  
+
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate(); // 🔥 Дней в прошлом месяце
-  const hasEventDays = [3, 7, 9, 12, 15, 17, 22, 24, 28];
+  // Точки — только реальные занятия текущего месяца (задача 5 V4-5); хвосты
+  // соседних месяцев намеренно без точек — eventDays их не содержит.
+  const eventDaySet = new Set(eventDays);
 
   // Математика для плавающего квадрата и сетки
   const offset = firstDayOffset();
@@ -45,15 +49,15 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selected
             <Icons.ChevronLeft />
           </button>
           <div className="mc-month" style={{ lineHeight: 1, display: 'flex', alignItems: 'center', margin: 0 }}>
-            {MONTH_NAMES[calMonth]} {calYear}
+            {monthName(calMonth, i18n.language)} {calYear}
           </div>
           <button className="mc-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => changeMonth(1)}>
             <Icons.ChevronRight />
           </button>
         </div>
-        
+
         <div className="mc-days-grid" style={{ marginBottom: 2 }}>
-          {DAY_NAMES_SHORT.map(d => <div key={d} className="mc-day-name">{d}</div>)}
+          {Array.from({ length: 7 }, (_, d) => weekdayShort(d, i18n.language)).map((d, i) => <div key={i} className="mc-day-name">{d}</div>)}
         </div>
         
         <div style={{ position: 'relative' }}>
@@ -97,7 +101,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selected
             {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => {
               const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
               const isSelected = d === selectedDay;
-              const hasEv = hasEventDays.includes(d);
+              const hasEv = eventDaySet.has(toDateStr(new Date(calYear, calMonth, d)));
               
               const inSelectedWeek = calendarView === 'week' && Math.floor((offset + d - 1) / 7) === row;
               const isHighlighted = isSelected || inSelectedWeek;
@@ -153,10 +157,11 @@ interface HallsFilterProps {
 }
 
 const HallsFilter: React.FC<HallsFilterProps> = ({ halls, activeHalls, activeBookings, toggleHall }) => {
+  const { t } = useTranslation('journal');
   const fallbackColors = ['#F9A08B', '#5BAB72', '#40a8a0', '#7B6CD4'];
   return (
     <div className="jr-section">
-      <div className="jr-label"><Icons.MapPin /> Залы</div>
+      <div className="jr-label"><Icons.MapPin /> {t('rightPanel.halls')}</div>
       {halls.map((h, i) => (
         <div key={h.id} className={`hall-chip ${activeHalls.includes(h.name) ? 'active' : ''}`} onClick={() => toggleHall(h.name)}>
           <div className="hc-dot" style={{ background: h.color || fallbackColors[i % fallbackColors.length] }} />
@@ -176,10 +181,11 @@ interface TrainerStatsProps {
 }
 
 const TrainerStats: React.FC<TrainerStatsProps> = ({ trainers, activeBookings }) => {
+  const { t } = useTranslation('journal');
   return (
     <div className="jr-section">
       {/* 🔥 Убрали отвлекающую анимацию, поставили строгую иконку Users */}
-      <div className="jr-label"><Icons.Users /> Загрузка</div>
+      <div className="jr-label"><Icons.Users /> {t('rightPanel.load')}</div>
       <div className="trainer-load">
         {trainers.map(t => {
           const tBookings = activeBookings.filter(b => b.trainer === t.id);
@@ -211,9 +217,10 @@ interface UpcomingListProps {
 }
 
 const UpcomingList: React.FC<UpcomingListProps> = ({ trainers, filteredBookings }) => {
+  const { t } = useTranslation('journal');
   return (
     <div className="jr-section">
-      <div className="jr-label"><Icons.Clock /> Ближайшие</div>
+      <div className="jr-label"><Icons.Clock /> {t('rightPanel.upcoming')}</div>
       {filteredBookings.slice(0, 4).map(b => {
         const trainer = trainers.find(t => t.id === b.trainer);
         return (
@@ -257,15 +264,17 @@ interface RightPanelProps {
   setSelectedDay: (d: number) => void;
   toggleHall: (h: string) => void;
   calendarView: 'day' | 'week'; // 🔥 Добавили пропс
+  eventDays: string[]; // Точки мини-календаря — реальные даты занятий месяца (задача 5 V4-5)
 }
 
 export const RightPanel: React.FC<RightPanelProps> = ({
   trainers, halls, calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
-  changeMonth, setSelectedDay, toggleHall, calendarView // 🔥 Вытащили пропс
+  changeMonth, setSelectedDay, toggleHall, calendarView, eventDays // 🔥 Вытащили пропс
 }) => {
+  const { i18n } = useTranslation('journal');
 
   const dateObj = new Date(calYear, calMonth, selectedDay);
-  const dayName = dateObj.toLocaleDateString('ru-RU', { weekday: 'long' });
+  const dayName = dateObj.toLocaleDateString(i18n.language, { weekday: 'long' });
   const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
 
   return (
@@ -275,13 +284,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           {capitalizedDay}
         </div>
         <div style={{ fontSize: 13, color: 'var(--peach)', fontWeight: 700 }}>
-          {selectedDay} {MONTH_NAMES[calMonth].toLowerCase()} {calYear}
+          {selectedDay} {monthName(calMonth, i18n.language)} {calYear}
         </div>
       </div>
-      <MiniCalendar 
-        calMonth={calMonth} calYear={calYear} selectedDay={selectedDay} 
-        today={today} changeMonth={changeMonth} setSelectedDay={setSelectedDay} 
+      <MiniCalendar
+        calMonth={calMonth} calYear={calYear} selectedDay={selectedDay}
+        today={today} changeMonth={changeMonth} setSelectedDay={setSelectedDay}
         calendarView={calendarView} // 🔥 Передали внутрь
+        eventDays={eventDays}
       />
       <HallsFilter
         halls={halls} activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall}

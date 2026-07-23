@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
-import { clientsApi } from '../../../../../api/clients';
+import { useClientMutations } from '../../hooks/useClientsList';
+import { loyaltyApi } from '../../../../../api/loyalty/loyalty.api';
+import { queryKeys } from '../../../../../api/queryKeys';
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../../components/UI';
+import { formatMoney } from '../../utils/mapClient';
+import { useToast } from '../../../../../components/ui/Toast';
+import { errorMessage } from '../../../../../api/errorMessage';
+import { ApiError } from '../../../../../api/client';
 
 export interface AddClientModalProps {
   isOpen: boolean;
@@ -46,7 +57,7 @@ function IllusStep2() {
   );
 }
 
-function IllusStep3() {
+function IllusStep3({ label }: { label: string }) {
   return (
     <svg width="140" height="140" viewBox="0 0 140 140">
       <circle cx="70" cy="70" r="68" fill="rgba(74,128,196,0.07)" stroke="rgba(74,128,196,0.18)" strokeWidth="1"/>
@@ -62,12 +73,12 @@ function IllusStep3() {
       <text x="46" y="89" textAnchor="middle" fill="rgba(74,128,196,0.9)" fontSize="7" fontWeight="800" fontFamily="Manrope">8</text>
       <text x="64" y="89" textAnchor="middle" fill="#4A80C4" fontSize="7" fontWeight="800" fontFamily="Manrope">10</text>
       <text x="82" y="89" textAnchor="middle" fill="rgba(74,128,196,0.9)" fontSize="7" fontWeight="800" fontFamily="Manrope">12</text>
-      <text x="70" y="64" textAnchor="middle" fill="rgba(74,128,196,0.7)" fontSize="9" fontWeight="700" fontFamily="Manrope">Абонемент</text>
+      <text x="70" y="64" textAnchor="middle" fill="rgba(74,128,196,0.7)" fontSize="9" fontWeight="700" fontFamily="Manrope">{label}</text>
     </svg>
   );
 }
 
-function IllusStep4() {
+function IllusStep4({ label }: { label: string }) {
   return (
     <svg width="140" height="140" viewBox="0 0 140 140">
       <circle cx="70" cy="70" r="68" fill="rgba(91,171,114,0.08)" stroke="rgba(91,171,114,0.2)" strokeWidth="1"/>
@@ -75,15 +86,15 @@ function IllusStep4() {
       <polyline points="56,62 66,72 84,52" fill="none" stroke="#5BAB72" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
       <circle cx="35" cy="35" r="8" fill="rgba(91,171,114,0.12)" stroke="rgba(91,171,114,0.25)" strokeWidth="1"/>
       <circle cx="105" cy="95" r="6" fill="rgba(91,171,114,0.12)" stroke="rgba(91,171,114,0.25)" strokeWidth="1"/>
-      <text x="70" y="108" textAnchor="middle" fill="#5BAB72" fontSize="10" fontWeight="800" fontFamily="Manrope">Готово!</text>
+      <text x="70" y="108" textAnchor="middle" fill="#5BAB72" fontSize="10" fontWeight="800" fontFamily="Manrope">{label}</text>
     </svg>
   );
 }
 
 // ─── FIELD ────────────────────────────────────────────────────────────────────
-function Field({ label, value, onChange, error, placeholder, type = 'text' }: {
+function Field({ label, value, onChange, error, placeholder, type = 'text', max }: {
   label: string; value: string; onChange: (v: string) => void;
-  error?: string; placeholder?: string; type?: string;
+  error?: string; placeholder?: string; type?: string; max?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -94,6 +105,7 @@ function Field({ label, value, onChange, error, placeholder, type = 'text' }: {
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
+        max={max}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{
@@ -113,10 +125,11 @@ function Field({ label, value, onChange, error, placeholder, type = 'text' }: {
 
 // ─── TAG INPUT ────────────────────────────────────────────────────────────────
 function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[]) => void }) {
+  const { t } = useTranslation('clients');
   const [draft, setDraft] = useState('');
   const commit = () => {
-    const t = draft.trim();
-    if (t && !tags.includes(t)) onChange([...tags, t]);
+    const tag = draft.trim();
+    if (tag && !tags.includes(tag)) onChange([...tags, tag]);
     setDraft('');
   };
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -125,12 +138,12 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   };
   return (
     <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>Теги</div>
+      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{t('addModal.step2.tags')}</div>
       <div style={{ minHeight: '44px', padding: '6px 10px', borderRadius: '10px', border: '1.5px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center', cursor: 'text', boxSizing: 'border-box', transition: 'border-color 0.2s', background: 'rgba(26,26,26,0.015)' }}>
-        {tags.map(t => (
-          <span key={t} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', border: '1px solid rgba(249,160,139,0.25)', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-            {t}
-            <button onClick={() => onChange(tags.filter(x => x !== t))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--peach)', fontSize: '12px', lineHeight: 1, display: 'flex' }}>×</button>
+        {tags.map(tag => (
+          <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', border: '1px solid rgba(249,160,139,0.25)', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+            {tag}
+            <button onClick={() => onChange(tags.filter(x => x !== tag))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--peach)', fontSize: '12px', lineHeight: 1, display: 'flex' }}>×</button>
           </span>
         ))}
         <input
@@ -138,40 +151,53 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
           onChange={e => setDraft(e.target.value)}
           onKeyDown={onKey}
           onBlur={commit}
-          placeholder={tags.length === 0 ? 'Пилатес, VIP, Реабилитация... (Enter)' : ''}
+          placeholder={tags.length === 0 ? t('addModal.step2.tagsPlaceholder') : ''}
           style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '13px', fontFamily: "'Manrope',sans-serif", color: 'var(--text)', minWidth: '120px', flex: 1 }}
         />
       </div>
-      <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '4px' }}>Нажмите Enter чтобы добавить тег</div>
+      <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '4px' }}>{t('addModal.step2.tagsHint')}</div>
     </div>
   );
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalProps) {
+  const { t, i18n } = useTranslation('clients');
   const { form, errors, set, validate, reset } = useClientForm();
+  const mutations = useClientMutations();
+  const toast = useToast();
   const [step, setStep] = useState(1);
   const [dir,  setDir]  = useState(1);
-  const [sendSms, setSendSms] = useState(true);
+  const currency = getCurrencySymbol(useStudioCurrency());
+  const { data: packages = [] } = useQuery({
+    queryKey: queryKeys.packages,
+    queryFn: () => loyaltyApi.getSubscriptionPackages(),
+    enabled: isOpen,
+  });
+  const activePackages = packages.filter(p => p.is_active);
+  const selectedPackage = activePackages.find(p => p.id === form.membershipId) ?? null;
 
   if (!isOpen) return null;
 
   const TOTAL = 4;
 
   const stepMeta = [
-    { title: 'Личные данные',   sub: 'Введите контактную информацию клиента' },
-    { title: 'Детали профиля',  sub: 'Дополнительная информация (необязательно)' },
-    { title: 'Абонемент',       sub: 'Выберите тип абонемента и добавьте заметку' },
-    { title: 'Готово!',         sub: 'Проверьте данные и добавьте клиента' },
+    { title: t('addModal.steps.1.title'), sub: t('addModal.steps.1.sub') },
+    { title: t('addModal.steps.2.title'), sub: t('addModal.steps.2.sub') },
+    { title: t('addModal.steps.3.title'), sub: t('addModal.steps.3.sub') },
+    { title: t('addModal.steps.4.title'), sub: t('addModal.steps.4.sub') },
   ];
 
   const canGoNext = () => {
-    if (step === 1) return form.name.trim().length >= 2;
+    if (step === 1) {
+      return form.name.trim().length >= 2 && !!form.phone.trim() && !!form.email.trim();
+    }
+    if (step === 2) return !!form.city.trim();
     return true;
   };
 
   const goNext = () => {
-    if (step === 1 && !validate()) return;
+    if ((step === 1 || step === 2) && !validate(step)) return;
     if (step < TOTAL) { setDir(1); setStep(s => s + 1); }
   };
 
@@ -181,22 +207,29 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
 
   const handleFinish = () => {
     const parts = form.name.trim().split(' ');
-    clientsApi.create({
-      name:      parts[0],
-      last_name: parts.slice(1).join(' ') || null,
-      phone:     form.phone || null,
-      email:     form.email || null,
-      city:      form.city  || null,
-      tags:      form.tags.length ? form.tags : undefined,
-      note:      form.note  || null,
+    mutations.create({
+      name:               parts[0],
+      last_name:          parts.slice(1).join(' ') || null,
+      phone:              form.phone,
+      email:              form.email,
+      city:               form.city,
+      birth_date:         form.bday || null,
+      tags:               form.tags.length ? form.tags : undefined,
+      note:               form.note || null,
+      membership_id:      form.membershipId,
+      is_membership_paid: form.membershipId !== null ? form.isMembershipPaid : false,
+      invite_code:        form.inviteCode.trim() || null,
     }).then(() => {
+      toast.success(t('toasts.clientAdded'));
       onSuccess(form);
       reset();
       setStep(1);
       onClose();
-    }).catch(() => {
-      // Ошибку (в т.ч. лимит тарифа → глобальная модалка апселла) показываем не тут;
-      // модалку добавления не закрываем, чтобы юзер не потерял введённые данные.
+    }).catch((err) => {
+      // Лимит тарифа (403 limit_exceeded) уже показывает глобальная модалка апселла — не дублируем.
+      if (err instanceof ApiError && err.code === 'limit_exceeded') return;
+      // Модалку не закрываем и данные формы не теряем — юзер видит, что пошло не так.
+      toast.error(errorMessage(err, t));
     });
   };
 
@@ -256,7 +289,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
 
             {/* Step label */}
             <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(249,160,139,0.8)', marginBottom: '8px' }}>
-              Шаг {step} из {TOTAL}
+              {t('addModal.stepCounter', { current: step, total: TOTAL })}
             </div>
 
             {/* Title */}
@@ -284,8 +317,8 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {step === 1 && <IllusStep1 name={form.name}/>}
               {step === 2 && <IllusStep2/>}
-              {step === 3 && <IllusStep3/>}
-              {step === 4 && <IllusStep4/>}
+              {step === 3 && <IllusStep3 label={t('panel.abonement.title')}/>}
+              {step === 4 && <IllusStep4 label={t('addModal.steps.4.title')}/>}
             </div>
 
             {/* Trust signal */}
@@ -294,7 +327,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
               <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600 }}>
-                Данные защищены и видны только администраторам
+                {t('addModal.trustSignal')}
               </div>
             </div>
           </div>
@@ -303,7 +336,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             {/* Header */}
             <div style={{ padding: '20px 26px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>Новый клиент</div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>{t('addModal.title')}</div>
               <button
                 onClick={handleClose}
                 style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s' }}
@@ -335,22 +368,26 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                       </div>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{form.name}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text3)' }}>Новый клиент · Предпросмотр</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{t('addModal.step1.previewLabel')}</div>
                       </div>
                     </div>
                   )}
-                  <Field label="ФИО *" value={form.name} onChange={v => set('name', v)} error={errors.name} placeholder="Иван Иванов"/>
-                  <Field label="Телефон" value={form.phone} onChange={v => set('phone', v)} error={errors.phone} placeholder="+7 900 000-00-00" type="tel"/>
-                  <Field label="Email" value={form.email} onChange={v => set('email', v)} error={errors.email} placeholder="client@example.com" type="email"/>
+                  <Field label={t('addModal.step1.name')} value={form.name} onChange={v => set('name', v)} error={errors.name} placeholder={t('addModal.step1.namePlaceholder')}/>
+                  <Field label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v)} error={errors.phone} placeholder={t('addModal.step1.phonePlaceholder')} type="tel"/>
+                  <Field label={t('addModal.step1.email')} value={form.email} onChange={v => set('email', v)} error={errors.email} placeholder={t('addModal.step1.emailPlaceholder')} type="email"/>
                 </div>
               )}
 
               {/* ── STEP 2 ── */}
               {step === 2 && (
                 <div>
-                  <Field label="День рождения" value={form.bday} onChange={v => set('bday', v)} placeholder="12 апреля 1990"/>
-                  <Field label="Город" value={form.city} onChange={v => set('city', v)} placeholder="Москва"/>
+                  <Field label={t('addModal.step2.bday')} value={form.bday} onChange={v => set('bday', v)} type="date" max={new Date().toISOString().slice(0, 10)}/>
+                  <Field label={t('addModal.step2.city')} value={form.city} onChange={v => set('city', v)} error={errors.city} placeholder={t('addModal.step2.cityPlaceholder')}/>
                   <TagInput tags={form.tags} onChange={tags => set('tags', tags)}/>
+                  <div style={{ marginTop: '16px' }}>
+                    <Field label={t('addModal.step2.inviteCode')} value={form.inviteCode} onChange={v => set('inviteCode', v.toUpperCase())} placeholder={t('addModal.step2.inviteCodePlaceholder')}/>
+                    <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '-10px' }}>{t('addModal.step2.inviteCodeHint')}</div>
+                  </div>
                 </div>
               )}
 
@@ -358,37 +395,12 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
               {step === 3 && (
                 <div>
                   <div style={{ marginBottom: '20px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>Количество занятий</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                      {[8, 10, 12].map(n => (
-                        <button
-                          key={n}
-                          onClick={() => set('abMax', n)}
-                          style={{
-                            padding: '18px 10px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer',
-                            fontFamily: "'Manrope',sans-serif", transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-                            border: form.abMax === n ? '2px solid var(--peach)' : '2px solid var(--border)',
-                            background: form.abMax === n ? 'rgba(249,160,139,0.06)' : 'transparent',
-                            boxShadow: form.abMax === n ? '0 4px 16px -4px rgba(249,160,139,0.3)' : 'none',
-                          }}
-                        >
-                          <div style={{ fontSize: '26px', fontWeight: 800, color: form.abMax === n ? 'var(--peach)' : 'var(--text)', letterSpacing: '-1px', lineHeight: 1 }}>{n}</div>
-                          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginTop: '4px' }}>занятий</div>
-                          {form.abMax === n && (
-                            <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--peach)', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Выбрано</div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>Заметка</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{t('addModal.step3.note')}</div>
                     <textarea
                       value={form.note}
                       onChange={e => set('note', e.target.value)}
-                      placeholder="Особые пожелания, противопоказания, предпочтения..."
-                      rows={4}
+                      placeholder={t('addModal.step3.notePlaceholder')}
+                      rows={3}
                       style={{
                         width: '100%', padding: '11px 14px', borderRadius: '10px',
                         border: '1.5px solid var(--border)', outline: 'none',
@@ -401,6 +413,79 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                       onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
                     />
                   </div>
+
+                  <div style={{ marginBottom: form.membershipId ? '16px' : 0 }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>{t('addModal.step3.classCount')}</div>
+
+                    {activePackages.length === 0 ? (
+                      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(26,26,26,0.02)', border: '1px dashed var(--border)', textAlign: 'center' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '8px' }}>{t('addModal.step3.noPackages')}</div>
+                        <Link to="/dashboard/catalog" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--peach)' }}>{t('addModal.step3.noPackagesLink')}</Link>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <button
+                          onClick={() => { set('membershipId', null); set('isMembershipPaid', false); }}
+                          style={{
+                            padding: '14px 10px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer',
+                            fontFamily: "'Manrope',sans-serif", transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+                            border: form.membershipId === null ? '2px solid var(--peach)' : '2px solid var(--border)',
+                            background: form.membershipId === null ? 'rgba(249,160,139,0.06)' : 'transparent',
+                          }}
+                        >
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: form.membershipId === null ? 'var(--peach)' : 'var(--text)' }}>{t('addModal.step3.noPackage')}</div>
+                        </button>
+                        {activePackages.map(pkg => (
+                          <button
+                            key={pkg.id}
+                            onClick={() => set('membershipId', pkg.id)}
+                            style={{
+                              padding: '14px 10px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer',
+                              fontFamily: "'Manrope',sans-serif", transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+                              border: form.membershipId === pkg.id ? '2px solid var(--peach)' : '2px solid var(--border)',
+                              background: form.membershipId === pkg.id ? 'rgba(249,160,139,0.06)' : 'transparent',
+                              boxShadow: form.membershipId === pkg.id ? '0 4px 16px -4px rgba(249,160,139,0.3)' : 'none',
+                            }}
+                          >
+                            <div style={{ fontSize: '13px', fontWeight: 800, color: form.membershipId === pkg.id ? 'var(--peach)' : 'var(--text)', letterSpacing: '-0.3px', lineHeight: 1.3 }}>{pkg.name}</div>
+                            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginTop: '4px' }}>{t('addModal.step3.classesCount', { count: pkg.class_count })} · {formatMoney(pkg.price, currency)}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedPackage && (
+                    <div style={{ padding: '14px 16px', borderRadius: '12px', background: 'rgba(249,160,139,0.05)', border: '1px solid rgba(249,160,139,0.15)' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', marginBottom: '10px' }}>{t('addModal.step3.alreadyPaid')}</div>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                          onClick={() => set('isMembershipPaid', true)}
+                          style={{
+                            flex: 1, padding: '9px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                            fontFamily: "'Manrope',sans-serif",
+                            border: form.isMembershipPaid ? '2px solid var(--peach)' : '1.5px solid var(--border)',
+                            background: form.isMembershipPaid ? 'rgba(249,160,139,0.1)' : 'transparent',
+                            color: form.isMembershipPaid ? 'var(--peach)' : 'var(--text3)',
+                          }}
+                        >
+                          {t('addModal.step3.yes')}
+                        </button>
+                        <button
+                          onClick={() => set('isMembershipPaid', false)}
+                          style={{
+                            flex: 1, padding: '9px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                            fontFamily: "'Manrope',sans-serif",
+                            border: !form.isMembershipPaid ? '2px solid var(--peach)' : '1.5px solid var(--border)',
+                            background: !form.isMembershipPaid ? 'rgba(249,160,139,0.1)' : 'transparent',
+                            color: !form.isMembershipPaid ? 'var(--peach)' : 'var(--text3)',
+                          }}
+                        >
+                          {t('addModal.step3.no')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -419,8 +504,8 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     </div>
-                    <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: '6px' }}>Данные заполнены!</div>
-                    <div style={{ fontSize: '13px', color: 'var(--text3)' }}>Проверьте информацию и подтвердите добавление</div>
+                    <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: '6px' }}>{t('addModal.step4.readyTitle')}</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{t('addModal.step4.readySub')}</div>
                   </div>
 
                   {/* Summary card */}
@@ -431,38 +516,24 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                       </div>
                       <div>
                         <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)' }}>{form.name || '—'}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>Новый клиент</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{t('addModal.step4.newClient')}</div>
                       </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       {[
-                        { l: 'Телефон',   v: form.phone || '—' },
-                        { l: 'Email',     v: form.email || '—' },
-                        { l: 'Д.р.',      v: form.bday  || '—' },
-                        { l: 'Город',     v: form.city  || '—' },
-                        { l: 'Абонемент', v: `${form.abMax} занятий` },
-                        { l: 'Теги',      v: form.tags.length ? form.tags.join(', ') : '—' },
+                        { l: t('addModal.step4.fields.phone'),        v: form.phone || '—' },
+                        { l: t('addModal.step4.fields.email'),        v: form.email || '—' },
+                        { l: t('addModal.step4.fields.bday'),         v: form.bday ? new Date(form.bday).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }) : '—' },
+                        { l: t('addModal.step4.fields.city'),         v: form.city  || '—' },
+                        { l: t('addModal.step4.fields.subscription'), v: selectedPackage ? selectedPackage.name : t('addModal.step3.noPackage') },
+                        { l: t('addModal.step4.fields.tags'),         v: form.tags.length ? form.tags.join(', ') : '—' },
                       ].map(({ l, v }) => (
                         <div key={l} style={{ padding: '10px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--border)' }}>
                           <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{l}</div>
                           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</div>
                         </div>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* SMS toggle */}
-                  <div
-                    onClick={() => setSendSms(v => !v)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '10px', background: 'rgba(249,160,139,0.04)', border: '1px solid rgba(249,160,139,0.15)', cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)' }}>Отправить SMS-приветствие</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>Клиент получит сообщение с приглашением</div>
-                    </div>
-                    <div style={{ width: '36px', height: '20px', borderRadius: '20px', background: sendSms ? 'linear-gradient(135deg,#FCAE91,#F9A08B)' : 'rgba(26,26,26,0.1)', transition: 'all 0.3s', position: 'relative', flexShrink: 0 }}>
-                      <div style={{ position: 'absolute', top: '2px', left: sendSms ? '18px' : '2px', width: '16px', height: '16px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'left 0.3s cubic-bezier(0.34,1.56,0.64,1)' }}/>
                     </div>
                   </div>
                 </div>
@@ -477,7 +548,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text2)'; e.currentTarget.style.color = 'var(--text)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
               >
-                {step === 1 ? 'Отмена' : '← Назад'}
+                {step === 1 ? t('addModal.cancel') : t('addModal.back')}
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -498,7 +569,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     onMouseEnter={e => { if (canGoNext()) { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
                     onMouseLeave={e => { e.currentTarget.style.filter = ''; e.currentTarget.style.transform = ''; }}
                   >
-                    Продолжить →
+                    {t('addModal.continue')}
                   </button>
                 ) : (
                   <button
@@ -514,7 +585,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.filter = ''; e.currentTarget.style.transform = ''; }}
                   >
-                    Добавить клиента ✓
+                    {t('addModal.submit')}
                   </button>
                 )}
               </div>

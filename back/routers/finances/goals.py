@@ -14,12 +14,12 @@ _DEFAULT_COLOR = "#FCAE91"
 
 
 async def _auto_amount(goal: FinancialGoal, studio_id: int, db: AsyncSession) -> int:
-    """current_amount для auto-цели = сумма доходов её категории от created_at до deadline."""
+    """current_amount для auto-цели = сумма операций её типа и категории от created_at до deadline."""
     if not goal.category:
         return 0
     filters = [
         Operation.studio_id == studio_id,
-        Operation.type == "in",
+        Operation.type == goal.op_type,
         Operation.category == goal.category,
         Operation.op_date >= goal.created_at.date(),
     ]
@@ -42,6 +42,7 @@ async def _to_read(goal: FinancialGoal, studio_id: int, db: AsyncSession) -> Goa
         deadline=goal.deadline,
         category=goal.category,
         priority=goal.priority,
+        op_type=goal.op_type,
     )
 
 
@@ -80,6 +81,7 @@ async def create_goal(
         deadline=body.deadline,
         category=body.category,
         priority=body.priority,
+        op_type=body.op_type,
         color=_DEFAULT_COLOR,
     )
     db.add(goal)

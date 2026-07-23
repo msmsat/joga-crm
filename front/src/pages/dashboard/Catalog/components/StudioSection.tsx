@@ -1,14 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
-import { useStudioCurrency } from '../hooks/useStudioCurrency';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 import { errorMessage } from '../../../../api/errorMessage';
 import { resolveImageUrl } from '../../../../api/client';
 import { getCurrencySymbol } from '../../../../components/UI';
 import AddStudioModal from './modals/AddStudioModal';
-import { EditStudioModal, HallModal } from './modals/EditStudio';
+import { HallModal } from './modals/EditStudio'; // Оставляем модалку зала
+import { EditBranchModal } from './modals/EditBranch'; // Подключаем твою новую крутую модалку
 import { CatalogListSkeleton, CatalogRightSkeleton, CatalogError } from './CatalogSkeleton';
 import type { HallBrief } from '../../../../api/studio/studio.types';
 
@@ -397,17 +398,23 @@ export function StudioSection() {
     />
 
     {isEditStudioOpen && activeStudio && (
-      <EditStudioModal
+      <EditBranchModal
         branch={activeStudio}
         onClose={() => setIsEditStudioOpen(false)}
+        // Передаем сохранение — эндпоинт updateBranch остается тем же и работает корректно
         onSubmit={async (data) => {
           try {
             await updateBranch(activeStudio.id, data);
             toast.success(t('catalog:studios.toasts.saved'));
           } catch (error) {
             toast.error(errorMessage(error, t));
-            throw error;
+            throw error; // Бросаем ошибку, чтобы модалка не закрылась и сняла лоадер
           }
+        }}
+        // Прокидываем удаление: закрываем форму редактирования и открываем окно подтверждения
+        onDelete={() => {
+          setIsEditStudioOpen(false);
+          setConfirmDelete('studio');
         }}
       />
     )}

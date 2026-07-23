@@ -1,6 +1,6 @@
 interface Segment { pct: number; color: string; label: string; }
 
-export function DonutIllustration({ total, segments }: { total: number; segments: Segment[] }) {
+export function DonutIllustration({ total, segments, centerLabel }: { total: number; segments: Segment[]; centerLabel: string }) {
   const r = 46, cx = 60, cy = 60;
   const circ = 2 * Math.PI * r;
   let offset = 0;
@@ -36,7 +36,7 @@ export function DonutIllustration({ total, segments }: { total: number; segments
         {total >= 1000000 ? `${(total / 1000000).toFixed(1)}M` : `${(total / 1000).toFixed(0)}K`}
       </text>
       <text x={cx} y={cy + 9} textAnchor="middle" style={{ fontSize: '8px', fill: 'var(--text3)', fontFamily: 'var(--font)', fontWeight: 600 }}>
-        ₽ всего
+        {centerLabel}
       </text>
     </svg>
   );

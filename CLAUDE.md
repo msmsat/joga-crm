@@ -180,6 +180,7 @@
 
 **Frontend (React 19 + TypeScript):**
 - Vite, React Router 7, Recharts, CSS Modules (`.module.css`).
+- Новый UI: Tailwind v4 + shadcn/ui + Radix + Motion (framer-motion) — см. §5 «Стек современного UI».
 - *Run:* `cd front && npm run dev`
 - *Build & Check:* `npm run build && npm run lint`
 
@@ -213,9 +214,11 @@
 | `Card` | `components/ui/index` | Карточка-поверхность: radius 16, мягкая тень, `hover` для кликабельных |
 | `Input` | `components/ui/index` | Поле с label, glow-фокусом персиковым и состоянием `error` |
 | `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита |
+| `Switch` | `components/ui/index` | Тумблер вкл/выкл: капсула, персиковая заливка при `checked`, `disabled` |
 | `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: blur-оверлей, пружинный вход/выход, Esc |
 | `ConfirmModal` | `components/ui/index` | Замена `window.confirm` (danger-режим для удалений) |
 | `Tooltip` | `components/ui/index` | Ониксовая капсула, `side: top/bottom/left/right` |
+| `InfoHint` | `components/ui/index` | i-кнопка с Apple-style поповером-описанием по клику, `side: top/bottom/left/right` |
 | `Toast` (`useToast`) | `components/ui/index` | Уведомления об успехе/ошибке |
 | `Sidebar`, `Navbar` | `components/ui/index` | Каркас приложения (используются только в `DashboardLayout`) |
 
@@ -224,6 +227,24 @@
 2. Главный акцент ВСЕГДА персиковый `#FCAE91` / `#F9A08B` — CTA, фокус, активные состояния. Новые компоненты кита обязаны использовать его как primary.
 3. Импорт строго через `components/ui/index` (не через папку `components/ui` — на Windows путь сталкивается по регистру со старым `components/UI.tsx`, который остаётся только для лендинга/авторизации/онбординга).
 4. Новый общий компонент → кладём в `components/ui/`, экспортируем из `index.ts`, добавляем строку в эту таблицу.
+
+### ⚡ Стек современного UI (Tailwind + shadcn/ui + Radix + Motion) — для НОВОГО кода
+Установлен параллельный стек для новых страниц/компонентов. **Старые страницы на CSS Modules НЕ переписываем** — оба слоя сосуществуют.
+
+**Что доступно:**
+- **Tailwind CSS v4** (плагин `@tailwindcss/vite`, конфиг-файла нет — тема в `src/index.css` через `@theme`). Токены уже связаны с ДС Velora: `bg-primary`/`ring`/`bg-accent` = персиковый, `bg-background` = `#FDFCFB`, `bg-card` = `#FFFFFF`, тёмная тема через класс `.dark`.
+- **shadcn/ui** (стиль `new-york`) — компоненты лежат в `@/components/ui-shadcn/` (button, input, dialog, select, switch, card, label, tooltip). Добавить ещё: `npx shadcn@latest add <name> -y`, затем перенести из созданной папки `@/` в `src/` (CLI на Windows не резолвит алиас — известный баг).
+- **Radix UI** — примитивы под капотом shadcn (доступность, фокус-менеджмент).
+- **Motion / framer-motion** (`import { motion } from 'framer-motion'`) — анимации входа/layout/жестов.
+- **tw-animate-css** — util-классы анимаций (`animate-in`, `fade-in`, …).
+- **lucide-react** — иконки для shadcn-компонентов (в остальном по проекту — inline SVG, эмодзи запрещены).
+- `cn()` из `@/lib/utils` — объединение классов; алиас `@/*` → `src/*`.
+
+**Правила:**
+1. Новый UI по умолчанию делаем на этом стеке. Правишь готовую CSS-Modules-страницу — оставайся в её стиле (не смешивай подходы в одном файле).
+2. **Акцент ВСЕГДА персиковый** `#F9A08B` / `#FCAE91`. Не вводи синий/фиолетовый дефолт shadcn — используй `bg-primary`, `ring`, `text-primary`, `bg-accent`. Токены темы менять нельзя без явного согласования.
+3. Тёмная тема — только через класс `.dark`, цветами из `src/index.css`. Не хардкодь hex в разметке — бери токены.
+4. Копипаст-компоненты (Magic UI / Aceternity / Origin UI) добавляем точечно по запросу, перекрашивая под персиковую палитру.
 
 ---
 

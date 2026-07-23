@@ -18,6 +18,18 @@
   0%   { transform: scale(1); opacity: 0.6; }
   100% { transform: scale(1.5); opacity: 0; }
 }
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Skeletons (задача 8): вместо ложного «Не настроена» до прихода конфигов ─── */
+.skel {
+  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
 
 /* ─── Program cards ─── */
 .programCard {
@@ -61,6 +73,88 @@
   border-radius: var(--radius);
   padding: 20px 24px;
   animation: fadeSlideIn 0.4s ease both;
+}
+
+/* ─── Scenario cards ─── */
+.scenarioCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  animation: fadeSlideIn 0.4s ease both;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.scenarioCard:hover {
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.scenarioCardDisabled {
+  opacity: 0.6;
+}
+
+.inlineNum {
+  /* 1. Увеличиваем минимальную и стартовую ширину с 2.5ch до 4ch (или 5ch, если нужно еще шире) */
+  width: max(4ch, var(--num-w, 4ch));
+  min-width: 4ch;
+  
+  /* 2. Добавляем box-sizing: content-box, чтобы padding не "съедал" ширину самого текста */
+  box-sizing: content-box;
+
+  /* Остальные стили оставляем без изменений */
+  padding: 4px 10px;
+  margin: 0 3px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(252, 174, 145, 0.5);
+  background: rgba(252, 174, 145, 0.08);
+  color: #F9A08B;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.inlineNum::-webkit-inner-spin-button,
+.inlineNum::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.inlineNumDisabled {
+  cursor: not-allowed;
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 12px;
+  border: none;
+  flex-shrink: 0;
+  background: var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+}
+.toggleOn {
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+}
+.toggleDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.toggleKnobOn {
+  left: 20px;
 }
 
 .barWrap {

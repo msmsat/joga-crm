@@ -1,0 +1,323 @@
+{
+  "header": {
+    "allConfigured": "Все программы настроены",
+    "allConfiguredSub": "Система лояльности работает в полную силу",
+    "setup": "Настройте программы лояльности",
+    "setupSub": "Настроено {{count}} из {{total}} программ · Каждая программа увеличивает удержание клиентов",
+    "start": "Начать"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Карты лояльности",
+      "desc": "Накопительная система баллов по уровням",
+      "statLabel": "клиентов"
+    },
+    "discounts": {
+      "title": "Скидки и кэшбэк",
+      "desc": "Персональные предложения для клиентов",
+      "statLabel": "активных"
+    },
+    "certificates": {
+      "title": "Сертификаты",
+      "desc": "Подарочные и именные сертификаты",
+      "statLabel": "продано"
+    },
+    "referral": {
+      "title": "Реферальная",
+      "desc": "Программа «Приведи друга»",
+      "statLabel": "реферала"
+    },
+    "promocodes": {
+      "title": "Промокоды и акции",
+      "desc": "Коды на скидку с лимитом использований",
+      "statLabel": "активных"
+    },
+    "deposit": {
+      "title": "Депозит",
+      "desc": "Денежный баланс студии на карте клиента",
+      "statLabel": "с балансом"
+    }
+  },
+  "card": {
+    "active": "Активна",
+    "disable": "Выключить",
+    "notConfigured": "Не настроена",
+    "configure": "Настроить"
+  },
+  "drawer": {
+    "subtitle": "Настройка программы",
+    "saving": "Сохранение…",
+    "save": "Сохранить и активировать",
+    "cancel": "Отмена",
+    "close": "Закрыть"
+  },
+  "config": {
+    "mainParams": "Основные параметры",
+    "programName": "Название программы",
+    "pointsRate": "Начисление баллов ({{currency}} за 1 балл)",
+    "levels": "Уровни",
+    "expiry": "Срок действия",
+    "expiryTooltip": "Срок, в течение которого клиент может использовать накопленные баллы",
+    "expiryOptions": {
+      "3m": "3 мес",
+      "6m": "6 мес",
+      "1y": "1 год",
+      "never": "Бессрочно"
+    },
+    "levelNames": {
+      "silver": "Серебро",
+      "gold": "Золото",
+      "platinum": "Платина"
+    },
+    "newLevelName": "Новый уровень",
+    "addLevel": "+ Уровень",
+    "levelFrom": "от",
+    "levelTo": "до",
+    "deleteLevelTitle": "Удалить уровень?",
+    "deleteLevelMessage": "Клиенты уровня «{{name}}» будут переведены на соседний уровень по сумме покупок.",
+    "discountType": "Тип скидки",
+    "discountTypes": {
+      "percentage": "Процент (%)",
+      "fixed": "Фиксированная ({{currency}})",
+      "cashback": "Кэшбэк"
+    },
+    "cashbackPercent": "Процент кэшбэка",
+    "discountSize": "Размер скидки",
+    "minPurchase": "Минимальная сумма покупки",
+    "noLimit": "Без ограничений",
+    "conditions": "Условия применения",
+    "appliesToAll": "Применять ко всем услугам",
+    "stackable": "Суммировать с другими скидками",
+    "visibleInCabinet": "Показывать клиенту в личном кабинете",
+    "certType": "Тип сертификата",
+    "certTypes": {
+      "named": "Именной",
+      "gift": "Подарочный",
+      "service": "На услугу"
+    },
+    "denominations": "Номиналы",
+    "addDenom": "+ Добавить",
+    "service": "Услуга",
+    "noServices": "В каталоге пока нет услуг — добавьте их в разделе «Каталог»",
+    "params": "Параметры",
+    "expiryDays": "Срок действия (дней)",
+    "certIssue": "Выпустить сертификат",
+    "certCustomAmount": "Свой номинал",
+    "certRecipientName": "Имя получателя",
+    "certRecipientPlaceholder": "Необязательно",
+    "certLinkClient": "Привязать к клиенту",
+    "certClientSearchPlaceholder": "Начните вводить имя…",
+    "certAccount": "Счёт зачисления",
+    "certAccountNone": "Без зачисления в кассу",
+    "certIssueButton": "Выпустить",
+    "certIssuedTitle": "Сертификат выпущен",
+    "certCopyCode": "Скопировать код",
+    "certCopied": "Скопировано",
+    "certIssueAnother": "Выпустить ещё один",
+    "certIssued": "Выпущенные сертификаты",
+    "certEmpty": "Сертификатов пока не выпущено",
+    "certStatus": {
+      "active": "Активен",
+      "used": "Погашен",
+      "expired": "Истёк"
+    },
+    "certRedeem": "Погасить",
+    "certRedeemTitle": "Погасить сертификат?",
+    "certRedeemMessage": "Сертификат {{code}} будет отмечен как использованный. Действие необратимо.",
+    "referrerBonusTitle": "Бонус за реферала",
+    "referrerBonus": "Бонус рефереру ({{currency}})",
+    "newClientDiscount": "Скидка новому клиенту (%)",
+    "triggerCondition": "Условие начисления",
+    "triggerConditions": {
+      "first_visit": "После первого визита",
+      "first_payment": "После первой оплаты",
+      "registration": "Сразу при регистрации"
+    },
+    "bonusAccrual": "Начисление бонуса",
+    "bonusTypes": {
+      "points": "Баллами",
+      "deposit": "На депозит",
+      "discount": "Скидкой"
+    },
+    "promoCreate": "Создать промокод",
+    "promoCodePlaceholder": "ЛЕТО25",
+    "promoValidUntil": "Действует до",
+    "promoUsageLimit": "Лимит использований",
+    "promoAdd": "+ Добавить промокод",
+    "promoList": "Промокоды",
+    "promoEmpty": "Промокодов пока нет",
+    "promoUntil": "до",
+    "promoStatus": {
+      "active": "Активен",
+      "expired": "Истёк",
+      "exhausted": "Лимит исчерпан",
+      "disabled": "Выключен"
+    },
+    "depositTotal": "Суммарный баланс",
+    "depositTotalSub": "на депозитах клиентов",
+    "depositTopClients": "Топ клиентов по балансу",
+    "depositEmpty": "Пока ни у кого нет депозита",
+    "depositHint": "Пополнение и списание — в карточке клиента. Реферальная программа может начислять бонус на депозит вместо баллов."
+  },
+  "validation": {
+    "required": "Обязательное поле",
+    "minOne": "Должно быть не меньше 1",
+    "minZero": "Не может быть отрицательным",
+    "positive": "Должно быть больше 0",
+    "range0to100": "От 0 до 100"
+  },
+  "toasts": {
+    "saved": "Программа активирована",
+    "saveFailed": "Не удалось сохранить",
+    "toggleFailed": "Не удалось изменить программу",
+    "loadFailed": "Не удалось загрузить данные",
+    "retry": "Повторить"
+  },
+  "stats": {
+    "notConnected": "Программа не подключена",
+    "willAppear": "Данные появятся после настройки",
+    "noData": "Нет данных",
+    "connectProgram": "Подключите программу",
+    "revenueHeadline": "Выручка от участников",
+    "membersHeadline": "Участников программы",
+    "returnedClients": "Вернулось клиентов",
+    "returnedClientsSub": "2+ визита за 90 дней",
+    "avgCheckHeadline": "Средний чек участника",
+    "bonusCostHeadline": "Стоимость бонусов",
+    "bonusCostSub": "за текущий месяц",
+    "roiHeadline": "Окупаемость",
+    "roiValue": "×{{value}}",
+    "perMonth": "за текущий месяц",
+    "cardHolders": "держателей карт",
+    "kpi": "Ключевые показатели",
+    "members": "Участников",
+    "withCard": "с картой",
+    "avgCheck": "Средний чек",
+    "byMembers": "по участникам",
+    "pointsInCirculation": "Баллов в обороте",
+    "accrued": "начислено",
+    "revenue": "Выручка",
+    "revenuePerMonth": "от участников / мес",
+    "levelDistribution": "Распределение по уровням",
+    "noLevels": "Уровни ещё не настроены",
+    "totalClients": "Всего клиентов в программе",
+    "fromValue": "от {{value}}"
+  },
+  "scenarios": {
+    "title": "Умные сценарии",
+    "subtitle": "Автопилот удержания: система сама находит клиентов и дарит бонус",
+    "add": "Сценарий",
+    "fired": "сработал {{count}} раз",
+    "lastRun": "последний прогон {{when}}",
+    "neverRun": "ещё не запускался",
+    "empty": "Пока нет ни одного сценария",
+    "emptySub": "Соберите первый — система будет удерживать клиентов за вас",
+    "channel": "Канал",
+    "channelSoon": "после подключения интеграции",
+    "pickTemplate": "Выберите сценарий",
+    "pickTemplateSub": "Готовая заготовка — потом подстроите пороги",
+    "create": "Создать",
+    "deleteConfirm": "Удалить сценарий?",
+    "deleteConfirmSub": "Правило перестанет срабатывать. Это действие необратимо.",
+    "triggers": {
+      "inactive_days": "не был {{days}} дней",
+      "low_subscription": "осталось ≤ {{classes_left}} занятий",
+      "birthday": "день рождения",
+      "nth_visit": "{{n}}-й визит",
+      "referral": "привёл друга"
+    },
+    "actions": {
+      "points": "подарить {{points}} баллов",
+      "gift_classes": "подарить {{classes}} занятий",
+      "certificate": "выдать сертификат на {{amount}} ₽",
+      "renewal_offer": "предложить продление со скидкой {{discount}}%"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Мы соскучились",
+        "desc": "Вернуть клиента, который давно не приходил"
+      },
+      "expiring_subscription": {
+        "name": "Абонемент на исходе",
+        "desc": "Предложить продление, пока занятия не кончились"
+      },
+      "birthday_gift": {
+        "name": "Подарок на день рождения",
+        "desc": "Порадовать клиента в его праздник"
+      },
+      "fifth_visit": {
+        "name": "Награда за визиты",
+        "desc": "Занятие в подарок за преданность"
+      },
+      "referral_thanks": {
+        "name": "Спасибо за друга",
+        "desc": "Бонус тому, кто привёл нового клиента"
+      }
+    },
+    "ifClient": "Если клиент",
+    "then": "→",
+    "toasts": {
+      "created": "Сценарий создан",
+      "updated": "Сценарий обновлён",
+      "deleted": "Сценарий удалён",
+      "failed": "Не удалось сохранить сценарий"
+    },
+    "delete": "Удалить"
+  },
+  "segmentsBoard": {
+    "title": "Сегменты и рекомендации",
+    "subtitle": "Живые группы клиентов с одной конкретной кнопкой к действию",
+    "empty": "Здесь пусто, и это хорошо",
+    "clients": "клиентов",
+    "daysAgo": "{{count}} дн. назад",
+    "neverVisited": "без визитов",
+    "more": "и ещё {{count}}",
+    "segments": {
+      "at_risk": {
+        "name": "На грани ухода",
+        "desc": "Активные, не были 21+ день",
+        "action": "Выдать бонус"
+      },
+      "vip_idle": {
+        "name": "VIP без визита",
+        "desc": "VIP-клиенты, не были 14+ дней",
+        "action": "Запустить кампанию"
+      },
+      "expiring_subscription": {
+        "name": "Абонемент кончается",
+        "desc": "Осталось ≤2 занятий или ≤7 дней",
+        "action": "Запустить кампанию"
+      },
+      "lost_newcomers": {
+        "name": "Не вернулись",
+        "desc": "Пришли раз и пропали на 14+ дней",
+        "action": "Запустить кампанию"
+      },
+      "upsell_candidates": {
+        "name": "Готовы к абонементу",
+        "desc": "8+ визитов за месяц, без пакета",
+        "action": "Запустить кампанию"
+      }
+    },
+    "campaignSub": "Сегмент «{{name}}» · {{count}} клиентов",
+    "pointsLabel": "Сколько баллов начислить",
+    "messageLabel": "Текст письма",
+    "messagePlaceholder": "Например: Мы соскучились! Возвращайтесь — ждём вас.",
+    "emailNote": "Письмо уйдёт только клиентам с email",
+    "confirm": "Отправить",
+    "toasts": {
+      "pointsDone": "Баллы начислены · обработано {{processed}}",
+      "emailDone": "Рассылка отправлена · писем {{emails}} из {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Продления абонементов",
+    "subtitle": "Как хорошо клиенты возвращаются за новым пакетом",
+    "renewalRate": "Продлевают",
+    "avgPackages": "Пакетов на клиента",
+    "sold": "Продано",
+    "renewed": "Продлено",
+    "empty": "Пока нет продаж абонементов",
+    "emptySub": "Аналитика появится после первых продаж пакетов"
+  }
+}

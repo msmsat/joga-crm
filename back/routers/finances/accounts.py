@@ -45,6 +45,22 @@ def _to_read(acc: Account, daily_change: int) -> AccountRead:
     )
 
 
+async def get_or_create_default_account(db: AsyncSession, studio_id: int) -> Account:
+    """Дефолтная касса студии. Создаёт «Основная касса», если счетов нет.
+    Не коммитит — вызывающий держит единую транзакцию.
+    # ponytail: default account = первый попавшийся/новый «Основная касса»; выбор типа счёта — когда касса/эквайринг/счёт станут раздельными
+    """
+    account = (await db.execute(
+        select(Account).where(Account.studio_id == studio_id).order_by(Account.id).limit(1)
+    )).scalar_one_or_none()
+    if account is not None:
+        return account
+    account = Account(studio_id=studio_id, name="Основная касса", type="cash", balance=0, color=_DEFAULT_COLOR)
+    db.add(account)
+    await db.flush()
+    return account
+
+
 async def _get_account_or_404(account_id: int, studio_id: int, db: AsyncSession) -> Account:
     acc = (await db.execute(
         select(Account).where(Account.id == account_id, Account.studio_id == studio_id)

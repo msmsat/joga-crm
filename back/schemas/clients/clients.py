@@ -1,19 +1,24 @@
 from datetime import date
 from typing import List, Optional
 
+from pydantic import Field
+
 from schemas._base import BaseSchema
 
 
 class ClientCreate(BaseSchema):
-    name: str
+    name: str = Field(min_length=1)
     last_name: Optional[str] = None
-    phone: Optional[str] = None
-    email: Optional[str] = None
+    phone: str = Field(min_length=1)
+    email: str = Field(min_length=1)
     birth_date: Optional[date] = None
-    city: Optional[str] = None
+    city: str = Field(min_length=1)
     tags: Optional[List[str]] = []
     note: Optional[str] = None
     source: Optional[str] = None
+    membership_id: Optional[int] = None
+    is_membership_paid: bool = False
+    invite_code: Optional[str] = None
 
 
 class ClientUpdate(BaseSchema):

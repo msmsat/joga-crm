@@ -1,6 +1,6 @@
 export const FINANCE_TABS = [
-  'Счета и кассы', 'Операции', 'Зарплаты', 'Контрагенты', 'Документы',
-  'Онлайн-платежи', 'Методы оплаты', 'Отчёты', 'Цели',
+  'accounts', 'operations', 'salaries', 'counterparties', 'documents',
+  'onlinePayments', 'paymentMethods', 'reports', 'goals',
 ] as const;
 
 export type Tab = typeof FINANCE_TABS[number];
@@ -26,25 +26,6 @@ export interface FinDocument {
   amount: number;
   status: 'signed' | 'pending' | 'draft';
   ext: string;
-}
-
-export interface OnlineChannel {
-  id: number;
-  name: string;
-  desc: string;
-  icon: string;
-  active: boolean;
-  amount: number;
-  sessions: number;
-}
-
-export interface PaymentMethod {
-  id: number;
-  name: string;
-  desc: string;
-  icon: string;
-  enabled: boolean;
-  commission: string;
-  transactions: number;
+  hasFile: boolean;
 }
 

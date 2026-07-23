@@ -4,7 +4,7 @@ import "../../../../../App.css";
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ColorPicker } from "../../../../../components/ui/modal";
 import { Select } from "../../../../../components/ui/Select";
 import { getCurrencySymbol } from "../../../../../components/UI";
-import { useStudioCurrency } from "../../hooks/useStudioCurrency";
+import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import { useValidation } from "./useValidation";
 import type { Service } from "../../types";
 import type { ServiceCreate } from "../../../../../api/studio/services.api";

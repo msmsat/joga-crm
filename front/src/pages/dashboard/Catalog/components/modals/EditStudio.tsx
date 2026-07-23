@@ -5,7 +5,7 @@ import "../../../../../App.css";
 import { PhoneField, getCurrencySymbol } from "../../../../../components/UI";
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, PhotoUpload, ChipsInput, ColorPicker, WorkingHoursEditor } from "../../../../../components/ui/modal";
 import type { WorkingHour } from "../../../../../components/ui/modal";
-import { useStudioCurrency } from "../../hooks/useStudioCurrency";
+import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import { useValidation } from "./useValidation";
 import { studioApi } from "../../../../../api/studio/studio.api";
 import { resolveImageUrl } from "../../../../../api/client";

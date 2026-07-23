@@ -1,0 +1,153 @@
+{
+  "toolbar": {
+    "today": "Сегодня",
+    "trainers": "Тренеры",
+    "halls": "Залы",
+    "day": "День",
+    "week": "Неделя"
+  },
+  "daySummary": {
+    "classesToday": "занятий сегодня",
+    "clientBookings": "записей клиентов",
+    "avgLoad": "средняя загрузка",
+    "trainersActive": "тренеров активно",
+    "gridStep": "Шаг сетки",
+    "minuteShort": "м",
+    "minutesShort": "мин",
+    "undo": "Отменить: {{label}}",
+    "redo": "Повторить: {{label}}",
+    "nothingToUndo": "Нечего отменять",
+    "nothingToRedo": "Нечего повторять"
+  },
+  "newBooking": {
+    "title": "Новое занятие",
+    "slotTime": "Время слота",
+    "service": "Услуга",
+    "servicePlaceholder": "Выберите услугу",
+    "namePlaceholder": "Например: Пилатес Реформер",
+    "location": "Локация / Зал",
+    "start": "Начало",
+    "end": "Конец",
+    "groupLimit": "Лимит группы",
+    "maxSpots": "Максимум мест",
+    "assignTrainer": "Назначить тренера",
+    "cancel": "Отмена",
+    "create": "Создать занятие",
+    "errors": {
+      "selectService": "Выберите услугу",
+      "range": "От 1 до 50",
+      "endAfterStart": "Конец должен быть позже начала"
+    },
+    "createServiceConfirm": {
+      "title": "Создать услугу?",
+      "message": "Нужной услуги нет в списке? Перейти в Каталог, чтобы создать её.",
+      "confirm": "Перейти в Каталог"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Подтверждено",
+    "pending": "Ожидает",
+    "spotsTaken": "мест занято",
+    "fillRate": "Заполненность",
+    "booked": "Записаны",
+    "attended": "Пришёл",
+    "markAttended": "Отметить посещение",
+    "removeFromLesson": "Снять с занятия",
+    "add": "Добавить",
+    "addClient": "Добавить клиента",
+    "edit": "Изменить",
+    "editLesson": "Изменить занятие",
+    "deleteLesson": "Удалить занятие",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "lessonTitle": "Название занятия",
+    "untitled": "Без названия",
+    "from": "С",
+    "to": "До",
+    "searchPlaceholder": "Поиск по имени или телефону...",
+    "noClientsFound": "Клиенты не найдены",
+    "noEligibleClients": "Нет клиентов с доступом на это занятие",
+    "visitsCount_one": "{{count}} визит",
+    "visitsCount_few": "{{count}} визита",
+    "visitsCount_many": "{{count}} визитов",
+    "visitsCount_other": "{{count}} визитов",
+    "errors": {
+      "selectService": "Выберите услугу",
+      "range": "От 1 до 50",
+      "minBooked": "Записано {{count}} — меньше нельзя",
+      "endAfterStart": "Конец должен быть позже начала"
+    },
+    "createServiceConfirm": {
+      "title": "Создать услугу?",
+      "message": "Нужной услуги нет в списке? Перейти в Каталог, чтобы создать её.",
+      "confirm": "Перейти в Каталог"
+    }
+  },
+  "addClientModal": {
+    "title": "Добавить клиента",
+    "searchPlaceholder": "Поиск по имени или телефону...",
+    "noClientsFound": "Клиенты не найдены",
+    "chooseFromList": "Выберите клиентов из списка",
+    "selectedCount_one": "Выбрано: {{count}} клиент",
+    "selectedCount_few": "Выбрано: {{count}} клиента",
+    "selectedCount_many": "Выбрано: {{count}} клиентов",
+    "selectedCount_other": "Выбрано: {{count}} клиентов",
+    "cancel": "Отмена",
+    "add": "Добавить"
+  },
+  "rightPanel": {
+    "halls": "Залы",
+    "load": "Загрузка",
+    "upcoming": "Ближайшие"
+  },
+  "grid": {
+    "classesShort": "зан.",
+    "peopleShort": "чел.",
+    "loadPercent": "Загрузка: {{percent}}%",
+    "classes": "занятий",
+    "classesToday": "занятий на сегодня",
+    "newLessonPreview": "Новое занятие"
+  },
+  "createService": "+ Создать услугу",
+  "invalidDateFormat": "Неверный формат даты",
+  "toasts": {
+    "lessonMoved": "Занятие перенесено",
+    "endTimeChanged": "Время окончания изменено",
+    "startTimeChanged": "Время начала изменено",
+    "attendanceMarked": "Посещение отмечено",
+    "clientRemoved": "Клиент снят с занятия",
+    "lessonUpdated": "Занятие обновлено",
+    "lessonAdded": "Занятие добавлено",
+    "selectTrainer": "Выберите тренера",
+    "alreadyCancelled": "Занятие уже отменено",
+    "lessonCancelled": "Занятие отменено",
+    "noPermission": "Недостаточно прав для изменения расписания",
+    "undoLabel": "Отменено: {{label}}",
+    "redoLabel": "Повторено: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Записано: {{count}} клиент",
+    "clientsBooked_few": "Записано: {{count}} клиента",
+    "clientsBooked_many": "Записано: {{count}} клиентов",
+    "clientsBooked_other": "Записано: {{count}} клиентов",
+    "clientsBookedPartial": "Записано {{success}} из {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "снятие клиента",
+      "moveLesson": "перенос занятия",
+      "createLesson": "создание занятия",
+      "bookClient": "запись клиента",
+      "bookClients": "запись клиентов ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Не удалось загрузить",
+    "retry": "Повторить"
+  },
+  "cancelBookingConfirm": {
+    "title": "Отменить занятие?",
+    "message_one": "{{count}} клиент получит уведомление об отмене.",
+    "message_few": "{{count}} клиента получат уведомление об отмене.",
+    "message_many": "{{count}} клиентов получат уведомление об отмене.",
+    "message_other": "{{count}} клиентов получат уведомление об отмене.",
+    "confirm": "Отменить занятие"
+  }
+}

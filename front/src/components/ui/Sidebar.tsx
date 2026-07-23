@@ -5,6 +5,10 @@ import { queryClient } from '../../api/queryClient';
 import { queryKeys } from '../../api/queryKeys';
 import { studioApi } from '../../api/studio/studio.api';
 import { servicesApi } from '../../api/studio/services.api';
+import { staffApi } from '../../api/staff';
+import { scheduleApi } from '../../api/schedule';
+import { toDateStr } from '../../pages/dashboard/Journal/utils';
+import { fetchBookings } from '../../pages/dashboard/Journal/hooks/useSchedule';
 
 // Префетч данных раздела по hover пункта меню: к клику страница уже из кэша.
 // staleTime бережёт от спама — повторный hover свежие данные не перезапрашивает.
@@ -12,6 +16,20 @@ import { servicesApi } from '../../api/studio/services.api';
 const prefetchCatalog = () => {
   queryClient.prefetchQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
   queryClient.prefetchQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
+};
+
+const prefetchJournal = async () => {
+  const [staff, halls] = await Promise.all([
+    queryClient.fetchQuery({ queryKey: queryKeys.staff, queryFn: () => staffApi.getList().then(r => r.staff.items) }),
+    queryClient.fetchQuery({ queryKey: queryKeys.halls, queryFn: () => scheduleApi.getHalls() }),
+  ]);
+  const today = toDateStr(new Date());
+  // journalLessons хранит уже смапленные Booking[] (не сырые Lesson[]) — маппим
+  // тем же fetchBookings, что и сам useSchedule, иначе типы в кэше разъедутся.
+  queryClient.prefetchQuery({
+    queryKey: queryKeys.journalLessons(today, today),
+    queryFn: () => fetchBookings(today, today, staff, halls),
+  });
 };
 
 export interface SidebarProps {
@@ -133,7 +151,7 @@ export function Sidebar({ role }: SidebarProps) {
       </div>
 
       <div className="sidebar-bottom">
-        <NavLink to="/dashboard/journal" className="sidebar-journal" style={{ textDecoration: 'none' }}>
+        <NavLink to="/dashboard/journal" onMouseEnter={prefetchJournal} className="sidebar-journal" style={{ textDecoration: 'none' }}>
           <div className="journal-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
           </div>

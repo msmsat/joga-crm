@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { IconWhatsApp } from '../ui/BookingIcons'
 
 type Step = 'default' | 'qr' | 'connected'
@@ -7,6 +8,7 @@ type Step = 'default' | 'qr' | 'connected'
 interface Props { onClose(): void }
 
 export function WaModal({ onClose }: Props) {
+  const { t } = useTranslation('booking')
   const [step, setStep] = useState<Step>('default')
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export function WaModal({ onClose }: Props) {
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(37,211,102,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#25D366' }}>
               <IconWhatsApp />
             </div>
-            <div className="modal-title" style={{ marginBottom: 0 }}>WhatsApp запись</div>
+            <div className="modal-title" style={{ marginBottom: 0 }}>{t('wa.title')}</div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', padding: '4px', display: 'flex' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -35,7 +37,7 @@ export function WaModal({ onClose }: Props) {
         {step === 'default' && (
           <>
             <div className="modal-sub" style={{ marginBottom: '20px' }}>
-              Настройте автоответчик в WhatsApp Business для мгновенной отправки ссылки на запись.
+              {t('wa.sub')}
             </div>
 
             {/* Phone illustration */}
@@ -55,17 +57,17 @@ export function WaModal({ onClose }: Props) {
                     <div style={{ fontSize: '11px', fontWeight: 700, color: 'white' }}>Velora Studio</div>
                     <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4CFF91', display: 'inline-block' }}/>
-                      в сети
+                      {t('wa.online')}
                     </div>
                   </div>
                 </div>
                 <div className="wa-phone-body">
                   <div className="wa-bubble wa-bubble-in">
-                    Здравствуйте! Хочу записаться.<span className="wa-time">10:42</span>
+                    {t('wa.sampleIncoming')}<span className="wa-time">10:42</span>
                   </div>
                   <div className="wa-typing-dots"><span/><span/><span/></div>
                   <div className="wa-bubble wa-bubble-out bot">
-                    Приветствуем! ✨<br/>
+                    {t('wa.sampleOutgoing')}<br/>
                     <span style={{ color: '#027EB5' }}>book.velora.studio</span>
                     <span className="wa-time">10:42</span>
                   </div>
@@ -80,7 +82,7 @@ export function WaModal({ onClose }: Props) {
               onClick={() => setStep('qr')}
             >
               <IconWhatsApp />
-              Подключить WhatsApp Business
+              {t('wa.connect')}
             </button>
           </>
         )}
@@ -156,10 +158,10 @@ export function WaModal({ onClose }: Props) {
 
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>
-                Отсканируйте QR-код
+                {t('wa.scanQr')}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.5 }}>
-                WhatsApp Business → Настройки →<br/>Связанные устройства
+                {t('wa.scanInstructionLine1')}<br/>{t('wa.scanInstructionLine2')}
               </div>
             </div>
 
@@ -167,7 +169,7 @@ export function WaModal({ onClose }: Props) {
               <div className="wa-qr-progress-bar"/>
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text3)', textAlign: 'center' }}>
-              Ожидание подключения...
+              {t('wa.waiting')}
             </div>
           </div>
         )}
@@ -183,7 +185,7 @@ export function WaModal({ onClose }: Props) {
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(37,211,102,0.12)', color: '#25D366', borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 600, marginBottom: '12px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#25D366', display: 'inline-block' }}/>
-                Подключён
+                {t('wa.connected')}
               </div>
               <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '4px' }}>
                 WhatsApp Business
@@ -196,11 +198,11 @@ export function WaModal({ onClose }: Props) {
             <div className="tg-connected-info">
               <div className="tg-info-row">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span>Автоответ активен</span>
+                <span>{t('wa.autoReplyActive')}</span>
               </div>
               <div className="tg-info-row">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                <span>Ссылка на запись отправляется мгновенно</span>
+                <span>{t('wa.instantLink')}</span>
               </div>
             </div>
 
@@ -210,7 +212,7 @@ export function WaModal({ onClose }: Props) {
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#D88C9A'; (e.currentTarget as HTMLButtonElement).style.color = '#D88C9A' }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text2)' }}
             >
-              Отключить
+              {t('wa.disconnect')}
             </button>
           </div>
         )}

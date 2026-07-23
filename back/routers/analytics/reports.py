@@ -1,13 +1,13 @@
 from datetime import date, datetime, time, timedelta
-from typing import Literal, Optional
+from typing import Literal
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import ActivityLog, Client, Lesson, Operation, Product, Reservation, User
+from models import ActivityLog, Client, Hall, Lesson, Operation, Product, Reservation, User
 from schemas.analytics.reports import (
     ActivityLogRead,
     PeriodSummaryRead,
@@ -16,15 +16,9 @@ from schemas.analytics.reports import (
     SummaryTrends,
     TrainerReportRow,
 )
+from ._filters import ReportFilters, lesson_conds, op_conds, occupied_expr, pct as _pct, prev_range, report_filters
 
 router = APIRouter()
-
-
-def _pct(current: float, previous: float) -> Optional[float]:
-    """% изменения к прошлому периоду. Прошлый период пустой → null, не 500."""
-    if previous == 0:
-        return None
-    return round((current - previous) / previous * 100, 1)
 
 
 async def _revenue_expenses(studio_id: int, d_from: date, d_to: date, db: AsyncSession) -> tuple[int, int, int]:
@@ -125,8 +119,9 @@ async def period_summary(
 ):
     sid = ctx.studio_id
     length = (date_to - date_from).days
-    prev_to = date_from - timedelta(days=1)
-    prev_from = prev_to - timedelta(days=length)
+    prev_from, prev_to = prev_range(
+        ReportFilters(date_from=date_from, date_to=date_to, branch_id=None, hall_id=None, trainer_id=None, service_id=None)
+    )
 
     curr = await _period_metrics(sid, date_from, date_to, db)
     prev = await _period_metrics(sid, prev_from, prev_to, db)
@@ -161,42 +156,47 @@ async def period_summary(
 
 @router.get("/series", response_model=list[SeriesPoint])
 async def metric_series(
-    metric: Literal["revenue", "expenses", "bookings", "new_clients"] = Query(...),
+    metric: Literal[
+        "revenue", "expenses", "bookings", "new_clients", "profit", "attendance", "fill_rate"
+    ] = Query(...),
     group: Literal["day", "week", "month"] = Query("day"),
-    date_from: date = Query(...),
-    date_to: date = Query(...),
+    f: ReportFilters = Depends(report_filters),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     sid = ctx.studio_id
+    date_from, date_to = f.date_from, f.date_to
     start_dt = datetime.combine(date_from, time.min)
     end_dt = datetime.combine(date_to, time.max)
 
+    if metric == "fill_rate":
+        return await _fill_rate_series(f, sid, group, db)
+
     # metric → (value-выражение, столбец-дата, WHERE). Один SELECT: date_trunc + GROUP BY.
-    if metric in ("revenue", "expenses"):
-        op_type = "in" if metric == "revenue" else "out"
+    if metric in ("revenue", "expenses", "profit"):
         bucket = func.date_trunc(group, Operation.op_date)
-        stmt = (
-            select(bucket.label("period"), func.coalesce(func.sum(Operation.amount), 0))
-            .where(
-                Operation.studio_id == sid,
-                Operation.type == op_type,
-                Operation.op_date >= date_from,
-                Operation.op_date <= date_to,
+        if metric == "profit":
+            value_expr = func.coalesce(
+                func.sum(case((Operation.type == "in", Operation.amount), else_=-Operation.amount)), 0
             )
-        )
-    elif metric == "bookings":
+            stmt = select(bucket.label("period"), value_expr).where(*op_conds(f, sid))
+        else:
+            op_type = "in" if metric == "revenue" else "out"
+            stmt = (
+                select(bucket.label("period"), func.coalesce(func.sum(Operation.amount), 0))
+                .where(*op_conds(f, sid), Operation.type == op_type)
+            )
+    elif metric in ("bookings", "attendance"):
         bucket = func.date_trunc(group, Lesson.start_time)
+        status_cond = Reservation.status == "attended" if metric == "attendance" else Reservation.status != "cancelled"
         stmt = (
             select(bucket.label("period"), func.count(Reservation.id))
-            .join(Lesson, Reservation.lesson_id == Lesson.id)
-            .where(
-                Lesson.studio_id == sid,
-                Lesson.start_time >= start_dt,
-                Lesson.start_time <= end_dt,
-                Reservation.status != "cancelled",
-            )
+            .select_from(Lesson)
+            .join(Reservation, Reservation.lesson_id == Lesson.id)
+            .where(*lesson_conds(f, sid), status_cond)
         )
+        if f.branch_id is not None:
+            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
     else:  # new_clients
         bucket = func.date_trunc(group, Client.registration_date)
         stmt = (
@@ -210,8 +210,37 @@ async def metric_series(
 
     rows = (await db.execute(stmt.group_by("period").order_by("period"))).all()
     return [
-        SeriesPoint(period=period.date().isoformat(), value=int(value or 0))
+        SeriesPoint(period=period.date().isoformat(), value=float(value or 0))
         for period, value in rows
+    ]
+
+
+async def _fill_rate_series(f: ReportFilters, sid: int, group: str, db: AsyncSession) -> list[SeriesPoint]:
+    """Σ занятых / Σ вместимости по бакетам. Считаем по Lesson.id (не по join-строкам
+    с Reservation) — иначе вместимость задваивается на число броней на занятие."""
+    bucket = func.date_trunc(group, Lesson.start_time).label("period")
+    stmt = (
+        select(bucket, Lesson.id, occupied_expr(), func.max(Lesson.total_spots))
+        .select_from(Lesson)
+        .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
+        .where(*lesson_conds(f, sid))
+    )
+    if f.branch_id is not None:
+        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+    rows = (await db.execute(stmt.group_by("period", Lesson.id).order_by("period"))).all()
+
+    totals: dict[datetime, list[int]] = {}
+    for period, _lesson_id, occupied, capacity in rows:
+        occ, cap = totals.setdefault(period, [0, 0])
+        totals[period][0] = occ + int(occupied or 0)
+        totals[period][1] = cap + int(capacity or 0)
+
+    return [
+        SeriesPoint(
+            period=period.date().isoformat(),
+            value=round(occ / cap * 100, 1) if cap else 0.0,
+        )
+        for period, (occ, cap) in sorted(totals.items())
     ]
 
 

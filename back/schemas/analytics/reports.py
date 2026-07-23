@@ -1,12 +1,110 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Any, Optional
 
 from schemas._base import BaseSchema
 
 
 class SeriesPoint(BaseSchema):
     period: str
-    value: int
+    value: float
+
+
+class Kpi(BaseSchema):
+    value: float
+    prev_pct: Optional[float] = None
+
+
+class RevenueStructureRow(BaseSchema):
+    category: str
+    amount: int
+    share_pct: float
+
+
+class ClientDynamics(BaseSchema):
+    new: Kpi
+    returned: Kpi
+    lost: Kpi
+
+
+class Insight(BaseSchema):
+    key: str
+    severity: str
+    params: dict[str, Any]
+    action: str
+    action_params: dict[str, Any]
+
+
+class OverviewKpiSet(BaseSchema):
+    revenue: Kpi
+    profit: Kpi
+    attendance: Kpi
+    active_clients: Kpi
+    fill_rate: Kpi
+
+
+class OverviewRead(BaseSchema):
+    kpi: OverviewKpiSet
+    revenue_structure: list[RevenueStructureRow]
+    client_dynamics: ClientDynamics
+    insights: list[Insight]
+
+
+class SalesKpi(BaseSchema):
+    revenue: Kpi
+    sales_count: Kpi
+    avg_check: Kpi
+    repeat_share_pct: Kpi
+    renewals_pct: Kpi
+
+
+class CategorySlice(BaseSchema):
+    category: str
+    amount: int
+    count: int
+    share_pct: float
+
+
+class MethodSlice(BaseSchema):
+    method: str
+    amount: int
+    count: int
+    share_pct: float
+
+
+class BuyerTypeGroup(BaseSchema):
+    amount: int
+    count: int
+
+
+class BuyerTypeSlice(BaseSchema):
+    new: BuyerTypeGroup
+    returning: BuyerTypeGroup
+    no_client: BuyerTypeGroup
+
+
+class ProductRow(BaseSchema):
+    product_id: Optional[int] = None
+    name: Optional[str] = None
+    sold: int
+    revenue: int
+    avg_check: int
+    repeat_share_pct: float
+    trend_pct: Optional[float] = None
+
+
+class SalesRead(BaseSchema):
+    kpi: SalesKpi
+    by_category: list[CategorySlice]
+    by_method: list[MethodSlice]
+    by_buyer_type: BuyerTypeSlice
+    products: list[ProductRow]
+    insights: list[Insight]
+
+
+class SalesSeriesPoint(BaseSchema):
+    period: str
+    revenue: int
+    sales_count: int
 
 
 class SummaryTrends(BaseSchema):

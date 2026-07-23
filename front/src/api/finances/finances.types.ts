@@ -19,6 +19,8 @@ export interface Operation {
   status: string
   client_id: number | null
   account_id: number | null
+  counterparty_id: number | null
+  trainer_id: number | null
 }
 
 export interface OperationCreate {
@@ -30,6 +32,18 @@ export interface OperationCreate {
   method?: string | null
   account_id?: number | null
   client_id?: number | null
+  counterparty_id?: number | null
+}
+
+export interface OperationUpdate {
+  title?: string
+  amount?: number
+  op_date?: string
+  category?: string | null
+  method?: string | null
+  account_id?: number | null
+  client_id?: number | null
+  counterparty_id?: number | null
 }
 
 export interface AccountUpdate {
@@ -44,11 +58,17 @@ export interface OperationFilters {
   category?: string
   account_id?: number
   client_id?: number
+  product_id?: number
   date_from?: string
   date_to?: string
   search?: string
   offset?: number
   limit?: number
+}
+
+export interface OperationCategoryStat {
+  category: string
+  amount: number
 }
 
 export interface Page<T> {
@@ -89,6 +109,7 @@ export interface FinDocument {
   amount: number | null
   status: string
   file_ext: string
+  has_file: boolean
   counterparty_id: number | null
   created_at: string
 }
@@ -130,6 +151,7 @@ export interface FinancialGoal {
   deadline: string | null
   category: string | null
   priority: string
+  op_type: 'in' | 'out'
 }
 
 export interface GoalCreate {
@@ -139,6 +161,7 @@ export interface GoalCreate {
   deadline?: string | null
   category?: string | null
   priority?: string
+  op_type?: 'in' | 'out'
 }
 
 export interface GoalUpdate {
@@ -149,14 +172,39 @@ export interface GoalUpdate {
   deadline?: string | null
   category?: string | null
   priority?: string
+  op_type?: 'in' | 'out'
+}
+
+export type GatewayType = 'stripe' | 'fondy'
+
+export interface Gateway {
+  gateway_type: GatewayType
+  connected: boolean
+  is_active: boolean
+  public_key: string | null
+}
+
+export interface GatewayUpdate {
+  public_key?: string | null
+  secret_key?: string | null
+  is_active?: boolean
+}
+
+export interface MethodStat {
+  method: string
+  amount: number
+  count: number
 }
 
 export interface SalaryRow {
   user_id: number
   name: string
   sessions_count: number
+  hours_worked: number
+  lessons_revenue: number
   rate: number | null
   rate_type: string | null
   amount: number
   status: string
+  paid_at: string | null
 }

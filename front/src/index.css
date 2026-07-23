@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* shadcn/ui dark-mode variant hook (class-based) */
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Мост дизайн-системы Velora → токены shadcn/ui.
+   Акцент СТРОГО персиковый (--peach #F9A08B / --peach-light #FCAE91).
+   Базовые токены (--peach, --bg, --onyx…) объявлены в App.css.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --radius: 0.75rem; /* 12px — как --radius в App.css */
+
+  --background: #FDFCFB;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  --primary: #F9A08B;          /* персиковый акцент */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F4F2F0;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F4F2F0;
+  --muted-foreground: #666666;
+  --accent: #FCAE91;           /* персиковый light */
+  --accent-foreground: #1A1A1A;
+  --destructive: #D88C9A;      /* dusty rose из ДС */
+
+  --border: rgba(26, 26, 26, 0.08);
+  --input: rgba(26, 26, 26, 0.12);
+  --ring: #F9A08B;             /* фокус-кольцо — персиковое */
+}
+
+.dark {
+  --background: #121212;
+  --foreground: #F5F5F5;
+  --card: #1E1E1E;
+  --card-foreground: #F5F5F5;
+  --popover: #1E1E1E;
+  --popover-foreground: #F5F5F5;
+
+  --primary: #F9A08B;
+  --primary-foreground: #1A1A1A;
+  --secondary: #262626;
+  --secondary-foreground: #F5F5F5;
+  --muted: #262626;
+  --muted-foreground: #A0A0A0;
+  --accent: #FCAE91;
+  --accent-foreground: #1A1A1A;
+  --destructive: #D88C9A;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #F9A08B;
+}
+
+/* Проброс токенов в утилиты Tailwind v4 (bg-primary, text-muted-foreground, …) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: 'Manrope', sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}

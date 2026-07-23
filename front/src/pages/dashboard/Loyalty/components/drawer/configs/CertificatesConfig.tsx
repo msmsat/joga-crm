@@ -1,22 +1,37 @@
 import { useState, useRef, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import styles from '../../../Loyalty.module.css';
 import type { CertificateConfig as CertificateConfigType } from '../../../../../../api/loyalty/loyalty.types';
+import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../../../components/UI';
+import type { ConfigErrors } from '../../../hooks/validateConfig';
+import { servicesApi } from '../../../../../../api/studio/services.api';
+import { queryKeys } from '../../../../../../api/queryKeys';
+import IssuedCertificates from './certificates/IssuedCertificates';
 
 interface Props {
   value: CertificateConfigType | null;
   onChange: (patch: Partial<CertificateConfigType>) => void;
+  errors?: ConfigErrors;
 }
 
-const TYPES = ['Именной', 'Подарочный', 'На услугу'] as const;
+const TYPE_KEYS = ['named', 'gift', 'service'] as const;
 const DEFAULT_DENOMS = [1000, 2500, 5000, 10000];
-const SERVICES = ['Йога', 'Пилатес', 'Растяжка', 'Медитация', 'TRX'];
-const fmt = (n: number) => `₽${n.toLocaleString('ru-RU')}`;
 
-export default function CertificatesConfig({ value, onChange }: Props) {
-  const certType = value?.cert_type ?? 'Подарочный';
+export default function CertificatesConfig({ value, onChange, errors = {} }: Props) {
+  const { t } = useTranslation('loyalty');
+  const currency = getCurrencySymbol(useStudioCurrency());
+  const fmt = (n: number) => `${currency}${n.toLocaleString('ru-RU')}`;
+  const certType = value?.cert_type ?? 'gift';
   const expiryDays = value?.expiry_days ?? 365;
-  const serviceName = value?.service_name ?? null;
+  const serviceId = value?.service_id ?? null;
   const activeDenoms = value?.denominations ?? [];
+  const { data: services = [] } = useQuery({
+    queryKey: queryKeys.services,
+    queryFn: () => servicesApi.list(),
+    enabled: certType === 'service',
+  });
 
   // Каталог кнопок номиналов = дефолты + всё, что уже выбрано (чтобы кастомные не исчезали).
   const denomChoices = Array.from(new Set([...DEFAULT_DENOMS, ...activeDenoms])).sort((a, b) => a - b);
@@ -49,30 +64,31 @@ export default function CertificatesConfig({ value, onChange }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       <div>
-        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Тип сертификата</div>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.certType')}</div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {TYPES.map(t => (
+          {TYPE_KEYS.map(key => (
             <button
-              key={t}
-              onClick={() => onChange({ cert_type: t })}
+              key={key}
+              onClick={() => onChange({ cert_type: key })}
               className={styles.btnOption}
               style={{
                 padding: '8px 14px',
-                border: `1px solid ${certType === t ? 'rgba(74,128,196,0.4)' : 'var(--border)'}`,
-                background: certType === t ? 'rgba(74,128,196,0.1)' : 'var(--bg)',
-                color: certType === t ? '#4A80C4' : 'var(--text2)',
+                border: `1px solid ${certType === key ? 'rgba(74,128,196,0.4)' : 'var(--border)'}`,
+                background: certType === key ? 'rgba(74,128,196,0.1)' : 'var(--bg)',
+                color: certType === key ? '#4A80C4' : 'var(--text2)',
               }}
             >
-              {t}
+              {t(`config.certTypes.${key}`)}
             </button>
           ))}
         </div>
       </div>
 
       <div key={certType} style={{ animation: 'fadeSlideIn 0.2s ease both', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {certType === 'Подарочный' && (
+        {certType === 'gift' && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Номиналы</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.denominations')}</div>
+            {errors.denominations && <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginBottom: '8px' }}>{errors.denominations}</div>}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
               {denomChoices.map(d => (
                 <button
@@ -94,7 +110,7 @@ export default function CertificatesConfig({ value, onChange }: Props) {
               {addingDenom ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', animation: 'fadeSlideIn 0.15s ease both' }}>
                   <div style={{ display: 'flex', alignItems: 'center', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(74,128,196,0.5)', background: 'var(--bg)', overflow: 'hidden' }}>
-                    <span style={{ padding: '0 10px', fontSize: '13px', fontWeight: 600, color: 'var(--text3)', borderRight: '1px solid var(--border)' }}>₽</span>
+                    <span style={{ padding: '0 10px', fontSize: '13px', fontWeight: 600, color: 'var(--text3)', borderRight: '1px solid var(--border)' }}>{currency}</span>
                     <input
                       ref={inputRef}
                       type="number"
@@ -130,44 +146,51 @@ export default function CertificatesConfig({ value, onChange }: Props) {
                   className={styles.btnOption}
                   style={{ padding: '8px 16px', border: '1px dashed var(--border)', background: 'var(--bg)', color: 'var(--text3)', fontSize: '13px', fontWeight: 600 }}
                 >
-                  + Добавить
+                  {t('config.addDenom')}
                 </button>
               )}
             </div>
           </div>
         )}
 
-        {certType === 'На услугу' && (
+        {certType === 'service' && (
           <div>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Услуга</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {SERVICES.map(s => (
-                <button
-                  key={s}
-                  onClick={() => onChange({ service_name: serviceName === s ? null : s })}
-                  className={styles.btnOption}
-                  style={{
-                    padding: '8px 16px',
-                    border: `1px solid ${serviceName === s ? 'rgba(74,128,196,0.4)' : 'var(--border)'}`,
-                    background: serviceName === s ? 'rgba(74,128,196,0.1)' : 'var(--bg)',
-                    color: serviceName === s ? '#4A80C4' : 'var(--text)',
-                    fontSize: '13px', fontWeight: 600,
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.service')}</div>
+            {services.length === 0 ? (
+              <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{t('config.noServices')}</div>
+            ) : (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {services.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => onChange({ service_id: serviceId === s.id ? null : s.id })}
+                    className={styles.btnOption}
+                    style={{
+                      padding: '8px 16px',
+                      border: `1px solid ${serviceId === s.id ? 'rgba(74,128,196,0.4)' : 'var(--border)'}`,
+                      background: serviceId === s.id ? 'rgba(74,128,196,0.1)' : 'var(--bg)',
+                      color: serviceId === s.id ? '#4A80C4' : 'var(--text)',
+                      fontSize: '13px', fontWeight: 600,
+                    }}
+                  >
+                    {s.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>Параметры</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.params')}</div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>Срок действия (дней)</label>
-            <input type="number" value={expiryDays} onChange={e => onChange({ expiry_days: Number(e.target.value) })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text2)', display: 'block', marginBottom: '6px' }}>{t('config.expiryDays')}</label>
+            <input type="number" value={expiryDays} onChange={e => onChange({ expiry_days: Number(e.target.value) })} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: `1px solid ${errors.expiry_days ? '#D88C9A' : 'var(--border)'}`, background: 'var(--bg)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
+            {errors.expiry_days && <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '6px' }}>{errors.expiry_days}</div>}
           </div>
         </div>
+
+        <IssuedCertificates denominations={activeDenoms} />
       </div>
     </div>
   );

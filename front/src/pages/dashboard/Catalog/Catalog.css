@@ -101,6 +101,27 @@
   transform: scale(1.1);
 }
 
+.cat-subscription-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(252, 174, 145, 0.15);
+  color: #F9A08B;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cat-subscription-add-btn:hover {
+  background: #FCAE91;
+  color: #fff;
+}
+
 .cat-list {
   overflow-y: auto;
   flex: 1;

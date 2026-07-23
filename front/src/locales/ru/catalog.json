@@ -117,7 +117,9 @@
       "durationDaysPlaceholder": "60",
       "services": "Услуги",
       "servicesHint": "Ничего не выбрано — пакет действует на все занятия",
-      "isActive": "В продаже"
+      "isActive": "В продаже",
+      "soldAsSubscription": "Показывать в табе «Абонементы»",
+      "soldAsSingle": "Показывать в табе «Разовые»"
     }
   },
   "studios": {
@@ -214,7 +216,7 @@
   },
   "subscriptions": {
     "title": "АБОНЕМЕНТЫ",
-    "addPackage": "Добавить пакет",
+    "addPackage": "Добавить абонемент",
     "card": {
       "classCount_one": "{{count}} занятие",
       "classCount_few": "{{count}} занятия",
@@ -232,7 +234,7 @@
       "title": "Настройки программы",
       "allowFreeze": "Заморозка абонемента",
       "allowTransfer": "Перенос на другого клиента",
-      "autoRenewal": "Автопродление"
+      "autoRenewal": "Автопродление за счёт депозита клиента"
     },
     "empty": {
       "title": "Пакетов пока нет",

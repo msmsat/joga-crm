@@ -15,4 +15,6 @@ export interface SubscriptionPackage {
   sort_order: number
   duration_days: number
   service_ids: number[] | null
+  sold_as_single: boolean
+  sold_as_subscription: boolean
 }

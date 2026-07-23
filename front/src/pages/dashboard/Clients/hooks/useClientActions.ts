@@ -1,8 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { EventFilterTab } from '../types';
-import { clientsApi } from '../../../../api/clients';
+import type { ClientUpdate } from '../../../../api/clients/clients.types';
 import { scheduleApi } from '../../../../api/schedule';
 import type { Lesson } from '../../../../api/schedule/schedule.types';
+import { useToast } from '../../../../components/ui/Toast';
+import { errorMessage } from '../../../../api/errorMessage';
+import { useClientMutations } from './useClientsList';
+import { clientsApi } from '../../../../api/clients/clients.api';
 
 export interface NoteItem {
   id: number;
@@ -10,62 +15,61 @@ export interface NoteItem {
   date: string;
 }
 
-export function useClientActions(
-  clientId: number,
-  initialFrozen = false,
-  initialTags: string[] = [],
-  initialNotes: NoteItem[] = [],
-) {
-  const [toastMsg, setToastMsg]           = useState('');
-  const [frozen, setFrozen]               = useState(initialFrozen);
+export function useClientActions(clientId: number) {
+  const { t } = useTranslation('clients');
+  const toast = useToast();
+  const mutations = useClientMutations();
+
   const [showTagPanel, setShowTagPanel]   = useState(false);
-  const [localTags, setLocalTags]         = useState<string[]>(initialTags);
-  const [notes, setNotes]                 = useState<NoteItem[]>(initialNotes);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [editingNoteText, setEditingNoteText] = useState('');
   const [isAddingNote, setIsAddingNote]   = useState(false);
+  const [deletingNoteId, setDeletingNoteId] = useState<number | null>(null);
   const [newNoteText, setNewNoteText]     = useState('');
   const [showMessage, setShowMessage]     = useState(false);
   const [messageText, setMessageText]     = useState('');
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
-  const [bonusPoints, setBonusPoints]     = useState(0); // накопленный прирост баллов за сессию (для мгновенного отображения)
-  const [eventFilter, setEventFilter]     = useState<EventFilterTab>('Все');
-  const [bookingDate, setBookingDate]     = useState(0);
+  const [eventFilter, setEventFilter]     = useState<EventFilterTab>('all');
+  const [bookingDate, setBookingDate]     = useState(0); // смещение в днях от сегодня (абсолютное, не индекс окна)
+  const [bookingWindowStart, setBookingWindowStart] = useState(0); // начало видимого окна из 7 дней
   const [bookingLessons, setBookingLessons] = useState<Lesson[]>([]);
   const [bookingLessonId, setBookingLessonId] = useState<number | null>(null);
 
-  const showToast = useCallback((msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 3000);
-  }, []);
+  // Панель больше не перемонтируется при смене клиента (без миганий/скачков) —
+  // закрываем открытые подпанели вручную вместо остатка со старого клиента.
+  useEffect(() => {
+    setShowTagPanel(false);
+    setEditingNoteId(null);
+    setIsAddingNote(false);
+    setDeletingNoteId(null);
+    setShowMessage(false);
+    setShowBooking(false);
+    setShowBonus(false);
+    setSelectedBonus(null);
+    setEventFilter('all');
+    setBookingDate(0);
+    setBookingWindowStart(0);
+  }, [clientId]);
 
-  const toggleFreeze = useCallback(() => {
-    const next = !frozen;
-    setFrozen(next);
-    clientsApi.freeze(clientId, next).catch(() => setFrozen(!next));
-  }, [frozen, clientId]);
+  const toggleFreeze = useCallback((frozen: boolean) => {
+    mutations.freeze(clientId, !frozen).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [clientId, mutations, toast, t]);
 
   const toggleTagPanel = useCallback(() => {
     setShowTagPanel(prev => !prev);
   }, []);
 
-  const addTag = useCallback((tag: string) => {
+  const addTag = useCallback((tag: string, existingTags: string[]) => {
     const trimmed = tag.trim();
-    if (!trimmed || localTags.includes(trimmed)) return;
-    setLocalTags(prev => [...prev, trimmed]);
-    clientsApi.addTag(clientId, trimmed)
-      .then(res => setLocalTags(res.tags))
-      .catch(() => setLocalTags(prev => prev.filter(t => t !== trimmed)));
-  }, [localTags, clientId]);
+    if (!trimmed || existingTags.includes(trimmed)) return;
+    mutations.addTag(clientId, trimmed).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [clientId, mutations, toast, t]);
 
   const removeTag = useCallback((tag: string) => {
-    setLocalTags(prev => prev.filter(t => t !== tag));
-    clientsApi.removeTag(clientId, tag)
-      .then(res => setLocalTags(res.tags))
-      .catch(() => setLocalTags(prev => [...prev, tag]));
-  }, [clientId]);
+    mutations.removeTag(clientId, tag).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [clientId, mutations, toast, t]);
 
   const startEditNote = useCallback((id: number, text: string) => {
     setEditingNoteId(id);
@@ -75,15 +79,29 @@ export function useClientActions(
 
   const saveNote = useCallback((id: number) => {
     const text = editingNoteText;
-    setNotes(prev => prev.map(n => n.id === id ? { ...n, text } : n));
     setEditingNoteId(null);
-    clientsApi.updateNote(clientId, id, text);
-  }, [editingNoteText, clientId]);
+    mutations.updateNote(clientId, id, text).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [editingNoteText, clientId, mutations, toast, t]);
 
   const cancelEditNote = useCallback(() => {
     setEditingNoteId(null);
     setEditingNoteText('');
   }, []);
+
+  const requestDeleteNote = useCallback((id: number) => {
+    setDeletingNoteId(id);
+  }, []);
+
+  const cancelDeleteNote = useCallback(() => {
+    setDeletingNoteId(null);
+  }, []);
+
+  const confirmDeleteNote = useCallback(() => {
+    if (deletingNoteId == null) return Promise.resolve();
+    return mutations.deleteNote(clientId, deletingNoteId)
+      .then(() => setDeletingNoteId(null))
+      .catch((e: Error) => { toast.error(errorMessage(e, t)); throw e; });
+  }, [clientId, deletingNoteId, mutations, toast, t]);
 
   const startAddNote = useCallback(() => {
     setIsAddingNote(true);
@@ -94,13 +112,10 @@ export function useClientActions(
   const saveNewNote = useCallback(() => {
     const text = newNoteText.trim();
     if (!text) return;
-    const tempId = Date.now();
-    setNotes(prev => [...prev, { id: tempId, text, date: 'только что' }]);
     setIsAddingNote(false);
     setNewNoteText('');
-    clientsApi.createNote(clientId, text)
-      .then(res => setNotes(prev => prev.map(n => n.id === tempId ? { ...n, id: res.id } : n)));
-  }, [newNoteText, clientId]);
+    mutations.createNote(clientId, text).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [newNoteText, clientId, mutations, toast, t]);
 
   const cancelAddNote = useCallback(() => {
     setIsAddingNote(false);
@@ -118,16 +133,21 @@ export function useClientActions(
     const text = messageText.trim();
     setMessageText('');
     const digits = phone.replace(/\D/g, '');
-    if (!digits) { showToast('У клиента не указан телефон'); return; }
+    if (!digits) { toast.error(t('panel.toasts.noPhone')); return; }
     // WhatsApp: wa.me принимает номер без «+» и опциональный предзаполненный текст.
     const url = `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
     window.open(url, '_blank', 'noopener');
-  }, [messageText, showToast]);
+  }, [messageText, toast, t]);
 
   const toggleBooking = useCallback(() => {
     setShowBooking(prev => !prev);
     setShowMessage(false);
     setShowBonus(false);
+  }, []);
+
+  // Листание окна дат на 7 дней; назад раньше сегодня не уходим.
+  const shiftBookingWindow = useCallback((deltaDays: number) => {
+    setBookingWindowStart(prev => Math.max(0, prev + deltaDays));
   }, []);
 
   // Занятия на выбранный день панели записи (bookingDate — смещение от сегодня)
@@ -144,13 +164,13 @@ export function useClientActions(
 
   const confirmBooking = useCallback(() => {
     if (bookingLessonId == null) return;
-    clientsApi.book(clientId, bookingLessonId)
+    mutations.book(clientId, bookingLessonId)
       .then(() => {
         setShowBooking(false);
-        showToast('Запись создана');
+        toast.success(t('panel.toasts.bookingCreated'));
       })
-      .catch((e: Error) => showToast(e.message || 'Не удалось записать'));
-  }, [clientId, bookingLessonId, showToast]);
+      .catch((e: Error) => toast.error(errorMessage(e, t) || t('panel.toasts.bookingFailed')));
+  }, [clientId, bookingLessonId, mutations, toast, t]);
 
   const toggleBonus = useCallback(() => {
     setShowBonus(prev => !prev);
@@ -159,43 +179,56 @@ export function useClientActions(
     setSelectedBonus(null);
   }, []);
 
-  const selectBonus = useCallback((id: string, label: string, points?: number) => {
+  const selectBonus = useCallback((id: string, label: string, points: number) => {
     setSelectedBonus(id);
-    // Только бонус с реальным начислением уходит на сервер; остальные — символические.
-    if (points) {
-      clientsApi.addBonus(clientId, points, label)
-        .then(() => setBonusPoints(prev => prev + points))
-        .catch((e: Error) => showToast(e.message || 'Не удалось начислить баллы'));
-    }
-    setTimeout(() => {
-      setShowBonus(false);
-      setSelectedBonus(null);
-      showToast(`Бонус начислен: ${label}`);
-    }, 600);
-  }, [clientId, showToast]);
+    mutations.addBonus(clientId, points, label)
+      .then(() => {
+        setTimeout(() => {
+          setShowBonus(false);
+          setSelectedBonus(null);
+          toast.success(t('panel.toasts.bonusApplied', { label }));
+        }, 600);
+      })
+      .catch((e: Error) => { setSelectedBonus(null); toast.error(errorMessage(e, t)); });
+  }, [clientId, mutations, toast, t]);
 
   const copyToClipboard = useCallback((value: string) => {
-    navigator.clipboard.writeText(value).then(() => showToast('Успешно скопировано'));
-  }, [showToast]);
+    navigator.clipboard.writeText(value).then(() => toast.success(t('panel.toasts.copied')));
+  }, [toast, t]);
 
   const handleCall = useCallback((phone: string) => {
-    if (!phone) { showToast('У клиента не указан телефон'); return; }
+    if (!phone) { toast.error(t('panel.toasts.noPhone')); return; }
     window.location.href = `tel:${phone.replace(/\s/g, '')}`;
-  }, [showToast]);
+  }, [toast, t]);
+
+  const remindAboutSubscription = useCallback(() => {
+    clientsApi.sendSubscriptionReminder(clientId)
+      .then(result => {
+        if (result.ok) toast.success(t('panel.abonement.reminderSent'));
+        else toast.error(result.message);
+      })
+      .catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [clientId, toast, t]);
 
   return {
-    toastMsg,
-    frozen, toggleFreeze,
-    showTagPanel, toggleTagPanel, localTags, addTag, removeTag,
-    notes, editingNoteId, editingNoteText, setEditingNoteText,
+    toggleFreeze,
+    showTagPanel, toggleTagPanel, addTag, removeTag,
+    editingNoteId, editingNoteText, setEditingNoteText,
     startEditNote, saveNote, cancelEditNote,
+    deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
     showMessage, messageText, setMessageText, toggleMessage, sendMessage,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
+    bookingWindowStart, shiftBookingWindow,
     bookingLessons, bookingLessonId, setBookingLessonId,
-    showBonus, selectedBonus, toggleBonus, selectBonus, bonusPoints,
+    showBonus, selectedBonus, toggleBonus, selectBonus,
     eventFilter, setEventFilter,
     copyToClipboard, handleCall,
+    remindAboutSubscription,
+    updateStatus: (status: string) => mutations.updateStatus(clientId, status).catch((e: Error) => toast.error(errorMessage(e, t))),
+    updateField: (field: 'phone' | 'email' | 'birth_date' | 'city', value: string | null) =>
+      mutations.update(clientId, { [field]: value } as ClientUpdate).catch((e: Error) => toast.error(errorMessage(e, t))),
+    updateRegistrationDate: (date: string) => mutations.updateRegistrationDate(clientId, date).catch((e: Error) => toast.error(errorMessage(e, t))),
   };
 }

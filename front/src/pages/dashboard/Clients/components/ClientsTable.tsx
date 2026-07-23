@@ -1,12 +1,9 @@
+import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ClientData } from '../types';
-import { getInitials } from '../utils/mapClient';
-import { formatDate, STATUS_TO_LABEL } from '../utils/mapClient';
-
-function formatCurrency(n: number): string {
-  if (n >= 1_000_000) return `₽${(n / 1_000_000).toFixed(1).replace('.0', '')}M`;
-  if (n >= 1_000)     return `₽${Math.round(n / 1_000)}K`;
-  return `₽${n}`;
-}
+import { getInitials, formatDate, formatMoney } from '../utils/mapClient';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../components/UI';
 
 function getTierLabel(points: number): { label: string; color: string } {
   if (points >= 8000) return { label: 'Platinum', color: '#8b8fa8' };
@@ -31,6 +28,61 @@ export interface ClientsTableProps {
 }
 
 export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, removingId }: ClientsTableProps) {
+  const { t } = useTranslation('clients');
+  const currency = getCurrencySymbol(useStudioCurrency());
+
+  // FLIP: при любой перестройке сетки (панель клиента, AI-панель, ресайз окна,
+  // фильтры) карточки плавно доезжают до новой позиции и ширины — быстрый старт
+  // с замедлением. Стартуем от текущей ВИЗУАЛЬНОЙ позиции, поэтому непрерывный
+  // ресайз (анимированный padding у dash-root) выглядит как плавная погоня.
+  const gridRef = useRef<HTMLDivElement>(null);
+  const prevRects = useRef(new Map<HTMLElement, { left: number; top: number; width: number }>());
+  const flipAnims = useRef(new Map<HTMLElement, Animation>());
+
+  const runFlip = useCallback(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const cards = Array.from(grid.children) as HTMLElement[];
+    // Визуальные позиции карточек с незавершённой анимацией — до cancel
+    const visual = new Map<HTMLElement, DOMRect>();
+    for (const el of cards) {
+      if (flipAnims.current.get(el)?.playState === 'running') visual.set(el, el.getBoundingClientRect());
+    }
+    flipAnims.current.forEach(a => a.cancel());
+    flipAnims.current.clear();
+    const next = new Map<HTMLElement, { left: number; top: number; width: number }>();
+    for (const el of cards) {
+      const lay = { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth };
+      next.set(el, lay);
+      const vis = visual.get(el);
+      const prev = prevRects.current.get(el);
+      let dx = 0, dy = 0, w0 = lay.width;
+      if (vis) {
+        const r = el.getBoundingClientRect(); // после cancel — чистый лэйаут
+        dx = vis.left - r.left; dy = vis.top - r.top; w0 = vis.width;
+      } else if (prev) {
+        dx = prev.left - lay.left; dy = prev.top - lay.top; w0 = prev.width;
+      }
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(w0 - lay.width) < 1) continue;
+      flipAnims.current.set(el, el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)`, width: `${w0}px` },
+          { transform: 'none', width: `${lay.width}px` },
+        ],
+        { duration: 380, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+      ));
+    }
+    prevRects.current = next;
+  }, []);
+
+  // Изменения списка/порядка карточек (рендер) + изменения ширины сетки
+  // (AI-панель двигает layout без ре-рендера этой страницы — ловим observer'ом).
+  useLayoutEffect(runFlip);
+  useLayoutEffect(() => {
+    const ro = new ResizeObserver(runFlip);
+    if (gridRef.current) ro.observe(gridRef.current);
+    return () => ro.disconnect();
+  }, [runFlip]);
   return (
     <>
       <style>{`
@@ -51,7 +103,10 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
           cursor: pointer;
           border: 1.5px solid rgba(26,26,26,0.06);
           box-shadow: 0 2px 12px -4px rgba(26,26,26,0.07), 0 1px 3px rgba(26,26,26,0.03);
-          transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+          transition:
+            transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+            border-color 0.22s ease,
+            box-shadow 0.22s ease;
           min-width: 0;
           overflow: hidden;
           position: relative;
@@ -170,14 +225,16 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
       `}</style>
 
       <div className="client-grid-wrap" style={{ minWidth: 0 }}>
-        <div className="ct2-grid">
+        <div className="ct2-grid" ref={gridRef}>
           {clients.map(cl => {
             const color    = cl.avatar_color ?? '#999';
+            const hasSub   = cl.active_subscription != null;
             const abUsed   = cl.active_subscription?.used ?? 0;
             const abTotal  = cl.active_subscription?.total ?? 0;
+            const abRemaining = Math.max(0, abTotal - abUsed);
             const tier     = getTierLabel(cl.loyalty_points);
-            const fillPct  = abTotal > 0 ? (abUsed / abTotal) * 100 : 0;
-            const isLow    = fillPct <= 30;
+            const fillPct  = abTotal > 0 ? (abRemaining / abTotal) * 100 : 0;
+            const isLow    = hasSub && (abTotal - abUsed) / abTotal <= 0.25;
             const isFrozen = cl.frozen;
             const isSelected  = isPanelOpen && activeClientId === cl.id;
             const isRemoving  = removingId === cl.id;
@@ -208,32 +265,34 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
                   <div className="ct2-info">
                     <div className="ct2-name">{cl.name}{cl.last_name ? ' ' + cl.last_name : ''}</div>
                     <div className="ct2-meta">
-                      <span>{cl.visit_count} визитов</span>
+                      <span>{cl.visit_count} {t('table.visits')}</span>
                       <span style={{ opacity: 0.4 }}>·</span>
                       <span>{formatDate(cl.last_visit_date)}</span>
                     </div>
                   </div>
                   <div className={`ct2-badge ${badgeClass}`}>
-                    {isFrozen ? '❄ заморожен' : (STATUS_TO_LABEL[cl.status] ?? cl.status)}
+                    {isFrozen ? t('table.frozenBadge') : t(`status.${cl.status}`, { defaultValue: cl.status })}
                   </div>
                 </div>
 
                 <div style={{ flex: 1 }}/>
 
                 <div className="ct2-spent-row">
-                  <span className="ct2-spent-lbl">Потрачено всего</span>
-                  <span className="ct2-spent-val">{formatCurrency(cl.total_spent)}</span>
+                  <span className="ct2-spent-lbl">{t('table.totalSpent')}</span>
+                  <span className="ct2-spent-val">{formatMoney(cl.total_spent, currency)}</span>
                 </div>
 
                 <div className="ct2-ab-row">
-                  <span className="ct2-ab-lbl">Абонемент</span>
-                  <span className="ct2-ab-val" style={{ color: isLow ? '#D88C9A' : isFrozen ? '#4a7ca8' : color }}>
-                    {abUsed} из {abTotal}
+                  <span className="ct2-ab-lbl">{t('table.subscription')}</span>
+                  <span className="ct2-ab-val" style={{ color: !hasSub ? 'var(--text3)' : isLow ? '#D88C9A' : isFrozen ? '#4a7ca8' : color }}>
+                    {hasSub ? `${abRemaining} ${t('table.of')} ${abTotal}` : t('table.noSubscription')}
                   </span>
                 </div>
-                <div className="ct2-bar">
-                  <div className="ct2-bar-fill" style={{ width: `${fillPct}%`, background: barColor }}/>
-                </div>
+                {hasSub && (
+                  <div className="ct2-bar">
+                    <div className="ct2-bar-fill" style={{ width: `${fillPct}%`, background: barColor }}/>
+                  </div>
+                )}
 
                 <div className="ct2-footer">
                   <div className="ct2-tier-dot" style={{ background: tier.color }}/>

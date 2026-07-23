@@ -1,8 +1,10 @@
 // src/components/modals/AddClientModal.tsx
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons'; // Убедитесь в правильности пути
 import type { Booking, ClientListItem } from '../../types';
 import { clientsApi } from '../../../../../api/clients/clients.api';
+import { scheduleApi } from '../../../../../api/schedule';
 import { formatIndexToTimeStr } from '../../utils';
 
 interface AddClientModalProps {
@@ -16,26 +18,35 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
   onClose,
   onAdd
 }) => {
+  const { t } = useTranslation('journal');
   // Локальные стейты модалки
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
   const [clients, setClients] = useState<ClientListItem[]>([]);
+
+  // Уже записанные на это занятие — прячем из списка, чтобы повторная запись
+  // не улетала на сервер и не возвращалась 409 «Клиент уже записан».
+  const [bookedIds, setBookedIds] = useState<Set<number>>(new Set());
 
   // Реальные клиенты студии; поиск — локально по загруженному списку
   useEffect(() => {
     clientsApi.getList({ limit: 100 })
       .then(page => setClients(page.items))
       .catch(err => console.error('Не удалось загрузить клиентов', err));
-  }, []);
+    scheduleApi.getLesson(booking.id)
+      .then(d => setBookedIds(new Set(d.booked_clients.map(c => c.client_id))))
+      .catch(() => {}); // не загрузилось — просто не фильтруем, сервер подстрахует 409-м
+  }, [booking.id]);
 
   // 🔥 Мемоизация поиска: пересчитывается только если изменился запрос
   const filteredClients = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return clients.filter(c =>
-      `${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
-      (c.phone ?? '').includes(searchQuery)
+      !bookedIds.has(c.id) &&
+      (`${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
+        (c.phone ?? '').includes(searchQuery))
     );
-  }, [clients, searchQuery]);
+  }, [clients, bookedIds, searchQuery]);
 
   // Закрытие по клавише Esc
   useEffect(() => {
@@ -51,7 +62,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
       <div className="modal-box" onMouseDown={e => e.stopPropagation()}>
         <div className="modal-header">
           <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--onyx)' }}>Добавить клиента</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--onyx)' }}>{t('addClientModal.title')}</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
               {booking.title} · {formatIndexToTimeStr(booking.timeStart)}
             </div>
@@ -68,7 +79,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
             <input
               className="modal-input"
               style={{ paddingLeft: 34, marginBottom: 0 }}
-              placeholder="Поиск по имени или телефону..."
+              placeholder={t('addClientModal.searchPlaceholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               autoFocus
@@ -80,7 +91,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
             {filteredClients.length === 0 ? (
               <div style={{ textAlign: 'center', padding: 32 }}>
                 <Icons.Icon.Profile size={48} color="var(--border)" className="empty-float" />
-                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>Клиенты не найдены</div>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>{t('addClientModal.noClientsFound')}</div>
               </div>
             ) : (
               filteredClients.map(c => {
@@ -111,13 +122,13 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
         <div className="modal-footer" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
             {selectedClients.length > 0
-              ? `Выбрано: ${selectedClients.length} клиент(а)`
-              : 'Выберите клиентов из списка'
+              ? t('addClientModal.selectedCount', { count: selectedClients.length })
+              : t('addClientModal.chooseFromList')
             }
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" className="btn-ghost-sm" style={{ height: 38, padding: '0 20px', fontSize: 13 }} onClick={onClose}>
-              Отмена
+              {t('addClientModal.cancel')}
             </button>
             <button
               type="button"
@@ -128,7 +139,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
             >
               <Icons.UserPlus />
               <span style={{ marginLeft: 6 }}>
-                Добавить {selectedClients.length > 0 ? `(${selectedClients.length})` : ''}
+                {t('addClientModal.add')} {selectedClients.length > 0 ? `(${selectedClients.length})` : ''}
               </span>
             </button>
           </div>

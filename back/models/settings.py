@@ -80,6 +80,11 @@ class StudioBookingSettings(Base):
     reminder_2h: Mapped[bool] = mapped_column(Boolean, default=True)
     review_request: Mapped[bool] = mapped_column(Boolean, default=True)
 
+    miniapp_generated: Mapped[bool] = mapped_column(Boolean, default=False)
+    widget_work_start: Mapped[str] = mapped_column(String(5), default="09:00")
+    widget_work_end: Mapped[str] = mapped_column(String(5), default="21:00")
+    slot_step_min: Mapped[int] = mapped_column(Integer, default=60)
+
     studio: Mapped["Studio"] = relationship(back_populates="booking_settings")
 
 

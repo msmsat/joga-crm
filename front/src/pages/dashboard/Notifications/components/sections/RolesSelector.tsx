@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Role } from '../../types';
 import { ROLES } from '../../constants';
 import styles from '../../Notifications.module.css';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function RolesSelector({ activeRole, switchRole, countActive }: Props) {
+  const { t } = useTranslation('notifications');
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
       {ROLES.map(role => {
@@ -32,10 +34,10 @@ export default function RolesSelector({ activeRole, switchRole, countActive }: P
             </div>
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <div style={{ fontSize: '14px', fontWeight: 800, color: isActive ? '#1A1A1A' : '#666666', lineHeight: 1.2, whiteSpace: 'nowrap', textOverflow: 'ellipsis', transition: 'color 0.2s ease' }}>
-                {role.label}
+                {t(`roles.${role.key}`)}
               </div>
               <div style={{ fontSize: '11px', color: isActive ? role.color : '#999999', marginTop: '3px', fontWeight: 600, transition: 'color 0.25s ease' }}>
-                {cnt} активных
+                {t('roles.activeCount', { count: cnt })}
               </div>
             </div>
           </button>

@@ -13,9 +13,13 @@ from activity import log_activity
 from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    Client, ClientNote, ClientPayment, ClientSubscription,
-    Lesson, Reservation, User,
+    Account, ActivityLog, Client, ClientNote, ClientPayment, ClientSubscription,
+    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, SubscriptionPackage, User,
 )
+from routers.clients.loyalty import expire_points
+from routers.clients.subscriptions import attach_subscription
+from routers.finances.accounts import get_or_create_default_account
+from services.booking_access import assert_can_book
 from schemas import (
     ActionMessageOut,
     ActivityPointOut,
@@ -45,6 +49,7 @@ from schemas import (
 from schemas.clients.responses import ActiveSubscriptionOut
 from schemas.common import Page
 from services.plan_limits import check_plan_limit
+from services.notifier import notify
 
 router = APIRouter()
 
@@ -60,7 +65,10 @@ def _client_list_item(client: Client) -> ClientListItemOut:
     visit_count = sum(1 for r in client.reservations if r.status == "attended")
     total_spent = sum(p.amount for p in client.payments if p.status == "success")
     active_sub = next(
-        (s for s in client.subscriptions if s.status == "active" and not s.is_frozen),
+        (
+            s for s in sorted(client.subscriptions, key=lambda s: s.expires_at)
+            if s.status == "active" and not s.is_frozen and s.used_classes < s.total_classes
+        ),
         None,
     )
     loyalty_points = client.loyalty_card.points_balance if client.loyalty_card else 0
@@ -84,6 +92,32 @@ def _client_list_item(client: Client) -> ClientListItemOut:
         loyalty_points=loyalty_points,
         last_visit_date=client.last_visit_date.isoformat() if client.last_visit_date else None,
         registration_date=client.registration_date.date().isoformat() if client.registration_date else None,
+    )
+
+
+def _subscription_for_reminder(client: Client) -> ClientSubscription | None:
+    """Возвращает текущий почти исчерпанный абонемент либо последний завершённый."""
+    active = next(
+        (
+            sub for sub in sorted(client.subscriptions, key=lambda sub: (sub.expires_at, sub.id))
+            if sub.status == "active"
+            and not sub.is_frozen
+            and sub.expires_at >= date.today()
+            and sub.used_classes < sub.total_classes
+        ),
+        None,
+    )
+    if active is not None:
+        return active if active.total_classes - active.used_classes <= 2 else None
+
+    return next(
+        (
+            sub for sub in sorted(client.subscriptions, key=lambda sub: (sub.expires_at, sub.id), reverse=True)
+            if not sub.is_frozen
+            and sub.expires_at >= date.today()
+            and sub.used_classes >= sub.total_classes
+        ),
+        None,
     )
 
 
@@ -267,9 +301,18 @@ async def get_client(
 ):
     studio_id = ctx.studio_id
     client = await _get_client_or_404(client_id, studio_id, db, load_relations=True)
+    if await expire_points(db, studio_id, client_id):
+        await db.commit()
     base = _client_list_item(client)
+    subscription_alert = _subscription_for_reminder(client)
     return ClientProfileOut(
         **base.model_dump(),
+        subscription_alert=ActiveSubscriptionOut(
+            used=subscription_alert.used_classes,
+            total=subscription_alert.total_classes,
+            expires_at=subscription_alert.expires_at.isoformat(),
+            type=subscription_alert.type,
+        ) if subscription_alert else None,
         birth_date=client.birth_date.isoformat() if client.birth_date else None,
         city=client.city,
         source=client.source,
@@ -296,7 +339,7 @@ async def get_client_events(
     ctx: StudioContext = Depends(require_role("owner", "admin")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-    event_type: Optional[str] = Query(None, description="payment | visit | freeze"),
+    event_type: Optional[str] = Query(None, description="payment | visit | booking | cancel | bonus | freeze"),
 ):
     studio_id = ctx.studio_id
     await _get_client_or_404(client_id, studio_id, db)
@@ -318,6 +361,36 @@ async def get_client_events(
                 trainer=lesson.teacher_name if lesson else None,
             ))
 
+    if not event_type or event_type in ("all", "booking"):
+        rows = (await db.execute(
+            select(Reservation)
+            .where(Reservation.client_id == client_id)
+            .options(selectinload(Reservation.lesson))
+        )).scalars().all()
+        for r in rows:
+            lesson = r.lesson
+            events.append(EventRecordOut(
+                date=r.created_at.date().isoformat(),
+                type="booking",
+                title=f"Запись: {lesson.name}" if lesson else "Запись на занятие",
+                trainer=lesson.teacher_name if lesson else None,
+            ))
+
+    if not event_type or event_type in ("all", "cancel"):
+        rows = (await db.execute(
+            select(Reservation)
+            .where(Reservation.client_id == client_id, Reservation.status == "cancelled")
+            .options(selectinload(Reservation.lesson))
+        )).scalars().all()
+        for r in rows:
+            lesson = r.lesson
+            events.append(EventRecordOut(
+                date=r.cancelled_at.date().isoformat() if r.cancelled_at else None,
+                type="cancel",
+                title=f"Отмена: {lesson.name}" if lesson else "Отмена записи",
+                trainer=lesson.teacher_name if lesson else None,
+            ))
+
     if not event_type or event_type in ("all", "payment"):
         rows = (await db.execute(
             select(ClientPayment)
@@ -330,6 +403,20 @@ async def get_client_events(
                 type="payment",
                 title=p.description,
                 amount=str(p.amount),
+            ))
+
+    if not event_type or event_type in ("all", "bonus"):
+        rows = (await db.execute(
+            select(LoyaltyPointTransaction)
+            .where(LoyaltyPointTransaction.client_id == client_id)
+            .order_by(LoyaltyPointTransaction.created_at.desc())
+        )).scalars().all()
+        for tr in rows:
+            events.append(EventRecordOut(
+                date=tr.created_at.date().isoformat(),
+                type="bonus",
+                title=tr.description,
+                amount=f"{'+' if tr.points >= 0 else ''}{tr.points}",
             ))
 
     if not event_type or event_type in ("all", "freeze"):
@@ -345,6 +432,22 @@ async def get_client_events(
                 date=s.frozen_at.date().isoformat() if s.frozen_at else None,
                 type="freeze",
                 title=f"Заморозка: {s.type}",
+            ))
+
+        log_rows = (await db.execute(
+            select(ActivityLog)
+            .where(
+                ActivityLog.studio_id == studio_id,
+                ActivityLog.entity_type == "client",
+                ActivityLog.entity_id == client_id,
+                ActivityLog.event_type == "freeze",
+            )
+        )).scalars().all()
+        for log in log_rows:
+            events.append(EventRecordOut(
+                date=log.created_at.date().isoformat(),
+                type="freeze",
+                title=log.title,
             ))
 
     events.sort(key=lambda e: e.date or "0000-00-00", reverse=True)
@@ -466,6 +569,24 @@ async def create_client(
     db.add(client)
     await db.flush()
 
+    if body.invite_code:
+        referrer = (await db.execute(
+            select(Client).where(
+                Client.studio_id == studio_id,
+                Client.invite_code == body.invite_code,
+                Client.id != client.id,
+            )
+        )).scalar_one_or_none()
+        if referrer is not None:
+            # UNIQUE(referred_client_id) на ReferralRecord гарантирует, что один
+            # клиент не может быть приглашён дважды — повторный insert упадёт.
+            db.add(ReferralRecord(
+                studio_id=studio_id,
+                referrer_client_id=referrer.id,
+                referred_client_id=client.id,
+                status="pending",
+            ))
+
     if body.note:
         db.add(ClientNote(
             client_id=client.id,
@@ -480,9 +601,57 @@ async def create_client(
         actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
         entity_type="client", entity_id=client.id,
     )
+
+    if body.membership_id is not None:
+        package = (await db.execute(
+            select(SubscriptionPackage).where(
+                SubscriptionPackage.id == body.membership_id,
+                SubscriptionPackage.studio_id == studio_id,
+            )
+        )).scalar_one_or_none()
+        if package is None:
+            raise HTTPException(status_code=404, detail="Пакет не найден")
+        if not package.is_active:
+            raise HTTPException(status_code=400, detail="Пакет снят с продажи")
+
+        account = None
+        if body.is_membership_paid:
+            account = await get_or_create_default_account(db, studio_id)
+
+        await attach_subscription(
+            db, studio_id, client.id, package, account,
+            mark_paid=body.is_membership_paid,
+        )
+        log_activity(
+            db, studio_id, "client",
+            title=f"Подключён абонемент «{package.name}»",
+            actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
+            entity_type="client", entity_id=client.id,
+        )
+
     await db.commit()
     await db.refresh(client)
     return ClientCreatedOut(id=client.id, message="Клиент создан")
+
+
+# ─── PATCH /clients/{id} ──────────────────────────────────────────────────────
+
+@router.patch("/{client_id}", response_model=OkOut)
+async def update_client(
+    client_id: int,
+    body: ClientUpdate,
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    studio_id = ctx.studio_id
+    client = await _get_client_or_404(client_id, studio_id, db)
+    for field, value in body.model_dump(exclude_unset=True).items():
+        if field == "name" and not value:
+            continue  # name в БД NOT NULL — пустое значение не применяем
+        setattr(client, field, value)
+    await db.commit()
+    return OkOut(ok=True)
 
 
 # ─── PATCH /clients/{id}/status ───────────────────────────────────────────────
@@ -516,6 +685,13 @@ async def freeze_client(
     client = await _get_client_or_404(client_id, studio_id, db)
     client.status = "frozen" if body.frozen else "active"
     client.is_active = not body.frozen
+    if body.frozen:
+        log_activity(
+            db, studio_id, "freeze",
+            title=f"Заморозка клиента: {client.name} {client.last_name or ''}".strip(),
+            actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
+            entity_type="client", entity_id=client.id,
+        )
     await db.commit()
     return OkFrozenOut(ok=True, frozen=body.frozen)
 
@@ -682,6 +858,8 @@ async def book_lesson(
     if duplicate:
         raise HTTPException(status_code=400, detail="Клиент уже записан на это занятие")
 
+    await assert_can_book(db, client_id, lesson)
+
     reservation = Reservation(
         client_id=client_id,
         lesson_id=body.lesson_id,
@@ -717,6 +895,28 @@ async def log_call(
 
 
 # ─── POST /clients/{id}/message ───────────────────────────────────────────────
+
+@router.post("/{client_id}/subscription-reminder", response_model=ActionMessageOut)
+async def send_subscription_reminder(
+    client_id: int,
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    client = await _get_client_or_404(client_id, ctx.studio_id, db, load_relations=True)
+    subscription = _subscription_for_reminder(client)
+    remaining = max(0, subscription.total_classes - subscription.used_classes) if subscription else 0
+    event_id = "c6" if remaining == 0 else "c5"
+    delivered = await notify(
+        db, ctx.studio_id, "client", event_id,
+        {"client_id": client.id, "remaining": remaining},
+    )
+    if not delivered:
+        return ActionMessageOut(
+            ok=False,
+            message="Напоминание не отправлено: включите нужный канал для этого события в Уведомлениях",
+        )
+    return ActionMessageOut(ok=True, message="Напоминание отправлено клиенту")
+
 
 @router.post("/{client_id}/message", response_model=ActionMessageOut)
 async def send_message(

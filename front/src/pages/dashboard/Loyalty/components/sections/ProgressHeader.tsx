@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from '../../Loyalty.module.css';
 import { IconArrow } from '../ui/LoyaltyIcons';
 import type { ProgramKey } from '../../types';
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default function ProgressHeader({ configuredCount, total, openDrawer }: Props) {
+  const { t } = useTranslation('loyalty');
+
   if (configuredCount === total) {
     return (
       <div style={{
@@ -23,8 +26,8 @@ export default function ProgressHeader({ configuredCount, total, openDrawer }: P
           </svg>
         </div>
         <div>
-          <div style={{ fontSize: '13px', fontWeight: 700 }}>Все программы настроены</div>
-          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>Система лояльности работает в полную силу</div>
+          <div style={{ fontSize: '13px', fontWeight: 700 }}>{t('header.allConfigured')}</div>
+          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{t('header.allConfiguredSub')}</div>
         </div>
       </div>
     );
@@ -49,16 +52,16 @@ export default function ProgressHeader({ configuredCount, total, openDrawer }: P
         </svg>
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px' }}>Настройте программы лояльности</div>
-        <div style={{ fontSize: '12px', color: 'var(--text2)' }}>Настроено {configuredCount} из {total} программ · Каждая программа увеличивает удержание клиентов</div>
+        <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px' }}>{t('header.setup')}</div>
+        <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{t('header.setupSub', { count: configuredCount, total })}</div>
       </div>
       {configuredCount === 0 && (
         <button
           className={styles.configureBtn}
           style={{ background: '#FCAE91', color: 'white' }}
-          onClick={() => openDrawer('loyalty', 'Карты лояльности')}
+          onClick={() => openDrawer('loyalty', t('programs.loyalty.title'))}
         >
-          Начать <IconArrow />
+          {t('header.start')} <IconArrow />
         </button>
       )}
     </div>

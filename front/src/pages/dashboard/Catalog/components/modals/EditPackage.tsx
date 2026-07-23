@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input } from "../../../../../components/ui/modal";
+import { Switch } from "../../../../../components/ui/index";
 import { getCurrencySymbol } from "../../../../../components/UI";
-import { useStudioCurrency } from "../../hooks/useStudioCurrency";
+import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import { useServiceList } from "../../hooks/useCatalogList";
 import { useValidation } from "./useValidation";
 import type { SubscriptionPackage } from "../../../../../api/catalog/catalog.types";
@@ -25,6 +26,7 @@ export function PackageModal({ pkg, onClose, onSubmit }: PackageModalProps) {
   const [durationDays, setDurationDays] = useState(pkg != null ? String(pkg.duration_days) : "30");
   const [serviceIds, setServiceIds] = useState<number[]>(pkg?.service_ids ?? []);
   const [isActive, setIsActive] = useState(pkg?.is_active ?? true);
+  const [soldAsSubscription, setSoldAsSubscription] = useState(pkg?.sold_as_subscription ?? true);
   const [saving, setSaving] = useState(false);
 
   // Не вводится руками — считается на лету (одно поле лжи меньше).
@@ -55,6 +57,8 @@ export function PackageModal({ pkg, onClose, onSubmit }: PackageModalProps) {
         service_ids: serviceIds.length ? serviceIds : null,
         is_active: isActive,
         sort_order: pkg?.sort_order ?? 0,
+        sold_as_single: pkg?.sold_as_single ?? true,
+        sold_as_subscription: soldAsSubscription,
       });
       onClose();
     } catch {
@@ -142,6 +146,11 @@ export function PackageModal({ pkg, onClose, onSubmit }: PackageModalProps) {
           <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)} />
           {t("catalog:modals.package.isActive")}
         </label>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+          <span style={{ fontSize: "13px", color: "#555" }}>{t("catalog:modals.package.soldAsSubscription")}</span>
+          <Switch checked={soldAsSubscription} onChange={setSoldAsSubscription} />
+        </div>
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t("common:buttons.cancel")}</GhostButton>

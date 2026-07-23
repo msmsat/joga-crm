@@ -10,8 +10,9 @@ import routers.clients.loyalty as L
 
 
 class _Card:
-    def __init__(self, bal=0):
+    def __init__(self, bal=0, deposit=0):
         self.points_balance = bal
+        self.deposit_balance = deposit
 
 
 class _Cfg:
@@ -49,24 +50,24 @@ def _txn_count(db):
 
 
 def test_accrue_rate():
-    # 1000 ₽ = 100000 копеек, курс 100 → 10 баллов
+    # 1500 ₽, курс 100 ₽ за балл → 15 баллов
     card = _Card(0)
     db = _DB([_Cfg(True, 100), card])
-    asyncio.run(L.accrue_points(db, 7, 1, 100_000))
-    assert card.points_balance == 10
+    asyncio.run(L.accrue_points(db, 7, 1, 1_500))
+    assert card.points_balance == 15
     assert _txn_count(db) == 1
 
 
 def test_accrue_disabled_skips():
     db = _DB([_Cfg(False, 100)])
-    asyncio.run(L.accrue_points(db, 7, 1, 100_000))
+    asyncio.run(L.accrue_points(db, 7, 1, 1_500))
     assert db.added == []
 
 
 def test_negative_balance_guard():
     db = _DB([_Card(5)])
     try:
-        asyncio.run(L._apply_points(1, 7, -10, "списание", db))
+        asyncio.run(L.apply_points_change(1, 7, -10, "списание", db))
         assert False, "должно было упасть 400"
     except HTTPException as e:
         assert e.status_code == 400
@@ -75,8 +76,27 @@ def test_negative_balance_guard():
 def test_valid_spend():
     card = _Card(20)
     db = _DB([card])
-    asyncio.run(L._apply_points(1, 7, -10, "списание", db))
+    asyncio.run(L.apply_points_change(1, 7, -10, "списание", db))
     assert card.points_balance == 10
+
+
+def test_deposit_negative_balance_guard():
+    db = _DB([_Card(deposit=100)])
+    try:
+        asyncio.run(L.apply_deposit_change(1, 7, -150, "списание", db))
+        assert False, "должно было упасть 400"
+    except HTTPException as e:
+        assert e.status_code == 400
+
+
+def test_deposit_topup_and_spend():
+    card = _Card(deposit=100)
+    db = _DB([card])
+    asyncio.run(L.apply_deposit_change(1, 7, 50, "пополнение", db))
+    assert card.deposit_balance == 150
+    db2 = _DB([card])
+    asyncio.run(L.apply_deposit_change(1, 7, -150, "списание в оплату", db2))
+    assert card.deposit_balance == 0
 
 
 if __name__ == "__main__":
@@ -84,4 +104,6 @@ if __name__ == "__main__":
     test_accrue_disabled_skips()
     test_negative_balance_guard()
     test_valid_spend()
+    test_deposit_negative_balance_guard()
+    test_deposit_topup_and_spend()
     print("ALL PASS")

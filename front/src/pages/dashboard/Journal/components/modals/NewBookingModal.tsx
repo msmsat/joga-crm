@@ -1,20 +1,27 @@
 // src/components/modals/NewBookingModal.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Trainer } from '../../types';
 import { TIMES } from '../../constants';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../../utils';
+import { useServiceOptions, CREATE_SERVICE_OPTION } from '../../hooks/useServiceOptions';
+import { Select, ConfirmModal } from '../../../../../components/ui/index';
 
 interface NewBookingModalProps {
   trainers: Trainer[];
   halls: string[];
   newBookingSlot: { trainer: number; timeStart: number; timeEnd: number };
   setNewBookingSlot: React.Dispatch<React.SetStateAction<{ trainer: number; timeStart: number; timeEnd: number } | null>>;
+  newForm: { serviceId: number | null; title: string; hall: string; maxClients: string };
+  setNewForm: React.Dispatch<React.SetStateAction<{ serviceId: number | null; title: string; hall: string; maxClients: string }>>;
   newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   timeStep: number;
   closeNewForm: () => void;
-  onCreate: (form: { title: string; hall: string; maxClients: number }) => void;
+  onCreate: (form: { serviceId: number; title: string; hall: string; maxClients: number }) => void;
 }
 
 export const NewBookingModal: React.FC<NewBookingModalProps> = ({
@@ -22,22 +29,53 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   halls,
   newBookingSlot,
   setNewBookingSlot,
+  newForm,
+  setNewForm,
   newFormPos,
   modalRef,
   timeStep,
   closeNewForm,
   onCreate
 }) => {
-  // 🔥 ЛОКАЛЬНЫЕ СТЕЙТЫ ФОРМЫ СОЗДАНИЯ
-  const [newForm, setNewForm] = useState({ title: '', hall: halls[0] ?? '', maxClients: '8' });
+  const { t } = useTranslation('journal');
   const [startInput, setStartInput] = useState('');
   const [endInput, setEndInput] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
+  const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
+  const { services, options: serviceOptions } = useServiceOptions();
+
+  // Валидация до отправки (зеркалит серверные правила, lessons.py): услуга
+  // выбрана, лимит — целое 1-50, конец позже начала.
+  const serviceError = !newForm.serviceId ? t('newBooking.errors.selectService') : null;
+  const maxClientsNum = Number(newForm.maxClients);
+  const maxClientsError = !Number.isInteger(maxClientsNum) || maxClientsNum < 1 || maxClientsNum > 50
+    ? t('newBooking.errors.range')
+    : null;
+  const timeError = newBookingSlot.timeEnd <= newBookingSlot.timeStart
+    ? t('newBooking.errors.endAfterStart')
+    : null;
+  const hasErrors = !!(serviceError || maxClientsError || timeError);
+
+  const handleServiceChange = (value: string) => {
+    if (value === CREATE_SERVICE_OPTION) {
+      setShowCatalogConfirm(true);
+      return;
+    }
+    const service = services.find(s => String(s.id) === value);
+    if (!service) return;
+    setNewForm(f => ({
+      ...f,
+      serviceId: service.id,
+      title: service.name,
+      maxClients: service.max_clients != null ? String(service.max_clients) : f.maxClients,
+    }));
+  };
 
   // Синхронизация инпутов с текущим слотом
   useEffect(() => {
@@ -49,12 +87,15 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
   // Автоматический проскролл дропдаунов
   useEffect(() => {
-    if (activeDropdown === 'start' && startScrollRef.current) {
-      setTimeout(() => startScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
-    }
-    if (activeDropdown === 'end' && endScrollRef.current) {
-      setTimeout(() => endScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
-    }
+    const scrollToActiveTime = (container: HTMLDivElement | null) => {
+      const activeItem = container?.querySelector<HTMLElement>('.active-time-item');
+      if (!container || !activeItem) return;
+
+      container.scrollTop = activeItem.offsetTop - (container.clientHeight - activeItem.offsetHeight) / 2;
+    };
+
+    if (activeDropdown === 'start') scrollToActiveTime(startScrollRef.current);
+    if (activeDropdown === 'end') scrollToActiveTime(endScrollRef.current);
   }, [activeDropdown]);
 
   // Закрытие дропдаунов при клике вне
@@ -86,23 +127,24 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
   // СОЗДАНИЕ: форма уходит наверх, Journal шлёт её на сервер
   const createBooking = () => {
-    if (!newForm.title.trim()) return;
+    if (hasErrors || !newForm.serviceId) return;
     onCreate({
-      title: newForm.title.trim(),
+      serviceId: newForm.serviceId,
+      title: newForm.title,
       hall: newForm.hall,
-      maxClients: parseInt(newForm.maxClients) || 8,
+      maxClients: maxClientsNum,
     });
     closeNewForm();
   };
 
-  return (
+  return createPortal(
     <>
       <div
-        style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+        style={{ position: 'fixed', inset: 0, zIndex: 200 }}
         onMouseDown={closeNewForm}
       />
       <div
-        style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 9999 }}
+        style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 210 }}
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="keypad-modal" ref={modalRef}>
@@ -113,9 +155,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 <Icons.Plus />
               </div>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>Новое занятие</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>{t('newBooking.title')}</div>
                 <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>
-                  Время слота: <span style={{ color: 'var(--peach)', fontWeight: 800 }}>
+                  {t('newBooking.slotTime')}: <span style={{ color: 'var(--peach)', fontWeight: 800 }}>
                     {[...TIMES, '22:00', '23:00'][newBookingSlot.timeStart] || '00:00'} – {[...TIMES, '22:00', '23:00'][newBookingSlot.timeEnd] || '00:00'}
                   </span>
                 </div>
@@ -128,19 +170,18 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               <div className="kp-section">
-                <div className="kp-section-title">Название программы</div>
-                <input
-                  className="modal-input"
-                  style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 600 }}
-                  placeholder="Например: Пилатес Реформер"
-                  value={newForm.title}
-                  onChange={e => setNewForm(f => ({ ...f, title: e.target.value }))}
-                  autoFocus
+                <div className="kp-section-title">{t('newBooking.service')}</div>
+                <Select
+                  value={newForm.serviceId != null ? String(newForm.serviceId) : ''}
+                  options={serviceOptions}
+                  onChange={handleServiceChange}
+                  placeholder={t('newBooking.servicePlaceholder')}
                 />
+                {serviceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{serviceError}</div>}
               </div>
 
               <div className="kp-section">
-                <div className="kp-section-title">Локация / Зал</div>
+                <div className="kp-section-title">{t('newBooking.location')}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   {halls.map(h => (
                     <div
@@ -157,12 +198,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="kp-section" onClick={e => e.stopPropagation()}>
-                  <div className="kp-section-title">Начало</div>
+                  <div className="kp-section-title">{t('newBooking.start')}</div>
                   <div className="kp-time-container">
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={startInput}
                       onFocus={(e) => { e.target.select(); setActiveDropdown('start'); }}
                       onChange={e => setStartInput(e.target.value)}
@@ -186,12 +227,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 </div>
 
                 <div className="kp-section" onClick={e => e.stopPropagation()}>
-                  <div className="kp-section-title">Конец</div>
+                  <div className="kp-section-title">{t('newBooking.end')}</div>
                   <div className="kp-time-container">
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: '1px solid var(--border)', height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={endInput}
                       onFocus={(e) => { e.target.select(); setActiveDropdown('end'); }}
                       onChange={e => setEndInput(e.target.value)}
@@ -218,24 +259,26 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   </div>
                 </div>
               </div>
+              {timeError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: -8 }}>{timeError}</div>}
 
               <div className="kp-section">
-                <div className="kp-section-title">Лимит группы</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '0 6px 0 14px', borderRadius: '10px', border: '1px solid var(--border)', height: '40px', boxSizing: 'border-box' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>Максимум мест</span>
+                <div className="kp-section-title">{t('newBooking.groupLimit')}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '0 6px 0 14px', borderRadius: '10px', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, height: '40px', boxSizing: 'border-box' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>{t('newBooking.maxSpots')}</span>
                   <input
                     className="modal-input"
                     type="number" min="1" max="50"
-                    style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'white', border: '1px solid var(--border)', borderRadius: '6px', fontWeight: 700 }}
+                    style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'white', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
                     value={newForm.maxClients}
                     onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
                   />
                 </div>
+                {maxClientsError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{maxClientsError}</div>}
               </div>
             </div>
 
             <div className="kp-section">
-              <div className="kp-section-title">Назначить тренера</div>
+              <div className="kp-section-title">{t('newBooking.assignTrainer')}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {trainers.map(t => {
                   const isActive = newBookingSlot.trainer === t.id;
@@ -271,19 +314,31 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
               style={{ height: 38, padding: '0 16px', fontSize: 12.5, borderRadius: '8px' }} 
               onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); closeNewForm(); }}
             >
-              Отмена
+              {t('newBooking.cancel')}
             </button>
             <button
               type="button"
               className="btn-primary-sm"
-              style={{ height: 38, padding: '0 24px', fontSize: 12.5, borderRadius: '8px' }}
+              disabled={hasErrors}
+              style={{ height: 38, padding: '0 24px', fontSize: 12.5, borderRadius: '8px', opacity: hasErrors ? 0.5 : 1, cursor: hasErrors ? 'not-allowed' : 'pointer' }}
               onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); createBooking(); }}
             >
-              Создать занятие
+              {t('newBooking.create')}
             </button>
           </div>
         </div>
       </div>
-    </>
+
+      {showCatalogConfirm && (
+        <ConfirmModal
+          title={t('newBooking.createServiceConfirm.title')}
+          message={t('newBooking.createServiceConfirm.message')}
+          confirmText={t('newBooking.createServiceConfirm.confirm')}
+          onConfirm={() => navigate('/dashboard/catalog')}
+          onClose={() => setShowCatalogConfirm(false)}
+        />
+      )}
+    </>,
+    document.body
   );
 };

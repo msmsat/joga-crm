@@ -1,0 +1,145 @@
+{
+  "toolbar": {
+    "today": "Today",
+    "trainers": "Trainers",
+    "halls": "Halls",
+    "day": "Day",
+    "week": "Week"
+  },
+  "daySummary": {
+    "classesToday": "classes today",
+    "clientBookings": "client bookings",
+    "avgLoad": "avg. load",
+    "trainersActive": "trainers active",
+    "gridStep": "Grid step",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Undo: {{label}}",
+    "redo": "Redo: {{label}}",
+    "nothingToUndo": "Nothing to undo",
+    "nothingToRedo": "Nothing to redo"
+  },
+  "newBooking": {
+    "title": "New lesson",
+    "slotTime": "Slot time",
+    "service": "Service",
+    "servicePlaceholder": "Select a service",
+    "namePlaceholder": "E.g. Reformer Pilates",
+    "location": "Location / Hall",
+    "start": "Start",
+    "end": "End",
+    "groupLimit": "Group limit",
+    "maxSpots": "Max spots",
+    "assignTrainer": "Assign trainer",
+    "cancel": "Cancel",
+    "create": "Create lesson",
+    "errors": {
+      "selectService": "Select a service",
+      "range": "From 1 to 50",
+      "endAfterStart": "End must be after start"
+    },
+    "createServiceConfirm": {
+      "title": "Create a service?",
+      "message": "Can't find the service you need? Go to Catalog to create it.",
+      "confirm": "Go to Catalog"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "spotsTaken": "spots taken",
+    "fillRate": "Fill rate",
+    "booked": "Booked",
+    "attended": "Attended",
+    "markAttended": "Mark attendance",
+    "removeFromLesson": "Remove from lesson",
+    "add": "Add",
+    "addClient": "Add client",
+    "edit": "Edit",
+    "editLesson": "Edit lesson",
+    "deleteLesson": "Delete lesson",
+    "cancel": "Cancel",
+    "save": "Save",
+    "lessonTitle": "Lesson title",
+    "untitled": "Untitled",
+    "from": "From",
+    "to": "To",
+    "searchPlaceholder": "Search by name or phone...",
+    "noClientsFound": "No clients found",
+    "noEligibleClients": "No clients with access to this lesson",
+    "visitsCount_one": "{{count}} visit",
+    "visitsCount_other": "{{count}} visits",
+    "errors": {
+      "selectService": "Select a service",
+      "range": "From 1 to 50",
+      "minBooked": "{{count}} already booked — can't go lower",
+      "endAfterStart": "End must be after start"
+    },
+    "createServiceConfirm": {
+      "title": "Create a service?",
+      "message": "Can't find the service you need? Go to Catalog to create it.",
+      "confirm": "Go to Catalog"
+    }
+  },
+  "addClientModal": {
+    "title": "Add client",
+    "searchPlaceholder": "Search by name or phone...",
+    "noClientsFound": "No clients found",
+    "chooseFromList": "Choose clients from the list",
+    "selectedCount_one": "Selected: {{count}} client",
+    "selectedCount_other": "Selected: {{count}} clients",
+    "cancel": "Cancel",
+    "add": "Add"
+  },
+  "rightPanel": {
+    "halls": "Halls",
+    "load": "Load",
+    "upcoming": "Upcoming"
+  },
+  "grid": {
+    "classesShort": "cls.",
+    "peopleShort": "ppl.",
+    "loadPercent": "Load: {{percent}}%",
+    "classes": "classes",
+    "classesToday": "classes today",
+    "newLessonPreview": "New lesson"
+  },
+  "createService": "+ Create service",
+  "invalidDateFormat": "Invalid date format",
+  "toasts": {
+    "lessonMoved": "Lesson moved",
+    "endTimeChanged": "End time changed",
+    "startTimeChanged": "Start time changed",
+    "attendanceMarked": "Attendance marked",
+    "clientRemoved": "Client removed from lesson",
+    "lessonUpdated": "Lesson updated",
+    "lessonAdded": "Lesson added",
+    "selectTrainer": "Select a trainer",
+    "alreadyCancelled": "Lesson is already cancelled",
+    "lessonCancelled": "Lesson cancelled",
+    "noPermission": "Not enough permissions to change the schedule",
+    "undoLabel": "Undone: {{label}}",
+    "redoLabel": "Redone: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Booked: {{count}} client",
+    "clientsBooked_other": "Booked: {{count}} clients",
+    "clientsBookedPartial": "Booked {{success}} of {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "remove client",
+      "moveLesson": "move lesson",
+      "createLesson": "create lesson",
+      "bookClient": "book client",
+      "bookClients": "book clients ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Failed to load",
+    "retry": "Retry"
+  },
+  "cancelBookingConfirm": {
+    "title": "Cancel lesson?",
+    "message_one": "{{count}} client will get a cancellation notice.",
+    "message_other": "{{count}} clients will get a cancellation notice.",
+    "confirm": "Cancel lesson"
+  }
+}

@@ -7,6 +7,24 @@ export interface ActiveSubscription {
   type: string
 }
 
+// GET /clients/{id}/wallet (CL-6.5) — полная форма абонемента, как отдаёт бэк
+// (ClientSubscriptionRead), в отличие от урезанной ActiveSubscription в профиле.
+export interface WalletSubscription {
+  id: number
+  type: string
+  total_classes: number
+  used_classes: number
+  remaining: number
+  expires_at: string
+  status: string
+  is_frozen: boolean
+}
+
+export interface ClientWallet {
+  active: WalletSubscription[]
+  archived: WalletSubscription[]
+}
+
 export interface ClientNote {
   id: number
   text: string
@@ -22,7 +40,7 @@ export interface CategoryStat {
 
 export interface EventRecord {
   date: string | null
-  type: 'payment' | 'visit' | 'freeze'
+  type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze'
   title: string
   trainer: string | null
   paid: string | null
@@ -55,6 +73,7 @@ export interface ClientListItem {
 }
 
 export interface ClientProfile extends ClientListItem {
+  subscription_alert: ActiveSubscription | null
   birth_date: string | null
   city: string | null
   source: string | null
@@ -69,12 +88,29 @@ export interface ClientProfile extends ClientListItem {
 export interface ClientCreate {
   name: string
   last_name?: string | null
+  phone: string
+  email: string
+  birth_date?: string | null
+  city: string
+  tags?: string[]
+  note?: string | null
+  source?: string | null
+  membership_id?: number | null
+  is_membership_paid?: boolean
+  invite_code?: string | null
+}
+
+export interface InviteCode {
+  invite_code: string
+}
+
+export interface ClientUpdate {
+  name?: string
+  last_name?: string | null
   phone?: string | null
   email?: string | null
   birth_date?: string | null
   city?: string | null
-  tags?: string[]
-  note?: string | null
   source?: string | null
 }
 

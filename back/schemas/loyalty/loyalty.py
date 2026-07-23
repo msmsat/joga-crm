@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
+from pydantic import Field
+
 from schemas._base import BaseSchema
 
 
@@ -30,12 +32,26 @@ class LoyaltyLevelRead(BaseSchema):
     sort_order: int
 
 
+class LoyaltyLevelWrite(BaseSchema):
+    id: Optional[int] = None  # None — новый уровень
+    name: str
+    color: str
+    min_threshold: int
+    max_threshold: Optional[int] = None
+    sort_order: int
+
+
+class LoyaltyLevelsUpdate(BaseSchema):
+    levels: list[LoyaltyLevelWrite]
+
+
 class LoyaltyCardRead(BaseSchema):
     id: int
     client_id: int
     client_name: str
     points_balance: int
     total_spent: int
+    deposit_balance: int
     level_id: Optional[int] = None
     created_at: datetime
 
@@ -45,6 +61,13 @@ class LoyaltyStatsRead(BaseSchema):
     points_in_circulation: int
     revenue_from_members: int
     avg_check: int
+    # Живые счётчики карточек программ (задача 6, V5-2): {program_key: value}.
+    # Словарь, а не отдельные поля — V5-3 добавит сюда промокоды и депозит.
+    program_counters: dict[str, int] = Field(default_factory=dict)
+    # Сводка-результат (V5-3, задача 1).
+    returned_clients: int
+    bonus_cost: int
+    roi: float
 
 
 class PointTransactionRead(BaseSchema):
@@ -62,6 +85,38 @@ class BonusCreate(BaseSchema):
 
 class PointsBalanceRead(BaseSchema):
     points_balance: int
+
+
+# --- Deposit / club balance (V5-3, задача 4) ---
+
+
+class DepositCreate(BaseSchema):
+    amount: int  # может быть отрицательным — списание
+    description: str = "Пополнение депозита"
+    account_id: Optional[int] = None  # обязателен при пополнении (amount > 0) — счёт кассы
+
+
+class DepositBalanceRead(BaseSchema):
+    deposit_balance: int
+
+
+class DepositTransactionRead(BaseSchema):
+    id: int
+    client_id: int
+    amount: int
+    description: str
+    created_at: datetime
+
+
+class DepositTopClient(BaseSchema):
+    client_id: int
+    client_name: str
+    deposit_balance: int
+
+
+class DepositStatsRead(BaseSchema):
+    total_balance: int
+    top_clients: list[DepositTopClient]
 
 
 # --- Discount program ---
@@ -114,6 +169,8 @@ class SubscriptionPackageRead(BaseSchema):
     sort_order: int
     duration_days: int
     service_ids: Optional[list] = None
+    sold_as_single: bool = True
+    sold_as_subscription: bool = True
 
 
 class SubscriptionPackageCreate(BaseSchema):
@@ -125,6 +182,8 @@ class SubscriptionPackageCreate(BaseSchema):
     sort_order: int = 0
     duration_days: int = 90
     service_ids: Optional[list] = None
+    sold_as_single: bool = True
+    sold_as_subscription: bool = True
 
 
 class SubscriptionPackageUpdate(BaseSchema):
@@ -136,6 +195,8 @@ class SubscriptionPackageUpdate(BaseSchema):
     sort_order: Optional[int] = None
     duration_days: Optional[int] = None
     service_ids: Optional[list] = None
+    sold_as_single: Optional[bool] = None
+    sold_as_subscription: Optional[bool] = None
 
 
 # --- Referral program ---

@@ -1,15 +1,6 @@
-import type { Tab, TrainerRecord, ServiceRecord, SalesRecord, EventRecord, Period } from './types';
+import type { Tab, TrainerRecord, ServiceRecord, SalesRecord, Period } from './types';
 
-export const TABS: Tab[] = ['Основные', 'По продажам', 'По тренерам', 'По услугам', 'Все', 'События'];
-
-export const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл'];
-
-export const MONTH_VALS: Record<Period, number[]> = {
-  day:   [18, 21, 24, 19, 27, 26, 28],
-  week:  [95, 110, 128, 103, 145, 138, 151],
-  month: [180, 210, 240, 195, 270, 260, 284],
-  year:  [1800, 2100, 2400, 1950, 2700, 2600, 2840],
-};
+export const TABS: Tab[] = ['overview', 'sales', 'clients', 'team', 'schedule'];
 
 export const PERIOD_LABELS: Record<Period, string> = {
   day: 'День', week: 'Неделя', month: 'Месяц', year: 'Год',
@@ -63,12 +54,4 @@ export const SALES_DATA: SalesRecord[] = [
     buyers: { newPct: 90, retPct: 10 },
     payments: [{ label: 'Карта онлайн', pct: 35, color: 'var(--accent)' }, { label: 'Наличные', pct: 55, color: '#5BAB72' }, { label: 'Перевод', pct: 10, color: '#4A80C4' }],
   },
-];
-
-export const EVENTS_DATA: EventRecord[] = [
-  { date: '15 июл', title: 'Мастер-класс по реформеру', type: 'Мероприятие', attendees: 14, revenue: 21000, status: 'Завершено', color: '#5BAB72' },
-  { date: '22 июл', title: 'Воркшоп: Основы пилатеса',  type: 'Обучение',    attendees: 8,  revenue: 12000, status: 'Завершено', color: '#4A80C4' },
-  { date: '28 июл', title: 'День открытых дверей',       type: 'Промо',       attendees: 31, revenue: 0,     status: 'Завершено', color: '#FCAE91' },
-  { date: '5 авг',  title: 'Интенсив по растяжке',       type: 'Мероприятие', attendees: 12, revenue: 18000, status: 'Предстоит', color: '#D88C9A' },
-  { date: '19 авг', title: 'Сезонный марафон',           type: 'Мероприятие', attendees: 0,  revenue: null,  status: 'Предстоит', color: '#FCAE91' },
 ];

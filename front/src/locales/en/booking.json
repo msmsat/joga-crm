@@ -1,0 +1,123 @@
+{
+  "channels": {
+    "sectionTitle": "Connection channels",
+    "connected": "Connected",
+    "disconnected": "Not connected",
+    "telegram": { "name": "Telegram bot", "desc": "Automatic booking via the bot" },
+    "instagram": { "name": "Instagram", "desc": "Link for bio and stories" },
+    "web": { "name": "Website", "desc": "Widget or standalone page" },
+    "whatsapp": { "name": "WhatsApp", "desc": "Booking via messenger" }
+  },
+  "loading": "Loading settings…",
+  "sections": {
+    "main": {
+      "title": "General settings",
+      "prefill": { "label": "Prepayment on booking", "sub": "Require payment before confirmation" },
+      "trainerConfirm": { "label": "Trainer confirmation", "sub": "Booking waits for manual approval" },
+      "clientReminder": { "label": "Client reminder", "sub": "24 and 2 hours before class" },
+      "bookingActive": { "label": "Online booking active", "sub": "Show the widget to clients" }
+    },
+    "rules": {
+      "title": "Limits & rules",
+      "advance": { "label": "Block booking less than", "sub": "Minimum time before class" },
+      "window": { "label": "Booking opens", "sub": "How many days ahead" },
+      "cancel": { "label": "Cancel without penalty", "sub": "Before class the client can cancel" },
+      "repeat": { "label": "Repeat booking", "sub": "Allow a client to book twice" },
+      "workHours": { "label": "Widget working hours", "sub": "Hours when booking is available" },
+      "step": { "label": "Booking step", "sub": "Interval between time slots" }
+    },
+    "branding": {
+      "title": "Widget branding",
+      "sub": "Look and feel of the booking page",
+      "accentColor": "Accent color",
+      "logo": { "label": "Studio logo", "sub": "Shown in the widget header", "upload": "Upload", "uploading": "Uploading…", "remove": "Remove", "uploadFailed": "Failed to upload logo" },
+      "darkMode": { "label": "Dark theme", "sub": "Widget in dark appearance" },
+      "language": { "label": "Default language", "sub": "Primary interface language" }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "sub": "Automatic messages to clients",
+      "preview": {
+        "confirmed": "Booking confirmed! Mon 10:00",
+        "reminder2h": "Reminder: in 2 hours",
+        "reviewRequest": "Thanks for visiting! Rate the class"
+      },
+      "sms": { "label": "SMS confirmation", "sub": "On successful booking" },
+      "reminder24h": { "label": "24h reminder", "sub": "Morning before class" },
+      "reminder2h": { "label": "2h reminder", "sub": "Shortly before class" },
+      "reviewRequest": { "label": "Review request", "sub": "1 hour after the visit" }
+    }
+  },
+  "options": {
+    "advance": { "1h": "1 hour", "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
+    "window": { "7d": "7 days", "14d": "14 days", "30d": "30 days", "60d": "60 days" },
+    "cancel": { "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
+    "lang": { "ru": "Русский", "en": "English", "de": "Deutsch" },
+    "step": { "15": "15 min", "30": "30 min", "45": "45 min", "60": "60 min" }
+  },
+  "toasts": {
+    "botConnected": "Bot connected",
+    "botDisconnected": "Bot disconnected",
+    "codeCopied": "Code copied!",
+    "linkCopied": "Link copied!"
+  },
+  "tg": {
+    "title": "Telegram bot",
+    "connected": "Connected",
+    "showToken": "Show token",
+    "hideToken": "Hide token",
+    "acceptsBookings": "Bot accepts bookings from clients",
+    "instantNotify": "Notifications arrive instantly",
+    "disconnect": "Disconnect bot",
+    "pasteToken": "Paste the bot token from @BotFather",
+    "invalidToken": "Invalid token format",
+    "connect": "Connect bot",
+    "howToGet": "How to get a token?",
+    "steps": {
+      "1a": "Open Telegram → find ",
+      "1b": "@BotFather",
+      "2a": "Send the command ",
+      "2b": "/newbot",
+      "3": "Choose a name and username for the bot",
+      "4": "Copy the token and paste it above"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Place a link for quick client booking in your profile and stories",
+    "steps": {
+      "1": "Copy your link",
+      "2a": "Paste it into the ",
+      "2b": "\"Website\"",
+      "2c": " field in Instagram profile settings.",
+      "3a": "Add the link to ",
+      "3b": "Stories",
+      "3c": " using a special sticker."
+    },
+    "proTip": "Pin a Story with the booking flow to Highlights — this increases conversion by 30%."
+  },
+  "web": {
+    "title": "Website widget",
+    "sub": "Add a booking button to any website (Tilda, WordPress or custom code)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Copy",
+    "instructionPrefix": "Paste this code right before the closing ",
+    "instructionSuffix": " tag on your website. The button will appear automatically."
+  },
+  "wa": {
+    "title": "WhatsApp booking",
+    "sub": "Set up an auto-responder in WhatsApp Business to instantly send the booking link.",
+    "online": "online",
+    "sampleIncoming": "Hi! I'd like to book a class.",
+    "sampleOutgoing": "Welcome! ✨",
+    "connect": "Connect WhatsApp Business",
+    "scanQr": "Scan the QR code",
+    "scanInstructionLine1": "WhatsApp Business → Settings →",
+    "scanInstructionLine2": "Linked devices",
+    "waiting": "Waiting for connection...",
+    "connected": "Connected",
+    "autoReplyActive": "Auto-reply active",
+    "instantLink": "Booking link is sent instantly",
+    "disconnect": "Disconnect"
+  }
+}

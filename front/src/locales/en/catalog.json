@@ -117,7 +117,9 @@
       "durationDaysPlaceholder": "60",
       "services": "Services",
       "servicesHint": "Nothing selected — package applies to all classes",
-      "isActive": "For sale"
+      "isActive": "For sale",
+      "soldAsSubscription": "Show in the \"Subscriptions\" tab",
+      "soldAsSingle": "Show in the \"Single visits\" tab"
     }
   },
   "studios": {
@@ -226,7 +228,7 @@
       "title": "Program settings",
       "allowFreeze": "Subscription freeze",
       "allowTransfer": "Transfer to another client",
-      "autoRenewal": "Auto-renewal"
+      "autoRenewal": "Auto-renewal from client deposit"
     },
     "empty": {
       "title": "No packages yet",

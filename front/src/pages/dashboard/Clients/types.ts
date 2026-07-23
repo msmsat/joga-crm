@@ -11,6 +11,7 @@ export interface ClientData {
   visit_count: number;
   total_spent: number;
   active_subscription?: ActiveSubscription;
+  subscription_alert?: ActiveSubscription;
   loyalty_points: number;
   last_visit_date?: string;
   registration_date?: string;
@@ -28,18 +29,11 @@ export interface ClientData {
 
 export interface EventRecord {
   date?: string;
-  type: 'payment' | 'visit' | 'freeze';
+  type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze';
   title: string;
   trainer?: string;
   paid?: string;
   amount?: string;
 }
 
-export type EventFilterTab = 'Все' | 'Оплаты' | 'Посещения' | 'Заморозки';
-
-export interface BonusOption {
-  id: string;
-  label: string;
-  description: string;
-  points?: number; // задан только у бонуса-начисления баллов; остальные — символические
-}
+export type EventFilterTab = 'all' | 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze';

@@ -92,20 +92,7 @@
     "cancelLesson": "Cancel class?",
     "dontAsk": "Don't ask again when deleting"
   },
-  "addEvent": {
-    "title": "New class",
-    "sub": "The class will be assigned to {{name}} and appear in the Journal",
-    "namePlaceholder": "Class name — e.g. Hatha Yoga",
-    "time": "Start",
-    "duration": "Duration, min",
-    "spots": "Spots",
-    "price": "Price, ₽",
-    "hall": "Hall",
-    "create": "Create"
-  },
   "toasts": {
-    "lessonAdded": "Class created",
-    "errorAdd": "Error creating class",
     "lessonCanceled": "Class canceled",
     "errorCancel": "Error canceling",
     "employeeAdded": "Employee {{name}} added",

@@ -64,14 +64,14 @@ async def list_salaries(
         .order_by(User.id)
     )).scalars().all()
 
-    paid_ids = set((await db.execute(
-        select(SalaryPayment.user_id).where(
+    paid_at_by_user = dict((await db.execute(
+        select(SalaryPayment.user_id, SalaryPayment.paid_at).where(
             SalaryPayment.studio_id == ctx.studio_id,
             SalaryPayment.period_start == period_start,
             SalaryPayment.period_end == period_end,
             SalaryPayment.status == "paid",
         )
-    )).scalars().all())
+    )).all())
 
     rows: list[SalaryRow] = []
     for u in members:
@@ -82,12 +82,37 @@ async def list_salaries(
             user_id=u.id,
             name=f"{u.name} {u.last_name or ''}".strip(),
             sessions_count=sessions,
+            hours_worked=hours,
+            lessons_revenue=revenue,
             rate=u.rate,
             rate_type=u.rate_type,
             amount=_compute_amount(u.rate, u.rate_type, hours, revenue),
-            status="paid" if u.id in paid_ids else "pending",
+            status="paid" if u.id in paid_at_by_user else "pending",
+            paid_at=paid_at_by_user.get(u.id),
         ))
     return rows
+
+
+@router.get("/salaries/{user_id}/history", response_model=list[SalaryRead])
+async def get_salary_history(
+    user_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    user = (await db.execute(
+        select(User.id)
+        .join(StudioMember, StudioMember.user_id == User.id)
+        .where(User.id == user_id, StudioMember.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Сотрудник не найден")
+
+    payments = (await db.execute(
+        select(SalaryPayment)
+        .where(SalaryPayment.studio_id == ctx.studio_id, SalaryPayment.user_id == user_id)
+        .order_by(SalaryPayment.period_start.desc())
+    )).scalars().all()
+    return payments
 
 
 @router.post("/salaries/{user_id}/pay", status_code=201, response_model=SalaryRead)

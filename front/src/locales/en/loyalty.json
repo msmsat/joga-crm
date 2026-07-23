@@ -1,0 +1,323 @@
+{
+  "header": {
+    "allConfigured": "All programs configured",
+    "allConfiguredSub": "Your loyalty system is running at full strength",
+    "setup": "Set up loyalty programs",
+    "setupSub": "{{count}} of {{total}} programs configured · Every program boosts client retention",
+    "start": "Get started"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Loyalty cards",
+      "desc": "Tiered points accumulation system",
+      "statLabel": "clients"
+    },
+    "discounts": {
+      "title": "Discounts & cashback",
+      "desc": "Personal offers for clients",
+      "statLabel": "active"
+    },
+    "certificates": {
+      "title": "Gift certificates",
+      "desc": "Gift and named certificates",
+      "statLabel": "sold"
+    },
+    "referral": {
+      "title": "Referral",
+      "desc": "\"Bring a friend\" program",
+      "statLabel": "referrals"
+    },
+    "promocodes": {
+      "title": "Promo codes",
+      "desc": "Discount codes with a usage limit",
+      "statLabel": "active"
+    },
+    "deposit": {
+      "title": "Deposit",
+      "desc": "Client's cash balance with the studio",
+      "statLabel": "with balance"
+    }
+  },
+  "card": {
+    "active": "Active",
+    "disable": "Disable",
+    "notConfigured": "Not configured",
+    "configure": "Configure"
+  },
+  "drawer": {
+    "subtitle": "Program settings",
+    "saving": "Saving…",
+    "save": "Save and activate",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "config": {
+    "mainParams": "Main parameters",
+    "programName": "Program name",
+    "pointsRate": "Points rate ({{currency}} per 1 point)",
+    "levels": "Levels",
+    "expiry": "Expiry period",
+    "expiryTooltip": "How long a client can spend accumulated points",
+    "expiryOptions": {
+      "3m": "3 mo",
+      "6m": "6 mo",
+      "1y": "1 yr",
+      "never": "No expiry"
+    },
+    "levelNames": {
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum"
+    },
+    "newLevelName": "New level",
+    "addLevel": "+ Level",
+    "levelFrom": "from",
+    "levelTo": "to",
+    "deleteLevelTitle": "Delete this level?",
+    "deleteLevelMessage": "Clients on the \"{{name}}\" level will move to the neighboring level based on their total spend.",
+    "discountType": "Discount type",
+    "discountTypes": {
+      "percentage": "Percentage (%)",
+      "fixed": "Fixed ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback percentage",
+    "discountSize": "Discount amount",
+    "minPurchase": "Minimum purchase amount",
+    "noLimit": "No limit",
+    "conditions": "Application conditions",
+    "appliesToAll": "Apply to all services",
+    "stackable": "Stack with other discounts",
+    "visibleInCabinet": "Show to client in their account",
+    "certType": "Certificate type",
+    "certTypes": {
+      "named": "Named",
+      "gift": "Gift",
+      "service": "For a service"
+    },
+    "denominations": "Denominations",
+    "addDenom": "+ Add",
+    "service": "Service",
+    "noServices": "No services in the catalog yet — add them under \"Catalog\"",
+    "params": "Parameters",
+    "expiryDays": "Expiry period (days)",
+    "certIssue": "Issue a certificate",
+    "certCustomAmount": "Custom amount",
+    "certRecipientName": "Recipient name",
+    "certRecipientPlaceholder": "Optional",
+    "certLinkClient": "Link to a client",
+    "certClientSearchPlaceholder": "Start typing a name…",
+    "certAccount": "Deposit account",
+    "certAccountNone": "Don't record in the ledger",
+    "certIssueButton": "Issue",
+    "certIssuedTitle": "Certificate issued",
+    "certCopyCode": "Copy code",
+    "certCopied": "Copied",
+    "certIssueAnother": "Issue another",
+    "certIssued": "Issued certificates",
+    "certEmpty": "No certificates issued yet",
+    "certStatus": {
+      "active": "Active",
+      "used": "Redeemed",
+      "expired": "Expired"
+    },
+    "certRedeem": "Redeem",
+    "certRedeemTitle": "Redeem this certificate?",
+    "certRedeemMessage": "Certificate {{code}} will be marked as used. This can't be undone.",
+    "referrerBonusTitle": "Referral bonus",
+    "referrerBonus": "Bonus for referrer ({{currency}})",
+    "newClientDiscount": "Discount for new client (%)",
+    "triggerCondition": "Accrual condition",
+    "triggerConditions": {
+      "first_visit": "After first visit",
+      "first_payment": "After first payment",
+      "registration": "Immediately on registration"
+    },
+    "bonusAccrual": "Bonus accrual",
+    "bonusTypes": {
+      "points": "Points",
+      "deposit": "To deposit",
+      "discount": "As discount"
+    },
+    "promoCreate": "Create promo code",
+    "promoCodePlaceholder": "SUMMER25",
+    "promoValidUntil": "Valid until",
+    "promoUsageLimit": "Usage limit",
+    "promoAdd": "+ Add promo code",
+    "promoList": "Promo codes",
+    "promoEmpty": "No promo codes yet",
+    "promoUntil": "until",
+    "promoStatus": {
+      "active": "Active",
+      "expired": "Expired",
+      "exhausted": "Limit reached",
+      "disabled": "Disabled"
+    },
+    "depositTotal": "Total balance",
+    "depositTotalSub": "across client deposits",
+    "depositTopClients": "Top clients by balance",
+    "depositEmpty": "No one has a deposit yet",
+    "depositHint": "Top-ups and withdrawals happen on the client's profile. The referral program can pay bonuses to the deposit instead of points."
+  },
+  "validation": {
+    "required": "This field is required",
+    "minOne": "Must be at least 1",
+    "minZero": "Cannot be negative",
+    "positive": "Must be greater than 0",
+    "range0to100": "0 to 100"
+  },
+  "toasts": {
+    "saved": "Program activated",
+    "saveFailed": "Failed to save",
+    "toggleFailed": "Failed to update the program",
+    "loadFailed": "Failed to load data",
+    "retry": "Retry"
+  },
+  "stats": {
+    "notConnected": "Program not connected",
+    "willAppear": "Data will appear after setup",
+    "noData": "No data",
+    "connectProgram": "Connect a program",
+    "revenueHeadline": "Revenue from members",
+    "membersHeadline": "Program members",
+    "returnedClients": "Returned clients",
+    "returnedClientsSub": "2+ visits in 90 days",
+    "avgCheckHeadline": "Average check per member",
+    "bonusCostHeadline": "Bonus cost",
+    "bonusCostSub": "this month",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "this month",
+    "cardHolders": "cardholders",
+    "kpi": "Key metrics",
+    "members": "Members",
+    "withCard": "with a card",
+    "avgCheck": "Average check",
+    "byMembers": "among members",
+    "pointsInCirculation": "Points in circulation",
+    "accrued": "accrued",
+    "revenue": "Revenue",
+    "revenuePerMonth": "from members / mo",
+    "levelDistribution": "Distribution by level",
+    "noLevels": "Levels not configured yet",
+    "totalClients": "Total clients in program",
+    "fromValue": "from {{value}}"
+  },
+  "scenarios": {
+    "title": "Smart scenarios",
+    "subtitle": "Retention autopilot: the system finds clients and rewards them for you",
+    "add": "Scenario",
+    "fired": "fired {{count}} times",
+    "lastRun": "last run {{when}}",
+    "neverRun": "not run yet",
+    "empty": "No scenarios yet",
+    "emptySub": "Build the first one — the system will retain clients for you",
+    "channel": "Channel",
+    "channelSoon": "after connecting integration",
+    "pickTemplate": "Pick a scenario",
+    "pickTemplateSub": "A ready template — tune the thresholds later",
+    "create": "Create",
+    "deleteConfirm": "Delete scenario?",
+    "deleteConfirmSub": "The rule will stop firing. This cannot be undone.",
+    "triggers": {
+      "inactive_days": "inactive for {{days}} days",
+      "low_subscription": "≤ {{classes_left}} classes left",
+      "birthday": "birthday",
+      "nth_visit": "visit #{{n}}",
+      "referral": "referred a friend"
+    },
+    "actions": {
+      "points": "gift {{points}} points",
+      "gift_classes": "gift {{classes}} classes",
+      "certificate": "issue a {{amount}} ₽ certificate",
+      "renewal_offer": "offer renewal at {{discount}}% off"
+    },
+    "templates": {
+      "win_back": {
+        "name": "We miss you",
+        "desc": "Win back a client who has not visited in a while"
+      },
+      "expiring_subscription": {
+        "name": "Subscription running low",
+        "desc": "Offer renewal before classes run out"
+      },
+      "birthday_gift": {
+        "name": "Birthday gift",
+        "desc": "Delight a client on their special day"
+      },
+      "fifth_visit": {
+        "name": "Loyalty reward",
+        "desc": "A free class for loyalty"
+      },
+      "referral_thanks": {
+        "name": "Thanks for the friend",
+        "desc": "Reward whoever brought a new client"
+      }
+    },
+    "ifClient": "If client",
+    "then": "→",
+    "toasts": {
+      "created": "Scenario created",
+      "updated": "Scenario updated",
+      "deleted": "Scenario deleted",
+      "failed": "Could not save scenario"
+    },
+    "delete": "Delete"
+  },
+  "segmentsBoard": {
+    "title": "Segments & recommendations",
+    "subtitle": "Live client groups, each with one clear call to action",
+    "empty": "Nothing here, and that is good",
+    "clients": "clients",
+    "daysAgo": "{{count}} days ago",
+    "neverVisited": "no visits",
+    "more": "and {{count}} more",
+    "segments": {
+      "at_risk": {
+        "name": "About to churn",
+        "desc": "Active, inactive for 21+ days",
+        "action": "Give bonus"
+      },
+      "vip_idle": {
+        "name": "VIP gone quiet",
+        "desc": "VIP clients, inactive 14+ days",
+        "action": "Run campaign"
+      },
+      "expiring_subscription": {
+        "name": "Subscription running out",
+        "desc": "≤2 classes or ≤7 days left",
+        "action": "Run campaign"
+      },
+      "lost_newcomers": {
+        "name": "Never returned",
+        "desc": "Came once, gone for 14+ days",
+        "action": "Run campaign"
+      },
+      "upsell_candidates": {
+        "name": "Ready for a package",
+        "desc": "8+ visits this month, no package",
+        "action": "Run campaign"
+      }
+    },
+    "campaignSub": "Segment \"{{name}}\" · {{count}} clients",
+    "pointsLabel": "How many points to grant",
+    "messageLabel": "Message text",
+    "messagePlaceholder": "e.g. We miss you! Come back — we are waiting for you.",
+    "emailNote": "The email goes only to clients with an email",
+    "confirm": "Send",
+    "toasts": {
+      "pointsDone": "Points granted · {{processed}} processed",
+      "emailDone": "Campaign sent · {{emails}} emails of {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Subscription renewals",
+    "subtitle": "How well clients come back for a new package",
+    "renewalRate": "Renew",
+    "avgPackages": "Packages per client",
+    "sold": "Sold",
+    "renewed": "Renewed",
+    "empty": "No subscription sales yet",
+    "emptySub": "Analytics will appear after the first package sales"
+  }
+}

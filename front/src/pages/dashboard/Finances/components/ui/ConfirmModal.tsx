@@ -1,9 +1,11 @@
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = false }: {
   open: boolean; title: string; text: string;
   onConfirm: () => void; onCancel: () => void; danger?: boolean;
 }) {
+  const { t } = useTranslation('finances');
   if (!open) return null;
 
   return createPortal(
@@ -66,7 +68,7 @@ export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = 
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'; }}
           >
-            Отмена
+            {t('confirmModal.cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -74,7 +76,7 @@ export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = 
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.06)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}
           >
-            {danger ? 'Удалить' : 'Подтвердить'}
+            {danger ? t('confirmModal.delete') : t('confirmModal.confirm')}
           </button>
         </div>
       </div>

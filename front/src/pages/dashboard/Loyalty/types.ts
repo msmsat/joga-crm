@@ -1,8 +1,12 @@
 import type { JSX } from 'react';
 
-export type { LoyaltyConfig, LoyaltyLevel, GiftCertificate } from '../../../api/loyalty/loyalty.types';
+export type { LoyaltyConfig, LoyaltyLevel, GiftCertificate, PromoCode } from '../../../api/loyalty/loyalty.types';
 
-export type ProgramKey = 'loyalty' | 'discounts' | 'certificates' | 'referral';
+// Промокоды и депозит не имеют config-записи (список/баланс вместо is_enabled) —
+// дровер и карточка знают все 6 ключей, но конфиг-инфраструктура (useLoyalty,
+// drawer Save/Cancel) — только про 4 «настоящих» конфига.
+export type ConfigProgramKey = 'loyalty' | 'discounts' | 'certificates' | 'referral';
+export type ProgramKey = ConfigProgramKey | 'promocodes' | 'deposit';
 
 export interface Program {
   key: ProgramKey;

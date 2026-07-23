@@ -1,6 +1,6 @@
 import type React from 'react'
 
-export type ChannelStatus = 'connected' | 'pending' | null
+export type ChannelStatus = 'connected' | null
 
 export interface ChannelCardProps {
   icon: React.ReactNode

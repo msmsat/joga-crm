@@ -1,14 +1,13 @@
 import type { JSX } from 'react';
 import type { NotificationSettings, EventToggle } from '../../../api/notifications/notifications.types';
+import type { NotifChannel, NotifRole } from '../../../stores/notificationsStore';
 export type { NotificationSettings, EventToggle };
 
-export type ChannelKey = 'telegram' | 'instagram' | 'whatsapp' | 'email' | 'sms' | 'push';
-export type Role = 'client' | 'trainer' | 'admin' | 'owner';
+export type ChannelKey = NotifChannel;
+export type Role = NotifRole;
 export type NotifEvent = {
   id: string;
   icon: () => JSX.Element;
-  title: string;
-  desc: string;
   color: string;
 };
 export type Toggles = Record<string, Record<ChannelKey, boolean>>;

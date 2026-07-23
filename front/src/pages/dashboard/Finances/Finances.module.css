@@ -13,6 +13,28 @@
   box-shadow: 0 4px 12px rgba(26,26,26,0.04);
   border-color: rgba(249,160,139,0.3) !important;
 }
+/* Открыто меню "три точки": строка держит подсветку и поднята НАД затемняющим оверлеем
+   (её кнопки не должны просвечивать сквозь него). Без translateX — чтобы не дёргалась. */
+.docRowActive {
+  box-shadow: 0 4px 12px rgba(26,26,26,0.04);
+  border-color: rgba(249,160,139,0.3) !important;
+  background: #FFFFFF !important;
+  position: relative;
+  z-index: 1000;
+}
+.docRowActive:hover {
+  transform: none;
+}
+/* Контейнер списка держит overflow:visible (поповер "три точки" — absolute и не должен
+   обрезаться), поэтому скругление углов карточки переносим на крайние строки. */
+.docRow:first-child {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+.docRow:last-child {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
 
 /* Столбики отчётов */
 .reportBar {

@@ -1,5 +1,6 @@
 // src/hooks/useDragAndDrop.ts
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Booking, Trainer } from '../types';
 import { toDateStr } from '../utils';
 
@@ -21,7 +22,6 @@ export interface DragState {
 
 interface UseDragAndDropProps {
   bookings: Booking[];
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
   viewMode: 'trainers' | 'halls';
   columns: any[]; 
   timeStep: number;
@@ -32,7 +32,6 @@ interface UseDragAndDropProps {
 
 export function useDragAndDrop({
   bookings,
-  setBookings,
   viewMode,
   columns,
   timeStep,
@@ -40,7 +39,8 @@ export function useDragAndDrop({
   calendarView, // 🔥 Приняли пропс
   onCommit
 }: UseDragAndDropProps) {
-  
+  const { t } = useTranslation('journal');
+
   const [drag, setDrag] = useState<DragState | null>(null);
   const [wasDragging, setWasDragging] = useState(false);
 
@@ -120,9 +120,9 @@ export function useDragAndDrop({
         // Пре-драг версия карточки — для отката, если сервер ответит ошибкой
         const original = bookings.find(b => b.id === drag.id);
 
-        // Применить оптимистично и сразу отправить на сервер
+        // Оптимизм и откат — внутри onCommit (useJournalMutations); здесь
+        // только считаем итоговые координаты и просим сохранить их.
         const apply = (updated: Booking, toastMsg: string) => {
-          setBookings(prev => prev.map(b => (b.id === drag.id ? updated : b)));
           onCommit(original!, updated);
           showToast(toastMsg);
         };
@@ -167,15 +167,15 @@ export function useDragAndDrop({
                    color: isTrainerMode ? (newColVal as Trainer).color : original.color
                  };
                }
-               apply(updated, 'Занятие перенесено');
+               apply(updated, t('toasts.lessonMoved'));
             }
         } else if (drag.type === 'resize-bottom') {
             if (original && drag.previewEnd !== drag.originalEnd) {
-              apply({ ...original, timeEnd: drag.previewEnd! }, 'Время окончания изменено');
+              apply({ ...original, timeEnd: drag.previewEnd! }, t('toasts.endTimeChanged'));
             }
         } else if (drag.type === 'resize-top') {
             if (original && drag.previewStart !== drag.originalStart) {
-              apply({ ...original, timeStart: drag.previewStart! }, 'Время начала изменено');
+              apply({ ...original, timeStart: drag.previewStart! }, t('toasts.startTimeChanged'));
             }
         }
         
@@ -191,7 +191,7 @@ export function useDragAndDrop({
        document.removeEventListener('mousemove', handleMouseMove);
        document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [drag, viewMode, calendarView, columns, bookings, timeStep, setBookings, showToast, onCommit]); // 🔥 Добавили calendarView в зависимости
+  }, [drag, viewMode, calendarView, columns, bookings, timeStep, showToast, onCommit, t]); // 🔥 Добавили calendarView в зависимости
 
   const initDrag = (
     e: React.MouseEvent,

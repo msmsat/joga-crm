@@ -1,0 +1,150 @@
+{
+  "tabs": {
+    "overview": "Основные",
+    "sales": "По продажам",
+    "clients": "По клиентам",
+    "team": "По тренерам",
+    "schedule": "По расписанию"
+  },
+  "toolbar": {
+    "period": {
+      "day": "День",
+      "week": "Неделя",
+      "month": "Месяц",
+      "year": "Год",
+      "custom": "Период"
+    },
+    "vsPrevious": "vs прошлый период: {{from}}–{{to}}",
+    "branch": "Филиал",
+    "hall": "Зал",
+    "trainer": "Тренер",
+    "service": "Услуга",
+    "allBranches": "Все филиалы",
+    "allHalls": "Все залы",
+    "allTrainers": "Все тренеры",
+    "allServices": "Все услуги",
+    "export": "Экспорт"
+  },
+  "insights": {
+    "title": "Что требует внимания",
+    "action": "Перейти",
+    "revenue_up_clients_down": "Выручка растёт, а число активных клиентов падает — стоит проверить отток",
+    "clients_at_risk": "{{count}} клиент(ов) не был(и) на занятиях более 3 недель — риск оттока",
+    "lesson_overfull": "«{{name}}» по {{weekday, weekday}} в {{hour}}:00 заполнено на {{pct}}% три недели подряд — добавьте ещё одно занятие",
+    "trial_low_conversion": "Только {{pct}}% из {{buyers}} купивших пробное занятие продолжили абонементом — стоит запустить кампанию",
+    "fastest_growing_product": "«{{name}}» растёт быстрее всех: +{{pct}}% к прошлому периоду",
+    "renewals_low": "Продлевают только {{pct}}% клиентов с истёкшим абонементом — стоит напомнить об окончании"
+  },
+  "table": {
+    "empty": "Нет данных за период",
+    "loading": "Загрузка…",
+    "noProduct": "Без продукта"
+  },
+  "empty": {
+    "inDevelopment": "Раздел в разработке"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Выручка",
+      "profit": "Прибыль",
+      "attendance": "Посещения",
+      "activeClients": "Активные клиенты",
+      "fillRate": "Заполняемость"
+    },
+    "chart": {
+      "title": "Динамика",
+      "metric": {
+        "revenue": "Выручка",
+        "profit": "Прибыль",
+        "attendance": "Посещения",
+        "new_clients": "Новые клиенты",
+        "fill_rate": "Заполняемость"
+      }
+    },
+    "revenueStructure": {
+      "title": "Структура выручки"
+    },
+    "category": {
+      "subscriptions": "Абонементы",
+      "services": "Услуги",
+      "certificates": "Сертификаты",
+      "rent": "Аренда",
+      "salary": "Зарплата",
+      "refunds": "Возвраты"
+    },
+    "clientDynamics": {
+      "title": "Динамика клиентов",
+      "new": "Новые",
+      "returned": "Вернулись",
+      "lost": "Потеряны"
+    },
+    "drilldown": {
+      "title": "Операция",
+      "category": "Категория",
+      "amount": "Сумма",
+      "lesson": "Занятие",
+      "time": "Время",
+      "occupancy": "Заполнено"
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Выручка",
+      "salesCount": "Продажи",
+      "avgCheck": "Средний чек",
+      "repeatShare": "Доля повторных",
+      "renewals": "% продлений"
+    },
+    "chart": {
+      "title": "Продажи"
+    },
+    "breakdown": {
+      "byCategory": "Что покупают",
+      "byMethod": "Как платят",
+      "buyerType": "Кто покупает",
+      "new": "Новые",
+      "returning": "Вернувшиеся",
+      "noClient": "Без клиента"
+    },
+    "method": {
+      "card": "Карта",
+      "cash": "Наличные",
+      "qr": "QR-код",
+      "transfer": "Перевод"
+    },
+    "products": {
+      "name": "Продукт",
+      "sold": "Продано",
+      "revenue": "Выручка",
+      "avgCheck": "Средний чек",
+      "repeatShare": "Доля повторных",
+      "trend": "Динамика"
+    }
+  },
+  "export": {
+    "csv": "Скачать CSV",
+    "pdf": "Печать PDF"
+  },
+  "formulas": {
+    "salesCount": { "title": "Продажи", "text": "count Operation, type='in', по op_date периода" },
+    "revenue": { "title": "Выручка", "text": "Σ Operation.amount, type='in', по op_date периода" },
+    "profit": { "title": "Прибыль", "text": "Выручка − Σ расходов (type='out')" },
+    "attendance": { "title": "Посещения", "text": "count Reservation status='attended' (join Lesson по периоду)" },
+    "bookings": { "title": "Записи", "text": "count Reservation status≠'cancelled'" },
+    "noshow": { "title": "No-show", "text": "Reservation status='active' И занятие уже закончилось (start_time + duration_min < now)" },
+    "activeClients": { "title": "Активные клиенты", "text": "distinct client_id с посещением за период" },
+    "occupancy": { "title": "Заполняемость", "text": "занятые места (active+attended) / Σ total_spots по неотменённым занятиям периода" },
+    "avgCheck": { "title": "Средний чек", "text": "Выручка / число доходных операций" },
+    "retention": { "title": "Retention", "text": "доля клиентов прошлого периода, посетивших в текущем" },
+    "newClients": { "title": "Новые клиенты", "text": "registration_date в периоде" },
+    "returning": { "title": "Вернувшиеся", "text": "посещение в периоде И посещали до периода" },
+    "lost": { "title": "Потерянные", "text": "посещали в прошлом периоде, нет посещений в текущем" },
+    "clientValue": { "title": "Ценность клиента", "text": "Выручка с client_id / distinct таких клиентов" },
+    "repeatPurchaseShare": { "title": "Доля повторных покупок", "text": "клиенты с ≥2 доходными операциями / клиенты с ≥1" },
+    "renewalRate": { "title": "% продлений", "text": "из /loyalty/retention: купил следующий абонемент после окончания" },
+    "revenuePerHour": { "title": "Выручка на час (тренер)", "text": "Σ in-операций с trainer_id / Σ часов его занятий" },
+    "trainerReturnRate": { "title": "Возвращаемость (тренер)", "text": "клиенты с ≥2 посещениями у тренера / клиенты с ≥1" },
+    "missedRevenue": { "title": "Упущенная выручка", "text": "Σ (свободные места × Lesson.price) по прошедшим неотменённым занятиям" },
+    "filtersScope": { "title": "Область действия фильтров", "text": "у операций нет зала/филиала — фильтры Филиал/Зал действуют только на метрики по занятиям" }
+  }
+}

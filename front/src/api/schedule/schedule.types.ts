@@ -20,17 +20,20 @@ export interface Lesson {
   booked_count: number
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
+  cancel_reason: string | null
+  clients_notified: boolean
+  service_id: number | null
+  service_color: string | null
 }
 
 export interface LessonCreate {
-  name: string
+  service_id: number
   teacher_id?: number | null
   hall_id?: number | null
   start_time: string
   duration_min: number
   price?: number
   total_spots?: number
-  service_id?: number | null
   level?: string | null
   equipment?: string | null
 }
@@ -49,6 +52,23 @@ export interface BookedClient {
 
 export interface LessonDetail extends Lesson {
   booked_clients: BookedClient[]
+}
+
+// Клиент, которого можно записать на занятие (CL-6.4) — уже прошёл проверку
+// доступа на бэке (assert_can_book), фронт только отображает.
+export interface EligibleClient {
+  id: number
+  name: string
+  last_name: string | null
+  phone: string | null
+  avatar_color: string | null
+  subscription_hint: string | null
+}
+
+// Ответ GET /schedule/lessons/days — точки мини-календаря Журнала (даты месяца
+// с неотменёнными занятиями), без загрузки полного списка занятий.
+export interface LessonDaysResponse {
+  days: string[]
 }
 
 export interface Reservation {

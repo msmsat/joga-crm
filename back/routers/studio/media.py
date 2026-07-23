@@ -49,7 +49,10 @@ async def _save_image(file: UploadFile, target_dir: str, max_size_mb: int) -> st
 
 
 @router.post("/upload-logo")
-async def upload_logo(file: UploadFile = File(...)):
+async def upload_logo(
+    file: UploadFile = File(...),
+    _token: str = Depends(oauth2_scheme),
+):
     url = await _save_image(file, LOGOS_DIR, max_size_mb=5)
     return {"url": url}
 

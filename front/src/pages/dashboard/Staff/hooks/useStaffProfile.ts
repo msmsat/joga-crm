@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import { staffApi } from '../../../../api/staff'
-import { scheduleApi } from '../../../../api/schedule/schedule.api'
-import type { LessonCreate } from '../../../../api/schedule/schedule.types'
 import type { StaffProfile, StaffMonthScheduleResponse } from '../../../../api/staff/staff.types'
 
 export function useStaffProfile(staffId: number | null) {
@@ -32,11 +30,5 @@ export function useStaffProfile(staffId: number | null) {
     staffApi.getProfile(staffId).then(setProfile)
   }
 
-  // Создать занятие для этого сотрудника (teacher_id = staffId проставляет вызывающий).
-  const createLesson = async (payload: LessonCreate) => {
-    await scheduleApi.createLesson(payload)
-    if (staffId) staffApi.getProfile(staffId).then(setProfile)
-  }
-
-  return { profile, monthData, isLoading, refetchProfile, fetchMonth, cancelLesson, createLesson }
+  return { profile, monthData, isLoading, refetchProfile, fetchMonth, cancelLesson }
 }

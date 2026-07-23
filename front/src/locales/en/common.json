@@ -84,7 +84,20 @@
     "network": "No connection to server",
     "unknown": "Something went wrong",
     "loadFailed": "Failed to load",
-    "retry": "Retry"
+    "retry": "Retry",
+    "checkout": {
+      "package_not_found": "Package not found",
+      "package_inactive": "Package is no longer for sale",
+      "client_not_found": "Client not found",
+      "account_not_found": "Account not found",
+      "card_unavailable": "Card payment is not available yet",
+      "promo_expired": "Promo code is no longer valid"
+    },
+    "loyalty": {
+      "cert_not_found": "Certificate not found",
+      "cert_used": "Certificate has already been redeemed or is invalid",
+      "cert_expired": "Certificate has expired"
+    }
   },
   "units": {
     "min": "min",

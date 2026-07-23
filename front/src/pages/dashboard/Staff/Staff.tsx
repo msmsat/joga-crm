@@ -111,7 +111,7 @@ export default function Staff() {
     const saved = localStorage.getItem('staff_active_id');
     return saved ? Number(saved) : null;
   });
-  const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson, createLesson } = useStaffProfile(activeStaffId);
+  const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson } = useStaffProfile(activeStaffId);
 
   // Создаем "Подготовленные данные для интерфейса" (ViewModel)
   const adaptedStaff = useMemo(() => rawStaff.map(item => {
@@ -172,12 +172,6 @@ export default function Staff() {
     isOpen: false, title: '', message: '', onConfirm: () => {},
   });
   const closeDeleteModal = () => setDeleteModal(m => ({ ...m, isOpen: false }));
-
-  // ── Add-event modal (создание занятия для сотрудника) ─────────────────────
-  const [addEvent, setAddEvent] = useState<{
-    name: string; time: string; duration: string; hallId: number | null; spots: string; price: string;
-  } | null>(null);
-  const [addEventBusy, setAddEventBusy] = useState(false);
 
   // ── Schedule local state (initialized from profile) ───────────────────────
   const [schedules, setSchedules] = useState<SchedulesMap>({});
@@ -274,46 +268,6 @@ export default function Staff() {
       showDontAsk: true,
       onConfirm: () => { doCancel(); closeDeleteModal(); },
     });
-  };
-
-  const openAddEvent = () => {
-    setAddEvent({
-      name: '',
-      time: '10:00',
-      duration: '60',
-      hallId: profile?.halls[0]?.id ?? null,
-      spots: '8',
-      price: '0',
-    });
-  };
-
-  const submitAddEvent = async () => {
-    if (!addEvent || !activeStaffId || addEventBusy) return;
-    if (!addEvent.name.trim() || !/^\d{1,2}:\d{2}$/.test(addEvent.time)) return;
-    setAddEventBusy(true);
-    try {
-      // start_time — сегодня в выбранное время (локально), как ISO без TZ-сдвига.
-      const now = new Date();
-      const ymd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      const startIso = `${ymd}T${addEvent.time.padStart(5, '0')}:00`;
-      await createLesson({
-        name: addEvent.name.trim(),
-        teacher_id: activeStaffId,
-        hall_id: addEvent.hallId,
-        start_time: startIso,
-        duration_min: parseInt(addEvent.duration) || 60,
-        total_spots: parseInt(addEvent.spots) || 8,
-        price: parseInt(addEvent.price) || 0,
-        level: '',
-        equipment: '',
-      });
-      setAddEvent(null);
-      showToast(t('staff:toasts.lessonAdded'));
-    } catch {
-      showToast(t('staff:toasts.errorAdd'));
-    } finally {
-      setAddEventBusy(false);
-    }
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -617,10 +571,6 @@ export default function Staff() {
                   <>
                     <div className="sec-title" style={{ marginTop: '24px' }}>
                       <span>{t('staff:profile.todaySchedule')}</span>
-                      <button className="sch-action-btn btn-add-event" onClick={openAddEvent}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '4px' }}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        {t('common:buttons.add')}
-                      </button>
                     </div>
                     <div className="upcoming-list">
                       {activeUpcoming.map((u, i) => {
@@ -733,103 +683,6 @@ export default function Staff() {
         document.body
       )}
 
-      {/* ── ADD EVENT MODAL (создание занятия для сотрудника) ─────────────── */}
-      {addEvent && createPortal(
-        <div
-          onClick={() => setAddEvent(null)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(26,26,26,0.3)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'fadeIn 0.2s ease forwards', padding: '20px', boxSizing: 'border-box',
-          }}
-        >
-          <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes scaleUp{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}`}</style>
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{
-              background: '#FFFFFF', width: '100%', maxWidth: '440px',
-              borderRadius: '24px', padding: '32px',
-              boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
-              animation: 'scaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards',
-              display: 'flex', flexDirection: 'column', gap: '24px',
-              fontFamily: "'Manrope', sans-serif",
-            }}
-          >
-            <div>
-              <div style={{ width:'48px',height:'48px',borderRadius:'14px',marginBottom:'20px',background:'rgba(249,160,139,0.15)',color:'#F9A08B',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </div>
-              <div style={{ fontSize:'20px',fontWeight:800,color:'#1A1A1A',letterSpacing:'-0.3px',marginBottom:'8px' }}>{t('staff:addEvent.title')}</div>
-              <div style={{ fontSize:'14px',color:'#666',lineHeight:1.5 }}>{t('staff:addEvent.sub', { name: profile?.name ?? '' })}</div>
-            </div>
-
-            <input
-              autoFocus
-              placeholder={t('staff:addEvent.namePlaceholder')}
-              value={addEvent.name}
-              onChange={e => setAddEvent(s => s && { ...s, name: e.target.value })}
-              onKeyDown={e => { if (e.key === 'Enter') submitAddEvent(); }}
-              style={{ width:'100%',padding:'14px 16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }}
-            />
-
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px' }}>
-              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
-                {t('staff:addEvent.time')}
-                <input type="time" value={addEvent.time} onChange={e => setAddEvent(s => s && { ...s, time: e.target.value })}
-                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
-              </label>
-              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
-                {t('staff:addEvent.duration')}
-                <input type="number" min="15" step="15" value={addEvent.duration} onChange={e => setAddEvent(s => s && { ...s, duration: e.target.value })}
-                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
-              </label>
-              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
-                {t('staff:addEvent.spots')}
-                <input type="number" min="1" max="50" value={addEvent.spots} onChange={e => setAddEvent(s => s && { ...s, spots: e.target.value })}
-                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
-              </label>
-              <label style={{ display:'flex',flexDirection:'column',gap:'6px',fontSize:'12px',fontWeight:700,color:'#666' }}>
-                {t('staff:addEvent.price')}
-                <input type="number" min="0" value={addEvent.price} onChange={e => setAddEvent(s => s && { ...s, price: e.target.value })}
-                  style={{ padding:'12px 14px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'10px',fontSize:'14px',color:'#1A1A1A',outline:'none',fontFamily:'inherit',boxSizing:'border-box' }} />
-              </label>
-            </div>
-
-            {(profile?.halls.length ?? 0) > 0 && (
-              <div style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
-                <div style={{ fontSize:'12px',fontWeight:700,color:'#666' }}>{t('staff:addEvent.hall')}</div>
-                <div style={{ display:'flex',flexWrap:'wrap',gap:'8px' }}>
-                  {profile!.halls.map(h => {
-                    const active = addEvent.hallId === h.id;
-                    const color = h.color ?? '#F9A08B';
-                    return (
-                      <button key={h.id} onClick={() => setAddEvent(s => s && { ...s, hallId: h.id })}
-                        style={{ padding:'8px 14px',borderRadius:'10px',fontSize:'13px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',transition:'all 0.2s',
-                          border:`1.5px solid ${active ? color : 'rgba(26,26,26,0.1)'}`,
-                          background: active ? `${color}18` : '#FDFCFB',
-                          color: active ? color : '#1A1A1A' }}>
-                        {h.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            <div style={{ display:'flex',gap:'12px' }}>
-              <button onClick={() => setAddEvent(null)} style={{ flex:1,padding:'12px',background:'#FDFCFB',color:'#1A1A1A',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor:'pointer',fontFamily:'inherit' }}>
-                {t('common:buttons.cancel')}
-              </button>
-              <button onClick={submitAddEvent} disabled={!addEvent.name.trim() || addEventBusy}
-                style={{ flex:1,padding:'12px',background:'#1A1A1A',color:'#FFFFFF',border:'none',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor: (!addEvent.name.trim() || addEventBusy) ? 'not-allowed' : 'pointer',opacity: (!addEvent.name.trim() || addEventBusy) ? 0.5 : 1,fontFamily:'inherit',boxShadow:'0 8px 24px rgba(26,26,26,0.15)' }}>
-                {t('staff:addEvent.create')}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
 
       {/* ── DELETE CONFIRM ────────────────────────────────────────────────── */}
       <DeleteConfirmModal

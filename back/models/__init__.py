@@ -40,6 +40,7 @@ from .loyalty import (
     LoyaltyLevel,
     ClientLoyaltyCard,
     LoyaltyPointTransaction,
+    DepositTransaction,
     StudioDiscountConfig,
     StudioCertificateConfig,
     GiftCertificate,
@@ -47,6 +48,10 @@ from .loyalty import (
     SubscriptionPackage,
     StudioReferralConfig,
     ReferralRecord,
+    StudioPromoCode,
+    LoyaltyScenario,
+    ScenarioFire,
+    ClientOffer,
 )
 from .products import Product, ProductSale
 from .events import StudioEvent, EventAttendee
@@ -101,6 +106,7 @@ __all__ = [
     "LoyaltyLevel",
     "ClientLoyaltyCard",
     "LoyaltyPointTransaction",
+    "DepositTransaction",
     "StudioDiscountConfig",
     "StudioCertificateConfig",
     "GiftCertificate",
@@ -108,6 +114,10 @@ __all__ = [
     "SubscriptionPackage",
     "StudioReferralConfig",
     "ReferralRecord",
+    "StudioPromoCode",
+    "LoyaltyScenario",
+    "ScenarioFire",
+    "ClientOffer",
     "Product",
     "ProductSale",
     "StudioEvent",

@@ -315,8 +315,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   const phoneValid = !!data.phone && isValidPhoneNumber(data.phone);
   const emailFilled = data.email.trim().length > 0;
   const emailValid = EMAIL_RE.test(data.email.trim());
-  const contactOk = phoneValid || emailValid;
-  const canStep1 = data.name.trim().length >= 2 && contactOk && (!emailFilled || emailValid);
+  const canStep1 = data.name.trim().length >= 2 && phoneValid && (!emailFilled || emailValid);
   const canStep2 = data.city.trim().length >= 2 && data.address.trim().length >= 2;
 
   const stepMeta = [
@@ -491,9 +490,9 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                       placeholder="studio@velora.ru"
                     />
 
-                    {!contactOk && (
+                    {!phoneValid && (
                       <p style={{ fontSize: "11.5px", color: "#D88C9A", fontWeight: 600, margin: "-6px 0 0" }}>
-                        {t("catalog:modals.addStudio.step1.contactHint")}
+                        {t("common:validation.phone", { defaultValue: "Обязательно укажите корректный телефон" })}
                       </p>
                     )}
 

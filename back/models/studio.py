@@ -78,3 +78,6 @@ class Studio(Base):
     subscription_program_config: Mapped[Optional["StudioSubscriptionProgramConfig"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     referral_config: Mapped[Optional["StudioReferralConfig"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     referral_records: Mapped[List["ReferralRecord"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    promo_codes: Mapped[List["StudioPromoCode"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    loyalty_scenarios: Mapped[List["LoyaltyScenario"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    client_offers: Mapped[List["ClientOffer"]] = relationship(back_populates="studio", cascade="all, delete-orphan")

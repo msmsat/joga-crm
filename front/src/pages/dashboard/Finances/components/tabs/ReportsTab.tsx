@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ToastType } from '../../types';
-import { fmt, LINE_DATA } from '../../constants';
-import type { LinePoint } from '../../constants';
 import { Ico } from '../ui/FinanceIcons';
 import { Btn } from '../ui/Btn';
 import styles from '../../Finances.module.css';
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../../components/UI';
+import { InfoHint } from '../../../../../components/ui/InfoHint';
+import { financesApi } from '../../../../../api/finances/finances.api';
+import { useReportSummary, useReportSeries, useReportBreakdown } from '../../hooks/useFinances';
+import { PeriodDropdown } from '../ui/PeriodDropdown';
+import i18n from '../../../../../i18n';
 
 // ─── SVG LINE CHART HELPERS ───────────────────────────────────────────────────
 const SVG_W = 600;
@@ -24,24 +30,68 @@ function smoothPath(pts: Array<{ x: number; y: number }>): string {
   return d;
 }
 
+// ─── PERIOD HELPERS ────────────────────────────────────────────────────────────
+type PeriodPreset = 'today' | 'week' | 'month' | 'year';
+const PERIOD_DAYS_BACK: Record<PeriodPreset, number> = { today: 0, week: 7, month: 30, year: 365 };
+const PERIOD_GROUP: Record<PeriodPreset, 'day' | 'month'> = { today: 'day', week: 'day', month: 'day', year: 'month' };
+
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+function periodToRange(preset: PeriodPreset): { date_from: string; date_to: string; group: 'day' | 'month' } {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - PERIOD_DAYS_BACK[preset]);
+  return { date_from: isoDate(from), date_to: isoDate(to), group: PERIOD_GROUP[preset] };
+}
+function formatSeriesLabel(period: string, group: 'day' | 'month'): string {
+  const d = new Date(period);
+  if (group === 'month') return d.toLocaleDateString(i18n.language, { month: 'short', year: '2-digit' });
+  return d.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
+}
+
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function ReportsTab({ showToast }: { showToast: (msg: string, t?: ToastType) => void }) {
-  const [period, setPeriod] = useState('Месяц');
+  const { t } = useTranslation('finances');
+  const currency = getCurrencySymbol(useStudioCurrency());
+  const fmt = (n: number) => `${currency}${n.toLocaleString('ru-RU')}`;
+  const [preset, setPreset] = useState<PeriodPreset>('month');
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [breakdownView, setBreakdownView] = useState<'income' | 'expense'>('expense');
   const [hoveredSeg, setHoveredSegment] = useState<number | null>(null);
   const [donutMouse, setDonutMouse] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart]   = useState<number | null>(null);
   const [selRange, setSelRange]     = useState<[number, number] | null>(null);
+  const [exporting, setExporting]   = useState(false);
 
-  const lineData: LinePoint[] = LINE_DATA[period] ?? LINE_DATA['Месяц'];
+  const { date_from: dateFrom, date_to: dateTo, group } = periodToRange(preset);
+
+  const { data: summary, isLoading: summaryLoading } = useReportSummary(dateFrom, dateTo);
+  const { data: revenueSeries = [], isLoading: revenueLoading } = useReportSeries('revenue', group, dateFrom, dateTo);
+  const { data: expenseSeries = [] } = useReportSeries('expenses', group, dateFrom, dateTo);
+  const { data: breakdown = [], isLoading: breakdownLoading } = useReportBreakdown(
+    breakdownView === 'expense' ? 'out' : 'in', dateFrom, dateTo,
+  );
+
+  const loading = summaryLoading || revenueLoading;
+
+  // Серии выручки/расходов объединяем по периоду (бэкенд группирует оба одинаково для одного диапазона).
+  const periods = Array.from(new Set([...revenueSeries.map(p => p.period), ...expenseSeries.map(p => p.period)])).sort();
+  const revenueByPeriod = new Map(revenueSeries.map(p => [p.period, p.value]));
+  const expenseByPeriod = new Map(expenseSeries.map(p => [p.period, p.value]));
+  const lineData = periods.map(period => ({
+    label: formatSeriesLabel(period, group),
+    income: revenueByPeriod.get(period) ?? 0,
+    expense: expenseByPeriod.get(period) ?? 0,
+  }));
   const n = lineData.length;
+  const hasSeriesData = n > 0 && lineData.some(d => d.income > 0 || d.expense > 0);
 
-  // Y-scale: from 0 to maxY
+  // Y-scale: from 0 to maxY (guard: пустая серия/все нули → maxY=1, чтобы не делить на 0)
   const allVals = lineData.flatMap(d => [d.income, d.expense]);
-  const maxY = Math.max(...allVals);
+  const maxY = Math.max(1, ...allVals);
 
-  const toX = (i: number) => (i / (n - 1)) * SVG_W;
+  const toX = (i: number) => n > 1 ? (i / (n - 1)) * SVG_W : 0;
   const toY = (v: number) => PAD_T + (1 - v / maxY) * (SVG_H - PAD_T - PAD_B);
 
   const incPts = lineData.map((d, i) => ({ x: toX(i), y: toY(d.income) }));
@@ -52,8 +102,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
   const last    = incPts[incPts.length - 1];
   const expLast = expPts[expPts.length - 1];
-  const incFillPath = `${incLinePath} L ${last.x.toFixed(1)} ${SVG_H} L ${incPts[0].x.toFixed(1)} ${SVG_H} Z`;
-  const expFillPath = `${expLinePath} L ${expLast.x.toFixed(1)} ${SVG_H} L ${expPts[0].x.toFixed(1)} ${SVG_H} Z`;
+  const incFillPath = last ? `${incLinePath} L ${last.x.toFixed(1)} ${SVG_H} L ${incPts[0].x.toFixed(1)} ${SVG_H} Z` : '';
+  const expFillPath = expLast ? `${expLinePath} L ${expLast.x.toFixed(1)} ${SVG_H} L ${expPts[0].x.toFixed(1)} ${SVG_H} Z` : '';
 
   // Selection derived values
   const isSelection = selRange !== null;
@@ -67,14 +117,14 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
   // Stats: hovered point or last point; summed when selection active
   const activeIdx  = hoveredIdx ?? n - 1;
-  const cur  = lineData[activeIdx];
-  const prev = lineData[Math.max(activeIdx - 1, 0)];
+  const cur  = hasSeriesData ? lineData[activeIdx] : { label: '—', income: 0, expense: 0 };
+  const prev = hasSeriesData ? lineData[Math.max(activeIdx - 1, 0)] : { label: '—', income: 0, expense: 0 };
 
   const dispIncome  = isSelection ? selData!.reduce((s, d) => s + d.income,  0) : cur.income;
   const dispExpense = isSelection ? selData!.reduce((s, d) => s + d.expense, 0) : cur.expense;
   const dispProfit  = dispIncome - dispExpense;
 
-  const dateLabel = isSelection
+  const dateLabel = !hasSeriesData ? '—' : isSelection
     ? `${lineData[selMin].label} – ${lineData[selMax].label}`
     : cur.label;
 
@@ -97,22 +147,44 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
     return Math.min(Math.max(Math.round((e.clientX - r.left) / r.width * (n - 1)), 0), n - 1);
   };
 
-  // ─── Breakdown data ───────────────────────────────────────────────────────
-  const expensesData = [
-    { id: 1, label: 'Зарплата команды',            value: 120000, color: '#D88C9A' },
-    { id: 2, label: 'Аренда помещения',             value: 80000,  color: '#E8A0B0' },
-    { id: 3, label: 'Маркетинг и реклама',          value: 35000,  color: '#F0B4C0' },
-    { id: 4, label: 'Налоги и взносы',              value: 15000,  color: '#F8C8D0' },
-  ];
-  const incomeData = [
-    { id: 1, label: 'Абонементы',                  value: 250000, color: '#5BAB72' },
-    { id: 2, label: 'Разовые визиты',               value: 120000, color: '#7AA080' },
-    { id: 3, label: 'Продажа товаров (Вода, Мерч)', value: 45000,  color: '#9AB5A0' },
-    { id: 4, label: 'Сдача в субаренду',            value: 67000,  color: '#B5C9B8' },
+  const handleExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      await financesApi.exportOperations({ date_from: dateFrom, date_to: dateTo });
+    } catch {
+      showToast(t('reports.toasts.exportFailed'), 'error');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // ─── Metrics ────────────────────────────────────────────────────────────────
+  const revenue = summary?.revenue ?? 0;
+  const expenses = summary?.expenses ?? 0;
+  const profitTotal = summary?.profit ?? 0;
+  const margin = revenue ? (profitTotal / revenue) * 100 : 0;
+
+  const fmtDelta = (pct: number | null | undefined) => pct == null ? null : `${pct >= 0 ? '+' : ''}${pct}%`;
+  const metrics = [
+    { label: t('reports.metrics.revenue'), value: fmt(revenue), delta: fmtDelta(summary?.trends.revenue_pct), good: (summary?.trends.revenue_pct ?? 0) >= 0, c1: '#A3C9A8', c2: 'rgba(163,201,168,0.15)', icon: <Ico.Up /> },
+    { label: t('reports.metrics.expenses'), value: fmt(expenses), delta: fmtDelta(summary?.trends.expenses_pct), good: (summary?.trends.expenses_pct ?? 0) <= 0, c1: '#D88C9A', c2: 'rgba(216,140,154,0.15)', icon: <Ico.Down /> },
+    { label: t('reports.metrics.profit'), value: fmt(profitTotal), delta: null, good: profitTotal >= 0, c1: '#F9A08B', c2: 'rgba(249,160,139,0.15)', icon: <Ico.Dollar /> },
+    { label: t('reports.metrics.margin'), value: `${margin.toFixed(1)}%`, delta: null, good: margin >= 0, c1: '#7EB5D6', c2: 'rgba(126,181,214,0.15)', icon: <Ico.Target /> },
   ];
 
-  const currentBreakdown = breakdownView === 'expense' ? expensesData : incomeData;
-  const breakdownTotal   = currentBreakdown.reduce((s, i) => s + i.value, 0);
+  // ─── Breakdown data ───────────────────────────────────────────────────────
+  const BREAKDOWN_COLORS = breakdownView === 'expense'
+    ? ['#D88C9A', '#E8A0B0', '#F0B4C0', '#F8C8D0', '#FBD8DE']
+    : ['#5BAB72', '#7AA080', '#9AB5A0', '#B5C9B8', '#CADACC'];
+  const categoryLabel = (key: string) => key === 'other' ? t('reports.otherCategory') : key;
+  const currentBreakdown = breakdown.map((b, i) => ({
+    id: i,
+    label: categoryLabel(b.category),
+    value: b.amount,
+    color: BREAKDOWN_COLORS[i % BREAKDOWN_COLORS.length],
+  }));
+  const breakdownTotal = currentBreakdown.reduce((s, i) => s + i.value, 0);
 
   const renderDonut = () => {
     const r = 54, circ = 2 * Math.PI * r;
@@ -141,26 +213,34 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
     );
   };
 
+  const emptyState = (label: string) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '180px', color: '#999999', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>
+      {label}
+    </div>
+  );
+
   return (
     <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '14px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A' }}>{t('tabs.reports')}</div>
+        <InfoHint title={t('tabs.reports')} text={t('info.reports')} />
+      </div>
+
       {/* 1. Метрики */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        {[
-          { label: 'Выручка',        value: '₽482 000', delta: '+12%',    good: true,  c1: '#A3C9A8', c2: 'rgba(163,201,168,0.15)', icon: <Ico.Up /> },
-          { label: 'Расходы',        value: '₽118 000', delta: '-4%',     good: true,  c1: '#D88C9A', c2: 'rgba(216,140,154,0.15)', icon: <Ico.Down /> },
-          { label: 'Прибыль',        value: '₽364 000', delta: '+18%',    good: true,  c1: '#F9A08B', c2: 'rgba(249,160,139,0.15)', icon: <Ico.Dollar /> },
-          { label: 'Рентабельность', value: '75.5%',    delta: '+3.2pp',  good: true,  c1: '#7EB5D6', c2: 'rgba(126,181,214,0.15)', icon: <Ico.Target /> },
-        ].map(m => (
+        {metrics.map(m => (
           <div key={m.label} style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '80px', height: '80px', background: `radial-gradient(circle, ${m.c2} 0%, transparent 70%)`, borderRadius: '50%' }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{m.label}</div>
               <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: m.c2, color: m.c1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{m.icon}</div>
             </div>
-            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#1A1A1A', marginBottom: '8px' }}>{m.value}</div>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ padding: '2px 6px', background: m.good ? 'rgba(91,171,114,0.1)' : 'rgba(216,140,154,0.1)', borderRadius: '6px' }}>{m.delta}</span> к прошлому периоду
-            </div>
+            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#1A1A1A', marginBottom: '8px' }}>{loading ? '—' : m.value}</div>
+            {m.delta && (
+              <div style={{ fontSize: '12px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ padding: '2px 6px', background: m.good ? 'rgba(91,171,114,0.1)' : 'rgba(216,140,154,0.1)', borderRadius: '6px' }}>{m.delta}</span> {t('reports.vsPreviousPeriod')}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -172,8 +252,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: '12px', marginBottom: '20px', gap: '12px' }}>
             <div style={{ flexShrink: 0 }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '4px' }}>Движение средств</div>
-              <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>Анализ доходов и расходов</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '4px' }}>{t('reports.cashflowTitle')}</div>
+              <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>{t('reports.cashflowSub')}</div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-end', rowGap: '10px' }}>
@@ -182,13 +262,13 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
                 {/* Период / дата */}
                 <div style={{ paddingRight: '12px', borderRight: '1px solid rgba(26,26,26,0.06)', minWidth: '70px' }}>
-                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Период</div>
+                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.period')}</div>
                   <div style={{ fontSize: '11px', fontWeight: 600, color: '#AAAAAA', whiteSpace: 'nowrap' }}>{dateLabel}</div>
                 </div>
 
                 {/* Доход */}
                 <div style={{ minWidth: '76px' }}>
-                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Доход</div>
+                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.income')}</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispIncome)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: incDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {incDelta >= 0 ? '+' : '-'}{fmt(Math.abs(incDelta))} ({incDelta >= 0 ? '+' : ''}{incDeltaPct}%)
@@ -197,7 +277,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
                 {/* Расход */}
                 <div style={{ minWidth: '76px' }}>
-                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Расход</div>
+                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.expense')}</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispExpense)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: expDelta >= 0 ? '#D88C9A' : '#5BAB72', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {expDelta >= 0 ? '+' : '-'}{fmt(Math.abs(expDelta))} ({expDelta >= 0 ? '+' : ''}{expDeltaPct}%)
@@ -206,7 +286,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
                 {/* Прибыль */}
                 <div style={{ minWidth: '76px' }}>
-                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Прибыль</div>
+                  <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.profit')}</div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispProfit)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: profitDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {profitDelta >= 0 ? '+' : '-'}{fmt(Math.abs(profitDelta))} ({profitDelta >= 0 ? '+' : ''}{profitDeltaPct}%)
@@ -214,20 +294,16 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 </div>
               </div>
 
-              {/* Кнопки периода */}
-              <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', border: '1px solid rgba(26,26,26,0.04)', borderRadius: '10px', padding: '4px', flexShrink: 0 }}>
-                {['Месяц', 'Неделя', 'День'].map(p => (
-                  <button
-                    key={p}
-                    onClick={() => { setPeriod(p); setHoveredIdx(null); setSelRange(null); }}
-                    style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: period === p ? '#FFFFFF' : 'transparent', color: period === p ? '#1A1A1A' : '#666666', boxShadow: period === p ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}
-                  >{p}</button>
-                ))}
-              </div>
+              <PeriodDropdown
+                value={preset}
+                options={(['today', 'week', 'month', 'year'] as const).map(p => ({ value: p, label: t(`reports.periods.${p}`) }))}
+                onChange={v => { setPreset(v as PeriodPreset); setHoveredIdx(null); setSelRange(null); }}
+              />
             </div>
           </div>
 
           {/* SVG Chart: высота ограничена clamp'ом, а не высотой соседней карточки */}
+          {!loading && !hasSeriesData ? emptyState(t('reports.noData')) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: 'clamp(180px, 30vh, 320px)', position: 'relative' }}>
               <svg
@@ -350,7 +426,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                   return (
                     <div style={{ position: 'absolute', right: 4, top: `${topPct}%`, transform: 'translateY(-50%)', pointerEvents: 'none', textAlign: 'right', lineHeight: 1.3 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, color, whiteSpace: 'nowrap', fontFamily: 'Manrope, Inter, sans-serif' }}>
-                        {sign}{Math.abs(change).toLocaleString('ru-RU')} ₽
+                        {sign}{fmt(Math.abs(change))}
                       </div>
                       <div style={{ fontSize: 10, fontWeight: 500, color, whiteSpace: 'nowrap', fontFamily: 'Manrope, Inter, sans-serif' }}>
                         {sign}{Math.abs(pct).toFixed(1)}%
@@ -383,17 +459,18 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
               })}
             </div>
           </div>
+          )}
 
           {/* Footer legend */}
           <div style={{ display: 'flex', gap: '20px', paddingTop: '16px', borderTop: '1px solid rgba(26,26,26,0.04)', marginTop: '12px', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
-              <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#5BAB72' }} /> Доходы
+              <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#5BAB72' }} /> {t('reports.legendIncome')}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
-              <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#D88C9A' }} /> Расходы
+              <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#D88C9A' }} /> {t('reports.legendExpense')}
             </div>
             <div style={{ marginLeft: 'auto' }}>
-              <Btn size="sm" onClick={() => showToast('Отчёт экспортируется...', 'info')}><Ico.Download /> Экспорт PDF</Btn>
+              <Btn size="sm" disabled={exporting} onClick={handleExport}><Ico.Download /> {exporting ? t('common.loading') : t('reports.exportCsv')}</Btn>
             </div>
           </div>
         </div>
@@ -401,14 +478,16 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
         {/* 3. Детализация (Breakdown) */}
         <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', border: '1px solid rgba(26,26,26,0.12)', borderRadius: '10px', padding: '4px', marginBottom: '24px' }}>
-            <button onClick={() => setBreakdownView('expense')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'expense' ? '#FFFFFF' : 'transparent', color: breakdownView === 'expense' ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'expense' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>Структура расходов</button>
-            <button onClick={() => setBreakdownView('income')}  style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'income'  ? '#FFFFFF' : 'transparent', color: breakdownView === 'income'  ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'income'  ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>Структура доходов</button>
+            <button onClick={() => setBreakdownView('expense')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'expense' ? '#FFFFFF' : 'transparent', color: breakdownView === 'expense' ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'expense' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.expenseStructure')}</button>
+            <button onClick={() => setBreakdownView('income')}  style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'income'  ? '#FFFFFF' : 'transparent', color: breakdownView === 'income'  ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'income'  ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.incomeStructure')}</button>
           </div>
 
+          {!breakdownLoading && breakdownTotal === 0 ? emptyState(t('reports.noData')) : (
+          <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', position: 'relative' }} onMouseMove={e => setDonutMouse({ x: e.clientX, y: e.clientY })}>
             {renderDonut()}
             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: '#999999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>Всего</div>
+              <div style={{ fontSize: '10px', color: '#999999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>{t('reports.total')}</div>
               <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{fmt(breakdownTotal)}</div>
             </div>
           </div>
@@ -436,6 +515,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
               );
             })}
           </div>
+          </>
+          )}
         </div>
       </div>
 
@@ -452,7 +533,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
         );
       })()}
 
-      {/* 4. Smart Insights */}
+      {/* 4. Smart Insights — заглушка до подключения AI-отчёта (задача FN-5.6).
+          TODO: GET /ai/finance-insights?date_from&date_to → {summary: string, tips: string[]} */}
       <div className={styles.insightCard}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #F9A08B 0%, #FCAE91 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flexShrink: 0, boxShadow: '0 8px 24px rgba(249,160,139,0.3)' }}>
@@ -463,13 +545,9 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>Финансовая сводка и инсайты</div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>{t('reports.insightsTitle')}</div>
             <div style={{ fontSize: '13px', color: '#666666', lineHeight: 1.6 }}>
-              Отличный месяц! Ваша <strong>чистая прибыль выросла на 18%</strong>. Мы заметили, что доля оплат абонементов онлайн увеличилась в 2 раза по сравнению с прошлым кварталом. При этом расходы на аренду и зарплату остались в пределах нормы (менее 50% от выручки). Рекомендуем рассмотреть создание резервного фонда.
-            </div>
-            <div style={{ marginTop: '12px', display: 'flex', gap: '12px' }}>
-              <span style={{ display: 'inline-flex', padding: '4px 10px', background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(249,160,139,0.2)', borderRadius: '6px', fontSize: '11px', fontWeight: 700, color: '#F9A08B' }}>Совет: Открыть копилку</span>
-              <span style={{ display: 'inline-flex', padding: '4px 10px', background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(249,160,139,0.2)', borderRadius: '6px', fontSize: '11px', fontWeight: 700, color: '#F9A08B' }}>Посмотреть план расходов</span>
+              {t('reports.insightsPlaceholder')}
             </div>
           </div>
         </div>

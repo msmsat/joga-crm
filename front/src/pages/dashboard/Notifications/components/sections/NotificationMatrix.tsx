@@ -1,4 +1,5 @@
 import type { JSX, Dispatch, SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Role, ChannelKey, NotifEvent, Toggles } from '../../types';
 import { Icon } from '../ui/NotificationIcons';
 import MiniCheck from '../ui/MiniCheck';
@@ -7,7 +8,7 @@ import styles from '../../Notifications.module.css';
 type Channel = { key: ChannelKey; label: string; sub: string; IconComp: () => JSX.Element; color: string };
 
 interface Props {
-  currentRole: { key: Role; label: string; IconComp: () => JSX.Element; color: string; bg: string };
+  currentRole: { key: Role; IconComp: () => JSX.Element; color: string; bg: string };
   events: NotifEvent[];
   activeChannels: Channel[];
   toggles: Toggles;
@@ -23,6 +24,7 @@ export default function NotificationMatrix({
   currentRole, events, activeChannels, toggles, toggleCheck, setToggles,
   isDirty, saving, onSave, onCancel,
 }: Props) {
+  const { t } = useTranslation('notifications');
   const allOn = events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key]));
 
   return (
@@ -34,10 +36,10 @@ export default function NotificationMatrix({
           </div>
           <div>
             <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A' }}>
-              Сценарии для: {currentRole.label}
+              {t('matrix.scenariosFor', { role: t(`roles.${currentRole.key}`) })}
             </div>
             <div style={{ fontSize: '12px', color: '#666666', marginTop: '2px' }}>
-              Настройте каналы для {events.length} системных триггеров
+              {t('matrix.configureFor', { count: events.length })}
             </div>
           </div>
         </div>
@@ -50,7 +52,7 @@ export default function NotificationMatrix({
             gap: '12px', padding: '16px 24px 8px', alignItems: 'center',
           }}>
             <div style={{ fontSize: '11px', fontWeight: 800, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
-              Событие системы
+              {t('matrix.eventColumn')}
             </div>
             {activeChannels.map(ch => (
               <div key={ch.key} title={ch.label} style={{ display: 'flex', justifyContent: 'center' }}>
@@ -67,8 +69,8 @@ export default function NotificationMatrix({
             <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}>
               <Icon.AlertTriangle />
             </div>
-            <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px' }}>Нет активных каналов</div>
-            <div style={{ fontSize: '12px', color: '#666666' }}>Включите хотя бы один канал доставки в панели слева</div>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px' }}>{t('matrix.noActiveChannels')}</div>
+            <div style={{ fontSize: '12px', color: '#666666' }}>{t('matrix.noActiveChannelsHint')}</div>
           </div>
         )}
 
@@ -85,10 +87,10 @@ export default function NotificationMatrix({
               </div>
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>
-                  {ev.title}
+                  {t(`events.${ev.id}.title`)}
                 </div>
                 <div style={{ fontSize: '11px', color: '#666666' }}>
-                  {ev.desc}
+                  {t(`events.${ev.id}.desc`)}
                 </div>
               </div>
             </div>
@@ -108,27 +110,29 @@ export default function NotificationMatrix({
       {activeChannels.length > 0 && (
         <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FAFAFA' }}>
           <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>
-            Активных триггеров: <strong style={{ color: '#1A1A1A', fontWeight: 800 }}>
-              {events.reduce((s, ev) => s + activeChannels.filter(ch => toggles[ev.id]?.[ch.key]).length, 0)}
-            </strong> из {events.length * activeChannels.length}
+            {t('matrix.activeCount', {
+              count: events.reduce((s, ev) => s + activeChannels.filter(ch => toggles[ev.id]?.[ch.key]).length, 0),
+              total: events.length * activeChannels.length,
+            })}
           </span>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
               onClick={onCancel}
-              disabled={!isDirty}
+              disabled={!isDirty || saving}
               style={{
                 fontSize: '12px', fontWeight: 700, color: isDirty ? '#666666' : '#BBBBBB',
                 background: 'transparent', border: `1px solid ${isDirty ? 'rgba(26,26,26,0.15)' : 'rgba(26,26,26,0.06)'}`,
-                cursor: isDirty ? 'pointer' : 'default',
+                cursor: isDirty && !saving ? 'pointer' : 'default',
+                opacity: saving ? 0.7 : 1,
                 padding: '8px 14px', borderRadius: '8px',
                 fontFamily: "'Manrope', sans-serif",
                 transition: 'all 0.18s ease',
               }}
-              onMouseEnter={e => { if (isDirty) e.currentTarget.style.borderColor = '#999999'; }}
-              onMouseLeave={e => { if (isDirty) e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; }}
+              onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.borderColor = '#999999'; }}
+              onMouseLeave={e => { if (isDirty && !saving) e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; }}
             >
-              Отмена
+              {t('matrix.cancel')}
             </button>
 
             <button
@@ -148,7 +152,7 @@ export default function NotificationMatrix({
               onMouseEnter={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(252,174,145,0.45)'; } }}
               onMouseLeave={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(252,174,145,0.35)'; } }}
             >
-              {saving ? 'Сохранение…' : 'Сохранить'}
+              {saving ? t('matrix.saving') : t('matrix.save')}
             </button>
 
             <button
@@ -166,7 +170,7 @@ export default function NotificationMatrix({
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
             >
-              {allOn ? 'Снять все галочки' : 'Активировать всё'}
+              {allOn ? t('matrix.deactivateAll') : t('matrix.activateAll')}
             </button>
           </div>
         </div>

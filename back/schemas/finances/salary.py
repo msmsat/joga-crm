@@ -21,10 +21,13 @@ class SalaryRow(BaseSchema):
     user_id: int
     name: str
     sessions_count: int
+    hours_worked: float
+    lessons_revenue: int
     rate: Optional[float] = None
     rate_type: Optional[str] = None
     amount: int
     status: str
+    paid_at: Optional[datetime] = None
 
 
 class SalaryPayRequest(BaseSchema):

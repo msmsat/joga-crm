@@ -12,12 +12,16 @@ import type {
   ClientsCountOut,
   ClientsListParams,
   ClientsPage,
+  ClientUpdate,
+  ClientWallet,
   EventRecord,
+  InviteCode,
   NoteCreatedOut,
   OkFrozenOut,
   OkOut,
   PointsBalanceOut,
   TagsOut,
+  WalletSubscription,
 } from './clients.types'
 
 function buildQuery(params?: Record<string, unknown>): string {
@@ -31,8 +35,10 @@ function buildQuery(params?: Record<string, unknown>): string {
 
 export const clientsApi = {
   // ─── LIST & COUNTS ────────────────────────────────────────────────────────
+  // Слэш перед query обязателен: без него FastAPI отвечает 307-редиректом
+  // на /clients/ — каждый запрос ходит на сервер дважды.
   getList: (params?: ClientsListParams) =>
-    client.get<ClientsPage<ClientListItem>>(`/clients${buildQuery(params as Record<string, unknown>)}`),
+    client.get<ClientsPage<ClientListItem>>(`/clients/${buildQuery(params as Record<string, unknown>)}`),
 
   getCount: () =>
     client.get<ClientsCountOut>('/clients/count'),
@@ -44,8 +50,17 @@ export const clientsApi = {
   getProfile: (id: number) =>
     client.get<ClientProfile>(`/clients/${id}`),
 
+  getWallet: (id: number) =>
+    client.get<ClientWallet>(`/clients/${id}/wallet`),
+
+  transferSubscription: (clientId: number, subId: number, targetClientId: number) =>
+    client.post<WalletSubscription>(`/clients/${clientId}/subscriptions/${subId}/transfer`, { target_client_id: targetClientId }),
+
+  getInviteCode: (id: number) =>
+    client.get<InviteCode>(`/clients/${id}/invite-code`),
+
   // ─── EVENTS & ACTIVITY ────────────────────────────────────────────────────
-  getEvents: (id: number, eventType?: 'payment' | 'visit' | 'freeze' | 'all') =>
+  getEvents: (id: number, eventType?: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze' | 'all') =>
     client.get<EventRecord[]>(
       `/clients/${id}/events${eventType ? `?event_type=${eventType}` : ''}`,
     ),
@@ -74,6 +89,9 @@ export const clientsApi = {
     client.delete<OkOut>(`/clients/${id}`),
 
   // ─── MUTATIONS ────────────────────────────────────────────────────────────
+  update: (id: number, payload: ClientUpdate) =>
+    client.patch<OkOut>(`/clients/${id}`, payload),
+
   updateStatus: (id: number, status: string) =>
     client.patch<OkOut>(`/clients/${id}/status`, { status }),
 
@@ -96,6 +114,9 @@ export const clientsApi = {
 
   sendMessage: (id: number, text: string, channel: string) =>
     client.post<ActionMessageOut>(`/clients/${id}/message`, { text, channel }),
+
+  sendSubscriptionReminder: (id: number) =>
+    client.post<ActionMessageOut>(`/clients/${id}/subscription-reminder`),
 
   book: (id: number, lesson_id: number) =>
     client.post<BookingCreatedOut>(`/clients/${id}/booking`, { lesson_id }),

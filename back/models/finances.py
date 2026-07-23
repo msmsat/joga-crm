@@ -95,6 +95,8 @@ class OnlineChannel(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     monthly_amount: Mapped[int] = mapped_column(Integer, default=0)
     monthly_sessions: Mapped[int] = mapped_column(Integer, default=0)
+    public_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    secret_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="online_channels")
     metrics: Mapped[List["OnlineChannelMetric"]] = relationship(back_populates="channel", cascade="all, delete-orphan")
@@ -128,6 +130,7 @@ class FinancialGoal(Base):
     color: Mapped[str] = mapped_column(String(7))
     priority: Mapped[str] = mapped_column(String(10), default="medium")
     tracking_mode: Mapped[str] = mapped_column(String(10), default="manual")
+    op_type: Mapped[str] = mapped_column(String(3), default="in")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
     studio: Mapped["Studio"] = relationship(back_populates="financial_goals")

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import os
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -13,6 +15,10 @@ from schemas.finances.operations import (
 
 router = APIRouter()
 
+DOCS_DIR = "uploads/docs"
+ALLOWED_EXTENSIONS = {"pdf", "docx", "xlsx"}
+MAX_SIZE_MB = 15
+
 
 def _to_read(doc: FinDocument) -> FinDocumentRead:
     return FinDocumentRead(
@@ -22,6 +28,7 @@ def _to_read(doc: FinDocument) -> FinDocumentRead:
         amount=doc.amount,
         status=doc.status,
         file_ext=doc.file_ext,
+        has_file=bool(doc.file_url),
         counterparty_id=doc.counterparty_id,
         created_at=doc.upload_date,
     )
@@ -105,5 +112,62 @@ async def delete_document(
     db: AsyncSession = Depends(get_db),
 ):
     doc = await _get_or_404(doc_id, ctx.studio_id, db)
+    if doc.file_url:
+        path = os.path.join(DOCS_DIR, str(ctx.studio_id), f"{doc.id}.{doc.file_ext}")
+        if os.path.isfile(path):
+            os.remove(path)
     await db.delete(doc)
     await db.commit()
+
+
+@router.post("/documents/{doc_id}/file", response_model=FinDocumentRead)
+async def upload_document_file(
+    doc_id: int,
+    file: UploadFile = File(...),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    doc = await _get_or_404(doc_id, ctx.studio_id, db)
+
+    raw_name = file.filename or ""
+    ext = raw_name.rsplit(".", 1)[-1].lower() if "." in raw_name else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Допустимые форматы: PDF, DOCX, XLSX")
+
+    content = await file.read()
+    if len(content) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"Файл не должен превышать {MAX_SIZE_MB} МБ")
+
+    studio_dir = os.path.join(DOCS_DIR, str(ctx.studio_id))
+    os.makedirs(studio_dir, exist_ok=True)
+    # Старый файл документа мог быть другого расширения — не оставляем сироту на диске.
+    if doc.file_url and doc.file_ext and doc.file_ext != ext:
+        old_path = os.path.join(studio_dir, f"{doc.id}.{doc.file_ext}")
+        if os.path.isfile(old_path):
+            os.remove(old_path)
+
+    with open(os.path.join(studio_dir, f"{doc.id}.{ext}"), "wb") as f:
+        f.write(content)
+
+    doc.file_ext = ext
+    doc.file_url = f"/finances/documents/{doc.id}/file"
+    await db.commit()
+    await db.refresh(doc)
+    return _to_read(doc)
+
+
+@router.get("/documents/{doc_id}/file")
+async def download_document_file(
+    doc_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    doc = await _get_or_404(doc_id, ctx.studio_id, db)
+    if not doc.file_url:
+        raise HTTPException(status_code=404, detail="Файл не загружен")
+
+    path = os.path.join(DOCS_DIR, str(ctx.studio_id), f"{doc.id}.{doc.file_ext}")
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="Файл не найден")
+
+    return FileResponse(path, filename=f"{doc.title}.{doc.file_ext}")

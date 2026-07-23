@@ -27,6 +27,8 @@ class Client(Base):
     reminders_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     source: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    # Реферальный код (V5-6, 1.4) — генерируется лениво при первом GET /invite-code.
+    invite_code: Mapped[Optional[str]] = mapped_column(String(12), unique=True, index=True, nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="clients")
     subscriptions: Mapped[List["ClientSubscription"]] = relationship(back_populates="client", cascade="all, delete-orphan")
@@ -35,9 +37,11 @@ class Client(Base):
     operations: Mapped[List["Operation"]] = relationship(back_populates="client", cascade="all, delete-orphan")
     loyalty_card: Mapped[Optional["ClientLoyaltyCard"]] = relationship(back_populates="client", uselist=False, cascade="all, delete-orphan")
     loyalty_transactions: Mapped[List["LoyaltyPointTransaction"]] = relationship(back_populates="client", cascade="all, delete-orphan")
+    deposit_transactions: Mapped[List["DepositTransaction"]] = relationship(back_populates="client", cascade="all, delete-orphan")
     certificates: Mapped[List["GiftCertificate"]] = relationship(back_populates="client", foreign_keys="[GiftCertificate.client_id]")
     referral_records: Mapped[List["ReferralRecord"]] = relationship(back_populates="referrer", foreign_keys="[ReferralRecord.referrer_client_id]")
     notes: Mapped[List["ClientNote"]] = relationship(back_populates="client", cascade="all, delete-orphan")
+    offers: Mapped[List["ClientOffer"]] = relationship(back_populates="client", cascade="all, delete-orphan")
 
 
 class ClientSubscription(Base):
@@ -53,6 +57,11 @@ class ClientSubscription(Base):
     is_frozen: Mapped[bool] = mapped_column(Boolean, default=False)
     frozen_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     freeze_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    # V5-4 задача 7: без пакета и даты покупки продления честно не посчитать.
+    # Старые строки — null (аналитика считает с момента миграции). Продажа
+    # (clients/subscriptions.py) начинает их заполнять.
+    package_id: Mapped[Optional[int]] = mapped_column(ForeignKey("subscription_packages.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), server_default=func.now(), nullable=True)
 
     client: Mapped["Client"] = relationship(back_populates="subscriptions")
 

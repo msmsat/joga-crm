@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePackageList, useSubscriptionConfig } from '../hooks/useSubscriptions';
-import { useStudioCurrency } from '../hooks/useStudioCurrency';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
@@ -10,6 +10,7 @@ import { errorMessage } from '../../../../api/errorMessage';
 import { PackageModal } from './modals/EditPackage';
 import type { SubscriptionPackage, SubscriptionProgramConfig } from '../../../../api/catalog/catalog.types';
 
+// allow_transfer/auto_renewal возвращены в V5-7 (Блок 4.1/4.2) — логика заведена.
 const SETTINGS: { key: keyof Omit<SubscriptionProgramConfig, 'is_enabled'>; labelKey: string }[] = [
   { key: 'allow_freeze', labelKey: 'catalog:subscriptions.settings.allowFreeze' },
   { key: 'allow_transfer', labelKey: 'catalog:subscriptions.settings.allowTransfer' },
@@ -53,10 +54,50 @@ export function SubscriptionSection() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', height: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '4px' }}>
         <span className="cat-panel-title">{t('catalog:subscriptions.title')}</span>
-        <button className="cat-add-btn" title={t('catalog:subscriptions.addPackage')} onClick={() => setPackageModal({ pkg: null })}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        
+        <button 
+          onClick={() => setPackageModal({ pkg: null })}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '6px 16px 6px 6px', 
+            background: '#FFFFFF',
+            border: '1px solid rgba(26,26,26,0.06)',
+            borderRadius: '999px',
+            color: '#1A1A1A',
+            fontSize: '13px', fontWeight: 700,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(26,26,26,0.03)',
+            transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(26,26,26,0.08)';
+            // Убрали translateY, кнопка визуально "приподнимается" только за счет глубокой тени
+            e.currentTarget.style.transform = 'scale(1)'; 
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'rgba(26,26,26,0.06)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(26,26,26,0.03)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          onMouseDown={e => e.currentTarget.style.transform = 'scale(0.97)'} // Мягкое нажатие внутрь
+          onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'} // Возврат в исходное положение без прыжка вверх
+        >
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '24px', height: '24px', borderRadius: '50%',
+            background: 'rgba(252,174,145,0.18)',
+            color: '#F07B60',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          
+          {t('catalog:subscriptions.addPackage', { defaultValue: 'Добавить абонемент' })}
         </button>
       </div>
 

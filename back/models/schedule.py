@@ -45,6 +45,8 @@ class Lesson(Base):
     total_spots: Mapped[int] = mapped_column(Integer, default=8)
     service_id: Mapped[Optional[int]] = mapped_column(ForeignKey("services.id", ondelete="SET NULL"), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(20), default="confirmed")
+    cancel_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    clients_notified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     studio: Mapped["Studio"] = relationship(back_populates="lessons")
     hall: Mapped[Optional["Hall"]] = relationship(back_populates="lessons")

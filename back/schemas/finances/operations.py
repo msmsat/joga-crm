@@ -15,6 +15,8 @@ class OperationRead(BaseSchema):
     status: str
     client_id: Optional[int] = None
     account_id: Optional[int] = None
+    counterparty_id: Optional[int] = None
+    trainer_id: Optional[int] = None
 
 
 class OperationCreate(BaseSchema):
@@ -27,6 +29,28 @@ class OperationCreate(BaseSchema):
     account_id: Optional[int] = None
     client_id: Optional[int] = None
     counterparty_id: Optional[int] = None
+
+
+class OperationUpdate(BaseSchema):
+    title: Optional[str] = None
+    amount: Optional[int] = None
+    op_date: Optional[date] = None
+    category: Optional[str] = None
+    method: Optional[str] = None
+    account_id: Optional[int] = None
+    client_id: Optional[int] = None
+    counterparty_id: Optional[int] = None
+
+
+class MethodStat(BaseSchema):
+    method: str  # ключ метода ("" → «не указан», обрабатывает фронт)
+    amount: int
+    count: int
+
+
+class CategoryStat(BaseSchema):
+    category: str  # "other" → без категории, обрабатывает фронт
+    amount: int
 
 
 class CounterpartyRead(BaseSchema):
@@ -60,6 +84,7 @@ class FinDocumentRead(BaseSchema):
     amount: Optional[int] = None
     status: str
     file_ext: str
+    has_file: bool = False
     counterparty_id: Optional[int] = None
     created_at: datetime
 

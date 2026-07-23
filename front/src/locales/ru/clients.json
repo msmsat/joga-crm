@@ -1,0 +1,311 @@
+{
+  "categories": {
+    "all": "Все",
+    "vip": "VIP",
+    "active": "Активные",
+    "new": "Новые",
+    "has_subscription": "С абонементом",
+    "inactive": "Неактивные",
+    "frozen": "Заморожены",
+    "birthday": "День рождения"
+  },
+  "status": {
+    "active": "Активный",
+    "vip": "VIP",
+    "new": "Новый",
+    "inactive": "Неактивный",
+    "frozen": "Заморожен"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Поиск клиента...",
+    "addClient": "Добавить клиента"
+  },
+  "table": {
+    "visits": "визитов",
+    "frozenBadge": "❄ заморожен",
+    "totalSpent": "Потрачено всего",
+    "subscription": "Абонемент",
+    "of": "из",
+    "noSubscription": "Нет абонемента"
+  },
+  "loadMore": "Загрузить ещё",
+  "loading": "Загрузка…",
+  "panel": {
+    "tabs": {
+      "info": "Профиль",
+      "events": "События",
+      "notes": "Заметки",
+      "wallet": "Покупки"
+    },
+    "actions": {
+      "call": "Позвонить",
+      "message": "Сообщение",
+      "book": "Записать",
+      "bonus": "Бонус"
+    },
+    "editDateHint": "Нажмите для изменения",
+    "since": "с {{date}}",
+    "contacts": {
+      "title": "Контакты",
+      "phone": "Телефон",
+      "email": "Email",
+      "telegram": "Telegram",
+      "birthDate": "День рождения",
+      "city": "Город",
+      "copyHint": " · нажмите для копирования"
+    },
+    "stats": {
+      "visits": "Визитов",
+      "spent": "Потрачено",
+      "subscription": "Абонемент"
+    },
+    "loyalty": {
+      "points": "баллов",
+      "level": "Уровень {{tier}}",
+      "toNext": "До следующего: {{points}} баллов",
+      "multiplier": "×{{value}} к баллам"
+    },
+    "referral": {
+      "title": "Пригласи друга",
+      "copy": "Копировать"
+    },
+    "abonement": {
+      "title": "Абонемент",
+      "lessons": "{{remaining}}/{{total}} занятий",
+      "noSubscription": "Нет активного абонемента",
+      "noSubscriptionWarning": "У клиента нет абонемента — предложите оформить его",
+      "lowWarning": "Осталось мало занятий — предложить продление",
+      "finishedWarning": "Занятия в абонементе закончились — предложите продление",
+      "remind": "Напомнить клиенту",
+      "reminderSent": "Напоминание отправлено клиенту"
+    },
+    "wallet": {
+      "buy": "Купить",
+      "active": "Активные",
+      "archived": "Архивные",
+      "singles": "Разовые",
+      "subscriptions": "Абонементы",
+      "noSingles": "Разовых занятий пока нет",
+      "emptyActive": "Нет активных продуктов",
+      "emptyArchived": "Нет архивных продуктов",
+      "emptyCatalog": "В студии пока нет пакетов абонементов",
+      "subscriptionsDisabled": "Программа абонементов выключена — включите её в разделе Каталог",
+      "lessons": "{{remaining}}/{{total}} занятий",
+      "lessonsCount": "{{count}} занятий",
+      "perVisit": "За одно посещение",
+      "until": "до {{date}}",
+      "frozenBadge": "Заморожен",
+      "loadFailed": "Не удалось загрузить кошелёк",
+      "back": "← Назад",
+      "catalogTitle": "Каталог",
+      "showAll": "Все",
+      "posTitle": "Касса",
+      "promoLabel": "Промокод",
+      "promoPlaceholder": "Введите промокод",
+      "promoInvalid": "Промокод недействителен",
+      "useBonuses": "Списать бонусы ({{count}})",
+      "useDeposit": "Списать с депозита ({{amount}})",
+      "certLabel": "Код сертификата",
+      "certPlaceholder": "Введите код сертификата",
+      "certApplied": "Сертификат",
+      "depositApplied": "Депозит",
+      "base": "Базовая цена",
+      "discount": "Скидка",
+      "bonuses": "Бонусы",
+      "total": "Итого",
+      "cash": "Наличные",
+      "card": "Карта",
+      "cardStub": "Интеграция с эквайрингом в разработке",
+      "confirmPay": "Подтвердить оплату",
+      "confirmPayCovered": "Провести (оплачено)",
+      "confirmTitle": "Точно оплачено?",
+      "confirmMessage": "Будет проведён доход {{amount}} и начислен продукт клиенту.",
+      "confirmMessageCovered": "Оплата полностью покрыта депозитом/сертификатом. Продукт будет начислен клиенту.",
+      "paySuccess": "Оплата проведена",
+      "transfer": "Передать",
+      "transferTitle": "Передать абонемент",
+      "transferSearchLabel": "Кому передать",
+      "transferSearchPlaceholder": "Имя или телефон клиента",
+      "transferSelectPlaceholder": "Выберите клиента",
+      "transferConfirm": "Передать",
+      "transferSuccess": "Абонемент передан"
+    },
+    "offers": {
+      "title": "Персональная скидка",
+      "empty": "Активных скидок нет",
+      "grant": "Выдать скидку",
+      "cancel": "Отменить",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "до {{date}}",
+      "noExpiry": "бессрочно",
+      "scopeRenewal": "на продление",
+      "grantTitle": "Выдать персональную скидку",
+      "grantValue": "Размер скидки",
+      "grantType": { "percent": "Процент (%)", "amount": "Сумма (₽)" },
+      "grantValidUntil": "Действует до",
+      "grantSubmit": "Выдать",
+      "cancelConfirmTitle": "Отменить скидку?",
+      "cancelConfirmMessage": "Клиент больше не сможет воспользоваться этим предложением.",
+      "toasts": {
+        "granted": "Скидка выдана",
+        "cancelled": "Скидка отменена",
+        "loadFailed": "Не удалось загрузить скидки"
+      }
+    },
+    "activity": {
+      "compactTitle": "Активность (3 мес.)",
+      "clickForDetails": "Нажмите для деталей",
+      "detailedTitle": "Детальная активность",
+      "periods": { "month3": "3 мес", "month6": "6 мес" },
+      "visitsInPeriod": "Визитов за период",
+      "visitsTooltip": "{{count}} визитов",
+      "emptyState": "Нет визитов за этот период",
+      "insightTitle": "Средняя посещаемость",
+      "insightBody": "В среднем {{avg}} визита в месяц за выбранный период.",
+      "months": {
+        "jan": "Янв", "feb": "Фев", "mar": "Мар", "apr": "Апр", "may": "Май", "jun": "Июн",
+        "jul": "Июл", "aug": "Авг", "sep": "Сен", "oct": "Окт", "nov": "Ноя", "dec": "Дек"
+      }
+    },
+    "tags": {
+      "title": "Теги",
+      "add": "Добавить",
+      "close": "Закрыть",
+      "customPlaceholder": "Свой тег + Enter..."
+    },
+    "danger": {
+      "freeze": "Заморозить",
+      "unfreeze": "Разморозить",
+      "delete": "Удалить"
+    },
+    "events": {
+      "filterTabs": { "all": "Все", "payment": "Оплаты", "visit": "Посещения", "booking": "Записи", "cancel": "Отмены", "bonus": "Бонусы", "freeze": "Заморозки" },
+      "empty": "Нет событий"
+    },
+    "notes": {
+      "title": "Заметки администратора",
+      "prefix": "Заметка · {{date}}",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "addPlaceholder": "Введите заметку...",
+      "add": "Добавить заметку",
+      "justNow": "только что",
+      "deleteTitle": "Удалить заметку?",
+      "deleteMessage": "Заметку нельзя будет восстановить."
+    },
+    "messagePanel": {
+      "title": "Сообщение клиенту",
+      "placeholder": "Введите сообщение...",
+      "send": "Отправить сообщение"
+    },
+    "bookingPanel": {
+      "title": "Быстрая запись",
+      "today": "Сег",
+      "noLessons": "Нет занятий в этот день",
+      "full": "Мест нет",
+      "confirm": "Записать →",
+      "noSubscription": "У клиента нет доступного абонемента для записи"
+    },
+    "bonusPanel": {
+      "title": "Начислить бонус"
+    },
+    "toasts": {
+      "noPhone": "У клиента не указан телефон",
+      "copied": "Успешно скопировано",
+      "bookingCreated": "Запись создана",
+      "bookingFailed": "Не удалось записать",
+      "bonusFailed": "Не удалось начислить баллы",
+      "bonusApplied": "Бонус начислен: {{label}}",
+      "clientAdded": "Клиент добавлен"
+    },
+    "bonusOptions": {
+      "p200": { "label": "+200 баллов", "description": "Начислить на баланс лояльности" },
+      "p500": { "label": "+500 баллов", "description": "Начислить на баланс лояльности" },
+      "p1000": { "label": "+1000 баллов", "description": "Начислить на баланс лояльности" }
+    }
+  },
+  "tags": {
+    "suggested": ["Пробное", "VIP", "Рекомендация", "Онлайн", "Групповой", "Персональный"]
+  },
+  "addModal": {
+    "title": "Новый клиент",
+    "cancel": "Отмена",
+    "back": "← Назад",
+    "continue": "Продолжить →",
+    "submit": "Добавить клиента ✓",
+    "stepCounter": "Шаг {{current}} из {{total}}",
+    "trustSignal": "Данные защищены и видны только администраторам",
+    "steps": {
+      "1": { "title": "Личные данные", "sub": "Введите контактную информацию клиента" },
+      "2": { "title": "Детали профиля", "sub": "Дополнительная информация (необязательно)" },
+      "3": { "title": "Абонемент", "sub": "Выберите тип абонемента и добавьте заметку" },
+      "4": { "title": "Готово!", "sub": "Проверьте данные и добавьте клиента" }
+    },
+    "step1": {
+      "previewLabel": "Новый клиент · Предпросмотр",
+      "name": "ФИО *",
+      "namePlaceholder": "Иван Иванов",
+      "phone": "Телефон",
+      "phonePlaceholder": "+7 900 000-00-00",
+      "email": "Email",
+      "emailPlaceholder": "client@example.com"
+    },
+    "step2": {
+      "bday": "День рождения",
+      "bdayPlaceholder": "12 апреля 1990",
+      "city": "Город",
+      "cityPlaceholder": "Москва",
+      "tags": "Теги",
+      "tagsPlaceholder": "Пилатес, VIP, Реабилитация... (Enter)",
+      "tagsHint": "Нажмите Enter чтобы добавить тег",
+      "inviteCode": "Инвайт-код пригласившего",
+      "inviteCodePlaceholder": "Необязательно",
+      "inviteCodeHint": "Если есть — оба получат бонус"
+    },
+    "step3": {
+      "classCount": "Абонемент",
+      "classesUnit": "занятий",
+      "classesCount": "{{count}} занятий",
+      "selected": "Выбрано",
+      "noPackage": "Без абонемента",
+      "noPackages": "В студии пока нет ни одного абонемента",
+      "noPackagesLink": "Создайте абонементы в Каталоге →",
+      "alreadyPaid": "Клиент уже оплатил этот абонемент?",
+      "yes": "Да",
+      "no": "Нет",
+      "note": "Заметка",
+      "notePlaceholder": "Особые пожелания, противопоказания, предпочтения..."
+    },
+    "step4": {
+      "readyTitle": "Данные заполнены!",
+      "readySub": "Проверьте информацию и подтвердите добавление",
+      "newClient": "Новый клиент",
+      "fields": {
+        "phone": "Телефон",
+        "email": "Email",
+        "bday": "Д.р.",
+        "city": "Город",
+        "subscription": "Абонемент",
+        "tags": "Теги"
+      },
+      "subscriptionValue": "{{count}} занятий",
+      "smsTitle": "Отправить SMS-приветствие",
+      "smsSub": "Клиент получит сообщение с приглашением"
+    },
+    "errors": {
+      "name": "Введите имя (минимум 2 символа)",
+      "phone": "Некорректный номер телефона",
+      "email": "Некорректный email",
+      "city": "Укажите город"
+    }
+  },
+  "deleteModal": {
+    "title": "Удалить клиента?",
+    "body": "Вы собираетесь удалить клиента",
+    "warning": "Это действие нельзя отменить.",
+    "cancel": "Отмена",
+    "confirm": "Удалить",
+    "success": "Клиент удалён"
+  }
+}

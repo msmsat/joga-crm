@@ -24,4 +24,8 @@ export interface BookingSettings {
   reminder_24h: boolean
   reminder_2h: boolean
   review_request: boolean
+  miniapp_generated: boolean
+  widget_work_start: string
+  widget_work_end: string
+  slot_step_min: number
 }

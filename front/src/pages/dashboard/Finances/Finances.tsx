@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Tab, ToastType } from './types';
 import { FINANCE_TABS } from './types';
 import { useToast } from '../../../components/ui/Toast';
@@ -14,42 +15,43 @@ import GoalsTab from './components/tabs/GoalsTab';
 import SalariesTab from './components/tabs/SalariesTab';
 
 const TAB_ICONS: Record<Tab, React.ReactNode> = {
-  'Счета и кассы': <Ico.Dollar />,
-  'Операции': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
-  'Зарплаты': <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  'Контрагенты': <Ico.Building />,
-  'Документы': <Ico.Doc />,
-  'Онлайн-платежи': <Ico.World />,
-  'Методы оплаты': <Ico.Card />,
-  'Отчёты': <Ico.Bar />,
-  'Цели': <Ico.Target />,
+  accounts: <Ico.Dollar />,
+  operations: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  salaries: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+  counterparties: <Ico.Building />,
+  documents: <Ico.Doc />,
+  onlinePayments: <Ico.World />,
+  paymentMethods: <Ico.Card />,
+  reports: <Ico.Bar />,
+  goals: <Ico.Target />,
 };
 
 export default function Finances() {
-  const [activeTab, setActiveTab] = useState<Tab>('Счета и кассы');
+  const { t } = useTranslation('finances');
+  const [activeTab, setActiveTab] = useState<Tab>('accounts');
   const [operationsSearch, setOperationsSearch] = useState('');
   const toast = useToast();
   const showToast = useCallback((msg: string, type: ToastType = 'success') => toast[type](msg), [toast]);
 
-  const handleTabClick = (t: Tab) => {
-    if (t === 'Операции' && activeTab !== 'Операции') setOperationsSearch('');
-    setActiveTab(t);
+  const handleTabClick = (tab: Tab) => {
+    if (tab === 'operations' && activeTab !== 'operations') setOperationsSearch('');
+    setActiveTab(tab);
   };
 
   const renderTab = () => {
     const props = { showToast };
     switch (activeTab) {
-      case 'Счета и кассы':
-        return <AccountsTab showToast={showToast} onNavigateToOperations={(name) => { setOperationsSearch(name); setActiveTab('Операции'); }} />;
-      case 'Операции':
+      case 'accounts':
+        return <AccountsTab showToast={showToast} onNavigateToOperations={(name) => { setOperationsSearch(name); setActiveTab('operations'); }} />;
+      case 'operations':
         return <OperationsTab showToast={showToast} initialSearch={operationsSearch} />;
-      case 'Зарплаты': return <SalariesTab {...props} />;
-      case 'Контрагенты': return <CounterpartiesTab {...props} />;
-      case 'Документы': return <DocumentsTab {...props} />;
-      case 'Онлайн-платежи': return <OnlinePaymentsTab {...props} />;
-      case 'Методы оплаты': return <PaymentMethodsTab {...props} />;
-      case 'Отчёты': return <ReportsTab {...props} />;
-      case 'Цели': return <GoalsTab {...props} />;
+      case 'salaries': return <SalariesTab {...props} />;
+      case 'counterparties': return <CounterpartiesTab {...props} />;
+      case 'documents': return <DocumentsTab {...props} />;
+      case 'onlinePayments': return <OnlinePaymentsTab {...props} />;
+      case 'paymentMethods': return <PaymentMethodsTab {...props} />;
+      case 'reports': return <ReportsTab {...props} />;
+      case 'goals': return <GoalsTab {...props} />;
       default: return null;
     }
   };
@@ -60,15 +62,15 @@ export default function Finances() {
 
       {/* Таббар — ВНЕ скролл-контейнера, никогда не исчезает */}
       <div className="finance-tabs-big" style={{ flexShrink: 0 }}>
-        {FINANCE_TABS.map(t => (
+        {FINANCE_TABS.map(tab => (
           <div
-            key={t}
-            className={`ftab ${activeTab === t ? 'active' : ''}`}
-            onClick={() => handleTabClick(t)}
+            key={tab}
+            className={`ftab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => handleTabClick(tab)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
           >
-            <span style={{ opacity: activeTab === t ? 1 : 0.5, transition: 'opacity 0.18s' }}>{TAB_ICONS[t]}</span>
-            {t}
+            <span style={{ opacity: activeTab === tab ? 1 : 0.5, transition: 'opacity 0.18s' }}>{TAB_ICONS[tab]}</span>
+            {t(`tabs.${tab}`)}
           </div>
         ))}
       </div>

@@ -1,4 +1,5 @@
 from schemas.finances.accounts import AccountCreate, AccountRead, AccountUpdate
+from schemas.finances.gateways import GatewayRead, GatewayUpdate
 from schemas.finances.goals import GoalCreate, GoalRead, GoalUpdate
 from schemas.finances.operations import (
     CounterpartyCreate,
@@ -20,6 +21,8 @@ __all__ = [
     "CounterpartyUpdate",
     "FinDocumentCreate",
     "FinDocumentRead",
+    "GatewayRead",
+    "GatewayUpdate",
     "GoalCreate",
     "GoalRead",
     "GoalUpdate",

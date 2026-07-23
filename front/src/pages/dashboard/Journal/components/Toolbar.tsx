@@ -1,7 +1,8 @@
 // src/components/Toolbar.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
-import { MONTH_NAMES } from '../constants';
+import { monthName } from '../utils';
 import type { Trainer } from '../types';
 
 interface ToolbarProps {
@@ -53,6 +54,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   setCalendarView,
   onGoToToday
 }) => {
+  const { t, i18n } = useTranslation('journal');
   return (
     <div className="j-toolbar">
       {/* Дата навигация */}
@@ -100,7 +102,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           <Icons.Calendar />
           <span style={{ display: 'inline-block', textAlign: 'center' }}>
-            {selectedDay} {MONTH_NAMES[calMonth]} {calYear}
+            {selectedDay} {monthName(calMonth, i18n.language)} {calYear}
           </span>
         </button>
       )}
@@ -114,7 +116,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onGoToToday}
       >
         <Icons.Today />
-        Сегодня
+        {t('toolbar.today')}
       </button>
 
       <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
@@ -122,10 +124,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Вид: тренеры / залы */}
       <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
         <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
-          <Icons.Users /> Тренеры
+          <Icons.Users /> {t('toolbar.trainers')}
         </button>
         <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
-          <Icons.Grid /> Залы
+          <Icons.Grid /> {t('toolbar.halls')}
         </button>
       </div>
 
@@ -174,13 +176,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           className={`view-btn ${calendarView === 'day' ? 'active' : ''}`}
           onClick={() => setCalendarView('day')}
         >
-          День
+          {t('toolbar.day')}
         </button>
         <button
           className={`view-btn ${calendarView === 'week' ? 'active' : ''}`}
           onClick={() => setCalendarView('week')}
         >
-          Неделя
+          {t('toolbar.week')}
         </button>
       </div>
     </div>

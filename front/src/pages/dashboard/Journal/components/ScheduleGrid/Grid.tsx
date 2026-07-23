@@ -1,9 +1,10 @@
 // src/components/ScheduleGrid/Grid.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookingCard } from './BookingCard';
 import type { Booking, Trainer } from '../../types';
-import { TIMES, DAY_NAMES_SHORT } from '../../constants';
-import { getBookingLayouts, formatIndexToTimeStr } from '../../utils';
+import { TIMES } from '../../constants';
+import { getBookingLayouts, formatIndexToTimeStr, weekdayShort } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
 interface GridProps {
@@ -28,6 +29,7 @@ interface GridProps {
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
+  editDraft: { bookingId: number; title: string; timeStart: number; timeEnd: number } | null;
 }
 
 export const Grid: React.FC<GridProps> = ({
@@ -35,8 +37,9 @@ export const Grid: React.FC<GridProps> = ({
   columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
   canEdit, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
-  initDrag, setPopupBooking, openBookingPopup, showToast
+  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
 }) => {
+  const { t, i18n } = useTranslation('journal');
   return (
     <div
       className="j-grid"
@@ -106,7 +109,7 @@ export const Grid: React.FC<GridProps> = ({
                   <div className="j-hdr-weekwrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
                     {/* Уменьшили день недели */}
                     <div style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {DAY_NAMES_SHORT[ci]}
+                      {weekdayShort(ci, i18n.language)}
                     </div>
 
                     {/* Уменьшили и жестко зафиксировали размеры кружка даты */}
@@ -137,10 +140,10 @@ export const Grid: React.FC<GridProps> = ({
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                        {colBookings.length} зан. · {colClients} чел.
+                        {colBookings.length} {t('grid.classesShort')} · {colClients} {t('grid.peopleShort')}
                       </div>
                       <div style={{ fontSize: 9.5, fontWeight: 700, color: colBookings.length > 0 ? 'var(--onyx)' : 'var(--muted)', opacity: 0.8 }}>
-                        Загрузка: {colLoad}%
+                        {t('grid.loadPercent', { percent: colLoad })}
                       </div>
                     </div>
                   </div>
@@ -166,13 +169,13 @@ export const Grid: React.FC<GridProps> = ({
                       </div>
                       <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                      {colBookings.length} занятий · {colBookings.reduce((s, b) => s + b.clients, 0)} чел.
+                      {colBookings.length} {t('grid.classes')} · {colBookings.reduce((s, b) => s + b.clients, 0)} {t('grid.peopleShort')}
                       </div>
                   </>
                   ) : (
                   <>
                       <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
-                      <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} занятий на сегодня</div>
+                      <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} {t('grid.classesToday')}</div>
                   </>
               ))}
             </div>
@@ -181,9 +184,9 @@ export const Grid: React.FC<GridProps> = ({
       })}
 
       {/* Ряды времени */}
-      {TIMES.map((t, ti) => (
+      {TIMES.map((timeLabel, ti) => (
         <React.Fragment key={ti}>
-          <div className="j-time-cell">{t}</div>
+          <div className="j-time-cell">{timeLabel}</div>
           {columns.map((col, ci) => {
             const isTrainerMode = viewMode === 'trainers';
             const trainer = isTrainerMode ? (col as Trainer) : null;
@@ -228,9 +231,11 @@ export const Grid: React.FC<GridProps> = ({
                 }}
               >
                 {/* Обертка для карточек с анимацией */}
-                <div 
+                {/* Без z-index/transform на обертке: иначе stacking context запирает
+                    карточку в её часовой строке и клики по нижней части перехватывают
+                    ячейки ниже. Карточки поднимаются через layout.zIndex. */}
+                <div
                   className={`cell-content-anim ${isTransitioning ? 'slide-out-left' : 'slide-in-right'}`}
-                  style={{ zIndex: drag ? 'auto' : 10 }}
                 >
                   {hourBookings.map(booking => (
                     <div key={booking.id} style={{ pointerEvents: 'auto' }}>
@@ -245,6 +250,7 @@ export const Grid: React.FC<GridProps> = ({
                         setPopupBooking={setPopupBooking}
                         openBookingPopup={openBookingPopup}
                         showToast={showToast}
+                        editDraft={editDraft?.bookingId === booking.id ? editDraft : null}
                       />
                     </div>
                   ))}
@@ -286,7 +292,7 @@ export const Grid: React.FC<GridProps> = ({
                     }} />
                     <div style={{ position: 'relative', zIndex: 1, padding: '8px 18px 8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
                       <div style={{ fontSize: '11.5px', fontWeight: 800, color: '#1A1A1A', lineHeight: 1.2, letterSpacing: '-0.2px' }}>
-                        {newForm.title || 'Новое занятие'}
+                        {newForm.title || t('grid.newLessonPreview')}
                       </div>
                       {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (
                         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--peach)', marginTop: 3, opacity: 0.9 }}>

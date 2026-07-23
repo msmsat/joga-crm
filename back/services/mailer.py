@@ -13,11 +13,11 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-async def send_email(to: str, subject: str, html: str) -> None:
+async def send_email(to: str, subject: str, html: str, sender: str | None = None) -> None:
     host = os.getenv("SMTP_HOST")
     user = os.getenv("SMTP_USER")
     password = os.getenv("SMTP_PASS")
-    sender = os.getenv("SMTP_FROM", user)
+    sender = sender or os.getenv("SMTP_FROM", user)
     port = int(os.getenv("SMTP_PORT", "587"))
 
     if not (host and user and password):

@@ -13,6 +13,7 @@ class GoalRead(BaseSchema):
     deadline: Optional[date] = None
     category: Optional[str] = None
     priority: str
+    op_type: Literal["in", "out"] = "in"
 
 
 class GoalCreate(BaseSchema):
@@ -22,6 +23,7 @@ class GoalCreate(BaseSchema):
     deadline: Optional[date] = None
     category: Optional[str] = None
     priority: str = "medium"
+    op_type: Literal["in", "out"] = "in"
 
 
 class GoalUpdate(BaseSchema):
@@ -32,3 +34,4 @@ class GoalUpdate(BaseSchema):
     deadline: Optional[date] = None
     category: Optional[str] = None
     priority: Optional[str] = None
+    op_type: Optional[Literal["in", "out"]] = None

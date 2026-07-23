@@ -16,7 +16,8 @@ from sqlalchemy.future import select
 from activity import log_activity
 from database import get_db
 from ratelimit import limiter
-from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioBookingSettings
+from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioBookingSettings, StudioReferralConfig
+from routers.clients.loyalty import apply_deposit_change, apply_points_change
 from schemas._base import BaseSchema
 from services.notifier import notify
 
@@ -228,8 +229,21 @@ async def public_reserve(
                 ReferralRecord.status == "pending",
             )
         )).scalar_one_or_none()
-        if referral is not None:
+        if referral is not None and referral.referrer_client_id is not None:
             referral.status = "completed"
+            # Бонус рефереру (V5-3, задача 4): bonus_type решает, баллами или на
+            # депозит — раньше bonus_paid никогда не выставлялся в True, реального
+            # начисления не было (аудит п.3, опция «На депозит» была пустышкой).
+            cfg = (await db.execute(
+                select(StudioReferralConfig).where(StudioReferralConfig.studio_id == studio_id)
+            )).scalar_one_or_none()
+            if cfg is not None and cfg.is_enabled and cfg.trigger_condition == "first_visit" and cfg.referrer_bonus > 0:
+                description = f"Реферальный бонус за приглашение {client.name}"
+                if cfg.bonus_type == "deposit":
+                    await apply_deposit_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
+                elif cfg.bonus_type == "points":
+                    await apply_points_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
+                referral.bonus_paid = True
 
     await db.commit()
     await db.refresh(reservation)

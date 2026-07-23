@@ -1,15 +1,24 @@
 // src/components/modals/BookingPopup.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import type { Booking, Trainer } from '../types';
-import type { BookedClient } from '../../../../api/schedule/schedule.types';
+import type { BookedClient, EligibleClient } from '../../../../api/schedule/schedule.types';
 import { scheduleApi } from '../../../../api/schedule';
-import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../utils';
-import { TIMES } from '../constants';
+import { errorMessage } from '../../../../api/errorMessage';
+import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
+import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
+import type { useJournalMutations } from '../hooks/useJournalMutations';
+import type { HistoryEntry } from '../hooks/useUndoHistory';
+import { useToast, Select, ConfirmModal } from '../../../../components/ui/index';
 
-// Сетка часов идёт 07:00..23:00 (TIMES + два часа хвоста в NewBookingModal) — indexToDateTime/drag клампят к тем же границам.
-const MIN_TIME_IDX = 0;
-const MAX_TIME_IDX = TIMES.length + 1;
+const MIN_TIME_IDX = MIN_TIME_INDEX;
+const MAX_TIME_IDX = MAX_TIME_INDEX;
+const EMPTY_CLIENTS: EligibleClient[] = [];
+
+interface EditForm { serviceId: number | null; title: string; hall: string; maxClients: string; timeStart: number; timeEnd: number }
 
 interface BookingPopupProps {
   trainers: Trainer[];
@@ -20,11 +29,16 @@ interface BookingPopupProps {
   canEdit: boolean;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
+  isEditingBooking: boolean;
+  setIsEditingBooking: React.Dispatch<React.SetStateAction<boolean>>;
+  editForm: EditForm;
+  setEditForm: React.Dispatch<React.SetStateAction<EditForm>>;
+  mutations: ReturnType<typeof useJournalMutations>;
   onSave: (prev: Booking, next: Booking) => void;
   deleteBooking: (id: number) => void;
-  openAddClient: (b: Booking) => void;
+  onAddClients: (clientIds: number[]) => void;
   showToast: (msg: string) => void;
+  pushHistoryEntry: (entry: HistoryEntry) => void;
 }
 
 export const BookingPopup: React.FC<BookingPopupProps> = ({
@@ -36,26 +50,60 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   canEdit,
   timeStep,
   setPopupBooking,
-  setBookings,
+  isEditingBooking,
+  setIsEditingBooking,
+  editForm,
+  setEditForm,
+  mutations,
   onSave,
   deleteBooking,
-  openAddClient,
-  showToast
+  onAddClients,
+  showToast,
+  pushHistoryEntry
 }) => {
-  // 🔥 ВСЕ СТЕЙТЫ РЕДАКТИРОВАНИЯ ТЕПЕРЬ ЖИВУТ ТОЛЬКО ЗДЕСЬ
-  const [isEditingBooking, setIsEditingBooking] = useState(false);
-  const [editForm, setEditForm] = useState({ title: '', hall: popupBooking.hall, maxClients: '8', timeStart: 0, timeEnd: 0 });
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { t } = useTranslation('journal');
+
+  // Стейты редактирования
   const [editStartInput, setEditStartInput] = useState('');
   const [editEndInput, setEditEndInput] = useState('');
   const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
+  const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
+
+  // Стейты добавления клиента
+  const [isAddingClient, setIsAddingClient] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedClients, setSelectedClients] = useState<number[]>([]);
+  const [eligible, setEligible] = useState<{ lessonId: number; clients: EligibleClient[] } | null>(null);
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
+  const { services, options: serviceOptions } = useServiceOptions();
 
-  // Записанные клиенты занятия (с сервера, для галочки «Пришёл» и снятия).
-  // Привязаны к id занятия — при открытии другого попапа старый список не мелькает.
+  const handleServiceChange = (value: string) => {
+    if (value === CREATE_SERVICE_OPTION) {
+      setShowCatalogConfirm(true);
+      return;
+    }
+    const service = services.find(s => String(s.id) === value);
+    if (!service) return;
+    setEditForm(f => ({ ...f, serviceId: service.id, title: service.name }));
+  };
+
+  // Валидация редактирования
+  const editServiceError = !editForm.serviceId ? t('bookingPopup.errors.selectService') : null;
+  const editMaxClientsNum = Number(editForm.maxClients);
+  const editMaxClientsError = !Number.isInteger(editMaxClientsNum) || editMaxClientsNum < 1 || editMaxClientsNum > 50
+    ? t('bookingPopup.errors.range')
+    : editMaxClientsNum < popupBooking.clients
+      ? t('bookingPopup.errors.minBooked', { count: popupBooking.clients })
+      : null;
+  const editTimeError = editForm.timeEnd <= editForm.timeStart ? t('bookingPopup.errors.endAfterStart') : null;
+  const hasEditErrors = !!(editServiceError || editMaxClientsError || editTimeError);
+
   const [booked, setBooked] = useState<{ lessonId: number; clients: BookedClient[] } | null>(null);
   const bookedClients = booked?.lessonId === popupBooking.id ? booked.clients : null;
 
@@ -67,34 +115,68 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     return () => { stale = true; };
   }, [popupBooking.id]);
 
+  const clientsLoaded = eligible?.lessonId === popupBooking.id;
+  const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
+
+  // Загружаем клиентов, когда открываем режим добавления. Источник — не все
+  // клиенты студии, а только те, кого можно записать на это занятие (право по
+  // абонементу проверяет бэк, CL-6.1/6.4) — Zero Trust, фронт не решает сам.
+  // lessonId в состоянии (образец — booked/bookedClients выше) переживает смену
+  // занятия без отдельного reset-эффекта.
+  useEffect(() => {
+    if (isAddingClient && !clientsLoaded) {
+      scheduleApi.getEligibleClients(popupBooking.id)
+        .then(list => setEligible({ lessonId: popupBooking.id, clients: list }))
+        .catch(err => console.error('Не удалось загрузить клиентов', err));
+    }
+  }, [isAddingClient, clientsLoaded, popupBooking.id]);
+
   const patchBooked = (fn: (list: BookedClient[]) => BookedClient[]) =>
     setBooked(b => b && { ...b, clients: fn(b.clients) });
 
   const markAttended = (c: BookedClient) => {
-    if (c.status === 'attended') return; // на сервере тоже идемпотентно
-    scheduleApi.attendReservation(c.reservation_id)
+    if (c.status === 'attended') return;
+    mutations.attendReservation(c.reservation_id)
       .then(() => {
         patchBooked(list => list.map(x =>
           x.reservation_id === c.reservation_id ? { ...x, status: 'attended' as const } : x
         ));
-        showToast('Посещение отмечено');
+        showToast(t('toasts.attendanceMarked'));
       })
-      .catch((e: Error) => showToast(e.message || 'Не удалось отметить посещение'));
+      .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
 
   const removeClient = (c: BookedClient) => {
-    scheduleApi.cancelReservation(c.reservation_id)
-      .then(() => {
+    mutations.cancelReservation(c.reservation_id, popupBooking)
+      .then(({ next }) => {
         patchBooked(list => list.filter(x => x.reservation_id !== c.reservation_id));
-        const clients = Math.max(0, popupBooking.clients - 1);
-        setBookings(prev => prev.map(b => (b.id === popupBooking.id ? { ...b, clients } : b)));
-        setPopupBooking({ ...popupBooking, clients });
-        showToast('Клиент снят с занятия');
+        setPopupBooking(next!);
+        showToast(t('toasts.clientRemoved'));
+
+        let liveReservationId = c.reservation_id;
+        pushHistoryEntry({
+          label: t('toasts.historyLabels.removeClient'),
+          undo: async () => {
+            const booking = next!;
+            const { reservationId } = await mutations.addReservation(c.client_id, booking);
+            liveReservationId = reservationId;
+          },
+          redo: async () => { await mutations.cancelReservation(liveReservationId, next!); },
+        });
       })
-      .catch((e: Error) => showToast(e.message || 'Не удалось снять клиента'));
+      .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
 
-  // Синхронизируем инпуты при открытии модалки редактирования
+  // Мемоизация поиска клиентов. Список уже отфильтрован бэком по праву записи
+  // и по «не записан на это занятие» (getEligibleClients) — тут только поиск.
+  const filteredClients = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return clientsList.filter(c =>
+      `${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
+      (c.phone ?? '').includes(searchQuery)
+    );
+  }, [clientsList, searchQuery]);
+
   useEffect(() => {
     if (isEditingBooking) {
       setEditStartInput(formatIndexToTimeStr(editForm.timeStart));
@@ -102,7 +184,6 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     }
   }, [isEditingBooking, editForm.timeStart, editForm.timeEnd]);
 
-  // Автоскролл для списков времени внутри модалки
   useEffect(() => {
     if (editActiveDropdown === 'start' && startScrollRef.current) {
       setTimeout(() => startScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
@@ -112,7 +193,6 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     }
   }, [editActiveDropdown]);
 
-  // Закрытие дропдаунов при клике вне
   useEffect(() => {
     const closeAllDps = (e: MouseEvent) => {
       if ((e.target as HTMLElement)?.closest('.kp-time-container')) return;
@@ -122,13 +202,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     return () => document.removeEventListener('click', closeAllDps);
   }, []);
 
-  return (
+  return createPortal(
+    <>
     <div
       ref={popupRef}
       className="booking-popup"
       style={{ left: popupPos.x, top: popupPos.y }}
     >
-      {/* 💎 Магическое свечение от цвета тренера */}
       <div style={{
         position: 'absolute', top: -30, left: -30, right: -30, height: 160,
         background: `radial-gradient(ellipse at top, ${popupBooking.color}35 0%, transparent 65%)`,
@@ -140,7 +220,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div>
             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.4px', lineHeight: 1.2 }}>
-              {isEditingBooking ? (editForm.title || 'Без названия') : popupBooking.title}
+              {isAddingClient ? t('bookingPopup.addClient') : isEditingBooking ? (editForm.title || t('bookingPopup.untitled')) : popupBooking.title}
             </div>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
               <Icons.Clock />
@@ -155,34 +235,90 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
             display: 'flex', alignItems: 'center', gap: 4, letterSpacing: '0.3px', textTransform: 'uppercase'
           }}>
             {popupBooking.status === 'confirmed' && <span style={{ transform: 'scale(0.85)' }}><Icons.Check /></span>}
-            {popupBooking.status === 'confirmed' ? 'Подтверждено' : 'Ожидает'}
+            {popupBooking.status === 'confirmed' ? t('bookingPopup.confirmed') : t('bookingPopup.pending')}
           </div>
         </div>
       </div>
 
-      {/* ТЕЛО С ИНФОРМАЦИЕЙ ИЛИ ФОРМА РЕДАКТИРОВАНИЯ */}
       <div className="bp-body" style={{ position: 'relative', zIndex: 10, minHeight: '180px' }}>
         
-        {isEditingBooking ? (
+        {/* РЕЖИМ ДОБАВЛЕНИЯ КЛИЕНТА */}
+        {isAddingClient ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
-            
-            {/* 1. Название */}
-            <input
-              className="modal-input"
-              style={{ margin: 0, height: '42px', fontSize: '14px', borderRadius: '12px', fontWeight: 700 }}
-              value={editForm.title}
-              onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="Название занятия"
-              autoFocus
+            <div style={{ position: 'relative', marginBottom: 4 }}>
+              <div style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }}>
+                <Icons.Search />
+              </div>
+              <input
+                className="modal-input"
+                style={{ paddingLeft: 34, height: 40, borderRadius: 10, fontSize: 14, margin: 0 }}
+                placeholder={t('bookingPopup.searchPlaceholder')}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div style={{ maxHeight: 220, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, paddingRight: 4 }}>
+              {filteredClients.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                  <Icons.Icon.Profile size={40} color="var(--border)" className="empty-float" />
+                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+                    {clientsLoaded && clientsList.length === 0
+                      ? t('bookingPopup.noEligibleClients')
+                      : t('bookingPopup.noClientsFound')}
+                  </div>
+                </div>
+              ) : (
+                filteredClients.map(c => {
+                  const isSelected = selectedClients.includes(c.id);
+                  return (
+                    <div
+                      key={c.id}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
+                        borderRadius: 10, cursor: 'pointer', transition: 'background 0.15s',
+                        background: isSelected ? 'var(--peach-soft)' : 'var(--bg)',
+                      }}
+                      onClick={() => setSelectedClients(prev =>
+                        isSelected ? prev.filter(x => x !== c.id) : [...prev, c.id]
+                      )}
+                    >
+                      <div style={{
+                        width: 32, height: 32, borderRadius: '50%', background: 'var(--peach-soft)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 10, fontWeight: 800, color: 'var(--peach)', flexShrink: 0
+                      }}>
+                        {[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('')}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{c.name} {c.last_name ?? ''}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone ?? ''}{c.subscription_hint ? ` · ${c.subscription_hint}` : ''}</div>
+                      </div>
+                      {isSelected && (
+                        <div style={{ color: 'var(--peach)' }}><Icons.Check /></div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+        /* РЕЖИМ РЕДАКТИРОВАНИЯ ЗАНЯТИЯ */
+        ) : isEditingBooking ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
+            <Select
+              value={editForm.serviceId != null ? String(editForm.serviceId) : ''}
+              options={serviceOptions}
+              onChange={handleServiceChange}
+              placeholder={t('bookingPopup.errors.selectService')}
             />
-            
-            {/* 2. 🔥 КАСТОМНЫЕ ДРОПДАУНЫ ВРЕМЕНИ */}
+            {editServiceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600 }}>{editServiceError}</div>}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              
-              {/* Начало */}
               <div className="kp-time-container" style={{ position: 'relative' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'start' ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>С</span>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'start' ? 'var(--peach)' : editTimeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>{t('bookingPopup.from')}</span>
                   <input
                     type="text"
                     style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
@@ -217,10 +353,9 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 )}
               </div>
 
-              {/* Конец */}
               <div className="kp-time-container" style={{ position: 'relative' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'end' ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>До</span>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'end' ? 'var(--peach)' : editTimeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>{t('bookingPopup.to')}</span>
                   <input
                     type="text"
                     style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
@@ -259,8 +394,8 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 )}
               </div>
             </div>
+            {editTimeError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600 }}>{editTimeError}</div>}
 
-            {/* 3. ЗАЛЫ (ЧИПСЫ) И ВМЕСТИМОСТЬ */}
             <div style={{ display: 'flex', gap: '8px' }}>
               <div style={{ display: 'flex', gap: '4px', flex: 1 }}>
                 {halls.map(h => (
@@ -279,7 +414,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 ))}
               </div>
 
-              <div style={{ width: '80px', display: 'flex', alignItems: 'center', background: 'var(--bg)', border: '1.5px solid var(--border)', borderRadius: '10px', padding: '0 8px', height: '42px', boxSizing: 'border-box' }}>
+              <div style={{ width: '80px', display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editMaxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', padding: '0 8px', height: '42px', boxSizing: 'border-box' }}>
                 <span style={{ color: 'var(--muted)', display: 'flex', transform: 'scale(0.9)' }}><Icons.Users /></span>
                 <input
                   type="number" min="1"
@@ -289,14 +424,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 />
               </div>
             </div>
+            {editMaxClientsError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, textAlign: 'right' }}>{editMaxClientsError}</div>}
           </div>
+          
+        /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА */
         ) : (
           <>
             <div className="bp-row">
               <div className="bp-icon-box"><Icons.Users /></div>
               <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
                 <span style={{ fontSize: 16, fontWeight: 900, lineHeight: 1 }}>{popupBooking.clients} / {popupBooking.maxClients}</span>
-                <span style={{ color: 'var(--muted)', marginLeft: 8, fontWeight: 600, fontSize: 13, lineHeight: 1 }}>мест занято</span>
+                <span style={{ color: 'var(--muted)', marginLeft: 8, fontWeight: 600, fontSize: 13, lineHeight: 1 }}>{t('bookingPopup.spotsTaken')}</span>
               </div>
             </div>
             
@@ -316,7 +454,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               <div style={{ marginTop: 8, background: 'rgba(26,26,26,0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.03)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Заполненность
+                    {t('bookingPopup.fillRate')}
                   </span>
                   <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--onyx)' }}>
                     {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
@@ -332,11 +470,10 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               </div>
             )}
 
-            {/* Записанные клиенты: галочка «Пришёл» + снятие с занятия */}
             {bookedClients && bookedClients.length > 0 && (
               <div style={{ marginTop: 8 }}>
                 <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
-                  Записаны
+                  {t('bookingPopup.booked')}
                 </div>
                 <div style={{ maxHeight: 168, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {bookedClients.map(c => (
@@ -354,7 +491,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       </div>
                       <button
                         className="btn-icon"
-                        title={c.status === 'attended' ? 'Пришёл' : 'Отметить посещение'}
+                        title={c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
                         style={{ color: c.status === 'attended' ? '#86b08c' : 'var(--border)', cursor: c.status === 'attended' ? 'default' : 'pointer' }}
                         onClick={(e) => { e.stopPropagation(); markAttended(c); }}
                       >
@@ -363,7 +500,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       {canEdit && (
                         <button
                           className="btn-icon"
-                          title="Снять с занятия"
+                          title={t('bookingPopup.removeFromLesson')}
                           style={{ color: 'var(--muted)' }}
                           onClick={(e) => { e.stopPropagation(); removeClient(c); }}
                         >
@@ -382,57 +519,83 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
       {/* КНОПКИ ДЕЙСТВИЙ */}
       <div className="bp-actions" style={{ position: 'relative', zIndex: 1 }}>
         
-        {isEditingBooking ? (
+        {isAddingClient ? (
+          <>
+            <button className="bp-btn ghost text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(false); }}>
+              {t('bookingPopup.cancel')}
+            </button>
+            <button
+              className="bp-btn primary text-btn"
+              disabled={selectedClients.length === 0}
+              style={{ opacity: selectedClients.length === 0 ? 0.5 : 1, cursor: selectedClients.length === 0 ? 'not-allowed' : 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddClients(selectedClients);
+                setIsAddingClient(false);
+                setSelectedClients([]);
+                setSearchQuery('');
+              }}
+            >
+              <Icons.UserPlus /> {t('bookingPopup.add')} {selectedClients.length > 0 ? `(${selectedClients.length})` : ''}
+            </button>
+          </>
+        ) : isEditingBooking ? (
           <>
             <button className="bp-btn ghost text-btn" onClick={(e) => { e.stopPropagation(); setIsEditingBooking(false); }}>
-              Отмена
+              {t('bookingPopup.cancel')}
             </button>
-            
-            <button className="bp-btn primary text-btn" onClick={(e) => {
-              e.stopPropagation();
-              const updatedMax = parseInt(editForm.maxClients) || 8;
-              const timeStart = Math.min(Math.max(editForm.timeStart, MIN_TIME_IDX), MAX_TIME_IDX - 0.25);
-              const timeEnd = Math.min(Math.max(editForm.timeEnd, timeStart + 0.25), MAX_TIME_IDX);
 
-              const next: Booking = {
-                ...popupBooking,
-                title: editForm.title,
-                hall: editForm.hall,
-                maxClients: updatedMax,
-                timeStart,
-                timeEnd,
-              };
+            <button
+              className="bp-btn primary text-btn"
+              disabled={hasEditErrors}
+              style={{ opacity: hasEditErrors ? 0.5 : 1, cursor: hasEditErrors ? 'not-allowed' : 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasEditErrors) return;
+                const timeStart = Math.min(Math.max(editForm.timeStart, MIN_TIME_IDX), MAX_TIME_IDX - 0.25);
+                const timeEnd = Math.min(Math.max(editForm.timeEnd, timeStart + 0.25), MAX_TIME_IDX);
 
-              setBookings(prev => prev.map(b => (b.id === popupBooking.id ? next : b)));
-              setPopupBooking(next);
-              onSave(popupBooking, next);
+                const next: Booking = {
+                  ...popupBooking,
+                  title: editForm.title,
+                  hall: editForm.hall,
+                  maxClients: editMaxClientsNum,
+                  timeStart,
+                  timeEnd,
+                  serviceId: editForm.serviceId,
+                };
 
-              setIsEditingBooking(false);
-            }}>
-              Сохранить
+                setPopupBooking(next);
+                onSave(popupBooking, next);
+
+                setIsEditingBooking(false);
+              }}
+            >
+              {t('bookingPopup.save')}
             </button>
           </>
         ) : (
           <>
             {canEdit && (
               <>
-                <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); openAddClient(popupBooking); }}>
-                  <Icons.UserPlus /> Добавить
+                <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(true); }}>
+                  <Icons.UserPlus /> {t('bookingPopup.add')}
                 </button>
 
-                <button className="bp-btn ghost text-btn" title="Изменить занятие" onClick={(e) => {
+                <button className="bp-btn ghost text-btn" title={t('bookingPopup.editLesson')} onClick={(e) => {
                   e.stopPropagation();
-                  setEditForm({ 
-                    title: popupBooking.title, hall: popupBooking.hall, 
+                  setEditForm({
+                    serviceId: popupBooking.serviceId,
+                    title: popupBooking.title, hall: popupBooking.hall,
                     maxClients: String(popupBooking.maxClients),
-                    timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd      
+                    timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd
                   });
                   setIsEditingBooking(true);
                 }}>
-                  <Icons.Edit /> Изменить
+                  <Icons.Edit /> {t('bookingPopup.edit')}
                 </button>
-                
-                <button className="bp-btn danger icon-only" title="Удалить занятие" onClick={() => deleteBooking(popupBooking.id)}>
+
+                <button className="bp-btn danger icon-only" title={t('bookingPopup.deleteLesson')} onClick={() => deleteBooking(popupBooking.id)}>
                   <Icons.Trash />
                 </button>
               </>
@@ -441,5 +604,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         )}
       </div>
     </div>
+
+    {showCatalogConfirm && (
+      <ConfirmModal
+        title={t('bookingPopup.createServiceConfirm.title')}
+        message={t('bookingPopup.createServiceConfirm.message')}
+        confirmText={t('bookingPopup.createServiceConfirm.confirm')}
+        onConfirm={() => navigate('/dashboard/catalog')}
+        onClose={() => setShowCatalogConfirm(false)}
+      />
+    )}
+    </>,
+    document.body
   );
 };

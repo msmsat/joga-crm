@@ -1,0 +1,150 @@
+{
+  "tabs": {
+    "overview": "Overview",
+    "sales": "Sales",
+    "clients": "Clients",
+    "team": "Team",
+    "schedule": "Schedule"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "year": "Year",
+      "custom": "Custom"
+    },
+    "vsPrevious": "vs previous period: {{from}}–{{to}}",
+    "branch": "Branch",
+    "hall": "Hall",
+    "trainer": "Trainer",
+    "service": "Service",
+    "allBranches": "All branches",
+    "allHalls": "All halls",
+    "allTrainers": "All trainers",
+    "allServices": "All services",
+    "export": "Export"
+  },
+  "insights": {
+    "title": "Needs attention",
+    "action": "Open",
+    "revenue_up_clients_down": "Revenue is up but active clients are down — check for churn",
+    "clients_at_risk": "{{count}} client(s) haven't attended in over 3 weeks — churn risk",
+    "lesson_overfull": "\"{{name}}\" on {{weekday, weekday}} at {{hour}}:00 has been {{pct}}% full for three weeks in a row — consider adding another session",
+    "trial_low_conversion": "Only {{pct}}% of {{buyers}} trial buyers went on to buy a subscription — consider a campaign",
+    "fastest_growing_product": "\"{{name}}\" is growing fastest: +{{pct}}% vs the previous period",
+    "renewals_low": "Only {{pct}}% of clients with an expired subscription renew — consider a reminder"
+  },
+  "table": {
+    "empty": "No data for this period",
+    "loading": "Loading…",
+    "noProduct": "No product"
+  },
+  "empty": {
+    "inDevelopment": "Coming soon"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Revenue",
+      "profit": "Profit",
+      "attendance": "Attendance",
+      "activeClients": "Active clients",
+      "fillRate": "Fill rate"
+    },
+    "chart": {
+      "title": "Trend",
+      "metric": {
+        "revenue": "Revenue",
+        "profit": "Profit",
+        "attendance": "Attendance",
+        "new_clients": "New clients",
+        "fill_rate": "Fill rate"
+      }
+    },
+    "revenueStructure": {
+      "title": "Revenue structure"
+    },
+    "category": {
+      "subscriptions": "Subscriptions",
+      "services": "Services",
+      "certificates": "Certificates",
+      "rent": "Rent",
+      "salary": "Salary",
+      "refunds": "Refunds"
+    },
+    "clientDynamics": {
+      "title": "Client dynamics",
+      "new": "New",
+      "returned": "Returned",
+      "lost": "Lost"
+    },
+    "drilldown": {
+      "title": "Operation",
+      "category": "Category",
+      "amount": "Amount",
+      "lesson": "Lesson",
+      "time": "Time",
+      "occupancy": "Occupancy"
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Revenue",
+      "salesCount": "Sales",
+      "avgCheck": "Average check",
+      "repeatShare": "Repeat share",
+      "renewals": "Renewal rate"
+    },
+    "chart": {
+      "title": "Sales"
+    },
+    "breakdown": {
+      "byCategory": "What they buy",
+      "byMethod": "How they pay",
+      "buyerType": "Who buys",
+      "new": "New",
+      "returning": "Returning",
+      "noClient": "No client"
+    },
+    "method": {
+      "card": "Card",
+      "cash": "Cash",
+      "qr": "QR code",
+      "transfer": "Transfer"
+    },
+    "products": {
+      "name": "Product",
+      "sold": "Sold",
+      "revenue": "Revenue",
+      "avgCheck": "Average check",
+      "repeatShare": "Repeat share",
+      "trend": "Trend"
+    }
+  },
+  "export": {
+    "csv": "Download CSV",
+    "pdf": "Print PDF"
+  },
+  "formulas": {
+    "salesCount": { "title": "Sales", "text": "count Operation, type='in', by op_date in the period" },
+    "revenue": { "title": "Revenue", "text": "Σ Operation.amount, type='in', by op_date in the period" },
+    "profit": { "title": "Profit", "text": "Revenue − Σ expenses (type='out')" },
+    "attendance": { "title": "Attendance", "text": "count Reservation status='attended' (joined to Lesson within the period)" },
+    "bookings": { "title": "Bookings", "text": "count Reservation status≠'cancelled'" },
+    "noshow": { "title": "No-show", "text": "Reservation status='active' AND the lesson has already ended (start_time + duration_min < now)" },
+    "activeClients": { "title": "Active clients", "text": "distinct client_id with an attendance in the period" },
+    "occupancy": { "title": "Occupancy", "text": "occupied spots (active+attended) / Σ total_spots across non-cancelled lessons in the period" },
+    "avgCheck": { "title": "Average check", "text": "Revenue / number of income operations" },
+    "retention": { "title": "Retention", "text": "share of last period's clients who returned this period" },
+    "newClients": { "title": "New clients", "text": "registration_date within the period" },
+    "returning": { "title": "Returning", "text": "attended this period AND attended before the period" },
+    "lost": { "title": "Lost", "text": "attended last period, no attendance this period" },
+    "clientValue": { "title": "Client value", "text": "Revenue from client_id / distinct such clients" },
+    "repeatPurchaseShare": { "title": "Repeat purchase share", "text": "clients with ≥2 income operations / clients with ≥1" },
+    "renewalRate": { "title": "Renewal rate", "text": "from /loyalty/retention: bought the next package after the previous one expired" },
+    "revenuePerHour": { "title": "Revenue per hour (trainer)", "text": "Σ income operations with trainer_id / Σ hours of their lessons" },
+    "trainerReturnRate": { "title": "Return rate (trainer)", "text": "clients with ≥2 visits to this trainer / clients with ≥1" },
+    "missedRevenue": { "title": "Missed revenue", "text": "Σ (empty spots × Lesson.price) across past non-cancelled lessons" },
+    "filtersScope": { "title": "Filter scope", "text": "operations have no hall/branch — Branch/Hall filters only affect lesson-based metrics" }
+  }
+}

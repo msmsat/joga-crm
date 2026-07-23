@@ -1,5 +1,5 @@
 import { client } from '../client'
-import type { Hall, Lesson, LessonCreate, LessonDetail, Reservation } from './schedule.types'
+import type { EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation } from './schedule.types'
 
 export const scheduleApi = {
   getLessons: (params: { date_from: string; date_to: string; hall_id?: number }) => {
@@ -12,14 +12,25 @@ export const scheduleApi = {
   getLesson: (id: number) =>
     client.get<LessonDetail>(`/schedule/lessons/${id}`),
 
+  getEligibleClients: (lessonId: number) =>
+    client.get<EligibleClient[]>(`/schedule/lessons/${lessonId}/eligible-clients`),
+
+  getLessonDays: (month: string) =>
+    client.get<LessonDaysResponse>(`/schedule/lessons/days?month=${month}`),
+
   createLesson: (payload: LessonCreate) =>
     client.post<Lesson>('/schedule/lessons', payload),
 
   updateLesson: (id: number, payload: Partial<LessonCreate>) =>
     client.patch<Lesson>(`/schedule/lessons/${id}`, payload),
 
-  cancelLesson: (id: number) =>
-    client.patch<void>(`/schedule/lessons/${id}/cancel`, {}),
+  cancelLesson: (id: number, reason?: string) =>
+    client.patch<void>(`/schedule/lessons/${id}/cancel`, reason ? { reason } : {}),
+
+  // Настоящее удаление — только для undo только что созданного занятия (V4-3);
+  // занятие с записанными клиентами сервер не удалит (409).
+  deleteLesson: (id: number) =>
+    client.delete<void>(`/schedule/lessons/${id}`),
 
   getHalls: () =>
     client.get<Hall[]>('/schedule/halls'),

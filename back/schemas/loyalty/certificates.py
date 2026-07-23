@@ -9,7 +9,7 @@ class CertificateConfigRead(BaseSchema):
     cert_type: str
     expiry_days: int
     denominations: Optional[list[int]] = None
-    service_name: Optional[str] = None
+    service_id: Optional[int] = None
 
 
 class CertificateConfigUpdate(BaseSchema):
@@ -17,7 +17,7 @@ class CertificateConfigUpdate(BaseSchema):
     cert_type: Optional[str] = None
     expiry_days: Optional[int] = None
     denominations: Optional[list[int]] = None
-    service_name: Optional[str] = None
+    service_id: Optional[int] = None
 
 
 class GiftCertificateRead(BaseSchema):
@@ -37,3 +37,4 @@ class GiftCertificateCreate(BaseSchema):
     recipient_name: Optional[str] = None
     client_id: Optional[int] = None
     expires_at: Optional[date] = None
+    account_id: Optional[int] = None

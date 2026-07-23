@@ -117,10 +117,56 @@ async function request<T>(method: string, path: string, options: RequestOptions 
   const data: unknown = await res.json()
 
   if (!res.ok) {
-    throw new ApiError(res.status, normalizeError(data))
+    throw new ApiError(res.status, normalizeError(data), detailCode(data))
   }
 
   return data as T
+}
+
+// Скачивание файла с бэкенда (CSV-экспорт, документы): нужен Bearer-токен в заголовке,
+// поэтому обычная ссылка <a href> не подходит — грузим blob через fetch и кликаем сами.
+export async function downloadFile(path: string): Promise<void> {
+  const token = getToken()
+  const headers: Record<string, string> = {}
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${BASE_URL}${path}`, { headers })
+  if (!res.ok) {
+    const data: unknown = await res.json().catch(() => null)
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Не удалось скачать файл')
+  }
+
+  const disposition = res.headers.get('Content-Disposition') ?? ''
+  const match = /filename="?([^";]+)"?/.exec(disposition)
+  const filename = match ? match[1] : 'download'
+
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+// Открыть файл в новой вкладке (просмотр, а не скачивание). Тот же blob-через-fetch,
+// т.к. нужен Bearer-токен. Blob-URL не отзываем сразу — вкладка ещё грузит его.
+// ponytail: blob-URL живёт до закрытия вкладки; браузер освободит его сам при unload.
+export async function openFile(path: string): Promise<void> {
+  const token = getToken()
+  const headers: Record<string, string> = {}
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${BASE_URL}${path}`, { headers })
+  if (!res.ok) {
+    const data: unknown = await res.json().catch(() => null)
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Не удалось открыть файл')
+  }
+
+  const blob = await res.blob()
+  window.open(URL.createObjectURL(blob), '_blank', 'noopener')
 }
 
 export const client = {

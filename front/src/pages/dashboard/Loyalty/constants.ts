@@ -2,49 +2,70 @@ import type { ProgramKey } from './types';
 
 interface ProgramMeta {
   key: ProgramKey;
-  title: string;
-  desc: string;
+  titleKey: string;
+  descKey: string;
   accentColor: string;
   accentBg: string;
   accentBorder: string;
-  stats: { value: number; label: string };
+  stats: { labelKey: string };
 }
 
+// title/desc/label — ключи loyalty.json (namespace `loyalty`), резолвятся в Loyalty.tsx.
+// Значение счётчика (было хардкодом — задача 6, V5-2) теперь приходит с сервера
+// (GET /loyalty/stats → program_counters), здесь остаётся только текстовый лейбл.
 export const PROGRAM_METADATA: ProgramMeta[] = [
   {
     key: 'loyalty',
-    title: 'Карты лояльности',
-    desc: 'Накопительная система баллов по уровням',
+    titleKey: 'programs.loyalty.title',
+    descKey: 'programs.loyalty.desc',
     accentColor: '#FCAE91',
     accentBg: 'rgba(252,174,145,0.08)',
     accentBorder: 'rgba(252,174,145,0.25)',
-    stats: { value: 89, label: 'клиентов' },
+    stats: { labelKey: 'programs.loyalty.statLabel' },
   },
   {
     key: 'discounts',
-    title: 'Скидки и кэшбэк',
-    desc: 'Персональные предложения для клиентов',
+    titleKey: 'programs.discounts.title',
+    descKey: 'programs.discounts.desc',
     accentColor: '#5BAB72',
     accentBg: 'rgba(91,171,114,0.08)',
     accentBorder: 'rgba(91,171,114,0.25)',
-    stats: { value: 18, label: 'активных' },
+    stats: { labelKey: 'programs.discounts.statLabel' },
   },
   {
     key: 'certificates',
-    title: 'Сертификаты',
-    desc: 'Подарочные и именные сертификаты',
+    titleKey: 'programs.certificates.title',
+    descKey: 'programs.certificates.desc',
     accentColor: '#4A80C4',
     accentBg: 'rgba(74,128,196,0.08)',
     accentBorder: 'rgba(74,128,196,0.25)',
-    stats: { value: 34, label: 'продано' },
+    stats: { labelKey: 'programs.certificates.statLabel' },
   },
   {
     key: 'referral',
-    title: 'Реферальная',
-    desc: 'Программа «Приведи друга»',
+    titleKey: 'programs.referral.title',
+    descKey: 'programs.referral.desc',
     accentColor: '#9B8EC4',
     accentBg: 'rgba(155,142,196,0.08)',
     accentBorder: 'rgba(155,142,196,0.25)',
-    stats: { value: 24, label: 'реферала' },
+    stats: { labelKey: 'programs.referral.statLabel' },
+  },
+  {
+    key: 'promocodes',
+    titleKey: 'programs.promocodes.title',
+    descKey: 'programs.promocodes.desc',
+    accentColor: '#5BAB72',
+    accentBg: 'rgba(91,171,114,0.08)',
+    accentBorder: 'rgba(91,171,114,0.25)',
+    stats: { labelKey: 'programs.promocodes.statLabel' },
+  },
+  {
+    key: 'deposit',
+    titleKey: 'programs.deposit.title',
+    descKey: 'programs.deposit.desc',
+    accentColor: '#FCAE91',
+    accentBg: 'rgba(252,174,145,0.08)',
+    accentBorder: 'rgba(252,174,145,0.25)',
+    stats: { labelKey: 'programs.deposit.statLabel' },
   },
 ];

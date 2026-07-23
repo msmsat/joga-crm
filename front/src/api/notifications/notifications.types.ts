@@ -16,3 +16,26 @@ export interface EventToggle {
   channel_key: string
   is_enabled: boolean
 }
+
+export interface ChannelStatus {
+  connected: boolean
+  details: Record<string, unknown>
+}
+
+export interface NotifyChannelsStatus {
+  telegram: ChannelStatus
+  whatsapp: ChannelStatus
+  email: ChannelStatus
+}
+
+export interface WaPricing {
+  price_per_message: number
+  currency: string
+  source: 'meta' | 'default'
+}
+
+export interface WaConnectPayload {
+  token: string
+  phone_number_id: string
+  waba_id?: string | null
+}
