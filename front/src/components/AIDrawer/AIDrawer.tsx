@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './AIDrawer.module.css';
 import { useAIDrawer } from '../../contexts/AIDrawerContext';
 import { useDrawerChat } from './hooks/useDrawerChat';
+import { useToast } from '../ui/Toast';
 import DrawerHeader from './components/DrawerHeader';
 import ChatView from './components/ChatView';
 import HistoryView from './components/HistoryView';
@@ -12,22 +14,31 @@ export default function AIDrawer() {
     messages,
     isThinking,
     sessions,
+    sessionsLoading,
+    sessionsError,
+    refetchSessions,
     activeSessionId,
     messagesEndRef,
     sendMessage,
     newChat,
     loadSession,
-    cleanup,
   } = useDrawerChat();
+  const { t } = useTranslation('ai');
+  const toast = useToast();
 
-  useEffect(() => cleanup, [cleanup]);
+  // Ошибки видимы всегда — один тост на переход isError, не молчаливая пустота
+  // (эпик AI-4, задача 3). ChatView (сообщения дровера) не в объёме этой задачи.
+  useEffect(() => {
+    if (sessionsError) toast.error(t('common:errors.loadFailed'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionsError]);
 
   const handleHistoryToggle = () => {
     if (showHistory) exitHistory();
     else enterHistory();
   };
 
-  const handleSelectSession = (id: string) => {
+  const handleSelectSession = (id: number) => {
     loadSession(id);
     exitHistory();
   };
@@ -61,6 +72,9 @@ export default function AIDrawer() {
         <div className={`${styles.screen} ${styles.historyScreen} ${showHistory ? styles.historyScreenVisible : ''}`}>
           <HistoryView
             sessions={sessions}
+            sessionsLoading={sessionsLoading}
+            sessionsError={sessionsError}
+            onRetry={() => void refetchSessions()}
             activeSessionId={activeSessionId}
             onSelect={handleSelectSession}
           />

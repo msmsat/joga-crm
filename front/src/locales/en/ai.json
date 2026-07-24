@@ -1,0 +1,132 @@
+{
+  "telegram": {
+    "tokenLabel": "Bot token",
+    "tokenPlaceholder": "1234567890:ABC...",
+    "tokenInvalidFormat": "Invalid token format",
+    "verifyButton": "Verify & connect",
+    "verifiedToast": "Bot @{{username}} connected",
+    "verifyFailedToast": "Telegram rejected this token",
+    "disconnect": "Disconnect",
+    "disconnectedToast": "Bot disconnected",
+    "disconnectConfirmTitle": "Disconnect the bot?",
+    "disconnectConfirmMessage": "The Telegram auto-responder will stop working until you reconnect a bot.",
+    "gateTooltip": "Connect a bot first",
+    "statsPending": "Will appear once the auto-responder starts working",
+    "instructionTitle": "How to get a token",
+    "instructionStep1": "Open @BotFather in Telegram",
+    "instructionStep2": "Send the /newbot command, choose a name and username for the bot",
+    "instructionStep3": "Copy the token it gives you",
+    "instructionStep4": "Paste it here and click \"Verify & connect\""
+  },
+  "instagram": {
+    "connectButton": "Connect Instagram",
+    "connectedToast": "Instagram connected",
+    "connectErrorToast": "Couldn't connect Instagram — please try again",
+    "expiresUntil": "Access valid until {{date}}",
+    "disconnect": "Disconnect",
+    "disconnectedToast": "Instagram disconnected",
+    "disconnectConfirmTitle": "Disconnect Instagram?",
+    "disconnectConfirmMessage": "The Instagram auto-responder will stop replying to clients until you reconnect the account.",
+    "gateTooltip": "Connect an account first",
+    "statsPending": "Will appear once the auto-responder starts working",
+    "instructionTitle": "How to connect",
+    "instructionStep1": "The studio's account must be professional — Business or Creator (Instagram Settings → Account type)",
+    "instructionStep2": "Click \"Connect Instagram\" and sign in as the studio's account",
+    "instructionStep3": "Allow access to messages",
+    "instructionStep4": "You'll be brought back here automatically"
+  },
+  "history": {
+    "title": "Chat history",
+    "empty": "Start your first conversation",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "earlier": "Earlier",
+    "messagesCount": "{{count}} msgs",
+    "deleteConfirmTitle": "Delete this chat?",
+    "deleteConfirmMessage": "All messages in this conversation will be permanently deleted."
+  },
+  "actions": {
+    "newChat": "New chat",
+    "deleteChat": "Delete chat"
+  },
+  "settings": {
+    "title": "AI settings",
+    "model": "Model",
+    "language": "Language"
+  },
+  "models": {
+    "comingSoon": "Coming soon",
+    "velora-3.5": "Velora AI 3.5"
+  },
+  "languages": {
+    "auto": "Auto",
+    "ru": "Russian",
+    "en": "English",
+    "uk": "Ukrainian"
+  },
+  "chat": {
+    "thinking": "Velora AI is thinking",
+    "thinkingAnswer": "Velora AI is thinking it over",
+    "readyTitle": "Velora AI is ready to help",
+    "thinkingTitle": "Velora AI is thinking...",
+    "readySubtitle": "Ask a question or pick a suggestion",
+    "thinkingSubtitle": "Processing your request",
+    "placeholder": "Write a message...",
+    "drawerPlaceholder": "Ask me anything...",
+    "navbarPlaceholder": "Ask AI or set a task...",
+    "enterToSend": "Enter to send",
+    "shiftEnterNewline": "Shift+Enter for a new line",
+    "continueInChat": "Continue in chat →",
+    "emptyTitle": "How can I help?",
+    "emptySubtitle": "Ask any question about your studio, clients, or business",
+    "charCount": "{{count}} / 4000 characters",
+    "suggestions": {
+      "revenue": "Show revenue stats for this month",
+      "sms": "Write an SMS reminder about an appointment",
+      "promo": "Ideas for a summer promotion",
+      "retention": "How can I improve client retention?"
+    },
+    "drawerSuggestions": {
+      "revenueAnalysis": "Revenue analysis",
+      "emailTemplate": "Email template",
+      "promoIdeas": "Promotion ideas",
+      "clientReport": "Client report"
+    }
+  },
+  "drawer": {
+    "historyBack": "Chats",
+    "historyLabel": "History"
+  },
+  "agents": {
+    "title": "AI agents",
+    "configureButton": "Configure agents",
+    "enable": "Enable",
+    "disable": "Disable",
+    "modalTitle": "AI agent setup",
+    "modalSubtitle": "Automated replies in messengers",
+    "tabPrompt": "System prompt",
+    "statusDisabled": "Disabled",
+    "statHandled": "Handled",
+    "statRating": "Rating",
+    "toneLabel": "Reply tone",
+    "tone": {
+      "friendly": "Friendly",
+      "formal": "Formal",
+      "neutral": "Neutral"
+    },
+    "maxLengthLabel": "Max reply length (characters)",
+    "maxLengthError": "Enter a number from 50 to 4000",
+    "offHoursLabel": "Auto-reply only outside working hours",
+    "promptHint": "This text defines the agent's personality — how it communicates, what it knows, which topics it avoids.",
+    "promptPlaceholder": "You are a polite studio assistant...",
+    "promptCount": "{{count}} / 2000 characters"
+  },
+  "errors": {
+    "tg_token_required": "Connect a Telegram bot first — no token has been saved yet.",
+    "ig_not_connected": "Instagram isn't connected yet.",
+    "assistant_unavailable": "The assistant is temporarily unavailable — please try again later."
+  },
+  "toasts": {
+    "settingsSaved": "Settings saved"
+  }
+}

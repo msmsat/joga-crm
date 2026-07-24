@@ -13,6 +13,7 @@ import financesRU from './locales/ru/finances.json';
 import bookingRU from './locales/ru/booking.json';
 import reportsRU from './locales/ru/reports.json';
 import notificationsRU from './locales/ru/notifications.json';
+import aiRU from './locales/ru/ai.json';
 
 import commonEN from './locales/en/common.json';
 import staffEN from './locales/en/staff.json';
@@ -25,6 +26,7 @@ import financesEN from './locales/en/finances.json';
 import bookingEN from './locales/en/booking.json';
 import reportsEN from './locales/en/reports.json';
 import notificationsEN from './locales/en/notifications.json';
+import aiEN from './locales/en/ai.json';
 
 // 2. Раскладываем их по полочкам (namespaces)
 const resources = {
@@ -40,6 +42,7 @@ const resources = {
     booking: bookingRU,
     reports: reportsRU,
     notifications: notificationsRU,
+    ai: aiRU,
   },
   en: {
     common: commonEN,
@@ -53,12 +56,18 @@ const resources = {
     booking: bookingEN,
     reports: reportsEN,
     notifications: notificationsEN,
+    ai: aiEN,
   }
 };
 
 // Postgres EXTRACT(dow): 0=воскресенье..6=суббота — используется в insights
 // бэка (R1, lesson_overfull.weekday). common.days ключи начинаются с mon.
 const DOW_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
+
+// Postgres EXTRACT(isodow): 1=понедельник..7=воскресенье — R5 (utilization.py,
+// heatmap/chronic_low/slot_overfull) использует isodow, не dow, поэтому нужен
+// отдельный форматтер вместо переиндексации 'weekday'.
+const ISODOW_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
 i18n
   .use(initReactI18next) // Передаем i18n внутрь React
@@ -76,5 +85,6 @@ i18n
 // (i18next v22+) — регистрировать кастомный формат нужно через formatter.add
 // ПОСЛЕ init, иначе {{weekday, weekday}} тихо выводит сырое число.
 i18n.services.formatter?.add('weekday', value => i18n.t(`common:days.${DOW_KEYS[Number(value)] ?? 'mon'}`));
+i18n.services.formatter?.add('isodowWeekday', value => i18n.t(`common:days.${ISODOW_KEYS[Number(value) % 7] ?? 'mon'}`));
 
 export default i18n;

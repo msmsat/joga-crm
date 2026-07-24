@@ -25,12 +25,17 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
 // (enableChannel) существовал раньше useNotifications, которому нужен статус интеграций.
 export function useEnableChannel() {
   const setChannel = useNotificationsStore(s => s.setChannel);
+  const qc = useQueryClient();
   // После подключения канала в модалке: интеграция уже сохранена на бэке,
   // здесь включаем сам тумблер настроек (PATCH + локальный стейт), без отката
   // при ошибке — подключение уже состоялось, тумблер лишь отражает его.
+  // Инвалидация в finally подтягивает реальное состояние с сервера даже если
+  // PATCH упал, и снимает расхождение локального стора с кэшем React Query.
   return (key: ChannelKey) => {
     setChannel(key, true);
-    notificationsApi.updateSettings({ [key]: true }).catch(() => {});
+    notificationsApi.updateSettings({ [key]: true })
+      .catch(() => {})
+      .finally(() => qc.invalidateQueries({ queryKey: queryKeys.notificationSettings }));
   };
 }
 
@@ -53,9 +58,10 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
 
   useEffect(() => {
     if (!settingsQ.data) return;
-    hydrateChannels({
-      telegram: settingsQ.data.telegram, whatsapp: settingsQ.data.whatsapp, email: settingsQ.data.email,
-    });
+    const data = settingsQ.data;
+    hydrateChannels(
+      Object.fromEntries(CHANNELS.map(ch => [ch.key, data[ch.key] ?? false])) as Record<ChannelKey, boolean>,
+    );
   }, [settingsQ.data, hydrateChannels]);
 
   useEffect(() => {
@@ -136,6 +142,7 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
 
   return {
     channels, toggleChannel,
+    channelSaving: updateSettingsMut.isPending,
     activeRole, switchRole, countActive,
     currentRole, events, activeChannels,
     toggles, toggleCheck, setToggles,

@@ -46,6 +46,8 @@ logger = logging.getLogger(__name__)
 NOTIFY_CHANNELS = ("email", "telegram", "whatsapp")
 _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴"}
 GRAPH = "https://graph.facebook.com/v20.0"
+# ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
+LARGE_PAYMENT = 10_000
 
 
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
@@ -157,6 +159,21 @@ def _render(
     tail_ru = f" — {when}" if when else ""
     tail_en = f" — {when}" if when else ""
 
+    client_name = context.get("client_name") or ""
+    staff_name = context.get("staff_name") or ""
+    period_start = context.get("period_start") or ""
+    period_end = context.get("period_end") or ""
+    names = context.get("names") or ""
+    revenue_str = _fmt_amount(context.get("revenue"), currency)
+    avg7_str = _fmt_amount(context.get("avg7"), currency)
+    lessons = context.get("lessons")
+    new_clients = context.get("new_clients")
+    goal_name = context.get("goal_name") or ""
+    days_left = context.get("days_left")
+    role_ru = {"admin": "администратор", "trainer": "тренер", "owner": "владелец"}.get(context.get("role"), context.get("role") or "")
+    role_en = context.get("role") or ""
+    hours = context.get("hours")
+
     TEMPLATES: dict[str, dict[str, tuple[str, str]]] = {
         "c1": {
             "ru": ("Запись подтверждена", f"Вы записаны на «{lesson_ru}»{tail_ru}. Ждём вас!"),
@@ -178,9 +195,101 @@ def _render(
             "ru": ("Абонемент закончился", "Ваш абонемент завершён. Оформите новый, чтобы продолжить занятия."),
             "en": ("Subscription ended", "Your subscription has ended. Get a new one to keep training."),
         },
+        "c2": {
+            "ru": ("Напоминание о занятии", f"Напоминаем: «{lesson_ru}»{tail_ru} через {hours} ч."),
+            "en": ("Class reminder", f'Reminder: "{lesson_en}"{tail_en} in {hours}h.'),
+        },
+        "t3": {
+            "ru": ("Занятие через час", f"«{lesson_ru}»{tail_ru} начнётся через час."),
+            "en": ("Class in an hour", f'"{lesson_en}"{tail_en} starts in an hour.'),
+        },
+        "t4": {
+            "ru": ("Занятие через 30 минут", f"«{lesson_ru}»{tail_ru} через 30 минут. Записаны: {names}."),
+            "en": ("Class in 30 minutes", f'"{lesson_en}"{tail_en} in 30 minutes. Attendees: {names}.'),
+        },
         "c11": {
             "ru": ("Занятие изменено", f"Занятие «{lesson_ru}» перенесено — новое время: {when}."),
             "en": ("Class rescheduled", f'"{lesson_en}" has been rescheduled — new time: {when}.'),
+        },
+        "t6": {
+            "ru": ("Выплачена зарплата", f"Выплачена зарплата {amount_str} за период {period_start} — {period_end}."),
+            "en": ("Salary paid", f"Salary of {amount_str} paid for the period {period_start} — {period_end}."),
+        },
+        "c7": {
+            "ru": ("С днём рождения!", f"{client_name}, поздравляем вас с днём рождения! Ждём вас на занятиях — будем рады видеть."),
+            "en": ("Happy Birthday!", f"{client_name}, happy birthday! We'd love to see you at a class soon."),
+        },
+        "t8": {
+            "ru": ("Дни рождения клиентов", f"Сегодня день рождения у: {names}."),
+            "en": ("Client birthdays today", f"Today's birthdays: {names}."),
+        },
+        "a1": {
+            "ru": ("Новая онлайн-запись", f"Новая запись клиента {client_name} на «{lesson_ru}»."),
+            "en": ("New online booking", f'New booking from {client_name} for "{lesson_en}".'),
+        },
+        "a2": {
+            "ru": ("Отмена менее чем за час", f"Клиент {client_name} отменил запись на «{lesson_ru}» менее чем за час до начала."),
+            "en": ("Cancellation under an hour", f'{client_name} cancelled "{lesson_en}" less than an hour before start.'),
+        },
+        "a3": {
+            "ru": ("Новый клиент в системе", f"В систему добавлен новый клиент: {client_name}."),
+            "en": ("New client added", f"A new client has been added: {client_name}."),
+        },
+        "a4": {
+            "ru": ("Оплата получена", f"Оплата {amount_str} от клиента {client_name}."),
+            "en": ("Payment received", f"Payment of {amount_str} from {client_name}."),
+        },
+        "a6": {
+            "ru": ("Абонемент на исходе", f"У клиента {client_name} осталось {remaining} занятий по абонементу."),
+            "en": ("Subscription running low", f"{client_name} has {remaining} classes left on their subscription."),
+        },
+        "a8": {
+            "ru": ("Отчёт за день", f"Выручка: {revenue_str}, занятий: {lessons}, новых клиентов: {new_clients}."),
+            "en": ("Daily report", f"Revenue: {revenue_str}, classes: {lessons}, new clients: {new_clients}."),
+        },
+        "a10": {
+            "ru": ("Оформлен возврат", f"Оформлен возврат {amount_str} клиенту {client_name}."),
+            "en": ("Refund issued", f"Refund of {amount_str} issued to {client_name}."),
+        },
+        "c8": {
+            "ru": ("Как прошло занятие?", f"Как вам «{lesson_ru}»? Будем рады отзыву — это поможет нам стать лучше."),
+            "en": ("How was your class?", f'How was "{lesson_en}"? We\'d love your feedback.'),
+        },
+        "c9": {
+            "ru": ("Возврат средств оформлен", f"Возврат {amount_str} оформлен и поступит в ближайшее время."),
+            "en": ("Refund issued", f"A refund of {amount_str} has been issued and is on its way."),
+        },
+        "o1": {
+            "ru": ("Ежедневная сводка", f"Выручка: {revenue_str}, занятий: {lessons}, новых клиентов: {new_clients}."),
+            "en": ("Daily summary", f"Revenue: {revenue_str}, classes: {lessons}, new clients: {new_clients}."),
+        },
+        "o2": {
+            "ru": ("Еженедельный отчёт", f"За неделю: выручка {revenue_str}, занятий {lessons}, новых клиентов {new_clients}."),
+            "en": ("Weekly report", f"This week: revenue {revenue_str}, classes {lessons}, new clients {new_clients}."),
+        },
+        "o3": {
+            "ru": ("Крупный платёж", f"Крупный платёж {amount_str} от клиента {client_name}."),
+            "en": ("Large payment", f"Large payment of {amount_str} from {client_name}."),
+        },
+        "o4": {
+            "ru": ("Резкое падение выручки", f"Выручка за сегодня ({revenue_str}) заметно ниже среднего за неделю ({avg7_str})."),
+            "en": ("Revenue drop", f"Today's revenue ({revenue_str}) is notably below the weekly average ({avg7_str})."),
+        },
+        "o5": {
+            "ru": ("Добавлен сотрудник", f"В команду добавлен новый сотрудник: {staff_name}."),
+            "en": ("Staff member added", f"A new staff member has been added: {staff_name}."),
+        },
+        "o6": {
+            "ru": ("Тариф истекает", f"Тариф истекает через {days_left} дн. Продлите подписку, чтобы не потерять доступ."),
+            "en": ("Plan expiring soon", f"Your plan expires in {days_left} days. Renew to keep access."),
+        },
+        "o7": {
+            "ru": ("Изменены права доступа", f"Изменены права доступа сотрудника {staff_name}: новая роль — {role_ru}."),
+            "en": ("Access role changed", f"{staff_name}'s access role has been changed to {role_en}."),
+        },
+        "o8": {
+            "ru": ("Финансовая цель достигнута", f"Цель «{goal_name}» достигнута!"),
+            "en": ("Financial goal reached", f'Goal "{goal_name}" has been reached!'),
         },
     }
 
@@ -193,26 +302,54 @@ def _render(
 
 async def _recipient(
     db: AsyncSession, studio_id: int, role: str, context: dict[str, Any],
-) -> tuple[Client | None, str | None]:
-    """Клиентские события → (Client, email клиента) — Client нужен для tg_id.
-    Остальные → (None, email владельца), либо context["to_email"] если передан
-    (сотрудник-адресат, например тренер при зарплате — приоритет над владельцем)."""
+) -> tuple[Client | None, list[str]]:
+    """Клиентские события → (Client, [email клиента]) — Client нужен для tg_id.
+    Остальные роли — точечный адресат или список email по роли:
+      - context["to_email"] задан → (None, [to_email]) — приоритет над всем
+        остальным (например, конкретный тренер при зарплате);
+      - role == "trainer" → email всех тренеров студии (fallback — пусто,
+        владельцу чужие события не шлём);
+      - role == "admin" → email всех админов, fallback — владелец (в
+        маленькой студии администратора может не быть);
+      - role == "owner" → email владельца.
+    Каналы telegram/whatsapp работают только при наличии Client — у
+    сотрудников нет tg_id/привязанного номера, их канал доставки — только
+    email (осознанное MVP-ограничение)."""
     client_id = context.get("client_id")
     if role == "client" and client_id is not None:
         client = (await db.execute(
             select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
         )).scalar_one_or_none()
-        return client, (client.email if client else None)
+        return client, ([client.email] if client and client.email else [])
 
     to_email = context.get("to_email")
     if to_email:
-        return None, to_email
+        return None, [to_email]
+
+    if role == "trainer":
+        emails = (await db.execute(
+            select(User.email)
+            .join(StudioMember, StudioMember.user_id == User.id)
+            .where(StudioMember.studio_id == studio_id, StudioMember.role == "trainer")
+        )).scalars().all()
+        return None, list(emails)
+
+    if role == "admin":
+        emails = (await db.execute(
+            select(User.email)
+            .join(StudioMember, StudioMember.user_id == User.id)
+            .where(StudioMember.studio_id == studio_id, StudioMember.role == "admin")
+        )).scalars().all()
+        if emails:
+            return None, list(emails)
+        # fallback: маленькая студия без отдельного администратора
+
     owner_email = (await db.execute(
         select(User.email)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id, StudioMember.role == "owner")
     )).scalars().first()
-    return None, owner_email
+    return None, ([owner_email] if owner_email else [])
 
 
 async def notify(
@@ -257,13 +394,14 @@ async def notify(
             return False  # нет шаблона под событие
         subject, text, html = rendered
 
-        client, email = await _recipient(db, studio_id, role, context)
-        if not email and client is None:
+        client, emails = await _recipient(db, studio_id, role, context)
+        if not emails and client is None:
             return False  # некому слать ни на один канал
 
         sent = False
-        if "email" in enabled_channels and email:
-            await send_email(email, subject, html)
+        if "email" in enabled_channels and emails:
+            for addr in emails:
+                await send_email(addr, subject, html)
             sent = True
         if client is not None:
             if "telegram" in enabled_channels and client.tg_id:

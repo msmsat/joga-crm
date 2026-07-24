@@ -16,7 +16,7 @@ from models import Account, Client, Counterparty, Operation
 from routers.clients.loyalty import accrue_points, register_purchase
 from schemas.common import Page
 from schemas.finances.operations import CategoryStat, MethodStat, OperationCreate, OperationRead, OperationUpdate
-from services.notifier import notify
+from services.notifier import LARGE_PAYMENT, notify
 
 router = APIRouter()
 
@@ -282,10 +282,30 @@ async def create_operation(
     await db.commit()
     await db.refresh(op)
 
-    # Успешная оплата клиента → квитанция (c4).
+    client_name = None
+    if body.client_id is not None:
+        client_name = (await db.execute(
+            select(Client.name, Client.last_name).where(Client.id == body.client_id)
+        )).first()
+        client_name = f"{client_name.name} {client_name.last_name or ''}".strip() if client_name else None
+
     if body.type == "in" and body.client_id is not None:
+        # Успешная оплата клиента → квитанция (c4) и уведомление админу (a4).
         await notify(db, ctx.studio_id, "client", "c4",
                      {"client_id": body.client_id, "amount": body.amount})
+        await notify(db, ctx.studio_id, "admin", "a4",
+                     {"amount": body.amount, "client_name": client_name})
+        if body.amount >= LARGE_PAYMENT:
+            await notify(db, ctx.studio_id, "owner", "o3",
+                         {"amount": body.amount, "client_name": client_name})
+
+    if body.type == "out" and body.category == "Возвраты":
+        await notify(db, ctx.studio_id, "admin", "a10",
+                     {"amount": body.amount, "client_name": client_name})
+        if body.client_id is not None:
+            await notify(db, ctx.studio_id, "client", "c9",
+                         {"client_id": body.client_id, "amount": body.amount})
+
     return _to_read(op)
 
 

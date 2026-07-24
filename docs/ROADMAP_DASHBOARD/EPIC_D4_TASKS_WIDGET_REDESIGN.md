@@ -1,162 +1,395 @@
-# EPIC D4 — Редизайн виджета «Задачи» + каскадные дропдауны
+# EPIC D4 — Виджет «Задачи»: редизайн + каскадные дропдауны делегирования
 
-**Цель:** переименовать «Задачи на сегодня» → «Задачи», освежить вид, и
-внедрить двухуровневый выбор исполнителя: группа (роль) → конкретный сотрудник.
-Создаваемая задача назначается выбранному пользователю. Всё через API D2.
+**Цель:** «Задачи на сегодня» → «Задачи»; современный вид виджета; двухуровневый
+выбор исполнителя (группа-роль → конкретный сотрудник) с фильтрацией списка и
+адресацией создаваемой задачи; всё через API из D2, без F5.
 
-**Зависимости:** **D2** (нужны `assignee_id`, `scope`, `/tasks/assignees`) +
-**D5** (задачи живут на `useQuery`/`useMutation`). **Оценка: ~4:00.** Только фронт.
+**Зависимости:** **D2** (нужны `assignee_id`, `scope`, `/tasks/assignees`), **D5**
+(ключи кэша, задачи вне `useOverviewData`), **D1** (ключи `tasks.*` в словарях).
+**Оценка ~4:30.** Только фронт.
 
 ---
 
 ## Контекст
 
-- Виджет: [`TodayTasksWidget.tsx`](../../front/src/pages/dashboard/Overview/components/widgets/TodayTasksWidget.tsx).
-  Заголовок «Задачи на сегодня» ([:119](../../front/src/pages/dashboard/Overview/components/widgets/TodayTasksWidget.tsx#L119)).
-  Уже есть optimistic `toggle`/`addTask`, локальный `InlineSelect`.
-- Роль текущего пользователя — `getUserRoleFromToken()`
-  ([`front/src/utils/auth.ts`](../../front/src/utils/auth.ts)), читает `role` из
-  JWT. Тип — `string | null` → сузить гардом до `'owner'|'admin'|'trainer'`
-  (fallback `'trainer'` — минимальные права, если роль не распозналась).
+| Что | Где | Состояние |
+|---|---|---|
+| Виджет | `Overview/components/widgets/TodayTasksWidget.tsx` (472 строки) | Заголовок «Задачи на сегодня» (:119), счётчик (:122), список, форма добавления с локальным `InlineSelect`, оптимистичный `toggle` (:67) и `addTask` (:77) на `setTasks` из props |
+| Данные | `useOverviewData.ts:45,65,120` | `tasks`/`setTasks` — `useState`, прокидываются пропами (после D5 отсюда уезжают) |
+| Роль пользователя | `front/src/utils/auth.ts` | `getUserRoleFromToken(): string \| null` — читает `role` из JWT |
+| Инициалы | `Clients/utils/mapClient.ts:9` | `getInitials(name, lastName)` — готовый хелпер |
+| Дропдаун кита | `components/ui/Select.tsx` | `{ value, options: {value,label}[], onChange, placeholder?, disabled? }`, клавиатура + Esc + клик мимо |
 
-## Frontend — Задача 1. API-слой (~0:30)
+> **Файл на 472 строки уже за пределом «< 200-300 строк» из `CLAUDE.md` §5.**
+> Эпик обязан не только добавить функциональность, но и разложить виджет по
+> файлам — иначе получится 700-строчный монолит.
 
-**Файлы:** `front/src/api/analytics/analytics.types.ts` и `analytics.api.ts`.
+---
 
-Типы — синхронно с D2 (§8 CLAUDE.md: бэк диктует структуру):
+## Backend
+
+Изменений нет — весь контракт закрыт в [D2](EPIC_D2_TASK_DELEGATION_API.md):
+`GET /analytics/tasks?scope=&assignee_id=`, `GET /analytics/tasks/assignees`,
+`POST/PATCH/DELETE /analytics/tasks`.
+
+---
+
+## Frontend API & State
+
+### Задача 1. Типы и методы API (~0:30)
+
+**Файл:** `front/src/api/analytics/analytics.types.ts` — привести в точное
+соответствие ответам бэка (`CLAUDE.md` §8: схема бэкенда — единственный источник правды):
 
 ```ts
-export interface StudioTask { ...; assignee_id: number | null; assignee_name: string | null }
-export interface StudioTaskCreate { text: string; priority?: ...; tag?: string | null; assignee_id?: number | null }
-export interface StudioTaskUpdate { ...; assignee_id?: number | null }
+export interface StudioTask {
+  id: number
+  text: string
+  priority: 'low' | 'medium' | 'high'
+  tag: string | null
+  is_done: boolean
+  done_at: string | null
+  created_at: string
+  assignee_id: number | null       // ← D2
+  assignee_name: string | null     // ← D2
+}
+
+export interface StudioTaskCreate {
+  text: string
+  priority?: 'low' | 'medium' | 'high'
+  tag?: string | null
+  assignee_id?: number | null      // ← D2
+}
+
+export interface StudioTaskUpdate {
+  text?: string
+  priority?: 'low' | 'medium' | 'high'
+  tag?: string | null
+  is_done?: boolean
+  assignee_id?: number | null      // ← D2
+}
+
 export type TaskScope = 'mine' | 'admins' | 'trainers'
-export interface AssigneeOption { user_id: number; name: string; role: 'admin' | 'trainer' }
-```
+export type StudioRole = 'owner' | 'admin' | 'trainer'
 
-`analyticsApi`:
-
-```ts
-getTasks: (p?: { scope?: TaskScope; assignee_id?: number }) =>
-  client.get<StudioTask[]>(`/analytics/tasks${p ? '?' + qs(p as any) : ''}`),
-getAssignees: () => client.get<AssigneeOption[]>('/analytics/tasks/assignees'),
-```
-
-## Frontend — Задача 2. Задачи на `useQuery`/`useMutation` (~0:45)
-
-Отдельный хук `useOverviewTasks()` (`Overview/hooks/`) — задачи в общий хук
-Обзора не мешаем (D5 их туда осознанно не тащил). UI-состояние скоупа — `useState`,
-серверные данные — квери (ключи заведены в D5: `overviewTasks`, `overviewAssignees`).
-
-```ts
-export function useOverviewTasks() {
-  const role = (getUserRoleFromToken() ?? 'trainer') as Role;
-  const [scope, setScope] = useState<TaskScope>('mine');
-  const [assignee, setAssignee] = useState<number | null>(null); // 2-й дропдаун
-
-  const tasks = useQuery({
-    queryKey: queryKeys.overviewTasks(scope, assignee),
-    queryFn: () => analyticsApi.getTasks(assignee != null ? { assignee_id: assignee } : { scope }),
-    placeholderData: keepPreviousData,       // смена скоупа не мигает списком
-  });
-  const assignees = useQuery({
-    queryKey: queryKeys.overviewAssignees,
-    queryFn: () => analyticsApi.getAssignees(),
-    enabled: role !== 'trainer',             // тренеру список не нужен
-  });
-  return { role, scope, setScope, assignee, setAssignee,
-           tasks: tasks.data ?? [], assignees: assignees.data ?? [] };
+export interface AssigneeOption {
+  user_id: number
+  name: string
+  role: 'admin' | 'trainer'
 }
 ```
 
-Смена `scope`/`assignee` меняет `queryKey` → React Query сам перезагружает (без
-F5, без ручного `useEffect`). Сброс `scope` в `'mine'` → `setAssignee(null)`.
-
-## Frontend — Задача 3. Каскадные дропдауны (RBAC) (~1:15)
-
-**Первый дропдаун (группа)** — справа от заголовка. Опции по роли:
-
-| role | опции первого дропдаунa |
-|---|---|
-| owner | `Мои` · `Админов` · `Трейнеров` |
-| admin | `Мои` · `Трейнеров` |
-| trainer | дропдаун **скрыт** (или только `Мои`, задизейблен) |
+**Файл:** `front/src/api/analytics/analytics.api.ts` — `getTasks` получает
+параметры, добавляется `getAssignees`:
 
 ```ts
-const SCOPE_OPTIONS: Record<Role, {value:TaskScope;label:string}[]> = {
-  owner:   [{value:'mine',label:t('tasks.mine')},{value:'admins',label:t('tasks.admins')},{value:'trainers',label:t('tasks.trainers')}],
-  admin:   [{value:'mine',label:t('tasks.mine')},{value:'trainers',label:t('tasks.trainers')}],
-  trainer: [{value:'mine',label:t('tasks.mine')}],
+  getTasks: (params?: { scope?: TaskScope; assignee_id?: number }) => {
+    const query = qs(Object.fromEntries(
+      Object.entries(params ?? {}).filter(([, v]) => v != null).map(([k, v]) => [k, String(v)]),
+    ))
+    return client.get<StudioTask[]>(`/analytics/tasks${query ? `?${query}` : ''}`)
+  },
+
+  getAssignees: () =>
+    client.get<AssigneeOption[]>('/analytics/tasks/assignees'),
+```
+
+Остальные три метода (`createTask`, `updateTask`, `deleteTask`) не меняются —
+у них расширился только тип payload.
+
+### Задача 2. Хук `useOverviewTasks` (~1:00)
+
+**Новый файл:** `Overview/hooks/useOverviewTasks.ts`. Задачи живут отдельно от
+`useOverviewData`: у них свой скоуп, свои мутации и своя доступность по ролям.
+
+```ts
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { analyticsApi } from '../../../../api';
+import { queryKeys } from '../../../../api/queryKeys';
+import { getUserRoleFromToken } from '../../../../utils/auth';
+import type { AssigneeOption, StudioRole, StudioTask, StudioTaskCreate, TaskScope } from '../../../../api/analytics';
+
+// Роль из JWT может не распознаться — падаем в минимальные права, не в максимальные.
+const ROLES: StudioRole[] = ['owner', 'admin', 'trainer'];
+function currentRole(): StudioRole {
+  const raw = getUserRoleFromToken();
+  return ROLES.includes(raw as StudioRole) ? (raw as StudioRole) : 'trainer';
+}
+
+export function useOverviewTasks() {
+  const qc = useQueryClient();
+  const role = currentRole();
+
+  // UI-состояние каскада (не серверные данные → useState)
+  const [scope, setScope] = useState<TaskScope>('mine');
+  const [assigneeId, setAssigneeId] = useState<number | null>(null);
+
+  const key = queryKeys.overviewTasks(scope, assigneeId);
+
+  const tasksQuery = useQuery({
+    queryKey: key,
+    queryFn: () => analyticsApi.getTasks(
+      assigneeId != null ? { assignee_id: assigneeId } : { scope },
+    ),
+    placeholderData: keepPreviousData,  // переключение скоупа не мигает пустым списком
+    refetchInterval: 60_000,            // делегированную задачу видно без F5
+  });
+
+  const assigneesQuery = useQuery({
+    queryKey: queryKeys.overviewAssignees,
+    queryFn: () => analyticsApi.getAssignees(),
+    enabled: role !== 'trainer',        // тренеру делегировать некому — запрос не шлём
+    staleTime: 5 * 60_000,              // состав команды меняется редко
+  });
+
+  // ── Мутации: оптимистика по образцу useJournalMutations ──
+  const patch = async (fn: (list: StudioTask[]) => StudioTask[]) => {
+    await qc.cancelQueries({ queryKey: key });        // иначе ответ «в полёте» перетрёт патч
+    const snapshot = qc.getQueryData<StudioTask[]>(key) ?? [];
+    qc.setQueryData<StudioTask[]>(key, fn(snapshot));
+    return { snapshot };
+  };
+  const rollback = (ctx?: { snapshot: StudioTask[] }) => {
+    if (ctx) qc.setQueryData(key, ctx.snapshot);
+  };
+  // Префикс: одна задача видна сразу в нескольких ключах («Мои» + «Тренеров» + конкретный сотрудник)
+  const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.overviewTasksAll });
+
+  const toggleMut = useMutation({
+    mutationFn: ({ id, is_done }: { id: number; is_done: boolean }) =>
+      analyticsApi.updateTask(id, { is_done }),
+    onMutate: ({ id, is_done }) =>
+      patch(list => list.map(t => (t.id === id ? { ...t, is_done } : t))),
+    onError: (_e, _v, ctx) => rollback(ctx),
+    onSettled: invalidate,
+  });
+
+  const createMut = useMutation({
+    mutationFn: (body: StudioTaskCreate) => analyticsApi.createTask(body),
+    onError: (_e, _v, ctx) => rollback(ctx as never),
+    onSettled: invalidate,              // id и assignee_name приходят с сервера
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: number) => analyticsApi.deleteTask(id),
+    onMutate: (id) => patch(list => list.filter(t => t.id !== id)),
+    onError: (_e, _v, ctx) => rollback(ctx),
+    onSettled: invalidate,
+  });
+
+  // Смена группы всегда сбрасывает второй уровень — иначе останется «Тренеров + админ Аня»
+  const changeScope = (next: TaskScope) => {
+    setScope(next);
+    setAssigneeId(null);
+  };
+
+  return {
+    role, scope, assigneeId,
+    setScope: changeScope, setAssigneeId,
+    tasks: tasksQuery.data ?? [],
+    isFirstLoad: tasksQuery.isPending,
+    error: tasksQuery.error,
+    assignees: assigneesQuery.data ?? [],
+    toggle: (id: number, is_done: boolean) => toggleMut.mutate({ id, is_done }),
+    create: (body: StudioTaskCreate) => createMut.mutateAsync(body),
+    remove: (id: number) => deleteMut.mutate(id),
+    isCreating: createMut.isPending,
+  };
+}
+```
+
+**Как это выполняет требование «без F5»:** `scope`/`assigneeId` входят в `queryKey` →
+их смена сама запускает загрузку нужного среза; мутации патчат кэш мгновенно и
+инвалидируют префикс `['overview','tasks']`, поэтому созданная в чужом скоупе
+задача появляется в правильном списке без ручных проверок «попадает ли в фильтр».
+
+---
+
+## Frontend UI & Components
+
+### Задача 3. Разбор монолита на файлы (~0:30)
+
+`CLAUDE.md` §5: файл < 200-300 строк, UI — в `components/`, логика — в `hooks/`.
+
+```
+Overview/components/widgets/
+├── TasksWidget.tsx            ← бывший TodayTasksWidget.tsx: только каркас + композиция (~120 строк)
+└── tasks/
+    ├── TasksHeader.tsx        ← заголовок «Задачи», счётчик, каскад дропдаунов (~90)
+    ├── TaskRow.tsx            ← строка задачи: чекбокс, текст, аватар исполнителя, тег, приоритет (~80)
+    └── AddTaskForm.tsx        ← форма создания: текст, тег, приоритет (~110)
+```
+
+- Файл переименовать `TodayTasksWidget.tsx` → `TasksWidget.tsx`, поправить импорт
+  в `Overview.tsx:4`.
+- Локальный `InlineSelect` (строки 313-396) **удалить** — его заменяет `Select`
+  из `components/ui/index` (§5: свои дропдауны запрещены). Если китовому `Select`
+  не хватает компактного вида для формы — **расширить кит новым `size`-пропом**,
+  а не оставлять копию.
+- Палитры `PRIORITY_COLOR`, `TAG_COLORS`, `TAG_TEXT` вынести в `Overview/constants.ts`
+  (это данные, а не разметка).
+
+### Задача 4. Каскадные дропдауны с RBAC (~1:15)
+
+**Файл:** `tasks/TasksHeader.tsx`.
+
+Раскладка (виджет живёт в половине `grid-2`, места мало):
+
+```
+┌────────────────────────────────────────────────────────────┐
+│  Задачи                                    [Мои       ▾]   │   ← 1-й уровень
+│  3 задачи осталось                         [Игорь С.  ▾]   │   ← 2-й, только если scope ≠ 'mine'
+└────────────────────────────────────────────────────────────┘
+```
+
+- Ширина ≥ 560 px — дропдауны в одну строку справа от заголовка;
+  < 560 px — переносятся под заголовок (`flex-wrap: wrap`). Контрольная точка —
+  ширина колонки, не окна (`grid-2` на ноутбуке ≈ 520-620 px).
+
+**Первый дропдаун — группа исполнителей.** Опции строго по роли из JWT:
+
+```ts
+const SCOPE_OPTIONS: Record<StudioRole, TaskScope[]> = {
+  owner:   ['mine', 'admins', 'trainers'],
+  admin:   ['mine', 'trainers'],
+  trainer: ['mine'],
+};
+const options = SCOPE_OPTIONS[role].map(v => ({ value: v, label: t(`tasks.scope.${v}`) }));
+```
+
+| Роль | Что видно в шапке |
+|---|---|
+| `owner` | `Select` с «Мои · Админов · Тренеров» |
+| `admin` | `Select` с «Мои · Тренеров» |
+| `trainer` | **дропдаун не рендерится вовсе** (единственная опция = отсутствие выбора) |
+
+**Второй дропдаун — конкретный сотрудник.** Рендерится только при `scope !== 'mine'`:
+
+```ts
+const wanted = scope === 'admins' ? 'admin' : 'trainer';
+const people = assignees.filter(a => a.role === wanted);
+// people.length === 0 → вместо Select показываем t('state.empty') (в студии нет таких сотрудников)
+```
+
+- `value` — `String(assigneeId ?? '')`, `placeholder` — `t('tasks.assigneePlaceholder')`.
+- Выбор → `setAssigneeId(Number(v))` → меняется `queryKey` → список перезагружается сам.
+- Возврат в «Мои» → `changeScope` обнуляет `assigneeId`, второй дропдаун исчезает.
+
+> **Инвариант UI ↔ API.** Фильтрация опций на фронте — это UX, а **не** защита.
+> Право доступа проверяет бэк (D2): подставленный руками `scope=admins` от тренера
+> вернёт `403`. Фронт никогда не источник правды по правам.
+
+**Обработка `403`** (роль сменилась в другой вкладке, токен старый): показать в
+теле виджета `t('state.ownerOnly')`-подобную плашку вместо списка, не роняя страницу.
+
+### Задача 5. Создание задачи с адресацией (~0:30)
+
+**Файл:** `tasks/AddTaskForm.tsx` + `TasksWidget.tsx`.
+
+```ts
+const submit = async () => {
+  const text = newText.trim();
+  if (!text) return;
+  await create({
+    text,
+    priority: newPriority,
+    tag: newTag,
+    // Адресат = выбранный во втором дропдауне; иначе бэк проставит текущего пользователя
+    ...(assigneeId != null ? { assignee_id: assigneeId } : {}),
+  });
 };
 ```
 
-**Второй дропдаун (сотрудник)** — появляется, только если `scope !== 'mine'`.
-Список = `assignees.filter(a => a.role === (scope==='admins'?'admin':'trainer'))`.
-Выбор → `setAssignee(user_id)`. Сброс первого в «Мои» → `setAssignee(null)`,
-второй дропдаун скрывается.
+Правила формы:
 
-**Компоненты:** использовать `Select` из `components/ui/index` (§5 — свои
-дропдауны запрещены). Локальный `InlineSelect` в виджете переиспользовать для
-формы, но два скоуп-дропдауна — китовый `Select`, они «первого класса».
+| Ситуация | Поведение |
+|---|---|
+| `scope === 'mine'` | `assignee_id` не шлём — задача себе |
+| `scope !== 'mine'`, сотрудник **выбран** | `assignee_id` = выбранный; после успеха задача видна в текущем срезе |
+| `scope !== 'mine'`, сотрудник **не выбран** | кнопка «Добавить» **disabled**, подсказка `t('tasks.assigneePlaceholder')`. Молча создавать задачу себе, находясь в чужом срезе, нельзя — она «исчезнет» из списка и это выглядит как баг |
+| `create` вернул ошибку | тост через `useToast()` (сейчас ошибка глотается молча — `TodayTasksWidget.tsx:87`), форма остаётся заполненной |
 
-> Ключевой инвариант UI ↔ API: список опций **и** список сотрудников фильтруются
-> по роли на фронте для UX, но право доступа проверяет бэк (D2). Фронт не —
-> источник правды по правам.
+### Задача 6. Редизайн (~1:00)
 
-## Frontend — Задача 4. Мутации: назначение и toggle (~0:30)
+Строго в рамках ДС (`CLAUDE.md` §6): персиковый акцент `#FCAE91`/`#F9A08B`,
+радиусы 12/16, ультрамягкие тени, воздух вместо разделителей, иконки — inline SVG
+(**эмодзи запрещены**).
 
-Оптимистику переносим с ручного `setTasks` на `useMutation` с `onMutate`/rollback —
-образец [`useJournalMutations.ts`](../../front/src/pages/dashboard/Journal/hooks/useJournalMutations.ts).
-В `useOverviewTasks()`:
+**Шапка**
+- «Задачи на сегодня» → `t('tasks.title')` = **«Задачи»**. Слова «сегодня»/«today»
+  не остаётся нигде, включая словари.
+- Подзаголовок — `t('tasks.remaining', { count })` (плюрализация из D1).
+- Персиковый бейдж-счётчик оставить, но не дублировать число в подзаголовке и в
+  бейдже одновременно — бейдж показывает счётчик, подзаголовок описывает срез
+  («Мои» / имя сотрудника).
 
-```ts
-const qc = useQueryClient();
-const key = queryKeys.overviewTasks(scope, assignee);
+**Строка задачи** (`TaskRow.tsx`)
+- Чекбокс, текст, тег, точка приоритета — как сейчас.
+- **Новое:** когда `scope !== 'mine'` — слева от тега аватар-инициалы исполнителя
+  (`getInitials` из `Clients/utils/mapClient.ts`, цвет-градиент как в карточке
+  клиента), с `Tooltip` (`components/ui/index`) на полное `assignee_name`.
+  В режиме «Мои» аватар не показываем — он был бы одинаков во всех строках.
+- Свайп/жестов не вводим (не заявлено в аудите).
+- Действие удаления — по наведению, иконка-корзина + `ConfirmModal` из кита
+  (`window.confirm` запрещён). Опционально: `remove` в хуке уже готов.
 
-const toggle = useMutation({
-  mutationFn: ({ id, is_done }: { id: number; is_done: boolean }) => analyticsApi.updateTask(id, { is_done }),
-  onMutate: async ({ id, is_done }) => {
-    await qc.cancelQueries({ queryKey: key });
-    const prev = qc.getQueryData<StudioTask[]>(key);
-    qc.setQueryData<StudioTask[]>(key, t => t?.map(x => x.id === id ? { ...x, is_done } : x));
-    return { prev };
-  },
-  onError: (_e, _v, ctx) => ctx?.prev && qc.setQueryData(key, ctx.prev),  // rollback
-  onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.overviewTasksAll }),
-});
+**Состояния**
+- Пустой список → `t('tasks.empty')` (не пустой контейнер и не «-»).
+- `isFirstLoad` → скелетон из 3 строк-плейсхолдеров; фоновое обновление список **не гасит**.
+- Выполненные — сворачиваемая секция «Выполнено · N», как сейчас.
 
-const create = useMutation({
-  mutationFn: (body: StudioTaskCreate) => analyticsApi.createTask(body),
-  onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.overviewTasksAll }),
-});
+**Анимации** — существующие классы `Overview.module.css` (`taskRow`,
+`taskEntryAnimate`) сохранить; новые — через `framer-motion` только если появится
+list-reorder (сейчас не нужен).
+
+### Задача 7. Доступ к странице для админа и тренера (~0:45)
+
+**Блокер, без которого весь RBAC этого эпика недостижим:** `Overview.tsx:19-25`
+рендерит заглушку «Обзор студии доступен только владельцу» **на всю страницу**,
+как только любой owner-only запрос вернул `403`. Админ и тренер не видят виджет
+задач вообще, хотя по ТЗ §2.2 дашборд доступен всем ролям.
+
+Минимальная правка (внутри страницы, без переделки бэкенда):
+
+```tsx
+export default function Overview() {
+  const d = useOverviewData();
+  const canSeeStudioData = !d.forbidden;   // owner-only срезы
+
+  return (
+    <>
+      {canSeeStudioData && <MetricsRow … />}
+      <div className="grid-2 mb-20">
+        {canSeeStudioData
+          ? <AnalyticsChart … />
+          : <div className="card">{t('state.ownerOnly')}</div>}
+        <TasksWidget />                     {/* ← доступен всем ролям */}
+      </div>
+      {canSeeStudioData && <RecentEventsBoard events={d.events} />}
+      {canSeeStudioData && <SummaryWidgets … />}
+    </>
+  );
+}
 ```
 
-**Назначение при создании:** если `scope !== 'mine'` и выбран сотрудник →
-`create.mutate({ text, priority, tag, assignee_id: assignee })`. Иначе без
-`assignee_id` (бэк проставит `ctx.user.id`). Инвалидация по префиксу
-`overviewTasksAll` обновит и текущий фильтр, и «Мои» — новая задача появится в
-правильном списке без ручной проверки «попадает ли в фильтр».
+Финансовые срезы остаются owner-only — **ничего не раскрываем**, просто перестаём
+прятать за ними то, что роли положено. Полноценный ролевой дашборд с собственными
+метриками для админа и тренера — отдельная работа, кандидат в
+[`docs/BACKLOG`](../BACKLOG/README.md), в этот роудмэп не тащим.
 
-## Frontend — Задача 5. Редизайн + переименование (~1:00)
-
-**Файл:** `TodayTasksWidget.tsx` (переименовать в `TasksWidget.tsx`, обновить
-импорт в `Overview.tsx`).
-
-- Заголовок: `t('tasks.title')` = «Задачи» (убрать «на сегодня» и `PERIOD`-намёки).
-- Подзаголовок: `t('tasks.remaining', { count: pending.length })`.
-- Освежить (в рамках ДС, §6): бейджи-теги оставить, добавить в строку задачи
-  аватар/инициалы `assignee_name` (когда скоуп не «Мои» — видно, на ком задача).
-  Инициалы — хелпер `getInitials` (§8), не эмодзи.
-- Header-layout: `[Заголовок] ......... [Дропдаун группы] [Дропдаун сотрудника]`.
-  На узкой колонке (виджет в `grid-2`) дропдауны переносить под заголовок.
-
-Все строки — через `t('tasks.*')` (ключи заведены в D1).
+---
 
 ## Definition of Done
 
-- owner видит 3 опции, admin — 2, trainer — дропдаунов нет (только свои задачи).
-- Выбор «Трейнеров» → появляется второй дропдаун с именами тренеров; выбор имени
-  фильтрует список и адресует создание.
-- Созданная в режиме «Трейнеров → Игорь» задача уходит с `assignee_id` Игоря
-  (проверить в Network / БД).
-- Заголовок — «Задачи», без «на сегодня». Переключение скоупа/сотрудника — без F5.
-- `cd front && npm run build && npm run lint` — чисто.
+- [ ] Заголовок — «Задачи» / «Tasks»; строки «на сегодня» нет ни в коде, ни в словарях.
+- [ ] `owner` видит 3 опции первого дропдауна, `admin` — 2, `trainer` — дропдаунов нет.
+- [ ] Выбор «Тренеров» открывает второй дропдаун с именами; выбор имени фильтрует список.
+- [ ] Задача, созданная в режиме «Тренеров → Игорь», уходит с `assignee_id` Игоря (проверка в Network и в БД).
+- [ ] В чужом срезе без выбранного сотрудника кнопка «Добавить» заблокирована.
+- [ ] Отметка выполнения мгновенная, при ошибке сети откатывается и показывает тост.
+- [ ] Переключение скоупа/сотрудника и все мутации — без единой перезагрузки страницы.
+- [ ] Админ и тренер открывают Обзор и видят свой виджет задач вместо заглушки на весь экран.
+- [ ] Ни одного самописного дропдауна: только `Select` из `components/ui/index`.
+- [ ] `TasksWidget.tsx` и каждый файл в `widgets/tasks/` — меньше 200 строк.
+- [ ] `cd front && npm run build && npm run lint` — чисто.

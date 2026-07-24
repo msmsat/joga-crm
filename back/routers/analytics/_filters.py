@@ -1,10 +1,19 @@
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from typing import Callable, Literal, TypeVar
 
 from fastapi import Query
-from sqlalchemy import func
+from sqlalchemy import cast, func
+from sqlalchemy.types import DateTime
 
 from models import Hall, Lesson, Operation, Reservation
+
+Group = Literal["hour", "day", "week", "month"]
+T = TypeVar("T")
+
+# Однодневный период рисуем по часам. Окно — константа, а не рабочие часы
+# студии: рабочих часов у филиала может не быть заполнено, а ось нужна всегда.
+SERIES_DAY_HOURS = range(6, 24)  # 18 слотов
 
 
 @dataclass
@@ -99,3 +108,54 @@ def occupied_expr():
 def capacity_expr():
     """Σ вместимости занятий (Lesson.total_spots)."""
     return func.sum(Lesson.total_spots)
+
+
+def date_bucket(column, group: Group):
+    """date_trunc по DATE-колонке (Operation.op_date). Postgres не знает
+    date_trunc(text, date) напрямую и приводит date к timestamptz по TimeZone
+    сессии — это сдвигает результат на день при положительном оффсете.
+    Явный cast к timestamp (без TZ) убирает конвертацию."""
+    return func.date_trunc(group, cast(column, DateTime))
+
+
+def bucket_key(dt: datetime | date, group: Group) -> str:
+    """Ключ бакета ровно так, как его считает date_trunc в Postgres.
+    week → понедельник, month → 1-е число, hour → ISO с часом.
+
+    date_trunc уже сделал округление на стороне SQL — здесь только форматируем
+    результат в строку-ключ для словаря fill_series."""
+    if group == "hour":
+        return dt.isoformat()
+    d = dt.date() if isinstance(dt, datetime) else dt
+    return d.isoformat()
+
+
+def series_buckets(date_from: date, date_to: date, group: Group) -> list[str]:
+    """Полный список ключей бакетов периода — включая пустые."""
+    if group == "hour":
+        return [datetime.combine(date_from, time(hour=h)).isoformat() for h in SERIES_DAY_HOURS]
+    if group == "day":
+        days = (date_to - date_from).days
+        return [(date_from + timedelta(days=i)).isoformat() for i in range(days + 1)]
+    if group == "week":
+        start = date_from - timedelta(days=date_from.weekday())
+        end = date_to - timedelta(days=date_to.weekday())
+        keys = []
+        cur = start
+        while cur <= end:
+            keys.append(cur.isoformat())
+            cur += timedelta(days=7)
+        return keys
+    # month
+    keys = []
+    cur = date_from.replace(day=1)
+    while cur <= date_to:
+        keys.append(cur.isoformat())
+        cur = (cur.replace(day=28) + timedelta(days=4)).replace(day=1)
+    return keys
+
+
+def fill_series(rows: dict[str, T], buckets: list[str], zero: Callable[[str], T]) -> list[T]:
+    """rows — то, что вернул SQL (ключ бакета → точка); buckets — полная ось.
+    Возвращает список длиной len(buckets) в порядке оси."""
+    return [rows.get(b, zero(b)) for b in buckets]

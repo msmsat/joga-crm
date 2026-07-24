@@ -14,6 +14,24 @@ export type {
   SalesKpiSet,
   SalesRead,
   SalesSeriesPoint,
+  ClientsKpiSet,
+  ClientsReportRead,
+  SegmentClientRow,
+  SegmentCount,
+  WeeklyPoint,
+  TeamKpiSet,
+  TeamRead,
+  TrainerRow,
+  TrainerLoadPoint,
+  TrainerTopLesson,
+  TrainerDetailRead,
+  UtilizationKpiSet,
+  UtilizationRead,
+  HeatmapCell,
+  LessonSliceRow,
+  ChronicLowRow,
+  HallUtilRow,
+  SlotLessonRow,
 } from '../../../api/analytics/analytics.types';
 
 export type Tab = 'overview' | 'sales' | 'clients' | 'team' | 'schedule';
@@ -52,29 +70,4 @@ export interface TrainerRecord {
   rating: number;
   retention: number;
   color: string;
-}
-
-export interface ServiceRecord {
-  name: string;
-  sessions: number;
-  revenue: number;
-  share: number;
-  color: string;
-  trend: string;
-}
-
-export interface SalesBuyerPayment {
-  label: string;
-  pct: number;
-  color: string;
-}
-
-export interface SalesRecord {
-  label: string;
-  count: number;
-  revenue: number;
-  avg: number;
-  badge: string;
-  buyers: { newPct: number; retPct: number };
-  payments: SalesBuyerPayment[];
 }

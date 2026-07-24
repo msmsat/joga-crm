@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select, update
@@ -39,7 +39,7 @@ async def create_reservation(
     lesson = await get_scoped_lesson(body.lesson_id, ctx, db)
 
     client = (await db.execute(
-        select(Client.id).where(Client.id == body.client_id, Client.studio_id == ctx.studio_id)
+        select(Client).where(Client.id == body.client_id, Client.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
     if client is None:
         raise HTTPException(status_code=404, detail="Клиент не найден")
@@ -81,6 +81,10 @@ async def create_reservation(
         "lesson_name": lesson.name,
         "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
     })
+    await notify(db, ctx.studio_id, "admin", "a1", {
+        "lesson_name": lesson.name,
+        "client_name": f"{client.name} {client.last_name or ''}".strip(),
+    })
     return ReservationRead.model_validate(reservation)
 
 
@@ -103,15 +107,26 @@ async def cancel_reservation(
     if reservation is None:
         raise HTTPException(status_code=404, detail="Запись не найдена")
 
-    await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
 
     if reservation.status == "cancelled":
         raise HTTPException(status_code=409, detail="Запись уже отменена")
 
+    is_last_minute = lesson.start_time - datetime.now() < timedelta(hours=1)
     reservation.status = "cancelled"
     reservation.cancelled_at = datetime.now()
     await db.commit()
     await db.refresh(reservation)
+
+    if is_last_minute:
+        client = (await db.execute(
+            select(Client).where(Client.id == reservation.client_id)
+        )).scalar_one_or_none()
+        if client is not None:
+            await notify(db, ctx.studio_id, "admin", "a2", {
+                "lesson_name": lesson.name,
+                "client_name": f"{client.name} {client.last_name or ''}".strip(),
+            })
     return ReservationRead.model_validate(reservation)
 
 
@@ -178,7 +193,7 @@ async def attend_reservation(
     if reservation is None:
         raise HTTPException(status_code=404, detail="Запись не найдена")
 
-    await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404/403 по студии/роли
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404/403 по студии/роли
 
     if reservation.status != "attended":
         reservation.status = "attended"
@@ -211,11 +226,22 @@ async def attend_reservation(
         await db.commit()
         await db.refresh(reservation)
 
-        # Уведомления после коммита: остаток 1–2 → c5; кончился/истёк → c6.
+        await notify(db, ctx.studio_id, "client", "c8",
+                     {"client_id": reservation.client_id, "lesson_name": lesson.name})
+
+        # Уведомления после коммита: остаток 1–2 → c5/a6; кончился/истёк → c6.
         if remaining is not None:
             if remaining in (1, 2):
                 await notify(db, ctx.studio_id, "client", "c5",
                              {"client_id": reservation.client_id, "remaining": remaining})
+                client = (await db.execute(
+                    select(Client).where(Client.id == reservation.client_id)
+                )).scalar_one_or_none()
+                if client is not None:
+                    await notify(db, ctx.studio_id, "admin", "a6", {
+                        "client_name": f"{client.name} {client.last_name or ''}".strip(),
+                        "remaining": remaining,
+                    })
             elif remaining <= 0:
                 await notify(db, ctx.studio_id, "client", "c6",
                              {"client_id": reservation.client_id, "remaining": 0})

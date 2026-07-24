@@ -17,6 +17,12 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations })
+  // Отключение интеграции гасит и тумблер канала в настройках — без этого
+  // сайдбар после disconnect показывает канал включённым до ручного рефреша.
+  const invalidateAfterDisconnect = () => {
+    qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations })
+    qc.invalidateQueries({ queryKey: queryKeys.notificationSettings })
+  }
 
   const onError = (err: unknown) => toast.error(errorMessage(err, t))
 
@@ -28,7 +34,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
 
   const disconnectTelegram = useMutation({
     mutationFn: () => notificationsApi.disconnectTelegram(),
-    onSuccess: () => { invalidate(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
     onError,
   })
 
@@ -52,7 +58,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
 
   const disconnectWhatsApp = useMutation({
     mutationFn: () => notificationsApi.disconnectWhatsApp(),
-    onSuccess: () => { invalidate(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
     onError,
   })
 

@@ -5,21 +5,16 @@ import { scheduleApi } from '../../../api/schedule';
 import { staffApi } from '../../../api/staff';
 import { servicesApi } from '../../../api/studio/services.api';
 import { queryKeys } from '../../../api/queryKeys';
-import type { Tab, Period as MockPeriod } from './types';
+import type { Tab } from './types';
 import { TABS } from './constants';
 import { useReportFilters } from './hooks/useReportFilters';
 import { useExport } from './hooks/useExport';
 import { ReportsToolbar } from './components/ReportsToolbar';
-import { EmptyTab } from './components/EmptyTab';
 import { OverviewTab } from './components/tabs/OverviewTab';
 import { SalesTab } from './components/tabs/SalesTab';
-import { TabTrenery } from './components/tabs/TabTrenery';
-
-// Старые mock-вкладки принимают Period без 'custom' — свободный диапазон
-// временно показывает как 'month' до собственных эпиков R1-R5.
-function toMockPeriod(period: string): MockPeriod {
-  return period === 'custom' ? 'month' : (period as MockPeriod);
-}
+import { ClientsTab } from './components/tabs/ClientsTab';
+import { TeamTab } from './components/tabs/TeamTab';
+import { ScheduleTab } from './components/tabs/ScheduleTab';
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -29,6 +24,8 @@ export default function Reports() {
   const registerCsvExport = useCallback((rows: Record<string, unknown>[]) => {
     csvRowsRef.current = rows;
   }, []);
+  // Единственное осмысленное действие на пустой вкладке — расширить период до года.
+  const onWidenPeriod = useCallback(() => setPeriod('year'), [setPeriod]);
 
   const { data: branches = [] } = useQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
   const { data: halls = [] } = useQuery({ queryKey: queryKeys.halls, queryFn: () => scheduleApi.getHalls() });
@@ -41,8 +38,6 @@ export default function Reports() {
     trainers: staff.map(s => ({ value: String(s.id), label: [s.name, s.last_name].filter(Boolean).join(' ') })),
     services: services.map(s => ({ value: String(s.id), label: s.name })),
   };
-
-  const mockPeriod = toMockPeriod(filters.period);
 
   return (
     <>
@@ -62,7 +57,7 @@ export default function Reports() {
         onPeriodChange={setPeriod}
         onCustomRangeChange={setCustomRange}
         onFilterChange={setFilter}
-        onExport={() => exportCSV(activeTab === 'overview' || activeTab === 'sales' ? csvRowsRef.current : [], `reports-${activeTab}`)}
+        onExport={() => exportCSV(csvRowsRef.current, `reports-${activeTab}`)}
       />
 
       <div key={activeTab} style={{ animation: 'fadeSlide 0.22s ease' }}>
@@ -71,6 +66,7 @@ export default function Reports() {
             params={params}
             paramsKey={paramsKey}
             registerCsvExport={registerCsvExport}
+            onWidenPeriod={onWidenPeriod}
           />
         )}
         {activeTab === 'sales' && (
@@ -78,11 +74,33 @@ export default function Reports() {
             params={params}
             paramsKey={paramsKey}
             registerCsvExport={registerCsvExport}
+            onWidenPeriod={onWidenPeriod}
           />
         )}
-        {activeTab === 'team' && <TabTrenery period={mockPeriod} />}
-        {activeTab === 'clients' && <EmptyTab />}
-        {activeTab === 'schedule' && <EmptyTab />}
+        {activeTab === 'clients' && (
+          <ClientsTab
+            params={params}
+            paramsKey={paramsKey}
+            registerCsvExport={registerCsvExport}
+            onWidenPeriod={onWidenPeriod}
+          />
+        )}
+        {activeTab === 'team' && (
+          <TeamTab
+            params={params}
+            paramsKey={paramsKey}
+            registerCsvExport={registerCsvExport}
+            onWidenPeriod={onWidenPeriod}
+          />
+        )}
+        {activeTab === 'schedule' && (
+          <ScheduleTab
+            params={params}
+            paramsKey={paramsKey}
+            registerCsvExport={registerCsvExport}
+            onWidenPeriod={onWidenPeriod}
+          />
+        )}
       </div>
     </>
   );

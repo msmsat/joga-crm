@@ -29,6 +29,7 @@ export default function Notifications() {
       <ChannelsSidebar
         channels={h.channels}
         toggleChannel={h.toggleChannel}
+        channelSaving={h.channelSaving}
         channelStatuses={ci.channels}
         onOpenModal={setOpenModal}
       />

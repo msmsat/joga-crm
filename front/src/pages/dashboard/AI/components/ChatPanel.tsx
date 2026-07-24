@@ -1,29 +1,45 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from 'react';
-import type { Message } from '../types';
+import { useTranslation } from 'react-i18next';
+import type { AIChatMessage } from '../types';
 import MessageBubble from './MessageBubble';
 import ThinkingIndicator from './ThinkingIndicator';
 import NeuralNetSVG from './animations/NeuralNetSVG';
 import styles from '../AI.module.css';
 
 interface ChatPanelProps {
-  messages: Message[];
+  messages: AIChatMessage[];
+  messagesLoading: boolean;
+  messagesError: boolean;
+  onRetryMessages: () => void;
   isThinking: boolean;
   onSend: (text: string) => void;
 }
 
-const SUGGESTIONS = [
-  'Покажи статистику за этот месяц',
-  'Составь SMS для напоминания о записи',
-  'Идеи для акции на летний период',
-  'Как улучшить удержание клиентов?',
-];
+const SUGGESTION_KEYS = ['revenue', 'sms', 'promo', 'retention'] as const;
 
-export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelProps) {
+export default function ChatPanel({ messages, messagesLoading, messagesError, onRetryMessages, isThinking, onSend }: ChatPanelProps) {
+  const { t } = useTranslation('ai');
   const [input, setInput] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isEmpty = messages.length === 0;
+  // messagesLoading (переключение сессии, placeholderData: [] уже отдал []) — не
+  // тот же случай, что реально пустой чат: скелетон вместо мигания приветствия.
+  const isEmpty = messages.length === 0 && !messagesLoading && !messagesError;
+
+  // Печатаем только ответ, только что пришедший с сервера: ловим переход
+  // isThinking true → false и помечаем последнее assistant-сообщение как "новое".
+  // Настройка стейта во время рендера (не в эффекте) — задокументированный
+  // React-паттерн для реакции на изменение пропа между рендерами.
+  const [prevIsThinking, setPrevIsThinking] = useState(isThinking);
+  const [animateId, setAnimateId] = useState<number | null>(null);
+  if (isThinking !== prevIsThinking) {
+    setPrevIsThinking(isThinking);
+    if (prevIsThinking && !isThinking) {
+      const last = messages[messages.length - 1];
+      if (last?.role === 'assistant') setAnimateId(last.id);
+    }
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,7 +47,7 @@ export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelPro
 
   const handleSend = () => {
     const text = input.trim();
-    if (!text) return;
+    if (!text || isThinking) return;
     setInput('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
     onSend(text);
@@ -55,20 +71,35 @@ export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelPro
   return (
     <div className={styles.chatPanel}>
       <div className={styles.messagesArea}>
-        {isEmpty ? (
+        {messagesError ? (
+          <div className={styles.messagesErrorState}>
+            <span>{t('common:errors.loadFailed')}</span>
+            <button onClick={onRetryMessages} className={styles.sessionsRetryBtn}>{t('common:errors.retry')}</button>
+          </div>
+        ) : messagesLoading ? (
+          <div className={styles.msgSkelList}>
+            <div className={styles.msgSkelPair}>
+              <div className={`${styles.skel} ${styles.msgSkelAvatar}`} />
+              <div className={`${styles.skel} ${styles.msgSkelBubble}`} />
+            </div>
+            <div className={styles.msgSkelUserRow}>
+              <div className={`${styles.skel} ${styles.msgSkelUserBubble}`} />
+            </div>
+          </div>
+        ) : isEmpty ? (
           <div className={styles.emptyState}>
             <NeuralNetSVG thinking={isThinking} size={300} />
             <div className={styles.emptyTitle}>
-              {isThinking ? 'Velora AI думает...' : 'Velora AI готов помочь'}
+              {isThinking ? t('chat.thinkingTitle') : t('chat.readyTitle')}
             </div>
             <div className={styles.emptySubtitle}>
-              {isThinking ? 'Обрабатываю ваш запрос' : 'Задайте вопрос или выберите подсказку'}
+              {isThinking ? t('chat.thinkingSubtitle') : t('chat.readySubtitle')}
             </div>
             {!isThinking && (
               <div className={styles.suggestions}>
-                {SUGGESTIONS.map(s => (
-                  <button key={s} onClick={() => onSend(s)} className={styles.suggestionChip}>
-                    {s}
+                {SUGGESTION_KEYS.map(key => (
+                  <button key={key} onClick={() => onSend(t(`chat.suggestions.${key}`))} className={styles.suggestionChip}>
+                    {t(`chat.suggestions.${key}`)}
                   </button>
                 ))}
               </div>
@@ -77,7 +108,12 @@ export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelPro
         ) : (
           <div className={styles.messagesList}>
             {messages.map(msg => (
-              <MessageBubble key={msg.id} message={msg} />
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                animate={msg.id === animateId}
+                onAnimateDone={() => setAnimateId(null)}
+              />
             ))}
             {isThinking && <ThinkingIndicator />}
             <div ref={bottomRef} />
@@ -94,9 +130,10 @@ export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelPro
             onKeyDown={handleKeyDown}
             onFocus={() => setInputFocused(true)}
             onBlur={() => setInputFocused(false)}
-            placeholder="Напишите сообщение..."
+            placeholder={t('chat.placeholder')}
             className={styles.inputTextarea}
             rows={1}
+            maxLength={4000}
           />
           <button
             onClick={handleSend}
@@ -109,9 +146,15 @@ export default function ChatPanel({ messages, isThinking, onSend }: ChatPanelPro
           </button>
         </div>
         <div className={styles.inputHint}>
-          <span>Enter — отправить</span>
+          <span>{t('chat.enterToSend')}</span>
           <span>·</span>
-          <span>Shift+Enter — новая строка</span>
+          <span>{t('chat.shiftEnterNewline')}</span>
+          {input.length > 3500 && (
+            <>
+              <span>·</span>
+              <span>{t('chat.charCount', { count: input.length })}</span>
+            </>
+          )}
         </div>
       </div>
     </div>

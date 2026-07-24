@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '../../../../../../components/ui/index';
+import { Card, EmptyState } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtInt, fmtPct } from '../../../../../../lib/format';
 import type { ProductRow } from '../../../types';
 
@@ -53,9 +53,7 @@ export function ProductsTable({ products, onRowClick }: ProductsTableProps) {
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       {products.length === 0 ? (
-        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px' }}>
-          {t('table.empty')}
-        </div>
+        <EmptyState size="sm" icon="search" title={t('empty.noProducts')} />
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <thead>

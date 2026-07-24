@@ -6,7 +6,7 @@
 from datetime import date
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +26,17 @@ from schemas.analytics.reports import (
     SalesRead,
     SalesSeriesPoint,
 )
-from ._filters import ReportFilters, op_conds, pct, prev_range, report_filters
+from ._filters import (
+    bucket_key,
+    date_bucket,
+    fill_series,
+    op_conds,
+    pct,
+    prev_range,
+    ReportFilters,
+    report_filters,
+    series_buckets,
+)
 
 router = APIRouter()
 
@@ -338,12 +348,16 @@ async def analytics_sales(
 
 @router.get("/sales/series", response_model=list[SalesSeriesPoint])
 async def analytics_sales_series(
-    group: Literal["day", "week"] = Query("day"),
+    group: Literal["hour", "day", "week", "month"] = Query("day"),
     f: ReportFilters = Depends(report_filters),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    bucket = func.date_trunc(group, Operation.op_date)
+    if group == "hour":
+        raise HTTPException(
+            status_code=400, detail="Почасовая разбивка недоступна — у операций нет времени суток, только дата"
+        )
+    bucket = date_bucket(Operation.op_date, group)
     rows = (await db.execute(
         select(
             bucket.label("period"),
@@ -354,7 +368,11 @@ async def analytics_sales_series(
         .group_by("period")
         .order_by("period")
     )).all()
-    return [
-        SalesSeriesPoint(period=period.date().isoformat(), revenue=int(revenue), sales_count=int(count))
+    by_bucket = {
+        bucket_key(period, group): SalesSeriesPoint(
+            period=bucket_key(period, group), revenue=int(revenue), sales_count=int(count)
+        )
         for period, revenue, count in rows
-    ]
+    }
+    buckets = series_buckets(f.date_from, f.date_to, group)
+    return fill_series(by_bucket, buckets, zero=lambda b: SalesSeriesPoint(period=b, revenue=0, sales_count=0))

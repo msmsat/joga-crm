@@ -2,18 +2,25 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, CartesianGrid, LabelList, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
 import type { CategoricalChartFunc } from 'recharts/types/chart/types';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { financesApi } from '../../../../../api/finances';
 import { scheduleApi } from '../../../../../api/schedule';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { fmtMoney, fmtInt } from '../../../../../lib/format';
+import { fmtMoney, fmtInt, fmtBucket } from '../../../../../lib/format';
+import { groupForRange } from '../../hooks/useReportFilters';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
+import { ChartFrame } from '../shared/ChartFrame';
+import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, LINE_CURSOR, PEACH, PEACH_LIGHT, ROSE } from '../shared/chartTheme';
+import { ZeroLabel } from '../shared/ZeroLabel';
+import { zeroAwareCells } from '../shared/zeroAwareCells';
 import { InsightsPanel } from '../shared/InsightsPanel';
 import { DrilldownModal } from '../shared/DrilldownModal';
 import type { DrilldownColumn } from '../shared/DrilldownModal';
+import { EmptyTabState } from '../shared/EmptyTabState';
+import { isAllZero } from '../../hooks/useIsEmpty';
 import { RevenueStructureCard } from './overview/RevenueStructureCard';
 import { ClientDynamicsCard } from './overview/ClientDynamicsCard';
 import type { ReportFiltersParams } from '../../types';
@@ -22,6 +29,7 @@ export interface OverviewTabProps {
   params: ReportFiltersParams;
   paramsKey: string;
   registerCsvExport: (rows: Record<string, unknown>[]) => void;
+  onWidenPeriod: () => void;
 }
 
 type ChartMetric = 'revenue' | 'profit' | 'attendance' | 'new_clients' | 'fill_rate';
@@ -34,12 +42,7 @@ interface DayDrilldown {
   date: string;
 }
 
-function fmtDay(iso: string): string {
-  const [, m, d] = iso.split('-');
-  return `${d}.${m}`;
-}
-
-export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTabProps) {
+export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPeriod }: OverviewTabProps) {
   const { t, i18n } = useTranslation('reports');
   const navigate = useNavigate();
   const [chartMetric, setChartMetric] = useState<ChartMetric>('revenue');
@@ -51,16 +54,34 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
     placeholderData: prev => prev,
   });
 
+  // revenue/profit не поддерживают почасовую разбивку — у Operation нет
+  // времени суток, только дата (back/routers/analytics/reports.py). На
+  // однодневном периоде для этих метрик остаёмся на 'day'.
+  const rangeGroup = groupForRange(params.date_from, params.date_to);
+  const chartGroup = rangeGroup === 'hour' && MONEY_METRICS.includes(chartMetric) ? 'day' : rangeGroup;
+
   const { data: series = [] } = useQuery({
-    queryKey: queryKeys.reportSeries(chartMetric, paramsKey),
-    queryFn: () => analyticsApi.getSeries({ ...params, metric: chartMetric, group: 'day' }),
+    queryKey: queryKeys.reportSeries(chartMetric, `${paramsKey}-${chartGroup}`),
+    queryFn: () => analyticsApi.getSeries({ ...params, metric: chartMetric, group: chartGroup }),
     placeholderData: prev => prev,
   });
 
   const chartData = useMemo(
-    () => series.map(p => ({ period: p.period, label: fmtDay(p.period), value: p.value })),
-    [series],
+    () => series.map(p => ({ period: p.period, label: fmtBucket(p.period, chartGroup), value: p.value })),
+    [series, chartGroup],
   );
+
+  // Точка на шкале 0..1, где линия пересекает 0 — граница между заливкой
+  // прибыли (персик) и убытка (розовый) в одном градиенте.
+  const profitGradientOffset = useMemo(() => {
+    if (chartData.length === 0) return 1;
+    const values = chartData.map(p => p.value);
+    const max = Math.max(...values, 0);
+    const min = Math.min(...values, 0);
+    if (min >= 0) return 1;
+    if (max <= 0) return 0;
+    return max / (max - min);
+  }, [chartData]);
 
   const drilldownDate = drilldown?.date ?? '';
   const { data: dayOperations, isFetching: opsLoading } = useQuery({
@@ -76,6 +97,10 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
   });
 
   const kpi = data?.kpi;
+  const isEmpty = !!data && isAllZero(
+    [data.kpi.revenue.value, data.kpi.profit.value, data.kpi.attendance.value, data.kpi.active_clients.value, data.kpi.fill_rate.value],
+    [data.revenue_structure],
+  );
 
   const csvRows = useMemo((): Record<string, unknown>[] => {
     if (!data) return [];
@@ -101,10 +126,13 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
   };
 
   // Recharts (v3) не даёт в onClick сам payload точки, только индекс тика —
-  // достаём period из chartData по activeTooltipIndex.
+  // достаём period из chartData по activeTooltipIndex. Часовой бакет — не дата,
+  // drilldown по дню для него не имеет смысла (эндпоинты дня ждут date_from/to).
   const handleChartClick: CategoricalChartFunc = (nextState) => {
+    if (chartGroup === 'hour') return;
     const idx = nextState.activeTooltipIndex;
-    if (typeof idx === 'number' && chartData[idx]) openDayDrilldown(chartData[idx].period);
+    if (typeof idx !== 'number' || !chartData[idx] || !chartData[idx].value) return;
+    openDayDrilldown(chartData[idx].period);
   };
 
   const operationColumns: DrilldownColumn[] = [
@@ -128,6 +156,10 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
     time: new Date(l.start_time).toLocaleTimeString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { hour: '2-digit', minute: '2-digit' }),
     occupancy: `${l.booked_count}/${l.total_spots}`,
   }));
+
+  if (isEmpty) {
+    return <EmptyTabState icon="chart" onWiden={onWidenPeriod} />;
+  }
 
   return (
     <>
@@ -198,31 +230,55 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
             </div>
           }
         >
-          <div style={{ height: '240px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              {MONEY_METRICS.includes(chartMetric) ? (
-                <AreaChart data={chartData} onClick={handleChartClick}>
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text3)' }} axisLine={false} tickLine={false} />
-                  <YAxis hide />
-                  <Tooltip
-                    formatter={(v) => fmtMoney(Number(v))}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', fontSize: '12px', background: 'var(--bg-card)' }}
-                  />
-                  <Area type="monotone" dataKey="value" stroke="#FCAE91" fill="rgba(252,174,145,0.25)" strokeWidth={2} />
-                </AreaChart>
-              ) : (
-                <BarChart data={chartData} onClick={handleChartClick}>
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text3)' }} axisLine={false} tickLine={false} />
-                  <YAxis hide />
-                  <Tooltip
-                    formatter={(v) => (chartMetric === 'fill_rate' ? `${v}%` : fmtInt(Number(v)))}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', fontSize: '12px', background: 'var(--bg-card)' }}
-                  />
-                  <Bar dataKey="value" fill="#FCAE91" radius={[6, 6, 0, 0]} maxBarSize={28} cursor="pointer" />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-          </div>
+          {MONEY_METRICS.includes(chartMetric) ? (
+            <ChartFrame>
+              <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+                <defs>
+                  <linearGradient id="overviewMoneyFill" x1="0" y1="0" x2="0" y2="1">
+                    {chartMetric === 'profit' ? (
+                      <>
+                        <stop offset={profitGradientOffset} stopColor={PEACH} stopOpacity={0.38} />
+                        <stop offset={profitGradientOffset} stopColor={ROSE} stopOpacity={0.22} />
+                      </>
+                    ) : (
+                      <>
+                        <stop offset="0%" stopColor={PEACH} stopOpacity={0.38} />
+                        <stop offset="100%" stopColor={PEACH} stopOpacity={0} />
+                      </>
+                    )}
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="rgba(26,26,26,0.05)" />
+                <XAxis dataKey="label" {...AXIS_X} interval="preserveStartEnd" minTickGap={16} />
+                <YAxis hide domain={[(dataMin: number) => Math.min(0, dataMin), 'auto']} />
+                <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} />
+                {chartMetric === 'profit' && <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />}
+                <Area
+                  type="monotone" dataKey="value" stroke={PEACH} strokeWidth={2.5}
+                  fill="url(#overviewMoneyFill)" fillOpacity={1}
+                  activeDot={{ r: 4, fill: '#fff', stroke: PEACH, strokeWidth: 2.5 }}
+                  dot={chartData.length <= 12 ? { r: 2.5, fill: '#fff', stroke: PEACH, strokeWidth: 2 } : false}
+                  animationDuration={400}
+                />
+              </AreaChart>
+            </ChartFrame>
+          ) : (
+            <ChartFrame>
+              <BarChart data={chartData} onClick={handleChartClick}>
+                <XAxis dataKey="label" {...AXIS_X} />
+                <YAxis hide />
+                <Tooltip
+                  formatter={(v) => (chartMetric === 'fill_rate' ? `${v}%` : fmtInt(Number(v)))}
+                  contentStyle={TOOLTIP_STYLE}
+                  cursor={BAR_CURSOR}
+                />
+                <Bar dataKey="value" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false} animationDuration={400}>
+                  <LabelList dataKey="value" position="top" content={ZeroLabel} />
+                  {zeroAwareCells(chartData, 'value', PEACH_LIGHT)}
+                </Bar>
+              </BarChart>
+            </ChartFrame>
+          )}
         </ChartCard>
       </div>
 
@@ -242,7 +298,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport }: OverviewTa
       <DrilldownModal
         open={!!drilldown}
         onClose={() => setDrilldown(null)}
-        title={drilldown ? fmtDay(drilldown.date) : ''}
+        title={drilldown ? fmtBucket(drilldown.date, 'day') : ''}
         columns={drilldown?.kind === 'money' ? operationColumns : lessonColumns}
         rows={drilldown?.kind === 'money' ? operationRows : lessonRows}
         loading={drilldown?.kind === 'money' ? opsLoading : lessonsLoading}

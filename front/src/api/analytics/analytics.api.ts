@@ -1,26 +1,32 @@
 import { client } from '../client'
 import type {
   ActivityLog,
+  ClientsReportRead,
   OverviewRead,
   PeriodSummary,
   SalesRead,
   SalesSeriesPoint,
+  SegmentClientRow,
   SeriesPoint,
   ServiceReportRow,
   StudioReview,
   StudioTask,
   StudioTaskCreate,
   StudioTaskUpdate,
+  SlotLessonRow,
+  TeamRead,
+  TrainerDetailRead,
   TrainerReportRow,
+  UtilizationRead,
 } from './analytics.types'
 import type { ReportFiltersParams } from '../../pages/dashboard/Reports/types'
 
 type DateRange = { date_from: string; date_to: string }
 type SeriesParams = ReportFiltersParams & {
   metric: 'revenue' | 'expenses' | 'bookings' | 'new_clients' | 'profit' | 'attendance' | 'fill_rate'
-  group?: 'day' | 'week' | 'month'
+  group?: 'hour' | 'day' | 'week' | 'month'
 }
-type SalesSeriesParams = ReportFiltersParams & { group?: 'day' | 'week' }
+type SalesSeriesParams = ReportFiltersParams & { group?: 'hour' | 'day' | 'week' | 'month' }
 
 const qs = (params: Record<string, string>) => new URLSearchParams(params).toString()
 
@@ -50,6 +56,27 @@ export const analyticsApi = {
 
   getSalesSeries: ({ group = 'day', ...rest }: SalesSeriesParams) =>
     client.get<SalesSeriesPoint[]>(`/analytics/sales/series?${reportQs(rest)}&group=${group}`),
+
+  getClientsReport: (params: ReportFiltersParams) =>
+    client.get<ClientsReportRead>(`/analytics/clients-report?${reportQs(params)}`),
+
+  getClientsReportSegment: (key: string, params: ReportFiltersParams) =>
+    client.get<SegmentClientRow[]>(`/analytics/clients-report/segment?key=${encodeURIComponent(key)}&${reportQs(params)}`),
+
+  getClientsReportWeek: (period: string, kind: 'new' | 'returned') =>
+    client.get<SegmentClientRow[]>(`/analytics/clients-report/week?period=${period}&kind=${kind}`),
+
+  getTeam: (params: ReportFiltersParams) =>
+    client.get<TeamRead>(`/analytics/team?${reportQs(params)}`),
+
+  getTrainerDetail: (id: number, params: ReportFiltersParams) =>
+    client.get<TrainerDetailRead>(`/analytics/team/${id}?${reportQs(params)}`),
+
+  getUtilization: (params: ReportFiltersParams) =>
+    client.get<UtilizationRead>(`/analytics/utilization?${reportQs(params)}`),
+
+  getUtilizationSlot: (weekday: number, hour: number, params: ReportFiltersParams) =>
+    client.get<SlotLessonRow[]>(`/analytics/utilization/slot?weekday=${weekday}&hour=${hour}&${reportQs(params)}`),
 
   getTrainers: (params: DateRange) =>
     client.get<TrainerReportRow[]>(`/analytics/trainers?${qs(params)}`),

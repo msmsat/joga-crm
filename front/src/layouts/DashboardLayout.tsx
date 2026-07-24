@@ -9,7 +9,7 @@ import { billingApi } from '../api/billing/billing.api';
 import type { BillingPlan } from '../api/billing/billing.types';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
-import { ToastProvider, Sidebar, Navbar } from '../components/ui/index';
+import { ToastProvider, Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
 
 // Активная подписка = trial или active; всё прочее (none, истёкшая) → пейволл.
 const ACTIVE_STATUSES = ['trial', 'active'];
@@ -98,7 +98,11 @@ export default function DashboardLayout() {
           position: 'relative', // 🔥 Включает контекст наложения для этой области
           zIndex: 1             // 🔥 Делает весь контент и графики ниже уровня topbar
         }}>
-          {paywalled ? <Navigate to="/dashboard/billing" replace /> : <Outlet />}
+          {paywalled ? <Navigate to="/dashboard/billing" replace /> : (
+            <ErrorBoundary key={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
+          )}
         </div>
       </div>
 

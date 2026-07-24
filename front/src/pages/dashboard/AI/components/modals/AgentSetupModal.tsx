@@ -1,24 +1,30 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Input, Button, Tooltip, ConfirmModal } from '../../../../../components/ui/index';
 import type { AgentConfig, AgentTone } from '../../types';
 import PulseRingSVG from '../animations/PulseRingSVG';
 import CustomSelect from '../CustomSelect';
 import styles from '../../AI.module.css';
 
+const TG_TOKEN_RE = /^\d+:[\w-]{30,}$/;
+
 interface AgentSetupModalProps {
   config: AgentConfig;
-  saved: boolean;
-  onUpdateChannel: (channel: 'telegram' | 'instagram', field: string, value: string | number | boolean | AgentTone) => void;
-  onUpdateSystemPrompt: (prompt: string) => void;
+  isSaving: boolean;
+  tgConnected: boolean;
+  isVerifyingTelegram: boolean;
+  igConnected: boolean;
+  isConnectingInstagram: boolean;
   onToggleChannel: (channel: 'telegram' | 'instagram') => void;
-  onSave: () => void;
+  onSave: (draft: AgentConfig) => void;
+  onVerifyTelegram: (token: string) => void;
+  onDisconnectTelegram: () => Promise<void>;
+  onConnectInstagram: () => void;
+  onDisconnectInstagram: () => Promise<void>;
   onClose: () => void;
 }
 
-const TONE_OPTIONS: { value: AgentTone; label: string }[] = [
-  { value: 'friendly', label: 'Дружелюбный' },
-  { value: 'formal', label: 'Формальный' },
-  { value: 'neutral', label: 'Нейтральный' },
-];
+const TONE_VALUES: AgentTone[] = ['friendly', 'formal', 'neutral'];
 
 function StatBadge({ label, value }: { label: string; value: string | number }) {
   return (
@@ -30,22 +36,40 @@ function StatBadge({ label, value }: { label: string; value: string | number }) 
 }
 
 function ChannelSection({
-  channel,
   label,
   icon,
   config,
   onUpdate,
   onToggle,
   showOffHours,
+  tokenArea,
+  toggleDisabled,
+  toggleDisabledReason,
+  statsPendingCaption,
 }: {
-  channel: 'telegram' | 'instagram';
   label: string;
   icon: React.ReactNode;
   config: AgentConfig['telegram'];
   onUpdate: (field: string, value: string | number | boolean | AgentTone) => void;
   onToggle: () => void;
   showOffHours?: boolean;
+  tokenArea: React.ReactNode;
+  toggleDisabled?: boolean;
+  toggleDisabledReason?: string;
+  statsPendingCaption?: string;
 }) {
+  const { t } = useTranslation('ai');
+  const toneOptions = TONE_VALUES.map(v => ({ value: v, label: t(`agents.tone.${v}`) }));
+  const toggleBtn = (
+    <button
+      onClick={onToggle}
+      disabled={toggleDisabled}
+      className={`${styles.toggleSwitch} ${config.enabled ? styles.toggleSwitchOn : ''}`}
+    >
+      <div className={styles.toggleThumb} />
+    </button>
+  );
+
   return (
     <div className={styles.channelSection}>
       <div className={styles.channelHeader}>
@@ -55,65 +79,45 @@ function ChannelSection({
           <div className={styles.channelStatus}>
             <PulseRingSVG active={config.enabled} size={8} />
             <span style={{ color: config.enabled ? '#A3C9A8' : '#999', fontSize: 11, marginLeft: 4 }}>
-              {config.enabled ? 'Активен' : 'Выключен'}
+              {config.enabled ? t('common:status.active') : t('agents.statusDisabled')}
             </span>
           </div>
         </div>
         <div style={{ flex: 1 }} />
-        <button
-          onClick={onToggle}
-          className={`${styles.toggleSwitch} ${config.enabled ? styles.toggleSwitchOn : ''}`}
-        >
-          <div className={styles.toggleThumb} />
-        </button>
+        {toggleDisabled && toggleDisabledReason ? <Tooltip label={toggleDisabledReason}>{toggleBtn}</Tooltip> : toggleBtn}
       </div>
 
-      {config.enabled && config.handledCount > 0 && (
-        <div className={styles.statsRow}>
-          <StatBadge label="Обработано" value={config.handledCount} />
-          <StatBadge label="Оценка" value={`${config.avgRating.toFixed(1)} ★`} />
-        </div>
+      {config.enabled && (
+        config.handledCount > 0 ? (
+          <div className={styles.statsRow}>
+            <StatBadge label={t('agents.statHandled')} value={config.handledCount} />
+            <StatBadge label={t('agents.statRating')} value={`${config.avgRating.toFixed(1)} ★`} />
+          </div>
+        ) : statsPendingCaption ? (
+          <div className={styles.statLabel}>{statsPendingCaption}</div>
+        ) : null
       )}
 
       <div className={styles.modalGrid}>
+        {tokenArea}
         <div className={styles.formGroup}>
-          <label className={styles.formLabel}>API Token</label>
-          <input
-            type="password"
-            value={config.token}
-            onChange={e => onUpdate('token', e.target.value)}
-            placeholder={channel === 'telegram' ? '1234567890:ABC...' : 'EAABsbCS...'}
-            className={styles.formInput}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Username / Bot</label>
-          <input
-            type="text"
-            value={config.username}
-            onChange={e => onUpdate('username', e.target.value)}
-            placeholder={channel === 'telegram' ? '@velora_bot' : 'velora.studio'}
-            className={styles.formInput}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Тон ответа</label>
+          <label className={styles.formLabel}>{t('agents.toneLabel')}</label>
           <CustomSelect
             value={config.tone}
-            options={TONE_OPTIONS}
+            options={toneOptions}
             onChange={v => onUpdate('tone', v as AgentTone)}
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Макс. длина ответа (символов)</label>
-          <input
+          <Input
+            label={t('agents.maxLengthLabel')}
             type="number"
-            value={config.maxLength}
-            onChange={e => onUpdate('maxLength', Number(e.target.value))}
+            value={String(config.maxLength)}
+            onChange={v => onUpdate('maxLength', Number(v))}
             min={50}
-            max={2000}
+            max={4000}
             step={50}
-            className={styles.formInput}
+            error={config.maxLength < 50 || config.maxLength > 4000 ? t('agents.maxLengthError') : undefined}
           />
         </div>
         {showOffHours && (
@@ -125,7 +129,7 @@ function ChannelSection({
                 onChange={e => onUpdate('offHoursOnly', e.target.checked)}
                 className={styles.checkbox}
               />
-              <span className={styles.checkLabel}>Автоответ только вне рабочих часов</span>
+              <span className={styles.checkLabel}>{t('agents.offHoursLabel')}</span>
             </label>
           </div>
         )}
@@ -136,22 +140,112 @@ function ChannelSection({
 
 export default function AgentSetupModal({
   config,
-  saved,
-  onUpdateChannel,
-  onUpdateSystemPrompt,
+  isSaving,
+  tgConnected,
+  isVerifyingTelegram,
+  igConnected,
+  isConnectingInstagram,
   onToggleChannel,
   onSave,
+  onVerifyTelegram,
+  onDisconnectTelegram,
+  onConnectInstagram,
+  onDisconnectInstagram,
   onClose,
 }: AgentSetupModalProps) {
+  const { t, i18n } = useTranslation('ai');
   const [activeTab, setActiveTab] = useState<'telegram' | 'instagram' | 'prompt'>('telegram');
+  // Тон/лимит/офчасы/промпт правятся локально до «Сохранить» — enabled/статистика
+  // всегда берутся из живого config (тумблер шлёт PATCH сразу, см. useAIAgent).
+  const [draft, setDraft] = useState<AgentConfig>(config);
+  const [confirmDisconnect, setConfirmDisconnect] = useState<'telegram' | 'instagram' | null>(null);
+
+  const updateChannel = (channel: 'telegram' | 'instagram', field: string, value: string | number | boolean | AgentTone) => {
+    setDraft(prev => ({ ...prev, [channel]: { ...prev[channel], [field]: value } }));
+  };
+  const updateSystemPrompt = (prompt: string) => setDraft(prev => ({ ...prev, systemPrompt: prompt }));
+
+  // Не даём уйти на сервер невалидному tg_max_length/ig_max_length (бэк: 50–4000).
+  const maxLengthInvalid = (n: number) => n < 50 || n > 4000;
+  const canSave = !maxLengthInvalid(draft.telegram.maxLength) && !maxLengthInvalid(draft.instagram.maxLength);
+
+  // username — только для чтения (заполняется verify-эндпоинтом), не редактируется вручную —
+  // берём из живого config; token остаётся в draft, пока не подтверждён «Проверить и подключить».
+  const display = {
+    telegram: { ...draft.telegram, enabled: config.telegram.enabled, handledCount: config.telegram.handledCount, avgRating: config.telegram.avgRating, username: config.telegram.username },
+    instagram: {
+      ...draft.instagram, enabled: config.instagram.enabled, handledCount: config.instagram.handledCount,
+      avgRating: config.instagram.avgRating, username: config.instagram.username, expiresAt: config.instagram.expiresAt,
+    },
+  };
+
+  const tgTokenTouched = draft.telegram.token.trim().length > 0;
+  const tgTokenValid = TG_TOKEN_RE.test(draft.telegram.token.trim());
+
+  const handleDisconnectTelegram = async () => {
+    await onDisconnectTelegram();
+    updateChannel('telegram', 'token', '');
+  };
+
+  const telegramTokenArea = (
+    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+      <label className={styles.formLabel}>{t('telegram.tokenLabel')}</label>
+      <div className={styles.tokenVerifyRow}>
+        <div>
+          <Input
+            value={draft.telegram.token}
+            onChange={v => updateChannel('telegram', 'token', v)}
+            placeholder={t('telegram.tokenPlaceholder')}
+            monospace
+            error={tgTokenTouched && !tgTokenValid ? t('telegram.tokenInvalidFormat') : undefined}
+          />
+        </div>
+        <Button onClick={() => onVerifyTelegram(draft.telegram.token.trim())} loading={isVerifyingTelegram} disabled={!tgTokenValid}>
+          {t('telegram.verifyButton')}
+        </Button>
+      </div>
+      {display.telegram.username && (
+        <div className={styles.tokenConnectedRow}>
+          <span className={styles.tokenBadge}>@{display.telegram.username}</span>
+          <button type="button" className={styles.tokenDisconnectBtn} onClick={() => setConfirmDisconnect('telegram')}>
+            {t('telegram.disconnect')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const instagramTokenArea = (
+    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+      {igConnected ? (
+        <div className={styles.tokenConnectedRow} style={{ marginTop: 0, flexWrap: 'wrap' }}>
+          <span className={styles.tokenBadge}>@{display.instagram.username}</span>
+          {display.instagram.expiresAt && (
+            <span style={{ fontSize: 12.5, color: '#999' }}>
+              {t('instagram.expiresUntil', {
+                date: new Intl.DateTimeFormat(i18n.language).format(new Date(display.instagram.expiresAt)),
+              })}
+            </span>
+          )}
+          <button type="button" className={styles.tokenDisconnectBtn} onClick={() => setConfirmDisconnect('instagram')}>
+            {t('instagram.disconnect')}
+          </button>
+        </div>
+      ) : (
+        <Button onClick={onConnectInstagram} loading={isConnectingInstagram}>
+          {t('instagram.connectButton')}
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <div>
-            <div className={styles.modalTitle}>Настройка AI-агентов</div>
-            <div className={styles.modalSubtitle}>Автоматические ответы в мессенджерах</div>
+            <div className={styles.modalTitle}>{t('agents.modalTitle')}</div>
+            <div className={styles.modalSubtitle}>{t('agents.modalSubtitle')}</div>
           </div>
           <button onClick={onClose} className={styles.modalClose}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -164,7 +258,7 @@ export default function AgentSetupModal({
           {([
             { id: 'telegram', label: 'Telegram' },
             { id: 'instagram', label: 'Instagram Direct' },
-            { id: 'prompt', label: 'Системный промпт' },
+            { id: 'prompt', label: t('agents.tabPrompt') },
           ] as const).map(tab => (
             <button
               key={tab.id}
@@ -172,7 +266,7 @@ export default function AgentSetupModal({
               className={`${styles.modalTab} ${activeTab === tab.id ? styles.modalTabActive : ''}`}
             >
               {tab.label}
-              {(tab.id === 'telegram' || tab.id === 'instagram') && config[tab.id].enabled && (
+              {(tab.id === 'telegram' || tab.id === 'instagram') && display[tab.id].enabled && (
                 <PulseRingSVG active size={7} />
               )}
             </button>
@@ -182,22 +276,33 @@ export default function AgentSetupModal({
         <div className={styles.modalBody}>
           {activeTab === 'telegram' && (
             <ChannelSection
-              channel="telegram"
               label="Telegram"
               icon={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8">
                   <path d="M22 2L11 13" /><path d="M22 2L15 22l-4-9-9-4 20-7z" />
                 </svg>
               }
-              config={config.telegram}
-              onUpdate={(field, value) => onUpdateChannel('telegram', field, value)}
+              config={display.telegram}
+              onUpdate={(field, value) => updateChannel('telegram', field, value)}
               onToggle={() => onToggleChannel('telegram')}
+              tokenArea={telegramTokenArea}
+              toggleDisabled={!tgConnected}
+              toggleDisabledReason={t('telegram.gateTooltip')}
+              statsPendingCaption={t('telegram.statsPending')}
             />
+          )}
+          {activeTab === 'telegram' && !tgConnected && (
+            <div className={styles.promptHint} style={{ marginTop: 14 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('telegram.instructionTitle')}</div>
+              <div>1. {t('telegram.instructionStep1')}</div>
+              <div>2. {t('telegram.instructionStep2')}</div>
+              <div>3. {t('telegram.instructionStep3')}</div>
+              <div>4. {t('telegram.instructionStep4')}</div>
+            </div>
           )}
 
           {activeTab === 'instagram' && (
             <ChannelSection
-              channel="instagram"
               label="Instagram Direct"
               icon={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8">
@@ -206,44 +311,62 @@ export default function AgentSetupModal({
                   <circle cx="17.5" cy="6.5" r="1.2" fill="#F9A08B" strokeWidth="0" />
                 </svg>
               }
-              config={config.instagram}
-              onUpdate={(field, value) => onUpdateChannel('instagram', field, value)}
+              config={display.instagram}
+              onUpdate={(field, value) => updateChannel('instagram', field, value)}
               onToggle={() => onToggleChannel('instagram')}
               showOffHours
+              tokenArea={instagramTokenArea}
+              toggleDisabled={!igConnected}
+              toggleDisabledReason={t('instagram.gateTooltip')}
+              statsPendingCaption={t('instagram.statsPending')}
             />
+          )}
+          {activeTab === 'instagram' && !igConnected && (
+            <div className={styles.promptHint} style={{ marginTop: 14 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('instagram.instructionTitle')}</div>
+              <div>1. {t('instagram.instructionStep1')}</div>
+              <div>2. {t('instagram.instructionStep2')}</div>
+              <div>3. {t('instagram.instructionStep3')}</div>
+              <div>4. {t('instagram.instructionStep4')}</div>
+            </div>
           )}
 
           {activeTab === 'prompt' && (
             <div className={styles.promptSection}>
               <div className={styles.promptHint}>
-                Этот текст определяет личность агента — как он общается, что знает, каких тем избегает.
+                {t('agents.promptHint')}
               </div>
               <textarea
-                value={config.systemPrompt}
-                onChange={e => onUpdateSystemPrompt(e.target.value)}
+                value={draft.systemPrompt}
+                onChange={e => updateSystemPrompt(e.target.value)}
                 className={styles.promptTextarea}
                 rows={10}
-                placeholder="Ты — вежливый ассистент студии..."
+                maxLength={2000}
+                placeholder={t('agents.promptPlaceholder')}
               />
-              <div className={styles.promptCount}>{config.systemPrompt.length} / 2000 символов</div>
+              <div className={styles.promptCount}>{t('agents.promptCount', { count: draft.systemPrompt.length })}</div>
             </div>
           )}
         </div>
 
         <div className={styles.modalFooter}>
-          <button onClick={onClose} className={styles.btnSecondary}>Отмена</button>
-          <button onClick={onSave} className={styles.btnPrimary}>
-            {saved ? (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Сохранено
-              </>
-            ) : 'Сохранить'}
+          <button onClick={onClose} className={styles.btnSecondary}>{t('common:buttons.cancel')}</button>
+          <button onClick={() => onSave(draft)} className={styles.btnPrimary} disabled={isSaving || !canSave}>
+            {isSaving ? t('common:buttons.saving') : t('common:buttons.save')}
           </button>
         </div>
       </div>
+
+      {confirmDisconnect && (
+        <ConfirmModal
+          danger
+          title={t(`${confirmDisconnect}.disconnectConfirmTitle`)}
+          message={t(`${confirmDisconnect}.disconnectConfirmMessage`)}
+          confirmText={t(`${confirmDisconnect}.disconnect`)}
+          onConfirm={confirmDisconnect === 'telegram' ? handleDisconnectTelegram : onDisconnectInstagram}
+          onClose={() => setConfirmDisconnect(null)}
+        />
+      )}
     </div>
   );
 }

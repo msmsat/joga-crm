@@ -180,3 +180,152 @@ export interface SalesSeriesPoint {
   revenue: number
   sales_count: number
 }
+
+// ─── R3: вкладка «Клиенты» ─────────────────────────────────────────────────
+export interface ClientsKpiSet {
+  new: Kpi
+  returned: Kpi
+  lost: Kpi
+  retention_pct: Kpi
+  avg_value: Kpi
+}
+
+export interface WeeklyPoint {
+  period: string
+  new: number
+  returned: number
+}
+
+export interface SegmentCount {
+  key: string
+  count: number
+}
+
+export interface SegmentClientRow {
+  id: number
+  name: string
+  last_name: string | null
+  phone: string | null
+  last_visit_date: string | null
+  value: number | null
+}
+
+export interface ClientsReportRead {
+  kpi: ClientsKpiSet
+  weekly: WeeklyPoint[]
+  risk_segments: SegmentCount[]
+  loyal_segments: SegmentCount[]
+  insights: Insight[]
+}
+
+// ─── R4: вкладка «Команда» ─────────────────────────────────────────────────
+export interface TeamKpiSet {
+  lessons_count: Kpi
+  revenue_per_hour: Kpi
+  avg_fill_pct: Kpi
+  cancel_noshow_pct: Kpi
+  avg_rating: Kpi
+}
+
+export interface TrainerRow {
+  trainer_id: number
+  name: string
+  lessons: number
+  fill_pct: number
+  attendance: number
+  revenue: number
+  return_rate_pct: number
+  cancels: number
+  noshows: number
+  rating: number | null
+  load_pct: number
+}
+
+export interface TeamRead {
+  kpi: TeamKpiSet
+  trainers: TrainerRow[]
+  insights: Insight[]
+}
+
+export interface TrainerLoadPoint {
+  weekday: number
+  lessons: number
+  fill_pct: number
+}
+
+export interface TrainerTopLesson {
+  name: string
+  held: number
+  attendance: number
+  fill_pct: number
+}
+
+export interface TrainerDetailRead {
+  revenue_series: SeriesPoint[]
+  load_by_weekday: TrainerLoadPoint[]
+  top_lessons: TrainerTopLesson[]
+  return_rate_pct: number
+  returned_clients: number
+  total_clients: number
+}
+
+// ─── R5: вкладка «Расписание» ──────────────────────────────────────────────
+export interface UtilizationKpiSet {
+  avg_fill_pct: Kpi
+  free_spots: Kpi
+  cancels: Kpi
+  noshows: Kpi
+  lost_revenue: Kpi
+}
+
+export interface HeatmapCell {
+  weekday: number
+  hour: number
+  fill_pct: number
+  lessons: number
+  attendance: number
+}
+
+export interface LessonSliceRow {
+  name: string
+  revenue: number
+  held: number
+  fill_pct: number
+}
+
+export interface ChronicLowRow {
+  name: string
+  weekday: number
+  hour: number
+  fill_pct: number
+  weeks: number
+  lesson_ids: number[]
+}
+
+export interface HallUtilRow {
+  hall_id: number
+  name: string
+  fill_pct: number
+  evening_idle_pct: number
+}
+
+export interface UtilizationRead {
+  kpi: UtilizationKpiSet
+  heatmap: HeatmapCell[]
+  top_profitable: LessonSliceRow[]
+  top_filled: LessonSliceRow[]
+  chronic_low: ChronicLowRow[]
+  halls: HallUtilRow[]
+  insights: Insight[]
+}
+
+export interface SlotLessonRow {
+  id: number
+  date: string
+  name: string
+  teacher_name: string
+  hall: string | null
+  occupied: number
+  total_spots: number
+  status: string
+}

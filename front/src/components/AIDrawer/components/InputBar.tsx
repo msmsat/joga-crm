@@ -1,4 +1,5 @@
 import { useState, useRef, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from '../AIDrawer.module.css';
 
 interface InputBarProps {
@@ -7,6 +8,7 @@ interface InputBarProps {
 }
 
 export default function InputBar({ onSend, disabled }: InputBarProps) {
+  const { t } = useTranslation('ai');
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -41,7 +43,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
         <textarea
           ref={textareaRef}
           className={styles.textarea}
-          placeholder="Спросите что-нибудь..."
+          placeholder={t('chat.drawerPlaceholder')}
           value={value}
           rows={1}
           onChange={e => { setValue(e.target.value); adjustHeight(); }}
@@ -49,6 +51,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           disabled={disabled}
+          maxLength={4000}
         />
         <button
           className={styles.sendBtn}
@@ -61,6 +64,9 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           </svg>
         </button>
       </div>
+      {value.length > 3500 && (
+        <div className={styles.charCount}>{t('chat.charCount', { count: value.length })}</div>
+      )}
     </div>
   );
 }

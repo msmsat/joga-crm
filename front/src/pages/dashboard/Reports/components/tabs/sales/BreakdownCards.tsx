@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Card, InfoHint } from '../../../../../../components/ui/index';
+import { Card, EmptyState, InfoHint } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtInt } from '../../../../../../lib/format';
 import type { BuyerTypeSlice, CategorySlice, MethodSlice } from '../../../types';
 
@@ -23,9 +23,7 @@ function SliceCard({
         <InfoHint title={t(`formulas.${formulaKey}.title`)} text={t(`formulas.${formulaKey}.text`)} />
       </div>
       {rows.length === 0 ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', color: 'var(--text3)', fontSize: '13px' }}>
-          {t('table.empty')}
-        </div>
+        <EmptyState size="sm" icon="chart" title={t('empty.noSales')} />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {rows.map((row, i) => (

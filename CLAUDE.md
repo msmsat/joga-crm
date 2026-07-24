@@ -220,7 +220,9 @@
 | `Tooltip` | `components/ui/index` | Ониксовая капсула, `side: top/bottom/left/right` |
 | `InfoHint` | `components/ui/index` | i-кнопка с Apple-style поповером-описанием по клику, `side: top/bottom/left/right` |
 | `Toast` (`useToast`) | `components/ui/index` | Уведомления об успехе/ошибке |
+| `EmptyState` | `components/ui/index` | Пустое состояние: SVG-иллюстрация в персиковом круге, заголовок, подпись, действие; `size: sm/lg` |
 | `Sidebar`, `Navbar` | `components/ui/index` | Каркас приложения (используются только в `DashboardLayout`) |
+| `ErrorBoundary` | `components/ui/index` | Классовый компонент, ловит ошибки рендера; fallback-карточка + «Обновить страницу»; оборачивает контент `DashboardLayout` вокруг `Outlet` |
 
 Правила:
 1. Нужной вариации нет → **расширь компонент кита** (новый variant/prop), не создавай локальную копию.

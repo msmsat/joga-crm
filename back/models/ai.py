@@ -12,7 +12,7 @@ class StudioAISettings(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), unique=True, index=True)
 
-    model: Mapped[str] = mapped_column(String(30), default="gpt-4o")
+    model: Mapped[str] = mapped_column(String(30), default="velora-3.5")
     language: Mapped[str] = mapped_column(String(10), default="auto")
     system_prompt: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
 
@@ -26,6 +26,8 @@ class StudioAISettings(Base):
 
     ig_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     ig_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    ig_user_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    ig_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     ig_username: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     ig_tone: Mapped[str] = mapped_column(String(20), default="friendly")
     ig_max_length: Mapped[int] = mapped_column(Integer, default=300)

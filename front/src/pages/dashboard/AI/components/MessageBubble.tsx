@@ -1,16 +1,37 @@
-import type { Message } from '../types';
+import { useEffect, useState } from 'react';
+import type { AIChatMessage } from '../types';
+import { formatMessageTime } from '../../../../lib/datetime';
 import styles from '../AI.module.css';
 
 interface MessageBubbleProps {
-  message: Message;
+  message: AIChatMessage;
+  animate?: boolean;
+  onAnimateDone?: () => void;
 }
 
-function formatTime(date: Date) {
-  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-}
-
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, animate = false, onAnimateDone }: MessageBubbleProps) {
   const isAI = message.role === 'assistant';
+  const [displayText, setDisplayText] = useState(animate ? '' : message.text);
+  const [typing, setTyping] = useState(animate);
+
+  // Печатает только только что пришедший ответ (animate решает родитель один раз
+  // по переходу isThinking true→false); история из БД отрисовывается сразу целиком.
+  useEffect(() => {
+    if (!animate) return;
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 4;
+      setDisplayText(message.text.slice(0, i));
+      if (i >= message.text.length) {
+        window.clearInterval(id);
+        setDisplayText(message.text);
+        setTyping(false);
+        onAnimateDone?.();
+      }
+    }, 18);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isAI) {
     if (!message.text) return null;
@@ -24,10 +45,10 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className={styles.aiLabel}>Velora AI</div>
           <div className={styles.aiBubble}>
-            <span>{message.text}</span>
-            {message.status === 'typing' && <span className={styles.caret} />}
+            <span>{displayText}</span>
+            {typing && <span className={styles.caret} />}
           </div>
-          <div className={styles.msgTime}>{formatTime(message.timestamp)}</div>
+          <div className={styles.msgTime}>{formatMessageTime(message.created_at)}</div>
         </div>
       </div>
     );
@@ -36,7 +57,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   return (
     <div className={styles.userMsgRow}>
       <div className={styles.userBubble}>{message.text}</div>
-      <div className={styles.msgTime} style={{ textAlign: 'right' }}>{formatTime(message.timestamp)}</div>
+      <div className={styles.msgTime} style={{ textAlign: 'right' }}>{formatMessageTime(message.created_at)}</div>
     </div>
   );
 }

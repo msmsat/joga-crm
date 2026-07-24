@@ -7,6 +7,7 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import FinancialGoal, Operation
 from schemas.finances.goals import GoalCreate, GoalRead, GoalUpdate
+from services.notifier import notify
 
 router = APIRouter()
 
@@ -90,6 +91,11 @@ async def create_goal(
     return await _to_read(goal, ctx.studio_id, db)
 
 
+async def _progress_percent(goal: FinancialGoal, studio_id: int, db: AsyncSession) -> float:
+    current = await _auto_amount(goal, studio_id, db) if goal.tracking_mode == "auto" else goal.current_amount
+    return (current / goal.target_amount * 100) if goal.target_amount else 0
+
+
 @router.patch("/goals/{goal_id}", response_model=GoalRead)
 async def update_goal(
     goal_id: int,
@@ -98,10 +104,17 @@ async def update_goal(
     db: AsyncSession = Depends(get_db),
 ):
     goal = await _get_goal_or_404(goal_id, ctx.studio_id, db)
+    progress_before = await _progress_percent(goal, ctx.studio_id, db)
+
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(goal, field, value)
     await db.commit()
     await db.refresh(goal)
+
+    progress_after = await _progress_percent(goal, ctx.studio_id, db)
+    if progress_before < 100 and progress_after >= 100:
+        await notify(db, ctx.studio_id, "owner", "o8", {"goal_name": goal.title})
+
     return await _to_read(goal, ctx.studio_id, db)
 
 

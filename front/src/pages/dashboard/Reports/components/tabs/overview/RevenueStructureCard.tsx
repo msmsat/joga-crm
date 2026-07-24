@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { EmptyState } from '../../../../../../components/ui/index';
 import { ChartCard } from '../../shared/ChartCard';
 import { fmtMoney } from '../../../../../../lib/format';
 import type { RevenueStructureRow } from '../../../types';
@@ -16,9 +17,7 @@ export function RevenueStructureCard({ rows, onCategoryClick }: RevenueStructure
   return (
     <ChartCard title={t('overview.revenueStructure.title')} formulaKey="revenue">
       {rows.length === 0 ? (
-        <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--text3)', fontSize: '13px' }}>
-          {t('table.empty')}
-        </div>
+        <EmptyState size="sm" icon="money" title={t('empty.noRevenue')} />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {rows.map((row, i) => (

@@ -89,14 +89,14 @@ async def _run():
             revenue = await metric_series(metric="revenue", group="day", f=f, ctx=ctx, db=db)
         assert len(revenue) == 1 and revenue[0].value == 1000.0, revenue
 
-        # фильтр hall_id, не совпадающий ни с одним залом → пустая серия, не 500
+        # фильтр hall_id, не совпадающий ни с одним залом → полная ось из нулей, не []
         f_other_hall = ReportFilters(
             date_from=date(2026, 1, 20), date_to=date(2026, 1, 20),
             branch_id=None, hall_id=hall_id + 999, trainer_id=None, service_id=None,
         )
         async with async_session_maker() as db:
             empty = await metric_series(metric="fill_rate", group="day", f=f_other_hall, ctx=ctx, db=db)
-        assert empty == [], empty
+        assert len(empty) == 1 and empty[0].value == 0.0, empty
     finally:
         await _cleanup(sid)
 

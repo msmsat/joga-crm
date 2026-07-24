@@ -103,5 +103,10 @@
     "min": "min",
     "sqm": "m²",
     "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "This page ran into an error. Try reloading — the rest of the app keeps working.",
+    "reload": "Reload page"
   }
 }

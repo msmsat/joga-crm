@@ -1,5 +1,5 @@
 import { client } from '../client'
-import type { AIChatMessage, AIChatSession, AISettings } from './ai.types'
+import type { AIChatMessage, AIChatSession, AISettings, SendMessageResponse } from './ai.types'
 
 export const aiApi = {
   getSessions: () =>
@@ -15,11 +15,23 @@ export const aiApi = {
     client.get<AIChatMessage[]>(`/ai/sessions/${sessionId}/messages`),
 
   sendMessage: (sessionId: number, text: string) =>
-    client.post<AIChatMessage>(`/ai/sessions/${sessionId}/messages`, { text }),
+    client.post<SendMessageResponse>(`/ai/sessions/${sessionId}/messages`, { text }),
 
   getSettings: () =>
     client.get<AISettings>('/ai/settings'),
 
   updateSettings: (payload: Partial<AISettings>) =>
     client.patch<AISettings>('/ai/settings', payload),
+
+  verifyTelegramToken: (token: string) =>
+    client.post<{ username: string }>('/ai/telegram/verify-token', { token }),
+
+  disconnectTelegram: () =>
+    client.delete<void>('/ai/telegram/token'),
+
+  getInstagramOauthUrl: () =>
+    client.get<{ url: string }>('/ai/instagram/oauth-url'),
+
+  disconnectInstagram: () =>
+    client.delete<void>('/ai/instagram/connection'),
 }

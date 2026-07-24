@@ -1,0 +1,132 @@
+{
+  "telegram": {
+    "tokenLabel": "Токен бота",
+    "tokenPlaceholder": "1234567890:ABC...",
+    "tokenInvalidFormat": "Неверный формат токена",
+    "verifyButton": "Проверить и подключить",
+    "verifiedToast": "Бот @{{username}} подключён",
+    "verifyFailedToast": "Токен не прошёл проверку Telegram",
+    "disconnect": "Отвязать",
+    "disconnectedToast": "Бот отключён",
+    "disconnectConfirmTitle": "Отвязать бота?",
+    "disconnectConfirmMessage": "Автоответчик Telegram перестанет работать, пока вы не подключите бота заново.",
+    "gateTooltip": "Сначала подключите бота",
+    "statsPending": "Появится после запуска автоответчика",
+    "instructionTitle": "Как получить токен",
+    "instructionStep1": "Откройте @BotFather в Telegram",
+    "instructionStep2": "Отправьте команду /newbot, задайте имя и username бота",
+    "instructionStep3": "Скопируйте выданный токен",
+    "instructionStep4": "Вставьте его сюда и нажмите «Проверить и подключить»"
+  },
+  "instagram": {
+    "connectButton": "Подключить Instagram",
+    "connectedToast": "Instagram подключён",
+    "connectErrorToast": "Не удалось подключить Instagram — попробуйте ещё раз",
+    "expiresUntil": "Доступ действует до {{date}}",
+    "disconnect": "Отключить",
+    "disconnectedToast": "Instagram отключён",
+    "disconnectConfirmTitle": "Отключить Instagram?",
+    "disconnectConfirmMessage": "Автоответчик Instagram перестанет отвечать клиентам, пока вы не подключите аккаунт заново.",
+    "gateTooltip": "Сначала подключите аккаунт",
+    "statsPending": "Появится после запуска автоответчика",
+    "instructionTitle": "Как подключить",
+    "instructionStep1": "Аккаунт студии должен быть профессиональным — Business или Creator (Настройки Instagram → Тип аккаунта)",
+    "instructionStep2": "Нажмите «Подключить Instagram» и войдите от имени аккаунта студии",
+    "instructionStep3": "Разрешите доступ к сообщениям",
+    "instructionStep4": "Вы автоматически вернётесь сюда"
+  },
+  "history": {
+    "title": "История чатов",
+    "empty": "Начните первый диалог",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "earlier": "Ранее",
+    "messagesCount": "{{count}} сооб.",
+    "deleteConfirmTitle": "Удалить чат?",
+    "deleteConfirmMessage": "Все сообщения этого диалога будут удалены без возможности восстановления."
+  },
+  "actions": {
+    "newChat": "Новый чат",
+    "deleteChat": "Удалить чат"
+  },
+  "settings": {
+    "title": "Настройки AI",
+    "model": "Модель",
+    "language": "Язык"
+  },
+  "models": {
+    "comingSoon": "Скоро появятся",
+    "velora-3.5": "Velora AI 3.5"
+  },
+  "languages": {
+    "auto": "Авто",
+    "ru": "Русский",
+    "en": "English",
+    "uk": "Українська"
+  },
+  "chat": {
+    "thinking": "Velora AI думает",
+    "thinkingAnswer": "Velora AI думает над ответом",
+    "readyTitle": "Velora AI готов помочь",
+    "thinkingTitle": "Velora AI думает...",
+    "readySubtitle": "Задайте вопрос или выберите подсказку",
+    "thinkingSubtitle": "Обрабатываю ваш запрос",
+    "placeholder": "Напишите сообщение...",
+    "drawerPlaceholder": "Спросите что-нибудь...",
+    "navbarPlaceholder": "Спросите AI или поставьте задачу...",
+    "enterToSend": "Enter — отправить",
+    "shiftEnterNewline": "Shift+Enter — новая строка",
+    "continueInChat": "Продолжить в чате →",
+    "emptyTitle": "Чем могу помочь?",
+    "emptySubtitle": "Задайте любой вопрос о вашей студии, клиентах или бизнесе",
+    "charCount": "{{count}} / 4000 символов",
+    "suggestions": {
+      "revenue": "Покажи статистику за этот месяц",
+      "sms": "Составь SMS для напоминания о записи",
+      "promo": "Идеи для акции на летний период",
+      "retention": "Как улучшить удержание клиентов?"
+    },
+    "drawerSuggestions": {
+      "revenueAnalysis": "Анализ выручки",
+      "emailTemplate": "Шаблон письма",
+      "promoIdeas": "Идеи для акции",
+      "clientReport": "Отчёт по клиентам"
+    }
+  },
+  "drawer": {
+    "historyBack": "Чаты",
+    "historyLabel": "История"
+  },
+  "agents": {
+    "title": "AI-агенты",
+    "configureButton": "Настроить агентов",
+    "enable": "Включить",
+    "disable": "Выключить",
+    "modalTitle": "Настройка AI-агентов",
+    "modalSubtitle": "Автоматические ответы в мессенджерах",
+    "tabPrompt": "Системный промпт",
+    "statusDisabled": "Выключен",
+    "statHandled": "Обработано",
+    "statRating": "Оценка",
+    "toneLabel": "Тон ответа",
+    "tone": {
+      "friendly": "Дружелюбный",
+      "formal": "Формальный",
+      "neutral": "Нейтральный"
+    },
+    "maxLengthLabel": "Макс. длина ответа (символов)",
+    "maxLengthError": "Введите число от 50 до 4000",
+    "offHoursLabel": "Автоответ только вне рабочих часов",
+    "promptHint": "Этот текст определяет личность агента — как он общается, что знает, каких тем избегает.",
+    "promptPlaceholder": "Ты — вежливый ассистент студии...",
+    "promptCount": "{{count}} / 2000 символов"
+  },
+  "errors": {
+    "tg_token_required": "Сначала подключите Telegram-бота — токен ещё не сохранён.",
+    "ig_not_connected": "Instagram ещё не подключён.",
+    "assistant_unavailable": "Ассистент временно недоступен — попробуйте позже."
+  },
+  "toasts": {
+    "settingsSaved": "Настройки сохранены"
+  }
+}

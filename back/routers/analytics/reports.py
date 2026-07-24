@@ -1,7 +1,7 @@
 from datetime import date, datetime, time, timedelta
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,7 +16,19 @@ from schemas.analytics.reports import (
     SummaryTrends,
     TrainerReportRow,
 )
-from ._filters import ReportFilters, lesson_conds, op_conds, occupied_expr, pct as _pct, prev_range, report_filters
+from ._filters import (
+    bucket_key,
+    date_bucket,
+    fill_series,
+    lesson_conds,
+    op_conds,
+    occupied_expr,
+    pct as _pct,
+    prev_range,
+    ReportFilters,
+    report_filters,
+    series_buckets,
+)
 
 router = APIRouter()
 
@@ -159,13 +171,21 @@ async def metric_series(
     metric: Literal[
         "revenue", "expenses", "bookings", "new_clients", "profit", "attendance", "fill_rate"
     ] = Query(...),
-    group: Literal["day", "week", "month"] = Query("day"),
+    group: Literal["hour", "day", "week", "month"] = Query("day"),
     f: ReportFilters = Depends(report_filters),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     sid = ctx.studio_id
     date_from, date_to = f.date_from, f.date_to
+    if group == "hour":
+        if date_from != date_to:
+            raise HTTPException(status_code=400, detail="Почасовая разбивка доступна только для одного дня")
+        if metric in ("revenue", "expenses", "profit"):
+            raise HTTPException(
+                status_code=400,
+                detail="Почасовая разбивка недоступна для этой метрики — у операций нет времени суток, только дата",
+            )
     start_dt = datetime.combine(date_from, time.min)
     end_dt = datetime.combine(date_to, time.max)
 
@@ -174,7 +194,7 @@ async def metric_series(
 
     # metric → (value-выражение, столбец-дата, WHERE). Один SELECT: date_trunc + GROUP BY.
     if metric in ("revenue", "expenses", "profit"):
-        bucket = func.date_trunc(group, Operation.op_date)
+        bucket = date_bucket(Operation.op_date, group)
         if metric == "profit":
             value_expr = func.coalesce(
                 func.sum(case((Operation.type == "in", Operation.amount), else_=-Operation.amount)), 0
@@ -209,10 +229,12 @@ async def metric_series(
         )
 
     rows = (await db.execute(stmt.group_by("period").order_by("period"))).all()
-    return [
-        SeriesPoint(period=period.date().isoformat(), value=float(value or 0))
+    by_bucket = {
+        bucket_key(period, group): SeriesPoint(period=bucket_key(period, group), value=float(value or 0))
         for period, value in rows
-    ]
+    }
+    buckets = series_buckets(date_from, date_to, group)
+    return fill_series(by_bucket, buckets, zero=lambda b: SeriesPoint(period=b, value=0.0))
 
 
 async def _fill_rate_series(f: ReportFilters, sid: int, group: str, db: AsyncSession) -> list[SeriesPoint]:
@@ -229,19 +251,19 @@ async def _fill_rate_series(f: ReportFilters, sid: int, group: str, db: AsyncSes
         stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
     rows = (await db.execute(stmt.group_by("period", Lesson.id).order_by("period"))).all()
 
-    totals: dict[datetime, list[int]] = {}
+    totals: dict[str, list[int]] = {}
     for period, _lesson_id, occupied, capacity in rows:
-        occ, cap = totals.setdefault(period, [0, 0])
-        totals[period][0] = occ + int(occupied or 0)
-        totals[period][1] = cap + int(capacity or 0)
+        key = bucket_key(period, group)
+        occ, cap = totals.setdefault(key, [0, 0])
+        totals[key][0] = occ + int(occupied or 0)
+        totals[key][1] = cap + int(capacity or 0)
 
-    return [
-        SeriesPoint(
-            period=period.date().isoformat(),
-            value=round(occ / cap * 100, 1) if cap else 0.0,
-        )
-        for period, (occ, cap) in sorted(totals.items())
-    ]
+    by_bucket = {
+        key: SeriesPoint(period=key, value=round(occ / cap * 100, 1) if cap else 0.0)
+        for key, (occ, cap) in totals.items()
+    }
+    buckets = series_buckets(f.date_from, f.date_to, group)
+    return fill_series(by_bucket, buckets, zero=lambda b: SeriesPoint(period=b, value=0.0))
 
 
 @router.get("/trainers", response_model=list[TrainerReportRow])

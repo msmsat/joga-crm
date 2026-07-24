@@ -23,9 +23,13 @@ export function useInsightAction() {
       case 'add_lesson':
         navigate('/dashboard/journal', { state: { prefill: params } });
         break;
-      case 'open_journal':
-        navigate(`/dashboard/journal?date=${params.date}&hall=${params.hallId}`);
+      case 'open_journal': {
+        const qs = new URLSearchParams(
+          Object.entries(params).reduce((acc, [k, v]) => ({ ...acc, [k]: String(v) }), {} as Record<string, string>),
+        ).toString();
+        navigate(`/dashboard/journal?${qs}`);
         break;
+      }
       case 'open_trainer':
         navigate(`/dashboard/staff?staff=${params.id}`);
         break;

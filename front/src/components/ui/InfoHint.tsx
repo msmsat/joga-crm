@@ -6,18 +6,32 @@ export interface InfoHintProps {
   side?: 'top' | 'bottom' | 'left' | 'right';
 }
 
-const POS: Record<NonNullable<InfoHintProps['side']>, React.CSSProperties> = {
-  top:    { bottom: 'calc(100% + 10px)', left: '50%', transform: 'translateX(-50%)' },
-  bottom: { top: 'calc(100% + 10px)',    left: '50%', transform: 'translateX(-50%)' },
-  left:   { right: 'calc(100% + 10px)',  top: '50%',  transform: 'translateY(-50%)' },
-  right:  { left: 'calc(100% + 10px)',   top: '50%',  transform: 'translateY(-50%)' },
+type Side = NonNullable<InfoHintProps['side']>;
+
+// Центрирование живёт в CSS-свойстве `translate`, а не в `transform` — так оно
+// не конфликтует с анимацией `scale` из infoHintIn (transform перезаписал бы
+// её на время анимации и поповер прыгал бы в угол при открытии).
+const POS: Record<Side, React.CSSProperties> = {
+  top:    { bottom: 'calc(100% + 10px)', left: '50%', translate: '-50% 0' },
+  bottom: { top: 'calc(100% + 10px)',    left: '50%', translate: '-50% 0' },
+  left:   { right: 'calc(100% + 10px)',  top: '50%',  translate: '0 -50%' },
+  right:  { left: 'calc(100% + 10px)',   top: '50%',  translate: '0 -50%' },
 };
 
-const ARROW: Record<NonNullable<InfoHintProps['side']>, React.CSSProperties> = {
-  top:    { top: '100%', left: '50%', transform: 'translateX(-50%) rotate(45deg)' },
-  bottom: { bottom: '100%', left: '50%', transform: 'translateX(-50%) rotate(45deg)' },
-  left:   { left: '100%', top: '50%', transform: 'translateY(-50%) rotate(45deg)' },
-  right:  { right: '100%', top: '50%', transform: 'translateY(-50%) rotate(45deg)' },
+// Треугольный указатель через clip-path вместо повёрнутого на 45° квадрата
+// (тот выглядел как плавающий ромб, а не как стрелка поповера).
+const ARROW_CLIP: Record<Side, string> = {
+  top:    'polygon(0% 0%, 100% 0%, 50% 100%)',
+  bottom: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+  left:   'polygon(100% 0%, 100% 100%, 0% 50%)',
+  right:  'polygon(0% 0%, 0% 100%, 100% 50%)',
+};
+
+const ARROW: Record<Side, React.CSSProperties> = {
+  top:    { bottom: '-7px', left: '50%', translate: '-50% 0', width: '14px', height: '7px', clipPath: ARROW_CLIP.top },
+  bottom: { top: '-7px',    left: '50%', translate: '-50% 0', width: '14px', height: '7px', clipPath: ARROW_CLIP.bottom },
+  left:   { right: '-7px',  top: '50%',  translate: '0 -50%', width: '7px', height: '14px', clipPath: ARROW_CLIP.left },
+  right:  { left: '-7px',   top: '50%',  translate: '0 -50%', width: '7px', height: '14px', clipPath: ARROW_CLIP.right },
 };
 
 // i-кнопка с поповером-описанием: клик открывает, Esc и клик мимо закрывают,
@@ -70,16 +84,16 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
             position: 'absolute', ...POS[side], zIndex: 1100,
             width: '260px', padding: '14px 16px',
             background: '#1A1A1A', color: '#FFFFFF',
-            borderRadius: '12px', boxShadow: '0 20px 48px -8px rgba(26,26,26,0.35)',
+            borderRadius: '16px', boxShadow: '0 20px 48px -8px rgba(26,26,26,0.4)',
             fontFamily: "'Manrope', sans-serif",
             transformOrigin: side === 'top' ? 'bottom center' : side === 'bottom' ? 'top center' : side === 'left' ? 'center right' : 'center left',
-            animation: 'infoHintIn 0.28s cubic-bezier(0.34,1.56,0.64,1)',
+            animation: 'infoHintIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
-          <div style={{ position: 'absolute', width: '10px', height: '10px', background: '#1A1A1A', ...ARROW[side] }} />
+          <div style={{ position: 'absolute', background: '#1A1A1A', ...ARROW[side] }} />
           <div style={{ fontSize: '12.5px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.1px' }}>{title}</div>
           <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{text}</div>
-          <style>{`@keyframes infoHintIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
+          <style>{`@keyframes infoHintIn { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }`}</style>
         </div>
       )}
     </div>

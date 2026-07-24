@@ -8,13 +8,14 @@ export interface KpiStatProps {
   trendPct: number | null;
   formulaKey: string;
   onClick?: () => void;
-  format?: 'money' | 'int' | 'pct';
+  format?: 'money' | 'int' | 'pct' | 'decimal';
   currencySymbol?: string;
 }
 
 function formatValue(value: number, format: KpiStatProps['format'], currencySymbol?: string): string {
   if (format === 'money') return fmtMoney(value, currencySymbol);
   if (format === 'pct') return fmtPct(value);
+  if (format === 'decimal') return value.toFixed(1);
   return fmtInt(value);
 }
 

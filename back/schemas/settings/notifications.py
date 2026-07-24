@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import Field
 
@@ -31,7 +31,13 @@ class NotificationSettingsUpdate(BaseSchema):
 
 
 class EventToggle(BaseSchema):
-    role: str
-    event_id: str
-    channel_key: str
+    role: Literal["client", "trainer", "admin", "owner"]
+    event_id: str = Field(pattern=r"^[ctao]\d{1,2}$")
+    # instagram/sms/push — колонки БД сохранены недеструктивно (ROADMAP_NOTIFICATIONS),
+    # хотя UI и notify() их больше не используют — старые строки матрицы валидны.
+    channel_key: Literal["telegram", "whatsapp", "email", "instagram", "sms", "push"]
     is_enabled: bool
+
+
+class EventToggleBulkUpdate(BaseSchema):
+    toggles: list[EventToggle] = Field(min_length=1, max_length=500)

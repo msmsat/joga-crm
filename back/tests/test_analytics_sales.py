@@ -110,7 +110,7 @@ async def _run():
             series = await analytics_sales_series(group="day", f=f, ctx=ctx, db=db)
         assert sum(p.revenue for p in series) == 10000, sum(p.revenue for p in series)
         assert sum(p.sales_count for p in series) == 3
-        assert len(series) == 3  # 3 разных дня из фикстуры (-5, -3, -2)
+        assert len(series) == 11  # полная ось периода (today-10..today), не только 3 дня с данными
     finally:
         await _cleanup(sid)
 

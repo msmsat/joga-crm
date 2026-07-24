@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAIDrawer } from '../../contexts/AIDrawerContext';
+import { useAssistant } from '../../hooks/useAssistant';
 
 export interface NavbarProps {
   title: string;
@@ -8,63 +10,56 @@ export interface NavbarProps {
 
 // Верхняя панель каркаса: заголовок раздела, AI-строка по центру (Spotlight-стиль
 // с выпадающей панелью ответа), кнопки AI-дровера и «+ Создать» справа.
+// AI-строка — третья поверхность общего чата (эпик AI-1, задача 7): вопрос
+// отсюда создаёт/продолжает ту же сессию, что видна на странице AI и в дровере.
 export function Navbar({ title, subtitle }: NavbarProps) {
-  const { isOpen: isDrawerOpen, toggle: toggleDrawer } = useAIDrawer();
+  const { t } = useTranslation('ai');
+  const { isOpen: isDrawerOpen, toggle: toggleDrawer, open: openDrawer } = useAIDrawer();
+  const { messages, isThinking, sendMessage } = useAssistant();
 
   const handlePrimaryBtn = () => alert('Создать новую запись');
 
   const [isAiFocused, setIsAiFocused] = useState(false); // Для Glow-эффекта
   const [aiQuery, setAiQuery] = useState(''); // Для текста в инпуте
 
-  // 🔥 Выпадающая AI-панель прямо под поисковиком (Spotlight-стиль)
-  const [aiPanel, setAiPanel] = useState<{
-    open: boolean;
-    query: string;
-    status: 'thinking' | 'answering' | 'done';
-    answer: string;
-  }>({ open: false, query: '', status: 'thinking', answer: '' });
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [askedQuery, setAskedQuery] = useState('');
+  // Отличаем настоящий ответ от отката оптимистики при ошибке: считаем
+  // сообщения до отправки, сверяем прирост после — не показываем чужой/старый
+  // ответ, если запрос упал (тост об ошибке уже покажет useAssistant).
+  const [pendingCount, setPendingCount] = useState<number | null>(null);
+  const [prevIsThinking, setPrevIsThinking] = useState(isThinking);
+  const [answeredId, setAnsweredId] = useState<number | null>(null);
+  if (isThinking !== prevIsThinking) {
+    setPrevIsThinking(isThinking);
+    if (prevIsThinking && !isThinking) {
+      const grew = pendingCount != null && messages.length >= pendingCount + 2;
+      const last = messages[messages.length - 1];
+      if (grew && last?.role === 'assistant') setAnsweredId(last.id);
+      setPendingCount(null);
+    }
+  }
 
   const aiSearchRef = useRef<HTMLDivElement | null>(null);
-  const thinkingTimeoutRef = useRef<number | null>(null);
-  const typingIntervalRef = useRef<number | null>(null);
 
-  const closeAiPanel = () => {
-    if (thinkingTimeoutRef.current) window.clearTimeout(thinkingTimeoutRef.current);
-    if (typingIntervalRef.current) window.clearInterval(typingIntervalRef.current);
-    setAiPanel((prev) => ({ ...prev, open: false }));
-  };
-
-  // Печатает ответ "по буквам" — придаёт ощущение, что ИИ отвечает в моменте
-  const typewriteAnswer = (fullText: string) => {
-    let i = 0;
-    typingIntervalRef.current = window.setInterval(() => {
-      i += 3;
-      setAiPanel((prev) => ({ ...prev, answer: fullText.slice(0, i) }));
-      if (i >= fullText.length) {
-        if (typingIntervalRef.current) window.clearInterval(typingIntervalRef.current);
-        setAiPanel((prev) => ({ ...prev, status: 'done', answer: fullText }));
-      }
-    }, 16);
-  };
+  const closeAiPanel = () => setPanelOpen(false);
 
   const handleAskAi = (query: string) => {
-    if (thinkingTimeoutRef.current) window.clearTimeout(thinkingTimeoutRef.current);
-    if (typingIntervalRef.current) window.clearInterval(typingIntervalRef.current);
+    setAskedQuery(query);
+    setAnsweredId(null);
+    setPanelOpen(true);
+    setPendingCount(messages.length);
+    void sendMessage(query);
+  };
 
-    setAiPanel({ open: true, query, status: 'thinking', answer: '' });
-
-    // ⚠️ Имитация "размышления". Замените на реальный fetch к вашему AI-эндпоинту —
-    // просто вызовите setAiPanel({ ...status:'answering' }) и typewriteAnswer(realAnswer) в .then()
-    thinkingTimeoutRef.current = window.setTimeout(() => {
-      const answer = `Понял запрос «${query}». Подключите сюда реальный вызов вашего AI-бэкенда — сейчас это имитационный ответ для демонстрации анимации.`;
-      setAiPanel((prev) => ({ ...prev, status: 'answering' }));
-      typewriteAnswer(answer);
-    }, 1400);
+  const handleContinueInChat = () => {
+    closeAiPanel();
+    openDrawer();
   };
 
   // Закрытие по клику вне панели
   useEffect(() => {
-    if (!aiPanel.open) return;
+    if (!panelOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (aiSearchRef.current && !aiSearchRef.current.contains(e.target as Node)) {
         closeAiPanel();
@@ -72,15 +67,9 @@ export function Navbar({ title, subtitle }: NavbarProps) {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [aiPanel.open]);
+  }, [panelOpen]);
 
-  // Чистим таймеры при размонтировании
-  useEffect(() => {
-    return () => {
-      if (thinkingTimeoutRef.current) window.clearTimeout(thinkingTimeoutRef.current);
-      if (typingIntervalRef.current) window.clearInterval(typingIntervalRef.current);
-    };
-  }, []);
+  const answeredText = messages.find((m) => m.id === answeredId)?.text ?? '';
 
   return (
     <div className="topbar" style={{
@@ -159,9 +148,9 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           gap: '12px',
           height: '44px',
           background: '#FFFFFF',
-          borderRadius: aiPanel.open ? '14px 14px 4px 4px' : '14px', // Срастается с панелью снизу, когда она открыта
+          borderRadius: panelOpen ? '14px 14px 4px 4px' : '14px', // Срастается с панелью снизу, когда она открыта
           border: isAiFocused ? '1px solid #F9A08B' : '1px solid rgba(26,26,26,0.08)',
-          borderBottom: aiPanel.open ? '1px solid rgba(26,26,26,0.06)' : undefined,
+          borderBottom: panelOpen ? '1px solid rgba(26,26,26,0.06)' : undefined,
           // Тот самый эффект "левитирующего Glow"
           boxShadow: isAiFocused
             ? '0 0 0 4px rgba(249,160,139,0.12), 0 8px 24px -4px rgba(26,26,26,0.08)'
@@ -177,20 +166,21 @@ export function Navbar({ title, subtitle }: NavbarProps) {
 
           <input
             type="text"
-            placeholder="Спросите AI или поставьте задачу..."
+            placeholder={t('chat.navbarPlaceholder')}
             value={aiQuery}
             onChange={(e) => setAiQuery(e.target.value)}
             onFocus={() => setIsAiFocused(true)}
             onBlur={() => setIsAiFocused(false)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && aiQuery.trim()) {
+              if (e.key === 'Enter' && aiQuery.trim() && !isThinking) {
                 handleAskAi(aiQuery.trim());
                 setAiQuery('');
               }
-              if (e.key === 'Escape' && aiPanel.open) {
+              if (e.key === 'Escape' && panelOpen) {
                 closeAiPanel();
               }
             }}
+            maxLength={4000}
             style={{
               flex: 1,
               border: 'none',
@@ -204,7 +194,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             }}
           />
 
-          {/* Элегантная заглушка Enter */}
+          {/* Элегантная заглушка Enter — уступает счётчику символов у лимита */}
           <div style={{
             fontSize: '11px',
             fontWeight: 700,
@@ -216,7 +206,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             pointerEvents: 'none',
             userSelect: 'none'
           }}>
-            {aiPanel.open ? 'Esc' : 'Enter'}
+            {aiQuery.length > 3500 ? t('chat.charCount', { count: aiQuery.length }) : panelOpen ? 'Esc' : 'Enter'}
           </div>
         </div>
 
@@ -226,12 +216,12 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           top: '100%',
           left: '24px',
           right: '24px',
-          maxHeight: aiPanel.open ? '420px' : '0px',
-          opacity: aiPanel.open ? 1 : 0,
-          transform: aiPanel.open ? 'translateY(0)' : 'translateY(-6px)',
+          maxHeight: panelOpen ? '420px' : '0px',
+          opacity: panelOpen ? 1 : 0,
+          transform: panelOpen ? 'translateY(0)' : 'translateY(-6px)',
           overflow: 'hidden',
           transition: 'max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          pointerEvents: aiPanel.open ? 'auto' : 'none',
+          pointerEvents: panelOpen ? 'auto' : 'none',
           zIndex: 20,
           background: '#FFFFFF',
           borderRadius: '0 0 16px 16px', // Идеально круглые нижние углы
@@ -255,12 +245,12 @@ export function Navbar({ title, subtitle }: NavbarProps) {
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
               }}>
-                {aiPanel.query}
+                {askedQuery}
               </span>
             </div>
 
             {/* Состояние: думает → отвечает */}
-            {aiPanel.status === 'thinking' ? (
+            {isThinking ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '4px 0 6px' }}>
                 <div style={{ position: 'relative', width: '26px', height: '26px', flexShrink: 0 }}>
                   {/* Мягкое пульсирующее свечение вокруг иконки */}
@@ -287,7 +277,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
                   </svg>
                 </div>
                 <span className="velora-ai-shimmer" style={{ fontSize: '13.5px', fontWeight: 600 }}>
-                  Velora AI думает над ответом
+                  {t('chat.thinkingAnswer')}
                 </span>
                 <span style={{ display: 'flex', gap: '3px', marginLeft: '-2px' }}>
                   <i className="velora-ai-dot" style={{ animationDelay: '0s' }} />
@@ -295,7 +285,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
                   <i className="velora-ai-dot" style={{ animationDelay: '0.3s' }} />
                 </span>
               </div>
-            ) : (
+            ) : answeredText ? (
               <div style={{
                 fontSize: '14.5px',
                 lineHeight: 1.6,
@@ -303,10 +293,26 @@ export function Navbar({ title, subtitle }: NavbarProps) {
                 fontWeight: 500,
                 animation: 'velora-ai-fade-up 0.35s ease both'
               }}>
-                {aiPanel.answer}
-                {aiPanel.status === 'answering' && <span className="velora-ai-caret" />}
+                <div>{answeredText}</div>
+                <button
+                  onClick={handleContinueInChat}
+                  style={{
+                    marginTop: '12px',
+                    fontSize: '12.5px',
+                    fontWeight: 700,
+                    color: '#F9A08B',
+                    background: 'rgba(249,160,139,0.1)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '7px 12px',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font)',
+                  }}
+                >
+                  {t('chat.continueInChat')}
+                </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

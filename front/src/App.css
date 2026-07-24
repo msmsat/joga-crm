@@ -922,6 +922,14 @@
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-2 > * { min-width: 0; } /* иначе Recharts распирает трек и рвёт вёрстку */
+
+/* Recharts v3 после клика оставляет focus-outline на секторе — в дизайне его нет */
+.recharts-wrapper :focus,
+.recharts-wrapper :focus-visible,
+.recharts-surface :focus { outline: none; }
+.recharts-rectangle, .recharts-sector { transition: opacity .15s ease; }
+
 .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--dash-shadow); transition: all 0.2s; }
 .stat-card:hover { 
   box-shadow: var(--dash-shadow-lg); 

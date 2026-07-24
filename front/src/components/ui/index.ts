@@ -19,6 +19,9 @@ export type { ConfirmModalProps } from './ConfirmModal';
 export { ToastProvider, useToast } from './Toast';
 export { Sidebar } from './Sidebar';
 export { Navbar } from './Navbar';
+export { ErrorBoundary } from './ErrorBoundary';
+export { EmptyState } from './EmptyState';
+export type { EmptyStateProps } from './EmptyState';
 
 // Диалоги: ModalShell — каркас, части собираются как конструктор.
 // Dialog — синоним ModalShell для новых страниц.

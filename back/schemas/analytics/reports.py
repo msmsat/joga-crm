@@ -107,6 +107,42 @@ class SalesSeriesPoint(BaseSchema):
     sales_count: int
 
 
+class ClientsKpi(BaseSchema):
+    new: Kpi
+    returned: Kpi
+    lost: Kpi
+    retention_pct: Kpi
+    avg_value: Kpi
+
+
+class WeeklyPoint(BaseSchema):
+    period: str
+    new: int
+    returned: int
+
+
+class SegmentCount(BaseSchema):
+    key: str
+    count: int
+
+
+class SegmentClientRow(BaseSchema):
+    id: int
+    name: str
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    last_visit_date: Optional[date] = None
+    value: Optional[float] = None
+
+
+class ClientsReportRead(BaseSchema):
+    kpi: ClientsKpi
+    weekly: list[WeeklyPoint]
+    risk_segments: list[SegmentCount]
+    loyal_segments: list[SegmentCount]
+    insights: list[Insight]
+
+
 class SummaryTrends(BaseSchema):
     revenue_pct: Optional[float] = None
     expenses_pct: Optional[float] = None
@@ -132,6 +168,56 @@ class TrainerReportRow(BaseSchema):
     name: str
     lessons_count: int
     revenue: int
+
+
+class TeamKpi(BaseSchema):
+    lessons_count: Kpi
+    revenue_per_hour: Kpi
+    avg_fill_pct: Kpi
+    cancel_noshow_pct: Kpi
+    avg_rating: Kpi
+
+
+class TrainerRow(BaseSchema):
+    trainer_id: int
+    name: str
+    lessons: int
+    fill_pct: float
+    attendance: int
+    revenue: int
+    return_rate_pct: float
+    cancels: int
+    noshows: int
+    rating: Optional[float] = None
+    load_pct: float
+
+
+class TeamRead(BaseSchema):
+    kpi: TeamKpi
+    trainers: list[TrainerRow]
+    insights: list[Insight]
+
+
+class TrainerLoadPoint(BaseSchema):
+    weekday: int
+    lessons: int
+    fill_pct: float
+
+
+class TrainerTopLesson(BaseSchema):
+    name: str
+    held: int
+    attendance: int
+    fill_pct: float
+
+
+class TrainerDetailRead(BaseSchema):
+    revenue_series: list[SeriesPoint]
+    load_by_weekday: list[TrainerLoadPoint]
+    top_lessons: list[TrainerTopLesson]
+    return_rate_pct: float
+    returned_clients: int
+    total_clients: int
 
 
 class ServiceReportRow(BaseSchema):
@@ -167,6 +253,66 @@ class StudioReviewCreate(BaseSchema):
     text: Optional[str] = None
     source: str = "internal"
     client_id: Optional[int] = None
+
+
+class UtilizationKpi(BaseSchema):
+    avg_fill_pct: Kpi
+    free_spots: Kpi
+    cancels: Kpi
+    noshows: Kpi
+    lost_revenue: Kpi
+
+
+class HeatmapCell(BaseSchema):
+    weekday: int
+    hour: int
+    fill_pct: float
+    lessons: int
+    attendance: int
+
+
+class LessonSliceRow(BaseSchema):
+    name: str
+    revenue: int
+    held: int
+    fill_pct: float
+
+
+class ChronicLowRow(BaseSchema):
+    name: str
+    weekday: int
+    hour: int
+    fill_pct: float
+    weeks: int
+    lesson_ids: list[int]
+
+
+class HallUtilRow(BaseSchema):
+    hall_id: int
+    name: str
+    fill_pct: float
+    evening_idle_pct: float
+
+
+class UtilizationRead(BaseSchema):
+    kpi: UtilizationKpi
+    heatmap: list[HeatmapCell]
+    top_profitable: list[LessonSliceRow]
+    top_filled: list[LessonSliceRow]
+    chronic_low: list[ChronicLowRow]
+    halls: list[HallUtilRow]
+    insights: list[Insight]
+
+
+class SlotLessonRow(BaseSchema):
+    id: int
+    date: date
+    name: str
+    teacher_name: str
+    hall: Optional[str] = None
+    occupied: int
+    total_spots: int
+    status: str
 
 
 class ActivityLogRead(BaseSchema):

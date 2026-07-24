@@ -82,6 +82,107 @@
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
+.sessionItemRow {
+  position: relative;
+}
+
+.sessionDeleteBtn {
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(26,26,26,0.05);
+  color: #B0ADA9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.sessionItemRow:hover .sessionDeleteBtn {
+  opacity: 1;
+}
+.sessionDeleteBtn:hover {
+  background: rgba(216,140,154,0.14);
+  color: #D88C9A;
+}
+.sessionItemRow:hover .sessionTime {
+  opacity: 0;
+}
+
+.sessionsEmpty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #B0ADA9;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
+.sessionsEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.sessionsErrorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 16px;
+  text-align: center;
+}
+.sessionsRetryBtn {
+  border: 1.5px solid rgba(26,26,26,0.1);
+  background: transparent;
+  color: var(--muted, #666);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: var(--font, 'Manrope', sans-serif);
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.sessionsRetryBtn:hover {
+  border-color: #F9A08B;
+  color: #F9A08B;
+}
+
+/* ─── SKELETON (эпик AI-4, задача 3: скелетон вместо мигания пустоты) ───────── */
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+.sessionSkelRow {
+  padding: 10px 10px 10px 12px;
+  margin-bottom: 2px;
+}
+.sessionSkelTitle {
+  height: 12px;
+  width: 65%;
+  margin-bottom: 7px;
+}
+.sessionSkelPreview {
+  height: 11px;
+  width: 42%;
+}
+
 .sessionItem {
   width: 100%;
   text-align: left;
@@ -271,6 +372,18 @@
   background: rgba(249,160,139,0.09);
 }
 
+.customSelectFooterNote {
+  padding: 8px 10px 6px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(26,26,26,0.06);
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  cursor: default;
+  user-select: none;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
 @keyframes selectFadeIn {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -338,6 +451,7 @@
   flex-shrink: 0;
 }
 .miniToggleOn { background: #A3C9A8; }
+.miniToggle:disabled { cursor: not-allowed; opacity: 0.5; }
 
 .miniToggleThumb {
   width: 13px;
@@ -392,6 +506,58 @@
 }
 .messagesArea::-webkit-scrollbar { width: 4px; }
 .messagesArea::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.07); border-radius: 2px; }
+
+/* ─── MESSAGES SKELETON (эпик AI-4, задача 3) ───────────────────────────────── */
+.msgSkelList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 740px;
+  margin: 0 auto;
+  width: 100%;
+}
+.msgSkelPair {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.msgSkelAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+.msgSkelBubble {
+  height: 46px;
+  width: 60%;
+  max-width: 420px;
+  border-radius: 4px 14px 14px 14px;
+}
+.msgSkelUserRow {
+  display: flex;
+  justify-content: flex-end;
+}
+.msgSkelUserBubble {
+  height: 38px;
+  width: 38%;
+  max-width: 280px;
+  border-radius: 14px 14px 4px 14px;
+}
+
+.messagesErrorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 380px;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #B0ADA9;
+  font-size: 14px;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
 
 /* ─── EMPTY STATE ────────────────────────────────────────────────────────────── */
 .emptyState {
@@ -877,6 +1043,7 @@
   flex-shrink: 0;
 }
 .toggleSwitchOn { background: #A3C9A8; }
+.toggleSwitch:disabled { cursor: not-allowed; opacity: 0.5; }
 
 .toggleThumb {
   width: 18px;
@@ -939,27 +1106,6 @@
   font-size: 12px;
   font-weight: 600;
   color: #888;
-  font-family: var(--font, 'Manrope', sans-serif);
-}
-
-.formInput {
-  height: 38px;
-  border-radius: 8px;
-  border: 1px solid rgba(26,26,26,0.09);
-  padding: 0 12px;
-  font-size: 13.5px;
-  font-family: var(--font, 'Manrope', sans-serif);
-  color: #1A1A1A;
-  background: rgba(253,252,251,0.8);
-  outline: none;
-  transition: border-color 0.18s, box-shadow 0.18s;
-}
-.formInput:focus {
-  border-color: rgba(249,160,139,0.45);
-  box-shadow: 0 0 0 3px rgba(249,160,139,0.09);
-}
-.formInput::placeholder {
-  color: #C8C4C0;
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
@@ -1028,6 +1174,47 @@
   box-shadow: 0 0 0 3px rgba(249,160,139,0.09);
 }
 
+/* Telegram token verify (эпик AI-3) */
+.tokenVerifyRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tokenVerifyRow > div:first-child { flex: 1; }
+
+.tokenConnectedRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tokenBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(163,201,168,0.12);
+  border: 1px solid rgba(163,201,168,0.3);
+  color: #5A8A62;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
+.tokenDisconnectBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #D88C9A;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+.tokenDisconnectBtn:hover { text-decoration: underline; }
+
 .promptCount {
   font-size: 11px;
   color: #C8C4C0;
@@ -1071,4 +1258,10 @@
 .btnPrimary:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(26,26,26,0.18);
+}
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 4px 12px rgba(26,26,26,0.14);
 }

@@ -20,6 +20,13 @@ function rangeForPeriod(period: Exclude<ReportPeriod, 'custom'>): { from: string
   return { from: toIso(from), to: toIso(to) };
 }
 
+/** Ось X всегда читаемая: сутки — по часам, до 45 дней — по дням, дальше — недели. */
+export function groupForRange(from: string, to: string): 'hour' | 'day' | 'week' {
+  const days = (new Date(to).getTime() - new Date(from).getTime()) / 86_400_000;
+  if (days < 1) return 'hour';
+  return days <= 45 ? 'day' : 'week';
+}
+
 /** Прошлый период той же длины — идентично back/routers/analytics/_filters.py:prev_range. */
 export function prevRange(dateFrom: string, dateTo: string): { from: string; to: string } {
   const from = new Date(dateFrom);

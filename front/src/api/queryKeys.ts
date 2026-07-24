@@ -18,6 +18,7 @@
 // finReportSummary(from, to), finReportSeries(metric, group, from, to), finReportBreakdown(type, from, to).
 // Отчётами (5 вкладок): report(tab, paramsKey)/reportsAll, reportSeries(metric, paramsKey).
 // Вкладка «Продажи» (R2) использует report('sales', paramsKey) и report('sales-series', paramsKey).
+// Velora AI (эпик AI-1/AI-2): aiSessions, aiMessages(sessionId), aiSettings.
 // Очередь миграции (по мере аудитов): Сотрудники.
 export const queryKeys = {
   branches: ['branches'] as const,
@@ -80,4 +81,7 @@ export const queryKeys = {
   report: (tab: string, paramsKey: string) => ['reports', tab, paramsKey] as const,
   reportSeries: (metric: string, paramsKey: string) => ['reports', 'series', metric, paramsKey] as const,
   reportsAll: ['reports'] as const, // префикс: инвалидация всех вкладок/фильтров разом
+  aiSessions: ['ai', 'sessions'] as const,
+  aiMessages: (sessionId: number) => ['ai', 'messages', sessionId] as const,
+  aiSettings: ['ai', 'settings'] as const,
 }

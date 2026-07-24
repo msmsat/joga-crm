@@ -16,6 +16,7 @@ from schemas import (
 )
 from schemas.staff.staff import StaffWorkingHoursItem
 from security import get_password_hash
+from services.notifier import notify
 from services.plan_limits import check_plan_limit
 
 router = APIRouter()
@@ -334,6 +335,10 @@ async def create_staff(
     await db.commit()
     await db.refresh(user)
 
+    await notify(db, studio_id, "owner", "o5", {
+        "staff_name": f"{user.name} {user.last_name or ''}".strip(),
+    })
+
     return {"ok": True, "staff": _staff_list_item(user, data.role)}
 
 
@@ -367,6 +372,8 @@ async def update_staff(
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
+    role_changed = membership.role != data.role
+
     user.name = data.name
     user.last_name = data.last_name
     user.email = data.email
@@ -381,6 +388,12 @@ async def update_staff(
     await _replace_schedule(user.id, data.schedule, db)
     await db.commit()
     await db.refresh(user)
+
+    if role_changed:
+        await notify(db, studio_id, "owner", "o7", {
+            "staff_name": f"{user.name} {user.last_name or ''}".strip(),
+            "role": data.role,
+        })
 
     return {"ok": True, "staff": _staff_list_item(user, membership.role)}
 

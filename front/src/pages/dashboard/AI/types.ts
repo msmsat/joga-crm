@@ -1,26 +1,8 @@
 export type { AIChatSession, AIChatMessage, AISettings } from '../../../api/ai/ai.types';
 
-export type MessageRole = 'user' | 'assistant';
-export type MessageStatus = 'sending' | 'thinking' | 'typing' | 'done';
 export type AgentTone = 'friendly' | 'formal' | 'neutral';
-export type AIModel = 'gpt-4o' | 'gpt-4o-mini' | 'claude-3-5-sonnet' | 'gemini-1.5-pro';
+export type AIModel = 'velora-3.5';
 export type AILanguage = 'auto' | 'ru' | 'en' | 'uk';
-
-export interface Message {
-  id: number;
-  role: MessageRole;
-  text: string;
-  timestamp: Date;
-  status?: MessageStatus;
-}
-
-export interface ChatSession {
-  id: number;
-  title: string;
-  preview: string;
-  timestamp: Date;
-  messageCount: number;
-}
 
 export interface ChannelAgentConfig {
   enabled: boolean;
@@ -31,6 +13,7 @@ export interface ChannelAgentConfig {
   offHoursOnly: boolean;
   handledCount: number;
   avgRating: number;
+  expiresAt?: string | null; // только Instagram (OAuth, эпик AI-3) — long-lived токен истекает
 }
 
 export interface AgentConfig {

@@ -13,7 +13,7 @@ type NotificationsUIState = {
 
 export const useNotificationsStore = create<NotificationsUIState>((set) => ({
   activeRole: 'client',
-  channels: { telegram: true, whatsapp: true, email: true },
+  channels: { telegram: false, whatsapp: false, email: false },
   setActiveRole: (activeRole) => set({ activeRole }),
   setChannel: (k, v) => set((s) => ({ channels: { ...s.channels, [k]: v } })),
   hydrateChannels: (channels) => set({ channels }),

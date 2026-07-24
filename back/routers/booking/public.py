@@ -253,6 +253,10 @@ async def public_reserve(
         "lesson_name": lesson.name,
         "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
     })
+    await notify(db, studio_id, "admin", "a1", {
+        "lesson_name": lesson.name,
+        "client_name": client.name,
+    })
     return ReserveResponse(
         reservation_id=reservation.id,
         lesson_name=lesson.name,

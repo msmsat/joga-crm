@@ -2,17 +2,24 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { ComposedChart, Bar, LabelList, Line, XAxis, YAxis, Tooltip } from 'recharts';
 import type { CategoricalChartFunc } from 'recharts/types/chart/types';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { financesApi } from '../../../../../api/finances';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { fmtMoney, fmtInt } from '../../../../../lib/format';
+import { fmtMoney, fmtInt, fmtBucket } from '../../../../../lib/format';
+import { groupForRange } from '../../hooks/useReportFilters';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
+import { ChartFrame } from '../shared/ChartFrame';
+import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, PEACH_LIGHT } from '../shared/chartTheme';
+import { ZeroLabel } from '../shared/ZeroLabel';
+import { zeroAwareCells } from '../shared/zeroAwareCells';
 import { InsightsPanel } from '../shared/InsightsPanel';
 import { DrilldownModal } from '../shared/DrilldownModal';
 import type { DrilldownColumn } from '../shared/DrilldownModal';
+import { EmptyTabState } from '../shared/EmptyTabState';
+import { isAllZero } from '../../hooks/useIsEmpty';
 import { BreakdownCards } from './sales/BreakdownCards';
 import { ProductsTable } from './sales/ProductsTable';
 import type { ProductRow, ReportFiltersParams } from '../../types';
@@ -21,6 +28,7 @@ export interface SalesTabProps {
   params: ReportFiltersParams;
   paramsKey: string;
   registerCsvExport: (rows: Record<string, unknown>[]) => void;
+  onWidenPeriod: () => void;
 }
 
 type Drilldown =
@@ -29,12 +37,7 @@ type Drilldown =
   | { kind: 'product'; productId: number | null; title: string }
   | { kind: 'day'; date: string; title: string };
 
-function fmtDay(iso: string): string {
-  const [, m, d] = iso.split('-');
-  return `${d}.${m}`;
-}
-
-export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps) {
+export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }: SalesTabProps) {
   const { t } = useTranslation('reports');
   const navigate = useNavigate();
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
@@ -45,15 +48,20 @@ export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps
     placeholderData: prev => prev,
   });
 
+  // /sales/series целиком на Operation.op_date — часовой разбивки нет
+  // (у операции нет времени суток), сервер всегда 400 на group=hour.
+  const rangeGroup = groupForRange(params.date_from, params.date_to);
+  const salesGroup = rangeGroup === 'hour' ? 'day' : rangeGroup;
+
   const { data: series = [] } = useQuery({
-    queryKey: queryKeys.report('sales-series', paramsKey),
-    queryFn: () => analyticsApi.getSalesSeries({ ...params, group: 'day' }),
+    queryKey: queryKeys.report('sales-series', `${paramsKey}-${salesGroup}`),
+    queryFn: () => analyticsApi.getSalesSeries({ ...params, group: salesGroup }),
     placeholderData: prev => prev,
   });
 
   const chartData = useMemo(
-    () => series.map(p => ({ period: p.period, label: fmtDay(p.period), revenue: p.revenue, sales_count: p.sales_count })),
-    [series],
+    () => series.map(p => ({ period: p.period, label: fmtBucket(p.period, salesGroup), revenue: p.revenue, sales_count: p.sales_count })),
+    [series, salesGroup],
   );
 
   const dateRange = drilldown?.kind === 'day'
@@ -83,6 +91,7 @@ export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps
   }, [operationsPage, drilldown]);
 
   const kpi = data?.kpi;
+  const isEmpty = !!data && isAllZero([data.kpi.revenue.value, data.kpi.sales_count.value], [data.products]);
 
   const csvRows = useMemo((): Record<string, unknown>[] => {
     return (data?.products ?? []).map(p => ({
@@ -101,9 +110,9 @@ export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps
 
   const handleChartClick: CategoricalChartFunc = (nextState) => {
     const idx = nextState.activeTooltipIndex;
-    if (typeof idx !== 'number' || !chartData[idx]) return;
+    if (typeof idx !== 'number' || !chartData[idx] || !chartData[idx].revenue) return;
     const period = chartData[idx].period;
-    setDrilldown({ kind: 'day', date: period, title: fmtDay(period) });
+    setDrilldown({ kind: 'day', date: period, title: fmtBucket(period, salesGroup) });
   };
 
   const onProductRowClick = (row: ProductRow) => {
@@ -120,6 +129,10 @@ export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps
     category: op.category ? t(`overview.category.${op.category}`, op.category) : '',
     amount: fmtMoney(op.amount),
   }));
+
+  if (isEmpty) {
+    return <EmptyTabState icon="money" onWiden={onWidenPeriod} />;
+  }
 
   return (
     <>
@@ -164,21 +177,23 @@ export function SalesTab({ params, paramsKey, registerCsvExport }: SalesTabProps
 
       <div style={{ marginBottom: '20px' }}>
         <ChartCard title={t('sales.chart.title')} formulaKey="revenue">
-          <div style={{ height: '240px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData} onClick={handleChartClick}>
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text3)' }} axisLine={false} tickLine={false} />
-                <YAxis yAxisId="revenue" hide />
-                <YAxis yAxisId="count" orientation="right" hide />
-                <Tooltip
-                  formatter={(v, name) => (name === 'revenue' ? fmtMoney(Number(v)) : fmtInt(Number(v)))}
-                  contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', fontSize: '12px', background: 'var(--bg-card)' }}
-                />
-                <Bar yAxisId="revenue" dataKey="revenue" fill="#FCAE91" radius={[6, 6, 0, 0]} maxBarSize={28} cursor="pointer" />
-                <Line yAxisId="count" type="monotone" dataKey="sales_count" stroke="#4A80C4" strokeWidth={2} dot={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+          <ChartFrame>
+            <ComposedChart data={chartData} onClick={handleChartClick}>
+              <XAxis dataKey="label" {...AXIS_X} />
+              <YAxis yAxisId="revenue" hide />
+              <YAxis yAxisId="count" orientation="right" hide />
+              <Tooltip
+                formatter={(v, name) => (name === 'revenue' ? fmtMoney(Number(v)) : fmtInt(Number(v)))}
+                contentStyle={TOOLTIP_STYLE}
+                cursor={BAR_CURSOR}
+              />
+              <Bar yAxisId="revenue" dataKey="revenue" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false}>
+                <LabelList dataKey="revenue" position="top" content={ZeroLabel} />
+                {zeroAwareCells(chartData, 'revenue', PEACH_LIGHT)}
+              </Bar>
+              <Line yAxisId="count" type="monotone" dataKey="sales_count" stroke="#4A80C4" strokeWidth={2} dot={false} />
+            </ComposedChart>
+          </ChartFrame>
         </ChartCard>
       </div>
 

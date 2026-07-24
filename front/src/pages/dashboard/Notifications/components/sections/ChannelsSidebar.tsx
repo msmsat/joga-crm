@@ -35,11 +35,12 @@ function integrationSub(statuses: NotifyChannelsStatus | undefined, key: Channel
 interface Props {
   channels: Record<ChannelKey, boolean>;
   toggleChannel: (key: ChannelKey) => void;
+  channelSaving?: boolean;
   channelStatuses?: NotifyChannelsStatus;
   onOpenModal: (modal: 'tg' | 'email' | 'wa') => void;
 }
 
-export default function ChannelsSidebar({ channels, toggleChannel, channelStatuses, onOpenModal }: Props) {
+export default function ChannelsSidebar({ channels, toggleChannel, channelSaving, channelStatuses, onOpenModal }: Props) {
   const { t } = useTranslation('notifications');
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -64,7 +65,16 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelStatus
             return (
               <div
                 key={ch.key}
+                role={requiresIntegration ? 'button' : undefined}
+                tabIndex={requiresIntegration ? 0 : undefined}
+                aria-label={requiresIntegration ? t('channels.openSettings', { channel: ch.label }) : undefined}
                 onClick={requiresIntegration ? handleClick : undefined}
+                onKeyDown={requiresIntegration ? (e => {
+                  // target !== currentTarget: клавиша нажата на вложенной кнопке
+                  // (тумблер/«Подключить») — та обрабатывает Enter/Space сама.
+                  if (e.target !== e.currentTarget) return;
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); }
+                }) : undefined}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
                   borderRadius: '12px', background: channels[ch.key] ? `${ch.color}0D` : 'transparent',
@@ -101,7 +111,12 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelStatus
                     {t('channels.connect')}
                   </button>
                 ) : (
-                  <ToggleSwitch on={channels[ch.key]} onChange={() => toggleChannel(ch.key)} />
+                  <ToggleSwitch
+                    on={channels[ch.key]}
+                    onChange={() => toggleChannel(ch.key)}
+                    disabled={channelSaving}
+                    aria-label={ch.label}
+                  />
                 )}
               </div>
             );

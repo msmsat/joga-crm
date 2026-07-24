@@ -380,6 +380,14 @@
   border-top: 1px solid rgba(26, 26, 26, 0.05);
 }
 
+.charCount {
+  font-size: 10.5px;
+  color: #C0BDB9;
+  text-align: right;
+  margin-top: 5px;
+  padding-right: 4px;
+}
+
 .inputWrap {
   display: flex;
   align-items: center; /* однострочный вид: текст по центру рядом с кнопкой */
@@ -527,6 +535,58 @@
   background: rgba(26, 26, 26, 0.05);
   padding: 2px 6px;
   border-radius: 10px;
+}
+
+/* ─── SKELETON / ERROR (эпик AI-4, задача 3) ───────────────────────────────── */
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+.sessionSkelRow {
+  padding: 11px 13px;
+}
+.sessionSkelTitle {
+  height: 13px;
+  width: 65%;
+  margin-bottom: 7px;
+}
+.sessionSkelPreview {
+  height: 12px;
+  width: 42%;
+}
+
+.errorState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 24px;
+  text-align: center;
+  color: #A0A0A0;
+  font-size: 13px;
+}
+.retryBtn {
+  border: 1.5px solid rgba(26,26,26,0.1);
+  background: transparent;
+  color: #666;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.retryBtn:hover {
+  border-color: #F9A08B;
+  color: #F9A08B;
 }
 
 /* ─── KEYFRAMES ─────────────────────────────────────────────── */

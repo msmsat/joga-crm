@@ -10,6 +10,7 @@ from slowapi import _rate_limit_exceeded_handler
 from ratelimit import limiter
 from database import async_session_maker
 from services.scenario_runner import start_scenario_loop
+from services.daily_notify import start_daily_notify_loop
 
 from routers.auth import router as auth_router
 from routers.studio import router as studio_router
@@ -30,16 +31,22 @@ from fastapi import Depends
 
 # Гейт подписки (задача 8b): вешаем router-level на разделы данных. НЕ на /auth,
 # /billing, вебхук и /booking/public — иначе не войти, не оплатить, не записаться извне.
+# /ai — та же история с AI-3: callback Instagram OAuth публичный, гейт на нём
+# не вешаем; для /ai (в отличие от /booking) гейт целиком переехал внутрь
+# routers/ai/router.py, где применяется по каждому подроутеру отдельно.
 _sub_gate = [Depends(require_active_subscription)]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Фоновый исполнитель умных сценариев лояльности (V5-4, задача 2).
     task = start_scenario_loop(async_session_maker)
+    # Ежедневные уведомления: дни рождения, отчёты дня/недели, тариф (N-4, задача 6).
+    daily_notify_task = start_daily_notify_loop(async_session_maker)
     try:
         yield
     finally:
         task.cancel()
+        daily_notify_task.cancel()
 
 
 app = FastAPI(title="Velora CRM API", lifespan=lifespan)
@@ -63,7 +70,7 @@ app.include_router(clients_router, prefix="/clients", tags=["Clients"], dependen
 app.include_router(schedule_router, prefix="/schedule", tags=["Schedule"], dependencies=_sub_gate)
 app.include_router(finances_router, prefix="/finances", tags=["Finances"], dependencies=_sub_gate)
 app.include_router(settings_router, prefix="/settings", tags=["Settings"], dependencies=_sub_gate)
-app.include_router(ai_router, prefix="/ai", tags=["AI"], dependencies=_sub_gate)
+app.include_router(ai_router, prefix="/ai", tags=["AI"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"], dependencies=_sub_gate)
 app.include_router(staff_router, prefix="/staff", tags=["Staff"], dependencies=_sub_gate)
 app.include_router(loyalty_router, prefix="/loyalty", tags=["Loyalty"], dependencies=_sub_gate)

@@ -1,4 +1,5 @@
-import { ModalShell, ModalHeader, ModalBody } from '../../../../../components/ui/index';
+import { useTranslation } from 'react-i18next';
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, EmptyState } from '../../../../../components/ui/index';
 
 export interface DrilldownColumn {
   key: string;
@@ -13,9 +14,11 @@ export interface DrilldownModalProps {
   rows: Record<string, React.ReactNode>[];
   loading?: boolean;
   onRowClick?: (row: Record<string, React.ReactNode>) => void;
+  footer?: React.ReactNode;
 }
 
-export function DrilldownModal({ open, onClose, title, columns, rows, loading, onRowClick }: DrilldownModalProps) {
+export function DrilldownModal({ open, onClose, title, columns, rows, loading, onRowClick, footer }: DrilldownModalProps) {
+  const { t } = useTranslation('reports');
   if (!open) return null;
 
   return (
@@ -25,7 +28,7 @@ export function DrilldownModal({ open, onClose, title, columns, rows, loading, o
         {loading ? (
           <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)' }}>…</div>
         ) : rows.length === 0 ? (
-          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)' }}>—</div>
+          <EmptyState size="sm" icon="search" title={t('empty.noRows')} />
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <thead>
@@ -61,6 +64,7 @@ export function DrilldownModal({ open, onClose, title, columns, rows, loading, o
           </table>
         )}
       </ModalBody>
+      {footer && <ModalFooter>{footer}</ModalFooter>}
     </ModalShell>
   );
 }

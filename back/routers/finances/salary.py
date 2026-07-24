@@ -9,6 +9,7 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import Lesson, Operation, SalaryPayment, StudioMember, User
 from schemas.finances.salary import SalaryPayRequest, SalaryRead, SalaryRow
+from services.notifier import notify
 
 router = APIRouter()
 
@@ -176,4 +177,12 @@ async def pay_salary(
     ))
     await db.commit()
     await db.refresh(payment)
+
+    await notify(db, ctx.studio_id, "trainer", "t6", {
+        "amount": payment.amount,
+        "period_start": str(body.period_start),
+        "period_end": str(body.period_end),
+        "to_email": user.email,
+    })
+
     return payment

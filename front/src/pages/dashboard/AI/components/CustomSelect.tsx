@@ -8,9 +8,10 @@ interface CustomSelectProps {
   options: Option[];
   onChange: (value: string) => void;
   placeholder?: string;
+  footerNote?: string;
 }
 
-export default function CustomSelect({ value, options, onChange, placeholder }: CustomSelectProps) {
+export default function CustomSelect({ value, options, onChange, placeholder, footerNote }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
   const [dropPos, setDropPos] = useState({ top: 0, left: 0, width: 0 });
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -70,6 +71,9 @@ export default function CustomSelect({ value, options, onChange, placeholder }: 
               )}
             </div>
           ))}
+          {footerNote && (
+            <div className={styles.customSelectFooterNote}>{footerNote}</div>
+          )}
         </div>
       )}
     </div>

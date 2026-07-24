@@ -631,6 +631,11 @@ async def create_client(
 
     await db.commit()
     await db.refresh(client)
+
+    await notify(db, studio_id, "admin", "a3", {
+        "client_name": f"{client.name} {client.last_name or ''}".strip(),
+    })
+
     return ClientCreatedOut(id=client.id, message="Клиент создан")
 
 

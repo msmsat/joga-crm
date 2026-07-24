@@ -267,3 +267,68 @@ async def match_segment(db: AsyncSession, studio_id: int, key: str) -> list[Matc
     if matcher is None:
         return []
     return await matcher(db, studio_id)
+
+
+# ─── Сегменты «лояльные» (EPIC_R3, задача 1) ───────────────────────────────
+# В отличие от SEGMENT_MATCHERS выше (точка во времени, для сценариев/кампаний
+# Лояльности) — эти скоуплены периодом отчёта (date_from..date_to), поэтому не
+# участвуют в SEGMENT_MATCHERS/match_segment, а вызываются напрямую из
+# analytics/retention.py.
+
+
+async def seg_frequent(db: AsyncSession, studio_id: int, date_from: date, date_to: date,
+                        min_visits: int = 8) -> list[Match]:
+    """≥ min_visits посещений (attended) за период отчёта."""
+    rows = (await db.execute(
+        select(Client.id, Client.name, func.count(Reservation.id).label("visits"))
+        .join(Reservation, Reservation.client_id == Client.id)
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(
+            Client.studio_id == studio_id,
+            Reservation.status == "attended",
+            Lesson.start_time >= datetime.combine(date_from, datetime.min.time()),
+            Lesson.start_time <= datetime.combine(date_to, datetime.max.time()),
+        )
+        .group_by(Client.id, Client.name)
+        .having(func.count(Reservation.id) >= min_visits)
+    )).all()
+    return [Match(cid, f"c:{cid}", {"name": name, "visits": visits}) for cid, name, visits in rows]
+
+
+async def seg_high_ltv(db: AsyncSession, studio_id: int, top_pct: float = 10.0) -> list[Match]:
+    """Топ top_pct% клиентов по Σ доходных операций за всё время (LTV, не период)."""
+    from models import Operation
+
+    rows = (await db.execute(
+        select(Operation.client_id, Client.name, func.sum(Operation.amount).label("spent"))
+        .join(Client, Client.id == Operation.client_id)
+        .where(
+            Client.studio_id == studio_id,
+            Operation.type == "in",
+            Operation.client_id.is_not(None),
+        )
+        .group_by(Operation.client_id, Client.name)
+        .order_by(func.sum(Operation.amount).desc())
+    )).all()
+    if not rows:
+        return []
+    top_n = max(1, round(len(rows) * top_pct / 100))
+    return [Match(cid, f"c:{cid}", {"name": name, "spent": int(spent)}) for cid, name, spent in rows[:top_n]]
+
+
+async def seg_referrers(db: AsyncSession, studio_id: int, date_from: date, date_to: date) -> list[Match]:
+    """Клиенты с завершённым рефералом за период (created_at в периоде)."""
+    from models import ReferralRecord
+
+    rows = (await db.execute(
+        select(ReferralRecord.referrer_client_id, Client.name)
+        .join(Client, Client.id == ReferralRecord.referrer_client_id)
+        .where(
+            ReferralRecord.studio_id == studio_id,
+            ReferralRecord.status == "completed",
+            ReferralRecord.created_at >= datetime.combine(date_from, datetime.min.time()),
+            ReferralRecord.created_at <= datetime.combine(date_to, datetime.max.time()),
+        )
+        .distinct()
+    )).all()
+    return [Match(cid, f"c:{cid}", {"name": name}) for cid, name in rows]
