@@ -2,6 +2,7 @@ import type { JSX, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fmtPct } from '../../../../../lib/format';
 import type { MetricConfig } from '../../types';
+import styles from '../../Overview.module.css';
 
 const ICONS: Record<string, JSX.Element> = {
   revenue: (
@@ -37,9 +38,11 @@ interface Props {
   metric: MetricConfig;
   isActive: boolean;
   onSelect: () => void;
+  /** Сводка ещё едет: показываем шиммер вместо нулей, чтобы не мигнуть ложным «0 ₽». */
+  loading?: boolean;
 }
 
-export default function MetricCard({ metric, isActive, onSelect }: Props) {
+export default function MetricCard({ metric, isActive, onSelect, loading }: Props) {
   const navigate = useNavigate();
 
   return (
@@ -68,8 +71,12 @@ export default function MetricCard({ metric, isActive, onSelect }: Props) {
       )}
 
       <div className="stat-label">{metric.title}</div>
-      <div className="stat-value">{metric.value}</div>
-      {metric.changePct !== null && (
+      {loading ? (
+        <div className={styles.skel} style={{ width: '96px', height: '30px', margin: '2px 0 6px' }} />
+      ) : (
+        <div className="stat-value">{metric.value}</div>
+      )}
+      {!loading && metric.changePct !== null && (
         <div className={`stat-change ${metric.changePct >= 0 ? 'up' : 'down'}`}>
           {fmtPct(metric.changePct)}
         </div>

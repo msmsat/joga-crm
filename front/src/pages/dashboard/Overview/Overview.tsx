@@ -8,14 +8,6 @@ import SummaryWidgets from './components/widgets/SummaryWidgets';
 export default function Overview() {
   const d = useOverviewData();
 
-  if (d.loading) {
-    return (
-      <div style={{ padding: 48, textAlign: 'center', color: 'var(--text3)', fontSize: 14 }}>
-        Загрузка данных…
-      </div>
-    );
-  }
-
   if (d.forbidden) {
     return (
       <div style={{ padding: 48, textAlign: 'center', color: 'var(--text3)', fontSize: 14 }}>
@@ -30,6 +22,7 @@ export default function Overview() {
         metrics={d.metrics}
         activeMetric={d.activeMetric}
         setActiveMetric={d.setActiveMetric}
+        loading={d.summaryLoading}
       />
 
       <div className="grid-2 mb-20">
@@ -45,7 +38,13 @@ export default function Overview() {
 
       <RecentEventsBoard events={d.events} />
 
-      <SummaryWidgets services={d.services} trainers={d.trainers} summary={d.summary} currencySymbol={d.currencySymbol} />
+      <SummaryWidgets
+        services={d.services}
+        trainers={d.trainers}
+        summary={d.summary}
+        currencySymbol={d.currencySymbol}
+        loading={d.widgetsLoading}
+      />
     </>
   );
 }

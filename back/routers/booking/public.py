@@ -19,7 +19,9 @@ from ratelimit import limiter
 from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioBookingSettings, StudioReferralConfig
 from routers.clients.loyalty import apply_deposit_change, apply_points_change
 from schemas._base import BaseSchema
+from services.booking_access import find_eligible_subscription
 from services.notifier import notify
+from services.subscription_charge import charge_reservation, notify_subscription_remaining
 
 router = APIRouter()
 
@@ -212,6 +214,10 @@ async def public_reserve(
         booking_channel="web",
     )
     db.add(reservation)
+    # Публичная бронь не гейтится абонементом (новый клиент записывается без него),
+    # поэтому списываем только если подходящий абонемент есть.
+    sub = await find_eligible_subscription(db, client.id, lesson)
+    remaining = await charge_reservation(db, studio_id, reservation, sub)
     await db.flush()  # нужен reservation.id для ленты
     log_activity(
         db, studio_id, "booking",
@@ -265,6 +271,7 @@ async def public_reserve(
             "client_name": client.name,
             "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
+    await notify_subscription_remaining(db, studio_id, client.id, remaining)
     return ReserveResponse(
         reservation_id=reservation.id,
         lesson_name=lesson.name,

@@ -1,6 +1,6 @@
-"""Автопродление абонемента за счёт депозита при attend → remaining == 0
+"""Автопродление абонемента за счёт депозита при списании последнего занятия
 (V5-7, Блок 4.2). Тестируем хелпер `_try_auto_renew` напрямую (не коммитит) —
-он изолированно вызывается внутри attend_reservation одной транзакцией.
+он изолированно вызывается внутри charge_reservation одной транзакцией.
 Реальная БД, откат.
 
 Запуск из back/:  python -m tests.test_subscription_auto_renewal
@@ -18,7 +18,7 @@ from models import (
     ActivityLog, Client, ClientLoyaltyCard, ClientSubscription, Operation, Studio,
     StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
-from routers.schedule.reservations import _try_auto_renew
+from services.subscription_charge import _try_auto_renew
 
 
 async def _setup(db, *, auto_renewal=True, package_active=True, deposit_balance=0):

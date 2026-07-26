@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, or_, select, update
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -14,6 +14,7 @@ from schemas.schedule.lessons import (
 )
 from services.booking_access import can_book
 from services.notifier import notify
+from services.subscription_charge import refund_reservation
 
 MIN_CREATE_LEAD = timedelta(hours=3)
 MIN_CHANGE_LEAD = timedelta(hours=2)
@@ -515,8 +516,8 @@ async def cancel_lesson(
     """Отменить занятие: статус cancelled + каскадная отмена активных резерваций.
 
     Расписание меняют только владелец и администратор (ТЗ 2.3). Образец каскада —
-    staff/schedule.py cancel_lesson. Резервации отменяем UPDATE-запросом (без
-    lazy-load relationship в async-контексте).
+    staff/schedule.py cancel_lesson. Каждой снятой записи возвращаем занятие на
+    абонемент — отмена занятия студией не должна стоить клиенту посещения.
     """
     if ctx.role == "trainer":
         raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
@@ -531,19 +532,20 @@ async def cancel_lesson(
         )
 
     # Записанных фиксируем до каскада — им уйдёт уведомление об отмене (c3).
-    booked_client_ids = (await db.execute(
-        select(Reservation.client_id).where(
+    reservations = (await db.execute(
+        select(Reservation).where(
             Reservation.lesson_id == lesson_id, Reservation.status != "cancelled"
         )
     )).scalars().all()
+    booked_client_ids = [r.client_id for r in reservations]
 
     lesson.status = "cancelled"
     lesson.cancel_reason = body.reason
-    await db.execute(
-        update(Reservation)
-        .where(Reservation.lesson_id == lesson_id, Reservation.status != "cancelled")
-        .values(status="cancelled", cancelled_at=datetime.now())
-    )
+    now = datetime.now()
+    for reservation in reservations:
+        reservation.status = "cancelled"
+        reservation.cancelled_at = now
+        await refund_reservation(db, reservation)
     await db.commit()
 
     results = [

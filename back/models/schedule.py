@@ -68,6 +68,12 @@ class Reservation(Base):
     review_text: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     booking_channel: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Абонемент, с которого списано занятие при записи. Отмена возвращает занятие
+    # ровно на него и обнуляет ссылку (services/subscription_charge.py). Null —
+    # запись без абонемента (разовая) или уже возвращённая.
+    subscription_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("client_subscriptions.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     cancelled_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     cancellation_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
 

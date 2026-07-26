@@ -20,6 +20,7 @@ from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
 from services.booking_access import assert_can_book
+from services.subscription_charge import charge_reservation, notify_subscription_remaining
 from schemas import (
     ActionMessageOut,
     ActivityPointOut,
@@ -868,7 +869,7 @@ async def book_lesson(
     if duplicate:
         raise HTTPException(status_code=400, detail="Клиент уже записан на это занятие")
 
-    await assert_can_book(db, client_id, lesson)
+    sub = await assert_can_book(db, client_id, lesson)
 
     reservation = Reservation(
         client_id=client_id,
@@ -878,6 +879,7 @@ async def book_lesson(
         booking_channel="manual",
     )
     db.add(reservation)
+    remaining = await charge_reservation(db, studio_id, reservation, sub)
     await db.flush()  # нужен reservation.id для ленты
     log_activity(
         db, studio_id, "booking",
@@ -887,6 +889,7 @@ async def book_lesson(
     )
     await db.commit()
     await db.refresh(reservation)
+    await notify_subscription_remaining(db, studio_id, client_id, remaining)
     return BookingCreatedOut(id=reservation.id, message="Запись создана")
 
 

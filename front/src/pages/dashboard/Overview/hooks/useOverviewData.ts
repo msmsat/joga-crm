@@ -45,6 +45,11 @@ const SERIES_RANGE: Record<'week' | 'month' | 'year', { days: number; group: 'we
   year:  { days: 365,     group: 'month' },  // 12 месяцев (группировки year нет)
 };
 
+// Сводки за месяц не меняются посекундно: в пределах 5 минут возврат на Дашборд
+// отдаёт кэш мгновенно и без фонового перезапроса (иначе дефолтные 30с из
+// queryClient дёргали бы все 5 эндпоинтов при каждом входе и фокусе окна).
+const STALE = 5 * 60_000;
+
 export function useOverviewData() {
   // ── UI-состояние ──
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
@@ -63,16 +68,19 @@ export function useOverviewData() {
   const summary = useQuery({
     queryKey: queryKeys.overviewSummary(range.date_from, range.date_to),
     queryFn: () => analyticsApi.getSummary(range),
+    staleTime: STALE,
   });
 
   const trainers = useQuery({
     queryKey: queryKeys.overviewTrainers(range.date_from, range.date_to),
     queryFn: () => analyticsApi.getTrainers(range),
+    staleTime: STALE,
   });
 
   const services = useQuery({
     queryKey: queryKeys.overviewServices(range.date_from, range.date_to),
     queryFn: () => analyticsApi.getServices(range),
+    staleTime: STALE,
   });
 
   const activity = useQuery({
@@ -86,12 +94,15 @@ export function useOverviewData() {
     queryFn: () => analyticsApi.getSeries({ metric: seriesMetric!, group, date_from: seriesFrom, date_to: seriesTo }),
     enabled: seriesMetric !== null, // у retention ряда нет — запрос не шлём
     placeholderData: keepPreviousData, // смена метрики/периода не гасит график
+    staleTime: STALE,
   });
 
   // ── Производные ──
+  // Общего «Загрузка данных…» на всю страницу больше нет: каркас рисуется сразу,
+  // каждый блок ждёт только свой запрос. Иначе метрики (уже пришедшие) не видно,
+  // пока грузятся тренеры/услуги/лента — а они вообще ниже первого экрана.
   const queries = [summary, trainers, services, activity];
   const forbidden = queries.some(q => q.error instanceof ApiError && q.error.status === 403);
-  const loading = queries.some(q => q.isPending) && !forbidden;
 
   const metrics: MetricConfig[] = useMemo(
     () => buildMetrics(summary.data ?? null, currencySymbol),
@@ -101,7 +112,9 @@ export function useOverviewData() {
   const activeConfig = metrics.find(m => m.id === activeMetric)!;
 
   return {
-    loading, forbidden,
+    forbidden,
+    summaryLoading: summary.isPending && !forbidden,
+    widgetsLoading: (trainers.isPending || services.isPending) && !forbidden,
     summary: summary.data ?? null,
     metrics, activeMetric, setActiveMetric, activeConfig,
     period, setPeriod, series: series.data ?? [],

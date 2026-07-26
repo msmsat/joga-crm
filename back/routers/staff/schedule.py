@@ -14,6 +14,7 @@ from schemas import (
     StaffWeekScheduleResponse, StaffMonthScheduleResponse,
     StaffTodayScheduleResponse, StaffCancelLessonResponse,
 )
+from services.subscription_charge import refund_reservation
 
 router = APIRouter()
 
@@ -197,6 +198,7 @@ async def cancel_lesson(
         if reservation.status != "cancelled":
             reservation.status = "cancelled"
             reservation.cancelled_at = datetime.now()
+            await refund_reservation(db, reservation)  # занятие возвращается на абонемент
 
     await db.commit()
 

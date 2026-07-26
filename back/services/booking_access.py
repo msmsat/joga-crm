@@ -18,14 +18,17 @@ async def find_eligible_subscription(
     db: AsyncSession, client_id: int, lesson: Lesson
 ) -> Optional[ClientSubscription]:
     """Активный незамороженный абонемент клиента с остатком, подходящий под
-    тип занятия lesson. Возвращает первый подходящий или None."""
+    тип занятия lesson. Возвращает первый подходящий или None.
+
+    Порядок по expires_at: с абонемента списывается занятие при записи
+    (services/subscription_charge.py), и тратить надо тот, что сгорит раньше."""
     subs = (await db.execute(
         select(ClientSubscription).where(
             ClientSubscription.client_id == client_id,
             ClientSubscription.status == "active",
             ClientSubscription.is_frozen == False,
             ClientSubscription.used_classes < ClientSubscription.total_classes,
-        )
+        ).order_by(ClientSubscription.expires_at)
     )).scalars().all()
     if not subs:
         return None

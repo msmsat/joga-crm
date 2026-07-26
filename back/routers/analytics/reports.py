@@ -71,23 +71,19 @@ async def _period_metrics(studio_id: int, d_from: date, d_to: date, db: AsyncSes
         Lesson.start_time <= end_dt,
     )
 
-    bookings = (await db.execute(
-        select(func.count(Reservation.id))
+    # Один проход по тому же join вместо трёх: FILTER-агрегаты Postgres. Раньше это
+    # были три отдельных запроса с идентичными WHERE — /summary зовётся дважды
+    # (текущий и прошлый период), так что экономия удваивается.
+    bookings, attendance, active_clients = (await db.execute(
+        select(
+            func.count(Reservation.id).filter(Reservation.status != "cancelled"),
+            func.count(Reservation.id).filter(Reservation.status == "attended"),
+            func.count(func.distinct(Reservation.client_id)).filter(Reservation.status == "attended"),
+        )
+        .select_from(Reservation)
         .join(Lesson, Reservation.lesson_id == Lesson.id)
-        .where(lesson_in_period, Reservation.status != "cancelled")
-    )).scalar_one()
-
-    attendance = (await db.execute(
-        select(func.count(Reservation.id))
-        .join(Lesson, Reservation.lesson_id == Lesson.id)
-        .where(lesson_in_period, Reservation.status == "attended")
-    )).scalar_one()
-
-    active_clients = (await db.execute(
-        select(func.count(func.distinct(Reservation.client_id)))
-        .join(Lesson, Reservation.lesson_id == Lesson.id)
-        .where(lesson_in_period, Reservation.status == "attended")
-    )).scalar_one()
+        .where(lesson_in_period)
+    )).one()
 
     return {
         "revenue": revenue,
@@ -317,13 +313,18 @@ async def trainers_report(
             "revenue": int(revenue),
             "lessons_count": lessons_by_trainer.pop(tid, 0),
         }
-    # тренеры с занятиями, но без выручки за период
-    for tid, cnt in lessons_by_trainer.items():
-        name_row = (await db.execute(
-            select(User.name, User.last_name).where(User.id == tid)
-        )).first()
-        display = " ".join(filter(None, name_row)) if name_row else str(tid)
-        rows[tid] = {"name": display, "revenue": 0, "lessons_count": cnt}
+    # Тренеры с занятиями, но без выручки за период. Имена добираем ОДНИМ запросом:
+    # выручка почти всегда без trainer_id, так что сюда попадает вся команда — по
+    # запросу на тренера это был N+1 и заметная часть времени ответа.
+    if lessons_by_trainer:
+        names = dict(
+            (uid, " ".join(filter(None, (name, last_name))))
+            for uid, name, last_name in (await db.execute(
+                select(User.id, User.name, User.last_name).where(User.id.in_(lessons_by_trainer))
+            )).all()
+        )
+        for tid, cnt in lessons_by_trainer.items():
+            rows[tid] = {"name": names.get(tid) or str(tid), "revenue": 0, "lessons_count": cnt}
 
     return [
         TrainerReportRow(trainer_id=tid, name=r["name"], lessons_count=r["lessons_count"], revenue=r["revenue"])

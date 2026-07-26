@@ -1,15 +1,26 @@
 import type { PeriodSummary, ServiceReportRow, TrainerReportRow } from '../../types';
 import { BAR_COLORS } from '../../constants';
 import { fmtMoneyCompact } from '../../../../../lib/format';
+import styles from '../../Overview.module.css';
 
 interface Props {
   services: ServiceReportRow[];
   trainers: TrainerReportRow[];
   summary: PeriodSummary | null;
   currencySymbol: string;
+  loading?: boolean;
 }
 
-export default function SummaryWidgets({ services, trainers, summary, currencySymbol }: Props) {
+/** Три полоски-заглушки: пока данные едут, «Нет данных» было бы враньём. */
+const RowsSkeleton = () => (
+  <>
+    {[0, 1, 2].map(i => (
+      <div key={i} className={styles.skel} style={{ height: '22px', marginBottom: '10px' }} />
+    ))}
+  </>
+);
+
+export default function SummaryWidgets({ services, trainers, summary, currencySymbol, loading }: Props) {
   // Загрузка тренера = его занятия / максимум по студии.
   const maxLessons = Math.max(1, ...trainers.map(t => t.lessons_count));
 
@@ -18,7 +29,8 @@ export default function SummaryWidgets({ services, trainers, summary, currencySy
       <div className="card card-sm">
         <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '12px' }}>Топ услуги</div>
         <div>
-          {services.length === 0 && <div style={{ fontSize: 12, color: 'var(--text3)' }}>Нет данных</div>}
+          {loading && <RowsSkeleton />}
+          {!loading && services.length === 0 && <div style={{ fontSize: 12, color: 'var(--text3)' }}>Нет данных</div>}
           {services.slice(0, 4).map((s, i) => (
             <div key={s.service} style={{ marginBottom: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
@@ -35,7 +47,8 @@ export default function SummaryWidgets({ services, trainers, summary, currencySy
       <div className="card card-sm">
         <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '12px' }}>Нагрузка тренеров</div>
         <div>
-          {trainers.length === 0 && <div style={{ fontSize: 12, color: 'var(--text3)' }}>Нет данных</div>}
+          {loading && <RowsSkeleton />}
+          {!loading && trainers.length === 0 && <div style={{ fontSize: 12, color: 'var(--text3)' }}>Нет данных</div>}
           {trainers.slice(0, 4).map((t, i) => {
             const pct = Math.round((t.lessons_count / maxLessons) * 100);
             return (
