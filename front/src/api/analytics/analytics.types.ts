@@ -65,12 +65,15 @@ export interface StudioTask {
   is_done: boolean
   done_at: string | null
   created_at: string
+  assignee_id: number | null
+  assignee_name: string | null
 }
 
 export interface StudioTaskCreate {
   text: string
   priority?: 'low' | 'medium' | 'high'
   tag?: string | null
+  assignee_id?: number | null
 }
 
 export interface StudioTaskUpdate {
@@ -78,6 +81,16 @@ export interface StudioTaskUpdate {
   priority?: 'low' | 'medium' | 'high'
   tag?: string | null
   is_done?: boolean
+  assignee_id?: number | null
+}
+
+export type TaskScope = 'mine' | 'admins' | 'trainers'
+export type StudioRole = 'owner' | 'admin' | 'trainer'
+
+export interface AssigneeOption {
+  user_id: number
+  name: string
+  role: 'admin' | 'trainer'
 }
 
 // ─── Отчёты (5 вкладок, ROADMAP_REPORTS) ──────────────────────────────────

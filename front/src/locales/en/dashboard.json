@@ -1,0 +1,65 @@
+{
+  "state": {
+    "empty": "No such employees in the studio",
+    "noData": "No data",
+    "ownerOnly": "Access limited by your role",
+    "loadError": "Failed to load data",
+    "retry": "Retry"
+  },
+  "metrics": {
+    "revenue": "Revenue this month",
+    "clients": "Active clients",
+    "bookings": "Bookings this month",
+    "retention": "Retention rate",
+    "more": "Details"
+  },
+  "chart": {
+    "byWeek": "by week",
+    "byMonth": "by month",
+    "subWeek": "Last 8 weeks",
+    "subMonth": "Last 8 months",
+    "subYear": "Last 12 months",
+    "tabWeek": "Week",
+    "tabMonth": "Month",
+    "tabYear": "Year",
+    "noData": "No data for this period",
+    "retentionNA": "Retention chart is not available"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "empty": "No tasks",
+    "done": "Done",
+    "add": "Add task",
+    "namePlaceholder": "Task name…",
+    "cancel": "Cancel",
+    "submit": "Add",
+    "priority": { "low": "Low", "medium": "Medium", "high": "High" },
+    "priorityHint": { "low": "Low priority", "medium": "Medium priority", "high": "High priority" },
+    "tags": {
+      "Клиент": "Client", "Финансы": "Finance", "Лиды": "Leads",
+      "Отчёты": "Reports", "Журнал": "Journal", "Персонал": "Staff"
+    },
+    "scope": { "mine": "Mine", "admins": "Admins", "trainers": "Trainers" },
+    "assigneePlaceholder": "Select an employee",
+    "deleteTitle": "Delete task?",
+    "deleteMessage": "This action cannot be undone."
+  },
+  "events": {
+    "title": "Recent events",
+    "seeAll": "See all",
+    "justNow": "just now",
+    "openProfile": "Open profile",
+    "writeWhatsApp": "Message on WhatsApp",
+    "sendReceipt": "Send receipt",
+    "cancelBooking": "Cancel booking"
+  },
+  "summary": {
+    "topServices": "Top services",
+    "trainersLoad": "Trainer load",
+    "financeMonth": "Finance (month)",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "avgCheck": "Avg. check",
+    "profit": "Profit"
+  }
+}

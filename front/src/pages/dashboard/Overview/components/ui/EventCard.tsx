@@ -1,14 +1,17 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import type { RecentEvent } from '../../types';
 
-function toRelative(iso: string): string {
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
-  if (diff < 1)   return 'только что';
-  if (diff < 60)  return `${diff} мин. назад`;
-  const h = Math.floor(diff / 60);
-  if (h < 24)    return `${h} ч назад`;
-  return `${Math.floor(h / 24)} дн. назад`;
+/** Относительное время платформенным Intl — без ручных склонений и словаря на каждую единицу. */
+function toRelative(iso: string, locale: string, t: TFunction): string {
+  const min = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
+  if (min < 1) return t('events.justNow');
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  if (min < 60) return rtf.format(-min, 'minute');
+  const h = Math.floor(min / 60);
+  return h < 24 ? rtf.format(-h, 'hour') : rtf.format(-Math.floor(h / 24), 'day');
 }
 
 interface Props {
@@ -16,6 +19,7 @@ interface Props {
 }
 
 export default function EventCard({ event }: Props) {
+  const { t, i18n } = useTranslation('dashboard');
   const [isOpen, setIsOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<{ bottom: number; right: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -56,7 +60,7 @@ export default function EventCard({ event }: Props) {
         <div className="activity-text" style={{ fontSize: '12px' }}>
           <strong>{event.actor_name}</strong> {event.title}
         </div>
-        <div className="activity-time">{toRelative(event.created_at)}</div>
+        <div className="activity-time">{toRelative(event.created_at, i18n.language, t)}</div>
       </div>
 
       <div style={{ position: 'relative' }}>
@@ -84,14 +88,14 @@ export default function EventCard({ event }: Props) {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
               </svg>
-              Открыть профиль
+              {t('events.openProfile')}
             </div>
             {event.event_type === 'booking' && (
               <div className="dropdown-item">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                 </svg>
-                Написать в WhatsApp
+                {t('events.writeWhatsApp')}
               </div>
             )}
             {event.event_type === 'payment' && (
@@ -99,7 +103,7 @@ export default function EventCard({ event }: Props) {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
                 </svg>
-                Отправить чек
+                {t('events.sendReceipt')}
               </div>
             )}
             {(event.event_type === 'booking' || event.event_type === 'cancel') && (
@@ -107,7 +111,7 @@ export default function EventCard({ event }: Props) {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
                 </svg>
-                Отменить запись
+                {t('events.cancelBooking')}
               </div>
             )}
           </div>

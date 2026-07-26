@@ -1,5 +1,6 @@
 import type { JSX, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { fmtPct } from '../../../../../lib/format';
 import type { MetricConfig } from '../../types';
 import styles from '../../Overview.module.css';
@@ -44,6 +45,7 @@ interface Props {
 
 export default function MetricCard({ metric, isActive, onSelect, loading }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation('dashboard');
 
   return (
     <div
@@ -66,7 +68,7 @@ export default function MetricCard({ metric, isActive, onSelect, loading }: Prop
             navigate(metric.route);
           }}
         >
-          Подробнее ↗
+          {t('metrics.more')} ↗
         </div>
       )}
 

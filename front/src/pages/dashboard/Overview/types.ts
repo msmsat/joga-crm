@@ -12,17 +12,17 @@ export type { ActivityLog, PeriodSummary, SeriesPoint, ServiceReportRow, Trainer
 export type Task = StudioTask;
 export type RecentEvent = ActivityLog;
 
-/** Статическая презентация метрики (иконка, цвет, роут). Значение и тренд — из API. */
+/** Статическая презентация метрики (иконка, цвет, роут). Заголовок — из словаря, значение и тренд — из API. */
 export interface MetricPresenter {
   id: 'revenue' | 'clients' | 'bookings' | 'retention';
-  title: string;
   color: string;
   glow: string;
   route: string;
 }
 
-/** MetricPresenter + рассчитанные из summary value/тренд для карточки. */
+/** MetricPresenter + переведённый заголовок и рассчитанные из summary value/тренд для карточки. */
 export interface MetricConfig extends MetricPresenter {
+  title: string;
   value: string;
   changePct: number | null;
 }

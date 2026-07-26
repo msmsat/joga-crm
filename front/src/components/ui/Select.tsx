@@ -11,11 +11,13 @@ export interface SelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  /** Список раскрывается вверх — для триггеров у нижней границы контейнера с overflow:hidden. */
+  openUp?: boolean;
 }
 
 // Общий выпадающий список: минимализм, glow-фокус, клавиатура (стрелки + Enter),
 // закрытие по Esc и клику мимо. Без поиска и мультивыбора — мелкие списки (YAGNI).
-export function Select({ value, options, onChange, placeholder, disabled }: SelectProps) {
+export function Select({ value, options, onChange, placeholder, disabled, openUp }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -87,7 +89,7 @@ export function Select({ value, options, onChange, placeholder, disabled }: Sele
         <div
           role="listbox"
           style={{
-            position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 50,
+            position: 'absolute', ...(openUp ? { bottom: 'calc(100% + 6px)' } : { top: 'calc(100% + 6px)' }), left: 0, right: 0, zIndex: 50,
             background: 'var(--bg-card, #FFFFFF)', borderRadius: '12px',
             border: '1px solid rgba(26,26,26,0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',

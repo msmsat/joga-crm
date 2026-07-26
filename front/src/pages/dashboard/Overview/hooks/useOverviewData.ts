@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { analyticsApi, ApiError } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -9,14 +11,14 @@ import type { MetricConfig, PeriodSummary } from '../types';
 import { METRIC_PRESENTERS } from '../constants';
 
 /** Сборщик метрик: валюта студии, без прочерков (0 по умолчанию), тренд — сырым числом. */
-function buildMetrics(s: PeriodSummary | null, symbol: string): MetricConfig[] {
+function buildMetrics(s: PeriodSummary | null, symbol: string, t: TFunction): MetricConfig[] {
   const cell: Record<MetricConfig['id'], { value: string; changePct: number | null }> = {
     revenue:   { value: fmtMoneyCompact(s?.revenue ?? 0, symbol), changePct: s?.trends.revenue_pct        ?? null },
     clients:   { value: fmtInt(s?.active_clients ?? 0),           changePct: s?.trends.active_clients_pct ?? null },
     bookings:  { value: fmtInt(s?.bookings ?? 0),                 changePct: s?.trends.bookings_pct       ?? null },
     retention: { value: `${Math.round(s?.retention ?? 0)}%`,      changePct: s?.trends.retention_pct      ?? null },
   };
-  return METRIC_PRESENTERS.map(p => ({ ...p, ...cell[p.id] }));
+  return METRIC_PRESENTERS.map(p => ({ ...p, ...cell[p.id], title: t(`metrics.${p.id}`) }));
 }
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -51,6 +53,7 @@ const SERIES_RANGE: Record<'week' | 'month' | 'year', { days: number; group: 'we
 const STALE = 5 * 60_000;
 
 export function useOverviewData() {
+  const { t } = useTranslation('dashboard');
   // ── UI-состояние ──
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [activeMetric, setActiveMetric] = useState<MetricConfig['id']>('revenue');
@@ -104,15 +107,23 @@ export function useOverviewData() {
   const queries = [summary, trainers, services, activity];
   const forbidden = queries.some(q => q.error instanceof ApiError && q.error.status === 403);
 
+  // Первая загрузка «с нуля» (кэша ни у одного из четырёх запросов ещё нет) vs
+  // фоновая: forbidden — это «нет доступа», не ошибка сети, из loadError исключён.
+  const isFirstLoad = queries.some(q => q.isPending) && !forbidden;
+  const loadError = forbidden ? null : (queries.find(q => q.error)?.error ?? null);
+  const isFirstLoadError = isFirstLoad && loadError != null;
+  const refetchAll = () => { summary.refetch(); trainers.refetch(); services.refetch(); activity.refetch(); };
+
   const metrics: MetricConfig[] = useMemo(
-    () => buildMetrics(summary.data ?? null, currencySymbol),
-    [summary.data, currencySymbol],
+    () => buildMetrics(summary.data ?? null, currencySymbol, t),
+    [summary.data, currencySymbol, t],
   );
 
   const activeConfig = metrics.find(m => m.id === activeMetric)!;
 
   return {
     forbidden,
+    isFirstLoadError, loadError, refetchAll,
     summaryLoading: summary.isPending && !forbidden,
     widgetsLoading: (trainers.isPending || services.isPending) && !forbidden,
     summary: summary.data ?? null,

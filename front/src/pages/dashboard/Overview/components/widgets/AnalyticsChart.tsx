@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { MetricConfig, SeriesPoint } from '../../types';
 import { fmtMoneyCompact } from '../../../../../lib/format';
 
@@ -9,49 +10,50 @@ interface Props {
   currencySymbol: string;
 }
 
-const PERIOD_LABEL: Record<Props['period'], string> = {
-  week: 'по неделям', month: 'по месяцам', year: 'по месяцам',
-};
-const PERIOD_SUB: Record<Props['period'], string> = {
-  week: 'Последние 8 недель', month: 'Последние 8 месяцев', year: 'Последние 12 месяцев',
-};
-
 /** ISO-дата бакета → короткая подпись бара. */
-function barLabel(iso: string, period: Props['period']): string {
+function barLabel(iso: string, period: Props['period'], locale: string): string {
   const d = new Date(iso);
   if (period === 'week') return `${d.getDate()}/${d.getMonth() + 1}`;
-  return d.toLocaleDateString('ru-RU', { month: 'short' });
+  return d.toLocaleDateString(locale, { month: 'short' });
 }
 
 export default function AnalyticsChart({ activeConfig, period, setPeriod, series, currencySymbol }: Props) {
+  const { t, i18n } = useTranslation('dashboard');
   const hasSeries = activeConfig.id !== 'retention';
   const max = Math.max(1, ...series.map(p => p.value));
   const fmt = (v: number) => (activeConfig.id === 'revenue' ? fmtMoneyCompact(v, currencySymbol) : String(v));
+
+  const periodLabel: Record<Props['period'], string> = {
+    week: t('chart.byWeek'), month: t('chart.byMonth'), year: t('chart.byMonth'),
+  };
+  const periodSub: Record<Props['period'], string> = {
+    week: t('chart.subWeek'), month: t('chart.subMonth'), year: t('chart.subYear'),
+  };
 
   return (
     <div className="card">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
           <div style={{ fontSize: '14px', fontWeight: 700 }}>
-            {activeConfig.title.replace(' за месяц', '').replace(' сегодня', '')} {PERIOD_LABEL[period]}
+            {activeConfig.title.replace(' за месяц', '').replace(' сегодня', '')} {periodLabel[period]}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{PERIOD_SUB[period]}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{periodSub[period]}</div>
         </div>
 
         <div className="tabs" style={{ marginBottom: 0 }}>
-          <div className={`tab ${period === 'week' ? 'active' : ''}`} onClick={() => setPeriod('week')}>Нед.</div>
-          <div className={`tab ${period === 'month' ? 'active' : ''}`} onClick={() => setPeriod('month')}>Мес.</div>
-          <div className={`tab ${period === 'year' ? 'active' : ''}`} onClick={() => setPeriod('year')}>Год</div>
+          <div className={`tab ${period === 'week' ? 'active' : ''}`} onClick={() => setPeriod('week')}>{t('chart.tabWeek')}</div>
+          <div className={`tab ${period === 'month' ? 'active' : ''}`} onClick={() => setPeriod('month')}>{t('chart.tabMonth')}</div>
+          <div className={`tab ${period === 'year' ? 'active' : ''}`} onClick={() => setPeriod('year')}>{t('chart.tabYear')}</div>
         </div>
       </div>
 
       {!hasSeries ? (
         <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: 13 }}>
-          График по удержанию недоступен
+          {t('chart.retentionNA')}
         </div>
       ) : series.length === 0 ? (
         <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: 13 }}>
-          Нет данных за период
+          {t('chart.noData')}
         </div>
       ) : (
         <div id="dash-chart">
@@ -74,7 +76,7 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
             })}
           </div>
           <div className="chart-labels">
-            {series.map((p) => <div key={p.period} className="chart-label">{barLabel(p.period, period)}</div>)}
+            {series.map((p) => <div key={p.period} className="chart-label">{barLabel(p.period, period, i18n.language)}</div>)}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { client } from '../client'
 import type {
   ActivityLog,
+  AssigneeOption,
   ClientsReportRead,
   OverviewRead,
   PeriodSummary,
@@ -14,6 +15,7 @@ import type {
   StudioTaskCreate,
   StudioTaskUpdate,
   SlotLessonRow,
+  TaskScope,
   TeamRead,
   TrainerDetailRead,
   TrainerReportRow,
@@ -90,8 +92,15 @@ export const analyticsApi = {
   getActivityLog: (limit = 20) =>
     client.get<ActivityLog[]>(`/analytics/activity?limit=${limit}`),
 
-  getTasks: () =>
-    client.get<StudioTask[]>('/analytics/tasks'),
+  getTasks: (params?: { scope?: TaskScope; assignee_id?: number }) => {
+    const query = qs(Object.fromEntries(
+      Object.entries(params ?? {}).filter(([, v]) => v != null).map(([k, v]) => [k, String(v)]),
+    ))
+    return client.get<StudioTask[]>(`/analytics/tasks${query ? `?${query}` : ''}`)
+  },
+
+  getAssignees: () =>
+    client.get<AssigneeOption[]>('/analytics/tasks/assignees'),
 
   createTask: (payload: StudioTaskCreate) =>
     client.post<StudioTask>('/analytics/tasks', payload),
