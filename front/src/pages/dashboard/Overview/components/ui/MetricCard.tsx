@@ -1,5 +1,6 @@
 import type { JSX, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fmtPct } from '../../../../../lib/format';
 import type { MetricConfig } from '../../types';
 
 const ICONS: Record<string, JSX.Element> = {
@@ -68,7 +69,11 @@ export default function MetricCard({ metric, isActive, onSelect }: Props) {
 
       <div className="stat-label">{metric.title}</div>
       <div className="stat-value">{metric.value}</div>
-      <div className="stat-change up">{metric.change}</div>
+      {metric.changePct !== null && (
+        <div className={`stat-change ${metric.changePct >= 0 ? 'up' : 'down'}`}>
+          {fmtPct(metric.changePct)}
+        </div>
+      )}
     </div>
   );
 }

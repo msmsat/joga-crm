@@ -8,6 +8,15 @@ export function fmtMoney(n: number, symbol = '₽'): string {
   return `${Math.round(n).toLocaleString(locale)} ${symbol}`;
 }
 
+/** Компактные деньги для плиток: «284K ₽», «1.2M ₽». Символ — из настроек студии. */
+export function fmtMoneyCompact(n: number, symbol = '₽'): string {
+  const locale = LOCALE[i18n.language] ?? 'ru-RU';
+  const value = new Intl.NumberFormat(locale, {
+    notation: 'compact', maximumFractionDigits: 1,
+  }).format(n);
+  return `${value} ${symbol}`;
+}
+
 export function fmtPct(n: number): string {
   const sign = n > 0 ? '+' : '';
   return `${sign}${n.toLocaleString(LOCALE[i18n.language] ?? 'ru-RU', { maximumFractionDigits: 1 })}%`;

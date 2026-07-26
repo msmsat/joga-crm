@@ -7,19 +7,5 @@ export const METRIC_PRESENTERS: MetricPresenter[] = [
   { id: 'retention', title: 'Уровень удержания',  color: '#D88C9A', glow: 'rgba(216,140,154,0.2)', route: '/dashboard/reports' },
 ];
 
-/** '₽284K' / '₽1.2M' из рублей. */
-export function formatMoney(rub: number): string {
-  if (rub >= 1_000_000) return `₽${(rub / 1_000_000).toFixed(1).replace('.0', '')}M`;
-  if (rub >= 1000)      return `₽${Math.round(rub / 1000)}K`;
-  return `₽${rub}`;
-}
-
-/** '↑ 18.4%' / '↓ 3.2%' / '—' для null. */
-export function formatTrend(pct: number | null): string {
-  if (pct === null) return '—';
-  const arrow = pct >= 0 ? '↑' : '↓';
-  return `${arrow} ${Math.abs(pct)}%`;
-}
-
 /** Палитра для баров сводок (услуги/тренеры). */
 export const BAR_COLORS = ['#FCAE91', '#5BAB72', '#4A80C4', '#f0c040', '#D88C9A', '#7B6CD4'];

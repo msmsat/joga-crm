@@ -1,11 +1,12 @@
 import type { MetricConfig, SeriesPoint } from '../../types';
-import { formatMoney } from '../../constants';
+import { fmtMoneyCompact } from '../../../../../lib/format';
 
 interface Props {
   activeConfig: MetricConfig;
   period: 'week' | 'month' | 'year';
   setPeriod: (p: 'week' | 'month' | 'year') => void;
   series: SeriesPoint[];
+  currencySymbol: string;
 }
 
 const PERIOD_LABEL: Record<Props['period'], string> = {
@@ -22,10 +23,10 @@ function barLabel(iso: string, period: Props['period']): string {
   return d.toLocaleDateString('ru-RU', { month: 'short' });
 }
 
-export default function AnalyticsChart({ activeConfig, period, setPeriod, series }: Props) {
+export default function AnalyticsChart({ activeConfig, period, setPeriod, series, currencySymbol }: Props) {
   const hasSeries = activeConfig.id !== 'retention';
   const max = Math.max(1, ...series.map(p => p.value));
-  const fmt = (v: number) => (activeConfig.id === 'revenue' ? formatMoney(v) : String(v));
+  const fmt = (v: number) => (activeConfig.id === 'revenue' ? fmtMoneyCompact(v, currencySymbol) : String(v));
 
   return (
     <div className="card">

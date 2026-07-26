@@ -38,13 +38,14 @@ export default function Overview() {
           period={d.period}
           setPeriod={d.setPeriod}
           series={d.series}
+          currencySymbol={d.currencySymbol}
         />
-        <TodayTasksWidget tasks={d.tasks} setTasks={d.setTasks} />
+        <TodayTasksWidget />
       </div>
 
       <RecentEventsBoard events={d.events} />
 
-      <SummaryWidgets services={d.services} trainers={d.trainers} summary={d.summary} />
+      <SummaryWidgets services={d.services} trainers={d.trainers} summary={d.summary} currencySymbol={d.currencySymbol} />
     </>
   );
 }

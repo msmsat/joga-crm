@@ -1,13 +1,15 @@
 import type { PeriodSummary, ServiceReportRow, TrainerReportRow } from '../../types';
-import { BAR_COLORS, formatMoney } from '../../constants';
+import { BAR_COLORS } from '../../constants';
+import { fmtMoneyCompact } from '../../../../../lib/format';
 
 interface Props {
   services: ServiceReportRow[];
   trainers: TrainerReportRow[];
   summary: PeriodSummary | null;
+  currencySymbol: string;
 }
 
-export default function SummaryWidgets({ services, trainers, summary }: Props) {
+export default function SummaryWidgets({ services, trainers, summary, currencySymbol }: Props) {
   // Загрузка тренера = его занятия / максимум по студии.
   const maxLessons = Math.max(1, ...trainers.map(t => t.lessons_count));
 
@@ -54,21 +56,21 @@ export default function SummaryWidgets({ services, trainers, summary }: Props) {
         <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '12px' }}>Финансы (месяц)</div>
         <div style={{ marginBottom: '8px' }}>
           <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>Выручка</div>
-          <div style={{ fontSize: '22px', fontWeight: 800 }}>{summary ? formatMoney(summary.revenue) : '—'}</div>
+          <div style={{ fontSize: '22px', fontWeight: 800 }}>{fmtMoneyCompact(summary?.revenue ?? 0, currencySymbol)}</div>
         </div>
         <div style={{ height: '1px', background: 'var(--border)', margin: '8px 0' }} />
         <div style={{ marginBottom: '6px' }}>
           <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>Расходы</div>
-          <div style={{ fontSize: '16px', fontWeight: 700 }}>{summary ? formatMoney(summary.expenses) : '—'}</div>
+          <div style={{ fontSize: '16px', fontWeight: 700 }}>{fmtMoneyCompact(summary?.expenses ?? 0, currencySymbol)}</div>
         </div>
         <div style={{ marginBottom: '6px' }}>
           <div style={{ fontSize: '11px', color: 'var(--text3)', marginBottom: '2px' }}>Средний чек</div>
-          <div style={{ fontSize: '16px', fontWeight: 700 }}>{summary ? formatMoney(summary.avg_check) : '—'}</div>
+          <div style={{ fontSize: '16px', fontWeight: 700 }}>{fmtMoneyCompact(summary?.avg_check ?? 0, currencySymbol)}</div>
         </div>
         <div style={{ height: '1px', background: 'var(--border)', margin: '8px 0' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Прибыль</div>
-          <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--accent2)' }}>{summary ? formatMoney(summary.profit) : '—'}</div>
+          <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--accent2)' }}>{fmtMoneyCompact(summary?.profit ?? 0, currencySymbol)}</div>
         </div>
       </div>
     </div>

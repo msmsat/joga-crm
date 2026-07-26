@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { analyticsApi } from '../../../../../api';
+import { useOverviewTasks } from '../../hooks/useOverviewTasks';
 import type { Task } from '../../types';
 import styles from '../../Overview.module.css';
 
@@ -41,12 +41,8 @@ const PRIORITY_OPTIONS: { value: Task['priority']; label: string }[] = [
   { value: 'high',   label: 'Высокий' },
 ];
 
-interface Props {
-  tasks: Task[];
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-}
-
-export default function TodayTasksWidget({ tasks, setTasks }: Props) {
+export default function TodayTasksWidget() {
+  const { tasks, toggle, addTask: createTask } = useOverviewTasks();
   const [showDone, setShowDone] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<number | null>(null);
 
@@ -63,25 +59,13 @@ export default function TodayTasksWidget({ tasks, setTasks }: Props) {
     }
   }, [isAddingTask]);
 
-  // Оптимистично переключаем is_done; при ошибке откатываем.
-  const toggle = (id: number) => {
-    const target = tasks.find(t => t.id === id);
-    if (!target) return;
-    const next = !target.is_done;
-    setTasks(prev => prev.map(t => (t.id === id ? { ...t, is_done: next } : t)));
-    analyticsApi.updateTask(id, { is_done: next }).catch(() => {
-      setTasks(prev => prev.map(t => (t.id === id ? { ...t, is_done: !next } : t)));
-    });
-  };
-
   const addTask = async () => {
     const text = newTaskText.trim();
     if (!text) return;
     setIsAddingTask(false);
     setNewTaskText('');
     try {
-      const created = await analyticsApi.createTask({ text, priority: newTaskPriority, tag: newTaskTag });
-      setTasks(prev => [created, ...prev]);
+      const created = await createTask({ text, priority: newTaskPriority, tag: newTaskTag });
       setNewlyAddedId(created.id);
       setTimeout(() => setNewlyAddedId(null), 600);
     } catch {

@@ -1,15 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { analyticsApi, ApiError } from '../../../../api';
-import type {
-  ActivityLog,
-  MetricConfig,
-  PeriodSummary,
-  SeriesPoint,
-  ServiceReportRow,
-  StudioTask,
-  TrainerReportRow,
-} from '../types';
-import { METRIC_PRESENTERS, formatMoney, formatTrend } from '../constants';
+import { queryKeys } from '../../../../api/queryKeys';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../components/UI';
+import { fmtMoneyCompact, fmtInt } from '../../../../lib/format';
+import type { MetricConfig, PeriodSummary } from '../types';
+import { METRIC_PRESENTERS } from '../constants';
+
+/** Сборщик метрик: валюта студии, без прочерков (0 по умолчанию), тренд — сырым числом. */
+function buildMetrics(s: PeriodSummary | null, symbol: string): MetricConfig[] {
+  const cell: Record<MetricConfig['id'], { value: string; changePct: number | null }> = {
+    revenue:   { value: fmtMoneyCompact(s?.revenue ?? 0, symbol), changePct: s?.trends.revenue_pct        ?? null },
+    clients:   { value: fmtInt(s?.active_clients ?? 0),           changePct: s?.trends.active_clients_pct ?? null },
+    bookings:  { value: fmtInt(s?.bookings ?? 0),                 changePct: s?.trends.bookings_pct       ?? null },
+    retention: { value: `${Math.round(s?.retention ?? 0)}%`,      changePct: s?.trends.retention_pct      ?? null },
+  };
+  return METRIC_PRESENTERS.map(p => ({ ...p, ...cell[p.id] }));
+}
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -38,85 +46,68 @@ const SERIES_RANGE: Record<'week' | 'month' | 'year', { days: number; group: 'we
 };
 
 export function useOverviewData() {
-  const [summary, setSummary] = useState<PeriodSummary | null>(null);
-  const [trainers, setTrainers] = useState<TrainerReportRow[]>([]);
-  const [services, setServices] = useState<ServiceReportRow[]>([]);
-  const [events, setEvents] = useState<ActivityLog[]>([]);
-  const [tasks, setTasks] = useState<StudioTask[]>([]);
-  const [loading, setLoading] = useState(true);
-  /** true, если владелец-only эндпоинты вернули 403 (роль админ/тренер). */
-  const [forbidden, setForbidden] = useState(false);
-
+  // ── UI-состояние ──
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [activeMetric, setActiveMetric] = useState<MetricConfig['id']>('revenue');
-  const [series, setSeries] = useState<SeriesPoint[]>([]);
+  const currencySymbol = getCurrencySymbol(useStudioCurrency());
 
-  // Первичная загрузка: всё, кроме серии графика.
-  useEffect(() => {
-    let alive = true;
-    const range = monthRange();
-    (async () => {
-      try {
-        const [sum, tr, sv, ev, tk] = await Promise.all([
-          analyticsApi.getSummary(range),
-          analyticsApi.getTrainers(range),
-          analyticsApi.getServices(range),
-          analyticsApi.getActivityLog(13),
-          analyticsApi.getTasks(),
-        ]);
-        if (!alive) return;
-        setSummary(sum);
-        setTrainers(tr);
-        setServices(sv);
-        setEvents(ev);
-        setTasks(tk);
-      } catch (e) {
-        if (alive && e instanceof ApiError && e.status === 403) setForbidden(true);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
-  }, []);
+  // Диапазоны считаем один раз за рендер — они же входят в ключи кэша.
+  const range = monthRange();
+  const { days, group } = SERIES_RANGE[period];
+  const seriesMetric = SERIES_METRIC[activeMetric]; // null для retention
+  const now = new Date();
+  const seriesFrom = iso(new Date(now.getTime() - days * 86_400_000));
+  const seriesTo = iso(now);
 
-  // Серия графика: зависит от выбранной метрики и периода.
-  useEffect(() => {
-    const metric = SERIES_METRIC[activeMetric];
-    // retention ряда не имеет — график его не рисует (hasSeries), серию не трогаем.
-    if (metric === null) return;
-    let alive = true;
-    const { days, group } = SERIES_RANGE[period];
-    const from = new Date(Date.now() - days * 86_400_000);
-    (async () => {
-      try {
-        const pts = await analyticsApi.getSeries({ metric, group, date_from: iso(from), date_to: iso(new Date()) });
-        if (alive) setSeries(pts);
-      } catch {
-        if (alive) setSeries([]);
-      }
-    })();
-    return () => { alive = false; };
-  }, [activeMetric, period]);
+  // ── Серверные данные ──
+  const summary = useQuery({
+    queryKey: queryKeys.overviewSummary(range.date_from, range.date_to),
+    queryFn: () => analyticsApi.getSummary(range),
+  });
 
-  const metrics: MetricConfig[] = useMemo(() => {
-    const s = summary;
-    const cell: Record<MetricConfig['id'], { value: string; change: string }> = {
-      revenue:   { value: s ? formatMoney(s.revenue) : '—',        change: formatTrend(s?.trends.revenue_pct ?? null) },
-      clients:   { value: s ? String(s.active_clients) : '—',      change: formatTrend(s?.trends.active_clients_pct ?? null) },
-      bookings:  { value: s ? String(s.bookings) : '—',            change: formatTrend(s?.trends.bookings_pct ?? null) },
-      retention: { value: s ? `${Math.round(s.retention)}%` : '—', change: formatTrend(s?.trends.retention_pct ?? null) },
-    };
-    return METRIC_PRESENTERS.map(p => ({ ...p, ...cell[p.id] }));
-  }, [summary]);
+  const trainers = useQuery({
+    queryKey: queryKeys.overviewTrainers(range.date_from, range.date_to),
+    queryFn: () => analyticsApi.getTrainers(range),
+  });
+
+  const services = useQuery({
+    queryKey: queryKeys.overviewServices(range.date_from, range.date_to),
+    queryFn: () => analyticsApi.getServices(range),
+  });
+
+  const activity = useQuery({
+    queryKey: queryKeys.overviewActivity,
+    queryFn: () => analyticsApi.getActivityLog(13),
+    refetchInterval: 60_000, // лента «живая» — как сетка Журнала
+  });
+
+  const series = useQuery({
+    queryKey: queryKeys.overviewSeries(seriesMetric ?? 'none', group, seriesFrom, seriesTo),
+    queryFn: () => analyticsApi.getSeries({ metric: seriesMetric!, group, date_from: seriesFrom, date_to: seriesTo }),
+    enabled: seriesMetric !== null, // у retention ряда нет — запрос не шлём
+    placeholderData: keepPreviousData, // смена метрики/периода не гасит график
+  });
+
+  // ── Производные ──
+  const queries = [summary, trainers, services, activity];
+  const forbidden = queries.some(q => q.error instanceof ApiError && q.error.status === 403);
+  const loading = queries.some(q => q.isPending) && !forbidden;
+
+  const metrics: MetricConfig[] = useMemo(
+    () => buildMetrics(summary.data ?? null, currencySymbol),
+    [summary.data, currencySymbol],
+  );
 
   const activeConfig = metrics.find(m => m.id === activeMetric)!;
 
   return {
     loading, forbidden,
-    summary,
+    summary: summary.data ?? null,
     metrics, activeMetric, setActiveMetric, activeConfig,
-    period, setPeriod, series,
-    trainers, services, events,
-    tasks, setTasks,
+    period, setPeriod, series: series.data ?? [],
+    trainers: trainers.data ?? [], services: services.data ?? [],
+    events: activity.data ?? [],
+    currencySymbol,
+    // tasks/setTasks здесь БОЛЬШЕ НЕТ — вынесены в useOverviewTasks.ts (временная заглушка до D4)
   };
 }

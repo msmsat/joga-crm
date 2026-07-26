@@ -67,6 +67,9 @@ class StudioTask(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    assignee_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     text: Mapped[str] = mapped_column(String(500))
     priority: Mapped[str] = mapped_column(String(10), default="medium")
     tag: Mapped[str] = mapped_column(String(50), default="Клиент")
@@ -75,4 +78,5 @@ class StudioTask(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
     studio: Mapped["Studio"] = relationship()
-    author: Mapped[Optional["User"]] = relationship()
+    author: Mapped[Optional["User"]] = relationship(foreign_keys=[author_id])
+    assignee: Mapped[Optional["User"]] = relationship(foreign_keys=[assignee_id])

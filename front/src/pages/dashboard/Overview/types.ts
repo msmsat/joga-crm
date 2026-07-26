@@ -21,8 +21,8 @@ export interface MetricPresenter {
   route: string;
 }
 
-/** MetricPresenter + рассчитанные из summary value/change для карточки. */
+/** MetricPresenter + рассчитанные из summary value/тренд для карточки. */
 export interface MetricConfig extends MetricPresenter {
   value: string;
-  change: string;
+  changePct: number | null;
 }

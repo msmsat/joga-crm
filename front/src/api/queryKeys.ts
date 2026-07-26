@@ -21,6 +21,8 @@
 // Velora AI (эпик AI-1/AI-2): aiSessions, aiMessages(sessionId), aiSettings.
 // Настройками (роадмап SETTINGS): appearance, billingPlan, billingPlans,
 // billingInvoices(limit)/billingInvoicesAll, sessions, integrations, integration(type), workspaces.
+// Дашбордом (роадмап DASHBOARD, эпик D5): overviewSummary(from, to), overviewSeries(metric, group, from, to),
+// overviewTrainers(from, to), overviewServices(from, to), overviewActivity, overviewTasks(scope, assigneeId)/overviewTasksAll, overviewAssignees.
 // Правило инвалидации: мутация обязана перечислить ВСЕ ключи, где видна
 // изменённая сущность — напр. смена валюты трогает studioSettings (её читает
 // пол-приложения через useStudioCurrency), смена тарифа — billingPlan и billingInvoicesAll.
@@ -99,4 +101,15 @@ export const queryKeys = {
   integrations: ['settings', 'integrations'] as const,
   integration: (type: string) => ['settings', 'integrations', type] as const,
   workspaces: ['settings', 'workspaces'] as const,
+  // Дашборд («Обзор»). Ключи с датами — чтобы смена периода не била в один слот.
+  overviewSummary: (from: string, to: string) => ['overview', 'summary', from, to] as const,
+  overviewSeries: (metric: string, group: string, from: string, to: string) =>
+    ['overview', 'series', metric, group, from, to] as const,
+  overviewTrainers: (from: string, to: string) => ['overview', 'trainers', from, to] as const,
+  overviewServices: (from: string, to: string) => ['overview', 'services', from, to] as const,
+  overviewActivity: ['overview', 'activity'] as const,
+  overviewTasks: (scope: string, assigneeId: number | null) =>
+    ['overview', 'tasks', scope, assigneeId] as const, // используется в D4
+  overviewTasksAll: ['overview', 'tasks'] as const, // префикс инвалидации (D4)
+  overviewAssignees: ['overview', 'assignees'] as const, // используется в D4
 }
