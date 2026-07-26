@@ -85,6 +85,7 @@
     "unknown": "Что-то пошло не так",
     "loadFailed": "Не удалось загрузить",
     "retry": "Повторить",
+    "invalid_bot_token": "Telegram не принял этот токен — проверьте, что бот существует",
     "checkout": {
       "package_not_found": "Пакет не найден",
       "package_inactive": "Пакет снят с продажи",

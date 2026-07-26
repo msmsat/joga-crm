@@ -1,0 +1,40 @@
+/* Plain (non-module) global CSS — these keyframes/classes are referenced by
+   raw name from several files under this feature (Settings.tsx, DataTab.tsx,
+   WorkspaceSelector.tsx, BillingTab.tsx) via string classNames or inline
+   style={{ animation: "..." }}, so they must stay unscoped. A .module.css
+   file would hash both the @keyframes names AND any "animation: <ident>"
+   value that looks like a local reference, breaking every cross-file usage. */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drawerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.settings-content-anim {
+  animation: fadeSlideIn 0.3s ease forwards;
+}
+
+.spin-anim {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Анимации восстановленных вкладок «Рабочие часы» и «Команда»
+   (жили в удалённом Settings.module.css, используются инлайн-стилями) */
+@keyframes csPopupIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes csCheckPop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}

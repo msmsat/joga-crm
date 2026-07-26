@@ -23,12 +23,10 @@ ponytail: один воркер uvicorn = один таск, как в scenario_
 """
 import asyncio
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from zoneinfo import ZoneInfo
 
 from models import (
     Client, Lesson, NotificationEventToggle, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
@@ -176,11 +174,20 @@ async def _run_billing_check(db: AsyncSession, studio_id: int, today: date) -> N
         await notify(db, studio_id, "owner", "o6", {"days_left": days_left})
 
 
+def _studio_tz(value: str | None) -> timezone:
+    """Studio.timezone хранится как офсет-строка ('UTC+3', 'UTC-5', 'UTC+0'),
+    а не как IANA-ключ. Парсим в фиксированный офсет через stdlib — без ZoneInfo
+    и пакета tzdata (на Windows системной базы TZ нет)."""
+    if value and value.upper().startswith("UTC"):
+        try:
+            return timezone(timedelta(hours=int(value[3:] or 0)))
+        except ValueError:
+            pass
+    return timezone.utc
+
+
 async def _process_studio(db: AsyncSession, studio: Studio) -> None:
-    try:
-        tz = ZoneInfo(studio.timezone or "UTC")
-    except Exception:
-        tz = ZoneInfo("UTC")
+    tz = _studio_tz(studio.timezone)
     now_local = datetime.now(tz).replace(tzinfo=None)
     today = now_local.date()
 

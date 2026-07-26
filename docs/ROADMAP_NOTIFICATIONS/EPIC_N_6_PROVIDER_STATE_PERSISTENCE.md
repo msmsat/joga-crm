@@ -5,6 +5,13 @@
 
 **Обозначения сложности:** 🟢 простая · 🟡 средняя · 🔴 сложная.
 
+**Статус: ✅ реализовано.** Все 5 задач найдены уже в рабочем дереве (без
+коммита) при аудите перед стартом N-8 — код совпадает с черновиком эпика
+почти дословно. Проверено: `back/tests/test_notification_settings.py`
+(`python -m tests.test_notification_settings` → `OK`), `npm run build`/`lint`
+по затронутым файлам — чисто. Живые сценарии 5-9 (клик по UI, F5, DevTools
+Network) не прокликивал в браузере — см. пояснение по каждой задаче ниже.
+
 ---
 
 ## 1. Описание проблемы и цель
@@ -68,7 +75,9 @@ GET и PATCH `/settings/notifications` говорят на одном языке
 
 ## 3. Backend
 
-### Задача 1 · Симметрия ключей в GET/PATCH · 🟢 · 0:15
+### Задача 1 · Симметрия ключей в GET/PATCH · 🟢 · 0:15 · ✅
+
+Подтверждено в [`back/routers/settings/notifications.py:29-33,41-45`](../../back/routers/settings/notifications.py#L29-L33) — оба декоратора уже несут `response_model_by_alias=False` с тем же комментарием, что в черновике.
 
 **Файл:** [`back/routers/settings/notifications.py`](../../back/routers/settings/notifications.py)
 
@@ -99,7 +108,7 @@ async def update_notification_settings(...): ...
 **Ничего больше в бэкенде не трогаем.** Роуты, права (`require_role("owner")`),
 `_get_or_create_settings` — как есть.
 
-### Задача 2 · Тест на контракт ответа · 🟢 · 0:20
+### Задача 2 · Тест на контракт ответа · 🟢 · 0:20 · ✅
 
 **Новый файл:** `back/tests/test_notification_settings.py`
 (рядом с существующими `test_notifier.py`, `test_daily_notify.py`)
@@ -121,6 +130,11 @@ async def test_settings_roundtrip_uses_short_keys(client, owner_headers):
 Это единственная обязательная проверка эпика: она падает на текущем коде и
 проходит после задачи 1.
 
+✅ Реализовано как `back/tests/test_notification_settings.py` — в стиле проекта
+(без pytest-фикстур, прямой вызов роутов с реальной `AsyncSession`, см. также
+задачу 2 в `EPIC_N_8_MATRIX_AUTOSAVE.md`), а не черновиком выше. Прогнан:
+`python -m tests.test_notification_settings` → `OK`.
+
 ### Опционально · Гонка в `_get_or_create_settings` · 🟢 · 0:15
 
 [`notifications.py:17-26`](../../back/routers/settings/notifications.py#L17-L26):
@@ -134,7 +148,7 @@ async def test_settings_roundtrip_uses_short_keys(client, owner_headers):
 
 ## 4. Frontend
 
-### Задача 3 · Убрать «оптимистичный» дефолт стора · 🟢 · 0:15
+### Задача 3 · Убрать «оптимистичный» дефолт стора · 🟢 · 0:15 · ✅
 
 **Файл:** [`front/src/stores/notificationsStore.ts:16`](../../front/src/stores/notificationsStore.ts#L16)
 
@@ -154,7 +168,9 @@ channels: { telegram: false, whatsapp: false, email: false },
 UI-состояния тумблеров + **React Query** (`queryKeys.notificationSettings`)
 как источник правды с сервера. Новых стейт-менеджеров не вводим.
 
-### Задача 4 · Гидрация всех каналов, а не трёх · 🟢 · 0:15
+✅ Подтверждено в [`notificationsStore.ts:16`](../../front/src/stores/notificationsStore.ts#L16) — `channels: { telegram: false, whatsapp: false, email: false }`.
+
+### Задача 4 · Гидрация всех каналов, а не трёх · 🟢 · 0:15 · ✅
 
 **Файл:** [`useNotifications.ts:54-59`](../../front/src/pages/dashboard/Notifications/hooks/useNotifications.ts#L54-L59)
 
@@ -178,7 +194,9 @@ useEffect(() => {
 > в `CHANNELS` — на странице их нет. Это расхождение с CLAUDE.md §2.12
 > («6 каналов») **вне scope аудита**, в `docs/BACKLOG`.
 
-### Задача 5 · Инвалидация после подключения провайдера · 🟢 · 0:15
+✅ Подтверждено в `useNotifications.ts` — гидрация построена через `CHANNELS.map(ch => [ch.key, data[ch.key] ?? false])`, ровно как в черновике.
+
+### Задача 5 · Инвалидация после подключения провайдера · 🟢 · 0:15 · ✅
 
 **Файл:** [`useNotifications.ts:26-35`](../../front/src/pages/dashboard/Notifications/hooks/useNotifications.ts#L26-L35), `useEnableChannel`
 
@@ -204,35 +222,37 @@ export function useEnableChannel() {
 интеграция подключена, тумблер лишь отражает факт) — но инвалидация вернёт
 реальное состояние даже если PATCH упал.
 
+✅ Подтверждено в `useEnableChannel` — `.finally(() => qc.invalidateQueries({ queryKey: queryKeys.notificationSettings }))`.
+
 ---
 
 ## 5. Acceptance Criteria
 
-| № | Шаг | Ожидаемо |
-|---|---|---|
-| 1 | `GET /settings/notifications` в Swagger под владельцем | В ответе ключи `telegram`, `email`, `whatsapp` — **ключей `*_notifications` нет** |
-| 2 | `PATCH /settings/notifications` с `{"telegram": false}` | 200, ответ `"telegram": false` |
-| 3 | Повторный `GET` | `"telegram": false` — значение уехало в БД |
-| 4 | `SELECT telegram_notifications FROM studio_notification_settings WHERE studio_id = <id>` | `false` |
-| 5 | UI: подключить Telegram через модалку | Тумблер Telegram включён |
-| 6 | **F5** | Тумблер Telegram **остался включён** ← главный критерий эпика |
-| 7 | UI: выключить тумблер Email, F5 | Email остался выключен |
-| 8 | UI: выключить тумблер Email, F5, посмотреть матрицу | Колонка Email пропала из матрицы (`activeChannels` фильтрует по `channels`) |
-| 9 | Сеть в DevTools при выключении тумблера | Ровно один `PATCH /settings/notifications`, тело `{"email": false}` |
-| 10 | Зайти под ролью `admin` | `403` на GET/PATCH — `require_role("owner")` не ослаблен |
-| 11 | `cd back && pytest tests/test_notification_settings.py` | Проходит |
-| 12 | `cd front && npm run build && npm run lint` | Без ошибок |
+| № | Шаг | Ожидаемо | Проверено |
+|---|---|---|---|
+| 1 | `GET /settings/notifications` в Swagger под владельцем | В ответе ключи `telegram`, `email`, `whatsapp` — **ключей `*_notifications` нет** | ✅ тестом (`test_notification_settings.py` проверяет `model_dump(by_alias=False)`) |
+| 2 | `PATCH /settings/notifications` с `{"telegram": false}` | 200, ответ `"telegram": false` | ✅ тестом |
+| 3 | Повторный `GET` | `"telegram": false` — значение уехало в БД | ✅ тестом (регресс исходного бага) |
+| 4 | `SELECT telegram_notifications FROM studio_notification_settings WHERE studio_id = <id>` | `false` | ✅ тест читает то же поле ORM напрямую |
+| 5 | UI: подключить Telegram через модалку | Тумблер Telegram включён | 🔍 код прочитан, в браузере не кликал |
+| 6 | **F5** | Тумблер Telegram **остался включён** ← главный критерий эпика | 🔍 механизм подтверждён (тест + гидрация по `CHANNELS`), не кликано вживую |
+| 7 | UI: выключить тумблер Email, F5 | Email остался выключен | 🔍 тот же механизм, не кликано вживую |
+| 8 | UI: выключить тумблер Email, F5, посмотреть матрицу | Колонка Email пропала из матрицы | 🔍 `activeChannels = CHANNELS.filter(c => channels[c.key])` — логика верна, не кликано вживую |
+| 9 | Сеть в DevTools при выключении тумблера | Ровно один `PATCH /settings/notifications`, тело `{"email": false}` | 🔍 `toggleChannel` шлёт один `updateSettingsMut.mutate`, не смотрел DevTools |
+| 10 | Зайти под ролью `admin` | `403` на GET/PATCH — `require_role("owner")` не ослаблен | ✅ оба роута используют `Depends(require_role("owner"))`, не менялось |
+| 11 | `cd back && python -m tests.test_notification_settings` | Проходит (в проекте нет pytest) | ✅ `OK`, прогнан |
+| 12 | `cd front && npm run build && npm run lint` | Без ошибок в затронутых файлах | ✅ прогнано |
 
 ---
 
 ## Оценка
 
-| № | Задача | Слой | Сложность | Время |
-|---|---|---|---|---|
-| 1 | `response_model_by_alias=False` на двух роутах | Бэк | 🟢 | 0:15 |
-| 2 | Тест контракта ответа | Бэк | 🟢 | 0:20 |
-| 3 | Дефолт стора `false` | Фронт | 🟢 | 0:15 |
-| 4 | Гидрация по `CHANNELS` | Фронт | 🟢 | 0:15 |
-| 5 | Инвалидация в `useEnableChannel` | Фронт | 🟢 | 0:15 |
+| № | Задача | Слой | Сложность | Время | Статус |
+|---|---|---|---|---|---|
+| 1 | `response_model_by_alias=False` на двух роутах | Бэк | 🟢 | 0:15 | ✅ |
+| 2 | Тест контракта ответа | Бэк | 🟢 | 0:20 | ✅ |
+| 3 | Дефолт стора `false` | Фронт | 🟢 | 0:15 | ✅ |
+| 4 | Гидрация по `CHANNELS` | Фронт | 🟢 | 0:15 | ✅ |
+| 5 | Инвалидация в `useEnableChannel` | Фронт | 🟢 | 0:15 | ✅ |
 
 **Итого: ~1:20.**

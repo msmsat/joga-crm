@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { ChartCard } from '../../shared/ChartCard';
+import { useScopeNote } from '../../../hooks/useScopeNote';
 import { fmtInt, fmtPct } from '../../../../../../lib/format';
 import type { ClientDynamics, Kpi } from '../../../types';
 
@@ -24,9 +25,10 @@ function DynamicsStat({ label, kpi, color }: { label: string; kpi: Kpi; color: s
 
 export function ClientDynamicsCard({ dynamics, onClick }: ClientDynamicsCardProps) {
   const { t } = useTranslation('reports');
+  const scopeNote = useScopeNote('clientBase');
 
   return (
-    <ChartCard title={t('overview.clientDynamics.title')} formulaKey="newClients">
+    <ChartCard title={t('overview.clientDynamics.title')} description={t('descriptions.overview.clientDynamics')} formulaKey="newClients" scopeNote={scopeNote}>
       <div onClick={onClick} style={{ display: 'flex', cursor: 'pointer' }}>
         <DynamicsStat label={t('overview.clientDynamics.new')} kpi={dynamics.new} color="#5BAB72" />
         <DynamicsStat label={t('overview.clientDynamics.returned')} kpi={dynamics.returned} color="#4A80C4" />

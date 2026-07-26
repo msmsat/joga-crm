@@ -24,21 +24,46 @@ export default function DrawerHeader({ showHistory, onHistoryToggle, onNewChat, 
         </>
       ) : (
         <>
-          <button className={styles.historyBtn} onClick={onHistoryToggle} title={t('history.title')}>
-            <svg
-              className={styles.historyBtnIcon}
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="1 4 1 10 7 10" />
-              <path d="M3.51 15a9 9 0 1 0 .49-4.27" />
-            </svg>
+          <button
+            onClick={onHistoryToggle}
+            className={`${styles.historyBtn} ${showHistory ? styles.historyBtnActive : ''}`}
+            title={showHistory ? 'Вернуться к чату' : 'История чатов'}
+          >
+            <div className={styles.historyBtnIcon}>
+              {showHistory ? (
+                /* Иконка стрелки "Назад" с мягким фильтром свечения */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+              ) : (
+                /* Футуристичная анимированная иконка Часов с орбитальными точками */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 7 12 12 15.5 14" />
+                  <path d="M12 3v-1" strokeWidth="2.5" />
+                  <path d="M12 22v-1" strokeWidth="2.5" />
+                </svg>
+              )}
+            </div>
           </button>
           <span className={styles.headerTitle}>Velora AI</span>
           <div className={styles.headerActions}>

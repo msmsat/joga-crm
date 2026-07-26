@@ -14,9 +14,9 @@
     "activeCount": "{{count}} active"
   },
   "matrix": {
-    "save": "Save",
     "saving": "Saving…",
-    "cancel": "Cancel",
+    "allSaved": "All changes saved",
+    "notSaved": "Not saved",
     "activateAll": "Activate all",
     "deactivateAll": "Clear all checkboxes",
     "activeCount": "Active triggers: {{count}} of {{total}}",
@@ -39,6 +39,7 @@
     "c8":  { "title": "Review request",          "desc": "After attending a class" },
     "c9":  { "title": "Refund",                  "desc": "On cancellation and refund processing" },
     "c11": { "title": "Class rescheduled",       "desc": "Time, room, or trainer changed" },
+    "c12": { "title": "Bonus credited",          "desc": "Points or bonus added to the client" },
     "t1":  { "title": "New booking with trainer", "desc": "A client booked a personal session" },
     "t2":  { "title": "Client cancelled booking", "desc": "Client cancelled less than 2h before" },
     "t3":  { "title": "Class reminder",           "desc": "1 hour before the start" },

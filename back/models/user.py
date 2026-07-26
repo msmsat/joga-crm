@@ -1,6 +1,6 @@
 from datetime import date
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, Date, ForeignKey
+from sqlalchemy import Integer, BigInteger, String, Float, Boolean, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -16,13 +16,12 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    tg_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
     photo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     salary: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     avg_rating: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-
-    role_id: Mapped[Optional[int]] = mapped_column(ForeignKey("roles.id", ondelete="SET NULL"), nullable=True, index=True)
 
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     verification_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
@@ -40,9 +39,7 @@ class User(Base):
     primary_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
     studio_memberships: Mapped[List["StudioMember"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    role_obj: Mapped[Optional["Role"]] = relationship(foreign_keys=[role_id])
     sessions: Mapped[List["UserSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    api_tokens: Mapped[List["ApiToken"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     payment_cards: Mapped[List["PaymentCard"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     billing_invoices: Mapped[List["BillingInvoice"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     staff_working_hours: Mapped[List["StaffWorkingHours"]] = relationship(back_populates="user", cascade="all, delete-orphan")

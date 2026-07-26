@@ -170,6 +170,16 @@ export function useFinanceMutations() {
     },
     onError,
   });
+  // Откат выплаты — те же ключи, что и выплата: операция-расход исчезает отовсюду.
+  const cancelSalary = useMutation({
+    mutationFn: ({ userId, periodStart, periodEnd }: { userId: number; periodStart: string; periodEnd: string }) =>
+      financesApi.cancelSalary(userId, { period_start: periodStart, period_end: periodEnd }),
+    onSuccess: (_data, { userId }) => {
+      invSalaries(); invOperations(); invAccounts(); invGoals();
+      qc.invalidateQueries({ queryKey: queryKeys.finSalaryHistory(userId) });
+    },
+    onError,
+  });
 
   // Контрагенты: имя видно в строке документа.
   const createCounterparty = useMutation({
@@ -230,6 +240,7 @@ export function useFinanceMutations() {
     updateAccount: (id: number, data: AccountUpdate) => updateAccount.mutateAsync({ id, data }),
     deleteAccount: (id: number) => deleteAccount.mutateAsync(id),
     paySalary: (userId: number, periodStart: string, periodEnd: string) => paySalary.mutateAsync({ userId, periodStart, periodEnd }),
+    cancelSalary: (userId: number, periodStart: string, periodEnd: string) => cancelSalary.mutateAsync({ userId, periodStart, periodEnd }),
     createCounterparty: (payload: CounterpartyCreate) => createCounterparty.mutateAsync(payload),
     updateCounterparty: (id: number, data: CounterpartyUpdate) => updateCounterparty.mutateAsync({ id, data }),
     deleteCounterparty: (id: number) => deleteCounterparty.mutateAsync(id),

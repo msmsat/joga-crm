@@ -1,12 +1,16 @@
-import { SparklesIcon } from './BillingIcons';
+import { useTranslation } from 'react-i18next';
+import { SparklesIcon, InfoIcon } from './BillingIcons';
+import { formatMoney } from '../../../../../lib/money';
 
 interface Props {
+  currency?: string;
   monthlyPrice: number;
   period: number;
   discount: number;
 }
 
-export default function SavingsIllustration({ monthlyPrice, period, discount }: Props) {
+export default function SavingsIllustration({ currency, monthlyPrice, period, discount }: Props) {
+  const { t } = useTranslation('billing');
   const total = monthlyPrice * period;
   const saved = Math.round(total * discount);
   const toPay = total - saved;
@@ -31,14 +35,14 @@ export default function SavingsIllustration({ monthlyPrice, period, discount }: 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
         <SparklesIcon />
         <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>
-          Ваша экономия при оплате вперёд
+          {t('savings.prepayTitle')}
         </span>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontSize: '13px', color: 'var(--muted)' }}>Без скидки</span>
+        <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('period.noDiscount')}</span>
         <span style={{ fontSize: '13px', color: 'var(--muted)', textDecoration: 'line-through' }}>
-          ₽{total.toLocaleString('ru-RU')}
+          {formatMoney(total, currency)}
         </span>
       </div>
 
@@ -55,10 +59,10 @@ export default function SavingsIllustration({ monthlyPrice, period, discount }: 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>
-            ₽{toPay.toLocaleString('ru-RU')}
+            {formatMoney(toPay, currency)}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--pistachio)', fontWeight: 600 }}>
-            За {period} {period === 1 ? 'месяц' : period < 5 ? 'месяца' : 'месяцев'}
+            {t('savings.forMonths', { count: period })}
           </div>
         </div>
         <div style={{
@@ -72,7 +76,7 @@ export default function SavingsIllustration({ monthlyPrice, period, discount }: 
             −{progress}%
           </div>
           <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
-            ₽{saved.toLocaleString('ru-RU')} экономия
+            {t('savings.amountLabel', { amount: formatMoney(saved, currency) })}
           </div>
         </div>
       </div>
@@ -84,10 +88,14 @@ export default function SavingsIllustration({ monthlyPrice, period, discount }: 
         fontSize: '12px',
         color: 'var(--muted)',
         lineHeight: '1.6',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '8px',
       }}>
-        💡 Это как <strong style={{ color: 'var(--onyx)' }}>
-          {Math.round(saved / 990)} месяца бесплатно
-        </strong> по сравнению с помесячной оплатой
+        <span style={{ flexShrink: 0, marginTop: '1px' }}><InfoIcon /></span>
+        <span>
+          <strong style={{ color: 'var(--onyx)' }}>{t('savings.freeMonths', { count: Math.round(saved / 990) })}</strong> {t('savings.comparedToMonthly')}
+        </span>
       </div>
     </div>
   );

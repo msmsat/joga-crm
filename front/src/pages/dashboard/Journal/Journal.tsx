@@ -23,16 +23,27 @@ import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
 
+// Журнал помнит выбранный день между перезагрузками
+const JOURNAL_DATE_KEY = 'journal:selectedDate';
+
   // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
   const { t } = useTranslation('journal');
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const today = new Date();
 
+  // Восстанавливаем последний открытый день (YYYY-MM-DD) — парсим по частям,
+  // чтобы new Date не сдвинул день из-за UTC. Битое значение → сегодня.
+  const initialDate = React.useMemo(() => {
+    const [y, m, d] = (localStorage.getItem(JOURNAL_DATE_KEY) ?? '').split('-').map(Number);
+    return (y && m && d) ? new Date(y, m - 1, d) : today;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 1. СНАЧАЛА ОБЪЯВЛЯЕМ ВСЕ СТЕЙТЫ (Чтобы TypeScript их видел)
-  const [calMonth, setCalMonth] = useState(today.getMonth());
-  const [calYear, setCalYear] = useState(today.getFullYear());
-  const [selectedDay, setSelectedDay] = useState(today.getDate());
+  const [calMonth, setCalMonth] = useState(initialDate.getMonth());
+  const [calYear, setCalYear] = useState(initialDate.getFullYear());
+  const [selectedDay, setSelectedDay] = useState(initialDate.getDate());
   const [activeTrainers, setActiveTrainers] = useState<number[]>([]);
   const [activeHalls, setActiveHalls] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
@@ -113,6 +124,11 @@ export default function Journal() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [canEdit, handleUndo, handleRedo]);
 
+  // Запоминаем выбранный день — при перезагрузке журнал откроется на нём же
+  useEffect(() => {
+    localStorage.setItem(JOURNAL_DATE_KEY, toDateStr(new Date(calYear, calMonth, selectedDay)));
+  }, [calYear, calMonth, selectedDay]);
+
   // При загрузке данных включаем все колонки/залы в фильтрах
   useEffect(() => { setActiveTrainers(trainers.map(t => t.id)); }, [trainers]);
   useEffect(() => { setActiveHalls(halls.map(h => h.name)); }, [halls]);
@@ -167,13 +183,17 @@ export default function Journal() {
       ? trainers.filter(t => activeTrainers.includes(t.id))
       : hallNames.filter(h => activeHalls.includes(h)));
   
-  const activeBookings = bookings;
+  // Живые занятия (без отменённых) — считаются в сводке дня и правой панели;
+  // сетка (Grid) рисует всё подряд через filteredBookings, отменённые остаются на месте.
+  const activeBookings = bookings.filter(b => b.status !== 'cancelled');
 
-  // ── Фильтрованные записи ──
-  const filteredBookings = activeBookings.filter(b => {
+  // ── Фильтрованные записи (для сетки — включают отменённые) ──
+  const filteredBookings = bookings.filter(b => {
     if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
     return activeHalls.includes(b.hall);
   });
+
+  const liveBookings = filteredBookings.filter(b => b.status !== 'cancelled');
 
   const closeNewForm = () => {
     setShowNewForm(false);
@@ -570,11 +590,11 @@ export default function Journal() {
     });
   };
 
-  // ── Статистика дня ──
-  const totalClasses = filteredBookings.length;
-  const totalClients = filteredBookings.reduce((s, b) => s + b.clients, 0);
-  const avgLoad = filteredBookings.length > 0
-    ? Math.round(filteredBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / filteredBookings.length * 100)
+  // ── Статистика дня (отменённые занятия не считаются) ──
+  const totalClasses = liveBookings.length;
+  const totalClients = liveBookings.reduce((s, b) => s + b.clients, 0);
+  const avgLoad = liveBookings.length > 0
+    ? Math.round(liveBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / liveBookings.length * 100)
     : 0;
 
   return (
@@ -685,7 +705,7 @@ export default function Journal() {
                 today={today}
                 activeHalls={activeHalls}
                 activeBookings={activeBookings}
-                filteredBookings={filteredBookings}
+                filteredBookings={liveBookings}
                 changeMonth={changeMonth}
                 setSelectedDay={setSelectedDay}
                 toggleHall={toggleHall}

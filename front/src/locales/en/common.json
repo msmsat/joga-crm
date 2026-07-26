@@ -85,6 +85,7 @@
     "unknown": "Something went wrong",
     "loadFailed": "Failed to load",
     "retry": "Retry",
+    "invalid_bot_token": "Telegram rejected this token — make sure the bot exists",
     "checkout": {
       "package_not_found": "Package not found",
       "package_inactive": "Package is no longer for sale",

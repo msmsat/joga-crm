@@ -5,6 +5,7 @@ import type { TFunction } from 'i18next';
 import { aiApi } from '../../../../api/ai/ai.api';
 import { ApiError } from '../../../../api/client';
 import { queryKeys } from '../../../../api/queryKeys';
+import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup';
 import { useToast } from '../../../../components/ui/Toast';
 import type { AISettings } from '../../../../api/ai/ai.types';
 import type { AgentConfig, AgentTone, AIUISettings, AIModel, AILanguage } from '../types';
@@ -110,7 +111,7 @@ export function useAIAgent() {
   const verifyTelegramMutation = useMutation({
     mutationFn: (token: string) => aiApi.verifyTelegramToken(token),
     onSuccess: ({ username }) => {
-      qc.invalidateQueries({ queryKey: queryKeys.aiSettings });
+      invalidateTelegramBotGroup(qc);
       toast.success(t('telegram.verifiedToast', { username }));
     },
     onError: () => toast.error(t('telegram.verifyFailedToast')),
@@ -119,7 +120,7 @@ export function useAIAgent() {
   const disconnectTelegramMutation = useMutation({
     mutationFn: () => aiApi.disconnectTelegram(),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.aiSettings });
+      invalidateTelegramBotGroup(qc);
       toast.success(t('telegram.disconnectedToast'));
     },
     onError: (err) => toast.error(aiErrorText(err, t)),

@@ -18,6 +18,7 @@ def _me_payload(user: User, token: str) -> dict:
         "name": user.name,
         "last_name": user.last_name,
         "phone": user.phone,
+        "tg_id": user.tg_id,
         "is_onboarded": user.is_onboarded,
         "studio_id": payload.get("studio_id"),
         "role": payload.get("role"),

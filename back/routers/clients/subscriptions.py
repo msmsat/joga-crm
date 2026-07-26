@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.clients.subscriptions import (
     ClientSubscriptionRead, ClientWallet, SubscriptionSaleCreate, SubscriptionTransferRequest,
 )
+from services.notifier import notify_payment
 from services.pricing import resolve_price
 
 router = APIRouter()
@@ -188,6 +189,9 @@ async def sell_subscription(
 
     await db.commit()
     await db.refresh(sub)
+
+    # Успешная оплата абонемента (c4/a4); цена 0 (погашен депозитом/сертификатом) — скип.
+    await notify_payment(db, ctx.studio_id, client_id, resolved.final_price)
     return _to_read(sub)
 
 

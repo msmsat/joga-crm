@@ -29,6 +29,7 @@ export default function Billing() {
 
       {h.activeTab === 'plans' && (
         <PlansTab
+          currency={h.currency}
           billingMode={h.billingMode}        setBillingMode={h.setBillingMode}
           selectedPlan={h.selectedPlan}      setSelectedPlan={h.setSelectedPlan}
           selectedPeriod={h.selectedPeriod}  setSelectedPeriod={h.setSelectedPeriod}
@@ -48,12 +49,13 @@ export default function Billing() {
         />
       )}
 
-      {h.activeTab === 'invoices' && <InvoicesTab />}
+      {h.activeTab === 'invoices' && <InvoicesTab currency={h.currency} />}
 
       {h.activeTab === 'method' && <PaymentMethodTab />}
 
       {h.showUpgradeModal && (
         <UpgradeModal
+          currency={h.currency}
           selectedPlan={h.selectedPlan}
           selectedPeriod={h.selectedPeriod}
           periodDiscounts={h.periodDiscounts}

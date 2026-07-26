@@ -204,6 +204,12 @@ class TrainerLoadPoint(BaseSchema):
     fill_pct: float
 
 
+class TrainerHourLoadPoint(BaseSchema):
+    hour: int
+    lessons: int
+    fill_pct: float
+
+
 class TrainerTopLesson(BaseSchema):
     name: str
     held: int
@@ -214,6 +220,7 @@ class TrainerTopLesson(BaseSchema):
 class TrainerDetailRead(BaseSchema):
     revenue_series: list[SeriesPoint]
     load_by_weekday: list[TrainerLoadPoint]
+    load_by_hour: list[TrainerHourLoadPoint]
     top_lessons: list[TrainerTopLesson]
     return_rate_pct: float
     returned_clients: int
@@ -294,6 +301,21 @@ class HallUtilRow(BaseSchema):
     evening_idle_pct: float
 
 
+class LossSliceRow(BaseSchema):
+    key: str
+    label: str
+    cancels: int
+    noshows: int
+    lost_spots: int
+    ref_id: Optional[int] = None
+
+
+class LossSlices(BaseSchema):
+    by_hour: list[LossSliceRow]
+    by_service: list[LossSliceRow]
+    by_trainer: list[LossSliceRow]
+
+
 class UtilizationRead(BaseSchema):
     kpi: UtilizationKpi
     heatmap: list[HeatmapCell]
@@ -301,6 +323,7 @@ class UtilizationRead(BaseSchema):
     top_filled: list[LessonSliceRow]
     chronic_low: list[ChronicLowRow]
     halls: list[HallUtilRow]
+    losses: LossSlices
     insights: list[Insight]
 
 
@@ -310,6 +333,8 @@ class SlotLessonRow(BaseSchema):
     name: str
     teacher_name: str
     hall: Optional[str] = None
+    hall_color: Optional[str] = None
+    price: int
     occupied: int
     total_spots: int
     status: str

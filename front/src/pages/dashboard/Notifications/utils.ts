@@ -41,6 +41,20 @@ export function mergeToggles(base: Toggles, server: EventToggle[]): Toggles {
   return result;
 }
 
+// Включённые тумблеры дефолтной матрицы → плоский список для первичного
+// сохранения на сервер (см. useNotifications: сид новой студии).
+export function flattenEnabledToggles(toggles: Toggles): EventToggle[] {
+  const result: EventToggle[] = [];
+  for (const evId of Object.keys(toggles)) {
+    const role = EVENT_ROLE[evId];
+    if (!role) continue;
+    for (const ch of Object.keys(toggles[evId]) as ChannelKey[]) {
+      if (toggles[evId][ch]) result.push({ role, event_id: evId, channel_key: ch, is_enabled: true });
+    }
+  }
+  return result;
+}
+
 // Тумблеры, отличающиеся от сохранённых, → плоский список EventToggle для PATCH.
 export function diffToggles(next: Toggles, prev: Toggles): EventToggle[] {
   const changes: EventToggle[] = [];

@@ -1,6 +1,7 @@
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Tooltip } from '../../../../../../components/ui/index';
+import { Card, Tooltip, EmptyState } from '../../../../../../components/ui/index';
+import { CardHeading } from '../../shared/CardHeading';
 import type { HeatmapCell } from '../../../types';
 
 export interface HeatmapProps {
@@ -20,8 +21,7 @@ const STEPS = [
   { max: Infinity, bg: '#F9A08B' },
 ];
 
-function stepColor(fillPct: number, lessons: number): string {
-  if (lessons === 0) return 'transparent';
+function stepColor(fillPct: number): string {
   const step = STEPS.find(s => fillPct <= s.max) ?? STEPS[STEPS.length - 1];
   return step.bg;
 }
@@ -46,62 +46,80 @@ export function Heatmap({ cells, onCellClick }: HeatmapProps) {
   }, [cells]);
 
   return (
-    <Card padding={24}>
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(52px, 1fr))`,
-          gap: '4px',
-          minWidth: '480px',
-        }}>
-          <div />
-          {WEEKDAYS_ISODOW.map((wd, i) => (
-            <div key={wd} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase' }}>
-              {weekdayLabels[i]}
+    <Card padding={24} id="reports-heatmap">
+      <CardHeading title={t('schedule.heatmap.title')} description={t('descriptions.schedule.heatmap')} formulaKey="heatmap" />
+      {cells.length === 0 ? (
+        <EmptyState size="sm" icon="calendar" title={t('empty.noLessons')} />
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <div style={{ minWidth: '480px' }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(52px, 1fr))`,
+              gap: '3px', marginBottom: '3px',
+            }}>
+              <div />
+              {WEEKDAYS_ISODOW.map((wd, i) => (
+                <div key={wd} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase' }}>
+                  {weekdayLabels[i]}
+                </div>
+              ))}
             </div>
-          ))}
 
-          {hours.map(hour => (
-            <Fragment key={hour}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', alignSelf: 'center', textAlign: 'right', paddingRight: '4px' }}>
-                {hour}:00
-              </div>
-              {WEEKDAYS_ISODOW.map(wd => {
-                const cell = byKey.get(`${wd}-${hour}`);
-                const fillPct = cell?.fill_pct ?? 0;
-                const lessons = cell?.lessons ?? 0;
-                const bg = stepColor(fillPct, lessons);
-                const tooltipLabel = lessons > 0
-                  ? t('schedule.heatmap.tooltip', { lessons, attendance: cell?.attendance ?? 0, pct: fillPct })
-                  : t('schedule.heatmap.empty');
-                return (
-                  <Tooltip key={`${wd}-${hour}`} label={tooltipLabel}>
-                    <button
-                      onClick={() => lessons > 0 && onCellClick(wd, hour)}
-                      disabled={lessons === 0}
-                      style={{
-                        width: '100%', aspectRatio: '1.4', borderRadius: '6px',
-                        border: lessons === 0 ? '1px dashed var(--border)' : 'none',
-                        background: bg, cursor: lessons > 0 ? 'pointer' : 'default',
-                        fontSize: '11px', fontWeight: 700,
-                        color: fillPct > 60 ? '#1A1A1A' : 'var(--text2)',
-                        fontFamily: 'var(--font)', padding: 0,
-                        transition: 'transform 0.15s ease',
-                      }}
-                      onMouseEnter={e => { if (lessons > 0) e.currentTarget.style.transform = 'scale(1.06)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}
-                    >
-                      {lessons > 0 ? `${Math.round(fillPct)}%` : ''}
-                    </button>
-                  </Tooltip>
-                );
-              })}
-            </Fragment>
-          ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+              {hours.map(hour => (
+                <div
+                  key={hour}
+                  id={`heatmap-row-${hour}`}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(52px, 1fr))`,
+                    gap: '3px', borderRadius: '6px',
+                  }}
+                >
+                  <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text3)', alignSelf: 'center', textAlign: 'right', paddingRight: '4px' }}>
+                    {`${hour}:00`}
+                  </div>
+                  {WEEKDAYS_ISODOW.map(wd => {
+                    const cell = byKey.get(`${wd}-${hour}`);
+                    const fillPct = cell?.fill_pct ?? 0;
+                    const lessons = cell?.lessons ?? 0;
+                    const bg = lessons === 0 ? 'rgba(26,26,26,0.035)' : stepColor(fillPct);
+                    const tooltipLabel = lessons > 0
+                      ? t('schedule.heatmap.tooltip', { lessons, attendance: cell?.attendance ?? 0, pct: fillPct })
+                      : t('schedule.heatmap.empty');
+                    return (
+                      <Tooltip key={`${wd}-${hour}`} label={tooltipLabel}>
+                        <button
+                          onClick={() => lessons > 0 && onCellClick(wd, hour)}
+                          disabled={lessons === 0}
+                          style={{
+                            width: '100%', height: '14px', borderRadius: '4px', border: 'none',
+                            background: bg, cursor: lessons > 0 ? 'pointer' : 'default',
+                            fontFamily: 'var(--font)', padding: 0,
+                            transition: 'filter 0.15s ease',
+                          }}
+                          onMouseEnter={e => {
+                            if (lessons === 0) return;
+                            e.currentTarget.style.filter = 'brightness(1.06)';
+                            e.currentTarget.style.outline = '1px solid rgba(249,160,139,0.6)';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.filter = 'none';
+                            e.currentTarget.style.outline = 'none';
+                          }}
+                        />
+                      </Tooltip>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '18px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)' }}>{t('schedule.heatmap.legend')}</span>
         {STEPS.slice(1).map((s, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

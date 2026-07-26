@@ -142,9 +142,27 @@ def test_update_far_lesson_ok_passes_time_check():
     assert db.committed is True
 
 
-# Кейс «PATCH только cancel_reason пропускает правило времени» (задача 1, п.4)
-# тестируется в задаче 2, когда поле cancel_reason появится в LessonUpdateRequest —
-# сам guard `set(fields.keys()) != {"cancel_reason"}` уже в коде update_lesson.
+# Кейс «PATCH только cancel_reason пропускает правило времени» (задача 1, п.4) —
+# см. test_update_cancelled_lesson_cancel_reason_only_ok ниже (эпик V4-7, задача 6).
+
+
+# ─── 2b. Отменённое занятие: править нельзя, кроме cancel_reason (эпик V4-7, задача 6) ──
+def test_update_cancelled_lesson_rejected():
+    lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
+    db = _DB([lesson])  # get_scoped_lesson; guard срабатывает раньше второго execute
+    body = LessonUpdateRequest(price=500)
+    _expect_400(L.update_lesson(1, body, _ctx(), db), "отменено")
+    assert db.committed is False
+
+
+def test_update_cancelled_lesson_cancel_reason_only_ok():
+    lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
+    db = _DB([lesson, 0])  # get_scoped_lesson, затем _booked_count
+    body = LessonUpdateRequest(cancel_reason="Клиент попросил перенос")
+    result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    assert lesson.cancel_reason == "Клиент попросил перенос"
+    assert db.committed is True
+    assert result.status == "cancelled"
 
 
 # ─── 3. Отмена занятия, начинающегося раньше чем через 2 часа ───────────────
@@ -170,6 +188,8 @@ if __name__ == "__main__":
     test_update_lesson_starting_soon_rejected()
     test_update_new_start_time_within_2h_rejected()
     test_update_far_lesson_ok_passes_time_check()
+    test_update_cancelled_lesson_rejected()
+    test_update_cancelled_lesson_cancel_reason_only_ok()
     test_cancel_lesson_starting_soon_rejected()
     test_cancel_far_lesson_ok_passes_time_check()
     print("ALL PASS — правила времени V4-6 задача 1 зелёные")

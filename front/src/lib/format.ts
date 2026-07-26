@@ -24,3 +24,21 @@ export function fmtBucket(iso: string, group: 'hour' | 'day' | 'week'): string {
   const [, m, d] = iso.slice(0, 10).split('-');
   return `${d}.${m}`;
 }
+
+/** Диапазон дат для заголовка drilldown-модалки: "01.07 — 25.07". */
+export function fmtDateRange(from: string, to: string): string {
+  return `${fmtBucket(from, 'day')} — ${fmtBucket(to, 'day')}`;
+}
+
+/** Дата последнего визита человеческим текстом: "сегодня" / "3 дня назад" / "21.07"
+ * (после недели — просто число, чтобы не считать в уме "12 дней назад"). */
+export function fmtRelativeDate(iso: string): string {
+  const date = new Date(`${iso.slice(0, 10)}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Math.round((today.getTime() - date.getTime()) / 86_400_000);
+  if (days === 0) return i18n.t('reports:clients.relative.today');
+  if (days > 0 && days <= 6) return i18n.t('reports:clients.relative.daysAgo', { count: days });
+  const [, m, d] = iso.slice(0, 10).split('-');
+  return `${d}.${m}`;
+}

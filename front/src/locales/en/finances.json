@@ -131,6 +131,7 @@
     "pending": "Pending",
     "paying": "…",
     "payAction": "Pay",
+    "cancelAction": "Cancel salary",
     "perMonth": "/mo",
     "accrualTitle": "Accrual for period",
     "rate": "Rate",
@@ -149,6 +150,7 @@
       "loadFailed": "Failed to load payroll",
       "paid": "Salary paid: {{name}}",
       "payFailed": "Failed to pay salary",
+      "canceled": "Salary canceled: {{name}}",
       "historyLoadFailed": "Failed to load payment history"
     }
   },

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
 import Toggle from "../ui/form/Toggle";
-import InputRow from "../ui/form/InputRow";
 import SecurityIllustration from "../illustrations/SecurityIllustration";
 import type { Session, ApiToken } from "../../types";
+import { Input, useToast } from "../../../../../components/ui/index";
+import type { TFunction } from "i18next";
 
 interface SecurityTabProps {
   secExpanded: "sessions" | "token" | "export" | null;
@@ -21,20 +23,19 @@ interface SecurityTabProps {
   generateToken: () => void;
   twoFa: boolean;
   setTwoFa: (v: boolean) => void;
-  triggerToast: (msg: string) => void;
 }
 
-function fmtLastActive(iso: string): string {
+function fmtLastActive(iso: string, t: TFunction): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
-  if (diff < 1)  return 'Сейчас активна';
-  if (diff < 60) return `${diff} мин. назад`;
+  if (diff < 1)  return t('settings:security.sessions.justNow');
+  if (diff < 60) return t('settings:security.sessions.minutesAgo', { count: diff });
   const h = Math.floor(diff / 60);
-  if (h < 24)   return `${h} ч назад`;
-  return `${Math.floor(h / 24)} дн. назад`;
+  if (h < 24)   return t('settings:security.sessions.hoursAgo', { count: h });
+  return t('settings:security.sessions.daysAgo', { count: Math.floor(h / 24) });
 }
 
-function fmtLoc(city: string | null, country: string | null): string {
-  return [city, country].filter(Boolean).join(', ') || 'Неизвестно';
+function fmtLoc(city: string | null, country: string | null, t: TFunction): string {
+  return [city, country].filter(Boolean).join(', ') || t('settings:security.sessions.unknownLocation');
 }
 
 function fmtCreated(iso: string): string {
@@ -46,9 +47,11 @@ export default function SecurityTab({
   secExpanded, setSecExpanded, setSecModal,
   activeSessions, apiTokens, newTokenName, setNewTokenName,
   terminateSession, revokeToken, generateToken,
-  twoFa, setTwoFa, triggerToast,
+  twoFa, setTwoFa,
 }: SecurityTabProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('settings');
+  const toast = useToast();
   const [exportChecked, setExportChecked] = useState({ clients: true, finances: true, media: true });
 
   const secIcons = {
@@ -61,25 +64,25 @@ export default function SecurityTab({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.shield} title="Безопасность аккаунта" subtitle="Защитите доступ к вашему рабочему пространству" accent />
+        <SectionHeader icon={icons.shield} title={t('security.account.title')} subtitle={t('security.account.subtitle')} accent />
         <SecurityIllustration />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Двухфакторная аутентификация</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>SMS или приложение-аутентификатор</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.twoFa.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.twoFa.sub')}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <StatusBadge type={twoFa ? "active" : "warning"}>{twoFa ? "Активна" : "Отключена"}</StatusBadge>
+              <StatusBadge type={twoFa ? "active" : "warning"}>{twoFa ? t('security.twoFa.active') : t('security.twoFa.disabled')}</StatusBadge>
               <Toggle checked={twoFa} onChange={() => setTwoFa(!twoFa)} />
             </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Пароль администратора</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Последнее изменение: 3 месяца назад</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.password.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.password.sub')}</div>
             </div>
             <button
               onClick={() => navigate("/change-password")}
@@ -87,23 +90,23 @@ export default function SecurityTab({
               onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; }}
             >
-              {secIcons.key} Сменить пароль
+              {secIcons.key} {t('security.password.change')}
             </button>
           </div>
 
           <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
-                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Активные сессии</div>
-                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Где сейчас выполнен вход в аккаунт</div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.sessions.title')}</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.sessions.sub')}</div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <StatusBadge type="info">{activeSessions.length} устройства</StatusBadge>
+                <StatusBadge type="info">{t('security.sessions.count', { count: activeSessions.length })}</StatusBadge>
                 <button
                   onClick={() => setSecExpanded(secExpanded === "sessions" ? null : "sessions")}
                   style={{ padding: "8px 14px", borderRadius: "8px", background: secExpanded === "sessions" ? "var(--peach)" : "rgba(26,26,26,0.05)", border: "none", color: secExpanded === "sessions" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
                 >
-                  {secExpanded === "sessions" ? "Скрыть" : "Управление"}
+                  {secExpanded === "sessions" ? t('security.sessions.hide') : t('security.sessions.manage')}
                 </button>
               </div>
             </div>
@@ -118,9 +121,9 @@ export default function SecurityTab({
                           <div style={{ color: session.is_current ? "#5A9A65" : "var(--muted)" }}>{session.icon === "laptop" ? secIcons.laptop : secIcons.phone}</div>
                           <div>
                             <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)", display: "flex", alignItems: "center", gap: "6px" }}>
-                              {session.device} {session.is_current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>Текущая</span>}
+                              {session.device} {session.is_current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>{t('security.sessions.current')}</span>}
                             </div>
-                            <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{session.browser} · {fmtLoc(session.location_city, session.location_country)} · {fmtLastActive(session.last_active)}</div>
+                            <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>{session.browser} · {fmtLoc(session.location_city, session.location_country, t)} · {fmtLastActive(session.last_active, t)}</div>
                           </div>
                         </div>
                         {!session.is_current && (
@@ -129,7 +132,7 @@ export default function SecurityTab({
                             style={{ padding: "6px 12px", borderRadius: "6px", background: "rgba(216,140,154,0.1)", color: "#C0607A", border: "none", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
                             onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
                           >
-                            Завершить
+                            {t('security.sessions.terminate')}
                           </button>
                         )}
                       </div>
@@ -143,7 +146,7 @@ export default function SecurityTab({
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.link} title="API токены" subtitle="Ключи для интеграции внешних сервисов" />
+        <SectionHeader icon={icons.link} title={t('security.tokens.title')} subtitle={t('security.tokens.sub')} />
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
           {apiTokens.map((token) => (
             <div key={token.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderRadius: "10px", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)" }}>
@@ -157,7 +160,7 @@ export default function SecurityTab({
                 style={{ display: "flex", alignItems: "center", gap: "4px", color: "#C0607A", background: "rgba(216,140,154,0.1)", border: "none", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
                 onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
               >
-                {icons.trash} Отозвать
+                {icons.trash} {t('security.tokens.revoke')}
               </button>
             </div>
           ))}
@@ -170,19 +173,19 @@ export default function SecurityTab({
               style={{ display: "flex", alignItems: "center", gap: "7px", padding: "10px 16px", borderRadius: "10px", background: "rgba(252,174,145,0.1)", border: "1px dashed rgba(252,174,145,0.4)", color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}
               onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.15)"; e.currentTarget.style.borderStyle = "solid"; }} onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderStyle = "dashed"; }}
             >
-              {icons.plus} Создать новый токен
+              {icons.plus} {t('security.tokens.createNew')}
             </button>
           ) : (
             <div style={{ padding: "16px", border: "1px solid var(--peach)", borderRadius: "12px", display: "flex", alignItems: "flex-end", gap: "12px" }}>
               <div style={{ flex: 1 }}>
-                <InputRow label="Название интеграции" placeholder="Например: AmoCRM Синхронизация" value={newTokenName} onChange={setNewTokenName} />
+                <Input label={t('security.tokens.name')} placeholder={t('security.tokens.namePh')} value={newTokenName} onChange={setNewTokenName} />
               </div>
-              <button onClick={() => setSecExpanded(null)} className="topbar-ghost" style={{ padding: "10px 16px", fontSize: "12px" }}>Отмена</button>
+              <button onClick={() => setSecExpanded(null)} className="topbar-ghost" style={{ padding: "10px 16px", fontSize: "12px" }}>{t('common:buttons.cancel')}</button>
               <button
                 onClick={generateToken}
                 style={{ padding: "10px 20px", borderRadius: "10px", background: "var(--peach)", border: "none", color: "#FFF", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.3)" }}
               >
-                Сгенерировать ключ
+                {t('security.tokens.generate')}
               </button>
             </div>
           )}
@@ -193,21 +196,21 @@ export default function SecurityTab({
         <div style={{ position: "absolute", top: 0, left: 0, width: "4px", height: "100%", background: "#D88C9A" }} />
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
           <span style={{ color: "#C0607A" }}>{icons.alertTriangle}</span>
-          <div style={{ fontSize: "15px", fontWeight: 800, color: "#C0607A" }}>Управление данными (Опасная зона)</div>
+          <div style={{ fontSize: "15px", fontWeight: 800, color: "#C0607A" }}>{t('security.danger.title')}</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
-                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Экспорт всех данных</div>
-                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Скачать архив с клиентской базой и историей</div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.danger.export.title')}</div>
+                <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.danger.export.sub')}</div>
               </div>
               <button
                 onClick={() => setSecExpanded(secExpanded === "export" ? null : "export")}
                 style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: secExpanded === "export" ? "var(--peach)" : "#FFFFFF", border: "1px solid", borderColor: secExpanded === "export" ? "var(--peach)" : "rgba(26,26,26,0.1)", color: secExpanded === "export" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
               >
-                {secExpanded === "export" ? "Скрыть" : <>{secIcons.archive} Подготовить архив</>}
+                {secExpanded === "export" ? t('security.danger.export.hide') : <>{secIcons.archive} {t('security.danger.export.prepare')}</>}
               </button>
             </div>
             <div style={{ display: "grid", gridTemplateRows: secExpanded === "export" ? "1fr" : "0fr", transition: "grid-template-rows 0.3s" }}>
@@ -216,9 +219,9 @@ export default function SecurityTab({
                   <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
                   <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
                     {([
-                      ["clients", "База клиентов (CSV)"],
-                      ["finances", "Финансовые транзакции"],
-                      ["media", "Медиа и фото"],
+                      ["clients", t('security.danger.export.clients')],
+                      ["finances", t('security.danger.export.finances')],
+                      ["media", t('security.danger.export.media')],
                     ] as [keyof typeof exportChecked, string][]).map(([key, label]) => (
                       <label
                         key={key}
@@ -244,12 +247,12 @@ export default function SecurityTab({
                     ))}
                   </div>
                   <button
-                    onClick={() => { triggerToast("Формирование ZIP архива началось. Мы пришлём ссылку на Email."); setSecExpanded(null); }}
+                    onClick={() => { toast.success(t('security.danger.export.started')); setSecExpanded(null); }}
                     style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "var(--peach)", color: "#FFF", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 14px rgba(252,174,145,0.35)" }}
                     onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.06)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.filter = "none"; e.currentTarget.style.transform = "none"; }}
                   >
-                    Начать выгрузку
+                    {t('security.danger.export.start')}
                   </button>
                 </div>
               </div>
@@ -258,29 +261,29 @@ export default function SecurityTab({
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "#C0607A" }}>Очистить базу данных</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Удаляет всех клиентов и записи. Настройки сохранятся.</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "#C0607A" }}>{t('security.danger.wipe.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.danger.wipe.sub')}</div>
             </div>
             <button
               onClick={() => setSecModal("deleteData")}
               style={{ padding: "8px 14px", borderRadius: "8px", background: "rgba(216,140,154,0.1)", border: "none", color: "#C0607A", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
               onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
             >
-              Стереть данные
+              {t('security.danger.wipe.action')}
             </button>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(216,140,154,0.05)", border: "1px solid rgba(216,140,154,0.2)" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 800, color: "#C0607A" }}>Удалить аккаунт компании</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Полное и безвозвратное уничтожение бизнеса в системе</div>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#C0607A" }}>{t('security.danger.deleteAccount.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.danger.deleteAccount.sub')}</div>
             </div>
             <button
               onClick={() => setSecModal("deleteAccount")}
               style={{ padding: "8px 14px", borderRadius: "8px", background: "#D88C9A", border: "none", color: "#FFF", fontSize: "11.5px", fontWeight: 800, cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s", boxShadow: "0 4px 12px rgba(216,140,154,0.4)" }}
               onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"} onMouseLeave={e => e.currentTarget.style.transform = "none"}
             >
-              Удалить навсегда
+              {t('security.danger.deleteAccount.action')}
             </button>
           </div>
         </div>

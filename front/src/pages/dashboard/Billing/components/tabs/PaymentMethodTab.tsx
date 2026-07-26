@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
 import { billingApi } from '../../../../../api/billing/billing.api';
 import type { PaymentCard } from '../../../../../api/billing/billing.types';
+import { CheckIcon } from '../ui/BillingIcons';
+
+const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
+const AUTOPAY_SETTINGS = [
+  { key: 'autoRenew',   active: true  },
+  { key: 'emailNotify', active: true  },
+  { key: 'remind3d',    active: true  },
+  { key: 'sms',         active: false },
+] as const;
 
 export default function PaymentMethodTab() {
+  const { t } = useTranslation('billing');
   const [cards, setCards] = useState<PaymentCard[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [renewState, setRenewState] = useState<'idle' | 'busy' | 'done'>('idle');
@@ -46,9 +57,9 @@ export default function PaymentMethodTab() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
               <div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px', fontWeight: 800 }}>ОСНОВНАЯ КАРТА</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px', fontWeight: 800 }}>{t('method.primaryCard')}</div>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginTop: '2px' }}>
-                  {card ? card.card_brand : 'Не привязана'}
+                  {card ? card.card_brand : t('method.notLinked')}
                 </div>
               </div>
               <div style={{ width: '36px', height: '26px', borderRadius: '6px', background: 'linear-gradient(135deg, #e6c587 0%, #ba9958 100%)', position: 'relative', display: 'flex', padding: '6px', boxSizing: 'border-box', opacity: 0.85, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
@@ -62,13 +73,13 @@ export default function PaymentMethodTab() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 2 }}>
               <div style={{ color: 'white', maxWidth: '180px', overflow: 'hidden' }}>
-                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>ДЕРЖАТЕЛЬ</div>
+                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>{t('method.holder')}</div>
                 <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', marginTop: '3px', letterSpacing: '0.5px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                  {card?.cardholder_name || '—'}
+                  {card?.cardholder_name || t('empty.noData')}
                 </div>
               </div>
               <div style={{ color: 'white', textAlign: 'right' }}>
-                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>СРОК</div>
+                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>{t('method.expiry')}</div>
                 <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '3px', fontFamily: 'monospace' }}>
                   {card?.card_expiry || 'MM/YY'}
                 </div>
@@ -81,12 +92,12 @@ export default function PaymentMethodTab() {
             <div style={{ padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pistachio)" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>Стандарты защиты данных</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.securityTitle')}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px' }}>
-                {['Шифрование по протоколу PCI DSS Level 1', 'Защита транзакций через 3D Secure', 'Данные карт не оседают на серверах', 'Карта привязывается при первой оплате'].map((text, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: 'var(--muted)' }}>
-                    <span style={{ color: 'var(--pistachio)', fontWeight: 'bold' }}>✓</span> {text}
+                {SECURITY_KEYS.map(key => (
+                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: 'var(--muted)' }}>
+                    <CheckIcon size={14} /> {t(`method.security.${key}`)}
                   </div>
                 ))}
               </div>
@@ -94,8 +105,7 @@ export default function PaymentMethodTab() {
 
             {loaded && !card && (
               <div style={{ padding: '16px 20px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', fontSize: '12.5px', color: 'var(--muted)', lineHeight: 1.5 }}>
-                Карта появится автоматически после первой оплаты через вкладку «Тарифы».
-                Отдельно вводить реквизиты не нужно — оплата проходит на защищённой странице Fondy.
+                {t('empty.noCard')} {t('method.noCardDetail')}
               </div>
             )}
 
@@ -105,9 +115,9 @@ export default function PaymentMethodTab() {
                 disabled={renewState !== 'idle'}
                 style={{ width: '100%', padding: '16px', borderRadius: '14px', background: renewState === 'done' ? 'var(--pistachio)' : 'var(--peach)', color: 'white', border: 'none', fontSize: '13.5px', fontWeight: 700, cursor: renewState === 'idle' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(252,174,145,0.3)', opacity: renewState === 'busy' ? 0.7 : 1, transition: 'all 0.2s ease' }}
               >
-                {renewState === 'done' ? 'Счёт создан — платёж обрабатывается'
-                  : renewState === 'busy' ? 'Создаём счёт…'
-                  : `Продлить сейчас по карте •••• ${card.card_last4}`}
+                {renewState === 'done' ? t('method.renewDone')
+                  : renewState === 'busy' ? t('method.renewBusy')
+                  : t('method.renewNow', { last4: card.card_last4 })}
               </button>
             )}
           </div>
@@ -117,19 +127,14 @@ export default function PaymentMethodTab() {
         <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M11 2L3 11H10L9 18L17 9H10L11 2Z" fill="var(--peach)" fillOpacity="0.2" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>Настройки автоплатежа</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.autopayTitle')}</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {[
-              { label: 'Автоматическое продление', desc: 'Списание происходит без подтверждения',    active: true  },
-              { label: 'Email-уведомления',         desc: 'Чек на почту после каждого платежа',      active: true  },
-              { label: 'Уведомить за 3 дня',        desc: 'Напомним перед автоматическим списанием', active: true  },
-              { label: 'SMS-оповещение',             desc: 'Сообщение на номер при списании',         active: false },
-            ].map((setting, i) => (
-              <div key={i} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {AUTOPAY_SETTINGS.map(setting => (
+              <div key={setting.key} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', marginBottom: '2px' }}>{setting.label}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{setting.desc}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', marginBottom: '2px' }}>{t(`method.autopay.${setting.key}.label`)}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{t(`method.autopay.${setting.key}.desc`)}</div>
                 </div>
                 <div style={{ width: '38px', height: '22px', borderRadius: '11px', background: setting.active ? 'var(--peach)' : 'var(--border)', position: 'relative', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease', boxShadow: setting.active ? '0 2px 10px rgba(252,174,145,0.3)' : 'none' }}>
                   <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: setting.active ? '19px' : '3px', transition: 'left 0.2s ease', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }} />

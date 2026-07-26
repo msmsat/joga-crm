@@ -1,25 +1,35 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, EmptyState } from '../../../../../../components/ui/index';
+import { Card, EmptyState, Tooltip } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtInt, fmtPct } from '../../../../../../lib/format';
 import { ProgressBar } from '../../ProgressBar';
+import { CardHeading } from '../../shared/CardHeading';
+import { useScopeNote } from '../../../hooks/useScopeNote';
 import type { TrainerRow } from '../../../types';
 
-type SortKey = 'name' | 'lessons' | 'fill_pct' | 'attendance' | 'revenue' | 'return_rate_pct' | 'cancels';
+export type SortKey = 'name' | 'lessons' | 'fill_pct' | 'attendance' | 'revenue' | 'return_rate_pct' | 'cancels';
+
+export const TRAINERS_TABLE_ID = 'reports-trainers-table';
 
 export interface TrainersTableProps {
   trainers: TrainerRow[];
   onRowClick: (row: TrainerRow) => void;
+  /** Внешний сигнал от клика по KPI (задача 4 EPIC R15) — клик по th работает как раньше.
+   * sortNonce меняется на каждый клик (даже по тому же key), иначе повторный клик
+   * по той же KPI не отличить от отсутствия клика — React не перерендерит на
+   * одинаковое значение sortBy. */
+  sortBy?: SortKey;
+  sortNonce?: number;
 }
 
-const COLUMNS: { key: SortKey; labelKey: string; align?: 'right' }[] = [
+const COLUMNS: { key: SortKey; labelKey: string; hintKey?: string; align?: 'right' }[] = [
   { key: 'name', labelKey: 'team.table.trainer' },
   { key: 'lessons', labelKey: 'team.table.lessons', align: 'right' },
-  { key: 'fill_pct', labelKey: 'team.table.fillPct', align: 'right' },
+  { key: 'fill_pct', labelKey: 'team.table.fillPct', hintKey: 'team.table.fillPctHint', align: 'right' },
   { key: 'attendance', labelKey: 'team.table.attendance', align: 'right' },
   { key: 'revenue', labelKey: 'team.table.revenue', align: 'right' },
-  { key: 'return_rate_pct', labelKey: 'team.table.returnRate', align: 'right' },
-  { key: 'cancels', labelKey: 'team.table.cancels', align: 'right' },
+  { key: 'return_rate_pct', labelKey: 'team.table.returnRate', hintKey: 'team.table.returnRateHint', align: 'right' },
+  { key: 'cancels', labelKey: 'team.table.cancels', hintKey: 'team.table.cancelsHint', align: 'right' },
 ];
 
 function sortValue(key: SortKey, r: TrainerRow): number | string {
@@ -33,11 +43,28 @@ const StarIcon = () => (
   </svg>
 );
 
-export function TrainersTable({ trainers, onRowClick }: TrainersTableProps) {
+export function TrainersTable({ trainers, onRowClick, sortBy, sortNonce }: TrainersTableProps) {
   const { t } = useTranslation('reports');
+  // В таблице есть колонка «Выручка» — фильтры «Филиал» и «Зал» к ней неприменимы.
+  const moneyScopeNote = useScopeNote('money');
   // Дефолт — по возвращаемости (принцип «не только выручка» из ТЗ).
   const [sortKey, setSortKey] = useState<SortKey>('return_rate_pct');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [appliedNonce, setAppliedNonce] = useState(sortNonce);
+
+  // useState остаётся источником истины (клики по заголовкам не должны спорить
+  // с пропом) — правим состояние во время рендера при новом sortNonce, не в
+  // useEffect (React не советует синхронный setState в эффекте). Тот же key
+  // второй раз подряд переключает направление — как обычный повторный клик по th.
+  if (sortBy !== undefined && sortNonce !== appliedNonce) {
+    setAppliedNonce(sortNonce);
+    if (sortBy === sortKey) {
+      setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(sortBy);
+      setSortDir('desc');
+    }
+  }
 
   const sorted = useMemo(() => {
     const copy = [...trainers];
@@ -60,7 +87,14 @@ export function TrainersTable({ trainers, onRowClick }: TrainersTableProps) {
   };
 
   return (
-    <Card padding={0} style={{ overflow: 'hidden' }}>
+    <Card id={TRAINERS_TABLE_ID} padding={0} style={{ overflow: 'hidden' }}>
+      <CardHeading
+        title={t('team.table.title')}
+        description={t('descriptions.team.trainers')}
+        formulaKey="teamScope"
+        scopeNote={moneyScopeNote}
+        style={{ padding: '16px 16px 0' }}
+      />
       {trainers.length === 0 ? (
         <EmptyState size="sm" icon="clients" title={t('empty.noRows')} />
       ) : (
@@ -78,7 +112,11 @@ export function TrainersTable({ trainers, onRowClick }: TrainersTableProps) {
                     userSelect: 'none', whiteSpace: 'nowrap',
                   }}
                 >
-                  {t(col.labelKey)}
+                  {col.hintKey ? (
+                    <Tooltip label={t(col.hintKey)} side="top">
+                      <span>{t(col.labelKey)}</span>
+                    </Tooltip>
+                  ) : t(col.labelKey)}
                   {sortKey === col.key && (sortDir === 'asc' ? ' ↑' : ' ↓')}
                 </th>
               ))}
@@ -97,9 +135,11 @@ export function TrainersTable({ trainers, onRowClick }: TrainersTableProps) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     {row.name}
                     {row.rating != null && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', color: 'var(--text3)', fontWeight: 700, fontSize: '11px' }}>
-                        <StarIcon />{row.rating.toFixed(1)}
-                      </span>
+                      <Tooltip label={t('team.table.ratingHint')} side="top">
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', color: 'var(--text3)', fontWeight: 700, fontSize: '11px' }}>
+                          <StarIcon />{row.rating.toFixed(1)}
+                        </span>
+                      </Tooltip>
                     )}
                   </div>
                 </td>

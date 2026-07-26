@@ -1,22 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { usePopoverPosition, type Side } from './popoverPosition';
 
 export interface InfoHintProps {
   title: string;
   text: string;
-  side?: 'top' | 'bottom' | 'left' | 'right';
+  side?: Side;
 }
-
-type Side = NonNullable<InfoHintProps['side']>;
-
-// Центрирование живёт в CSS-свойстве `translate`, а не в `transform` — так оно
-// не конфликтует с анимацией `scale` из infoHintIn (transform перезаписал бы
-// её на время анимации и поповер прыгал бы в угол при открытии).
-const POS: Record<Side, React.CSSProperties> = {
-  top:    { bottom: 'calc(100% + 10px)', left: '50%', translate: '-50% 0' },
-  bottom: { top: 'calc(100% + 10px)',    left: '50%', translate: '-50% 0' },
-  left:   { right: 'calc(100% + 10px)',  top: '50%',  translate: '0 -50%' },
-  right:  { left: 'calc(100% + 10px)',   top: '50%',  translate: '0 -50%' },
-};
 
 // Треугольный указатель через clip-path вместо повёрнутого на 45° квадрата
 // (тот выглядел как плавающий ромб, а не как стрелка поповера).
@@ -27,24 +17,43 @@ const ARROW_CLIP: Record<Side, string> = {
   right:  'polygon(0% 0%, 0% 100%, 100% 50%)',
 };
 
-const ARROW: Record<Side, React.CSSProperties> = {
-  top:    { bottom: '-7px', left: '50%', translate: '-50% 0', width: '14px', height: '7px', clipPath: ARROW_CLIP.top },
-  bottom: { top: '-7px',    left: '50%', translate: '-50% 0', width: '14px', height: '7px', clipPath: ARROW_CLIP.bottom },
-  left:   { right: '-7px',  top: '50%',  translate: '0 -50%', width: '7px', height: '14px', clipPath: ARROW_CLIP.left },
-  right:  { left: '-7px',   top: '50%',  translate: '0 -50%', width: '7px', height: '14px', clipPath: ARROW_CLIP.right },
+const TRANSFORM_ORIGIN: Record<Side, string> = {
+  top: 'bottom center', bottom: 'top center', left: 'center right', right: 'center left',
 };
 
+// Стрелка смещена к якорю через arrowOffset (px от левого/верхнего края поповера),
+// а не через фиксированные 50% — иначе при клампе поповера к краю экрана стрелка
+// уезжала бы за скруглённый угол вместо якоря.
+function arrowStyle(side: Side, offset: number): React.CSSProperties {
+  const clipPath = ARROW_CLIP[side];
+  switch (side) {
+    case 'top':    return { bottom: '-7px', left: `${offset - 7}px`, width: '14px', height: '7px', clipPath };
+    case 'bottom': return { top: '-7px',    left: `${offset - 7}px`, width: '14px', height: '7px', clipPath };
+    case 'left':   return { right: '-7px',  top: `${offset - 7}px`,  width: '7px',  height: '14px', clipPath };
+    case 'right':  return { left: '-7px',   top: `${offset - 7}px`,  width: '7px',  height: '14px', clipPath };
+  }
+}
+
 // i-кнопка с поповером-описанием: клик открывает, Esc и клик мимо закрывают,
-// пружинная анимация как у модалок кита.
+// пружинная анимация как у модалок кита. Поповер рендерится в портал с
+// position: fixed — так его не обрежет overflow родителя и не перекроет
+// соседняя карточка с hover-transform (см. EPIC_R9_INFO_TEXTS).
 export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const close = () => setOpen(false);
+  const placement = usePopoverPosition(open, buttonRef, popoverRef, side, close);
+  const resolvedSide = placement?.side ?? side;
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
     const onClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target) || popoverRef.current?.contains(target)) return;
+      setOpen(false);
     };
     window.addEventListener('keydown', onKey);
     document.addEventListener('mousedown', onClick);
@@ -57,6 +66,7 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
   return (
     <div ref={rootRef} style={{ position: 'relative', display: 'inline-flex' }}>
       <button
+        ref={buttonRef}
         type="button"
         aria-label={title}
         onClick={() => setOpen(o => !o)}
@@ -77,24 +87,31 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
         </svg>
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={popoverRef}
           role="tooltip"
           style={{
-            position: 'absolute', ...POS[side], zIndex: 1100,
-            width: '260px', padding: '14px 16px',
+            position: 'fixed',
+            top: placement ? `${placement.top}px` : 0,
+            left: placement ? `${placement.left}px` : 0,
+            visibility: placement ? 'visible' : 'hidden',
+            zIndex: 1200,
+            width: 'min(260px, calc(100vw - 16px))',
+            padding: '14px 16px',
             background: '#1A1A1A', color: '#FFFFFF',
             borderRadius: '16px', boxShadow: '0 20px 48px -8px rgba(26,26,26,0.4)',
             fontFamily: "'Manrope', sans-serif",
-            transformOrigin: side === 'top' ? 'bottom center' : side === 'bottom' ? 'top center' : side === 'left' ? 'center right' : 'center left',
+            transformOrigin: TRANSFORM_ORIGIN[resolvedSide],
             animation: 'infoHintIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
-          <div style={{ position: 'absolute', background: '#1A1A1A', ...ARROW[side] }} />
+          <div style={{ position: 'absolute', background: '#1A1A1A', ...arrowStyle(resolvedSide, placement?.arrowOffset ?? 14) }} />
           <div style={{ fontSize: '12.5px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.1px' }}>{title}</div>
           <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{text}</div>
           <style>{`@keyframes infoHintIn { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }`}</style>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

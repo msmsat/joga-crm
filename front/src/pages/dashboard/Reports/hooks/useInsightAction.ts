@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useHighlightRow } from './useHighlightRow';
 
 /**
  * Действие по инсайту → переход в нужный раздел с нужным контекстом.
@@ -8,9 +9,13 @@ import { useNavigate } from 'react-router-dom';
  */
 export function useInsightAction() {
   const navigate = useNavigate();
+  const highlightRow = useHighlightRow();
 
   return useCallback((action: string, params: Record<string, string | number>) => {
     switch (action) {
+      case 'open_schedule_hour':
+        highlightRow('reports-heatmap', `heatmap-row-${params.hour}`);
+        break;
       case 'open_clients':
         navigate(`/dashboard/clients?filter=${encodeURIComponent(String(params.filter ?? ''))}`);
         break;
@@ -37,5 +42,5 @@ export function useInsightAction() {
         navigate('/dashboard/booking');
         break;
     }
-  }, [navigate]);
+  }, [navigate, highlightRow]);
 }

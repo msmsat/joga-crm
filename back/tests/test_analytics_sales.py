@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 
 from sqlalchemy import delete, select
 
-from database import async_session_maker
+from database import async_session_maker, engine
 from dependencies import StudioContext
 from models import Client, ClientSubscription, Operation, Product, Studio
 from routers.analytics.sales import analytics_sales, analytics_sales_series
@@ -113,6 +113,10 @@ async def _run():
         assert len(series) == 11  # полная ось периода (today-10..today), не только 3 дня с данными
     finally:
         await _cleanup(sid)
+        # Пул asyncpg привязан к текущему event loop: без dispose() следующий
+        # asyncio.run() в этом же процессе (соседний test_* или другой файл в
+        # одном прогоне pytest) унаследует мёртвый пул.
+        await engine.dispose()
 
 
 def test_analytics_sales():

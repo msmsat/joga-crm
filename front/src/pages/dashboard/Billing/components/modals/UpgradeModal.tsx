@@ -1,8 +1,11 @@
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import type { PlanType } from '../../types';
+import { formatMoney } from '../../../../../lib/money';
 import { ZapIcon, InfoIcon } from '../ui/BillingIcons';
 
 interface Props {
+  currency?: string;
   selectedPlan: PlanType;
   selectedPeriod: number;
   periodDiscounts: Record<number, number>;
@@ -15,7 +18,8 @@ interface Props {
   checkoutBusy: boolean;
 }
 
-export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, checkoutBusy }: Props) {
+export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, checkoutBusy }: Props) {
+  const { t } = useTranslation('billing');
   const plan = plans[selectedPlan];
 
   return createPortal(
@@ -32,52 +36,52 @@ export default function UpgradeModal({ selectedPlan, selectedPeriod, periodDisco
             <ZapIcon />
           </div>
           <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px', marginBottom: '8px' }}>
-            Переход на {plan.name}
+            {t('upgrade.title', { plan: plan.name })}
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: '1.6' }}>
-            Стоимость ₽{getPrice(selectedPlan, selectedPeriod).toLocaleString('ru-RU')}/мес.
-            {selectedPeriod > 1 && ` Со скидкой ${periodDiscounts[selectedPeriod] * 100}% при оплате за ${selectedPeriod} мес.`}
+            {t('upgrade.priceLine', { price: formatMoney(getPrice(selectedPlan, selectedPeriod), currency) })}
+            {selectedPeriod > 1 && t('upgrade.discountNote', { percent: periodDiscounts[selectedPeriod] * 100, period: selectedPeriod })}
           </p>
         </div>
 
         <div style={{ padding: '16px 20px', background: 'rgba(252,174,145,0.06)', borderRadius: '14px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>Тариф</span>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('upgrade.planLabel')}</span>
             <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{plan.name}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>Период</span>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('upgrade.periodLabel')}</span>
             <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>
-              {selectedPeriod === 1 ? '1 месяц' : `${selectedPeriod} месяцев`}
+              {t('upgrade.periodValue', { count: selectedPeriod })}
             </span>
           </div>
           {selectedPeriod > 1 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '13px', color: 'var(--muted)' }}>Скидка</span>
+              <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('upgrade.discountLabel')}</span>
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--pistachio)' }}>
-                −{periodDiscounts[selectedPeriod] * 100}% (−₽{savedTotal.toLocaleString('ru-RU')})
+                −{periodDiscounts[selectedPeriod] * 100}% (−{formatMoney(savedTotal, currency)})
               </span>
             </div>
           )}
           <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>Итого</span>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>₽{totalToPay.toLocaleString('ru-RU')}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalLabel')}</span>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
           </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={startCheckout} disabled={checkoutBusy} style={{ padding: '14px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '15px', fontWeight: 700, cursor: checkoutBusy ? 'wait' : 'pointer', opacity: checkoutBusy ? 0.7 : 1, fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', transition: 'all 0.2s ease' }}>
-            {checkoutBusy ? 'Переходим к оплате…' : 'Подтвердить и оплатить'}
+            {checkoutBusy ? t('paymentSchedule.processing') : t('upgrade.confirmAndPay')}
           </button>
           <button onClick={onClose} style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease' }}>
-            Отмена
+            {t('common:cancel')}
           </button>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
           <InfoIcon />
-          <span style={{ fontSize: '11px', color: 'var(--muted)' }}>Защищено PCI DSS · Возврат в течение 7 дней</span>
+          <span style={{ fontSize: '11px', color: 'var(--muted)' }}>{t('upgrade.trustNote')}</span>
         </div>
       </div>
     </div>,

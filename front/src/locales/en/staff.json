@@ -129,6 +129,7 @@
       "inviteHint": "The employee logs in with their email and this temporary password — they can change it after signing in.",
       "errors": {
         "name": "Name is required",
+        "phone": "Invalid phone number",
         "email": "Invalid email",
         "password": "Password must be at least 6 characters"
       }

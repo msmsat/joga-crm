@@ -19,11 +19,22 @@ from schemas.settings.booking import (
     BookingSettingsRead, BookingSettingsUpdate,
     BookingChannelRead, BookingChannelUpdate,
 )
+from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
 
 router = APIRouter()
 
 _CHANNEL_TYPES = {"telegram", "instagram", "whatsapp", "web"}
 _TG_TOKEN_RE = re.compile(r"^\d{6,12}:[A-Za-z0-9_-]{30,50}$")
+
+
+async def _telegram_channel(db: AsyncSession, studio_id: int) -> BookingChannelConfig:
+    """Строка канала после записи общим сервисом — он гарантирует, что она есть."""
+    return (await db.execute(
+        select(BookingChannelConfig).where(
+            BookingChannelConfig.studio_id == studio_id,
+            BookingChannelConfig.channel_type == "telegram",
+        )
+    )).scalar_one()
 
 
 @router.get("/settings", response_model=BookingSettingsRead)
@@ -82,10 +93,20 @@ async def update_channel(
     if channel_type not in _CHANNEL_TYPES:
         raise HTTPException(status_code=400, detail="Неизвестный тип канала")
 
-    if channel_type == "telegram" and body.config and "token" in body.config:
-        token = body.config["token"]
-        if not isinstance(token, str) or not _TG_TOKEN_RE.match(token):
-            raise HTTPException(status_code=400, detail="Неверный формат токена")
+    # Telegram-бот у студии один на всю CRM: его токен и статус живут ещё в
+    # Уведомлениях и в настройках AI-агента. Подключение/отключение идёт через
+    # общий сервис, иначе правка только этой строки разъезжается с двумя другими.
+    if channel_type == "telegram":
+        token = (body.config or {}).get("token")
+        if token is not None:
+            if not isinstance(token, str) or not _TG_TOKEN_RE.match(token):
+                raise HTTPException(status_code=400, detail="Неверный формат токена")
+            username = await verify_bot_token(token)
+            await connect_telegram_bot(db, ctx.studio_id, token, username)
+            return await _telegram_channel(db, ctx.studio_id)
+        if body.is_active is False:
+            await disconnect_telegram_bot(db, ctx.studio_id)
+            return await _telegram_channel(db, ctx.studio_id)
 
     row = (await db.execute(
         select(BookingChannelConfig).where(

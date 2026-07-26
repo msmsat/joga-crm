@@ -36,7 +36,7 @@ interface BookingPopupProps {
   mutations: ReturnType<typeof useJournalMutations>;
   onSave: (prev: Booking, next: Booking) => void;
   deleteBooking: (id: number) => void;
-  onAddClients: (clientIds: number[]) => void;
+  onAddClients: (clientIds: number[]) => void | Promise<void>;
   showToast: (msg: string) => void;
   pushHistoryEntry: (entry: HistoryEntry) => void;
 }
@@ -64,6 +64,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const toast = useToast();
   const navigate = useNavigate();
   const { t } = useTranslation('journal');
+  const isCancelled = popupBooking.status === 'cancelled';
 
   // Стейты редактирования
   const [editStartInput, setEditStartInput] = useState('');
@@ -108,12 +109,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const bookedClients = booked?.lessonId === popupBooking.id ? booked.clients : null;
 
   useEffect(() => {
+    if (isCancelled) return;
     let stale = false;
     scheduleApi.getLesson(popupBooking.id)
       .then(d => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: d.booked_clients }); })
       .catch(() => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: [] }); });
     return () => { stale = true; };
-  }, [popupBooking.id]);
+  }, [popupBooking.id, isCancelled]);
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
@@ -230,20 +232,36 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           
           <div style={{
             padding: '6px 12px', borderRadius: '12px', fontSize: 11, fontWeight: 800,
-            background: popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
-            color: popupBooking.status === 'confirmed' ? '#86b08c' : '#D88C9A',
+            background: isCancelled ? 'rgba(26,26,26,0.06)' : popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
+            color: isCancelled ? 'var(--muted)' : popupBooking.status === 'confirmed' ? '#86b08c' : '#D88C9A',
             display: 'flex', alignItems: 'center', gap: 4, letterSpacing: '0.3px', textTransform: 'uppercase'
           }}>
             {popupBooking.status === 'confirmed' && <span style={{ transform: 'scale(0.85)' }}><Icons.Check /></span>}
-            {popupBooking.status === 'confirmed' ? t('bookingPopup.confirmed') : t('bookingPopup.pending')}
+            {isCancelled ? t('bookingPopup.cancelled') : popupBooking.status === 'confirmed' ? t('bookingPopup.confirmed') : t('bookingPopup.pending')}
           </div>
         </div>
       </div>
 
       <div className="bp-body" style={{ position: 'relative', zIndex: 10, minHeight: '180px' }}>
         
-        {/* РЕЖИМ ДОБАВЛЕНИЯ КЛИЕНТА */}
-        {isAddingClient ? (
+        {/* ОТМЕНЁННОЕ ЗАНЯТИЕ: только зал и тренер, ничего интерактивного */}
+        {isCancelled ? (
+          <>
+            <div className="bp-row">
+              <div className="bp-icon-box"><Icons.MapPin /></div>
+              <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
+            </div>
+
+            <div className="bp-row">
+              <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
+              </div>
+              <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
+            </div>
+          </>
+
+        /* РЕЖИМ ДОБАВЛЕНИЯ КЛИЕНТА */
+        ) : isAddingClient ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
             <div style={{ position: 'relative', marginBottom: 4 }}>
               <div style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }}>
@@ -516,9 +534,10 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         )}
       </div>
 
-      {/* КНОПКИ ДЕЙСТВИЙ */}
+      {/* КНОПКИ ДЕЙСТВИЙ: у отменённого занятия их нет вовсе */}
+      {!isCancelled && (
       <div className="bp-actions" style={{ position: 'relative', zIndex: 1 }}>
-        
+
         {isAddingClient ? (
           <>
             <button className="bp-btn ghost text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(false); }}>
@@ -528,12 +547,18 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               className="bp-btn primary text-btn"
               disabled={selectedClients.length === 0}
               style={{ opacity: selectedClients.length === 0 ? 0.5 : 1, cursor: selectedClients.length === 0 ? 'not-allowed' : 'pointer' }}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                onAddClients(selectedClients);
+                const ids = selectedClients;
                 setIsAddingClient(false);
                 setSelectedClients([]);
                 setSearchQuery('');
+                setEligible(null); // подходящие пересчитаются заново — записанные уйдут из списка
+                await onAddClients(ids);
+                // Обновляем список записанных прямо в попапе — новые клиенты видны без перезагрузки модалки
+                scheduleApi.getLesson(popupBooking.id)
+                  .then(d => setBooked({ lessonId: popupBooking.id, clients: d.booked_clients }))
+                  .catch(() => {});
               }}
             >
               <Icons.UserPlus /> {t('bookingPopup.add')} {selectedClients.length > 0 ? `(${selectedClients.length})` : ''}
@@ -603,6 +628,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           </>
         )}
       </div>
+      )}
     </div>
 
     {showCatalogConfirm && (

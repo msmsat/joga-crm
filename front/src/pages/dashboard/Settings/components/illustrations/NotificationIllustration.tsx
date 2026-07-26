@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 
 export default function NotificationIllustration() {
+  const { t } = useTranslation('settings');
   const [step, setStep] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setStep(s => (s + 1) % 4), 1400);
-    return () => clearInterval(t);
+    const interval = setInterval(() => setStep(s => (s + 1) % 4), 1400);
+    return () => clearInterval(interval);
   }, []);
   const notifs = [
-    { icon: icons.mail, text: "Новая запись от Анны К.", color: "var(--peach)" },
-    { icon: icons.bell, text: "Оплата подтверждена", color: "#A3C9A8" },
-    { icon: icons.smartphone, text: "Push: Напоминание о визите", color: "#9BB5D8" },
+    { icon: icons.mail, text: t('notifications.channels.illustration.newBooking'), color: "var(--peach)" },
+    { icon: icons.bell, text: t('notifications.channels.illustration.paymentConfirmed'), color: "#A3C9A8" },
+    { icon: icons.smartphone, text: t('notifications.channels.illustration.visitReminder'), color: "#9BB5D8" },
   ];
   return (
     <div style={{ padding: "12px 0 4px", display: "flex", flexDirection: "column", gap: "8px" }}>

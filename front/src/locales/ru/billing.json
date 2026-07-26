@@ -1,0 +1,193 @@
+{
+  "tabs": {
+    "plans": "Тарифы",
+    "invoices": "История",
+    "method": "Способ оплаты"
+  },
+  "mode": {
+    "title": "Модель оплаты",
+    "subscription": "Фиксированная подписка",
+    "percent": "% с онлайн-платежей",
+    "combo": "Фикс + % комбо",
+    "descriptions": {
+      "subscription": "Платите одну сумму в месяц. Предсказуемо и выгодно.",
+      "percent": "Платите только когда зарабатываете. От 2% до 8% от транзакций.",
+      "combo": "Сниженная подписка + небольшой % для активного роста."
+    },
+    "badges": {
+      "popular": "Популярно",
+      "flexible": "Гибко"
+    }
+  },
+  "period": {
+    "1": "1 месяц",
+    "6": "6 месяцев",
+    "12": "1 год",
+    "24": "2 года",
+    "title": "Период оплаты",
+    "discountActive": "Скидка {{percent}}% активна",
+    "noDiscount": "Без скидки",
+    "discountLabel": "−{{percent}}% скидка"
+  },
+  "calculator": {
+    "title": "Параметры расчёта",
+    "monthlyTurnover": "Ваш онлайн-оборот в месяц",
+    "turnoverRangeMin": "50 тыс.",
+    "turnoverRangeMax": "3 млн+",
+    "chooseFeeLabel": "Выберите процент комиссии (влияет на функции)",
+    "feeOptions": {
+      "basic": "Базовый",
+      "standard": "Стандарт",
+      "pro": "Pro",
+      "max": "Максимум"
+    },
+    "chooseFixedLabel": "Выберите базовую фикс-часть (эквайринг всегда 3%)",
+    "fixedOptions": {
+      "start": "Старт",
+      "optima": "Оптима",
+      "business": "Бизнес"
+    },
+    "economyPercentTitle": "ЭКОНОМИКА ТАРИФА",
+    "economyComboTitle": "ЭКОНОМИКА КОМБО-ТАРИФА",
+    "turnover": "Оборот студии",
+    "systemFee": "Комиссия системы",
+    "totalMonthlyPayment": "ИТОГОВЫЙ ПЛАТЕЖ В МЕСЯЦ",
+    "onlyPayForResult": "Вы не платите фикс, только за результат",
+    "activatePercent": "Активировать модель за {{percent}}%",
+    "baseSubscription": "Базовая подписка (Fix)",
+    "acquiringFee": "Эквайринг / Комиссия",
+    "activateCombo": "Активировать Комбо-тариф"
+  },
+  "planCards": {
+    "bestChoice": "Лучший выбор",
+    "current": "Текущий",
+    "enterprise": "Enterprise",
+    "perMonth": "/ мес.",
+    "currentPlan": "Текущий план",
+    "choosePlan": "Выбрать план"
+  },
+  "features": {
+    "start": {
+      "staff": "До 3 сотрудников",
+      "clients": "До 100 клиентов",
+      "booking": "Онлайн-запись",
+      "calendar": "Базовый календарь",
+      "analytics": "Аналитика",
+      "api": "API-доступ",
+      "loyalty": "Лояльность и CRM",
+      "whiteLabel": "White-label"
+    },
+    "pro": {
+      "staff": "До 20 сотрудников",
+      "clients": "Неограниченно клиентов",
+      "analytics": "Полная аналитика",
+      "loyalty": "Лояльность и CRM",
+      "telegram": "Telegram-уведомления",
+      "support": "Приоритетная поддержка",
+      "api": "API-доступ",
+      "whiteLabel": "White-label"
+    },
+    "business": {
+      "unlimited": "Неограниченно всё",
+      "whiteLabel": "White-label",
+      "api": "API-доступ",
+      "multiBranch": "Мультифилиалы",
+      "manager": "Выделенный менеджер",
+      "integrations": "Кастомные интеграции",
+      "sla": "SLA 99.9%",
+      "training": "Обучение команды"
+    }
+  },
+  "paymentSchedule": {
+    "title": "График платежей",
+    "total": "Итого к оплате",
+    "morePayments": "+ ещё {{count}} платежей по {{amount}}",
+    "processing": "Переходим к оплате…",
+    "payFor": "Оплатить {{count}} мес."
+  },
+  "trust": {
+    "title": "Почему нам доверяют 2 400+ бизнесов",
+    "reviews": [
+      { "text": "Перешли с Altegio. Разница как между такси и бизнес-джетом.", "author": "Мария К., пилатес FORM" },
+      { "text": "Удобнее всего, что я знаю ровно сколько плачу каждый месяц. Никаких сюрпризов.", "author": "Артём Н., Barbershop Bros" },
+      { "text": "Поддержка ответила за 4 минуты. Такого я ещё не видела нигде.", "author": "Елена Д., SPA LUNA" }
+    ]
+  },
+  "upgrade": {
+    "title": "Переход на {{plan}}",
+    "priceLine": "Стоимость {{price}}/мес.",
+    "discountNote": " Со скидкой {{percent}}% при оплате за {{period}} мес.",
+    "planLabel": "Тариф",
+    "periodLabel": "Период",
+    "periodValue_one": "{{count}} месяц",
+    "periodValue_few": "{{count}} месяца",
+    "periodValue_many": "{{count}} месяцев",
+    "periodValue_other": "{{count}} месяцев",
+    "discountLabel": "Скидка",
+    "totalLabel": "Итого",
+    "confirmAndPay": "Подтвердить и оплатить",
+    "trustNote": "Защищено PCI DSS · Возврат в течение 7 дней"
+  },
+  "method": {
+    "primaryCard": "ОСНОВНАЯ КАРТА",
+    "notLinked": "Не привязана",
+    "holder": "ДЕРЖАТЕЛЬ",
+    "expiry": "СРОК",
+    "securityTitle": "Стандарты защиты данных",
+    "security": {
+      "pciDss": "Шифрование по протоколу PCI DSS Level 1",
+      "secure3d": "Защита транзакций через 3D Secure",
+      "noStorage": "Данные карт не оседают на серверах",
+      "autoLink": "Карта привязывается при первой оплате"
+    },
+    "noCardDetail": "Отдельно вводить реквизиты не нужно — оплата проходит на защищённой странице Fondy.",
+    "renewDone": "Счёт создан — платёж обрабатывается",
+    "renewBusy": "Создаём счёт…",
+    "renewNow": "Продлить сейчас по карте •••• {{last4}}",
+    "autopayTitle": "Настройки автоплатежа",
+    "autopay": {
+      "autoRenew":   { "label": "Автоматическое продление", "desc": "Списание происходит без подтверждения" },
+      "emailNotify": { "label": "Email-уведомления",          "desc": "Чек на почту после каждого платежа" },
+      "remind3d":    { "label": "Уведомить за 3 дня",         "desc": "Напомним перед автоматическим списанием" },
+      "sms":         { "label": "SMS-оповещение",             "desc": "Сообщение на номер при списании" }
+    }
+  },
+  "invoices": {
+    "title": "История платежей",
+    "totalPaid": "всего оплачено {{amount}}",
+    "exportCsv": "Экспорт CSV"
+  },
+  "table": {
+    "date": "Дата",
+    "description": "Описание",
+    "amount": "Сумма",
+    "status": "Статус",
+    "receipt": "Чек"
+  },
+  "status": {
+    "paid": "Оплачено",
+    "pending": "Ожидает",
+    "failed": "Ошибка",
+    "refunded": "Возврат"
+  },
+  "empty": {
+    "noInvoices": "Счетов пока нет — они появятся после первой оплаты.",
+    "noCard": "Карта появится автоматически после первой оплаты.",
+    "monthsWithUs": "Вы ещё не купили подписку",
+    "noData": "Нет данных"
+  },
+  "savings": {
+    "title": "Ваша экономия",
+    "prepayTitle": "Ваша экономия при оплате вперёд",
+    "youSave": "Вы экономите {{amount}} за {{months}} мес.",
+    "freeMonths": "Это как {{count}} мес. бесплатно",
+    "amountLabel": "{{amount}} экономия",
+    "comparedToMonthly": "по сравнению с помесячной оплатой",
+    "forMonths_one": "За {{count}} месяц",
+    "forMonths_few": "За {{count}} месяца",
+    "forMonths_many": "За {{count}} месяцев",
+    "forMonths_other": "За {{count}} месяцев"
+  },
+  "pay": "Оплатить",
+  "continuePlan": "Продолжить план"
+}

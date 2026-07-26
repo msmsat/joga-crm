@@ -1,4 +1,4 @@
-import { client } from '../client'
+import { client, patchKeepalive } from '../client'
 import type {
   EventToggle,
   NotificationSettings,
@@ -20,6 +20,14 @@ export const notificationsApi = {
 
   updateEventToggle: (payload: EventToggle) =>
     client.patch<EventToggle>('/settings/notifications/events', payload),
+
+  bulkUpdateEventToggles: (toggles: EventToggle[]) =>
+    client.patch<EventToggle[]>('/settings/notifications/events/bulk', { toggles }),
+
+  // Флаш несохранённого диффа при уходе со страницы/закрытии вкладки — не ждёт
+  // ответа, не участвует в React Query (см. patchKeepalive).
+  flushEventTogglesOnUnload: (toggles: EventToggle[]) =>
+    patchKeepalive('/settings/notifications/events/bulk', { toggles }),
 
   getChannelIntegrations: () =>
     client.get<NotifyChannelsStatus>('/settings/integrations/notify-channels'),

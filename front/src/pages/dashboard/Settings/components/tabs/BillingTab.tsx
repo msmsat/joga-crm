@@ -1,15 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
-import InputRow from "../ui/form/InputRow";
+import { Input, useToast } from "../../../../../components/ui/index";
+import { getCurrencySymbol } from "../../../../../components/UI";
+import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import type { useBilling } from "../../hooks/useBilling";
 
-type BillingState = ReturnType<typeof useBilling>;
-
-interface BillingTabProps extends BillingState {
-  savedStates: Record<string, boolean>;
-  triggerSave: (key: string, msg: string) => void;
-}
+type BillingTabProps = ReturnType<typeof useBilling>;
 
 export default function BillingTab({
   billingView, setBillingView,
@@ -22,13 +20,14 @@ export default function BillingTab({
   cardCvc, setCardCvc,
   cardFocused, setCardFocused: _setCardFocused,
   addCard, replaceCard, applyBillingSettings, upgradeToBusinessView,
-  triggerToast,
-  savedStates: _savedStates,
 }: BillingTabProps) {
+  const { t } = useTranslation('settings');
+  const toast = useToast();
+  const currency = getCurrencySymbol(useStudioCurrency());
   const PAYMENTS = [
-    { date: "15 июня 2026", amount: "4 990 ₽", plan: "Pro — июль", status: "active" as const },
-    { date: "15 мая 2026", amount: "4 990 ₽", plan: "Pro — июнь", status: "active" as const },
-    { date: "15 апреля 2026", amount: "4 990 ₽", plan: "Pro — май", status: "active" as const },
+    { date: "15 июня 2026", amount: "4 990", plan: "Pro — июль", status: "active" as const },
+    { date: "15 мая 2026", amount: "4 990", plan: "Pro — июнь", status: "active" as const },
+    { date: "15 апреля 2026", amount: "4 990", plan: "Pro — май", status: "active" as const },
   ];
 
   const sectionIcons = {
@@ -50,6 +49,9 @@ export default function BillingTab({
     return value;
   };
 
+  const proFeatures = t('billing.tariffs.pro.features', { returnObjects: true }) as string[];
+  const businessFeatures = t('billing.tariffs.business.features', { returnObjects: true }) as string[];
+
   if (billingView === "tariffs") {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", animation: "fadeSlideIn 0.3s ease" }}>
@@ -62,39 +64,39 @@ export default function BillingTab({
           >
             {sectionIcons.arrowLeft}
           </button>
-          <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--muted)" }}>Назад в управление подпиской</span>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--muted)" }}>{t('billing.tariffs.back')}</span>
         </div>
 
         <div style={{ textAlign: "center", margin: "10px 0 20px" }}>
-          <h1 style={{ fontSize: "28px", fontWeight: 900, color: "var(--onyx)", marginBottom: "8px", letterSpacing: "-0.5px" }}>Доступные тарифные планы</h1>
-          <p style={{ fontSize: "13px", color: "var(--muted)" }}>Перейдите на Business уровень, чтобы масштабировать ваш бренд без ограничений</p>
+          <h1 style={{ fontSize: "28px", fontWeight: 900, color: "var(--onyx)", marginBottom: "8px", letterSpacing: "-0.5px" }}>{t('billing.tariffs.title')}</h1>
+          <p style={{ fontSize: "13px", color: "var(--muted)" }}>{t('billing.tariffs.subtitle')}</p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
           <div style={{ padding: "32px", borderRadius: "16px", background: "#FFFFFF", border: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
-              <div style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)", marginBottom: "6px" }}>Pro Лицензия</div>
-              <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "20px" }}>Идеально для растущих студий и премиум-бутиков</div>
-              <div style={{ fontSize: "32px", fontWeight: 950, color: "var(--onyx)", marginBottom: "24px" }}>4 990 ₽ <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--muted)" }}>/ мес</span></div>
+              <div style={{ fontSize: "18px", fontWeight: 800, color: "var(--onyx)", marginBottom: "6px" }}>{t('billing.tariffs.pro.name')}</div>
+              <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "20px" }}>{t('billing.tariffs.pro.desc')}</div>
+              <div style={{ fontSize: "32px", fontWeight: 950, color: "var(--onyx)", marginBottom: "24px" }}>4 990 {currency} <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--muted)" }}>{t('billing.tariffs.pro.perMonth')}</span></div>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {["До 5 активных сотрудников", "До 3 залов синхронизации", "База клиентов без лимитов", "Стандартная аналитика"].map((f, idx) => (
+                {proFeatures.map((f, idx) => (
                   <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "var(--onyx)", fontWeight: 500 }}>
                     <span style={{ color: "#A3C9A8" }}>✓</span> {f}
                   </div>
                 ))}
               </div>
             </div>
-            <button disabled style={{ width: "100%", padding: "12px", borderRadius: "10px", background: "rgba(26,26,26,0.04)", border: "none", color: "var(--muted)", fontSize: "13px", fontWeight: 700, marginTop: "40px" }}>Ваш текущий тариф</button>
+            <button disabled style={{ width: "100%", padding: "12px", borderRadius: "10px", background: "rgba(26,26,26,0.04)", border: "none", color: "var(--muted)", fontSize: "13px", fontWeight: 700, marginTop: "40px" }}>{t('billing.tariffs.pro.current')}</button>
           </div>
 
           <div style={{ padding: "32px", borderRadius: "16px", background: "linear-gradient(135deg, #121212 0%, #1e1e24 100%)", border: "2px solid var(--peach)", display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: "0 20px 40px rgba(252,174,145,0.15)", position: "relative" }}>
-            <span style={{ position: "absolute", top: "16px", right: "16px", background: "var(--peach)", color: "white", padding: "4px 10px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, letterSpacing: "0.5px" }}>РЕКОМЕНДУЕМ</span>
+            <span style={{ position: "absolute", top: "16px", right: "16px", background: "var(--peach)", color: "white", padding: "4px 10px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, letterSpacing: "0.5px" }}>{t('billing.tariffs.business.badge')}</span>
             <div>
-              <div style={{ fontSize: "18px", fontWeight: 800, color: "white", marginBottom: "6px" }}>Business План</div>
-              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "20px" }}>Максимальная экосистема для крупных сетей и франшиз</div>
-              <div style={{ fontSize: "32px", fontWeight: 950, color: "white", marginBottom: "24px" }}>9 990 ₽ <span style={{ fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.4)" }}>/ мес</span></div>
+              <div style={{ fontSize: "18px", fontWeight: 800, color: "white", marginBottom: "6px" }}>{t('billing.tariffs.business.name')}</div>
+              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "20px" }}>{t('billing.tariffs.business.desc')}</div>
+              <div style={{ fontSize: "32px", fontWeight: 950, color: "white", marginBottom: "24px" }}>9 990 {currency} <span style={{ fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.4)" }}>{t('billing.tariffs.business.perMonth')}</span></div>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {["Безлимитное число сотрудников", "Франшизная мульти-сеть (все филиалы)", "Глубокая финансовая AI-аналитика", "Персональный менеджер 24/7", "Кастомное брендирование виджетов"].map((f, idx) => (
+                {businessFeatures.map((f, idx) => (
                   <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>
                     <span style={{ color: "var(--peach)" }}>✓</span> {f}
                   </div>
@@ -107,7 +109,7 @@ export default function BillingTab({
               onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
               onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
             >
-              Перейти на Business
+              {t('billing.tariffs.business.upgrade')}
             </button>
           </div>
         </div>
@@ -127,17 +129,17 @@ export default function BillingTab({
         <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "200px", height: "200px", background: "radial-gradient(circle, rgba(252,174,145,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: "10.5px", fontWeight: 800, color: "rgba(252,174,145,0.85)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "6px" }}>
-            Ваш план обслуживания
+            {t('billing.dashboard.planLabel')}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "24px" }}>
-            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>Pro Тариф</div>
-            <span style={{ padding: "4px 12px", borderRadius: "100px", fontSize: "11px", fontWeight: 700, background: "rgba(163,201,168,0.15)", color: "#A3C9A8", border: "1px solid rgba(163,201,168,0.25)" }}>Активен до 15 июля</span>
+            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>{t('billing.dashboard.planName')}</div>
+            <span style={{ padding: "4px 12px", borderRadius: "100px", fontSize: "11px", fontWeight: 700, background: "rgba(163,201,168,0.15)", color: "#A3C9A8", border: "1px solid rgba(163,201,168,0.25)" }}>{t('billing.dashboard.activeUntil')}</span>
           </div>
           <div style={{ display: "flex", gap: "48px", marginBottom: "28px" }}>
             {[
-              { v: "БЕЗЛИМИТНО", l: "База клиентов", desc: "Без скрытых ограничений" },
-              { v: "5 из 5 мест", l: "Сотрудники студии", desc: "Доступно расширение" },
-              { v: "АКТИВЕН", l: "Полный API доступ", desc: "Синхронизация включена" }
+              { v: t('billing.dashboard.stats.clients.value'), l: t('billing.dashboard.stats.clients.label'), desc: t('billing.dashboard.stats.clients.desc') },
+              { v: t('billing.dashboard.stats.staff.value'), l: t('billing.dashboard.stats.staff.label'), desc: t('billing.dashboard.stats.staff.desc') },
+              { v: t('billing.dashboard.stats.api.value'), l: t('billing.dashboard.stats.api.label'), desc: t('billing.dashboard.stats.api.desc') }
             ].map((s, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 <div style={{ fontSize: "16px", fontWeight: 800, color: "white", letterSpacing: "-0.2px" }}>{s.v}</div>
@@ -155,7 +157,7 @@ export default function BillingTab({
               onMouseDown={e => e.currentTarget.style.transform = "scale(0.96)"}
               onMouseUp={e => e.currentTarget.style.transform = "translateY(-1.5px)"}
             >
-              Улучшить до Business
+              {t('billing.dashboard.upgradeBtn')}
             </button>
             <button
               onClick={() => setIsManagingSub(!isManagingSub)}
@@ -163,7 +165,7 @@ export default function BillingTab({
               onMouseEnter={e => { if (!isManagingSub) { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#FFFFFF"; } }}
               onMouseLeave={e => { if (!isManagingSub) { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "rgba(255,255,255,0.75)"; } }}
             >
-              {isManagingSub ? "Закрыть управление" : "Управление подпиской"}
+              {isManagingSub ? t('billing.dashboard.manageBtnClose') : t('billing.dashboard.manageBtn')}
             </button>
           </div>
         </div>
@@ -174,16 +176,16 @@ export default function BillingTab({
           <div style={{ padding: "24px", borderRadius: "14px", background: "#FFFFFF", border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "16px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>Период оплаты лицензии</div>
-                <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "2px" }}>Переключитесь на годовой цикл для экономии бюджета</div>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)" }}>{t('billing.cycle.title')}</div>
+                <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "2px" }}>{t('billing.cycle.subtitle')}</div>
               </div>
               <div style={{ display: "flex", gap: "4px", background: "rgba(26,26,26,0.03)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border)" }}>
-                <button onClick={() => setBillingCycle("monthly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "monthly" ? "#FFFFFF" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "monthly" ? "var(--onyx)" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "monthly" ? "0 2px 6px rgba(0,0,0,0.05)" : "none" }}>Ежемесячно</button>
-                <button onClick={() => setBillingCycle("yearly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "yearly" ? "var(--peach)" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "yearly" ? "#FFFFFF" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "yearly" ? "0 4px 10px rgba(252,174,145,0.3)" : "none" }}>Ежегодно -30%</button>
+                <button onClick={() => setBillingCycle("monthly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "monthly" ? "#FFFFFF" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "monthly" ? "var(--onyx)" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "monthly" ? "0 2px 6px rgba(0,0,0,0.05)" : "none" }}>{t('billing.cycle.monthly')}</button>
+                <button onClick={() => setBillingCycle("yearly")} style={{ padding: "6px 12px", borderRadius: "7px", border: "none", background: billingCycle === "yearly" ? "var(--peach)" : "transparent", fontSize: "11px", fontWeight: 700, color: billingCycle === "yearly" ? "#FFFFFF" : "var(--muted)", cursor: "pointer", transition: "all 0.2s", boxShadow: billingCycle === "yearly" ? "0 4px 10px rgba(252,174,145,0.3)" : "none" }}>{t('billing.cycle.yearly')}</button>
               </div>
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-              <button onClick={applyBillingSettings} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(26,26,26,0.05)", border: "none", color: "var(--onyx)", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>Применить настройки</button>
+              <button onClick={applyBillingSettings} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(26,26,26,0.05)", border: "none", color: "var(--onyx)", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>{t('billing.cycle.apply')}</button>
             </div>
           </div>
         </div>
@@ -194,8 +196,8 @@ export default function BillingTab({
           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
             <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(252,174,145,0.12)", color: "var(--peach)", display: "flex", alignItems: "center", justifyContent: "center" }}>{sectionIcons.card}</div>
             <div>
-              <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>Способ оплаты</div>
-              <div style={{ fontSize: "12px", color: "var(--muted)" }}>Управление картами автопродления</div>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--onyx)" }}>{t('billing.payment.title')}</div>
+              <div style={{ fontSize: "12px", color: "var(--muted)" }}>{t('billing.payment.subtitle')}</div>
             </div>
           </div>
           <button
@@ -205,7 +207,7 @@ export default function BillingTab({
             onMouseLeave={e => { if (!isAddingCard) { e.currentTarget.style.background = "rgba(252,174,145,0.08)"; e.currentTarget.style.color = "var(--peach)"; } }}
           >
             {sectionIcons.plus}
-            {isAddingCard ? "Закрыть форму" : "Добавить карту"}
+            {isAddingCard ? t('billing.payment.closeForm') : t('billing.payment.addCard')}
           </button>
         </div>
 
@@ -235,11 +237,11 @@ export default function BillingTab({
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}>
                   <div style={{ transition: "color 0.2s", color: cardFocused === "name" ? "var(--peach)" : "rgba(255,255,255,0.6)" }}>
-                    <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>Держатель</div>
-                    <div style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "130px" }}>{cardName || "CARDHOLDER NAME"}</div>
+                    <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>{t('billing.payment.holder')}</div>
+                    <div style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "130px" }}>{cardName || t('billing.payment.holderPh')}</div>
                   </div>
                   <div style={{ transition: "color 0.2s", color: cardFocused === "expiry" ? "var(--peach)" : "rgba(255,255,255,0.6)", textAlign: "right" }}>
-                    <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>Срок</div>
+                    <div style={{ fontSize: "7px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(255,255,255,0.3)" }}>{t('billing.payment.expiry')}</div>
                     <div style={{ fontSize: "10px", fontWeight: 700, marginTop: "2px" }}>{cardExpiry || "MM/YY"}</div>
                   </div>
                 </div>
@@ -247,24 +249,24 @@ export default function BillingTab({
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div style={{ gridColumn: "1 / -1" }}>
-                  <InputRow label="Номер карты" placeholder="4242 4242 4242 4242" value={cardNumber} onChange={v => setCardNumber(formatCardNumber(v))} />
+                  <Input label={t('billing.payment.cardNumber')} placeholder={t('billing.payment.cardNumberPh')} value={cardNumber} onChange={v => setCardNumber(formatCardNumber(v))} />
                 </div>
                 <div style={{ gridColumn: "1 / -1" }}>
-                  <InputRow label="Имя держателя (LATIN)" placeholder="ALEXEY MOROZOV" value={cardName} onChange={setCardName} />
+                  <Input label={t('billing.payment.cardHolderName')} placeholder={t('billing.payment.cardHolderNamePh')} value={cardName} onChange={setCardName} />
                 </div>
-                <InputRow
-                  label="Срок действия" placeholder="MM/YY" value={cardExpiry}
+                <Input
+                  label={t('billing.payment.cardExpiry')} placeholder="MM/YY" value={cardExpiry}
                   onChange={v => {
                     const sanitized = v.replace(/[^0-9]/g, '');
                     if (sanitized.length >= 2) setCardExpiry(`${sanitized.slice(0, 2)}/${sanitized.slice(2, 4)}`);
                     else setCardExpiry(sanitized);
                   }}
                 />
-                <InputRow label="CVC код" placeholder="•••" type="password" value={cardCvc} onChange={v => setCardCvc(v.slice(0, 3).replace(/[^0-9]/g, ''))} />
+                <Input label={t('billing.payment.cvc')} placeholder="•••" type="password" value={cardCvc} onChange={v => setCardCvc(v.slice(0, 3).replace(/[^0-9]/g, ''))} />
                 <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "6px" }}>
-                  <button onClick={() => setIsAddingCard(false)} className="topbar-ghost" style={{ padding: "8px 16px", fontSize: "12px" }}>Отмена</button>
+                  <button onClick={() => setIsAddingCard(false)} className="topbar-ghost" style={{ padding: "8px 16px", fontSize: "12px" }}>{t('common:buttons.cancel')}</button>
                   <button onClick={addCard} style={{ padding: "9px 20px", borderRadius: "8px", background: "var(--peach)", border: "none", color: "white", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.3)" }}>
-                    Привязать карту
+                    {t('billing.payment.linkCard')}
                   </button>
                 </div>
               </div>
@@ -281,9 +283,9 @@ export default function BillingTab({
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", fontFamily: "monospace", letterSpacing: "1px" }}>•••• •••• •••• 4242</div>
-                <span style={{ padding: "2px 8px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, background: "rgba(252,174,145,0.12)", color: "var(--peach)" }}>Основная</span>
+                <span style={{ padding: "2px 8px", borderRadius: "100px", fontSize: "10px", fontWeight: 800, background: "rgba(252,174,145,0.12)", color: "var(--peach)" }}>{t('billing.payment.primaryBadge')}</span>
               </div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>Visa Debit · Срок действия до 08/2027</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>{t('billing.payment.cardDesc')}</div>
             </div>
           </div>
           <button
@@ -293,31 +295,31 @@ export default function BillingTab({
             onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.02)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            Заменить карту
+            {t('billing.payment.replace')}
           </button>
         </div>
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "4px" }}>
-          <SectionHeader icon={icons.download} title="История платежей" subtitle="Все транзакции и инвойсы" />
+          <SectionHeader icon={icons.download} title={t('billing.history.title')} subtitle={t('billing.history.subtitle')} />
           <button
             onClick={() => {
               const header = "Дата,Тариф,Сумма,Статус";
-              const rows = PAYMENTS.map(p => `${p.date},${p.plan},${p.amount},Оплачено`);
+              const rows = PAYMENTS.map(p => `${p.date},${p.plan},${p.amount} ${currency},${t('billing.history.paid')}`);
               const csv = "﻿" + [header, ...rows].join("\n");
               const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url; a.download = "velora_payments.csv"; a.click();
               URL.revokeObjectURL(url);
-              triggerToast("История платежей экспортирована в CSV");
+              toast.success(t('billing.toast.csvExported'));
             }}
             style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: "rgba(252,174,145,0.1)", border: "1px solid rgba(252,174,145,0.3)", color: "var(--peach)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s", flexShrink: 0, marginTop: "2px" }}
             onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.18)"; e.currentTarget.style.borderColor = "var(--peach)"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
           >
-            {icons.download} Экспорт CSV
+            {icons.download} {t('billing.history.exportCsv')}
           </button>
         </div>
         {PAYMENTS.map((p, i) => (
@@ -326,20 +328,20 @@ export default function BillingTab({
               <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{p.plan}</div>
               <div style={{ fontSize: "11px", color: "var(--muted)" }}>{p.date}</div>
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", marginRight: "8px" }}>{p.amount}</div>
-            <StatusBadge type={p.status}>Оплачено</StatusBadge>
+            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--onyx)", marginRight: "8px" }}>{p.amount} {currency}</div>
+            <StatusBadge type={p.status}>{t('billing.history.paid')}</StatusBadge>
             <button
               onClick={() => {
                 const win = window.open("", "_blank");
-                if (!win) { triggerToast("Разрешите всплывающие окна для скачивания PDF"); return; }
-                win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Чек — ${p.plan}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',Arial,sans-serif;padding:48px;color:#1A1A1A;max-width:600px}h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}h1 span{color:#F9A08B}.sub{color:#666;font-size:13px;margin-bottom:40px;margin-top:2px}.divider{height:1px;background:#eee;margin:28px 0}table{width:100%;border-collapse:collapse}td{padding:13px 0;border-bottom:1px solid #f0f0f0;font-size:14px}td:last-child{text-align:right;font-weight:700}.total td{font-size:16px;font-weight:800;border-bottom:none;padding-top:22px;color:#1A1A1A}.badge{display:inline-block;padding:3px 10px;border-radius:20px;background:#A3C9A814;color:#2A6B35;font-size:11px;font-weight:700;border:1px solid #A3C9A8}.footer{margin-top:40px;font-size:11px;color:#999;line-height:1.6}@media print{body{padding:32px}}</style></head><body><h1>Velora <span>CRM</span></h1><div class="sub">Квитанция об оплате · ${new Date().toLocaleDateString("ru-RU")}</div><div class="divider"></div><table><tr><td style="color:#666">Тариф</td><td>${p.plan}</td></tr><tr><td style="color:#666">Дата списания</td><td>${p.date}</td></tr><tr><td style="color:#666">Способ оплаты</td><td>Visa •••• 4242</td></tr><tr><td style="color:#666">Статус</td><td><span class="badge">Оплачено</span></td></tr><tr class="total"><td>Итого</td><td>${p.amount}</td></tr></table><div class="footer">Velora CRM · velora.studio<br>По вопросам оплаты: support@velora.studio</div><script>window.onload=function(){window.print();}</script></body></html>`);
+                if (!win) { toast.error(t('billing.toast.popupBlocked')); return; }
+                win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Чек — ${p.plan}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',Arial,sans-serif;padding:48px;color:#1A1A1A;max-width:600px}h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}h1 span{color:#F9A08B}.sub{color:#666;font-size:13px;margin-bottom:40px;margin-top:2px}.divider{height:1px;background:#eee;margin:28px 0}table{width:100%;border-collapse:collapse}td{padding:13px 0;border-bottom:1px solid #f0f0f0;font-size:14px}td:last-child{text-align:right;font-weight:700}.total td{font-size:16px;font-weight:800;border-bottom:none;padding-top:22px;color:#1A1A1A}.badge{display:inline-block;padding:3px 10px;border-radius:20px;background:#A3C9A814;color:#2A6B35;font-size:11px;font-weight:700;border:1px solid #A3C9A8}.footer{margin-top:40px;font-size:11px;color:#999;line-height:1.6}@media print{body{padding:32px}}</style></head><body><h1>Velora <span>CRM</span></h1><div class="sub">Квитанция об оплате · ${new Date().toLocaleDateString("ru-RU")}</div><div class="divider"></div><table><tr><td style="color:#666">Тариф</td><td>${p.plan}</td></tr><tr><td style="color:#666">Дата списания</td><td>${p.date}</td></tr><tr><td style="color:#666">Способ оплаты</td><td>Visa •••• 4242</td></tr><tr><td style="color:#666">Статус</td><td><span class="badge">Оплачено</span></td></tr><tr class="total"><td>Итого</td><td>${p.amount} ${currency}</td></tr></table><div class="footer">Velora CRM · velora.studio<br>По вопросам оплаты: support@velora.studio</div><script>window.onload=function(){window.print();}</script></body></html>`);
                 win.document.close();
               }}
               style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "7px", border: "1px solid var(--border)", background: "transparent", color: "var(--muted)", fontSize: "11px", fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}
             >
-              {icons.download} PDF
+              {icons.download} {t('billing.history.pdf')}
             </button>
           </div>
         ))}

@@ -186,3 +186,46 @@ async def pay_salary(
     })
 
     return payment
+
+
+@router.delete("/salaries/{user_id}/pay", status_code=204)
+async def cancel_salary(
+    user_id: int,
+    period_start: date = Query(...),
+    period_end: date = Query(...),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Откат выплаты: удаляет запись SalaryPayment и созданную при выплате операцию-расход.
+    Строка в списке возвращается в статус 'pending', деньги уходят из операций/категорий/целей."""
+    payment = (await db.execute(
+        select(SalaryPayment).where(
+            SalaryPayment.studio_id == ctx.studio_id,
+            SalaryPayment.user_id == user_id,
+            SalaryPayment.period_start == period_start,
+            SalaryPayment.period_end == period_end,
+        )
+    )).scalar_one_or_none()
+    if payment is None:
+        raise HTTPException(status_code=404, detail="Выплата за этот период не найдена")
+
+    # ponytail: нет FK на операцию — матчим её по полям, заданным в pay_salary.
+    # При двух одинаковых выплатах в один день агрегат всё равно верен: удаляется
+    # одна из идентичных строк-расходов. Upgrade path: FK operation_id на SalaryPayment.
+    if payment.paid_at is not None:
+        op = (await db.execute(
+            select(Operation).where(
+                Operation.studio_id == ctx.studio_id,
+                Operation.trainer_id == user_id,
+                Operation.type == "out",
+                Operation.category == "Зарплата",
+                Operation.amount == payment.amount,
+                Operation.op_date == payment.paid_at.date(),
+                Operation.account_id.is_(None),
+            ).order_by(Operation.id.desc())
+        )).scalars().first()
+        if op is not None:
+            await db.delete(op)
+
+    await db.delete(payment)
+    await db.commit()

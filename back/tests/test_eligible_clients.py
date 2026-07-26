@@ -17,11 +17,12 @@ class _User:
 
 
 class _Lesson:
-    def __init__(self, service_id=1, teacher_id=1, studio_id=1):
+    def __init__(self, service_id=1, teacher_id=1, studio_id=1, status="confirmed"):
         self.id = 1
         self.studio_id = studio_id
         self.service_id = service_id
         self.teacher_id = teacher_id
+        self.status = status
 
 
 class _Client:

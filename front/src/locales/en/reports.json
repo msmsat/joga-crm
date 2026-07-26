@@ -15,10 +15,6 @@
       "custom": "Custom"
     },
     "vsPrevious": "vs previous period: {{from}}–{{to}}",
-    "branch": "Branch",
-    "hall": "Hall",
-    "trainer": "Trainer",
-    "service": "Service",
     "allBranches": "All branches",
     "allHalls": "All halls",
     "allTrainers": "All trainers",
@@ -28,6 +24,7 @@
   "insights": {
     "title": "Needs attention",
     "action": "Open",
+    "empty": "All good for now — no advice to show",
     "revenue_up_clients_down": "Revenue is up but active clients are down — check for churn",
     "clients_at_risk": "{{count}} client(s) haven't attended in over 3 weeks — churn risk",
     "lesson_overfull": "\"{{name}}\" on {{weekday, weekday}} at {{hour}}:00 has been {{pct}}% full for three weeks in a row — consider adding another session",
@@ -42,7 +39,8 @@
     "low_rating": "\"{{name}}\" has a rating of {{rating}} — worth a closer look",
     "slot_chronic_low": "\"{{name}}\" on {{weekday, isodowWeekday}} at {{hour}}:00 has been {{pct}}% full for {{weeks}} weeks in a row — move or cancel it",
     "hall_idle_evenings": "\"{{name}}\" is idle {{pct}}% of evening hours — consider scheduling a session",
-    "slot_overfull": "The {{weekday, isodowWeekday}} {{hour}}:00 slot has been {{pct}}% full for three weeks in a row — consider adding another session"
+    "slot_overfull": "The {{weekday, isodowWeekday}} {{hour}}:00 slot has been {{pct}}% full for three weeks in a row — consider adding another session",
+    "loss_hotspot": "{{cancels}} lessons were cancelled at {{label}} this period — most cancellations cluster around this hour"
   },
   "table": {
     "loading": "Loading…",
@@ -59,7 +57,8 @@
     "noProducts": "No packages or services sold yet",
     "noLessons": "No lessons in this period",
     "noTrainerLessons": "This trainer hasn't held any lessons yet",
-    "noRows": "No records in this slice"
+    "noRows": "No records in this slice",
+    "noLosses": "No cancellations or no-shows this period"
   },
   "overview": {
     "kpi": {
@@ -70,7 +69,6 @@
       "fillRate": "Fill rate"
     },
     "chart": {
-      "title": "Trend",
       "metric": {
         "revenue": "Revenue",
         "profit": "Profit",
@@ -116,6 +114,7 @@
     "chart": {
       "title": "Sales"
     },
+    "incomeOperations": "Income operations",
     "breakdown": {
       "byCategory": "What they buy",
       "byMethod": "How they pay",
@@ -131,12 +130,14 @@
       "transfer": "Transfer"
     },
     "products": {
+      "title": "Products",
       "name": "Product",
       "sold": "Sold",
       "revenue": "Revenue",
       "avgCheck": "Average check",
       "repeatShare": "Repeat share",
-      "trend": "Trend"
+      "trend": "Trend",
+      "trendHint": "Compared with the previous period of the same length"
     }
   },
   "clients": {
@@ -159,6 +160,10 @@
     "exportList": "Export list",
     "emptySegment": "The \"{{name}}\" segment has no clients right now",
     "segments": {
+      "new": { "name": "New clients", "desc": "Registered in the selected period" },
+      "returned": { "name": "Returning clients", "desc": "Visited this period and the one before it" },
+      "lost": { "name": "Lost clients", "desc": "Visited last period, didn't come back this period" },
+      "active": { "name": "Active clients", "desc": "Came to at least one class in the selected period" },
       "at_risk": { "name": "On the edge", "desc": "Active, no visit for 21+ days" },
       "vip_idle": { "name": "VIP idle", "desc": "VIP clients, no visit for 14+ days" },
       "expiring_subscription": { "name": "Subscription ending", "desc": "≤2 classes left or ≤7 days left" },
@@ -168,11 +173,22 @@
       "high_ltv": { "name": "High LTV", "desc": "Top 10% by all-time spend" },
       "referrers": { "name": "Referrers", "desc": "Completed referral in the period" }
     },
-    "drilldown": {
-      "name": "Client",
-      "phone": "Phone",
-      "lastVisit": "Last visit",
+    "listSearch": "Search by name or phone",
+    "shownOf": "Showing {{shown}} of {{total}}",
+    "noMatches": "No one found for \"{{query}}\"",
+    "resetSearch": "Reset",
+    "neverVisited": "Never visited",
+    "valueLabel": {
+      "visits": "Visits",
+      "spent": "Spent",
+      "daysIdle": "Days idle",
+      "remaining": "Classes left",
       "value": "Value"
+    },
+    "relative": {
+      "today": "Today",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago"
     }
   },
   "team": {
@@ -184,17 +200,25 @@
       "avgRating": "Rating"
     },
     "table": {
+      "title": "Trainers",
       "trainer": "Trainer",
       "lessons": "Lessons",
       "fillPct": "Fill rate",
       "attendance": "Attendance",
       "revenue": "Revenue",
       "returnRate": "Return rate",
-      "cancels": "Cancels"
+      "cancels": "Cancels",
+      "fillPctHint": "Spots filled out of what was scheduled",
+      "returnRateHint": "Clients who booked with this trainer again",
+      "cancelsHint": "Cancelled sessions and client no-shows",
+      "ratingHint": "Average rating clients gave this trainer's sessions"
     },
     "drawer": {
       "revenueByWeek": "Revenue by week",
       "loadByWeekday": "Load by weekday",
+      "loadByHour": "Load by time of day",
+      "loadDim": { "weekday": "By day", "hour": "By hour" },
+      "schedule": { "title": "Schedule", "empty": "No lessons in this period" },
       "topLessons": "Favorite lessons",
       "returnBlock": "Client return",
       "returnOf": "{{returned}} of {{total}} clients returned ({{pct}}%)",
@@ -214,6 +238,7 @@
       "lostRevenue": "Missed revenue"
     },
     "heatmap": {
+      "title": "Load by day and hour",
       "legend": "Fill rate:",
       "tooltip": "{{lessons}} lessons · {{attendance}} attended · {{pct}}%",
       "empty": "No lessons"
@@ -229,23 +254,76 @@
       "cancel": "Cancel",
       "eveningIdle": "evening idle {{pct}}%"
     },
-    "drilldown": {
-      "date": "Date",
-      "lesson": "Lesson",
-      "teacher": "Trainer",
-      "hall": "Hall",
-      "occupancy": "Occupancy",
-      "status": "Status"
+    "losses": {
+      "title": "Cancellations and no-shows",
+      "dim": {
+        "hour": "By time",
+        "service": "By service",
+        "trainer": "By trainer"
+      },
+      "cancels_one": "{{count}} cancel",
+      "cancels_other": "{{count}} cancels",
+      "noshows_one": "{{count}} no-show",
+      "noshows_other": "{{count}} no-shows",
+      "lostSpots_one": "−{{count}} spot",
+      "lostSpots_other": "−{{count}} spots"
     },
     "status": {
       "confirmed": "Confirmed",
       "pending": "Pending",
       "cancelled": "Cancelled"
+    },
+    "slot": {
+      "summary": "for {{from}} — {{to}}",
+      "lessonsCount": "Total lessons"
     }
   },
   "export": {
-    "csv": "Download CSV",
-    "pdf": "Print PDF"
+    "csv": "Download CSV"
+  },
+  "scopeNote": {
+    "label": "Studio-wide",
+    "money": "The Branch and Hall filters don't affect money — payments aren't linked to a hall",
+    "clientBase": "Trainer, hall, branch and service don't change this metric — clients aren't linked to them"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "All money that came into the studio during the period",
+        "profit": "What's left after the period's expenses",
+        "attendance": "Lessons clients actually attended",
+        "new_clients": "Clients registered during this period",
+        "fill_rate": "How full lessons are: spots booked out of spots available"
+      },
+      "revenueStructure": "What your money is made of this period",
+      "clientDynamics": "How many came for the first time, returned, and stopped coming"
+    },
+    "sales": {
+      "chart": "Revenue and purchase count by day",
+      "byCategory": "Each product's share of revenue",
+      "byMethod": "How revenue breaks down by payment method",
+      "buyerType": "How much revenue comes from new clients versus regulars",
+      "products": "Every product: how many sold, for how much, and whether it's growing"
+    },
+    "clients": {
+      "chart": "How many clients came for the first time and how many returned, by week",
+      "riskSegments": "Clients you could lose if you don't reach out now",
+      "loyalSegments": "The ones who visit most, spend most, and bring friends"
+    },
+    "team": {
+      "trainers": "Comparison by load, revenue, and client return rate",
+      "loadWeekday": "Which days of the week the trainer is busy, and when they're free",
+      "loadHour": "What time their sessions fill up, and when they stay empty",
+      "schedule": "All of the trainer's sessions in the selected period"
+    },
+    "schedule": {
+      "heatmap": "Where the schedule is overbooked, and where it's empty",
+      "topProfitable": "The times in your schedule that bring in the most money",
+      "topFilled": "The times clients book most eagerly",
+      "chronicLow": "Slots that have filled less than a third of the hall for weeks running",
+      "halls": "How much of the time your halls are actually in use",
+      "losses": "Where the studio loses spots: lessons cancelled or clients not showing up"
+    }
   },
   "formulas": {
     "salesCount": { "title": "Sales", "text": "How many times clients paid you this period. One person paying more than once counts as separate sales." },
@@ -267,6 +345,7 @@
     "revenuePerHour": { "title": "Revenue per hour (trainer)", "text": "How much money one hour of a trainer's work brings in. Lets you compare trainers fairly — one may teach fewer sessions but each one pays more." },
     "trainerReturnRate": { "title": "Return rate (trainer)", "text": "Share of a trainer's clients who booked with them again." },
     "missedRevenue": { "title": "Missed revenue", "text": "Money the studio didn't earn because of empty spots in past sessions: free spots multiplied by the session price." },
+    "losses": { "title": "Cancellations and no-shows", "text": "A \"cancel\" is a cancelled lesson; a \"no-show\" is a client who booked but didn't come. The time/service/trainer breakdowns use the same filters as the tab and reconcile with the header KPIs." },
     "lessonRevenue": { "title": "Lesson revenue", "text": "A rough estimate of a session's revenue: attendees multiplied by price. Payments aren't tied to a specific session, so this is an approximation, not an exact figure." },
     "filtersScope": { "title": "Filter scope", "text": "The Branch and Hall filters only affect session-based metrics. Payments aren't linked to a hall, so money is shown studio-wide." },
     "avgValue": { "title": "Client value", "text": "What one client brings in on average this period." },
@@ -274,6 +353,28 @@
     "avgRating": { "title": "Average rating", "text": "The average rating clients gave this trainer's sessions." },
     "teamScope": { "title": "Data scope", "text": "This only counts revenue linked to a specific trainer, so the total across all trainers can be less than the studio's overall revenue." },
     "lessonsCount": { "title": "Lessons", "text": "How many sessions trainers held this period." },
-    "load": { "title": "Load", "text": "How packed a trainer's day is: their booked hours out of the studio's working window." }
+    "load": { "title": "Load", "text": "How packed a trainer's day is: their booked hours out of the studio's working window." },
+    "weeklyClients": { "title": "New and returning", "text": "By week: how many people came to you for the first time and how many came back. A healthy studio grows on both lines." },
+    "byCategory": { "title": "Revenue by category", "text": "What you actually earn on: packages, single sessions, gift cards, retail." },
+    "byMethod": { "title": "Payment methods", "text": "How clients pay. Helps you see whether you need card processing and how much money bypasses the till." },
+    "buyerType": { "title": "Who's paying", "text": "New clients versus regulars. If almost all revenue comes from new clients, the studio isn't retaining people." },
+    "products": { "title": "What's selling", "text": "All packages and services for the period: how many sold, for how much, and whether sales are growing." },
+    "topProfitable": { "title": "Most profitable slots", "text": "The times in your schedule that bring in the most money. Put your best trainers there." },
+    "topFilled": { "title": "Most filled slots", "text": "The times clients book most eagerly. If it's packed solid, it's worth adding another session." },
+    "chronicLow": { "title": "Chronically empty slots", "text": "Times that have filled less than a third of the hall for several weeks running. Candidates for moving or cancelling." },
+    "hallUtil": { "title": "Hall utilization", "text": "How much of the time your halls are actually in use. An empty hall is rent that isn't paying for itself." },
+    "heatmap": { "title": "Load by day and hour", "text": "Color shows the slot's average fill rate for the period. Click a cell to see that day and hour's sessions." },
+    "riskSegments": { "title": "Risk segments", "text": "Clients grouped by the type of risk they carry — losing them, or the revenue they're not bringing in. Each card has its own reason and a clear next step: message them, offer a renewal, or upsell." },
+    "loyalSegments": { "title": "Loyal", "text": "Clients who already bring you the most value: they visit most often, spend the most, or bring in friends. Worth looking after and rewarding." },
+    "segment": {
+      "at_risk": { "title": "On the edge", "text": "Used to visit regularly and have now disappeared. Still recoverable with one message." },
+      "vip_idle": { "title": "VIP idle", "text": "Clients who've spent more than anyone, but haven't visited in a while." },
+      "expiring_subscription": { "title": "Subscription ending", "text": "These clients have 1–2 sessions left. The best moment to offer a renewal." },
+      "lost_newcomers": { "title": "Newcomers who didn't return", "text": "Came once and vanished. Usually comes down to that first session — worth looking into." },
+      "upsell_candidates": { "title": "Ready for more", "text": "Visit often but buy the simplest package. Worth offering a pricier subscription." },
+      "frequent": { "title": "Regulars", "text": "Visit more than anyone else. The backbone of the studio's revenue." },
+      "high_ltv": { "title": "Most valuable", "text": "Brought the studio more money than anyone, all-time." },
+      "referrers": { "title": "Bring friends", "text": "Clients whose referrals brought other people to you." }
+    }
   }
 }

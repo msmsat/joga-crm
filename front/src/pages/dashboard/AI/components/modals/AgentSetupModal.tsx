@@ -190,26 +190,43 @@ export default function AgentSetupModal({
   const telegramTokenArea = (
     <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
       <label className={styles.formLabel}>{t('telegram.tokenLabel')}</label>
-      <div className={styles.tokenVerifyRow}>
-        <div>
-          <Input
-            value={draft.telegram.token}
-            onChange={v => updateChannel('telegram', 'token', v)}
-            placeholder={t('telegram.tokenPlaceholder')}
-            monospace
-            error={tgTokenTouched && !tgTokenValid ? t('telegram.tokenInvalidFormat') : undefined}
-          />
-        </div>
-        <Button onClick={() => onVerifyTelegram(draft.telegram.token.trim())} loading={isVerifyingTelegram} disabled={!tgTokenValid}>
-          {t('telegram.verifyButton')}
-        </Button>
-      </div>
-      {display.telegram.username && (
-        <div className={styles.tokenConnectedRow}>
-          <span className={styles.tokenBadge}>@{display.telegram.username}</span>
-          <button type="button" className={styles.tokenDisconnectBtn} onClick={() => setConfirmDisconnect('telegram')}>
+      
+      {tgConnected && display.telegram.username ? (
+        /* Если бот подключен — показываем статус и кнопку отключения */
+        <div className={styles.tokenConnectedRow} style={{ marginTop: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className={styles.tokenBadge}>@{display.telegram.username}</span>
+            <span style={{ fontSize: 12, color: '#5BAB72', fontWeight: 600 }}>
+              ✓ {t('common:status.connected', 'Подключен')}
+            </span>
+          </div>
+          <button 
+            type="button" 
+            className={styles.tokenDisconnectBtn} 
+            onClick={() => setConfirmDisconnect('telegram')}
+          >
             {t('telegram.disconnect')}
           </button>
+        </div>
+      ) : (
+        /* Если токена нет — показываем поле ввода */
+        <div className={styles.tokenVerifyRow}>
+          <div style={{ flex: 1 }}>
+            <Input
+              value={draft.telegram.token}
+              onChange={v => updateChannel('telegram', 'token', v)}
+              placeholder={t('telegram.tokenPlaceholder')}
+              monospace
+              error={tgTokenTouched && !tgTokenValid ? t('telegram.tokenInvalidFormat') : undefined}
+            />
+          </div>
+          <Button 
+            onClick={() => onVerifyTelegram(draft.telegram.token.trim())} 
+            loading={isVerifyingTelegram} 
+            disabled={!tgTokenValid}
+          >
+            {t('telegram.verifyButton')}
+          </Button>
         </div>
       )}
     </div>

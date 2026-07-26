@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
+import { localeForCurrency } from '../../../../../lib/money';
 
 interface Props {
   target: number;
   prefix?: string;
   suffix?: string;
   duration?: number;
+  currency?: string;
 }
 
-export default function AnimatedCounter({ target, prefix = '', suffix = '', duration = 1200 }: Props) {
+export default function AnimatedCounter({ target, prefix = '', suffix = '', duration = 1200, currency }: Props) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -28,5 +30,5 @@ export default function AnimatedCounter({ target, prefix = '', suffix = '', dura
     return () => observer.disconnect();
   }, [target, duration]);
 
-  return <span ref={ref}>{prefix}{count.toLocaleString('ru-RU')}{suffix}</span>;
+  return <span ref={ref}>{prefix}{count.toLocaleString(localeForCurrency(currency))}{suffix}</span>;
 }

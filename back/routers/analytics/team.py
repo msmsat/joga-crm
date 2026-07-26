@@ -5,6 +5,7 @@
 без привязки к тренеру в срез не входит, Σ ≤ Обзора — формула в InfoHint
 formulas.team_scope).
 """
+from dataclasses import replace
 from datetime import date, timedelta
 from typing import Optional
 
@@ -22,11 +23,23 @@ from schemas.analytics.reports import (
     TeamKpi,
     TeamRead,
     TrainerDetailRead,
+    TrainerHourLoadPoint,
     TrainerLoadPoint,
     TrainerRow,
     TrainerTopLesson,
 )
-from ._filters import date_bucket, lesson_conds, noshow_cond, pct, prev_range, ReportFilters, report_filters, series_buckets
+from ._filters import (
+    date_bucket,
+    lesson_conds,
+    noshow_cond,
+    op_conds,
+    pct,
+    prev_range,
+    ReportFilters,
+    report_filters,
+    series_buckets,
+    SERIES_DAY_HOURS,
+)
 
 router = APIRouter()
 
@@ -77,7 +90,7 @@ async def _lesson_stats(f: ReportFilters, sid: int, db: AsyncSession) -> dict[in
             Reservation.status,
         )
         .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
-        .where(*lesson_conds(f, sid), Lesson.teacher_id.isnot(None))
+        .where(*lesson_conds(f, sid, include_cancelled=True), Lesson.teacher_id.isnot(None))
     )).all()
 
     lessons: dict[int, dict[int, dict]] = {}
@@ -102,7 +115,7 @@ async def _lesson_stats(f: ReportFilters, sid: int, db: AsyncSession) -> dict[in
         capacity = sum(e["total_spots"] for e in active_lessons)
         duration_hours = sum(e["duration_min"] for e in active_lessons) / 60
         stats[teacher_id] = {
-            "lessons": len(by_lesson),
+            "lessons": len(active_lessons),
             "cancels": cancelled,
             "occupied": occupied,
             "capacity": capacity,
@@ -114,13 +127,20 @@ async def _lesson_stats(f: ReportFilters, sid: int, db: AsyncSession) -> dict[in
     return stats
 
 
+def _money_scoped(f: ReportFilters) -> bool:
+    """Активен фильтр, которого Operation не знает (зал/филиал) — денежные
+    метрики Команды считаются по всей студии (матрица применимости R13, в UI
+    подписано пометкой «По всей студии»)."""
+    return f.branch_id is not None or f.hall_id is not None
+
+
 async def _revenue_by_trainer(f: ReportFilters, sid: int, db: AsyncSession) -> dict[int, int]:
+    """Через общий op_conds: фильтры по тренеру и услуге применяются, зала и
+    филиала у операции нет. До R13 условия собирались здесь вручную и фильтры
+    вкладки к выручке не применялись вообще."""
     rows = (await db.execute(
         select(Operation.trainer_id, func.coalesce(func.sum(Operation.amount), 0))
-        .where(
-            Operation.studio_id == sid, Operation.type == "in", Operation.trainer_id.isnot(None),
-            Operation.op_date >= f.date_from, Operation.op_date <= f.date_to,
-        )
+        .where(*op_conds(f, sid), Operation.type == "in", Operation.trainer_id.isnot(None))
         .group_by(Operation.trainer_id)
     )).all()
     return {tid: int(amount) for tid, amount in rows}
@@ -180,12 +200,16 @@ async def _build_trainer_rows(f: ReportFilters, sid: int, db: AsyncSession) -> t
     noshows = await _noshows_by_trainer(f, sid, db)
     ratings = await _rating_by_trainer(f, sid, db)
     return_rates = await _return_rate_by_trainer(f, sid, db)
-    names = await _trainer_names(set(lesson_stats) | set(revenue), db)
 
     working_days = _working_days(f.date_from, f.date_to)
     window_hours = working_days * (LOAD_WINDOW_END_HOUR - LOAD_WINDOW_START_HOUR)
 
-    trainer_ids = set(lesson_stats) | set(revenue)
+    # Тренер с выручкой, но без занятий в периоде, в таблице нужен (продал
+    # абонемент, своих занятий не вёл). Но под фильтром по залу/филиалу выручка
+    # приезжает по всей студии (op_conds их не знает) — union добавил бы
+    # тренеров, у которых в этом зале нет ни одного занятия.
+    trainer_ids = set(lesson_stats) if _money_scoped(f) else set(lesson_stats) | set(revenue)
+    names = await _trainer_names(trainer_ids, db)
     rows: list[TrainerRow] = []
     votes_by_trainer: dict[int, int] = {}
     for tid in trainer_ids:
@@ -289,11 +313,22 @@ async def analytics_team(
     prev_lessons_count = sum(t.lessons for t in prev_trainers)
 
     total_revenue = sum(t.revenue for t in trainers)
+    prev_total_revenue = sum(t.revenue for t in prev_trainers)
     lesson_stats = await _lesson_stats(f, sid, db)
     prev_lesson_stats = await _lesson_stats(prev_f, sid, db)
-    total_hours = sum(s["duration_hours"] for s in lesson_stats.values())
-    prev_total_hours = sum(s["duration_hours"] for s in prev_lesson_stats.values())
-    prev_total_revenue = sum(t.revenue for t in prev_trainers)
+
+    # Часы для «выручки на час» — из того же охвата, что и деньги: под фильтром
+    # по залу/филиалу числитель приезжает по всей студии, и делить его на часы
+    # одного зала значит смешивать два охвата в одной дроби. Без такого фильтра
+    # это те же lesson_stats — лишнего запроса нет.
+    hours_stats, prev_hours_stats = lesson_stats, prev_lesson_stats
+    if _money_scoped(f):
+        hours_stats = await _lesson_stats(replace(f, branch_id=None, hall_id=None), sid, db)
+        prev_hours_stats = await _lesson_stats(replace(prev_f, branch_id=None, hall_id=None), sid, db)
+    row_ids = {t.trainer_id for t in trainers}
+    prev_row_ids = {t.trainer_id for t in prev_trainers}
+    total_hours = sum(s["duration_hours"] for tid, s in hours_stats.items() if tid in row_ids)
+    prev_total_hours = sum(s["duration_hours"] for tid, s in prev_hours_stats.items() if tid in prev_row_ids)
     revenue_per_hour = round(total_revenue / total_hours, 1) if total_hours else 0.0
     prev_revenue_per_hour = round(prev_total_revenue / prev_total_hours, 1) if prev_total_hours else 0.0
 
@@ -356,12 +391,11 @@ async def analytics_team_trainer_detail(
         branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=id, service_id=f.service_id,
     )
 
+    # op_conds(trainer_f) даёт и trainer_id == id, и фильтр по услуге вкладки —
+    # остальные блоки дровера считаются под тем же trainer_f (lesson_conds).
     revenue_rows = (await db.execute(
         select(date_bucket(Operation.op_date, "week").label("period"), func.coalesce(func.sum(Operation.amount), 0))
-        .where(
-            Operation.studio_id == sid, Operation.type == "in", Operation.trainer_id == id,
-            Operation.op_date >= f.date_from, Operation.op_date <= f.date_to,
-        )
+        .where(*op_conds(trainer_f, sid), Operation.type == "in")
         .group_by("period").order_by("period")
     )).all()
     revenue_by_week = {period.date().isoformat(): float(amount) for period, amount in revenue_rows}
@@ -395,6 +429,35 @@ async def analytics_team_trainer_detail(
             fill_pct=round(e["occupied"] / e["capacity"] * 100, 1) if e["capacity"] else 0.0,
         )
         for dow, e in sorted(by_weekday.items())
+    ]
+
+    hour_rows = (await db.execute(
+        select(
+            func.extract("hour", Lesson.start_time).label("hour"),
+            Lesson.id,
+            func.count(Reservation.id).filter(Reservation.status.in_(("active", "attended"))),
+            func.max(Lesson.total_spots),
+        )
+        .select_from(Lesson)
+        .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
+        .where(*lesson_conds(trainer_f, sid))
+        .group_by("hour", Lesson.id)
+    )).all()
+    by_hour: dict[int, dict] = {}
+    for hour, _lesson_id, occ, cap in hour_rows:
+        entry = by_hour.setdefault(int(hour), {"lessons": set(), "occupied": 0, "capacity": 0})
+        entry["lessons"].add(_lesson_id)
+        entry["occupied"] += int(occ or 0)
+        entry["capacity"] += int(cap or 0)
+    # Ось — только рабочее окно SERIES_DAY_HOURS (6..23): занятия вне окна (напр. 03:00)
+    # в разрез не попадают, полная ось нужна чтобы пустой вечер был виден как ноль, а не как отсутствие данных.
+    load_by_hour = [
+        TrainerHourLoadPoint(
+            hour=h,
+            lessons=len(by_hour[h]["lessons"]) if h in by_hour else 0,
+            fill_pct=round(by_hour[h]["occupied"] / by_hour[h]["capacity"] * 100, 1) if by_hour.get(h, {}).get("capacity") else 0.0,
+        )
+        for h in SERIES_DAY_HOURS
     ]
 
     top_rows = (await db.execute(
@@ -439,6 +502,7 @@ async def analytics_team_trainer_detail(
     return TrainerDetailRead(
         revenue_series=revenue_series,
         load_by_weekday=load_by_weekday,
+        load_by_hour=load_by_hour,
         top_lessons=top_lessons,
         return_rate_pct=return_rate_pct,
         returned_clients=returned_clients,

@@ -47,6 +47,7 @@
   "bookingPopup": {
     "confirmed": "Confirmed",
     "pending": "Pending",
+    "cancelled": "Cancelled",
     "spotsTaken": "spots taken",
     "fillRate": "Fill rate",
     "booked": "Booked",
@@ -102,7 +103,8 @@
     "loadPercent": "Load: {{percent}}%",
     "classes": "classes",
     "classesToday": "classes today",
-    "newLessonPreview": "New lesson"
+    "newLessonPreview": "New lesson",
+    "cancelled": "Cancelled"
   },
   "createService": "+ Create service",
   "invalidDateFormat": "Invalid date format",

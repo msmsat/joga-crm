@@ -44,8 +44,7 @@ export default function Notifications() {
           setToggles={h.setToggles}
           isDirty={h.isDirty}
           saving={h.saving}
-          onSave={h.saveChanges}
-          onCancel={h.cancelChanges}
+          saveFailed={h.saveFailed}
         />
       </div>
 

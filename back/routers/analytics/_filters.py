@@ -60,15 +60,21 @@ def pct(curr: float, prev: float) -> float | None:
     return round((curr - prev) / prev * 100, 1)
 
 
-def lesson_conds(f: ReportFilters, sid: int) -> list:
+def lesson_conds(f: ReportFilters, sid: int, *, include_cancelled: bool = False) -> list:
     """Условия для запросов по Lesson (+ join Hall для branch_id). start_time —
     datetime, а date_to — дата без времени: без combine(time.max) занятия
-    последнего дня периода после полуночи выпадали бы из выборки."""
+    последнего дня периода после полуночи выпадали бы из выборки.
+
+    Отменённые занятия по умолчанию исключены — почти все отчёты не должны их
+    считать (V4-7); include_cancelled=True — для запросов, которым нужны обе
+    группы (сам KPI отмен, разбивка тренера на живые/отменённые)."""
     conds = [
         Lesson.studio_id == sid,
         Lesson.start_time >= datetime.combine(f.date_from, time.min),
         Lesson.start_time <= datetime.combine(f.date_to, time.max),
     ]
+    if not include_cancelled:
+        conds.append(Lesson.status != "cancelled")
     if f.hall_id is not None:
         conds.append(Lesson.hall_id == f.hall_id)
     if f.trainer_id is not None:
@@ -78,6 +84,11 @@ def lesson_conds(f: ReportFilters, sid: int) -> list:
     if f.branch_id is not None:
         conds.append(Hall.branch_id == f.branch_id)
     return conds
+
+
+def needs_hall_join(f: ReportFilters) -> bool:
+    """branch_id фильтрует по Hall.branch_id — Hall нужно джойнить только тогда."""
+    return f.branch_id is not None
 
 
 def op_conds(f: ReportFilters, sid: int) -> list:

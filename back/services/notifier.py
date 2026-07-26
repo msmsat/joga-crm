@@ -1,8 +1,10 @@
-"""Диспетчер уведомлений (эпик N-1) — единая точка отправки для всего приложения.
-Вызывающий код нигде сам не решает, слать ли и куда: он лишь описывает событие
-через notify(db, studio_id, role, event_id, context), а notify() сам решает:
-  - To (кому): клиент из context["client_id"] (роль "client"), иначе владелец
-    студии или явный адресат context["to_email"] (сотрудник, например тренер);
+"""Диспетчер уведомлений (эпик N-1, N-9) — единая точка отправки для всего
+приложения. Вызывающий код нигде сам не решает, слать ли и куда: он лишь
+описывает событие через notify(db, studio_id, role, event_id, context), а
+notify() сам решает:
+  - To (кому): клиент из context["client_id"] (роль "client"), сотрудники по
+    роли (trainer/admin/owner) или точечный адресат context["to_email"] —
+    все приводятся к списку Recipient (задача N-9.2);
   - From (от кого): сама студия — токены каналов берутся из её StudioIntegration;
   - Message (что): _render(event_id, context, lang, currency) — текст на языке
     студии (Studio.language, ru/en) и в её валюте (Studio.currency);
@@ -19,15 +21,17 @@ chat_id, поэтому это не часть матрицы notify(), а то�
 у клиента уже есть Client.tg_id. token — бот студии; не передан — fallback
 на общий env TG_BOT_TOKEN.
 
-deliver(db, channel, client, subject, text, html, *, studio_id) — диспетчер
+deliver(db, channel, recipient, subject, text, html, *, studio_id) — диспетчер
 каналов для сценариев лояльности (V5-5, задача 6) и фан-аута notify(): email,
 telegram и whatsapp реально шлют по реквизитам студии из StudioIntegration
-(N-2). Нет токена канала или нужного поля у клиента (email/tg_id/phone) → False.
+(N-2). recipient — Recipient(id, email, tg_id, phone); Client/User подходят
+под этот интерфейс напрямую. Нет токена канала или нужного поля у получателя
+(email/tg_id/phone) → False.
 """
 import logging
 import os
 import re
-from typing import Any
+from typing import Any, NamedTuple
 
 import aiohttp
 from aiogram import Bot
@@ -48,6 +52,17 @@ _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": 
 GRAPH = "https://graph.facebook.com/v20.0"
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000
+
+
+class Recipient(NamedTuple):
+    """Лёгкий получатель уведомления — общий для клиента и сотрудника (N-9.2).
+    id — для логов; email/tg_id/phone — реквизиты каналов, любое может быть
+    None (канал просто не сработает). Client и User обоих совместимы по
+    атрибутам, поэтому deliver() принимает и живой Client напрямую."""
+    id: int | None
+    email: str | None
+    tg_id: int | None
+    phone: str | None
 
 
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
@@ -97,15 +112,15 @@ async def _integration_config(db: AsyncSession, studio_id: int, kind: str) -> di
     return config or {}
 
 
-async def _send_whatsapp(cfg: dict, client: Client, text: str) -> bool:
+async def _send_whatsapp(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
     """Отправка через WhatsApp Cloud API (N-2, задача 4). Нет токена/номера
-    клиента → False. Свободный текст доставляется только в 24-часовом окне
+    получателя → False. Свободный текст доставляется только в 24-часовом окне
     диалога — на стороне Meta, здесь не проверяется (MVP)."""
     phone_number_id = cfg.get("phone_number_id")
     token = cfg.get("token")
-    if not phone_number_id or not token or not client.phone:
+    if not phone_number_id or not token or not recipient.phone:
         return False
-    to = re.sub(r"\D", "", client.phone)
+    to = re.sub(r"\D", "", recipient.phone)
     payload = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text}}
     headers = {"Authorization": f"Bearer {token}"}
     async with aiohttp.ClientSession() as session:
@@ -114,33 +129,35 @@ async def _send_whatsapp(cfg: dict, client: Client, text: str) -> bool:
 
 
 async def deliver(
-    db: AsyncSession, channel: str, client: Client, subject: str, text: str, html: str,
+    db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
     *, studio_id: int,
 ) -> bool:
-    """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4): email,
-    telegram и whatsapp реально шлют по реквизитам студии. Возвращает True,
-    только если сообщение реально ушло; исключения не пробрасывает."""
+    """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4; N-9,
+    задача 2): email, telegram и whatsapp реально шлют по реквизитам студии.
+    recipient — Recipient или любой объект с .id/.email/.tg_id/.phone (Client,
+    User). Возвращает True, только если сообщение реально ушло; исключения не
+    пробрасывает."""
     try:
         if channel == "email":
-            if not client.email:
+            if not recipient.email:
                 return False
             cfg = await _integration_config(db, studio_id, "email_sender")
             sender = cfg.get("email") if cfg.get("verified") else None
-            await send_email(client.email, subject, html, sender=sender)
+            await send_email(recipient.email, subject, html, sender=sender)
             return True
         if channel == "telegram":
-            if not client.tg_id:
+            if not recipient.tg_id:
                 return False
             token = (await _integration_config(db, studio_id, "tg_notify")).get("token")
-            return await send_telegram(client.tg_id, text, token)
+            return await send_telegram(recipient.tg_id, text, token)
         if channel == "whatsapp":
             cfg = await _integration_config(db, studio_id, "wa_notify")
             if not cfg:
                 return False
-            return await _send_whatsapp(cfg, client, text)
+            return await _send_whatsapp(cfg, recipient, text)
         return False
     except Exception:
-        logger.exception("deliver failed: channel=%s client=%s", channel, client.id)
+        logger.exception("deliver failed: channel=%s recipient=%s", channel, recipient.id)
         return False
 
 
@@ -174,6 +191,16 @@ def _render(
     role_en = context.get("role") or ""
     hours = context.get("hours")
 
+    second_lesson = context.get("second_lesson_name") or ""
+    resource_ru = {"hall": "зал", "trainer": "тренер"}.get(context.get("resource"), context.get("resource") or "")
+    resource_en = {"hall": "hall", "trainer": "trainer"}.get(context.get("resource"), context.get("resource") or "")
+    device = context.get("device") or ""
+    city = context.get("city") or ""
+    kind = context.get("kind") or ""
+    rating = context.get("rating")
+    amount_raw = context.get("amount")  # сырое число (баллы), не денежный формат
+    description = context.get("description") or ""
+
     TEMPLATES: dict[str, dict[str, tuple[str, str]]] = {
         "c1": {
             "ru": ("Запись подтверждена", f"Вы записаны на «{lesson_ru}»{tail_ru}. Ждём вас!"),
@@ -198,6 +225,10 @@ def _render(
         "c2": {
             "ru": ("Напоминание о занятии", f"Напоминаем: «{lesson_ru}»{tail_ru} через {hours} ч."),
             "en": ("Class reminder", f'Reminder: "{lesson_en}"{tail_en} in {hours}h.'),
+        },
+        "t1": {
+            "ru": ("Новая запись", f"Клиент {client_name} записался на «{lesson_ru}»{tail_ru}."),
+            "en": ("New booking", f'{client_name} booked "{lesson_en}"{tail_en}.'),
         },
         "t3": {
             "ru": ("Занятие через час", f"«{lesson_ru}»{tail_ru} начнётся через час."),
@@ -291,6 +322,35 @@ def _render(
             "ru": ("Финансовая цель достигнута", f"Цель «{goal_name}» достигнута!"),
             "en": ("Financial goal reached", f'Goal "{goal_name}" has been reached!'),
         },
+        "t2": {
+            "ru": ("Отмена записи", f"Клиент {client_name} отменил запись на «{lesson_ru}»{tail_ru} менее чем за 2 часа до начала."),
+            "en": ("Booking cancelled", f'{client_name} cancelled "{lesson_en}"{tail_en} less than 2 hours before start.'),
+        },
+        "t5": {
+            "ru": ("Изменение в расписании", f"Занятие «{lesson_ru}» перенесено — новое время: {when}."),
+            "en": ("Schedule change", f'"{lesson_en}" has been rescheduled — new time: {when}.'),
+        },
+        "a7": {
+            "ru": ("Конфликт расписания", f"Наложение занятий: «{lesson_ru}» и «{second_lesson}»{tail_ru} — общий {resource_ru}."),
+            "en": ("Schedule conflict", f'Overlapping classes: "{lesson_en}" and "{second_lesson}"{tail_en} — shared {resource_en}.'),
+        },
+        "a9": {
+            "ru": ("Вход с нового устройства", f"Вход в аккаунт {staff_name} с нового устройства: {device}, {city}."),
+            "en": ("New device login", f"{staff_name}'s account was accessed from a new device: {device}, {city}."),
+        },
+        "o9": {
+            "ru": ("Экспорт данных", f"Экспорт данных ({kind}) выполнил {staff_name}."),
+            "en": ("Data export", f"Data export ({kind}) performed by {staff_name}."),
+        },
+        "c12": {
+            "ru": ("Начислены бонусы", f"Вам начислено баллов: {amount_raw}. {description}".strip()),
+            "en": ("Bonus credited", f"You've earned {amount_raw} points. {description}".strip()),
+        },
+        # t7 — задел (N-9 границы): эндпоинта создания отзыва ещё нет, врезки тоже.
+        "t7": {
+            "ru": ("Новый отзыв", f"Новый отзыв от {client_name}: {rating}★ о занятии «{lesson_ru}»."),
+            "en": ("New review", f'New review from {client_name}: {rating}★ for "{lesson_en}".'),
+        },
     }
 
     by_lang = TEMPLATES.get(event_id)
@@ -300,56 +360,74 @@ def _render(
     return subject, text, f"<p>{text}</p>"
 
 
+def _user_recipient(user: User) -> Recipient:
+    return Recipient(user.id, user.email, user.tg_id, user.phone)
+
+
 async def _recipient(
     db: AsyncSession, studio_id: int, role: str, context: dict[str, Any],
-) -> tuple[Client | None, list[str]]:
-    """Клиентские события → (Client, [email клиента]) — Client нужен для tg_id.
-    Остальные роли — точечный адресат или список email по роли:
-      - context["to_email"] задан → (None, [to_email]) — приоритет над всем
-        остальным (например, конкретный тренер при зарплате);
-      - role == "trainer" → email всех тренеров студии (fallback — пусто,
-        владельцу чужие события не шлём);
-      - role == "admin" → email всех админов, fallback — владелец (в
-        маленькой студии администратора может не быть);
-      - role == "owner" → email владельца.
-    Каналы telegram/whatsapp работают только при наличии Client — у
-    сотрудников нет tg_id/привязанного номера, их канал доставки — только
-    email (осознанное MVP-ограничение)."""
+) -> list[Recipient]:
+    """Приводит "кому" к списку Recipient — одинаково для клиента и сотрудника
+    (N-9, задача 2). Сотрудник получает свой tg_id/phone наравне с клиентом,
+    гейт "только email у сотрудников" снят:
+      - role == "client" → [Recipient(клиент)] по context["client_id"], либо
+        [] если клиент не найден;
+      - context["to_email"] задан → точечный адресат (например, тренер при
+        зарплате t6): подтягиваем всю строку User по email, чтобы отдать его
+        tg_id/phone, а не только email; нет такого User — fallback на голый
+        email (канал доставки — только email);
+      - role == "trainer" и context["trainer_id"] задан (событие конкретного
+        занятия, напр. t1) → только тренер этого занятия, не вся команда;
+      - role == "trainer"/"admin" без trainer_id → все сотрудники студии с
+        этой ролью; "admin" без админов — fallback на владельца (в маленькой
+        студии администратора может не быть);
+      - role == "owner" → владелец студии."""
     client_id = context.get("client_id")
-    if role == "client" and client_id is not None:
+    if role == "client":
+        if client_id is None:
+            return []
         client = (await db.execute(
             select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
         )).scalar_one_or_none()
-        return client, ([client.email] if client and client.email else [])
+        if client is None:
+            return []
+        return [Recipient(client.id, client.email, client.tg_id, client.phone)]
 
     to_email = context.get("to_email")
     if to_email:
-        return None, [to_email]
+        user = (await db.execute(select(User).where(User.email == to_email))).scalar_one_or_none()
+        return [_user_recipient(user) if user else Recipient(None, to_email, None, None)]
 
     if role == "trainer":
-        emails = (await db.execute(
-            select(User.email)
+        # Событие конкретного занятия (t1 «новая запись») → только тренеру этого
+        # занятия, не всей команде. context["trainer_id"] = Lesson.teacher_id.
+        trainer_id = context.get("trainer_id")
+        if trainer_id is not None:
+            user = (await db.execute(select(User).where(User.id == trainer_id))).scalar_one_or_none()
+            return [_user_recipient(user)] if user else []
+        users = (await db.execute(
+            select(User)
             .join(StudioMember, StudioMember.user_id == User.id)
             .where(StudioMember.studio_id == studio_id, StudioMember.role == "trainer")
         )).scalars().all()
-        return None, list(emails)
+        return [_user_recipient(u) for u in users]
 
     if role == "admin":
-        emails = (await db.execute(
-            select(User.email)
+        users = (await db.execute(
+            select(User)
             .join(StudioMember, StudioMember.user_id == User.id)
             .where(StudioMember.studio_id == studio_id, StudioMember.role == "admin")
         )).scalars().all()
-        if emails:
-            return None, list(emails)
+        if users:
+            return [_user_recipient(u) for u in users]
         # fallback: маленькая студия без отдельного администратора
 
-    owner_email = (await db.execute(
-        select(User.email)
+    owner = (await db.execute(
+        select(User)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id, StudioMember.role == "owner")
     )).scalars().first()
-    return None, ([owner_email] if owner_email else [])
+    return [_user_recipient(owner)] if owner else []
 
 
 async def notify(
@@ -394,21 +472,37 @@ async def notify(
             return False  # нет шаблона под событие
         subject, text, html = rendered
 
-        client, emails = await _recipient(db, studio_id, role, context)
-        if not emails and client is None:
+        recipients = await _recipient(db, studio_id, role, context)
+        if not recipients:
             return False  # некому слать ни на один канал
 
         sent = False
-        if "email" in enabled_channels and emails:
-            for addr in emails:
-                await send_email(addr, subject, html)
-            sent = True
-        if client is not None:
-            if "telegram" in enabled_channels and client.tg_id:
-                sent = await deliver(db, "telegram", client, subject, text, html, studio_id=studio_id) or sent
-            if "whatsapp" in enabled_channels:
-                sent = await deliver(db, "whatsapp", client, subject, text, html, studio_id=studio_id) or sent
+        for r in recipients:
+            if "email" in enabled_channels and r.email:
+                sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id) or sent
+            if "telegram" in enabled_channels and r.tg_id:
+                sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id) or sent
+            if "whatsapp" in enabled_channels and r.phone:
+                sent = await deliver(db, "whatsapp", r, subject, text, html, studio_id=studio_id) or sent
         return sent
     except Exception:
         logger.exception("notify failed: studio=%s role=%s event=%s", studio_id, role, event_id)
         return False
+
+
+async def notify_payment(
+    db: AsyncSession, studio_id: int, client_id: int | None, amount: float | int | None,
+) -> None:
+    """c4 клиенту + a4 админу об успешной оплате — единая врезка для всех
+    платёжных потоков (checkout, продажа абонемента, сертификат, депозит; ручная
+    операция в Финансах шлёт c4/a4 сама). Зовётся ПОСЛЕ commit транзакции оплаты.
+    Тихо выходит при пустом client_id или неположительной сумме (оплата 0 —
+    товар погашен депозитом/сертификатом, отдельного «оплата получена» не надо)."""
+    if not client_id or not amount or amount <= 0:
+        return
+    row = (await db.execute(
+        select(Client.name, Client.last_name).where(Client.id == client_id)
+    )).first()
+    client_name = f"{row.name} {row.last_name or ''}".strip() if row else ""
+    await notify(db, studio_id, "client", "c4", {"client_id": client_id, "amount": amount})
+    await notify(db, studio_id, "admin", "a4", {"client_name": client_name, "amount": amount})

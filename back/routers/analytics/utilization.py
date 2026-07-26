@@ -6,6 +6,7 @@
 formulas.lesson_revenue на фронте).
 """
 from datetime import date, datetime, time, timedelta
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
@@ -13,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Hall, Lesson, Reservation
+from models import Hall, Lesson, Reservation, User
 from schemas.analytics.reports import (
     ChronicLowRow,
     HallUtilRow,
@@ -21,6 +22,8 @@ from schemas.analytics.reports import (
     Insight,
     Kpi,
     LessonSliceRow,
+    LossSliceRow,
+    LossSlices,
     SlotLessonRow,
     UtilizationKpi,
     UtilizationRead,
@@ -38,6 +41,7 @@ EVENING_END_HOUR = 21
 HALL_IDLE_THRESHOLD_PCT = 30.0
 TOP_SLICE_LIMIT = 5
 MAX_INSIGHTS_PER_RULE = 2
+LOSS_HOTSPOT_THRESHOLD_PCT = 30.0
 
 
 def _needs_hall_join(f: ReportFilters) -> bool:
@@ -69,7 +73,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
     prev_fill_pct, prev_free_spots = await _fill_and_free(prev_f)
 
     async def _cancels(filt: ReportFilters) -> int:
-        conds = lesson_conds(filt, sid)
+        conds = lesson_conds(filt, sid, include_cancelled=True)
         stmt = select(func.count(Lesson.id)).where(*conds, Lesson.status == "cancelled")
         if _needs_hall_join(filt):
             stmt = stmt.select_from(Lesson).join(Hall, Lesson.hall_id == Hall.id)
@@ -99,7 +103,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
         if _needs_hall_join(filt):
             stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
         rows = (await db.execute(
-            stmt.where(*conds, Lesson.status != "cancelled", Lesson.start_time < func.now())
+            stmt.where(*conds, Lesson.start_time < func.now())
             .group_by(Lesson.id)
         )).all()
         return sum(max(int(cap or 0) - int(occ or 0), 0) * int(price or 0) for occ, cap, price in rows)
@@ -134,7 +138,7 @@ async def _heatmap_rows(f: ReportFilters, sid: int, db: AsyncSession) -> list:
     )
     if _needs_hall_join(f):
         stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
-    stmt = stmt.where(*conds, Lesson.status != "cancelled").group_by(
+    stmt = stmt.where(*conds).group_by(
         weekday, hour, Lesson.id, Lesson.name, Lesson.hall_id, Lesson.price
     )
     return (await db.execute(stmt)).all()
@@ -253,7 +257,7 @@ async def _halls(f: ReportFilters, sid: int, db: AsyncSession) -> list[HallUtilR
     if _needs_hall_join(f):
         stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
     rows = (await db.execute(
-        stmt.where(*conds, Lesson.status != "cancelled", Lesson.hall_id.isnot(None))
+        stmt.where(*conds, Lesson.hall_id.isnot(None))
         .group_by(Lesson.hall_id, Lesson.start_time, Lesson.id)
     )).all()
 
@@ -292,10 +296,101 @@ async def _halls(f: ReportFilters, sid: int, db: AsyncSession) -> list[HallUtilR
     return result
 
 
+async def _teacher_names(ids: set[int], db: AsyncSession) -> dict[int, str]:
+    if not ids:
+        return {}
+    rows = (await db.execute(
+        select(User.id, User.name, User.last_name).where(User.id.in_(ids))
+    )).all()
+    return {uid: " ".join(filter(None, [name, last_name])) for uid, name, last_name in rows}
+
+
+def _loss_rows(bucket: dict, key_fn, label_fn, ref_fn, limit: Optional[int] = TOP_SLICE_LIMIT) -> list[LossSliceRow]:
+    rows = [
+        LossSliceRow(
+            key=key_fn(k), label=label_fn(k), cancels=e["cancels"], noshows=e["noshows"],
+            lost_spots=e["lost_spots"], ref_id=ref_fn(k),
+        )
+        for k, e in bucket.items()
+        if e["cancels"] or e["noshows"]
+    ]
+    rows.sort(key=lambda r: r.cancels + r.noshows, reverse=True)
+    return rows[:limit] if limit is not None else rows
+
+
+async def _losses(f: ReportFilters, sid: int, db: AsyncSession) -> LossSlices:
+    """Отмены и неявки в трёх разрезах. Источники ровно те же, что у KPI
+    cancels/noshows — суммы разрезов обязаны сходиться с шапкой."""
+    hour = func.extract("hour", Lesson.start_time)
+
+    by_hour: dict[int, dict] = {}
+    by_service: dict[tuple[str, Optional[int]], dict] = {}
+    by_trainer: dict[Optional[int], dict] = {}
+
+    def bump(bucket: dict, key) -> dict:
+        return bucket.setdefault(key, {"cancels": 0, "noshows": 0, "lost_spots": 0})
+
+    cancel_stmt = select(hour, Lesson.name, Lesson.service_id, Lesson.teacher_id, Lesson.total_spots).where(
+        *lesson_conds(f, sid, include_cancelled=True), Lesson.status == "cancelled"
+    )
+    if _needs_hall_join(f):
+        cancel_stmt = cancel_stmt.select_from(Lesson).join(Hall, Lesson.hall_id == Hall.id)
+    cancel_rows = (await db.execute(cancel_stmt)).all()
+    for hour_v, name, service_id, teacher_id, total_spots in cancel_rows:
+        spots = int(total_spots or 0)
+        for entry in (bump(by_hour, int(hour_v)), bump(by_service, (name, service_id)), bump(by_trainer, teacher_id)):
+            entry["cancels"] += 1
+            entry["lost_spots"] += spots
+
+    noshow_stmt = (
+        select(hour, Lesson.name, Lesson.service_id, Lesson.teacher_id)
+        .select_from(Lesson)
+        .join(Reservation, Reservation.lesson_id == Lesson.id)
+        .where(*lesson_conds(f, sid), noshow_cond())
+    )
+    if _needs_hall_join(f):
+        noshow_stmt = noshow_stmt.join(Hall, Lesson.hall_id == Hall.id)
+    noshow_rows = (await db.execute(noshow_stmt)).all()
+    for hour_v, name, service_id, teacher_id in noshow_rows:
+        for entry in (bump(by_hour, int(hour_v)), bump(by_service, (name, service_id)), bump(by_trainer, teacher_id)):
+            entry["noshows"] += 1
+            entry["lost_spots"] += 1
+
+    names = await _teacher_names({tid for tid in by_trainer if tid is not None}, db)
+
+    return LossSlices(
+        by_hour=_loss_rows(by_hour, lambda h: f"hour:{h}", lambda h: f"{h:02d}:00", lambda h: None, limit=None),
+        by_service=_loss_rows(
+            by_service,
+            lambda k: f"service:{k[1] if k[1] is not None else k[0]}",
+            lambda k: k[0],
+            lambda k: k[1],
+        ),
+        by_trainer=_loss_rows(
+            by_trainer,
+            lambda k: f"trainer:{k if k is not None else 'none'}",
+            lambda k: names.get(k, "Без тренера") if k is not None else "Без тренера",
+            lambda k: k,
+        ),
+    )
+
+
 async def _insights(
-    f: ReportFilters, sid: int, chronic_low: list[ChronicLowRow], halls: list[HallUtilRow], db: AsyncSession,
+    f: ReportFilters, sid: int, chronic_low: list[ChronicLowRow], halls: list[HallUtilRow],
+    losses: LossSlices, total_cancels: int, db: AsyncSession,
 ) -> list[Insight]:
     insights: list[Insight] = []
+
+    if losses.by_hour and total_cancels:
+        top = losses.by_hour[0]
+        if top.cancels / total_cancels * 100 >= LOSS_HOTSPOT_THRESHOLD_PCT:
+            insights.append(Insight(
+                key="loss_hotspot",
+                severity="warning",
+                params={"label": top.label, "cancels": top.cancels},
+                action="open_schedule_hour",
+                action_params={"hour": int(top.key.split(":")[1])},
+            ))
 
     if chronic_low:
         top = chronic_low[0]
@@ -389,11 +484,12 @@ async def analytics_utilization(
     top_profitable, top_filled = _top_slices(rows)
     chronic_low = await _chronic_low(f, sid, db)
     halls = await _halls(f, sid, db)
-    insights = await _insights(f, sid, chronic_low, halls, db)
+    losses = await _losses(f, sid, db)
+    insights = await _insights(f, sid, chronic_low, halls, losses, int(kpi.cancels.value), db)
 
     return UtilizationRead(
         kpi=kpi, heatmap=heatmap, top_profitable=top_profitable, top_filled=top_filled,
-        chronic_low=chronic_low, halls=halls, insights=insights,
+        chronic_low=chronic_low, halls=halls, losses=losses, insights=insights,
     )
 
 
@@ -410,7 +506,10 @@ async def analytics_utilization_slot(
     weekday_expr = func.extract("isodow", Lesson.start_time)
     hour_expr = func.extract("hour", Lesson.start_time)
     stmt = (
-        select(Lesson.id, Lesson.start_time, Lesson.name, Lesson.teacher_name, Hall.name, Lesson.total_spots, Lesson.status)
+        select(
+            Lesson.id, Lesson.start_time, Lesson.name, Lesson.teacher_name, Hall.name, Hall.color,
+            Lesson.price, Lesson.total_spots, Lesson.status,
+        )
         .select_from(Lesson)
         .join(Hall, Lesson.hall_id == Hall.id, isouter=True)
         .where(*conds, weekday_expr == weekday, hour_expr == hour)
@@ -431,7 +530,8 @@ async def analytics_utilization_slot(
     return [
         SlotLessonRow(
             id=lid, date=start_time.date(), name=name, teacher_name=teacher_name, hall=hall_name,
-            occupied=occupied_by_lesson.get(lid, 0), total_spots=total_spots, status=status,
+            hall_color=hall_color, price=price, occupied=occupied_by_lesson.get(lid, 0),
+            total_spots=total_spots, status=status,
         )
-        for lid, start_time, name, teacher_name, hall_name, total_spots, status in rows
+        for lid, start_time, name, teacher_name, hall_name, hall_color, price, total_spots, status in rows
     ]

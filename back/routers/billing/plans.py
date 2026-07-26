@@ -17,6 +17,17 @@ PLANS: dict[str, dict] = {
 PERIOD_DISCOUNTS: dict[int, float] = {1: 0.0, 6: 0.20, 12: 0.30, 24: 0.40}
 
 
+# Модель «%»: единственный тариф (аудит §3). Модель «комбо»: 1.5% + фикс ÷2.
+PERCENT_ONLY_RATE = 3.0
+COMBO_PERCENT_RATE = 1.5
+# Комбо-фикс: половина от подписки (аудит «уменьшить цену в 2 раза»), коп/мес.
+COMBO_FIXED: dict[str, int] = {
+    "start":    PLANS["start"]["price"]    // 2,
+    "pro":      PLANS["pro"]["price"]      // 2,
+    "business": PLANS["business"]["price"] // 2,
+}
+
+
 def amount_for(plan_id: str, period_months: int) -> int:
     """Итоговая сумма к оплате в копейках: цена×месяцы со скидкой периода.
 

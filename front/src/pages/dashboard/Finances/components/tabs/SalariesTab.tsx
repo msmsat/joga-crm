@@ -37,9 +37,10 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
 
   const [period] = useState(currentPeriod);
   const { data: rows = [], isLoading: loading, error } = useSalaries(period.start, period.end);
-  const { paySalary } = useFinanceMutations();
+  const { paySalary, cancelSalary } = useFinanceMutations();
   const [expanded, setExpanded] = useState<number | null>(null);
   const [payingId, setPayingId] = useState<number | null>(null);
+  const [cancelingId, setCancelingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (error) showToast(t('salaries.toasts.loadFailed'), 'error');
@@ -61,6 +62,19 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
       // тост с текстом ошибки сервера уже показан в useFinanceMutations
     } finally {
       setPayingId(null);
+    }
+  };
+
+  const handleCancel = async (row: typeof rows[number]) => {
+    if (cancelingId) return;
+    setCancelingId(row.user_id);
+    try {
+      await cancelSalary(row.user_id, period.start, period.end);
+      showToast(t('salaries.toasts.canceled', { name: row.name }), 'success');
+    } catch {
+      // тост с текстом ошибки сервера уже показан в useFinanceMutations
+    } finally {
+      setCancelingId(null);
     }
   };
 
@@ -102,6 +116,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
           const isExpanded = expanded === row.user_id;
           const isPaid = row.status === 'paid';
           const isPaying = payingId === row.user_id;
+          const isCanceling = cancelingId === row.user_id;
 
           return (
             <div key={row.user_id}>
@@ -202,9 +217,16 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
                         <span style={{ fontSize: '13px', color: '#1A1A1A', fontWeight: 700 }}>{t('salaries.totalToPay')}</span>
                         <span style={{ fontSize: '22px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.4px' }}>{fmt(row.amount)}</span>
                       </div>
-                      {isPaid && row.paid_at && (
-                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#4E885B', background: 'rgba(163,201,168,0.16)', borderRadius: '6px', padding: '4px 10px', alignSelf: 'flex-start' }}>
-                          {t('salaries.paidAt', { date: fmtDate(row.paid_at) })}
+                      {isPaid && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                          {row.paid_at && (
+                            <div style={{ fontSize: '11px', fontWeight: 700, color: '#4E885B', background: 'rgba(163,201,168,0.16)', borderRadius: '6px', padding: '4px 10px' }}>
+                              {t('salaries.paidAt', { date: fmtDate(row.paid_at) })}
+                            </div>
+                          )}
+                          <Button variant="danger" size="sm" loading={isCanceling} onClick={() => handleCancel(row)}>
+                            {t('salaries.cancelAction')}
+                          </Button>
                         </div>
                       )}
                     </div>

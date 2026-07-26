@@ -8,20 +8,6 @@ export interface GeneralSettings {
   journal_time_step: number
 }
 
-export interface WorkingHours {
-  day_of_week: number
-  is_open: boolean
-  open_time: string
-  close_time: string
-}
-
-export interface Role {
-  id: number
-  name: string
-  description: string | null
-  color: string
-}
-
 export interface UserSession {
   id: number
   device: string | null

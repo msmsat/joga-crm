@@ -178,6 +178,12 @@ async def export_operations(
 
     csv_bytes = "﻿".encode("utf-8") + buffer.getvalue().encode("utf-8")
     filename = f"operations_{date_from or 'all'}_{date_to or 'all'}.csv"
+
+    await notify(db, ctx.studio_id, "owner", "o9", {
+        "staff_name": f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+        "kind": "операции",
+    })
+
     return StreamingResponse(
         io.BytesIO(csv_bytes),
         media_type="text/csv",

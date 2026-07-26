@@ -1,15 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Card, EmptyState, InfoHint } from '../../../../../../components/ui/index';
+import { Card, EmptyState } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtInt } from '../../../../../../lib/format';
+import { CardHeading } from '../../shared/CardHeading';
 import type { BuyerTypeSlice, CategorySlice, MethodSlice } from '../../../types';
 
 const BAR_COLORS = ['#FCAE91', '#5BAB72', '#4A80C4', '#D88C9A', '#A3C9A8'];
 
 function SliceCard({
-  title, formulaKey, rows, labelKey, onRowClick, t,
+  title, description, formulaKey, rows, labelKey, onRowClick, t,
 }: {
   title: string;
+  description: string;
   formulaKey: string;
   rows: { key: string; amount: number; share_pct: number }[];
   labelKey: string;
@@ -18,10 +20,7 @@ function SliceCard({
 }) {
   return (
     <Card padding={24}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', margin: 0, letterSpacing: '-0.2px' }}>{title}</h3>
-        <InfoHint title={t(`formulas.${formulaKey}.title`)} text={t(`formulas.${formulaKey}.text`)} />
-      </div>
+      <CardHeading title={title} description={description} formulaKey={formulaKey} />
       {rows.length === 0 ? (
         <EmptyState size="sm" icon="chart" title={t('empty.noSales')} />
       ) : (
@@ -56,12 +55,7 @@ function BuyerTypeCard({ buyerType, t }: { buyerType: BuyerTypeSlice; t: TFuncti
 
   return (
     <Card padding={24}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', margin: 0, letterSpacing: '-0.2px' }}>
-          {t('sales.breakdown.buyerType')}
-        </h3>
-        <InfoHint title={t('formulas.newClients.title')} text={t('formulas.newClients.text')} />
-      </div>
+      <CardHeading title={t('sales.breakdown.buyerType')} description={t('descriptions.sales.buyerType')} formulaKey="buyerType" />
       <div style={{ display: 'flex', gap: '16px' }}>
         <div style={{ flex: 1, textAlign: 'center' }}>
           <div style={{ fontSize: '24px', fontWeight: 800, color: '#5BAB72' }}>{fmtInt(buyerType.new.count)}</div>
@@ -103,7 +97,8 @@ export function BreakdownCards({ byCategory, byMethod, byBuyerType, onCategoryCl
     <div className="grid-2" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '20px' }}>
       <SliceCard
         title={t('sales.breakdown.byCategory')}
-        formulaKey="revenue"
+        description={t('descriptions.sales.byCategory')}
+        formulaKey="byCategory"
         rows={byCategory.map(c => ({ key: c.category, amount: c.amount, share_pct: c.share_pct }))}
         labelKey="overview.category"
         onRowClick={onCategoryClick}
@@ -111,7 +106,8 @@ export function BreakdownCards({ byCategory, byMethod, byBuyerType, onCategoryCl
       />
       <SliceCard
         title={t('sales.breakdown.byMethod')}
-        formulaKey="revenue"
+        description={t('descriptions.sales.byMethod')}
+        formulaKey="byMethod"
         rows={byMethod.map(m => ({ key: m.method, amount: m.amount, share_pct: m.share_pct }))}
         labelKey="sales.method"
         onRowClick={onMethodClick}

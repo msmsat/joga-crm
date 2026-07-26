@@ -13,7 +13,6 @@ import { queryKeys } from '../api/queryKeys';
 import { useToast } from '../components/ui/Toast';
 import { errorMessage } from '../api/errorMessage';
 import { ApiError } from '../api/client';
-import { useAIDrawer } from '../contexts/AIDrawerContext';
 
 const MAX_MESSAGE_LENGTH = 4000;
 
@@ -42,9 +41,8 @@ export function useAssistant() {
   const toast = useToast();
   const { t } = useTranslation();
 
-  // activeSessionId живёт в AIDrawerContext — общий для страницы AI, дровера и
-  // AI-строки шапки (задача 7): один и тот же диалог виден на всех поверхностях.
-  const { activeSessionId, setActiveSessionId } = useAIDrawer();
+  // Теперь у каждого компонента, вызывающего useAssistant, будет своя независимая сессия
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [isThinking, setIsThinking] = useState(false);
   // Защита от дубля при двойном Enter: закрывает и разрыв "создаём сессию" (до
   // старта мутации isPending ещё false), и сам полёт мутации.

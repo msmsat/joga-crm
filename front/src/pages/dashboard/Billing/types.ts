@@ -6,6 +6,6 @@ export type PlanType = 'start' | 'pro' | 'business';
 export type BillingTab = 'plans' | 'invoices' | 'method';
 
 export interface Feature {
-  text: string;
+  key: string;
   on: boolean;
 }

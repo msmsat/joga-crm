@@ -398,14 +398,16 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const nameError     = data.name.trim().length > 0 && data.name.trim().length < 2 ? t("addModal.step1.errors.name") : undefined;
+  const phoneError    = data.phone.trim().length > 0 && data.phone.replace(/\D/g, "").length < 6 ? t("addModal.step1.errors.phone") : undefined;
   const emailError    = data.email.trim().length > 0 && !EMAIL_RE.test(data.email.trim()) ? t("addModal.step1.errors.email") : undefined;
   const passwordError = data.password.length > 0 && data.password.length < 6 ? t("addModal.step1.errors.password") : undefined;
 
   const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
   const canStep1         = data.name.trim().length >= 2
+    && data.phone.replace(/\D/g, "").length >= 6
     && EMAIL_RE.test(data.email.trim())
     && data.password.length >= 6
-    && !nameError && !emailError && !passwordError;
+    && !nameError && !phoneError && !emailError && !passwordError;
   const canStep2         = data.role.trim().length >= 2;
   const canStep3         = Object.values(data.schedule).some(d => d.enabled);
   const enabledDays      = Object.values(data.schedule).filter(d => d.enabled).length;
@@ -621,11 +623,11 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                       <FocusInput value={data.name} onChange={v => set("name", v)} placeholder={t("addModal.step1.namePlaceholder")} error={nameError}/>
                     </div>
                     <div>
-                      <FieldLabel>{t("addModal.step1.phoneLabel")}</FieldLabel>
-                      <FocusInput type="tel" value={data.phone} onChange={v => set("phone", v)} placeholder="+7 (___) ___-__-__"/>
+                      <FieldLabel>{t("addModal.step1.phoneLabel")} *</FieldLabel>
+                      <FocusInput type="tel" value={data.phone} onChange={v => set("phone", v)} placeholder="+7 (___) ___-__-__" error={phoneError}/>
                     </div>
                     <div>
-                      <FieldLabel>{t("addModal.step1.emailLabel")}</FieldLabel>
+                      <FieldLabel>{t("addModal.step1.emailLabel")} *</FieldLabel>
                       <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError}/>
                     </div>
                     <div>

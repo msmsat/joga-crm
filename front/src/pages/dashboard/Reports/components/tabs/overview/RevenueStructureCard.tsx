@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../../../../../../components/ui/index';
 import { ChartCard } from '../../shared/ChartCard';
+import { useScopeNote } from '../../../hooks/useScopeNote';
 import { fmtMoney } from '../../../../../../lib/format';
 import type { RevenueStructureRow } from '../../../types';
 
@@ -13,9 +14,10 @@ const BAR_COLORS = ['#FCAE91', '#5BAB72', '#4A80C4', '#D88C9A', '#A3C9A8'];
 
 export function RevenueStructureCard({ rows, onCategoryClick }: RevenueStructureCardProps) {
   const { t } = useTranslation('reports');
+  const scopeNote = useScopeNote('money');
 
   return (
-    <ChartCard title={t('overview.revenueStructure.title')} formulaKey="revenue">
+    <ChartCard title={t('overview.revenueStructure.title')} description={t('descriptions.overview.revenueStructure')} formulaKey="revenue" scopeNote={scopeNote}>
       {rows.length === 0 ? (
         <EmptyState size="sm" icon="money" title={t('empty.noRevenue')} />
       ) : (

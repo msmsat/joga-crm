@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { BillingMode, PlanType, BillingTab, BillingPlan } from '../types';
 import { PLAN_COLORS } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 
 type PlanInfo = { name: string; monthly: number; color: string };
 
@@ -13,6 +14,7 @@ const EMPTY_PLANS: Record<PlanType, PlanInfo> = {
 };
 
 export function useBillingCalculator() {
+  const currency = useStudioCurrency();
   const [billingMode, setBillingMode] = useState<BillingMode>('subscription');
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('pro');
   const [selectedPeriod, setSelectedPeriod] = useState<1 | 6 | 12 | 24>(1);
@@ -81,6 +83,7 @@ export function useBillingCalculator() {
   const savedTotal = currentMonthly * selectedPeriod - totalToPay;
 
   return {
+    currency,
     billingMode, setBillingMode,
     selectedPlan, setSelectedPlan,
     selectedPeriod, setSelectedPeriod,

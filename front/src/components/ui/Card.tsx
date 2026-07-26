@@ -6,19 +6,23 @@ export interface CardProps {
   hover?: boolean;               // подъём + тень при наведении (для кликабельных карточек)
   onClick?: () => void;
   style?: React.CSSProperties;
+  id?: string;                   // якорь для scrollIntoView (напр. подсветка блока по клику из инсайта)
 }
 
 // Карточка кита: белая поверхность на жемчужном фоне, радиус 16, левитирующая тень.
-export function Card({ children, padding = 24, hover = false, onClick, style }: CardProps) {
+export function Card({ children, padding = 24, hover = false, onClick, style, id }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const lifted = hover && hovered;
 
   return (
     <div
+      id={id}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
+        position: 'relative',
+        zIndex: lifted ? 3 : 1,
         background: 'var(--bg-card, #FFFFFF)',
         border: '1px solid var(--border, #F0EDE8)',
         borderRadius: '16px',
@@ -26,9 +30,10 @@ export function Card({ children, padding = 24, hover = false, onClick, style }: 
         boxShadow: lifted
           ? '0 16px 40px -8px rgba(26,26,26,0.1)'
           : '0 8px 24px -4px rgba(26,26,26,0.04)',
-        transform: lifted ? 'translateY(-2px)' : 'none',
+        transform: lifted ? 'translateY(-2px)' : 'translateY(0)',
         cursor: onClick ? 'pointer' : undefined,
-        transition: 'all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1)',
+        transition: 'transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1), box-shadow 0.25s ease',
+        willChange: 'transform',
         ...style,
       }}
     >

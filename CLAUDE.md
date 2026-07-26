@@ -188,6 +188,7 @@
 - FastAPI, SQLAlchemy + asyncpg (PostgreSQL), Alembic, Pydantic, JWT (python-jose).
 - *Run:* `cd back && venv\Scripts\activate && uvicorn main:app --reload`
 - *Migrations:* `alembic revision --autogenerate -m "msg"` -> `alembic upgrade head`
+- *Tests:* `pytest back/tests/test_x.py` (нужен `pip install -r back/requirements-dev.txt`; `back/conftest.py` кладёт корень в `sys.path`). **Только пофайлово:** тесты пишут в dev-БД, а тесты уведомлений отправляют реальные письма — прогон всей папки не безопасен до эпика N-10.
 
 ---
 

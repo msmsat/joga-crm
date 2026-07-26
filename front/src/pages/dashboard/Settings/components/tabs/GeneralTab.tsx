@@ -1,19 +1,14 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DEFAULT_GENERAL } from "../../constants";
 import type { GeneralState } from "../../types";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
-import PremiumButton from "../ui/PremiumButton";
-import InputRow from "../ui/form/InputRow";
-import DarkSelectRow from "../ui/form/DarkSelectRow";
+import { Button, Input, Select, useToast } from "../../../../../components/ui/index";
 
-interface GeneralTabProps {
-  savedStates: Record<string, boolean>;
-  triggerSave: (key: string, msg: string) => void;
-  triggerToast: (msg: string) => void;
-}
-
-export default function GeneralTab({ savedStates, triggerSave, triggerToast }: GeneralTabProps) {
+export default function GeneralTab() {
+  const { t } = useTranslation('settings');
+  const toast = useToast();
   const [general, setGeneral] = useState<GeneralState>(DEFAULT_GENERAL);
   const [timezone, setTimezone] = useState("Europe/Moscow (UTC+3)");
   const [currency, setCurrency] = useState("RUB — Российский рубль (₽)");
@@ -21,9 +16,15 @@ export default function GeneralTab({ savedStates, triggerSave, triggerToast }: G
   const [dateFormat, setDateFormat] = useState("ДД.ММ.ГГГГ");
   const [firstDay, setFirstDay] = useState("Понедельник");
 
+  const asOptions = (values: string[]) => values.map(v => ({ value: v, label: v }));
+
   const handleReset = () => {
     setGeneral(DEFAULT_GENERAL);
-    triggerToast("Настройки сброшены");
+    toast.success(t('general.resetToast'));
+  };
+
+  const handleSave = () => {
+    toast.success(t('toast.saved'));
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +41,7 @@ export default function GeneralTab({ savedStates, triggerSave, triggerToast }: G
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px 28px 24px" }}>
-        <SectionHeader icon={icons.building} title="Данные компании" subtitle="Публичная информация вашего бизнеса" />
+        <SectionHeader icon={icons.building} title={t('general.company.title')} subtitle={t('general.company.subtitle')} />
         <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
           <label style={{
             width: "90px", height: "90px", borderRadius: "16px", flexShrink: 0,
@@ -68,40 +69,51 @@ export default function GeneralTab({ savedStates, triggerSave, triggerToast }: G
             ) : (
               <>
                 <div style={{ color: "var(--peach)" }}>{icons.plus}</div>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)" }}>Загрузить</span>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)" }}>{t('common:buttons.upload')}</span>
               </>
             )}
           </label>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
-            <InputRow label="Название компании" value={general.name} onChange={v => setGeneral({ ...general, name: v })} placeholder="Например: My Studio" />
-            <InputRow label="Описание" value={general.desc} onChange={v => setGeneral({ ...general, desc: v })} placeholder="Чем занимается ваша студия…" />
+            <Input label={t('general.company.name')} value={general.name} onChange={v => setGeneral({ ...general, name: v })} placeholder={t('general.company.namePh')} />
+            <Input label={t('general.company.desc')} value={general.desc} onChange={v => setGeneral({ ...general, desc: v })} placeholder={t('general.company.descPh')} />
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
-          <InputRow label="Телефон" value={general.phone} onChange={v => setGeneral({ ...general, phone: v })} type="tel" />
-          <InputRow label="Email" value={general.email} onChange={v => setGeneral({ ...general, email: v })} type="email" />
-          <InputRow label="Сайт" value={general.site} onChange={v => setGeneral({ ...general, site: v })} placeholder="https://studio.ru" />
-          <InputRow label="Адрес" value={general.address} onChange={v => setGeneral({ ...general, address: v })} placeholder="Москва, ул. Примерная, 1" />
+          <Input label={t('general.company.phone')} value={general.phone} onChange={v => setGeneral({ ...general, phone: v })} type="tel" />
+          <Input label={t('general.company.email')} value={general.email} onChange={v => setGeneral({ ...general, email: v })} type="email" />
+          <Input label={t('general.company.site')} value={general.site} onChange={v => setGeneral({ ...general, site: v })} placeholder={t('general.company.sitePh')} />
+          <Input label={t('general.company.address')} value={general.address} onChange={v => setGeneral({ ...general, address: v })} placeholder={t('general.company.addressPh')} />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-          <button onClick={handleReset} className="topbar-ghost" style={{ padding: "9px 18px", fontSize: "12px" }}>Сбросить</button>
-          <PremiumButton
-            isSaved={savedStates['general']}
-            onClick={() => triggerSave('general', 'Сохранено')}
-            text="Сохранить"
-          />
+          <Button variant="ghost" onClick={handleReset}>{t('general.reset')}</Button>
+          <Button variant="primary" onClick={handleSave}>{t('common:buttons.save')}</Button>
         </div>
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.globe} title="Язык и регион" subtitle="Настройки локализации интерфейса" />
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <DarkSelectRow label="Часовой пояс" value={timezone} onChange={setTimezone} options={["Europe/Moscow (UTC+3)", "Europe/London (UTC+0)", "Asia/Dubai (UTC+4)", "Asia/Almaty (UTC+5)"]} />
-          <DarkSelectRow label="Валюта" value={currency} onChange={setCurrency} options={["RUB — Российский рубль (₽)", "USD — Доллар США ($)", "EUR — Евро (€)", "KZT — Тенге (₸)"]} />
-          <DarkSelectRow label="Язык интерфейса" value={lang} onChange={setLang} options={["Русский", "English", "Deutsch", "Español"]} />
-          <DarkSelectRow label="Формат даты" value={dateFormat} onChange={setDateFormat} options={["ДД.ММ.ГГГГ", "ММ.ДД.ГГГГ", "ГГГГ-ММ-ДД"]} />
-          <DarkSelectRow label="Первый день недели" value={firstDay} onChange={setFirstDay} options={["Понедельник", "Воскресенье"]} />
+        <SectionHeader icon={icons.globe} title={t('general.locale.title')} subtitle={t('general.locale.subtitle')} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.timezone')}</div>
+            <div style={{ width: "260px" }}><Select value={timezone} onChange={setTimezone} options={asOptions(["Europe/Moscow (UTC+3)", "Europe/London (UTC+0)", "Asia/Dubai (UTC+4)", "Asia/Almaty (UTC+5)"])} /></div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.currency')}</div>
+            <div style={{ width: "260px" }}><Select value={currency} onChange={setCurrency} options={asOptions(["RUB — Российский рубль (₽)", "USD — Доллар США ($)", "EUR — Евро (€)", "KZT — Тенге (₸)"])} /></div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.language')}</div>
+            <div style={{ width: "260px" }}><Select value={lang} onChange={setLang} options={asOptions(["Русский", "English", "Deutsch", "Español"])} /></div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.dateFormat')}</div>
+            <div style={{ width: "260px" }}><Select value={dateFormat} onChange={setDateFormat} options={asOptions(["ДД.ММ.ГГГГ", "ММ.ДД.ГГГГ", "ГГГГ-ММ-ДД"])} /></div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.firstDay')}</div>
+            <div style={{ width: "260px" }}><Select value={firstDay} onChange={setFirstDay} options={asOptions(["Понедельник", "Воскресенье"])} /></div>
+          </div>
         </div>
       </div>
     </div>

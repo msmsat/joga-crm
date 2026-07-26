@@ -1,26 +1,39 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 
 export default function AppearanceTab() {
+  const { t } = useTranslation('settings');
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "auto">("light");
   const [accentColor, setAccentColor] = useState("#FCAE91");
+
+  const themes = [
+    { id: "light", label: t('appearance.theme.light'), icon: icons.sun, preview: ["#FDFCFB", "#FFFFFF", "#FCAE91"] },
+    { id: "dark", label: t('appearance.theme.dark'), icon: icons.moon, preview: ["#121212", "#1E1E1E", "#FCAE91"] },
+    { id: "auto", label: t('appearance.theme.auto'), icon: icons.toggle, preview: ["#ECECEC", "#F5F5F5", "#FCAE91"] },
+  ];
+
+  const accentColors = [
+    { color: "#FCAE91", label: t('appearance.accent.colors.peach') },
+    { color: "#A3C9A8", label: t('appearance.accent.colors.pistachio') },
+    { color: "#9BB5D8", label: t('appearance.accent.colors.lavender') },
+    { color: "#D88C9A", label: t('appearance.accent.colors.pink') },
+    { color: "#E8C97A", label: t('appearance.accent.colors.gold') },
+    { color: "#8BBFBF", label: t('appearance.accent.colors.mint') },
+  ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.palette} title="Тема оформления" subtitle="Выберите визуальный стиль интерфейса" />
+        <SectionHeader icon={icons.palette} title={t('appearance.theme.title')} subtitle={t('appearance.theme.subtitle')} />
         <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
-          {[
-            { id: "light", label: "Светлая", icon: icons.sun, preview: ["#FDFCFB", "#FFFFFF", "#FCAE91"] },
-            { id: "dark", label: "Тёмная", icon: icons.moon, preview: ["#121212", "#1E1E1E", "#FCAE91"] },
-            { id: "auto", label: "Системная", icon: icons.toggle, preview: ["#ECECEC", "#F5F5F5", "#FCAE91"] },
-          ].map((t) => {
-            const selected = themeMode === t.id;
+          {themes.map((th) => {
+            const selected = themeMode === th.id;
             return (
               <button
-                key={t.id}
-                onClick={() => setThemeMode(t.id as "light" | "dark" | "auto")}
+                key={th.id}
+                onClick={() => setThemeMode(th.id as "light" | "dark" | "auto")}
                 style={{
                   flex: 1, padding: "16px 12px",
                   borderRadius: "12px",
@@ -45,7 +58,7 @@ export default function AppearanceTab() {
                 }}
               >
                 <div style={{ display: "flex", gap: "4px" }}>
-                  {t.preview.map((c, i) => (
+                  {th.preview.map((c, i) => (
                     <div key={i} style={{
                       width: i === 2 ? "12px" : "20px", height: "24px",
                       borderRadius: "4px", background: c,
@@ -54,8 +67,8 @@ export default function AppearanceTab() {
                   ))}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "5px", color: selected ? "var(--peach)" : "var(--muted)" }}>
-                  {t.icon}
-                  <span style={{ fontSize: "12px", fontWeight: 600 }}>{t.label}</span>
+                  {th.icon}
+                  <span style={{ fontSize: "12px", fontWeight: 600 }}>{th.label}</span>
                 </div>
                 <div style={{
                   width: "18px", height: "18px", borderRadius: "50%",
@@ -78,16 +91,9 @@ export default function AppearanceTab() {
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.zap} title="Акцентный цвет" subtitle="Персонализируйте главный цвет интерфейса" />
+        <SectionHeader icon={icons.zap} title={t('appearance.accent.title')} subtitle={t('appearance.accent.subtitle')} />
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
-          {[
-            { color: "#FCAE91", label: "Персиковый" },
-            { color: "#A3C9A8", label: "Фисташковый" },
-            { color: "#9BB5D8", label: "Лавандовый" },
-            { color: "#D88C9A", label: "Розовый" },
-            { color: "#E8C97A", label: "Золотой" },
-            { color: "#8BBFBF", label: "Минт" },
-          ].map((c, i) => {
+          {accentColors.map((c, i) => {
             const isSelected = c.color === accentColor;
             return (
               <button
@@ -102,7 +108,7 @@ export default function AppearanceTab() {
                   cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "white",
-                  transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   transform: isSelected ? "scale(1.12)" : "scale(1)",
                   boxShadow: isSelected
                     ? `0 0 0 2px ${c.color}, 0 8px 24px ${c.color}60`
@@ -136,7 +142,7 @@ export default function AppearanceTab() {
           border: "1px solid rgba(252,174,145,0.2)",
           fontSize: "12px", color: "var(--muted)",
         }}>
-          Цвет акцента применяется к кнопкам, ссылкам, активным элементам и прогресс-индикаторам.
+          {t('appearance.accent.note')}
         </div>
       </div>
     </div>

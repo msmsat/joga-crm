@@ -1,23 +1,28 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, EmptyState } from '../../../../../../components/ui/index';
+import { Card, EmptyState, Tooltip } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtInt, fmtPct } from '../../../../../../lib/format';
+import { CardHeading } from '../../shared/CardHeading';
 import type { ProductRow } from '../../../types';
 
-type SortKey = 'name' | 'sold' | 'revenue' | 'avg_check' | 'repeat_share_pct' | 'trend_pct';
+export type SortKey = 'name' | 'sold' | 'revenue' | 'avg_check' | 'repeat_share_pct' | 'trend_pct';
+
+export const PRODUCTS_TABLE_ID = 'reports-products-table';
 
 export interface ProductsTableProps {
   products: ProductRow[];
   onRowClick: (row: ProductRow) => void;
+  /** Внешний сигнал от клика по KPI (задача 3 EPIC R15) — клик по th работает как раньше. */
+  sortBy?: SortKey;
 }
 
-const COLUMNS: { key: SortKey; labelKey: string; align?: 'right' }[] = [
+const COLUMNS: { key: SortKey; labelKey: string; hintKey?: string; align?: 'right' }[] = [
   { key: 'name', labelKey: 'sales.products.name' },
   { key: 'sold', labelKey: 'sales.products.sold', align: 'right' },
   { key: 'revenue', labelKey: 'sales.products.revenue', align: 'right' },
   { key: 'avg_check', labelKey: 'sales.products.avgCheck', align: 'right' },
   { key: 'repeat_share_pct', labelKey: 'sales.products.repeatShare', align: 'right' },
-  { key: 'trend_pct', labelKey: 'sales.products.trend', align: 'right' },
+  { key: 'trend_pct', labelKey: 'sales.products.trend', hintKey: 'sales.products.trendHint', align: 'right' },
 ];
 
 function rowKey(row: SortKey, r: ProductRow): number | string {
@@ -25,10 +30,20 @@ function rowKey(row: SortKey, r: ProductRow): number | string {
   return r[row] ?? -Infinity;
 }
 
-export function ProductsTable({ products, onRowClick }: ProductsTableProps) {
+export function ProductsTable({ products, onRowClick, sortBy }: ProductsTableProps) {
   const { t } = useTranslation('reports');
   const [sortKey, setSortKey] = useState<SortKey>('revenue');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [appliedSortBy, setAppliedSortBy] = useState(sortBy);
+
+  // useState остаётся источником истины (клики по заголовкам не должны спорить
+  // с пропом) — правим состояние во время рендера при смене sortBy, не в
+  // useEffect (React не советует синхронный setState в эффекте).
+  if (sortBy !== undefined && sortBy !== appliedSortBy) {
+    setAppliedSortBy(sortBy);
+    setSortKey(sortBy);
+    setSortDir('desc');
+  }
 
   const sorted = useMemo(() => {
     const copy = [...products];
@@ -51,7 +66,13 @@ export function ProductsTable({ products, onRowClick }: ProductsTableProps) {
   };
 
   return (
-    <Card padding={0} style={{ overflow: 'hidden' }}>
+    <Card id={PRODUCTS_TABLE_ID} padding={0} style={{ overflow: 'hidden' }}>
+      <CardHeading
+        title={t('sales.products.title')}
+        description={t('descriptions.sales.products')}
+        formulaKey="products"
+        style={{ padding: '16px 16px 0' }}
+      />
       {products.length === 0 ? (
         <EmptyState size="sm" icon="search" title={t('empty.noProducts')} />
       ) : (
@@ -69,7 +90,11 @@ export function ProductsTable({ products, onRowClick }: ProductsTableProps) {
                     userSelect: 'none', whiteSpace: 'nowrap',
                   }}
                 >
-                  {t(col.labelKey)}
+                  {col.hintKey ? (
+                    <Tooltip label={t(col.hintKey)} side="top">
+                      <span>{t(col.labelKey)}</span>
+                    </Tooltip>
+                  ) : t(col.labelKey)}
                   {sortKey === col.key && (sortDir === 'asc' ? ' ↑' : ' ↓')}
                 </th>
               ))}

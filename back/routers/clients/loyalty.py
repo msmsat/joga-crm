@@ -21,7 +21,7 @@ from models import (
 from schemas.loyalty import (
     BonusCreate, DepositBalanceRead, DepositCreate, DepositTransactionRead, PointsBalanceRead, PointTransactionRead,
 )
-from services.notifier import send_telegram
+from services.notifier import notify, notify_payment
 
 router = APIRouter()
 
@@ -205,11 +205,11 @@ async def add_bonus(
     card = await apply_points_change(client_id, ctx.studio_id, body.amount, body.description, db)
     await db.commit()
 
-    tg_id = (await db.execute(
-        select(Client.tg_id).where(Client.id == client_id, Client.studio_id == ctx.studio_id)
-    )).scalar_one_or_none()
-    if tg_id:
-        await send_telegram(tg_id, f"Вам начислено {body.amount} баллов: {body.description}")
+    # Начисление бонусов (c12) — теперь через матрицу: email/telegram/whatsapp по
+    # настройкам студии, а не только прямой Telegram по tg_id (как было раньше).
+    await notify(db, ctx.studio_id, "client", "c12", {
+        "client_id": client_id, "amount": body.amount, "description": body.description,
+    })
 
     return PointsBalanceRead(points_balance=card.points_balance)
 
@@ -270,6 +270,10 @@ async def apply_deposit(
         account.balance += body.amount
 
     await db.commit()
+
+    # Пополнение депозита через кассу — это оплата (c4/a4); списание/без счёта — скип.
+    if account is not None:
+        await notify_payment(db, ctx.studio_id, client_id, body.amount)
     return DepositBalanceRead(deposit_balance=card.deposit_balance)
 
 

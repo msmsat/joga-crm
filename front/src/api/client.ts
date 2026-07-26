@@ -169,6 +169,17 @@ export async function openFile(path: string): Promise<void> {
   window.open(URL.createObjectURL(blob), '_blank', 'noopener')
 }
 
+// Флаш при закрытии вкладки/обновлении страницы (EPIC N-8, задача 5):
+// keepalive переживает выгрузку документа — обычный fetch/XHR браузер обрывает.
+// navigator.sendBeacon тоже переживает, но не поддерживает свои заголовки —
+// Bearer-токен (localStorage, не cookie) с ним не уехал бы, запрос лёг бы 401.
+export function patchKeepalive(path: string, body: unknown): void {
+  const token = getToken()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  fetch(`${BASE_URL}${path}`, { method: 'PATCH', headers, keepalive: true, body: JSON.stringify(body) }).catch(() => {})
+}
+
 export const client = {
   get: <T>(path: string, options?: { auth?: boolean; signal?: AbortSignal }) =>
     request<T>('GET', path, options),

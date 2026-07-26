@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.checkout import (
     CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult, CheckoutServiceOut,
 )
+from services.notifier import notify_payment
 from services.pricing import resolve_price
 
 router = APIRouter(prefix="/checkout")
@@ -335,6 +336,10 @@ async def pay(
     )
 
     await db.commit()
+
+    # Успешная оплата (c4 клиенту, a4 админу) — покрывает и абонемент, и разовое;
+    # оплата 0 ₽ (всё погашено депозитом/сертификатом) внутри тихо пропускается.
+    await notify_payment(db, ctx.studio_id, body.client_id, quote.total_price)
 
     return CheckoutPayResult(
         total_price=quote.total_price,

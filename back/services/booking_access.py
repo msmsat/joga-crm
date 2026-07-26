@@ -58,6 +58,9 @@ async def assert_can_book(
 ) -> ClientSubscription:
     """Бросает HTTPException, если клиента нельзя записать на lesson по
     абонементу. Возвращает подходящий ClientSubscription при успехе."""
+    if lesson.status == "cancelled":
+        raise HTTPException(status_code=400, detail="Занятие отменено")
+
     sub = await find_eligible_subscription(db, client_id, lesson)
     if sub is not None:
         return sub
@@ -84,5 +87,7 @@ async def assert_can_book(
 async def can_book(db: AsyncSession, client_id: int, lesson: Lesson) -> bool:
     """Булева версия для массовых проверок (CL-6.4: eligible-clients) — без
     исключений в цикле."""
+    if lesson.status == "cancelled":
+        return False
     sub = await find_eligible_subscription(db, client_id, lesson)
     return sub is not None

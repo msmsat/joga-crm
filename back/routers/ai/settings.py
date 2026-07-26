@@ -44,6 +44,38 @@ async def update_ai_settings(
     for field, value in fields.items():
         setattr(settings, field, value)
 
+    # --- ПРИ ДИСКОННЕКТЕ ЧЕРЕЗ AI АГЕНТА: ВЫКЛЮЧАЕМ ТУМБЛЕР AI И СТИРАЕМ ДАННЫЕ ---
+    if "tg_token" in fields and not fields["tg_token"]:
+        settings.tg_enabled = False
+        settings.tg_token = None
+        settings.tg_username = None
+    # ------------------------------------------------------------------------------
+
+    # --- СИНХРОНИЗАЦИЯ С ОБЩИМИ ИНТЕГРАЦИЯМИ (УВЕДОМЛЕНИЯМИ) ---
+    if "tg_token" in fields:
+        from models import StudioIntegration
+        from sqlalchemy import select
+        integ = (await db.execute(select(StudioIntegration).where(
+            StudioIntegration.studio_id == ctx.studio_id,
+            StudioIntegration.integration_type == "tg_notify"
+        ))).scalar_one_or_none()
+        
+        if fields["tg_token"]:
+            if not integ:
+                integ = StudioIntegration(studio_id=ctx.studio_id, integration_type="tg_notify")
+                db.add(integ)
+            integ.config = {
+                "token": fields["tg_token"], 
+                "bot_username": fields.get("tg_username", settings.tg_username)
+            }
+            integ.is_connected = True
+        else:
+            # Если токен стерли — делаем дисконнект и в Уведомлениях
+            if integ:
+                integ.is_connected = False
+                integ.config = None
+    # -----------------------------------------------------------
+
     await db.commit()
     await db.refresh(settings)
     return settings

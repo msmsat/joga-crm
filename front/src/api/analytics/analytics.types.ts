@@ -253,6 +253,12 @@ export interface TrainerLoadPoint {
   fill_pct: number
 }
 
+export interface TrainerHourLoadPoint {
+  hour: number
+  lessons: number
+  fill_pct: number
+}
+
 export interface TrainerTopLesson {
   name: string
   held: number
@@ -263,6 +269,7 @@ export interface TrainerTopLesson {
 export interface TrainerDetailRead {
   revenue_series: SeriesPoint[]
   load_by_weekday: TrainerLoadPoint[]
+  load_by_hour: TrainerHourLoadPoint[]
   top_lessons: TrainerTopLesson[]
   return_rate_pct: number
   returned_clients: number
@@ -309,6 +316,21 @@ export interface HallUtilRow {
   evening_idle_pct: number
 }
 
+export interface LossSliceRow {
+  key: string
+  label: string
+  cancels: number
+  noshows: number
+  lost_spots: number
+  ref_id: number | null
+}
+
+export interface LossSlices {
+  by_hour: LossSliceRow[]
+  by_service: LossSliceRow[]
+  by_trainer: LossSliceRow[]
+}
+
 export interface UtilizationRead {
   kpi: UtilizationKpiSet
   heatmap: HeatmapCell[]
@@ -316,6 +338,7 @@ export interface UtilizationRead {
   top_filled: LessonSliceRow[]
   chronic_low: ChronicLowRow[]
   halls: HallUtilRow[]
+  losses: LossSlices
   insights: Insight[]
 }
 
@@ -325,6 +348,8 @@ export interface SlotLessonRow {
   name: string
   teacher_name: string
   hall: string | null
+  hall_color: string | null
+  price: number
   occupied: number
   total_spots: number
   status: string

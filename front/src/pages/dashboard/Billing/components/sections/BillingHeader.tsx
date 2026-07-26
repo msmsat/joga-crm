@@ -1,19 +1,15 @@
 import type { BillingTab } from '../../types';
 import { CalendarIcon, CreditCardIcon, TrendingIcon, ZapIcon } from '../ui/BillingIcons';
 import AnimatedCounter from '../ui/AnimatedCounter';
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { getCurrencySymbol } from '../../../../../components/UI';
+import { formatMoney } from '../../../../../lib/money';
 
 interface Props {
   activeTab: BillingTab;
   setActiveTab: (tab: BillingTab) => void;
   animateCards: boolean;
 }
-
-const STATS = [
-  { label: 'Потрачено всего',    target: 17430, prefix: '₽', suffix: '',        Icon: CreditCardIcon },
-  { label: 'Месяцев с нами',     target: 7,     prefix: '',  suffix: ' мес.',   Icon: CalendarIcon   },
-  { label: 'Сэкономлено',        target: 0,     prefix: '₽', suffix: ' (пока)', Icon: TrendingIcon   },
-  { label: 'Следующее списание', target: 2490,  prefix: '₽', suffix: '',        Icon: ZapIcon        },
-];
 
 const TABS: { id: BillingTab; label: string }[] = [
   { id: 'plans',    label: 'Тарифы и планы'   },
@@ -22,6 +18,16 @@ const TABS: { id: BillingTab; label: string }[] = [
 ];
 
 export default function BillingHeader({ activeTab, setActiveTab, animateCards }: Props) {
+  const currency = useStudioCurrency();
+  const currencySymbol = getCurrencySymbol(currency);
+
+  const STATS = [
+    { label: 'Потрачено всего',    target: 17430, prefix: currencySymbol, suffix: '',        Icon: CreditCardIcon },
+    { label: 'Месяцев с нами',     target: 7,     prefix: '',             suffix: ' мес.',   Icon: CalendarIcon   },
+    { label: 'Сэкономлено',        target: 0,     prefix: currencySymbol, suffix: ' (пока)', Icon: TrendingIcon   },
+    { label: 'Следующее списание', target: 2490,  prefix: currencySymbol, suffix: '',        Icon: ZapIcon        },
+  ];
+
   return (
     <>
       <div style={{ padding: '32px 32px 0', marginBottom: '32px' }}>
@@ -44,7 +50,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards }:
             <div style={{ fontSize: '12px', color: 'var(--pistachio)', fontWeight: 600, marginTop: '2px' }}>Активен · до 15 июля 2025</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
               <CalendarIcon />
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>₽2 490 / мес</span>
+              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{formatMoney(2490, currency)} / мес</span>
             </div>
           </div>
         </div>
@@ -63,7 +69,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards }:
               </div>
               <div>
                 <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>
-                  <AnimatedCounter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
+                  <AnimatedCounter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} currency={currency} />
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '1px' }}>{stat.label}</div>
               </div>

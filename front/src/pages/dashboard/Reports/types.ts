@@ -23,6 +23,7 @@ export type {
   TeamRead,
   TrainerRow,
   TrainerLoadPoint,
+  TrainerHourLoadPoint,
   TrainerTopLesson,
   TrainerDetailRead,
   UtilizationKpiSet,
@@ -31,6 +32,8 @@ export type {
   LessonSliceRow,
   ChronicLowRow,
   HallUtilRow,
+  LossSliceRow,
+  LossSlices,
   SlotLessonRow,
 } from '../../../api/analytics/analytics.types';
 

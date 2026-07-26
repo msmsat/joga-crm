@@ -6,6 +6,8 @@
 import asyncio
 from datetime import datetime, timedelta
 
+from fastapi import HTTPException
+
 import routers.schedule.lessons as L
 import services.notifier as notifier_module
 from dependencies import StudioContext
@@ -58,6 +60,7 @@ class _Client:
         self.id = 7
         self.email = email
         self.tg_id = None
+        self.phone = None
 
 
 class _R:
@@ -139,6 +142,9 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
         ["email"],                   # notify: matrix — email включён
         _StudioPrefs(),              # notify: _studio_prefs
         _Client("client@x.com"),     # notify: _recipient
+        None,                        # notify: deliver(email) → _integration_config
+        None,                        # t5 (тренеру): settings lookup → None → ранний False
+        [],                          # a7: _find_schedule_conflict → нет пересечений
         0,                           # финальный _booked_count для ответа
     ])
     body = LessonUpdateRequest(start_time=new_start)
@@ -154,6 +160,8 @@ def test_reschedule_with_client_notified_false_when_channel_disabled():
         lesson,
         [7],                         # select client_id
         _Settings(enabled=False),    # notify: все каналы выключены → False
+        None,                        # t5 (тренеру): settings lookup → None → ранний False
+        [],                          # a7: _find_schedule_conflict → нет пересечений
         0,                           # финальный _booked_count
     ])
     body = LessonUpdateRequest(start_time=new_start)
@@ -163,13 +171,34 @@ def test_reschedule_with_client_notified_false_when_channel_disabled():
 
 
 def test_reschedule_without_clients_stays_false_no_notify_call():
-    """Перенос без записанных клиентов — notify не вызывается вовсе, clients_notified False."""
+    """Перенос без записанных клиентов — клиентский notify (c11) не вызывается
+    вовсе, clients_notified остаётся False (тренерский t5 всё равно уходит —
+    он не зависит от записанных клиентов)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([lesson, [], 0])  # get_scoped_lesson, client_id-ы (пусто), финальный _booked_count
+    db = _DB([lesson, [], None, [], 0])  # get_scoped_lesson, client_id-ы (пусто), t5 settings→None, a7 conflict→[], финальный _booked_count
     body = LessonUpdateRequest(start_time=new_start)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.clients_notified is False
+
+
+def test_reschedule_cancelled_lesson_rejected():
+    """Перенос ОТМЕНЁННОГО занятия теперь запрещён целиком (эпик V4-7, задача 6,
+    сменяет прежнее поведение V4-6 задачи 3: раньше правка проходила молча, без
+    уведомлений) — 400 раньше похода в БД за клиентами, правка не применяется."""
+    lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
+    new_start = datetime.now() + timedelta(hours=20)
+    db = _DB([lesson])  # get_scoped_lesson — guard срабатывает раньше следующего execute
+    body = LessonUpdateRequest(start_time=new_start)
+    try:
+        asyncio.run(L.update_lesson(1, body, _ctx(), db))
+        raise AssertionError("ожидали HTTPException(400)")
+    except HTTPException as e:
+        assert e.status_code == 400
+        assert "отменено" in e.detail
+    assert lesson.clients_notified is False
+    assert lesson.start_time != new_start  # правка не применена
+    assert db.committed is False
 
 
 def test_non_reschedule_field_does_not_trigger_notify():
@@ -193,6 +222,7 @@ def test_cancel_sets_notified_true_when_client_notified():
         ["email"],                   # notify: matrix — email включён
         _StudioPrefs(),              # notify: _studio_prefs
         _Client("client@x.com"),     # notify: _recipient
+        None,                        # notify: deliver(email) → _integration_config
     ])
     result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
     assert lesson.clients_notified is True
@@ -213,6 +243,7 @@ if __name__ == "__main__":
     test_reschedule_with_client_sets_notified_true_when_email_enabled()
     test_reschedule_with_client_notified_false_when_channel_disabled()
     test_reschedule_without_clients_stays_false_no_notify_call()
+    test_reschedule_cancelled_lesson_rejected()
     test_non_reschedule_field_does_not_trigger_notify()
     test_cancel_sets_notified_true_when_client_notified()
     test_cancel_no_clients_stays_false()

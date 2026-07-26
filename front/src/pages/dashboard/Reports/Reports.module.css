@@ -17,3 +17,21 @@
     gap: 24px;
   }
 }
+
+.mainWithInsights {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+
+.mainWithInsightsSide {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+@media (max-width: 1280px) {
+  .mainWithInsightsSide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

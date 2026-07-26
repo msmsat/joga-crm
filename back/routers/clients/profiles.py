@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -844,6 +844,11 @@ async def book_lesson(
     )).scalar_one_or_none()
     if not lesson:
         raise HTTPException(status_code=404, detail="Занятие не найдено")
+    if lesson.status == "cancelled":
+        raise HTTPException(status_code=400, detail="Занятие отменено — запись невозможна")
+    # Записать менее чем за 2 часа до начала нельзя (то же правило, что в Журнале).
+    if lesson.start_time < datetime.now() + timedelta(hours=2):
+        raise HTTPException(status_code=400, detail="Записать на занятие можно не позднее чем за 2 часа до начала")
 
     existing_count = (await db.execute(
         select(func.count(Reservation.id))

@@ -69,6 +69,7 @@ class ProfileUpdate(BaseSchema):
     name: Optional[str] = None
     last_name: Optional[str] = None
     phone: Optional[str] = None
+    tg_id: Optional[int] = None
 
 
 class WorkingHoursInput(BaseSchema):

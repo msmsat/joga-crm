@@ -17,15 +17,6 @@ export const INITIAL_TEAM_DATA: TeamMember[] = [
   { id: 4, name: "Светлана Новикова", role: "Тренер", email: "svetlana@studio.ru", status: "warning" },
 ];
 
-export const INITIAL_INTEGRATIONS_CONFIG: IntegrationsConfig = {
-  whatsapp: { connected: true, phone: "+7 (900) 123-45-67", webhook: "https://api.velora.studio/v1/wa/webhook" },
-  telegram: { connected: true, token: "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ", welcomeMsg: "Приветствуем! Выберите удобное время для записи ✨" },
-  instagram: { connected: false, account: "" },
-  google: { connected: false, calendarName: "Основной календарь", syncType: "Двусторонняя" },
-  onec: { connected: false, url: "https://1c.studio.ru/base", login: "" },
-  yandex: { connected: true, shopId: "208492", testMode: false },
-};
-
 export const INITIAL_PERMISSIONS_MATRIX: Record<string, Record<string, boolean>> = {
   "Владелец": {
     createBooking: true, cancelBooking: true, editOwnSchedule: true, editOthersSchedules: true, viewAllBookings: true,
@@ -51,6 +42,15 @@ export const INITIAL_PERMISSIONS_MATRIX: Record<string, Record<string, boolean>>
     viewBasicReports: false, viewFullReports: false, exportReports: false,
     editStudioSettings: false, manageIntegrations: false, managePricelist: false, manageNotifications: false, accessAI: false, manageRoles: false,
   },
+};
+
+export const INITIAL_INTEGRATIONS_CONFIG: IntegrationsConfig = {
+  whatsapp: { connected: true, phone: "+7 (900) 123-45-67", webhook: "https://api.velora.studio/v1/wa/webhook" },
+  telegram: { connected: true, token: "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ", welcomeMsg: "Приветствуем! Выберите удобное время для записи ✨" },
+  instagram: { connected: false, account: "" },
+  google: { connected: false, calendarName: "Основной календарь", syncType: "Двусторонняя" },
+  onec: { connected: false, url: "https://1c.studio.ru/base", login: "" },
+  yandex: { connected: true, shopId: "208492", testMode: false },
 };
 
 export const INITIAL_SESSIONS: Session[] = [

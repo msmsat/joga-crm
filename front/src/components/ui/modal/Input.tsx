@@ -13,6 +13,7 @@ export interface InputProps {
   min?: number;                  // для type="number" — нативные ограничения ввода
   max?: number;
   step?: number;
+  icon?: React.ReactNode;        // иконка слева (например, поиск)
 }
 
 const labelStyle: React.CSSProperties = {
@@ -21,34 +22,44 @@ const labelStyle: React.CSSProperties = {
 };
 
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
-export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step }: InputProps) {
+export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon }: InputProps) {
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(26,26,26,0.09)';
   return (
     <div>
       {label && <label style={labelStyle}>{label}</label>}
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        disabled={disabled}
-        min={min}
-        max={max}
-        step={step}
-        onFocus={() => setFocused(true)}
-        onBlur={() => { setFocused(false); onBlur?.(); }}
-        style={{
-          width: '100%', padding: '12px 15px',
-          background: focused ? 'var(--bg-card, #fff)' : 'rgba(26,26,26,0.025)',
-          border: `1.5px solid ${borderColor}`,
-          borderRadius: '12px', fontSize: '14px', fontWeight: 500, color: 'var(--text, #1A1A1A)',
-          outline: 'none', fontFamily: monospace ? "'SF Mono', 'Consolas', monospace" : 'Manrope, sans-serif',
-          boxShadow: error ? '0 0 0 3px rgba(216,140,154,0.12)' : focused ? '0 0 0 3px rgba(252,174,145,0.14)' : 'none',
-          transition: 'all 0.18s ease', boxSizing: 'border-box',
-          opacity: disabled ? 0.6 : 1,
-        }}
-      />
+      <div style={{ position: 'relative' }}>
+        {icon && (
+          <span style={{
+            position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)',
+            display: 'flex', color: 'var(--text3, #999)', pointerEvents: 'none',
+          }}>
+            {icon}
+          </span>
+        )}
+        <input
+          type={type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          min={min}
+          max={max}
+          step={step}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); onBlur?.(); }}
+          style={{
+            width: '100%', padding: `12px 15px 12px ${icon ? '38px' : '15px'}`,
+            background: focused ? 'var(--bg-card, #fff)' : 'rgba(26,26,26,0.025)',
+            border: `1.5px solid ${borderColor}`,
+            borderRadius: '12px', fontSize: '14px', fontWeight: 500, color: 'var(--text, #1A1A1A)',
+            outline: 'none', fontFamily: monospace ? "'SF Mono', 'Consolas', monospace" : 'Manrope, sans-serif',
+            boxShadow: error ? '0 0 0 3px rgba(216,140,154,0.12)' : focused ? '0 0 0 3px rgba(252,174,145,0.14)' : 'none',
+            transition: 'all 0.18s ease', boxSizing: 'border-box',
+            opacity: disabled ? 0.6 : 1,
+          }}
+        />
+      </div>
       {error && <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '6px' }}>{error}</div>}
     </div>
   );

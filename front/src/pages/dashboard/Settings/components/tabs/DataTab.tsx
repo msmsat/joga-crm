@@ -1,12 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
 import Toggle from "../ui/form/Toggle";
-import DarkSelectRow from "../ui/form/DarkSelectRow";
-
-interface DataTabProps {
-  triggerToast: (msg: string) => void;
-}
+import { Select, useToast } from "../../../../../components/ui/index";
 
 const dataIcons = {
   database: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>,
@@ -15,9 +12,12 @@ const dataIcons = {
   clock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>,
 };
 
-export default function DataTab({ triggerToast }: DataTabProps) {
+export default function DataTab() {
+  const { t } = useTranslation('settings');
+  const toast = useToast();
+  const retentionOptions = t('data.storage.retentionOptions', { returnObjects: true }) as string[];
   const [autoBackup, setAutoBackup] = useState(true);
-  const [backupRetention, setBackupRetention] = useState("30 дней");
+  const [backupRetention, setBackupRetention] = useState(retentionOptions[1]);
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
   const [isDownloadingBackup, setIsDownloadingBackup] = useState(false);
   const [exportingItem, setExportingItem] = useState<number | null>(null);
@@ -26,7 +26,7 @@ export default function DataTab({ triggerToast }: DataTabProps) {
     setIsCreatingBackup(true);
     setTimeout(() => {
       setIsCreatingBackup(false);
-      triggerToast("Резервная копия базы данных успешно создана ✨");
+      toast.success(t('data.storage.toast.backupCreated'));
     }, 2000);
   };
 
@@ -34,7 +34,7 @@ export default function DataTab({ triggerToast }: DataTabProps) {
     setIsDownloadingBackup(true);
     setTimeout(() => {
       setIsDownloadingBackup(false);
-      triggerToast("Файл backup_joga_live.sql скачан");
+      toast.success(t('data.storage.toast.fileDownloaded'));
     }, 1500);
   };
 
@@ -42,18 +42,31 @@ export default function DataTab({ triggerToast }: DataTabProps) {
     setExportingItem(id);
     setTimeout(() => {
       setExportingItem(null);
-      triggerToast(`Документ "${name}" успешно экспортирован`);
+      toast.success(t('data.export.toast', { name }));
     }, 1800);
   };
+
+  const storageCategories = [
+    { label: t('data.storage.categories.clients'), size: "0.8 ГБ", color: "var(--peach)" },
+    { label: t('data.storage.categories.media'), size: "1.4 ГБ", color: "#9BB5D8" },
+    { label: t('data.storage.categories.docs'), size: "0.2 ГБ", color: "#A3C9A8" },
+  ];
+
+  const exportItems = [
+    { id: 1, name: t('data.export.items.clients.name'), format: t('data.export.items.clients.format'), size: "4.2 МБ" },
+    { id: 2, name: t('data.export.items.journal.name'), format: t('data.export.items.journal.format'), size: "12.8 МБ" },
+    { id: 3, name: t('data.export.items.finances.name'), format: t('data.export.items.finances.format'), size: "1.1 МБ" },
+    { id: 4, name: t('data.export.items.ai.name'), format: t('data.export.items.ai.format'), size: "8.4 МБ" },
+  ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={dataIcons.database} title="Хранилище данных" subtitle="Мониторинг дискового пространства и автоматизация бэкапов" accent />
+        <SectionHeader icon={dataIcons.database} title={t('data.storage.title')} subtitle={t('data.storage.subtitle')} accent />
 
         <div style={{ marginBottom: "24px", background: "rgba(0,0,0,0.01)", padding: "18px 20px", borderRadius: "14px", border: "1px solid var(--border)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Использовано дискового пространства</span>
+            <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.used')}</span>
             <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--onyx)", fontFamily: "monospace" }}>2.4 ГБ / 10 ГБ</span>
           </div>
 
@@ -62,14 +75,10 @@ export default function DataTab({ triggerToast }: DataTabProps) {
           </div>
 
           <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
-            {[
-              { label: "Клиенты", size: "0.8 ГБ", color: "var(--peach)" },
-              { label: "Медиа-файлы", size: "1.4 ГБ", color: "#9BB5D8" },
-              { label: "Документы", size: "0.2 ГБ", color: "#A3C9A8" },
-            ].map((d, i) => (
+            {storageCategories.map((d, i) => (
               <div
                 key={i}
-                onClick={() => triggerToast(`Детализация категории: ${d.label} (${d.size})`)}
+                onClick={() => toast.info(t('data.storage.categoryToast', { label: d.label, size: d.size }))}
                 style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid rgba(26,26,26,0.04)", cursor: "pointer", transition: "all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)", boxShadow: "0 2px 4px rgba(0,0,0,0.01)" }}
                 onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.04)"; }}
@@ -85,31 +94,31 @@ export default function DataTab({ triggerToast }: DataTabProps) {
         <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginBottom: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px", background: autoBackup ? "rgba(252,174,145,0.03)" : "transparent", transition: "background 0.2s" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Автоматическое резервное копирование</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Ежедневное создание слепка системы в 03:00 ночи</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.autoBackup.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('data.storage.autoBackup.sub')}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <StatusBadge type={autoBackup ? "active" : "warning"}>{autoBackup ? "Включён" : "Отключён"}</StatusBadge>
+              <StatusBadge type={autoBackup ? "active" : "warning"}>{autoBackup ? t('data.storage.autoBackup.on') : t('data.storage.autoBackup.off')}</StatusBadge>
               <Toggle checked={autoBackup} onChange={() => setAutoBackup(!autoBackup)} />
             </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>Последняя успешная копия</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>Сегодня в 03:14 · Объём сжатого архива: 124 МБ</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.lastBackup.title')}</div>
+              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('data.storage.lastBackup.sub')}</div>
             </div>
             <span style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--muted)", display: "flex", alignItems: "center", gap: "4px" }}>
-              {dataIcons.clock} 10 часов назад
+              {dataIcons.clock} {t('data.storage.lastBackup.agoHours')}
             </span>
           </div>
 
-          <DarkSelectRow
-            label="Срок хранения архивных бэкапов"
-            value={backupRetention}
-            options={["14 дней", "30 дней", "60 дней", "90 дней"]}
-            onChange={setBackupRetention}
-          />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", gap: "16px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('data.storage.retention')}</div>
+            <div style={{ width: "180px" }}>
+              <Select value={backupRetention} onChange={setBackupRetention} options={retentionOptions.map(v => ({ value: v, label: v }))} />
+            </div>
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
@@ -121,7 +130,7 @@ export default function DataTab({ triggerToast }: DataTabProps) {
             onMouseLeave={e => { if (!isDownloadingBackup) { e.currentTarget.style.background = "rgba(252,174,145,0.08)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "none"; } }}
           >
             {isDownloadingBackup ? dataIcons.loader : dataIcons.download}
-            {isDownloadingBackup ? "Скачивание..." : "Скачать последний бэкап"}
+            {isDownloadingBackup ? t('data.storage.downloading') : t('data.storage.download')}
           </button>
 
           <button
@@ -135,21 +144,16 @@ export default function DataTab({ triggerToast }: DataTabProps) {
               ? dataIcons.loader
               : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
             }
-            {isCreatingBackup ? "Компиляция таблиц..." : "Сгенерировать бэкап сейчас"}
+            {isCreatingBackup ? t('data.storage.generating') : t('data.storage.generate')}
           </button>
         </div>
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={dataIcons.download} title="Экспорт отчётов и списков" subtitle="Выгрузите файлы в табличных форматах для бухгалтерии и аналитики" />
+        <SectionHeader icon={dataIcons.download} title={t('data.export.title')} subtitle={t('data.export.subtitle')} />
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          {[
-            { id: 1, name: "Полный список клиентов", format: "CSV / XLSX (Excel)", size: "4.2 МБ" },
-            { id: 2, name: "История журналов и записей", format: "CSV / PDF Документ", size: "12.8 МБ" },
-            { id: 3, name: "Финансовый отчёт и касса", format: "XLSX / Сводная таблица", size: "1.1 МБ" },
-            { id: 4, name: "Сводная AI-аналитика студии", format: "PDF Презентация", size: "8.4 МБ" },
-          ].map((e) => {
+          {exportItems.map((e) => {
             const isExporting = exportingItem === e.id;
             return (
               <div

@@ -6,6 +6,7 @@
 """
 import os
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +15,10 @@ from sqlalchemy.future import select
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import BillingInvoice, PaymentCard, StudioBillingPlan
-from schemas.settings.billing import CheckoutRequest, CheckoutResponse, RenewResponse
+from schemas.settings.billing import (
+    CheckoutRequest, CheckoutResponse, RenewResponse,
+    IbanCheckoutRequest, IbanCheckoutResponse,
+)
 from services import fondy
 from .plans import PLANS, PERIOD_DISCOUNTS, amount_for
 
@@ -59,6 +63,50 @@ async def create_checkout(
         response_url=f"{WEB_APP_URL}/dashboard/billing?payment=return",
     )
     return CheckoutResponse(checkout_url=checkout_url)
+
+
+def fake_iban(studio_id: int) -> str:
+    # ponytail: фейковый IBAN для теста оплаты, не валидируется банком. Реальный — через провайдера.
+    tail = f"{studio_id:018d}"[-18:]
+    return f"DE{(studio_id * 97 % 89 + 10):02d}5001051000{tail[:10]}"
+
+
+@router.post("/checkout/iban", response_model=IbanCheckoutResponse)
+async def create_iban_checkout(
+    body: IbanCheckoutRequest,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """IBAN-ветка оплаты (аудит §4): без Fondy — тестовый IBAN + pending-инвойс,
+    показывается в модалке для банковского перевода. В paid переводится вне UI-скоупа
+    (реального шлюза для IBAN нет — см. skip в эпике B2)."""
+    if body.plan not in PLANS or body.period_months not in PERIOD_DISCOUNTS:
+        raise HTTPException(status_code=422, detail="Неизвестный план или период")
+
+    amount = amount_for(body.plan, body.period_months)
+
+    invoice = BillingInvoice(
+        studio_id=ctx.studio_id,
+        user_id=ctx.user.id,
+        plan_name=body.plan,
+        period_months=body.period_months,
+        amount=amount,
+        status="pending",
+        payment_method="iban",
+    )
+    db.add(invoice)
+    await db.flush()  # нужен invoice.id для order_id
+
+    invoice.order_id = f"velora-{invoice.id}-{uuid.uuid4()}"
+    await db.commit()
+
+    return IbanCheckoutResponse(
+        invoice_id=invoice.id,
+        invoice_number=f"INV-{datetime.utcnow().year}-{invoice.id:06d}",
+        iban=fake_iban(ctx.studio_id),
+        amount=amount,
+        reference=invoice.order_id,
+    )
 
 
 @router.post("/renew", response_model=RenewResponse)

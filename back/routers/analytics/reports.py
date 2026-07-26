@@ -304,6 +304,7 @@ async def trainers_report(
             Lesson.teacher_id.isnot(None),
             Lesson.start_time >= start_dt,
             Lesson.start_time <= end_dt,
+            Lesson.status != "cancelled",
         )
         .group_by(Lesson.teacher_id)
     )).all()

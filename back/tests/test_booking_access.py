@@ -12,9 +12,10 @@ from services.booking_access import assert_can_book
 
 
 class _Lesson:
-    def __init__(self, service_id=1):
+    def __init__(self, service_id=1, status="confirmed"):
         self.id = 1
         self.service_id = service_id
+        self.status = status
 
 
 class _Sub:
@@ -126,6 +127,17 @@ def test_frozen_or_exhausted_excluded_403():
         assert e.status_code == 403
 
 
+# ─── Отменённое занятие → 400, до похода за абонементом (эпик V4-7, задача 6) ──
+def test_cancelled_lesson_400():
+    db = _DB([])  # guard срабатывает раньше первого execute
+    try:
+        _run(db, _Lesson(service_id=1, status="cancelled"))
+        raise AssertionError("ожидали 400")
+    except HTTPException as e:
+        assert e.status_code == 400
+        assert "отменено" in e.detail
+
+
 if __name__ == "__main__":
     test_no_subscription_403()
     test_wrong_service_400()
@@ -133,4 +145,5 @@ if __name__ == "__main__":
     test_matching_service_ids_passes()
     test_legacy_no_package_id_passes()
     test_frozen_or_exhausted_excluded_403()
+    test_cancelled_lesson_400()
     print("ALL PASS — гейт доступа к записи CL-6.1 зелёные")

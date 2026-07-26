@@ -16,16 +16,19 @@ interface Props {
   setToggles: Dispatch<SetStateAction<Toggles>>;
   isDirty: boolean;
   saving: boolean;
-  onSave: () => void;
-  onCancel: () => void;
+  saveFailed: boolean;
 }
 
 export default function NotificationMatrix({
   currentRole, events, activeChannels, toggles, toggleCheck, setToggles,
-  isDirty, saving, onSave, onCancel,
+  isDirty, saving, saveFailed,
 }: Props) {
   const { t } = useTranslation('notifications');
   const allOn = events.every(ev => activeChannels.every(ch => toggles[ev.id]?.[ch.key]));
+  // isDirty здесь означает и «ещё не отправили» (окно дебаунса), и «отправляем» —
+  // с автосохранением кнопки «Сохранить» больше нет, статус должен реагировать
+  // на клик сразу, не дожидаясь фактического старта запроса через 600 мс.
+  const syncing = saving || isDirty;
 
   return (
     <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid rgba(26,26,26,0.08)' }}>
@@ -116,44 +119,34 @@ export default function NotificationMatrix({
             })}
           </span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={onCancel}
-              disabled={!isDirty || saving}
-              style={{
-                fontSize: '12px', fontWeight: 700, color: isDirty ? '#666666' : '#BBBBBB',
-                background: 'transparent', border: `1px solid ${isDirty ? 'rgba(26,26,26,0.15)' : 'rgba(26,26,26,0.06)'}`,
-                cursor: isDirty && !saving ? 'pointer' : 'default',
-                opacity: saving ? 0.7 : 1,
-                padding: '8px 14px', borderRadius: '8px',
-                fontFamily: "'Manrope', sans-serif",
-                transition: 'all 0.18s ease',
-              }}
-              onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.borderColor = '#999999'; }}
-              onMouseLeave={e => { if (isDirty && !saving) e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; }}
-            >
-              {t('matrix.cancel')}
-            </button>
-
-            <button
-              onClick={onSave}
-              disabled={!isDirty || saving}
-              style={{
-                fontSize: '12px', fontWeight: 800,
-                color: isDirty ? '#FFFFFF' : '#CCCCCC',
-                background: isDirty ? '#FCAE91' : 'rgba(26,26,26,0.05)',
-                border: 'none', cursor: isDirty && !saving ? 'pointer' : 'default',
-                opacity: saving ? 0.7 : 1,
-                padding: '8px 16px', borderRadius: '8px',
-                fontFamily: "'Manrope', sans-serif",
-                transition: 'all 0.18s ease',
-                boxShadow: isDirty ? '0 4px 12px rgba(252,174,145,0.35)' : 'none',
-              }}
-              onMouseEnter={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(252,174,145,0.45)'; } }}
-              onMouseLeave={e => { if (isDirty && !saving) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(252,174,145,0.35)'; } }}
-            >
-              {saving ? t('matrix.saving') : t('matrix.save')}
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              fontSize: '12px', fontWeight: 700,
+              color: syncing ? '#666666' : saveFailed ? '#D88C9A' : '#A3C9A8',
+            }}>
+              {syncing ? (
+                <>
+                  <span style={{
+                    width: '12px', height: '12px', borderRadius: '50%', display: 'inline-block', flexShrink: 0,
+                    border: '2px solid rgba(26,26,26,0.15)', borderTopColor: '#666666',
+                    animation: 'vl-matrix-spin 0.6s linear infinite',
+                  }} />
+                  <style>{`@keyframes vl-matrix-spin { to { transform: rotate(360deg); } }`}</style>
+                  {t('matrix.saving')}
+                </>
+              ) : saveFailed ? (
+                <>
+                  <Icon.AlertTriangle />
+                  {t('matrix.notSaved')}
+                </>
+              ) : (
+                <>
+                  <Icon.Check />
+                  {t('matrix.allSaved')}
+                </>
+              )}
+            </span>
 
             <button
               onClick={() => {

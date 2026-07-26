@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 from sqlalchemy import delete
 
-from database import async_session_maker
+from database import async_session_maker, engine
 from dependencies import StudioContext
 from models import Client, Operation, Studio
 from routers.analytics._filters import bucket_key, ReportFilters, SERIES_DAY_HOURS, series_buckets
@@ -110,6 +110,10 @@ async def _run():
         assert len(hourly) == 18, len(hourly)
     finally:
         await _cleanup(sid)
+        # Пул asyncpg привязан к текущему event loop: без dispose() следующий
+        # asyncio.run() в этом же процессе (соседний test_* или другой файл в
+        # одном прогоне pytest) унаследует мёртвый пул.
+        await engine.dispose()
 
 
 def test_analytics_series_fill():

@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useToast } from "../../../../components/ui/index";
 
-export function useBilling(triggerToast: (msg: string) => void) {
+export function useBilling() {
+  const { t } = useTranslation('settings');
+  const toast = useToast();
   const [billingView, setBillingView] = useState<"dashboard" | "tariffs">("dashboard");
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [isManagingSub, setIsManagingSub] = useState(false);
@@ -12,22 +16,22 @@ export function useBilling(triggerToast: (msg: string) => void) {
   const [cardFocused, setCardFocused] = useState("");
 
   const addCard = () => {
-    triggerToast("Карта успешно добавлена и привязана");
+    toast.success(t('billing.toast.cardAdded'));
     setIsAddingCard(false);
   };
 
   const replaceCard = () => {
-    triggerToast("Запуск защищенного обновления реквизитов...");
+    toast.success(t('billing.toast.cardReplaceStarted'));
     setIsAddingCard(true);
   };
 
   const applyBillingSettings = () => {
-    triggerToast("Период подписки успешно изменен");
+    toast.success(t('billing.toast.cycleChanged'));
     setIsManagingSub(false);
   };
 
   const upgradeToBusinessView = () => {
-    triggerToast("Заявка на тариф Business успешно подтверждена!");
+    toast.success(t('billing.toast.businessRequested'));
     setBillingView("dashboard");
   };
 
@@ -42,6 +46,5 @@ export function useBilling(triggerToast: (msg: string) => void) {
     cardCvc, setCardCvc,
     cardFocused, setCardFocused,
     addCard, replaceCard, applyBillingSettings, upgradeToBusinessView,
-    triggerToast,
   };
 }

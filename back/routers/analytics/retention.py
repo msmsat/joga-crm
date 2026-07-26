@@ -6,6 +6,7 @@
 «лояльные» (frequent/high_ltv/referrers) скоуплены периодом отчёта и не
 участвуют в кампаниях Лояльности — свои функции по соседству.
 """
+from dataclasses import replace
 from datetime import date, datetime, time, timedelta
 from typing import Literal
 
@@ -15,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Client, ClientSubscription, Lesson, Operation, Reservation
+from models import Client, ClientSubscription, Hall, Lesson, Operation, Reservation
 from schemas.analytics.reports import (
     ClientsKpi,
     ClientsReportRead,
@@ -26,17 +27,28 @@ from schemas.analytics.reports import (
     WeeklyPoint,
 )
 from services.loyalty_matching import (
+    _days_since,
     Match,
     SEGMENT_MATCHERS,
     seg_frequent,
     seg_high_ltv,
     seg_referrers,
 )
-from ._filters import lesson_conds, pct, prev_range, ReportFilters, report_filters, series_buckets
+from ._filters import (
+    lesson_conds,
+    needs_hall_join,
+    op_conds,
+    pct,
+    prev_range,
+    ReportFilters,
+    report_filters,
+    series_buckets,
+)
 
 router = APIRouter()
 
 RISK_SEGMENT_KEYS = ["at_risk", "vip_idle", "expiring_subscription", "lost_newcomers", "upsell_candidates"]
+PERIOD_SEGMENT_KEYS = ["new", "returned", "lost"]
 
 SUBS_EXPIRING_DAYS = 7
 VIP_INACTIVE_DAYS = 30
@@ -69,18 +81,66 @@ async def _active_matches(f: ReportFilters, sid: int, db: AsyncSession) -> list[
     return [Match(cid, f"c:{cid}", {"visits": int(visits)}) for cid, visits in rows]
 
 
-async def _attended_client_ids(sid: int, d_from: date, d_to: date, db: AsyncSession) -> set[int]:
-    ids = (await db.execute(
-        select(func.distinct(Reservation.client_id))
-        .select_from(Lesson)
-        .join(Reservation, Reservation.lesson_id == Lesson.id)
-        .where(
-            Lesson.studio_id == sid,
-            Reservation.status == "attended",
-            Lesson.start_time >= datetime.combine(d_from, time.min),
-            Lesson.start_time <= datetime.combine(d_to, time.max),
-        )
-    )).scalars().all()
+async def _period_matches(key: str, f: ReportFilters, sid: int, prev_from: date, prev_to: date, db: AsyncSession) -> list[Match]:
+    """Те же множества, что стоят за KPI вкладки Клиенты (_kpi): new —
+    registration_date в периоде (без фильтров — как в _kpi), returned —
+    attended и в периоде, и в прошлом периоде, lost — attended в прошлом
+    периоде и не пришёл в текущем. Один источник на цифру и на список, иначе
+    счётчик и список разъедутся."""
+    if key == "new":
+        start_dt = datetime.combine(f.date_from, time.min)
+        end_dt = datetime.combine(f.date_to, time.max)
+        new_ids = (await db.execute(
+            select(Client.id).where(
+                Client.studio_id == sid, Client.registration_date >= start_dt, Client.registration_date <= end_dt,
+            )
+        )).scalars().all()
+        if not new_ids:
+            return []
+        visit_rows = (await db.execute(
+            select(Reservation.client_id, func.count(Reservation.id))
+            .join(Lesson, Lesson.id == Reservation.lesson_id)
+            .where(
+                Reservation.client_id.in_(new_ids), Reservation.status == "attended",
+                Lesson.start_time >= start_dt, Lesson.start_time <= end_dt,
+            )
+            .group_by(Reservation.client_id)
+        )).all()
+        visits_by_id = {cid: int(cnt) for cid, cnt in visit_rows}
+        return [Match(cid, f"c:{cid}", {"visits": visits_by_id.get(cid, 0)}) for cid in new_ids]
+
+    curr_matches = await _active_matches(f, sid, db)
+    curr_visits = {m.client_id: int(m.context["visits"]) for m in curr_matches}
+    prev_ids = await _attended_client_ids(f, sid, prev_from, prev_to, db)
+
+    if key == "returned":
+        ids = set(curr_visits) & prev_ids
+        return [Match(cid, f"c:{cid}", {"visits": curr_visits[cid]}) for cid in ids]
+
+    if key == "lost":
+        ids = prev_ids - set(curr_visits)
+        if not ids:
+            return []
+        rows = (await db.execute(
+            select(Client.id, Client.last_visit_date).where(Client.id.in_(ids))
+        )).all()
+        return [Match(cid, f"c:{cid}", {"days_inactive": _days_since(lv)}) for cid, lv in rows]
+
+    return []
+
+
+async def _attended_client_ids(f: ReportFilters, sid: int, d_from: date, d_to: date, db: AsyncSession) -> set[int]:
+    """Единственная точка, через которую вкладка Клиенты видит посещения — окно
+    периода подменяем, остальные фильтры (зал/тренер/услуга/филиал) берём из f
+    как есть (тот же приём, что в overview.py:_attended_client_ids)."""
+    shifted = replace(f, date_from=d_from, date_to=d_to)
+    conds = lesson_conds(shifted, sid)
+    stmt = select(func.distinct(Reservation.client_id)).select_from(Lesson).join(
+        Reservation, Reservation.lesson_id == Lesson.id
+    )
+    if needs_hall_join(shifted):
+        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+    ids = (await db.execute(stmt.where(*conds, Reservation.status == "attended"))).scalars().all()
     return set(ids)
 
 
@@ -101,12 +161,12 @@ async def _kpi(f: ReportFilters, sid: int, prev_from: date, prev_to: date, db: A
         )
     )).scalar_one()
 
-    curr_ids = await _attended_client_ids(sid, f.date_from, f.date_to, db)
-    prev_ids = await _attended_client_ids(sid, prev_from, prev_to, db)
+    curr_ids = await _attended_client_ids(f, sid, f.date_from, f.date_to, db)
+    prev_ids = await _attended_client_ids(f, sid, prev_from, prev_to, db)
     length = (f.date_to - f.date_from).days
     prev2_from = prev_from - timedelta(days=length + 1)
     prev2_to = prev_from - timedelta(days=1)
-    prev2_ids = await _attended_client_ids(sid, prev2_from, prev2_to, db)
+    prev2_ids = await _attended_client_ids(f, sid, prev2_from, prev2_to, db)
 
     returned = len(curr_ids & prev_ids)
     prev_returned = len(prev_ids & prev2_ids)
@@ -116,22 +176,21 @@ async def _kpi(f: ReportFilters, sid: int, prev_from: date, prev_to: date, db: A
     retention_pct = round(len(prev_ids & curr_ids) / len(prev_ids) * 100, 1) if prev_ids else 0.0
     prev_retention_pct = round(len(prev2_ids & prev_ids) / len(prev2_ids) * 100, 1) if prev2_ids else 0.0
 
+    # Деньги → op_conds(f, sid): тренер и услуга применяются, филиал и зал — нет
+    # (у Operation нет зала/филиала; задача 2 подписывает это в UI).
     rev_rows = (await db.execute(
         select(Operation.client_id, Operation.amount).where(
-            Operation.studio_id == sid, Operation.type == "in",
-            Operation.op_date >= f.date_from, Operation.op_date <= f.date_to,
-            Operation.client_id.is_not(None),
+            *op_conds(f, sid), Operation.type == "in", Operation.client_id.is_not(None),
         )
     )).all()
     clients_with_rev = {cid for cid, _amount in rev_rows}
     total_rev = sum(int(amount) for _cid, amount in rev_rows)
     avg_value = total_rev / len(clients_with_rev) if clients_with_rev else 0.0
 
+    prev_f = replace(f, date_from=prev_from, date_to=prev_to)
     prev_rev_rows = (await db.execute(
         select(Operation.client_id, Operation.amount).where(
-            Operation.studio_id == sid, Operation.type == "in",
-            Operation.op_date >= prev_from, Operation.op_date <= prev_to,
-            Operation.client_id.is_not(None),
+            *op_conds(prev_f, sid), Operation.type == "in", Operation.client_id.is_not(None),
         )
     )).all()
     prev_clients_with_rev = {cid for cid, _amount in prev_rev_rows}
@@ -158,7 +217,7 @@ async def _weekly(f: ReportFilters, sid: int, db: AsyncSession) -> list[WeeklyPo
     )).all()
     new_by_week = {p.date().isoformat(): int(cnt) for p, cnt in new_rows}
 
-    returning_rows = (await db.execute(
+    returning_stmt = (
         select(
             func.date_trunc("week", Lesson.start_time).label("period"),
             func.count(func.distinct(Reservation.client_id)),
@@ -166,13 +225,12 @@ async def _weekly(f: ReportFilters, sid: int, db: AsyncSession) -> list[WeeklyPo
         .select_from(Lesson)
         .join(Reservation, Reservation.lesson_id == Lesson.id)
         .join(Client, Client.id == Reservation.client_id)
-        .where(
-            Lesson.studio_id == sid,
-            Reservation.status == "attended",
-            Lesson.start_time >= start_dt,
-            Lesson.start_time <= end_dt,
-            Client.registration_date < start_dt,
-        )
+    )
+    if needs_hall_join(f):
+        returning_stmt = returning_stmt.join(Hall, Lesson.hall_id == Hall.id)
+    returning_rows = (await db.execute(
+        returning_stmt
+        .where(*lesson_conds(f, sid), Reservation.status == "attended", Client.registration_date < start_dt)
         .group_by("period")
     )).all()
     returning_by_week = {p.date().isoformat(): int(cnt) for p, cnt in returning_rows}
@@ -317,9 +375,9 @@ async def analytics_clients_report(
 def _match_value(key: str, m: Match) -> float | None:
     if key == "high_ltv":
         return float(m.context.get("spent", 0))
-    if key in ("frequent", "active"):
+    if key in ("frequent", "active", "new", "returned"):
         return float(m.context.get("visits", 0))
-    if key in ("at_risk", "vip_idle", "lost_newcomers"):
+    if key in ("at_risk", "vip_idle", "lost_newcomers", "lost"):
         return float(m.context.get("days_inactive")) if m.context.get("days_inactive") is not None else None
     if key == "expiring_subscription":
         return float(m.context.get("remaining", 0))
@@ -340,6 +398,9 @@ async def analytics_clients_report_segment(
         matches = await _loyal_matches(key, f, sid, db)
     elif key == "active":
         matches = await _active_matches(f, sid, db)
+    elif key in PERIOD_SEGMENT_KEYS:
+        prev_from, prev_to = prev_range(f)
+        matches = await _period_matches(key, f, sid, prev_from, prev_to, db)
     else:
         raise HTTPException(status_code=404, detail="Сегмент не найден")
 

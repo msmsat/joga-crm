@@ -3,6 +3,7 @@ import { notificationsApi } from '../../../../api/notifications'
 import { queryKeys } from '../../../../api/queryKeys'
 import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
+import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup'
 import { useTranslation } from 'react-i18next'
 import type { WaConnectPayload } from '../../../../api/notifications/notifications.types'
 
@@ -26,15 +27,25 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
 
   const onError = (err: unknown) => toast.error(errorMessage(err, t))
 
+  // Telegram-бот один на три страницы — освежаем всю группу, иначе Velora AI и
+  // Онлайн-запись останутся с прежним статусом до ручного рефреша.
   const connectTelegram = useMutation({
     mutationFn: (token: string) => notificationsApi.connectTelegram(token),
-    onSuccess: () => { invalidate(); onConnected?.('telegram'); toast.success(t('common:actions.saved', 'Подключено')) },
+    onSuccess: () => {
+      invalidateTelegramBotGroup(qc)
+      onConnected?.('telegram')
+      toast.success(t('common:actions.saved', 'Подключено'))
+    },
     onError,
   })
 
   const disconnectTelegram = useMutation({
     mutationFn: () => notificationsApi.disconnectTelegram(),
-    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onSuccess: () => {
+      invalidateAfterDisconnect()
+      invalidateTelegramBotGroup(qc)
+      toast.success(t('common:actions.saved', 'Отключено'))
+    },
     onError,
   })
 

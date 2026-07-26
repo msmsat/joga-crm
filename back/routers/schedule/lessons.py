@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -258,6 +258,63 @@ async def _service_in_studio(service_id: int, studio_id: int, db: AsyncSession) 
     return service
 
 
+async def _find_schedule_conflict(
+    db: AsyncSession, studio_id: int, *, exclude_lesson_id: Optional[int],
+    teacher_id: Optional[int], hall_id: Optional[int],
+    start_time: datetime, duration_min: int,
+) -> Optional[tuple[Lesson, str]]:
+    """Активное занятие той же студии, пересекающееся по времени
+    [start, start+dur) с тем же тренером ИЛИ тем же залом (N-9, задача 7).
+    exclude_lesson_id — само занятие (перенос не конфликтует само с собой).
+    Возвращает (занятие, resource) — resource "trainer"/"hall", то, что
+    совпало; None — конфликтов нет.
+    # ponytail: наивная проверка O(n) по занятиям тренера/зала за всё время;
+    # индексная выборка по диапазону дат — если журнал станет большим.
+    """
+    conditions = []
+    if teacher_id is not None:
+        conditions.append(Lesson.teacher_id == teacher_id)
+    if hall_id is not None:
+        conditions.append(Lesson.hall_id == hall_id)
+    if not conditions:
+        return None
+
+    stmt = select(Lesson).where(
+        Lesson.studio_id == studio_id,
+        Lesson.status != "cancelled",
+        or_(*conditions),
+    )
+    if exclude_lesson_id is not None:
+        stmt = stmt.where(Lesson.id != exclude_lesson_id)
+
+    end_time = start_time + timedelta(minutes=duration_min)
+    for other in (await db.execute(stmt)).scalars().all():
+        other_end = other.start_time + timedelta(minutes=other.duration_min)
+        if other.start_time < end_time and start_time < other_end:
+            resource = "trainer" if teacher_id is not None and other.teacher_id == teacher_id else "hall"
+            return other, resource
+    return None
+
+
+async def _notify_schedule_conflict(db: AsyncSession, studio_id: int, lesson: Lesson) -> None:
+    """a7: находит конфликт для текущих время/зал/тренера занятия и, если
+    есть, уведомляет админа. Общий хвост для create_lesson и update_lesson."""
+    conflict = await _find_schedule_conflict(
+        db, studio_id, exclude_lesson_id=lesson.id,
+        teacher_id=lesson.teacher_id, hall_id=lesson.hall_id,
+        start_time=lesson.start_time, duration_min=lesson.duration_min,
+    )
+    if conflict is None:
+        return
+    other, resource = conflict
+    await notify(db, studio_id, "admin", "a7", {
+        "lesson_name": lesson.name,
+        "second_lesson_name": other.name,
+        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        "resource": resource,
+    })
+
+
 @router.post("/lessons", response_model=LessonRead, status_code=status.HTTP_201_CREATED)
 async def create_lesson(
     body: LessonCreateRequest,
@@ -303,6 +360,8 @@ async def create_lesson(
     await db.commit()
     await db.refresh(lesson)
 
+    await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+
     # Новое занятие — записей нет, booked_count = 0.
     return _lesson_read(lesson, 0)
 
@@ -321,6 +380,11 @@ async def update_lesson(
 
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     fields = body.model_dump(exclude_unset=True)
+
+    # Отменённое занятие нельзя менять — кроме причины отмены (задача 9,
+    # инфо-вид отменённого занятия): она правится и после отмены.
+    if lesson.status == "cancelled" and set(fields.keys()) - {"cancel_reason"}:
+        raise HTTPException(status_code=400, detail="Занятие отменено, изменить его нельзя")
 
     # Правка только причины отмены (задача 9, инфо-вид отменённого занятия) —
     # правило времени не применяется: занятие уже прошло/отменено, ничего не переносим.
@@ -352,6 +416,8 @@ async def update_lesson(
                 detail=f"Мест не может быть меньше числа записанных ({booked})",
             )
 
+    old_teacher_id = lesson.teacher_id
+
     if "teacher_id" in fields:
         new_teacher_id = fields["teacher_id"]
         lesson.teacher_name = await _teacher_name_in_studio(new_teacher_id, ctx.studio_id, db)
@@ -372,7 +438,9 @@ async def update_lesson(
     await db.commit()
     await db.refresh(lesson)
 
-    if is_reschedule:
+    if is_reschedule and lesson.status != "cancelled":
+        # Отменённое занятие «уже не считается» — правки применяем, но никого не
+        # уведомляем (ни клиента c11, ни тренера t5, ни админа a7).
         # Перенос времени/зала/длительности — уведомляем записанных клиентов (c11).
         # Образец сбора client_id — cancel_lesson. Второй короткий commit только
         # clients_notified: notify идёт после основного commit (подводный камень задачи 3).
@@ -390,6 +458,20 @@ async def update_lesson(
             for client_id in booked_client_ids
         ]
         lesson.clients_notified = any(results)
+
+        # t5: тренеру(ам) занятия — зеркало c11, но не клиентам, а тренеру;
+        # если тренер сменился вместе с переносом, уведомляем и старого, и
+        # нового (N-9, задача 6).
+        for trainer_id in {tid for tid in (old_teacher_id, lesson.teacher_id) if tid is not None}:
+            await notify(db, ctx.studio_id, "trainer", "t5", {
+                "trainer_id": trainer_id,
+                "lesson_name": lesson.name,
+                "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            })
+
+        # a7: перенос мог столкнуть занятие с другим по тому же тренеру/залу.
+        await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+
         await db.commit()
         await db.refresh(lesson)
 

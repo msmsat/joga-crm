@@ -37,6 +37,14 @@ async def create_reservation(
         raise HTTPException(status_code=403, detail="Записывать клиентов могут владелец и администратор")
 
     lesson = await get_scoped_lesson(body.lesson_id, ctx, db)
+    # Отменённое занятие «уже не считается» — на него нельзя записать (как в
+    # публичной брони, public.py: cancelled → 404), значит и c1/a1/t1 не шлём.
+    if lesson.status == "cancelled":
+        raise HTTPException(status_code=400, detail="Занятие отменено — запись невозможна")
+    # Записать менее чем за 2 часа до начала нельзя (правило Журнала).
+    # ponytail: фикс-окно 2ч; вынести в настройки студии — если попросят.
+    if lesson.start_time < datetime.now() + timedelta(hours=2):
+        raise HTTPException(status_code=400, detail="Записать на занятие можно не позднее чем за 2 часа до начала")
 
     client = (await db.execute(
         select(Client).where(Client.id == body.client_id, Client.studio_id == ctx.studio_id)
@@ -76,6 +84,7 @@ async def create_reservation(
     await db.commit()
     await db.refresh(reservation)
 
+    client_full_name = f"{client.name} {client.last_name or ''}".strip()
     await notify(db, ctx.studio_id, "client", "c1", {
         "client_id": body.client_id,
         "lesson_name": lesson.name,
@@ -83,8 +92,16 @@ async def create_reservation(
     })
     await notify(db, ctx.studio_id, "admin", "a1", {
         "lesson_name": lesson.name,
-        "client_name": f"{client.name} {client.last_name or ''}".strip(),
+        "client_name": client_full_name,
     })
+    # Тренеру этого занятия (t1) — только если у занятия задан teacher_id.
+    if lesson.teacher_id is not None:
+        await notify(db, ctx.studio_id, "trainer", "t1", {
+            "trainer_id": lesson.teacher_id,
+            "lesson_name": lesson.name,
+            "client_name": client_full_name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
     return ReservationRead.model_validate(reservation)
 
 
@@ -112,21 +129,25 @@ async def cancel_reservation(
     if reservation.status == "cancelled":
         raise HTTPException(status_code=409, detail="Запись уже отменена")
 
-    is_last_minute = lesson.start_time - datetime.now() < timedelta(hours=1)
+    # Снять клиента менее чем за 2 часа до начала нельзя (правило Журнала). Из-за
+    # этого события a2/t2 «отмена <1ч/<2ч» больше не могут сработать отсюда —
+    # блок удалён; если понадобятся, их надо врезать в другой путь отмены.
+    # ponytail: фикс-окно 2ч; вынести в настройки студии — если попросят.
+    if lesson.start_time < datetime.now() + timedelta(hours=2):
+        raise HTTPException(status_code=400, detail="Снять с занятия можно не позднее чем за 2 часа до начала")
+
     reservation.status = "cancelled"
     reservation.cancelled_at = datetime.now()
     await db.commit()
     await db.refresh(reservation)
 
-    if is_last_minute:
-        client = (await db.execute(
-            select(Client).where(Client.id == reservation.client_id)
-        )).scalar_one_or_none()
-        if client is not None:
-            await notify(db, ctx.studio_id, "admin", "a2", {
-                "lesson_name": lesson.name,
-                "client_name": f"{client.name} {client.last_name or ''}".strip(),
-            })
+    # Клиента сняли с занятия (крестик в Журнале) — сообщаем ему об отмене его
+    # записи (переиспользуем c3 «Отмена занятия»; работает с текущими галочками).
+    await notify(db, ctx.studio_id, "client", "c3", {
+        "client_id": reservation.client_id,
+        "lesson_name": lesson.name,
+        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+    })
     return ReservationRead.model_validate(reservation)
 
 

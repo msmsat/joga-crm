@@ -19,6 +19,11 @@
 // Отчётами (5 вкладок): report(tab, paramsKey)/reportsAll, reportSeries(metric, paramsKey).
 // Вкладка «Продажи» (R2) использует report('sales', paramsKey) и report('sales-series', paramsKey).
 // Velora AI (эпик AI-1/AI-2): aiSessions, aiMessages(sessionId), aiSettings.
+// Настройками (роадмап SETTINGS): appearance, billingPlan, billingPlans,
+// billingInvoices(limit)/billingInvoicesAll, sessions, integrations, integration(type), workspaces.
+// Правило инвалидации: мутация обязана перечислить ВСЕ ключи, где видна
+// изменённая сущность — напр. смена валюты трогает studioSettings (её читает
+// пол-приложения через useStudioCurrency), смена тарифа — billingPlan и billingInvoicesAll.
 // Очередь миграции (по мере аудитов): Сотрудники.
 export const queryKeys = {
   branches: ['branches'] as const,
@@ -84,4 +89,14 @@ export const queryKeys = {
   aiSessions: ['ai', 'sessions'] as const,
   aiMessages: (sessionId: number) => ['ai', 'messages', sessionId] as const,
   aiSettings: ['ai', 'settings'] as const,
+  // Настройками (роадмап SETTINGS):
+  appearance: ['settings', 'appearance'] as const,
+  billingPlan: ['billing', 'plan'] as const,
+  billingPlans: ['billing', 'plans'] as const,
+  billingInvoices: (limit: number) => ['billing', 'invoices', limit] as const,
+  billingInvoicesAll: ['billing', 'invoices'] as const, // префикс: инвалидация всех limit разом
+  sessions: ['settings', 'sessions'] as const,
+  integrations: ['settings', 'integrations'] as const,
+  integration: (type: string) => ['settings', 'integrations', type] as const,
+  workspaces: ['settings', 'workspaces'] as const,
 }

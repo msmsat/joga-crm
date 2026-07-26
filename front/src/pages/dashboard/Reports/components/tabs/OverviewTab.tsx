@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, BarChart, Bar, CartesianGrid, LabelList, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
@@ -16,11 +16,12 @@ import { ChartFrame } from '../shared/ChartFrame';
 import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, LINE_CURSOR, PEACH, PEACH_LIGHT, ROSE } from '../shared/chartTheme';
 import { ZeroLabel } from '../shared/ZeroLabel';
 import { zeroAwareCells } from '../shared/zeroAwareCells';
-import { InsightsPanel } from '../shared/InsightsPanel';
+import { MainWithInsights } from '../shared/MainWithInsights';
 import { DrilldownModal } from '../shared/DrilldownModal';
 import type { DrilldownColumn } from '../shared/DrilldownModal';
 import { EmptyTabState } from '../shared/EmptyTabState';
 import { isAllZero } from '../../hooks/useIsEmpty';
+import { useScopeNote } from '../../hooks/useScopeNote';
 import { RevenueStructureCard } from './overview/RevenueStructureCard';
 import { ClientDynamicsCard } from './overview/ClientDynamicsCard';
 import type { ReportFiltersParams } from '../../types';
@@ -36,6 +37,13 @@ type ChartMetric = 'revenue' | 'profit' | 'attendance' | 'new_clients' | 'fill_r
 
 const CHART_METRICS: ChartMetric[] = ['revenue', 'profit', 'attendance', 'new_clients', 'fill_rate'];
 const MONEY_METRICS: ChartMetric[] = ['revenue', 'profit'];
+const FORMULA_BY_METRIC: Record<ChartMetric, string> = {
+  revenue: 'revenue',
+  profit: 'profit',
+  attendance: 'attendance',
+  new_clients: 'newClients',
+  fill_rate: 'occupancy',
+};
 
 interface DayDrilldown {
   kind: 'money' | 'lessons';
@@ -45,8 +53,10 @@ interface DayDrilldown {
 export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPeriod }: OverviewTabProps) {
   const { t, i18n } = useTranslation('reports');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [chartMetric, setChartMetric] = useState<ChartMetric>('revenue');
   const [drilldown, setDrilldown] = useState<DayDrilldown | null>(null);
+  const moneyScopeNote = useScopeNote('money');
 
   const { data } = useQuery({
     queryKey: queryKeys.report('overview', paramsKey),
@@ -125,6 +135,17 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
     setDrilldown({ kind: MONEY_METRICS.includes(chartMetric) ? 'money' : 'lessons', date: period });
   };
 
+  // Переход на вкладку «Клиенты» с сохранением текущего периода/фильтров.
+  const gotoClientsTab = (segment?: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'clients');
+    if (segment) next.set('segment', segment);
+    else next.delete('segment');
+    // replace: остальные переходы внутри Отчётов (вкладки, период, фильтры) тоже
+    // не плодят историю — «Назад» должен уводить со страницы Отчётов целиком.
+    navigate(`/dashboard/reports?${next.toString()}`, { replace: true });
+  };
+
   // Recharts (v3) не даёт в onClick сам payload точки, только индекс тика —
   // достаём period из chartData по activeTooltipIndex. Часовой бакет — не дата,
   // drilldown по дню для него не имеет смысла (эндпоинты дня ждут date_from/to).
@@ -171,6 +192,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
           formulaKey="revenue"
           format="money"
           onClick={() => setChartMetric('revenue')}
+          scopeNote={moneyScopeNote}
         />
         <KpiStat
           label={t('overview.kpi.profit')}
@@ -178,7 +200,8 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
           trendPct={kpi?.profit.prev_pct ?? null}
           formulaKey="profit"
           format="money"
-          onClick={() => navigate('/dashboard/finances?tab=operations')}
+          onClick={() => setChartMetric('profit')}
+          scopeNote={moneyScopeNote}
         />
         <KpiStat
           label={t('overview.kpi.attendance')}
@@ -194,7 +217,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
           trendPct={kpi?.active_clients.prev_pct ?? null}
           formulaKey="activeClients"
           format="int"
-          onClick={() => navigate('/dashboard/reports?tab=clients')}
+          onClick={() => gotoClientsTab('active')}
         />
         <KpiStat
           label={t('overview.kpi.fillRate')}
@@ -206,10 +229,11 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
         />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      <MainWithInsights insights={data?.insights ?? []}>
         <ChartCard
-          title={t('overview.chart.title')}
-          formulaKey={chartMetric === 'fill_rate' ? 'occupancy' : chartMetric === 'new_clients' ? 'newClients' : chartMetric}
+          title={t(`overview.chart.metric.${chartMetric}`)}
+          description={t(`descriptions.overview.metric.${chartMetric}`)}
+          formulaKey={FORMULA_BY_METRIC[chartMetric]}
           actions={
             <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.04)', borderRadius: '10px', padding: '3px' }}>
               {CHART_METRICS.map(m => (
@@ -280,7 +304,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
             </ChartFrame>
           )}
         </ChartCard>
-      </div>
+      </MainWithInsights>
 
       <div className="grid-2" style={{ marginBottom: '20px' }}>
         <RevenueStructureCard
@@ -289,11 +313,9 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
         />
         <ClientDynamicsCard
           dynamics={data?.client_dynamics ?? { new: { value: 0, prev_pct: null }, returned: { value: 0, prev_pct: null }, lost: { value: 0, prev_pct: null } }}
-          onClick={() => navigate('/dashboard/reports?tab=clients')}
+          onClick={() => gotoClientsTab()}
         />
       </div>
-
-      <InsightsPanel insights={data?.insights ?? []} />
 
       <DrilldownModal
         open={!!drilldown}

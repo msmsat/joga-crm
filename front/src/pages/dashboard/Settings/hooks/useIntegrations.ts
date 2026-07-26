@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { INITIAL_INTEGRATIONS_CONFIG } from "../constants";
 import type { IntegrationsConfig } from "../types";
+import { useToast } from "../../../../components/ui/index";
 
-export function useIntegrations(
-  triggerSave: (key: string, msg: string) => void,
-  triggerToast: (msg: string) => void,
-) {
+export function useIntegrations() {
+  const { t } = useTranslation('settings');
+  const toast = useToast();
   const [expandedIntegration, setExpandedIntegration] = useState<string | null>(null);
   const [integrationsConfig, setIntegrationsConfig] = useState<IntegrationsConfig>(INITIAL_INTEGRATIONS_CONFIG);
 
@@ -20,9 +21,9 @@ export function useIntegrations(
     const isConnecting = !integrationsConfig[channel].connected;
     updateIntegrationField(channel, "connected", isConnecting);
     if (isConnecting) {
-      triggerSave(`int_${channel}`, `Интеграция с ${name} успешно настроена и подключена`);
+      toast.success(t('integrations.toast.connected', { name }));
     } else {
-      triggerToast(`Интеграция с ${name} отключена`);
+      toast.success(t('integrations.toast.disconnected', { name }));
     }
     setExpandedIntegration(null);
   };

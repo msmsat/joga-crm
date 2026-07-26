@@ -7,21 +7,24 @@ import type { CategoricalChartFunc } from 'recharts/types/chart/types';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { financesApi } from '../../../../../api/finances';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { fmtMoney, fmtInt, fmtBucket } from '../../../../../lib/format';
+import { fmtMoney, fmtInt, fmtBucket, fmtDateRange } from '../../../../../lib/format';
 import { groupForRange } from '../../hooks/useReportFilters';
+import { useHighlightRow } from '../../hooks/useHighlightRow';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
 import { ChartFrame } from '../shared/ChartFrame';
 import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, PEACH_LIGHT } from '../shared/chartTheme';
 import { ZeroLabel } from '../shared/ZeroLabel';
 import { zeroAwareCells } from '../shared/zeroAwareCells';
-import { InsightsPanel } from '../shared/InsightsPanel';
+import { MainWithInsights } from '../shared/MainWithInsights';
 import { DrilldownModal } from '../shared/DrilldownModal';
 import type { DrilldownColumn } from '../shared/DrilldownModal';
 import { EmptyTabState } from '../shared/EmptyTabState';
 import { isAllZero } from '../../hooks/useIsEmpty';
+import { useScopeNote } from '../../hooks/useScopeNote';
 import { BreakdownCards } from './sales/BreakdownCards';
-import { ProductsTable } from './sales/ProductsTable';
+import { ProductsTable, PRODUCTS_TABLE_ID } from './sales/ProductsTable';
+import type { SortKey as ProductSortKey } from './sales/ProductsTable';
 import type { ProductRow, ReportFiltersParams } from '../../types';
 
 export interface SalesTabProps {
@@ -35,12 +38,16 @@ type Drilldown =
   | { kind: 'category'; value: string; title: string }
   | { kind: 'method'; value: string; title: string }
   | { kind: 'product'; productId: number | null; title: string }
-  | { kind: 'day'; date: string; title: string };
+  | { kind: 'day'; date: string; title: string }
+  | { kind: 'period'; title: string };
 
 export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }: SalesTabProps) {
   const { t } = useTranslation('reports');
   const navigate = useNavigate();
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
+  const [productSortBy, setProductSortBy] = useState<ProductSortKey | undefined>(undefined);
+  const highlight = useHighlightRow();
+  const moneyScopeNote = useScopeNote('money');
 
   const { data } = useQuery({
     queryKey: queryKeys.report('sales', paramsKey),
@@ -76,7 +83,8 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
   const drilldownKeyPart = drilldown
     ? drilldown.kind === 'product' ? `product-${drilldown.productId ?? 'none'}`
       : drilldown.kind === 'day' ? `day-${drilldown.date}`
-        : `${drilldown.kind}-${drilldown.value}`
+        : drilldown.kind === 'period' ? 'period'
+          : `${drilldown.kind}-${drilldown.value}`
     : 'none';
   const { data: operationsPage, isFetching: opsLoading } = useQuery({
     queryKey: queryKeys.finOperations(`sales-${drilldownKeyPart}-${dateRange.date_from}-${dateRange.date_to}`),
@@ -119,6 +127,17 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
     setDrilldown({ kind: 'product', productId: row.product_id, title: row.name ?? t('table.noProduct') });
   };
 
+  // Задача 3 (EPIC R15): «Выручка» и «Число продаж» — один и тот же список
+  // доходных операций периода, отличается только его длина/сумма.
+  const openPeriodDrilldown = () => {
+    setDrilldown({ kind: 'period', title: `${t('sales.incomeOperations')} · ${fmtDateRange(params.date_from, params.date_to)}` });
+  };
+
+  const openRepeatShareTable = () => {
+    setProductSortBy('repeat_share_pct');
+    highlight(PRODUCTS_TABLE_ID);
+  };
+
   const operationColumns: DrilldownColumn[] = [
     { key: 'title', label: t('overview.drilldown.title') },
     { key: 'category', label: t('overview.drilldown.category') },
@@ -143,6 +162,8 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
           trendPct={kpi?.revenue.prev_pct ?? null}
           formulaKey="revenue"
           format="money"
+          scopeNote={moneyScopeNote}
+          onClick={openPeriodDrilldown}
         />
         <KpiStat
           label={t('sales.kpi.salesCount')}
@@ -150,13 +171,18 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
           trendPct={kpi?.sales_count.prev_pct ?? null}
           formulaKey="salesCount"
           format="int"
+          scopeNote={moneyScopeNote}
+          onClick={openPeriodDrilldown}
         />
+        {/* Осознанно без клика (EPIC R15): дробь от двух других KPI (выручка/
+        число продаж), оба уже кликабельны. */}
         <KpiStat
           label={t('sales.kpi.avgCheck')}
           value={kpi?.avg_check.value ?? 0}
           trendPct={kpi?.avg_check.prev_pct ?? null}
           formulaKey="avgCheck"
           format="money"
+          scopeNote={moneyScopeNote}
         />
         <KpiStat
           label={t('sales.kpi.repeatShare')}
@@ -164,6 +190,8 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
           trendPct={kpi?.repeat_share_pct.prev_pct ?? null}
           formulaKey="repeatPurchaseShare"
           format="pct"
+          scopeNote={moneyScopeNote}
+          onClick={openRepeatShareTable}
         />
         <KpiStat
           label={t('sales.kpi.renewals')}
@@ -172,11 +200,12 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
           formulaKey="renewalRate"
           format="pct"
           onClick={() => navigate('/dashboard/reports?tab=clients')}
+          scopeNote={moneyScopeNote}
         />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <ChartCard title={t('sales.chart.title')} formulaKey="revenue">
+      <MainWithInsights insights={data?.insights ?? []}>
+        <ChartCard title={t('sales.chart.title')} description={t('descriptions.sales.chart')} formulaKey="revenue">
           <ChartFrame>
             <ComposedChart data={chartData} onClick={handleChartClick}>
               <XAxis dataKey="label" {...AXIS_X} />
@@ -195,7 +224,7 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
             </ComposedChart>
           </ChartFrame>
         </ChartCard>
-      </div>
+      </MainWithInsights>
 
       <BreakdownCards
         byCategory={data?.by_category ?? []}
@@ -206,10 +235,8 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
       />
 
       <div style={{ marginBottom: '20px' }}>
-        <ProductsTable products={data?.products ?? []} onRowClick={onProductRowClick} />
+        <ProductsTable products={data?.products ?? []} onRowClick={onProductRowClick} sortBy={productSortBy} />
       </div>
-
-      <InsightsPanel insights={data?.insights ?? []} />
 
       <DrilldownModal
         open={!!drilldown}

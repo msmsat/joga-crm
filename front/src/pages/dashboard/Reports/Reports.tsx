@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { studioApi } from '../../../api/studio/studio.api';
 import { scheduleApi } from '../../../api/schedule';
@@ -17,7 +18,17 @@ import { TeamTab } from './components/tabs/TeamTab';
 import { ScheduleTab } from './components/tabs/ScheduleTab';
 
 export default function Reports() {
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as Tab | null;
+  const activeTab: Tab = tabParam && TABS.includes(tabParam) ? tabParam : 'overview';
+  const setActiveTab = useCallback((tab: Tab) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      next.delete('segment');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
   const { filters, params, paramsKey, comparisonRange, setPeriod, setCustomRange, setFilter } = useReportFilters();
   const { exportCSV } = useExport();
   const csvRowsRef = useRef<Record<string, unknown>[]>([]);
@@ -45,6 +56,11 @@ export default function Reports() {
         @keyframes tooltipIn { from{opacity:0;transform:translateY(4px) scale(0.97)} to{opacity:1;transform:none} }
         @keyframes fadeSlide  { from{opacity:0;transform:translateY(6px)}            to{opacity:1;transform:none} }
         @keyframes rtDropIn   { from{opacity:0;transform:translateY(-6px)}           to{opacity:1;transform:none} }
+        @keyframes highlightRowFade { from{outline-color:#F9A08B} to{outline-color:transparent} }
+        .reports-highlight-row { outline:2px solid #F9A08B; outline-offset:2px; animation:highlightRowFade 1.2s ease forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .reports-highlight-row { animation:none; outline-color:#F9A08B; }
+        }
       `}</style>
 
       <ReportsToolbar
@@ -99,6 +115,7 @@ export default function Reports() {
             paramsKey={paramsKey}
             registerCsvExport={registerCsvExport}
             onWidenPeriod={onWidenPeriod}
+            onFilterChange={setFilter}
           />
         )}
       </div>

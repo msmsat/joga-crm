@@ -108,6 +108,9 @@ export const financesApi = {
   paySalary: (userId: number, payload: { period_start: string; period_end: string }) =>
     client.post<SalaryPayment>(`/finances/salaries/${userId}/pay`, payload),
 
+  cancelSalary: (userId: number, payload: { period_start: string; period_end: string }) =>
+    client.delete<void>(`/finances/salaries/${userId}/pay?period_start=${payload.period_start}&period_end=${payload.period_end}`),
+
   getSalaryHistory: (userId: number) =>
     client.get<SalaryPayment[]>(`/finances/salaries/${userId}/history`),
 

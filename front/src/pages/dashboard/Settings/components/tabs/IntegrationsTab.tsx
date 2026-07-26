@@ -1,12 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
-import PremiumButton from "../ui/PremiumButton";
 import StatusBadge from "../ui/StatusBadge";
 import Toggle from "../ui/form/Toggle";
-import InputRow from "../ui/form/InputRow";
-import DarkSelectRow from "../ui/form/DarkSelectRow";
 import IntegrationIllustration from "../illustrations/IntegrationIllustration";
 import type { IntegrationsConfig } from "../../types";
+import { Button, Input, Select } from "../../../../../components/ui/index";
 
 interface IntegrationsTabProps {
   expandedIntegration: string | null;
@@ -14,31 +13,33 @@ interface IntegrationsTabProps {
   integrationsConfig: IntegrationsConfig;
   updateIntegrationField: (channel: string, field: string, value: any) => void;
   toggleIntegrationConnect: (channel: string, name: string) => void;
-  savedStates: Record<string, boolean>;
 }
 
 const intIcons = {
   power: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>,
 };
 
-const INTEGRATION_LIST = [
-  { id: "whatsapp", name: "WhatsApp Business", sub: "Рассылки сообщений и автоуведомления клиентам", color: "#25D366" },
-  { id: "telegram", name: "Telegram Bot", sub: "Автоматическая круглосуточная запись через чат-бота", color: "#229ED9" },
-  { id: "instagram", name: "Instagram Direct", sub: "Перехват входящих сообщений в CRM-систему", color: "#E1306C" },
-  { id: "google", name: "Google Calendar", sub: "Двусторонняя синхронизация расписания тренеров", color: "#4285F4" },
-  { id: "onec", name: "1С: Предприятие", sub: "Автоматическая выгрузка финансов и аналитики", color: "#EF3B2C" },
-  { id: "yandex", name: "Яндекс.Касса (ЮKassa)", sub: "Безопасный приём онлайн-оплаты и предоплат на сайте", color: "#333333" },
-];
-
 export default function IntegrationsTab({
   expandedIntegration, setExpandedIntegration,
   integrationsConfig, updateIntegrationField, toggleIntegrationConnect,
-  savedStates,
 }: IntegrationsTabProps) {
+  const { t } = useTranslation('settings');
+
+  const INTEGRATION_LIST = [
+    { id: "whatsapp", name: t('integrations.items.whatsapp.name'), sub: t('integrations.items.whatsapp.sub'), color: "#25D366" },
+    { id: "telegram", name: t('integrations.items.telegram.name'), sub: t('integrations.items.telegram.sub'), color: "#229ED9" },
+    { id: "instagram", name: t('integrations.items.instagram.name'), sub: t('integrations.items.instagram.sub'), color: "#E1306C" },
+    { id: "google", name: t('integrations.items.google.name'), sub: t('integrations.items.google.sub'), color: "#4285F4" },
+    { id: "onec", name: t('integrations.items.onec.name'), sub: t('integrations.items.onec.sub'), color: "#EF3B2C" },
+    { id: "yandex", name: t('integrations.items.yandex.name'), sub: t('integrations.items.yandex.sub'), color: "#333333" },
+  ];
+
+  const syncOptions = (t('integrations.fields.googleSyncOptions', { returnObjects: true }) as string[]).map(v => ({ value: v, label: v }));
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.link} title="Интеграции" subtitle="Подключите внешние каналы и экосистемы в один клик" accent />
+        <SectionHeader icon={icons.link} title={t('integrations.title')} subtitle={t('integrations.subtitle')} accent />
         <IntegrationIllustration />
 
         <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -72,9 +73,9 @@ export default function IntegrationsTab({
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "12px", pointerEvents: "none" }}>
-                    <StatusBadge type={isConnected ? "active" : "warning"}>{isConnected ? "Подключено" : "Не активно"}</StatusBadge>
+                    <StatusBadge type={isConnected ? "active" : "warning"}>{isConnected ? t('integrations.status.connected') : t('integrations.status.notActive')}</StatusBadge>
                     <button style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 14px", borderRadius: "8px", background: isExpanded ? "var(--peach)" : "#FFFFFF", color: isExpanded ? "#FFFFFF" : "var(--onyx)", border: isExpanded ? "1px solid var(--peach)" : "1px solid rgba(26,26,26,0.1)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)", boxShadow: isExpanded ? "0 4px 12px rgba(252,174,145,0.35)" : "0 2px 6px rgba(0,0,0,0.02)" }}>
-                      {isConnected ? "Настроить" : "Подключить"}
+                      {isConnected ? t('integrations.actions.configure') : t('integrations.actions.connect')}
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}>
                         <polyline points="6 9 12 15 18 9"></polyline>
                       </svg>
@@ -89,45 +90,45 @@ export default function IntegrationsTab({
 
                       {item.id === "whatsapp" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                          <InputRow label="Номер телефона WhatsApp Business" value={config.phone} onChange={v => updateIntegrationField("whatsapp", "phone", v)} />
-                          <InputRow label="Адрес Webhook для синхронизации (Просмотр)" value={config.webhook} type="text" />
+                          <Input label={t('integrations.fields.whatsappPhone')} value={config.phone} onChange={v => updateIntegrationField("whatsapp", "phone", v)} />
+                          <Input label={t('integrations.fields.whatsappWebhook')} value={config.webhook} onChange={() => {}} disabled />
                         </div>
                       )}
 
                       {item.id === "telegram" && (
                         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                          <InputRow label="API Токен Бота (из @BotFather)" placeholder="123456789:ABCDefGhIJKlmNo..." value={config.token} onChange={v => updateIntegrationField("telegram", "token", v)} />
-                          <InputRow label="Приветственное сообщение в боте" value={config.welcomeMsg} onChange={v => updateIntegrationField("telegram", "welcomeMsg", v)} />
+                          <Input label={t('integrations.fields.telegramToken')} placeholder={t('integrations.fields.telegramTokenPh')} value={config.token} onChange={v => updateIntegrationField("telegram", "token", v)} />
+                          <Input label={t('integrations.fields.telegramWelcome')} value={config.welcomeMsg} onChange={v => updateIntegrationField("telegram", "welcomeMsg", v)} />
                         </div>
                       )}
 
                       {item.id === "instagram" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}>
-                          <InputRow label="Имя привязанного бизнес-аккаунта Meta" placeholder="@your_studio_candles" value={config.account} onChange={v => updateIntegrationField("instagram", "account", v)} />
+                          <Input label={t('integrations.fields.instagramAccount')} placeholder={t('integrations.fields.instagramAccountPh')} value={config.account} onChange={v => updateIntegrationField("instagram", "account", v)} />
                         </div>
                       )}
 
                       {item.id === "google" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "flex-end" }}>
-                          <InputRow label="Название календаря" value={config.calendarName} onChange={v => updateIntegrationField("google", "calendarName", v)} />
-                          <DarkSelectRow label="Режим синхронизации" value={config.syncType} options={["Двусторонняя", "Только экспорт", "Только импорт"]} onChange={v => updateIntegrationField("google", "syncType", v)} />
+                          <Input label={t('integrations.fields.googleCalendarName')} value={config.calendarName} onChange={v => updateIntegrationField("google", "calendarName", v)} />
+                          <Select value={config.syncType} options={syncOptions} onChange={v => updateIntegrationField("google", "syncType", v)} />
                         </div>
                       )}
 
                       {item.id === "onec" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                          <InputRow label="URL шлюза публикации базы" placeholder="https://1c.company.ru/base" value={config.url} onChange={v => updateIntegrationField("onec", "url", v)} />
-                          <InputRow label="Логин / Идентификатор CRM" placeholder="velora_sync_user" value={config.login} onChange={v => updateIntegrationField("onec", "login", v)} />
+                          <Input label={t('integrations.fields.onecUrl')} placeholder={t('integrations.fields.onecUrlPh')} value={config.url} onChange={v => updateIntegrationField("onec", "url", v)} />
+                          <Input label={t('integrations.fields.onecLogin')} placeholder={t('integrations.fields.onecLoginPh')} value={config.login} onChange={v => updateIntegrationField("onec", "login", v)} />
                         </div>
                       )}
 
                       {item.id === "yandex" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "center" }}>
-                          <InputRow label="Идентификатор магазина (ShopID)" value={config.shopId} onChange={v => updateIntegrationField("yandex", "shopId", v)} />
+                          <Input label={t('integrations.fields.yandexShopId')} value={config.shopId} onChange={v => updateIntegrationField("yandex", "shopId", v)} />
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "rgba(0,0,0,0.015)", borderRadius: "10px", marginTop: "18px", border: "1px solid var(--border)" }}>
                             <div>
-                              <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--onyx)" }}>Тестовый режим оплаты</div>
-                              <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "1px" }}>Проверка платежей без реального списания денег</div>
+                              <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--onyx)" }}>{t('integrations.fields.yandexTestMode')}</div>
+                              <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "1px" }}>{t('integrations.fields.yandexTestModeSub')}</div>
                             </div>
                             <Toggle checked={config.testMode} onChange={() => updateIntegrationField("yandex", "testMode", !config.testMode)} />
                           </div>
@@ -143,15 +144,12 @@ export default function IntegrationsTab({
                             onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.08)"}
                           >
                             {intIcons.power}
-                            Отключить интеграцию
+                            {t('integrations.actions.disconnect')}
                           </button>
                         )}
-                        <PremiumButton
-                          isSaved={savedStates[`int_${item.id}`]}
-                          onClick={() => toggleIntegrationConnect(item.id, item.name)}
-                          text={isConnected ? "Сохранить изменения" : "Активировать шлюз"}
-                          savedText="Настройки сохранены"
-                        />
+                        <Button variant="primary" onClick={() => toggleIntegrationConnect(item.id, item.name)}>
+                          {isConnected ? t('integrations.actions.saveChanges') : t('integrations.actions.activate')}
+                        </Button>
                       </div>
                     </div>
                   </div>

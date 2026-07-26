@@ -1,18 +1,17 @@
 import { useTranslation } from 'react-i18next';
-import { Card, EmptyState, InfoHint } from '../../../../../../components/ui/index';
+import { Card, EmptyState } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtPct } from '../../../../../../lib/format';
 import { ProgressBar } from '../../ProgressBar';
 import { useInsightAction } from '../../../hooks/useInsightAction';
+import { CardHeading } from '../../shared/CardHeading';
 import type { ChronicLowRow, HallUtilRow, LessonSliceRow } from '../../../types';
 
-function SectionCard({ title, formulaKey, children }: { title: string; formulaKey?: string; children: React.ReactNode }) {
-  const { t } = useTranslation('reports');
+export const CHRONIC_LOW_ID = 'reports-chronic-low';
+
+function SectionCard({ id, title, description, formulaKey, children }: { id?: string; title: string; description?: string; formulaKey?: string; children: React.ReactNode }) {
   return (
-    <Card padding={24}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', margin: 0, letterSpacing: '-0.2px' }}>{title}</h3>
-        {formulaKey && <InfoHint title={t(`formulas.${formulaKey}.title`)} text={t(`formulas.${formulaKey}.text`)} />}
-      </div>
+    <Card padding={24} id={id}>
+      <CardHeading title={title} description={description} formulaKey={formulaKey} />
       {children}
     </Card>
   );
@@ -117,16 +116,16 @@ export function SlicesCards({ topProfitable, topFilled, chronicLow, halls }: Sli
   const { t } = useTranslation('reports');
   return (
     <div className="grid-2" style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '20px' }}>
-      <SectionCard title={t('schedule.slices.topProfitable')} formulaKey="lessonRevenue">
+      <SectionCard title={t('schedule.slices.topProfitable')} description={t('descriptions.schedule.topProfitable')} formulaKey="topProfitable">
         <LessonSliceList rows={topProfitable} valueKey="revenue" />
       </SectionCard>
-      <SectionCard title={t('schedule.slices.topFilled')} formulaKey="occupancy">
+      <SectionCard title={t('schedule.slices.topFilled')} description={t('descriptions.schedule.topFilled')} formulaKey="topFilled">
         <LessonSliceList rows={topFilled} valueKey="fill_pct" />
       </SectionCard>
-      <SectionCard title={t('schedule.slices.chronicLow')}>
+      <SectionCard id={CHRONIC_LOW_ID} title={t('schedule.slices.chronicLow')} description={t('descriptions.schedule.chronicLow')} formulaKey="chronicLow">
         <ChronicLowList rows={chronicLow} />
       </SectionCard>
-      <SectionCard title={t('schedule.slices.halls')}>
+      <SectionCard title={t('schedule.slices.halls')} description={t('descriptions.schedule.halls')} formulaKey="hallUtil">
         <HallsList rows={halls} />
       </SectionCard>
     </div>

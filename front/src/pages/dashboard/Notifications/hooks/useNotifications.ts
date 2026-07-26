@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ChannelKey, EventToggle, Role, Toggles } from '../types';
 import { CHANNELS, ROLES, NOTIF_EVENTS } from '../constants';
-import { buildInitialToggles, mergeToggles, diffToggles } from '../utils';
+import { buildInitialToggles, mergeToggles, diffToggles, flattenEnabledToggles } from '../utils';
 import { notificationsApi } from '../../../../api/notifications';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useNotificationsStore } from '../../../../stores/notificationsStore';
@@ -12,6 +12,7 @@ import { errorMessage } from '../../../../api/errorMessage';
 import type { NotifyChannelsStatus } from '../../../../api/notifications/notifications.types';
 
 const INTEGRATION_CHANNELS = new Set<ChannelKey>(['telegram', 'email', 'whatsapp']);
+const DEBOUNCE_MS = 600; // серия кликов (напр. «Активировать все») схлопывается в 1 запрос
 
 function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key: ChannelKey): boolean {
   if (!statuses) return false;
@@ -19,6 +20,24 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
   if (key === 'email') return statuses.email.connected;
   if (key === 'whatsapp') return statuses.whatsapp.connected;
   return false;
+}
+
+// Канал «живой» (виден в матрице справа, считается активным), только если он
+// включён в настройках И его интеграция не отключена. Disconnect на бэке гасит
+// integration.is_connected, но не сам флаг канала в настройках — поэтому одного
+// channels[key] мало: отключённый канал остаётся true и без этой проверки
+// продолжал висеть в матрице, хотя в сайдбаре уже показывалась кнопка «Подключить».
+// Пока статус интеграций не загружен (undefined) — не прячем (оптимистично, как и
+// сайдбар), чтобы не мигало и чтобы ошибка загрузки статусов не опустошала матрицу.
+function isChannelLive(
+  statuses: NotifyChannelsStatus | undefined,
+  channels: Record<ChannelKey, boolean>,
+  key: ChannelKey,
+): boolean {
+  if (!channels[key]) return false;
+  if (!INTEGRATION_CHANNELS.has(key)) return true;
+  if (!statuses) return true;
+  return isIntegrationConnected(statuses, key);
 }
 
 // Отдельный хук: вызывается до useChannelIntegrations, чтобы её onConnected-колбэк
@@ -49,12 +68,13 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   const togglesQ = useQuery({ queryKey: queryKeys.notificationEventToggles, queryFn: notificationsApi.getEventToggles });
 
   const updateSettingsMut = useMutation({ mutationFn: notificationsApi.updateSettings });
-  const saveTogglesMut = useMutation({
-    mutationFn: (changes: EventToggle[]) => Promise.all(changes.map(notificationsApi.updateEventToggle)),
-  });
+  // Один bulk-PATCH на пачку изменений вместо Promise.all(map(...)) — было N
+  // параллельных запросов/транзакций на одно действие пользователя (EPIC N-8, дефект B).
+  const saveTogglesMut = useMutation({ mutationFn: notificationsApi.bulkUpdateEventToggles });
 
   const [toggles, setToggles] = useState<Toggles>(buildInitialToggles);
   const [savedToggles, setSavedToggles] = useState<Toggles>(buildInitialToggles);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   useEffect(() => {
     if (!settingsQ.data) return;
@@ -87,6 +107,77 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     setSavedToggles(merged);
   }
 
+  // Новая студия: сервер ещё не хранит ни одной строки матрицы, но UI уже
+  // показывает дефолтные события (buildInitialToggles) как включённые —
+  // это только фронтовый дефолт, isDirty здесь false (toggles === savedToggles),
+  // поэтому обычное автосохранение никогда не срабатывает. Итог был найден при
+  // сквозном прогоне N-5/4: notify() видел 0 строк в матрице и молча ничего
+  // не отправлял, хотя чекбоксы выглядели включёнными. Досылаем дефолт как
+  // реальное состояние сервера один раз — только если у студии вообще нет
+  // сохранённых строк (не трогаем уже настроенные студии).
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (!togglesQ.isSuccess || togglesQ.data.length > 0 || seededRef.current) return;
+    seededRef.current = true;
+    const seed = flattenEnabledToggles(buildInitialToggles());
+    if (seed.length === 0) return;
+    saveTogglesMut.mutate(seed, {
+      onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.notificationEventToggles }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [togglesQ.isSuccess, togglesQ.data]);
+
+  // Автосохранение матрицы: через DEBOUNCE_MS после ПОСЛЕДНЕГО изменения шлём
+  // накопленный diff одним bulk-запросом. Таймер перезапускается на каждое
+  // изменение toggles — промежуточные клики в сеть не уходят (EPIC N-8, дефект A).
+  useEffect(() => {
+    const changes = diffToggles(toggles, savedToggles);
+    if (changes.length === 0) return;
+
+    const timer = setTimeout(() => {
+      const snapshot = toggles; // фиксируем то, что реально отправляем — к моменту
+      // ответа сервера toggles мог уехать дальше, closure над ним пометил бы
+      // сохранённым то, что ещё не отправлялось.
+      setSaveFailed(false); // новая попытка — снимаем индикатор прошлой ошибки
+      saveTogglesMut.mutate(changes, {
+        onSuccess: () => setSavedToggles(snapshot),
+        onError: (e: unknown) => {
+          setToggles(savedToggles); // откат черновика к последнему подтверждённому
+          setSaveFailed(true);
+          toast.error(errorMessage(e, t));
+        },
+        onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.notificationEventToggles }),
+      });
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timer); // перезапуск таймера / очистка при unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggles, savedToggles]);
+
+  // Ref с актуальным несохранённым диффом — обновляется в эффекте, а не в теле
+  // рендера (прямая запись в ref во время рендера запрещена линтером проекта,
+  // см. комментарий у syncedTogglesData выше).
+  const pendingRef = useRef<EventToggle[]>([]);
+  useEffect(() => {
+    pendingRef.current = diffToggles(toggles, savedToggles);
+  }, [toggles, savedToggles]);
+
+  // Флаш при уходе со страницы: 600 мс дебаунса — окно, где можно успеть уйти
+  // раньше, чем сработает автосохранение. unmount (переход внутри SPA) и
+  // beforeunload (закрытие/обновление вкладки) шлют то же самое несохранённое
+  // одним keepalive-запросом (см. patchKeepalive — почему не sendBeacon).
+  useEffect(() => {
+    const flush = () => {
+      if (pendingRef.current.length === 0) return;
+      notificationsApi.flushEventTogglesOnUnload(pendingRef.current);
+    };
+    window.addEventListener('beforeunload', flush);
+    return () => {
+      window.removeEventListener('beforeunload', flush);
+      flush();
+    };
+  }, []);
+
   // Канал сохраняется сразу (оптимистично); при ошибке откатываем + тост.
   const toggleChannel = (key: ChannelKey) => {
     const next = !channels[key];
@@ -115,30 +206,15 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     setActiveRole(role);
   };
 
-  const saveChanges = () => {
-    const changes = diffToggles(toggles, savedToggles);
-    if (changes.length === 0) return;
-    saveTogglesMut.mutate(changes, {
-      onSuccess: () => {
-        setSavedToggles(toggles);
-        qc.invalidateQueries({ queryKey: queryKeys.notificationEventToggles });
-        toast.success(t('common:actions.saved', 'Сохранено'));
-      },
-      onError: (e: unknown) => toast.error(errorMessage(e, t)),
-    });
-  };
-
-  const cancelChanges = () => setToggles(savedToggles);
-
   const countActive = (role: Role) =>
     NOTIF_EVENTS[role].reduce((sum, ev) => {
-      const hasActive = CHANNELS.some(ch => channels[ch.key] && toggles[ev.id]?.[ch.key]);
+      const hasActive = CHANNELS.some(ch => isChannelLive(channelStatuses, channels, ch.key) && toggles[ev.id]?.[ch.key]);
       return sum + (hasActive ? 1 : 0);
     }, 0);
 
   const currentRole = ROLES.find(r => r.key === activeRole)!;
   const events = NOTIF_EVENTS[activeRole];
-  const activeChannels = CHANNELS.filter(c => channels[c.key]);
+  const activeChannels = CHANNELS.filter(c => isChannelLive(channelStatuses, channels, c.key));
 
   return {
     channels, toggleChannel,
@@ -146,7 +222,7 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     activeRole, switchRole, countActive,
     currentRole, events, activeChannels,
     toggles, toggleCheck, setToggles,
-    isDirty, saveChanges, cancelChanges,
+    isDirty, saveFailed,
     loading: settingsQ.isPending || togglesQ.isPending,
     saving: saveTogglesMut.isPending,
   };

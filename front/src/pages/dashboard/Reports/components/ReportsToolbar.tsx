@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select } from '../../../../components/ui/index';
 import type { SelectOption } from '../../../../components/ui/index';
+import { TAB_FILTERS } from '../constants';
 import type { Tab, ReportPeriod, ReportFilters } from '../types';
 
 const PERIODS: ReportPeriod[] = ['day', 'week', 'month', 'year', 'custom'];
@@ -22,6 +23,7 @@ function PeriodSelector({ value, onChange }: { value: ReportPeriod; onChange: (p
           color: value === p ? 'var(--text)' : 'var(--text3)',
           boxShadow: value === p ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
           transform: value === p ? 'translateY(-0.5px)' : 'none',
+          minWidth: '62px', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto',
         }}>
           {t(`toolbar.period.${p}`)}
         </button>
@@ -58,14 +60,16 @@ function fmtShort(iso: string): string {
   return `${d}.${m}`;
 }
 
-function ComparisonBadge({ from, to }: { from: string; to: string }) {
+function ComparisonBadge({ from, to, visible }: { from: string; to: string; visible: boolean }) {
   const { t } = useTranslation('reports');
   return (
     <div style={{
       padding: '5px 10px', borderRadius: '8px', background: 'rgba(26,26,26,0.04)',
       fontSize: '11px', fontWeight: 600, color: 'var(--text3)', whiteSpace: 'nowrap',
+      minWidth: '172px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums',
+      visibility: visible ? 'visible' : 'hidden',
     }}>
-      {t('toolbar.vsPrevious', { from: fmtShort(from), to: fmtShort(to) })}
+      {visible ? t('toolbar.vsPrevious', { from: fmtShort(from), to: fmtShort(to) }) : ''}
     </div>
   );
 }
@@ -106,6 +110,7 @@ export function ReportsToolbar({
 }: ReportsToolbarProps) {
   const { t } = useTranslation('reports');
   const [exported, setExported] = useState(false);
+  const visibleFilters = TAB_FILTERS[activeTab];
 
   const fire = () => {
     onExport();
@@ -157,12 +162,14 @@ export function ReportsToolbar({
           ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto', flexWrap: 'nowrap' }}>
           <PeriodSelector value={filters.period} onChange={onPeriodChange} />
-          {filters.period === 'custom' && (
-            <DateRangeInputs from={filters.dateFrom} to={filters.dateTo} onChange={onCustomRangeChange} />
-          )}
-          {comparisonRange && <ComparisonBadge from={comparisonRange.from} to={comparisonRange.to} />}
+          <div style={{ width: '236px', flexShrink: 0 }}>
+            {filters.period === 'custom' && (
+              <DateRangeInputs from={filters.dateFrom} to={filters.dateTo} onChange={onCustomRangeChange} />
+            )}
+          </div>
+          <ComparisonBadge from={comparisonRange?.from ?? ''} to={comparisonRange?.to ?? ''} visible={!!comparisonRange} />
           <button
             onClick={fire}
             style={{
@@ -179,11 +186,13 @@ export function ReportsToolbar({
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
-        {selectFilter('branchId', filters.branchId, options.branches, t('toolbar.allBranches'))}
-        {selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
-        {selectFilter('trainerId', filters.trainerId, options.trainers, t('toolbar.allTrainers'))}
-        {selectFilter('serviceId', filters.serviceId, options.services, t('toolbar.allServices'))}
+      {/* minHeight = высота Select кита — ряд не схлопывается и не дёргает страницу,
+          когда вкладка показывает 2 фильтра вместо 4 (см. R10, борьба с layout shift). */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '20px', minHeight: '45px' }}>
+        {visibleFilters.includes('branch') && selectFilter('branchId', filters.branchId, options.branches, t('toolbar.allBranches'))}
+        {visibleFilters.includes('hall') && selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
+        {visibleFilters.includes('trainer') && selectFilter('trainerId', filters.trainerId, options.trainers, t('toolbar.allTrainers'))}
+        {visibleFilters.includes('service') && selectFilter('serviceId', filters.serviceId, options.services, t('toolbar.allServices'))}
       </div>
     </>
   );

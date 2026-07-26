@@ -27,6 +27,7 @@ export const NOTIF_EVENTS: Record<Role, NotifEvent[]> = {
     { id: 'c8',  icon: Icon.Star,          color: '#9B8EC4' },
     { id: 'c9',  icon: Icon.Refresh,       color: '#4A80C4' },
     { id: 'c11', icon: Icon.Clock,         color: '#9B8EC4' },
+    { id: 'c12', icon: Icon.Star,          color: '#5BAB72' },
   ],
   trainer: [
     { id: 't1', icon: Icon.Calendar,      color: '#F9A08B' },

@@ -117,7 +117,7 @@ def test_create_denormalizes_name_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога")])  # teacher, service
+    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога"), []])  # teacher, service, a7 conflict-check → []
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True

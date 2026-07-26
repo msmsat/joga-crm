@@ -1,0 +1,340 @@
+{
+  "nav": {
+    "sectionLabel": "System settings",
+    "general": "General",
+    "hours": "Working hours",
+    "team": "Team",
+    "appearance": "Appearance",
+    "notifications": "Notifications",
+    "billing": "Billing",
+    "security": "Security",
+    "integrations": "Integrations",
+    "data": "Data",
+    "logout": "Switch CRM"
+  },
+  "toast": {
+    "saved": "Saved",
+    "error": "Something went wrong"
+  },
+  "workspace": {
+    "loggedOut": "You left the Pilates Studio workspace",
+    "entered": "Signed in: {{name}}",
+    "title": "Your CRM systems",
+    "subtitle": "Choose a workspace to sign in, or create a new one",
+    "businessAccount": "Business account",
+    "createNew": "Create a new CRM system",
+    "newSpaceTitle": "New workspace parameters",
+    "studioName": "Studio or salon name",
+    "studioNamePh": "e.g. Stretch & Go",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeLightFull": "Light theme",
+    "themeDarkFull": "Dark theme",
+    "initSystem": "Initialize system",
+    "created": "CRM system \"{{name}}\" created successfully!"
+  },
+  "general": {
+    "company": {
+      "title": "Company details",
+      "subtitle": "Public information about your business",
+      "name": "Company name",
+      "namePh": "e.g. My Studio",
+      "desc": "Description",
+      "descPh": "What your studio does…",
+      "phone": "Phone",
+      "email": "Email",
+      "site": "Website",
+      "sitePh": "https://studio.com",
+      "address": "Address",
+      "addressPh": "123 Example St, City"
+    },
+    "reset": "Reset",
+    "resetToast": "Settings reset",
+    "locale": {
+      "title": "Language & region",
+      "subtitle": "Interface localization settings",
+      "timezone": "Timezone",
+      "currency": "Currency",
+      "language": "Interface language",
+      "dateFormat": "Date format",
+      "firstDay": "First day of week"
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Choose the visual style of the interface",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "System"
+    },
+    "accent": {
+      "title": "Accent color",
+      "subtitle": "Personalize the main interface color",
+      "note": "The accent color applies to buttons, links, active elements and progress indicators.",
+      "colors": {
+        "peach": "Peach",
+        "pistachio": "Pistachio",
+        "lavender": "Lavender",
+        "pink": "Pink",
+        "gold": "Gold",
+        "mint": "Mint"
+      }
+    }
+  },
+  "notifications": {
+    "channels": {
+      "title": "Notifications",
+      "subtitle": "Set up how and when you receive alerts",
+      "email": { "label": "Email notifications", "sub": "New bookings, cancellations, payments" },
+      "sms": { "label": "SMS alerts", "sub": "Urgent notifications to your phone" },
+      "push": { "label": "Push notifications", "sub": "Notifications in browser and app" },
+      "marketing": { "label": "Marketing emails", "sub": "Product updates, tips, promotions" },
+      "illustration": {
+        "newBooking": "New booking from Anna K.",
+        "paymentConfirmed": "Payment confirmed",
+        "visitReminder": "Push: Visit reminder"
+      }
+    },
+    "telegram": {
+      "title": "Telegram for notifications",
+      "subtitle": "Where to send events to you personally — bookings, payroll, reports",
+      "chatId": "Your Telegram chat_id",
+      "chatIdPh": "e.g. 123456789",
+      "hintBefore": "You can find your chat_id from the bot ",
+      "hintAfter": " on Telegram — start a chat with it and it will send you your ID.",
+      "invalidChatId": "Telegram chat_id must be a number, no symbols",
+      "saved": "Telegram linked for notifications",
+      "saveFailed": "Failed to save Telegram"
+    },
+    "email": {
+      "title": "Email for notifications",
+      "subtitle": "Where to send system emails",
+      "primary": "Primary email",
+      "backup": "Backup email",
+      "backupPh": "backup@studio.com",
+      "saved": "Notification settings saved"
+    }
+  },
+  "billing": {
+    "tariffs": {
+      "back": "Back to subscription management",
+      "title": "Available plans",
+      "subtitle": "Upgrade to Business to scale your brand without limits",
+      "pro": {
+        "name": "Pro License",
+        "desc": "Perfect for growing studios and premium boutiques",
+        "perMonth": "/ mo",
+        "features": ["Up to 5 active staff", "Up to 3 synced venues", "Unlimited client base", "Standard analytics"],
+        "current": "Your current plan"
+      },
+      "business": {
+        "badge": "RECOMMENDED",
+        "name": "Business Plan",
+        "desc": "Maximum ecosystem for large chains and franchises",
+        "perMonth": "/ mo",
+        "features": ["Unlimited staff", "Franchise multi-network (all branches)", "Deep financial AI analytics", "Dedicated 24/7 manager", "Custom widget branding"],
+        "upgrade": "Upgrade to Business"
+      }
+    },
+    "dashboard": {
+      "planLabel": "Your service plan",
+      "planName": "Pro Plan",
+      "activeUntil": "Active until July 15",
+      "stats": {
+        "clients": { "value": "UNLIMITED", "label": "Client base", "desc": "No hidden limits" },
+        "staff": { "value": "5 of 5 seats", "label": "Studio staff", "desc": "Expansion available" },
+        "api": { "value": "ACTIVE", "label": "Full API access", "desc": "Sync enabled" }
+      },
+      "upgradeBtn": "Upgrade to Business",
+      "manageBtn": "Manage subscription",
+      "manageBtnClose": "Close management"
+    },
+    "cycle": {
+      "title": "License billing period",
+      "subtitle": "Switch to a yearly cycle to save on your budget",
+      "monthly": "Monthly",
+      "yearly": "Yearly -30%",
+      "apply": "Apply settings"
+    },
+    "payment": {
+      "title": "Payment method",
+      "subtitle": "Manage auto-renewal cards",
+      "addCard": "Add card",
+      "closeForm": "Close form",
+      "holder": "Holder",
+      "holderPh": "CARDHOLDER NAME",
+      "expiry": "Expiry",
+      "cardNumber": "Card number",
+      "cardNumberPh": "4242 4242 4242 4242",
+      "cardHolderName": "Cardholder name (LATIN)",
+      "cardHolderNamePh": "ALEXEY MOROZOV",
+      "cardExpiry": "Expiry date",
+      "cvc": "CVC code",
+      "linkCard": "Link card",
+      "primaryBadge": "Primary",
+      "cardDesc": "Visa Debit · Valid through 08/2027",
+      "replace": "Replace card"
+    },
+    "history": {
+      "title": "Payment history",
+      "subtitle": "All transactions and invoices",
+      "exportCsv": "Export CSV",
+      "pdf": "PDF",
+      "paid": "Paid"
+    },
+    "toast": {
+      "csvExported": "Payment history exported to CSV",
+      "popupBlocked": "Allow pop-ups to download the PDF",
+      "cardAdded": "Card added and linked successfully",
+      "cardReplaceStarted": "Starting secure details update...",
+      "cycleChanged": "Subscription period changed successfully",
+      "businessRequested": "Business plan request confirmed successfully!"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Account security",
+      "subtitle": "Protect access to your workspace"
+    },
+    "twoFa": {
+      "title": "Two-factor authentication",
+      "sub": "SMS or authenticator app",
+      "active": "Active",
+      "disabled": "Disabled"
+    },
+    "password": {
+      "title": "Admin password",
+      "sub": "Last changed: 3 months ago",
+      "change": "Change password"
+    },
+    "sessions": {
+      "title": "Active sessions",
+      "sub": "Where your account is currently signed in",
+      "count": "{{count}} devices",
+      "manage": "Manage",
+      "hide": "Hide",
+      "current": "Current",
+      "terminate": "Terminate",
+      "terminatedToast": "Session terminated successfully",
+      "justNow": "Active now",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} h ago",
+      "daysAgo": "{{count}} d ago",
+      "unknownLocation": "Unknown"
+    },
+    "tokens": {
+      "title": "API tokens",
+      "sub": "Keys for integrating external services",
+      "revoke": "Revoke",
+      "createNew": "Create new token",
+      "name": "Integration name",
+      "namePh": "e.g. AmoCRM Sync",
+      "generate": "Generate key",
+      "revokedToast": "API token revoked and removed",
+      "generatedToast": "New API key generated"
+    },
+    "danger": {
+      "title": "Data management (Danger zone)",
+      "export": {
+        "title": "Export all data",
+        "sub": "Download an archive of the client base and history",
+        "prepare": "Prepare archive",
+        "hide": "Hide",
+        "clients": "Client base (CSV)",
+        "finances": "Financial transactions",
+        "media": "Media and photos",
+        "start": "Start export",
+        "started": "ZIP archive generation started. We'll send a link to your email."
+      },
+      "wipe": {
+        "title": "Wipe database",
+        "sub": "Deletes all clients and bookings. Settings will be kept.",
+        "action": "Wipe data",
+        "toast": "Database wiped successfully"
+      },
+      "deleteAccount": {
+        "title": "Delete company account",
+        "sub": "Complete and irreversible destruction of the business in the system",
+        "action": "Delete forever",
+        "toast": "Company account deleted beyond recovery"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrations",
+    "subtitle": "Connect external channels and ecosystems in one click",
+    "items": {
+      "whatsapp": { "name": "WhatsApp Business", "sub": "Message broadcasts and auto-notifications to clients" },
+      "telegram": { "name": "Telegram Bot", "sub": "Automatic 24/7 booking via chat bot" },
+      "instagram": { "name": "Instagram Direct", "sub": "Capture incoming messages into the CRM" },
+      "google": { "name": "Google Calendar", "sub": "Two-way sync of trainer schedules" },
+      "onec": { "name": "1C: Enterprise", "sub": "Automatic export of finances and analytics" },
+      "yandex": { "name": "YooKassa", "sub": "Secure online payments and prepayments on the website" }
+    },
+    "status": { "connected": "Connected", "notActive": "Not active" },
+    "actions": {
+      "configure": "Configure",
+      "connect": "Connect",
+      "disconnect": "Disconnect integration",
+      "activate": "Activate gateway",
+      "saveChanges": "Save changes"
+    },
+    "fields": {
+      "whatsappPhone": "WhatsApp Business phone number",
+      "whatsappWebhook": "Sync webhook address (View only)",
+      "telegramToken": "Bot API token (from @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNo...",
+      "telegramWelcome": "Bot welcome message",
+      "instagramAccount": "Linked Meta business account name",
+      "instagramAccountPh": "@your_studio_candles",
+      "googleCalendarName": "Calendar name",
+      "googleSyncType": "Sync mode",
+      "googleSyncOptions": ["Two-way", "Export only", "Import only"],
+      "onecUrl": "Database publication gateway URL",
+      "onecUrlPh": "https://1c.company.com/base",
+      "onecLogin": "Login / CRM identifier",
+      "onecLoginPh": "velora_sync_user",
+      "yandexShopId": "Shop ID",
+      "yandexTestMode": "Test payment mode",
+      "yandexTestModeSub": "Test payments without real charges"
+    },
+    "toast": {
+      "connected": "{{name}} integration set up and connected successfully",
+      "disconnected": "{{name}} integration disconnected"
+    }
+  },
+  "data": {
+    "storage": {
+      "title": "Data storage",
+      "subtitle": "Monitor disk space and automate backups",
+      "used": "Disk space used",
+      "categories": { "clients": "Clients", "media": "Media files", "docs": "Documents" },
+      "categoryToast": "Category detail: {{label}} ({{size}})",
+      "autoBackup": { "title": "Automatic backups", "sub": "Daily system snapshot at 3:00 AM", "on": "Enabled", "off": "Disabled" },
+      "lastBackup": { "title": "Last successful backup", "sub": "Today at 03:14 · Compressed archive size: 124 MB", "agoHours": "10 hours ago" },
+      "retention": "Backup retention period",
+      "retentionOptions": ["14 days", "30 days", "60 days", "90 days"],
+      "download": "Download latest backup",
+      "downloading": "Downloading...",
+      "generate": "Generate backup now",
+      "generating": "Compiling tables...",
+      "toast": {
+        "backupCreated": "Database backup created successfully ✨",
+        "fileDownloaded": "File backup_joga_live.sql downloaded"
+      }
+    },
+    "export": {
+      "title": "Export reports & lists",
+      "subtitle": "Download files in table formats for accounting and analytics",
+      "items": {
+        "clients": { "name": "Full client list", "format": "CSV / XLSX (Excel)" },
+        "journal": { "name": "Journal & booking history", "format": "CSV / PDF Document" },
+        "finances": { "name": "Financial report & cash register", "format": "XLSX / Pivot table" },
+        "ai": { "name": "Studio AI analytics summary", "format": "PDF Presentation" }
+      },
+      "toast": "Document \"{{name}}\" exported successfully"
+    }
+  }
+}

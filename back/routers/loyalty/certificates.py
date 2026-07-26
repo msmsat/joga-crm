@@ -15,6 +15,7 @@ from sqlalchemy.future import select
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import Account, GiftCertificate, Operation, StudioCertificateConfig
+from services.notifier import notify_payment
 from schemas.loyalty import GiftCertificateCreate, GiftCertificateRead
 
 router = APIRouter()
@@ -98,6 +99,10 @@ async def create_certificate(
 
     await db.commit()
     await db.refresh(cert)
+    # Оплата сертификата (c4/a4) — только если проведена через счёт (был платёж)
+    # и привязан клиент-покупатель; подарочный без client_id внутри тихо скипнется.
+    if account is not None:
+        await notify_payment(db, ctx.studio_id, body.client_id, body.amount)
     return cert
 
 

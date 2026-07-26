@@ -63,6 +63,7 @@ export interface UserMe {
   last_name: string | null
   email: string | null
   phone: string | null
+  tg_id: number | null
   is_onboarded: boolean
   studio_id: number | null
   role: string | null
@@ -72,6 +73,7 @@ export interface UpdateProfilePayload {
   name?: string
   last_name?: string | null
   phone?: string | null
+  tg_id?: number | null
 }
 
 export interface CheckPhoneResponse {

@@ -3,7 +3,6 @@ import secrets
 from datetime import datetime, timedelta
 
 import aiohttp
-from aiogram import Bot
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,6 +21,7 @@ from schemas.settings.integrations import (
 )
 from services.mailer import send_email
 from services.notifier import _studio_prefs
+from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
 
 logger = logging.getLogger(__name__)
 
@@ -91,19 +91,10 @@ async def connect_telegram(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    bot = Bot(token=body.token)
-    try:
-        me = await bot.get_me()
-    except Exception:
-        raise HTTPException(status_code=400, detail="Telegram не принял токен")
-    finally:
-        await bot.session.close()
+    username = await verify_bot_token(body.token)
+    await connect_telegram_bot(db, ctx.studio_id, body.token, username)
 
     integ = await _get_or_create_integration(db, ctx.studio_id, "tg_notify")
-    integ.config = {"token": body.token, "bot_username": me.username}
-    integ.is_connected = True
-    await db.commit()
-    await db.refresh(integ)
     return _channel_status(integ, "tg_notify")
 
 
@@ -112,10 +103,7 @@ async def disconnect_telegram(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    integ = await _get_or_create_integration(db, ctx.studio_id, "tg_notify")
-    integ.is_connected = False
-    integ.config = None
-    await db.commit()
+    await disconnect_telegram_bot(db, ctx.studio_id)
     return ChannelStatus()
 
 

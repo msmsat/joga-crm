@@ -30,6 +30,40 @@ class BillingPlanRead(BaseSchema):
     expires_at: Optional[str] = None
     max_staff: int
     auto_renewal: bool
+    billing_mode: str = "subscription"
+    percent_rate: Optional[float] = None
+    fixed_base_amount: Optional[int] = None
+    notify_before_days: int = 3
+    notify_before_autocharge: bool = True
+    email_receipt_enabled: bool = True
+    sms_notification_enabled: bool = False
+
+
+class AutopaySettingsUpdate(BaseModel):
+    auto_renewal: Optional[bool] = None
+    email_receipt_enabled: Optional[bool] = None
+    notify_before_autocharge: Optional[bool] = None
+    sms_notification_enabled: Optional[bool] = None
+
+
+class ActivateModelRequest(BaseModel):
+    mode: Literal["subscription", "percent", "combo"]
+    plan: Optional[Literal["start", "pro", "business"]] = None
+    period_months: Optional[Literal[1, 6, 12, 24]] = None
+
+
+class IbanCheckoutRequest(BaseModel):
+    plan: Literal["start", "pro", "business"]
+    period_months: Literal[1, 6, 12, 24]
+
+
+class IbanCheckoutResponse(BaseModel):
+    invoice_id: int
+    invoice_number: str      # "INV-2026-000123"
+    iban: str                # тестовый, детерминированный
+    amount: int               # копейки
+    reference: str            # назначение платежа = order_id
+    beneficiary: str = "Velora CRM LLC"
 
 
 class InvoiceRead(BaseSchema):
@@ -49,6 +83,7 @@ class PaymentCardRead(BaseSchema):
     card_expiry: str
     cardholder_name: Optional[str] = None
     is_primary: bool
+    method_type: str = "card"
 
 
 class CheckoutRequest(BaseModel):

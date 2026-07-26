@@ -35,7 +35,6 @@ class Studio(Base):
     lessons: Mapped[List["Lesson"]] = relationship(back_populates="studio")
     halls: Mapped[List["Hall"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     services: Mapped[List["Service"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
-    roles: Mapped[List["Role"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
 
     # Settings
     working_hours: Mapped[List["StudioWorkingHours"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
@@ -46,7 +45,6 @@ class Studio(Base):
     billing_plan: Mapped[Optional["StudioBillingPlan"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     billing_invoices: Mapped[List["BillingInvoice"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     integrations: Mapped[List["StudioIntegration"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
-    backup_settings: Mapped[Optional["StudioBackupSettings"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
 
     # Finances
     accounts: Mapped[List["Account"]] = relationship(back_populates="studio", cascade="all, delete-orphan")

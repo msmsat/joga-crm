@@ -14,6 +14,8 @@ import bookingRU from './locales/ru/booking.json';
 import reportsRU from './locales/ru/reports.json';
 import notificationsRU from './locales/ru/notifications.json';
 import aiRU from './locales/ru/ai.json';
+import billingRU from './locales/ru/billing.json';
+import settingsRU from './locales/ru/settings.json';
 
 import commonEN from './locales/en/common.json';
 import staffEN from './locales/en/staff.json';
@@ -27,6 +29,8 @@ import bookingEN from './locales/en/booking.json';
 import reportsEN from './locales/en/reports.json';
 import notificationsEN from './locales/en/notifications.json';
 import aiEN from './locales/en/ai.json';
+import billingEN from './locales/en/billing.json';
+import settingsEN from './locales/en/settings.json';
 
 // 2. Раскладываем их по полочкам (namespaces)
 const resources = {
@@ -43,6 +47,8 @@ const resources = {
     reports: reportsRU,
     notifications: notificationsRU,
     ai: aiRU,
+    billing: billingRU,
+    settings: settingsRU,
   },
   en: {
     common: commonEN,
@@ -57,6 +63,8 @@ const resources = {
     reports: reportsEN,
     notifications: notificationsEN,
     ai: aiEN,
+    billing: billingEN,
+    settings: settingsEN,
   }
 };
 

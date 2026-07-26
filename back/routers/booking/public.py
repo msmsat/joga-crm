@@ -257,6 +257,14 @@ async def public_reserve(
         "lesson_name": lesson.name,
         "client_name": client.name,
     })
+    # Тренеру этого занятия (t1) — только если у занятия задан teacher_id.
+    if lesson.teacher_id is not None:
+        await notify(db, studio_id, "trainer", "t1", {
+            "trainer_id": lesson.teacher_id,
+            "lesson_name": lesson.name,
+            "client_name": client.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
     return ReserveResponse(
         reservation_id=reservation.id,
         lesson_name=lesson.name,

@@ -1,0 +1,189 @@
+{
+  "tabs": {
+    "plans": "Plans",
+    "invoices": "History",
+    "method": "Payment method"
+  },
+  "mode": {
+    "title": "Payment model",
+    "subscription": "Fixed subscription",
+    "percent": "% of online payments",
+    "combo": "Fixed + % combo",
+    "descriptions": {
+      "subscription": "Pay one amount per month. Predictable and cost-effective.",
+      "percent": "Pay only when you earn. From 2% to 8% of transactions.",
+      "combo": "Reduced subscription + a small % for active growth."
+    },
+    "badges": {
+      "popular": "Popular",
+      "flexible": "Flexible"
+    }
+  },
+  "period": {
+    "1": "1 month",
+    "6": "6 months",
+    "12": "1 year",
+    "24": "2 years",
+    "title": "Payment period",
+    "discountActive": "{{percent}}% discount active",
+    "noDiscount": "No discount",
+    "discountLabel": "−{{percent}}% discount"
+  },
+  "calculator": {
+    "title": "Calculation parameters",
+    "monthlyTurnover": "Your monthly online turnover",
+    "turnoverRangeMin": "50K",
+    "turnoverRangeMax": "3M+",
+    "chooseFeeLabel": "Choose a commission rate (affects features)",
+    "feeOptions": {
+      "basic": "Basic",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "chooseFixedLabel": "Choose a base fixed part (acquiring is always 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "PLAN ECONOMICS",
+    "economyComboTitle": "COMBO PLAN ECONOMICS",
+    "turnover": "Studio turnover",
+    "systemFee": "System fee",
+    "totalMonthlyPayment": "TOTAL MONTHLY PAYMENT",
+    "onlyPayForResult": "You don't pay a fixed fee, only for results",
+    "activatePercent": "Activate the {{percent}}% model",
+    "baseSubscription": "Base subscription (Fix)",
+    "acquiringFee": "Acquiring / Fee",
+    "activateCombo": "Activate the Combo plan"
+  },
+  "planCards": {
+    "bestChoice": "Best choice",
+    "current": "Current",
+    "enterprise": "Enterprise",
+    "perMonth": "/ mo.",
+    "currentPlan": "Current plan",
+    "choosePlan": "Choose plan"
+  },
+  "features": {
+    "start": {
+      "staff": "Up to 3 staff members",
+      "clients": "Up to 100 clients",
+      "booking": "Online booking",
+      "calendar": "Basic calendar",
+      "analytics": "Analytics",
+      "api": "API access",
+      "loyalty": "Loyalty & CRM",
+      "whiteLabel": "White-label"
+    },
+    "pro": {
+      "staff": "Up to 20 staff members",
+      "clients": "Unlimited clients",
+      "analytics": "Full analytics",
+      "loyalty": "Loyalty & CRM",
+      "telegram": "Telegram notifications",
+      "support": "Priority support",
+      "api": "API access",
+      "whiteLabel": "White-label"
+    },
+    "business": {
+      "unlimited": "Unlimited everything",
+      "whiteLabel": "White-label",
+      "api": "API access",
+      "multiBranch": "Multi-branch",
+      "manager": "Dedicated manager",
+      "integrations": "Custom integrations",
+      "sla": "99.9% SLA",
+      "training": "Team training"
+    }
+  },
+  "paymentSchedule": {
+    "title": "Payment schedule",
+    "total": "Total due",
+    "morePayments": "+ {{count}} more payments of {{amount}}",
+    "processing": "Redirecting to payment…",
+    "payFor": "Pay for {{count}} mo."
+  },
+  "trust": {
+    "title": "Why 2,400+ businesses trust us",
+    "reviews": [
+      { "text": "Switched from Altegio. The difference is like between a taxi and a private jet.", "author": "Maria K., FORM Pilates" },
+      { "text": "The best part is knowing exactly what I pay every month. No surprises.", "author": "Artem N., Barbershop Bros" },
+      { "text": "Support replied in 4 minutes. I've never seen that anywhere else.", "author": "Elena D., SPA LUNA" }
+    ]
+  },
+  "upgrade": {
+    "title": "Upgrade to {{plan}}",
+    "priceLine": "Price {{price}}/mo.",
+    "discountNote": " {{percent}}% off when paying for {{period}} mo.",
+    "planLabel": "Plan",
+    "periodLabel": "Period",
+    "periodValue_one": "{{count}} month",
+    "periodValue_other": "{{count}} months",
+    "discountLabel": "Discount",
+    "totalLabel": "Total",
+    "confirmAndPay": "Confirm and pay",
+    "trustNote": "Secured by PCI DSS · 7-day refund"
+  },
+  "method": {
+    "primaryCard": "PRIMARY CARD",
+    "notLinked": "Not linked",
+    "holder": "HOLDER",
+    "expiry": "EXPIRY",
+    "securityTitle": "Data protection standards",
+    "security": {
+      "pciDss": "PCI DSS Level 1 encryption",
+      "secure3d": "3D Secure transaction protection",
+      "noStorage": "Card data never touches our servers",
+      "autoLink": "Card is linked on first payment"
+    },
+    "noCardDetail": "No need to enter details separately — payment happens on Fondy's secure page.",
+    "renewDone": "Invoice created — payment processing",
+    "renewBusy": "Creating invoice…",
+    "renewNow": "Renew now with card •••• {{last4}}",
+    "autopayTitle": "Autopayment settings",
+    "autopay": {
+      "autoRenew":   { "label": "Automatic renewal",        "desc": "Charged without confirmation" },
+      "emailNotify": { "label": "Email notifications",      "desc": "Receipt emailed after every payment" },
+      "remind3d":    { "label": "Remind 3 days before",     "desc": "We'll remind you before the automatic charge" },
+      "sms":         { "label": "SMS alert",                "desc": "Text message sent on charge" }
+    }
+  },
+  "invoices": {
+    "title": "Payment history",
+    "totalPaid": "total paid {{amount}}",
+    "exportCsv": "Export CSV"
+  },
+  "table": {
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "status": "Status",
+    "receipt": "Receipt"
+  },
+  "status": {
+    "paid": "Paid",
+    "pending": "Pending",
+    "failed": "Failed",
+    "refunded": "Refunded"
+  },
+  "empty": {
+    "noInvoices": "No invoices yet — they'll appear after your first payment.",
+    "noCard": "Your card will appear automatically after the first payment.",
+    "monthsWithUs": "You haven't purchased a subscription yet",
+    "noData": "No data"
+  },
+  "savings": {
+    "title": "Your savings",
+    "prepayTitle": "Your savings when paying upfront",
+    "youSave": "You save {{amount}} over {{months}} mo.",
+    "freeMonths": "That's like {{count}} mo. free",
+    "amountLabel": "{{amount}} savings",
+    "comparedToMonthly": "compared to paying monthly",
+    "forMonths_one": "For {{count}} month",
+    "forMonths_other": "For {{count}} months"
+  },
+  "pay": "Pay",
+  "continuePlan": "Continue plan"
+}

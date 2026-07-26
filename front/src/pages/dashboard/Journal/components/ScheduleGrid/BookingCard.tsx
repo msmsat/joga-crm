@@ -49,6 +49,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
       onMouseDown={e => {
+        if (b.status === 'cancelled') return;
         if (!canEdit) {
           showToast(t('toasts.noPermission'));
           return;
@@ -67,7 +68,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         background: layout.isCascade ? '#FFFFFF' : `${b.color}12`,
         border: editDraft ? '2px dashed var(--peach)' : `2px solid ${b.color}`,
         color: b.color,
-        cursor: canEdit ? 'grab' : 'pointer',
+        cursor: b.status === 'cancelled' ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
@@ -78,16 +79,20 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       </div>
       
       <div className="b-meta">
-        {height > 36 && canEdit && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
-            <Icons.Users />
-            <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
-            {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
-          </div>
+        {b.status === 'cancelled' ? (
+          <span className="b-cancelled-badge">{t('grid.cancelled')}</span>
+        ) : (
+          height > 36 && canEdit && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
+              <Icons.Users />
+              <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
+              {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
+            </div>
+          )
         )}
       </div>
 
-      {b.maxClients > 0 && height > 40 && (
+      {b.status !== 'cancelled' && b.maxClients > 0 && height > 40 && (
         <div className="b-progress" style={{ position: 'absolute', bottom: 6, left: 8, right: 8, height: 2, background: `${b.color}25`, borderRadius: 1 }}>
           <div style={{ height: '100%', width: `${fillRatio * 100}%`, background: b.color, borderRadius: 1, transition: 'width 0.5s ease' }} />
         </div>
@@ -106,7 +111,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </div>
       )}
 
-      {isSelected && !isDragging && canEdit && (
+      {isSelected && !isDragging && canEdit && b.status !== 'cancelled' && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

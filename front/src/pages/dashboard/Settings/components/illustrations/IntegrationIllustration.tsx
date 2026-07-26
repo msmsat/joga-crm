@@ -5,7 +5,7 @@ export default function IntegrationIllustration() {
     { name: "WhatsApp", color: "#25D366" },
     { name: "Telegram", color: "#229ED9" },
     { name: "Instagram", color: "#E1306C" },
-    { name: "1С", color: "#EF3B2C" },
+    { name: "1C", color: "#EF3B2C" },
   ];
   const [active, setActive] = useState<number | null>(null);
   return (

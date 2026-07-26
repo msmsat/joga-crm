@@ -16,6 +16,7 @@ from schemas.analytics.reports import (
     RevenueStructureRow,
 )
 from ._filters import (
+    needs_hall_join,
     ReportFilters,
     lesson_conds,
     occupied_expr,
@@ -30,10 +31,6 @@ router = APIRouter()
 AT_RISK_DAYS = 21
 OVERFULL_WEEKS = 3
 OVERFULL_THRESHOLD_PCT = 90.0
-
-
-def _needs_hall_join(f: ReportFilters) -> bool:
-    return f.branch_id is not None
 
 
 async def _period_kpi(f: ReportFilters, sid: int, db: AsyncSession) -> dict[str, float]:
@@ -54,7 +51,7 @@ async def _period_kpi(f: ReportFilters, sid: int, db: AsyncSession) -> dict[str,
 
     def _lesson_join(stmt, outer: bool):
         stmt = stmt.select_from(Lesson).join(Reservation, Reservation.lesson_id == Lesson.id, isouter=outer)
-        if _needs_hall_join(f):
+        if needs_hall_join(f):
             stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
         return stmt.where(*conds)
 
@@ -96,7 +93,7 @@ async def _attended_client_ids(f: ReportFilters, sid: int, d_from: date, d_to: d
     stmt = select(func.distinct(Reservation.client_id)).select_from(Lesson).join(
         Reservation, Reservation.lesson_id == Lesson.id
     )
-    if _needs_hall_join(shifted):
+    if needs_hall_join(shifted):
         stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
     ids = (await db.execute(stmt.where(*conds, Reservation.status == "attended"))).scalars().all()
     return set(ids)
@@ -210,6 +207,7 @@ async def _insight_lesson_overfull(f: ReportFilters, sid: int, db: AsyncSession)
         Lesson.studio_id == sid,
         Lesson.start_time >= start_dt,
         Lesson.start_time <= end_dt,
+        Lesson.status != "cancelled",
     ]
     if f.hall_id is not None:
         conds.append(Lesson.hall_id == f.hall_id)

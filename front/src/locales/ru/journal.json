@@ -47,6 +47,7 @@
   "bookingPopup": {
     "confirmed": "Подтверждено",
     "pending": "Ожидает",
+    "cancelled": "Отменено",
     "spotsTaken": "мест занято",
     "fillRate": "Заполненность",
     "booked": "Записаны",
@@ -106,7 +107,8 @@
     "loadPercent": "Загрузка: {{percent}}%",
     "classes": "занятий",
     "classesToday": "занятий на сегодня",
-    "newLessonPreview": "Новое занятие"
+    "newLessonPreview": "Новое занятие",
+    "cancelled": "Отменено"
   },
   "createService": "+ Создать услугу",
   "invalidDateFormat": "Неверный формат даты",

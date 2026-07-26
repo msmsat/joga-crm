@@ -51,36 +51,111 @@
   border-bottom: 1px solid rgba(26, 26, 26, 0.05);
 }
 
+/* ─── ULTIMATE ANIMATED HISTORY BUTTON ────────────────────── */
 .historyBtn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
-  background: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(249, 160, 139, 0.2);
+  background: rgba(249, 160, 139, 0.04);
   cursor: pointer;
   color: #888888;
   flex-shrink: 0;
-  transition: border-color 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
-              color 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  /* Пружинистый отклик кнопки */
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Эффект свечения при наведении (Glow) */
 .historyBtn:hover {
-  border-color: rgba(249, 160, 139, 0.4);
-  background: rgba(249, 160, 139, 0.07);
+  border-color: rgba(249, 160, 139, 0.6);
+  background: rgba(249, 160, 139, 0.12);
   color: #F9A08B;
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(249, 160, 139, 0.25),
+              inset 0 0 8px rgba(249, 160, 139, 0.15);
 }
 
+/* Вращающаяся неоновая орбита вокруг кнопки */
+.historyBtn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(249, 160, 139, 0.8) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: orbitSpin 2.5s linear infinite;
+  z-index: 0;
+}
+
+.historyBtn:hover::before {
+  opacity: 1;
+}
+
+/* Внутренний маскирующий слой для мягкого размытия */
+.historyBtn::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: #FDFCFB;
+  border-radius: 8.5px;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.historyBtn:hover::after {
+  background: #FFF9F7;
+}
+
+/* Слой для контейнера иконок с анимацией вылета */
 .historyBtnIcon {
-  display: block;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
 }
 
+/* Эффект вращения и микро-зума при ховере */
 .historyBtn:hover .historyBtnIcon {
-  transform: rotate(-360deg);
+  transform: rotate(-180deg) scale(1.15);
+}
+
+/* Состояние когда открыта история (активная кнопка) */
+.historyBtnActive {
+  border-color: #F9A08B;
+  background: #F9A08B;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(249, 160, 139, 0.4);
+}
+
+.historyBtnActive::after {
+  opacity: 0; /* Убираем плашку, чтобы кнопка стала полностью цветной */
+}
+
+.historyBtnActive .historyBtnIcon {
+  color: #FFFFFF;
+  transform: rotate(180deg);
+}
+
+/* Анимация вращения орбиты */
+@keyframes orbitSpin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .headerTitle {
