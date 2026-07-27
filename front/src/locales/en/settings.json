@@ -2,8 +2,6 @@
   "nav": {
     "sectionLabel": "System settings",
     "general": "General",
-    "hours": "Working hours",
-    "team": "Team",
     "appearance": "Appearance",
     "notifications": "Notifications",
     "billing": "Billing",
@@ -223,17 +221,6 @@
       "hoursAgo": "{{count}} h ago",
       "daysAgo": "{{count}} d ago",
       "unknownLocation": "Unknown"
-    },
-    "tokens": {
-      "title": "API tokens",
-      "sub": "Keys for integrating external services",
-      "revoke": "Revoke",
-      "createNew": "Create new token",
-      "name": "Integration name",
-      "namePh": "e.g. AmoCRM Sync",
-      "generate": "Generate key",
-      "revokedToast": "API token revoked and removed",
-      "generatedToast": "New API key generated"
     },
     "danger": {
       "title": "Data management (Danger zone)",

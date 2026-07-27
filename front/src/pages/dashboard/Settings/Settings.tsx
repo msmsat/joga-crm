@@ -5,18 +5,12 @@ import "./Settings.css";
 import { useSecurity } from "./hooks/useSecurity";
 import { useBilling } from "./hooks/useBilling";
 import { useIntegrations } from "./hooks/useIntegrations";
-import { useTeam } from "./hooks/useTeam";
-
-import { AddEmployeeModal } from "../Staff/components/modals/AddEmployeeModal";
-import EditStaffModal from "../../../components/modals/EditStaffModal";
 
 import { icons } from "./components/ui/SettingsIcons";
 import SettingsNav from "./components/ui/SettingsNav";
 import { ConfirmModal, useToast } from "../../../components/ui/index";
 
 import GeneralTab from "./components/tabs/GeneralTab";
-import HoursTab from "./components/tabs/HoursTab";
-import TeamTab from "./components/tabs/TeamTab";
 import AppearanceTab from "./components/tabs/AppearanceTab";
 import NotificationsTab from "./components/tabs/NotificationsTab";
 import BillingTab from "./components/tabs/BillingTab";
@@ -42,27 +36,14 @@ export default function Settings() {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [studiosList, setStudiosList] = useState<Studio[]>(INITIAL_STUDIOS_LIST);
 
-  // Адаптер старого useSettingsToast поверх общего Toast-кита:
-  // savedStates даёт кнопкам «Сохранено»-состояние, сообщения идут в общий тост.
-  const [savedStates, setSavedStates] = useState<Record<string, boolean>>({});
-  const triggerToast = (msg: string) => toast.success(msg);
-  const triggerSave = (key: string, msg: string) => {
-    setSavedStates(p => ({ ...p, [key]: true }));
-    toast.success(msg);
-    setTimeout(() => setSavedStates(p => ({ ...p, [key]: false })), 2000);
-  };
-  const team = useTeam(triggerToast, triggerSave);
-
   useEffect(() => {
     rightPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
 
   const navItems = [
     { id: "general", icon: icons.building, label: t('nav.general') },
-    { id: "hours", icon: icons.calendar, label: t('nav.hours') },
     { id: "appearance", icon: icons.palette, label: t('nav.appearance') },
     { id: "notifications", icon: icons.bell, label: t('nav.notifications'), badge: 2 },
-    { id: "team", icon: icons.users, label: t('nav.team') },
     { id: "billing", icon: icons.creditCard, label: t('nav.billing') },
     { id: "security", icon: icons.shield, label: t('nav.security') },
     { id: "integrations", icon: icons.link, label: t('nav.integrations') },
@@ -71,22 +52,8 @@ export default function Settings() {
 
   const sectionContent: Record<string, React.ReactNode> = {
     general: <GeneralTab />,
-    hours: <HoursTab savedStates={savedStates} triggerSave={triggerSave} />,
     appearance: <AppearanceTab />,
     notifications: <NotificationsTab />,
-    team: (
-      <TeamTab
-        teamData={team.teamData}
-        expandedRole={team.expandedRole}
-        setExpandedRole={team.setExpandedRole}
-        permissionsMatrix={team.permissionsMatrix}
-        handlePermissionToggle={team.handlePermissionToggle}
-        onAddStaff={() => team.setIsAddStaffOpen(true)}
-        onEditStaff={(member) => { team.setActiveEditStaff(member); team.setIsEditStaffOpen(true); }}
-        savedStates={savedStates}
-        triggerSave={triggerSave}
-      />
-    ),
     billing: <BillingTab {...billing} />,
     security: (
       <SecurityTab
@@ -94,12 +61,7 @@ export default function Settings() {
         setSecExpanded={security.setSecExpanded}
         setSecModal={security.setSecModal}
         activeSessions={security.activeSessions}
-        apiTokens={security.apiTokens}
-        newTokenName={security.newTokenName}
-        setNewTokenName={security.setNewTokenName}
         terminateSession={security.terminateSession}
-        revokeToken={security.revokeToken}
-        generateToken={security.generateToken}
         twoFa={twoFa}
         setTwoFa={setTwoFa}
       />
@@ -138,22 +100,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
-      <AddEmployeeModal
-        isOpen={team.isAddStaffOpen}
-        onClose={() => team.setIsAddStaffOpen(false)}
-        onSuccess={team.handleAddStaffSuccess}
-      />
-
-      {team.activeEditStaff && (
-        <EditStaffModal
-          isOpen={team.isEditStaffOpen}
-          staff={team.activeEditStaff}
-          onClose={() => team.setIsEditStaffOpen(false)}
-          onSave={team.handleEditStaffSave}
-          onDelete={team.handleEditStaffDelete}
-        />
-      )}
 
       {(security.secModal === "deleteData" || security.secModal === "deleteAccount") && (
         <ConfirmModal

@@ -6,21 +6,16 @@ import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
 import Toggle from "../ui/form/Toggle";
 import SecurityIllustration from "../illustrations/SecurityIllustration";
-import type { Session, ApiToken } from "../../types";
-import { Input, useToast } from "../../../../../components/ui/index";
+import type { Session } from "../../types";
+import { useToast } from "../../../../../components/ui/index";
 import type { TFunction } from "i18next";
 
 interface SecurityTabProps {
-  secExpanded: "sessions" | "token" | "export" | null;
-  setSecExpanded: (v: "sessions" | "token" | "export" | null) => void;
+  secExpanded: "sessions" | "export" | null;
+  setSecExpanded: (v: "sessions" | "export" | null) => void;
   setSecModal: (v: "password" | "deleteData" | "deleteAccount" | null) => void;
   activeSessions: Session[];
-  apiTokens: ApiToken[];
-  newTokenName: string;
-  setNewTokenName: (v: string) => void;
   terminateSession: (id: number) => void;
-  revokeToken: (id: number) => void;
-  generateToken: () => void;
   twoFa: boolean;
   setTwoFa: (v: boolean) => void;
 }
@@ -38,15 +33,9 @@ function fmtLoc(city: string | null, country: string | null, t: TFunction): stri
   return [city, country].filter(Boolean).join(', ') || t('settings:security.sessions.unknownLocation');
 }
 
-function fmtCreated(iso: string): string {
-  try { return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }); }
-  catch { return iso; }
-}
-
 export default function SecurityTab({
   secExpanded, setSecExpanded, setSecModal,
-  activeSessions, apiTokens, newTokenName, setNewTokenName,
-  terminateSession, revokeToken, generateToken,
+  activeSessions, terminateSession,
   twoFa, setTwoFa,
 }: SecurityTabProps) {
   const navigate = useNavigate();
@@ -142,53 +131,6 @@ export default function SecurityTab({
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.link} title={t('security.tokens.title')} subtitle={t('security.tokens.sub')} />
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
-          {apiTokens.map((token) => (
-            <div key={token.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderRadius: "10px", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)" }}>{token.name}</div>
-                <div style={{ fontSize: "11.5px", color: "var(--muted)", fontFamily: "monospace", marginTop: "2px" }}>{token.token_prefix}</div>
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--muted)" }}>{fmtCreated(token.created_at)}</div>
-              <button
-                onClick={() => revokeToken(token.id)}
-                style={{ display: "flex", alignItems: "center", gap: "4px", color: "#C0607A", background: "rgba(216,140,154,0.1)", border: "none", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(216,140,154,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(216,140,154,0.1)"}
-              >
-                {icons.trash} {t('security.tokens.revoke')}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ borderRadius: "12px", background: secExpanded === "token" ? "rgba(252,174,145,0.04)" : "transparent", transition: "all 0.3s", overflow: "hidden" }}>
-          {!secExpanded || secExpanded !== "token" ? (
-            <button
-              onClick={() => setSecExpanded("token")}
-              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "10px 16px", borderRadius: "10px", background: "rgba(252,174,145,0.1)", border: "1px dashed rgba(252,174,145,0.4)", color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.15)"; e.currentTarget.style.borderStyle = "solid"; }} onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderStyle = "dashed"; }}
-            >
-              {icons.plus} {t('security.tokens.createNew')}
-            </button>
-          ) : (
-            <div style={{ padding: "16px", border: "1px solid var(--peach)", borderRadius: "12px", display: "flex", alignItems: "flex-end", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <Input label={t('security.tokens.name')} placeholder={t('security.tokens.namePh')} value={newTokenName} onChange={setNewTokenName} />
-              </div>
-              <button onClick={() => setSecExpanded(null)} className="topbar-ghost" style={{ padding: "10px 16px", fontSize: "12px" }}>{t('common:buttons.cancel')}</button>
-              <button
-                onClick={generateToken}
-                style={{ padding: "10px 20px", borderRadius: "10px", background: "var(--peach)", border: "none", color: "#FFF", fontSize: "12px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(252,174,145,0.3)" }}
-              >
-                {t('security.tokens.generate')}
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

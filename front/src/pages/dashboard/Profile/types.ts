@@ -1,5 +1,5 @@
-import type { UserSession, ApiToken } from '../../../api/settings/settings.types';
-export type { UserSession, ApiToken };
+import type { UserSession } from '../../../api/settings/settings.types';
+export type { UserSession };
 
 export interface UserAccount {
   id: number;

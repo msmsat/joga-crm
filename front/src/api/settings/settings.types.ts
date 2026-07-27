@@ -19,14 +19,6 @@ export interface UserSession {
   is_current: boolean
 }
 
-export interface ApiToken {
-  id: number
-  name: string
-  token_prefix: string
-  created_at: string
-  is_active: boolean
-}
-
 export interface Integration {
   integration_type: string
   is_active: boolean

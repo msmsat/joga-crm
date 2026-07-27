@@ -1,5 +1,5 @@
-import type { GeneralSettings, UserSession, ApiToken } from '../../../api/settings/settings.types';
-export type { GeneralSettings, UserSession, ApiToken };
+import type { GeneralSettings, UserSession } from '../../../api/settings/settings.types';
+export type { GeneralSettings, UserSession };
 
 // Session extends API UserSession with UI-only icon field
 export type Session = UserSession & { icon: string };
@@ -9,14 +9,6 @@ export interface Studio {
   name: string;
   theme: "light" | "dark";
   desc: string;
-}
-
-export interface TeamMember {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  status: "active" | "warning" | "info";
 }
 
 export type IntegrationsConfig = Record<string, any>;
