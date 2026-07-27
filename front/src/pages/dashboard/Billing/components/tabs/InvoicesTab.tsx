@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HistoryIcon, DownloadIcon } from '../ui/BillingIcons';
+import { HistoryIcon, DownloadIcon, RefreshIcon } from '../ui/BillingIcons';
 
 import { billingApi } from '../../../../../api/billing/billing.api';
 import { formatMoney } from '../../../../../lib/money';
@@ -21,13 +21,36 @@ const STATUS_META: Record<string, { key: string; color: string; bg: string }> = 
   refunded: { key: 'status.refunded', color: '#666666', bg: 'rgba(102,102,102,0.10)' },
 };
 
-function StatusBadge({ status }: { status: string }) {
+// paid/refunded — конечные, банк их уже не поменяет; остальные можно сверить.
+const FINAL_STATUSES = ['paid', 'refunded'];
+
+interface StatusProps {
+  status: string;
+  busy: boolean;
+  onSync?: () => void;
+}
+
+function StatusBadge({ status, busy, onSync }: StatusProps) {
   const { t } = useTranslation('billing');
   const m = STATUS_META[status] ?? STATUS_META.pending;
+  const style = {
+    display: 'inline-flex', alignItems: 'center', gap: '5px',
+    padding: '3px 10px', borderRadius: '20px', background: m.bg, color: m.color,
+    fontSize: '11px', fontWeight: 700, fontFamily: 'inherit',
+  } as const;
+
+  if (!onSync) return <span style={style}>{t(m.key)}</span>;
+
   return (
-    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '20px', background: m.bg, color: m.color, fontSize: '11px', fontWeight: 700 }}>
+    <button
+      onClick={onSync}
+      disabled={busy}
+      title={t('invoices.syncHint')}
+      style={{ ...style, border: 'none', cursor: busy ? 'default' : 'pointer', opacity: busy ? 0.6 : 1, transition: 'opacity 0.2s ease' }}
+    >
       {t(m.key)}
-    </span>
+      <RefreshIcon />
+    </button>
   );
 }
 
@@ -36,13 +59,15 @@ interface Props {
   invoices: Invoice[];
   loaded: boolean;
   plans: Record<PlanType, { name: string; monthly: number; color: string }>;
+  syncInvoice: (id: number) => Promise<Invoice>;
 }
 
-export default function InvoicesTab({ currency, invoices, loaded, plans }: Props) {
+export default function InvoicesTab({ currency, invoices, loaded, plans, syncInvoice }: Props) {
   const { t } = useTranslation('billing');
   const toast = useToast();
   const [exporting, setExporting] = useState(false);
   const [openingReceiptId, setOpeningReceiptId] = useState<number | null>(null);
+  const [syncingId, setSyncingId] = useState<number | null>(null);
 
   // Суммы счетов приходят в копейках (как и каталог) — в рубли переводим на отрисовке.
   const total = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0) / 100;
@@ -68,6 +93,22 @@ export default function InvoicesTab({ currency, invoices, loaded, plans }: Props
       toast.error(t('invoices.receiptError'));
     } finally {
       setOpeningReceiptId(null);
+    }
+  };
+
+  // Сверка с банком: статус мог не дойти вебхуком. Не изменился — говорим об этом прямо,
+  // чтобы клик не выглядел «ничего не произошло».
+  const handleSync = async (inv: Invoice) => {
+    if (syncingId !== null) return;
+    setSyncingId(inv.id);
+    try {
+      const fresh = await syncInvoice(inv.id);
+      if (fresh.status === inv.status) toast.info(t('invoices.syncUnchanged'));
+      else toast.success(t('invoices.syncChanged', { status: t(`status.${fresh.status}`) }));
+    } catch {
+      toast.error(t('invoices.syncError'));
+    } finally {
+      setSyncingId(null);
     }
   };
 
@@ -114,11 +155,31 @@ export default function InvoicesTab({ currency, invoices, loaded, plans }: Props
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{fmtDate(inv.paid_at, t('empty.noData'))}</div>
-                <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>{plans[inv.plan_name as PlanType]?.name ?? inv.plan_name}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
+                    {plans[inv.plan_name as PlanType]?.name ?? inv.plan_name}
+                    <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {t('upgrade.periodValue', { count: inv.period_months })}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px' }}>
+                    {inv.payment_method === 'iban'
+                      ? t('invoices.methodIban')
+                      : inv.payment_method
+                      ? t('invoices.methodCard')
+                      : t('invoices.invoiceNo', { id: inv.id })}
+                  </div>
+                </div>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{formatMoney(inv.amount / 100, currency)}</div>
-                <div><StatusBadge status={inv.status} /></div>
                 <div>
-                  {inv.pdf_url ? (
+                  <StatusBadge
+                    status={inv.status}
+                    busy={syncingId === inv.id}
+                    onSync={FINAL_STATUSES.includes(inv.status) ? undefined : () => handleSync(inv)}
+                  />
+                </div>
+                <div>
+                  {/* Чек есть у любого оплаченного счёта — эндпоинт рендерит его сам,
+                      pdf_url заполняет только вебхук провайдера и его может не быть. */}
+                  {inv.status === 'paid' ? (
                     <button
                       onClick={() => handleOpenReceipt(inv.id)}
                       disabled={openingReceiptId === inv.id}

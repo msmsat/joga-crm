@@ -27,6 +27,7 @@ CURRENCY = os.getenv("FONDY_CURRENCY", "UAH")
 CHECKOUT_URL = "https://pay.fondy.eu/api/checkout/url"
 REVERSE_URL = "https://pay.fondy.eu/api/reverse/order_id"
 RECURRING_URL = "https://pay.fondy.eu/api/recurring"
+STATUS_URL = "https://pay.fondy.eu/api/status/order_id"
 # Не входят в расчёт подписи (сами подписью не являются / служебные).
 _SIGNATURE_EXCLUDED = {"signature", "response_signature_string"}
 
@@ -103,6 +104,21 @@ async def reverse(order_id: str, amount: int, currency: str | None = None) -> No
     if data.get("response_status") != "success":
         logger.error("Fondy reverse failed for %s: %s", order_id, data)
         raise RuntimeError(f"Fondy reverse error: {data.get('error_message', data)}")
+
+
+async def status(order_id: str) -> dict:
+    """Актуальный статус платежа у Fondy — сверка, когда вебхук не дошёл.
+
+    Тело `response` возвращаем как есть: поля те же, что в колбэке (order_status,
+    masked_card, rectoken, receipt_url), поэтому применяется тем же кодом.
+    Неизвестный банку заказ — не ошибка: вернётся failure без order_status.
+    """
+    request = {"order_id": order_id, "merchant_id": MERCHANT_ID}
+    request["signature"] = build_signature(request)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(STATUS_URL, json={"request": request}) as resp:
+            return (await resp.json()).get("response", {})
 
 
 async def recurring(

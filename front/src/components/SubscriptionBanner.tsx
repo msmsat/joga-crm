@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { BillingPlan } from '../api/billing/billing.types';
 import { billingApi } from '../api/billing/billing.api';
 
 // Баннер «подписка заканчивается/обновится» за 3 дня (задача 12c). Только owner —
 // план и карты тянутся с owner-only эндпоинтов; у остальных ролей план = null.
-const PLAN_NAMES: Record<string, string> = { start: 'Старт', pro: 'Pro', business: 'Business' };
 const WARN_DAYS = 3;
 
-const fmtDate = (iso: string) =>
-  new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(new Date(iso));
+const fmtDate = (iso: string, lang: string) =>
+  new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long' }).format(new Date(iso));
 
 // Ключ дизмисса на сегодня: закрыли — не показываем до конца дня, назавтра снова.
 const dismissKey = (iso: string) => `velora:sub-banner:${iso.slice(0, 10)}:${new Date().toISOString().slice(0, 10)}`;
 
 export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null | undefined }) {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation('billing');
   const [hasCard, setHasCard] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -36,14 +37,13 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
   const isTrial = plan.status === 'trial';
   // Спокойный info-баннер только если карта привязана И автопродление включено.
   const willRenew = !isTrial && hasCard && plan.auto_renewal;
-  const date = fmtDate(expiresAt!);
-  const planLabel = PLAN_NAMES[plan.plan_name] ?? plan.plan_name;
+  const date = fmtDate(expiresAt!, i18n.language);
+  // Названия тарифов — те же ключи, что и на странице биллинга (сервер отдаёт их по-русски).
+  const planLabel = t(`planNames.${plan.plan_name}`, plan.plan_name);
 
   const text = isTrial
-    ? `Пробный период заканчивается ${date} — выберите тариф`
-    : willRenew
-      ? `Подписка ${planLabel} обновится ${date}`
-      : `Подписка ${planLabel} заканчивается ${date}`;
+    ? t('banner.trialEnds', { date })
+    : t(willRenew ? 'banner.renews' : 'banner.expires', { plan: planLabel, date });
 
   const close = () => { localStorage.setItem(dismissKey(expiresAt!), '1'); setDismissed(true); };
 
@@ -68,13 +68,13 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
             fontSize: '12.5px', fontWeight: 700, fontFamily: 'var(--font)', flexShrink: 0,
           }}
         >
-          {isTrial ? 'Выбрать тариф' : 'Оплатить'}
+          {isTrial ? t('banner.choosePlan') : t('pay')}
         </button>
       )}
 
       <button
         onClick={close}
-        aria-label="Скрыть"
+        aria-label={t('banner.dismiss')}
         style={{
           width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center',
           borderRadius: '7px', border: 'none', background: 'transparent', cursor: 'pointer',

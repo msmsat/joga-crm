@@ -16,11 +16,7 @@ interface Props {
   stats: BillingStats | null;
 }
 
-const TABS: { id: BillingTab; label: string }[] = [
-  { id: 'plans',    label: 'Тарифы и планы'   },
-  { id: 'invoices', label: 'История платежей' },
-  { id: 'method',   label: 'Способ оплаты'    },
-];
+const TAB_IDS: BillingTab[] = ['plans', 'invoices', 'method'];
 
 export default function BillingHeader({ activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
   const { t, i18n } = useTranslation('billing');
@@ -30,7 +26,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
   // Суммы приходят в копейках (как и каталог) — делим на 100 один раз тут.
   const STATS = [
     { label: t('header.totalSpent'),  target: (stats?.total_spent ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: CreditCardIcon },
-    { label: t('header.monthsWithUs'), target: stats?.months_with_us ?? 0,     prefix: '',             suffix: t('header.monthsSuffix'), Icon: CalendarIcon },
+    { label: t('header.monthsWithUs'), target: stats?.months_with_us ?? 0,     prefix: '',             suffix: '',                Icon: CalendarIcon   },
     { label: t('header.saved'),       target: (stats?.saved ?? 0) / 100,       prefix: currencySymbol, suffix: '',                Icon: TrendingIcon   },
     { label: t('header.nextCharge'),  target: (stats?.next_charge ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: ZapIcon        },
   ];
@@ -39,13 +35,21 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
   // status=none приходит до первой оплаты — тогда показываем «нет подписки», а не выдуманный Pro.
   const active = plan && plan.status !== 'none' ? plan : null;
   const expiresAt = active?.expires_at ? new Date(active.expires_at) : null;
+  // trial — тоже рабочая подписка (выдаётся на онбординге), а не «истёк».
+  const live = active?.status === 'active' || active?.status === 'trial';
+  const until = expiresAt?.toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   const statusLabel = !active
     ? t('header.noPlan')
-    : active.status !== 'active'
+    : !live
     ? t('header.expired')
-    : expiresAt
-    ? t('header.activeUntil', { date: expiresAt.toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }) })
-    : t('header.active');
+    : until
+    ? t(active.status === 'trial' ? 'header.trialUntil' : 'header.activeUntil', { date: until })
+    : t(active.status === 'trial' ? 'header.trial' : 'header.active');
+  // free_trial выдаётся на онбординге и в каталоге тарифов его нет — своя подпись.
+  const planLabel = !active
+    ? t('header.noPlanName')
+    : plans[active.plan_name as PlanType]?.name
+      ?? (active.plan_name === 'free_trial' ? t('header.trialPlanName') : active.plan_name);
   // Комбо платит уменьшенный фикс, «%» — ничего фиксированного, подписка — цену тарифа из каталога.
   const monthly = active?.billing_mode === 'combo'
     ? (active.fixed_base_amount ?? 0) / 100
@@ -57,22 +61,22 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--peach)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Velora · Биллинг
+              {t('header.eyebrow')}
             </p>
             <h1 style={{ fontSize: '32px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-1.2px', lineHeight: '1.1', marginBottom: '8px' }}>
-              Тарифы и оплата
+              {t('header.title')}
             </h1>
             <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: '1.6' }}>
-              Управляйте подпиской, способами оплаты и историей платежей
+              {t('header.subtitle')}
             </p>
           </div>
 
           <div style={{ padding: '16px 24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '16px', textAlign: 'right' }}>
             <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>{t('header.currentPlan')}</div>
             <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)' }}>
-              {active ? plans[active.plan_name as PlanType]?.name ?? active.plan_name : t('header.noPlanName')}
+              {planLabel}
             </div>
-            <div style={{ fontSize: '12px', color: active?.status === 'active' ? 'var(--pistachio)' : 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: live ? 'var(--pistachio)' : 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>
               {statusLabel}
             </div>
             {active && (
@@ -113,18 +117,18 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
 
       <div style={{ padding: '0 32px', marginBottom: '28px' }}>
         <div style={{ display: 'inline-flex', gap: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '4px' }}>
-          {TABS.map(tab => (
+          {TAB_IDS.map(id => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              key={id}
+              onClick={() => setActiveTab(id)}
               style={{
                 padding: '8px 18px', borderRadius: '9px', border: 'none', cursor: 'pointer',
                 fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', transition: 'all 0.2s ease',
-                background: activeTab === tab.id ? 'var(--peach)' : 'transparent',
-                color: activeTab === tab.id ? 'white' : 'var(--muted)',
-                boxShadow: activeTab === tab.id ? '0 2px 12px rgba(252,174,145,0.35)' : 'none',
+                background: activeTab === id ? 'var(--peach)' : 'transparent',
+                color: activeTab === id ? 'white' : 'var(--muted)',
+                boxShadow: activeTab === id ? '0 2px 12px rgba(252,174,145,0.35)' : 'none',
               }}
-            >{tab.label}</button>
+            >{t(`tabs.${id}`)}</button>
           ))}
         </div>
       </div>

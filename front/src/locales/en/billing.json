@@ -1,13 +1,31 @@
 {
   "tabs": {
-    "plans": "Plans",
-    "invoices": "History",
+    "plans": "Plans & pricing",
+    "invoices": "Payment history",
     "method": "Payment method"
   },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "banner": {
+    "trialEnds": "Your trial ends on {{date}} — pick a plan",
+    "renews": "Your {{plan}} subscription renews on {{date}}",
+    "expires": "Your {{plan}} subscription ends on {{date}}",
+    "choosePlan": "Choose a plan",
+    "dismiss": "Dismiss"
+  },
+  "paymentReturn": {
+    "done": "Payment went through — the {{plan}} plan is active.",
+    "processing": "Processing the payment — your subscription will activate in a couple of minutes."
+  },
   "header": {
+    "eyebrow": "Velora · Billing",
+    "title": "Plans & billing",
+    "subtitle": "Manage your subscription, payment methods and payment history",
     "totalSpent": "Total spent",
     "monthsWithUs": "Months with us",
-    "monthsSuffix": " mo.",
     "saved": "Saved",
     "nextCharge": "Next charge",
     "currentPlan": "CURRENT PLAN",
@@ -15,6 +33,9 @@
     "noPlan": "No active subscription",
     "active": "Active",
     "activeUntil": "Active · until {{date}}",
+    "trialPlanName": "Trial plan",
+    "trial": "Trial period",
+    "trialUntil": "Trial period · until {{date}}",
     "expired": "Expired",
     "percentRate": "{{rate}}% of online payments"
   },
@@ -193,7 +214,14 @@
     "totalPaid": "total paid {{amount}}",
     "exportCsv": "Export CSV",
     "exportError": "Couldn't export CSV. Please try again.",
-    "receiptError": "Couldn't open the receipt. Please try again."
+    "receiptError": "Couldn't open the receipt. Please try again.",
+    "invoiceNo": "Invoice #{{id}}",
+    "methodCard": "Paid by card",
+    "methodIban": "Paid by bank transfer (IBAN)",
+    "syncHint": "Check the status with the payment service",
+    "syncChanged": "Status updated: {{status}}",
+    "syncUnchanged": "The payment service confirmed the same status",
+    "syncError": "Couldn't check the status. Please try again."
   },
   "table": {
     "date": "Date",

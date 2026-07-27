@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
 import type { ActivateModelRequest, IbanCheckout, AutopaySettings, PaymentCard, BillingStats } from '../../../../api/billing/billing.types';
@@ -9,12 +9,10 @@ import { useToast } from '../../../../components/ui/index';
 
 type PlanInfo = { name: string; monthly: number; color: string };
 
-// Фолбэк-каркас на время загрузки каталога — те же ключи, нулевые цены.
-const EMPTY_PLANS: Record<PlanType, PlanInfo> = {
-  start:    { name: 'Старт',    monthly: 0, color: PLAN_COLORS.start },
-  pro:      { name: 'Pro',      monthly: 0, color: PLAN_COLORS.pro },
-  business: { name: 'Business', monthly: 0, color: PLAN_COLORS.business },
-};
+const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
+
+// Нулевые цены на время загрузки каталога — карточки рисуются сразу, без скачка вёрстки.
+const EMPTY_PRICES: Record<PlanType, number> = { start: 0, pro: 0, business: 0 };
 
 export function useBillingCalculator() {
   const currency = useStudioCurrency();
@@ -30,7 +28,7 @@ export function useBillingCalculator() {
 
   // Каталог с сервера — источник истины о ценах (правило 6 эпика). Цены приходят
   // в копейках, UI считает и рисует в рублях → делим на 100 один раз тут.
-  const [plans, setPlans] = useState<Record<PlanType, PlanInfo>>(EMPTY_PLANS);
+  const [prices, setPrices] = useState<Record<PlanType, number>>(EMPTY_PRICES);
   const [periodDiscounts, setPeriodDiscounts] = useState<Record<number, number>>({ 1: 0, 6: 0, 12: 0, 24: 0 });
   // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на Fondy.
   const [showPayModal, setShowPayModal] = useState(false);
@@ -137,6 +135,15 @@ export function useBillingCalculator() {
       .catch(() => { setRenewState('idle'); toast.error(t('method.renewError')); });
   };
 
+  // Сверка статуса счёта с банком (вебхук мог не дойти). Оплаченный счёт активирует
+  // подписку на сервере — поэтому вместе со строкой освежаем план и плашки шапки.
+  const syncInvoice = (id: number) =>
+    billingApi.syncInvoice(id).then(fresh => {
+      setInvoices(list => list.map(i => (i.id === fresh.id ? fresh : i)));
+      loadPlan(); loadStats();
+      return fresh;
+    });
+
   // Живые тумблеры автосписания (эпик B4, §4): оптимистичный флип, на ошибке — откат + тост.
   const setAutopay = (field: keyof AutopaySettings, value: boolean) => {
     if (!plan) return;
@@ -149,15 +156,24 @@ export function useBillingCalculator() {
 
   useEffect(() => {
     billingApi.getPlans().then(cat => {
-      const mapped = { ...EMPTY_PLANS };
+      const mapped = { ...EMPTY_PRICES };
       for (const p of cat.plans) {
         const id = p.id as PlanType;
-        if (mapped[id]) mapped[id] = { name: p.name, monthly: p.price / 100, color: PLAN_COLORS[id] };
+        if (id in mapped) mapped[id] = p.price / 100;
       }
-      setPlans(mapped);
+      setPrices(mapped);
       setPeriodDiscounts(cat.period_discounts);
-    }).catch(() => { /* каркас с нулями остаётся — не роняем страницу */ });
+    }).catch(() => { /* нули остаются — не роняем страницу */ });
   }, []);
+
+  // Названия тарифов — из i18n по id: каталог отдаёт их только на русском, а интерфейс
+  // мультиязычный. Цены и id по-прежнему диктует сервер (CLAUDE.md §8).
+  const plans = useMemo(
+    () => Object.fromEntries(PLAN_IDS.map(id => [
+      id, { name: t(`planNames.${id}`), monthly: prices[id], color: PLAN_COLORS[id] },
+    ])) as Record<PlanType, PlanInfo>,
+    [prices, t],
+  );
 
   const getPrice = (plan: PlanType, period: number) => {
     const base = plans[plan].monthly;
@@ -185,6 +201,6 @@ export function useBillingCalculator() {
     showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy, payWithIban, payWithCard,
     paymentReturn, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, renew, renewState, setAutopay,
-    stats,
+    stats, syncInvoice,
   };
 }

@@ -68,28 +68,41 @@ async def fondy_webhook(request: Request):
             logger.info("Fondy webhook: инвойс не найден order_id=%s status=%s", order_id, order_status)
             return {"status": "ok"}
 
-        # 3. Идемпотентность: повтор конечного статуса по уже переведённому инвойсу → no-op.
-        if invoice.status == "paid" and order_status == _APPROVED:
-            logger.info("Fondy webhook: повтор approved по paid-инвойсу %s — no-op", order_id)
-            return {"status": "ok"}
-        if invoice.status == "refunded" and order_status == _REVERSED:
-            logger.info("Fondy webhook: повтор reversed по refunded-инвойсу %s — no-op", order_id)
-            return {"status": "ok"}
-
-        if order_status == _APPROVED:
-            await _activate(db, invoice, payload)
-        elif order_status == _REVERSED:
-            await _refund(db, invoice)
-        elif order_status in _FAILED:
-            invoice.status = "failed"
-        else:
-            # pending/created/processing и пр. — фиксировать нечего, отвечаем 200.
-            logger.info("Fondy webhook: промежуточный статус %s order_id=%s", order_status, order_id)
-            return {"status": "ok"}
-
-        await db.commit()
+        # 3. Применяем статус (идемпотентность и переходы — внутри).
+        if not await apply_status(db, invoice, payload):
+            logger.info("Fondy webhook: статус %s по инвойсу %s ничего не меняет", order_status, order_id)
 
     return {"status": "ok"}
+
+
+async def apply_status(db: AsyncSession, invoice: BillingInvoice, payload: dict) -> bool:
+    """Переводит инвойс в статус, присланный банком. True — если что-то изменилось.
+
+    Общая точка вебхука и ручной сверки (POST /billing/invoices/{id}/sync): переход
+    один и тот же, откуда бы статус ни пришёл. Идемпотентно — повтор конечного
+    статуса по уже переведённому инвойсу ничего не делает; промежуточные
+    (pending/created/processing) и отсутствующий статус тоже no-op.
+    """
+    order_status = payload.get("order_status")
+
+    if invoice.status == "paid" and order_status == _APPROVED:
+        return False
+    if invoice.status == "refunded" and order_status == _REVERSED:
+        return False
+    if invoice.status == "failed" and order_status in _FAILED:
+        return False
+
+    if order_status == _APPROVED:
+        await _activate(db, invoice, payload)
+    elif order_status == _REVERSED:
+        await _refund(db, invoice)
+    elif order_status in _FAILED:
+        invoice.status = "failed"
+    else:
+        return False
+
+    await db.commit()
+    return True
 
 
 async def _activate(db: AsyncSession, invoice: BillingInvoice, payload: dict) -> None:
@@ -169,6 +182,23 @@ async def _refund(db: AsyncSession, invoice: BillingInvoice) -> None:
 
 
 if __name__ == "__main__":
+    import asyncio
+    import types
+
+    # apply_status: ветки без похода в БД — провал, повтор конечного статуса, промежуточный.
+    _fake_db = types.SimpleNamespace(commit=lambda: asyncio.sleep(0))
+    _inv = lambda status: types.SimpleNamespace(status=status)  # noqa: E731
+
+    _declined = _inv("pending")
+    assert asyncio.run(apply_status(_fake_db, _declined, {"order_status": "declined"})) is True
+    assert _declined.status == "failed"
+    assert asyncio.run(apply_status(_fake_db, _inv("paid"), {"order_status": "approved"})) is False
+    assert asyncio.run(apply_status(_fake_db, _inv("refunded"), {"order_status": "reversed"})) is False
+    # брошенный чекаут отдаёт expired на каждой сверке — второй раз это уже не «изменение»
+    assert asyncio.run(apply_status(_fake_db, _inv("failed"), {"order_status": "expired"})) is False
+    assert asyncio.run(apply_status(_fake_db, _inv("pending"), {"order_status": "processing"})) is False
+    assert asyncio.run(apply_status(_fake_db, _inv("pending"), {})) is False
+
     # Money-path self-check: _add_months на переносе года, клампе дня и високосном.
     d = datetime
     assert _add_months(d(2026, 1, 15), 12) == d(2027, 1, 15)

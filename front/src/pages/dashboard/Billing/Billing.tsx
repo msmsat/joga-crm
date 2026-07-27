@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import type { PlanType } from './types';
 import { useBillingCalculator } from './hooks/useBillingCalculator';
 import BillingHeader from './components/sections/BillingHeader';
 import PlansTab from './components/tabs/PlansTab';
@@ -7,6 +9,7 @@ import UpgradeModal from './components/modals/UpgradeModal';
 import PaymentMethodModal from './components/modals/PaymentMethodModal';
 
 export default function Billing() {
+  const { t } = useTranslation('billing');
   const h = useBillingCalculator();
 
   return (
@@ -25,8 +28,8 @@ export default function Billing() {
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pistachio)', flexShrink: 0 }} />
           <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 600 }}>
             {h.plan?.status === 'active'
-              ? `Оплата прошла — тариф ${h.plan.plan_name} активен.`
-              : 'Обрабатываем оплату — подписка активируется в течение пары минут.'}
+              ? t('paymentReturn.done', { plan: h.plans[h.plan.plan_name as PlanType]?.name ?? h.plan.plan_name })
+              : t('paymentReturn.processing')}
           </span>
         </div>
       )}
@@ -53,7 +56,13 @@ export default function Billing() {
       )}
 
       {h.activeTab === 'invoices' && (
-        <InvoicesTab currency={h.currency} invoices={h.invoices} loaded={h.invoicesLoaded} plans={h.plans} />
+        <InvoicesTab
+          currency={h.currency}
+          invoices={h.invoices}
+          loaded={h.invoicesLoaded}
+          plans={h.plans}
+          syncInvoice={h.syncInvoice}
+        />
       )}
 
       {h.activeTab === 'method' && (

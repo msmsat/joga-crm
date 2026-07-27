@@ -78,6 +78,7 @@ class BillingStatsRead(BaseSchema):
 class InvoiceRead(BaseSchema):
     id: int
     plan_name: str
+    period_months: int
     amount: int
     payment_method: Optional[str] = None
     paid_at: Optional[str] = None

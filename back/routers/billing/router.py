@@ -5,6 +5,7 @@
 """
 import csv
 import io
+import logging
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -23,10 +24,12 @@ from schemas.settings.billing import (
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
 )
+from services import fondy
 from .checkout import router as checkout_router
-from .webhook import router as webhook_router
+from .webhook import router as webhook_router, apply_status
 from .refunds import router as refunds_router
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 router.include_router(checkout_router)
 router.include_router(webhook_router)
@@ -192,6 +195,19 @@ async def update_autopay(
     return _to_plan_read(row)
 
 
+def _to_invoice_read(inv: BillingInvoice) -> InvoiceRead:
+    return InvoiceRead(
+        id=inv.id,
+        plan_name=inv.plan_name,
+        period_months=inv.period_months,
+        amount=inv.amount,
+        payment_method=inv.payment_method,
+        paid_at=inv.paid_at.isoformat() if inv.paid_at else None,
+        status=inv.status,
+        pdf_url=inv.pdf_url,
+    )
+
+
 @router.get("/invoices", response_model=list[InvoiceRead])
 async def get_invoices(
     ctx: StudioContext = Depends(require_role("owner")),
@@ -203,18 +219,39 @@ async def get_invoices(
         .where(BillingInvoice.studio_id == ctx.studio_id)
         .order_by(BillingInvoice.id.desc())
     )).scalars().all()
-    return [
-        InvoiceRead(
-            id=inv.id,
-            plan_name=inv.plan_name,
-            amount=inv.amount,
-            payment_method=inv.payment_method,
-            paid_at=inv.paid_at.isoformat() if inv.paid_at else None,
-            status=inv.status,
-            pdf_url=inv.pdf_url,
-        )
-        for inv in rows
-    ]
+    return [_to_invoice_read(inv) for inv in rows]
+
+
+@router.post("/invoices/{invoice_id}/sync", response_model=InvoiceRead)
+async def sync_invoice(
+    invoice_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Сверка статуса счёта с платёжным сервисом — когда вебхук не дошёл.
+
+    Истина о платеже по-прежнему у банка: тянем статус по order_id и применяем тем
+    же переходом, что и вебхук (apply_status) — оплата так же активирует подписку.
+    Заказ, о котором банк не знает (оплату не начинали), остаётся как был.
+    """
+    inv = (await db.execute(select(BillingInvoice).where(
+        BillingInvoice.id == invoice_id,
+        BillingInvoice.studio_id == ctx.studio_id,
+    ))).scalar_one_or_none()
+    if inv is None:
+        raise HTTPException(status_code=404, detail="Счёт не найден")
+    if not inv.order_id:
+        raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
+
+    try:
+        payload = await fondy.status(inv.order_id)
+    except Exception:
+        logger.exception("Сверка статуса не удалась, инвойс %s", inv.id)
+        raise HTTPException(status_code=502, detail="Платёжный сервис недоступен")
+
+    await apply_status(db, inv, payload)
+    await db.refresh(inv)
+    return _to_invoice_read(inv)
 
 
 @router.get("/invoices/export.csv")

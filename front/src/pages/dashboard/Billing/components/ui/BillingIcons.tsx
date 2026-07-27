@@ -96,6 +96,14 @@ export const DownloadIcon = () => (
   </svg>
 );
 
+// Сверка статуса счёта с платёжным сервисом — currentColor, чтобы совпадать с бейджем статуса.
+export const RefreshIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+    <path d="M12 7A5 5 0 1 1 10.4 3.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M12.2 1.4V4.1H9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export const BankIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M2 7L10 2L18 7" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

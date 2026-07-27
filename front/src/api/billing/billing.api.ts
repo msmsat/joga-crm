@@ -27,6 +27,10 @@ export const billingApi = {
   openReceipt: (id: number) =>
     openFile(`/billing/invoices/${id}/receipt.pdf`),
 
+  // Сверка статуса счёта с платёжным сервисом, когда вебхук не дошёл: возвращает счёт как есть в БД.
+  syncInvoice: (id: number) =>
+    client.post<Invoice>(`/billing/invoices/${id}/sync`, {}),
+
   getPaymentCards: () =>
     client.get<PaymentCard[]>('/billing/cards'),
 

@@ -66,7 +66,8 @@ export interface BillingStats {
 export interface Invoice {
   id: number
   plan_name: string
-  amount: number
+  period_months: number
+  amount: number          // копейки
   payment_method: string | null
   paid_at: string | null
   status: string
