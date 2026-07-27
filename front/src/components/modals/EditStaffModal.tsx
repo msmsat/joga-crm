@@ -332,7 +332,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
   useEffect(() => {
     if (isOpen) {
-      settingsApi.getGeneral().then(s => setCurrency(s.currency)).catch(() => {});
+      settingsApi.getGeneral().then(s => setCurrency(s.currency ?? undefined)).catch(() => {});
     }
   }, [isOpen]);
 
@@ -479,19 +479,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   if (!isOpen || !staff) return null;
 
   return createPortal(
-    <div
-      style={{
-        position: "fixed", inset: 0,
-        background: "rgba(26,26,26,0.42)",
-        backdropFilter: "blur(10px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        zIndex: 1000, padding: "16px",
-        animation: "eiOverlayIn 0.22s ease",
-      }}
-      onClick={onClose}
-    >
+    <div className="v-overlay" onClick={onClose}>
       <style>{`
-        @keyframes eiOverlayIn { from{opacity:0} to{opacity:1} }
         @keyframes eiModalIn { from{opacity:0;transform:scale(0.93) translateY(18px)} to{opacity:1;transform:scale(1) translateY(0)} }
         @keyframes eiSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         @keyframes eiCheckPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }

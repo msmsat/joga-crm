@@ -19,6 +19,8 @@ export const useModalClose = () => useContext(CloseContext);
 // Каркас всех модалок кита: overlay с blur, вход (scale+translateY, пружина) и
 // ВЫХОД (плавное закрытие — раньше все модалки исчезали мгновенно), Esc и клик
 // мимо. Содержимое (Header/поля/Footer) передаётся как children.
+// Анимация и блюр — в классах .v-overlay / .v-modal (App.css): блюр-слой
+// намеренно не анимируется, иначе Chrome пересчитывает его каждый кадр.
 export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdrop = true }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
 
@@ -39,24 +41,11 @@ export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdr
 
   return createPortal(
     <div
+      className={leaving ? 'v-overlay is-leaving' : 'v-overlay'}
       onClick={() => { if (closeOnBackdrop) requestClose(); }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(26,26,26,0.42)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', boxSizing: 'border-box',
-        animation: leaving ? 'ms-overlayOut 0.2s ease forwards' : 'ms-overlayIn 0.22s ease',
-      }}
     >
-      <style>{`
-        @keyframes ms-overlayIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes ms-overlayOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes ms-modalIn    { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes ms-modalOut   { from { opacity: 1; transform: scale(1) translateY(0); } to { opacity: 0; transform: scale(0.97) translateY(8px); } }
-        .ms-scroll::-webkit-scrollbar { width: 3px; }
-        .ms-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
-      `}</style>
-
       <div
+        className="v-modal"
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: isLg ? '860px' : '460px',
@@ -64,9 +53,6 @@ export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdr
           background: 'var(--bg-card, #FDFCFB)', borderRadius: isLg ? '24px' : '20px',
           boxShadow: '0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)',
           overflow: 'hidden',
-          animation: leaving
-            ? 'ms-modalOut 0.2s ease forwards'
-            : 'ms-modalIn 0.32s cubic-bezier(0.34,1.1,0.64,1)',
           ...(isLg
             ? { display: 'grid', gridTemplateColumns: '280px 1fr' }
             : { display: 'flex', flexDirection: 'column' }),

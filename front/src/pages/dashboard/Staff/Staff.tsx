@@ -156,7 +156,7 @@ export default function Staff() {
   const [currency, setCurrency] = useState<string>();
 
   useEffect(() => {
-    settingsApi.getGeneral().then(s => setCurrency(s.currency)).catch(() => {});
+    settingsApi.getGeneral().then(s => setCurrency(s.currency ?? undefined)).catch(() => {});
   }, []);
 
   // ── Employee modals ───────────────────────────────────────────────────────
@@ -608,22 +608,17 @@ export default function Staff() {
       {/* ── ACTION MODAL (write / call) ───────────────────────────────────── */}
       {actionModal.isOpen && createPortal(
         <div
+          className="v-overlay"
           onClick={closeActionModal}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(26,26,26,0.3)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'fadeIn 0.2s ease forwards', padding: '20px', boxSizing: 'border-box',
-          }}
+          style={{ zIndex: 9999 }}
         >
-          <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes scaleUp{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}`}</style>
           <div
+            className="v-modal"
             onClick={e => e.stopPropagation()}
             style={{
               background: '#FFFFFF', width: '100%', maxWidth: '420px',
               borderRadius: '24px', padding: '32px',
               boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
-              animation: 'scaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards',
               display: 'flex', flexDirection: 'column', gap: '24px',
               fontFamily: "'Manrope', sans-serif",
             }}

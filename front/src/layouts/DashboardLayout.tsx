@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Outlet, useLocation, Navigate } from 'react-router-dom';
 import '../App.css';
 import { useAIDrawer } from '../contexts/AIDrawerContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import AIDrawer from '../components/AIDrawer';
 import PlanLimitModal from '../components/PlanLimitModal';
 import { getUserRoleFromToken } from '../utils/auth';
@@ -69,6 +70,7 @@ export default function DashboardLayout() {
 
   return (
     <ToastProvider>
+    <ThemeProvider>
     <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
       display: 'flex',
       height: '100vh',
@@ -109,6 +111,7 @@ export default function DashboardLayout() {
       <AIDrawer />
       <PlanLimitModal />
     </div>
+    </ThemeProvider>
     </ToastProvider>
   );
 }

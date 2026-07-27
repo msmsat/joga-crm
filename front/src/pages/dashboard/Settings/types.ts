@@ -19,13 +19,3 @@ export interface NotificationsState {
   push: boolean;
   marketing: boolean;
 }
-
-export interface GeneralState {
-  name: string;
-  desc: string;
-  phone: string;
-  email: string;
-  site: string;
-  address: string;
-  logo: string | null;
-}

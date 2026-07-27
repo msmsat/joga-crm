@@ -328,19 +328,8 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
   if (!isOpen) return null;
 
   return createPortal(
-    <div
-      style={{
-        position: "fixed", inset: 0,
-        background: "rgba(26,26,26,0.42)",
-        backdropFilter: "blur(10px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        zIndex: 1000, padding: "16px",
-        animation: "overlayIn 0.22s ease",
-      }}
-      onClick={handleClose}
-    >
+    <div className="v-overlay" onClick={handleClose}>
       <style>{`
-        @keyframes overlayIn { from { opacity:0 } to { opacity:1 } }
         @keyframes modalIn { from { opacity:0; transform: scale(0.93) translateY(20px) } to { opacity:1; transform: scale(1) translateY(0) } }
         @keyframes stepIn { from { opacity:0; transform: translateX(${dir === 1 ? 24 : -24}px) } to { opacity:1; transform: translateX(0) } }
         @keyframes pulse2 { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.5; transform:scale(1.5) } }

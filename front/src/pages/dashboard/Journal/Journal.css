@@ -758,13 +758,19 @@
 /* ════════════════════════════════════════════════════════════
    12. МОДАЛЬНОЕ ОКНО (добавление клиента)
    ════════════════════════════════════════════════════════════ */
+/* Блюр статичен, анимируется только затемнение в ::before — иначе Chrome
+   пересчитывает backdrop-filter каждый кадр и открытие «подлагивает». */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(26,26,26,0.3);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 10000; /* перекрывает шапки сетки (z-index: 8050) */
   display: flex; align-items: center; justify-content: center;
-  animation: overlay-in 0.2s ease;
+}
+.modal-overlay::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: rgba(26,26,26,0.3);
+  animation: overlay-in 0.2s ease both;
 }
 @keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
 

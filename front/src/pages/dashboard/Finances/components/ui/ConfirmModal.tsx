@@ -9,29 +9,15 @@ export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = 
   if (!open) return null;
 
   return createPortal(
-    <div style={{
-      position: 'fixed', inset: 0,
-      background: 'rgba(18, 18, 18, 0.45)',
-      zIndex: 99999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-      animation: 'fadeIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both',
-      padding: '20px', boxSizing: 'border-box',
-    }}>
-      <div style={{
+    <div className="v-overlay" style={{ zIndex: 99999 }}>
+      <div className="v-modal" style={{
         background: '#1A1A1A', borderRadius: '16px', padding: '32px', width: '400px', maxWidth: '100%',
         boxShadow: danger
           ? '0 20px 50px -12px rgba(216, 140, 154, 0.25), 0 0 0 1px rgba(255,255,255,0.04)'
           : '0 20px 50px -12px rgba(249, 160, 139, 0.22), 0 0 0 1px rgba(255,255,255,0.04)',
         border: '1px solid rgba(255, 255, 255, 0.03)',
-        animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.3, 0.64, 1) both',
         fontFamily: "'Manrope', sans-serif",
       }}>
-        <style>{`
-          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          @keyframes scaleUp { from { transform: scale(0.95) translateY(10px); } to { transform: scale(1) translateY(0); } }
-        `}</style>
-
         <div style={{
           width: '44px', height: '44px', borderRadius: '12px',
           background: danger ? 'rgba(216, 140, 154, 0.12)' : 'rgba(249, 160, 139, 0.12)',

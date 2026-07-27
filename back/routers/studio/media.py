@@ -1,8 +1,11 @@
 import os
 import uuid
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies import oauth2_scheme
+from database import get_db
+from dependencies import oauth2_scheme, require_role, StudioContext
+from models import Studio
 
 router = APIRouter()
 
@@ -17,6 +20,9 @@ MIME_TO_EXT = {
     "image/webp": "webp",
     "image/gif":  "gif",
 }
+# Логотип студии (ROADMAP_SETTINGS эпик 2, задача 2) — строже общего загрузчика:
+# только эти 3 типа, без gif.
+STUDIO_LOGO_MIME_TYPES = {"image/png", "image/jpeg", "image/webp"}
 
 
 def _resolve_ext(file: UploadFile) -> str:
@@ -55,6 +61,35 @@ async def upload_logo(
 ):
     url = await _save_image(file, LOGOS_DIR, max_size_mb=5)
     return {"url": url}
+
+
+@router.post("/logo")
+async def upload_studio_logo(
+    file: UploadFile = File(...),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Логотип студии для вкладки «Основные» (ROADMAP_SETTINGS эпик 2, задача 2):
+    в отличие от /upload-logo — пишет logo_url в Studio и подчищает старый файл.
+    """
+    if (file.content_type or "").lower() not in STUDIO_LOGO_MIME_TYPES:
+        raise HTTPException(status_code=400, detail="Допустимы только PNG, JPEG и WEBP")
+
+    studio = await db.get(Studio, ctx.studio_id)
+    if studio is None:
+        raise HTTPException(status_code=404, detail="Студия не найдена")
+
+    old_url = studio.logo_url
+    new_url = await _save_image(file, LOGOS_DIR, max_size_mb=2)
+    studio.logo_url = new_url
+    await db.commit()
+
+    if old_url and old_url.startswith(f"/{LOGOS_DIR}/"):
+        old_path = old_url.lstrip("/")
+        if os.path.isfile(old_path):
+            os.remove(old_path)
+
+    return {"logo_url": new_url}
 
 
 @router.post("/upload-branch-photo")

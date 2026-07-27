@@ -1,12 +1,18 @@
 /* ── MOCKUP OVERLAY ── */
+/* Блюр статичен, анимируется только затемнение в ::before — иначе Chrome
+   пересчитывает backdrop-filter каждый кадр открытия. */
 .mockup-overlay {
   position: fixed; inset: 0; z-index: 300;
-  background: rgba(10, 10, 18, 0.75);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   overflow-y: auto; /* на низких окнах превью скроллится, а не режется */
   padding: 24px;
-  animation: fadeIn 0.25s ease;
+}
+.mockup-overlay::before {
+  content: ''; position: fixed; inset: 0; z-index: -1;
+  background: rgba(10, 10, 18, 0.75);
+  animation: fadeIn 0.25s ease both;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 

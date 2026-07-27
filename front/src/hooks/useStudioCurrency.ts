@@ -11,5 +11,5 @@ export function useStudioCurrency(): string | undefined {
     queryFn: () => settingsApi.getGeneral(),
     staleTime: 5 * 60 * 1000,
   })
-  return data?.currency
+  return data?.currency ?? undefined
 }

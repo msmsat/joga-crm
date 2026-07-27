@@ -1,11 +1,19 @@
 import { client } from '../client'
-import type { StudioRead, StudioUpdate, UploadLogoResponse, BranchCreate, BranchUpdate, BranchListItem, BranchDetail, HallBrief, HallCreate, HallUpdate } from './studio.types'
+import type { StudioRead, StudioUpdate, UploadLogoResponse, UploadStudioLogoResponse, BranchCreate, BranchUpdate, BranchListItem, BranchDetail, HallBrief, HallCreate, HallUpdate } from './studio.types'
 
 export const studioApi = {
   uploadLogo: (file: File) => {
     const form = new FormData()
     form.append('file', file)
     return client.postForm<UploadLogoResponse>('/studio/upload-logo', form)
+  },
+
+  // Логотип студии для вкладки «Основные» (Настройки): в отличие от uploadLogo
+  // сразу пишет logo_url в Studio на бэке — фронту не нужно отдельно PATCH'ить его.
+  uploadStudioLogo: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return client.postForm<UploadStudioLogoResponse>('/studio/logo', form)
   },
 
   uploadBranchPhoto: (file: File) => {

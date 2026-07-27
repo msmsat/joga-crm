@@ -248,7 +248,6 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
   return createPortal(
     <>
       <style>{`
-        @keyframes acOverlayIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes acModalIn   { from { opacity: 0; transform: scale(0.94) translateY(20px) } to { opacity: 1; transform: scale(1) translateY(0) } }
         @keyframes acStepIn    { from { opacity: 0; transform: translateX(calc(var(--ac-dir, 1) * 24px)) } to { opacity: 1; transform: translateX(0) } }
         @keyframes acCheckPop  { 0% { transform: scale(0) } 70% { transform: scale(1.2) } 100% { transform: scale(1) } }
@@ -256,15 +255,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
       `}</style>
 
       {/* Overlay */}
-      <div
-        onClick={handleClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(26,26,26,0.5)', backdropFilter: 'blur(6px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          animation: 'acOverlayIn 0.22s ease both',
-        }}
-      >
+      <div className="v-overlay" onClick={handleClose}>
         {/* Modal */}
         <div
           onClick={e => e.stopPropagation()}

@@ -2,6 +2,10 @@ export interface UploadLogoResponse {
   url: string
 }
 
+export interface UploadStudioLogoResponse {
+  logo_url: string
+}
+
 export interface StudioRead {
   id: number
   name: string

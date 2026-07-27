@@ -24,26 +24,19 @@ export default function PlanLimitModal() {
 
   return (
     <div
+      className="v-overlay"
       onClick={close}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(26,26,26,0.32)', backdropFilter: 'blur(3px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px',
-        animation: 'velora-plan-fade 0.2s ease',
-      }}
+      style={{ padding: '24px' }}
     >
-      <style>{`
-        @keyframes velora-plan-fade { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes velora-plan-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-      `}</style>
       <div
+        className="v-modal"
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: '420px',
           background: 'var(--bg-card, #FFFFFF)', color: 'var(--text, #1A1A1A)',
           borderRadius: '16px', padding: '32px',
           boxShadow: '0 24px 48px -12px rgba(26,26,26,0.28)',
-          textAlign: 'center', animation: 'velora-plan-pop 0.28s cubic-bezier(0.34,1.56,0.64,1)',
+          textAlign: 'center',
         }}
       >
         <div style={{

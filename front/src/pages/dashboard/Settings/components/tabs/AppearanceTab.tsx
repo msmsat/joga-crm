@@ -1,18 +1,54 @@
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
+import { InfoHint, useToast } from "../../../../../components/ui/index";
+import { settingsApi } from "../../../../../api/settings/settings.api";
+import { queryKeys } from "../../../../../api/queryKeys";
+import { errorMessage } from "../../../../../api/errorMessage";
+import { THEME_STORAGE_KEY } from "../../../../../contexts/ThemeContext";
+import type { AppearanceSettings, AppearanceUpdate } from "../../../../../api/settings/settings.types";
 
 export default function AppearanceTab() {
   const { t } = useTranslation('settings');
-  const [themeMode, setThemeMode] = useState<"light" | "dark" | "auto">("light");
-  const [accentColor, setAccentColor] = useState("#FCAE91");
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { data } = useQuery({
+    queryKey: queryKeys.appearance,
+    queryFn: () => settingsApi.getAppearance(),
+  });
+  const themeMode = (data?.theme ?? "light") as "light" | "dark" | "auto";
+  const accentColor = data?.accent_color ?? "#FCAE91";
+
+  // Optimistic UI: клик перекрашивает интерфейс мгновенно (ThemeProvider читает
+  // тот же кэш-ключ), откат — по onError. Тема дополнительно уходит в
+  // localStorage — анти-мигание при следующей загрузке (см. ThemeContext.tsx).
+  const save = useMutation({
+    mutationFn: (patch: AppearanceUpdate) => settingsApi.updateAppearance(patch),
+    onMutate: async (patch) => {
+      await qc.cancelQueries({ queryKey: queryKeys.appearance });
+      const prev = qc.getQueryData<AppearanceSettings>(queryKeys.appearance);
+      qc.setQueryData<AppearanceSettings>(queryKeys.appearance, (o) => ({
+        theme: o?.theme ?? null, accent_color: o?.accent_color ?? null, ...patch,
+      }));
+      return { prev };
+    },
+    onSuccess: (_data, patch) => {
+      if (patch.theme) localStorage.setItem(THEME_STORAGE_KEY, patch.theme);
+      toast.success(t('toast.saved'));
+    },
+    onError: (err, _patch, ctx) => {
+      if (ctx?.prev) qc.setQueryData(queryKeys.appearance, ctx.prev);
+      toast.error(errorMessage(err, t));
+    },
+  });
 
   const themes = [
     { id: "light", label: t('appearance.theme.light'), icon: icons.sun, preview: ["#FDFCFB", "#FFFFFF", "#FCAE91"] },
     { id: "dark", label: t('appearance.theme.dark'), icon: icons.moon, preview: ["#121212", "#1E1E1E", "#FCAE91"] },
     { id: "auto", label: t('appearance.theme.auto'), icon: icons.toggle, preview: ["#ECECEC", "#F5F5F5", "#FCAE91"] },
-  ];
+  ] as const;
 
   const accentColors = [
     { color: "#FCAE91", label: t('appearance.accent.colors.peach') },
@@ -33,16 +69,17 @@ export default function AppearanceTab() {
             return (
               <button
                 key={th.id}
-                onClick={() => setThemeMode(th.id as "light" | "dark" | "auto")}
+                disabled={save.isPending}
+                onClick={() => save.mutate({ theme: th.id })}
                 style={{
                   flex: 1, padding: "16px 12px",
                   borderRadius: "12px",
                   border: `1.5px solid ${selected ? "var(--peach)" : "var(--border)"}`,
                   background: selected ? "rgba(252,174,145,0.07)" : "transparent",
-                  cursor: "pointer",
+                  cursor: save.isPending ? "default" : "pointer",
                   transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
-                  outline: "none"
+                  outline: "none", opacity: save.isPending ? 0.7 : 1,
                 }}
                 onMouseOver={(e) => {
                   if (!selected) {
@@ -92,24 +129,26 @@ export default function AppearanceTab() {
 
       <div className="card" style={{ padding: "28px" }}>
         <SectionHeader icon={icons.zap} title={t('appearance.accent.title')} subtitle={t('appearance.accent.subtitle')} />
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "12px" }}>
           {accentColors.map((c, i) => {
             const isSelected = c.color === accentColor;
             return (
               <button
                 key={i}
                 title={c.label}
-                onClick={() => setAccentColor(c.color)}
+                disabled={save.isPending}
+                onClick={() => save.mutate({ accent_color: c.color })}
                 style={{
                   width: "36px", height: "36px", borderRadius: "10px",
                   background: c.color,
                   border: isSelected ? `3px solid ${c.color}` : "3px solid transparent",
                   outline: isSelected ? `2px solid white` : "none",
-                  cursor: "pointer",
+                  cursor: save.isPending ? "default" : "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "white",
                   transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   transform: isSelected ? "scale(1.12)" : "scale(1)",
+                  opacity: save.isPending ? 0.7 : 1,
                   boxShadow: isSelected
                     ? `0 0 0 2px ${c.color}, 0 8px 24px ${c.color}60`
                     : `0 4px 12px ${c.color}25`,
@@ -135,14 +174,7 @@ export default function AppearanceTab() {
               </button>
             );
           })}
-        </div>
-        <div style={{
-          padding: "14px 16px",
-          background: "rgba(252,174,145,0.06)", borderRadius: "10px",
-          border: "1px solid rgba(252,174,145,0.2)",
-          fontSize: "12px", color: "var(--muted)",
-        }}>
-          {t('appearance.accent.note')}
+          <InfoHint title={t('appearance.accent.noteTitle')} text={t('appearance.accent.note')} side="right" />
         </div>
       </div>
     </div>

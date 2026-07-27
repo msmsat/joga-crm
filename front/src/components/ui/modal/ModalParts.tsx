@@ -94,7 +94,6 @@ export function PrimaryButton({ onClick, disabled, loading, children }: {
           animation: 'cm-spin 0.6s linear infinite', display: 'inline-block',
         }} />
       )}
-      <style>{`@keyframes cm-spin { to { transform: rotate(360deg); } }`}</style>
       {children}
     </button>
   );
