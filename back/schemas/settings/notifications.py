@@ -41,3 +41,40 @@ class EventToggle(BaseSchema):
 
 class EventToggleBulkUpdate(BaseSchema):
     toggles: list[EventToggle] = Field(min_length=1, max_length=500)
+
+
+# ─── EPIC 3, Задача 3: матрица «событие × канал» и личные настройки ─────────
+class ChannelInfo(BaseSchema):
+    key: str
+    connected: bool
+    global_enabled: bool
+
+
+class MatrixRow(BaseSchema):
+    event_id: str
+    role: Literal["client", "trainer", "admin", "owner"]
+    tier: Literal["critical", "operational", "optional"]
+    channels: dict[str, bool]
+    locked: bool                       # строку менять нельзя вообще (tier=critical)
+    locked_channels: list[str]         # эти каналы в строке снять нельзя (последний включённый)
+    lock_reason: Optional[str] = None  # ключ i18n: "critical" | "last_channel"
+
+
+class MatrixRead(BaseSchema):
+    channels: list[ChannelInfo]
+    events: list[MatrixRow]
+
+
+class UserPrefRow(BaseSchema):
+    event_id: str
+    channels: dict[str, bool]
+
+
+class UserPrefRead(BaseSchema):
+    events: list[UserPrefRow]
+
+
+class UserPrefUpdate(BaseSchema):
+    event_id: str = Field(pattern=r"^[ctao]\d{1,2}$")
+    channel_key: Literal["telegram", "whatsapp", "email", "instagram", "sms", "push"]
+    is_enabled: bool

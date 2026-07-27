@@ -1,29 +1,35 @@
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import Toggle from "../ui/form/Toggle";
-import NotificationIllustration from "../illustrations/NotificationIllustration";
-import type { NotificationsState } from "../../types";
+import { useMyNotifications } from "../../hooks/useMyNotifications";
 import { authApi, ApiError } from "../../../../../api";
-import { Button, Input, useToast } from "../../../../../components/ui/index";
+import { notificationsApi } from "../../../../../api/notifications";
+import { queryKeys } from "../../../../../api/queryKeys";
+import { errorMessage } from "../../../../../api/errorMessage";
+import { Button, EmptyState, Input, useToast } from "../../../../../components/ui/index";
+import type { NotificationSettings } from "../../../../../api/notifications/notifications.types";
+
+const CHANNEL_KEYS = ["email", "telegram", "whatsapp"] as const;
 
 export default function NotificationsTab() {
   const { t } = useTranslation('settings');
   const toast = useToast();
-  const [notifications, setNotifications] = useState<NotificationsState>({
-    email: true, sms: false, push: true, marketing: false,
-  });
+  const qc = useQueryClient();
 
   const [tgId, setTgId] = useState("");
   const [isSavingTg, setIsSavingTg] = useState(false);
-  const [primaryEmail, setPrimaryEmail] = useState("hello@studio.ru");
-  const [backupEmail, setBackupEmail] = useState("");
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     authApi.getMe(controller.signal)
-      .then(me => setTgId(me.tg_id ? String(me.tg_id) : ""))
+      .then(me => {
+        setTgId(me.tg_id ? String(me.tg_id) : "");
+        setIsOwner(me.role === "owner");
+      })
       .catch(() => { /* 401 обрабатывает клиент; иначе поле остаётся пустым */ });
     return () => controller.abort();
   }, []);
@@ -46,34 +52,70 @@ export default function NotificationsTab() {
     }
   };
 
-  const channels = [
-    { key: "email" as const, label: t('notifications.channels.email.label'), sub: t('notifications.channels.email.sub') },
-    { key: "sms" as const, label: t('notifications.channels.sms.label'), sub: t('notifications.channels.sms.sub') },
-    { key: "push" as const, label: t('notifications.channels.push.label'), sub: t('notifications.channels.push.sub') },
-    { key: "marketing" as const, label: t('notifications.channels.marketing.label'), sub: t('notifications.channels.marketing.sub') },
-  ];
+  // Email для системных писем — те же поля, что уже реально работают в
+  // /dashboard/notifications (ChannelsSidebar), здесь просто их собственная карточка.
+  // GET/PATCH /settings/notifications — owner-only на бэке; для admin/trainer
+  // не зовём вовсе (иначе гарантированный 403), карточка им не показывается.
+  const emailQ = useQuery({ queryKey: queryKeys.notificationSettings, queryFn: () => notificationsApi.getSettings(), enabled: isOwner });
+  const [primaryEmail, setPrimaryEmail] = useState("");
+  const [backupEmail, setBackupEmail] = useState("");
+  const [emailSynced, setEmailSynced] = useState<NotificationSettings | null>(null);
+  if (emailQ.data && emailQ.data !== emailSynced) {
+    setEmailSynced(emailQ.data);
+    setPrimaryEmail(emailQ.data.primary_email ?? "");
+    setBackupEmail(emailQ.data.backup_email ?? "");
+  }
+  const saveEmail = useMutation({
+    mutationFn: () => notificationsApi.updateSettings({ primary_email: primaryEmail || null, backup_email: backupEmail || null }),
+    onSuccess: (data) => {
+      qc.setQueryData(queryKeys.notificationSettings, data);
+      toast.success(t('notifications.email.saved'));
+    },
+    onError: (err) => toast.error(errorMessage(err, t)),
+  });
+
+  const myPrefs = useMyNotifications();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.bell} title={t('notifications.channels.title')} subtitle={t('notifications.channels.subtitle')} />
-        <NotificationIllustration />
-        <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "2px" }}>
-          {channels.map(({ key, label, sub }) => (
-            <div key={key} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 16px", borderRadius: "10px",
-              background: notifications[key] ? "rgba(252,174,145,0.04)" : "transparent",
-              transition: "background 0.2s ease",
-            }}>
-              <div>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{label}</div>
-                <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "1px" }}>{sub}</div>
+        <SectionHeader icon={icons.bell} title={t('notifications.myPrefs.title')} subtitle={t('notifications.myPrefs.subtitle')} />
+        <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "16px" }}>{t('notifications.myPrefs.hint')}</div>
+        {!myPrefs.isLoading && myPrefs.data?.events.length === 0 && (
+          <EmptyState size="sm" title={t('notifications.myPrefs.empty')} />
+        )}
+        {(myPrefs.data?.events.length ?? 0) > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            {myPrefs.data?.events.map(row => (
+              <div key={row.event_id} style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "14px 16px", borderRadius: "10px", gap: "16px",
+              }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>
+                    {t(`events.${row.event_id}.title`, { ns: 'notifications' })}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "1px" }}>
+                    {t(`events.${row.event_id}.desc`, { ns: 'notifications' })}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: "16px", flexShrink: 0 }}>
+                  {CHANNEL_KEYS.map(ch => (
+                    <label key={ch} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>
+                        {t(`notifications.myPrefs.channels.${ch}`)}
+                      </span>
+                      <Toggle
+                        checked={row.channels[ch] ?? false}
+                        onChange={() => myPrefs.toggle.mutate({ event_id: row.event_id, channel_key: ch, is_enabled: !row.channels[ch] })}
+                      />
+                    </label>
+                  ))}
+                </div>
               </div>
-              <Toggle checked={notifications[key]} onChange={() => setNotifications(p => ({ ...p, [key]: !p[key] }))} />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card" style={{ padding: "28px" }}>
@@ -94,16 +136,18 @@ export default function NotificationsTab() {
         </div>
       </div>
 
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.mail} title={t('notifications.email.title')} subtitle={t('notifications.email.subtitle')} />
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <Input label={t('notifications.email.primary')} value={primaryEmail} onChange={setPrimaryEmail} type="email" />
-          <Input label={t('notifications.email.backup')} placeholder={t('notifications.email.backupPh')} value={backupEmail} onChange={setBackupEmail} type="email" />
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="primary" onClick={() => toast.success(t('notifications.email.saved'))}>{t('common:buttons.save')}</Button>
+      {isOwner && (
+        <div className="card" style={{ padding: "28px" }}>
+          <SectionHeader icon={icons.mail} title={t('notifications.email.title')} subtitle={t('notifications.email.subtitle')} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <Input label={t('notifications.email.primary')} value={primaryEmail} onChange={setPrimaryEmail} type="email" />
+            <Input label={t('notifications.email.backup')} placeholder={t('notifications.email.backupPh')} value={backupEmail} onChange={setBackupEmail} type="email" />
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button variant="primary" loading={saveEmail.isPending} onClick={() => saveEmail.mutate()}>{t('common:buttons.save')}</Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

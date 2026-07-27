@@ -12,7 +12,7 @@
 // Клиентами: clients(search, category), client(id), clientCategories,
 // clientEvents(id, filter), clientActivity(id), clientNotes(id), wallet(clientId).
 // Онлайн-записью: bookingSettings, bookingChannels.
-// Уведомлениями: notifyIntegrations, notificationSettings, notificationEventToggles.
+// Уведомлениями: notifyIntegrations, notificationSettings, notificationMatrix, notificationMyPrefs.
 // Финансами: finAccounts, finGateways, finMethodStats(from, to), finOperations(filters)/finOperationsAll,
 // finCounterparties, finDocuments, finGoals, finSalaries(periodStart, periodEnd), finSalaryHistory(userId),
 // finReportSummary(from, to), finReportSeries(metric, group, from, to), finReportBreakdown(type, from, to).
@@ -69,7 +69,8 @@ export const queryKeys = {
   bookingChannels: ['booking', 'channels'] as const,
   notifyIntegrations: ['notify-integrations'] as const,
   notificationSettings: ['notification-settings'] as const,
-  notificationEventToggles: ['notification-event-toggles'] as const,
+  notificationMatrix: ['notification-matrix'] as const,
+  notificationMyPrefs: ['notification-my-prefs'] as const,
   finAccounts: ['finances', 'accounts'] as const,
   finGateways: ['finances', 'gateways'] as const,
   finMethodStats: (dateFrom: string, dateTo: string) => ['finances', 'method-stats', dateFrom, dateTo] as const,

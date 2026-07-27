@@ -12,10 +12,3 @@ export interface Studio {
 }
 
 export type IntegrationsConfig = Record<string, any>;
-
-export interface NotificationsState {
-  email: boolean;
-  sms: boolean;
-  push: boolean;
-  marketing: boolean;
-}

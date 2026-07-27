@@ -559,5 +559,14 @@ async def cancel_lesson(
     lesson.clients_notified = any(results)
     await db.commit()
 
+    # t9: тренер узнаёт об отмене СВОЕГО занятия (эпик 3, задача 4 — раньше
+    # такого события не было вовсе, тренер мог не знать, что занятие сняли).
+    if lesson.teacher_id is not None:
+        await notify(db, ctx.studio_id, "trainer", "t9", {
+            "trainer_id": lesson.teacher_id,
+            "lesson_name": lesson.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
+
     # После отмены все записи отменены — booked_count = 0.
     return _lesson_read(lesson, 0)

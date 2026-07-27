@@ -26,7 +26,17 @@
     "noActiveChannels": "No active channels",
     "noActiveChannelsHint": "Enable at least one delivery channel in the panel on the left",
     "adviceLabel": "Tip:",
-    "advice": "Configure separately for each role what gets sent and where — Velora will handle it automatically."
+    "advice": "Configure separately for each role what gets sent and where — Velora will handle it automatically.",
+    "tiers": {
+      "critical": "Required · cannot be turned off",
+      "operational": "Operational",
+      "optional": "Optional"
+    },
+    "lock": {
+      "critical": "Required notification — cannot be turned off",
+      "lastChannel": "Last delivery channel — cannot be turned off"
+    },
+    "channelDisconnected": "Channel not connected"
   },
   "events": {
     "c1":  { "title": "Booking confirmed",       "desc": "On successful class booking" },
@@ -48,6 +58,7 @@
     "t6":  { "title": "Salary accrued",           "desc": "Weekly payout calculation" },
     "t7":  { "title": "New trainer review",       "desc": "Client left a rating after class" },
     "t8":  { "title": "Client's birthday",        "desc": "Reminder to congratulate in person" },
+    "t9":  { "title": "Class cancelled",          "desc": "The studio or admin cancelled your class" },
     "a1":  { "title": "New online booking",       "desc": "Client booked via site or widget" },
     "a2":  { "title": "Last-minute cancellation", "desc": "Less than 1 hour before class" },
     "a3":  { "title": "New client in the system", "desc": "New user registration" },

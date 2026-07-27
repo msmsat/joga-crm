@@ -54,6 +54,24 @@ class NotificationEventToggle(Base):
     studio: Mapped["Studio"] = relationship(back_populates="notification_event_toggles")
 
 
+class UserNotificationPreference(Base):
+    """Личный слой настроек уведомлений (EPIC 3): сотрудник может только
+    сузить набор каналов, и только у optional-событий своей роли —
+    operational/critical этот слой не затрагивает (см. notification_resolver)."""
+    __tablename__ = "user_notification_preferences"
+    __table_args__ = (
+        UniqueConstraint("user_id", "event_id", "channel_key", name="uq_user_notif_pref"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    event_id: Mapped[str] = mapped_column(String(10))
+    channel_key: Mapped[str] = mapped_column(String(20))
+    is_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    user: Mapped["User"] = relationship(back_populates="notification_preferences")
+
+
 class StudioBookingSettings(Base):
     __tablename__ = "studio_booking_settings"
 

@@ -39,9 +39,7 @@ from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import (
-    Client, NotificationEventToggle, Studio, StudioIntegration, StudioNotificationSettings, StudioMember, User,
-)
+from models import Client, Studio, StudioIntegration, StudioMember, User
 from services.mailer import send_email
 
 load_dotenv()
@@ -52,6 +50,16 @@ _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": 
 GRAPH = "https://graph.facebook.com/v20.0"
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000
+
+# Единый список event_id, для которых есть шаблон в TEMPLATES (см. _render ниже) —
+# сверяется с services.notification_catalog.CATALOG (EPIC 3, Задача 1). Новый event_id
+# в TEMPLATES → сразу добавить и сюда, иначе _render упадёт на assert.
+KNOWN_EVENT_IDS = frozenset({
+    "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c11", "c12",
+    "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9",
+    "a1", "a2", "a3", "a4", "a6", "a7", "a8", "a9", "a10",
+    "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9",
+})
 
 
 class Recipient(NamedTuple):
@@ -254,6 +262,10 @@ def _render(
             "ru": ("Дни рождения клиентов", f"Сегодня день рождения у: {names}."),
             "en": ("Client birthdays today", f"Today's birthdays: {names}."),
         },
+        "t9": {
+            "ru": ("Занятие отменено", f"Ваше занятие «{lesson_ru}»{tail_ru} отменено."),
+            "en": ("Class cancelled", f'Your class "{lesson_en}"{tail_en} has been cancelled.'),
+        },
         "a1": {
             "ru": ("Новая онлайн-запись", f"Новая запись клиента {client_name} на «{lesson_ru}»."),
             "en": ("New online booking", f'New booking from {client_name} for "{lesson_en}".'),
@@ -353,11 +365,19 @@ def _render(
         },
     }
 
+    assert TEMPLATES.keys() == KNOWN_EVENT_IDS, "notifier.TEMPLATES / KNOWN_EVENT_IDS out of sync"
+
     by_lang = TEMPLATES.get(event_id)
     if by_lang is None:
         return None
     subject, text = by_lang.get(lang) or by_lang["ru"]
     return subject, text, f"<p>{text}</p>"
+
+
+# Стартовая проверка (EPIC 3, Задача 1): выполняется один раз при импорте модуля, вне
+# try/except notify() — если TEMPLATES и KNOWN_EVENT_IDS разошлись, импорт падает сразу
+# при старте приложения, а не тихо глотается где-то в проде.
+_render("c1", {}, "ru", "RUB")
 
 
 def _user_recipient(user: User) -> Recipient:
@@ -445,26 +465,7 @@ async def notify(
     False. Вызывающий код использует это для честного clients_notified (задача 3)."""
     context = context or {}
     try:
-        settings = (await db.execute(
-            select(StudioNotificationSettings).where(StudioNotificationSettings.studio_id == studio_id)
-        )).scalar_one_or_none()
-        if settings is None:
-            return False
-        enabled_global = {ch for ch in NOTIFY_CHANNELS if getattr(settings, f"{ch}_notifications")}
-        if not enabled_global:
-            return False  # все каналы выключены глобально
-
-        enabled_channels = set((await db.execute(
-            select(NotificationEventToggle.channel_key).where(
-                NotificationEventToggle.studio_id == studio_id,
-                NotificationEventToggle.role == role,
-                NotificationEventToggle.event_id == event_id,
-                NotificationEventToggle.channel_key.in_(enabled_global),
-                NotificationEventToggle.is_enabled == True,  # noqa: E712
-            )
-        )).scalars().all())
-        if not enabled_channels:
-            return False  # в матрице для этого события/роли ни один канал не включён
+        from services.notification_resolver import resolve_channels  # локальный импорт — иначе цикл notifier<->resolver
 
         lang, currency = await _studio_prefs(db, studio_id)
         rendered = _render(event_id, context, lang, currency)
@@ -478,11 +479,15 @@ async def notify(
 
         sent = False
         for r in recipients:
-            if "email" in enabled_channels and r.email:
+            recipient_user_id = r.id if role != "client" else None  # личный слой — только у staff
+            channels, forced = await resolve_channels(db, studio_id, role, event_id, recipient_user_id)
+            if forced:
+                logger.warning("notify: forced fallback studio=%s role=%s event=%s", studio_id, role, event_id)
+            if "email" in channels and r.email:
                 sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id) or sent
-            if "telegram" in enabled_channels and r.tg_id:
+            if "telegram" in channels and r.tg_id:
                 sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id) or sent
-            if "whatsapp" in enabled_channels and r.phone:
+            if "whatsapp" in channels and r.phone:
                 sent = await deliver(db, "whatsapp", r, subject, text, html, studio_id=studio_id) or sent
         return sent
     except Exception:

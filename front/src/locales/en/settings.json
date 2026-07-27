@@ -86,18 +86,12 @@
     }
   },
   "notifications": {
-    "channels": {
-      "title": "Notifications",
-      "subtitle": "Set up how and when you receive alerts",
-      "email": { "label": "Email notifications", "sub": "New bookings, cancellations, payments" },
-      "sms": { "label": "SMS alerts", "sub": "Urgent notifications to your phone" },
-      "push": { "label": "Push notifications", "sub": "Notifications in browser and app" },
-      "marketing": { "label": "Marketing emails", "sub": "Product updates, tips, promotions" },
-      "illustration": {
-        "newBooking": "New booking from Anna K.",
-        "paymentConfirmed": "Payment confirmed",
-        "visitReminder": "Push: Visit reminder"
-      }
+    "myPrefs": {
+      "title": "My notifications",
+      "subtitle": "Personal preferences — don't affect the rest of the studio",
+      "hint": "Required notifications can't be turned off — they make sure you never miss schedule changes and payments.",
+      "empty": "No optional notifications for your role",
+      "channels": { "email": "Email", "telegram": "Telegram", "whatsapp": "WhatsApp" }
     },
     "telegram": {
       "title": "Telegram for notifications",

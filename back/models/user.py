@@ -46,6 +46,7 @@ class User(Base):
     salary_payments: Mapped[List["SalaryPayment"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     services: Mapped[List["Service"]] = relationship(secondary="user_services", back_populates="users")
     ai_chat_sessions: Mapped[List["AIChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    notification_preferences: Mapped[List["UserNotificationPreference"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     primary_account: Mapped[Optional["User"]] = relationship(
         "User", foreign_keys="[User.primary_user_id]", back_populates="linked_accounts", remote_side="[User.id]"
     )

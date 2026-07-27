@@ -223,7 +223,11 @@ async def _send_ig_message(token: str, recipient_igsid: str, text: str) -> None:
             params={"access_token": token},
             json={"recipient": {"id": recipient_igsid}, "message": {"text": text}},
         ) as resp:
-            resp.raise_for_status()
+            if resp.status >= 400:
+                # Тело ответа Graph — единственное место, где написана причина отказа
+                # («вне 24-часового окна», «нет прав», «получатель недоступен»).
+                # Без него в логе остаётся голая 400 и гадание. Токен не логируем.
+                raise RuntimeError(f"Graph {resp.status}: {(await resp.text())[:400]}")
 
 
 @webhook_router.get("/instagram/webhook")
@@ -265,8 +269,8 @@ async def instagram_webhook(request: Request, db: AsyncSession = Depends(get_db)
             continue
         try:
             await _send_ig_message(settings.ig_token, sender_igsid, "Hello")
-        except (aiohttp.ClientError, TimeoutError):
-            logger.exception("instagram webhook: не удалось ответить, studio_id=%s", settings.studio_id)
+        except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
+            logger.error("instagram webhook: не удалось ответить, studio_id=%s: %s", settings.studio_id, exc)
             continue
         settings.ig_handled_count += 1
         logger.info("instagram webhook: ответ отправлен, studio_id=%s, входящее=%r", settings.studio_id, text[:50])

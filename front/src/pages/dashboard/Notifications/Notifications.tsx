@@ -38,13 +38,12 @@ export default function Notifications() {
         <NotificationMatrix
           currentRole={h.currentRole}
           events={h.events}
-          activeChannels={h.activeChannels}
-          toggles={h.toggles}
+          allChannels={h.allChannels}
           toggleCheck={h.toggleCheck}
-          setToggles={h.setToggles}
-          isDirty={h.isDirty}
-          saving={h.saving}
-          saveFailed={h.saveFailed}
+          toggleAllForRole={h.toggleAllForRole}
+          allOn={h.allOn}
+          syncing={h.syncing}
+          onConnectChannel={h.onConnectChannel}
         />
       </div>
 

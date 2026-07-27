@@ -1,6 +1,13 @@
 """Событие «занятие изменено» (c11) + честный clients_notified (эпик V4-6, задача 3).
-Образец фейковой сессии — tests/test_loyalty_points.py.
 
+EPIC 3, Задача 2: notify() теперь резолвит каналы через
+services.notification_resolver.resolve_channels вместо инлайновой проверки
+матрицы. Тесты update_lesson/cancel_lesson патчат L.notify напрямую — их
+дело проверить агрегацию clients_notified, а не резолвинг каналов (тот
+покрыт tests/test_notification_resolver.py). Тесты notify() ниже патчат
+resolve_channels — так же не завязаны на его внутренние запросы к БД.
+
+Образец фейковой сессии — tests/test_loyalty_points.py.
 Запуск из back/:  python -m tests.test_lesson_reschedule_notify
 """
 import asyncio
@@ -10,6 +17,7 @@ from fastapi import HTTPException
 
 import routers.schedule.lessons as L
 import services.notifier as notifier_module
+import services.notification_resolver as resolver_module
 from dependencies import StudioContext
 from schemas.schedule.lessons import LessonUpdateRequest
 from services.notifier import notify
@@ -43,13 +51,6 @@ class _Lesson:
         self.clients_notified = False
 
 
-class _Settings:
-    def __init__(self, enabled=True):
-        self.email_notifications = enabled
-        self.telegram_notifications = False
-        self.whatsapp_notifications = False
-
-
 class _StudioPrefs:
     language = "ru"
     currency = "RUB"
@@ -61,6 +62,17 @@ class _Client:
         self.email = email
         self.tg_id = None
         self.phone = None
+
+
+class _Reservation:
+    """Фейк Reservation для cancel_lesson: каскад отмены мутирует объект и
+    зовёт refund_reservation, который сразу выходит при subscription_id=None
+    (без похода в БД) — этим и упрощаем мок."""
+    def __init__(self, client_id):
+        self.client_id = client_id
+        self.status = "active"
+        self.cancelled_at = None
+        self.subscription_id = None
 
 
 class _R:
@@ -109,24 +121,56 @@ def _ctx(role="owner"):
     return StudioContext(user=_User(), studio_id=1, role=role)
 
 
-# ─── notify(): bool-возврат ──────────────────────────────────────────────────
-def test_notify_returns_false_when_channel_disabled():
-    db = _DB([_Settings(enabled=False)])  # все каналы глобально выключены
-    result = asyncio.run(notify(db, 1, "client", "c11", {"client_id": 1}))
+# ─── notify(): резолвинг каналов патчится, здесь проверяем только оркестрацию
+# рендер → получатели → resolve_channels → deliver (сам резолвинг — отдельный
+# файл, tests/test_notification_resolver.py) ─────────────────────────────────
+def test_notify_returns_false_when_resolver_finds_no_channels():
+    """optional-событие (c5): resolve_channels вернул пустой набор без forced —
+    единственный легальный «не слать» (§3 эпика)."""
+    db = _DB([_StudioPrefs(), _Client("c@x.com")])
+
+    async def fake_resolve(db_, studio_id, role, event_id, recipient_user_id):
+        return set(), False
+
+    orig = resolver_module.resolve_channels
+    resolver_module.resolve_channels = fake_resolve
+    try:
+        result = asyncio.run(notify(db, 1, "client", "c5", {"client_id": 1}))
+    finally:
+        resolver_module.resolve_channels = orig
     assert result is False
 
 
-def test_notify_returns_false_when_event_not_enabled_in_matrix():
-    db = _DB([_Settings(enabled=True), []])  # settings ok, matrix: ни один канал не включён
-    result = asyncio.run(notify(db, 1, "client", "c11", {"client_id": 1}))
-    assert result is False
+def test_notify_sends_via_forced_fallback_channel():
+    """critical-событие (c11): resolve_channels сообщил forced=True — notify
+    всё равно доставляет через fallback-канал (Guaranteed Delivery, §3),
+    а не молчит."""
+    db = _DB([_StudioPrefs(), _Client("c@x.com")])
+
+    async def fake_resolve(db_, studio_id, role, event_id, recipient_user_id):
+        return {"email"}, True
+
+    calls = []
+
+    async def fake_deliver(db_, channel, recipient, subject, text, html, *, studio_id):
+        calls.append(channel)
+        return True
+
+    orig_resolve = resolver_module.resolve_channels
+    orig_deliver = notifier_module.deliver
+    resolver_module.resolve_channels = fake_resolve
+    notifier_module.deliver = fake_deliver
+    try:
+        result = asyncio.run(notify(db, 1, "client", "c11", {"client_id": 1}))
+    finally:
+        resolver_module.resolve_channels = orig_resolve
+        notifier_module.deliver = orig_deliver
+    assert result is True
+    assert calls == ["email"], calls
 
 
 def test_notify_returns_false_for_unknown_event_template():
-    db = _DB([
-        _Settings(enabled=True), ["email"],  # settings ok, matrix: email on
-        _StudioPrefs(),                       # _studio_prefs
-    ])  # но шаблона для события нет
+    db = _DB([_StudioPrefs()])  # notify: _studio_prefs — рендер падает в None раньше recipients
     result = asyncio.run(notify(db, 1, "client", "c99-unknown", {"client_id": 1}))
     assert result is False
 
@@ -137,35 +181,44 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
     new_start = datetime.now() + timedelta(hours=20)
     db = _DB([
         lesson,                      # get_scoped_lesson
-        [7],                         # select client_id (reschedule notify)
-        _Settings(enabled=True),     # notify: settings
-        ["email"],                   # notify: matrix — email включён
-        _StudioPrefs(),              # notify: _studio_prefs
-        _Client("client@x.com"),     # notify: _recipient
-        None,                        # notify: deliver(email) → _integration_config
-        None,                        # t5 (тренеру): settings lookup → None → ранний False
+        [7],                         # select client_id (reschedule notify, c11)
         [],                          # a7: _find_schedule_conflict → нет пересечений
         0,                           # финальный _booked_count для ответа
     ])
-    body = LessonUpdateRequest(start_time=new_start)
-    result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    calls = []
+
+    async def fake_notify(db_, studio_id, role, event_id, context=None):
+        calls.append((role, event_id))
+        return True
+
+    orig = L.notify
+    L.notify = fake_notify
+    try:
+        body = LessonUpdateRequest(start_time=new_start)
+        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    finally:
+        L.notify = orig
     assert lesson.clients_notified is True
     assert result.clients_notified is True
+    assert ("client", "c11") in calls
+    assert ("trainer", "t5") in calls  # тренер узнаёт о переносе — эпик 3, задача 4
 
 
 def test_reschedule_with_client_notified_false_when_channel_disabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([
-        lesson,
-        [7],                         # select client_id
-        _Settings(enabled=False),    # notify: все каналы выключены → False
-        None,                        # t5 (тренеру): settings lookup → None → ранний False
-        [],                          # a7: _find_schedule_conflict → нет пересечений
-        0,                           # финальный _booked_count
-    ])
-    body = LessonUpdateRequest(start_time=new_start)
-    result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    db = _DB([lesson, [7], [], 0])
+
+    async def fake_notify(db_, studio_id, role, event_id, context=None):
+        return False  # ни один канал не доставил (например, все выключены)
+
+    orig = L.notify
+    L.notify = fake_notify
+    try:
+        body = LessonUpdateRequest(start_time=new_start)
+        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    finally:
+        L.notify = orig
     assert lesson.clients_notified is False
     assert result.clients_notified is False
 
@@ -176,10 +229,23 @@ def test_reschedule_without_clients_stays_false_no_notify_call():
     он не зависит от записанных клиентов)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([lesson, [], None, [], 0])  # get_scoped_lesson, client_id-ы (пусто), t5 settings→None, a7 conflict→[], финальный _booked_count
-    body = LessonUpdateRequest(start_time=new_start)
-    result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    db = _DB([lesson, [], [], 0])
+    calls = []
+
+    async def fake_notify(db_, studio_id, role, event_id, context=None):
+        calls.append((role, event_id))
+        return True
+
+    orig = L.notify
+    L.notify = fake_notify
+    try:
+        body = LessonUpdateRequest(start_time=new_start)
+        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    finally:
+        L.notify = orig
     assert lesson.clients_notified is False
+    assert ("client", "c11") not in calls
+    assert ("trainer", "t5") in calls
 
 
 def test_reschedule_cancelled_lesson_rejected():
@@ -216,29 +282,52 @@ def test_cancel_sets_notified_true_when_client_notified():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
     db = _DB([
         lesson,                      # get_scoped_lesson
-        [7],                         # select client_id (booked)
-        None,                        # UPDATE Reservation cascade
-        _Settings(enabled=True),     # notify: settings
-        ["email"],                   # notify: matrix — email включён
-        _StudioPrefs(),              # notify: _studio_prefs
-        _Client("client@x.com"),     # notify: _recipient
-        None,                        # notify: deliver(email) → _integration_config
+        [_Reservation(7)],           # select Reservation (booked, каскад отмены)
     ])
-    result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
+    calls = []
+
+    async def fake_notify(db_, studio_id, role, event_id, context=None):
+        calls.append((role, event_id))
+        return True
+
+    orig = L.notify
+    L.notify = fake_notify
+    try:
+        result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
+    finally:
+        L.notify = orig
     assert lesson.clients_notified is True
     assert result.clients_notified is True
+    assert ("client", "c3") in calls
+    assert ("trainer", "t9") in calls  # тренер узнаёт об отмене своего занятия — эпик 3, задача 4
 
 
 def test_cancel_no_clients_stays_false():
+    """Без записанных клиентов клиентский c3 не зовётся, но тренер (t9) всё
+    равно узнаёт об отмене своего занятия — не зависит от booked_client_ids."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
-    db = _DB([lesson, [], None])  # get_scoped_lesson, client_id-ы (пусто), UPDATE cascade
-    result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
+    db = _DB([lesson, []])  # get_scoped_lesson, reservations (пусто)
+    calls = []
+
+    async def fake_notify(db_, studio_id, role, event_id, context=None):
+        calls.append((role, event_id))
+        return True
+
+    orig = L.notify
+    L.notify = fake_notify
+    try:
+        result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
+    finally:
+        L.notify = orig
     assert lesson.clients_notified is False
+    assert result.clients_notified is False
+    assert ("client", "c3") not in calls
+    assert ("trainer", "t9") in calls
 
 
 if __name__ == "__main__":
-    test_notify_returns_false_when_channel_disabled()
-    test_notify_returns_false_when_event_not_enabled_in_matrix()
+    test_notify_returns_false_when_resolver_finds_no_channels()
+    test_notify_sends_via_forced_fallback_channel()
     test_notify_returns_false_for_unknown_event_template()
     test_reschedule_with_client_sets_notified_true_when_email_enabled()
     test_reschedule_with_client_notified_false_when_channel_disabled()

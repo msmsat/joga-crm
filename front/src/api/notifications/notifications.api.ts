@@ -1,6 +1,11 @@
-import { client, patchKeepalive } from '../client'
+import { client } from '../client'
 import type {
   EventToggle,
+  MatrixRead,
+  MatrixEventRow,
+  UserPrefRead,
+  UserPrefRow,
+  UserPrefUpdate,
   NotificationSettings,
   NotifyChannelsStatus,
   ChannelStatus,
@@ -15,19 +20,22 @@ export const notificationsApi = {
   updateSettings: (payload: Partial<NotificationSettings>) =>
     client.patch<NotificationSettings>('/settings/notifications', payload),
 
-  getEventToggles: () =>
-    client.get<EventToggle[]>('/settings/notifications/events'),
+  getMatrix: () =>
+    client.get<MatrixRead>('/settings/notifications/matrix'),
 
+  // Ответ — строка матрицы целиком (обновлённые locked/locked_channels), не голый EventToggle.
   updateEventToggle: (payload: EventToggle) =>
-    client.patch<EventToggle>('/settings/notifications/events', payload),
+    client.patch<MatrixEventRow>('/settings/notifications/events', payload),
 
   bulkUpdateEventToggles: (toggles: EventToggle[]) =>
     client.patch<EventToggle[]>('/settings/notifications/events/bulk', { toggles }),
 
-  // Флаш несохранённого диффа при уходе со страницы/закрытии вкладки — не ждёт
-  // ответа, не участвует в React Query (см. patchKeepalive).
-  flushEventTogglesOnUnload: (toggles: EventToggle[]) =>
-    patchKeepalive('/settings/notifications/events/bulk', { toggles }),
+  // Личный слой (EPIC 3, Задача 6) — все роли, только optional-события своей роли.
+  getMyPrefs: () =>
+    client.get<UserPrefRead>('/settings/notifications/me'),
+
+  updateMyPref: (payload: UserPrefUpdate) =>
+    client.patch<UserPrefRow>('/settings/notifications/me', payload),
 
   getChannelIntegrations: () =>
     client.get<NotifyChannelsStatus>('/settings/integrations/notify-channels'),

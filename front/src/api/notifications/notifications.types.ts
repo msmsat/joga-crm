@@ -17,6 +17,46 @@ export interface EventToggle {
   is_enabled: boolean
 }
 
+// EPIC 3 (ROADMAP_SETTINGS): матрица «событие × канал» с локами по tier.
+export interface ChannelInfo {
+  key: string
+  connected: boolean
+  global_enabled: boolean
+}
+
+export type NotificationTier = 'critical' | 'operational' | 'optional'
+
+export interface MatrixEventRow {
+  event_id: string
+  role: string
+  tier: NotificationTier
+  channels: Record<string, boolean>
+  locked: boolean            // критично — строку менять нельзя вообще
+  locked_channels: string[]  // операционное — этот канал последний, снять нельзя
+  lock_reason: 'critical' | 'last_channel' | null
+}
+
+export interface MatrixRead {
+  channels: ChannelInfo[]
+  events: MatrixEventRow[]
+}
+
+// EPIC 3, Задача 6: личный слой — только optional-события своей роли, сужает default.
+export interface UserPrefRow {
+  event_id: string
+  channels: Record<string, boolean>
+}
+
+export interface UserPrefRead {
+  events: UserPrefRow[]
+}
+
+export interface UserPrefUpdate {
+  event_id: string
+  channel_key: string
+  is_enabled: boolean
+}
+
 export interface ChannelStatus {
   connected: boolean
   details: Record<string, unknown>

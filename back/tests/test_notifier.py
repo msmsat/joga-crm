@@ -115,6 +115,23 @@ def test_render_new_dead_events_t2_t5_a7_a9_o9_t7():
         assert N._render(event_id, {}, "ru", "RUB") is not None, f"{event_id}: пустой контекст ломает рендер"
 
 
+def test_render_t9_trainer_lesson_cancelled():
+    # EPIC 3, задача 4 — новое событие: тренер узнаёт об отмене СВОЕГО занятия
+    # (раньше при cancel_lesson уведомлялся только клиент через c3).
+    res = N._render("t9", {"lesson_name": "Хатха", "start_time": "18:00"}, "ru", "RUB")
+    assert res is not None
+    subject, text, html = res
+    assert subject == "Занятие отменено"
+    assert "Хатха" in text and "18:00" in text
+    assert html == f"<p>{text}</p>"
+
+    subject_en, text_en, _ = N._render("t9", {"lesson_name": "Hatha", "start_time": "18:00"}, "en", "USD")
+    assert subject_en == "Class cancelled"
+    assert "Hatha" in text_en
+
+    assert N._render("t9", {}, "ru", "RUB") is not None  # пустой контекст не должен падать
+
+
 def test_recipient_staff_includes_tg_id_and_phone():
     # N-9, задача 2/10 — раньше _recipient для сотрудника возвращал только
     # email (client=None), теперь — полноценный Recipient с tg_id/phone.
@@ -132,10 +149,13 @@ def test_notify_staff_fanout_hits_telegram_and_whatsapp():
     # Ключевой регресс-тест эпика N-9: раньше notify() слал сотруднику ТОЛЬКО
     # email (гейт `if client is not None` перед tg/wa). Теперь при включённых
     # каналах и заполненном tg_id/phone у сотрудника уходят все три.
+    # EPIC 3, Задача 2: резолвинг каналов делегирован resolve_channels — здесь
+    # патчим его напрямую (сам резолвер покрыт test_notification_resolver.py),
+    # чтобы проверить только фан-аут по каналам получателя.
+    import services.notification_resolver as R
+
     owner = _FakeUser(id=9, email="owner@studio.ru", tg_id=42, phone="+79991112233")
     db = _DB([
-        _Settings(enabled=True),                   # notify: settings — все каналы включены глобально
-        ["email", "telegram", "whatsapp"],          # notify: матрица — все три включены для role/event
         _StudioPrefs(),                             # notify: _studio_prefs
         owner,                                      # _recipient: role="owner" → select(User)...first()
     ])
@@ -146,12 +166,18 @@ def test_notify_staff_fanout_hits_telegram_and_whatsapp():
         calls.append(channel)
         return True
 
+    async def fake_resolve(db_, studio_id, role, event_id, recipient_user_id):
+        return {"email", "telegram", "whatsapp"}, False
+
     orig_deliver = N.deliver
+    orig_resolve = R.resolve_channels
     N.deliver = fake_deliver
+    R.resolve_channels = fake_resolve
     try:
         result = asyncio.run(N.notify(db, 1, "owner", "o1", {}))
     finally:
         N.deliver = orig_deliver
+        R.resolve_channels = orig_resolve
 
     assert result is True
     assert calls == ["email", "telegram", "whatsapp"], calls
@@ -208,6 +234,7 @@ def test_render():
     test_fmt_amount_none_defaults_to_zero()
     test_fmt_amount_unknown_currency_uses_code_as_sign()
     test_render_t1_trainer_booking()
+    test_render_t9_trainer_lesson_cancelled()
     test_render_new_dead_events_t2_t5_a7_a9_o9_t7()
     test_recipient_staff_includes_tg_id_and_phone()
     test_notify_staff_fanout_hits_telegram_and_whatsapp()
