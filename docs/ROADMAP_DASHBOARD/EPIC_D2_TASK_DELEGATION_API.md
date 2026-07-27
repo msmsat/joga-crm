@@ -440,8 +440,17 @@ class AssigneeOption(BaseSchema):              # ← новая схема
 
 ## Definition of Done
 
-- [ ] Миграция применяется и откатывается чисто; у всех старых задач `assignee_id == author_id`.
-- [ ] `GET /analytics/tasks/assignees` объявлен выше `/tasks/{task_id}` и не даёт `422`.
-- [ ] Ролевая матрица из Задачи 2 воспроизводится тестом (11 assert'ов зелёные).
-- [ ] Ни один ответ не отдаёт `assignee_name: null` для существующего пользователя (`selectinload` на месте).
-- [ ] `analyticsApi.getTasks()` без параметров работает как раньше.
+- [x] Миграция применяется и откатывается чисто; у всех старых задач `assignee_id == author_id` —
+      `alembic current`/`heads` = `b3c7f1d29a04`, миграция `08d1e987cc4c` в цепочке до head (применена);
+      read-only проверка БД: `studio_tasks` — 0 строк с `assignee_id IS NULL`, 0 строк с `assignee_id != author_id`.
+      `downgrade()` проверен чтением кода (зеркалит `upgrade()`: сперва FK, потом индекс, потом колонка) —
+      реальный запуск на dev-БД не выполнялся, чтобы не задеть параллельную незакоммiченную работу.
+- [x] `GET /analytics/tasks/assignees` объявлен выше `/tasks/{task_id}` и не даёт `422` —
+      подтверждено чтением `back/routers/analytics/tasks.py`: `list_assignees` (строка 110) объявлен
+      до `update_task`/`delete_task` (строки 151, 173) — единственных обработчиков с `{task_id}`.
+- [x] Ролевая матрица из Задачи 2 воспроизводится тестом (11 assert'ов зелёные) —
+      `python -m tests.test_dashboard_tasks` → `ALL PASS` (запущено в этой сессии).
+- [x] Ни один ответ не отдаёт `assignee_name: null` для существующего пользователя (`selectinload` на месте) —
+      `selectinload(StudioTask.assignee)` стоит в `list_tasks` и `_get_task_scoped`; assert 11 теста это проверяет напрямую.
+- [x] `analyticsApi.getTasks()` без параметров работает как раньше — актуально не для рантайма (D4 уже
+      передаёт `scope` явно), а для контракта: `list_tasks` дефолтит `scope="mine"` при отсутствии параметров.
