@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BillingMode, PlanType, BillingTab, BillingPlan } from '../types';
-import type { ActivateModelRequest, IbanCheckout } from '../../../../api/billing/billing.types';
+import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
+import type { ActivateModelRequest, IbanCheckout, AutopaySettings, PaymentCard, BillingStats } from '../../../../api/billing/billing.types';
 import { PLAN_COLORS } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -44,25 +44,56 @@ export function useBillingCalculator() {
     () => new URLSearchParams(window.location.search).get('payment') === 'return',
   );
   const [plan, setPlan] = useState<BillingPlan | null>(null);
+  // Инвойсы и карты (эпик B6) — единый источник в хуке вместо локальных фетчей в табах,
+  // чтобы фокус-рефетч и возврат с оплаты освежали оба таба, даже если открыт третий.
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoicesLoaded, setInvoicesLoaded] = useState(false);
+  const [cards, setCards] = useState<PaymentCard[]>([]);
+  const [cardsLoaded, setCardsLoaded] = useState(false);
+  const [renewState, setRenewState] = useState<'idle' | 'busy' | 'done'>('idle');
+  // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
+  const [stats, setStats] = useState<BillingStats | null>(null);
+
+  const loadPlan = () => billingApi.getPlan().then(setPlan).catch(() => {});
+  const loadInvoices = () =>
+    billingApi.getInvoices().then(setInvoices).catch(() => {}).finally(() => setInvoicesLoaded(true));
+  const loadCards = () =>
+    billingApi.getPaymentCards().then(setCards).catch(() => {}).finally(() => setCardsLoaded(true));
+  const loadStats = () => billingApi.getStats().then(setStats).catch(() => {});
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateCards(true), 100);
     return () => clearTimeout(t);
   }, []);
 
+  // Первая загрузка. Возврат с оплаты (?payment=return) истину о платеже узнаёт из вебхука,
+  // а не рисует подписку локально — поэтому тоже просто перезапрашивает все три источника.
   useEffect(() => {
-    if (!paymentReturn) return;
-    billingApi.getPlan().then(setPlan).catch(() => {});
-    // Убираем ?payment=return из URL, чтобы обновление страницы не показало баннер снова.
-    window.history.replaceState(null, '', window.location.pathname);
+    loadPlan(); loadInvoices(); loadCards(); loadStats();
+    if (paymentReturn) {
+      // Убираем ?payment=return из URL, чтобы обновление страницы не показало баннер снова.
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   }, [paymentReturn]);
+
+  // ponytail: фокус-рефетч, а не polling (React Query не вводим, §3.2) — добавить
+  // setInterval, если понадобится live-обновление при постоянно открытой вкладке.
+  useEffect(() => {
+    const onFocus = () => { loadPlan(); loadInvoices(); loadCards(); loadStats(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, []);
 
   // Переключение тарифной модели (эпик B3): без разового платежа, ответ сразу в стейт — без F5.
   const activateModel = (body: ActivateModelRequest) => {
     if (modelBusy) return;
     setModelBusy(true);
     billingApi.activateModel(body)
-      .then(res => { setPlan(res); toast.success(t('mode.activateSuccess')); })
+      .then(res => { setPlan(res); loadStats(); toast.success(t('mode.activateSuccess')); })
       .catch(() => toast.error(t('mode.activateError')))
       .finally(() => setModelBusy(false));
   };
@@ -94,6 +125,26 @@ export function useBillingCalculator() {
     billingApi.checkout(selectedPlan, selectedPeriod)
       .then(({ checkout_url }) => { window.location.href = checkout_url; })
       .catch(() => { setPayBusy(false); toast.error(t('payModal.cardError')); }); // при ошибке снимаем блок, редиректа не было
+  };
+
+  // Продление по сохранённой карте (rectoken): статус подписки придёт вебхуком, а свежий
+  // (pending) счёт подтягиваем сразу через loadInvoices — не ждём фокус-рефетч.
+  const renew = () => {
+    if (renewState === 'busy') return;
+    setRenewState('busy');
+    billingApi.renew()
+      .then(() => { setRenewState('done'); loadInvoices(); toast.success(t('method.renewSuccess')); })
+      .catch(() => { setRenewState('idle'); toast.error(t('method.renewError')); });
+  };
+
+  // Живые тумблеры автосписания (эпик B4, §4): оптимистичный флип, на ошибке — откат + тост.
+  const setAutopay = (field: keyof AutopaySettings, value: boolean) => {
+    if (!plan) return;
+    const prev = plan;
+    setPlan({ ...plan, [field]: value });
+    billingApi.updateAutopay({ [field]: value })
+      .then(res => { setPlan(res); toast.success(t('method.autopaySuccess')); })
+      .catch(() => { setPlan(prev); toast.error(t('method.autopayError')); });
   };
 
   useEffect(() => {
@@ -133,5 +184,7 @@ export function useBillingCalculator() {
     activateModel, modelBusy,
     showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy, payWithIban, payWithCard,
     paymentReturn, plan,
+    invoices, invoicesLoaded, cards, cardsLoaded, renew, renewState, setAutopay,
+    stats,
   };
 }

@@ -15,6 +15,9 @@ export default function Billing() {
         activeTab={h.activeTab}
         setActiveTab={h.setActiveTab}
         animateCards={h.animateCards}
+        plan={h.plan}
+        plans={h.plans}
+        stats={h.stats}
       />
 
       {h.paymentReturn && (
@@ -45,12 +48,24 @@ export default function Billing() {
           startCheckout={h.startCheckout}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
+          plan={h.plan}
         />
       )}
 
-      {h.activeTab === 'invoices' && <InvoicesTab currency={h.currency} />}
+      {h.activeTab === 'invoices' && (
+        <InvoicesTab currency={h.currency} invoices={h.invoices} loaded={h.invoicesLoaded} plans={h.plans} />
+      )}
 
-      {h.activeTab === 'method' && <PaymentMethodTab />}
+      {h.activeTab === 'method' && (
+        <PaymentMethodTab
+          cards={h.cards}
+          loaded={h.cardsLoaded}
+          plan={h.plan}
+          renew={h.renew}
+          renewState={h.renewState}
+          setAutopay={h.setAutopay}
+        />
+      )}
 
       {h.showUpgradeModal && (
         <UpgradeModal

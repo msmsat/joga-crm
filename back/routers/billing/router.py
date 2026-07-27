@@ -5,6 +5,7 @@
 """
 import csv
 import io
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -16,10 +17,12 @@ from dependencies import require_role, StudioContext
 from models import StudioBillingPlan, BillingInvoice, PaymentCard
 from schemas.settings.billing import (
     PlansCatalogRead, PlanRead, PlanLimits,
-    BillingPlanRead, InvoiceRead, PaymentCardRead,
+    BillingPlanRead, InvoiceRead, PaymentCardRead, BillingStatsRead,
     ActivateModelRequest, AutopaySettingsUpdate,
 )
-from .plans import PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED
+from .plans import (
+    PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
+)
 from .checkout import router as checkout_router
 from .webhook import router as webhook_router
 from .refunds import router as refunds_router
@@ -77,6 +80,56 @@ async def get_current_plan(
             expires_at=None, max_staff=0, auto_renewal=False,
         )
     return _to_plan_read(row)
+
+
+def _months_between(start: datetime, end: datetime) -> int:
+    """Полных месяцев между датами (неполный месяц не считаем). Без dateutil."""
+    months = (end.year - start.year) * 12 + end.month - start.month
+    if end.day < start.day:
+        months -= 1
+    return max(0, months)
+
+
+@router.get("/stats", response_model=BillingStatsRead)
+async def get_billing_stats(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Четыре плашки шапки. Всё из оплаченных счетов студии — до первой оплаты нули."""
+    paid = (await db.execute(
+        select(BillingInvoice)
+        .where(BillingInvoice.studio_id == ctx.studio_id, BillingInvoice.status == "paid")
+        .order_by(BillingInvoice.paid_at)
+    )).scalars().all()
+
+    total_spent = sum(inv.amount for inv in paid)
+    # Экономия: во сколько тот же период обошёлся бы помесячно минус фактически оплаченное.
+    saved = sum(
+        max(0, PLANS[inv.plan_name]["price"] * inv.period_months - inv.amount)
+        for inv in paid if inv.plan_name in PLANS
+    )
+    months = _months_between(paid[0].paid_at, datetime.utcnow()) if paid else 0
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+
+    # Следующее списание = то же, что спишет /renew: план из подписки, период — из последней оплаты.
+    next_charge = 0
+    if plan and plan.status == "active":
+        if plan.billing_mode == "combo":
+            next_charge = plan.fixed_base_amount or 0
+        elif plan.billing_mode == "subscription" and plan.plan_name in PLANS:
+            next_charge = amount_for(plan.plan_name, paid[-1].period_months if paid else 1)
+        # percent: фикса нет, списывать по расписанию нечего — остаётся 0
+
+    return BillingStatsRead(
+        total_spent=total_spent,
+        months_with_us=months,
+        saved=saved,
+        next_charge=next_charge,
+        next_charge_at=plan.expires_at.isoformat() if plan and plan.expires_at else None,
+    )
 
 
 @router.post("/model", response_model=BillingPlanRead)
@@ -281,6 +334,12 @@ async def get_payment_cards(
 
 
 if __name__ == "__main__":
+    # Плашка «месяцев с нами»: неполный месяц не засчитывается, переход года считается.
+    assert _months_between(datetime(2026, 1, 15), datetime(2026, 7, 14)) == 5
+    assert _months_between(datetime(2026, 1, 15), datetime(2026, 7, 15)) == 6
+    assert _months_between(datetime(2025, 11, 30), datetime(2026, 7, 27)) == 7
+    assert _months_between(datetime(2026, 7, 27), datetime(2026, 7, 27)) == 0
+
     # CSV self-check (задача B5): экранирование `;`/кавычек и BOM для Excel-кириллицы.
     _buf = io.StringIO()
     _buf.write("﻿")

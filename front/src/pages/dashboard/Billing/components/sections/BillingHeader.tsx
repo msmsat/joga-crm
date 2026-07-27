@@ -1,4 +1,6 @@
-import type { BillingTab } from '../../types';
+import { useTranslation } from 'react-i18next';
+import type { BillingTab, BillingPlan, PlanType } from '../../types';
+import type { BillingStats } from '../../../../../api/billing/billing.types';
 import { CalendarIcon, CreditCardIcon, TrendingIcon, ZapIcon } from '../ui/BillingIcons';
 import AnimatedCounter from '../ui/AnimatedCounter';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
@@ -9,6 +11,9 @@ interface Props {
   activeTab: BillingTab;
   setActiveTab: (tab: BillingTab) => void;
   animateCards: boolean;
+  plan: BillingPlan | null;
+  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
+  stats: BillingStats | null;
 }
 
 const TABS: { id: BillingTab; label: string }[] = [
@@ -17,16 +22,34 @@ const TABS: { id: BillingTab; label: string }[] = [
   { id: 'method',   label: 'Способ оплаты'    },
 ];
 
-export default function BillingHeader({ activeTab, setActiveTab, animateCards }: Props) {
+export default function BillingHeader({ activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
+  const { t, i18n } = useTranslation('billing');
   const currency = useStudioCurrency();
   const currencySymbol = getCurrencySymbol(currency);
 
+  // Суммы приходят в копейках (как и каталог) — делим на 100 один раз тут.
   const STATS = [
-    { label: 'Потрачено всего',    target: 17430, prefix: currencySymbol, suffix: '',        Icon: CreditCardIcon },
-    { label: 'Месяцев с нами',     target: 7,     prefix: '',             suffix: ' мес.',   Icon: CalendarIcon   },
-    { label: 'Сэкономлено',        target: 0,     prefix: currencySymbol, suffix: ' (пока)', Icon: TrendingIcon   },
-    { label: 'Следующее списание', target: 2490,  prefix: currencySymbol, suffix: '',        Icon: ZapIcon        },
+    { label: t('header.totalSpent'),  target: (stats?.total_spent ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: CreditCardIcon },
+    { label: t('header.monthsWithUs'), target: stats?.months_with_us ?? 0,     prefix: '',             suffix: t('header.monthsSuffix'), Icon: CalendarIcon },
+    { label: t('header.saved'),       target: (stats?.saved ?? 0) / 100,       prefix: currencySymbol, suffix: '',                Icon: TrendingIcon   },
+    { label: t('header.nextCharge'),  target: (stats?.next_charge ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: ZapIcon        },
   ];
+
+  // Текущая подписка студии: имя тарифа — из каталога (в БД лежит id), срок и цена — из подписки.
+  // status=none приходит до первой оплаты — тогда показываем «нет подписки», а не выдуманный Pro.
+  const active = plan && plan.status !== 'none' ? plan : null;
+  const expiresAt = active?.expires_at ? new Date(active.expires_at) : null;
+  const statusLabel = !active
+    ? t('header.noPlan')
+    : active.status !== 'active'
+    ? t('header.expired')
+    : expiresAt
+    ? t('header.activeUntil', { date: expiresAt.toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }) })
+    : t('header.active');
+  // Комбо платит уменьшенный фикс, «%» — ничего фиксированного, подписка — цену тарифа из каталога.
+  const monthly = active?.billing_mode === 'combo'
+    ? (active.fixed_base_amount ?? 0) / 100
+    : plans[active?.plan_name as PlanType]?.monthly ?? 0;
 
   return (
     <>
@@ -45,13 +68,23 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards }:
           </div>
 
           <div style={{ padding: '16px 24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '16px', textAlign: 'right' }}>
-            <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>ТЕКУЩИЙ ТАРИФ</div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)' }}>Pro</div>
-            <div style={{ fontSize: '12px', color: 'var(--pistachio)', fontWeight: 600, marginTop: '2px' }}>Активен · до 15 июля 2025</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
-              <CalendarIcon />
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{formatMoney(2490, currency)} / мес</span>
+            <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>{t('header.currentPlan')}</div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)' }}>
+              {active ? plans[active.plan_name as PlanType]?.name ?? active.plan_name : t('header.noPlanName')}
             </div>
+            <div style={{ fontSize: '12px', color: active?.status === 'active' ? 'var(--pistachio)' : 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>
+              {statusLabel}
+            </div>
+            {active && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '6px' }}>
+                <CalendarIcon />
+                <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                  {active.billing_mode === 'percent'
+                    ? t('header.percentRate', { rate: active.percent_rate ?? 0 })
+                    : `${formatMoney(monthly, currency)} ${t('planCards.perMonth')}`}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

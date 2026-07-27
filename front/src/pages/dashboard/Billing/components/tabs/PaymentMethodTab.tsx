@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
-import { billingApi } from '../../../../../api/billing/billing.api';
 import type { BillingPlan, PaymentCard, AutopaySettings } from '../../../../../api/billing/billing.types';
-import { Button, Switch, useToast } from '../../../../../components/ui/index';
+import { Button, Switch } from '../../../../../components/ui/index';
 import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
@@ -14,44 +12,22 @@ const AUTOPAY_FIELDS = [
   { key: 'sms',         field: 'sms_notification_enabled' as const },
 ] satisfies { key: string; field: keyof AutopaySettings }[];
 
-export default function PaymentMethodTab() {
-  const { t } = useTranslation('billing');
-  const toast = useToast();
-  const [cards, setCards] = useState<PaymentCard[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [renewState, setRenewState] = useState<'idle' | 'busy' | 'done'>('idle');
-  const [plan, setPlan] = useState<BillingPlan | null>(null);
+interface Props {
+  cards: PaymentCard[];
+  loaded: boolean;
+  plan: BillingPlan | null;
+  renew: () => void;
+  renewState: 'idle' | 'busy' | 'done';
+  setAutopay: (field: keyof AutopaySettings, value: boolean) => void;
+}
 
-  useEffect(() => {
-    billingApi.getPaymentCards()
-      .then(setCards)
-      .catch(() => { /* нет карт — покажем пустое состояние */ })
-      .finally(() => setLoaded(true));
-    billingApi.getPlan().then(setPlan).catch(() => {});
-  }, []);
+export default function PaymentMethodTab({ cards, loaded, plan, renew, renewState, setAutopay }: Props) {
+  const { t } = useTranslation('billing');
 
   // Карта из rectoken Fondy: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;
   // Автосписание доступно только при оплате картой (аудит §4) — бэк дублирует запрет.
   const canAutopay = card?.method_type === 'card';
-
-  const renew = () => {
-    if (renewState === 'busy') return;
-    setRenewState('busy');
-    billingApi.renew()
-      .then(() => setRenewState('done'))          // счёт создан, статус придёт вебхуком
-      .catch(() => setRenewState('idle'));
-  };
-
-  // Живые тумблеры (эпик B4, §4): оптимистичный флип, на ошибке — откат + тост.
-  const setAutopay = (field: keyof AutopaySettings, value: boolean) => {
-    if (!plan) return;
-    const prev = plan;
-    setPlan({ ...plan, [field]: value });
-    billingApi.updateAutopay({ [field]: value })
-      .then(res => { setPlan(res); toast.success(t('method.autopaySuccess')); })
-      .catch(() => { setPlan(prev); toast.error(t('method.autopayError')); });
-  };
 
   return (
     <div style={{ padding: '0 32px', animation: 'fadeSlideIn 0.4s ease forwards' }}>

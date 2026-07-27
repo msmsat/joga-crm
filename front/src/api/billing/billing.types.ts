@@ -55,6 +55,14 @@ export interface IbanCheckout {
   beneficiary: string
 }
 
+export interface BillingStats {
+  total_spent: number          // копейки
+  months_with_us: number
+  saved: number                // копейки
+  next_charge: number          // копейки
+  next_charge_at: string | null
+}
+
 export interface Invoice {
   id: number
   plan_name: string

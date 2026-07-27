@@ -4,6 +4,20 @@
     "invoices": "History",
     "method": "Payment method"
   },
+  "header": {
+    "totalSpent": "Total spent",
+    "monthsWithUs": "Months with us",
+    "monthsSuffix": " mo.",
+    "saved": "Saved",
+    "nextCharge": "Next charge",
+    "currentPlan": "CURRENT PLAN",
+    "noPlanName": "No plan",
+    "noPlan": "No active subscription",
+    "active": "Active",
+    "activeUntil": "Active · until {{date}}",
+    "expired": "Expired",
+    "percentRate": "{{rate}}% of online payments"
+  },
   "mode": {
     "title": "Payment model",
     "subscription": "Fixed subscription",
@@ -27,7 +41,9 @@
       "cta": "Activate the 3% model"
     },
     "activateSuccess": "Payment model updated",
-    "activateError": "Couldn't update the payment model"
+    "activateError": "Couldn't update the payment model",
+    "confirmSwitchTitle": "Switch payment model?",
+    "confirmSwitchMessage": "Your current subscription is active. Switching models takes effect immediately — remaining paid time won't carry over."
   },
   "combo": {
     "rateBadge": "{{rate}}%",
@@ -158,6 +174,8 @@
     "noCardDetail": "No need to enter details separately — payment happens on Fondy's secure page.",
     "renewDone": "Invoice created — payment processing",
     "renewBusy": "Creating invoice…",
+    "renewSuccess": "Renewal invoice created",
+    "renewError": "Couldn't create the invoice. Please try again.",
     "renewNow": "Renew now with card •••• {{last4}}",
     "autopayTitle": "Autopayment settings",
     "autopaySuccess": "Setting saved",
@@ -173,7 +191,9 @@
   "invoices": {
     "title": "Payment history",
     "totalPaid": "total paid {{amount}}",
-    "exportCsv": "Export CSV"
+    "exportCsv": "Export CSV",
+    "exportError": "Couldn't export CSV. Please try again.",
+    "receiptError": "Couldn't open the receipt. Please try again."
   },
   "table": {
     "date": "Date",

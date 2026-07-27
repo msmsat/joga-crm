@@ -66,6 +66,15 @@ class IbanCheckoutResponse(BaseModel):
     beneficiary: str = "Velora CRM LLC"
 
 
+class BillingStatsRead(BaseSchema):
+    """Плашки шапки биллинга — считаются из оплаченных счетов студии, не из констант."""
+    total_spent: int                      # копейки, сумма paid-счетов
+    months_with_us: int                   # полных месяцев с первой оплаты (0 — оплат не было)
+    saved: int                            # копейки, экономия от скидок за период
+    next_charge: int                      # копейки, следующее списание (0 — списывать нечего)
+    next_charge_at: Optional[str] = None
+
+
 class InvoiceRead(BaseSchema):
     id: int
     plan_name: str

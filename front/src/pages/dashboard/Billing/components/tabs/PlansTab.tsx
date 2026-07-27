@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BillingMode, PlanType } from '../../types';
+import type { BillingMode, PlanType, BillingPlan } from '../../types';
 import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
 import { planFeatures } from '../../constants';
 import { formatMoney } from '../../../../../lib/money';
-import { Button } from '../../../../../components/ui/index';
+import { Button, ConfirmModal } from '../../../../../components/ui/index';
 import {
   CheckIcon, XIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
   PercentIcon, ArrowRightIcon, HistoryIcon,
@@ -31,6 +32,7 @@ interface Props {
   startCheckout: () => void;
   activateModel: (body: ActivateModelRequest) => void;
   modelBusy: boolean;
+  plan: BillingPlan | null;
 }
 
 export default function PlansTab({
@@ -42,11 +44,27 @@ export default function PlansTab({
   currentMonthly, discountedPrice, totalToPay,
   animateCards, setShowUpgradeModal,
   startCheckout,
-  activateModel, modelBusy,
+  activateModel, modelBusy, plan,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
   const reviews = t('trust.reviews', { returnObjects: true }) as { text: string; author: string }[];
+  // Бейдж «Текущий» — тариф активной подписки студии, а не захардкоженный Pro.
+  // Считаем до карточек: внутри .map имя `plan` перекрыто записью каталога.
+  const currentPlanId = plan?.status === 'active' ? plan.plan_name : null;
+
+  // Смена модели оплаты при активной подписке — необратимо теряет остаток оплаченного
+  // периода, поэтому спрашиваем подтверждение (эпик B6, §2), а не бьём в API молча.
+  const [pendingActivation, setPendingActivation] = useState<ActivateModelRequest | null>(null);
+  const requestActivate = (body: ActivateModelRequest) => {
+    if (plan?.status === 'active') setPendingActivation(body);
+    else activateModel(body);
+  };
+
+  // «Продолжить план» (аудит §1, эпик B6, §3): нативный плавный скролл к графику
+  // платежей — без библиотек, браузер сам уважает prefers-reduced-motion.
+  const scrollToPayment = () =>
+    document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <div style={{ padding: '0 32px' }}>
@@ -99,7 +117,7 @@ export default function PlansTab({
                   </div>
                 ))}
               </div>
-              <Button variant="primary" loading={modelBusy} onClick={() => activateModel({ mode: 'percent' })}>
+              <Button variant="primary" loading={modelBusy} onClick={() => requestActivate({ mode: 'percent' })}>
                 {t('mode.percentCard.cta')}
               </Button>
             </div>
@@ -147,7 +165,7 @@ export default function PlansTab({
             <Button
               variant="primary"
               loading={modelBusy}
-              onClick={() => activateModel({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
+              onClick={() => requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
             >
               {t('combo.cta')}
             </Button>
@@ -163,7 +181,7 @@ export default function PlansTab({
             const features = planFeatures[planId];
             const price = getPrice(planId, selectedPeriod);
             const isSelected = selectedPlan === planId;
-            const isCurrent = planId === 'pro';
+            const isCurrent = currentPlanId === planId;
             return (
               <div key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '28px', background: 'var(--bg-card)', border: `2px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '20px', cursor: 'pointer', position: 'relative', boxShadow: isSelected ? '0 8px 40px rgba(252,174,145,0.18)' : 'var(--shadow)', transition: 'all 0.3s cubic-bezier(0.34,1.1,0.64,1)', transform: isSelected ? 'translateY(-3px)' : 'none', opacity: animateCards ? 1 : 0, transitionDelay: `${i * 0.08}s` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
@@ -195,9 +213,9 @@ export default function PlansTab({
                     </div>
                   ))}
                 </div>
-                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (!isCurrent) setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                  {isCurrent ? t('planCards.currentPlan') : t('planCards.choosePlan')}
-                  {!isCurrent && <ArrowRightIcon />}
+                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  {isCurrent ? t('continuePlan') : t('planCards.choosePlan')}
+                  <ArrowRightIcon />
                 </button>
               </div>
             );
@@ -210,7 +228,7 @@ export default function PlansTab({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
           <SavingsIllustration currency={currency} monthlyPrice={currentMonthly} period={selectedPeriod} discount={periodDiscounts[selectedPeriod]} />
 
-          <div style={{ padding: '28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
+          <div id="payment-section" style={{ padding: '28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
               <HistoryIcon />
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{t('paymentSchedule.title')}</span>
@@ -268,6 +286,16 @@ export default function PlansTab({
           </div>
         </div>
       </div>
+
+      {pendingActivation && (
+        <ConfirmModal
+          title={t('mode.confirmSwitchTitle')}
+          message={t('mode.confirmSwitchMessage')}
+          confirmText={t('common:buttons.continue')}
+          onConfirm={() => activateModel(pendingActivation)}
+          onClose={() => setPendingActivation(null)}
+        />
+      )}
     </div>
   );
 }

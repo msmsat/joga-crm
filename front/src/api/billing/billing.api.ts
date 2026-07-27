@@ -1,6 +1,6 @@
-import { client } from '../client'
+import { client, downloadFile, openFile } from '../client'
 import type {
-  PlansCatalog, BillingPlan, Invoice, PaymentCard,
+  PlansCatalog, BillingPlan, Invoice, PaymentCard, BillingStats,
   CheckoutRequest, CheckoutResponse, RenewResponse,
   ActivateModelRequest, IbanCheckout, AutopaySettings,
 } from './billing.types'
@@ -14,6 +14,18 @@ export const billingApi = {
 
   getInvoices: () =>
     client.get<Invoice[]>('/billing/invoices'),
+
+  // Плашки шапки (потрачено / месяцев с нами / сэкономлено / следующее списание) — считает сервер.
+  getStats: () =>
+    client.get<BillingStats>('/billing/stats'),
+
+  // Серверный CSV всех счетов студии (не только загруженной страницы) — Bearer в заголовке,
+  // поэтому не <a href>, а blob-через-fetch (задача B5).
+  exportInvoicesCsv: () =>
+    downloadFile('/billing/invoices/export.csv'),
+
+  openReceipt: (id: number) =>
+    openFile(`/billing/invoices/${id}/receipt.pdf`),
 
   getPaymentCards: () =>
     client.get<PaymentCard[]>('/billing/cards'),
