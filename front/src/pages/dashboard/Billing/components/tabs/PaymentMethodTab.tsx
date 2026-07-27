@@ -2,32 +2,38 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
 import { billingApi } from '../../../../../api/billing/billing.api';
-import type { PaymentCard } from '../../../../../api/billing/billing.types';
-import { CheckIcon } from '../ui/BillingIcons';
+import type { BillingPlan, PaymentCard, AutopaySettings } from '../../../../../api/billing/billing.types';
+import { Button, Switch, useToast } from '../../../../../components/ui/index';
+import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
-const AUTOPAY_SETTINGS = [
-  { key: 'autoRenew',   active: true  },
-  { key: 'emailNotify', active: true  },
-  { key: 'remind3d',    active: true  },
-  { key: 'sms',         active: false },
-] as const;
+const AUTOPAY_FIELDS = [
+  { key: 'autoRenew',   field: 'auto_renewal' as const },
+  { key: 'emailNotify', field: 'email_receipt_enabled' as const },
+  { key: 'remind3d',    field: 'notify_before_autocharge' as const },
+  { key: 'sms',         field: 'sms_notification_enabled' as const },
+] satisfies { key: string; field: keyof AutopaySettings }[];
 
 export default function PaymentMethodTab() {
   const { t } = useTranslation('billing');
+  const toast = useToast();
   const [cards, setCards] = useState<PaymentCard[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [renewState, setRenewState] = useState<'idle' | 'busy' | 'done'>('idle');
+  const [plan, setPlan] = useState<BillingPlan | null>(null);
 
   useEffect(() => {
     billingApi.getPaymentCards()
       .then(setCards)
       .catch(() => { /* нет карт — покажем пустое состояние */ })
       .finally(() => setLoaded(true));
+    billingApi.getPlan().then(setPlan).catch(() => {});
   }, []);
 
   // Карта из rectoken Fondy: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;
+  // Автосписание доступно только при оплате картой (аудит §4) — бэк дублирует запрет.
+  const canAutopay = card?.method_type === 'card';
 
   const renew = () => {
     if (renewState === 'busy') return;
@@ -37,54 +43,74 @@ export default function PaymentMethodTab() {
       .catch(() => setRenewState('idle'));
   };
 
+  // Живые тумблеры (эпик B4, §4): оптимистичный флип, на ошибке — откат + тост.
+  const setAutopay = (field: keyof AutopaySettings, value: boolean) => {
+    if (!plan) return;
+    const prev = plan;
+    setPlan({ ...plan, [field]: value });
+    billingApi.updateAutopay({ [field]: value })
+      .then(res => { setPlan(res); toast.success(t('method.autopaySuccess')); })
+      .catch(() => { setPlan(prev); toast.error(t('method.autopayError')); });
+  };
+
   return (
     <div style={{ padding: '0 32px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
         <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '32px', alignItems: 'start' }}>
 
-          {/* Premium bank card visual — данные из сохранённой карты */}
+          {/* Токен-бейдж (эпик B4, §5) — вместо отрисовки номера карты: PAN/CVV/держатель
+              нигде не хранятся и не показываются, только брендинг + маскированный хвост токена. */}
           <div style={{
-            width: '340px', height: '210px', borderRadius: '20px',
-            background: 'linear-gradient(135deg, #0f0f12 0%, #1b1b22 100%)',
-            padding: '28px', boxSizing: 'border-box', position: 'relative',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            border: '1.5px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 24px 48px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.05)',
-            overflow: 'hidden',
+            width: '100%', borderRadius: '20px', background: 'var(--bg-card)',
+            border: '1px solid var(--border)', boxShadow: 'var(--shadow)',
+            padding: '28px', boxSizing: 'border-box',
+            display: 'flex', flexDirection: 'column', gap: '18px',
           }}>
-            <div style={{ position: 'absolute', inset: 0, borderRadius: '20px', background: 'linear-gradient(to right, transparent, rgba(252,174,145,0.04), transparent)', animation: 'cardLaserScan 4s linear infinite', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShieldIcon />
+              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.badgeTitle')}</span>
+            </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
-              <div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px', fontWeight: 800 }}>{t('method.primaryCard')}</div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginTop: '2px' }}>
-                  {card ? card.card_brand : t('method.notLinked')}
+            <div style={{ padding: '16px 18px', borderRadius: '14px', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {card?.method_type === 'iban' ? <BankIcon /> : <CreditCardIcon />}
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', fontFamily: card ? "'SF Mono', 'Consolas', monospace" : 'inherit' }}>
+                  {card?.method_type === 'iban'
+                    ? t('method.ibanBadgeLabel')
+                    : card
+                    ? `${card.card_brand} · tok_••••${card.card_last4}`
+                    : t('method.notLinked')}
                 </div>
-              </div>
-              <div style={{ width: '36px', height: '26px', borderRadius: '6px', background: 'linear-gradient(135deg, #e6c587 0%, #ba9958 100%)', position: 'relative', display: 'flex', padding: '6px', boxSizing: 'border-box', opacity: 0.85, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
-                <div style={{ width: '100%', height: '100%', border: '0.5px solid rgba(0,0,0,0.2)', borderRadius: '3px' }} />
+                {card?.method_type === 'card' && (
+                  <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px' }}>
+                    {t('method.tokenSub', { expiry: card.card_expiry })}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'monospace', letterSpacing: '3px', textShadow: '0 2px 8px rgba(0,0,0,0.6)', color: 'white', position: 'relative', zIndex: 2 }}>
-              {card ? `•••• •••• •••• ${card.card_last4}` : '•••• •••• •••• ••••'}
-            </div>
+            {card && (
+              <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: '1.6' }}>
+                {card.method_type === 'iban' ? t('method.ibanBadgeNote') : t('method.tokenNote')}
+              </div>
+            )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 2 }}>
-              <div style={{ color: 'white', maxWidth: '180px', overflow: 'hidden' }}>
-                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>{t('method.holder')}</div>
-                <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', marginTop: '3px', letterSpacing: '0.5px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                  {card?.cardholder_name || t('empty.noData')}
-                </div>
-              </div>
-              <div style={{ color: 'white', textAlign: 'right' }}>
-                <div style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>{t('method.expiry')}</div>
-                <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '3px', fontFamily: 'monospace' }}>
-                  {card?.card_expiry || 'MM/YY'}
-                </div>
-              </div>
-            </div>
+            {/* Автопродление доступно только по токену карты — для IBAN кнопки нет (§5) */}
+            {card?.method_type === 'card' && (
+              <Button
+                variant="primary"
+                fullWidth
+                loading={renewState === 'busy'}
+                disabled={renewState !== 'idle'}
+                onClick={renew}
+                style={renewState === 'done' ? { background: 'var(--pistachio)', boxShadow: 'none' } : undefined}
+              >
+                {renewState === 'done' ? t('method.renewDone')
+                  : renewState === 'busy' ? t('method.renewBusy')
+                  : t('method.renewNow', { last4: card.card_last4 })}
+              </Button>
+            )}
           </div>
 
           {/* Right column: защита + продление */}
@@ -108,18 +134,6 @@ export default function PaymentMethodTab() {
                 {t('empty.noCard')} {t('method.noCardDetail')}
               </div>
             )}
-
-            {card && (
-              <button
-                onClick={renew}
-                disabled={renewState !== 'idle'}
-                style={{ width: '100%', padding: '16px', borderRadius: '14px', background: renewState === 'done' ? 'var(--pistachio)' : 'var(--peach)', color: 'white', border: 'none', fontSize: '13.5px', fontWeight: 700, cursor: renewState === 'idle' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(252,174,145,0.3)', opacity: renewState === 'busy' ? 0.7 : 1, transition: 'all 0.2s ease' }}
-              >
-                {renewState === 'done' ? t('method.renewDone')
-                  : renewState === 'busy' ? t('method.renewBusy')
-                  : t('method.renewNow', { last4: card.card_last4 })}
-              </button>
-            )}
           </div>
         </div>
 
@@ -130,17 +144,18 @@ export default function PaymentMethodTab() {
             <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.autopayTitle')}</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {AUTOPAY_SETTINGS.map(setting => (
-              <div key={setting.key} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', marginBottom: '2px' }}>{t(`method.autopay.${setting.key}.label`)}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{t(`method.autopay.${setting.key}.desc`)}</div>
+            {AUTOPAY_FIELDS.map(({ key, field }) => {
+              const disabled = !canAutopay || !plan;
+              return (
+                <div key={key} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', marginBottom: '2px' }}>{t(`method.autopay.${key}.label`)}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{!canAutopay ? t('method.autopay.cardOnly') : t(`method.autopay.${key}.desc`)}</div>
+                  </div>
+                  <Switch checked={!!plan?.[field]} onChange={v => setAutopay(field, v)} disabled={disabled} />
                 </div>
-                <div style={{ width: '38px', height: '22px', borderRadius: '11px', background: setting.active ? 'var(--peach)' : 'var(--border)', position: 'relative', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease', boxShadow: setting.active ? '0 2px 10px rgba(252,174,145,0.3)' : 'none' }}>
-                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: setting.active ? '19px' : '3px', transition: 'left 0.2s ease', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

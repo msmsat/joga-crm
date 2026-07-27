@@ -15,10 +15,9 @@ interface Props {
   totalToPay: number;
   onClose: () => void;
   startCheckout: () => void;
-  checkoutBusy: boolean;
 }
 
-export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, checkoutBusy }: Props) {
+export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout }: Props) {
   const { t } = useTranslation('billing');
   const plan = plans[selectedPlan];
 
@@ -71,8 +70,8 @@ export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, p
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button onClick={startCheckout} disabled={checkoutBusy} style={{ padding: '14px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '15px', fontWeight: 700, cursor: checkoutBusy ? 'wait' : 'pointer', opacity: checkoutBusy ? 0.7 : 1, fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', transition: 'all 0.2s ease' }}>
-            {checkoutBusy ? t('paymentSchedule.processing') : t('upgrade.confirmAndPay')}
+          <button onClick={() => { onClose(); startCheckout(); }} style={{ padding: '14px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '15px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', transition: 'all 0.2s ease' }}>
+            {t('upgrade.confirmAndPay')}
           </button>
           <button onClick={onClose} style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease' }}>
             {t('common:cancel')}

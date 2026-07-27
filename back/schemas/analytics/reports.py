@@ -1,6 +1,8 @@
 from datetime import date, datetime
 from typing import Any, Optional
 
+from pydantic import ValidationInfo, field_validator
+
 from schemas._base import BaseSchema
 
 
@@ -344,7 +346,14 @@ class ActivityLogRead(BaseSchema):
     id: int
     event_type: str
     title: str
-    actor_name: str
+    actor_name: str = "Система"
     entity_type: Optional[str] = None
-    color: str
+    color: str = "#C8C8C8"
     created_at: datetime
+
+    # В БД оба поля nullable: событие без автора (автопродление, публичная запись) и тип события
+    # вне палитры пишут NULL. Без подмены на дефолт вся лента отдаёт 500.
+    @field_validator("actor_name", "color", mode="before")
+    @classmethod
+    def _default_if_null(cls, v: Optional[str], info: ValidationInfo) -> Any:
+        return {"actor_name": "Система", "color": "#C8C8C8"}[info.field_name] if v is None else v

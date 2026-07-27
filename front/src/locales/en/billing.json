@@ -17,7 +17,22 @@
     "badges": {
       "popular": "Popular",
       "flexible": "Flexible"
-    }
+    },
+    "percentCard": {
+      "title": "The “3% of online payments” model",
+      "description": "Pay only when you earn. 3% of every successful online payment. No fixed subscription fee.",
+      "noFixed": "No fixed fee",
+      "payForResult": "Pay for results",
+      "oneClick": "1-click activation",
+      "cta": "Activate the 3% model"
+    },
+    "activateSuccess": "Payment model updated",
+    "activateError": "Couldn't update the payment model"
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fixed {{fixed}}/mo. + {{rate}}% of online payments",
+    "cta": "Activate the Combo plan"
   },
   "period": {
     "1": "1 month",
@@ -127,10 +142,12 @@
     "trustNote": "Secured by PCI DSS · 7-day refund"
   },
   "method": {
-    "primaryCard": "PRIMARY CARD",
     "notLinked": "Not linked",
-    "holder": "HOLDER",
-    "expiry": "EXPIRY",
+    "badgeTitle": "Payment method secured",
+    "tokenSub": "Provider token · expires {{expiry}}",
+    "tokenNote": "Your real card data is stored by the payment provider (PCI DSS L1). We only keep a one-time token for renewals.",
+    "ibanBadgeLabel": "Billed by invoice (IBAN)",
+    "ibanBadgeNote": "Invoice renewals are manual — create a new invoice from the Plans tab.",
     "securityTitle": "Data protection standards",
     "security": {
       "pciDss": "PCI DSS Level 1 encryption",
@@ -143,7 +160,10 @@
     "renewBusy": "Creating invoice…",
     "renewNow": "Renew now with card •••• {{last4}}",
     "autopayTitle": "Autopayment settings",
+    "autopaySuccess": "Setting saved",
+    "autopayError": "Couldn't save the setting. Please try again.",
     "autopay": {
+      "cardOnly": "Available when paying by card",
       "autoRenew":   { "label": "Automatic renewal",        "desc": "Charged without confirmation" },
       "emailNotify": { "label": "Email notifications",      "desc": "Receipt emailed after every payment" },
       "remind3d":    { "label": "Remind 3 days before",     "desc": "We'll remind you before the automatic charge" },
@@ -177,6 +197,7 @@
   "savings": {
     "title": "Your savings",
     "prepayTitle": "Your savings when paying upfront",
+    "emptyState": "Choose a period of 6+ months to start saving",
     "youSave": "You save {{amount}} over {{months}} mo.",
     "freeMonths": "That's like {{count}} mo. free",
     "amountLabel": "{{amount}} savings",
@@ -185,5 +206,36 @@
     "forMonths_other": "For {{count}} months"
   },
   "pay": "Pay",
-  "continuePlan": "Continue plan"
+  "continuePlan": "Continue plan",
+  "payModal": {
+    "title": "Payment method",
+    "chooseTitle": "How would you like to pay?",
+    "iban": {
+      "label": "IBAN",
+      "desc": "Invoice / bank transfer"
+    },
+    "card": {
+      "label": "Card",
+      "desc": "Apple Pay · Google Pay"
+    },
+    "invoiceTitle": "Invoice {{number}}",
+    "beneficiary": "Beneficiary",
+    "ibanLabel": "IBAN",
+    "referenceLabel": "Payment reference",
+    "amountLabel": "Amount",
+    "copy": "Copy",
+    "copied": "Copied",
+    "ibanNote": "Invoice created — pay using these details, the status will update once funds arrive.",
+    "or": "or",
+    "applePay": "Apple Pay",
+    "googlePay": "Google Pay",
+    "cardNumber": "Card number",
+    "expiry": "MM/YY",
+    "cvv": "CVV",
+    "cardFormNote": "Card details are entered on the provider's secure page — nothing here is sent to us.",
+    "payWithCard": "Pay by card",
+    "back": "Back",
+    "ibanError": "Couldn't create the invoice. Please try again.",
+    "cardError": "Couldn't proceed to payment. Please try again."
+  }
 }

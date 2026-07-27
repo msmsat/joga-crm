@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends
 from dependencies import require_active_subscription
 from .agents import router as agents_router
 from .chat import router as chat_router
-from .instagram import callback_router as instagram_callback_router, router as instagram_router
+from .instagram import (
+    callback_router as instagram_callback_router,
+    router as instagram_router,
+    webhook_router as instagram_webhook_router,
+)
 from .settings import router as settings_router
 
 router = APIRouter()
@@ -18,3 +22,6 @@ router.include_router(settings_router, dependencies=_gate)
 router.include_router(agents_router, dependencies=_gate)
 router.include_router(instagram_router, dependencies=_gate)
 router.include_router(instagram_callback_router)
+# Вебхук Meta: ни JWT, ни подписки студии — за студию отвечает ig_user_id из тела,
+# за подлинность — verify-токен (GET) и X-Hub-Signature-256 (POST).
+router.include_router(instagram_webhook_router)

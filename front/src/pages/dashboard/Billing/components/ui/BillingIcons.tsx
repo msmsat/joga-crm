@@ -96,6 +96,14 @@ export const DownloadIcon = () => (
   </svg>
 );
 
+export const BankIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M2 7L10 2L18 7" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 8V16M7 8V16M13 8V16M17 8V16" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M2 16H18" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
 export const SparklesIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
     <path d="M9 2L10.1 6.9L15 8L10.1 9.1L9 14L7.9 9.1L3 8L7.9 6.9L9 2Z" fill="var(--peach)" fillOpacity="0.3" stroke="var(--peach)" strokeWidth="1.3" strokeLinejoin="round" />

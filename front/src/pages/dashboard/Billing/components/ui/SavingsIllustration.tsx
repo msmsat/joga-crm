@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { SparklesIcon, InfoIcon } from './BillingIcons';
 import { formatMoney } from '../../../../../lib/money';
+import { EmptyState } from '../../../../../components/ui/index';
 
 interface Props {
   currency?: string;
@@ -15,6 +16,9 @@ export default function SavingsIllustration({ currency, monthlyPrice, period, di
   const saved = Math.round(total * discount);
   const toPay = total - saved;
   const progress = discount * 100;
+  // Сколько месяцев (по факту оплаты) покрывает сэкономленная сумма — только если ≥1 (без фейка).
+  const discountedMonthly = monthlyPrice * (1 - discount);
+  const freeMonths = discountedMonthly > 0 ? Math.floor(saved / discountedMonthly) : 0;
 
   return (
     <div style={{
@@ -39,64 +43,72 @@ export default function SavingsIllustration({ currency, monthlyPrice, period, di
         </span>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('period.noDiscount')}</span>
-        <span style={{ fontSize: '13px', color: 'var(--muted)', textDecoration: 'line-through' }}>
-          {formatMoney(total, currency)}
-        </span>
-      </div>
+      {discount <= 0 ? (
+        <EmptyState size="sm" icon="money" title={t('savings.emptyState')} />
+      ) : (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('period.noDiscount')}</span>
+            <span style={{ fontSize: '13px', color: 'var(--muted)', textDecoration: 'line-through' }}>
+              {formatMoney(total, currency)}
+            </span>
+          </div>
 
-      <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', marginBottom: '8px', overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${100 - progress}%`,
-          background: 'linear-gradient(90deg, var(--peach), #F9A08B)',
-          borderRadius: '3px',
-          transition: 'width 0.8s cubic-bezier(0.34,1.1,0.64,1)',
-        }} />
-      </div>
+          <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', marginBottom: '8px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%',
+              width: `${100 - progress}%`,
+              background: 'linear-gradient(90deg, var(--peach), #F9A08B)',
+              borderRadius: '3px',
+              transition: 'width 0.8s cubic-bezier(0.34,1.1,0.64,1)',
+            }} />
+          </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>
-            {formatMoney(toPay, currency)}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>
+                {formatMoney(toPay, currency)}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--pistachio)', fontWeight: 600 }}>
+                {t('savings.forMonths', { count: period })}
+              </div>
+            </div>
+            <div style={{
+              padding: '10px 16px',
+              background: 'rgba(163,201,168,0.15)',
+              border: '1px solid rgba(163,201,168,0.3)',
+              borderRadius: '12px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--pistachio)' }}>
+                −{progress}%
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
+                {t('savings.amountLabel', { amount: formatMoney(saved, currency) })}
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--pistachio)', fontWeight: 600 }}>
-            {t('savings.forMonths', { count: period })}
-          </div>
-        </div>
-        <div style={{
-          padding: '10px 16px',
-          background: 'rgba(163,201,168,0.15)',
-          border: '1px solid rgba(163,201,168,0.3)',
-          borderRadius: '12px',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--pistachio)' }}>
-            −{progress}%
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
-            {t('savings.amountLabel', { amount: formatMoney(saved, currency) })}
-          </div>
-        </div>
-      </div>
 
-      <div style={{
-        padding: '12px 16px',
-        background: 'rgba(252,174,145,0.08)',
-        borderRadius: '12px',
-        fontSize: '12px',
-        color: 'var(--muted)',
-        lineHeight: '1.6',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '8px',
-      }}>
-        <span style={{ flexShrink: 0, marginTop: '1px' }}><InfoIcon /></span>
-        <span>
-          <strong style={{ color: 'var(--onyx)' }}>{t('savings.freeMonths', { count: Math.round(saved / 990) })}</strong> {t('savings.comparedToMonthly')}
-        </span>
-      </div>
+          {freeMonths >= 1 && (
+            <div style={{
+              padding: '12px 16px',
+              background: 'rgba(252,174,145,0.08)',
+              borderRadius: '12px',
+              fontSize: '12px',
+              color: 'var(--muted)',
+              lineHeight: '1.6',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px',
+            }}>
+              <span style={{ flexShrink: 0, marginTop: '1px' }}><InfoIcon /></span>
+              <span>
+                <strong style={{ color: 'var(--onyx)' }}>{t('savings.freeMonths', { count: freeMonths })}</strong> {t('savings.comparedToMonthly')}
+              </span>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

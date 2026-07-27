@@ -3,7 +3,11 @@
 Всё — только owner (ТЗ: раздел «Тариф и оплата» доступен владельцу).
 Оплата/вебхуки/возвраты — отдельные задачи эпика 5; здесь только read + каталог.
 """
+import csv
+import io
+
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -160,6 +164,110 @@ async def get_invoices(
     ]
 
 
+@router.get("/invoices/export.csv")
+async def export_invoices_csv(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Серверный CSV всех счетов студии (не только загруженной страницы, как на фронте)."""
+    rows = (await db.execute(
+        select(BillingInvoice)
+        .where(BillingInvoice.studio_id == ctx.studio_id)
+        .order_by(BillingInvoice.id.desc())
+    )).scalars().all()
+
+    buf = io.StringIO()
+    buf.write("﻿")  # BOM — Excel корректно читает кириллицу
+    w = csv.writer(buf, delimiter=";")  # ; — RU-Excel разделитель
+    w.writerow(["Дата", "Описание", "Сумма", "Метод", "Статус", "Чек"])
+    for inv in rows:
+        w.writerow([
+            inv.paid_at.strftime("%d.%m.%Y") if inv.paid_at else "",
+            inv.plan_name,
+            f"{inv.amount / 100:.2f}",
+            inv.payment_method or "",
+            inv.status,
+            inv.pdf_url or "",
+        ])
+
+    return StreamingResponse(
+        iter([buf.getvalue()]), media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="velora_invoices.csv"'},
+    )
+
+
+def _pdf_escape(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+
+def _render_receipt_pdf(inv: BillingInvoice) -> bytes:
+    """Минимальный PDF-чек без внешних либ (reportlab не в requirements — не тащим).
+
+    ponytail: base-14 Helvetica не несёт кириллицы без embed-шрифта (тяжёлый PDF-движок,
+    именно то, что эпик просит не тащить) — лейблы латиницей. Апгрейд: локализовать
+    при появлении полноценного PDF-рендера с кастомным шрифтом.
+    """
+    lines = [
+        f"Receipt #{inv.id}",
+        f"Plan: {inv.plan_name}",
+        f"Amount: {inv.amount / 100:.2f}",
+        f"Payment method: {inv.payment_method or '-'}",
+        f"Paid at: {inv.paid_at.strftime('%Y-%m-%d %H:%M') if inv.paid_at else '-'}",
+        f"Status: {inv.status}",
+    ]
+    ops = ["BT", "/F1 14 Tf", "50 760 Td", "18 TL"]
+    for i, line in enumerate(lines):
+        if i > 0:
+            ops.append("T*")
+        ops.append(f"({_pdf_escape(line)}) Tj")
+    ops.append("ET")
+    stream_bytes = "\n".join(ops).encode("latin-1", errors="replace")
+
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> "
+        b"/MediaBox [0 0 612 792] /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        f"<< /Length {len(stream_bytes)} >>\nstream\n".encode("latin-1") + stream_bytes + b"\nendstream",
+    ]
+
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for i, body in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += f"{i} 0 obj\n".encode("latin-1") + body + b"\nendobj\n"
+
+    xref_offset = len(out)
+    n = len(objects) + 1
+    out += f"xref\n0 {n}\n".encode("latin-1")
+    out += b"0000000000 65535 f \n"
+    for off in offsets:
+        out += f"{off:010d} 00000 n \n".encode("latin-1")
+    out += f"trailer\n<< /Size {n} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF".encode("latin-1")
+    return bytes(out)
+
+
+@router.get("/invoices/{invoice_id}/receipt.pdf")
+async def get_receipt(
+    invoice_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Чек по оплаченному счёту своей студии. 404 — чужой/несуществующий/не-paid (не палим состояние)."""
+    inv = (await db.execute(select(BillingInvoice).where(
+        BillingInvoice.id == invoice_id,
+        BillingInvoice.studio_id == ctx.studio_id,
+    ))).scalar_one_or_none()
+    if inv is None or inv.status != "paid":
+        raise HTTPException(status_code=404, detail="Чек доступен только для оплаченных счетов")
+
+    return StreamingResponse(
+        iter([_render_receipt_pdf(inv)]), media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="receipt-{inv.id}.pdf"'},
+    )
+
+
 @router.get("/cards", response_model=list[PaymentCardRead])
 async def get_payment_cards(
     ctx: StudioContext = Depends(require_role("owner")),
@@ -170,3 +278,13 @@ async def get_payment_cards(
         select(PaymentCard).where(PaymentCard.user_id == ctx.user.id)
     )).scalars().all()
     return rows
+
+
+if __name__ == "__main__":
+    # CSV self-check (задача B5): экранирование `;`/кавычек и BOM для Excel-кириллицы.
+    _buf = io.StringIO()
+    _buf.write("﻿")
+    csv.writer(_buf, delimiter=";").writerow(["a;b", 'c"d'])
+    _out = _buf.getvalue()
+    assert _out.startswith("﻿") and '"a;b"' in _out and '"c""d"' in _out
+    print("billing router self-check ok")

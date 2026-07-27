@@ -4,6 +4,7 @@ import PlansTab from './components/tabs/PlansTab';
 import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
 import UpgradeModal from './components/modals/UpgradeModal';
+import PaymentMethodModal from './components/modals/PaymentMethodModal';
 
 export default function Billing() {
   const h = useBillingCalculator();
@@ -33,9 +34,6 @@ export default function Billing() {
           billingMode={h.billingMode}        setBillingMode={h.setBillingMode}
           selectedPlan={h.selectedPlan}      setSelectedPlan={h.setSelectedPlan}
           selectedPeriod={h.selectedPeriod}  setSelectedPeriod={h.setSelectedPeriod}
-          fixedAmount={h.fixedAmount}        setFixedAmount={h.setFixedAmount}
-          percentAmount={h.percentAmount}    setPercentAmount={h.setPercentAmount}
-          estimatedRevenue={h.estimatedRevenue} setEstimatedRevenue={h.setEstimatedRevenue}
           getPrice={h.getPrice}
           periodDiscounts={h.periodDiscounts}
           plans={h.plans}
@@ -45,7 +43,8 @@ export default function Billing() {
           animateCards={h.animateCards}
           setShowUpgradeModal={h.setShowUpgradeModal}
           startCheckout={h.startCheckout}
-          checkoutBusy={h.checkoutBusy}
+          activateModel={h.activateModel}
+          modelBusy={h.modelBusy}
         />
       )}
 
@@ -65,7 +64,19 @@ export default function Billing() {
           totalToPay={h.totalToPay}
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
-          checkoutBusy={h.checkoutBusy}
+        />
+      )}
+
+      {h.showPayModal && (
+        <PaymentMethodModal
+          currency={h.currency}
+          branch={h.payBranch}
+          setBranch={h.setPayBranch}
+          ibanData={h.ibanData}
+          busy={h.payBusy}
+          onChooseIban={h.payWithIban}
+          onPayCard={h.payWithCard}
+          onClose={h.closePayModal}
         />
       )}
     </div>

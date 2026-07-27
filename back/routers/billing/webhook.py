@@ -21,6 +21,7 @@ from sqlalchemy.future import select
 from database import async_session_maker
 from models import StudioBillingPlan, BillingInvoice, PaymentCard
 from services import fondy
+from .checkout import BACKEND_URL
 from .plans import PLANS
 
 logger = logging.getLogger(__name__)
@@ -96,6 +97,12 @@ async def _activate(db: AsyncSession, invoice: BillingInvoice, payload: dict) ->
     invoice.status = "paid"
     invoice.paid_at = datetime.utcnow()
     invoice.payment_method = payload.get("payment_system") or "card"
+    # Гарантированный чек (эпик B5, §5 аудита): свой receipt_url провайдера — приоритет,
+    # иначе наш эндпоинт. Идемпотентно — не перезаписываем при повторной активации.
+    if not invoice.pdf_url:
+        invoice.pdf_url = payload.get("receipt_url") or (
+            f"{BACKEND_URL}/billing/invoices/{invoice.id}/receipt.pdf"
+        )
 
     # Подписка студии: продлить от максимума (сейчас / текущий expires_at), чтобы
     # оплата активной подписки добавляла период, а не начинала его с now().

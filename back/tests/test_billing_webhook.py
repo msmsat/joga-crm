@@ -19,7 +19,8 @@ from routers.billing.plans import amount_for
 # ─── Фейки моделей и сессии (паттерн tests/test_loyalty_points.py) ──────────────
 class _Invoice:
     def __init__(self, status="pending", order_id="velora-1-x", studio_id=1,
-                 user_id=1, plan_name="pro", period_months=1):
+                 user_id=1, plan_name="pro", period_months=1, invoice_id=1):
+        self.id = invoice_id
         self.status = status
         self.order_id = order_id
         self.studio_id = studio_id
@@ -29,6 +30,7 @@ class _Invoice:
         self.amount = amount_for(plan_name, period_months)
         self.paid_at = None
         self.payment_method = None
+        self.pdf_url = None
 
 
 class _Plan:
@@ -99,6 +101,7 @@ def test_success_activates():
     assert res == {"status": "ok"}
     assert inv.status == "paid"
     assert inv.paid_at is not None
+    assert inv.pdf_url is not None and inv.pdf_url.endswith(f"/billing/invoices/{inv.id}/receipt.pdf")
     assert plan.status == "active"
     assert plan.expires_at is not None and plan.expires_at > datetime.utcnow()
     assert db.committed is True
