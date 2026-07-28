@@ -4,6 +4,12 @@
     "invoices": "Payment history",
     "method": "Payment method"
   },
+  "paymentsHistory": {
+    "title": "Full payment history",
+    "subtitle": "All invoices for this studio",
+    "clearFilter": "Clear",
+    "loadMore": "Load more"
+  },
   "planNames": {
     "start": "Start",
     "pro": "Pro",

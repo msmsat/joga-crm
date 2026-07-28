@@ -1,9 +1,15 @@
 from schemas.studio import StudioRead
 from schemas.auth import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     GoogleAuthRequest,
+    Login2FARequest,
     LoginRequest,
     OnboardingRequest,
+    OtpRequestIn,
+    OtpRequestOut,
+    OtpVerifyIn,
+    OtpVerifyOut,
     RegisterRequest,
     ResetPasswordRequest,
     SelectStudioRequest,
@@ -67,10 +73,16 @@ __all__ = [
     # studio
     "StudioRead",
     # auth
+    "ChangePasswordRequest",
     "ForgotPasswordRequest",
     "GoogleAuthRequest",
+    "Login2FARequest",
     "LoginRequest",
     "OnboardingRequest",
+    "OtpRequestIn",
+    "OtpRequestOut",
+    "OtpVerifyIn",
+    "OtpVerifyOut",
     "RegisterRequest",
     "ResetPasswordRequest",
     "SelectStudioRequest",

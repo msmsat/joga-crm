@@ -1,14 +1,15 @@
 import os
 from dataclasses import dataclass
 from datetime import date, datetime
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Header, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from jose import jwt, JWTError
 
 from database import get_db
-from models import StudioBillingPlan, StudioMember, User
+from models import StudioBillingPlan, StudioMember, User, UserSession
+from services.sessions import hash_token
 
 SECRET_KEY = os.getenv("SECRET_KEY", "velora_super_secret_key_2026")
 ALGORITHM = "HS256"
@@ -32,7 +33,46 @@ async def get_current_user(
     )).scalars().first()
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    # Отзыв сессии (EPIC 5, задача 2.3). Токен без строки в user_sessions —
+    # выдан в обход логина (verify-email/onboarding/select-studio, эпик их
+    # пока не переписывает) — пропускаем без проверки, как «незалогированный».
+    # ponytail: только /login и /google пишут сессию; расширить на остальные
+    # точки выдачи токена, если понадобится их отзывать.
+    session = (await db.execute(
+        select(UserSession).where(UserSession.token_hash == hash_token(token))
+    )).scalar_one_or_none()
+    if session is not None:
+        if session.revoked_at is not None:
+            raise HTTPException(status_code=401, detail="Сессия завершена")
+        session.last_active = datetime.utcnow()
+        await db.commit()
+
     return user
+
+
+def require_otp(action: str):
+    """Гейт на опасные ручки (EPIC 5, задачи 4/6/7): требует заголовок
+    X-OTP-Token — короткоживущий JWT, выданный `POST /auth/otp/verify` под
+    ТОТ ЖЕ action и на того же пользователя, что и текущая сессия. Так
+    подтверждение не переиспользуется для другого действия и не подходит
+    чужому аккаунту.
+
+    Вешается на эндпоинт: `Depends(require_otp("change_password"))`.
+    """
+    async def guard(
+        x_otp_token: str | None = Header(None, alias="X-OTP-Token"),
+        user: User = Depends(get_current_user),
+    ) -> None:
+        if not x_otp_token:
+            raise HTTPException(status_code=401, detail="Требуется код подтверждения")
+        try:
+            payload = jwt.decode(x_otp_token, SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Недействительный код подтверждения")
+        if payload.get("typ") != "otp" or payload.get("action") != action or payload.get("sub") != user.email:
+            raise HTTPException(status_code=403, detail="Код подтверждения не подходит для этого действия")
+    return guard
 
 
 @dataclass

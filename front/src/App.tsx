@@ -23,6 +23,7 @@ import Notifications from './pages/dashboard/Notifications/Notifications';
 import Loyalty from './pages/dashboard/Loyalty/Loyalty';
 import Settings from './pages/dashboard/Settings/Settings';
 import Billing from './pages/dashboard/Billing/Billing';
+import PaymentsHistory from './pages/dashboard/Billing/PaymentsHistory';
 import Journal from './pages/dashboard/Journal/Journal';
 import Profile from './pages/dashboard/Profile';
 import AIPage from './pages/dashboard/AI';
@@ -137,6 +138,7 @@ export default function App() {
           <Route path="notifications" element={<OwnerRoute><Notifications /></OwnerRoute>} />
           <Route path="loyalty" element={<OwnerRoute><Loyalty /></OwnerRoute>} />
           <Route path="billing" element={<OwnerRoute><Billing /></OwnerRoute>} />
+          <Route path="billing/payments-history" element={<OwnerRoute><PaymentsHistory /></OwnerRoute>} />
         </Route>
 
       </Routes>

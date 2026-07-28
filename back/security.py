@@ -22,10 +22,12 @@ def get_password_hash(password):
     """Превращает обычный пароль в нечитаемый хэш для базы данных"""
     return pwd_context.hash(password)
 
-def create_access_token(data: dict):
-    """Генерирует тот самый JWT-токен"""
+def create_access_token(data: dict, expires_minutes: int | None = None):
+    """Генерирует тот самый JWT-токен. expires_minutes переопределяет TTL
+    по умолчанию — короткоживущим otp_token (EPIC 5, задача 3)."""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    minutes = ACCESS_TOKEN_EXPIRE_MINUTES if expires_minutes is None else expires_minutes
+    expire = datetime.utcnow() + timedelta(minutes=minutes)
     to_encode.update({"exp": expire})
     
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

@@ -3,19 +3,20 @@
 Всё — только owner (ТЗ: раздел «Тариф и оплата» доступен владельцу).
 Оплата/вебхуки/возвраты — отдельные задачи эпика 5; здесь только read + каталог.
 """
-import csv
-import io
 import logging
-from datetime import datetime
+from datetime import date, datetime, timedelta
+from types import SimpleNamespace
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import StudioBillingPlan, BillingInvoice, PaymentCard
+from schemas.common import Page
 from schemas.settings.billing import (
     PlansCatalogRead, PlanRead, PlanLimits,
     BillingPlanRead, InvoiceRead, PaymentCardRead, BillingStatsRead,
@@ -25,6 +26,8 @@ from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
 )
 from services import fondy
+from services.exporter import csv_stream
+from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import router as checkout_router
 from .webhook import router as webhook_router, apply_status
 from .refunds import router as refunds_router
@@ -50,7 +53,24 @@ async def get_plans_catalog(
     )
 
 
+def _upgrade_target(row: StudioBillingPlan) -> str | None:
+    """Кнопка «Улучшить тариф» (задача 2): только фиксированная часть тарифа
+    (subscription = чистый fix, combo = %+fix), активная подписка, и это не
+    максимальная ступень. Чистый % от оборота (percent) — апгрейда нет.
+    Порядок ступеней берём из PLANS (plans.py) — второго списка не заводим,
+    иначе четвёртый тариф придётся дописывать в двух местах.
+    """
+    if row.billing_mode not in ("subscription", "combo") or row.status != "active":
+        return None
+    plan_ids = list(PLANS)
+    if row.plan_name not in plan_ids:
+        return None
+    idx = plan_ids.index(row.plan_name)
+    return plan_ids[idx + 1] if idx + 1 < len(plan_ids) else None
+
+
 def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
+    next_plan = _upgrade_target(row)
     return BillingPlanRead(
         plan_name=row.plan_name,
         billing_cycle=row.billing_cycle,
@@ -65,6 +85,8 @@ def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
         notify_before_autocharge=row.notify_before_autocharge,
         email_receipt_enabled=row.email_receipt_enabled,
         sms_notification_enabled=row.sms_notification_enabled,
+        can_upgrade=next_plan is not None,
+        next_plan=next_plan,
     )
 
 
@@ -208,18 +230,45 @@ def _to_invoice_read(inv: BillingInvoice) -> InvoiceRead:
     )
 
 
-@router.get("/invoices", response_model=list[InvoiceRead])
+def _invoice_date_filters(date_from: date | None, date_to: date | None) -> list:
+    """paid_at — datetime (не date), поэтому верхняя граница исключающая: иначе
+    выпадают счета, оплаченные позже полуночи date_to. Общее для списка (задача 6)
+    и CSV-экспорта (задача 4) — фильтр по датам не должен разъезжаться между ними.
+    """
+    filters = []
+    if date_from is not None:
+        filters.append(BillingInvoice.paid_at >= date_from)
+    if date_to is not None:
+        filters.append(BillingInvoice.paid_at < date_to + timedelta(days=1))
+    return filters
+
+
+@router.get("/invoices", response_model=Page[InvoiceRead])
 async def get_invoices(
+    limit: int = Query(12, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    date_from: date | None = Query(None),
+    date_to: date | None = Query(None),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """История счетов студии, новые сверху. До первой оплаты — пусто."""
+    """История счетов студии, новые сверху, с пагинацией (задача 3) и опциональным
+    фильтром по дате оплаты (задача 6, страница полной истории). До первой оплаты — пусто.
+
+    Верхняя граница limit обязательна — иначе ?limit=999999 превращается в способ
+    положить БД (аудит §3).
+    """
+    filters = [BillingInvoice.studio_id == ctx.studio_id, *_invoice_date_filters(date_from, date_to)]
+    total = (await db.execute(
+        select(func.count()).select_from(BillingInvoice).where(*filters)
+    )).scalar_one()
     rows = (await db.execute(
         select(BillingInvoice)
-        .where(BillingInvoice.studio_id == ctx.studio_id)
+        .where(*filters)
         .order_by(BillingInvoice.id.desc())
+        .offset(offset).limit(limit)
     )).scalars().all()
-    return [_to_invoice_read(inv) for inv in rows]
+    return Page(items=[_to_invoice_read(inv) for inv in rows], total=total, offset=offset, limit=limit)
 
 
 @router.post("/invoices/{invoice_id}/sync", response_model=InvoiceRead)
@@ -254,35 +303,60 @@ async def sync_invoice(
     return _to_invoice_read(inv)
 
 
+# Локализация CSV-экспорта (задача 4) — {cur} подставляется символом валюты студии,
+# сумма без символа в каждой ячейке, иначе колонка перестаёт быть числовой для Excel.
+_EXPORT_HEADERS = {
+    "ru": ["Дата", "Тариф", "Период", "Сумма, {cur}", "Метод", "Статус"],
+    "en": ["Date", "Plan", "Period", "Amount, {cur}", "Method", "Status"],
+}
+_EXPORT_METHOD = {
+    "ru": {"card": "Карта", "iban": "IBAN"},
+    "en": {"card": "Card", "iban": "IBAN"},
+}
+_EXPORT_STATUS = {
+    "ru": {"paid": "Оплачено", "pending": "Ожидает", "failed": "Ошибка", "refunded": "Возврат"},
+    "en": {"paid": "Paid", "pending": "Pending", "failed": "Failed", "refunded": "Refunded"},
+}
+
+
 @router.get("/invoices/export.csv")
 async def export_invoices_csv(
+    date_from: date | None = Query(None),
+    date_to: date | None = Query(None),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Серверный CSV всех счетов студии (не только загруженной страницы, как на фронте)."""
+    """Серверный CSV всех счетов студии (не только загруженной страницы, как на фронте).
+
+    Заголовки — на языке студии (задача 4, требование тотальной локализации).
+    date_from/date_to — опциональный фильтр по дате оплаты для страницы полной
+    истории (задача 6); без них — вся история, как раньше.
+    """
+    lang, currency = await _studio_prefs(db, ctx.studio_id)
+    sign = _CURRENCY_SIGNS.get(currency, currency)
+
+    filters = [BillingInvoice.studio_id == ctx.studio_id, *_invoice_date_filters(date_from, date_to)]
     rows = (await db.execute(
-        select(BillingInvoice)
-        .where(BillingInvoice.studio_id == ctx.studio_id)
-        .order_by(BillingInvoice.id.desc())
+        select(BillingInvoice).where(*filters).order_by(BillingInvoice.id.desc())
     )).scalars().all()
 
-    buf = io.StringIO()
-    buf.write("﻿")  # BOM — Excel корректно читает кириллицу
-    w = csv.writer(buf, delimiter=";")  # ; — RU-Excel разделитель
-    w.writerow(["Дата", "Описание", "Сумма", "Метод", "Статус", "Чек"])
-    for inv in rows:
-        w.writerow([
-            inv.paid_at.strftime("%d.%m.%Y") if inv.paid_at else "",
-            inv.plan_name,
-            f"{inv.amount / 100:.2f}",
-            inv.payment_method or "",
-            inv.status,
-            inv.pdf_url or "",
-        ])
+    header = [h.format(cur=sign) for h in _EXPORT_HEADERS[lang]]
 
+    def _rows():
+        for inv in rows:
+            yield [
+                inv.paid_at.strftime("%d.%m.%Y") if inv.paid_at else "",
+                inv.plan_name,
+                inv.period_months,
+                f"{inv.amount / 100:.2f}",
+                _EXPORT_METHOD[lang].get(inv.payment_method, inv.payment_method or ""),
+                _EXPORT_STATUS[lang].get(inv.status, inv.status),
+            ]
+
+    fname = f"velora-invoices-{datetime.utcnow().strftime('%Y-%m-%d')}.csv"
     return StreamingResponse(
-        iter([buf.getvalue()]), media_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="velora_invoices.csv"'},
+        csv_stream(header, _rows()), media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
 
 
@@ -377,10 +451,13 @@ if __name__ == "__main__":
     assert _months_between(datetime(2025, 11, 30), datetime(2026, 7, 27)) == 7
     assert _months_between(datetime(2026, 7, 27), datetime(2026, 7, 27)) == 0
 
-    # CSV self-check (задача B5): экранирование `;`/кавычек и BOM для Excel-кириллицы.
-    _buf = io.StringIO()
-    _buf.write("﻿")
-    csv.writer(_buf, delimiter=";").writerow(["a;b", 'c"d'])
-    _out = _buf.getvalue()
-    assert _out.startswith("﻿") and '"a;b"' in _out and '"c""d"' in _out
+    # Кнопка «Улучшить тариф» (задача 2): fix/combo + активна + не максимальный тариф → апгрейд есть.
+    _row = lambda **kw: SimpleNamespace(**{"billing_mode": "subscription", "status": "active", "plan_name": "pro", **kw})
+    assert _upgrade_target(_row()) == "business"
+    assert _upgrade_target(_row(billing_mode="combo")) == "business"
+    assert _upgrade_target(_row(billing_mode="percent")) is None       # % от оборота — апгрейда нет
+    assert _upgrade_target(_row(plan_name="business")) is None         # максимальный тариф
+    assert _upgrade_target(_row(status="past_due")) is None            # неоплаченный не апгрейдим
+
+    # CSV-экранирование/BOM теперь проверяет services/exporter.py (задача 4) — не дублируем тут.
     print("billing router self-check ok")

@@ -37,6 +37,8 @@ class BillingPlanRead(BaseSchema):
     notify_before_autocharge: bool = True
     email_receipt_enabled: bool = True
     sms_notification_enabled: bool = False
+    can_upgrade: bool = False          # считает сервер (задача 2) — фронту не доверяем ветвистость
+    next_plan: Optional[str] = None    # None, если апгрейда нет (% от оборота / максимальный тариф)
 
 
 class AutopaySettingsUpdate(BaseModel):

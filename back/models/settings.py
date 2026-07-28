@@ -193,7 +193,11 @@ class UserSession(Base):
     location_country: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     last_active: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     is_current: Mapped[bool] = mapped_column(Boolean, default=False)
-    token_hash: Mapped[str] = mapped_column(String(255))
+    token_hash: Mapped[str] = mapped_column(String(255), index=True)
+    ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)  # IPv6 = 45 симв.
+    user_agent: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
+    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="sessions")
 

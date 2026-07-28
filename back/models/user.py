@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
-from sqlalchemy import Integer, BigInteger, String, Float, Boolean, Date, ForeignKey
+from sqlalchemy import Integer, BigInteger, String, Float, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -29,6 +29,14 @@ class User(Base):
     last_online_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
     two_fa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    # OTP с TTL и скоупом действия (EPIC 5, задача 3) — для действий внутри
+    # аккаунта (смена пароля, danger zone, 2FA). User.verification_code
+    # (регистрация/восстановление пароля) остаётся отдельно, не трогаем.
+    otp_code_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    otp_action: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    otp_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    otp_attempts: Mapped[int] = mapped_column(Integer, default=0)
 
     theme: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     accent_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)

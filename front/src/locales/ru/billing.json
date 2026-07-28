@@ -4,6 +4,12 @@
     "invoices": "История платежей",
     "method": "Способ оплаты"
   },
+  "paymentsHistory": {
+    "title": "Полная история платежей",
+    "subtitle": "Все счета студии",
+    "clearFilter": "Сбросить",
+    "loadMore": "Загрузить ещё"
+  },
   "planNames": {
     "start": "Старт",
     "pro": "Pro",

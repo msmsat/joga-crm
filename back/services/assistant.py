@@ -112,11 +112,20 @@ async def generate_reply(
     if not base_url:
         return _fallback_reply(settings.language, studio_language)
 
+    # LLM_BASE_URL задаётся вместе с версией пути (".../v1", ".../v1beta/openai") — так же,
+    # как его принимают официальные SDK. Ключ нужен облачным провайдерам; локальная
+    # Ollama обходится без него.
+    headers = {}
+    api_key = os.getenv("LLM_API_KEY")
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+
     try:
         timeout = aiohttp.ClientTimeout(total=_LLM_TIMEOUT_SECONDS)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(
-                f"{base_url}/v1/chat/completions",
+                f"{base_url.rstrip('/')}/chat/completions",
+                headers=headers,
                 json={"model": os.getenv("LLM_MODEL", settings.model), "messages": messages},
             ) as resp:
                 resp.raise_for_status()

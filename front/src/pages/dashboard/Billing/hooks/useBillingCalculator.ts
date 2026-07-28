@@ -53,8 +53,10 @@ export function useBillingCalculator() {
   const [stats, setStats] = useState<BillingStats | null>(null);
 
   const loadPlan = () => billingApi.getPlan().then(setPlan).catch(() => {});
+  // /dashboard/billing показывает всю историю без своей пагинации — берём верхнюю
+  // границу бэка (задача 3, ?limit=999999 → 422), не 12-строчный дефолт вкладки Настроек.
   const loadInvoices = () =>
-    billingApi.getInvoices().then(setInvoices).catch(() => {}).finally(() => setInvoicesLoaded(true));
+    billingApi.getInvoices({ limit: 100 }).then(res => setInvoices(res.items)).catch(() => {}).finally(() => setInvoicesLoaded(true));
   const loadCards = () =>
     billingApi.getPaymentCards().then(setCards).catch(() => {}).finally(() => setCardsLoaded(true));
   const loadStats = () => billingApi.getStats().then(setStats).catch(() => {});

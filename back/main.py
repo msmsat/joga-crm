@@ -62,6 +62,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Скачивание файлов идёт fetch с Authorization-заголовком (токен в localStorage,
+    # не в куке) — без этого браузер не отдаст JS имя файла из Content-Disposition,
+    # и все export-эндпоинты (billing, finances, ...) скачивают файл с именем "blob".
+    expose_headers=["Content-Disposition"],
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])

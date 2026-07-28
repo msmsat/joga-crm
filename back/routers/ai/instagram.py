@@ -12,11 +12,13 @@ import hmac
 import json
 import logging
 import os
-from datetime import datetime, timedelta
+import re
+from datetime import datetime, timedelta, timezone, tzinfo
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import aiohttp
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from jose import JWTError, jwt
 from sqlalchemy import select
@@ -24,9 +26,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
-from models import StudioAISettings
+from models import AIChatMessage, Studio, StudioAISettings, StudioWorkingHours
 from ratelimit import limiter
-from services.assistant import get_or_create_ai_settings
+from services.assistant import generate_reply, get_or_create_ai_settings
 
 logger = logging.getLogger(__name__)
 
@@ -215,6 +217,73 @@ def _incoming_messages(payload: dict) -> list[tuple[str, str, str]]:
     return out
 
 
+_TONE_HINTS = {
+    "friendly": "Пиши дружелюбно и тепло, как живой администратор студии.",
+    "formal": "Пиши вежливо и официально, обращайся на «вы».",
+    "neutral": "Пиши нейтрально и по-деловому, без лишних эмоций.",
+}
+
+
+def _studio_tz(timezone_name: str | None) -> tzinfo | None:
+    """Зона студии. Онбординг сохраняет её как смещение («UTC+3»), а не как имя IANA
+    («Europe/Kyiv»), поэтому понимаем оба формата. Не разобрали — None (время сервера)."""
+    if not timezone_name:
+        return None
+    try:
+        return ZoneInfo(timezone_name)
+    except (ZoneInfoNotFoundError, ValueError):
+        pass
+    m = re.fullmatch(r"UTC([+-])(\d{1,2})(?::(\d{2}))?", timezone_name.strip(), re.IGNORECASE)
+    if m:
+        sign = 1 if m.group(1) == "+" else -1
+        return timezone(sign * timedelta(hours=int(m.group(2)), minutes=int(m.group(3) or 0)))
+    logger.warning("instagram webhook: не разобрал таймзону студии %r", timezone_name)
+    return None
+
+
+def _studio_now(timezone_name: str | None) -> datetime:
+    """Местное время студии; зона не задана или не разобрана — время сервера."""
+    return datetime.now(_studio_tz(timezone_name))
+
+
+def _is_open_now(hours: StudioWorkingHours | None, now: datetime) -> bool:
+    """Открыта ли студия в этот момент. Нет записи на сегодня — считаем закрытой."""
+    if hours is None or not hours.is_open:
+        return False
+    # open/close_time хранятся как "HH:MM" — лексикографическое сравнение здесь корректно.
+    return hours.open_time <= now.strftime("%H:%M") < hours.close_time
+
+
+async def _compose_reply(
+    settings: StudioAISettings, studio: Studio, incoming: str, db: AsyncSession
+) -> str | None:
+    """Текст ответа авто-ответчика или None, если по настройкам отвечать не нужно."""
+    if settings.ig_off_hours_only:
+        hours = (await db.execute(
+            select(StudioWorkingHours).where(
+                StudioWorkingHours.studio_id == settings.studio_id,
+                # 0 = понедельник, как в routers/studio/router.py::_DEFAULT_HOURS
+                StudioWorkingHours.day_of_week == _studio_now(studio.timezone).weekday(),
+            )
+        )).scalar_one_or_none()
+        if _is_open_now(hours, _studio_now(studio.timezone)):
+            return None  # рабочее время: отвечает живой администратор, не бот
+
+    limit = settings.ig_max_length
+    extra = (
+        f"{_TONE_HINTS.get(settings.ig_tone, '')} Это переписка в Instagram Direct: "
+        f"ответь одним сообщением не длиннее {limit} символов."
+    ).strip()
+    reply = await generate_reply(
+        settings, studio.name, studio.language,
+        [AIChatMessage(role="user", text=incoming)],
+        extra_system=extra,
+    )
+    # Жёсткая обрезка: модель просьбу о лимите может и не соблюсти, а Graph отвергнет
+    # сообщение длиннее 1000 символов целиком.
+    return reply[:limit]
+
+
 async def _send_ig_message(token: str, recipient_igsid: str, text: str) -> None:
     timeout = aiohttp.ClientTimeout(total=_OAUTH_TIMEOUT_SECONDS)
     async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -267,8 +336,23 @@ async def instagram_webhook(request: Request, db: AsyncSession = Depends(get_db)
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.ig_enabled or not settings.ig_token:
             continue
+        studio = (await db.execute(
+            select(Studio).where(Studio.id == settings.studio_id)
+        )).scalar_one_or_none()
+        if studio is None:
+            continue
+
         try:
-            await _send_ig_message(settings.ig_token, sender_igsid, "Hello")
+            reply = await _compose_reply(settings, studio, text, db)
+        except HTTPException:  # generate_reply: модель недоступна
+            logger.exception("instagram webhook: ассистент недоступен, studio_id=%s", settings.studio_id)
+            continue
+        if reply is None:
+            logger.info("instagram webhook: рабочее время, агент настроен только на нерабочие часы")
+            continue
+
+        try:
+            await _send_ig_message(settings.ig_token, sender_igsid, reply)
         except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
             logger.error("instagram webhook: не удалось ответить, studio_id=%s: %s", settings.studio_id, exc)
             continue
@@ -296,4 +380,16 @@ if __name__ == "__main__":
     ]}]}
     assert _incoming_messages(event) == [("999", "111", "Привет")]
     assert _incoming_messages({}) == []
+
+    # Рабочие часы: границы включительно слева, исключительно справа; закрытый день и
+    # отсутствие расписания одинаково означают «нерабочее время».
+    from types import SimpleNamespace
+    day = SimpleNamespace(is_open=True, open_time="09:00", close_time="21:00")
+    at = lambda hhmm: datetime.strptime(hhmm, "%H:%M")
+    assert _is_open_now(day, at("09:00"))
+    assert _is_open_now(day, at("20:59"))
+    assert not _is_open_now(day, at("08:59"))
+    assert not _is_open_now(day, at("21:00"))
+    assert not _is_open_now(SimpleNamespace(is_open=False, open_time="09:00", close_time="21:00"), at("12:00"))
+    assert not _is_open_now(None, at("12:00"))
     print("instagram webhook self-check ok")

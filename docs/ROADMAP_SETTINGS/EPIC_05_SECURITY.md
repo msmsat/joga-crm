@@ -77,16 +77,42 @@
 
 ---
 
-## Задача 1. Удалить «API токены» (~0:15)
+## Задача 1. Удалить «API токены» (~0:15) — ✅ было уже сделано
 
-Модель снесена в эпике 1 (задача 2). Здесь — фронт: секция из
-`SecurityTab.tsx` (строки ~146–190), состояния `apiTokens`,
-`newTokenName`, функции `revokeToken`, `generateToken` из
-`hooks/useSecurity.ts`, вариант `"token"` из типа `secExpanded`.
+При проверке кода секции API-токенов в `SecurityTab.tsx`/`useSecurity.ts`
+уже не оказалось — файлы были переписаны раньше без них. Действие не
+потребовалось, точка отсчёта в этом пункте была устаревшей.
 
-`grep -rn "apiToken\|generateToken" front/src` → пусто.
+## Задача 2. Сессии: запись, чтение, отзыв (~2:30) — ✅ выполнено
 
-## Задача 2. Сессии: запись, чтение, отзыв (~2:30)
+**Реальная точка отсчёта отличалась от описанной выше:** `UserSession`
+уже писалась при входе (`_record_login_session` в `login.py`, фича
+эпика N-9) — но без `revoked_at`/`ip_address`, и `get_current_user` отзыв
+не проверял. Ревокацию сделали не через `jti` в JWT, а через хэш всего
+токена (`token_hash`, он уже использовался как идентификатор строки) —
+эквивалентно `jti`, но без изменения формата токена.
+
+Сделано:
+- Миграция `dd87070a896b`: `user_sessions` + `ip_address`, `user_agent`,
+  `created_at`, `revoked_at`, индекс на `token_hash`.
+- `login.py`: `_record_login_session` пишет реальный IP
+  (`_client_ip` — X-Forwarded-For → fallback `client.host`) и User-Agent;
+  убран фиктивный `is_current=True` (считается на лету в GET-ручке
+  сравнением `token_hash`).
+- `dependencies.py::get_current_user`: SELECT по `token_hash`; если
+  сессия отозвана → 401 «Сессия завершена»; иначе `last_active` +
+  commit. Токен без строки в `user_sessions` (verify-email/onboarding/
+  select-studio — эти три ручки токен минтят в обход `_record_login_session`)
+  пропускается без проверки — `# ponytail` в коде, отзыв на них пока не
+  распространяется, только /login и /google.
+- `routers/settings/security.py`: `GET/DELETE /settings/security/sessions`,
+  `DELETE /settings/security/sessions/{id}` — скоуп по `user_id`, 409 на
+  попытку завершить текущую сессию, 404 на чужую/несуществующую.
+- Чистка отозванных сессий старше 30 дней — раз в день в `daily_notify.py`.
+- Тест чистой функции `_client_ip` — `back/tests/test_login_sessions.py`.
+
+Фронт (`SecurityTab`/`useSecurity`) на реальный API не переключён — это
+задача 8.
 
 **2.1. Сделать JWT отзываемым.** Сейчас токен stateless — «завершить
 сессию» технически невозможно. Добавляем `jti`:
@@ -180,7 +206,33 @@ DELETE /settings/security/sessions          → 204   (все, кроме тек
 остаётся. Чистка старых — `WHERE revoked_at < now() - 30 days`, разово в
 `daily_notify.py` (планировщик уже есть).
 
-## Задача 3. Единый OTP-механизм (~1:30)
+## Задача 3. Единый OTP-механизм (~1:30) — ✅ выполнено
+
+Реализовано по спецификации ниже почти без отклонений:
+- `models/user.py` + миграция `ab036aec5531`: `otp_code_hash`, `otp_action`,
+  `otp_expires_at`, `otp_attempts`.
+- `services/otp.py`: `issue`/`verify` — код `secrets`, хэш bcrypt, TTL 10 мин,
+  ≤5 попыток, одноразовость, скоуп по `action`.
+- `schemas/auth/otp.py` + `routers/auth/otp.py`: `POST /auth/otp/request`
+  (202, rate-limit 3/мин через существующий `ratelimit.limiter`) и
+  `POST /auth/otp/verify` (200, `otp_token` — JWT 5 мин через новый параметр
+  `expires_minutes` в `create_access_token`).
+- `auth/password.py`: `random.randint` → `secrets.randbelow` (тот же
+  security-баг, что просил исправить эпик).
+- Тест чистой логики verify (скоуп/TTL/лимит/одноразовость, без БД и без
+  реальных писем) — `back/tests/test_otp.py`, `ALL PASS`.
+
+**Отклонение от плана:** `/auth/otp/request` и `/auth/otp/verify` сделаны
+только под `Depends(get_current_user)` — они обслуживают 4 действия внутри
+уже залогиненного аккаунта (`change_password`, `delete_data`,
+`delete_account`, `enable_2fa`). Пятый скоуп, `login_2fa`, по своей природе
+происходит ДО выдачи токена (см. задачу 5: `POST /auth/login/2fa
+{identifier, code}` — отдельная ручка) и будет вызывать `services/otp.py`
+напрямую, а не через этот HTTP-эндпоинт — это и есть архитектура, которую
+описывает сама задача 5 ниже, просто явно фиксирую здесь, чтобы не
+переизобретать при подключении.
+
+## Задача 3 (текст ТЗ для справки)
 
 **Слой:** `back/routers/auth/otp.py` (новый, в `auth/router.py`),
 `back/services/otp.py` (генерация/проверка).
@@ -238,7 +290,27 @@ async def verify(db, user, action: str, code: str) -> bool:
 - Ответ `/otp/request` **всегда 202**, независимо от существования
   пользователя — не даём перечислять аккаунты.
 
-## Задача 4. Смена пароля с OTP (~1:00)
+## Задача 4. Смена пароля с OTP (~1:00) — ✅ бэкенд выполнен, фронт → задача 8
+
+**Бэкенд сделан полностью:**
+- `dependencies.py::require_otp(action)` — новый переиспользуемый гейт
+  (пригодится задачам 6/7): проверяет `X-OTP-Token`, скоуп `action` и что
+  токен выдан именно текущему пользователю (`sub == user.email`); нет
+  заголовка → 401, не тот `action`/чужой `sub`/не-OTP токен → 403.
+- `services/sessions.py` (новый, общий): `hash_token`/`revoke_sessions` —
+  вынесено из задачи 2, чтобы не дублировать между `settings/security.py` и
+  `change-password`; `dependencies.py`/`login.py` тоже переведены на него.
+- `POST /auth/change-password` в `routers/auth/password.py` — три проверки
+  по порядку, после успеха `revoke_sessions(..., except_token_hash=текущий)`.
+- `schemas/auth/requests.py::ChangePasswordRequest` — та же политика пароля,
+  что у `RegisterRequest`.
+- Тест гейта `require_otp` (401/403/сценарии подмены) —
+  `back/tests/test_change_password.py`, `ALL PASS`.
+
+**Фронт (двухшаговая модалка вместо старой страницы `/change-password`,
+переименование лейбла) сознательно отложен до задачи 8** — решение
+пользователя: там всё равно переписывается весь `SecurityTab` и общая
+OTP-модалка, отдельно переделывать сейчас — переделывать дважды.
 
 ```
 POST /auth/change-password    header: X-OTP-Token
@@ -262,7 +334,34 @@ i18n — колонка в БД всегда называлась `hashed_passwo
 Двухшаговая модалка на `ModalShell`: шаг 1 — текущий/новый пароль +
 «Выслать код», шаг 2 — 6 цифр, таймер «выслать повторно» 60 с.
 
-## Задача 5. 2FA при входе (~1:30)
+## Задача 5. 2FA при входе (~1:30) — ✅ бэкенд выполнен
+
+Реализовано по спецификации. Изменения:
+- `schemas/auth/responses.py::TokenResponse` — `access_token` стал
+  `Optional`, добавлено `two_fa_required: bool = False`.
+- `schemas/auth/requests.py::Login2FARequest` — `{identifier, code}`.
+- `routers/auth/login.py::_finish_login()` — общий хвост для `/login` и
+  `/google`: при `two_fa_enabled` шлёт код (`action=login_2fa`) и
+  возвращает `two_fa_required` без токена; иначе — обычная выдача
+  токена + запись сессии, как раньше.
+- `POST /auth/login/2fa` — второй шаг, `otp.verify(..., "login_2fa", ...)`,
+  затем токен + `UserSession` (та же `_build_token_for_user`/
+  `_record_login_session`, что у обычного входа).
+- `PATCH /settings/security/2fa {"enabled": bool}` в
+  `routers/settings/security.py` — гейт `require_otp("enable_2fa")` (тот же
+  для включения и выключения, как требует эпик).
+
+**Отклонение от плана:** 2FA-гейт применён не только к `/auth/login`
+(как в примере эпика), но и к `/auth/google` — через тот же
+`_finish_login()`. Иначе включённая владельцем 2FA полностью обходилась
+бы входом через Google (тот же email), что обесценивало бы всю защиту.
+Эпик явно не упоминал `/google` в этом месте — фиксирую как осознанное
+расширение, не сговор с ТЗ.
+
+Новых тестов не добавлял: единственная новая ветвь (`if
+user.two_fa_enabled`) тривиальна, а OTP-механика (`action` scope, лимит
+попыток) уже покрыта `test_otp.py`/`test_change_password.py` и не меняется
+для `login_2fa` — это тот же код с другой строкой действия.
 
 Колонка `User.two_fa_enabled` уже есть.
 

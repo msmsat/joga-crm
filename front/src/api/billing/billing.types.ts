@@ -31,6 +31,8 @@ export interface BillingPlan {
   notify_before_autocharge: boolean
   email_receipt_enabled: boolean
   sms_notification_enabled: boolean
+  can_upgrade: boolean       // считает сервер (эпик 4 задача 2) — фронт не дублирует ветвистость
+  next_plan: string | null   // null, если апгрейда нет (% от оборота / максимальный тариф)
 }
 
 export interface AutopaySettings {
@@ -72,6 +74,15 @@ export interface Invoice {
   paid_at: string | null
   status: string
   pdf_url: string | null
+}
+
+// Пагинация истории платежей (задача 3). Не назвали `Page<T>` — это имя уже
+// занято в staff/finances types.ts и коллизирует в барреле api/index.ts.
+export interface InvoicesPage {
+  items: Invoice[]
+  total: number
+  offset: number
+  limit: number
 }
 
 export interface PaymentCard {

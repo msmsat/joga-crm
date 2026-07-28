@@ -25,12 +25,12 @@ import asyncio
 import logging
 from datetime import date, datetime, timedelta, timezone
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from models import (
     Client, Lesson, NotificationEventToggle, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
-    User,
+    User, UserSession,
 )
 from services.notifier import notify
 
@@ -39,6 +39,11 @@ logger = logging.getLogger(__name__)
 _SLEEP_SECONDS = 30 * 60
 _STATE_TYPE = "notify_state"
 _REPORT_HOUR = 20
+_SESSION_RETENTION_DAYS = 30  # EPIC 5, задача 2: история завершённых сессий хранится 30 дней
+
+# ponytail: маркер только в памяти, как _last_tick — рестарт бэка максимум
+# отложит чистку до следующего тика, не критично для истории сессий.
+_last_cleanup_date: date | None = None
 
 # (offset, event_id, hours-контекст) — окно (last_tick; this_tick] на start_time - offset.
 _REMINDER_OFFSETS = (
@@ -264,13 +269,32 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
                              {**ctx_base, "to_email": teacher.email, "names": names})
 
 
+async def _cleanup_expired_sessions(db: AsyncSession) -> None:
+    """Отзыв сессий не удаляет строку (история входов) — старьё чистим сами."""
+    cutoff = datetime.now() - timedelta(days=_SESSION_RETENTION_DAYS)
+    await db.execute(delete(UserSession).where(
+        UserSession.revoked_at.is_not(None), UserSession.revoked_at < cutoff,
+    ))
+    await db.commit()
+
+
 async def run_daily_notify(session_maker: async_sessionmaker) -> None:
     """Прогнать все студии с хотя бы одним включённым событием в матрице.
     Своя сессия/try-except на студию — падение одной не глушит остальные
     (образец — run_due_scenarios). Напоминания о занятии (c2/t3/t4) — отдельным
     блоком по всем студиям сразу, окно от последнего тика до текущего."""
-    global _last_tick
+    global _last_tick, _last_cleanup_date
     this_tick = datetime.now()
+
+    today = date.today()
+    if _last_cleanup_date != today:
+        async with session_maker() as db:
+            try:
+                await _cleanup_expired_sessions(db)
+            except Exception:
+                await db.rollback()
+                logger.exception("daily_notify: session cleanup failed")
+        _last_cleanup_date = today
     if _last_tick is not None:
         async with session_maker() as db:
             try:

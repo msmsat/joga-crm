@@ -19,8 +19,9 @@
 // Отчётами (5 вкладок): report(tab, paramsKey)/reportsAll, reportSeries(metric, paramsKey).
 // Вкладка «Продажи» (R2) использует report('sales', paramsKey) и report('sales-series', paramsKey).
 // Velora AI (эпик AI-1/AI-2): aiSessions, aiMessages(sessionId), aiSettings.
-// Настройками (роадмап SETTINGS): appearance, billingPlan, billingPlans,
-// billingInvoices(limit)/billingInvoicesAll, sessions, integrations, integration(type), workspaces.
+// Настройками (роадмап SETTINGS): appearance, billingPlan, billingPlans, billingCards,
+// billingInvoices(limit)/billingInvoicesAll/billingInvoicesHistory(dateFrom, dateTo),
+// sessions, integrations, integration(type), workspaces.
 // Дашбордом (роадмап DASHBOARD, эпик D5): overviewSummary(from, to), overviewSeries(metric, group, from, to),
 // overviewTrainers(from, to), overviewServices(from, to), overviewActivity, overviewTasks(scope, assigneeId)/overviewTasksAll, overviewAssignees.
 // Правило инвалидации: мутация обязана перечислить ВСЕ ключи, где видна
@@ -96,8 +97,10 @@ export const queryKeys = {
   appearance: ['settings', 'appearance'] as const,
   billingPlan: ['billing', 'plan'] as const,
   billingPlans: ['billing', 'plans'] as const,
+  billingCards: ['billing', 'cards'] as const,
   billingInvoices: (limit: number) => ['billing', 'invoices', limit] as const,
   billingInvoicesAll: ['billing', 'invoices'] as const, // префикс: инвалидация всех limit разом
+  billingInvoicesHistory: (dateFrom: string, dateTo: string) => ['billing', 'invoices', 'history', dateFrom, dateTo] as const,
   sessions: ['settings', 'sessions'] as const,
   integrations: ['settings', 'integrations'] as const,
   integration: (type: string) => ['settings', 'integrations', type] as const,

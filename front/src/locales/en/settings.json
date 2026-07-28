@@ -114,79 +114,45 @@
     }
   },
   "billing": {
-    "tariffs": {
-      "back": "Back to subscription management",
-      "title": "Available plans",
-      "subtitle": "Upgrade to Business to scale your brand without limits",
-      "pro": {
-        "name": "Pro License",
-        "desc": "Perfect for growing studios and premium boutiques",
-        "perMonth": "/ mo",
-        "features": ["Up to 5 active staff", "Up to 3 synced venues", "Unlimited client base", "Standard analytics"],
-        "current": "Your current plan"
-      },
-      "business": {
-        "badge": "RECOMMENDED",
-        "name": "Business Plan",
-        "desc": "Maximum ecosystem for large chains and franchises",
-        "perMonth": "/ mo",
-        "features": ["Unlimited staff", "Franchise multi-network (all branches)", "Deep financial AI analytics", "Dedicated 24/7 manager", "Custom widget branding"],
-        "upgrade": "Upgrade to Business"
-      }
+    "plans": { "start": "Start", "pro": "Pro", "business": "Business", "free_trial": "Free trial" },
+    "status": { "active": "Active", "trial": "Trial", "expired": "Expired" },
+    "plan": {
+      "title": "Current plan",
+      "expiresAt": "Active until {{date}}",
+      "maxStaff": "Up to {{count}} staff",
+      "staffUnlimited": "Unlimited staff",
+      "noSubscription": "No active subscription",
+      "noSubscriptionCta": "Choose a plan",
+      "trialCta": "Choose a plan"
     },
-    "dashboard": {
-      "planLabel": "Your service plan",
-      "planName": "Pro Plan",
-      "activeUntil": "Active until July 15",
-      "stats": {
-        "clients": { "value": "UNLIMITED", "label": "Client base", "desc": "No hidden limits" },
-        "staff": { "value": "5 of 5 seats", "label": "Studio staff", "desc": "Expansion available" },
-        "api": { "value": "ACTIVE", "label": "Full API access", "desc": "Sync enabled" }
-      },
-      "upgradeBtn": "Upgrade to Business",
-      "manageBtn": "Manage subscription",
-      "manageBtnClose": "Close management"
-    },
-    "cycle": {
-      "title": "License billing period",
-      "subtitle": "Switch to a yearly cycle to save on your budget",
-      "monthly": "Monthly",
-      "yearly": "Yearly -30%",
-      "apply": "Apply settings"
+    "upgrade": "Upgrade to {{plan}}",
+    "renew": "Renew",
+    "autopay": {
+      "title": "Auto-renewal",
+      "subtitle": "Charged to your saved card",
+      "autoRenew": "Automatic renewal",
+      "notifyBefore": "We'll remind you {{count}} days before charging"
     },
     "payment": {
       "title": "Payment method",
-      "subtitle": "Manage auto-renewal cards",
-      "addCard": "Add card",
-      "closeForm": "Close form",
-      "holder": "Holder",
-      "holderPh": "CARDHOLDER NAME",
-      "expiry": "Expiry",
-      "cardNumber": "Card number",
-      "cardNumberPh": "4242 4242 4242 4242",
-      "cardHolderName": "Cardholder name (LATIN)",
-      "cardHolderNamePh": "ALEXEY MOROZOV",
-      "cardExpiry": "Expiry date",
-      "cvc": "CVC code",
-      "linkCard": "Link card",
-      "primaryBadge": "Primary",
-      "cardDesc": "Visa Debit · Valid through 08/2027",
-      "replace": "Replace card"
+      "cardSummary": "Card •••• {{last4}}",
+      "notLinked": "No card linked",
+      "change": "Change"
     },
     "history": {
       "title": "Payment history",
-      "subtitle": "All transactions and invoices",
+      "subtitle": "Last 12 payments",
       "exportCsv": "Export CSV",
-      "pdf": "PDF",
-      "paid": "Paid"
+      "empty": "No payments yet",
+      "showAll": "Show all",
+      "period": "{{count}} mo",
+      "noDate": "—",
+      "status": { "paid": "Paid", "pending": "Pending", "failed": "Failed", "refunded": "Refunded" }
     },
     "toast": {
-      "csvExported": "Payment history exported to CSV",
-      "popupBlocked": "Allow pop-ups to download the PDF",
-      "cardAdded": "Card added and linked successfully",
-      "cardReplaceStarted": "Starting secure details update...",
-      "cycleChanged": "Subscription period changed successfully",
-      "businessRequested": "Business plan request confirmed successfully!"
+      "autopaySaved": "Auto-renewal settings saved",
+      "renewed": "Renewal started",
+      "csvExportError": "Couldn't export CSV"
     }
   },
   "security": {
