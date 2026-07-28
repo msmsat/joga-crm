@@ -1,14 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect, type ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './api/queryClient';
 import { authApi, type UserMe } from './api';
 import { AIDrawerProvider } from './contexts/AIDrawerContext';
+import { ToastProvider } from './components/ui/index';
 import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
 import ChangePassword from './pages/ChangePassword';
+import SelectCrm from './pages/SelectCrm';
 
 import DashboardLayout from './layouts/DashboardLayout';
 
@@ -79,10 +81,29 @@ const PublicRoute = ({ children }: { children: ReactNode }) => {
   return children;
 };
 
+// ─── 4. /onboarding: первая студия vs доп. студия (EPIC 7, задача 5) ────────
+// ?new=1 — уже онбординженный владелец создаёт вторую студию тем же мастером.
+// Без параметра при is_onboarded === true строго уводим на дашборд: иначе
+// пользователь просто узнал бы об этом на пятом шаге по 400 с бэка.
+const OnboardingRoute = () => {
+  const [searchParams] = useSearchParams();
+  const isNewStudio = searchParams.get('new') === '1';
+  return (
+    <ProtectedRoute requireOnboarding={isNewStudio}>
+      <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+        <OnboardingPage />
+      </div>
+    </ProtectedRoute>
+  );
+};
+
 // ─── ГЛАВНЫЙ КОМПОНЕНТ APP ──────────────────────────────────────────────────
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+    {/* Тосты — на уровне всего приложения: useToast зовут и страницы вне
+        DashboardLayout (/select-crm), а без провайдера хук кидает и роняет дерево. */}
+    <ToastProvider>
     <AIDrawerProvider>
     <Router>
       <Routes>
@@ -92,25 +113,27 @@ export default function App() {
         {/* Убрали защиту с регистрации для тестов (в проде вернем <PublicRoute>) */}
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* 🚀 Онбординг */}
-        <Route 
-          path="/onboarding" 
-          element={
-            <ProtectedRoute requireOnboarding={false}>
-              <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-                <OnboardingPage />
-              </div>
-            </ProtectedRoute>
-          } 
-        />
+        {/* 🚀 Онбординг (первая студия, или ?new=1 — доп. студия, см. OnboardingRoute) */}
+        <Route path="/onboarding" element={<OnboardingRoute />} />
 
-        <Route 
-          path="/change-password" 
+        <Route
+          path="/change-password"
           element={
             <ProtectedRoute requireOnboarding={true}>
               <ChangePassword />
             </ProtectedRoute>
-          } 
+          }
+        />
+
+        {/* 🚀 Мультистудийность (EPIC 7): выбор/переключение CRM — вне DashboardLayout,
+            студия ещё не выбрана, сайдбар и пейволл рисовать не на чем */}
+        <Route
+          path="/select-crm"
+          element={
+            <ProtectedRoute requireOnboarding={true}>
+              <SelectCrm />
+            </ProtectedRoute>
+          }
         />
 
         {/* 🚀 ДАШБОРД (Каркас + Вложенные страницы) */}
@@ -144,6 +167,7 @@ export default function App() {
       </Routes>
     </Router>
     </AIDrawerProvider>
+    </ToastProvider>
     </QueryClientProvider>
   );
 }

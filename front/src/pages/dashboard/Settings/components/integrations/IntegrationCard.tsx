@@ -14,6 +14,7 @@ interface IntegrationCardProps {
   sub: string;
   color: string;
   data: Integration;
+  studioTimezone: string | null;
   isExpanded: boolean;
   onToggleExpand: () => void;
   onRequestDisconnect: () => void;
@@ -36,7 +37,7 @@ function formatDate(iso: string | null, lang: string, withTime = false): string 
 }
 
 export default function IntegrationCard({
-  type, name, sub, color, data, isExpanded, onToggleExpand, onRequestDisconnect,
+  type, name, sub, color, data, studioTimezone, isExpanded, onToggleExpand, onRequestDisconnect,
   connectTelegram, connectWhatsApp, connectInstagram, startGoogleAuth,
   calendars, calendarsLoading, updateGoogleCalendar, syncGoogleCalendar,
 }: IntegrationCardProps) {
@@ -135,6 +136,11 @@ export default function IntegrationCard({
 
                 {type === "google_calendar" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "16px", background: "rgba(0,0,0,0.015)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+                    {!studioTimezone && (
+                      <div style={{ fontSize: "11.5px", color: "#C0607A", background: "rgba(216,140,154,0.08)", border: "1px solid rgba(216,140,154,0.2)", borderRadius: "8px", padding: "8px 12px" }}>
+                        {t("integrations.google.timezoneWarning")}
+                      </div>
+                    )}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                       <div>
                         <div style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--onyx)", marginBottom: "6px" }}>{t("integrations.google.calendar")}</div>

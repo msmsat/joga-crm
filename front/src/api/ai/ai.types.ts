@@ -41,4 +41,13 @@ export interface AISettings {
   ig_off_hours_only: boolean
   ig_handled_count: number
   ig_avg_rating: number
+  wa_enabled: boolean
+  wa_tone: string
+  wa_max_length: number
+  wa_off_hours_only: boolean
+  wa_handled_count: number
+  wa_avg_rating: number
+  // Номер подключённой интеграции WhatsApp (Уведомления / Настройки → Интеграции),
+  // у агента своего подключения нет — только гейт тумблера.
+  wa_phone_number: string | null
 }

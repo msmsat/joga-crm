@@ -54,7 +54,9 @@ async def check_phone(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Свой же номер не в счёт — иначе владелец, создающий вторую студию
+    # (EPIC 7, задача 5), увидит «уже занят» на собственном телефоне.
     taken = (
-        await db.execute(select(User).where(User.phone == phone))
+        await db.execute(select(User).where(User.phone == phone, User.id != current_user.id))
     ).scalars().first() is not None
     return {"taken": taken}

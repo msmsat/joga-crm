@@ -138,8 +138,16 @@ async def google_calendar_callback(
     if error:
         return RedirectResponse(f"{WEB_APP_URL}/dashboard/settings?tab=integrations&google=denied")
 
+    # state отсутствует вовсе (прямой заход на URL колбэка, не через флоу) — мягкий
+    # редирект. state ПРИСЛАН, но не прошёл проверку (подделан/протух/чужой purpose) —
+    # это не обычная пользовательская ситуация, а провал CSRF-защиты: 400, без
+    # редиректа и без касания БД (критерий приёмки эпика 6).
+    if not state:
+        return RedirectResponse(f"{WEB_APP_URL}/dashboard/settings?tab=integrations&google=error")
     studio_id = _studio_id_from_state(state)
-    if studio_id is None or not code:
+    if studio_id is None:
+        raise HTTPException(status_code=400, detail="Недействительный state")
+    if not code:
         return RedirectResponse(f"{WEB_APP_URL}/dashboard/settings?tab=integrations&google=error")
 
     try:

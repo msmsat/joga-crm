@@ -7,6 +7,7 @@ from .security import router as security_router
 from .integrations import router as integrations_router
 from .google_calendar import callback_router as google_calendar_callback_router, router as google_calendar_router
 from .notifications import router as notifications_router
+from .data import router as data_router
 
 router = APIRouter()
 
@@ -21,3 +22,4 @@ router.include_router(integrations_router, dependencies=_gate)
 router.include_router(google_calendar_router, dependencies=_gate)
 router.include_router(google_calendar_callback_router)
 router.include_router(notifications_router, dependencies=_gate)
+router.include_router(data_router, dependencies=_gate)

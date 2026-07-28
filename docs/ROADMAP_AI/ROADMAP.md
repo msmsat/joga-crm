@@ -58,12 +58,15 @@ ConfirmModal, Switch, Tooltip, Select). Страница AI написана н�
    первом GET настроек и содержит название студии вместо «Velora»
    (`Ты — вежливый ассистент студии «{Studio.name}»…`).
 5. **Telegram = токен бота с серверной проверкой `getMe`; Instagram = OAuth
-   (Instagram API with Instagram Login, Meta), не токен-инпут.** Тумблеры
-   агентов гейтятся и в UI, и на сервере: PATCH `enabled=true` без
-   подключённого канала → 400. Согласовано с соседними роадмэпами: канал
-   instagram в уведомлениях выключен (ROADMAP_NOTIFICATIONS, решение 2),
+   (Instagram API with Instagram Login, Meta), не токен-инпут; WhatsApp =
+   без своего подключения — берёт интеграцию `wa_notify` (28.07.2026).**
+   Тумблеры агентов гейтятся и в UI, и на сервере: PATCH `enabled=true` без
+   подключённого канала → 400 (`tg_token_required` / `ig_not_connected` /
+   `wa_not_connected`). Согласовано с соседними роадмэпами: instagram и
+   whatsapp — рабочие каналы уведомлений (ROADMAP_NOTIFICATIONS, решение 2),
    в Онлайн-записи Insta — информационная модалка (ROADMAP_BOOKINGS, блок 1);
-   agent-данные живут только в `StudioAISettings`.
+   настройки агентов живут только в `StudioAISettings`, номер WhatsApp — в
+   `StudioIntegration("wa_notify")`, один на студию.
 
 ## Пункты аудита → что делаем
 

@@ -210,5 +210,6 @@ function MatrixCell({
 const CHANNEL_HEADER_META: Record<string, { label: string; color: string; IconComp: () => JSX.Element }> = {
   telegram: { label: 'Telegram', color: '#4A80C4', IconComp: Icon.Telegram },
   whatsapp: { label: 'WhatsApp', color: '#5BAB72', IconComp: Icon.WhatsApp },
+  instagram: { label: 'Instagram', color: '#C13584', IconComp: Icon.Instagram },
   email: { label: 'Email', color: '#F9A08B', IconComp: Icon.Email },
 };

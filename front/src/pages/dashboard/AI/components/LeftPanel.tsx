@@ -21,12 +21,15 @@ interface LeftPanelProps {
   telegramConnected: boolean;
   instagramEnabled: boolean;
   instagramConnected: boolean;
+  whatsappEnabled: boolean;
+  whatsappConnected: boolean;
   onNewChat: () => void;
   onLoadSession: (id: number) => void;
   onDeleteSession: (id: number) => void;
   onUpdateSettings: (patch: Partial<AIUISettings>) => void;
   onToggleTelegram: () => void;
   onToggleInstagram: () => void;
+  onToggleWhatsapp: () => void;
   onOpenAgentSetup: () => void;
 }
 
@@ -55,12 +58,15 @@ export default function LeftPanel({
   telegramConnected,
   instagramEnabled,
   instagramConnected,
+  whatsappEnabled,
+  whatsappConnected,
   onNewChat,
   onLoadSession,
   onDeleteSession,
   onUpdateSettings,
   onToggleTelegram,
   onToggleInstagram,
+  onToggleWhatsapp,
   onOpenAgentSetup,
 }: LeftPanelProps) {
   const { t } = useTranslation('ai');
@@ -161,8 +167,11 @@ export default function LeftPanel({
           telegramConnected={telegramConnected}
           instagramEnabled={instagramEnabled}
           instagramConnected={instagramConnected}
+          whatsappEnabled={whatsappEnabled}
+          whatsappConnected={whatsappConnected}
           onToggleTelegram={onToggleTelegram}
           onToggleInstagram={onToggleInstagram}
+          onToggleWhatsapp={onToggleWhatsapp}
           onOpenSetup={onOpenAgentSetup}
         />
       </div>

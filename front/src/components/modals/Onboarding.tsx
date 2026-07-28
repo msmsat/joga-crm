@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
@@ -25,6 +26,11 @@ const STEP_META = [
 ];
 
 export default function OnboardingPage() {
+  // Доп. студия для уже онбординженного владельца (EPIC 7, задача 5) — тот же мастер,
+  // меняется только конечный вызов; is_onboarded у пользователя не трогаем (см. App.tsx).
+  const [searchParams] = useSearchParams();
+  const isNewStudio = searchParams.get("new") === "1";
+
   const [step, setStep] = useState<Step>(1);
   const [dir, setDir] = useState<1 | -1>(1);
   const [animating, setAnimating] = useState(false);
@@ -110,7 +116,7 @@ export default function OnboardingPage() {
         logoUrl = url;
       }
 
-      const responseData = await authApi.onboarding({
+      const payload = {
         studioName: data.studioName,
         description: data.description || null,
         logoUrl,
@@ -130,7 +136,10 @@ export default function OnboardingPage() {
           openTime: d.openTime,
           closeTime: d.closeTime,
         })),
-      });
+      };
+      const responseData = isNewStudio
+        ? await authApi.createStudio(payload)
+        : await authApi.onboarding(payload);
 
       if (responseData.access_token) {
         localStorage.setItem('token', responseData.access_token);

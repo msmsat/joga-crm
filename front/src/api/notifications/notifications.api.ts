@@ -11,6 +11,7 @@ import type {
   ChannelStatus,
   WaPricing,
   WaConnectPayload,
+  IgConnectChannelPayload,
 } from './notifications.types'
 
 export const notificationsApi = {
@@ -60,4 +61,11 @@ export const notificationsApi = {
 
   getWaPricing: () =>
     client.get<WaPricing>('/settings/integrations/whatsapp/pricing'),
+
+  connectInstagram: (payload: IgConnectChannelPayload) =>
+    client.post<ChannelStatus>('/settings/integrations/instagram', payload),
+
+  // Отдельного DELETE у Instagram нет — гасит общий /settings/integrations/{type}.
+  disconnectInstagram: () =>
+    client.delete<ChannelStatus>('/settings/integrations/instagram'),
 }

@@ -15,22 +15,16 @@
     "error": "Something went wrong"
   },
   "workspace": {
-    "loggedOut": "You left the Pilates Studio workspace",
-    "entered": "Signed in: {{name}}",
     "title": "Your CRM systems",
-    "subtitle": "Choose a workspace to sign in, or create a new one",
-    "businessAccount": "Business account",
-    "createNew": "Create a new CRM system",
-    "newSpaceTitle": "New workspace parameters",
-    "studioName": "Studio or salon name",
-    "studioNamePh": "e.g. Stretch & Go",
-    "theme": "Theme",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeLightFull": "Light theme",
-    "themeDarkFull": "Dark theme",
-    "initSystem": "Initialize system",
-    "created": "CRM system \"{{name}}\" created successfully!"
+    "subtitle": "Choose a workspace or create a new one",
+    "current": "Current",
+    "membersCount_one": "{{count}} member",
+    "membersCount_other": "{{count}} members",
+    "clientsCount_one": "{{count}} client",
+    "clientsCount_other": "{{count}} clients",
+    "createNew": "Create a new studio",
+    "loadError": "Couldn't load your studios",
+    "selectError": "Couldn't switch to this studio"
   },
   "general": {
     "company": {
@@ -333,6 +327,7 @@
       "syncNow": "Sync now",
       "lastSync": "Last synced: {{date}}",
       "neverSynced": "Not synced yet",
+      "timezoneWarning": "Studio timezone isn't set — events are sent in UTC and may drift from actual class times. Set the timezone under General.",
       "syncResult": "Synced: {{pushed}} pushed, {{pulled}} pulled",
       "settingsSaved": "Google Calendar settings saved"
     },
@@ -342,35 +337,20 @@
     }
   },
   "data": {
-    "storage": {
-      "title": "Data storage",
-      "subtitle": "Monitor disk space and automate backups",
-      "used": "Disk space used",
-      "categories": { "clients": "Clients", "media": "Media files", "docs": "Documents" },
-      "categoryToast": "Category detail: {{label}} ({{size}})",
-      "autoBackup": { "title": "Automatic backups", "sub": "Daily system snapshot at 3:00 AM", "on": "Enabled", "off": "Disabled" },
-      "lastBackup": { "title": "Last successful backup", "sub": "Today at 03:14 · Compressed archive size: 124 MB", "agoHours": "10 hours ago" },
-      "retention": "Backup retention period",
-      "retentionOptions": ["14 days", "30 days", "60 days", "90 days"],
-      "download": "Download latest backup",
-      "downloading": "Downloading...",
-      "generate": "Generate backup now",
-      "generating": "Compiling tables...",
-      "toast": {
-        "backupCreated": "Database backup created successfully ✨",
-        "fileDownloaded": "File backup_joga_live.sql downloaded"
-      }
-    },
     "export": {
       "title": "Export reports & lists",
       "subtitle": "Download files in table formats for accounting and analytics",
+      "clearFilter": "Clear period",
       "items": {
-        "clients": { "name": "Full client list", "format": "CSV / XLSX (Excel)" },
-        "journal": { "name": "Journal & booking history", "format": "CSV / PDF Document" },
-        "finances": { "name": "Financial report & cash register", "format": "XLSX / Pivot table" },
-        "ai": { "name": "Studio AI analytics summary", "format": "PDF Presentation" }
+        "clients": { "name": "Client list" },
+        "schedule": { "name": "Journal & booking history" },
+        "finances": { "name": "Financial report" },
+        "subscriptions": { "name": "Client subscriptions" }
       },
-      "toast": "Document \"{{name}}\" exported successfully"
+      "rows_one": "{{count}} record",
+      "rows_other": "{{count}} records",
+      "loading": "Loading...",
+      "empty": "no data for this period"
     }
   }
 }

@@ -17,6 +17,7 @@ class User(Base):
     last_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     tg_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
+    ig_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     photo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     salary: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)

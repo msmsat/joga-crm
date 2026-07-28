@@ -39,12 +39,17 @@ WhatsApp, Email), боевые триггеры в рабочих процесс
    (верифицированный email / токен бота), Message ← шаблон `event_id` +
    `context`, Network ← `StudioNotificationSettings` + матрица toggles,
    Language ← `Studio.language`. Все триггеры приложения зовут только её.
-2. **Каналы — только telegram / whatsapp / email.** Лишние bool-колонки
-   (`sms`, `push`, `instagram`) в БД остаются (недеструктивно), но UI и
+2. **Каналы — telegram / whatsapp / email / instagram.** Instagram добавлен
+   к трём исходным по запросу владельца продукта (28.07.2026): канал
+   подключается интеграцией `ig_dm`, адрес доставки — `Client.ig_id` /
+   `User.ig_id` (IGSID). Ограничение Meta: директ уходит только тем, кто уже
+   писал студии, и только в 24-часовом окне — IGSID заполняется вручную или
+   импортом, автоматического сопоставления с клиентом Meta не даёт. Лишние
+   bool-колонки (`sms`, `push`) в БД остаются (недеструктивно), но UI и
    `notify()` их игнорируют.
 3. **Токены каналов — в `StudioIntegration.config` (JSON)**, по одному ряду
-   на `integration_type`: `"tg_notify"`, `"wa_notify"`, `"email_sender"`.
-   Без новых таблиц и без токенов в env (env — только fallback).
+   на `integration_type`: `"tg_notify"`, `"wa_notify"`, `"ig_dm"`,
+   `"email_sender"`. Без новых таблиц и без токенов в env (env — только fallback).
 4. **Zustand — только UI-состояние страницы** (выбранная роль, чекбоксы
    каналов). Серверные данные — исключительно React Query. Стор:
    `front/src/stores/notificationsStore.ts`.

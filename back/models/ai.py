@@ -35,6 +35,15 @@ class StudioAISettings(Base):
     ig_handled_count: Mapped[int] = mapped_column(Integer, default=0)
     ig_avg_rating: Mapped[float] = mapped_column(Float, default=0.0)
 
+    # WhatsApp-агент: подключение (токен + phone_number_id) живёт не здесь, а в
+    # StudioIntegration("wa_notify") — одно на Уведомления, Настройки и агента.
+    wa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    wa_tone: Mapped[str] = mapped_column(String(20), default="friendly")
+    wa_max_length: Mapped[int] = mapped_column(Integer, default=300)
+    wa_off_hours_only: Mapped[bool] = mapped_column(Boolean, default=False)
+    wa_handled_count: Mapped[int] = mapped_column(Integer, default=0)
+    wa_avg_rating: Mapped[float] = mapped_column(Float, default=0.0)
+
     studio: Mapped["Studio"] = relationship(back_populates="ai_settings")
 
 

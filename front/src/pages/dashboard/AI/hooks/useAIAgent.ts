@@ -8,7 +8,9 @@ import { queryKeys } from '../../../../api/queryKeys';
 import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup';
 import { useToast } from '../../../../components/ui/Toast';
 import type { AISettings } from '../../../../api/ai/ai.types';
-import type { AgentConfig, AgentTone, AIUISettings, AIModel, AILanguage } from '../types';
+import type { AgentChannel, AgentConfig, AgentTone, AIUISettings, AIModel, AILanguage } from '../types';
+
+const PREFIX: Record<AgentChannel, 'tg' | 'ig' | 'wa'> = { telegram: 'tg', instagram: 'ig', whatsapp: 'wa' };
 
 // Коды серверного гейта тумблеров (эпик AI-2, задача 1) — человеческий текст вместо
 // машинного code. Реальное подключение токенов — эпик AI-3, отсюда и формулировки.
@@ -16,6 +18,7 @@ function aiErrorText(err: unknown, t: TFunction): string {
   if (err instanceof ApiError) {
     if (err.message === 'tg_token_required') return t('errors.tg_token_required');
     if (err.message === 'ig_not_connected') return t('errors.ig_not_connected');
+    if (err.message === 'wa_not_connected') return t('errors.wa_not_connected');
     return err.message || t('common:errors.unknown');
   }
   if (err instanceof TypeError) return t('common:errors.network');
@@ -28,6 +31,7 @@ const EMPTY_CHANNEL: AgentConfig['telegram'] = {
 const EMPTY_AGENT_CONFIG: AgentConfig = {
   telegram: EMPTY_CHANNEL,
   instagram: { ...EMPTY_CHANNEL, maxLength: 300, offHoursOnly: true },
+  whatsapp: { ...EMPTY_CHANNEL, maxLength: 300 },
   systemPrompt: '',
 };
 
@@ -43,6 +47,13 @@ function toAgentConfig(s: AISettings): AgentConfig {
       tone: s.ig_tone as AgentTone, maxLength: s.ig_max_length,
       offHoursOnly: s.ig_off_hours_only, handledCount: s.ig_handled_count, avgRating: s.ig_avg_rating,
       expiresAt: s.ig_token_expires_at,
+    },
+    // token/username WhatsApp-агента — не его: номер подключён в Уведомлениях,
+    // сюда приходит только для отображения (username = сам номер).
+    whatsapp: {
+      enabled: s.wa_enabled, token: '', username: s.wa_phone_number ?? '',
+      tone: s.wa_tone as AgentTone, maxLength: s.wa_max_length,
+      offHoursOnly: s.wa_off_hours_only, handledCount: s.wa_handled_count, avgRating: s.wa_avg_rating,
     },
     systemPrompt: s.system_prompt ?? '',
   };
@@ -88,10 +99,8 @@ export function useAIAgent() {
     mutation.mutate(patch);
   }, [mutation]);
 
-  const toggleChannel = useCallback((channel: 'telegram' | 'instagram') => {
-    const prefix = channel === 'telegram' ? 'tg' : 'ig';
-    const current = channel === 'telegram' ? agentConfig.telegram.enabled : agentConfig.instagram.enabled;
-    mutation.mutate({ [`${prefix}_enabled`]: !current } as Partial<AISettings>);
+  const toggleChannel = useCallback((channel: AgentChannel) => {
+    mutation.mutate({ [`${PREFIX[channel]}_enabled`]: !agentConfig[channel].enabled } as Partial<AISettings>);
   }, [mutation, agentConfig]);
 
   // Тон/лимит/офчасы/промпт — «Сохранить» шлёт только реально изменённые поля.
@@ -104,6 +113,9 @@ export function useAIAgent() {
     if (draft.instagram.tone !== settings.ig_tone) patch.ig_tone = draft.instagram.tone;
     if (draft.instagram.maxLength !== settings.ig_max_length) patch.ig_max_length = draft.instagram.maxLength;
     if (draft.instagram.offHoursOnly !== settings.ig_off_hours_only) patch.ig_off_hours_only = draft.instagram.offHoursOnly;
+    if (draft.whatsapp.tone !== settings.wa_tone) patch.wa_tone = draft.whatsapp.tone;
+    if (draft.whatsapp.maxLength !== settings.wa_max_length) patch.wa_max_length = draft.whatsapp.maxLength;
+    if (draft.whatsapp.offHoursOnly !== settings.wa_off_hours_only) patch.wa_off_hours_only = draft.whatsapp.offHoursOnly;
     if (Object.keys(patch).length === 0) return;
     mutation.mutate(patch);
   }, [settings, mutation]);
@@ -155,6 +167,9 @@ export function useAIAgent() {
     // (заполняется только успешным OAuth-обменом), а не на срок токена — просрочку
     // сервер отдельно отловит 400-кой при попытке включить тумблер (тот же тост+откат).
     igConnected: !!settings?.ig_user_id,
+    // Гейт WhatsApp-агента — та же интеграция wa_notify, что и у Уведомлений:
+    // отдельного подключения у агента нет, номер один на всю студию.
+    waConnected: !!settings?.wa_phone_number,
     updateAISettings, toggleChannel, saveChannelFields,
     verifyTelegram: verifyTelegramMutation.mutate,
     isVerifyingTelegram: verifyTelegramMutation.isPending,

@@ -5,6 +5,7 @@ import { Icon } from './components/ui/NotificationIcons';
 export const CHANNELS: { key: ChannelKey; label: string; sub: string; IconComp: () => JSX.Element; color: string }[] = [
   { key: 'telegram',  label: 'Telegram',  sub: '@VeloraNotifyBot',       IconComp: Icon.Telegram,  color: '#4A80C4' },
   { key: 'whatsapp',  label: 'WhatsApp',  sub: '+7 (999) 123-45-67',     IconComp: Icon.WhatsApp,  color: '#5BAB72' },
+  { key: 'instagram', label: 'Instagram', sub: '@studio',                IconComp: Icon.Instagram, color: '#C13584' },
   { key: 'email',     label: 'Email',     sub: 'admin@velora.studio',     IconComp: Icon.Email,     color: '#F9A08B' },
 ];
 

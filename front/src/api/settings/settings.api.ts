@@ -1,7 +1,9 @@
-import { client } from '../client'
+import { client, downloadFile } from '../client'
 import type {
   AppearanceSettings,
   AppearanceUpdate,
+  DataExportEstimate,
+  DataExportKind,
   DeleteAccountResult,
   ExportArchivePayload,
   GeneralSettings,
@@ -17,6 +19,20 @@ import type {
   WaConnectIntegrationPayload,
   WipeDataResult,
 } from './settings.types'
+
+// date_from/date_to — YYYY-MM-DD, опциональны; общий фильтр для оценки и скачивания
+// (эпик 7, задача 1/2) — оба эндпоинта принимают их одинаково.
+interface DataExportParams {
+  date_from?: string
+  date_to?: string
+}
+
+function dataExportQuery(kind: DataExportKind, params?: DataExportParams): string {
+  const q = new URLSearchParams({ kind })
+  if (params?.date_from) q.set('date_from', params.date_from)
+  if (params?.date_to) q.set('date_to', params.date_to)
+  return `?${q.toString()}`
+}
 
 export const settingsApi = {
   getGeneral: () =>
@@ -92,4 +108,12 @@ export const settingsApi = {
     client.delete<DeleteAccountResult>('/settings/security/account', { confirm_name: confirmName }, {
       headers: { 'X-OTP-Token': otpToken },
     }),
+
+  // EPIC 7: реальный экспорт вкладки «Данные» — Bearer в заголовке, поэтому
+  // не <a href>, а blob-через-fetch (downloadFile), как у billingApi.exportInvoicesCsv.
+  getExportEstimate: (kind: DataExportKind, params?: DataExportParams) =>
+    client.get<DataExportEstimate>(`/settings/data/export/estimate${dataExportQuery(kind, params)}`),
+
+  exportData: (kind: DataExportKind, params?: DataExportParams) =>
+    downloadFile(`/settings/data/export${dataExportQuery(kind, params)}`),
 }

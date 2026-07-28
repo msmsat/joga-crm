@@ -53,7 +53,7 @@ async def _run():
         assert len(matrix.events) == 38, len(matrix.events)  # весь каталог, не только тронутые
         c3 = by_id["c3"]
         assert c3.locked is True and c3.lock_reason == "critical" and c3.locked_channels == []
-        assert c3.channels == {"email": True, "telegram": True, "whatsapp": False}, c3.channels
+        assert c3.channels == {"email": True, "telegram": True, "whatsapp": False, "instagram": False}, c3.channels
         c6 = by_id["c6"]
         assert c6.locked is False and c6.lock_reason == "last_channel" and c6.locked_channels == ["email"]
         print("OK: GET /matrix — critical locked, operational last-channel locked")

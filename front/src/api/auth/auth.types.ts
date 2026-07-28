@@ -88,6 +88,17 @@ export interface CheckPhoneResponse {
   taken: boolean
 }
 
+// EPIC 7, задача 3/4: карточка студии на /select-crm — по членству в StudioMember.
+export interface StudioListItem {
+  id: number
+  name: string
+  role: string
+  logo_url: string | null
+  is_current: boolean
+  members_count: number
+  clients_count: number
+}
+
 // EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).
 export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'enable_2fa' | 'login_2fa'
 

@@ -9,6 +9,7 @@ from .instagram import (
     webhook_router as instagram_webhook_router,
 )
 from .settings import router as settings_router
+from .whatsapp import webhook_router as whatsapp_webhook_router
 
 router = APIRouter()
 
@@ -25,3 +26,6 @@ router.include_router(instagram_callback_router)
 # Вебхук Meta: ни JWT, ни подписки студии — за студию отвечает ig_user_id из тела,
 # за подлинность — verify-токен (GET) и X-Hub-Signature-256 (POST).
 router.include_router(instagram_webhook_router)
+# Вебхук WhatsApp Cloud API — так же без JWT: студию определяет phone_number_id
+# из тела, подлинность — verify-токен (GET) и X-Hub-Signature-256 (POST).
+router.include_router(whatsapp_webhook_router)

@@ -1,19 +1,90 @@
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
-from models import User, Studio, StudioWorkingHours, StudioMember, StudioBillingPlan
+from models import Client, User, Studio, StudioWorkingHours, StudioMember, StudioBillingPlan
 from routers.billing.plans import PLANS
-from schemas import OnboardingRequest, SelectStudioRequest, TokenResponse
+from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
-from dependencies import get_current_user
+from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
+from jose import jwt
 
 router = APIRouter()
 
 TRIAL_DAYS = 14  # бесплатный период после онбординга (задача 8b)
+
+
+def _validate_onboarding_request(data: OnboardingRequest) -> None:
+    """Проверка формата — общая для первой студии (/onboarding) и
+    дополнительной (/studios, EPIC 7 задача 3)."""
+    if len(data.studioName.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Название компании слишком короткое")
+    if not data.phone or not data.phone.strip():
+        raise HTTPException(status_code=400, detail="Укажите корректный номер телефона")
+    if not data.activityType:
+        raise HTTPException(status_code=400, detail="Выберите вид деятельности")
+    if not data.timezone or not data.language or not data.currency:
+        raise HTTPException(status_code=400, detail="Укажите региональные настройки")
+
+
+async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: AsyncSession) -> Studio:
+    """Studio + рабочие часы + владелец в StudioMember + пробный период —
+    общее для /onboarding (первая студия) и /studios (доп. студия, EPIC 7
+    задача 3). Проверка формата — на вызывающем (_validate_onboarding_request),
+    проверка глобальной уникальности телефона и флаг is_onboarded — тоже (нужны
+    только при самом первом онбординге)."""
+    new_studio = Studio(
+        name=data.studioName.strip(),
+        description=data.description,
+        logo_url=data.logoUrl,
+        phone=data.phone.strip(),
+        address=data.address,
+        email=data.email,
+        website=data.website,
+        business_type="fitness",
+        business_subtype=data.activityType,
+        timezone=data.timezone,
+        language=data.language,
+        currency=data.currency,
+        date_format=data.dateFormat,
+        first_day_of_week=data.firstDayOfWeek,
+    )
+    db.add(new_studio)
+    await db.flush()
+
+    if data.workingHours:
+        for wh in data.workingHours:
+            db.add(StudioWorkingHours(
+                studio_id=new_studio.id,
+                day_of_week=wh.dayOfWeek,
+                is_open=wh.isOpen,
+                open_time=wh.openTime,
+                close_time=wh.closeTime,
+            ))
+
+    db.add(StudioMember(
+        user_id=user.id,
+        studio_id=new_studio.id,
+        role="owner",
+    ))
+
+    # Бесплатный триал на 14 дней с лимитами Pro (задача 8b). До онбординга строки
+    # нет вовсе → GET /billing/plan отдаёт none; здесь она появляется впервые.
+    # Для доп. студии (/studios) это тоже верно — новая студия = новая подписка,
+    # без строки в StudioBillingPlan пейволл (_sub_gate) сам приведёт на оплату.
+    db.add(StudioBillingPlan(
+        studio_id=new_studio.id,
+        plan_name="free_trial",
+        status="trial",
+        expires_at=datetime.utcnow() + timedelta(days=TRIAL_DAYS),
+        max_staff=PLANS["pro"]["limits"]["staff"],
+    ))
+
+    return new_studio
 
 
 @router.post("/onboarding")
@@ -24,14 +95,7 @@ async def complete_onboarding(
 ):
     if current_user.is_onboarded:
         raise HTTPException(status_code=400, detail="Онбординг уже пройден")
-    if len(request.studioName.strip()) < 2:
-        raise HTTPException(status_code=400, detail="Название компании слишком короткое")
-    if not request.phone or not request.phone.strip():
-        raise HTTPException(status_code=400, detail="Укажите корректный номер телефона")
-    if not request.activityType:
-        raise HTTPException(status_code=400, detail="Выберите вид деятельности")
-    if not request.timezone or not request.language or not request.currency:
-        raise HTTPException(status_code=400, detail="Укажите региональные настройки")
+    _validate_onboarding_request(request)
 
     existing_phone = (
         await db.execute(select(User).where(User.phone == request.phone.strip()))
@@ -39,50 +103,7 @@ async def complete_onboarding(
     if existing_phone is not None:
         raise HTTPException(status_code=400, detail="Данный номер телефона уже используется")
 
-    new_studio = Studio(
-        name=request.studioName.strip(),
-        description=request.description,
-        logo_url=request.logoUrl,
-        phone=request.phone.strip(),
-        address=request.address,
-        email=request.email,
-        website=request.website,
-        business_type="fitness",
-        business_subtype=request.activityType,
-        timezone=request.timezone,
-        language=request.language,
-        currency=request.currency,
-        date_format=request.dateFormat,
-        first_day_of_week=request.firstDayOfWeek,
-    )
-    db.add(new_studio)
-    await db.flush()
-
-    if request.workingHours:
-        for wh in request.workingHours:
-            db.add(StudioWorkingHours(
-                studio_id=new_studio.id,
-                day_of_week=wh.dayOfWeek,
-                is_open=wh.isOpen,
-                open_time=wh.openTime,
-                close_time=wh.closeTime,
-            ))
-
-    db.add(StudioMember(
-        user_id=current_user.id,
-        studio_id=new_studio.id,
-        role="owner",
-    ))
-
-    # Бесплатный триал на 14 дней с лимитами Pro (задача 8b). До онбординга строки
-    # нет вовсе → GET /billing/plan отдаёт none; здесь она появляется впервые.
-    db.add(StudioBillingPlan(
-        studio_id=new_studio.id,
-        plan_name="free_trial",
-        status="trial",
-        expires_at=datetime.utcnow() + timedelta(days=TRIAL_DAYS),
-        max_staff=PLANS["pro"]["limits"]["staff"],
-    ))
+    new_studio = await _create_studio_with_defaults(current_user, request, db)
 
     current_user.is_onboarded = True
     current_user.phone = request.phone.strip()
@@ -92,6 +113,70 @@ async def complete_onboarding(
         data={"sub": current_user.email, "studio_id": new_studio.id, "role": "owner"}
     )
     return {"message": "Онбординг успешно пройден!", "access_token": access_token}
+
+
+@router.post("/studios", response_model=TokenResponse)
+async def create_studio(
+    request: OnboardingRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Дополнительная студия для уже онбординженного пользователя (мультистудийность,
+    EPIC 7 задача 3) — тот же мастер (/onboarding?new=1 на фронте), но без блокировки
+    is_onboarded и без проверки глобальной уникальности телефона: номер уже
+    закреплён за этим же пользователем первой студией."""
+    _validate_onboarding_request(request)
+    new_studio = await _create_studio_with_defaults(current_user, request, db)
+    await db.commit()
+
+    access_token = create_access_token(
+        data={"sub": current_user.email, "studio_id": new_studio.id, "role": "owner"}
+    )
+    return TokenResponse(access_token=access_token, token_type="bearer")
+
+
+@router.get("/studios", response_model=list[StudioListItem])
+async def list_studios(
+    token: str = Depends(oauth2_scheme),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Список студий пользователя для /select-crm (EPIC 7 задача 4) — по
+    членству в StudioMember, не по справочнику внешних CRM (его в БД нет)."""
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    current_studio_id = payload.get("studio_id")
+
+    rows = (await db.execute(
+        select(StudioMember, Studio)
+        .join(Studio, StudioMember.studio_id == Studio.id)
+        .where(StudioMember.user_id == current_user.id)
+        .order_by(Studio.id)
+    )).all()
+    studio_ids = [studio.id for _, studio in rows]
+
+    members_counts = dict((await db.execute(
+        select(StudioMember.studio_id, func.count())
+        .where(StudioMember.studio_id.in_(studio_ids))
+        .group_by(StudioMember.studio_id)
+    )).all())
+    clients_counts = dict((await db.execute(
+        select(Client.studio_id, func.count())
+        .where(Client.studio_id.in_(studio_ids))
+        .group_by(Client.studio_id)
+    )).all())
+
+    return [
+        StudioListItem(
+            id=studio.id,
+            name=studio.name,
+            role=member.role,
+            logo_url=studio.logo_url,
+            is_current=(studio.id == current_studio_id),
+            members_count=members_counts.get(studio.id, 0),
+            clients_count=clients_counts.get(studio.id, 0),
+        )
+        for member, studio in rows
+    ]
 
 
 @router.post("/select-studio", response_model=TokenResponse)

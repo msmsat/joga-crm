@@ -52,6 +52,12 @@ export interface DeleteAccountResult {
   redirect: string
 }
 
+export type DataExportKind = 'clients' | 'schedule' | 'finances' | 'subscriptions'
+
+export interface DataExportEstimate {
+  rows: number
+}
+
 export type IntegrationType = 'telegram' | 'whatsapp' | 'instagram' | 'google_calendar'
 
 export interface Integration {

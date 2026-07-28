@@ -1,5 +1,3 @@
-import type { Studio } from "./types";
-
 // Коды — то, что уходит на бэк (GeneralUpdate); подписи — через i18n
 // (general.locale.currencyLabels/firstDayLabels/timezoneLabels в settings.json),
 // либо эндонимы/примеры формата ниже, не требующие перевода.
@@ -16,8 +14,3 @@ export const TIMEZONES = [
   "Asia/Krasnoyarsk", "Asia/Irkutsk", "Asia/Yakutsk", "Asia/Vladivostok", "Asia/Magadan", "Asia/Kamchatka",
   "Europe/Berlin", "Europe/London", "America/New_York", "America/Los_Angeles",
 ] as const;
-
-export const INITIAL_STUDIOS_LIST: Studio[] = [
-  { id: "1", name: "Pilates & Wellness Studio", theme: "light", desc: "Жемчужно-алебастровый UI · Основное пространство" },
-  { id: "2", name: "Barbershop Blade & Co", theme: "dark", desc: "Матовый глубокий графит · Брутальный стиль" },
-];

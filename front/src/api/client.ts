@@ -96,6 +96,18 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     throw new ApiError(402, data ? normalizeError(data) : 'Подписка неактивна', detailCode(data))
   }
 
+  // 400 no_active_studio — токен мультистудийного пользователя без выбранной студии
+  // (get_studio_context, EPIC 7 задача 4): ведём на выбор студии, а не показываем
+  // голую ошибку с любой из десятков вкладок дашборда, откуда мог прийти запрос.
+  if (res.status === 400) {
+    const data: unknown = await res.json().catch(() => null)
+    const code = detailCode(data)
+    if (code === 'no_active_studio' && !window.location.pathname.startsWith('/select-crm')) {
+      window.location.href = '/select-crm'
+    }
+    throw new ApiError(400, data ? normalizeError(data) : 'Некорректный запрос', code)
+  }
+
   // 403 — читаем тело: это может быть отказ доступа ИЛИ лимит тарифа {code, message}.
   if (res.status === 403) {
     const data: unknown = await res.json().catch(() => null)

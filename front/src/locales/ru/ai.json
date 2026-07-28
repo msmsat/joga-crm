@@ -35,6 +35,16 @@
     "instructionStep3": "Разрешите доступ к сообщениям",
     "instructionStep4": "Вы автоматически вернётесь сюда"
   },
+  "whatsapp": {
+    "numberLabel": "Номер WhatsApp Business",
+    "connectLink": "Подключить номер в Уведомлениях →",
+    "gateTooltip": "Сначала подключите номер WhatsApp",
+    "statsPending": "Появится после запуска автоответчика",
+    "instructionTitle": "Как подключить",
+    "instructionStep1": "Откройте раздел Уведомления и подключите канал WhatsApp (токен и Phone Number ID из Meta Business Suite)",
+    "instructionStep2": "Номер подключается один раз — он же используется для уведомлений клиентам",
+    "instructionStep3": "Вернитесь сюда и включите автоответчик"
+  },
   "history": {
     "title": "История чатов",
     "empty": "Начните первый диалог",
@@ -124,6 +134,7 @@
   "errors": {
     "tg_token_required": "Сначала подключите Telegram-бота — токен ещё не сохранён.",
     "ig_not_connected": "Instagram ещё не подключён.",
+    "wa_not_connected": "Номер WhatsApp ещё не подключён — подключите его в Уведомлениях.",
     "assistant_unavailable": "Ассистент временно недоступен — попробуйте позже."
   },
   "toasts": {

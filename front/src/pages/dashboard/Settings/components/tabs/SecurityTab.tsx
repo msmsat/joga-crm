@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { icons } from "../ui/SettingsIcons";
@@ -13,6 +14,7 @@ import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import { ChangePasswordModal } from "../modals/ChangePasswordModal";
 import { DangerZoneModal } from "../modals/DangerZoneModal";
 import { OtpConfirmModal } from "../modals/OtpConfirmModal";
+import { authApi } from "../../../../../api";
 import type { ExportArchivePayload } from "../../../../../api/settings/settings.types";
 
 function fmtLastActive(iso: string, t: TFunction): string {
@@ -34,6 +36,7 @@ type ExportKey = ExportArchivePayload["include"][number];
 
 export default function SecurityTab() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { t } = useTranslation('settings');
   const toast = useToast();
   const security = useSecurity();
@@ -314,9 +317,22 @@ export default function SecurityTab() {
           studioName={studioName}
           onClose={() => setDangerAction(null)}
           onConfirmed={async (otpToken, confirmName) => {
-            const result = await security.deleteAccount.mutateAsync({ confirmName, otpToken });
-            localStorage.removeItem('token');
-            navigate(result.redirect);
+            await security.deleteAccount.mutateAsync({ confirmName, otpToken });
+            // Кэш набит данными удалённой студии — без сброса /select-crm покажет
+            // их же до первого рефетча (EPIC 7, задача 6).
+            qc.clear();
+            // Токен пока не трогаем: /auth/studios скопан по пользователю, не по
+            // studio_id, так что старый (уже без действующей студии) токен всё ещё
+            // годится, чтобы узнать, остались ли у пользователя другие студии.
+            const studios = await authApi.getStudios();
+            if (studios.length === 0) {
+              // Удалённая студия была единственной — валидного studio_id для этого
+              // пользователя больше нет вообще, вести на /select-crm некуда.
+              localStorage.removeItem('token');
+              navigate('/register');
+            } else {
+              navigate('/select-crm');
+            }
           }}
         />
       )}

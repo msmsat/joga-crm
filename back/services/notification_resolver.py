@@ -18,7 +18,7 @@ from models import NotificationEventToggle, StudioIntegration, StudioNotificatio
 from services.notification_catalog import CATALOG
 from services.notifier import NOTIFY_CHANNELS
 
-_CHANNEL_INTEGRATION = {"telegram": "tg_notify", "whatsapp": "wa_notify"}
+_CHANNEL_INTEGRATION = {"telegram": "tg_notify", "whatsapp": "wa_notify", "instagram": "ig_dm"}
 
 
 async def studio_channels(db: AsyncSession, studio_id: int, role: str, event_id: str, default_channels: tuple[str, ...]) -> set[str]:
@@ -62,8 +62,8 @@ async def _enabled_global(db: AsyncSession, studio_id: int) -> set[str]:
 
 async def connected_channels(db: AsyncSession, studio_id: int) -> set[str]:
     """email всегда «подключён» — уходит через платформенный SMTP (см. deliver()),
-    отдельной интеграции не требует. telegram/whatsapp — только если StudioIntegration
-    реально подключена (tg_notify/wa_notify)."""
+    отдельной интеграции не требует. telegram/whatsapp/instagram — только если
+    StudioIntegration реально подключена (tg_notify/wa_notify/ig_dm)."""
     connected = {"email"}
     kinds = (await db.execute(
         select(StudioIntegration.integration_type).where(

@@ -20,7 +20,7 @@ export default function AIPage() {
   } = useAssistant();
   const {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, isVerifyingTelegram,
-    igConnected, isConnectingInstagram,
+    igConnected, isConnectingInstagram, waConnected,
     toggleChannel, updateAISettings, saveChannelFields, verifyTelegram, disconnectTelegram,
     connectInstagram, disconnectInstagram,
   } = useAIAgent();
@@ -66,12 +66,15 @@ export default function AIPage() {
         telegramConnected={tgConnected}
         instagramEnabled={agentConfig.instagram.enabled}
         instagramConnected={igConnected}
+        whatsappEnabled={agentConfig.whatsapp.enabled}
+        whatsappConnected={waConnected}
         onNewChat={newChat}
         onLoadSession={loadSession}
         onDeleteSession={deleteSession}
         onUpdateSettings={updateAISettings}
         onToggleTelegram={() => toggleChannel('telegram')}
         onToggleInstagram={() => toggleChannel('instagram')}
+        onToggleWhatsapp={() => toggleChannel('whatsapp')}
         onOpenAgentSetup={() => isLoaded && setAgentModalOpen(true)}
       />
 
@@ -92,6 +95,7 @@ export default function AIPage() {
           isVerifyingTelegram={isVerifyingTelegram}
           igConnected={igConnected}
           isConnectingInstagram={isConnectingInstagram}
+          waConnected={waConnected}
           onToggleChannel={toggleChannel}
           onSave={saveChannelFields}
           onVerifyTelegram={verifyTelegram}

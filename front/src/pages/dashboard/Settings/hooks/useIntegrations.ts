@@ -22,6 +22,15 @@ export function useIntegrations() {
     queryFn: () => settingsApi.getIntegrations(),
   });
 
+  // Тот же ключ, что и useGeneralSettings/useStudioCurrency — почти всегда уже в
+  // кэше. Нужен только для предупреждения «укажите часовой пояс» под Google-картой
+  // (эпик 6, эдж-кейс: Studio.timezone = null -> бэк шлёт UTC, событие уезжает).
+  const generalQuery = useQuery({
+    queryKey: queryKeys.studioSettings,
+    queryFn: () => settingsApi.getGeneral(),
+    staleTime: 5 * 60_000,
+  });
+
   const google = integrationsQuery.data?.find(i => i.type === "google_calendar") ?? null;
 
   // Список календарей нужен только пока открыта карточка Google — не тянем его
@@ -130,6 +139,7 @@ export function useIntegrations() {
     integrations: integrationsQuery.data ?? [],
     loading: integrationsQuery.isPending,
     loadError: integrationsQuery.isError,
+    studioTimezone: generalQuery.data?.timezone ?? null,
     expandedIntegration, setExpandedIntegration,
     calendars: calendarsQuery.data ?? [],
     calendarsLoading: calendarsQuery.isFetching,

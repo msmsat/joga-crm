@@ -10,7 +10,7 @@ import { billingApi } from '../api/billing/billing.api';
 import type { BillingPlan } from '../api/billing/billing.types';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
-import { ToastProvider, Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
+import { Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
 
 // Активная подписка = trial или active; всё прочее (none, истёкшая) → пейволл.
 const ACTIVE_STATUSES = ['trial', 'active'];
@@ -69,7 +69,6 @@ export default function DashboardLayout() {
     subActive === false && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
 
   return (
-    <ToastProvider>
     <ThemeProvider>
     <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
       display: 'flex',
@@ -112,6 +111,5 @@ export default function DashboardLayout() {
       <PlanLimitModal />
     </div>
     </ThemeProvider>
-    </ToastProvider>
   );
 }

@@ -5,9 +5,9 @@ import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
 import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup'
 import { useTranslation } from 'react-i18next'
-import type { WaConnectPayload } from '../../../../api/notifications/notifications.types'
+import type { IgConnectChannelPayload, WaConnectPayload } from '../../../../api/notifications/notifications.types'
 
-export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'email') => void) {
+export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'instagram' | 'email') => void) {
   const qc = useQueryClient()
   const toast = useToast()
   const { t } = useTranslation()
@@ -79,6 +79,18 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onError,
   })
 
+  const connectInstagram = useMutation({
+    mutationFn: (payload: IgConnectChannelPayload) => notificationsApi.connectInstagram(payload),
+    onSuccess: () => { invalidate(); onConnected?.('instagram'); toast.success(t('common:actions.saved', 'Подключено')) },
+    onError,
+  })
+
+  const disconnectInstagram = useMutation({
+    mutationFn: () => notificationsApi.disconnectInstagram(),
+    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onError,
+  })
+
   return {
     channels: data,
     loading: isPending,
@@ -89,5 +101,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     verifyEmailCode,
     connectWhatsApp,
     disconnectWhatsApp,
+    connectInstagram,
+    disconnectInstagram,
   }
 }

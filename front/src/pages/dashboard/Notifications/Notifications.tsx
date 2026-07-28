@@ -8,14 +8,15 @@ import NotificationMatrix from './components/sections/NotificationMatrix';
 import { TgTokenModal } from './components/modals/TgTokenModal';
 import { EmailVerifyModal } from './components/modals/EmailVerifyModal';
 import { WaConnectModal } from './components/modals/WaConnectModal';
+import { IgConnectModal } from './components/modals/IgConnectModal';
 
-const MODAL_BY_CHANNEL: Record<'telegram' | 'whatsapp' | 'email', 'tg' | 'wa' | 'email'> = {
-  telegram: 'tg', whatsapp: 'wa', email: 'email',
+const MODAL_BY_CHANNEL: Record<'telegram' | 'whatsapp' | 'instagram' | 'email', 'tg' | 'wa' | 'ig' | 'email'> = {
+  telegram: 'tg', whatsapp: 'wa', instagram: 'ig', email: 'email',
 };
 
 export default function Notifications() {
   const { t } = useTranslation('notifications');
-  const [openModal, setOpenModal] = useState<'tg' | 'email' | 'wa' | null>(null);
+  const [openModal, setOpenModal] = useState<'tg' | 'email' | 'wa' | 'ig' | null>(null);
   const enableChannel = useEnableChannel();
   const ci = useChannelIntegrations(enableChannel);
   const h = useNotifications(ci.channels, key => setOpenModal(MODAL_BY_CHANNEL[key]));
@@ -68,6 +69,14 @@ export default function Notifications() {
           status={ci.channels?.whatsapp}
           connectMut={ci.connectWhatsApp}
           disconnectMut={ci.disconnectWhatsApp}
+          onClose={() => setOpenModal(null)}
+        />
+      )}
+      {openModal === 'ig' && (
+        <IgConnectModal
+          status={ci.channels?.instagram}
+          connectMut={ci.connectInstagram}
+          disconnectMut={ci.disconnectInstagram}
           onClose={() => setOpenModal(null)}
         />
       )}

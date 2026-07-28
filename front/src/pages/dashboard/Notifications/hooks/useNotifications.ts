@@ -48,7 +48,7 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   useEffect(() => {
     if (!settingsQ.data) return;
     const data = settingsQ.data;
-    hydrateChannels({ telegram: data.telegram, whatsapp: data.whatsapp, email: data.email });
+    hydrateChannels({ telegram: data.telegram, whatsapp: data.whatsapp, instagram: data.instagram, email: data.email });
   }, [settingsQ.data, hydrateChannels]);
 
   // Канал сохраняется сразу (оптимистично); при ошибке откатываем + тост.
@@ -164,5 +164,6 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
   if (key === 'telegram') return statuses.telegram.connected;
   if (key === 'email') return statuses.email.connected;
   if (key === 'whatsapp') return statuses.whatsapp.connected;
+  if (key === 'instagram') return statuses.instagram.connected;
   return false;
 }

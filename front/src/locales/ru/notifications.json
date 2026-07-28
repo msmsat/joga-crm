@@ -145,5 +145,29 @@
     "disconnectMessage": "Уведомления клиентам и сотрудникам перестанут отправляться в этот канал.",
     "close": "Закрыть",
     "cancel": "Отмена"
+  },
+  "ig": {
+    "title": "Instagram",
+    "subtitleConnected": "Канал подключён",
+    "subtitleDisconnected": "Подключение через Meta Graph API",
+    "connected": "Подключено",
+    "howToConnect": "Как подключить:",
+    "steps": {
+      "1": "Свяжите Instagram-аккаунт студии со страницей Facebook — без этого Direct API недоступен",
+      "2a": "Создайте приложение в",
+      "2link": "Meta for Developers",
+      "2b": "с продуктом Instagram и правами instagram_basic, instagram_manage_messages",
+      "3": "Скопируйте токен доступа и ID бизнес-аккаунта Instagram"
+    },
+    "tokenLabel": "Токен доступа",
+    "igUserIdLabel": "ID бизнес-аккаунта Instagram",
+    "windowWarning": "Директ работает не для всех",
+    "windowNotice": "Сообщение уходит только тем, кто уже писал студии в Direct, и только в 24-часовом окне диалога — у клиента должен быть заполнен Instagram ID.",
+    "connect": "Подключить",
+    "disconnect": "Отключить",
+    "disconnectTitle": "Отключить Instagram?",
+    "disconnectMessage": "Уведомления клиентам и сотрудникам перестанут отправляться в этот канал.",
+    "close": "Закрыть",
+    "cancel": "Отмена"
   }
 }

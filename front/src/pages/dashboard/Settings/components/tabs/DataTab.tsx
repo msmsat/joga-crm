@@ -1,174 +1,65 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import SectionHeader from "../ui/SectionHeader";
-import StatusBadge from "../ui/StatusBadge";
-import Toggle from "../ui/form/Toggle";
-import { Select, useToast } from "../../../../../components/ui/index";
+import { EXPORT_KINDS, useData } from "../../hooks/useData";
 
 const dataIcons = {
-  database: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>,
   download: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
   loader: <svg className="spin-anim" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.2" /><path d="M4 12a8 8 0 0 1 8-8" /></svg>,
-  clock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>,
+};
+
+const dateInputStyle: React.CSSProperties = {
+  padding: "7px 10px", borderRadius: "8px", border: "1px solid var(--border)",
+  fontSize: "12.5px", fontFamily: "inherit", color: "var(--onyx)", background: "var(--bg-card)",
 };
 
 export default function DataTab() {
   const { t } = useTranslation('settings');
-  const toast = useToast();
-  const retentionOptions = t('data.storage.retentionOptions', { returnObjects: true }) as string[];
-  const [autoBackup, setAutoBackup] = useState(true);
-  const [backupRetention, setBackupRetention] = useState(retentionOptions[1]);
-  const [isCreatingBackup, setIsCreatingBackup] = useState(false);
-  const [isDownloadingBackup, setIsDownloadingBackup] = useState(false);
-  const [exportingItem, setExportingItem] = useState<number | null>(null);
-
-  const handleCreateBackupNow = () => {
-    setIsCreatingBackup(true);
-    setTimeout(() => {
-      setIsCreatingBackup(false);
-      toast.success(t('data.storage.toast.backupCreated'));
-    }, 2000);
-  };
-
-  const handleDownloadBackupFile = () => {
-    setIsDownloadingBackup(true);
-    setTimeout(() => {
-      setIsDownloadingBackup(false);
-      toast.success(t('data.storage.toast.fileDownloaded'));
-    }, 1500);
-  };
-
-  const handleTriggerExport = (id: number, name: string) => {
-    setExportingItem(id);
-    setTimeout(() => {
-      setExportingItem(null);
-      toast.success(t('data.export.toast', { name }));
-    }, 1800);
-  };
-
-  const storageCategories = [
-    { label: t('data.storage.categories.clients'), size: "0.8 ГБ", color: "var(--peach)" },
-    { label: t('data.storage.categories.media'), size: "1.4 ГБ", color: "#9BB5D8" },
-    { label: t('data.storage.categories.docs'), size: "0.2 ГБ", color: "#A3C9A8" },
-  ];
-
-  const exportItems = [
-    { id: 1, name: t('data.export.items.clients.name'), format: t('data.export.items.clients.format'), size: "4.2 МБ" },
-    { id: 2, name: t('data.export.items.journal.name'), format: t('data.export.items.journal.format'), size: "12.8 МБ" },
-    { id: 3, name: t('data.export.items.finances.name'), format: t('data.export.items.finances.format'), size: "1.1 МБ" },
-    { id: 4, name: t('data.export.items.ai.name'), format: t('data.export.items.ai.format'), size: "8.4 МБ" },
-  ];
+  const { dateFrom, setDateFrom, dateTo, setDateTo, estimates, exportingKind, exportKind } = useData();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={dataIcons.database} title={t('data.storage.title')} subtitle={t('data.storage.subtitle')} accent />
+        <SectionHeader icon={dataIcons.download} title={t('data.export.title')} subtitle={t('data.export.subtitle')} accent />
 
-        <div style={{ marginBottom: "24px", background: "rgba(0,0,0,0.01)", padding: "18px 20px", borderRadius: "14px", border: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.used')}</span>
-            <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--onyx)", fontFamily: "monospace" }}>2.4 ГБ / 10 ГБ</span>
-          </div>
-
-          <div style={{ height: "8px", borderRadius: "100px", background: "rgba(26,26,26,0.06)", overflow: "hidden", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)" }}>
-            <div style={{ height: "100%", width: "24%", background: "linear-gradient(90deg, var(--peach) 0%, #f07050 100%)", borderRadius: "100px", boxShadow: "0 2px 8px rgba(252,174,145,0.4)" }} />
-          </div>
-
-          <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
-            {storageCategories.map((d, i) => (
-              <div
-                key={i}
-                onClick={() => toast.info(t('data.storage.categoryToast', { label: d.label, size: d.size }))}
-                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid rgba(26,26,26,0.04)", cursor: "pointer", transition: "all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)", boxShadow: "0 2px 4px rgba(0,0,0,0.01)" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.04)"; }}
-              >
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: d.color }} />
-                <span style={{ fontSize: "11.5px", color: "var(--muted)", fontWeight: 600 }}>{d.label}</span>
-                <span style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--onyx)", fontFamily: "monospace" }}>{d.size}</span>
-              </div>
-            ))}
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={dateInputStyle} />
+          <span style={{ color: "var(--muted)", fontSize: "12px" }}>—</span>
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={dateInputStyle} />
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={() => { setDateFrom(""); setDateTo(""); }}
+              style={{ padding: "7px 12px", borderRadius: "8px", border: "1px solid var(--border)", background: "transparent", color: "var(--muted)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+            >
+              {t('data.export.clearFilter')}
+            </button>
+          )}
         </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginBottom: "20px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px", background: autoBackup ? "rgba(252,174,145,0.03)" : "transparent", transition: "background 0.2s" }}>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.autoBackup.title')}</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('data.storage.autoBackup.sub')}</div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <StatusBadge type={autoBackup ? "active" : "warning"}>{autoBackup ? t('data.storage.autoBackup.on') : t('data.storage.autoBackup.off')}</StatusBadge>
-              <Toggle checked={autoBackup} onChange={() => setAutoBackup(!autoBackup)} />
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: "10px" }}>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('data.storage.lastBackup.title')}</div>
-              <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('data.storage.lastBackup.sub')}</div>
-            </div>
-            <span style={{ fontSize: "11.5px", fontWeight: 700, color: "var(--muted)", display: "flex", alignItems: "center", gap: "4px" }}>
-              {dataIcons.clock} {t('data.storage.lastBackup.agoHours')}
-            </span>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", gap: "16px" }}>
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('data.storage.retention')}</div>
-            <div style={{ width: "180px" }}>
-              <Select value={backupRetention} onChange={setBackupRetention} options={retentionOptions.map(v => ({ value: v, label: v }))} />
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-          <button
-            onClick={handleDownloadBackupFile}
-            disabled={isDownloadingBackup}
-            style={{ display: "flex", alignItems: "center", gap: "7px", padding: "9px 18px", borderRadius: "10px", background: "rgba(252,174,145,0.08)", border: "1px solid rgba(252,174,145,0.2)", color: "var(--peach)", fontSize: "12px", fontWeight: 700, cursor: isDownloadingBackup ? "default" : "pointer", transition: "all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)" }}
-            onMouseEnter={e => { if (!isDownloadingBackup) { e.currentTarget.style.background = "var(--peach)"; e.currentTarget.style.color = "white"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
-            onMouseLeave={e => { if (!isDownloadingBackup) { e.currentTarget.style.background = "rgba(252,174,145,0.08)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "none"; } }}
-          >
-            {isDownloadingBackup ? dataIcons.loader : dataIcons.download}
-            {isDownloadingBackup ? t('data.storage.downloading') : t('data.storage.download')}
-          </button>
-
-          <button
-            onClick={handleCreateBackupNow}
-            disabled={isCreatingBackup}
-            style={{ display: "flex", alignItems: "center", gap: "7px", padding: "9px 18px", borderRadius: "10px", border: "1px solid rgba(26,26,26,0.1)", background: isCreatingBackup ? "rgba(163,201,168,0.12)" : "#FFFFFF", borderColor: isCreatingBackup ? "rgba(163,201,168,0.3)" : "rgba(26,26,26,0.1)", color: isCreatingBackup ? "#5A9A65" : "var(--onyx)", fontSize: "12px", fontWeight: 700, cursor: isCreatingBackup ? "default" : "pointer", transition: "all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1)", boxShadow: "0 2px 6px rgba(0,0,0,0.02)" }}
-            onMouseEnter={e => { if (!isCreatingBackup) { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
-            onMouseLeave={e => { if (!isCreatingBackup) { e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; } }}
-          >
-            {isCreatingBackup
-              ? dataIcons.loader
-              : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-            }
-            {isCreatingBackup ? t('data.storage.generating') : t('data.storage.generate')}
-          </button>
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={dataIcons.download} title={t('data.export.title')} subtitle={t('data.export.subtitle')} />
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          {exportItems.map((e) => {
-            const isExporting = exportingItem === e.id;
+          {EXPORT_KINDS.map((kind) => {
+            const estimate = estimates[kind];
+            const rows = estimate.data?.rows ?? 0;
+            const isEstimating = estimate.isLoading;
+            const isExporting = exportingKind === kind;
+            const isEmpty = !isEstimating && rows === 0;
+            const disabled = isExporting || isEstimating || isEmpty;
+
             return (
               <div
-                key={e.id}
-                onClick={() => !isExporting && handleTriggerExport(e.id, e.name)}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderRadius: "12px", border: isExporting ? "1.5px solid var(--peach)" : "1.5px solid rgba(26,26,26,0.06)", background: isExporting ? "rgba(252,174,145,0.02)" : "#FDFCFB", cursor: isExporting ? "default" : "pointer", transition: "all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
-                onMouseEnter={el => { if (!isExporting) { el.currentTarget.style.borderColor = "var(--peach)"; el.currentTarget.style.transform = "translateY(-1px)"; el.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.02)"; } }}
-                onMouseLeave={el => { if (!isExporting) { el.currentTarget.style.borderColor = "rgba(26,26,26,0.06)"; el.currentTarget.style.transform = "none"; el.currentTarget.style.boxShadow = "none"; } }}
+                key={kind}
+                onClick={() => !disabled && exportKind(kind)}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderRadius: "12px", border: isExporting ? "1.5px solid var(--peach)" : "1.5px solid rgba(26,26,26,0.06)", background: isExporting ? "rgba(252,174,145,0.02)" : "#FDFCFB", cursor: disabled ? "default" : "pointer", opacity: isEmpty ? 0.55 : 1, transition: "all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+                onMouseEnter={el => { if (!disabled) { el.currentTarget.style.borderColor = "var(--peach)"; el.currentTarget.style.transform = "translateY(-1px)"; el.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.02)"; } }}
+                onMouseLeave={el => { if (!disabled) { el.currentTarget.style.borderColor = "rgba(26,26,26,0.06)"; el.currentTarget.style.transform = "none"; el.currentTarget.style.boxShadow = "none"; } }}
               >
                 <div>
-                  <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{e.name}</div>
-                  <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>{e.format} · <span style={{ fontFamily: "monospace", fontWeight: 600 }}>{e.size}</span></div>
+                  <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t(`data.export.items.${kind}.name`)}</div>
+                  <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "3px" }}>
+                    {isEstimating ? t('data.export.loading') : isEmpty ? t('data.export.empty') : t('data.export.rows', { count: rows })}
+                  </div>
                 </div>
 
-                <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: isExporting ? "transparent" : "#FFFFFF", border: "1px solid rgba(26,26,26,0.08)", color: isExporting ? "var(--peach)" : "var(--muted)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: isExporting ? "transparent" : "#FFFFFF", border: "1px solid rgba(26,26,26,0.08)", color: isExporting ? "var(--peach)" : "var(--muted)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.2s ease" }}>
                   {isExporting ? dataIcons.loader : dataIcons.download}
                 </div>
               </div>

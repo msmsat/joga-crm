@@ -65,6 +65,7 @@ export interface ChannelStatus {
 export interface NotifyChannelsStatus {
   telegram: ChannelStatus
   whatsapp: ChannelStatus
+  instagram: ChannelStatus
   email: ChannelStatus
 }
 
@@ -78,4 +79,9 @@ export interface WaConnectPayload {
   token: string
   phone_number_id: string
   waba_id?: string | null
+}
+
+export interface IgConnectChannelPayload {
+  token: string
+  ig_user_id: string
 }

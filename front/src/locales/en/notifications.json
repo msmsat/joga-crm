@@ -145,5 +145,29 @@
     "disconnectMessage": "Clients and staff will stop receiving notifications through this channel.",
     "close": "Close",
     "cancel": "Cancel"
+  },
+  "ig": {
+    "title": "Instagram",
+    "subtitleConnected": "Channel connected",
+    "subtitleDisconnected": "Connect via Meta Graph API",
+    "connected": "Connected",
+    "howToConnect": "How to connect:",
+    "steps": {
+      "1": "Link the studio's Instagram account to a Facebook page — the Direct API requires it",
+      "2a": "Create an app in",
+      "2link": "Meta for Developers",
+      "2b": "with the Instagram product and the instagram_basic, instagram_manage_messages permissions",
+      "3": "Copy the access token and the Instagram business account ID"
+    },
+    "tokenLabel": "Access token",
+    "igUserIdLabel": "Instagram business account ID",
+    "windowWarning": "Direct doesn't reach everyone",
+    "windowNotice": "Messages only reach people who have already messaged the studio on Direct, and only within the 24-hour conversation window — the client must have an Instagram ID on file.",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "disconnectTitle": "Disconnect Instagram?",
+    "disconnectMessage": "Clients and staff will stop receiving notifications through this channel.",
+    "close": "Close",
+    "cancel": "Cancel"
   }
 }

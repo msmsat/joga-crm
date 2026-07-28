@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input, Button, Tooltip, ConfirmModal } from '../../../../../components/ui/index';
-import type { AgentConfig, AgentTone } from '../../types';
+import type { AgentChannel, AgentConfig, AgentTone } from '../../types';
 import PulseRingSVG from '../animations/PulseRingSVG';
 import CustomSelect from '../CustomSelect';
 import styles from '../../AI.module.css';
@@ -15,7 +16,8 @@ interface AgentSetupModalProps {
   isVerifyingTelegram: boolean;
   igConnected: boolean;
   isConnectingInstagram: boolean;
-  onToggleChannel: (channel: 'telegram' | 'instagram') => void;
+  waConnected: boolean;
+  onToggleChannel: (channel: AgentChannel) => void;
   onSave: (draft: AgentConfig) => void;
   onVerifyTelegram: (token: string) => void;
   onDisconnectTelegram: () => Promise<void>;
@@ -145,6 +147,7 @@ export default function AgentSetupModal({
   isVerifyingTelegram,
   igConnected,
   isConnectingInstagram,
+  waConnected,
   onToggleChannel,
   onSave,
   onVerifyTelegram,
@@ -154,20 +157,21 @@ export default function AgentSetupModal({
   onClose,
 }: AgentSetupModalProps) {
   const { t, i18n } = useTranslation('ai');
-  const [activeTab, setActiveTab] = useState<'telegram' | 'instagram' | 'prompt'>('telegram');
+  const [activeTab, setActiveTab] = useState<AgentChannel | 'prompt'>('telegram');
   // Тон/лимит/офчасы/промпт правятся локально до «Сохранить» — enabled/статистика
   // всегда берутся из живого config (тумблер шлёт PATCH сразу, см. useAIAgent).
   const [draft, setDraft] = useState<AgentConfig>(config);
   const [confirmDisconnect, setConfirmDisconnect] = useState<'telegram' | 'instagram' | null>(null);
 
-  const updateChannel = (channel: 'telegram' | 'instagram', field: string, value: string | number | boolean | AgentTone) => {
+  const updateChannel = (channel: AgentChannel, field: string, value: string | number | boolean | AgentTone) => {
     setDraft(prev => ({ ...prev, [channel]: { ...prev[channel], [field]: value } }));
   };
   const updateSystemPrompt = (prompt: string) => setDraft(prev => ({ ...prev, systemPrompt: prompt }));
 
   // Не даём уйти на сервер невалидному tg_max_length/ig_max_length (бэк: 50–4000).
   const maxLengthInvalid = (n: number) => n < 50 || n > 4000;
-  const canSave = !maxLengthInvalid(draft.telegram.maxLength) && !maxLengthInvalid(draft.instagram.maxLength);
+  const canSave = !maxLengthInvalid(draft.telegram.maxLength) && !maxLengthInvalid(draft.instagram.maxLength)
+    && !maxLengthInvalid(draft.whatsapp.maxLength);
 
   // username — только для чтения (заполняется verify-эндпоинтом), не редактируется вручную —
   // берём из живого config; token остаётся в draft, пока не подтверждён «Проверить и подключить».
@@ -176,6 +180,10 @@ export default function AgentSetupModal({
     instagram: {
       ...draft.instagram, enabled: config.instagram.enabled, handledCount: config.instagram.handledCount,
       avgRating: config.instagram.avgRating, username: config.instagram.username, expiresAt: config.instagram.expiresAt,
+    },
+    whatsapp: {
+      ...draft.whatsapp, enabled: config.whatsapp.enabled, handledCount: config.whatsapp.handledCount,
+      avgRating: config.whatsapp.avgRating, username: config.whatsapp.username,
     },
   };
 
@@ -256,6 +264,26 @@ export default function AgentSetupModal({
     </div>
   );
 
+  // У WhatsApp-агента нет своего подключения: номер один на студию и живёт в
+  // Уведомлениях / Настройках → Интеграции. Здесь — только статус и ссылка туда.
+  const whatsappTokenArea = (
+    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+      <label className={styles.formLabel}>{t('whatsapp.numberLabel')}</label>
+      {waConnected ? (
+        <div className={styles.tokenConnectedRow} style={{ marginTop: 0 }}>
+          <span className={styles.tokenBadge}>{display.whatsapp.username}</span>
+          <span style={{ fontSize: 12, color: '#5BAB72', fontWeight: 600 }}>
+            {t('common:status.connected', 'Подключён')}
+          </span>
+        </div>
+      ) : (
+        <Link to="/dashboard/notifications" className={styles.tokenDisconnectBtn} style={{ textDecoration: 'none', width: 'fit-content' }}>
+          {t('whatsapp.connectLink')}
+        </Link>
+      )}
+    </div>
+  );
+
   return (
     <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
@@ -275,6 +303,7 @@ export default function AgentSetupModal({
           {([
             { id: 'telegram', label: 'Telegram' },
             { id: 'instagram', label: 'Instagram Direct' },
+            { id: 'whatsapp', label: 'WhatsApp' },
             { id: 'prompt', label: t('agents.tabPrompt') },
           ] as const).map(tab => (
             <button
@@ -283,7 +312,7 @@ export default function AgentSetupModal({
               className={`${styles.modalTab} ${activeTab === tab.id ? styles.modalTabActive : ''}`}
             >
               {tab.label}
-              {(tab.id === 'telegram' || tab.id === 'instagram') && display[tab.id].enabled && (
+              {tab.id !== 'prompt' && display[tab.id].enabled && (
                 <PulseRingSVG active size={7} />
               )}
             </button>
@@ -345,6 +374,33 @@ export default function AgentSetupModal({
               <div>2. {t('instagram.instructionStep2')}</div>
               <div>3. {t('instagram.instructionStep3')}</div>
               <div>4. {t('instagram.instructionStep4')}</div>
+            </div>
+          )}
+
+          {activeTab === 'whatsapp' && (
+            <ChannelSection
+              label="WhatsApp"
+              icon={
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+              }
+              config={display.whatsapp}
+              onUpdate={(field, value) => updateChannel('whatsapp', field, value)}
+              onToggle={() => onToggleChannel('whatsapp')}
+              showOffHours
+              tokenArea={whatsappTokenArea}
+              toggleDisabled={!waConnected}
+              toggleDisabledReason={t('whatsapp.gateTooltip')}
+              statsPendingCaption={t('whatsapp.statsPending')}
+            />
+          )}
+          {activeTab === 'whatsapp' && !waConnected && (
+            <div className={styles.promptHint} style={{ marginTop: 14 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('whatsapp.instructionTitle')}</div>
+              <div>1. {t('whatsapp.instructionStep1')}</div>
+              <div>2. {t('whatsapp.instructionStep2')}</div>
+              <div>3. {t('whatsapp.instructionStep3')}</div>
             </div>
           )}
 

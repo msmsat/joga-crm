@@ -39,6 +39,7 @@ class ChannelStatus(BaseModel):
 class NotifyChannelsStatus(BaseModel):
     telegram: ChannelStatus
     whatsapp: ChannelStatus
+    instagram: ChannelStatus
     email: ChannelStatus
 
 

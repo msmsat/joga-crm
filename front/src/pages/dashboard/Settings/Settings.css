@@ -1,6 +1,6 @@
 /* Plain (non-module) global CSS — these keyframes/classes are referenced by
    raw name from several files under this feature (Settings.tsx, DataTab.tsx,
-   WorkspaceSelector.tsx, BillingTab.tsx) via string classNames or inline
+   SelectCrm.tsx, BillingTab.tsx) via string classNames or inline
    style={{ animation: "..." }}, so they must stay unscoped. A .module.css
    file would hash both the @keyframes names AND any "animation: <ident>"
    value that looks like a local reference, breaking every cross-file usage. */

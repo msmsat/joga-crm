@@ -29,6 +29,15 @@ class AISettingsRead(BaseSchema):
     ig_off_hours_only: bool
     ig_handled_count: int
     ig_avg_rating: float
+    wa_enabled: bool
+    wa_tone: str
+    wa_max_length: int
+    wa_off_hours_only: bool
+    wa_handled_count: int
+    wa_avg_rating: float
+    # Не колонка StudioAISettings, а срез StudioIntegration("wa_notify"): номер
+    # подключён в Уведомлениях/Настройках, здесь он только гейт тумблера.
+    wa_phone_number: Optional[str] = None
 
 
 class AISettingsUpdate(BaseSchema):
@@ -42,8 +51,13 @@ class AISettingsUpdate(BaseSchema):
     ig_tone: Optional[Tone] = None
     ig_max_length: Optional[int] = Field(None, ge=50, le=4000)
     ig_off_hours_only: Optional[bool] = None
+    wa_enabled: Optional[bool] = None
+    wa_tone: Optional[Tone] = None
+    wa_max_length: Optional[int] = Field(None, ge=50, le=4000)
+    wa_off_hours_only: Optional[bool] = None
     # tg_token/ig_* подключения не сюда: токен TG пишет verify-эндпоинт,
-    # Instagram — OAuth-callback (эпик AI-3). PATCH не даёт вписать токен руками.
+    # Instagram — OAuth-callback (эпик AI-3), WhatsApp — StudioIntegration
+    # ("wa_notify"). PATCH не даёт вписать токен руками.
 
 
 class TelegramTokenIn(BaseSchema):

@@ -12,6 +12,7 @@ import type {
   OtpVerifyResponse,
   RegisterPayload,
   ResetPasswordPayload,
+  StudioListItem,
   TokenResponse,
   UpdateProfilePayload,
   UserMe,
@@ -51,6 +52,17 @@ export const authApi = {
 
   onboarding: (payload: OnboardingPayload) =>
     client.post<TokenResponse>('/auth/onboarding', payload),
+
+  // EPIC 7: мультистудийность — список студий пользователя, переключение между ними
+  // и создание доп. студии тем же мастером (/onboarding?new=1 — задача 5).
+  getStudios: () =>
+    client.get<StudioListItem[]>('/auth/studios'),
+
+  selectStudio: (studioId: number) =>
+    client.post<TokenResponse>('/auth/select-studio', { studio_id: studioId }),
+
+  createStudio: (payload: OnboardingPayload) =>
+    client.post<TokenResponse>('/auth/studios', payload),
 
   // EPIC 5, задача 3: единый OTP-механизм для опасных действий внутри аккаунта.
   requestOtp: (action: OtpAction) =>

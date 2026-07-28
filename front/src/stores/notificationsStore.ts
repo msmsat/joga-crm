@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type NotifChannel = 'telegram' | 'whatsapp' | 'email';
+export type NotifChannel = 'telegram' | 'whatsapp' | 'instagram' | 'email';
 export type NotifRole = 'client' | 'trainer' | 'admin' | 'owner';
 
 type NotificationsUIState = {
@@ -18,7 +18,7 @@ export const useNotificationsStore = create<NotificationsUIState>()(
   persist(
     (set) => ({
       activeRole: 'client',
-      channels: { telegram: false, whatsapp: false, email: false },
+      channels: { telegram: false, whatsapp: false, instagram: false, email: false },
       setActiveRole: (activeRole) => set({ activeRole }),
       setChannel: (k, v) => set((s) => ({ channels: { ...s.channels, [k]: v } })),
       hydrateChannels: (channels) => set({ channels }),

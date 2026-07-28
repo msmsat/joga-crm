@@ -102,7 +102,12 @@ async def get_studio_context(
         if not memberships:
             raise HTTPException(status_code=403, detail="Пользователь не состоит ни в одной студии")
         if len(memberships) > 1:
-            raise HTTPException(status_code=400, detail="Не выбрана активная студия")
+            # code машиночитаемый (не голая строка) — фронт ловит его глобально в client.ts
+            # и ведёт на /select-crm, а не показывает голую ошибку (EPIC 7, задача 4).
+            raise HTTPException(status_code=400, detail={
+                "code": "no_active_studio",
+                "message": "Не выбрана активная студия",
+            })
         m = memberships[0]
         studio_id, role = m.studio_id, m.role
 

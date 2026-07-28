@@ -19,8 +19,11 @@ export interface ChannelAgentConfig {
 export interface AgentConfig {
   telegram: ChannelAgentConfig;
   instagram: ChannelAgentConfig;
+  whatsapp: ChannelAgentConfig;
   systemPrompt: string;
 }
+
+export type AgentChannel = 'telegram' | 'instagram' | 'whatsapp';
 
 export interface AIUISettings {
   model: AIModel;

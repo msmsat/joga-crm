@@ -8,9 +8,10 @@ notify() сам решает:
   - From (от кого): сама студия — токены каналов берутся из её StudioIntegration;
   - Message (что): _render(event_id, context, lang, currency) — текст на языке
     студии (Studio.language, ru/en) и в её валюте (Studio.currency);
-  - Network (куда): NOTIFY_CHANNELS = ("email", "telegram", "whatsapp") —
-    только каналы, включённые и глобально (StudioNotificationSettings), и в
-    матрице события (NotificationEventToggle); sms/push/instagram не участвуют.
+  - Network (куда): NOTIFY_CHANNELS = ("email", "telegram", "whatsapp",
+    "instagram") — только каналы, включённые и глобально
+    (StudioNotificationSettings), и в матрице события (NotificationEventToggle);
+    sms/push не участвуют.
 
 notify не должен валить основной запрос: вся отправка в try/except с логом.
 Возвращает True, если хотя бы один канал реально доставил сообщение.
@@ -23,10 +24,10 @@ chat_id, поэтому это не часть матрицы notify(), а то�
 
 deliver(db, channel, recipient, subject, text, html, *, studio_id) — диспетчер
 каналов для сценариев лояльности (V5-5, задача 6) и фан-аута notify(): email,
-telegram и whatsapp реально шлют по реквизитам студии из StudioIntegration
-(N-2). recipient — Recipient(id, email, tg_id, phone); Client/User подходят
-под этот интерфейс напрямую. Нет токена канала или нужного поля у получателя
-(email/tg_id/phone) → False.
+telegram, whatsapp и instagram реально шлют по реквизитам студии из
+StudioIntegration (N-2). recipient — Recipient(id, email, tg_id, phone, ig_id);
+Client/User подходят под этот интерфейс напрямую. Нет токена канала или нужного
+поля у получателя (email/tg_id/phone/ig_id) → False.
 """
 import logging
 import os
@@ -45,7 +46,7 @@ from services.mailer import send_email
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-NOTIFY_CHANNELS = ("email", "telegram", "whatsapp")
+NOTIFY_CHANNELS = ("email", "telegram", "whatsapp", "instagram")
 _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴"}
 GRAPH = "https://graph.facebook.com/v20.0"
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
@@ -64,13 +65,14 @@ KNOWN_EVENT_IDS = frozenset({
 
 class Recipient(NamedTuple):
     """Лёгкий получатель уведомления — общий для клиента и сотрудника (N-9.2).
-    id — для логов; email/tg_id/phone — реквизиты каналов, любое может быть
-    None (канал просто не сработает). Client и User обоих совместимы по
+    id — для логов; email/tg_id/phone/ig_id — реквизиты каналов, любое может
+    быть None (канал просто не сработает). Client и User обоих совместимы по
     атрибутам, поэтому deliver() принимает и живой Client напрямую."""
     id: int | None
     email: str | None
     tg_id: int | None
     phone: str | None
+    ig_id: str | None = None
 
 
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
@@ -136,15 +138,31 @@ async def _send_whatsapp(cfg: dict, recipient: "Recipient | Client", text: str) 
             return resp.status == 200
 
 
+async def _send_instagram(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
+    """Отправка в Instagram Direct через Messenger Platform. Нет токена или IGSID
+    получателя → False. Как и у WhatsApp, свободный текст доставляется только в
+    24-часовом окне диалога — проверяет Meta, не мы (MVP)."""
+    ig_user_id = cfg.get("ig_user_id")
+    token = cfg.get("token")
+    ig_id = getattr(recipient, "ig_id", None)
+    if not ig_user_id or not token or not ig_id:
+        return False
+    payload = {"recipient": {"id": ig_id}, "message": {"text": text}}
+    headers = {"Authorization": f"Bearer {token}"}
+    async with aiohttp.ClientSession() as session:
+        async with session.post(f"{GRAPH}/{ig_user_id}/messages", json=payload, headers=headers) as resp:
+            return resp.status == 200
+
+
 async def deliver(
     db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
     *, studio_id: int,
 ) -> bool:
     """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4; N-9,
-    задача 2): email, telegram и whatsapp реально шлют по реквизитам студии.
-    recipient — Recipient или любой объект с .id/.email/.tg_id/.phone (Client,
-    User). Возвращает True, только если сообщение реально ушло; исключения не
-    пробрасывает."""
+    задача 2): email, telegram, whatsapp и instagram реально шлют по реквизитам
+    студии. recipient — Recipient или любой объект с .id/.email/.tg_id/.phone/
+    .ig_id (Client, User). Возвращает True, только если сообщение реально ушло;
+    исключения не пробрасывает."""
     try:
         if channel == "email":
             if not recipient.email:
@@ -163,6 +181,11 @@ async def deliver(
             if not cfg:
                 return False
             return await _send_whatsapp(cfg, recipient, text)
+        if channel == "instagram":
+            cfg = await _integration_config(db, studio_id, "ig_dm")
+            if not cfg:
+                return False
+            return await _send_instagram(cfg, recipient, text)
         return False
     except Exception:
         logger.exception("deliver failed: channel=%s recipient=%s", channel, recipient.id)
@@ -381,7 +404,7 @@ _render("c1", {}, "ru", "RUB")
 
 
 def _user_recipient(user: User) -> Recipient:
-    return Recipient(user.id, user.email, user.tg_id, user.phone)
+    return Recipient(user.id, user.email, user.tg_id, user.phone, user.ig_id)
 
 
 async def _recipient(
@@ -411,7 +434,7 @@ async def _recipient(
         )).scalar_one_or_none()
         if client is None:
             return []
-        return [Recipient(client.id, client.email, client.tg_id, client.phone)]
+        return [Recipient(client.id, client.email, client.tg_id, client.phone, client.ig_id)]
 
     to_email = context.get("to_email")
     if to_email:
@@ -489,6 +512,8 @@ async def notify(
                 sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id) or sent
             if "whatsapp" in channels and r.phone:
                 sent = await deliver(db, "whatsapp", r, subject, text, html, studio_id=studio_id) or sent
+            if "instagram" in channels and r.ig_id:
+                sent = await deliver(db, "instagram", r, subject, text, html, studio_id=studio_id) or sent
         return sent
     except Exception:
         logger.exception("notify failed: studio=%s role=%s event=%s", studio_id, role, event_id)

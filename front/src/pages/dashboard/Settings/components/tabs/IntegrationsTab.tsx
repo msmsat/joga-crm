@@ -19,7 +19,7 @@ const ORDER: { type: IntegrationType; color: string }[] = [
 export default function IntegrationsTab() {
   const { t } = useTranslation("settings");
   const {
-    integrations, loading, loadError,
+    integrations, loading, loadError, studioTimezone,
     expandedIntegration, setExpandedIntegration,
     calendars, calendarsLoading,
     connectTelegram, connectWhatsApp, connectInstagram, startGoogleAuth,
@@ -50,6 +50,7 @@ export default function IntegrationsTab() {
                   sub={t(`integrations.items.${type}.sub`)}
                   color={color}
                   data={data}
+                  studioTimezone={studioTimezone}
                   isExpanded={expandedIntegration === type}
                   onToggleExpand={() => setExpandedIntegration(expandedIntegration === type ? null : type)}
                   onRequestDisconnect={() => setDisconnectTarget(type)}

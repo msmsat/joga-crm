@@ -5,10 +5,10 @@ import NotifIllustration from '../ui/NotifIllustration';
 import ToggleSwitch from '../ui/ToggleSwitch';
 import type { NotifyChannelsStatus } from '../../../../../api/notifications/notifications.types';
 
-// Каналы, для которых в этом эпике есть реальное подключение (модалка).
-// Instagram/SMS/Push подключаются в других разделах — клик по ним не открывает модалку.
-const MODAL_KEY: Partial<Record<ChannelKey, 'tg' | 'email' | 'wa'>> = {
-  telegram: 'tg', email: 'email', whatsapp: 'wa',
+// Каналы, для которых есть реальное подключение (модалка).
+// SMS/Push подключаются в других разделах — клик по ним не открывает модалку.
+const MODAL_KEY: Partial<Record<ChannelKey, 'tg' | 'email' | 'wa' | 'ig'>> = {
+  telegram: 'tg', email: 'email', whatsapp: 'wa', instagram: 'ig',
 };
 
 function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key: ChannelKey): boolean | null {
@@ -16,6 +16,7 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
   if (key === 'telegram') return statuses.telegram.connected;
   if (key === 'email') return statuses.email.connected;
   if (key === 'whatsapp') return statuses.whatsapp.connected;
+  if (key === 'instagram') return statuses.instagram.connected;
   return null;
 }
 
@@ -23,11 +24,13 @@ function integrationSub(statuses: NotifyChannelsStatus | undefined, key: Channel
   const details = key === 'telegram' ? statuses?.telegram.details
     : key === 'email' ? statuses?.email.details
     : key === 'whatsapp' ? statuses?.whatsapp.details
+    : key === 'instagram' ? statuses?.instagram.details
     : undefined;
   if (!details) return fallback;
   const value = key === 'telegram' ? (details.bot_username && `@${details.bot_username}`)
     : key === 'email' ? details.email
     : key === 'whatsapp' ? details.display_phone_number
+    : key === 'instagram' ? (details.username && `@${details.username}`)
     : undefined;
   return (value as string | undefined) || '—';
 }
@@ -37,7 +40,7 @@ interface Props {
   toggleChannel: (key: ChannelKey) => void;
   channelSaving?: boolean;
   channelStatuses?: NotifyChannelsStatus;
-  onOpenModal: (modal: 'tg' | 'email' | 'wa') => void;
+  onOpenModal: (modal: 'tg' | 'email' | 'wa' | 'ig') => void;
 }
 
 export default function ChannelsSidebar({ channels, toggleChannel, channelSaving, channelStatuses, onOpenModal }: Props) {

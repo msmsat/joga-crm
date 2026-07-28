@@ -7,8 +7,16 @@ from database import get_db
 from dependencies import StudioContext, get_studio_context, require_role
 from schemas.ai import AISettingsRead, AISettingsUpdate
 from services.assistant import get_or_create_ai_settings
+from services.notifier import _integration_config
 
 router = APIRouter()
+
+
+async def _wa_phone_number(db: AsyncSession, studio_id: int) -> str | None:
+    """Номер подключённой интеграции wa_notify — гейт WhatsApp-агента. Своего
+    подключения у агента нет: один номер на Уведомления, Настройки и агента."""
+    cfg = await _integration_config(db, studio_id, "wa_notify")
+    return cfg.get("display_phone_number") or cfg.get("phone_number_id")
 
 
 @router.get("/settings", response_model=AISettingsRead)
@@ -20,7 +28,9 @@ async def get_ai_settings(
     await db.commit()
     await db.refresh(settings)
 
-    data = AISettingsRead.model_validate(settings)
+    data = AISettingsRead.model_validate(settings).model_copy(
+        update={"wa_phone_number": await _wa_phone_number(db, ctx.studio_id)}
+    )
     if ctx.role != "owner":
         data = data.model_copy(update={"tg_token": None, "ig_token": None})
     return data
@@ -40,6 +50,9 @@ async def update_ai_settings(
     ig_connected = bool(settings.ig_token and settings.ig_token_expires_at and settings.ig_token_expires_at > datetime.utcnow())
     if fields.get("ig_enabled") and not ig_connected:
         raise HTTPException(status_code=400, detail="ig_not_connected")
+    wa_phone = await _wa_phone_number(db, ctx.studio_id)
+    if fields.get("wa_enabled") and not wa_phone:
+        raise HTTPException(status_code=400, detail="wa_not_connected")
 
     for field, value in fields.items():
         setattr(settings, field, value)
@@ -78,4 +91,4 @@ async def update_ai_settings(
 
     await db.commit()
     await db.refresh(settings)
-    return settings
+    return AISettingsRead.model_validate(settings).model_copy(update={"wa_phone_number": wa_phone})

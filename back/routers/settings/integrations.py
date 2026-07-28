@@ -126,13 +126,14 @@ async def get_notify_channels_status(
     rows = (await db.execute(
         select(StudioIntegration).where(
             StudioIntegration.studio_id == ctx.studio_id,
-            StudioIntegration.integration_type.in_(("tg_notify", "wa_notify", "email_sender")),
+            StudioIntegration.integration_type.in_(("tg_notify", "wa_notify", "ig_dm", "email_sender")),
         )
     )).scalars().all()
     by_kind = {row.integration_type: row for row in rows}
     return NotifyChannelsStatus(
         telegram=_channel_status(by_kind.get("tg_notify"), "tg_notify"),
         whatsapp=_channel_status(by_kind.get("wa_notify"), "wa_notify"),
+        instagram=_channel_status(by_kind.get("ig_dm"), "ig_dm"),
         email=_channel_status(by_kind.get("email_sender"), "email_sender"),
     )
 

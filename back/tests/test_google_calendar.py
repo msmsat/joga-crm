@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 
 warnings.filterwarnings("ignore")
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException
 from jose import jwt as _jwt
 from pydantic import ValidationError
 from sqlalchemy import delete, select
@@ -24,7 +24,9 @@ from database import async_session_maker
 from dependencies import ALGORITHM, SECRET_KEY
 from models import Lesson, Studio, StudioIntegration
 from routers.schedule.lessons import _schedule_gcal_push
-from routers.settings.google_calendar import _make_state, _status, _studio_id_from_state
+from routers.settings.google_calendar import (
+    _make_state, _status, _studio_id_from_state, google_calendar_callback,
+)
 from schemas.settings.google_calendar import GoogleCalendarUpdate
 from services import gcal
 
@@ -93,6 +95,19 @@ async def _run():
             SECRET_KEY, algorithm=ALGORITHM,
         )
         assert _studio_id_from_state(wrong_purpose) is None, "state с чужим purpose не должен приниматься"
+
+        # --- Критерий приёмки эпика 6: колбэк с подделанным state -> 400, БД не тронута ---
+        async with async_session_maker() as db:
+            try:
+                await google_calendar_callback(code="fakecode", state="forged.not.a.jwt", error=None, db=db)
+                raise AssertionError("подделанный state должен приводить к HTTPException(400)")
+            except HTTPException as e:
+                assert e.status_code == 400, e.status_code
+        async with async_session_maker() as db:
+            integ = (await db.execute(
+                select(StudioIntegration).where(StudioIntegration.studio_id == sid, StudioIntegration.integration_type == "gcal")
+            )).scalar_one_or_none()
+            assert integ is None, "подделанный state не должен создавать/менять интеграцию"
 
         # --- _event_body: форма события Google (таймзона, extendedProperties) ---
         lesson = _FakeLesson()

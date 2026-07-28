@@ -12,7 +12,7 @@ from schemas.auth.requests import (
     VerifyEmailRequest,
     WorkingHoursInput,
 )
-from schemas.auth.responses import TokenResponse
+from schemas.auth.responses import StudioListItem, TokenResponse
 from schemas.auth.otp import OtpAction, OtpRequestIn, OtpRequestOut, OtpVerifyIn, OtpVerifyOut
 
 __all__ = [
@@ -31,6 +31,7 @@ __all__ = [
     "RegisterRequest",
     "ResetPasswordRequest",
     "SelectStudioRequest",
+    "StudioListItem",
     "TokenResponse",
     "VerifyEmailRequest",
     "WorkingHoursInput",

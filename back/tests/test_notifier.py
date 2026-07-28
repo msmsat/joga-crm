@@ -9,8 +9,9 @@ import services.notifier as N
 
 
 class _FakeUser:
-    def __init__(self, id, email, tg_id, phone):
+    def __init__(self, id, email, tg_id, phone, ig_id=None):
         self.id, self.email, self.tg_id, self.phone = id, email, tg_id, phone
+        self.ig_id = ig_id
 
 
 class _Settings:
@@ -18,6 +19,7 @@ class _Settings:
         self.email_notifications = enabled
         self.telegram_notifications = enabled
         self.whatsapp_notifications = enabled
+        self.instagram_notifications = enabled
 
 
 class _StudioPrefs:

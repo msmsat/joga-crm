@@ -35,6 +35,16 @@
     "instructionStep3": "Allow access to messages",
     "instructionStep4": "You'll be brought back here automatically"
   },
+  "whatsapp": {
+    "numberLabel": "WhatsApp Business number",
+    "connectLink": "Connect a number in Notifications →",
+    "gateTooltip": "Connect a WhatsApp number first",
+    "statsPending": "Will appear once the auto-responder starts working",
+    "instructionTitle": "How to connect",
+    "instructionStep1": "Open Notifications and connect the WhatsApp channel (token and Phone Number ID from Meta Business Suite)",
+    "instructionStep2": "The number is connected once — the same one is used for client notifications",
+    "instructionStep3": "Come back here and switch the auto-responder on"
+  },
   "history": {
     "title": "Chat history",
     "empty": "Start your first conversation",
@@ -124,6 +134,7 @@
   "errors": {
     "tg_token_required": "Connect a Telegram bot first — no token has been saved yet.",
     "ig_not_connected": "Instagram isn't connected yet.",
+    "wa_not_connected": "The WhatsApp number isn't connected yet — connect it in Notifications.",
     "assistant_unavailable": "The assistant is temporarily unavailable — please try again later."
   },
   "toasts": {
