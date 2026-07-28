@@ -21,7 +21,7 @@
 // Velora AI (эпик AI-1/AI-2): aiSessions, aiMessages(sessionId), aiSettings.
 // Настройками (роадмап SETTINGS): appearance, billingPlan, billingPlans, billingCards,
 // billingInvoices(limit)/billingInvoicesAll/billingInvoicesHistory(dateFrom, dateTo),
-// sessions, integrations, integration(type), workspaces.
+// sessions, integrations, integration(type), workspaces, me.
 // Дашбордом (роадмап DASHBOARD, эпик D5): overviewSummary(from, to), overviewSeries(metric, group, from, to),
 // overviewTrainers(from, to), overviewServices(from, to), overviewActivity, overviewTasks(scope, assigneeId)/overviewTasksAll, overviewAssignees.
 // Правило инвалидации: мутация обязана перечислить ВСЕ ключи, где видна
@@ -102,6 +102,7 @@ export const queryKeys = {
   billingInvoicesAll: ['billing', 'invoices'] as const, // префикс: инвалидация всех limit разом
   billingInvoicesHistory: (dateFrom: string, dateTo: string) => ['billing', 'invoices', 'history', dateFrom, dateTo] as const,
   sessions: ['settings', 'sessions'] as const,
+  me: ['auth', 'me'] as const,
   integrations: ['settings', 'integrations'] as const,
   integration: (type: string) => ['settings', 'integrations', type] as const,
   workspaces: ['settings', 'workspaces'] as const,

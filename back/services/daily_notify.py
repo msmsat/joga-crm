@@ -24,6 +24,7 @@ ponytail: один воркер uvicorn = один таск, как в scenario_
 import asyncio
 import logging
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -40,6 +41,8 @@ _SLEEP_SECONDS = 30 * 60
 _STATE_TYPE = "notify_state"
 _REPORT_HOUR = 20
 _SESSION_RETENTION_DAYS = 30  # EPIC 5, задача 2: история завершённых сессий хранится 30 дней
+_EXPORT_RETENTION_DAYS = 7  # EPIC 5, задача 6: TTL скачиваемого архива данных
+_EXPORT_DIR = Path("uploads/exports")
 
 # ponytail: маркер только в памяти, как _last_tick — рестарт бэка максимум
 # отложит чистку до следующего тика, не критично для истории сессий.
@@ -278,6 +281,20 @@ async def _cleanup_expired_sessions(db: AsyncSession) -> None:
     await db.commit()
 
 
+def _cleanup_expired_exports() -> None:
+    """Архивы `/settings/security/export-archive` — файлы на диске, не
+    строки в БД: TTL сверяется по mtime, синхронный os-вызов, без БД."""
+    if not _EXPORT_DIR.is_dir():
+        return
+    cutoff = datetime.now().timestamp() - _EXPORT_RETENTION_DAYS * 86400
+    for zip_path in _EXPORT_DIR.rglob("*.zip"):
+        try:
+            if zip_path.stat().st_mtime < cutoff:
+                zip_path.unlink()
+        except OSError:
+            logger.exception("daily_notify: не удалось удалить архив %s", zip_path)
+
+
 async def run_daily_notify(session_maker: async_sessionmaker) -> None:
     """Прогнать все студии с хотя бы одним включённым событием в матрице.
     Своя сессия/try-except на студию — падение одной не глушит остальные
@@ -294,6 +311,10 @@ async def run_daily_notify(session_maker: async_sessionmaker) -> None:
             except Exception:
                 await db.rollback()
                 logger.exception("daily_notify: session cleanup failed")
+        try:
+            _cleanup_expired_exports()
+        except Exception:
+            logger.exception("daily_notify: export cleanup failed")
         _last_cleanup_date = today
     if _last_tick is not None:
         async with session_maker() as db:

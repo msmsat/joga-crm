@@ -17,12 +17,18 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     queryFn: notificationsApi.getChannelIntegrations,
   })
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations })
+  // + queryKeys.integrations (эпик 6): та же StudioIntegration-строка видна и
+  // на вкладке Настройки → Интеграции — без этого она отстаёт до ручного F5.
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations })
+    qc.invalidateQueries({ queryKey: queryKeys.integrations })
+  }
   // Отключение интеграции гасит и тумблер канала в настройках — без этого
   // сайдбар после disconnect показывает канал включённым до ручного рефреша.
   const invalidateAfterDisconnect = () => {
     qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations })
     qc.invalidateQueries({ queryKey: queryKeys.notificationSettings })
+    qc.invalidateQueries({ queryKey: queryKeys.integrations })
   }
 
   const onError = (err: unknown) => toast.error(errorMessage(err, t))

@@ -14,6 +14,9 @@ from schemas.settings.integrations import (
     ChannelStatus,
     EmailCodeRequest,
     EmailCodeVerify,
+    IgConnect,
+    IntegrationStatus,
+    IntegrationType,
     NotifyChannelsStatus,
     TgConnect,
     WaConnect,
@@ -50,6 +53,53 @@ def _mask_token(token: str) -> str:
     return f"{token[:6]}…{token[-4:]}" if len(token) > 10 else "…"
 
 
+# Публичный тип интеграции (для API) -> внутренний StudioIntegration.integration_type
+_INTEGRATION_TYPE_MAP: dict[IntegrationType, str] = {
+    "telegram": "tg_notify",
+    "whatsapp": "wa_notify",
+    "instagram": "ig_dm",
+    "google_calendar": "gcal",
+}
+
+_INTEGRATION_CAPABILITIES: dict[IntegrationType, list[str]] = {
+    "telegram": ["notify", "booking"],
+    "whatsapp": ["notify", "booking"],
+    "instagram": ["dm_agent", "booking"],
+    "google_calendar": ["schedule_sync"],
+}
+
+
+def _integration_details(integ: StudioIntegration | None, kind: str) -> dict | None:
+    # config хранится открытым JSON в БД (см. эпик 6);
+    # ponytail: секреты в БД открытым текстом; шифрование at-rest — когда появится KMS/vault.
+    if integ is None or not integ.is_connected:
+        return None
+    config = integ.config or {}
+    if kind == "tg_notify":
+        return {"bot_username": config.get("bot_username"), "token_masked": _mask_token(config.get("token", ""))}
+    if kind == "wa_notify":
+        return {"phone_number_id": config.get("phone_number_id"), "display_phone_number": config.get("display_phone_number")}
+    if kind == "ig_dm":
+        return {"username": config.get("username"), "token_masked": _mask_token(config.get("token", ""))}
+    return {  # gcal
+        "calendar_id": config.get("calendar_id"),
+        "calendar_name": config.get("calendar_name"),
+        "connected_email": config.get("connected_email"),
+    }
+
+
+def _integration_status(type_: IntegrationType, integ: StudioIntegration | None) -> IntegrationStatus:
+    connected = bool(integ and integ.is_connected)
+    kind = _INTEGRATION_TYPE_MAP[type_]
+    return IntegrationStatus(
+        type=type_,
+        connected=connected,
+        connected_at=integ.updated_at if connected else None,
+        details=_integration_details(integ, kind),
+        capabilities=_INTEGRATION_CAPABILITIES[type_],
+    )
+
+
 def _channel_status(integ: StudioIntegration | None, kind: str) -> ChannelStatus:
     if integ is None or not integ.is_connected:
         return ChannelStatus()
@@ -58,6 +108,8 @@ def _channel_status(integ: StudioIntegration | None, kind: str) -> ChannelStatus
         details = {"bot_username": config.get("bot_username"), "token_masked": _mask_token(config.get("token", ""))}
     elif kind == "email_sender":
         details = {"email": config.get("email"), "verified": config.get("verified", False)}
+    elif kind == "ig_dm":
+        details = {"username": config.get("username"), "token_masked": _mask_token(config.get("token", ""))}
     else:  # wa_notify
         details = {
             "phone_number_id": config.get("phone_number_id"),
@@ -235,3 +287,64 @@ async def get_whatsapp_pricing(
     except Exception:
         logger.exception("get_whatsapp_pricing failed for studio=%s", ctx.studio_id)
         return _DEFAULT_WA_PRICING
+
+
+@router.post("/integrations/instagram", response_model=ChannelStatus)
+async def connect_instagram(
+    body: IgConnect,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    headers = {"Authorization": f"Bearer {body.token}"}
+    url = f"{GRAPH}/{body.ig_user_id}"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, params={"fields": "username"}) as resp:
+                if resp.status != 200:
+                    raise HTTPException(status_code=400, detail="Meta не принял токен или ig_user_id")
+                data = await resp.json()
+    except aiohttp.ClientError:
+        raise HTTPException(status_code=400, detail="Meta не принял токен или ig_user_id")
+
+    integ = await _get_or_create_integration(db, ctx.studio_id, "ig_dm")
+    integ.config = {
+        "token": body.token,
+        "ig_user_id": body.ig_user_id,
+        "username": data.get("username"),
+    }
+    integ.is_connected = True
+    await db.commit()
+    await db.refresh(integ)
+    return _channel_status(integ, "ig_dm")
+
+
+@router.get("/integrations", response_model=list[IntegrationStatus])
+async def list_integrations(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    rows = (await db.execute(
+        select(StudioIntegration).where(
+            StudioIntegration.studio_id == ctx.studio_id,
+            StudioIntegration.integration_type.in_(_INTEGRATION_TYPE_MAP.values()),
+        )
+    )).scalars().all()
+    by_kind = {row.integration_type: row for row in rows}
+    return [
+        _integration_status(type_, by_kind.get(kind))
+        for type_, kind in _INTEGRATION_TYPE_MAP.items()
+    ]
+
+
+@router.delete("/integrations/{integration_type}", response_model=IntegrationStatus)
+async def disconnect_integration(
+    integration_type: IntegrationType,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    integ = await _get_or_create_integration(db, ctx.studio_id, _INTEGRATION_TYPE_MAP[integration_type])
+    integ.is_connected = False
+    integ.config = None
+    await db.commit()
+    await db.refresh(integ)
+    return _integration_status(integration_type, integ)

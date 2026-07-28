@@ -1,10 +1,15 @@
 import { client } from '../client'
 import type {
+  ChangePasswordPayload,
   CheckPhoneResponse,
   ForgotPasswordPayload,
   GoogleAuthPayload,
+  Login2FAPayload,
   LoginPayload,
   OnboardingPayload,
+  OtpAction,
+  OtpRequestResponse,
+  OtpVerifyResponse,
   RegisterPayload,
   ResetPasswordPayload,
   TokenResponse,
@@ -16,6 +21,9 @@ import type {
 export const authApi = {
   login: (payload: LoginPayload) =>
     client.post<TokenResponse>('/auth/login', payload, { auth: false }),
+
+  login2fa: (payload: Login2FAPayload) =>
+    client.post<TokenResponse>('/auth/login/2fa', payload, { auth: false }),
 
   register: (payload: RegisterPayload) =>
     client.post<void>('/auth/register', payload, { auth: false }),
@@ -43,4 +51,16 @@ export const authApi = {
 
   onboarding: (payload: OnboardingPayload) =>
     client.post<TokenResponse>('/auth/onboarding', payload),
+
+  // EPIC 5, задача 3: единый OTP-механизм для опасных действий внутри аккаунта.
+  requestOtp: (action: OtpAction) =>
+    client.post<OtpRequestResponse>('/auth/otp/request', { action }),
+
+  verifyOtp: (action: OtpAction, code: string) =>
+    client.post<OtpVerifyResponse>('/auth/otp/verify', { action, code }),
+
+  changePassword: (payload: ChangePasswordPayload, otpToken: string) =>
+    client.post<{ message: string }>('/auth/change-password', payload, {
+      headers: { 'X-OTP-Token': otpToken },
+    }),
 }

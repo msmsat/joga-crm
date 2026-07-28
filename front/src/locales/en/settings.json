@@ -162,14 +162,25 @@
     },
     "twoFa": {
       "title": "Two-factor authentication",
-      "sub": "SMS or authenticator app",
+      "sub": "Email code on every sign-in",
       "active": "Active",
-      "disabled": "Disabled"
+      "disabled": "Disabled",
+      "enableTitle": "Enable 2FA",
+      "disableTitle": "Disable 2FA",
+      "enableWarning": "Once enabled, every sign-in will require a code sent to {{email}}. Make sure you have access to it — otherwise you risk losing access to your account.",
+      "disableWarning": "Once disabled, a password alone will be enough to sign in, without an email code.",
+      "enabledToast": "Two-factor authentication enabled",
+      "disabledToast": "Two-factor authentication disabled"
     },
     "password": {
-      "title": "Admin password",
-      "sub": "Last changed: 3 months ago",
-      "change": "Change password"
+      "title": "Account password",
+      "sub": "Changing it is confirmed with an email code",
+      "change": "Change password",
+      "changed": "Password changed successfully",
+      "current": "Current password",
+      "currentPh": "Enter your current password",
+      "new": "New password",
+      "newPh": "At least 8 characters"
     },
     "sessions": {
       "title": "Active sessions",
@@ -179,12 +190,23 @@
       "hide": "Hide",
       "current": "Current",
       "terminate": "Terminate",
+      "terminateAll": "Terminate all other sessions",
       "terminatedToast": "Session terminated successfully",
+      "terminatedAllToast": "Other sessions terminated",
       "justNow": "Active now",
       "minutesAgo": "{{count}} min ago",
       "hoursAgo": "{{count}} h ago",
       "daysAgo": "{{count}} d ago",
       "unknownLocation": "Unknown"
+    },
+    "otp": {
+      "sentHint": "We've sent a 6-digit code to your email. Enter it below.",
+      "resend": "Resend code",
+      "resendIn": "Resend in {{count}}s",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "sendCode": "Send code",
+      "continue": "Continue"
     },
     "danger": {
       "title": "Data management (Danger zone)",
@@ -195,65 +217,128 @@
         "hide": "Hide",
         "clients": "Client base (CSV)",
         "finances": "Financial transactions",
-        "media": "Media and photos",
+        "schedule": "Lessons & schedule",
         "start": "Start export",
-        "started": "ZIP archive generation started. We'll send a link to your email."
+        "started": "Archive is being prepared, a link will be sent to your email",
+        "emptySelection": "Choose at least one section to export"
       },
       "wipe": {
         "title": "Wipe database",
         "sub": "Deletes all clients and bookings. Settings will be kept.",
         "action": "Wipe data",
-        "toast": "Database wiped successfully"
+        "toast": "Database wiped successfully",
+        "consequence1": "Permanently deleted: clients, lessons, bookings, operations, documents, client subscriptions, loyalty history",
+        "consequence2": "Kept as is: studio, branches, halls, services, staff, subscription plan and settings",
+        "consequence3": "This action is irreversible — it cannot be undone once confirmed"
       },
       "deleteAccount": {
         "title": "Delete company account",
         "sub": "Complete and irreversible destruction of the business in the system",
         "action": "Delete forever",
-        "toast": "Company account deleted beyond recovery"
+        "consequence1": "The studio and all its data will be permanently deleted, including clients, lessons, finances and settings",
+        "consequence2": "Your personal account stays — only this studio is deleted",
+        "consequence3": "Deletion is unavailable with an active subscription or if the studio has other owners"
       }
     }
   },
   "integrations": {
     "title": "Integrations",
     "subtitle": "Connect external channels and ecosystems in one click",
+    "loadError": "Failed to load integration status",
     "items": {
+      "telegram": { "name": "Telegram Bot", "sub": "Client notifications and booking via bot" },
       "whatsapp": { "name": "WhatsApp Business", "sub": "Message broadcasts and auto-notifications to clients" },
-      "telegram": { "name": "Telegram Bot", "sub": "Automatic 24/7 booking via chat bot" },
-      "instagram": { "name": "Instagram Direct", "sub": "Capture incoming messages into the CRM" },
-      "google": { "name": "Google Calendar", "sub": "Two-way sync of trainer schedules" },
-      "onec": { "name": "1C: Enterprise", "sub": "Automatic export of finances and analytics" },
-      "yandex": { "name": "YooKassa", "sub": "Secure online payments and prepayments on the website" }
+      "instagram": { "name": "Instagram Direct", "sub": "AI auto-responder agent and online booking" },
+      "google_calendar": { "name": "Google Calendar", "sub": "Studio schedule sync" }
     },
-    "status": { "connected": "Connected", "notActive": "Not active" },
+    "status": { "connected": "Connected", "notActive": "Not connected" },
     "actions": {
       "configure": "Configure",
       "connect": "Connect",
-      "disconnect": "Disconnect integration",
-      "activate": "Activate gateway",
-      "saveChanges": "Save changes"
+      "disconnect": "Disconnect"
     },
     "fields": {
-      "whatsappPhone": "WhatsApp Business phone number",
-      "whatsappWebhook": "Sync webhook address (View only)",
+      "keyLabel": "Key",
+      "connectedAtLabel": "Connected",
       "telegramToken": "Bot API token (from @BotFather)",
-      "telegramTokenPh": "123456789:ABCDefGhIJKlmNo...",
-      "telegramWelcome": "Bot welcome message",
-      "instagramAccount": "Linked Meta business account name",
-      "instagramAccountPh": "@your_studio_candles",
-      "googleCalendarName": "Calendar name",
-      "googleSyncType": "Sync mode",
-      "googleSyncOptions": ["Two-way", "Export only", "Import only"],
-      "onecUrl": "Database publication gateway URL",
-      "onecUrlPh": "https://1c.company.com/base",
-      "onecLogin": "Login / CRM identifier",
-      "onecLoginPh": "velora_sync_user",
-      "yandexShopId": "Shop ID",
-      "yandexTestMode": "Test payment mode",
-      "yandexTestModeSub": "Test payments without real charges"
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Access token",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Phone number ID",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA ID (optional)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Access token",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram business account ID",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "How to connect",
+      "telegram": {
+        "steps": [
+          "Open @BotFather in Telegram and send /newbot",
+          "Choose a name and username for the bot — BotFather will send you an API token",
+          "Paste the token below and click Connect"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Create an app in Meta for Developers and add the WhatsApp product",
+          "In API Setup, copy the temporary or permanent access token",
+          "Also copy the Phone number ID of the test or verified number",
+          "Paste both values below and click Connect"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Link the studio's Instagram account to a Facebook Page — required for the Direct API",
+          "Create an app in Meta for Developers with the Instagram Graph API product",
+          "Generate an access token with instagram_basic and instagram_manage_messages permissions",
+          "Copy the Instagram business account ID and token, paste them below",
+          "Without passing Meta review, the connection only works for the app's test accounts"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Click Connect — a Google sign-in window will open",
+          "Choose the account the studio's calendar is linked to",
+          "Grant calendar access — classes will start appearing in it automatically"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "client notifications on this channel",
+      "booking": "online booking through this channel",
+      "dm_agent": "AI auto-responder agent in Direct",
+      "schedule_sync": "schedule sync with Google Calendar"
+    },
+    "disconnect": {
+      "title": "Disconnect {{name}}?",
+      "willStop": "This will stop working:",
+      "checkbox": "I understand the consequences",
+      "cancel": "Cancel",
+      "confirm": "Disconnect"
+    },
+    "google": {
+      "connected": "Google Calendar connected",
+      "denied": "Google Calendar access was not granted",
+      "error": "Failed to connect Google Calendar",
+      "primary": "primary",
+      "calendar": "Calendar",
+      "selectCalendar": "Select a calendar",
+      "loadingCalendars": "Loading calendars…",
+      "syncMode": "Sync mode",
+      "syncModeOptions": { "push": "CRM to Google only", "two_way": "Two-way" },
+      "syncNow": "Sync now",
+      "lastSync": "Last synced: {{date}}",
+      "neverSynced": "Not synced yet",
+      "syncResult": "Synced: {{pushed}} pushed, {{pulled}} pulled",
+      "settingsSaved": "Google Calendar settings saved"
     },
     "toast": {
-      "connected": "{{name}} integration set up and connected successfully",
-      "disconnected": "{{name}} integration disconnected"
+      "connected": "Integration connected",
+      "disconnected": "Integration disconnected"
     }
   },
   "data": {

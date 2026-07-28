@@ -57,10 +57,11 @@ interface RequestOptions {
   form?: FormData
   auth?: boolean
   signal?: AbortSignal
+  headers?: Record<string, string>   // напр. X-OTP-Token на опасных ручках (EPIC 5)
 }
 
 async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {}
+  const headers: Record<string, string> = { ...options.headers }
 
   if (options.auth !== false) {
     const token = getToken()
@@ -184,18 +185,18 @@ export const client = {
   get: <T>(path: string, options?: { auth?: boolean; signal?: AbortSignal }) =>
     request<T>('GET', path, options),
 
-  post: <T>(path: string, body?: unknown, options?: { auth?: boolean; signal?: AbortSignal }) =>
+  post: <T>(path: string, body?: unknown, options?: { auth?: boolean; signal?: AbortSignal; headers?: Record<string, string> }) =>
     request<T>('POST', path, { body, ...options }),
 
   postForm: <T>(path: string, form: FormData, options?: { auth?: boolean }) =>
     request<T>('POST', path, { form, ...options }),
 
-  patch: <T>(path: string, body?: unknown) =>
-    request<T>('PATCH', path, { body }),
+  patch: <T>(path: string, body?: unknown, options?: { headers?: Record<string, string> }) =>
+    request<T>('PATCH', path, { body, ...options }),
 
   put: <T>(path: string, body?: unknown) =>
     request<T>('PUT', path, { body }),
 
-  delete: <T>(path: string, body?: unknown) =>
-    request<T>('DELETE', path, body !== undefined ? { body } : {}),
+  delete: <T>(path: string, body?: unknown, options?: { headers?: Record<string, string> }) =>
+    request<T>('DELETE', path, { ...(body !== undefined ? { body } : {}), ...options }),
 }

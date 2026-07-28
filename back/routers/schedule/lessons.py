@@ -1,20 +1,24 @@
+import logging
 from datetime import date, datetime, time, timedelta
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
+from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from models import Client, Hall, Lesson, Reservation, Service, StudioMember, User
 from schemas.schedule.lessons import (
     EligibleClient, LessonCancelRequest, LessonCreateRequest, LessonDaysResponse, LessonDetail,
     LessonRead, LessonUpdateRequest,
 )
+from services import gcal
 from services.booking_access import can_book
 from services.notifier import notify
 from services.subscription_charge import refund_reservation
+
+logger = logging.getLogger(__name__)
 
 MIN_CREATE_LEAD = timedelta(hours=3)
 MIN_CHANGE_LEAD = timedelta(hours=2)
@@ -297,6 +301,27 @@ async def _find_schedule_conflict(
     return None
 
 
+async def _gcal_push_task(studio_id: int, lesson_id: int) -> None:
+    """Своя сессия БД — сессия исходного запроса закрыта к моменту выполнения фоновой
+    задачи (образец — routers/settings/security.py::_build_and_send_archive). Google не
+    должен задерживать ответ журналу, а его недоступность не должна ронять создание
+    занятия (эпик 6, задача 4.3) — push_lesson сама глотает свои ошибки, этот try/except
+    только на случай, если сама сессия/импорт упадёт."""
+    async with async_session_maker() as db:
+        try:
+            await gcal.push_lesson(db, studio_id, lesson_id)
+        except Exception:
+            logger.exception("gcal push failed: studio=%s lesson=%s", studio_id, lesson_id)
+
+
+def _schedule_gcal_push(background_tasks: BackgroundTasks | None, studio_id: int, lesson_id: int) -> None:
+    # background_tasks не None только на реальном HTTP-запросе (FastAPI инжектит его по
+    # типу вне зависимости от позиции/дефолта в сигнатуре) — прямые вызовы из тестов
+    # (см. test_lesson_time_rules.py и соседние) его не передают, и это не должно падать.
+    if background_tasks is not None:
+        background_tasks.add_task(_gcal_push_task, studio_id, lesson_id)
+
+
 async def _notify_schedule_conflict(db: AsyncSession, studio_id: int, lesson: Lesson) -> None:
     """a7: находит конфликт для текущих время/зал/тренера занятия и, если
     есть, уведомляет админа. Общий хвост для create_lesson и update_lesson."""
@@ -321,6 +346,7 @@ async def create_lesson(
     body: LessonCreateRequest,
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
 ):
     """Создать занятие в текущей студии. teacher_name денормализуется из teacher_id."""
     # Расписание меняют только владелец и администратор (ТЗ 2.3) — тренер строго просмотр.
@@ -362,6 +388,7 @@ async def create_lesson(
     await db.refresh(lesson)
 
     await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+    _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
 
     # Новое занятие — записей нет, booked_count = 0.
     return _lesson_read(lesson, 0)
@@ -373,6 +400,7 @@ async def update_lesson(
     body: LessonUpdateRequest,
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
 ):
     """Изменить/перенести/растянуть занятие. Меняются только присланные поля.
     Расписание меняют только владелец и администратор (ТЗ 2.3)."""
@@ -475,6 +503,7 @@ async def update_lesson(
 
         await db.commit()
         await db.refresh(lesson)
+        _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
 
     return _lesson_read(lesson, await _booked_count(lesson_id, db))
 
@@ -512,6 +541,7 @@ async def cancel_lesson(
     body: LessonCancelRequest = LessonCancelRequest(),
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
 ):
     """Отменить занятие: статус cancelled + каскадная отмена активных резерваций.
 
@@ -567,6 +597,8 @@ async def cancel_lesson(
             "lesson_name": lesson.name,
             "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
+
+    _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
 
     # После отмены все записи отменены — booked_count = 0.
     return _lesson_read(lesson, 0)

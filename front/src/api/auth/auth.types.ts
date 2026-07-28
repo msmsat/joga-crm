@@ -53,9 +53,16 @@ export interface OnboardingPayload {
 }
 
 export interface TokenResponse {
-  access_token: string
+  access_token: string | null
   token_type: string
   message?: string
+  two_fa_required?: boolean
+  two_fa_identifier?: string | null
+}
+
+export interface Login2FAPayload {
+  identifier: string
+  code: string
 }
 
 export interface UserMe {
@@ -67,6 +74,7 @@ export interface UserMe {
   is_onboarded: boolean
   studio_id: number | null
   role: string | null
+  two_fa_enabled: boolean
 }
 
 export interface UpdateProfilePayload {
@@ -78,4 +86,20 @@ export interface UpdateProfilePayload {
 
 export interface CheckPhoneResponse {
   taken: boolean
+}
+
+// EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).
+export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'enable_2fa' | 'login_2fa'
+
+export interface OtpRequestResponse {
+  expires_in: number
+}
+
+export interface OtpVerifyResponse {
+  otp_token: string
+}
+
+export interface ChangePasswordPayload {
+  current_password: string
+  new_password: string
 }

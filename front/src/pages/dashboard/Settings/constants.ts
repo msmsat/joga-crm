@@ -1,4 +1,4 @@
-import type { IntegrationsConfig, Session, Studio } from "./types";
+import type { Studio } from "./types";
 
 // Коды — то, что уходит на бэк (GeneralUpdate); подписи — через i18n
 // (general.locale.currencyLabels/firstDayLabels/timezoneLabels в settings.json),
@@ -16,20 +16,6 @@ export const TIMEZONES = [
   "Asia/Krasnoyarsk", "Asia/Irkutsk", "Asia/Yakutsk", "Asia/Vladivostok", "Asia/Magadan", "Asia/Kamchatka",
   "Europe/Berlin", "Europe/London", "America/New_York", "America/Los_Angeles",
 ] as const;
-
-export const INITIAL_INTEGRATIONS_CONFIG: IntegrationsConfig = {
-  whatsapp: { connected: true, phone: "+7 (900) 123-45-67", webhook: "https://api.velora.studio/v1/wa/webhook" },
-  telegram: { connected: true, token: "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ", welcomeMsg: "Приветствуем! Выберите удобное время для записи ✨" },
-  instagram: { connected: false, account: "" },
-  google: { connected: false, calendarName: "Основной календарь", syncType: "Двусторонняя" },
-  onec: { connected: false, url: "https://1c.studio.ru/base", login: "" },
-  yandex: { connected: true, shopId: "208492", testMode: false },
-};
-
-export const INITIAL_SESSIONS: Session[] = [
-  { id: 1, device: "MacBook Pro 14\"", platform: null, browser: "Safari", location_city: "Москва", location_country: "РФ", last_active: new Date().toISOString(), is_current: true, icon: "laptop" },
-  { id: 2, device: "iPhone 13 Pro", platform: null, browser: "App / iOS", location_city: "Санкт-Петербург", location_country: "РФ", last_active: new Date(Date.now() - 20 * 60 * 60_000).toISOString(), is_current: false, icon: "phone" },
-];
 
 export const INITIAL_STUDIOS_LIST: Studio[] = [
   { id: "1", name: "Pilates & Wellness Studio", theme: "light", desc: "Жемчужно-алебастровый UI · Основное пространство" },

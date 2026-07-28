@@ -10,7 +10,7 @@ import { authApi, ApiError } from '../api';
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "register" | "forgot" | "login2fa">("login");
   const [identifierMode, setIdentifierMode] = useState<IdentifierMode>("email");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [errors, setErrors] = useState<{ identifier?: string; password?: string; resetCode?: string }>({});
+  const [errors, setErrors] = useState<{ identifier?: string; password?: string; resetCode?: string; twoFaCode?: string }>({});
 
   const [submitError, setSubmitError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -28,6 +28,10 @@ export default function LoginPage() {
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
+  // 2FA при входе (EPIC 5, задача 5) — identifier/password уже введены и
+  // проверены на шаге "login", здесь только код из письма.
+  const [twoFaCode, setTwoFaCode] = useState("");
+
   useEffect(() => {
     setTimeout(() => setMounted(true), 50);
   }, []);
@@ -36,8 +40,14 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await authApi.google({ token: credential });
-      localStorage.setItem("token", data.access_token);
-      navigate("/dashboard");
+      if (data.two_fa_required) {
+        setIdentifier(data.two_fa_identifier ?? "");
+        setTwoFaCode("");
+        setMode("login2fa");
+      } else if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        navigate("/dashboard");
+      }
     } catch {
       setSubmitError("Ошибка авторизации через Google");
     } finally {
@@ -46,7 +56,12 @@ export default function LoginPage() {
   };
 
   const validateForm = () => {
-    const newErrors: { identifier?: string; password?: string } = {};
+    const newErrors: { identifier?: string; password?: string; twoFaCode?: string } = {};
+    if (mode === "login2fa") {
+      if (!/^\d{6}$/.test(twoFaCode)) newErrors.twoFaCode = "Введите 6 цифр из письма";
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    }
     if (!identifier.trim()) {
       const labels = { email: "Email", phone: "Телефон" }; // Убрали name
       newErrors.identifier = `${labels[identifierMode]} обязателен`;
@@ -87,11 +102,23 @@ export default function LoginPage() {
         setSuccessMsg("Пароль успешно изменен! Теперь вы можете войти.");
       }
 
+      // ── ФЛОУ: ПОДТВЕРЖДЕНИЕ КОДА 2FA (ШАГ 2 ВХОДА) ──
+      else if (mode === "login2fa") {
+        const data = await authApi.login2fa({ identifier, code: twoFaCode });
+        if (data.access_token) localStorage.setItem("token", data.access_token);
+        navigate("/dashboard");
+      }
+
       // ── ФЛОУ: ОБЫЧНЫЙ ЛОГИН ──
       else {
         const data = await authApi.login({ identifier, password });
-        localStorage.setItem("token", data.access_token);
-        navigate("/dashboard");
+        if (data.two_fa_required) {
+          setMode("login2fa");
+          setTwoFaCode("");
+        } else if (data.access_token) {
+          localStorage.setItem("token", data.access_token);
+          navigate("/dashboard");
+        }
       }
     } catch (err: unknown) {
       setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
@@ -120,12 +147,14 @@ export default function LoginPage() {
     login: "С возвращением",
     register: "Создать аккаунт",
     forgot: forgotStep === 1 ? "Восстановить доступ" : "Придумайте пароль",
+    login2fa: "Код подтверждения",
   };
 
   const subtitles = {
     login: "Войдите, чтобы продолжить работу в Velora",
     register: "14 дней бесплатно — без карты",
     forgot: forgotStep === 1 ? "Мы пришлём инструкцию на ваш email" : `Код отправлен на ${identifier}`,
+    login2fa: `Код отправлен на ${identifier}`,
   };
 
   return (
@@ -202,10 +231,11 @@ export default function LoginPage() {
           <div className="login-card">
             {/* Header */}
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {mode === "forgot" && (
+              {(mode === "forgot" || mode === "login2fa") && (
                 <button
-                  onClick={() => { 
-                    if (forgotStep === 2) setForgotStep(1);
+                  onClick={() => {
+                    if (mode === "login2fa") { setMode("login"); setTwoFaCode(""); }
+                    else if (forgotStep === 2) setForgotStep(1);
                     else { setMode("login"); setForgotStep(1); }
                     setErrors({}); setSubmitError("");
                   }}
@@ -223,8 +253,8 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Google Auth (not for forgot) */}
-            {mode !== "forgot" && (
+            {/* Google Auth (not for forgot/login2fa) */}
+            {mode !== "forgot" && mode !== "login2fa" && (
               <>
                 <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
                   <GoogleLogin
@@ -245,7 +275,7 @@ export default function LoginPage() {
             )}
 
             {/* Identifier Tabs */}
-            {mode !== "forgot" && (
+            {mode !== "forgot" && mode !== "login2fa" && (
               <IdentifierTabs active={identifierMode} onChange={(m) => { setIdentifierMode(m); setIdentifier(""); setErrors({}); }} />
             )}
 
@@ -262,7 +292,7 @@ export default function LoginPage() {
               )}
 
               {/* Если режим восстановления пароля ИЛИ вкладка email — показываем обычный InputField */}
-              {(mode !== "forgot" || (mode === "forgot" && forgotStep === 1)) && (
+              {mode !== "login2fa" && (mode !== "forgot" || (mode === "forgot" && forgotStep === 1)) && (
                 identifierMode === "email" || mode === "forgot" ? (
                   <InputField
                     label="Email"
@@ -305,6 +335,19 @@ export default function LoginPage() {
                     <PasswordStrength password={newPassword} />
                   </div>
                 </>
+              )}
+
+              {mode === "login2fa" && (
+                <InputField
+                  label="Код из письма"
+                  type="text"
+                  placeholder="123456"
+                  maxLength={6}
+                  value={twoFaCode}
+                  onChange={(v: string) => { setTwoFaCode(v.replace(/\D/g, '').slice(0, 6)); setErrors((e) => ({ ...e, twoFaCode: undefined })); }}
+                  icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>}
+                  error={errors.twoFaCode}
+                />
               )}
 
               {mode === "login" && (
@@ -364,6 +407,8 @@ export default function LoginPage() {
                 ? "Войти в систему"
                 : mode === "register"
                 ? "Создать аккаунт"
+                : mode === "login2fa"
+                ? "Подтвердить"
                 : "Отправить инструкцию"}
             </PrimaryBtn>
 

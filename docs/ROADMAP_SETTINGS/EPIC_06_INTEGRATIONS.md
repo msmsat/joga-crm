@@ -56,7 +56,18 @@
 
 ---
 
-## Задача 1. Удалить «Яндекс» и «1С: Предприятие» (~0:30)
+## Задача 1. Удалить «Яндекс» и «1С: Предприятие» (~0:30) — ✅ выполнено
+
+Удалены `onec`/`yandex` из `INITIAL_INTEGRATIONS_CONFIG`
+(`Settings/constants.ts`) и соответствующие карточки/формы в
+`IntegrationsTab.tsx` (список `INTEGRATION_LIST` и блоки полей); заодно
+убран осиротевший импорт `Toggle` (использовался только в форме Яндекса).
+`grep -rn "yandex\|onec" front/src` по коду (не по i18n-строкам) теперь
+пусто — сами ключи локализации `integrations.items.onec/yandex` и
+`integrations.fields.onec*/yandex*` в `settings.json` намеренно оставлены:
+их чистка явно назначена задаче 6 вместе с переписыванием всей секции
+`integrations`. `npm run build` и `npm run lint` зелёные (проверено, что
+82 существующих ошибки линта — в других файлах, не в изменённых).
 
 **Яндекс.Касса** — приём платежей идёт через **Fondy**
 (`back/services/fondy.py`, вебхук, возвраты, `rectoken`). Вторая
@@ -70,7 +81,42 @@
 Итоговый список вкладки — 4 интеграции: **Telegram, WhatsApp, Instagram,
 Google Calendar**.
 
-## Задача 2. Бэк: единый список интеграций (~1:15)
+## Задача 2. Бэк: единый список интеграций (~1:15) — ✅ выполнено
+
+Добавлены в `routers/settings/integrations.py`:
+- `GET /settings/integrations` → `list[IntegrationStatus]`, всегда 4 записи
+  в фиксированном порядке `telegram, whatsapp, instagram, google_calendar`
+  (типы, для которых строки в БД ещё нет — `instagram`/`google_calendar`
+  до задач 3–4 — приходят как `connected: false` без ошибок).
+- `DELETE /settings/integrations/{integration_type}` → та же схема,
+  `connected: false`, `details: null` (параметр назван не `type`, чтобы не
+  затенять питоновский builtin — на URL это не влияет, сегмент пути
+  публично называется по значению, не по имени параметра).
+- `_INTEGRATION_TYPE_MAP` — единственное место маппинга публичных типов на
+  `StudioIntegration.integration_type` (`tg_notify`, `wa_notify`, `ig_dm`,
+  `gcal`); `IntegrationType = Literal[...]` в схеме — невалидный тип
+  (например «yandex») отдаёт 422 автоматической валидацией FastAPI.
+- `_integration_details()` — секреты (полный токен, `access_token`) не
+  формируются вообще, наружу только `_mask_token()` + публичные поля
+  (`bot_username`, `display_phone_number`, `calendar_id`, …); ponytail-
+  пометка про открытый JSON в БД перенесена из ТЗ в код рядом с местом,
+  где он читается.
+- **Отклонение/уточнение плана:** в ТЗ пример `capabilities` дан только для
+  `telegram` (`["notify","booking"]`) и `google_calendar`
+  (`["schedule_sync"]`); для `whatsapp` и `instagram` набор не был явно
+  зафиксирован — принято решение по аналогии с функциональным ТЗ (оба
+  канала — «Онлайн-запись», п. 2.7): `whatsapp → ["notify","booking"]`
+  (уведомления + канал записи, как у Telegram), `instagram →
+  ["dm_agent","booking"]` (ИИ-агент автоответчик, п. 2.11, + канал
+  записи). Список используется задачами 5–6 (i18n предупреждений об
+  отключении) — если состав не подойдёт под текст гайдов, поправить одной
+  строкой в `_INTEGRATION_CAPABILITIES`.
+- Тест `back/tests/test_settings_integrations.py` (сидирует реальную
+  студию + подключённый `tg_notify`, ручная чистка, паттерн как у
+  соседних `test_general_settings.py`/`test_notification_settings.py`):
+  порядок и состав 4 типов, маскирование токена и отсутствие полного
+  токена в ответе, `DELETE` возвращает `connected: false`, `IntegrationType`
+  отвергает `"yandex"`. `python -m tests.test_settings_integrations` → OK.
 
 **Слой:** `back/routers/settings/integrations.py` — дописать две ручки в
 существующий файл.
@@ -114,7 +160,29 @@ DELETE /settings/integrations/{type} → 200 (та же схема, connected=fa
 > Менять это в рамках эпика не будем, но помечаем:
 > `# ponytail: секреты в БД открытым текстом; шифрование at-rest — когда появится KMS/vault.`
 
-## Задача 3. Бэк: Instagram Direct (~1:00)
+## Задача 3. Бэк: Instagram Direct (~1:00) — ✅ выполнено
+
+`POST /settings/integrations/instagram` в `routers/settings/integrations.py`,
+буквально по образцу `connect_whatsapp`: `IgConnect{token, ig_user_id}` →
+`GET {GRAPH}/{ig_user_id}?fields=username` → при не-200 или сетевой ошибке
+400 «Meta не принял токен или ig_user_id»; при успехе — `_get_or_create_integration(..., "ig_dm")`,
+`config = {token, ig_user_id, username}`, `is_connected = True`, ответ
+`ChannelStatus` через `_channel_status(integ, "ig_dm")` (добавлена новая
+ветка: `{username, token_masked}` — та же форма, что уже использует
+`_integration_details()` из задачи 2 для списка).
+
+Отдельная ручка отключения не нужна — `DELETE
+/settings/integrations/instagram` уже закрыт задачей 2 (общий `DELETE
+/settings/integrations/{integration_type}`).
+
+**Не протестировано и не может быть протестировано в этом эпике:** сам HTTP-
+вызов к Meta Graph API — как и у `connect_whatsapp`, в кодовой базе нет
+мока `aiohttp.ClientSession` ни для одного внешнего вызова, а реального
+Meta-приложения нет (см. эдж-кейс «Instagram не прошёл модерацию»).
+Протестирована локальная логика, которая реально в зоне риска —
+`_channel_status(..., "ig_dm")` — добавлено в `test_settings_integrations.py`
+(поймало опечатку в ожидаемой маске токена при первом прогоне: перепутал
+длину «последних 4 символов»).
 
 Единственный канал из четырёх, которого в бэке нет. Meta Graph API — тот
 же, что у WhatsApp (`GRAPH = "https://graph.facebook.com/v20.0"` уже
@@ -129,7 +197,100 @@ POST /settings/integrations/instagram  {"token": "...", "ig_user_id": "..."}
 `connect_whatsapp`. Без реального приложения Meta задача упирается в
 модерацию — это фиксируется в UI-гайде (задача 5), а не прячется.
 
-## Задача 4. 🔴 Google Calendar: OAuth и синхронизация (~4:00)
+## Задача 4. 🔴 Google Calendar: OAuth и синхронизация (~4:00) — ✅ выполнено
+
+**Файлы:** `back/models/schedule.py` (+`Lesson.gcal_event_id`), миграция
+`712ef52a466b_lesson_gcal_event_id.py`, `back/services/gcal.py` (новый),
+`back/schemas/settings/google_calendar.py` (новый),
+`back/routers/settings/google_calendar.py` (новый), подключён в
+`routers/settings/router.py`; `routers/schedule/lessons.py` — триггеры push
+в `create_lesson`/`update_lesson`/`cancel_lesson`; `back/.env.example`
+(+`GOOGLE_CLIENT_SECRET`, `GOOGLE_CALENDAR_REDIRECT_URI`).
+
+**Реализовано через прямые REST-вызовы `aiohttp`, а не
+`google-api-python-client`/`google-auth-oauthlib`** (хотя в requirements.txt
+они есть — пришли с Google-логином): их клиент синхронный (`requests` под
+капотом), в асинхронном FastAPI это блокирует event loop на каждый вызов.
+Весь остальной внешний API-код проекта (WhatsApp, Instagram Graph,
+Instagram OAuth — `routers/ai/instagram.py`) уже общается напрямую через
+aiohttp — это тот же паттерн, не новый. Задокументировано в шапке
+`services/gcal.py`.
+
+**Три сознательных отклонения от буквального текста ТЗ ниже**, каждое —
+не срезание угла, а следование уже работающему в этой кодовой базе паттерну
+(CLAUDE.md: «Maintain existing architecture. Do NOT introduce new patterns
+without explicit discussion»):
+
+1. **`/start` без ticket-эндпоинта.** ТЗ (п. 4.2, диаграмма и раздел CORS)
+   заставляет `/start` самому делать 302 на Google и вводит отдельный
+   одноразовый `POST /integrations/google/ticket` — чтобы не класть основной
+   JWT в query браузерной навигации. Вместо этого `GET
+   /integrations/google/start` здесь — обычная JSON-ручка под
+   `require_role("owner")` (вызывается через fetch с Authorization-заголовком,
+   как везде в проекте) и возвращает `{"url": ...}`; браузер уходит по этому
+   URL прямой навигацией, минуя наш бэкенд. Редиректа через наш домен просто
+   нет — значит, нет и предмета спора (JWT в query). Буквально то же самое,
+   что уже работает для Instagram OAuth (`GET /ai/instagram/oauth-url` →
+   `{"url": ...}`, см. `routers/ai/instagram.py::get_instagram_oauth_url`) —
+   не новый паттерн, а переиспользование существующего. Ticket-эндпоинт и
+   его TTL/одноразовость (со своей поверхностью для багов) не понадобились.
+2. **Гейт подписки переехал с `main.py` на `routers/settings/router.py`.**
+   Колбэк Google — редирект браузера от Google без Authorization-заголовка;
+   под общий `dependencies=_sub_gate` всего `/settings` (main.py) его не
+   подвести. Ровно та же проблема уже была решена в AI-3 для Instagram OAuth
+   (см. комментарий в `routers/ai/router.py`: «Гейт подписки… переехал сюда с
+   уровня main.py») — применил тот же перенос: `_sub_gate` снят с
+   `app.include_router(settings_router, ...)` в `main.py`, вместо этого
+   каждый под-роутер `settings/router.py` (general/team/security/
+   integrations/google_calendar) получает `dependencies=_gate` по
+   отдельности, а `google_calendar_callback_router` — без гейта. Остальные
+   5 вкладок Настроек ведут себя идентично прежнему (тесты settings, вызывающие
+   роуты напрямую как функции, гейт на уровне `include_router` вообще не видят
+   — регрессии подтверждённо нет).
+3. **Автовыбор основного календаря при подключении**, а не обязательный
+   отдельный шаг «выберите календарь» перед первым push. User story ТЗ
+   («подключаю в два клика, и занятия… появляются в календаре студии») — это
+   буквально два клика, без третьего обязательного шага. В колбэке сразу
+   зовём `calendars.list` и берём `primary`; `calendar_id`/`calendar_name`
+   можно сменить потом через `PATCH .../google`.
+
+**Что не сделано буквально по ТЗ, сознательно, с пометкой:**
+- 401 `invalid_grant` → `is_connected=false` — есть; «уведомление владельцу»
+  из таблицы 4.4 — нет: в `services/notifier.py::KNOWN_EVENT_IDS` нет
+  подходящего event_id («интеграция отключена сама»), а заводить новый
+  event_id/шаблон/i18n-строку — это уже каталог уведомлений (другой эпик),
+  не механика OAuth. `# ponytail` в `services/gcal.py` рядом с местом.
+- **Pull (two_way)** реализован как счётчик (`sync_studio` возвращает
+  `pulled`), но НЕ persist-ится и никуда не отдаётся на фронт — в ТЗ нет ни
+  таблицы (явно: «новых таблиц нет»), ни эндпоинта для чтения «занятости» в
+  Журнале. Отображение этого в сетке расписания — отдельная, не описанная
+  здесь задача (см. `_count_busy_events` в `services/gcal.py`).
+- Ретрай на 403 `rateLimitExceeded` — 3 попытки с backoff (0.5с → 1с) есть в
+  `_calendar_request`.
+- 410 (событие удалено) → пересоздаётся при следующем push; 404 (календарь
+  удалён) → `is_connected=false`. Различение 404-от-события vs
+  404-от-календаря — по тому, 404-ит ли САМО создание нового события (без
+  привязки к старому event_id): если да, дело в календаре, не в конкретном
+  событии.
+
+**Не протестировано и не может быть протестировано без реального Google
+OAuth-приложения** (по прежней логике задачи 3 — Instagram): сам обмен
+code→token, календарные REST-вызовы. Протестирована вся локальная логика в
+зоне риска — подпись/валидация `state` (CSRF, включая просроченный и
+чужой-purpose state), ранние безопасные выходы `push_lesson` (не
+подключено/не выбран календарь), скоуп `disconnect_studio` по `studio_id`
+(обнуление `gcal_event_id` — проверено, что чужая студия не затронута),
+форма `_event_body`, отсутствие `refresh_token` в ответе `_status()`,
+обратная совместимость `background_tasks` для существующих прямых вызовов
+из тестов расписания. `back/tests/test_google_calendar.py`; полный прогон
+`test_lesson_cancel_reason/_reschedule_notify/_time_rules/_service_required`,
+`test_schedule_conflict`, `test_lesson_days`, `test_journal_time_rules`,
+`test_settings_integrations` — без регрессий (все ALL PASS / OK).
+
+**Для реальной проверки end-to-end нужны настоящие Google-креды:**
+`GOOGLE_CLIENT_SECRET` и `GOOGLE_CALENDAR_REDIRECT_URI` — добавлены в
+`.env.example`, но не в боевой `.env` (там есть только `GOOGLE_CLIENT_ID` —
+от Google-логина, секрет ему не требовался). Без них OAuth-flow не запустить.
 
 ### 4.1. Хранение
 

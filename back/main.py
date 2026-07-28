@@ -73,7 +73,10 @@ app.include_router(studio_router, prefix="/studio", tags=["Studio"], dependencie
 app.include_router(clients_router, prefix="/clients", tags=["Clients"], dependencies=_sub_gate)
 app.include_router(schedule_router, prefix="/schedule", tags=["Schedule"], dependencies=_sub_gate)
 app.include_router(finances_router, prefix="/finances", tags=["Finances"], dependencies=_sub_gate)
-app.include_router(settings_router, prefix="/settings", tags=["Settings"], dependencies=_sub_gate)
+# /settings — тот же случай, что /ai (эпик 6, задача 4): колбэк Google Calendar
+# OAuth публичный (браузерный редирект без Authorization-заголовка), под общий
+# гейт всего /settings его не подвести. Гейт переехал внутрь routers/settings/router.py.
+app.include_router(settings_router, prefix="/settings", tags=["Settings"])
 app.include_router(ai_router, prefix="/ai", tags=["AI"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"], dependencies=_sub_gate)
 app.include_router(staff_router, prefix="/staff", tags=["Staff"], dependencies=_sub_gate)

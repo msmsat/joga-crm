@@ -22,6 +22,7 @@ def _me_payload(user: User, token: str) -> dict:
         "is_onboarded": user.is_onboarded,
         "studio_id": payload.get("studio_id"),
         "role": payload.get("role"),
+        "two_fa_enabled": user.two_fa_enabled,
     }
 
 

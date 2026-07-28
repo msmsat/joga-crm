@@ -47,6 +47,7 @@ class Lesson(Base):
     status: Mapped[str] = mapped_column(String(20), default="confirmed")
     cancel_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     clients_notified: Mapped[bool] = mapped_column(Boolean, default=False)
+    gcal_event_id: Mapped[Optional[str]] = mapped_column(String(120), nullable=True, index=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="lessons")
     hall: Mapped[Optional["Hall"]] = relationship(back_populates="lessons")

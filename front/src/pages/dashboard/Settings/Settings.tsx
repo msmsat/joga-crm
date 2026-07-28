@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import "./Settings.css";
 
-import { useSecurity } from "./hooks/useSecurity";
 import { useBilling } from "./hooks/useBilling";
-import { useIntegrations } from "./hooks/useIntegrations";
 
 import { icons } from "./components/ui/SettingsIcons";
 import SettingsNav from "./components/ui/SettingsNav";
-import { ConfirmModal, useToast } from "../../../components/ui/index";
+import { useToast } from "../../../components/ui/index";
 
 import GeneralTab from "./components/tabs/GeneralTab";
 import AppearanceTab from "./components/tabs/AppearanceTab";
@@ -27,12 +26,13 @@ export default function Settings() {
 
   const { t } = useTranslation('settings');
   const toast = useToast();
-  const security = useSecurity();
   const billing = useBilling();
-  const integrations = useIntegrations();
+  const [searchParams] = useSearchParams();
 
-  const [activeSection, setActiveSection] = useState("general");
-  const [twoFa, setTwoFa] = useState(false);
+  // Возврат из Google OAuth (эпик 6, задача 4) редиректит на
+  // /dashboard/settings?tab=integrations&google=ok|denied|error — без этого
+  // владелец увидел бы вкладку «Основные», а не результат подключения.
+  const [activeSection, setActiveSection] = useState(() => searchParams.get("tab") ?? "general");
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [studiosList, setStudiosList] = useState<Studio[]>(INITIAL_STUDIOS_LIST);
 
@@ -55,26 +55,8 @@ export default function Settings() {
     appearance: <AppearanceTab />,
     notifications: <NotificationsTab />,
     billing: <BillingTab {...billing} />,
-    security: (
-      <SecurityTab
-        secExpanded={security.secExpanded}
-        setSecExpanded={security.setSecExpanded}
-        setSecModal={security.setSecModal}
-        activeSessions={security.activeSessions}
-        terminateSession={security.terminateSession}
-        twoFa={twoFa}
-        setTwoFa={setTwoFa}
-      />
-    ),
-    integrations: (
-      <IntegrationsTab
-        expandedIntegration={integrations.expandedIntegration}
-        setExpandedIntegration={integrations.setExpandedIntegration}
-        integrationsConfig={integrations.integrationsConfig}
-        updateIntegrationField={integrations.updateIntegrationField}
-        toggleIntegrationConnect={integrations.toggleIntegrationConnect}
-      />
-    ),
+    security: <SecurityTab />,
+    integrations: <IntegrationsTab />,
     data: <DataTab />,
   };
 
@@ -100,21 +82,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
-      {(security.secModal === "deleteData" || security.secModal === "deleteAccount") && (
-        <ConfirmModal
-          danger
-          title={security.secModal === "deleteAccount" ? t('security.danger.deleteAccount.title') : t('security.danger.wipe.title')}
-          message={security.secModal === "deleteAccount" ? t('security.danger.deleteAccount.sub') : t('security.danger.wipe.sub')}
-          confirmText={security.secModal === "deleteAccount" ? t('security.danger.deleteAccount.action') : t('security.danger.wipe.action')}
-          onClose={() => security.setSecModal(null)}
-          onConfirm={() => {
-            toast.success(security.secModal === "deleteData"
-              ? t('security.danger.wipe.toast')
-              : t('security.danger.deleteAccount.toast'));
-          }}
-        />
-      )}
 
       {isLoggedOut && (
         <WorkspaceSelector

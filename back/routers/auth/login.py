@@ -110,7 +110,10 @@ async def _finish_login(user: User, http_request: Request, db: AsyncSession) -> 
     промежуточный шаг того же входа."""
     if user.two_fa_enabled:
         await otp.issue(db, user, "login_2fa")
-        return TokenResponse(access_token=None, token_type="2fa_required", two_fa_required=True)
+        return TokenResponse(
+            access_token=None, token_type="2fa_required",
+            two_fa_required=True, two_fa_identifier=user.email,
+        )
 
     access_token = await _build_token_for_user(user, db)
     await _record_login_session(user, access_token, http_request, db)

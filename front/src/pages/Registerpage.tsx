@@ -40,8 +40,14 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const data = await authApi.google({ token: credential });
-      localStorage.setItem("token", data.access_token);
-      navigate("/dashboard");
+      if (data.two_fa_required) {
+        // Google-аккаунт привязан к существующему владельцу с 2FA — код уже
+        // отправлен, дошагать до ввода кода умеет страница входа.
+        navigate("/login");
+      } else if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        navigate("/dashboard");
+      }
     } catch {
       setSubmitError("Ошибка авторизации через Google");
     } finally {
@@ -100,7 +106,7 @@ export default function RegisterPage() {
 
     try {
       const data = await authApi.verifyEmail({ email, code });
-      localStorage.setItem("token", data.access_token);
+      if (data.access_token) localStorage.setItem("token", data.access_token);
       setDone(true);
     } catch (err: unknown) {
       setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");

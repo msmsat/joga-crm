@@ -26,18 +26,66 @@ export type AppearanceUpdate = Partial<AppearanceSettings>
 
 export interface UserSession {
   id: number
-  device: string | null
-  platform: string | null
+  device: string
+  platform: string
   browser: string | null
+  ip_address: string | null
   location_city: string | null
   location_country: string | null
   last_active: string
   is_current: boolean
 }
 
+export interface TwoFaStatus {
+  enabled: boolean
+}
+
+export interface ExportArchivePayload {
+  include: Array<'clients' | 'finances' | 'schedule'>
+}
+
+export interface WipeDataResult {
+  deleted: Record<string, number>
+}
+
+export interface DeleteAccountResult {
+  redirect: string
+}
+
+export type IntegrationType = 'telegram' | 'whatsapp' | 'instagram' | 'google_calendar'
+
 export interface Integration {
-  integration_type: string
-  is_active: boolean
+  type: IntegrationType
+  connected: boolean
   connected_at: string | null
-  config: Record<string, unknown> | null
+  details: Record<string, string | boolean | null> | null
+  capabilities: string[]
+}
+
+export interface GoogleCalendarInfo {
+  id: string
+  name: string
+  primary: boolean
+}
+
+export interface GoogleSyncResult {
+  pushed: number
+  pulled: number
+  errors: string[]
+}
+
+export interface GoogleCalendarUpdatePayload {
+  calendar_id?: string
+  sync_mode?: 'push' | 'two_way'
+}
+
+export interface WaConnectIntegrationPayload {
+  token: string
+  phone_number_id: string
+  waba_id?: string
+}
+
+export interface IgConnectPayload {
+  token: string
+  ig_user_id: string
 }

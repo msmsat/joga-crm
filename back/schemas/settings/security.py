@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
+
+from pydantic import Field
 
 from schemas._base import BaseSchema
 
@@ -22,3 +24,19 @@ class TwoFaUpdate(BaseSchema):
 
 class TwoFaStatus(BaseSchema):
     enabled: bool
+
+
+class ExportArchiveRequest(BaseSchema):
+    include: list[Literal["clients", "finances", "schedule"]] = Field(min_length=1)
+
+
+class ConfirmNameRequest(BaseSchema):
+    confirm_name: str
+
+
+class WipeDataResult(BaseSchema):
+    deleted: dict[str, int]
+
+
+class DeleteAccountResult(BaseSchema):
+    redirect: str
