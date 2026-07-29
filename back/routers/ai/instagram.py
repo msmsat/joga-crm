@@ -26,7 +26,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings
 from ratelimit import limiter
-from services.assistant import get_or_create_ai_settings
+from services.instagram_account import connect_instagram_account, disconnect_instagram_account
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +45,23 @@ _STATE_TTL_MINUTES = 10
 _OAUTH_TIMEOUT_SECONDS = 10
 _STATE_PURPOSE = "ig_oauth"
 
+# Подключение живёт на двух страницах (Velora AI и Уведомления) — возвращаем
+# браузер туда, откуда ушли. Белый список, а не свободный URL из запроса: иначе
+# callback становится открытым редиректом.
+_RETURN_PAGES = {"ai": "/dashboard/ai", "notifications": "/dashboard/notifications"}
+_DEFAULT_RETURN = "ai"
+
 
 @router.get("/instagram/oauth-url")
-async def get_instagram_oauth_url(ctx: StudioContext = Depends(require_role("owner"))):
+async def get_instagram_oauth_url(
+    back: str = Query(_DEFAULT_RETURN),
+    ctx: StudioContext = Depends(require_role("owner")),
+):
     state = jwt.encode(
         {
             "studio_id": ctx.studio_id,
             "purpose": _STATE_PURPOSE,
+            "back": back if back in _RETURN_PAGES else _DEFAULT_RETURN,
             "exp": datetime.utcnow() + timedelta(minutes=_STATE_TTL_MINUTES),
         },
         SECRET_KEY, algorithm=ALGORITHM,
@@ -71,25 +81,23 @@ async def disconnect_instagram(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    settings = await get_or_create_ai_settings(ctx.studio_id, db)
-    settings.ig_token = None
-    settings.ig_user_id = None
-    settings.ig_username = None
-    settings.ig_token_expires_at = None
-    settings.ig_enabled = False
-    await db.commit()
+    # Аккаунт один на всю CRM: гасим и канал Уведомлений/Интеграций, иначе там
+    # остаётся живой токен-сирота (services/instagram_account).
+    await disconnect_instagram_account(db, ctx.studio_id)
 
 
-def _studio_id_from_state(state: str | None) -> int | None:
+def _decode_state(state: str | None) -> tuple[int | None, str]:
+    """(studio_id, путь возврата). Битый state — студии нет, возврат по умолчанию."""
+    fallback = _RETURN_PAGES[_DEFAULT_RETURN]
     if not state:
-        return None
+        return None, fallback
     try:
         payload = jwt.decode(state, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
-        return None
+        return None, fallback
     if payload.get("purpose") != _STATE_PURPOSE:
-        return None
-    return payload.get("studio_id")
+        return None, fallback
+    return payload.get("studio_id"), _RETURN_PAGES.get(payload.get("back"), fallback)
 
 
 async def _exchange_code_for_token(code: str) -> str:
@@ -156,9 +164,9 @@ async def instagram_oauth_callback(
     state: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = _studio_id_from_state(state)
+    studio_id, back = _decode_state(state)
     if studio_id is None or not code:
-        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?ig=error")
+        return RedirectResponse(f"{WEB_APP_URL}{back}?ig=error")
 
     try:
         short_token = await _exchange_code_for_token(code)
@@ -166,7 +174,7 @@ async def instagram_oauth_callback(
         ig_user_id, username = await _fetch_ig_profile(long_token)
     except (aiohttp.ClientError, TimeoutError, KeyError, ValueError):
         logger.exception("instagram_oauth_callback: token exchange failed for studio_id=%s", studio_id)
-        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?ig=error")
+        return RedirectResponse(f"{WEB_APP_URL}{back}?ig=error")
 
     # Подписка отдельным шагом: упала — подключение всё равно состоялось, токен валиден.
     # Повторится при следующем подключении; событий до этого не будет — видно по логу.
@@ -175,14 +183,14 @@ async def instagram_oauth_callback(
     except (aiohttp.ClientError, TimeoutError):
         logger.exception("instagram_oauth_callback: subscribed_apps failed for studio_id=%s", studio_id)
 
-    settings = await get_or_create_ai_settings(studio_id, db)
-    settings.ig_token = long_token
-    settings.ig_user_id = ig_user_id
-    settings.ig_username = username
-    settings.ig_token_expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
-    await db.commit()
+    # Одно подключение на обе поверхности: авто-ответчик и канал Уведомлений.
+    await connect_instagram_account(
+        db, studio_id,
+        token=long_token, ig_user_id=ig_user_id, username=username,
+        expires_at=datetime.utcnow() + timedelta(seconds=expires_in),
+    )
 
-    return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?ig=connected")
+    return RedirectResponse(f"{WEB_APP_URL}{back}?ig=connected")
 
 
 # --- Вебхук входящих сообщений -------------------------------------------------

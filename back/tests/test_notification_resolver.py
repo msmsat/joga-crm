@@ -74,13 +74,40 @@ async def _run():
         assert channels == {"telegram"}, channels
         print("OK: studio matrix override removes default channel")
 
-        # 5) critical (c3) игнорирует матрицу и личный слой — email+telegram
-        #    из default_channels, оба подключены/включены глобально.
+        # 5) critical (c3) без правок матрицы — email+telegram из default_channels,
+        #    оба подключены и включены глобально.
         async with async_session_maker() as db:
             channels, forced = await resolve_channels(db, studio_id, "client", "c3", None)
         assert forced is False, (channels, forced)
         assert channels == {"email", "telegram"}, channels
-        print("OK: critical ignores matrix override")
+        print("OK: critical без правок -> default_channels")
+
+        # 5b) Замков в матрице нет: владелец гасит email у critical — и это
+        #     учитывается, остаётся telegram.
+        async with async_session_maker() as db:
+            db.add(NotificationEventToggle(studio_id=studio_id, role="client", event_id="c3", channel_key="email", is_enabled=False))
+            await db.commit()
+        async with async_session_maker() as db:
+            channels, forced = await resolve_channels(db, studio_id, "client", "c3", None)
+        assert channels == {"telegram"} and forced is False, (channels, forced)
+        print("OK: critical учитывает матрицу (локов нет)")
+
+        # 5c) ...но выключить ВСЁ у critical нельзя «в тишину»: пустой набор
+        #     превращается в forced-фолбэк — гарантия доставки цела.
+        async with async_session_maker() as db:
+            db.add(NotificationEventToggle(studio_id=studio_id, role="client", event_id="c3", channel_key="telegram", is_enabled=False))
+            await db.commit()
+        async with async_session_maker() as db:
+            channels, forced = await resolve_channels(db, studio_id, "client", "c3", None)
+        assert forced is True and len(channels) == 1, (channels, forced)
+        print("OK: critical выключен целиком -> forced fallback, не тишина")
+
+        # Возвращаем c3 в исходное, чтобы не влиять на шаги ниже.
+        async with async_session_maker() as db:
+            await db.execute(delete(NotificationEventToggle).where(
+                NotificationEventToggle.studio_id == studio_id, NotificationEventToggle.event_id == "c3",
+            ))
+            await db.commit()
 
         # 6) optional-событие тренера (t8, default_channels=()) без строк
         #    матрицы/личных настроек -> ничего не включено (пусто, не forced).

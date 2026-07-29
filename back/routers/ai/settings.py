@@ -47,7 +47,11 @@ async def update_ai_settings(
     fields = body.model_dump(exclude_unset=True)
     if fields.get("tg_enabled") and not settings.tg_token:
         raise HTTPException(status_code=400, detail="tg_token_required")
-    ig_connected = bool(settings.ig_token and settings.ig_token_expires_at and settings.ig_token_expires_at > datetime.utcnow())
+    # Срок известен только у Instagram Login (OAuth); у ручного токена Facebook
+    # Login из Уведомлений его нет — отсутствие срока не значит «просрочен».
+    ig_connected = bool(settings.ig_token) and (
+        settings.ig_token_expires_at is None or settings.ig_token_expires_at > datetime.utcnow()
+    )
     if fields.get("ig_enabled") and not ig_connected:
         raise HTTPException(status_code=400, detail="ig_not_connected")
     wa_phone = await _wa_phone_number(db, ctx.studio_id)

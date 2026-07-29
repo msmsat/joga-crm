@@ -1,5 +1,19 @@
 {
   "loading": "Loading…",
+  "chModal": {
+    "eyebrow": "Notification channel",
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "setup": "Connection setup",
+    "details": "Connection details",
+    "ready": "Channel is up and running",
+    "readyHint": "Notifications for enabled events are sent automatically.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Number",
+    "account": "Account",
+    "sender": "Sender"
+  },
   "channels": {
     "title": "Delivery channels",
     "connect": "Connect",
@@ -149,21 +163,18 @@
   "ig": {
     "title": "Instagram",
     "subtitleConnected": "Channel connected",
-    "subtitleDisconnected": "Connect via Meta Graph API",
+    "subtitleDisconnected": "Sign in with Instagram",
     "connected": "Connected",
-    "howToConnect": "How to connect:",
+    "howToConnect": "How it works:",
     "steps": {
-      "1": "Link the studio's Instagram account to a Facebook page — the Direct API requires it",
-      "2a": "Create an app in",
-      "2link": "Meta for Developers",
-      "2b": "with the Instagram product and the instagram_basic, instagram_manage_messages permissions",
-      "3": "Copy the access token and the Instagram business account ID"
+      "1": "Hit “Connect with Instagram” — the official Instagram sign-in page opens",
+      "2": "Sign in to the studio's business account and grant access to messages",
+      "3": "You land back here with the channel connected — Velora stores and refreshes the token itself"
     },
-    "tokenLabel": "Access token",
-    "igUserIdLabel": "Instagram business account ID",
+    "requirement": "Requires an Instagram business or creator account linked to a Facebook page. No token or ID to type in.",
     "windowWarning": "Direct doesn't reach everyone",
     "windowNotice": "Messages only reach people who have already messaged the studio on Direct, and only within the 24-hour conversation window — the client must have an Instagram ID on file.",
-    "connect": "Connect",
+    "connect": "Connect with Instagram",
     "disconnect": "Disconnect",
     "disconnectTitle": "Disconnect Instagram?",
     "disconnectMessage": "Clients and staff will stop receiving notifications through this channel.",

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccounts } from './hooks/useAccounts';
 import { useProfileForm } from './hooks/useProfileForm';
@@ -6,21 +5,14 @@ import LinkedAccounts from './components/sections/LinkedAccounts';
 import SecuritySettings from './components/sections/SecuritySettings';
 import ActiveSessionCard from './components/sections/ActiveSessionCard';
 import PersonalInfoForm from './components/sections/PersonalInfoForm';
-import Toast from './components/ui/Toast';
 import { icons } from './components/ui/ProfileIcons';
 import styles from './Profile.module.css';
 
 export default function Profile() {
   const { t } = useTranslation(["profile", "common"]);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  const triggerToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
-  };
-
-  const { accounts, isSwitching, handleSwitchAccount, handleLogoutAll } = useAccounts(triggerToast);
-  const { userInfo, setUserInfo, isSavingInfo, handleSaveInfo } = useProfileForm(triggerToast);
+  const { studios, isLoading: studiosLoading, isError: studiosError, refetch: refetchStudios, switchingId, handleSwitchAccount } = useAccounts();
+  const { userInfo, setUserInfo, email, isLoading, isSavingInfo, handleSaveInfo } = useProfileForm();
 
   return (
     <div className={styles.page}>
@@ -45,27 +37,30 @@ export default function Profile() {
           {/* Left column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <LinkedAccounts
-              accounts={accounts}
-              isSwitching={isSwitching}
+              studios={studios}
+              isLoading={studiosLoading}
+              isError={studiosError}
+              refetch={refetchStudios}
+              switchingId={switchingId}
               handleSwitchAccount={handleSwitchAccount}
             />
-            <SecuritySettings handleLogoutAll={handleLogoutAll} />
+            <SecuritySettings />
           </div>
 
           {/* Right column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <ActiveSessionCard accounts={accounts} />
+            <ActiveSessionCard />
             <PersonalInfoForm
               userInfo={userInfo}
               setUserInfo={setUserInfo}
+              email={email}
+              isLoading={isLoading}
               isSavingInfo={isSavingInfo}
               handleSaveInfo={handleSaveInfo}
             />
           </div>
         </div>
       </div>
-
-      <Toast message={toastMsg} />
     </div>
   );
 }

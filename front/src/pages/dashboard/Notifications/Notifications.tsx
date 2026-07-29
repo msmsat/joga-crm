@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { invalidateChannelGroup } from '../../../api/channelGroup';
+import { useToast } from '../../../components/ui/Toast';
 import { useNotifications, useEnableChannel } from './hooks/useNotifications';
 import { useChannelIntegrations } from './hooks/useChannelIntegrations';
 import ChannelsSidebar from './components/sections/ChannelsSidebar';
@@ -20,6 +24,27 @@ export default function Notifications() {
   const enableChannel = useEnableChannel();
   const ci = useChannelIntegrations(enableChannel);
   const h = useNotifications(ci.channels, key => setOpenModal(MODAL_BY_CHANNEL[key]));
+
+  // Возврат с Instagram OAuth: бэк редиректит сюда с ?ig=connected|error, если
+  // подключение начали отсюда (routers/ai/instagram.py, _RETURN_PAGES).
+  const toast = useToast();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const ig = searchParams.get('ig');
+    if (!ig) return;
+    if (ig === 'connected') {
+      invalidateChannelGroup(qc);
+      enableChannel('instagram');
+      toast.success(t('chModal.connected'));
+    } else {
+      toast.error(t('common:errors.unknown', 'Не удалось подключить Instagram'));
+    }
+    // Затираем query, чтобы тост не повторялся на F5.
+    navigate('/dashboard/notifications', { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   if (h.loading) {
     return <div style={{ padding: '60px 24px', textAlign: 'center', color: '#666666', fontSize: '14px' }}>{t('loading')}</div>;
@@ -44,7 +69,7 @@ export default function Notifications() {
           toggleAllForRole={h.toggleAllForRole}
           allOn={h.allOn}
           syncing={h.syncing}
-          onConnectChannel={h.onConnectChannel}
+          saveFailed={h.saveFailed}
         />
       </div>
 

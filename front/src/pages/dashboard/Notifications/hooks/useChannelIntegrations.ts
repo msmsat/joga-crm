@@ -3,9 +3,9 @@ import { notificationsApi } from '../../../../api/notifications'
 import { queryKeys } from '../../../../api/queryKeys'
 import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
-import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup'
+import { invalidateChannelGroup } from '../../../../api/channelGroup'
 import { useTranslation } from 'react-i18next'
-import type { IgConnectChannelPayload, WaConnectPayload } from '../../../../api/notifications/notifications.types'
+import type { WaConnectPayload } from '../../../../api/notifications/notifications.types'
 
 export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'instagram' | 'email') => void) {
   const qc = useQueryClient()
@@ -38,7 +38,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
   const connectTelegram = useMutation({
     mutationFn: (token: string) => notificationsApi.connectTelegram(token),
     onSuccess: () => {
-      invalidateTelegramBotGroup(qc)
+      invalidateChannelGroup(qc)
       onConnected?.('telegram')
       toast.success(t('common:actions.saved', 'Подключено'))
     },
@@ -49,7 +49,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     mutationFn: () => notificationsApi.disconnectTelegram(),
     onSuccess: () => {
       invalidateAfterDisconnect()
-      invalidateTelegramBotGroup(qc)
+      invalidateChannelGroup(qc)
       toast.success(t('common:actions.saved', 'Отключено'))
     },
     onError,
@@ -79,15 +79,22 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onError,
   })
 
+  // Instagram — только OAuth: уходим на страницу согласия Instagram полным
+  // редиректом (не попап, как и на Velora AI), возвращаемся сюда с ?ig=...
+  // Кэш здесь не трогаем — страница всё равно перезагрузится после возврата.
   const connectInstagram = useMutation({
-    mutationFn: (payload: IgConnectChannelPayload) => notificationsApi.connectInstagram(payload),
-    onSuccess: () => { invalidate(); onConnected?.('instagram'); toast.success(t('common:actions.saved', 'Подключено')) },
+    mutationFn: () => notificationsApi.getInstagramOauthUrl(),
+    onSuccess: ({ url }) => { window.location.href = url },
     onError,
   })
 
   const disconnectInstagram = useMutation({
     mutationFn: () => notificationsApi.disconnectInstagram(),
-    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onSuccess: () => {
+      invalidateAfterDisconnect()
+      invalidateChannelGroup(qc)
+      toast.success(t('common:actions.saved', 'Отключено'))
+    },
     onError,
   })
 

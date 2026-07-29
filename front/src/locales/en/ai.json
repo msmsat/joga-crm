@@ -37,13 +37,17 @@
   },
   "whatsapp": {
     "numberLabel": "WhatsApp Business number",
-    "connectLink": "Connect a number in Notifications →",
+    "connectLink": "or enter a token manually",
     "gateTooltip": "Connect a WhatsApp number first",
     "statsPending": "Will appear once the auto-responder starts working",
     "instructionTitle": "How to connect",
-    "instructionStep1": "Open Notifications and connect the WhatsApp channel (token and Phone Number ID from Meta Business Suite)",
-    "instructionStep2": "The number is connected once — the same one is used for client notifications",
-    "instructionStep3": "Come back here and switch the auto-responder on"
+    "instructionStep1": "Click “Connect WhatsApp” — a Meta window opens",
+    "instructionStep2": "Sign in to Facebook, pick a business account and a number (or add a new one) and confirm it with the code",
+    "instructionStep3": "The number is connected once — the same one is used for client notifications; come back here and switch the auto-responder on",
+    "connectButton": "Connect WhatsApp",
+    "connectedToast": "WhatsApp number connected",
+    "connectFailedToast": "Could not connect the WhatsApp number",
+    "notConfiguredToast": "WhatsApp signup is not configured yet — contact support"
   },
   "history": {
     "title": "Chat history",

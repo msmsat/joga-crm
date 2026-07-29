@@ -1,33 +1,45 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { UserAccount } from '../types';
-import { initialAccounts } from '../constants';
+import { authApi } from '../../../../api';
+import { queryKeys } from '../../../../api/queryKeys';
+import { errorMessage } from '../../../../api/errorMessage';
+import { useToast } from '../../../../components/ui/index';
 
-export function useAccounts(triggerToast: (msg: string) => void) {
+export function useAccounts() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { t } = useTranslation("profile");
-  const [accounts, setAccounts] = useState<UserAccount[]>(initialAccounts);
-  const [isSwitching, setIsSwitching] = useState<number | null>(null);
+  const toast = useToast();
 
-  const handleSwitchAccount = (id: number) => {
-    const acc = accounts.find(a => a.id === id);
-    if (!acc || acc.active) return;
-    setIsSwitching(id);
-    setTimeout(() => {
-      setAccounts(prev => prev.map(a => ({ ...a, active: a.id === id })));
-      setIsSwitching(null);
-      triggerToast(t("toasts.switchedAs", { email: acc.email }));
-    }, 1200);
+  const { data: studios = [], isLoading, isError, refetch } = useQuery({
+    queryKey: queryKeys.workspaces,
+    queryFn: () => authApi.getStudios(),
+  });
+
+  const select = useMutation({
+    mutationFn: (studioId: number) => authApi.selectStudio(studioId),
+    onSuccess: (data) => {
+      if (data.access_token) localStorage.setItem('token', data.access_token);
+      // Кэш набит данными прошлой студии — иначе пользователь увидит чужие данные.
+      qc.clear();
+      navigate('/dashboard');
+    },
+    onError: (err) => toast.error(errorMessage(err, t)),
+  });
+
+  const handleSwitchAccount = (studioId: number) => {
+    const studio = studios.find(s => s.id === studioId);
+    if (!studio || studio.is_current || select.isPending) return;
+    select.mutate(studioId);
   };
 
-  const handleLogoutAll = () => {
-    triggerToast(t("toasts.logoutAll"));
-    setTimeout(() => {
-      localStorage.removeItem('token');
-      navigate('/login');
-    }, 1500);
+  return {
+    studios,
+    isLoading,
+    isError,
+    refetch,
+    switchingId: select.isPending ? select.variables ?? null : null,
+    handleSwitchAccount,
   };
-
-  return { accounts, setAccounts, isSwitching, handleSwitchAccount, handleLogoutAll };
 }

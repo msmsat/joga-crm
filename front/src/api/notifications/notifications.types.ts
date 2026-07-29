@@ -81,7 +81,3 @@ export interface WaConnectPayload {
   waba_id?: string | null
 }
 
-export interface IgConnectChannelPayload {
-  token: string
-  ig_user_id: string
-}

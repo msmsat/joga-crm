@@ -11,7 +11,6 @@ import type {
   ChannelStatus,
   WaPricing,
   WaConnectPayload,
-  IgConnectChannelPayload,
 } from './notifications.types'
 
 export const notificationsApi = {
@@ -62,8 +61,11 @@ export const notificationsApi = {
   getWaPricing: () =>
     client.get<WaPricing>('/settings/integrations/whatsapp/pricing'),
 
-  connectInstagram: (payload: IgConnectChannelPayload) =>
-    client.post<ChannelStatus>('/settings/integrations/instagram', payload),
+  // Instagram подключается только по OAuth — тем же эндпоинтом, что и на Velora AI
+  // (аккаунт один на обе поверхности, см. services/instagram_account.py). back
+  // говорит бэку, куда вернуть браузер после согласия в Instagram.
+  getInstagramOauthUrl: () =>
+    client.get<{ url: string }>('/ai/instagram/oauth-url?back=notifications'),
 
   // Отдельного DELETE у Instagram нет — гасит общий /settings/integrations/{type}.
   disconnectInstagram: () =>

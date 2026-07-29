@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAssistant } from '../../../hooks/useAssistant';
 import { useToast } from '../../../components/ui/Toast';
-import { queryKeys } from '../../../api/queryKeys';
+import { invalidateChannelGroup } from '../../../api/channelGroup';
 import { useAIAgent } from './hooks/useAIAgent';
 import LeftPanel from './components/LeftPanel';
 import ChatPanel from './components/ChatPanel';
@@ -22,7 +22,7 @@ export default function AIPage() {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, isVerifyingTelegram,
     igConnected, isConnectingInstagram, waConnected,
     toggleChannel, updateAISettings, saveChannelFields, verifyTelegram, disconnectTelegram,
-    connectInstagram, disconnectInstagram,
+    connectInstagram, disconnectInstagram, connectWhatsapp, isConnectingWhatsapp,
   } = useAIAgent();
   const [agentModalOpen, setAgentModalOpen] = useState(false);
 
@@ -36,7 +36,8 @@ export default function AIPage() {
     const ig = searchParams.get('ig');
     if (!ig) return;
     if (ig === 'connected') {
-      qc.invalidateQueries({ queryKey: queryKeys.aiSettings });
+      // Подключение сразу открывает канал и в Уведомлениях/Интеграциях.
+      invalidateChannelGroup(qc);
       toast.success(t('instagram.connectedToast'));
     } else if (ig === 'error') {
       toast.error(t('instagram.connectErrorToast'));
@@ -96,6 +97,8 @@ export default function AIPage() {
           igConnected={igConnected}
           isConnectingInstagram={isConnectingInstagram}
           waConnected={waConnected}
+          isConnectingWhatsapp={isConnectingWhatsapp}
+          onConnectWhatsapp={connectWhatsapp}
           onToggleChannel={toggleChannel}
           onSave={saveChannelFields}
           onVerifyTelegram={verifyTelegram}

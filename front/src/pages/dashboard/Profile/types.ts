@@ -1,17 +1,8 @@
 import type { UserSession } from '../../../api/settings/settings.types';
 export type { UserSession };
 
-export interface UserAccount {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  active: boolean;
-  color: string;
-}
-
 export interface UserInfo {
   name: string;
-  email: string;
+  last_name: string;
   phone: string;
 }

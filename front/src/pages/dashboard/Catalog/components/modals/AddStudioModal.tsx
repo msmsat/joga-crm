@@ -346,7 +346,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "280px 1fr",
           overflow: "hidden",
-          animation: "modalIn 0.42s cubic-bezier(0.34,1.1,0.64,1)",
+          animation: "modalIn 0.3s ease",
         }}
         onClick={e => e.stopPropagation()}
       >

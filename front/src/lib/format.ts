@@ -51,3 +51,15 @@ export function fmtRelativeDate(iso: string): string {
   const [, m, d] = iso.slice(0, 10).split('-');
   return `${d}.${m}`;
 }
+
+/** Когда сессия была активна в последний раз: "Сейчас активна" / "5 мин. назад" /
+ * "3 ч назад" / "2 дн. назад" — общий хелпер для списка сессий (Настройки) и
+ * карточки текущей сессии (Профиль). */
+export function fmtLastActive(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
+  if (diff < 1) return i18n.t('settings:security.sessions.justNow');
+  if (diff < 60) return i18n.t('settings:security.sessions.minutesAgo', { count: diff });
+  const h = Math.floor(diff / 60);
+  if (h < 24) return i18n.t('settings:security.sessions.hoursAgo', { count: h });
+  return i18n.t('settings:security.sessions.daysAgo', { count: Math.floor(h / 24) });
+}

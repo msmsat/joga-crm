@@ -1,0 +1,47 @@
+{
+  "brand": {
+    "product": "Velora CRM"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "staff": "Staff",
+    "catalog": "Catalog",
+    "clients": "Clients",
+    "reports": "Reports",
+    "booking": "Online booking",
+    "finances": "Finances",
+    "notifications": "Notifications",
+    "loyalty": "Loyalty",
+    "ai": "Velora AI",
+    "settings": "Settings",
+    "billing": "Plan & billing",
+    "journal": "Journal",
+    "profile": "Profile"
+  },
+  "subtitles": {
+    "dashboard": "Welcome to Velora CRM",
+    "staff": "Team management",
+    "catalog": "Branches, halls and services",
+    "clients": "Studio client base",
+    "reports": "Analytics and statistics",
+    "booking": "Manage booking channels",
+    "finances": "Accounts, transactions, documents",
+    "notifications": "Channels and notification types",
+    "loyalty": "Client programs and cards",
+    "ai": "Smart assistant and auto-replies",
+    "settings": "System configuration",
+    "billing": "Subscription management",
+    "journal": "Class schedule",
+    "profile": "Account and settings"
+  },
+  "badge": {
+    "new": "NEW"
+  },
+  "navbar": {
+    "create": "Create"
+  },
+  "tooltips": {
+    "studioName": "Your studio: {{name}}",
+    "openProfile": "Open profile"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "brand": {
+    "product": "Velora CRM"
+  },
+  "nav": {
+    "dashboard": "Дашборд",
+    "staff": "Сотрудники",
+    "catalog": "Каталог",
+    "clients": "Клиенты",
+    "reports": "Отчёты",
+    "booking": "Онлайн-запись",
+    "finances": "Финансы",
+    "notifications": "Уведомления",
+    "loyalty": "Лояльность",
+    "ai": "Velora AI",
+    "settings": "Настройки",
+    "billing": "Тариф и оплата",
+    "journal": "Журнал",
+    "profile": "Профиль"
+  },
+  "subtitles": {
+    "dashboard": "Добро пожаловать в Velora CRM",
+    "staff": "Управление командой",
+    "catalog": "Студии, залы и услуги",
+    "clients": "База клиентов студии",
+    "reports": "Аналитика и статистика",
+    "booking": "Управление каналами записи",
+    "finances": "Счета, операции, документы",
+    "notifications": "Каналы и типы оповещений",
+    "loyalty": "Программы и карты клиентов",
+    "ai": "Умный ассистент и автоответы",
+    "settings": "Конфигурация системы",
+    "billing": "Управление подпиской",
+    "journal": "Расписание занятий",
+    "profile": "Аккаунт и настройки"
+  },
+  "badge": {
+    "new": "NEW"
+  },
+  "navbar": {
+    "create": "Создать"
+  },
+  "tooltips": {
+    "studioName": "Ваша студия: {{name}}",
+    "openProfile": "Открыть профиль"
+  }
+}

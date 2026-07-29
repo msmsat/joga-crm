@@ -38,6 +38,8 @@
   },
   "fields": {
     "fullName": "Полное имя",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
     "phone": "Телефон",
     "email": "Email",
     "photo": "Фото профиля",

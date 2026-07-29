@@ -4,25 +4,27 @@
     "sub": "Manage personal data and sessions"
   },
   "personalInfo": {
-    "heading": "Personal details"
+    "heading": "Personal details",
+    "emailLocked": "Email is your account login and can't be changed here"
   },
   "security": {
     "changePassword": "Change password",
-    "logoutAll": "End all sessions"
+    "logoutCurrent": "End current session",
+    "logoutConfirm": "End the session on this device?",
+    "logoutConfirmSub": "You'll be signed out. Your data won't be affected."
   },
   "accounts": {
-    "title": "Linked accounts",
-    "count": "{{count}} account",
-    "enter": "Sign in",
-    "createNew": "Create new account"
+    "title": "My studios",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studios",
+    "enter": "Open",
+    "createNew": "Create new studio"
   },
   "session": {
-    "current": "Current session"
+    "current": "Current session",
+    "lastActive": "Active {{time}}"
   },
   "toasts": {
-    "switchedAs": "Signed in as {{email}}",
-    "logoutAll": "Logging out of all accounts...",
-    "infoSaved": "Personal data updated successfully",
-    "infoSaveError": "Failed to save changes"
+    "infoSaved": "Personal data updated successfully"
   }
 }

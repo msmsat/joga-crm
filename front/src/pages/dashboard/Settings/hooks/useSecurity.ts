@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { settingsApi } from "../../../../api/settings/settings.api";
-import { authApi } from "../../../../api/auth/auth.api";
 import { queryKeys } from "../../../../api/queryKeys";
 import { errorMessage } from "../../../../api/errorMessage";
 import { useToast } from "../../../../components/ui/index";
+import { useMe } from "../../../../hooks/useMe";
 import type { ExportArchivePayload } from "../../../../api/settings/settings.types";
 
 export function useSecurity() {
@@ -19,11 +19,7 @@ export function useSecurity() {
     queryFn: () => settingsApi.getSessions(),
   });
 
-  const meQuery = useQuery({
-    queryKey: queryKeys.me,
-    queryFn: () => authApi.getMe(),
-    staleTime: 60_000,
-  });
+  const meQuery = useMe();
 
   const terminateSession = useMutation({
     mutationFn: (id: number) => settingsApi.terminateSession(id),

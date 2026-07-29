@@ -1,9 +1,12 @@
-"""WhatsApp-агент: входящие сообщения WhatsApp Cloud API -> авто-ответ.
+"""WhatsApp-агент: Embedded Signup (подключение номера) + вебхук Cloud API.
 
-Подключения здесь нет: номер студии (token + phone_number_id) живёт в
-StudioIntegration("wa_notify") и подключается в Уведомлениях / Настройках →
-Интеграции. Этот файл — только вебхук Meta (аналог routers/ai/instagram.py):
-GET проверяется verify-токеном, POST — подписью тела на app secret.
+Номер студии (token + phone_number_id) живёт в StudioIntegration("wa_notify") —
+один на Уведомления, Настройки → Интеграции и агента. Подключить его можно двумя
+путями: руками (POST /settings/integrations/whatsapp) или через Embedded Signup —
+кнопка на странице Velora AI, ниже её серверная половина.
+
+Вебхук Meta (аналог routers/ai/instagram.py): GET проверяется verify-токеном,
+POST — подписью тела на app secret.
 """
 import hashlib
 import hmac
@@ -12,21 +15,28 @@ import logging
 import os
 
 import aiohttp
-from fastapi import APIRouter, Query, Request, Depends
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
+from dependencies import StudioContext, require_role
 from models import StudioAISettings, StudioIntegration
+from schemas.ai import WaEmbeddedSignup
 
 logger = logging.getLogger(__name__)
 
+router = APIRouter()
 webhook_router = APIRouter()
 
+WA_APP_ID = os.getenv("WA_APP_ID", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
-GRAPH = "https://graph.facebook.com/v20.0"
+# PIN двухфакторки номера в Cloud API: задаётся при регистрации и нужен, чтобы
+# позже перерегистрировать тот же номер. Один на инсталляцию — кладём в config.
+WA_REGISTER_PIN = os.getenv("WA_REGISTER_PIN", "000000")
+GRAPH = "https://graph.facebook.com/v23.0"
 _TIMEOUT_SECONDS = 10
 
 
@@ -90,6 +100,89 @@ async def _studio_by_phone_number_id(db: AsyncSession, phone_number_id: str) -> 
         if str(config.get("phone_number_id")) == phone_number_id and config.get("token"):
             return row.studio_id, config["token"]
     return None
+
+
+# --- Embedded Signup -----------------------------------------------------------
+
+
+async def _graph(method: str, path: str, token: str = "", **kwargs) -> dict:
+    """Один вызов Graph API. Ошибку поднимаем вместе с телом ответа: причина отказа
+    («номер уже зарегистрирован», «нет прав») написана только там. Токен не логируем."""
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+    timeout = aiohttp.ClientTimeout(total=_TIMEOUT_SECONDS)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.request(method, f"{GRAPH}/{path}", headers=headers, **kwargs) as resp:
+            if resp.status >= 400:
+                raise RuntimeError(f"Graph {method} {path} -> {resp.status}: {(await resp.text())[:400]}")
+            return await resp.json()
+
+
+@router.post("/whatsapp/embedded-signup")
+async def whatsapp_embedded_signup(
+    body: WaEmbeddedSignup,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Финал Embedded Signup: code от FB.login -> постоянный токен студии, подписка
+    WABA на наш вебхук, регистрация номера в Cloud API, запись в wa_notify.
+
+    Номер один на студию, поэтому пишем в ту же интеграцию, что и ручное
+    подключение из Уведомлений, — Уведомления и агент увидят его сразу.
+    """
+    if not WA_APP_ID or not WA_APP_SECRET:
+        raise HTTPException(status_code=503, detail="wa_signup_not_configured")
+
+    try:
+        data = await _graph("GET", "oauth/access_token", params={
+            "client_id": WA_APP_ID, "client_secret": WA_APP_SECRET, "code": body.code,
+        })
+        token = data["access_token"]
+    except (aiohttp.ClientError, TimeoutError, RuntimeError, KeyError) as exc:
+        logger.error("wa embedded signup: обмен code не удался, studio_id=%s: %s", ctx.studio_id, exc)
+        raise HTTPException(status_code=400, detail="wa_signup_failed")
+
+    # Подписка и регистрация — отдельными шагами: токен уже валиден, значит
+    # подключение состоялось и исходящие уведомления заработают в любом случае.
+    # Без subscribed_apps не придёт ни одного входящего — это видно по логу.
+    try:
+        await _graph("POST", f"{body.waba_id}/subscribed_apps", token=token)
+    except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
+        logger.error("wa embedded signup: subscribed_apps не прошёл, studio_id=%s: %s", ctx.studio_id, exc)
+    try:
+        await _graph("POST", f"{body.phone_number_id}/register", token=token,
+                     json={"messaging_product": "whatsapp", "pin": WA_REGISTER_PIN})
+    except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
+        # Номер, уже зарегистрированный с другим PIN, сюда и попадает — отправка
+        # с него всё равно работает, повторная регистрация не нужна.
+        logger.warning("wa embedded signup: register не прошёл, studio_id=%s: %s", ctx.studio_id, exc)
+
+    try:
+        info = await _graph("GET", body.phone_number_id, token=token, params={"fields": "display_phone_number"})
+        display_phone_number = info.get("display_phone_number")
+    except (aiohttp.ClientError, TimeoutError, RuntimeError):
+        display_phone_number = None  # гейт тумблера откатится на phone_number_id
+
+    integ = (await db.execute(select(StudioIntegration).where(
+        StudioIntegration.studio_id == ctx.studio_id,
+        StudioIntegration.integration_type == "wa_notify",
+    ))).scalar_one_or_none()
+    if integ is None:
+        integ = StudioIntegration(studio_id=ctx.studio_id, integration_type="wa_notify")
+        db.add(integ)
+    integ.config = {
+        "token": token,
+        "phone_number_id": body.phone_number_id,
+        "waba_id": body.waba_id,
+        "display_phone_number": display_phone_number,
+        "pin": WA_REGISTER_PIN,
+    }
+    integ.is_connected = True
+    await db.commit()
+    logger.info("wa embedded signup: номер подключён, studio_id=%s", ctx.studio_id)
+    return {"display_phone_number": display_phone_number or body.phone_number_id}
+
+
+# --- Вебхук входящих сообщений -------------------------------------------------
 
 
 @webhook_router.get("/whatsapp/webhook")

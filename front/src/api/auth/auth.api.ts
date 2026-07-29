@@ -75,4 +75,7 @@ export const authApi = {
     client.post<{ message: string }>('/auth/change-password', payload, {
       headers: { 'X-OTP-Token': otpToken },
     }),
+
+  logoutCurrentSession: () =>
+    client.delete<void>('/auth/sessions/current'),
 }

@@ -6,6 +6,8 @@ export interface ModalShellProps {
   children: React.ReactNode;
   size?: 'sm' | 'lg';           // sm: 460px одна колонка; lg: 860px, две колонки (left slot)
   left?: React.ReactNode;       // левая панель под иллюстрацию/превью (только size="lg")
+  leftStyle?: React.CSSProperties; // переопределяет фон/паддинг левой панели (full-bleed hero)
+  maxWidth?: string;            // ширина карточки, если дефолт (460/860) не подходит
   closeOnBackdrop?: boolean;    // клик мимо закрывает (по умолчанию true)
 }
 
@@ -21,7 +23,7 @@ export const useModalClose = () => useContext(CloseContext);
 // мимо. Содержимое (Header/поля/Footer) передаётся как children.
 // Анимация и блюр — в классах .v-overlay / .v-modal (App.css): блюр-слой
 // намеренно не анимируется, иначе Chrome пересчитывает его каждый кадр.
-export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdrop = true }: ModalShellProps) {
+export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, maxWidth, closeOnBackdrop = true }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
 
   const requestClose = () => {
@@ -48,7 +50,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdr
         className="v-modal"
         onClick={e => e.stopPropagation()}
         style={{
-          width: '100%', maxWidth: isLg ? '860px' : '460px',
+          width: '100%', maxWidth: maxWidth ?? (isLg ? '860px' : '460px'),
           maxHeight: 'calc(100vh - 32px)',
           background: 'var(--bg-card, #FDFCFB)', borderRadius: isLg ? '24px' : '20px',
           boxShadow: '0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)',
@@ -60,7 +62,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, closeOnBackdr
       >
         <CloseContext.Provider value={requestClose}>
           {isLg && (
-            <div style={{ background: 'var(--card, #FFFFFF)', padding: '36px 30px 28px', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ background: 'var(--card, #FFFFFF)', padding: '36px 30px 28px', display: 'flex', flexDirection: 'column', ...leftStyle }}>
               {left}
             </div>
           )}

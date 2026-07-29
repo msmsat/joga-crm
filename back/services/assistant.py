@@ -54,11 +54,11 @@ async def get_or_create_ai_settings(studio_id: int, db: AsyncSession) -> StudioA
         settings = StudioAISettings(studio_id=studio_id, system_prompt=default_prompt(studio_name))
         db.add(settings)
         await db.flush()
-    await _maybe_refresh_instagram_token(settings)
+    await _maybe_refresh_instagram_token(settings, db)
     return settings
 
 
-async def _maybe_refresh_instagram_token(settings: StudioAISettings) -> None:
+async def _maybe_refresh_instagram_token(settings: StudioAISettings, db: AsyncSession) -> None:
     """Продление long-lived IG-токена (эпик AI-3, задача 4, п.3): ленивый рефреш при
     любом обращении к настройкам студии — токен живёт ~60 дней, владелец заходит
     чаще, отдельный планировщик пока не нужен.
@@ -80,6 +80,14 @@ async def _maybe_refresh_instagram_token(settings: StudioAISettings) -> None:
                 data = await resp.json()
         settings.ig_token = data["access_token"]
         settings.ig_token_expires_at = datetime.utcnow() + timedelta(seconds=data["expires_in"])
+        # Тот же токен лежит в канале Уведомлений — без этого он там протухает
+        # молча. Импорт локальный: instagram_account импортирует этот модуль.
+        from services.instagram_account import IG_LOGIN_API, write_dm_integration
+        await write_dm_integration(
+            db, settings.studio_id,
+            token=settings.ig_token, ig_user_id=settings.ig_user_id,
+            username=settings.ig_username, api=IG_LOGIN_API,
+        )
     except (aiohttp.ClientError, TimeoutError, KeyError, ValueError):
         # Владелец увидит приближающийся срок в UI и переподключит по инструкции (задача 5).
         logger.exception("Instagram token refresh failed for studio_id=%s", settings.studio_id)

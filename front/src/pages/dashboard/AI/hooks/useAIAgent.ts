@@ -5,8 +5,9 @@ import type { TFunction } from 'i18next';
 import { aiApi } from '../../../../api/ai/ai.api';
 import { ApiError } from '../../../../api/client';
 import { queryKeys } from '../../../../api/queryKeys';
-import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup';
+import { invalidateChannelGroup } from '../../../../api/channelGroup';
 import { useToast } from '../../../../components/ui/Toast';
+import { launchWhatsAppSignup } from '../../../../lib/whatsappSignup';
 import type { AISettings } from '../../../../api/ai/ai.types';
 import type { AgentChannel, AgentConfig, AgentTone, AIUISettings, AIModel, AILanguage } from '../types';
 
@@ -123,7 +124,7 @@ export function useAIAgent() {
   const verifyTelegramMutation = useMutation({
     mutationFn: (token: string) => aiApi.verifyTelegramToken(token),
     onSuccess: ({ username }) => {
-      invalidateTelegramBotGroup(qc);
+      invalidateChannelGroup(qc);
       toast.success(t('telegram.verifiedToast', { username }));
     },
     onError: () => toast.error(t('telegram.verifyFailedToast')),
@@ -132,7 +133,7 @@ export function useAIAgent() {
   const disconnectTelegramMutation = useMutation({
     mutationFn: () => aiApi.disconnectTelegram(),
     onSuccess: () => {
-      invalidateTelegramBotGroup(qc);
+      invalidateChannelGroup(qc);
       toast.success(t('telegram.disconnectedToast'));
     },
     onError: (err) => toast.error(aiErrorText(err, t)),
@@ -144,10 +145,30 @@ export function useAIAgent() {
     onError: (err) => toast.error(aiErrorText(err, t)),
   });
 
+  // Embedded Signup: окно Meta -> code -> обмен на сервере. Отмена в окне — не
+  // ошибка подключения, тост не нужен.
+  const connectWhatsappMutation = useMutation({
+    mutationFn: async () => aiApi.connectWhatsapp(await launchWhatsAppSignup()),
+    onSuccess: () => {
+      // Номер один на студию: он же канал Уведомлений и Настроек → Интеграции.
+      invalidateChannelGroup(qc);
+      toast.success(t('whatsapp.connectedToast'));
+    },
+    onError: (err) => {
+      if (err instanceof Error && err.message === 'cancelled') return;
+      if (err instanceof Error && err.message === 'not_configured') {
+        toast.error(t('whatsapp.notConfiguredToast'));
+        return;
+      }
+      toast.error(t('whatsapp.connectFailedToast'));
+    },
+  });
+
   const disconnectInstagramMutation = useMutation({
     mutationFn: () => aiApi.disconnectInstagram(),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.aiSettings });
+      // Аккаунт один на всю CRM — гасим статус и в Уведомлениях/Интеграциях.
+      invalidateChannelGroup(qc);
       toast.success(t('instagram.disconnectedToast'));
     },
     onError: (err) => toast.error(aiErrorText(err, t)),
@@ -177,5 +198,7 @@ export function useAIAgent() {
     connectInstagram: connectInstagramMutation.mutate,
     isConnectingInstagram: connectInstagramMutation.isPending,
     disconnectInstagram: () => disconnectInstagramMutation.mutateAsync(),
+    connectWhatsapp: () => connectWhatsappMutation.mutate(),
+    isConnectingWhatsapp: connectWhatsappMutation.isPending,
   };
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ConfirmModal } from '../../../../../components/ui/index';
+import { GhostButton, PrimaryButton, Input, ConfirmModal } from '../../../../../components/ui/index';
+import { ChannelModalShell, Steps, Notice, DetailRow, DangerButton } from './ChannelModalLayout';
+import { CHANNEL_BRAND } from './channelBrand';
 import type { UseMutationResult } from '@tanstack/react-query';
 import type { ChannelStatus } from '../../../../../api/notifications/notifications.types';
 
@@ -20,74 +22,63 @@ export function TgTokenModal({ status, connectMut, disconnectMut, onClose }: Pro
   const trimmed = token.trim();
   const isValid = TOKEN_RE.test(trimmed);
   const connected = status?.connected ?? false;
+  const botUsername = status?.details?.bot_username ? `@${String(status.details.bot_username)}` : '—';
 
   return (
     <>
-      <ModalShell size="sm" onClose={onClose}>
-        <ModalHeader title={t('tg.title')} subtitle={connected ? t('tg.subtitleConnected') : t('tg.subtitleDisconnected')} />
-        <ModalBody>
-          {connected ? (
-            <>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(91,171,114,0.12)',
-                color: '#5BAB72', borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 600, width: 'fit-content',
-              }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#5BAB72', display: 'inline-block' }} />
-                {t('tg.connected')}
-              </div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text, #1A1A1A)' }}>
-                @{String(status?.details?.bot_username ?? '—')}
-              </div>
-              <div style={{ fontSize: '12px', color: '#999999', fontFamily: 'monospace' }}>
-                {String(status?.details?.token_masked ?? '')}
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize: '13px', color: '#666666' }}>{t('tg.pasteToken')}</div>
-              <Input
-                value={token}
-                onChange={setToken}
-                placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
-                error={trimmed && !isValid ? t('tg.invalidToken') : undefined}
-              />
-              <div style={{
-                padding: '14px 16px', borderRadius: '12px', background: 'rgba(26,26,26,0.03)',
-                fontSize: '12px', color: '#666666', lineHeight: 1.7,
-              }}>
-                <div style={{ fontWeight: 700, color: 'var(--text, #1A1A1A)', marginBottom: '6px' }}>{t('tg.howToGet')}</div>
-                <ol style={{ margin: 0, paddingLeft: '18px' }}>
-                  <li>{t('tg.steps.1')}</li>
-                  <li>{t('tg.steps.2')}</li>
-                  <li>{t('tg.steps.3')}</li>
-                  <li>{t('tg.steps.4')}</li>
-                </ol>
-              </div>
-            </>
-          )}
-        </ModalBody>
-        <ModalFooter>
-          {connected ? (
-            <>
-              <GhostButton>{t('tg.close')}</GhostButton>
-              <PrimaryButton onClick={() => setConfirmingDisconnect(true)} disabled={disconnectMut.isPending}>
-                {t('tg.disconnect')}
-              </PrimaryButton>
-            </>
-          ) : (
-            <>
-              <GhostButton>{t('tg.cancel')}</GhostButton>
-              <PrimaryButton
-                onClick={() => connectMut.mutate(trimmed, { onSuccess: () => setToken('') })}
-                disabled={!isValid}
-                loading={connectMut.isPending}
-              >
-                {t('tg.connect')}
-              </PrimaryButton>
-            </>
-          )}
-        </ModalFooter>
-      </ModalShell>
+      <ChannelModalShell
+        brand={CHANNEL_BRAND.telegram}
+        name={t('tg.title')}
+        tagline={connected ? t('tg.subtitleConnected') : t('tg.subtitleDisconnected')}
+        connected={connected}
+        detail={botUsername}
+        title={connected ? t('chModal.details') : t('chModal.setup')}
+        onClose={onClose}
+        footer={connected ? (
+          <>
+            <GhostButton>{t('tg.close')}</GhostButton>
+            <DangerButton onClick={() => setConfirmingDisconnect(true)} disabled={disconnectMut.isPending}>
+              {t('tg.disconnect')}
+            </DangerButton>
+          </>
+        ) : (
+          <>
+            <GhostButton>{t('tg.cancel')}</GhostButton>
+            <PrimaryButton
+              onClick={() => connectMut.mutate(trimmed, { onSuccess: () => setToken('') })}
+              disabled={!isValid}
+              loading={connectMut.isPending}
+            >
+              {t('tg.connect')}
+            </PrimaryButton>
+          </>
+        )}
+      >
+        {connected ? (
+          <>
+            <Notice tone="ok">
+              <strong>{t('chModal.ready')}</strong> — {t('chModal.readyHint')}
+            </Notice>
+            <DetailRow label={t('chModal.bot')} value={botUsername} />
+            <DetailRow label={t('chModal.token')} value={String(status?.details?.token_masked ?? '—')} mono />
+          </>
+        ) : (
+          <>
+            <Input
+              label={t('tg.title')}
+              value={token}
+              onChange={setToken}
+              placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
+              error={trimmed && !isValid ? t('tg.invalidToken') : undefined}
+            />
+            <Notice>{t('tg.pasteToken')}</Notice>
+            <Steps
+              title={t('tg.howToGet')}
+              items={[t('tg.steps.1'), t('tg.steps.2'), t('tg.steps.3'), t('tg.steps.4')]}
+            />
+          </>
+        )}
+      </ChannelModalShell>
 
       {confirmingDisconnect && (
         <ConfirmModal

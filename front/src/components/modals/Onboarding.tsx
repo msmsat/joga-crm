@@ -182,7 +182,7 @@ export default function OnboardingPage() {
         background: "#FDFCFB", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
         display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden",
-        animation: "modalIn 0.45s cubic-bezier(0.34,1.1,0.64,1)",
+        animation: "modalIn 0.3s ease",
         position: "relative",
       }}
     >
@@ -326,7 +326,7 @@ export default function OnboardingPage() {
             background: "white", borderRadius: "20px", padding: "36px 32px",
             maxWidth: "340px", width: "90%", textAlign: "center",
             boxShadow: "0 32px 80px rgba(26,26,26,0.2)",
-            animation: "modalIn 0.3s cubic-bezier(0.34,1.1,0.64,1)",
+            animation: "modalIn 0.3s ease",
           }}>
             <div style={{
               width: "56px", height: "56px", borderRadius: "50%",

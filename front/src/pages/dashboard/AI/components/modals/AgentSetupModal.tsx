@@ -17,6 +17,8 @@ interface AgentSetupModalProps {
   igConnected: boolean;
   isConnectingInstagram: boolean;
   waConnected: boolean;
+  isConnectingWhatsapp: boolean;
+  onConnectWhatsapp: () => void;
   onToggleChannel: (channel: AgentChannel) => void;
   onSave: (draft: AgentConfig) => void;
   onVerifyTelegram: (token: string) => void;
@@ -148,6 +150,8 @@ export default function AgentSetupModal({
   igConnected,
   isConnectingInstagram,
   waConnected,
+  isConnectingWhatsapp,
+  onConnectWhatsapp,
   onToggleChannel,
   onSave,
   onVerifyTelegram,
@@ -264,8 +268,8 @@ export default function AgentSetupModal({
     </div>
   );
 
-  // У WhatsApp-агента нет своего подключения: номер один на студию и живёт в
-  // Уведомлениях / Настройках → Интеграции. Здесь — только статус и ссылка туда.
+  // Номер один на студию (он же канал Уведомлений), но подключить его можно и
+  // отсюда — Embedded Signup: окно Meta вместо ручного токена и Phone Number ID.
   const whatsappTokenArea = (
     <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
       <label className={styles.formLabel}>{t('whatsapp.numberLabel')}</label>
@@ -277,15 +281,22 @@ export default function AgentSetupModal({
           </span>
         </div>
       ) : (
-        <Link to="/dashboard/notifications" className={styles.tokenDisconnectBtn} style={{ textDecoration: 'none', width: 'fit-content' }}>
-          {t('whatsapp.connectLink')}
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <Button onClick={onConnectWhatsapp} loading={isConnectingWhatsapp}>
+            {t('whatsapp.connectButton')}
+          </Button>
+          <Link to="/dashboard/notifications" className={styles.tokenDisconnectBtn} style={{ textDecoration: 'none' }}>
+            {t('whatsapp.connectLink')}
+          </Link>
+        </div>
       )}
     </div>
   );
 
   return (
-    <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+    // v-blur-overlay — глобальный маркер: по нему App.css гасит анимации фона,
+    // пока висит блюр (на класс из CSS-модуля в :has() не сослаться).
+    <div className={`${styles.modalOverlay} v-blur-overlay`} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <div>

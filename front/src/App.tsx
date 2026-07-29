@@ -9,7 +9,6 @@ import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
-import ChangePassword from './pages/ChangePassword';
 import SelectCrm from './pages/SelectCrm';
 
 import DashboardLayout from './layouts/DashboardLayout';
@@ -115,15 +114,6 @@ export default function App() {
 
         {/* 🚀 Онбординг (первая студия, или ?new=1 — доп. студия, см. OnboardingRoute) */}
         <Route path="/onboarding" element={<OnboardingRoute />} />
-
-        <Route
-          path="/change-password"
-          element={
-            <ProtectedRoute requireOnboarding={true}>
-              <ChangePassword />
-            </ProtectedRoute>
-          }
-        />
 
         {/* 🚀 Мультистудийность (EPIC 7): выбор/переключение CRM — вне DashboardLayout,
             студия ещё не выбрана, сайдбар и пейволл рисовать не на чем */}

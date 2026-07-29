@@ -88,12 +88,14 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     },
   });
 
+  // Локов в матрице нет: любая ячейка свободно переключается. Гарантия доставки
+  // живёт не здесь, а в resolve_channels (критичное событие уходит по своим
+  // default_channels, у операционного при пустом наборе срабатывает fallback) —
+  // тумблер её не отменяет, поэтому запрещать клик незачем.
   const toggleCheck = (evId: string, chKey: ChannelKey) => {
     const row = matrixQ.data?.events.find(e => e.event_id === evId);
-    if (!row || row.locked) return; // критичное — строка целиком нередактируема
-    const nextValue = !row.channels[chKey];
-    if (!nextValue && row.tier === 'operational' && row.locked_channels.includes(chKey)) return; // последний канал
-    toggleMut.mutate({ role: row.role, event_id: evId, channel_key: chKey, is_enabled: nextValue });
+    if (!row) return;
+    toggleMut.mutate({ role: row.role, event_id: evId, channel_key: chKey, is_enabled: !row.channels[chKey] });
   };
 
   const switchRole = (role: Role) => {
@@ -101,11 +103,12 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     setActiveRole(role);
   };
 
-  const allChannels = matrixQ.data?.channels ?? [];
-  // Только подключённые каналы реально кликабельны в матрице (отключённые
-  // рендерятся тире вместо чекбокса, см. MatrixCell) — bulk-действие трогает
-  // ровно то, что пользователь может нажать сам.
-  const connectedChannelKeys = allChannels.filter(c => c.connected).map(c => c.key as ChannelKey);
+  // Колонка в матрице = канал подключён И включён тумблером в сайдбаре.
+  // Берём тумблер из стора (а не global_enabled из /matrix): стор обновляется
+  // оптимистично, колонка появляется/исчезает сразу, без рефетча матрицы.
+  const allChannels = (matrixQ.data?.channels ?? []).filter(c => c.connected && channels[c.key as ChannelKey]);
+  // bulk-действие трогает ровно то, что пользователь видит и может нажать сам.
+  const connectedChannelKeys = allChannels.map(c => c.key as ChannelKey);
 
   const countActive = (role: Role) =>
     (matrixQ.data?.events ?? []).filter(r => r.role === role).reduce((sum, r) => {
@@ -116,30 +119,16 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   const currentRole = ROLES.find(r => r.key === activeRole)!;
   const events = (matrixQ.data?.events ?? []).filter(r => r.role === activeRole);
 
-  // Активировать/деактивировать всё в текущей роли — только по незалоченным,
-  // подключённым ячейкам; для operational всегда оставляем минимум один
-  // включённый канал (та же гарантия доставки, что и на бэке, см. notification_resolver.py).
-  const toggleableCells = events.flatMap(r => (r.locked ? [] : connectedChannelKeys.map(ch => ({ row: r, ch }))));
-  const allOn = toggleableCells.length > 0 && toggleableCells.every(({ row, ch }) => row.channels[ch]);
+  // Активировать/деактивировать всё в текущей роли — по всем подключённым
+  // ячейкам, без исключений: bulk трогает ровно то, что видно в матрице.
+  const cells = events.flatMap(r => connectedChannelKeys.map(ch => ({ row: r, ch })));
+  const allOn = cells.length > 0 && cells.every(({ row, ch }) => row.channels[ch]);
 
   const toggleAllForRole = () => {
     const targetOn = !allOn;
-    const toggles: EventToggle[] = [];
-    for (const row of events) {
-      if (row.locked) continue;
-      if (targetOn) {
-        for (const ch of connectedChannelKeys) {
-          if (!row.channels[ch]) toggles.push({ role: row.role, event_id: row.event_id, channel_key: ch, is_enabled: true });
-        }
-        continue;
-      }
-      const onChannels = connectedChannelKeys.filter(ch => row.channels[ch]);
-      const keep = row.tier === 'operational' ? onChannels[0] : undefined;
-      for (const ch of onChannels) {
-        if (ch === keep) continue;
-        toggles.push({ role: row.role, event_id: row.event_id, channel_key: ch, is_enabled: false });
-      }
-    }
+    const toggles: EventToggle[] = cells
+      .filter(({ row, ch }) => row.channels[ch] !== targetOn)
+      .map(({ row, ch }) => ({ role: row.role, event_id: row.event_id, channel_key: ch, is_enabled: targetOn }));
     if (toggles.length === 0) return;
     bulkMut.mutate(toggles, {
       onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.notificationMatrix }),
@@ -154,6 +143,7 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     currentRole, events, allChannels,
     toggleCheck, toggleAllForRole, allOn,
     syncing: toggleMut.isPending || bulkMut.isPending,
+    saveFailed: toggleMut.isError || bulkMut.isError,
     onConnectChannel: onNeedsConnect,
     loading: settingsQ.isPending || matrixQ.isPending,
   };

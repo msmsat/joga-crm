@@ -371,7 +371,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             e.currentTarget.style.boxShadow = '0 4px 12px rgba(26,26,26,0.15)';
           }}
         >
-          + Создать
+          + {t('menu:navbar.create')}
         </button>
       </div>
     </div>

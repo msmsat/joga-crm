@@ -481,7 +481,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   return createPortal(
     <div className="v-overlay" onClick={onClose}>
       <style>{`
-        @keyframes eiModalIn { from{opacity:0;transform:scale(0.93) translateY(18px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        @keyframes eiModalIn { from{opacity:0} to{opacity:1} }
         @keyframes eiSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         @keyframes eiCheckPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
         @keyframes eiPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.6)} }
@@ -593,7 +593,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "260px 1fr",
           overflow: "hidden",
-          animation: "eiModalIn 0.42s cubic-bezier(0.34,1.1,0.64,1)",
+          animation: "eiModalIn 0.3s ease",
         }}
         onClick={e => e.stopPropagation()}
       >

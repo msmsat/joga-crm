@@ -73,25 +73,18 @@ async def update_notification_settings(
 # ─── EPIC 3, Задача 3: матрица «событие × канал» ─────────────────────────────
 async def _matrix_row(db: AsyncSession, studio_id: int, event_id: str, spec) -> MatrixRow:
     """Строка матрицы для одного события — общий строитель для GET /matrix и
-    PATCH /events, чтобы локи не разъезжались между двумя ответами."""
-    if spec.tier == "critical":
-        eff = set(spec.default_channels)  # матрица игнорируется — шлём по дефолту
-    else:
-        eff = await studio_channels(db, studio_id, spec.role, event_id, spec.default_channels)
+    PATCH /events.
 
-    locked = spec.tier == "critical"
-    locked_channels: list[str] = []
-    lock_reason: str | None = None
-    if locked:
-        lock_reason = "critical"
-    elif spec.tier == "operational" and len(eff) == 1:
-        locked_channels = list(eff)
-        lock_reason = "last_channel"
-
+    Все уровни читаются одинаково, через studio_channels: галка показывает
+    ровно то, что сохранено, иначе выключенная ячейка critical отскакивала бы
+    обратно. Поля locked* остались в схеме, но всегда пустые — замков в матрице
+    нет; страховка от «выключили всё» живёт в resolve_channels (forced-фолбэк).
+    """
+    eff = await studio_channels(db, studio_id, spec.role, event_id, spec.default_channels)
     return MatrixRow(
         event_id=event_id, role=spec.role, tier=spec.tier,
         channels={ch: ch in eff for ch in NOTIFY_CHANNELS},
-        locked=locked, locked_channels=locked_channels, lock_reason=lock_reason,
+        locked=False, locked_channels=[], lock_reason=None,
     )
 
 
@@ -112,32 +105,19 @@ async def get_notification_matrix(
 
 async def _validate_toggles(db: AsyncSession, studio_id: int, toggles: list[EventToggle]) -> None:
     """Границе доверия (§2 API эпика): фронту не верим, интерфейс можно обойти
-    curl'ом. critical — 409 на любую попытку; operational — 409, если пачка
-    (с учётом ДРУГИХ тумблеров той же пачки на тот же event_id) гасит последний
-    включённый канал."""
-    by_event: dict[tuple[str, str], list[EventToggle]] = defaultdict(list)
+    curl'ом — неизвестное событие или чужая роль по-прежнему 422.
+
+    Запреты «critical отключить нельзя» и «нужен хотя бы один канал» сняты вместе
+    с замками в матрице: владелец волен выключить любую ячейку. Доставку это не
+    ломает — её гарантирует resolve_channels, а не тумблер: у critical каналы
+    берутся из default_channels мимо настроек, у operational пустой набор
+    превращается в forced-фолбэк (services/notification_resolver.py, §3).
+    """
     for t in toggles:
         spec = CATALOG.get(t.event_id)
         if spec is None or spec.role != t.role:
             raise HTTPException(status_code=422, detail={
                 "code": "notifications.unknown_event", "message": f"Неизвестное событие: {t.event_id}",
-            })
-        if spec.tier == "critical":
-            raise HTTPException(status_code=409, detail={
-                "code": "notifications.critical_locked", "message": "Это уведомление отключить нельзя",
-            })
-        by_event[(t.role, t.event_id)].append(t)
-
-    for (role, event_id), items in by_event.items():
-        spec = CATALOG[event_id]
-        if spec.tier != "operational":
-            continue
-        eff = await studio_channels(db, studio_id, role, event_id, spec.default_channels)
-        for t in items:  # применяем пачку к текущему состоянию по порядку — как ON CONFLICT DO UPDATE
-            eff = (eff | {t.channel_key}) if t.is_enabled else (eff - {t.channel_key})
-        if not eff:
-            raise HTTPException(status_code=409, detail={
-                "code": "notifications.last_channel", "message": "Нужен хотя бы один канал доставки",
             })
 
 

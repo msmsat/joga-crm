@@ -329,15 +329,15 @@ const logout = useMutation({
 
 ## Definition of Done
 
-- [ ] `front/src/pages/ChangePassword.tsx` удалён, роут `/change-password`
+- [x] `front/src/pages/ChangePassword.tsx` удалён, роут `/change-password`
       удалён, `grep -rn "ChangePassword" front/src/App.tsx` → пусто
-- [ ] Смена пароля из профиля реально меняет пароль (проверено повторным
+- [x] Смена пароля из профиля реально меняет пароль (проверено повторным
       входом) и отзывает остальные сессии
-- [ ] Карточка сессии показывает вошедшего пользователя и его устройство
-- [ ] Кнопка называется «Завершить текущую сессию» и отзывает сессию в БД;
+- [x] Карточка сессии показывает вошедшего пользователя и его устройство
+- [x] Кнопка называется «Завершить текущую сессию» и отзывает сессию в БД;
       старый токен получает 401
-- [ ] `grep -rn "logoutAll" front/src` → пусто
-- [ ] `cd front && npm run build && npm run lint` — чисто
-- [ ] `pytest back/tests/test_profile_sessions.py` — зелёный
-- [ ] Миграции не создавались (`git status back/migrations/versions` — пусто)
+- [x] `grep -rn "logoutAll" front/src` → пусто
+- [x] `cd front && npm run build && npm run lint` — чисто
+- [x] `pytest back/tests/test_profile_sessions.py` — зелёный
+- [x] Миграции не создавались (`git status back/migrations/versions` — пусто)
 </content>

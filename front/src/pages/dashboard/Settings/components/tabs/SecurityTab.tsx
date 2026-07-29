@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
@@ -15,16 +14,8 @@ import { ChangePasswordModal } from "../modals/ChangePasswordModal";
 import { DangerZoneModal } from "../modals/DangerZoneModal";
 import { OtpConfirmModal } from "../modals/OtpConfirmModal";
 import { authApi } from "../../../../../api";
+import { fmtLastActive } from "../../../../../lib/format";
 import type { ExportArchivePayload } from "../../../../../api/settings/settings.types";
-
-function fmtLastActive(iso: string, t: TFunction): string {
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
-  if (diff < 1)  return t('settings:security.sessions.justNow');
-  if (diff < 60) return t('settings:security.sessions.minutesAgo', { count: diff });
-  const h = Math.floor(diff / 60);
-  if (h < 24)   return t('settings:security.sessions.hoursAgo', { count: h });
-  return t('settings:security.sessions.daysAgo', { count: Math.floor(h / 24) });
-}
 
 function maskEmail(email: string): string {
   const [local, domain] = email.split('@');
@@ -122,7 +113,7 @@ export default function SecurityTab() {
                                 {session.device} {session.is_current && <span style={{ fontSize: "9px", padding: "2px 6px", borderRadius: "4px", background: "#5A9A65", color: "#FFF" }}>{t('security.sessions.current')}</span>}
                               </div>
                               <div style={{ fontSize: "11px", color: "var(--muted)", marginTop: "2px" }}>
-                                {session.browser ?? session.platform} · {session.ip_address ?? t('security.sessions.unknownLocation')} · {fmtLastActive(session.last_active, t)}
+                                {session.browser ?? session.platform} · {session.ip_address ?? t('security.sessions.unknownLocation')} · {fmtLastActive(session.last_active)}
                               </div>
                             </div>
                           </div>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { bookingApi } from '../../../../api/booking/booking.api'
 import type { BookingChannel, BookingChannelType } from '../../../../api/booking/booking.types'
 import { queryKeys } from '../../../../api/queryKeys'
-import { invalidateTelegramBotGroup } from '../../../../api/telegramBotGroup'
+import { invalidateChannelGroup } from '../../../../api/channelGroup'
 import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
 import type { ChannelStatus } from '../types'
@@ -37,7 +37,7 @@ export function useChannels() {
       bookingApi.updateChannel(type, payload),
     onSuccess: (_row, { payload }) => {
       // Тот же бот виден на страницах Velora AI и Уведомлений — освежаем все три.
-      invalidateTelegramBotGroup(qc)
+      invalidateChannelGroup(qc)
       toast.success(payload.is_active ? 'Бот подключён' : 'Бот отключён')
     },
     onError: (err) => toast.error(errorMessage(err, t)),

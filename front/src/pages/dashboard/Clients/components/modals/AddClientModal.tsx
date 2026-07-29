@@ -248,7 +248,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
   return createPortal(
     <>
       <style>{`
-        @keyframes acModalIn   { from { opacity: 0; transform: scale(0.94) translateY(20px) } to { opacity: 1; transform: scale(1) translateY(0) } }
+        @keyframes acModalIn   { from { opacity: 0 } to { opacity: 1 } }
         @keyframes acStepIn    { from { opacity: 0; transform: translateX(calc(var(--ac-dir, 1) * 24px)) } to { opacity: 1; transform: translateX(0) } }
         @keyframes acCheckPop  { 0% { transform: scale(0) } 70% { transform: scale(1.2) } 100% { transform: scale(1) } }
         @keyframes acPulse     { 0%,100% { box-shadow: 0 0 0 0 rgba(91,171,114,0.4) } 50% { box-shadow: 0 0 0 10px rgba(91,171,114,0) } }
@@ -263,7 +263,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             width: 'min(780px, calc(100vw - 48px))', height: 'min(556px, calc(100vh - 32px))',
             background: '#fff', borderRadius: '24px', overflow: 'hidden',
             display: 'flex', boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
-            animation: 'acModalIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both',
+            animation: 'acModalIn 0.3s ease both',
           }}
         >
           {/* ─ LEFT PANEL ─ */}

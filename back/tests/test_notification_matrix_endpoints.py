@@ -45,35 +45,32 @@ async def _run():
     try:
         owner = StudioContext(user=None, studio_id=studio_id, role="owner")
 
-        # 1) GET /matrix — critical (c3) залочена целиком; operational с единственным
-        #    дефолтным каналом (c6: email) — locked_channels=["email"].
+        # 1) GET /matrix — весь каталог, замков нет ни у одной строки, каналы
+        #    по дефолтам каталога (студия ещё ничего не меняла).
         async with async_session_maker() as db:
             matrix = await get_notification_matrix(ctx=owner, db=db)
         by_id = {row.event_id: row for row in matrix.events}
         assert len(matrix.events) == 38, len(matrix.events)  # весь каталог, не только тронутые
+        assert all(r.locked is False and r.locked_channels == [] for r in matrix.events)
         c3 = by_id["c3"]
-        assert c3.locked is True and c3.lock_reason == "critical" and c3.locked_channels == []
         assert c3.channels == {"email": True, "telegram": True, "whatsapp": False, "instagram": False}, c3.channels
-        c6 = by_id["c6"]
-        assert c6.locked is False and c6.lock_reason == "last_channel" and c6.locked_channels == ["email"]
-        print("OK: GET /matrix — critical locked, operational last-channel locked")
+        print("OK: GET /matrix — без локов, каналы по дефолтам каталога")
 
-        # 2) PATCH /events на critical → 409, БД не тронута.
+        # 2) PATCH /events на critical проходит: замков в матрице больше нет,
+        #    владелец гасит любую ячейку. Доставку это не отменяет — critical
+        #    уходит по default_channels мимо тумблеров (notification_resolver).
         async with async_session_maker() as db:
-            try:
-                await upsert_event_toggle(
-                    body=EventToggle(role="client", event_id="c3", channel_key="email", is_enabled=False),
-                    ctx=owner, db=db,
-                )
-                raise AssertionError("ожидали 409")
-            except HTTPException as e:
-                assert e.status_code == 409 and e.detail["code"] == "notifications.critical_locked", e.detail
+            row = await upsert_event_toggle(
+                body=EventToggle(role="client", event_id="c3", channel_key="email", is_enabled=False),
+                ctx=owner, db=db,
+            )
+        assert row.channels["email"] is False, row.channels
         async with async_session_maker() as db:
             rows = (await db.execute(
                 select(NotificationEventToggle).where(NotificationEventToggle.studio_id == studio_id)
             )).scalars().all()
-        assert rows == [], rows  # ничего не записалось
-        print("OK: PATCH /events on critical -> 409, no DB write")
+        assert len(rows) == 1 and rows[0].event_id == "c3", rows
+        print("OK: PATCH /events on critical -> 200 (локов нет)")
 
         # 3) Неизвестное событие / чужая роль -> 422.
         async with async_session_maker() as db:
@@ -95,67 +92,59 @@ async def _run():
                 assert e.status_code == 422 and e.detail["code"] == "notifications.unknown_event", e.detail
         print("OK: role/event mismatch -> 422")
 
-        # 4) c1 (email+telegram default) — email уже выключен шагом 3, значит
-        #    telegram сейчас последний канал -> попытка его выключить -> 409.
+        # 4) c1 (email+telegram default) — email уже выключен шагом 3; гасим и
+        #    telegram, последний канал. Тоже проходит: пустой набор превращается
+        #    в forced-фолбэк в resolve_channels, а не в отказ здесь.
         async with async_session_maker() as db:
-            try:
-                await upsert_event_toggle(
-                    body=EventToggle(role="client", event_id="c1", channel_key="telegram", is_enabled=False),
-                    ctx=owner, db=db,
-                )
-                raise AssertionError("ожидали 409 — последний канал c1")
-            except HTTPException as e:
-                assert e.status_code == 409 and e.detail["code"] == "notifications.last_channel", e.detail
-        print("OK: PATCH /events last channel of operational -> 409")
+            row = await upsert_event_toggle(
+                body=EventToggle(role="client", event_id="c1", channel_key="telegram", is_enabled=False),
+                ctx=owner, db=db,
+            )
+        assert row.channels["telegram"] is False and row.channels["email"] is False, row.channels
+        print("OK: PATCH /events last channel of operational -> 200 (fallback в резолвере)")
 
-        # 5) Возвращаем email c1 обратно -> 200, теперь два канала, locked_channels пуст.
+        # 5) Возвращаем email c1 обратно -> 200.
         async with async_session_maker() as db:
             row = await upsert_event_toggle(
                 body=EventToggle(role="client", event_id="c1", channel_key="email", is_enabled=True),
                 ctx=owner, db=db,
             )
-        assert row.locked_channels == [] and row.channels["email"] is True, row
-        print("OK: PATCH /events re-enable -> row reflects updated locks")
+        assert row.channels["email"] is True, row
+        print("OK: PATCH /events re-enable -> 200")
 
-        # 6) Bulk: пачка с critical-событием целиком отклоняется (атомарно) —
-        #    даже валидный c2-тумблер в той же пачке не должен были записан.
+        # 6) Bulk с critical-событием в пачке проходит целиком — записывается и
+        #    соседний c2-тумблер (раньше пачку отклоняло из-за c3).
         async with async_session_maker() as db:
-            try:
-                await bulk_upsert_event_toggles(
-                    body=EventToggleBulkUpdate(toggles=[
-                        EventToggle(role="client", event_id="c2", channel_key="whatsapp", is_enabled=True),
-                        EventToggle(role="client", event_id="c3", channel_key="email", is_enabled=False),
-                    ]),
-                    ctx=owner, db=db,
-                )
-                raise AssertionError("ожидали 409")
-            except HTTPException as e:
-                assert e.status_code == 409 and e.detail["code"] == "notifications.critical_locked", e.detail
+            await bulk_upsert_event_toggles(
+                body=EventToggleBulkUpdate(toggles=[
+                    EventToggle(role="client", event_id="c2", channel_key="whatsapp", is_enabled=True),
+                    EventToggle(role="client", event_id="c3", channel_key="email", is_enabled=False),
+                ]),
+                ctx=owner, db=db,
+            )
         async with async_session_maker() as db:
             c2_rows = (await db.execute(
                 select(NotificationEventToggle).where(
                     NotificationEventToggle.studio_id == studio_id, NotificationEventToggle.event_id == "c2",
                 )
             )).scalars().all()
-        assert c2_rows == [], c2_rows  # c2 из той же (отклонённой) пачки не записался
-        print("OK: bulk batch with critical item rejected atomically")
+        assert len(c2_rows) == 1 and c2_rows[0].is_enabled is True, c2_rows
+        print("OK: bulk batch with critical item -> 200")
 
-        # 7) Bulk: кумулятивная проверка внутри одной пачки — c1 (default
-        #    email+telegram) гасим ОБА канала в одном batch -> 409, несмотря
-        #    на то что по отдельности каждый тумблер не последний.
+        # 7) Bulk гасит ОБА канала c1 одной пачкой — тоже проходит.
         async with async_session_maker() as db:
-            try:
-                await bulk_upsert_event_toggles(
-                    body=EventToggleBulkUpdate(toggles=[
-                        EventToggle(role="client", event_id="c1", channel_key="email", is_enabled=False),
-                        EventToggle(role="client", event_id="c1", channel_key="telegram", is_enabled=False),
-                    ]),
-                    ctx=owner, db=db,
-                )
-                raise AssertionError("ожидали 409 — пачка гасит оба канала c1")
-            except HTTPException as e:
-                assert e.status_code == 409 and e.detail["code"] == "notifications.last_channel", e.detail
-        print("OK: bulk cumulative last-channel check within one batch")
+            await bulk_upsert_event_toggles(
+                body=EventToggleBulkUpdate(toggles=[
+                    EventToggle(role="client", event_id="c1", channel_key="email", is_enabled=False),
+                    EventToggle(role="client", event_id="c1", channel_key="telegram", is_enabled=False),
+                ]),
+                ctx=owner, db=db,
+            )
+        async with async_session_maker() as db:
+            matrix = await get_notification_matrix(ctx=owner, db=db)
+        c1 = {row.event_id: row for row in matrix.events}["c1"]
+        assert c1.channels["email"] is False and c1.channels["telegram"] is False, c1.channels
+        print("OK: bulk gasit оба канала c1 -> 200")
 
         # ─── Личный слой («Мои уведомления») ─────────────────────────────────
         async with async_session_maker() as db:

@@ -88,12 +88,12 @@ async def resolve_channels(
     if spec is None or spec.role != role:
         return set(), False
 
-    if spec.tier == "critical":
-        channels = set(spec.default_channels)
-    else:
-        channels = await studio_channels(db, studio_id, role, event_id, spec.default_channels)
-        if spec.tier == "optional" and role != "client" and recipient_user_id is not None:
-            channels &= await _user_channels(db, recipient_user_id, event_id)
+    # Матрица владельца учитывается на всех уровнях, включая critical: замков в
+    # ней больше нет, и выключенная галка обязана что-то значить. Не потеряться
+    # критичному событию не даёт forced-фолбэк ниже, а не игнор настроек здесь.
+    channels = await studio_channels(db, studio_id, role, event_id, spec.default_channels)
+    if spec.tier == "optional" and role != "client" and recipient_user_id is not None:
+        channels &= await _user_channels(db, recipient_user_id, event_id)
 
     channels &= await _enabled_global(db, studio_id)
     channels &= await connected_channels(db, studio_id)

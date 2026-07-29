@@ -1,5 +1,19 @@
 {
   "loading": "Загрузка…",
+  "chModal": {
+    "eyebrow": "Канал уведомлений",
+    "connected": "Подключено",
+    "notConnected": "Не подключено",
+    "setup": "Настройка подключения",
+    "details": "Данные подключения",
+    "ready": "Канал готов к работе",
+    "readyHint": "Уведомления по включённым событиям уходят автоматически.",
+    "bot": "Бот",
+    "token": "Токен",
+    "phone": "Номер",
+    "account": "Аккаунт",
+    "sender": "Отправитель"
+  },
   "channels": {
     "title": "Каналы доставки",
     "connect": "Подключить",
@@ -149,21 +163,18 @@
   "ig": {
     "title": "Instagram",
     "subtitleConnected": "Канал подключён",
-    "subtitleDisconnected": "Подключение через Meta Graph API",
+    "subtitleDisconnected": "Вход через официальный Instagram",
     "connected": "Подключено",
-    "howToConnect": "Как подключить:",
+    "howToConnect": "Как это работает:",
     "steps": {
-      "1": "Свяжите Instagram-аккаунт студии со страницей Facebook — без этого Direct API недоступен",
-      "2a": "Создайте приложение в",
-      "2link": "Meta for Developers",
-      "2b": "с продуктом Instagram и правами instagram_basic, instagram_manage_messages",
-      "3": "Скопируйте токен доступа и ID бизнес-аккаунта Instagram"
+      "1": "Нажмите «Подключить через Instagram» — откроется официальная страница входа",
+      "2": "Войдите в бизнес-аккаунт студии и разрешите доступ к сообщениям",
+      "3": "Вернётесь сюда — канал уже подключён, токен Velora хранит и обновляет сама"
     },
-    "tokenLabel": "Токен доступа",
-    "igUserIdLabel": "ID бизнес-аккаунта Instagram",
+    "requirement": "Нужен бизнес- или creator-аккаунт Instagram, связанный со страницей Facebook. Токен и ID вводить не нужно.",
     "windowWarning": "Директ работает не для всех",
     "windowNotice": "Сообщение уходит только тем, кто уже писал студии в Direct, и только в 24-часовом окне диалога — у клиента должен быть заполнен Instagram ID.",
-    "connect": "Подключить",
+    "connect": "Подключить через Instagram",
     "disconnect": "Отключить",
     "disconnectTitle": "Отключить Instagram?",
     "disconnectMessage": "Уведомления клиентам и сотрудникам перестанут отправляться в этот канал.",

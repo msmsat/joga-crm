@@ -1,11 +1,13 @@
 import os
 import uuid
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Request, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import services.otp as otp
 from database import get_db
+from dependencies import get_current_user, oauth2_scheme
 from models import User, StudioMember, UserSession
 from schemas import Login2FARequest, LoginRequest, TokenResponse, GoogleAuthRequest
 from security import verify_password, get_password_hash
@@ -211,3 +213,29 @@ async def login_2fa(request: Login2FARequest, http_request: Request, db: AsyncSe
     access_token = await _build_token_for_user(user, db)
     await _record_login_session(user, access_token, http_request, db)
     return TokenResponse(access_token=access_token, token_type="bearer")
+
+
+@router.delete("/sessions/current", status_code=204)
+async def logout_current_session(
+    token: str = Depends(oauth2_scheme),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Выход с этого устройства: отзывает ровно ту сессию, которой сделан
+    запрос. Дальше `get_current_user` увидит `revoked_at` и вернёт 401 —
+    токен, оставшийся в чужом браузере, мёртв.
+
+    204 и когда строки нет: токен мог быть выдан в обход логина
+    (verify-email / onboarding / select-studio — см. dependencies.py).
+    Для клиента результат один: токен выброшен, повторять нечего.
+    """
+    session = (await db.execute(
+        select(UserSession).where(
+            UserSession.user_id == user.id,
+            UserSession.token_hash == hash_token(token),
+            UserSession.revoked_at.is_(None),
+        )
+    )).scalar_one_or_none()
+    if session is not None:
+        session.revoked_at = datetime.utcnow()
+        await db.commit()

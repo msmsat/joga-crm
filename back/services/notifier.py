@@ -48,7 +48,8 @@ logger = logging.getLogger(__name__)
 
 NOTIFY_CHANNELS = ("email", "telegram", "whatsapp", "instagram")
 _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴"}
-GRAPH = "https://graph.facebook.com/v20.0"
+GRAPH = "https://graph.facebook.com/v23.0"
+IG_GRAPH = "https://graph.instagram.com/v23.0"  # Instagram API with Instagram Login
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000
 
@@ -141,16 +142,22 @@ async def _send_whatsapp(cfg: dict, recipient: "Recipient | Client", text: str) 
 async def _send_instagram(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
     """Отправка в Instagram Direct через Messenger Platform. Нет токена или IGSID
     получателя → False. Как и у WhatsApp, свободный текст доставляется только в
-    24-часовом окне диалога — проверяет Meta, не мы (MVP)."""
+    24-часовом окне диалога — проверяет Meta, не мы (MVP).
+
+    Хост зависит от того, как подключён аккаунт (services/instagram_account):
+    токен из OAuth на странице AI («Instagram Login») ходит только на
+    graph.instagram.com, ручной токен Facebook Login — только на graph.facebook.com.
+    Ключа нет — строка досталась от ручного подключения, поведение прежнее."""
     ig_user_id = cfg.get("ig_user_id")
     token = cfg.get("token")
     ig_id = getattr(recipient, "ig_id", None)
     if not ig_user_id or not token or not ig_id:
         return False
+    base = IG_GRAPH if cfg.get("api") == "instagram_login" else GRAPH
     payload = {"recipient": {"id": ig_id}, "message": {"text": text}}
     headers = {"Authorization": f"Bearer {token}"}
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"{GRAPH}/{ig_user_id}/messages", json=payload, headers=headers) as resp:
+        async with session.post(f"{base}/{ig_user_id}/messages", json=payload, headers=headers) as resp:
             return resp.status == 200
 
 

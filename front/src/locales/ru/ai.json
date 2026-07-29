@@ -37,13 +37,17 @@
   },
   "whatsapp": {
     "numberLabel": "Номер WhatsApp Business",
-    "connectLink": "Подключить номер в Уведомлениях →",
+    "connectLink": "или ввести токен вручную",
     "gateTooltip": "Сначала подключите номер WhatsApp",
     "statsPending": "Появится после запуска автоответчика",
     "instructionTitle": "Как подключить",
-    "instructionStep1": "Откройте раздел Уведомления и подключите канал WhatsApp (токен и Phone Number ID из Meta Business Suite)",
-    "instructionStep2": "Номер подключается один раз — он же используется для уведомлений клиентам",
-    "instructionStep3": "Вернитесь сюда и включите автоответчик"
+    "instructionStep1": "Нажмите «Подключить WhatsApp» — откроется окно Meta",
+    "instructionStep2": "Войдите в Facebook, выберите бизнес-аккаунт и номер (или добавьте новый) и подтвердите его кодом",
+    "instructionStep3": "Номер подключится один раз — он же используется для уведомлений клиентам; вернитесь сюда и включите автоответчик",
+    "connectButton": "Подключить WhatsApp",
+    "connectedToast": "Номер WhatsApp подключён",
+    "connectFailedToast": "Не удалось подключить номер WhatsApp",
+    "notConfiguredToast": "Подключение WhatsApp ещё не настроено — обратитесь в поддержку"
   },
   "history": {
     "title": "История чатов",

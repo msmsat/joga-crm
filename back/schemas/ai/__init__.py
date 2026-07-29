@@ -5,7 +5,7 @@ from schemas.ai.chat import (
     ChatSessionRead,
     SendMessageResponse,
 )
-from schemas.ai.settings import AISettingsRead, AISettingsUpdate, TelegramTokenIn
+from schemas.ai.settings import AISettingsRead, AISettingsUpdate, TelegramTokenIn, WaEmbeddedSignup
 
 __all__ = [
     "ChatMessageCreate",
@@ -16,4 +16,5 @@ __all__ = [
     "AISettingsRead",
     "AISettingsUpdate",
     "TelegramTokenIn",
+    "WaEmbeddedSignup",
 ]

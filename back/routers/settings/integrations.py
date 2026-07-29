@@ -22,6 +22,7 @@ from schemas.settings.integrations import (
     WaConnect,
     WaPricing,
 )
+from services.instagram_account import FB_LOGIN_API, connect_instagram_account, disconnect_instagram_account
 from services.mailer import send_email
 from services.notifier import _studio_prefs
 from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-GRAPH = "https://graph.facebook.com/v20.0"
+GRAPH = "https://graph.facebook.com/v23.0"
 _DEFAULT_WA_PRICING = WaPricing(price_per_message=0.08, currency="USD", source="default")
 
 
@@ -226,6 +227,21 @@ async def connect_whatsapp(
     except aiohttp.ClientError:
         raise HTTPException(status_code=400, detail="Meta не принял токен или phone_number_id")
 
+    # Без подписки приложения на WABA Meta не пришлёт ни одного входящего, даже
+    # когда callback URL настроен и токен валиден: канал выглядит подключённым, а
+    # автоответчик молчит. Embedded Signup делает это сам (routers/ai/whatsapp.py),
+    # ручному пути шаг нужен здесь. Упало — подключение всё равно состоялось,
+    # исходящие уведомления работают; видно по логу.
+    if body.waba_id:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(f"{GRAPH}/{body.waba_id}/subscribed_apps", headers=headers) as resp:
+                    if resp.status >= 400:
+                        logger.error("connect_whatsapp: subscribed_apps %s: %s",
+                                     resp.status, (await resp.text())[:400])
+        except aiohttp.ClientError:
+            logger.exception("connect_whatsapp: subscribed_apps failed for studio=%s", ctx.studio_id)
+
     integ = await _get_or_create_integration(db, ctx.studio_id, "wa_notify")
     integ.config = {
         "token": body.token,
@@ -307,15 +323,13 @@ async def connect_instagram(
     except aiohttp.ClientError:
         raise HTTPException(status_code=400, detail="Meta не принял токен или ig_user_id")
 
+    # Аккаунт один на всю CRM: тем же вызовом он появляется и у AI-агента.
+    await connect_instagram_account(
+        db, ctx.studio_id,
+        token=body.token, ig_user_id=body.ig_user_id, username=data.get("username"),
+        api=FB_LOGIN_API,
+    )
     integ = await _get_or_create_integration(db, ctx.studio_id, "ig_dm")
-    integ.config = {
-        "token": body.token,
-        "ig_user_id": body.ig_user_id,
-        "username": data.get("username"),
-    }
-    integ.is_connected = True
-    await db.commit()
-    await db.refresh(integ)
     return _channel_status(integ, "ig_dm")
 
 
@@ -343,9 +357,19 @@ async def disconnect_integration(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    # Telegram-бот и Instagram-аккаунт живут ещё и в настройках AI-агента (и бот —
+    # в Онлайн-записи). Гасить только эту строку — оставить там живой токен-сироту,
+    # поэтому оба идут через свой общий сервис.
+    if integration_type == "telegram":
+        await disconnect_telegram_bot(db, ctx.studio_id)
+    elif integration_type == "instagram":
+        await disconnect_instagram_account(db, ctx.studio_id)
+    else:
+        integ = await _get_or_create_integration(db, ctx.studio_id, _INTEGRATION_TYPE_MAP[integration_type])
+        integ.is_connected = False
+        integ.config = None
+        await db.commit()
+
     integ = await _get_or_create_integration(db, ctx.studio_id, _INTEGRATION_TYPE_MAP[integration_type])
-    integ.is_connected = False
-    integ.config = None
-    await db.commit()
     await db.refresh(integ)
     return _integration_status(integration_type, integ)
