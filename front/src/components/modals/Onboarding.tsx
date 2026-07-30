@@ -195,21 +195,21 @@ export default function OnboardingPage() {
   return (
     <>
     <div
-      className="velora-modal"
+      className="velora-modal ob-modal"
       style={{
         width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100vh - 40px))", maxHeight: "calc(100vh - 40px)",
         background: "#FDFCFB", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
-        display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden",
+        display: "flex", alignItems: "stretch", overflow: "hidden",
         animation: "modalIn 0.3s ease",
         position: "relative",
       }}
     >
       {/* ── LEFT PANEL ── */}
-      <div style={{
-        background: "white", padding: "44px 36px",
+      <div className="ob-left" style={{
+        flex: "1 1 0", background: "white", padding: "44px 36px",
         display: "flex", flexDirection: "column", justifyContent: "space-between",
-        borderRight: "1px solid #F0EDE8", position: "relative", overflow: "hidden",
+        borderRight: "1px solid #F0EDE8", position: "relative", overflow: "hidden", minHeight: 0, minWidth: 0,
       }}>
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
@@ -219,7 +219,7 @@ export default function OnboardingPage() {
           `,
         }} />
 
-        <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ position: "relative", zIndex: 1, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
             <Logo />
             <div style={{ width: "132px", flexShrink: 0 }}>
@@ -248,9 +248,9 @@ export default function OnboardingPage() {
         </div>
 
         {/* Illustration */}
-        <div style={{
-          flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "16px 0", position: "relative", zIndex: 1,
+        <div className="ob-illustration" style={{
+          flex: 1, minHeight: 0, display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "16px 0", position: "relative", zIndex: 1, overflow: "hidden",
         }}>
           {step === 1 && <Illustration1 studioName={data.studioName} logoPreviewUrl={data.logoPreviewUrl} />}
           {step === 2 && <Illustration2 activityType={data.activityType} />}
@@ -262,7 +262,7 @@ export default function OnboardingPage() {
         <div style={{
           display: "flex", alignItems: "center", gap: "8px",
           padding: "10px 12px", background: "rgba(163,201,168,0.1)",
-          borderRadius: "10px", position: "relative", zIndex: 1,
+          borderRadius: "10px", position: "relative", zIndex: 1, flexShrink: 0,
         }}>
           <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#A3C9A8", animation: "stepPulse 2s infinite" }} />
           <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
@@ -271,20 +271,29 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ── */}
-      <div style={{
-        padding: "44px 40px", display: "flex", flexDirection: "column",
-        justifyContent: "space-between", position: "relative", overflowX: "hidden", overflowY: "auto",
+      {/* ── RIGHT PANEL ──
+          Скролл живёт ТОЛЬКО на контенте шага (.ob-right-scroll), а панель навигации
+          закреплена снизу как футер: иначе на низких экранах кнопка «Продолжить»
+          уезжала под край модалки и мастер было не пройти. */}
+      <div className="ob-right" style={{
+        flex: "1 1 0", padding: "44px 40px", display: "flex", flexDirection: "column",
+        position: "relative", overflow: "hidden", minWidth: 0, minHeight: 0,
       }}>
-        <div key={step} style={animStyle}>
-          {step === 1 && <StepIdentity data={data} onChange={patch} />}
-          {step === 2 && <StepActivity data={data} onChange={patch} />}
-          {step === 3 && <StepContact data={data} onChange={patch} phoneError={phoneError} isCheckingPhone={phoneCheck.checking} />}
-          {step === 4 && <StepSettings data={data} onChange={patch} />}
-          {step === 5 && <StepSchedule data={data} onChange={patch} />}
+        <div className="ob-right-scroll" style={{
+          flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+          overflowX: "hidden", overflowY: "auto", marginRight: "-8px", paddingRight: "8px",
+        }}>
+          <div key={step} style={animStyle}>
+            {step === 1 && <StepIdentity data={data} onChange={patch} />}
+            {step === 2 && <StepActivity data={data} onChange={patch} />}
+            {step === 3 && <StepContact data={data} onChange={patch} phoneError={phoneError} isCheckingPhone={phoneCheck.checking} />}
+            {step === 4 && <StepSettings data={data} onChange={patch} />}
+            {step === 5 && <StepSchedule data={data} onChange={patch} />}
+          </div>
         </div>
 
-        {/* ── ACTION BUTTONS ── */}
+        {/* ── ACTION BUTTONS (закреплённый футер) ── */}
+        <div className="ob-footer" style={{ flexShrink: 0 }}>
         <div style={{
           display: "flex", alignItems: "center", gap: "10px",
           marginTop: "24px", paddingTop: "18px", borderTop: "1px solid #F0EDE8",
@@ -342,6 +351,7 @@ export default function OnboardingPage() {
         <p style={{ textAlign: "center", fontSize: "11px", color: "#CCCCCC", margin: "8px 0 0", fontWeight: 500 }}>
           {t("onboarding:wizard.progress", { step, total: 5 })}
         </p>
+        </div>
       </div>
 
     </div>
