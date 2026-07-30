@@ -12,7 +12,7 @@ export default function Profile() {
   const { t } = useTranslation(["profile", "common"]);
 
   const { studios, isLoading: studiosLoading, isError: studiosError, refetch: refetchStudios, switchingId, handleSwitchAccount } = useAccounts();
-  const { userInfo, setUserInfo, email, isLoading, isSavingInfo, handleSaveInfo } = useProfileForm();
+  const { userInfo, setUserInfo, email, isLoading, isSavingInfo, phoneTaken, isCheckingPhone, handleSaveInfo } = useProfileForm();
 
   return (
     <div className={styles.page}>
@@ -56,6 +56,8 @@ export default function Profile() {
               email={email}
               isLoading={isLoading}
               isSavingInfo={isSavingInfo}
+              phoneTaken={phoneTaken}
+              isCheckingPhone={isCheckingPhone}
               handleSaveInfo={handleSaveInfo}
             />
           </div>

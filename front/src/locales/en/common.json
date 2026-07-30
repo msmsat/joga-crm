@@ -25,7 +25,13 @@
     "phone": "Invalid phone",
     "contactRequired": "Enter a phone or email",
     "min": "Must be at least {{n}}",
-    "positive": "Must be greater than 0"
+    "positive": "Must be greater than 0",
+    "checkingContact": "Checking…",
+    "emailTaken": "This email is already taken",
+    "phoneTaken": "This phone number is already taken",
+    "emailInStudio": "This person already works at your studio",
+    "phoneInStudio": "This person already works at your studio",
+    "accountWillBeLinked": "An account with this contact already exists — they will be linked to your studio"
   },
   "status": {
     "online": "Online",

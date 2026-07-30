@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { DAYS_KEYS, TIME_OPTIONS } from "../../constants";
 import { servicesApi, type ServiceRead } from "../../../../../api/studio/services.api";
 import { settingsApi } from "../../../../../api/settings/settings.api";
-import { getCurrencySymbol } from "../../../../../components/UI";
+import { getCurrencySymbol, PhoneField } from "../../../../../components/UI";
+import { useContactCheck } from "../../../../../hooks/useContactCheck";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -287,10 +288,10 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown, error }: {
+function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown, error, hint }: {
   value: string; onChange: (v: string) => void; placeholder: string;
   type?: string; onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  error?: string;
+  error?: string; hint?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -311,6 +312,9 @@ function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown, er
       />
       {error && (
         <p style={{ fontSize: "11px", color: "#D88C9A", margin: "6px 0 0", fontWeight: 500 }}>{error}</p>
+      )}
+      {!error && hint && (
+        <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "6px 0 0", fontWeight: 500 }}>{hint}</p>
       )}
     </div>
   );
@@ -397,17 +401,37 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   }
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneFormatOk = data.phone.replace(/\D/g, "").length >= 6;
+  const emailFormatOk = EMAIL_RE.test(data.email.trim());
+
+  // Аккаунт глобальный, а членство — на студию. Поэтому ошибка здесь только одна:
+  // человек УЖЕ в этой студии (inStudio). Занятый контакт из чужой студии ошибкой
+  // не является — такого человека привяжут вторым StudioMember, а не создадут
+  // заново (ROADMAP_ACCOUNTS, решение 8). Раньше форма падала на глобальном
+  // `taken` и не пускала владельца дальше первого шага.
+  const phoneCheck = useContactCheck("staff", "phone", data.phone, { enabled: isOpen && phoneFormatOk });
+  const emailCheck = useContactCheck("staff", "email", data.email, { enabled: isOpen && emailFormatOk });
+
   const nameError     = data.name.trim().length > 0 && data.name.trim().length < 2 ? t("addModal.step1.errors.name") : undefined;
-  const phoneError    = data.phone.trim().length > 0 && data.phone.replace(/\D/g, "").length < 6 ? t("addModal.step1.errors.phone") : undefined;
-  const emailError    = data.email.trim().length > 0 && !EMAIL_RE.test(data.email.trim()) ? t("addModal.step1.errors.email") : undefined;
+  const phoneError    = data.phone.trim().length > 0 && !phoneFormatOk ? t("addModal.step1.errors.phone")
+    : phoneCheck.inStudio ? t("common:validation.phoneInStudio") : undefined;
+  const emailError    = data.email.trim().length > 0 && !emailFormatOk ? t("addModal.step1.errors.email")
+    : emailCheck.inStudio ? t("common:validation.emailInStudio") : undefined;
   const passwordError = data.password.length > 0 && data.password.length < 6 ? t("addModal.step1.errors.password") : undefined;
+  const checkingHint  = t("common:validation.checkingContact");
+  // Нейтральная подсказка вместо красной ошибки: контакт известен продукту, но в
+  // этой студии человека нет — значит он будет привязан, а имя и пароль из формы
+  // не применятся (личные данные принадлежат человеку).
+  const willLinkHint  = (emailCheck.taken && !emailCheck.inStudio) || (phoneCheck.taken && !phoneCheck.inStudio)
+    ? t("common:validation.accountWillBeLinked") : undefined;
 
   const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
   const canStep1         = data.name.trim().length >= 2
-    && data.phone.replace(/\D/g, "").length >= 6
-    && EMAIL_RE.test(data.email.trim())
+    && phoneFormatOk
+    && emailFormatOk
     && data.password.length >= 6
-    && !nameError && !phoneError && !emailError && !passwordError;
+    && !nameError && !phoneError && !emailError && !passwordError
+    && !phoneCheck.checking && !emailCheck.checking;
   const canStep2         = data.role.trim().length >= 2;
   const canStep3         = Object.values(data.schedule).some(d => d.enabled);
   const enabledDays      = Object.values(data.schedule).filter(d => d.enabled).length;
@@ -614,11 +638,11 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.phoneLabel")} *</FieldLabel>
-                      <FocusInput type="tel" value={data.phone} onChange={v => set("phone", v)} placeholder="+7 (___) ___-__-__" error={phoneError}/>
+                      <PhoneField value={data.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : willLinkHint}/>
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.emailLabel")} *</FieldLabel>
-                      <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError}/>
+                      <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError} hint={emailCheck.checking ? checkingHint : willLinkHint}/>
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.passwordLabel")} *</FieldLabel>

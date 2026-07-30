@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import services.otp as otp
+from contact_format import normalize_email
 from database import get_db
 from dependencies import get_current_user, oauth2_scheme
 from models import User, StudioMember, UserSession
@@ -142,10 +143,13 @@ async def google_auth(request: GoogleAuthRequest, http_request: Request, db: Asy
             detail="Недействительный токен Google",
         )
 
+    # Ищем по email и только по нему: аккаунт глобальный, роль в студии к
+    # опознанию личности отношения не имеет (docs/ROADMAP_ACCOUNTS, решение 6).
+    # Прежний фильтр `role == 'owner'` не находил тренера или админа с этим
+    # email и заводил ВТОРОЙ аккаунт с тем же адресом — источник дублей в БД.
+    email = normalize_email(email)
     user = (await db.execute(
-        select(User)
-        .join(StudioMember, StudioMember.user_id == User.id)
-        .where(User.email == email, StudioMember.role == 'owner')
+        select(User).where(User.email == email)
     )).scalars().first()
 
     if not user:

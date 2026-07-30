@@ -1,4 +1,5 @@
 import { client } from '../client'
+import type { ContactCheckResponse, ContactField } from '../auth/auth.types'
 import type {
   StaffCreate,
   StaffUpdate,
@@ -20,6 +21,13 @@ export const staffApi = {
 
   getList: () =>
     client.get<StaffListResponse>('/staff/'),
+
+  // Занят ли email/телефон другим аккаунтом продукта. excludeId — правимый сотрудник.
+  checkContact: (field: ContactField, value: string, excludeId?: number) =>
+    client.get<ContactCheckResponse>(
+      `/staff/check-contact?field=${field}&value=${encodeURIComponent(value)}`
+      + (excludeId !== undefined ? `&exclude_id=${excludeId}` : '')
+    ),
 
   getProfile: (id: number) =>
     client.get<StaffProfile>(`/staff/${id}`),

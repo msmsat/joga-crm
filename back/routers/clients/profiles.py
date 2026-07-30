@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, cast, extract, func, or_
@@ -20,6 +20,7 @@ from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
 from services.booking_access import assert_can_book
+from services.contacts import contact_taken, ensure_client_contacts_free
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 from schemas import (
     ActionMessageOut,
@@ -291,6 +292,29 @@ async def get_categories(
     ]
 
 
+# ─── GET /clients/check-contact ───────────────────────────────────────────────
+# Объявлен до /{client_id}, иначе FastAPI читает «check-contact» как int.
+
+@router.get("/check-contact")
+async def check_client_contact(
+    field: Literal["email", "phone"],
+    value: str,
+    exclude_id: Optional[int] = Query(None, description="Кого не считать — правимый клиент"),
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Подсказка фронту: занят ли контакт другим клиентом этой студии.
+
+    Область — студия: у разных студий клиенты не пересекаются. Барьер —
+    guard на записи, эта ручка только гасит кнопку заранее.
+    """
+    return {
+        "taken": await contact_taken(
+            db, Client, field, value, studio_id=ctx.studio_id, exclude_id=exclude_id,
+        )
+    }
+
+
 # ─── GET /clients/{id} ────────────────────────────────────────────────────────
 
 @router.get("/{client_id}", response_model=ClientProfileOut)
@@ -554,6 +578,7 @@ async def create_client(
 ):
     studio_id = ctx.studio_id
     await check_plan_limit(db, studio_id, "clients")
+    await ensure_client_contacts_free(db, studio_id, email=body.email, phone=body.phone)
     client = Client(
         studio_id=studio_id,
         name=body.name,
@@ -652,7 +677,16 @@ async def update_client(
 ):
     studio_id = ctx.studio_id
     client = await _get_client_or_404(client_id, studio_id, db)
-    for field, value in body.model_dump(exclude_unset=True).items():
+    patch = body.model_dump(exclude_unset=True)
+    # Только изменённые контакты: прежние значения — свои же, и на исторические
+    # дубли (до появления проверки) нельзя запирать правку остальных полей.
+    await ensure_client_contacts_free(
+        db, studio_id,
+        email=patch.get("email") if patch.get("email") != client.email else None,
+        phone=patch.get("phone") if patch.get("phone") != client.phone else None,
+        exclude_id=client_id,
+    )
+    for field, value in patch.items():
         if field == "name" and not value:
             continue  # name в БД NOT NULL — пустое значение не применяем
         setattr(client, field, value)

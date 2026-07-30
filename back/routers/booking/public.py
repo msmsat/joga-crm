@@ -20,6 +20,7 @@ from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioB
 from routers.clients.loyalty import apply_deposit_change, apply_points_change
 from schemas._base import BaseSchema
 from services.booking_access import find_eligible_subscription
+from services.contacts import normalize, normalized_column
 from services.notifier import notify
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 
@@ -165,9 +166,14 @@ async def public_reserve(
         raise HTTPException(status_code=400, detail="Запись на это занятие закрыта")
 
     # find-or-create по телефону в рамках студии; первый визит через онлайн → source=online.
+    # Сравнение по цифрам: «+7 999 …» и «79999…» — тот же клиент, второй заводить нельзя
+    # (то же правило, что у guard'а на POST /clients).
     client = (await db.execute(
-        select(Client).where(Client.studio_id == studio_id, Client.phone == body.phone)
-    )).scalar_one_or_none()
+        select(Client).where(
+            Client.studio_id == studio_id,
+            normalized_column(Client, "phone") == normalize("phone", body.phone),
+        )
+    )).scalars().first()
     is_new_client = client is None
     if client is None:
         client = Client(

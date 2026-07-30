@@ -2,21 +2,21 @@ import re
 from typing import List, Optional
 from pydantic import EmailStr, field_validator
 
-from schemas._base import BaseSchema
+from schemas._base import BaseSchema, Identifier, NormEmail, OptPhone, Phone
 
 
 class LoginRequest(BaseSchema):
-    identifier: str
+    identifier: Identifier
     password: str
 
 
 class Login2FARequest(BaseSchema):
-    identifier: str
+    identifier: Identifier
     code: str
 
 
 class RegisterRequest(BaseSchema):
-    email: EmailStr
+    email: NormEmail
     name: str
     password: str
 
@@ -41,16 +41,16 @@ class GoogleAuthRequest(BaseSchema):
 
 
 class VerifyEmailRequest(BaseSchema):
-    email: EmailStr
+    email: NormEmail
     code: str
 
 
 class ForgotPasswordRequest(BaseSchema):
-    email: EmailStr
+    email: NormEmail
 
 
 class ResetPasswordRequest(BaseSchema):
-    email: EmailStr
+    email: NormEmail
     code: str
     new_password: str
 
@@ -93,7 +93,7 @@ class SelectStudioRequest(BaseSchema):
 class ProfileUpdate(BaseSchema):
     name: Optional[str] = None
     last_name: Optional[str] = None
-    phone: Optional[str] = None
+    phone: OptPhone = None
     tg_id: Optional[int] = None
 
 
@@ -109,7 +109,7 @@ class OnboardingRequest(BaseSchema):
     description: Optional[str] = None
     logoUrl: Optional[str] = None
     activityType: str
-    phone: str
+    phone: Phone
     address: Optional[str] = None
     email: Optional[str] = None
     website: Optional[str] = None

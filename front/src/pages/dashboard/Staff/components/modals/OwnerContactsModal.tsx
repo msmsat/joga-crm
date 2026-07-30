@@ -2,11 +2,14 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { FieldLabel, FocusInput } from "../../../../../components/modals/EditStaffModal";
+import { PhoneField } from "../../../../../components/UI";
+import { useContactCheck } from "../../../../../hooks/useContactCheck";
 
 // Владельцу правим только контакты: имя/роль/доступ живут в «Профиле»,
 // а роль owner бэкенд у себя не даёт менять этим эндпоинтом вообще.
 
 export interface OwnerContact {
+  id: number;          // нужен, чтобы исключить себя из проверки занятости контакта
   name: string;
   last_name?: string;
   email: string;
@@ -173,11 +176,26 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
   const emailOk = EMAIL_RE.test(email.trim());
   const phoneDigits = phone.replace(/\D/g, "").length;
   const phoneOk = phoneDigits >= 6;
-  const emailError = email.trim().length > 0 && !emailOk ? t("staff:editModal.profile.errors.email") : undefined;
-  const phoneError = phone.trim().length > 0 && !phoneOk ? t("staff:addModal.step1.errors.phone") : undefined;
+
+  // Контакт — идентификатор аккаунта: занят другим пользователем → «Сохранить» серая.
+  // Проверяем только изменённое — то же правило, что у сервера на PUT /staff/{id}.
+  const emailCheck = useContactCheck("staff", "email", email, {
+    excludeId: owner.id, enabled: emailOk && email.trim() !== owner.email,
+  });
+  const phoneCheck = useContactCheck("staff", "phone", phone, {
+    excludeId: owner.id, enabled: phoneOk && phone.trim() !== (owner.phone ?? ""),
+  });
+
+  const emailError = email.trim().length > 0 && !emailOk ? t("staff:editModal.profile.errors.email")
+    : emailCheck.taken ? t("common:validation.emailTaken") : undefined;
+  const phoneError = phone.trim().length > 0 && !phoneOk ? t("staff:addModal.step1.errors.phone")
+    : phoneCheck.taken ? t("common:validation.phoneTaken") : undefined;
+  const checkingHint = t("common:validation.checkingContact");
   const dirty = email.trim() !== owner.email || phone.trim() !== (owner.phone ?? "");
   const emailChanged = email.trim() !== owner.email && emailOk;
-  const canSave = emailOk && (phone.trim() === "" || phoneOk) && dirty && !saving;
+  const canSave = emailOk && (phone.trim() === "" || phoneOk) && dirty && !saving
+    && !emailError && !phoneError
+    && !emailCheck.checking && !phoneCheck.checking;
 
   async function handleSave() {
     if (!canSave) return;
@@ -306,13 +324,15 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <div>
                 <FieldLabel>{t("common:fields.phone")}</FieldLabel>
-                <FocusInput type="tel" value={phone} onChange={setPhone}
-                  placeholder="+7 900 000-00-00" error={phoneError} />
+                <PhoneField value={phone} onChange={(v: string | undefined) => setPhone(v || "")}
+                  error={phoneError}
+                  hint={phoneCheck.checking ? checkingHint : undefined} />
               </div>
               <div>
                 <FieldLabel>{t("common:fields.email")} *</FieldLabel>
                 <FocusInput type="email" value={email} onChange={setEmail}
                   placeholder="owner@velora.studio" error={emailError}
+                  hint={emailCheck.checking ? checkingHint : undefined}
                   onKeyDown={e => { if (e.key === "Enter") handleSave(); }} />
               </div>
 
@@ -367,15 +387,19 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
               type="button" className="oc-save" disabled={!canSave || saved} onClick={handleSave}
               style={{
                 flex: 1, padding: "12px 22px",
+                // Недоступная кнопка серая: занятый контакт должен читаться как «нельзя».
                 background: saved
                   ? "linear-gradient(135deg, #A3C9A8, #7aab80)"
-                  : "linear-gradient(135deg, #FCAE91, #F9A08B)",
+                  : !canSave
+                    ? "rgba(26,26,26,0.06)"
+                    : "linear-gradient(135deg, #FCAE91, #F9A08B)",
                 border: "none", borderRadius: "12px",
-                fontSize: "14px", fontWeight: 700, color: "white",
+                fontSize: "14px", fontWeight: 700, color: !canSave && !saved ? "#AAAAAA" : "white",
                 cursor: canSave ? "pointer" : "not-allowed",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                boxShadow: saved ? "0 8px 24px rgba(163,201,168,0.3)" : "0 8px 24px rgba(252,174,145,0.3)",
-                opacity: !canSave && !saved ? 0.65 : 1,
+                boxShadow: !canSave && !saved ? "none"
+                  : saved ? "0 8px 24px rgba(163,201,168,0.3)" : "0 8px 24px rgba(252,174,145,0.3)",
+                opacity: 1,
                 fontFamily: "inherit", letterSpacing: "-0.1px",
               }}
             >

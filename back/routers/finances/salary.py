@@ -58,12 +58,15 @@ async def list_salaries(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    # Ставка — условие работы в ЭТОЙ студии, поэтому забираем StudioMember рядом
+    # с User: у того же человека в другой студии ставка своя
+    # (docs/ROADMAP_ACCOUNTS, решение 7).
     members = (await db.execute(
-        select(User)
+        select(User, StudioMember)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == ctx.studio_id)
         .order_by(User.id)
-    )).scalars().all()
+    )).all()
 
     paid_at_by_user = dict((await db.execute(
         select(SalaryPayment.user_id, SalaryPayment.paid_at).where(
@@ -75,7 +78,7 @@ async def list_salaries(
     )).all())
 
     rows: list[SalaryRow] = []
-    for u in members:
+    for u, sm in members:
         sessions, hours, revenue = await _sessions_and_hours(
             u.id, ctx.studio_id, period_start, period_end, db
         )
@@ -85,9 +88,9 @@ async def list_salaries(
             sessions_count=sessions,
             hours_worked=hours,
             lessons_revenue=revenue,
-            rate=u.rate,
-            rate_type=u.rate_type,
-            amount=_compute_amount(u.rate, u.rate_type, hours, revenue),
+            rate=sm.rate,
+            rate_type=sm.rate_type,
+            amount=_compute_amount(sm.rate, sm.rate_type, hours, revenue),
             status="paid" if u.id in paid_at_by_user else "pending",
             paid_at=paid_at_by_user.get(u.id),
         ))
@@ -123,13 +126,15 @@ async def pay_salary(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    user = (await db.execute(
-        select(User)
+    # User нужен для письма и названия операции, StudioMember — для ставки.
+    row = (await db.execute(
+        select(User, StudioMember)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(User.id == user_id, StudioMember.studio_id == ctx.studio_id)
-    )).scalar_one_or_none()
-    if user is None:
+    )).first()
+    if row is None:
         raise HTTPException(status_code=404, detail="Сотрудник не найден")
+    user, member = row
 
     dup = (await db.execute(
         select(SalaryPayment.id).where(
@@ -145,7 +150,7 @@ async def pay_salary(
     sessions, hours, revenue = await _sessions_and_hours(
         user_id, ctx.studio_id, body.period_start, body.period_end, db
     )
-    amount = _compute_amount(user.rate, user.rate_type, hours, revenue)
+    amount = _compute_amount(member.rate, member.rate_type, hours, revenue)
     now = datetime.utcnow()
 
     # Снапшот ставки: смена rate/rate_type в будущем не трогает эту выплату.
@@ -156,8 +161,8 @@ async def pay_salary(
         period_end=body.period_end,
         sessions_count=sessions,
         hours_worked=hours,
-        rate_snapshot=user.rate or 0.0,
-        rate_type_snapshot=user.rate_type or "fixed",
+        rate_snapshot=member.rate or 0.0,
+        rate_type_snapshot=member.rate_type or "fixed",
         amount=amount,
         status="paid",
         paid_at=now,

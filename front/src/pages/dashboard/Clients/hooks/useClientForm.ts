@@ -16,7 +16,7 @@ export interface ClientFormState {
 
 type FormErrors = Partial<Record<keyof ClientFormState, string>>;
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const DEFAULTS: ClientFormState = {
   name: '', phone: '', email: '',

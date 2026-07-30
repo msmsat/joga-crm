@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from jose import jwt
@@ -7,6 +9,7 @@ from database import get_db
 from models import User
 from dependencies import get_current_user, oauth2_scheme, SECRET_KEY, ALGORITHM
 from schemas.auth import ProfileUpdate
+from services.contacts import contact_taken, ensure_user_contacts_free
 
 router = APIRouter()
 
@@ -41,22 +44,47 @@ async def update_me(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    for field, value in data.model_dump(exclude_unset=True).items():
+    patch = data.model_dump(exclude_unset=True)
+    # Только изменённый телефон — прежнее значение своё же, конфликтом не считается.
+    phone = patch.get("phone")
+    await ensure_user_contacts_free(
+        db,
+        phone=phone if phone != current_user.phone else None,
+        exclude_id=current_user.id,
+    )
+
+    # tg_id — тоже контакт: notifier ищет получателя по нему, и два аккаунта с
+    # одним telegram означают уведомления не тому человеку. В БД стоит
+    # uq_users_tg_id, но без этой проверки конфликт вернулся бы как 500.
+    tg_id = patch.get("tg_id")
+    if tg_id is not None and tg_id != current_user.tg_id:
+        clash = (await db.execute(
+            select(User.id).where(User.tg_id == tg_id, User.id != current_user.id).limit(1)
+        )).first()
+        if clash is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Этот Telegram уже привязан к другому аккаунту",
+            )
+
+    for field, value in patch.items():
         setattr(current_user, field, value)
     await db.commit()
     await db.refresh(current_user)
     return _me_payload(current_user, token)
 
 
-@router.get("/check-phone")
-async def check_phone(
-    phone: str,
+@router.get("/check-contact")
+async def check_contact(
+    field: Literal["email", "phone"],
+    value: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Свой же номер не в счёт — иначе владелец, создающий вторую студию
-    # (EPIC 7, задача 5), увидит «уже занят» на собственном телефоне.
-    taken = (
-        await db.execute(select(User).where(User.phone == phone, User.id != current_user.id))
-    ).scalars().first() is not None
-    return {"taken": taken}
+    """Подсказка фронту (онбординг, профиль): занят ли контакт другим аккаунтом.
+
+    Свой же контакт не в счёт — иначе владелец, создающий вторую студию
+    (EPIC 7, задача 5), увидит «уже занят» на собственном телефоне.
+    Барьер — guard на записи, эта ручка только гасит кнопку заранее.
+    """
+    return {"taken": await contact_taken(db, User, field, value, exclude_id=current_user.id)}

@@ -43,7 +43,10 @@ async def get_week_schedule(
 
     result = await db.execute(
         select(StaffWorkingHours)
-        .where(StaffWorkingHours.user_id == staff_id)
+        .where(
+            StaffWorkingHours.user_id == staff_id,
+            StaffWorkingHours.studio_id == studio_id,
+        )
         .order_by(StaffWorkingHours.day_of_week)
     )
     working_hours = result.scalars().all()

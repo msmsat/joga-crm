@@ -6,9 +6,11 @@ import "../../App.css";
 import { DAYS_KEYS, TIME_OPTIONS } from "../../pages/dashboard/Staff/constants";
 import { servicesApi, type ServiceRead } from "../../api/studio/services.api";
 import { studioApi } from "../../api/studio/studio.api";
+import { PhoneField } from "../UI";
 import { settingsApi } from "../../api/settings/settings.api";
 import { resolveImageUrl } from "../../api/client";
 import { getCurrencySymbol } from "../UI";
+import { useContactCheck } from "../../hooks/useContactCheck";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
@@ -285,11 +287,11 @@ export function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function FocusInput({
-  value, onChange, placeholder, type = "text", onKeyDown, disabled, error
+  value, onChange, placeholder, type = "text", onKeyDown, disabled, error, hint
 }: {
   value: string; onChange: (v: string) => void; placeholder: string;
   type?: string; onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  disabled?: boolean; error?: string;
+  disabled?: boolean; error?: string; hint?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -312,6 +314,9 @@ export function FocusInput({
       />
       {error && (
         <p style={{ fontSize: "11px", color: "#D88C9A", margin: "6px 0 0", fontWeight: 500 }}>{error}</p>
+      )}
+      {!error && hint && (
+        <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "6px 0 0", fontWeight: 500 }}>{hint}</p>
       )}
     </div>
   );
@@ -452,9 +457,27 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   const enabledDays = Object.values(form.schedule).filter(d => d.enabled).length;
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailFormatOk = EMAIL_RE.test(form.email.trim());
+  const phoneFormatOk = form.phone.replace(/\D/g, "").length >= 6;
+
+  // Контакт сотрудника — идентификатор его аккаунта: занят кем-то ещё → «Сохранить» серая.
+  // Себя исключаем (exclude_id), и проверяем только изменённое — ровно то, что проверит
+  // сервер на PUT: исторические дубли не должны запирать правку остальных полей.
+  const emailCheck = useContactCheck("staff", "email", form.email, {
+    excludeId: form.id, enabled: isOpen && emailFormatOk && form.email !== staff?.email,
+  });
+  const phoneCheck = useContactCheck("staff", "phone", form.phone, {
+    excludeId: form.id, enabled: isOpen && phoneFormatOk && form.phone !== (staff?.phone ?? ""),
+  });
+
   const nameError = form.name.trim().length > 0 && form.name.trim().length < 2 ? t("staff:editModal.profile.errors.name") : undefined;
-  const emailError = form.email.trim().length > 0 && !EMAIL_RE.test(form.email.trim()) ? t("staff:editModal.profile.errors.email") : undefined;
-  const canSave = form.name.trim().length >= 2 && EMAIL_RE.test(form.email.trim());
+  const emailError = form.email.trim().length > 0 && !emailFormatOk ? t("staff:editModal.profile.errors.email")
+    : emailCheck.taken ? t("common:validation.emailTaken") : undefined;
+  const phoneError = phoneCheck.taken ? t("common:validation.phoneTaken") : undefined;
+  const checkingHint = t("common:validation.checkingContact");
+  const canSave = form.name.trim().length >= 2 && emailFormatOk
+    && !emailError && !phoneError
+    && !emailCheck.checking && !phoneCheck.checking;
 
   const selectStyle: React.CSSProperties = {
     padding: "7px 10px", 
@@ -833,11 +856,11 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                     <div>
                       <FieldLabel>{t("common:fields.phone")}</FieldLabel>
-                      <FocusInput type="tel" value={form.phone} onChange={v => set("phone", v)} placeholder="+7 900 000-00-00" />
+                      <PhoneField value={form.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : undefined} />
                     </div>
                     <div>
                       <FieldLabel>{t("common:fields.email")}</FieldLabel>
-                      <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} />
+                      <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} hint={emailCheck.checking ? checkingHint : undefined} />
                     </div>
                   </div>
 
@@ -1306,16 +1329,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               onClick={handleSave}
               style={{
                 flex: 1, padding: "12px 22px",
+                // Недоступная кнопка серая, а не приглушённо-персиковая: занятый контакт
+                // должен читаться как «дальше нельзя», а не «кнопка чуть бледнее».
                 background: saved
                   ? "linear-gradient(135deg, #A3C9A8, #7aab80)"
-                  : "linear-gradient(135deg, #FCAE91, #F9A08B)",
+                  : !canSave
+                    ? "rgba(26,26,26,0.06)"
+                    : "linear-gradient(135deg, #FCAE91, #F9A08B)",
                 border: "none", borderRadius: "12px",
-                fontSize: "14px", fontWeight: 700, color: "white",
+                fontSize: "14px", fontWeight: 700, color: !canSave && !saved ? "#AAAAAA" : "white",
                 cursor: saving || !canSave ? "not-allowed" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                boxShadow: saved ? "0 8px 24px rgba(163,201,168,0.3)" : "0 8px 24px rgba(252,174,145,0.3)",
+                boxShadow: !canSave && !saved ? "none"
+                  : saved ? "0 8px 24px rgba(163,201,168,0.3)" : "0 8px 24px rgba(252,174,145,0.3)",
                 transition: "all 0.2s ease", fontFamily: "Manrope, sans-serif",
-                opacity: saving || !canSave ? 0.7 : 1,
+                opacity: saving ? 0.7 : 1,
                 letterSpacing: "-0.1px",
               }}
             >
@@ -1334,7 +1362,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 <>
                   {t("common:buttons.saveChanges")}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </>
               )}

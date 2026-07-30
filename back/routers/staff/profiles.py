@@ -1,7 +1,8 @@
 from datetime import date, datetime, timedelta
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -16,6 +17,9 @@ from schemas import (
 )
 from schemas.staff.staff import StaffWorkingHoursItem
 from security import get_password_hash
+from services.contacts import (
+    ensure_user_contacts_free, normalize, normalized_column,
+)
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 
@@ -38,6 +42,39 @@ async def _get_staff_member(
     return row[0], row[1]
 
 
+async def _find_user_by_contacts(
+    email: str, phone: Optional[str], db: AsyncSession
+) -> Optional[User]:
+    """Аккаунт продукта с таким email или телефоном, если он уже существует.
+
+    Сравнение нормализованное: в БД до миграции могли остаться значения в разных
+    форматах, и «+7 999 …» не должен разойтись с «79999…».
+    """
+    conditions = [
+        normalized_column(User, field) == normalize(field, value)
+        for field, value in (("email", email), ("phone", phone))
+        if normalize(field, value) is not None
+    ]
+    if not conditions:
+        return None
+    result = await db.execute(
+        select(User).options(selectinload(User.services)).where(or_(*conditions)).limit(1)
+    )
+    return result.scalars().first()
+
+
+async def _membership_of(
+    user_id: int, studio_id: int, db: AsyncSession
+) -> Optional[StudioMember]:
+    result = await db.execute(
+        select(StudioMember).where(
+            StudioMember.user_id == user_id,
+            StudioMember.studio_id == studio_id,
+        )
+    )
+    return result.scalars().first()
+
+
 async def _resolve_services(service_ids: list[int], studio_id: int, db: AsyncSession) -> list[Service]:
     """Услуги по id, скоуп студии. Чужой/несуществующий id → 404."""
     if not service_ids:
@@ -52,15 +89,24 @@ async def _resolve_services(service_ids: list[int], studio_id: int, db: AsyncSes
 
 
 async def _replace_schedule(
-    user_id: int, schedule: list[StaffWorkingHoursItem], db: AsyncSession
+    user_id: int, studio_id: int, schedule: list[StaffWorkingHoursItem], db: AsyncSession
 ) -> None:
-    """Полная замена рабочего графика сотрудника (пришёл список — он и есть истина)."""
+    """Полная замена графика сотрудника В ЭТОЙ студии (пришёл список — он и есть истина).
+
+    Скоуп по studio_id обязателен: у человека, работающего в двух студиях, два
+    независимых графика, и правка одной студией не должна затирать другую
+    (docs/ROADMAP_ACCOUNTS, решение 7).
+    """
     await db.execute(
-        delete(StaffWorkingHours).where(StaffWorkingHours.user_id == user_id)
+        delete(StaffWorkingHours).where(
+            StaffWorkingHours.user_id == user_id,
+            StaffWorkingHours.studio_id == studio_id,
+        )
     )
     for item in schedule:
         db.add(StaffWorkingHours(
             user_id=user_id,
+            studio_id=studio_id,
             day_of_week=item.day_of_week,
             is_open=item.is_open,
             open_time=item.open_time,
@@ -73,15 +119,16 @@ def _is_online(user: User) -> bool:
     return user.last_online_at == date.today()
 
 
-def _staff_list_item(user: User, role: str) -> dict:
+def _staff_list_item(user: User, membership: StudioMember) -> dict:
+    """Личные поля — с аккаунта, студийные (роль, должность) — с membership."""
     return {
         "id": user.id,
         "name": user.name,
         "last_name": user.last_name,
         "email": user.email,
         "phone": user.phone,
-        "role": role,
-        "department": user.department,
+        "role": membership.role,
+        "department": membership.department,
         "is_online": _is_online(user),
         "photo_url": user.photo_url,
         "avatar_gradient": user.avatar_gradient,
@@ -117,7 +164,7 @@ async def list_staff(
             online_count += 1
 
     page_rows = rows[offset:offset + limit]
-    staff_items = [_staff_list_item(u, sm.role) for u, sm in page_rows]
+    staff_items = [_staff_list_item(u, sm) for u, sm in page_rows]
 
     return {
         "summary": {
@@ -132,6 +179,45 @@ async def list_staff(
             "limit": limit,
         },
     }
+
+
+# ─── GET /staff/check-contact ─────────────────────────────────────────────────
+# Объявлен до /{staff_id}, иначе FastAPI пытается прочитать «check-contact» как int.
+
+@router.get("/check-contact")
+async def check_staff_contact(
+    field: Literal["email", "phone"],
+    value: str,
+    exclude_id: Optional[int] = Query(None, description="Кого не считать — правимый сотрудник"),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Два разных факта об одном контакте — форма берёт нужный ей.
+
+    `in_studio` — человек с этим контактом УЖЕ работает в этой студии. При
+    добавлении это настоящая ошибка: второе членство в одной студии запрещено
+    (uq_studio_member).
+
+    `taken` — контакт принадлежит какому-то аккаунту продукта, возможно из чужой
+    студии. При ДОБАВЛЕНИИ это НЕ ошибка: человека привяжем к студии, а не
+    создадим второй аккаунт (решение 8), и говорить «email уже зарегистрирован»
+    здесь нельзя — владельцу это ничего не объясняет и только блокирует форму.
+    А вот при ПРАВКЕ карточки ошибка: там контакт переписывается, и
+    update_staff ответит 409.
+    """
+    normalized = normalize(field, value)
+    if normalized is None:
+        return {"taken": False, "in_studio": False}
+
+    query = select(User.id).where(normalized_column(User, field) == normalized)
+    if exclude_id is not None:
+        query = query.where(User.id != exclude_id)
+    user_id = (await db.execute(query.limit(1))).scalars().first()
+    if user_id is None:
+        return {"taken": False, "in_studio": False}
+
+    in_studio = await _membership_of(user_id, ctx.studio_id, db) is not None
+    return {"taken": True, "in_studio": in_studio}
 
 
 # ─── GET /staff/{staff_id} ────────────────────────────────────────────────────
@@ -246,10 +332,13 @@ async def get_staff_profile(
             if lesson.hall else None,
         })
 
-    # Weekly working hours
+    # Weekly working hours — только этой студии: в другой у него свой график.
     wh_result = await db.execute(
         select(StaffWorkingHours)
-        .where(StaffWorkingHours.user_id == staff_id)
+        .where(
+            StaffWorkingHours.user_id == staff_id,
+            StaffWorkingHours.studio_id == studio_id,
+        )
         .order_by(StaffWorkingHours.day_of_week)
     )
     week_working_hours = [
@@ -269,14 +358,16 @@ async def get_staff_profile(
         "email": user.email,
         "phone": user.phone,
         "role": membership.role,
-        "department": user.department,
+        # Должность и деньги — условия работы В ЭТОЙ студии, поэтому с membership.
+        # avg_rating остаётся с аккаунта: это оценка человека, а не студии.
+        "department": membership.department,
         "is_online": _is_online(user),
         "is_active": user.is_verified,
         "photo_url": user.photo_url,
         "avatar_gradient": user.avatar_gradient,
-        "salary": user.salary,
-        "rate": user.rate,
-        "rate_type": user.rate_type,
+        "salary": membership.salary,
+        "rate": membership.rate,
+        "rate_type": membership.rate_type,
         "avg_rating": user.avg_rating,
         "stats": {
             "total_bookings": total_bookings,
@@ -301,45 +392,61 @@ async def create_staff(
 ):
     studio_id = ctx.studio_id
     await check_plan_limit(db, studio_id, "staff")
-    existing = (await db.execute(
-        select(User).where(User.email == data.email)
-    )).scalars().first()
-    if existing:
-        # ponytail: MVP — существующий email отклоняем; переиспользование чужого
-        # аккаунта как сотрудника другой студии — отдельная фича (Эпик 4).
-        raise HTTPException(status_code=409, detail="Пользователь с таким email уже существует")
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
-    user = User(
-        email=data.email,
-        name=data.name,
-        last_name=data.last_name,
-        phone=data.phone,
+    # Аккаунт глобальный: если контакт уже известен продукту, второго User с ним
+    # быть не может — человека ПРИВЯЗЫВАЕМ к студии, а не создаём заново
+    # (docs/ROADMAP_ACCOUNTS, решение 8). Так один тренер работает в нескольких
+    # студиях под одним логином и паролем.
+    user = await _find_user_by_contacts(data.email, data.phone, db)
+
+    if user is None:
+        user = User(
+            email=data.email,
+            name=data.name,
+            last_name=data.last_name,
+            phone=data.phone,
+            photo_url=data.photo_url,
+            hashed_password=get_password_hash(data.password),
+            is_verified=True,       # вход по временному паролю — без email-подтверждения
+            is_onboarded=True,      # онбординг только для владельца новой студии
+            services=services,
+        )
+        db.add(user)
+        await db.flush()
+    else:
+        # Уже в этой студии — настоящая ошибка, а не приглашение.
+        if await _membership_of(user.id, studio_id, db) is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Этот человек уже работает в вашей студии",
+            )
+        # Личные данные чужого аккаунта не перезаписываем: имя, пароль, фото и
+        # контакты принадлежат человеку, а не студии, которая его позвала.
+        # Услуги студийные (Service.studio_id), поэтому их добавить можно.
+        user.services = list({*user.services, *services})
+
+    membership = StudioMember(
+        user_id=user.id,
+        studio_id=studio_id,
+        role=data.role,
         department=data.department,
         salary=data.salary,
         rate=data.rate,
         rate_type=data.rate_type,
-        photo_url=data.photo_url,
-        hashed_password=get_password_hash(data.password),
-        is_verified=True,       # вход по временному паролю — без email-подтверждения
-        is_onboarded=True,      # онбординг только для владельца новой студии
-        services=services,
     )
-    db.add(user)
-    await db.flush()
-
-    membership = StudioMember(user_id=user.id, studio_id=studio_id, role=data.role)
     db.add(membership)
-    await _replace_schedule(user.id, data.schedule, db)
+    await _replace_schedule(user.id, studio_id, data.schedule, db)
     await db.commit()
     await db.refresh(user)
+    await db.refresh(membership)
 
     await notify(db, studio_id, "owner", "o5", {
         "staff_name": f"{user.name} {user.last_name or ''}".strip(),
     })
 
-    return {"ok": True, "staff": _staff_list_item(user, data.role)}
+    return {"ok": True, "staff": _staff_list_item(user, membership)}
 
 
 # ─── PUT /staff/{staff_id} ────────────────────────────────────────────────────
@@ -363,12 +470,15 @@ async def update_staff(
         raise HTTPException(status_code=404, detail="Сотрудник не найден")
     user, membership = row
 
-    if data.email != user.email:
-        existing = (await db.execute(
-            select(User).where(User.email == data.email)
-        )).scalars().first()
-        if existing:
-            raise HTTPException(status_code=409, detail="Пользователь с таким email уже существует")
+    # Проверяем только изменённые контакты: в БД остались исторические дубли по email
+    # (docs/ROADMAP_ACCOUNTS, решение 3 — чистка), и на них нельзя запирать правку
+    # остальных полей карточки. Новый конфликт при этом ввести всё равно нельзя.
+    await ensure_user_contacts_free(
+        db,
+        email=data.email if data.email != user.email else None,
+        phone=data.phone if data.phone != user.phone else None,
+        exclude_id=staff_id,
+    )
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
@@ -378,15 +488,17 @@ async def update_staff(
     user.last_name = data.last_name
     user.email = data.email
     user.phone = data.phone
-    user.department = data.department
-    user.salary = data.salary
-    user.rate = data.rate
-    user.rate_type = data.rate_type
     user.photo_url = data.photo_url
     user.services = services
+    # Условия работы — в membership этой студии. У человека, работающего ещё
+    # где-то, там своя ставка и своя должность, и они остаются нетронутыми.
+    membership.department = data.department
+    membership.salary = data.salary
+    membership.rate = data.rate
+    membership.rate_type = data.rate_type
     if data.role is not None:
         membership.role = data.role
-    await _replace_schedule(user.id, data.schedule, db)
+    await _replace_schedule(user.id, studio_id, data.schedule, db)
     await db.commit()
     await db.refresh(user)
 
@@ -396,7 +508,7 @@ async def update_staff(
             "role": data.role,
         })
 
-    return {"ok": True, "staff": _staff_list_item(user, membership.role)}
+    return {"ok": True, "staff": _staff_list_item(user, membership)}
 
 
 # ─── DELETE /staff/{staff_id} ─────────────────────────────────────────────────

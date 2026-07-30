@@ -10,6 +10,7 @@ from models import Client, User, Studio, StudioWorkingHours, StudioMember, Studi
 from routers.billing.plans import PLANS
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
+from services.contacts import ensure_user_contacts_free
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
@@ -97,11 +98,8 @@ async def complete_onboarding(
         raise HTTPException(status_code=400, detail="Онбординг уже пройден")
     _validate_onboarding_request(request)
 
-    existing_phone = (
-        await db.execute(select(User).where(User.phone == request.phone.strip()))
-    ).scalar_one_or_none()
-    if existing_phone is not None:
-        raise HTTPException(status_code=400, detail="Данный номер телефона уже используется")
+    # Сравнение по цифрам, а не по строке: «+7 999 …» и «79999…» — один номер.
+    await ensure_user_contacts_free(db, phone=request.phone, exclude_id=current_user.id)
 
     new_studio = await _create_studio_with_defaults(current_user, request, db)
 

@@ -4,7 +4,7 @@ import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { useClientForm } from '../../hooks/useClientForm';
+import { EMAIL_RE, useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
 import { useClientMutations } from '../../hooks/useClientsList';
 import { loyaltyApi } from '../../../../../api/loyalty/loyalty.api';
@@ -15,6 +15,7 @@ import { formatMoney } from '../../utils/mapClient';
 import { useToast } from '../../../../../components/ui/Toast';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { ApiError } from '../../../../../api/client';
+import { useContactCheck } from '../../../../../hooks/useContactCheck';
 
 export interface AddClientModalProps {
   isOpen: boolean;
@@ -92,9 +93,9 @@ function IllusStep4({ label }: { label: string }) {
 }
 
 // ─── FIELD ────────────────────────────────────────────────────────────────────
-function Field({ label, value, onChange, error, placeholder, type = 'text', max }: {
+function Field({ label, value, onChange, error, hint, placeholder, type = 'text', max }: {
   label: string; value: string; onChange: (v: string) => void;
-  error?: string; placeholder?: string; type?: string; max?: string;
+  error?: string; hint?: string; placeholder?: string; type?: string; max?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -119,6 +120,7 @@ function Field({ label, value, onChange, error, placeholder, type = 'text', max 
         }}
       />
       {error && <div style={{ fontSize: '11px', color: '#D88C9A', fontWeight: 600, marginTop: '4px' }}>{error}</div>}
+      {!error && hint && <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 500, marginTop: '4px' }}>{hint}</div>}
     </div>
   );
 }
@@ -177,6 +179,15 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
   const activePackages = packages.filter(p => p.is_active);
   const selectedPackage = activePackages.find(p => p.id === form.membershipId) ?? null;
 
+  // Телефон и email клиента не должны повторяться в студии — спрашиваем сервер на лету,
+  // пока проверка идёт или контакт занят, кнопка «Продолжить» остаётся серой.
+  const phoneCheck = useContactCheck('client', 'phone', form.phone, {
+    enabled: isOpen && form.phone.replace(/\D/g, '').length >= 6,
+  });
+  const emailCheck = useContactCheck('client', 'email', form.email, {
+    enabled: isOpen && EMAIL_RE.test(form.email.trim()),
+  });
+
   if (!isOpen) return null;
 
   const TOTAL = 4;
@@ -190,7 +201,9 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
 
   const canGoNext = () => {
     if (step === 1) {
-      return form.name.trim().length >= 2 && !!form.phone.trim() && !!form.email.trim();
+      return form.name.trim().length >= 2 && !!form.phone.trim() && !!form.email.trim()
+        && !phoneCheck.taken && !emailCheck.taken
+        && !phoneCheck.checking && !emailCheck.checking;
     }
     if (step === 2) return !!form.city.trim();
     return true;
@@ -364,8 +377,18 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     </div>
                   )}
                   <Field label={t('addModal.step1.name')} value={form.name} onChange={v => set('name', v)} error={errors.name} placeholder={t('addModal.step1.namePlaceholder')}/>
-                  <Field label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v)} error={errors.phone} placeholder={t('addModal.step1.phonePlaceholder')} type="tel"/>
-                  <Field label={t('addModal.step1.email')} value={form.email} onChange={v => set('email', v)} error={errors.email} placeholder={t('addModal.step1.emailPlaceholder')} type="email"/>
+                  <Field
+                    label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v)}
+                    error={errors.phone ?? (phoneCheck.taken ? t('common:validation.phoneTaken') : undefined)}
+                    hint={phoneCheck.checking ? t('common:validation.checkingContact') : undefined}
+                    placeholder={t('addModal.step1.phonePlaceholder')} type="tel"
+                  />
+                  <Field
+                    label={t('addModal.step1.email')} value={form.email} onChange={v => set('email', v)}
+                    error={errors.email ?? (emailCheck.taken ? t('common:validation.emailTaken') : undefined)}
+                    hint={emailCheck.checking ? t('common:validation.checkingContact') : undefined}
+                    placeholder={t('addModal.step1.emailPlaceholder')} type="email"
+                  />
                 </div>
               )}
 

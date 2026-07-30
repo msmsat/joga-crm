@@ -5,6 +5,7 @@ import { authApi } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useToast } from '../../../../components/ui/index';
+import { useContactCheck } from '../../../../hooks/useContactCheck';
 import type { UserInfo } from '../types';
 
 export function useProfileForm() {
@@ -25,6 +26,13 @@ export function useProfileForm() {
     last_name: draft.last_name ?? me?.last_name  ?? '',
     phone:     draft.phone     ?? me?.phone      ?? '',
   };
+
+  // Телефон — контакт аккаунта: занят другим пользователем → «Сохранить» серая.
+  // Свой номер сервер из проверки исключает сам (/auth/check-contact), а неизменённый
+  // не проверяем вовсе — как и PATCH /me.
+  const phoneCheck = useContactCheck('user', 'phone', userInfo.phone, {
+    enabled: userInfo.phone.replace(/\D/g, '').length >= 6 && userInfo.phone !== (me?.phone ?? ''),
+  });
 
   const save = useMutation({
     mutationFn: () => authApi.updateMe({
@@ -47,6 +55,8 @@ export function useProfileForm() {
     email: me?.email ?? '',
     isLoading,
     isSavingInfo: save.isPending,
+    phoneTaken: phoneCheck.taken,
+    isCheckingPhone: phoneCheck.checking,
     handleSaveInfo: () => save.mutate(),
   };
 }

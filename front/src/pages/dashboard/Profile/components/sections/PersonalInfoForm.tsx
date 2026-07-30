@@ -8,10 +8,12 @@ interface Props {
   email: string;
   isLoading: boolean;
   isSavingInfo: boolean;
+  phoneTaken?: boolean;
+  isCheckingPhone?: boolean;
   handleSaveInfo: () => void;
 }
 
-export default function PersonalInfoForm({ userInfo, setUserInfo, email, isLoading, isSavingInfo, handleSaveInfo }: Props) {
+export default function PersonalInfoForm({ userInfo, setUserInfo, email, isLoading, isSavingInfo, phoneTaken, isCheckingPhone, handleSaveInfo }: Props) {
   const { t } = useTranslation(["profile", "common"]);
   return (
     <div style={{ padding: '32px', background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>
@@ -47,17 +49,30 @@ export default function PersonalInfoForm({ userInfo, setUserInfo, email, isLoadi
               {t("profile:personalInfo.emailLocked")}
             </div>
           </div>
-          <Input
-            label={t("common:fields.phone")}
-            value={userInfo.phone}
-            onChange={v => setUserInfo({ ...userInfo, phone: v })}
-            disabled={isLoading}
-          />
+          <div>
+            <Input
+              label={t("common:fields.phone")}
+              value={userInfo.phone}
+              onChange={v => setUserInfo({ ...userInfo, phone: v })}
+              disabled={isLoading}
+              error={phoneTaken ? t("common:validation.phoneTaken") : undefined}
+            />
+            {isCheckingPhone && (
+              <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '6px' }}>
+                {t("common:validation.checkingContact")}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
-        <Button variant="primary" onClick={handleSaveInfo} loading={isSavingInfo}>
+        <Button
+          variant="primary"
+          onClick={handleSaveInfo}
+          loading={isSavingInfo}
+          disabled={phoneTaken || isCheckingPhone}
+        >
           {t("common:buttons.saveChanges")}
         </Button>
       </div>

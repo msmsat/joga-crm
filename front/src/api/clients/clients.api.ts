@@ -1,4 +1,5 @@
 import { client } from '../client'
+import type { ContactCheckResponse, ContactField } from '../auth/auth.types'
 import type {
   ActionMessageOut,
   ActivityPoint,
@@ -42,6 +43,13 @@ export const clientsApi = {
 
   getCount: () =>
     client.get<ClientsCountOut>('/clients/count'),
+
+  // Занят ли email/телефон другим клиентом студии. excludeId — правимый клиент.
+  checkContact: (field: ContactField, value: string, excludeId?: number) =>
+    client.get<ContactCheckResponse>(
+      `/clients/check-contact?field=${field}&value=${encodeURIComponent(value)}`
+      + (excludeId !== undefined ? `&exclude_id=${excludeId}` : '')
+    ),
 
   getCategories: () =>
     client.get<CategoryStat[]>('/clients/categories'),

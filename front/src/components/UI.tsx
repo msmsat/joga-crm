@@ -78,15 +78,20 @@ export function InputField({ label, type = "text", placeholder, value, onChange,
 }
 
 // ─── PHONE INPUT FIELD (С маской и флагами) ───────────────────────────────────
-export function PhoneField({ label, value, onChange, error }: any) {
+// label необязателен: в модалках, где подпись рисует свой <FieldLabel>, пустой
+// <label> добавлял лишний отступ. hint — строка-подсказка под полем (например
+// «проверяем…», пока идёт живая проверка занятости номера).
+export function PhoneField({ label, value, onChange, error, hint }: any) {
   const [focused, setFocused] = useState(false);
   const hasValue = value && value.length > 0;
 
   return (
     <div className="input-wrapper">
-      <label className="input-label" style={{ color: focused ? "var(--onyx)" : "var(--muted)" }}>
-        {label}
-      </label>
+      {label && (
+        <label className="input-label" style={{ color: focused ? "var(--onyx)" : "var(--muted)" }}>
+          {label}
+        </label>
+      )}
       <div className="input-container">
         <PhoneInput
           international
@@ -104,6 +109,9 @@ export function PhoneField({ label, value, onChange, error }: any) {
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="var(--rose)" strokeWidth="1.2"/><path d="M6 3.5V6.5" stroke="var(--rose)" strokeWidth="1.2" strokeLinecap="round"/><circle cx="6" cy="8.5" r="0.6" fill="var(--rose)"/></svg>
           {error}
         </span>
+      )}
+      {!error && hint && (
+        <span className="input-error-msg" style={{ color: "var(--muted)" }}>{hint}</span>
       )}
     </div>
   );
@@ -667,16 +675,15 @@ export function Illustration2({ activityType }: { activityType: string }) {
         <circle cx="140" cy="110" r="94" stroke="#A3C9A8" strokeWidth="1" strokeDasharray="3 12" opacity="0.12">
           <animateTransform attributeName="transform" type="rotate" values="360 140 110;0 140 110" dur="28s" repeatCount="indefinite"/>
         </circle>
+        <line x1="140" y1="150" x2="126" y2="176" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+        <line x1="140" y1="150" x2="154" y2="176" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
         <g>
-          <animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="4s" repeatCount="indefinite" additive="sum"/>
-          <circle cx="140" cy="58" r="14" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
-          <circle cx="140" cy="58" r="8" fill="#FDFCFB"/>
-          <path d="M140 72 L140 100" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M140 84 L122 98" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M140 84 L158 98" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M140 100 C128 104 108 104 100 116" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M140 100 C152 104 172 104 180 116" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M94 120 Q140 132 186 120" stroke="#FCAE91" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+          <animateTransform attributeName="transform" type="rotate" values="0 140 150;50 140 150;50 140 150;0 140 150" keyTimes="0;0.4;0.6;1" dur="3.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0 0 0 0;0.45 0 0.55 1"/>
+          <path d="M140 150 L140 122" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <circle cx="140" cy="110" r="13" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
+          <circle cx="140" cy="110" r="7" fill="#FDFCFB"/>
+          <path d="M140 128 L124 104" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M140 128 L156 104" stroke="#FCAE91" strokeWidth="2.5" strokeLinecap="round"/>
         </g>
         <circle cx="198" cy="56" r="4" fill="#FCAE91" opacity="0.35"><animateTransform attributeName="transform" type="translate" values="0,0;4,-5;0,0" dur="3s" repeatCount="indefinite" additive="sum"/></circle>
         <circle cx="82" cy="82" r="3" fill="#A3C9A8" opacity="0.4"><animateTransform attributeName="transform" type="translate" values="0,0;-3,4;0,0" dur="4.5s" repeatCount="indefinite" additive="sum"/></circle>
@@ -692,19 +699,14 @@ export function Illustration2({ activityType }: { activityType: string }) {
         <circle cx="140" cy="110" r="88" stroke="#A3C9A8" strokeWidth="0.8" strokeDasharray="3 14" opacity="0.18">
           <animateTransform attributeName="transform" type="rotate" values="0 140 110;360 140 110" dur="32s" repeatCount="indefinite"/>
         </circle>
-        <rect x="48" y="140" width="184" height="8" rx="4" fill="#F0EDE8"/>
-        <rect x="58" y="128" width="164" height="16" rx="5" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
-        {[0,1,2,3].map(i => <line key={i} x1={136 + i * 18} y1="128" x2={136 + i * 18} y2="144" stroke="#E8E4DF" strokeWidth="1.5" strokeDasharray="2 2"/>)}
-        <rect x="68" y="120" width="62" height="13" rx="4" fill="rgba(252,174,145,0.18)" stroke="#FCAE91" strokeWidth="1.5">
-          <animate attributeName="x" values="68;106;68" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.45,0,0.55,1;0.45,0,0.55,1"/>
-        </rect>
+        <rect x="70" y="152" width="140" height="8" rx="4" fill="#F0EDE8"/>
+        <circle cx="88" cy="140" r="11" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
+        <circle cx="88" cy="140" r="6" fill="#FDFCFB"/>
+        <path d="M99 140 L150 150" stroke="#FCAE91" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M110 143 L132 148" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
         <g>
-          <animateTransform attributeName="transform" type="translate" values="0,0;38,0;0,0" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.45,0,0.55,1;0.45,0,0.55,1" additive="sum"/>
-          <circle cx="84" cy="114" r="11" fill="white" stroke="#F0EDE8" strokeWidth="1.5"/>
-          <circle cx="84" cy="114" r="6" fill="#FDFCFB"/>
-          <path d="M84 125 L84 136" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M84 130 L73 125" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M84 130 L97 128" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
+          <animateTransform attributeName="transform" type="rotate" values="-8 150 150;-58 150 150;-58 150 150;-8 150 150" keyTimes="0;0.4;0.6;1" dur="2.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0 0 0 0;0.45 0 0.55 1"/>
+          <line x1="150" y1="150" x2="204" y2="150" stroke="#FCAE91" strokeWidth="4" strokeLinecap="round"/>
         </g>
         <circle cx="68" cy="74" r="3.5" fill="#FCAE91" opacity="0.3"><animateTransform attributeName="transform" type="translate" values="0,0;-3,-5;0,0" dur="4s" repeatCount="indefinite" additive="sum"/></circle>
         <circle cx="216" cy="90" r="5" fill="#A3C9A8" opacity="0.25"><animateTransform attributeName="transform" type="translate" values="0,0;4,4;0,0" dur="5s" repeatCount="indefinite" additive="sum"/></circle>

@@ -84,9 +84,16 @@ export interface UpdateProfilePayload {
   tg_id?: number | null
 }
 
-export interface CheckPhoneResponse {
+// Живая проверка занятости контакта — общий ответ для /auth, /staff и /clients.
+export interface ContactCheckResponse {
+  // Контакт принадлежит какому-то аккаунту продукта (возможно, из чужой студии).
   taken: boolean
+  // Этот человек уже работает в текущей студии. Только у scope 'staff';
+  // auth/check-contact и clients/check-contact присылают undefined.
+  in_studio?: boolean
 }
+
+export type ContactField = 'email' | 'phone'
 
 // EPIC 7, задача 3/4: карточка студии на /select-crm — по членству в StudioMember.
 export interface StudioListItem {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -7,6 +7,7 @@ import {
   Illustration1, Illustration2, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
+import { useContactCheck } from '../../hooks/useContactCheck';
 import StepIdentity from "./onboarding/StepIdentity";
 import StepActivity from "./onboarding/StepActivity";
 import StepContact from "./onboarding/StepContact";
@@ -35,8 +36,6 @@ export default function OnboardingPage() {
   const [dir, setDir] = useState<1 | -1>(1);
   const [animating, setAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [isCheckingPhone, setIsCheckingPhone] = useState(false);
   const [errorModal, setErrorModal] = useState<{ visible: boolean; message: string }>({ visible: false, message: "" });
   const [data, setData] = useState<OnboardingData>({
     studioName: "",
@@ -60,26 +59,11 @@ export default function OnboardingPage() {
     setData(d => ({ ...d, ...update }));
   }
 
-  useEffect(() => {
-    if (!data.phone || !isValidPhoneNumber(data.phone)) {
-      setPhoneError(null);
-      setIsCheckingPhone(false);
-      return;
-    }
-    setIsCheckingPhone(true);
-    setPhoneError(null);
-    const timer = setTimeout(async () => {
-      try {
-        const json = await authApi.checkPhone(data.phone);
-        setPhoneError(json.taken ? "Этот номер уже зарегистрирован в системе" : null);
-      } catch {
-        setPhoneError(null);
-      } finally {
-        setIsCheckingPhone(false);
-      }
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [data.phone]);
+  // Телефон становится контактом аккаунта владельца — занятый чужим аккаунтом не пропускаем.
+  const phoneCheck = useContactCheck('user', 'phone', data.phone, {
+    enabled: !!data.phone && isValidPhoneNumber(data.phone),
+  });
+  const phoneError = phoneCheck.taken ? 'Этот номер уже зарегистрирован в системе' : null;
 
   function goNext() {
     if (animating) return;
@@ -154,7 +138,7 @@ export default function OnboardingPage() {
 
   const canProceed1 = data.studioName.trim().length >= 2;
   const canProceed2 = data.activityType !== "";
-  const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone) && !phoneError && !isCheckingPhone;
+  const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone) && !phoneError && !phoneCheck.checking;
   const canProceed4 = !!(data.timezone && data.language && data.currency);
   const canProceed5 = true;
 
@@ -250,7 +234,7 @@ export default function OnboardingPage() {
         <div key={step} style={animStyle}>
           {step === 1 && <StepIdentity data={data} onChange={patch} />}
           {step === 2 && <StepActivity data={data} onChange={patch} />}
-          {step === 3 && <StepContact data={data} onChange={patch} phoneError={phoneError} isCheckingPhone={isCheckingPhone} />}
+          {step === 3 && <StepContact data={data} onChange={patch} phoneError={phoneError} isCheckingPhone={phoneCheck.checking} />}
           {step === 4 && <StepSettings data={data} onChange={patch} />}
           {step === 5 && <StepSchedule data={data} onChange={patch} />}
         </div>

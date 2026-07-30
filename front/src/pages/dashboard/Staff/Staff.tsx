@@ -728,6 +728,7 @@ export default function Staff() {
       {isEditModalOpen && isOwner && profile && (
       <OwnerContactsModal
         owner={{
+          id: profile.id,
           name: profile.name,
           last_name: profile.last_name ?? undefined,
           email: profile.email,

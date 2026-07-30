@@ -1,7 +1,8 @@
 import { client } from '../client'
 import type {
   ChangePasswordPayload,
-  CheckPhoneResponse,
+  ContactCheckResponse,
+  ContactField,
   ForgotPasswordPayload,
   GoogleAuthPayload,
   Login2FAPayload,
@@ -47,8 +48,11 @@ export const authApi = {
   updateMe: (payload: UpdateProfilePayload) =>
     client.patch<UserMe>('/auth/me', payload),
 
-  checkPhone: (phone: string) =>
-    client.get<CheckPhoneResponse>(`/auth/check-phone?phone=${encodeURIComponent(phone)}`),
+  // Занят ли контакт другим аккаунтом продукта (свой не считается) — онбординг, профиль.
+  checkContact: (field: ContactField, value: string) =>
+    client.get<ContactCheckResponse>(
+      `/auth/check-contact?field=${field}&value=${encodeURIComponent(value)}`
+    ),
 
   onboarding: (payload: OnboardingPayload) =>
     client.post<TokenResponse>('/auth/onboarding', payload),
