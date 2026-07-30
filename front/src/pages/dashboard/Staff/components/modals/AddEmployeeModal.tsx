@@ -345,7 +345,13 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   // владелец мог передать её сотруднику руками, если почта не дошла. Email берём
   // с ответа, а не из формы: человека с этим телефоном могли привязать к уже
   // существующему аккаунту, и письмо ушло на ЕГО адрес (ROADMAP_ACCOUNTS, решение 8).
-  const [created, setCreated] = useState<{ id: number; email: string; inviteUrl: string } | null>(null);
+  const [created, setCreated] = useState<{
+    id: number; email: string; inviteUrl: string;
+    // Введённое имя не применилось — в студию привязан существующий аккаунт под
+    // своим именем. Владелец должен увидеть это явно, а не найти чужого человека
+    // в списке сотрудников.
+    name: string; linkedExisting: boolean;
+  } | null>(null);
   const [saving, setSaving]   = useState(false);
   const [copied, setCopied]   = useState(false);
   const [resent, setResent]   = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -399,7 +405,13 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     setSaving(true);
     try {
       const result = await onSuccess?.({ ...data, serviceIds: data.role === "trainer" ? data.serviceIds : [] });
-      if (result) setCreated({ id: result.staff.id, email: result.staff.email, inviteUrl: result.invite_url ?? "" });
+      if (result) setCreated({
+        id: result.staff.id,
+        email: result.staff.email,
+        inviteUrl: result.invite_url ?? "",
+        name: [result.staff.name, result.staff.last_name].filter(Boolean).join(" "),
+        linkedExisting: result.linked_existing ?? false,
+      });
       goNext();
     } catch {
       // Ошибка уже показана тостом выше по стеку (Staff.tsx onSuccess) — остаёмся на шаге 3.
@@ -450,25 +462,28 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const phoneFormatOk = data.phone.replace(/\D/g, "").length >= 6;
   const emailFormatOk = EMAIL_RE.test(data.email.trim());
 
-  // Аккаунт глобальный, а членство — на студию. Поэтому ошибка здесь только одна:
-  // человек УЖЕ в этой студии (inStudio). Занятый контакт из чужой студии ошибкой
-  // не является — такого человека привяжут вторым StudioMember, а не создадут
-  // заново (ROADMAP_ACCOUNTS, решение 8). Раньше форма падала на глобальном
-  // `taken` и не пускала владельца дальше первого шага.
+  // Аккаунт глобальный, а членство — на студию, и поля ведут себя по-разному.
+  // EMAIL — личность аккаунта: занят «чужой» студией — не ошибка, человека
+  // привяжут вторым StudioMember (ROADMAP_ACCOUNTS, решение 8), но в студию
+  // попадёт ЕГО имя, поэтому предупреждаем.
+  // ТЕЛЕФОН — ошибка: номер уникален глобально, и держит его аккаунт с другим
+  // email, то есть другой человек. Бэкенд отвечает 409, и молчать об этом нельзя.
   const phoneCheck = useContactCheck("staff", "phone", data.phone, { enabled: isOpen && phoneFormatOk });
   const emailCheck = useContactCheck("staff", "email", data.email, { enabled: isOpen && emailFormatOk });
 
+  const emailIsKnownAccount = emailCheck.taken && !emailCheck.inStudio;
+
   const nameError     = data.name.trim().length > 0 && data.name.trim().length < 2 ? t("addModal.step1.errors.name") : undefined;
   const phoneError    = data.phone.trim().length > 0 && !phoneFormatOk ? t("addModal.step1.errors.phone")
-    : phoneCheck.inStudio ? t("common:validation.phoneInStudio") : undefined;
+    : phoneCheck.inStudio ? t("common:validation.phoneInStudio")
+    : phoneCheck.taken ? t("addModal.step1.errors.phoneTaken") : undefined;
   const emailError    = data.email.trim().length > 0 && !emailFormatOk ? t("addModal.step1.errors.email")
     : emailCheck.inStudio ? t("common:validation.emailInStudio") : undefined;
   const checkingHint  = t("common:validation.checkingContact");
-  // Нейтральная подсказка вместо красной ошибки: контакт известен продукту, но в
-  // этой студии человека нет — значит он будет привязан, а имя и пароль из формы
-  // не применятся (личные данные принадлежат человеку).
-  const willLinkHint  = (emailCheck.taken && !emailCheck.inStudio) || (phoneCheck.taken && !phoneCheck.inStudio)
-    ? t("common:validation.accountWillBeLinked") : undefined;
+  // Нейтральная подсказка вместо красной ошибки: аккаунт с этим email уже есть,
+  // в студию привяжут его — а имя из формы не применится (личные данные
+  // принадлежат человеку, а не студии, которая его позвала).
+  const willLinkHint  = emailIsKnownAccount ? t("common:validation.accountWillBeLinked") : undefined;
 
   const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
   const canStep1         = data.name.trim().length >= 2
@@ -682,7 +697,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.phoneLabel")} *</FieldLabel>
-                      <PhoneField value={data.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : willLinkHint}/>
+                      <PhoneField value={data.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : undefined}/>
                     </div>
                     <div>
                       <FieldLabel>{t("addModal.step1.emailLabel")} *</FieldLabel>
@@ -1026,6 +1041,20 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     {t("addModal.step4.exclaim")}{" "}<span style={{ color: "#FCAE91" }}>{data.name.split(" ")[0] || t("addModal.employeeFallback")}</span> {t("addModal.step4.added")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 20px", lineHeight: 1.6 }}>{t("addModal.step4.sub")}</p>
+
+                  {/* Введённое имя не применилось: email принадлежит существующему
+                      аккаунту, и в студию привязан он. Молчать об этом нельзя —
+                      владелец иначе просто найдёт в списке незнакомого человека. */}
+                  {created?.linkedExisting && (
+                    <div style={{ display: "flex", gap: "11px", padding: "13px 16px", background: "rgba(252,174,145,0.09)", border: "1.5px solid rgba(252,174,145,0.3)", borderRadius: "14px", marginBottom: "14px" }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0, marginTop: "2px" }}>
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                      <p style={{ fontSize: "12px", color: "#8a6a5c", margin: 0, lineHeight: 1.6 }}>
+                        {t("addModal.step4.linkedExisting", { name: created.name, email: created.email })}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Письмо уже ушло при создании — здесь подтверждение факта */}
                   <div style={{ display: "flex", alignItems: "center", gap: "11px", padding: "13px 16px", background: "rgba(163,201,168,0.1)", border: "1.5px solid rgba(163,201,168,0.28)", borderRadius: "14px", marginBottom: "14px" }}>

@@ -38,8 +38,6 @@
       "wallet": "Purchases"
     },
     "actions": {
-      "call": "Call",
-      "message": "Message",
       "book": "Book",
       "bonus": "Bonus"
     },
@@ -194,11 +192,6 @@
       "justNow": "just now",
       "deleteTitle": "Delete note?",
       "deleteMessage": "This note cannot be recovered."
-    },
-    "messagePanel": {
-      "title": "Message to client",
-      "placeholder": "Type a message...",
-      "send": "Send message"
     },
     "bookingPanel": {
       "title": "Quick booking",

@@ -11,6 +11,7 @@ import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
 import SelectCrm from './pages/SelectCrm';
 import JoinPage from './pages/JoinPage';
+import { clearActiveToken, getActiveToken, rememberAccountName } from './utils/auth';
 
 import DashboardLayout from './layouts/DashboardLayout';
 
@@ -36,7 +37,7 @@ import Catalog from './pages/dashboard/Catalog';
 const ProtectedRoute = ({ children, requireOnboarding = true }: { children: ReactNode, requireOnboarding?: boolean }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserMe | null>(null);
-  const token = localStorage.getItem('token');
+  const token = getActiveToken();
 
   useEffect(() => {
     if (!token) {
@@ -48,8 +49,13 @@ const ProtectedRoute = ({ children, requireOnboarding = true }: { children: Reac
     const timer = setTimeout(() => controller.abort(), 5000);
 
     authApi.getMe(controller.signal)
-      .then(data => setUser(data))
-      .catch(() => localStorage.removeItem('token'))
+      .then(data => {
+        setUser(data);
+        // Связка аккаунтов знает только email из токена — имя приходит вот
+        // отсюда, поэтому дописываем его при каждой загрузке кабинета.
+        if (data.email) rememberAccountName(data.email, data.name);
+      })
+      .catch(() => clearActiveToken())
       .finally(() => { clearTimeout(timer); setLoading(false); });
   }, [token]);
 
@@ -63,7 +69,7 @@ const ProtectedRoute = ({ children, requireOnboarding = true }: { children: Reac
 
 // ─── 2. ЗАЩИТА РОУТОВ ПО РОЛИ (Только для Владельца) ────────────────────────
 const OwnerRoute = ({ children }: { children: ReactNode }) => {
-  const token = localStorage.getItem('token');
+  const token = getActiveToken();
   if (!token) return <Navigate to="/login" replace />;
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
@@ -76,7 +82,7 @@ const OwnerRoute = ({ children }: { children: ReactNode }) => {
 
 // ─── 3. ЗАЩИТА ЛОГИНА (Не пускает, если УЖЕ вошел) ──────────────────────────
 const PublicRoute = ({ children }: { children: ReactNode }) => {
-  const token = localStorage.getItem('token');
+  const token = getActiveToken();
   const [searchParams] = useSearchParams();
   // ?switch=1 — вход в другой аккаунт из профиля: токен текущей сессии намеренно
   // сохраняем, поэтому редирект на дашборд здесь пропускаем.

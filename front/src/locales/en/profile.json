@@ -25,5 +25,14 @@
   },
   "toasts": {
     "infoSaved": "Personal data updated successfully"
+  },
+  "accountSwitcher": {
+    "title": "Accounts",
+    "count_one": "{{count}} account",
+    "count_other": "{{count}} accounts",
+    "add": "Sign in to another account",
+    "forget": "Remove from list",
+    "emptyTitle": "Only this account so far",
+    "expired": "The session for {{email}} has expired — sign in again"
   }
 }

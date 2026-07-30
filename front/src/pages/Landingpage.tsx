@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Обязательный импорт наших глобальных стилей
-import { 
-  Orbs, Logo, Badge, StatCard, FeatureCard, 
-  TestimonialCard, DashboardMockup 
+import {
+  Orbs, Logo, Badge, StatCard, FeatureCard,
+  TestimonialCard, DashboardMockup
 } from "../components/UI";
+import { getActiveToken } from '../utils/auth';
 
 // ─── MAIN LANDING ─────────────────────────────────────────────────────────────
 export default function Landing() {
@@ -39,7 +40,7 @@ export default function Landing() {
           <button 
             className="btn btn-ghost btn-size-normal" 
             onClick={() => {
-              const token = localStorage.getItem('token');
+              const token = getActiveToken();
               if (token) {
                 navigate('/dashboard'); // Если токен есть, кидаем в систему
               } else {

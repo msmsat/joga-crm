@@ -6,6 +6,7 @@ import { Orbs, Logo, InputField, PrimaryBtn, PasswordStrength, ErrorAlert } from
 import { authApi, ApiError } from "../api";
 import { resolveImageUrl } from "../api/client";
 import type { InviteInfo, UserMe } from "../api/auth/auth.types";
+import { getActiveToken, setActiveToken } from '../utils/auth';
 
 // Уход на форму входа именно с ?switch=1: без него PublicRoute уводит на
 // дашборд, если в браузере уже открыт чей-то аккаунт — а по ссылке-приглашению
@@ -67,7 +68,7 @@ export default function JoinPage() {
   }, [token, t]);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) return;
+    if (!getActiveToken()) return;
     authApi.getMe().then(setCurrentUser).catch(() => setCurrentUser(null));
   }, []);
 
@@ -97,7 +98,7 @@ export default function JoinPage() {
         return;
       }
       if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        setActiveToken(data.access_token);
         navigate("/dashboard");
       }
     } catch (err: unknown) {

@@ -56,6 +56,16 @@ export const authApi = {
   getMe: (signal?: AbortSignal) =>
     client.get<UserMe>('/auth/me', { signal }),
 
+  // Жив ли сохранённый токен ДРУГОГО аккаунта (переключатель в профиле).
+  // auth:false + явный заголовок — активную сессию подставлять нельзя, а
+  // allowUnauthorized не даёт протухшему чужому токену выкинуть текущий.
+  verifyToken: (token: string) =>
+    client.get<UserMe>('/auth/me', {
+      auth: false,
+      allowUnauthorized: true,
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
   updateMe: (payload: UpdateProfilePayload) =>
     client.patch<UserMe>('/auth/me', payload),
 

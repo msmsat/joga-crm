@@ -104,6 +104,9 @@ class StaffMutateResponse(BaseSchema):
     # Заполнен только при создании и повторной отправке: ссылка из письма, чтобы
     # владелец мог передать её сотруднику руками, если почта не дошла.
     invite_url: Optional[str] = None
+    # True — email уже принадлежал аккаунту продукта, и в студию привязан ОН со
+    # своим именем; введённые владельцем имя и телефон не применились.
+    linked_existing: bool = False
 
 
 class StaffWeekScheduleResponse(BaseSchema):

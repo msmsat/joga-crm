@@ -1,15 +1,25 @@
 import i18n from '../i18n';
+import { queryClient } from '../api/queryClient';
+import { queryKeys } from '../api/queryKeys';
+import { getCurrencySymbol } from '../components/UI';
 
 const LOCALE: Record<string, string> = { ru: 'ru-RU', en: 'en-US' };
 
-/** Рубли целыми, с разделителями по языку интерфейса. Только для Отчётов. */
-export function fmtMoney(n: number, symbol = '₽'): string {
+// Синхронное чтение валюты студии из кэша react-query — те же данные, что
+// useStudioCurrency(), но доступны вне компонентов (как i18n.language выше).
+function studioCurrencySymbol(): string {
+  const settings = queryClient.getQueryData<{ currency?: string | null }>(queryKeys.studioSettings);
+  return getCurrencySymbol(settings?.currency ?? undefined);
+}
+
+/** Целыми, с разделителями по языку интерфейса. Символ — валюта студии. Только для Отчётов. */
+export function fmtMoney(n: number, symbol = studioCurrencySymbol()): string {
   const locale = LOCALE[i18n.language] ?? 'ru-RU';
   return `${Math.round(n).toLocaleString(locale)} ${symbol}`;
 }
 
 /** Компактные деньги для плиток: «284K ₽», «1.2M ₽». Символ — из настроек студии. */
-export function fmtMoneyCompact(n: number, symbol = '₽'): string {
+export function fmtMoneyCompact(n: number, symbol = studioCurrencySymbol()): string {
   const locale = LOCALE[i18n.language] ?? 'ru-RU';
   const value = new Intl.NumberFormat(locale, {
     notation: 'compact', maximumFractionDigits: 1,

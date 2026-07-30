@@ -93,7 +93,8 @@
     "emailCopied": "Email copied",
     "ringing": "Calling...",
     "inviteSent": "Invitation sent to {{email}}",
-    "inviteResent": "Invitation sent again"
+    "inviteResent": "Invitation sent again",
+    "employeeLinked": "An existing account was added to the studio: {{name}}"
   },
   "addModal": {
     "stepIndicator": "Step {{current}} of {{total}}",
@@ -117,7 +118,8 @@
       "errors": {
         "name": "Name is required",
         "phone": "Invalid phone number",
-        "email": "Invalid email"
+        "email": "Invalid email",
+        "phoneTaken": "This number already belongs to another Velora account"
       }
     },
     "step2": {
@@ -146,7 +148,8 @@
       "resend": "Send again",
       "resentOk": "Email sent again",
       "resendError": "Sending failed — retry",
-      "copied": "Copied"
+      "copied": "Copied",
+      "linkedExisting": "An account with this email already exists in Velora — its owner, {{name}} ({{email}}), was added to the studio. The name and phone you entered were not applied: personal data belongs to the person, not to the studio."
     },
     "illus": {
       "contacts": "Contacts",

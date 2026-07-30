@@ -639,7 +639,11 @@ export default function Staff() {
             if (result?.staff?.id) setActiveStaffId(result.staff.id);
             // Модалку не закрываем: она сама покажет последний шаг со ссылкой-приглашением
             // и закроется по «Готово» (AddEmployeeModal.handleClose → onClose).
-            showToast(t('staff:toasts.inviteSent', { email: result?.staff.email ?? data.email }));
+            // Привязали существующий аккаунт — говорим это прямо: в списке появится
+            // его имя, а не введённое, и «Приглашение отправлено» тут вводит в заблуждение.
+            showToast(result?.linked_existing
+              ? t('staff:toasts.employeeLinked', { name: result.staff.name })
+              : t('staff:toasts.inviteSent', { email: result?.staff.email ?? data.email }));
             return result;
           } catch (err) {
             // 402 (лимит тарифа) уже показан глобальной модалкой апселла — закрываем молча.

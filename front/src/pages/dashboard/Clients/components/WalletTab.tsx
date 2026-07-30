@@ -1,27 +1,13 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useClientWallet } from '../hooks/useClientsList';
 import { formatDate } from '../utils/mapClient';
-import { catalogApi } from '../../../../api/catalog/catalog.api';
-import { queryKeys } from '../../../../api/queryKeys';
 import { Card, Button } from '../../../../components/ui/index';
 import { WalletCatalog } from './WalletCatalog';
 import { WalletPOS } from './WalletPOS';
-import { TransferSubscriptionModal } from './modals/TransferSubscriptionModal';
 import type { WalletSubscription } from '../../../../api/clients/clients.types';
 import type { CheckoutProductType } from '../../../../api/checkout';
 import s from './WalletTab.module.css';
-
-/** allow_transfer — тот же конфиг, что читает страница Каталог (owner-only, 403 для admin проглатывается). */
-function useTransferEnabled() {
-  const { data } = useQuery({
-    queryKey: queryKeys.subscriptionConfig,
-    queryFn: () => catalogApi.getSubscriptionConfig(),
-    retry: false,
-  });
-  return data?.allow_transfer ?? false;
-}
 
 function SubscriptionIcon() {
   return (
@@ -53,8 +39,6 @@ export function WalletTab({ clientId, enabled }: { clientId: number; enabled: bo
   const [mode, setMode] = useState<WalletMode>('view');
   const [selected, setSelected] = useState<{ productId: number; type: CheckoutProductType } | null>(null);
   const [activeList, setActiveList] = useState<'active' | 'archived'>('active');
-  const [transferSub, setTransferSub] = useState<WalletSubscription | null>(null);
-  const transferEnabled = useTransferEnabled();
 
   if (mode === 'catalog') {
     return (
@@ -95,13 +79,8 @@ export function WalletTab({ clientId, enabled }: { clientId: number; enabled: bo
 
       {!isLoading && wallet && (
         activeList === 'active'
-          ? <WalletList items={wallet.active} emptyText={t('panel.wallet.emptyActive')} t={t}
-                        onTransfer={transferEnabled ? setTransferSub : undefined}/>
+          ? <WalletList items={wallet.active} emptyText={t('panel.wallet.emptyActive')} t={t}/>
           : <WalletList items={wallet.archived} emptyText={t('panel.wallet.emptyArchived')} t={t}/>
-      )}
-
-      {transferSub && (
-        <TransferSubscriptionModal clientId={clientId} sub={transferSub} onClose={() => setTransferSub(null)}/>
       )}
     </div>
   );
@@ -128,25 +107,23 @@ function EmptyCard({ text }: { text: string }) {
   );
 }
 
-function WalletList({ items, emptyText, t, onTransfer }: {
+function WalletList({ items, emptyText, t }: {
   items: WalletSubscription[];
   emptyText: string;
   t: (key: string, opts?: Record<string, unknown>) => string;
-  onTransfer?: (sub: WalletSubscription) => void;
 }) {
   return items.length === 0 ? (
     <EmptyCard text={emptyText}/>
   ) : (
     <div className={s.list}>
-      {items.map(sub => <WalletCard key={sub.id} sub={sub} t={t} onTransfer={onTransfer}/>)}
+      {items.map(sub => <WalletCard key={sub.id} sub={sub} t={t}/>)}
     </div>
   );
 }
 
-function WalletCard({ sub, t, onTransfer }: {
+function WalletCard({ sub, t }: {
   sub: WalletSubscription;
   t: (key: string, opts?: Record<string, unknown>) => string;
-  onTransfer?: (sub: WalletSubscription) => void;
 }) {
   const progress = sub.total_classes > 0 ? Math.min(100, Math.round((sub.used_classes / sub.total_classes) * 100)) : 0;
   return (
@@ -167,11 +144,6 @@ function WalletCard({ sub, t, onTransfer }: {
           </div>
           {sub.is_frozen && <span className={s.badgeFrozen}>{t('panel.wallet.frozenBadge')}</span>}
         </div>
-        {onTransfer && (
-          <button type="button" className={s.transferBtn} onClick={() => onTransfer(sub)}>
-            {t('panel.wallet.transfer')}
-          </button>
-        )}
       </div>
     </Card>
   );

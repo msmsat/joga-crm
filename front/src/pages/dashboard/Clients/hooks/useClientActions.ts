@@ -26,8 +26,6 @@ export function useClientActions(clientId: number) {
   const [isAddingNote, setIsAddingNote]   = useState(false);
   const [deletingNoteId, setDeletingNoteId] = useState<number | null>(null);
   const [newNoteText, setNewNoteText]     = useState('');
-  const [showMessage, setShowMessage]     = useState(false);
-  const [messageText, setMessageText]     = useState('');
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -44,7 +42,6 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setIsAddingNote(false);
     setDeletingNoteId(null);
-    setShowMessage(false);
     setShowBooking(false);
     setShowBonus(false);
     setSelectedBonus(null);
@@ -122,26 +119,14 @@ export function useClientActions(clientId: number) {
     setNewNoteText('');
   }, []);
 
-  const toggleMessage = useCallback(() => {
-    setShowMessage(prev => !prev);
-    setShowBooking(false);
-    setShowBonus(false);
-  }, []);
-
-  const sendMessage = useCallback((phone: string) => {
-    setShowMessage(false);
-    const text = messageText.trim();
-    setMessageText('');
+  const openWhatsApp = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '');
     if (!digits) { toast.error(t('panel.toasts.noPhone')); return; }
-    // WhatsApp: wa.me принимает номер без «+» и опциональный предзаполненный текст.
-    const url = `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
-    window.open(url, '_blank', 'noopener');
-  }, [messageText, toast, t]);
+    window.open(`https://wa.me/${digits}`, '_blank', 'noopener');
+  }, [toast, t]);
 
   const toggleBooking = useCallback(() => {
     setShowBooking(prev => !prev);
-    setShowMessage(false);
     setShowBonus(false);
   }, []);
 
@@ -174,7 +159,6 @@ export function useClientActions(clientId: number) {
 
   const toggleBonus = useCallback(() => {
     setShowBonus(prev => !prev);
-    setShowMessage(false);
     setShowBooking(false);
     setSelectedBonus(null);
   }, []);
@@ -196,11 +180,6 @@ export function useClientActions(clientId: number) {
     navigator.clipboard.writeText(value).then(() => toast.success(t('panel.toasts.copied')));
   }, [toast, t]);
 
-  const handleCall = useCallback((phone: string) => {
-    if (!phone) { toast.error(t('panel.toasts.noPhone')); return; }
-    window.location.href = `tel:${phone.replace(/\s/g, '')}`;
-  }, [toast, t]);
-
   const remindAboutSubscription = useCallback(() => {
     clientsApi.sendSubscriptionReminder(clientId)
       .then(result => {
@@ -217,14 +196,13 @@ export function useClientActions(clientId: number) {
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
-    showMessage, messageText, setMessageText, toggleMessage, sendMessage,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
     bookingWindowStart, shiftBookingWindow,
     bookingLessons, bookingLessonId, setBookingLessonId,
     showBonus, selectedBonus, toggleBonus, selectBonus,
     eventFilter, setEventFilter,
-    copyToClipboard, handleCall,
+    copyToClipboard, openWhatsApp,
     remindAboutSubscription,
     updateStatus: (status: string) => mutations.updateStatus(clientId, status).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateField: (field: 'phone' | 'email' | 'birth_date' | 'city', value: string | null) =>

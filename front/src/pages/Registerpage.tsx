@@ -7,6 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
 import { authApi, ApiError } from '../api';
+import { setActiveToken } from '../utils/auth';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -45,7 +46,7 @@ export default function RegisterPage() {
         // отправлен, дошагать до ввода кода умеет страница входа.
         navigate("/login");
       } else if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        setActiveToken(data.access_token);
         navigate("/dashboard");
       }
     } catch {
@@ -106,7 +107,7 @@ export default function RegisterPage() {
 
     try {
       const data = await authApi.verifyEmail({ email, code });
-      if (data.access_token) localStorage.setItem("token", data.access_token);
+      if (data.access_token) setActiveToken(data.access_token);
       setDone(true);
     } catch (err: unknown) {
       setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");

@@ -16,6 +16,7 @@ import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
+import { setActiveToken } from '../../utils/auth';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -144,7 +145,7 @@ export default function OnboardingPage() {
         : await authApi.onboarding(payload);
 
       if (responseData.access_token) {
-        localStorage.setItem('token', responseData.access_token);
+        setActiveToken(responseData.access_token);
       }
       window.location.href = "/dashboard";
     } catch (err: unknown) {

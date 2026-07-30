@@ -6,6 +6,7 @@ import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { GoogleLogin } from '@react-oauth/google';
 import { authApi, ApiError } from '../api';
+import { setActiveToken } from '../utils/auth';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -45,7 +46,7 @@ export default function LoginPage() {
         setTwoFaCode("");
         setMode("login2fa");
       } else if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        setActiveToken(data.access_token);
         navigate("/dashboard");
       }
     } catch {
@@ -105,7 +106,7 @@ export default function LoginPage() {
       // ── ФЛОУ: ПОДТВЕРЖДЕНИЕ КОДА 2FA (ШАГ 2 ВХОДА) ──
       else if (mode === "login2fa") {
         const data = await authApi.login2fa({ identifier, code: twoFaCode });
-        if (data.access_token) localStorage.setItem("token", data.access_token);
+        if (data.access_token) setActiveToken(data.access_token);
         navigate("/dashboard");
       }
 
@@ -116,7 +117,7 @@ export default function LoginPage() {
           setMode("login2fa");
           setTwoFaCode("");
         } else if (data.access_token) {
-          localStorage.setItem("token", data.access_token);
+          setActiveToken(data.access_token);
           navigate("/dashboard");
         }
       }

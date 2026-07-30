@@ -1,3 +1,5 @@
+import { clearActiveToken, getActiveToken } from '../utils/auth'
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
 // Бэкенд отдаёт загруженные файлы (лого, фото филиала/сотрудника) как относительный
@@ -22,7 +24,7 @@ export class ApiError extends Error {
 }
 
 function getToken(): string | null {
-  return localStorage.getItem('token')
+  return getActiveToken()
 }
 
 function normalizeError(data: unknown): string {
@@ -58,6 +60,8 @@ interface RequestOptions {
   auth?: boolean
   signal?: AbortSignal
   headers?: Record<string, string>   // напр. X-OTP-Token на опасных ручках (EPIC 5)
+  // 401 отдать вызывающему ошибкой вместо глобального «выкинуть и на /login».
+  allowUnauthorized?: boolean
 }
 
 async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
@@ -79,8 +83,12 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
   })
 
+  // 401 — сессия мертва: выбрасываем токен и уводим на вход. Кроме случая, когда
+  // вызывающий проверяет ЧУЖОЙ токен (переключатель аккаунтов): там 401 означает
+  // «эта запись связки протухла», и стирать активную рабочую сессию нельзя.
   if (res.status === 401) {
-    localStorage.removeItem('token')
+    if (options.allowUnauthorized) throw new ApiError(401, 'Сессия истекла')
+    clearActiveToken()
     window.location.href = '/login'
     throw new ApiError(401, 'Сессия истекла')
   }
@@ -194,7 +202,7 @@ export function patchKeepalive(path: string, body: unknown): void {
 }
 
 export const client = {
-  get: <T>(path: string, options?: { auth?: boolean; signal?: AbortSignal }) =>
+  get: <T>(path: string, options?: { auth?: boolean; signal?: AbortSignal; headers?: Record<string, string>; allowUnauthorized?: boolean }) =>
     request<T>('GET', path, options),
 
   post: <T>(path: string, body?: unknown, options?: { auth?: boolean; signal?: AbortSignal; headers?: Record<string, string> }) =>

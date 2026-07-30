@@ -7,6 +7,7 @@ import { errorMessage } from '../../../../api/errorMessage';
 // Импорт напрямую из Toast, не из ui/index: index экспортирует Sidebar, а тот
 // тянет UserMenu → этот хук — через бочку получался цикл импортов.
 import { useToast } from '../../../../components/ui/Toast';
+import { setActiveToken } from '../../../../utils/auth';
 
 export function useAccounts() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export function useAccounts() {
   const select = useMutation({
     mutationFn: (studioId: number) => authApi.selectStudio(studioId),
     onSuccess: (data) => {
-      if (data.access_token) localStorage.setItem('token', data.access_token);
+      if (data.access_token) setActiveToken(data.access_token);
       // Кэш набит данными прошлой студии — иначе пользователь увидит чужие данные.
       qc.clear();
       navigate('/dashboard');

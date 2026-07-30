@@ -16,6 +16,7 @@ import { OtpConfirmModal } from "../modals/OtpConfirmModal";
 import { authApi } from "../../../../../api";
 import { fmtLastActive } from "../../../../../lib/format";
 import type { ExportArchivePayload } from "../../../../../api/settings/settings.types";
+import { clearActiveToken } from '../../../../../utils/auth';
 
 function maskEmail(email: string): string {
   const [local, domain] = email.split('@');
@@ -319,7 +320,7 @@ export default function SecurityTab() {
             if (studios.length === 0) {
               // Удалённая студия была единственной — валидного studio_id для этого
               // пользователя больше нет вообще, вести на /select-crm некуда.
-              localStorage.removeItem('token');
+              clearActiveToken();
               navigate('/register');
             } else {
               navigate('/select-crm');

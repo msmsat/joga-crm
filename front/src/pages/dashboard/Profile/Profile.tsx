@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAccounts } from './hooks/useAccounts';
 import { useProfileForm } from './hooks/useProfileForm';
+import AccountSwitcher from './components/sections/AccountSwitcher';
 import LinkedAccounts from './components/sections/LinkedAccounts';
 import SecuritySettings from './components/sections/SecuritySettings';
 import ActiveSessionCard from './components/sections/ActiveSessionCard';
@@ -36,6 +37,9 @@ export default function Profile() {
         <div className={styles.grid}>
           {/* Left column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Аккаунты (разные люди) и студии (рабочие пространства одного
+                человека) — разные оси, поэтому две секции, а не один список. */}
+            <AccountSwitcher />
             <LinkedAccounts
               studios={studios}
               isLoading={studiosLoading}

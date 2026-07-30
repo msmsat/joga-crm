@@ -7,6 +7,7 @@ import { queryKeys } from '../api/queryKeys'
 import { resolveImageUrl } from '../api/client'
 import { errorMessage } from '../api/errorMessage'
 import { Button, Card, useToast } from '../components/ui/index'
+import { setActiveToken } from '../utils/auth';
 
 // Инициалы студии для карточки без лого — первые буквы первых двух слов названия.
 function initials(name: string): string {
@@ -27,7 +28,7 @@ export default function SelectCrm() {
   const select = useMutation({
     mutationFn: (studioId: number) => authApi.selectStudio(studioId),
     onSuccess: (data) => {
-      if (data.access_token) localStorage.setItem('token', data.access_token)
+      if (data.access_token) setActiveToken(data.access_token)
       // Кэш Query набит данными предыдущей студии (клиенты, занятия, финансы) — без
       // сброса пользователь после переключения увидит чужие данные до первого рефетча.
       qc.clear()
