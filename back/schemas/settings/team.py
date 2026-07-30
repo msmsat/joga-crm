@@ -10,7 +10,8 @@ class StaffCreate(BaseSchema):
     last_name: Optional[str] = None
     email: NormEmail
     phone: Phone  # телефон обязателен при создании сотрудника
-    password: str  # временный пароль, сотрудник сменит через flow смены пароля
+    # Пароля здесь нет: сотрудник задаёт его сам по ссылке-приглашению из письма
+    # (services/invites.py). Владелец не должен знать пароль от чужого аккаунта.
     role: Literal["admin", "trainer"]
     department: Optional[str] = None
     salary: Optional[float] = None

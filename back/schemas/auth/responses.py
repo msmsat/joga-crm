@@ -13,6 +13,22 @@ class TokenResponse(BaseSchema):
     two_fa_identifier: Optional[str] = None
 
 
+class InviteInfoResponse(BaseSchema):
+    """GET /auth/invite — что показать на странице по ссылке из письма.
+
+    `needs_password=True` — аккаунта у человека ещё не было, страница просит
+    ПРИДУМАТЬ пароль. False — аккаунт в продукте уже есть, и страница просит
+    ВВЕСТИ существующий: приглашение не должно открывать чужой аккаунт тому,
+    кому просто переслали письмо.
+    """
+    email: str
+    name: str
+    studio_name: str
+    studio_logo_url: Optional[str] = None
+    role: str
+    needs_password: bool
+
+
 class StudioListItem(BaseSchema):
     """GET /auth/studios (EPIC 7, задача 3) — карточка студии в /select-crm."""
     id: int

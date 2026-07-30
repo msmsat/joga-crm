@@ -13,8 +13,6 @@
     "allGroup": "All"
   },
   "profile": {
-    "write": "Message",
-    "call": "Call",
     "online": "· online",
     "offline": "· offline",
     "fullAccess": "Full access",
@@ -28,7 +26,9 @@
     "staffHalls": "Staff halls",
     "noName": "Name not set",
     "noRole": "No role",
-    "addEventStub": "Add event form..."
+    "addEventStub": "Add event form...",
+    "resendInvite": "Send invitation",
+    "invitePending": "Invitation pending"
   },
   "cards": {
     "trainer": {
@@ -78,16 +78,6 @@
     "trainer": "Trainer",
     "owner": "Owner"
   },
-  "actionModal": {
-    "writeTitle": "Message {{name}}",
-    "writeSub": "Message will be sent to the work chat",
-    "callTitle": "Contact: {{name}}",
-    "callSub": "Choose a convenient way to connect",
-    "messagePlaceholder": "Enter message...",
-    "regularCall": "Regular call",
-    "writeWhatsapp": "Write on WhatsApp",
-    "toMessenger": "Open messenger"
-  },
   "deleteModal": {
     "cancelLesson": "Cancel class?",
     "dontAsk": "Don't ask again when deleting"
@@ -100,11 +90,10 @@
     "employeeDeleted": "Employee deleted",
     "errorDelete": "Error deleting",
     "errorSave": "Failed to save changes",
-    "messageSent": "Message sent",
-    "calling": "Starting call...",
-    "openingWhatsapp": "Opening WhatsApp...",
     "emailCopied": "Email copied",
-    "ringing": "Calling..."
+    "ringing": "Calling...",
+    "inviteSent": "Invitation sent to {{email}}",
+    "inviteResent": "Invitation sent again"
   },
   "addModal": {
     "stepIndicator": "Step {{current}} of {{total}}",
@@ -112,10 +101,10 @@
     "nameFallback": "them",
     "employeeFallback": "Employee",
     "steps": {
-      "1": { "title": "About employee",    "sub": "What's the new team member's name?",          "trust": "Employee data is protected" },
-      "2": { "title": "Role & services",   "sub": "Position and list of services",                "trust": "Role can be changed at any time" },
-      "3": { "title": "Schedule & salary", "sub": "When do they work and how much do they earn?", "trust": "Schedule syncs with journal" },
-      "4": { "title": "Done!",             "sub": "Just invite {{name}} to join",                 "trust": "" }
+      "1": { "title": "About employee",     "sub": "What's the new team member's name?",     "trust": "Employee data is protected" },
+      "2": { "title": "Role & services",    "sub": "Position and list of services",          "trust": "Role can be changed at any time" },
+      "3": { "title": "Schedule & salary",  "sub": "When do they work and how much do they earn?", "trust": "Schedule syncs with journal" },
+      "4": { "title": "Done!",              "sub": "Invitation sent to {{name}}",            "trust": "" }
     },
     "step1": {
       "heading": "Personal details",
@@ -123,15 +112,12 @@
       "namePlaceholder": "E.g. Anna Smith",
       "phoneLabel": "Phone number",
       "emailLabel": "Email address",
-      "passwordLabel": "Temporary password",
-      "passwordPlaceholder": "At least 6 characters",
       "contactsNotSet": "No contacts provided",
-      "inviteHint": "The employee logs in with their email and this temporary password — they can change it after signing in.",
+      "inviteHint": "An invitation goes to this email — the employee sets their own password and signs in via the link.",
       "errors": {
         "name": "Name is required",
         "phone": "Invalid phone number",
-        "email": "Invalid email",
-        "password": "Password must be at least 6 characters"
+        "email": "Invalid email"
       }
     },
     "step2": {
@@ -146,17 +132,21 @@
       "sub": "Set working days and compensation",
       "scheduleLabel": "Working schedule",
       "salaryLabel": "Salary (optional)",
-      "salaryPlaceholder": "Enter a number"
+      "salaryPlaceholder": "Enter a number",
+      "createAndInvite": "Create and invite"
     },
     "step4": {
       "exclaim": "Great!",
       "added": "added",
-      "sub": "Now invite the employee to join the system",
+      "sub": "The invitation is already on its way — now just wait for the employee to sign in.",
       "inviteLinkLabel": "Invite link",
       "sendInviteLabel": "Send invitation",
-      "whatsappNoPhone": "(no number)",
-      "emailNoEmail": "(no email)",
-      "inviteInfo": "The employee will follow the link, create an account and appear in the system. If the phone number is correct, the message will be sent via WhatsApp automatically."
+      "inviteInfo": "The employee follows the link, sets a password and appears in the system right away. The link is valid for 7 days; if the email did not arrive, share it any way you like.",
+      "emailSentTitle": "Email sent",
+      "resend": "Send again",
+      "resentOk": "Email sent again",
+      "resendError": "Sending failed — retry",
+      "copied": "Copied"
     },
     "illus": {
       "contacts": "Contacts",

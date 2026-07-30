@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { PremiumSelect, TIMEZONES, LANGUAGES, CURRENCIES, DATE_FORMATS, WEEK_START_OPTIONS } from "../../UI";
 import type { OnboardingData } from "./types";
 
@@ -11,61 +12,69 @@ const labelStyle: React.CSSProperties = {
   color: "#666", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px",
 };
 
+const WEEK_START_DAY_KEY: Record<string, string> = { monday: "mon", sunday: "sun" };
+
 export default function StepSettings({ data, onChange }: Props) {
+  const { t } = useTranslation(["onboarding", "common"]);
+
+  const timezoneOptions = TIMEZONES.map(o => ({ ...o, label: t(`onboarding:settings.timezones.${o.value}`) }));
+  const currencyOptions = CURRENCIES.map(o => ({ ...o, label: t(`onboarding:settings.currencies.${o.value}`) }));
+  const weekStartOptions = WEEK_START_OPTIONS.map(o => ({ ...o, label: t(`common:days.${WEEK_START_DAY_KEY[o.value]}`) }));
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h3 style={{ fontSize: "22px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 6px" }}>
-          Настройки региона
+          {t("onboarding:settings.title")}
         </h3>
         <p style={{ fontSize: "13px", color: "#888", margin: 0 }}>
-          Можно изменить позже в настройках студии
+          {t("onboarding:settings.subtitle")}
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
         <div>
-          <label style={labelStyle}>Часовой пояс</label>
+          <label style={labelStyle}>{t("onboarding:settings.timezoneLabel")}</label>
           <PremiumSelect
             value={data.timezone}
             onChange={v => onChange({ timezone: v })}
-            options={TIMEZONES}
-            placeholder="Выберите пояс"
+            options={timezoneOptions}
+            placeholder={t("onboarding:settings.timezonePlaceholder")}
           />
         </div>
         <div>
-          <label style={labelStyle}>Язык</label>
+          <label style={labelStyle}>{t("onboarding:settings.languageLabel")}</label>
           <PremiumSelect
             value={data.language}
             onChange={v => onChange({ language: v })}
             options={LANGUAGES}
-            placeholder="Язык"
+            placeholder={t("onboarding:settings.languagePlaceholder")}
           />
         </div>
         <div>
-          <label style={labelStyle}>Валюта</label>
+          <label style={labelStyle}>{t("onboarding:settings.currencyLabel")}</label>
           <PremiumSelect
             value={data.currency}
             onChange={v => onChange({ currency: v })}
-            options={CURRENCIES}
-            placeholder="Валюта"
+            options={currencyOptions}
+            placeholder={t("onboarding:settings.currencyPlaceholder")}
           />
         </div>
         <div>
-          <label style={labelStyle}>Формат даты</label>
+          <label style={labelStyle}>{t("onboarding:settings.dateFormatLabel")}</label>
           <PremiumSelect
             value={data.dateFormat}
             onChange={v => onChange({ dateFormat: v })}
             options={DATE_FORMATS}
-            placeholder="Формат"
+            placeholder={t("onboarding:settings.dateFormatPlaceholder")}
           />
         </div>
       </div>
 
       <div>
-        <label style={labelStyle}>Первый день недели</label>
+        <label style={labelStyle}>{t("onboarding:settings.firstDayLabel")}</label>
         <div style={{ display: "flex", gap: "8px" }}>
-          {WEEK_START_OPTIONS.map(opt => (
+          {weekStartOptions.map(opt => (
             <button
               key={opt.value}
               type="button"

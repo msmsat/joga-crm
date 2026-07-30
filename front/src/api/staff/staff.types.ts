@@ -5,7 +5,6 @@ export interface StaffCreate {
   last_name?: string | null
   email: string
   phone?: string | null
-  password: string  // временный пароль для входа сотрудника
   role: string
   department?: string | null
   salary?: number | null
@@ -17,7 +16,7 @@ export interface StaffCreate {
 }
 
 // role необязателен: у владельца роль не меняется — поле просто не отправляем.
-export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string }
+export type StaffUpdate = Omit<StaffCreate, 'role'> & { role?: string }
 
 export interface StaffMessagePayload {
   text: string
@@ -87,6 +86,8 @@ export interface StaffListItem {
   role: string
   department: string | null
   is_online: boolean
+  // false — приглашение отправлено, но сотрудник ещё не задал пароль и не вошёл.
+  is_active: boolean
   photo_url: string | null
   avatar_gradient: string | null
 }
@@ -130,6 +131,9 @@ export interface StaffProfile extends StaffListItem {
 export interface StaffMutateResponse {
   ok: boolean
   staff: StaffListItem
+  // Только у create/resendInvite: ссылка из письма — показываем владельцу,
+  // чтобы он мог передать её сотруднику руками, если почта не дошла.
+  invite_url?: string | null
 }
 
 // ─── Schedule responses ───────────────────────────────────────────────────────

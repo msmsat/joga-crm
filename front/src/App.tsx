@@ -10,6 +10,7 @@ import LoginPage from './pages/Loginpage'; // Твоя страница логи
 import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
 import SelectCrm from './pages/SelectCrm';
+import JoinPage from './pages/JoinPage';
 
 import DashboardLayout from './layouts/DashboardLayout';
 
@@ -114,6 +115,11 @@ export default function App() {
         
         {/* Убрали защиту с регистрации для тестов (в проде вернем <PublicRoute>) */}
         <Route path="/register" element={<RegisterPage />} />
+
+        {/* 🚀 Приглашение сотрудника по ссылке из письма. Намеренно БЕЗ PublicRoute:
+            приглашённый мог открыть ссылку в браузере, где уже вошёл другой аккаунт,
+            и редирект на дашборд не дал бы ему принять приглашение вовсе. */}
+        <Route path="/join" element={<JoinPage />} />
 
         {/* 🚀 Онбординг (первая студия, или ?new=1 — доп. студия, см. OnboardingRoute) */}
         <Route path="/onboarding" element={<OnboardingRoute />} />

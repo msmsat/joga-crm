@@ -1,8 +1,10 @@
 import { client } from '../client'
 import type {
+  AcceptInvitePayload,
   ChangePasswordPayload,
   ContactCheckResponse,
   ContactField,
+  InviteInfo,
   ForgotPasswordPayload,
   GoogleAuthPayload,
   Login2FAPayload,
@@ -41,6 +43,15 @@ export const authApi = {
 
   resetPassword: (payload: ResetPasswordPayload) =>
     client.post<void>('/auth/reset-password', payload, { auth: false }),
+
+  // Приглашение сотрудника (/join?token=…). Обе ручки публичные: права даёт сам
+  // токен из письма, поэтому auth: false — иначе чужой токен в localStorage
+  // ушёл бы в заголовке и бэк отвечал бы про не ту личность.
+  getInvite: (token: string) =>
+    client.get<InviteInfo>(`/auth/invite?token=${encodeURIComponent(token)}`, { auth: false }),
+
+  acceptInvite: (payload: AcceptInvitePayload) =>
+    client.post<TokenResponse>('/auth/invite/accept', payload, { auth: false }),
 
   getMe: (signal?: AbortSignal) =>
     client.get<UserMe>('/auth/me', { signal }),

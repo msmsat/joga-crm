@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { InputField, PhoneField } from "../../UI";
 import type { OnboardingData } from "./types";
 
@@ -32,27 +33,28 @@ const IconGlobe = () => (
 );
 
 export default function StepContact({ data, onChange, phoneError, isCheckingPhone }: Props) {
+  const { t } = useTranslation("onboarding");
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
         <h3 style={{ fontSize: "24px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
-          Контактные данные
+          {t("onboarding:contact.title")}
         </h3>
         <p style={{ fontSize: "13px", color: "#888", margin: 0, lineHeight: "1.6" }}>
-          Клиенты увидят эту информацию при записи онлайн
+          {t("onboarding:contact.subtitle")}
         </p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         <PhoneField
-          label="Телефон студии"
+          label={t("onboarding:contact.phoneLabel")}
           value={data.phone}
           onChange={(v: string) => onChange({ phone: v || "" })}
         />
         {isCheckingPhone && (
           <div style={{ fontSize: "12px", color: "#AAAAAA", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
             <span className="spinner" style={{ width: "10px", height: "10px", borderWidth: "1.5px", borderTopColor: "#FCAE91", flexShrink: 0 }} />
-            Проверяем номер...
+            {t("onboarding:contact.checkingPhone")}
           </div>
         )}
         {phoneError && !isCheckingPhone && (
@@ -67,15 +69,15 @@ export default function StepContact({ data, onChange, phoneError, isCheckingPhon
         )}
 
         <InputField
-          label="Адрес"
-          placeholder="ул. Ленина, д. 10, офис 205"
+          label={t("onboarding:contact.addressLabel")}
+          placeholder="Baker Street, 221B"
           value={data.address}
           onChange={(v: string) => onChange({ address: v })}
           icon={<IconPin />}
         />
 
         <InputField
-          label="Email"
+          label={t("onboarding:contact.emailLabel")}
           type="email"
           placeholder="studio@example.com"
           value={data.email}
@@ -84,8 +86,8 @@ export default function StepContact({ data, onChange, phoneError, isCheckingPhon
         />
 
         <InputField
-          label="Сайт"
-          placeholder="https://your-studio.ru"
+          label={t("onboarding:contact.websiteLabel")}
+          placeholder="https://your-studio.com"
           value={data.website}
           onChange={(v: string) => onChange({ website: v })}
           icon={<IconGlobe />}
@@ -104,7 +106,7 @@ export default function StepContact({ data, onChange, phoneError, isCheckingPhon
           <circle cx="8" cy="11" r="0.75" fill="#A3C9A8"/>
         </svg>
         <span style={{ fontSize: "12px", color: "#666", lineHeight: "1.5" }}>
-          Все поля, кроме телефона, необязательны. Их можно заполнить позже в настройках.
+          {t("onboarding:contact.note")}
         </span>
       </div>
     </div>

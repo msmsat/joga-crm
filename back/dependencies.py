@@ -25,6 +25,12 @@ async def get_current_user(
         email: str = payload.get("sub")
         if email is None:
             raise HTTPException(status_code=401, detail="Недействительный токен")
+        # Спец-токены (`typ`: otp, invite) подписаны тем же ключом и тем же
+        # полем `sub`, поэтому без этой проверки ссылка из письма-приглашения
+        # или одноразовый OTP-токен работали бы как полноценная сессия.
+        # У токенов сессии `typ` нет вовсе.
+        if payload.get("typ") is not None:
+            raise HTTPException(status_code=401, detail="Недействительный токен")
     except JWTError:
         raise HTTPException(status_code=401, detail="Недействительный токен")
 

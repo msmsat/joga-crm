@@ -14,10 +14,10 @@
     "more": "Details"
   },
   "chart": {
-    "byWeek": "by week",
+    "byDay": "by day",
     "byMonth": "by month",
-    "subWeek": "Last 8 weeks",
-    "subMonth": "Last 8 months",
+    "subWeek": "Current week",
+    "subMonth": "Current month",
     "subYear": "Last 12 months",
     "tabWeek": "Week",
     "tabMonth": "Month",

@@ -32,6 +32,3 @@ export const DEFAULT_WORKING_HOURS: WorkingDay[] = [
   { dayOfWeek: 5, isOpen: true,  openTime: "10:00", closeTime: "18:00" },
   { dayOfWeek: 6, isOpen: false, openTime: "10:00", closeTime: "18:00" },
 ];
-
-export const DAY_NAMES = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
-export const DAY_NAMES_SHORT = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];

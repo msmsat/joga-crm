@@ -58,6 +58,8 @@ class StaffListItem(BaseSchema):
     role: str
     department: Optional[str] = None
     is_online: bool
+    # False — приглашение отправлено, но сотрудник ещё не задал пароль и не вошёл.
+    is_active: bool = True
     photo_url: Optional[str] = None
     avatar_gradient: Optional[str] = None
 
@@ -99,6 +101,9 @@ class StaffProfileResponse(BaseSchema):
 class StaffMutateResponse(BaseSchema):
     ok: bool
     staff: StaffListItem
+    # Заполнен только при создании и повторной отправке: ссылка из письма, чтобы
+    # владелец мог передать её сотруднику руками, если почта не дошла.
+    invite_url: Optional[str] = None
 
 
 class StaffWeekScheduleResponse(BaseSchema):

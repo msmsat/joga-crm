@@ -1,9 +1,10 @@
 // ─── В самом верху UI.tsx ───
 import { GoogleIcon } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 // @ts-ignore
-import PhoneInput from 'react-phone-number-input';
+import PhoneInput from 'react-phone-number-input/input';
 import 'react-phone-number-input/style.css';
 
 // ─── FLOATING ORBS ────────────────────────────────────────────────────────────
@@ -94,11 +95,9 @@ export function PhoneField({ label, value, onChange, error, hint }: any) {
       )}
       <div className="input-container">
         <PhoneInput
-          international
-          defaultCountry="RU" 
+          placeholder="+"
           value={value}
           onChange={onChange}
-          limitMaxLength={true} // 🔥 Магия! Блокирует ввод лишних цифр для выбранной страны
           className={`phone-input-wrapper ${focused ? "focused" : ""} ${hasValue ? "has-value" : ""} ${error ? "has-error" : ""}`}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -410,8 +409,6 @@ export function ErrorAlert({ message }: { message?: string }) {
 export const ACTIVITY_TYPES = [
   {
     id: "yoga",
-    label: "Йога",
-    description: "Хатха, аштанга, виньяса",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
         <circle cx="18" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
@@ -425,8 +422,6 @@ export const ACTIVITY_TYPES = [
   },
   {
     id: "pilates",
-    label: "Пилатес",
-    description: "Реформер, матовый пилатес",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
         <circle cx="5.5" cy="20" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
@@ -448,8 +443,8 @@ export const DATE_FORMATS = [
 ];
 
 export const WEEK_START_OPTIONS = [
-  { value: "monday", label: "Понедельник" },
-  { value: "sunday", label: "Воскресенье" },
+  { value: "monday" },
+  { value: "sunday" },
 ];
 
 export const BUSINESS_CATEGORIES = [
@@ -462,15 +457,17 @@ export const BUSINESS_CATEGORIES = [
   { id: "other", icon: "✦", label: "Другое", subtypes: ["Фотостудия", "Коворкинг", "Квест-комната", "Бьюти-бокс", "Иное"] },
 ];
 
+// Порядок начинается с UTC+1 (наш "домашний" пояс) и идёт в сторону убывания
+// (0, -5, -8), затем оборачивается через дальнюю сторону глобуса обратно к +2 — см. чат.
 export const TIMEZONES = [
-  { value: "UTC+3", label: "Москва (UTC+3)" }, { value: "UTC+2", label: "Калининград (UTC+2)" },
-  { value: "UTC+4", label: "Самара (UTC+4)" }, { value: "UTC+5", label: "Екатеринбург (UTC+5)" },
-  { value: "UTC+6", label: "Омск (UTC+6)" }, { value: "UTC+7", label: "Красноярск (UTC+7)" },
-  { value: "UTC+8", label: "Иркутск (UTC+8)" }, { value: "UTC+9", label: "Якутск (UTC+9)" },
-  { value: "UTC+10", label: "Владивосток (UTC+10)" }, { value: "UTC+11", label: "Магадан (UTC+11)" },
-  { value: "UTC+12", label: "Камчатка (UTC+12)" }, { value: "UTC+1", label: "Центральная Европа (UTC+1)" },
-  { value: "UTC+0", label: "Лондон (UTC+0)" }, { value: "UTC-5", label: "Нью-Йорк (UTC-5)" },
-  { value: "UTC-8", label: "Лос-Анджелес (UTC-8)" },
+  { value: "UTC+1" }, { value: "UTC+0" },
+  { value: "UTC-5" }, { value: "UTC-8" },
+  { value: "UTC+12" }, { value: "UTC+11" },
+  { value: "UTC+10" }, { value: "UTC+9" },
+  { value: "UTC+8" }, { value: "UTC+7" },
+  { value: "UTC+6" }, { value: "UTC+5" },
+  { value: "UTC+4" }, { value: "UTC+3" },
+  { value: "UTC+2" },
 ];
 
 export const LANGUAGES = [
@@ -481,10 +478,16 @@ export const LANGUAGES = [
 ];
 
 export const CURRENCIES = [
-  { value: "RUB", label: "Рубль", symbol: "₽" }, { value: "USD", label: "Доллар", symbol: "$" },
-  { value: "EUR", label: "Евро", symbol: "€" }, { value: "KZT", label: "Тенге", symbol: "₸" },
-  { value: "UAH", label: "Гривна", symbol: "₴" }, { value: "GBP", label: "Фунт", symbol: "£" },
-  { value: "AED", label: "Дирхам", symbol: "د.إ" }, { value: "TRY", label: "Лира", symbol: "₺" },
+  { value: "RUB", symbol: "₽" }, { value: "USD", symbol: "$" },
+  { value: "EUR", symbol: "€" }, { value: "KZT", symbol: "₸" },
+  { value: "UAH", symbol: "₴" }, { value: "GBP", symbol: "£" },
+  { value: "AED", symbol: "د.إ" }, { value: "TRY", symbol: "₺" },
+  { value: "CZK", symbol: "Kč" }, { value: "PLN", symbol: "zł" },
+  { value: "HUF", symbol: "Ft" }, { value: "RON", symbol: "lei" },
+  { value: "BGN", symbol: "лв" }, { value: "SEK", symbol: "kr" },
+  { value: "NOK", symbol: "kr" }, { value: "DKK", symbol: "kr" },
+  { value: "CHF", symbol: "CHF" }, { value: "ISK", symbol: "kr" },
+  { value: "RSD", symbol: "дин." },
 ];
 
 export function getCurrencySymbol(code: string | undefined): string {
@@ -545,18 +548,19 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
           textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center",
           justifyContent: "space-between", transition: "all 0.2s ease",
           boxShadow: open ? "0 0 0 4px rgba(252,174,145,0.12)" : "none",
-          outline: "none", fontFamily: "inherit",
+          outline: "none", fontFamily: "inherit", minWidth: 0,
         }}
       >
-        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {selected?.flag && <span>{selected.flag}</span>}
+        <span style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, overflow: "hidden" }}>
+          {selected?.flag && <span style={{ flexShrink: 0 }}>{selected.flag}</span>}
           {selected?.symbol && (
             <span style={{
               width: "22px", height: "22px", background: "rgba(252,174,145,0.15)", borderRadius: "6px",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#FCAE91",
+              flexShrink: 0,
             }}>{selected.symbol}</span>
           )}
-          {selected?.label || placeholder}
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
         </span>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease", flexShrink: 0 }}>
           <path d="M4 6L8 10L12 6" stroke="#AAAAAA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -609,6 +613,7 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
 // ─── ONBOARDING ILLUSTRATIONS (Live, reactive) ────────────────────────────────
 
 export function Illustration1({ studioName, logoPreviewUrl }: { studioName: string; logoPreviewUrl: string }) {
+  const { t } = useTranslation("onboarding");
   const initial = studioName.trim().charAt(0).toUpperCase() || '';
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
@@ -632,7 +637,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
           </div>
           <div style={{ flex: 1, overflow: 'hidden' }}>
             <div style={{ fontWeight: 800, fontSize: '12px', color: studioName ? '#1A1A1A' : '#AAAAAA', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {studioName || 'Название студии'}
+              {studioName || t("onboarding:illustration.studioNamePlaceholder")}
             </div>
             <div style={{ fontSize: '10px', color: '#AAAAAA', marginTop: '1px' }}>Velora CRM</div>
           </div>
@@ -640,7 +645,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
         </div>
         <div style={{ padding: '12px 16px 10px' }}>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-            {[{ v: '248', l: 'Клиентов', c: '#FCAE91' }, { v: '94%', l: 'Посещ.', c: '#A3C9A8' }].map((s, i) => (
+            {[{ v: '248', l: t("onboarding:illustration.clients"), c: '#FCAE91' }, { v: '94%', l: t("onboarding:illustration.attendance"), c: '#A3C9A8' }].map((s, i) => (
               <div key={i} style={{ flex: 1, padding: '8px', background: '#FDFCFB', borderRadius: '8px', border: '1px solid #F0EDE8' }}>
                 <div style={{ fontWeight: 800, fontSize: '14px', color: s.c }}>{s.v}</div>
                 <div style={{ fontSize: '9px', color: '#AAAAAA', marginTop: '1px' }}>{s.l}</div>
@@ -657,7 +662,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
       {studioName.trim().length > 0 && (
         <div style={{ padding: '5px 12px', background: 'rgba(163,201,168,0.15)', borderRadius: '100px', border: '1px solid rgba(163,201,168,0.3)', fontSize: '11px', fontWeight: 700, color: '#5A8A60', animation: 'slideInRight 0.3s ease', display: 'flex', alignItems: 'center', gap: '5px' }}>
           <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#A3C9A8' }} />
-          Студия создана
+          {t("onboarding:illustration.studioCreated")}
         </div>
       )}
     </div>
@@ -665,6 +670,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
 }
 
 export function Illustration2({ activityType }: { activityType: string }) {
+  const { t } = useTranslation("onboarding");
   if (activityType === 'yoga') {
     return (
       <svg viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxHeight: '190px' }}>
@@ -688,7 +694,7 @@ export function Illustration2({ activityType }: { activityType: string }) {
         <circle cx="198" cy="56" r="4" fill="#FCAE91" opacity="0.35"><animateTransform attributeName="transform" type="translate" values="0,0;4,-5;0,0" dur="3s" repeatCount="indefinite" additive="sum"/></circle>
         <circle cx="82" cy="82" r="3" fill="#A3C9A8" opacity="0.4"><animateTransform attributeName="transform" type="translate" values="0,0;-3,4;0,0" dur="4.5s" repeatCount="indefinite" additive="sum"/></circle>
         <circle cx="210" cy="148" r="5" fill="#FCAE91" opacity="0.2"><animateTransform attributeName="transform" type="translate" values="0,0;5,4;0,0" dur="5s" repeatCount="indefinite" additive="sum"/></circle>
-        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">Йога</text>
+        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">{t("onboarding:activity.types.yoga.label")}</text>
       </svg>
     );
   }
@@ -710,7 +716,7 @@ export function Illustration2({ activityType }: { activityType: string }) {
         </g>
         <circle cx="68" cy="74" r="3.5" fill="#FCAE91" opacity="0.3"><animateTransform attributeName="transform" type="translate" values="0,0;-3,-5;0,0" dur="4s" repeatCount="indefinite" additive="sum"/></circle>
         <circle cx="216" cy="90" r="5" fill="#A3C9A8" opacity="0.25"><animateTransform attributeName="transform" type="translate" values="0,0;4,4;0,0" dur="5s" repeatCount="indefinite" additive="sum"/></circle>
-        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">Пилатес</text>
+        <text x="140" y="196" textAnchor="middle" fontSize="11" fill="#AAAAAA" fontWeight="600" fontFamily="inherit">{t("onboarding:activity.types.pilates.label")}</text>
       </svg>
     );
   }
@@ -723,12 +729,13 @@ export function Illustration2({ activityType }: { activityType: string }) {
         <animate attributeName="opacity" values="0.3;0.5;0.3" dur="3s" repeatCount="indefinite"/>
       </circle>
       <text x="140" y="116" textAnchor="middle" fontSize="22" fill="#FCAE91" opacity="0.35">?</text>
-      <text x="140" y="185" textAnchor="middle" fontSize="11" fill="#CCCCCC" fontWeight="500" fontFamily="inherit">Выберите направление</text>
+      <text x="140" y="185" textAnchor="middle" fontSize="11" fill="#CCCCCC" fontWeight="500" fontFamily="inherit">{t("onboarding:illustration.chooseDirection")}</text>
     </svg>
   );
 }
 
 export function Illustration3({ phone, email, address }: { phone: string; email: string; address: string }) {
+  const { t } = useTranslation("onboarding");
   const hasPhone = !!phone && phone.length > 5;
   const hasEmail = !!email && email.includes('@');
   const hasAddress = !!address && address.length > 2;
@@ -744,20 +751,20 @@ export function Illustration3({ phone, email, address }: { phone: string; email:
       </svg>
       <div style={{ position: 'absolute', top: '8px', left: '8px', transition: 'all 0.4s ease', opacity: hasPhone ? 1 : 0.4, animation: 'floatLogin2 5s ease-in-out infinite' }}>
         <div style={{ background: 'white', border: `1.5px solid ${hasPhone ? 'rgba(252,174,145,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasPhone ? '0 8px 24px rgba(252,174,145,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
-          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Телефон</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasPhone ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasPhone ? (phone.length > 13 ? phone.slice(0, 13) : phone) : '+7 (___) ___'}</div>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.phoneLabel")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasPhone ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasPhone ? (phone.length > 13 ? phone.slice(0, 13) : phone) : t("onboarding:illustration.phonePlaceholder")}</div>
         </div>
       </div>
       <div style={{ position: 'absolute', top: '8px', right: '8px', transition: 'all 0.4s ease', opacity: hasEmail ? 1 : 0.4, animation: 'floatLogin1 6s ease-in-out infinite' }}>
         <div style={{ background: 'white', border: `1.5px solid ${hasEmail ? 'rgba(163,201,168,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasEmail ? '0 8px 24px rgba(163,201,168,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
-          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Email</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasEmail ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasEmail ? (email.length > 15 ? email.slice(0, 12) + '…' : email) : 'studio@mail.ru'}</div>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.emailLabel")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasEmail ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasEmail ? (email.length > 15 ? email.slice(0, 12) + '…' : email) : t("onboarding:illustration.emailPlaceholder")}</div>
         </div>
       </div>
       <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', transition: 'all 0.4s ease', opacity: hasAddress ? 1 : 0.4, animation: 'floatLogin3 7s ease-in-out infinite' }}>
         <div style={{ background: 'white', border: `1.5px solid ${hasAddress ? 'rgba(252,174,145,0.35)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasAddress ? '0 8px 24px rgba(252,174,145,0.12)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease', whiteSpace: 'nowrap' }}>
-          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Адрес</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasAddress ? '#1A1A1A' : '#CCCCCC' }}>{hasAddress ? (address.length > 18 ? address.slice(0, 15) + '…' : address) : 'ул. Пушкина, 1'}</div>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.addressLabel")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasAddress ? '#1A1A1A' : '#CCCCCC' }}>{hasAddress ? (address.length > 18 ? address.slice(0, 15) + '…' : address) : t("onboarding:illustration.addressPlaceholder")}</div>
         </div>
       </div>
     </div>
@@ -765,9 +772,10 @@ export function Illustration3({ phone, email, address }: { phone: string; email:
 }
 
 export function Illustration4({ timezone, currency, language }: { timezone: string; currency: string; language: string }) {
+  const { t } = useTranslation("onboarding");
   const curr = CURRENCIES.find(c => c.value === currency);
   const lang = LANGUAGES.find(l => l.value === language);
-  const tz = TIMEZONES.find(t => t.value === timezone);
+  const tz = TIMEZONES.find(tz => tz.value === timezone);
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '4px 0' }}>
       <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'white', border: '2px solid #F0EDE8', boxShadow: '0 8px 24px rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', animation: 'floatLogin1 5s ease-in-out infinite', flexShrink: 0 }}>
@@ -777,37 +785,39 @@ export function Illustration4({ timezone, currency, language }: { timezone: stri
           <circle cx="21" cy="21" r="2.5" fill="#FCAE91"/>
         </svg>
         <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#1A1A1A', borderRadius: '8px', padding: '3px 7px', fontSize: '10px', fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
-          {timezone || 'UTC+3'}
+          {timezone || 'UTC+1'}
         </div>
       </div>
       <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
         <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin2 6s ease-in-out infinite' }}>
-          <div style={{ fontSize: '22px', fontWeight: 900, color: '#FCAE91', lineHeight: '1' }}>{curr?.symbol || '₽'}</div>
-          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{curr?.label || 'Рубль'}</div>
+          <div style={{ fontSize: '22px', fontWeight: 900, color: '#FCAE91', lineHeight: '1' }}>{curr?.symbol || '$'}</div>
+          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{t(`onboarding:settings.currencies.${curr?.value ?? 'USD'}`)}</div>
         </div>
         <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin3 7s ease-in-out infinite' }}>
-          <div style={{ fontSize: '20px', lineHeight: '1' }}>{lang?.flag || '🇷🇺'}</div>
-          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{lang?.label?.slice(0, 8) || 'Русский'}</div>
+          <div style={{ fontSize: '20px', lineHeight: '1' }}>{lang?.flag || '🇬🇧'}</div>
+          <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{(lang?.label ?? 'English').slice(0, 8)}</div>
         </div>
       </div>
-      {tz && <div style={{ fontSize: '11px', color: '#AAAAAA', fontWeight: 500 }}>{tz.label}</div>}
+      {tz && <div style={{ fontSize: '11px', color: '#AAAAAA', fontWeight: 500 }}>{t(`onboarding:settings.timezones.${tz.value}`)}</div>}
     </div>
   );
 }
 
+const DOW_TO_DAY_KEY = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
 export function Illustration5({ workingHours }: { workingHours: Array<{ dayOfWeek: number; isOpen: boolean; openTime: string; closeTime: string }> }) {
-  const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  const { t } = useTranslation(["onboarding", "common"]);
   return (
     <div style={{ width: '100%', padding: '0 4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
       {workingHours.map((day, idx) => (
         <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}>
           <span style={{ width: '22px', fontSize: '10px', fontWeight: 700, color: day.isOpen ? '#1A1A1A' : '#CCCCCC', flexShrink: 0, transition: 'color 0.3s ease' }}>
-            {dayNames[idx]}
+            {t(`common:days.short.${DOW_TO_DAY_KEY[idx]}`)}
           </span>
           <div style={{ flex: 1, height: '20px', borderRadius: '6px', background: day.isOpen ? 'linear-gradient(90deg, rgba(252,174,145,0.28), rgba(252,174,145,0.12))' : 'rgba(26,26,26,0.04)', transition: 'all 0.35s cubic-bezier(0.34,1.1,0.64,1)', display: 'flex', alignItems: 'center', paddingLeft: '8px' }}>
             {day.isOpen
               ? <span style={{ fontSize: '9px', fontWeight: 600, color: '#F9A08B', whiteSpace: 'nowrap' }}>{day.openTime} – {day.closeTime}</span>
-              : <span style={{ fontSize: '9px', color: '#CCCCCC', fontStyle: 'italic' }}>выходной</span>
+              : <span style={{ fontSize: '9px', color: '#CCCCCC', fontStyle: 'italic' }}>{t("onboarding:illustration.dayOff")}</span>
             }
           </div>
           <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: day.isOpen ? '#FCAE91' : '#E8E4DF', flexShrink: 0, transition: 'all 0.3s ease', boxShadow: day.isOpen ? '0 2px 6px rgba(252,174,145,0.4)' : 'none' }} />

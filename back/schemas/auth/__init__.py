@@ -2,6 +2,7 @@ from schemas.auth.requests import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
     GoogleAuthRequest,
+    InviteAcceptRequest,
     Login2FARequest,
     LoginRequest,
     OnboardingRequest,
@@ -11,14 +12,17 @@ from schemas.auth.requests import (
     SelectStudioRequest,
     VerifyEmailRequest,
     WorkingHoursInput,
+    validate_strong_password,
 )
-from schemas.auth.responses import StudioListItem, TokenResponse
+from schemas.auth.responses import InviteInfoResponse, StudioListItem, TokenResponse
 from schemas.auth.otp import OtpAction, OtpRequestIn, OtpRequestOut, OtpVerifyIn, OtpVerifyOut
 
 __all__ = [
     "ChangePasswordRequest",
     "ForgotPasswordRequest",
     "GoogleAuthRequest",
+    "InviteAcceptRequest",
+    "InviteInfoResponse",
     "Login2FARequest",
     "LoginRequest",
     "OnboardingRequest",
@@ -35,4 +39,5 @@ __all__ = [
     "TokenResponse",
     "VerifyEmailRequest",
     "WorkingHoursInput",
+    "validate_strong_password",
 ]

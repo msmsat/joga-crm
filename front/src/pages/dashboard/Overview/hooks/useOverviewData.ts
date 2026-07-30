@@ -41,11 +41,14 @@ const SERIES_METRIC: Record<MetricConfig['id'], 'revenue' | 'new_clients' | 'boo
 };
 
 /** period → сколько дней назад и группировка (у бэкенда только day/week/month). */
-const SERIES_RANGE: Record<'week' | 'month' | 'year', { days: number; group: 'week' | 'month' }> = {
-  week:  { days: 7 * 8,   group: 'week' },   // 8 недель
-  month: { days: 30 * 8,  group: 'month' },  // 8 месяцев
-  year:  { days: 365,     group: 'month' },  // 12 месяцев (группировки year нет)
-};
+function seriesRange(now: Date): Record<'week' | 'month' | 'year', { days: number; group: 'day' | 'month' }> {
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  return {
+    week:  { days: 7,          group: 'day' },   // 7 дней текущей недели
+    month: { days: daysInMonth, group: 'day' },  // дни текущего месяца
+    year:  { days: 365,         group: 'month' }, // 12 месяцев (группировки year нет)
+  };
+}
 
 // Сводки за месяц не меняются посекундно: в пределах 5 минут возврат на Дашборд
 // отдаёт кэш мгновенно и без фонового перезапроса (иначе дефолтные 30с из
@@ -61,9 +64,9 @@ export function useOverviewData() {
 
   // Диапазоны считаем один раз за рендер — они же входят в ключи кэша.
   const range = monthRange();
-  const { days, group } = SERIES_RANGE[period];
-  const seriesMetric = SERIES_METRIC[activeMetric]; // null для retention
   const now = new Date();
+  const { days, group } = seriesRange(now)[period];
+  const seriesMetric = SERIES_METRIC[activeMetric]; // null для retention
   const seriesFrom = iso(new Date(now.getTime() - days * 86_400_000));
   const seriesTo = iso(now);
 

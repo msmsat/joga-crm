@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "question": "Not you?",
+    "login": "Sign in to another account"
+  },
+  "card": {
+    "roleLine": "Team invitation · {{role}}"
+  },
+  "title": {
+    "new": "Welcome, {{name}}",
+    "existing": "Welcome back, {{name}}"
+  },
+  "sub": {
+    "new": "Set a password — and your workspace is ready.",
+    "existing": "Enter the password for {{email}} to accept the invitation."
+  },
+  "switch": {
+    "notice": "You are signed in as {{current}}. This invitation is for {{next}} — accepting it switches you to that account. You can switch back from your profile."
+  },
+  "fields": {
+    "newPassword": "Create a password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "password": "Password",
+    "passwordPlaceholder": "Your Velora password",
+    "confirm": "Repeat password",
+    "confirmPlaceholder": "Once again",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "cta": {
+    "new": "Set password and sign in",
+    "existing": "Accept invitation"
+  },
+  "forgotHint": "Forgot your password?",
+  "forgotLink": "Recover access",
+  "expired": {
+    "title": "Link is not valid",
+    "sub": "The invitation has expired or was revoked. Ask the studio owner to send it again.",
+    "cta": "Go to sign in"
+  },
+  "errors": {
+    "noToken": "The link has no invitation code — open it from the email in full.",
+    "network": "Connection error",
+    "passwordRequired": "Enter your password",
+    "passwordWeak": "Password is too simple — at least 8 characters, letters and digits",
+    "confirmMismatch": "Passwords do not match"
+  }
+}

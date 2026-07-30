@@ -59,6 +59,7 @@
   display: flex;
   flex-direction: row;
   gap: 12px;
+  min-height: 60px;
   overflow-x: auto;
   padding-bottom: 4px;
   scroll-behavior: smooth;
@@ -73,4 +74,14 @@
 .eventsGrid > * {
   flex: 0 0 240px;
   min-width: 240px;
+}
+
+.eventsEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 100%;
+  min-width: 100%;
+  font-size: 13px;
+  color: var(--text3);
 }

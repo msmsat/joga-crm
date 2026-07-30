@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
-  Logo, StepIndicator,
+  Logo, StepIndicator, PremiumSelect, LANGUAGES,
   Illustration1, Illustration2, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
@@ -18,15 +19,13 @@ import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
-const STEP_META = [
-  { title: "О студии",    desc: "Название, описание и визуальный стиль вашего бренда." },
-  { title: "Деятельность", desc: "Выберите направление, чтобы мы настроили CRM под вас." },
-  { title: "Контакты",   desc: "Адрес, телефон и ссылки для ваших клиентов." },
-  { title: "Настройки",  desc: "Регион, валюта и формат дат." },
-  { title: "График работы", desc: "Укажите дни и часы работы студии." },
-];
+// Выбор языка на онбординге запоминаем отдельно от studio.language — до создания
+// студии привязывать его не к чему, а после DashboardLayout сам синхронизирует i18n.
+const ONBOARDING_LANG_KEY = "onboarding_language";
 
 export default function OnboardingPage() {
+  const { t, i18n } = useTranslation("onboarding");
+
   // Доп. студия для уже онбординженного владельца (EPIC 7, задача 5) — тот же мастер,
   // меняется только конечный вызов; is_onboarded у пользователя не трогаем (см. App.tsx).
   const [searchParams] = useSearchParams();
@@ -47,23 +46,42 @@ export default function OnboardingPage() {
     address: "",
     email: "",
     website: "",
-    timezone: "UTC+3",
-    language: "ru",
+    timezone: "UTC+1",
+    language: localStorage.getItem(ONBOARDING_LANG_KEY) || "en",
     currency: "RUB",
     dateFormat: "DD.MM.YYYY",
     firstDayOfWeek: "monday",
     workingHours: DEFAULT_WORKING_HOURS,
   });
 
+  // Онбординг стартует на английском по умолчанию, независимо от языка, оставшегося
+  // от предыдущей студии пользователя (DashboardLayout синхронизирует его обратно после финиша) —
+  // но если человек уже выбирал язык на онбординге раньше, помним его выбор (см. ONBOARDING_LANG_KEY).
+  useEffect(() => {
+    i18n.changeLanguage(data.language);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   function patch(update: Partial<OnboardingData>) {
     setData(d => ({ ...d, ...update }));
+    if (update.language) {
+      i18n.changeLanguage(update.language);
+      localStorage.setItem(ONBOARDING_LANG_KEY, update.language);
+    }
   }
+
+  const STEP_META = [
+    { title: t("onboarding:steps.identity.title"), desc: t("onboarding:steps.identity.desc") },
+    { title: t("onboarding:steps.activity.title"), desc: t("onboarding:steps.activity.desc") },
+    { title: t("onboarding:steps.contact.title"), desc: t("onboarding:steps.contact.desc") },
+    { title: t("onboarding:steps.settings.title"), desc: t("onboarding:steps.settings.desc") },
+    { title: t("onboarding:steps.schedule.title"), desc: t("onboarding:steps.schedule.desc") },
+  ];
 
   // Телефон становится контактом аккаунта владельца — занятый чужим аккаунтом не пропускаем.
   const phoneCheck = useContactCheck('user', 'phone', data.phone, {
     enabled: !!data.phone && isValidPhoneNumber(data.phone),
   });
-  const phoneError = phoneCheck.taken ? 'Этот номер уже зарегистрирован в системе' : null;
+  const phoneError = phoneCheck.taken ? t("onboarding:wizard.phoneTaken") : null;
 
   function goNext() {
     if (animating) return;
@@ -87,7 +105,7 @@ export default function OnboardingPage() {
 
   async function handleFinish() {
     if (!data.timezone || !data.language || !data.currency) {
-      alert("Укажите региональные настройки");
+      alert(t("onboarding:wizard.regionRequired"));
       return;
     }
     setIsSubmitting(true);
@@ -130,11 +148,24 @@ export default function OnboardingPage() {
       }
       window.location.href = "/dashboard";
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Сетевая ошибка при сохранении данных.";
+      const msg = err instanceof Error ? err.message : t("onboarding:wizard.networkError");
       setErrorModal({ visible: true, message: msg });
       setIsSubmitting(false);
     }
   }
+
+  function closeErrorModal() {
+    const wasPhoneTaken = errorModal.message.includes("номер");
+    setErrorModal({ visible: false, message: "" });
+    if (wasPhoneTaken) setStep(3);
+  }
+
+  useEffect(() => {
+    if (!errorModal.visible) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeErrorModal(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [errorModal.visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const canProceed1 = data.studioName.trim().length >= 2;
   const canProceed2 = data.activityType !== "";
@@ -158,7 +189,10 @@ export default function OnboardingPage() {
       : (dir === 1 ? "slideInRight 0.3s cubic-bezier(0.34,1.1,0.64,1)" : "slideInLeft 0.3s cubic-bezier(0.34,1.1,0.64,1)"),
   };
 
+  const isPhoneTaken = errorModal.message.includes("номер");
+
   return (
+    <>
     <div
       className="velora-modal"
       style={{
@@ -185,10 +219,20 @@ export default function OnboardingPage() {
         }} />
 
         <div style={{ position: "relative", zIndex: 1 }}>
-          <Logo />
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+            <Logo />
+            <div style={{ width: "132px", flexShrink: 0 }}>
+              <PremiumSelect
+                value={data.language}
+                onChange={(v) => patch({ language: v })}
+                options={LANGUAGES}
+                placeholder={t("onboarding:settings.languagePlaceholder")}
+              />
+            </div>
+          </div>
           <div style={{ marginTop: "28px" }}>
             <p style={{ fontSize: "11px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 8px" }}>
-              Шаг {step} из 5
+              {t("onboarding:wizard.stepOf", { step, total: 5 })}
             </p>
             <h2 style={{ fontSize: "21px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.7px", lineHeight: 1.25, margin: "0 0 8px", whiteSpace: "pre-line" }}>
               {meta.title}
@@ -221,7 +265,7 @@ export default function OnboardingPage() {
         }}>
           <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#A3C9A8", animation: "stepPulse 2s infinite" }} />
           <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
-            Данные защищены и не передаются третьим лицам
+            {t("onboarding:wizard.securityNote")}
           </span>
         </div>
       </div>
@@ -261,7 +305,7 @@ export default function OnboardingPage() {
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Назад
+              {t("onboarding:wizard.back")}
             </button>
           )}
 
@@ -282,10 +326,10 @@ export default function OnboardingPage() {
             }}
           >
             {isSubmitting
-              ? "Сохраняем..."
+              ? t("onboarding:wizard.saving")
               : step === 5
-                ? "Начать работу"
-                : "Продолжить"}
+                ? t("onboarding:wizard.finish")
+                : t("onboarding:wizard.continue")}
             {!isSubmitting && step !== 5 && (
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -295,57 +339,78 @@ export default function OnboardingPage() {
         </div>
 
         <p style={{ textAlign: "center", fontSize: "11px", color: "#CCCCCC", margin: "8px 0 0", fontWeight: 500 }}>
-          {step}/5 — займёт меньше 3 минут
+          {t("onboarding:wizard.progress", { step, total: 5 })}
         </p>
       </div>
 
-      {/* ── ERROR MODAL OVERLAY ── */}
-      {errorModal.visible && (
-        <div style={{
-          position: "absolute", inset: 0, background: "rgba(26,26,26,0.55)",
-          backdropFilter: "blur(6px)", display: "flex", alignItems: "center",
-          justifyContent: "center", zIndex: 50, borderRadius: "24px",
-        }}>
-          <div style={{
-            background: "white", borderRadius: "20px", padding: "36px 32px",
-            maxWidth: "340px", width: "90%", textAlign: "center",
-            boxShadow: "0 32px 80px rgba(26,26,26,0.2)",
-            animation: "modalIn 0.3s ease",
-          }}>
-            <div style={{
-              width: "56px", height: "56px", borderRadius: "50%",
-              background: "rgba(216,140,154,0.1)", display: "flex",
-              alignItems: "center", justifyContent: "center", margin: "0 auto 20px",
-            }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#D88C9A" strokeWidth="1.5"/>
-                <path d="M15 9L9 15M9 9L15 15" stroke="#D88C9A" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <h3 style={{ fontSize: "18px", fontWeight: 900, color: "#1A1A1A", margin: "0 0 8px", letterSpacing: "-0.5px" }}>
-              {errorModal.message.includes("номер") ? "Номер уже используется" : "Ошибка"}
-            </h3>
-            <p style={{ fontSize: "14px", color: "#888", margin: "0 0 24px", lineHeight: "1.6" }}>
-              {errorModal.message}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setErrorModal({ visible: false, message: "" });
-                if (errorModal.message.includes("номер")) setStep(3);
-              }}
-              style={{
-                width: "100%", padding: "13px",
-                background: "linear-gradient(135deg, #FCAE91, #F9A08B)",
-                border: "none", borderRadius: "12px", fontSize: "15px",
-                fontWeight: 700, color: "white", cursor: "pointer", fontFamily: "inherit",
-              }}
-            >
-              {errorModal.message.includes("номер") ? "Изменить номер" : "Понятно"}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
+
+    {/* ── ERROR MODAL ──
+        Живёт вне карточки мастера и на position: fixed — оверлей закрывает весь
+        экран, а не только модалку онбординга. Блюр намеренно почти незаметный
+        (2px): затемнение делает работу, тяжёлый backdrop-filter во весь вьюпорт
+        раньше стоил лагов на открытии. */}
+    {errorModal.visible && (
+      <div
+        onClick={closeErrorModal}
+        style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(26,26,26,0.34)",
+          backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "20px", animation: "modalIn 0.22s ease",
+        }}
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: "#FFFFFF", borderRadius: "24px", padding: "38px 34px 28px",
+            maxWidth: "384px", width: "100%", textAlign: "center",
+            border: "1px solid rgba(26,26,26,0.05)",
+            boxShadow: "0 40px 100px rgba(26,26,26,0.22), 0 8px 24px rgba(26,26,26,0.07)",
+            animation: "errorPopIn 0.32s cubic-bezier(0.34,1.28,0.64,1)",
+          }}
+        >
+          <div style={{
+            width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 20px",
+            background: "radial-gradient(circle at 50% 38%, rgba(216,140,154,0.2), rgba(216,140,154,0.07))",
+            boxShadow: "0 0 0 9px rgba(216,140,154,0.05)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9.25" stroke="#D88C9A" strokeWidth="1.5"/>
+              <path d="M12 7.5V13" stroke="#D88C9A" strokeWidth="1.8" strokeLinecap="round"/>
+              <circle cx="12" cy="16.4" r="1.05" fill="#D88C9A"/>
+            </svg>
+          </div>
+
+          <h3 style={{ fontSize: "19px", fontWeight: 900, color: "#1A1A1A", margin: "0 0 10px", letterSpacing: "-0.5px" }}>
+            {isPhoneTaken ? t("onboarding:wizard.phoneTakenTitle") : t("onboarding:wizard.errorTitle")}
+          </h3>
+          <p style={{ fontSize: "14px", color: "#8A8A8A", margin: "0 0 26px", lineHeight: "1.65" }}>
+            {errorModal.message}
+          </p>
+
+          <button
+            type="button"
+            autoFocus
+            onClick={closeErrorModal}
+            style={{
+              width: "100%", padding: "14px",
+              background: "linear-gradient(135deg, #FCAE91, #F9A08B)",
+              border: "none", borderRadius: "14px", fontSize: "15px",
+              fontWeight: 700, color: "white", cursor: "pointer", fontFamily: "inherit",
+              boxShadow: "0 10px 26px rgba(252,174,145,0.34)",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 14px 32px rgba(252,174,145,0.42)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 10px 26px rgba(252,174,145,0.34)"; }}
+          >
+            {isPhoneTaken ? t("onboarding:wizard.changeNumber") : t("onboarding:wizard.gotIt")}
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

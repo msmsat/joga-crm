@@ -106,6 +106,23 @@ export interface StudioListItem {
   clients_count: number
 }
 
+// Приглашение сотрудника: страница /join по ссылке из письма.
+export interface InviteInfo {
+  email: string
+  name: string
+  studio_name: string
+  studio_logo_url: string | null
+  role: string
+  // true — аккаунта у человека ещё не было, страница просит ПРИДУМАТЬ пароль;
+  // false — аккаунт есть, и нужен его СУЩЕСТВУЮЩИЙ пароль.
+  needs_password: boolean
+}
+
+export interface AcceptInvitePayload {
+  token: string
+  password: string
+}
+
 // EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).
 export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'enable_2fa' | 'login_2fa'
 

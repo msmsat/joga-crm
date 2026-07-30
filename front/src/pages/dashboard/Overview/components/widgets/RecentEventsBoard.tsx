@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { RecentEvent } from '../../types';
 import EventCard from '../ui/EventCard';
@@ -14,18 +13,14 @@ export default function RecentEventsBoard({ events }: Props) {
     <div className="card mb-20">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ fontSize: '14px', fontWeight: 700 }}>{t('events.title')}</div>
-        <Link
-          to="/dashboard/journal"
-          style={{ fontSize: '11px', fontWeight: 700, color: 'var(--peach)', textDecoration: 'none' }}
-        >
-          {t('events.seeAll')} →
-        </Link>
       </div>
 
       <div className={styles.eventsGrid}>
-        {events.map((ev) => (
-          <EventCard key={ev.id} event={ev} />
-        ))}
+        {events.length === 0 ? (
+          <div className={styles.eventsEmpty}>{t('state.noData')}</div>
+        ) : (
+          events.map((ev) => <EventCard key={ev.id} event={ev} />)
+        )}
       </div>
     </div>
   );

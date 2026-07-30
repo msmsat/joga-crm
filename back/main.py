@@ -13,7 +13,7 @@ from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
 
 from routers.auth import router as auth_router
-from routers.studio import router as studio_router
+from routers.studio import router as studio_router, onboarding_router as studio_onboarding_router
 from routers.clients import router as clients_router
 from routers.schedule import router as schedule_router
 from routers.finances import router as finances_router
@@ -69,6 +69,10 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+# /studio/upload-logo зовётся из мастера онбординга — студии и подписки ещё нет,
+# под общий гейт его не подвести. Регистрируем ДО гейтованного /studio: побеждает
+# первый совпавший роут.
+app.include_router(studio_onboarding_router, prefix="/studio", tags=["Studio"])
 app.include_router(studio_router, prefix="/studio", tags=["Studio"], dependencies=_sub_gate)
 app.include_router(clients_router, prefix="/clients", tags=["Clients"], dependencies=_sub_gate)
 app.include_router(schedule_router, prefix="/schedule", tags=["Schedule"], dependencies=_sub_gate)

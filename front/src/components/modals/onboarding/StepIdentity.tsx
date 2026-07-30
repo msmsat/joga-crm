@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { InputField } from "../../UI";
 import type { OnboardingData } from "./types";
 
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function StepIdentity({ data, onChange }: Props) {
+  const { t } = useTranslation("onboarding");
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -20,16 +22,22 @@ export default function StepIdentity({ data, onChange }: Props) {
     reader.readAsDataURL(file);
   }
 
+  function removeLogo() {
+    onChange({ logoFile: null, logoPreviewUrl: "" });
+    // Иначе повторный выбор того же файла не поднимет onChange.
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
   const initials = data.studioName.trim().charAt(0).toUpperCase() || "S";
 
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
         <h3 style={{ fontSize: "26px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-1px", margin: "0 0 8px" }}>
-          Добро пожаловать
+          {t("onboarding:identity.welcome")}
         </h3>
         <p style={{ fontSize: "14px", color: "#888", margin: 0, lineHeight: "1.6" }}>
-          Пара минут настройки — и ваш рабочий инструмент готов
+          {t("onboarding:identity.subtitle")}
         </p>
       </div>
 
@@ -63,39 +71,58 @@ export default function StepIdentity({ data, onChange }: Props) {
         </div>
         <input ref={fileRef} type="file" accept="image/jpeg, image/png, image/webp" style={{ display: "none" }} onChange={handleFile} />
         <div>
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            style={{
-              padding: "8px 16px", background: "rgba(252,174,145,0.1)",
-              border: "1.5px solid rgba(252,174,145,0.3)", borderRadius: "10px",
-              fontSize: "13px", fontWeight: 600, color: "#F9A08B",
-              cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease",
-              display: "block", marginBottom: "6px",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.18)"; e.currentTarget.style.borderColor = "#FCAE91"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
-          >
-            {data.logoPreviewUrl ? "Заменить логотип" : "Загрузить логотип"}
-          </button>
-          <span style={{ fontSize: "11px", color: "#BBBBBB" }}>JPG, PNG, WEBP до 5 МБ</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              style={{
+                padding: "8px 16px", background: "rgba(252,174,145,0.1)",
+                border: "1.5px solid rgba(252,174,145,0.3)", borderRadius: "10px",
+                fontSize: "13px", fontWeight: 600, color: "#F9A08B",
+                cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(252,174,145,0.18)"; e.currentTarget.style.borderColor = "#FCAE91"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(252,174,145,0.1)"; e.currentTarget.style.borderColor = "rgba(252,174,145,0.3)"; }}
+            >
+              {data.logoPreviewUrl ? t("onboarding:identity.replaceLogo") : t("onboarding:identity.uploadLogo")}
+            </button>
+            {/* Без этой кнопки выбранный логотип нечем убрать: если файл не грузится
+                (формат, размер, сеть), мастер не завершить иначе как перезагрузкой. */}
+            {data.logoPreviewUrl && (
+              <button
+                type="button"
+                onClick={removeLogo}
+                style={{
+                  padding: "8px 12px", background: "transparent",
+                  border: "1.5px solid #EEEBE6", borderRadius: "10px",
+                  fontSize: "13px", fontWeight: 600, color: "#999",
+                  cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = "#D88C9A"; e.currentTarget.style.borderColor = "rgba(216,140,154,0.4)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "#999"; e.currentTarget.style.borderColor = "#EEEBE6"; }}
+              >
+                {t("onboarding:identity.removeLogo")}
+              </button>
+            )}
+          </div>
+          <span style={{ fontSize: "11px", color: "#BBBBBB" }}>{t("onboarding:identity.logoHint")}</span>
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
         <InputField
-          label="Название студии или компании"
-          placeholder="Например: Studio Forma"
+          label={t("onboarding:identity.nameLabel")}
+          placeholder={t("onboarding:identity.namePlaceholder")}
           value={data.studioName}
           onChange={(v: string) => onChange({ studioName: v })}
         />
 
         <div>
           <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#666", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px" }}>
-            Описание
+            {t("onboarding:identity.descriptionLabel")}
           </label>
           <textarea
-            placeholder="Кратко о студии, стиле работы, особенностях..."
+            placeholder={t("onboarding:identity.descriptionPlaceholder")}
             value={data.description}
             onChange={(e) => onChange({ description: e.target.value })}
             maxLength={300}
@@ -144,7 +171,7 @@ export default function StepIdentity({ data, onChange }: Props) {
                 marginLeft: "auto", padding: "3px 8px",
                 background: "rgba(163,201,168,0.18)", borderRadius: "6px",
                 fontSize: "10px", fontWeight: 700, color: "#5A8A60", letterSpacing: "0.5px",
-              }}>НОВЫЙ</div>
+              }}>{t("onboarding:identity.newBadge")}</div>
             </div>
           </div>
         )}

@@ -1,0 +1,108 @@
+{
+  "wizard": {
+    "stepOf": "Шаг {{step}} из {{total}}",
+    "securityNote": "Данные защищены и не передаются третьим лицам",
+    "back": "Назад",
+    "continue": "Продолжить",
+    "finish": "Начать работу",
+    "saving": "Сохраняем...",
+    "progress": "{{step}}/5 — займёт меньше 3 минут",
+    "regionRequired": "Укажите региональные настройки",
+    "networkError": "Сетевая ошибка при сохранении данных.",
+    "phoneTakenTitle": "Номер уже используется",
+    "phoneTaken": "Этот номер уже зарегистрирован в системе",
+    "errorTitle": "Ошибка",
+    "changeNumber": "Изменить номер",
+    "gotIt": "Понятно"
+  },
+  "steps": {
+    "identity": { "title": "О студии", "desc": "Название, описание и визуальный стиль вашего бренда." },
+    "activity": { "title": "Деятельность", "desc": "Выберите направление, чтобы мы настроили CRM под вас." },
+    "contact": { "title": "Контакты", "desc": "Адрес, телефон и ссылки для ваших клиентов." },
+    "settings": { "title": "Настройки", "desc": "Регион, валюта и формат дат." },
+    "schedule": { "title": "График работы", "desc": "Укажите дни и часы работы студии." }
+  },
+  "identity": {
+    "welcome": "Добро пожаловать",
+    "subtitle": "Пара минут настройки — и ваш рабочий инструмент готов",
+    "replaceLogo": "Заменить логотип",
+    "uploadLogo": "Загрузить логотип",
+    "removeLogo": "Убрать",
+    "logoHint": "JPG, PNG, WEBP до 5 МБ",
+    "nameLabel": "Название студии или компании",
+    "namePlaceholder": "Например: Studio Forma",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Кратко о студии, стиле работы, особенностях...",
+    "newBadge": "НОВЫЙ"
+  },
+  "activity": {
+    "title": "Вид деятельности",
+    "subtitle": "Выберите направление — мы настроим CRM под вас",
+    "comingSoon": "Скоро: барбершоп, фитнес, танцы и другие направления",
+    "types": {
+      "yoga": { "label": "Йога", "description": "Хатха, аштанга, виньяса" },
+      "pilates": { "label": "Пилатес", "description": "Реформер, матовый пилатес" }
+    }
+  },
+  "contact": {
+    "title": "Контактные данные",
+    "subtitle": "Клиенты увидят эту информацию при записи онлайн",
+    "phoneLabel": "Телефон студии",
+    "checkingPhone": "Проверяем номер...",
+    "addressLabel": "Адрес",
+    "emailLabel": "Email",
+    "websiteLabel": "Сайт",
+    "note": "Все поля, кроме телефона, необязательны. Их можно заполнить позже в настройках."
+  },
+  "settings": {
+    "title": "Настройки региона",
+    "subtitle": "Можно изменить позже в настройках студии",
+    "timezoneLabel": "Часовой пояс",
+    "timezonePlaceholder": "Выберите пояс",
+    "languageLabel": "Язык",
+    "languagePlaceholder": "Язык",
+    "currencyLabel": "Валюта",
+    "currencyPlaceholder": "Валюта",
+    "dateFormatLabel": "Формат даты",
+    "dateFormatPlaceholder": "Формат",
+    "firstDayLabel": "Первый день недели",
+    "timezones": {
+      "UTC+1": "Центральная Европа (UTC+1)", "UTC+0": "Лондон (UTC+0)",
+      "UTC-5": "Нью-Йорк (UTC-5)", "UTC-8": "Лос-Анджелес (UTC-8)",
+      "UTC+12": "Оклэнд (UTC+12)", "UTC+11": "Соломоновы Острова (UTC+11)",
+      "UTC+10": "Сидней (UTC+10)", "UTC+9": "Токио (UTC+9)",
+      "UTC+8": "Сингапур (UTC+8)", "UTC+7": "Бангкок (UTC+7)",
+      "UTC+6": "Дакка (UTC+6)", "UTC+5": "Карачи (UTC+5)",
+      "UTC+4": "Дубай (UTC+4)", "UTC+3": "Стамбул (UTC+3)",
+      "UTC+2": "Каир (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Рубль", "USD": "Доллар", "EUR": "Евро", "KZT": "Тенге",
+      "UAH": "Гривна", "GBP": "Фунт", "AED": "Дирхам", "TRY": "Лира",
+      "CZK": "Чешская крона", "PLN": "Злотый", "HUF": "Форинт", "RON": "Лей",
+      "BGN": "Лев", "SEK": "Шведская крона", "NOK": "Норвежская крона",
+      "DKK": "Датская крона", "CHF": "Швейцарский франк", "ISK": "Исландская крона",
+      "RSD": "Сербский динар"
+    }
+  },
+  "schedule": {
+    "title": "График работы",
+    "subtitle": "Укажите дни и часы работы вашей студии",
+    "scheduleLabel": "Расписание студии",
+    "dayOff": "Выходной"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Название студии",
+    "clients": "Клиентов",
+    "attendance": "Посещ.",
+    "studioCreated": "Студия создана",
+    "chooseDirection": "Выберите направление",
+    "phoneLabel": "Телефон",
+    "emailLabel": "Email",
+    "addressLabel": "Адрес",
+    "phonePlaceholder": "+7 (___) ___",
+    "emailPlaceholder": "studio@mail.ru",
+    "addressPlaceholder": "ул. Пушкина, 1",
+    "dayOff": "выходной"
+  }
+}

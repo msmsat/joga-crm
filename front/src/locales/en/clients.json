@@ -177,6 +177,7 @@
     "danger": {
       "freeze": "Freeze",
       "unfreeze": "Unfreeze",
+      "freezeDisabledHint": "Freezing is disabled in Catalog → Subscriptions settings",
       "delete": "Delete"
     },
     "events": {

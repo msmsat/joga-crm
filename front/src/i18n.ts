@@ -18,6 +18,8 @@ import billingRU from './locales/ru/billing.json';
 import settingsRU from './locales/ru/settings.json';
 import dashboardRU from './locales/ru/dashboard.json';
 import menuRU from './locales/ru/menu.json';
+import onboardingRU from './locales/ru/onboarding.json';
+import joinRU from './locales/ru/join.json';
 
 import commonEN from './locales/en/common.json';
 import staffEN from './locales/en/staff.json';
@@ -35,6 +37,8 @@ import billingEN from './locales/en/billing.json';
 import settingsEN from './locales/en/settings.json';
 import dashboardEN from './locales/en/dashboard.json';
 import menuEN from './locales/en/menu.json';
+import onboardingEN from './locales/en/onboarding.json';
+import joinEN from './locales/en/join.json';
 
 // 2. Раскладываем их по полочкам (namespaces)
 const resources = {
@@ -55,6 +59,8 @@ const resources = {
     settings: settingsRU,
     dashboard: dashboardRU,
     menu: menuRU,
+    onboarding: onboardingRU,
+    join: joinRU,
   },
   en: {
     common: commonEN,
@@ -73,6 +79,8 @@ const resources = {
     settings: settingsEN,
     dashboard: dashboardEN,
     menu: menuEN,
+    onboarding: onboardingEN,
+    join: joinEN,
   }
 };
 

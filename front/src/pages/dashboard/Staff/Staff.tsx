@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createPortal } from 'react-dom';
 import './Staff.css';
 import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
 import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS } from './constants';
@@ -15,6 +14,7 @@ import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
 import { OwnerContactsModal } from './components/modals/OwnerContactsModal';
 import { useToast } from '../../../components/ui/Toast';
 import { ApiError, resolveImageUrl } from '../../../api/client';
+import { staffApi } from '../../../api/staff';
 import { settingsApi } from '../../../api/settings/settings.api';
 import { getCurrencySymbol } from '../../../components/UI';
 import type { StaffListItem, StaffWorkingHoursItem, StaffProfile } from '../../../api/staff/staff.types';
@@ -81,16 +81,6 @@ function hoursToMatrix(hours: StaffWorkingHoursItem[]): ScheduleMatrix {
 }
 
 // ─── Local state types ────────────────────────────────────────────────────────
-
-interface ActionModal {
-  isOpen: boolean;
-  title: string;
-  sub: string;
-  type?: 'PROMPT_MESSAGE' | 'PROMPT_CALL';
-  phone?: string;
-  email?: string;
-  onConfirm?: () => void;
-}
 
 interface DeleteModal {
   isOpen: boolean;
@@ -163,10 +153,6 @@ export default function Staff() {
   // ── Employee modals ───────────────────────────────────────────────────────
   const [isAddModalOpen,  setIsAddModalOpen]  = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // ── Action modal (non-destructive: write / call) ──────────────────────────
-  const [actionModal, setActionModal] = useState<ActionModal>({ isOpen: false, title: '', sub: '' });
-  const closeActionModal = () => setActionModal(m => ({ ...m, isOpen: false }));
 
   // ── Delete confirmation modal ─────────────────────────────────────────────
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({
@@ -251,6 +237,20 @@ export default function Staff() {
 
   const showToast = toast.success;
 
+  // Повторная отправка приглашения — сотрудник ещё не задал пароль (is_active=false).
+  const [resendingInvite, setResendingInvite] = useState(false);
+  const resendInvite = async (staffId: number) => {
+    setResendingInvite(true);
+    try {
+      await staffApi.resendInvite(staffId);
+      showToast(t('staff:toasts.inviteResent'));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+    } finally {
+      setResendingInvite(false);
+    }
+  };
+
   const deleteEvent = (i: number) => {
     const lesson = activeUpcoming[i];
     const doCancel = async () => {
@@ -308,36 +308,29 @@ export default function Staff() {
                 <div className="hero-bg" style={{ background: 'rgba(252,174,145,0.08)' }} />
 
                 <div className="hero-actions">
-                  <button
-                    className="h-btn"
-                    onClick={() => setActionModal({
-                      isOpen: true, title: t('staff:actionModal.writeTitle', { name: profile.name }),
-                      sub: t('staff:actionModal.writeSub'), type: 'PROMPT_MESSAGE',
-                      email: profile.email ?? undefined,
-                      onConfirm: () => {
-                        const el = document.getElementById('staff-msg-body') as HTMLTextAreaElement | null;
-                        const body = el?.value.trim();
-                        const email = profile.email;
-                        if (!email) { showToast(t('staff:toasts.messageSent')); closeActionModal(); return; }
-                        window.location.href = `mailto:${email}${body ? `?body=${encodeURIComponent(body)}` : ''}`;
-                        closeActionModal();
-                      },
-                    })}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    {t('staff:profile.write')}
-                  </button>
-                  <button
-                    className="h-btn"
-                    onClick={() => setActionModal({
-                      isOpen: true, title: t('staff:actionModal.callTitle', { name: profile.name }),
-                      sub: t('staff:actionModal.callSub'), type: 'PROMPT_CALL',
-                      phone: profile.phone ?? undefined,
-                    })}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    {t('staff:profile.call')}
-                  </button>
+                  {/* Приглашение ещё не принято — единственный способ дожать сотрудника */}
+                  {!profile.is_active && (
+                    <button
+                      className="h-btn"
+                      style={{ color: '#F9A08B', opacity: resendingInvite ? 0.5 : 1 }}
+                      disabled={resendingInvite}
+                      onClick={() => resendInvite(profile.id)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      {t('staff:profile.resendInvite')}
+                    </button>
+                  )}
+
+                  {profile.phone && (
+                    <button
+                      className="h-btn"
+                      style={{ color: '#1FA855' }}
+                      onClick={() => window.open(`https://wa.me/${profile.phone!.replace(/\D/g, '')}`, '_blank', 'noopener')}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.695.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>
+                      WhatsApp
+                    </button>
+                  )}
 
                   {/* Владелец правит только контакты — открывается OwnerContactsModal */}
                   <button
@@ -400,10 +393,19 @@ export default function Staff() {
 
                 {/* Info chips */}
                 <div className="info-row">
-                  <div className="chip status-on">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    {t('common:status.active')}
-                  </div>
+                  {/* «Активен» ставим по факту принятого приглашения, а не всем подряд:
+                      приглашённый сотрудник пароля ещё не задал и войти не может. */}
+                  {profile.is_active ? (
+                    <div className="chip status-on">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      {t('common:status.active')}
+                    </div>
+                  ) : (
+                    <div className="chip" style={{ color: '#C98B5E', background: 'rgba(252,174,145,0.12)' }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 14"/></svg>
+                      {t('staff:profile.invitePending')}
+                    </div>
+                  )}
                   <div className="chip" onClick={() => showToast(t('staff:toasts.emailCopied'))}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     {profile.email}
@@ -605,80 +607,6 @@ export default function Staff() {
         </div>
       </div>
 
-      {/* ── ACTION MODAL (write / call) ───────────────────────────────────── */}
-      {actionModal.isOpen && createPortal(
-        <div
-          className="v-overlay"
-          onClick={closeActionModal}
-          style={{ zIndex: 9999 }}
-        >
-          <div
-            className="v-modal"
-            onClick={e => e.stopPropagation()}
-            style={{
-              background: '#FFFFFF', width: '100%', maxWidth: '420px',
-              borderRadius: '24px', padding: '32px',
-              boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
-              display: 'flex', flexDirection: 'column', gap: '24px',
-              fontFamily: "'Manrope', sans-serif",
-            }}
-          >
-            <div>
-              <div style={{ width:'48px',height:'48px',borderRadius:'14px',marginBottom:'20px',background:'rgba(74,128,196,0.15)',color:'#4A80C4',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              </div>
-              <div style={{ fontSize:'20px',fontWeight:800,color:'#1A1A1A',letterSpacing:'-0.3px',marginBottom:'8px' }}>{actionModal.title}</div>
-              <div style={{ fontSize:'14px',color:'#666',lineHeight:1.5 }}>{actionModal.sub}</div>
-            </div>
-
-            {actionModal.type === 'PROMPT_MESSAGE' && (
-              <textarea
-                id="staff-msg-body"
-                placeholder={t('staff:actionModal.messagePlaceholder')}
-                autoFocus
-                style={{ width:'100%',height:'100px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',color:'#1A1A1A',outline:'none',resize:'none',fontFamily:'inherit',boxSizing:'border-box' }}
-              />
-            )}
-
-            {actionModal.type === 'PROMPT_CALL' && (
-              <div style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
-                <div onClick={() => { const p = actionModal.phone?.replace(/\s/g, ''); closeActionModal(); if (p) window.location.href = `tel:${p}`; else showToast(t('staff:toasts.calling')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(74,128,196,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
-                  <div style={{ width:'40px',height:'40px',borderRadius:'10px',background:'rgba(74,128,196,0.1)',color:'#4A80C4',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                  </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:'15px',fontWeight:800,color:'#1A1A1A' }}>{t('staff:actionModal.regularCall')}</div>
-                    <div style={{ fontSize:'13px',color:'#666' }}>{actionModal.phone}</div>
-                  </div>
-                </div>
-                <div onClick={() => { const d = actionModal.phone?.replace(/\D/g, ''); closeActionModal(); if (d) window.open(`https://wa.me/${d}`, '_blank', 'noopener'); else showToast(t('staff:toasts.openingWhatsapp')); }} style={{ display:'flex',alignItems:'center',gap:'16px',padding:'16px',background:'#FDFCFB',border:'1.5px solid rgba(26,26,26,0.06)',borderRadius:'16px',cursor:'pointer',transition:'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(91,171,114,0.3)'; e.currentTarget.style.background='#FFF'; }} onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(26,26,26,0.06)'; e.currentTarget.style.background='#FDFCFB'; }}>
-                  <div style={{ width:'40px',height:'40px',borderRadius:'10px',background:'rgba(91,171,114,0.12)',color:'#5BAB72',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                  </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:'15px',fontWeight:800,color:'#1A1A1A' }}>{t('staff:actionModal.writeWhatsapp')}</div>
-                    <div style={{ fontSize:'13px',color:'#666' }}>{t('staff:actionModal.toMessenger')}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div style={{ display:'flex',gap:'12px' }}>
-              <button onClick={closeActionModal} style={{ flex:1,padding:'12px',background:'#FDFCFB',color:'#1A1A1A',border:'1.5px solid rgba(26,26,26,0.1)',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor:'pointer',transition:'all 0.2s',fontFamily:'inherit' }} onMouseEnter={e=>e.currentTarget.style.background='rgba(26,26,26,0.02)'} onMouseLeave={e=>e.currentTarget.style.background='#FDFCFB'}>
-                {t('common:buttons.cancel')}
-              </button>
-              {actionModal.onConfirm && (
-                <button onClick={actionModal.onConfirm} style={{ flex:1,padding:'12px',background:'#1A1A1A',color:'#FFFFFF',border:'none',borderRadius:'12px',fontSize:'14px',fontWeight:700,cursor:'pointer',transition:'all 0.2s',fontFamily:'inherit',boxShadow:'0 8px 24px rgba(26,26,26,0.15)' }} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.filter='brightness(1.05)'}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.filter='none'}}>
-                  {t('common:buttons.send')}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-
       {/* ── DELETE CONFIRM ────────────────────────────────────────────────── */}
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}
@@ -702,7 +630,6 @@ export default function Staff() {
               last_name: data.last_name || undefined,
               email: data.email,
               phone: data.phone || undefined,
-              password: data.password,
               role: data.role,
               salary: data.salary ? Number(data.salary) : undefined,
               rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
@@ -710,8 +637,10 @@ export default function Staff() {
               schedule: scheduleToWorkingHours(data.schedule),
             });
             if (result?.staff?.id) setActiveStaffId(result.staff.id);
-            setIsAddModalOpen(false);
-            showToast(t('staff:toasts.employeeAdded', { name: data.name }));
+            // Модалку не закрываем: она сама покажет последний шаг со ссылкой-приглашением
+            // и закроется по «Готово» (AddEmployeeModal.handleClose → onClose).
+            showToast(t('staff:toasts.inviteSent', { email: result?.staff.email ?? data.email }));
+            return result;
           } catch (err) {
             // 402 (лимит тарифа) уже показан глобальной модалкой апселла — закрываем молча.
             if (err instanceof ApiError && err.status === 402) {

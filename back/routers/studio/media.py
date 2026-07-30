@@ -4,10 +4,16 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import oauth2_scheme, require_role, StudioContext
-from models import Studio
+from dependencies import get_current_user, oauth2_scheme, require_role, StudioContext
+from models import Studio, User
 
 router = APIRouter()
+
+# Отдельный роутер БЕЗ гейта /studio (_sub_gate в main.py — студия + активная
+# подписка): логотип грузится из мастера онбординга, когда ни студии, ни членства,
+# ни подписки ещё нет. Под общим гейтом эндпоинт отдавал 403 «Пользователь не
+# состоит ни в одной студии» и не давал завершить онбординг с логотипом.
+onboarding_router = APIRouter()
 
 LOGOS_DIR = "static/logos"
 BRANCH_PHOTOS_DIR = "static/branches"
@@ -54,10 +60,10 @@ async def _save_image(file: UploadFile, target_dir: str, max_size_mb: int) -> st
     return f"/{target_dir}/{filename}"
 
 
-@router.post("/upload-logo")
+@onboarding_router.post("/upload-logo")
 async def upload_logo(
     file: UploadFile = File(...),
-    _token: str = Depends(oauth2_scheme),
+    _user: User = Depends(get_current_user),
 ):
     url = await _save_image(file, LOGOS_DIR, max_size_mb=5)
     return {"url": url}

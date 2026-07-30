@@ -1,3 +1,4 @@
+import secrets
 from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
@@ -9,7 +10,7 @@ from sqlalchemy.orm import selectinload
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
-    Hall, Lesson, Reservation, Service, StaffWorkingHours, StudioMember, User,
+    Hall, Lesson, Reservation, Service, StaffWorkingHours, Studio, StudioMember, User,
 )
 from schemas import (
     StaffCreate, StaffUpdate,
@@ -20,6 +21,7 @@ from security import get_password_hash
 from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
 )
+from services.invites import send_invite
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 
@@ -61,6 +63,11 @@ async def _find_user_by_contacts(
         select(User).options(selectinload(User.services)).where(or_(*conditions)).limit(1)
     )
     return result.scalars().first()
+
+
+async def _studio_of(studio_id: int, db: AsyncSession) -> Studio:
+    """Студия для письма-приглашения — нужны её название, лого и язык."""
+    return (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
 
 
 async def _membership_of(
@@ -130,6 +137,9 @@ def _staff_list_item(user: User, membership: StudioMember) -> dict:
         "role": membership.role,
         "department": membership.department,
         "is_online": _is_online(user),
+        # Приглашённый, но ещё не принявший приглашение сотрудник — не активен:
+        # пароля у него нет, войти он не может (см. services/invites.py).
+        "is_active": user.is_verified,
         "photo_url": user.photo_url,
         "avatar_gradient": user.avatar_gradient,
     }
@@ -408,8 +418,11 @@ async def create_staff(
             last_name=data.last_name,
             phone=data.phone,
             photo_url=data.photo_url,
-            hashed_password=get_password_hash(data.password),
-            is_verified=True,       # вход по временному паролю — без email-подтверждения
+            # Пароля ещё нет — его задаст сам сотрудник по ссылке из письма.
+            # Хэш всё равно ставим случайный, а не пустой: NOT NULL в схеме, и
+            # подобрать «пустой пароль» на /login должно быть невозможно.
+            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+            is_verified=False,      # станет True, когда сотрудник примет приглашение
             is_onboarded=True,      # онбординг только для владельца новой студии
             services=services,
         )
@@ -446,7 +459,29 @@ async def create_staff(
         "staff_name": f"{user.name} {user.last_name or ''}".strip(),
     })
 
-    return {"ok": True, "staff": _staff_list_item(user, membership)}
+    studio = await _studio_of(studio_id, db)
+    invite_url = await send_invite(user, studio, membership.role)
+    return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
+
+
+# ─── POST /staff/{staff_id}/invite ────────────────────────────────────────────
+
+@router.post("/{staff_id}/invite", response_model=StaffMutateResponse)
+async def resend_invite(
+    staff_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Отправить приглашение повторно (письмо не дошло, ссылка протухла).
+
+    Ссылка — новый токен от текущего момента, а не тот же самый: у прежнего
+    свой `exp`, и «отправить повторно» на седьмой день иначе прислало бы
+    мёртвую ссылку.
+    """
+    user, membership = await _get_staff_member(staff_id, ctx.studio_id, db)
+    studio = await _studio_of(ctx.studio_id, db)
+    invite_url = await send_invite(user, studio, membership.role)
+    return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
 
 
 # ─── PUT /staff/{staff_id} ────────────────────────────────────────────────────

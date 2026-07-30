@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ACTIVITY_TYPES } from "../../UI";
 import type { OnboardingData } from "./types";
 
@@ -7,14 +8,15 @@ interface Props {
 }
 
 export default function StepActivity({ data, onChange }: Props) {
+  const { t } = useTranslation("onboarding");
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
         <h3 style={{ fontSize: "24px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
-          Вид деятельности
+          {t("onboarding:activity.title")}
         </h3>
         <p style={{ fontSize: "13px", color: "#888", margin: 0, lineHeight: "1.6" }}>
-          Выберите направление — мы настроим CRM под вас
+          {t("onboarding:activity.subtitle")}
         </p>
       </div>
 
@@ -62,10 +64,10 @@ export default function StepActivity({ data, onChange }: Props) {
                   fontSize: "16px", fontWeight: 800, color: isSelected ? "#1A1A1A" : "#444",
                   letterSpacing: "-0.3px", marginBottom: "3px",
                 }}>
-                  {activity.label}
+                  {t(`onboarding:activity.types.${activity.id}.label`)}
                 </div>
                 <div style={{ fontSize: "13px", color: "#AAAAAA", lineHeight: "1.4" }}>
-                  {activity.description}
+                  {t(`onboarding:activity.types.${activity.id}.description`)}
                 </div>
               </div>
               <div style={{
@@ -87,7 +89,7 @@ export default function StepActivity({ data, onChange }: Props) {
       </div>
 
       <p style={{ fontSize: "12px", color: "#CCCCCC", marginTop: "20px", textAlign: "center" }}>
-        Скоро: барбершоп, фитнес, танцы и другие направления
+        {t("onboarding:activity.comingSoon")}
       </p>
     </div>
   );

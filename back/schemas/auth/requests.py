@@ -5,6 +5,24 @@ from pydantic import EmailStr, field_validator
 from schemas._base import BaseSchema, Identifier, NormEmail, OptPhone, Phone
 
 
+def validate_strong_password(value: str) -> str:
+    """Требования к НОВОМУ паролю. Один источник правды: правила проверяются и
+    схемами (регистрация, смена пароля), и роутером приглашений — там пароль
+    задаётся только в одной из двух веток, поэтому валидатором поля не обойтись.
+    """
+    if len(value) < 8:
+        raise ValueError("Пароль должен содержать минимум 8 символов")
+    if not re.search(r"[A-Za-zА-Яа-я]", value):
+        raise ValueError("Пароль должен содержать хотя бы одну букву")
+    if not re.search(r"[0-9]", value):
+        raise ValueError("Пароль должен содержать хотя бы одну цифру")
+    if re.search(r"(.)\1{2,}", value):
+        raise ValueError("Пароль содержит слишком много одинаковых символов подряд (например, 111)")
+    if re.search(r"(123|234|345|456|567|678|789|890|qwe|wer|ert|asd|sdf|zxc)", value.lower()):
+        raise ValueError("Пароль слишком простой (содержит популярные последовательности)")
+    return value
+
+
 class LoginRequest(BaseSchema):
     identifier: Identifier
     password: str
@@ -23,17 +41,7 @@ class RegisterRequest(BaseSchema):
     @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Пароль должен содержать минимум 8 символов")
-        if not re.search(r"[A-Za-zА-Яа-я]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну букву")
-        if not re.search(r"[0-9]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну цифру")
-        if re.search(r"(.)\1{2,}", value):
-            raise ValueError("Пароль содержит слишком много одинаковых символов подряд (например, 111)")
-        if re.search(r"(123|234|345|456|567|678|789|890|qwe|wer|ert|asd|sdf|zxc)", value.lower()):
-            raise ValueError("Пароль слишком простой (содержит популярные последовательности)")
-        return value
+        return validate_strong_password(value)
 
 
 class GoogleAuthRequest(BaseSchema):
@@ -73,21 +81,21 @@ class ChangePasswordRequest(BaseSchema):
     @field_validator("new_password")
     @classmethod
     def validate_new_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Пароль должен содержать минимум 8 символов")
-        if not re.search(r"[A-Za-zА-Яа-я]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну букву")
-        if not re.search(r"[0-9]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну цифру")
-        if re.search(r"(.)\1{2,}", value):
-            raise ValueError("Пароль содержит слишком много одинаковых символов подряд (например, 111)")
-        if re.search(r"(123|234|345|456|567|678|789|890|qwe|wer|ert|asd|sdf|zxc)", value.lower()):
-            raise ValueError("Пароль слишком простой (содержит популярные последовательности)")
-        return value
+        return validate_strong_password(value)
 
 
 class SelectStudioRequest(BaseSchema):
     studio_id: int
+
+
+class InviteAcceptRequest(BaseSchema):
+    """Принятие приглашения в студию. `password` — либо НОВЫЙ пароль (аккаунта
+    ещё не было), либо СУЩЕСТВУЮЩИЙ пароль уже заведённого аккаунта. Поэтому
+    валидатора на поле нет: чужой старый пароль требованиям может не отвечать,
+    и «слабый пароль» вместо «неверный пароль» — ложная ошибка.
+    """
+    token: str
+    password: str
 
 
 class ProfileUpdate(BaseSchema):

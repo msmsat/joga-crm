@@ -13,8 +13,29 @@ interface Props {
 /** ISO-дата бакета → короткая подпись бара. */
 function barLabel(iso: string, period: Props['period'], locale: string): string {
   const d = new Date(iso);
-  if (period === 'week') return `${d.getDate()}/${d.getMonth() + 1}`;
+  if (period === 'week') return d.toLocaleDateString(locale, { weekday: 'short' });
+  if (period === 'month') return String(d.getDate());
   return d.toLocaleDateString(locale, { month: 'short' });
+}
+
+/** Центрируем тултип над баром; если бар у́же тултипа и центр вылезает за
+ * #dash-chart (обрезается его overflow-x), прижимаем к внутреннему краю. */
+function positionTooltip(bar: HTMLDivElement) {
+  const chart = bar.closest('#dash-chart') as HTMLElement | null;
+  const tip = bar.querySelector<HTMLDivElement>('.bar-tooltip');
+  if (!chart || !tip) return;
+  const chartRect = chart.getBoundingClientRect();
+  const barRect = bar.getBoundingClientRect();
+  const half = tip.offsetWidth / 2;
+  const center = barRect.left + barRect.width / 2;
+  const clamped = Math.min(Math.max(center, chartRect.left + half), chartRect.right - half);
+  tip.style.left = `${clamped - barRect.left}px`;
+  tip.style.transform = 'translate(-50%, -4px)';
+}
+
+function resetTooltip(bar: HTMLDivElement) {
+  const tip = bar.querySelector<HTMLDivElement>('.bar-tooltip');
+  if (tip) { tip.style.left = ''; tip.style.transform = ''; }
 }
 
 export default function AnalyticsChart({ activeConfig, period, setPeriod, series, currencySymbol }: Props) {
@@ -24,7 +45,7 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
   const fmt = (v: number) => (activeConfig.id === 'revenue' ? fmtMoneyCompact(v, currencySymbol) : String(v));
 
   const periodLabel: Record<Props['period'], string> = {
-    week: t('chart.byWeek'), month: t('chart.byMonth'), year: t('chart.byMonth'),
+    week: t('chart.byDay'), month: t('chart.byDay'), year: t('chart.byMonth'),
   };
   const periodSub: Record<Props['period'], string> = {
     week: t('chart.subWeek'), month: t('chart.subMonth'), year: t('chart.subYear'),
@@ -67,8 +88,8 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
                   key={p.period}
                   className="bar"
                   style={{ height: `${Math.max(4, (p.value / max) * 100)}%`, background: last ? hoverColor : baseColor }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = hoverColor)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = last ? hoverColor : baseColor)}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = hoverColor; positionTooltip(e.currentTarget); }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = last ? hoverColor : baseColor; resetTooltip(e.currentTarget); }}
                 >
                   <div className="bar-tooltip">{fmt(p.value)}</div>
                 </div>

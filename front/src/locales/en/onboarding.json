@@ -1,0 +1,108 @@
+{
+  "wizard": {
+    "stepOf": "Step {{step}} of {{total}}",
+    "securityNote": "Your data is protected and never shared with third parties",
+    "back": "Back",
+    "continue": "Continue",
+    "finish": "Start working",
+    "saving": "Saving...",
+    "progress": "{{step}}/5 — takes less than 3 minutes",
+    "regionRequired": "Please set your regional settings",
+    "networkError": "Network error while saving data.",
+    "phoneTakenTitle": "Number already in use",
+    "phoneTaken": "This phone number is already registered",
+    "errorTitle": "Error",
+    "changeNumber": "Change number",
+    "gotIt": "Got it"
+  },
+  "steps": {
+    "identity": { "title": "About the studio", "desc": "Name, description and visual style of your brand." },
+    "activity": { "title": "Activity", "desc": "Choose a direction so we can tailor the CRM for you." },
+    "contact": { "title": "Contacts", "desc": "Address, phone and links for your clients." },
+    "settings": { "title": "Settings", "desc": "Region, currency and date format." },
+    "schedule": { "title": "Working hours", "desc": "Set the days and hours your studio operates." }
+  },
+  "identity": {
+    "welcome": "Welcome",
+    "subtitle": "A couple of minutes of setup — and your workspace is ready",
+    "replaceLogo": "Replace logo",
+    "uploadLogo": "Upload logo",
+    "removeLogo": "Remove",
+    "logoHint": "JPG, PNG, WEBP up to 5 MB",
+    "nameLabel": "Studio or company name",
+    "namePlaceholder": "E.g.: Studio Forma",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "A short note about your studio, style of work, features...",
+    "newBadge": "NEW"
+  },
+  "activity": {
+    "title": "Type of activity",
+    "subtitle": "Choose a direction — we'll tailor the CRM for you",
+    "comingSoon": "Coming soon: barbershop, fitness, dance and more",
+    "types": {
+      "yoga": { "label": "Yoga", "description": "Hatha, Ashtanga, Vinyasa" },
+      "pilates": { "label": "Pilates", "description": "Reformer, mat Pilates" }
+    }
+  },
+  "contact": {
+    "title": "Contact details",
+    "subtitle": "Clients will see this information when booking online",
+    "phoneLabel": "Studio phone",
+    "checkingPhone": "Checking number...",
+    "addressLabel": "Address",
+    "emailLabel": "Email",
+    "websiteLabel": "Website",
+    "note": "All fields except phone are optional. You can fill them in later in settings."
+  },
+  "settings": {
+    "title": "Regional settings",
+    "subtitle": "Can be changed later in studio settings",
+    "timezoneLabel": "Timezone",
+    "timezonePlaceholder": "Select timezone",
+    "languageLabel": "Language",
+    "languagePlaceholder": "Language",
+    "currencyLabel": "Currency",
+    "currencyPlaceholder": "Currency",
+    "dateFormatLabel": "Date format",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "First day of week",
+    "timezones": {
+      "UTC+1": "Central Europe (UTC+1)", "UTC+0": "London (UTC+0)",
+      "UTC-5": "New York (UTC-5)", "UTC-8": "Los Angeles (UTC-8)",
+      "UTC+12": "Auckland (UTC+12)", "UTC+11": "Solomon Islands (UTC+11)",
+      "UTC+10": "Sydney (UTC+10)", "UTC+9": "Tokyo (UTC+9)",
+      "UTC+8": "Singapore (UTC+8)", "UTC+7": "Bangkok (UTC+7)",
+      "UTC+6": "Dhaka (UTC+6)", "UTC+5": "Karachi (UTC+5)",
+      "UTC+4": "Dubai (UTC+4)", "UTC+3": "Istanbul (UTC+3)",
+      "UTC+2": "Cairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Ruble", "USD": "Dollar", "EUR": "Euro", "KZT": "Tenge",
+      "UAH": "Hryvnia", "GBP": "Pound", "AED": "Dirham", "TRY": "Lira",
+      "CZK": "Czech Koruna", "PLN": "Złoty", "HUF": "Forint", "RON": "Leu",
+      "BGN": "Lev", "SEK": "Swedish Krona", "NOK": "Norwegian Krone",
+      "DKK": "Danish Krone", "CHF": "Swiss Franc", "ISK": "Icelandic Króna",
+      "RSD": "Serbian Dinar"
+    }
+  },
+  "schedule": {
+    "title": "Working hours",
+    "subtitle": "Set the days and hours your studio operates",
+    "scheduleLabel": "Studio schedule",
+    "dayOff": "Day off"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Studio name",
+    "clients": "Clients",
+    "attendance": "Attend.",
+    "studioCreated": "Studio created",
+    "chooseDirection": "Choose a direction",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "phonePlaceholder": "+1 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "123 Main St",
+    "dayOff": "day off"
+  }
+}

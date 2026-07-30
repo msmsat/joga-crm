@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 import type { OnboardingData, WorkingDay } from "./types";
-import { DAY_NAMES_SHORT } from "./types";
+
+const DOW_TO_DAY_KEY = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 interface Props {
   data: OnboardingData;
@@ -39,6 +41,8 @@ function updateWorkingDay(hours: WorkingDay[], idx: number, patch: Partial<Worki
 }
 
 export default function StepSchedule({ data, onChange }: Props) {
+  const { t } = useTranslation(["onboarding", "common"]);
+
   function patchHours(idx: number, patch: Partial<WorkingDay>) {
     onChange({ workingHours: updateWorkingDay(data.workingHours, idx, patch) });
   }
@@ -47,15 +51,15 @@ export default function StepSchedule({ data, onChange }: Props) {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h3 style={{ fontSize: "22px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 6px" }}>
-          График работы
+          {t("onboarding:schedule.title")}
         </h3>
         <p style={{ fontSize: "13px", color: "#888", margin: 0 }}>
-          Укажите дни и часы работы вашей студии
+          {t("onboarding:schedule.subtitle")}
         </p>
       </div>
 
       <div>
-        <label style={labelStyle}>Расписание студии</label>
+        <label style={labelStyle}>{t("onboarding:schedule.scheduleLabel")}</label>
         <div style={{
           background: "white", border: "1.5px solid #EEEBE6",
           borderRadius: "14px", overflow: "hidden",
@@ -76,7 +80,7 @@ export default function StepSchedule({ data, onChange }: Props) {
                 color: day.isOpen ? "#1A1A1A" : "#BBBBBB",
                 flexShrink: 0, transition: "color 0.2s ease",
               }}>
-                {DAY_NAMES_SHORT[day.dayOfWeek]}
+                {t(`common:days.short.${DOW_TO_DAY_KEY[day.dayOfWeek]}`)}
               </span>
 
               <Toggle checked={day.isOpen} onChange={v => patchHours(idx, { isOpen: v })} />
@@ -114,7 +118,7 @@ export default function StepSchedule({ data, onChange }: Props) {
                   />
                 </>
               ) : (
-                <span style={{ fontSize: "12px", color: "#CCCCCC", fontStyle: "italic" }}>Выходной</span>
+                <span style={{ fontSize: "12px", color: "#CCCCCC", fontStyle: "italic" }}>{t("onboarding:schedule.dayOff")}</span>
               )}
             </div>
           ))}

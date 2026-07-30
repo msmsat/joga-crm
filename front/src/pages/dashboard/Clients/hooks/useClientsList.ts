@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientsApi } from '../../../../api/clients';
 import type { ClientCreate, ClientUpdate } from '../../../../api/clients/clients.types';
+import { catalogApi } from '../../../../api/catalog/catalog.api';
 import { loyaltyApi } from '../../../../api/loyalty/loyalty.api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { mapListItem } from '../utils/mapClient';
@@ -137,6 +138,19 @@ export function useReferralEnabled(enabled: boolean) {
     retry: false,
   });
   return data?.is_enabled ?? false;
+}
+
+/** allow_freeze — тот же конфиг, что читает страница Каталог → Абонементы (owner-only,
+ * 403 для admin проглатывается). Дефолт true — совпадает с дефолтом модели, чтобы
+ * admin (не видящий конфиг) не терял рабочую кнопку, если владелец её не трогал;
+ * реальный запрет всё равно проверяется на бэке при попытке заморозить. */
+export function useFreezeEnabled() {
+  const { data } = useQuery({
+    queryKey: queryKeys.subscriptionConfig,
+    queryFn: () => catalogApi.getSubscriptionConfig(),
+    retry: false,
+  });
+  return data?.allow_freeze ?? true;
 }
 
 /**

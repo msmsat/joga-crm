@@ -43,6 +43,10 @@ export const staffApi = {
   delete: (id: number) =>
     client.delete<{ ok: boolean }>(`/staff/${id}`),
 
+  // Отправить приглашение повторно — письмо не дошло или ссылка протухла.
+  resendInvite: (id: number) =>
+    client.post<StaffMutateResponse>(`/staff/${id}/invite`, {}),
+
   // ─── Schedule ────────────────────────────────────────────────────────────────
 
   getWeekSchedule: (id: number) =>

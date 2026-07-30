@@ -807,6 +807,15 @@
   border-radius: 14px;
   padding: 0 16px;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--onyx);
+}
+
+.phone-input-wrapper::placeholder {
+  color: rgba(102,102,102,0.45);
 }
 
 .phone-input-wrapper:hover {
@@ -832,34 +841,6 @@
 
 .phone-input-wrapper.has-error.focused {
   box-shadow: 0 0 0 4px rgba(216,140,154,0.14);
-}
-
-/* Стилизация флага и выпадающего списка */
-.phone-input-wrapper .PhoneInputCountry {
-  margin-right: 12px;
-  padding-right: 12px;
-  border-right: 1.5px solid var(--border);
-}
-
-.phone-input-wrapper .PhoneInputCountrySelectArrow {
-  opacity: 0.5;
-}
-
-/* Стилизация самого поля ввода внутри компонента */
-.phone-input-wrapper .PhoneInputInput {
-  flex: 1;
-  height: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--font-main);
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--onyx);
-}
-
-.phone-input-wrapper .PhoneInputInput::placeholder {
-  color: rgba(102,102,102,0.45);
 }
 
 @media (max-width: 480px) {
@@ -1118,7 +1099,7 @@
   justify-content: flex-end;
   /* Ювелирно съедаем лишнюю пустоту снизу, "приземляя" график к краю карточки */
   margin-bottom: -12px;
-  /* 13 баров при узкой колонке — скролл вместо схлопывания/выдавливания */
+  /* до 31 бара (дни месяца) при узкой колонке — скролл вместо схлопывания/выдавливания */
   overflow-x: auto;
   overscroll-behavior-x: contain;
   /* overflow-x без overflow-y даёт вычисленный overflow-y: auto (спека CSS Overflow) —
@@ -1142,9 +1123,8 @@
 }
 
 .bar {
-  flex: 0 1 56px; /* было flex: 1 — не растягиваем бар на всю ширину при малом числе точек */
-  min-width: 18px; /* 13 баров в узкой колонке всё ещё различимы */
-  max-width: 56px;
+  flex: 1 1 0; /* растягиваем на всю ширину карточки при любом числе точек (7-31 бар) */
+  min-width: 4px;
   border-radius: 6px 6px 0 0; /* Чуть более мягкое, современное скругление */
   background: rgba(252,174,145,0.2); 
   transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); 
@@ -1174,9 +1154,9 @@
   z-index: 10; 
 }
 
-.bar:hover .bar-tooltip { 
-  opacity: 1; 
-  transform: translate(-50%, -4px); 
+.bar:hover .bar-tooltip {
+  opacity: 1;
+  transform: translate(-50%, -4px);
 }
 
 .chart-labels { 
@@ -1186,9 +1166,8 @@
 }
 
 .chart-label {
-  flex: 0 1 56px; /* синхронно с .bar, иначе подпись «уплывёт» */
-  min-width: 18px;
-  max-width: 56px;
+  flex: 1 1 0; /* синхронно с .bar, иначе подпись «уплывёт» */
+  min-width: 4px;
   text-align: center;
   font-size: 10px;
   color: var(--text3);
@@ -1322,6 +1301,9 @@
 .tg-modal { background: var(--card); border-radius: var(--radius-lg); padding: 28px; width: 480px; max-width: 90vw; max-height: calc(100vh - 48px); overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: modalIn 0.3s ease; }
 /* Общий вход модалок: только проявление, без масштаба и сдвига (см. .v-modal) */
 @keyframes modalIn { from { opacity:0 } to { opacity:1 } }
+/* Точечное исключение для модалки ошибки онбординга: одна карточка на экране,
+   мягкий подъём читается как реакция на действие. */
+@keyframes errorPopIn { from { opacity:0; transform: translateY(10px) scale(0.97) } to { opacity:1; transform: none } }
 .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
 .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
 .instruction-box { background: rgba(252,174,145,0.08); border: 1px solid rgba(252,174,145,0.3); border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 12px; }

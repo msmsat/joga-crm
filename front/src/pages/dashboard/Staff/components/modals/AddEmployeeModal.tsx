@@ -7,6 +7,8 @@ import { servicesApi, type ServiceRead } from "../../../../../api/studio/service
 import { settingsApi } from "../../../../../api/settings/settings.api";
 import { getCurrencySymbol, PhoneField } from "../../../../../components/UI";
 import { useContactCheck } from "../../../../../hooks/useContactCheck";
+import { staffApi } from "../../../../../api/staff";
+import type { StaffMutateResponse } from "../../../../../api/staff/staff.types";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -14,7 +16,7 @@ type Step = 1 | 2 | 3 | 4;
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
 
 interface StaffData {
-  name: string; last_name: string; phone: string; email: string; password: string;
+  name: string; last_name: string; phone: string; email: string;
   role: string;
   serviceIds: number[];
   salary: string; rate_type: "fixed" | "percent" | "hourly" | "";
@@ -324,7 +326,9 @@ function FocusInput({ value, onChange, placeholder, type = "text", onKeyDown, er
 export interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: (data: StaffData) => Promise<void> | void;
+  // Возвращает созданного сотрудника: шаг 4 показывает НАСТОЯЩУЮ ссылку-приглашение,
+  // поэтому запись должна быть создана до него, а не по кнопке «Готово».
+  onSuccess?: (data: StaffData) => Promise<StaffMutateResponse | void>;
 }
 
 export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModalProps) {
@@ -334,9 +338,17 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const [animating, setAnimating] = useState(false);
   const [dir, setDir]         = useState<1 | -1>(1);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
-  const [inviteLink]          = useState(`https://velora.studio/join/k9x2a-${Math.random().toString(36).slice(2, 8)}`);
   const [availableServices, setAvailableServices] = useState<ServiceRead[]>([]);
   const [currency, setCurrency] = useState<string>();
+
+  // Результат создания: id нужен для повторной отправки письма, ссылка — чтобы
+  // владелец мог передать её сотруднику руками, если почта не дошла. Email берём
+  // с ответа, а не из формы: человека с этим телефоном могли привязать к уже
+  // существующему аккаунту, и письмо ушло на ЕГО адрес (ROADMAP_ACCOUNTS, решение 8).
+  const [created, setCreated] = useState<{ id: number; email: string; inviteUrl: string } | null>(null);
+  const [saving, setSaving]   = useState(false);
+  const [copied, setCopied]   = useState(false);
+  const [resent, setResent]   = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   useEffect(() => {
     if (isOpen) {
@@ -348,7 +360,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const currencySymbol = getCurrencySymbol(currency);
 
   const [data, setData] = useState<StaffData>({
-    name: "", last_name: "", phone: "", email: "", password: "",
+    name: "", last_name: "", phone: "", email: "",
     role: "", serviceIds: [],
     salary: "", rate_type: "fixed",
     schedule: { ...defaultSchedule },
@@ -373,16 +385,50 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   function handleClose() {
     setStep(1);
     setShowCatalogConfirm(false);
-    setData({ name: "", last_name: "", phone: "", email: "", password: "", role: "", serviceIds: [], salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
+    setCreated(null);
+    setCopied(false);
+    setResent("idle");
+    setData({ name: "", last_name: "", phone: "", email: "", role: "", serviceIds: [], salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
     onClose();
   }
 
-  async function handleFinish() {
+  // Создание — на шаге 3, а не по кнопке «Готово»: шаг 4 показывает реальную
+  // ссылку-приглашение, а её выдаёт бэкенд только вместе с созданным сотрудником.
+  async function handleCreate() {
+    if (saving) return;
+    setSaving(true);
     try {
-      await onSuccess?.({ ...data, serviceIds: data.role === "trainer" ? data.serviceIds : [] });
-      handleClose();
+      const result = await onSuccess?.({ ...data, serviceIds: data.role === "trainer" ? data.serviceIds : [] });
+      if (result) setCreated({ id: result.staff.id, email: result.staff.email, inviteUrl: result.invite_url ?? "" });
+      goNext();
     } catch {
-      // Ошибка уже показана тостом выше по стеку (Staff.tsx onSuccess) — модалка остаётся открытой.
+      // Ошибка уже показана тостом выше по стеку (Staff.tsx onSuccess) — остаёмся на шаге 3.
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleCopy() {
+    if (!created?.inviteUrl) return;
+    try {
+      await navigator.clipboard.writeText(created.inviteUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // Буфер обмена недоступен (http без localhost) — ссылка видна и её можно выделить.
+    }
+  }
+
+  async function handleResend() {
+    if (!created || resent === "sending") return;
+    setResent("sending");
+    try {
+      const result = await staffApi.resendInvite(created.id);
+      // Ссылка новая: у прежней свой срок жизни, и переиспользовать её нельзя.
+      setCreated({ ...created, inviteUrl: result.invite_url ?? created.inviteUrl });
+      setResent("sent");
+    } catch {
+      setResent("error");
     }
   }
 
@@ -417,7 +463,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     : phoneCheck.inStudio ? t("common:validation.phoneInStudio") : undefined;
   const emailError    = data.email.trim().length > 0 && !emailFormatOk ? t("addModal.step1.errors.email")
     : emailCheck.inStudio ? t("common:validation.emailInStudio") : undefined;
-  const passwordError = data.password.length > 0 && data.password.length < 6 ? t("addModal.step1.errors.password") : undefined;
   const checkingHint  = t("common:validation.checkingContact");
   // Нейтральная подсказка вместо красной ошибки: контакт известен продукту, но в
   // этой студии человека нет — значит он будет привязан, а имя и пароль из формы
@@ -429,8 +474,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const canStep1         = data.name.trim().length >= 2
     && phoneFormatOk
     && emailFormatOk
-    && data.password.length >= 6
-    && !nameError && !phoneError && !emailError && !passwordError
+    && !nameError && !phoneError && !emailError
     && !phoneCheck.checking && !emailCheck.checking;
   const canStep2         = data.role.trim().length >= 2;
   const canStep3         = Object.values(data.schedule).some(d => d.enabled);
@@ -643,10 +687,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     <div>
                       <FieldLabel>{t("addModal.step1.emailLabel")} *</FieldLabel>
                       <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError} hint={emailCheck.checking ? checkingHint : willLinkHint}/>
-                    </div>
-                    <div>
-                      <FieldLabel>{t("addModal.step1.passwordLabel")} *</FieldLabel>
-                      <FocusInput type="password" value={data.password} onChange={v => set("password", v)} placeholder={t("addModal.step1.passwordPlaceholder")} error={passwordError}/>
                     </div>
                     {data.name.trim().length >= 2 && (
                       <div style={{
@@ -986,26 +1026,45 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     {t("addModal.step4.exclaim")}{" "}<span style={{ color: "#FCAE91" }}>{data.name.split(" ")[0] || t("addModal.employeeFallback")}</span> {t("addModal.step4.added")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 20px", lineHeight: 1.6 }}>{t("addModal.step4.sub")}</p>
-                  <div style={{ padding: "16px 18px", background: "rgba(26,26,26,0.025)", borderRadius: "14px", border: "1.5px solid rgba(26,26,26,0.08)", marginBottom: "14px" }}>
-                    <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 7px" }}>{t("addModal.step4.inviteLinkLabel")}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <div style={{ flex: 1, padding: "9px 12px", background: "white", border: "1px solid #F0EDE8", borderRadius: "10px", fontSize: "11px", fontWeight: 600, color: "#999", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {inviteLink}
-                      </div>
-                      <button type="button" onClick={() => navigator.clipboard?.writeText(inviteLink)} style={{ padding: "9px 13px", background: "rgba(252,174,145,0.12)", border: "1.5px solid rgba(252,174,145,0.3)", borderRadius: "10px", fontSize: "12px", fontWeight: 700, color: "#F9A08B", cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s", whiteSpace: "nowrap" }}>
-                        {t("common:buttons.copy")}
-                      </button>
+
+                  {/* Письмо уже ушло при создании — здесь подтверждение факта */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "11px", padding: "13px 16px", background: "rgba(163,201,168,0.1)", border: "1.5px solid rgba(163,201,168,0.28)", borderRadius: "14px", marginBottom: "14px" }}>
+                    <div style={{ width: "32px", height: "32px", borderRadius: "10px", flexShrink: 0, background: "#A3C9A8", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(163,201,168,0.35)" }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "13px", fontWeight: 800, color: "#1A1A1A" }}>{t("addModal.step4.emailSentTitle")}</div>
+                      <div style={{ fontSize: "11.5px", color: "#7d9a82", marginTop: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{created?.email ?? data.email}</div>
                     </div>
                   </div>
+
+                  {created?.inviteUrl && (
+                    <div style={{ padding: "16px 18px", background: "rgba(26,26,26,0.025)", borderRadius: "14px", border: "1.5px solid rgba(26,26,26,0.08)", marginBottom: "14px" }}>
+                      <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 7px" }}>{t("addModal.step4.inviteLinkLabel")}</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div style={{ flex: 1, minWidth: 0, padding: "9px 12px", background: "white", border: "1px solid #F0EDE8", borderRadius: "10px", fontSize: "11px", fontWeight: 600, color: "#999", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {created.inviteUrl}
+                        </div>
+                        <button type="button" onClick={handleCopy} style={{ padding: "9px 13px", background: copied ? "rgba(163,201,168,0.16)" : "rgba(252,174,145,0.12)", border: `1.5px solid ${copied ? "rgba(163,201,168,0.4)" : "rgba(252,174,145,0.3)"}`, borderRadius: "10px", fontSize: "12px", fontWeight: 700, color: copied ? "#7aab80" : "#F9A08B", cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s", whiteSpace: "nowrap" }}>
+                          {copied ? t("addModal.step4.copied") : t("common:buttons.copy")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAAAAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 9px" }}>{t("addModal.step4.sendInviteLabel")}</p>
                   <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
-                    <button type="button" disabled={!data.phone} style={{ flex: 1, padding: "12px 14px", background: data.phone ? "rgba(37,211,102,0.08)" : "rgba(26,26,26,0.03)", border: data.phone ? "1.5px solid rgba(37,211,102,0.3)" : "1.5px solid rgba(26,26,26,0.07)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", cursor: data.phone ? "pointer" : "default", fontFamily: "Manrope, sans-serif", fontSize: "13px", fontWeight: 600, color: data.phone ? "#25d366" : "#CCC", transition: "all 0.15s" }}>
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill={data.phone ? "#25d366" : "#CCC"}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.464 3.49"/></svg>
-                      WhatsApp{!data.phone && <span style={{ fontSize: "10px", opacity: 0.6 }}>{t("addModal.step4.whatsappNoPhone")}</span>}
-                    </button>
-                    <button type="button" disabled={!data.email} style={{ flex: 1, padding: "12px 14px", background: data.email ? "rgba(252,174,145,0.08)" : "rgba(26,26,26,0.03)", border: data.email ? "1.5px solid rgba(252,174,145,0.3)" : "1.5px solid rgba(26,26,26,0.07)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", cursor: data.email ? "pointer" : "default", fontFamily: "Manrope, sans-serif", fontSize: "13px", fontWeight: 600, color: data.email ? "#F9A08B" : "#CCC", transition: "all 0.15s" }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={data.email ? "#F9A08B" : "#CCC"} strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                      Email{!data.email && <span style={{ fontSize: "10px", opacity: 0.6 }}>{t("addModal.step4.emailNoEmail")}</span>}
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={!created || resent === "sending"}
+                      style={{ flex: 1, padding: "12px 14px", background: resent === "sent" ? "rgba(163,201,168,0.1)" : "rgba(252,174,145,0.08)", border: `1.5px solid ${resent === "sent" ? "rgba(163,201,168,0.3)" : "rgba(252,174,145,0.3)"}`, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", cursor: created && resent !== "sending" ? "pointer" : "default", fontFamily: "Manrope, sans-serif", fontSize: "13px", fontWeight: 600, color: resent === "sent" ? "#7aab80" : "#F9A08B", opacity: created ? 1 : 0.5, transition: "all 0.15s" }}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      {resent === "sending" ? t("common:status.loading")
+                        : resent === "sent" ? t("addModal.step4.resentOk")
+                        : resent === "error" ? t("addModal.step4.resendError")
+                        : t("addModal.step4.resend")}
                     </button>
                   </div>
                   <div style={{ padding: "13px 16px", background: "rgba(163,201,168,0.08)", borderRadius: "12px", border: "1px solid rgba(163,201,168,0.2)" }}>
@@ -1032,33 +1091,39 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                 {t("common:buttons.back")}
               </button>
             )}
-            <button
-              type="button"
-              disabled={(step === 1 && !canStep1) || (step === 2 && !canStep2) || (step === 3 && !canStep3)}
-              onClick={step === 4 ? handleFinish : goNext}
-              style={{
-                flex: 1, padding: "13px 22px",
-                background: step === 4 ? "linear-gradient(135deg, #A3C9A8, #7aab80)" : "linear-gradient(135deg, #FCAE91, #F9A08B)",
-                border: "none", borderRadius: "12px", fontSize: "14px", fontWeight: 700, color: "white",
-                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
-                letterSpacing: "-0.1px",
-                boxShadow: step === 4 ? "0 8px 24px rgba(163,201,168,0.35)" : "0 8px 24px rgba(252,174,145,0.32)",
-                transition: "all 0.2s ease", fontFamily: "Manrope, sans-serif",
-                opacity: ((step === 1 && !canStep1) || (step === 2 && !canStep2) || (step === 3 && !canStep3)) ? 0.4 : 1,
-              }}
-            >
-              {step === 4 ? (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  {t("common:buttons.done")}
-                </>
-              ) : (
-                <>
-                  {step === 3 ? t("common:buttons.finish") : t("common:buttons.continue")}
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </>
-              )}
-            </button>
+            {(() => {
+              // Шаг 3 создаёт сотрудника (и отправляет письмо), шаг 4 только закрывает.
+              const blocked = (step === 1 && !canStep1) || (step === 2 && !canStep2) || (step === 3 && (!canStep3 || saving));
+              return (
+                <button
+                  type="button"
+                  disabled={blocked}
+                  onClick={step === 4 ? handleClose : step === 3 ? handleCreate : goNext}
+                  style={{
+                    flex: 1, padding: "13px 22px",
+                    background: step === 4 ? "linear-gradient(135deg, #A3C9A8, #7aab80)" : "linear-gradient(135deg, #FCAE91, #F9A08B)",
+                    border: "none", borderRadius: "12px", fontSize: "14px", fontWeight: 700, color: "white",
+                    cursor: blocked ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
+                    letterSpacing: "-0.1px",
+                    boxShadow: step === 4 ? "0 8px 24px rgba(163,201,168,0.35)" : "0 8px 24px rgba(252,174,145,0.32)",
+                    transition: "all 0.2s ease", fontFamily: "Manrope, sans-serif",
+                    opacity: blocked ? 0.4 : 1,
+                  }}
+                >
+                  {step === 4 ? (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      {t("common:buttons.done")}
+                    </>
+                  ) : (
+                    <>
+                      {step === 3 ? (saving ? t("common:status.loading") : t("addModal.step3.createAndInvite")) : t("common:buttons.continue")}
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </>
+                  )}
+                </button>
+              );
+            })()}
           </div>
           <p style={{ textAlign: "center", fontSize: "10px", color: "#CCCCCC", margin: "7px 0 0", fontWeight: 500 }}>
             {t("addModal.stepCounter", { current: step })}

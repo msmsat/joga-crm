@@ -14,7 +14,8 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, ActivityLog, Client, ClientNote, ClientPayment, ClientSubscription,
-    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, SubscriptionPackage, User,
+    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, StudioSubscriptionProgramConfig,
+    SubscriptionPackage, User,
 )
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
@@ -723,6 +724,17 @@ async def freeze_client(
 ):
     studio_id = ctx.studio_id
     client = await _get_client_or_404(client_id, studio_id, db)
+
+    if body.frozen:
+        config = (await db.execute(
+            select(StudioSubscriptionProgramConfig).where(StudioSubscriptionProgramConfig.studio_id == studio_id)
+        )).scalar_one_or_none()
+        if config is not None and not config.allow_freeze:
+            raise HTTPException(status_code=400, detail={
+                "code": "loyalty.freeze_disabled",
+                "message": "Заморозка клиентов выключена в настройках Каталога → Абонементы",
+            })
+
     client.status = "frozen" if body.frozen else "active"
     client.is_active = not body.frozen
     if body.frozen:

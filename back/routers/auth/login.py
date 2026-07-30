@@ -106,11 +106,16 @@ async def _record_login_session(user: User, access_token: str, request: Request,
         })
 
 
-async def _finish_login(user: User, http_request: Request, db: AsyncSession) -> TokenResponse:
-    """Хвост входа, общий для /login и /google (EPIC 5, задача 5): если у
-    пользователя включена 2FA — токен не выдаём, отправляем код и просим
-    подтвердить его на /login/2fa. 200, не 401 — это не «токен протух», а
-    промежуточный шаг того же входа."""
+async def _finish_login(
+    user: User, http_request: Request, db: AsyncSession, studio_id: int | None = None
+) -> TokenResponse:
+    """Хвост входа, общий для /login, /google и принятия приглашения (EPIC 5,
+    задача 5): если у пользователя включена 2FA — токен не выдаём, отправляем
+    код и просим подтвердить его на /login/2fa. 200, не 401 — это не «токен
+    протух», а промежуточный шаг того же входа.
+
+    `studio_id` — активная студия, если она известна (приглашение): токен сразу
+    получает нужные studio_id и role, без захода на /select-crm."""
     if user.two_fa_enabled:
         await otp.issue(db, user, "login_2fa")
         return TokenResponse(
@@ -118,7 +123,7 @@ async def _finish_login(user: User, http_request: Request, db: AsyncSession) -> 
             two_fa_required=True, two_fa_identifier=user.email,
         )
 
-    access_token = await _build_token_for_user(user, db)
+    access_token = await _build_token_for_user(user, db, studio_id)
     await _record_login_session(user, access_token, http_request, db)
     return TokenResponse(access_token=access_token, token_type="bearer")
 
@@ -188,7 +193,10 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
     if not user.is_verified:
         raise HTTPException(
             status_code=403,
-            detail="Ваш email не подтвержден. Пожалуйста, зарегистрируйтесь заново или введите код.",
+            # Сюда попадает и приглашённый сотрудник, который ещё не открыл
+            # письмо: пароля у него нет вовсе, поэтому «введите код» одно
+            # ничего бы ему не подсказало.
+            detail="Аккаунт ещё не активирован. Примите приглашение по ссылке из письма или подтвердите email кодом.",
         )
 
     if not verify_password(request.password, user.hashed_password):

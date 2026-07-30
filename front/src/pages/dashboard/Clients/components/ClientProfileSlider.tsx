@@ -8,7 +8,7 @@ import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { WalletTab } from './WalletTab';
-import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled } from '../hooks/useClientsList';
+import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
@@ -409,6 +409,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const [editingReg,   setEditingReg]   = useState(false);
   const status = client.status;
   const frozen = client.frozen ?? false;
+  const freezeEnabled = useFreezeEnabled();
+  const freezeBlocked = !frozen && !freezeEnabled;
   const displaySubscription = client.active_subscription ?? client.subscription_alert;
   const tags = client.tags;
   const color = getAvatarColor(client.id, client.avatar_color);
@@ -705,8 +707,10 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid rgba(216,140,154,0.2)', background: 'rgba(216,140,154,0.03)', display: 'flex', gap: '6px' }}>
               <button
                 onClick={() => actions.toggleFreeze(frozen)}
-                style={{ flex: 1, padding: '7px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, border: `1px solid ${frozen ? 'rgba(147,181,216,0.4)' : 'rgba(123,108,212,0.25)'}`, background: frozen ? 'rgba(147,181,216,0.12)' : 'rgba(123,108,212,0.06)', color: frozen ? '#4a7ca8' : '#7b6cd4', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
-                onMouseEnter={e => e.currentTarget.style.transform='translateY(-1px)'}
+                disabled={freezeBlocked}
+                title={freezeBlocked ? t('panel.danger.freezeDisabledHint') : undefined}
+                style={{ flex: 1, padding: '7px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, border: `1px solid ${frozen ? 'rgba(147,181,216,0.4)' : 'rgba(123,108,212,0.25)'}`, background: frozen ? 'rgba(147,181,216,0.12)' : 'rgba(123,108,212,0.06)', color: frozen ? '#4a7ca8' : '#7b6cd4', cursor: freezeBlocked ? 'not-allowed' : 'pointer', opacity: freezeBlocked ? 0.5 : 1, fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
+                onMouseEnter={e => { if (!freezeBlocked) e.currentTarget.style.transform='translateY(-1px)'; }}
                 onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
               >
                 <IconFreeze/>{frozen ? t('panel.danger.unfreeze') : t('panel.danger.freeze')}
