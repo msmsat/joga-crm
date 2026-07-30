@@ -76,7 +76,10 @@ const OwnerRoute = ({ children }: { children: ReactNode }) => {
 // ─── 3. ЗАЩИТА ЛОГИНА (Не пускает, если УЖЕ вошел) ──────────────────────────
 const PublicRoute = ({ children }: { children: ReactNode }) => {
   const token = localStorage.getItem('token');
-  if (token) return <Navigate to="/dashboard" replace />;
+  const [searchParams] = useSearchParams();
+  // ?switch=1 — вход в другой аккаунт из профиля: токен текущей сессии намеренно
+  // сохраняем, поэтому редирект на дашборд здесь пропускаем.
+  if (token && searchParams.get('switch') !== '1') return <Navigate to="/dashboard" replace />;
   return children;
 };
 

@@ -13,7 +13,7 @@ export function useLogout() {
     onSettled: () => {
       qc.clear();
       localStorage.removeItem('token');
-      navigate('/login', { replace: true });
+      navigate('/', { replace: true });
     },
   });
 

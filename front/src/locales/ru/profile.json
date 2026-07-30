@@ -9,9 +9,7 @@
   },
   "security": {
     "changePassword": "Сменить пароль",
-    "logoutCurrent": "Завершить текущую сессию",
-    "logoutConfirm": "Завершить сессию на этом устройстве?",
-    "logoutConfirmSub": "Вы выйдете из аккаунта. Данные не пострадают."
+    "logout": "Выйти"
   },
   "accounts": {
     "title": "Мои студии",
@@ -19,7 +17,8 @@
     "count_few": "{{count}} студии",
     "count_many": "{{count}} студий",
     "enter": "Перейти",
-    "createNew": "Создать новую студию"
+    "login": "Логин",
+    "register": "Регистрация"
   },
   "session": {
     "current": "Текущая сессия",

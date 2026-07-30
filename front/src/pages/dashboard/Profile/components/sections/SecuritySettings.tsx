@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icons } from '../ui/ProfileIcons';
 import { ChangePasswordModal } from '../../../Settings/components/modals/ChangePasswordModal';
-import { ConfirmModal } from '../../../../../components/ui/index';
 import { useLogout } from '../../hooks/useLogout';
 
 export default function SecuritySettings() {
   const { t } = useTranslation("profile");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const { handleLogout } = useLogout();
+  const { handleLogout, isLoggingOut } = useLogout();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -39,7 +37,8 @@ export default function SecuritySettings() {
       </button>
 
       <button
-        onClick={() => setShowLogoutConfirm(true)}
+        onClick={() => handleLogout()}
+        disabled={isLoggingOut}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px',
           padding: '16px 20px', borderRadius: '14px',
@@ -58,24 +57,13 @@ export default function SecuritySettings() {
           e.currentTarget.style.transform = 'none';
         }}
       >
-        {icons.logout} {t("security.logoutCurrent")}
+        {icons.logout} {t("security.logout")}
       </button>
 
       {showPasswordModal && (
         <ChangePasswordModal
           onClose={() => setShowPasswordModal(false)}
           onSuccess={() => setShowPasswordModal(false)}
-        />
-      )}
-
-      {showLogoutConfirm && (
-        <ConfirmModal
-          title={t("security.logoutConfirm")}
-          message={t("security.logoutConfirmSub")}
-          confirmText={t("security.logoutCurrent")}
-          danger
-          onConfirm={handleLogout}
-          onClose={() => setShowLogoutConfirm(false)}
         />
       )}
     </div>

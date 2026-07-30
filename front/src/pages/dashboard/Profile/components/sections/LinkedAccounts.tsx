@@ -113,10 +113,15 @@ export default function LinkedAccounts({ studios, isLoading, isError, refetch, s
             );
           })}
 
-          <div className={styles.addAccountBtn} onClick={() => navigate('/onboarding?new=1')}>
-            <div className={styles.iconWrapper}>{icons.plus}</div>
-            <span style={{ flex: 1 }}>{t("profile:accounts.createNew")}</span>
-            <div className={styles.addArrow}>{icons.arrowRight}</div>
+          {/* Вход/регистрация в другой аккаунт: текущий токен не трогаем —
+              ?switch=1 отключает редирект PublicRoute на дашборд. */}
+          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+            <Button variant="primary" icon={icons.login} style={{ flex: 1 }} onClick={() => navigate('/login?switch=1')}>
+              {t("profile:accounts.login")}
+            </Button>
+            <Button variant="dark" icon={icons.plus} style={{ flex: 1 }} onClick={() => navigate('/register')}>
+              {t("profile:accounts.register")}
+            </Button>
           </div>
         </div>
       )}

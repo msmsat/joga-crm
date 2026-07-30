@@ -9,16 +9,15 @@
   },
   "security": {
     "changePassword": "Change password",
-    "logoutCurrent": "End current session",
-    "logoutConfirm": "End the session on this device?",
-    "logoutConfirmSub": "You'll be signed out. Your data won't be affected."
+    "logout": "Log out"
   },
   "accounts": {
     "title": "My studios",
     "count_one": "{{count}} studio",
     "count_other": "{{count}} studios",
     "enter": "Open",
-    "createNew": "Create new studio"
+    "login": "Log in",
+    "register": "Sign up"
   },
   "session": {
     "current": "Current session",
