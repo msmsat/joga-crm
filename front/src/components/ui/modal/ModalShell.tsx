@@ -18,11 +18,11 @@ const EXIT_MS = 200;
 const CloseContext = createContext<() => void>(() => {});
 export const useModalClose = () => useContext(CloseContext);
 
-// Каркас всех модалок кита: overlay с blur, вход (scale+translateY, пружина) и
-// ВЫХОД (плавное закрытие — раньше все модалки исчезали мгновенно), Esc и клик
-// мимо. Содержимое (Header/поля/Footer) передаётся как children.
-// Анимация и блюр — в классах .v-overlay / .v-modal (App.css): блюр-слой
-// намеренно не анимируется, иначе Chrome пересчитывает его каждый кадр.
+// Каркас всех модалок кита: затемняющий overlay, вход и ВЫХОД (плавное
+// закрытие — раньше все модалки исчезали мгновенно), Esc и клик мимо.
+// Содержимое (Header/поля/Footer) передаётся как children.
+// Анимация — в классах .v-overlay / .v-modal (App.css). Без backdrop-filter:
+// блюр во весь вьюпорт и был причиной лагов открытия (см. комментарий там).
 export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, maxWidth, closeOnBackdrop = true }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
 

@@ -62,10 +62,3 @@ class AISettingsUpdate(BaseSchema):
 
 class TelegramTokenIn(BaseSchema):
     token: str = Field(..., pattern=r"^\d+:[\w-]{30,}$")
-
-
-class WaEmbeddedSignup(BaseSchema):
-    """Результат Embedded Signup: code от FB.login + id из события WA_EMBEDDED_SIGNUP."""
-    code: str = Field(..., min_length=10)
-    waba_id: str = Field(..., pattern=r"^\d+$")
-    phone_number_id: str = Field(..., pattern=r"^\d+$")

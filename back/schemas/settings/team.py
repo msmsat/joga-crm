@@ -26,7 +26,9 @@ class StaffUpdate(BaseSchema):
     last_name: Optional[str] = None
     email: EmailStr
     phone: Optional[str] = None
-    role: Literal["admin", "trainer"]
+    # None → роль не меняется. Так правится владелец: его "owner" в Literal не входит,
+    # и промахнуться с понижением до admin/trainer нельзя.
+    role: Optional[Literal["admin", "trainer"]] = None
     department: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None

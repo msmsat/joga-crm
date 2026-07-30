@@ -16,7 +16,8 @@ export interface StaffCreate {
   schedule?: StaffWorkingHoursItem[]
 }
 
-export type StaffUpdate = Omit<StaffCreate, 'password'>
+// role необязателен: у владельца роль не меняется — поле просто не отправляем.
+export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string }
 
 export interface StaffMessagePayload {
   text: string

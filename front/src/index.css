@@ -8,80 +8,109 @@
    Мост дизайн-системы Velora → токены shadcn/ui.
    Акцент СТРОГО персиковый (--peach #F9A08B / --peach-light #FCAE91).
    Базовые токены (--peach, --bg, --onyx…) объявлены в App.css.
+
+   ВАЖНО: имена с префиксом --v-*. Раньше здесь стояли «канонические» имена
+   shadcn (--card, --accent, --muted, --border, --radius), и они совпадали с
+   легаси-токенами App.css. App.css грузится позже и НЕ в @layer, поэтому
+   перебивал эти значения: в тёмной теме --card оставался белым из App.css,
+   а --foreground честно уезжал в светлый — получался белый текст на белом.
+   Префикс делает слой shadcn независимым от легаси-палитры.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --radius: 0.75rem; /* 12px — как --radius в App.css */
+  --v-radius: 0.75rem; /* 12px — как --radius в App.css */
 
-  --background: #FDFCFB;
-  --foreground: #1A1A1A;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
+  --v-background: #FDFCFB;
+  --v-foreground: #1A1A1A;
+  --v-card: #FFFFFF;
+  --v-card-foreground: #1A1A1A;
+  --v-popover: #FFFFFF;
+  --v-popover-foreground: #1A1A1A;
 
-  --primary: #F9A08B;          /* персиковый акцент */
-  --primary-foreground: #FFFFFF;
-  --secondary: #F4F2F0;
-  --secondary-foreground: #1A1A1A;
-  --muted: #F4F2F0;
-  --muted-foreground: #666666;
-  --accent: #FCAE91;           /* персиковый light */
-  --accent-foreground: #1A1A1A;
-  --destructive: #D88C9A;      /* dusty rose из ДС */
+  --v-primary: #F9A08B;          /* персиковый акцент */
+  --v-primary-foreground: #FFFFFF;
+  --v-secondary: #F4F2F0;
+  --v-secondary-foreground: #1A1A1A;
+  --v-muted: #F4F2F0;
+  --v-muted-foreground: #666666;
+  --v-accent: #FCAE91;           /* персиковый light */
+  --v-accent-foreground: #1A1A1A;
+  --v-destructive: #D88C9A;      /* dusty rose из ДС */
 
-  --border: rgba(26, 26, 26, 0.08);
-  --input: rgba(26, 26, 26, 0.12);
-  --ring: #F9A08B;             /* фокус-кольцо — персиковое */
+  --v-border: rgba(26, 26, 26, 0.08);
+  --v-input: rgba(26, 26, 26, 0.12);
+  --v-ring: #F9A08B;             /* фокус-кольцо — персиковое */
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #F5F5F5;
-  --card: #1E1E1E;
-  --card-foreground: #F5F5F5;
-  --popover: #1E1E1E;
-  --popover-foreground: #F5F5F5;
+  --v-background: #121212;
+  --v-foreground: #F5F5F5;
+  --v-card: #1E1E1E;
+  --v-card-foreground: #F5F5F5;
+  --v-popover: #1E1E1E;
+  --v-popover-foreground: #F5F5F5;
 
-  --primary: #F9A08B;
-  --primary-foreground: #1A1A1A;
-  --secondary: #262626;
-  --secondary-foreground: #F5F5F5;
-  --muted: #262626;
-  --muted-foreground: #A0A0A0;
-  --accent: #FCAE91;
-  --accent-foreground: #1A1A1A;
-  --destructive: #D88C9A;
+  --v-primary: #F9A08B;
+  --v-primary-foreground: #1A1A1A;
+  --v-secondary: #262626;
+  --v-secondary-foreground: #F5F5F5;
+  --v-muted: #262626;
+  --v-muted-foreground: #A0A0A0;
+  --v-accent: #FCAE91;
+  --v-accent-foreground: #1A1A1A;
+  --v-destructive: #D88C9A;
 
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.14);
-  --ring: #F9A08B;
+  --v-border: rgba(255, 255, 255, 0.1);
+  --v-input: rgba(255, 255, 255, 0.14);
+  --v-ring: #F9A08B;
+}
+
+/* Дашборд пока светлый целиком: легаси CSS-модули страниц не знают про .dark
+   и рисуют белые карточки в любой теме. Поэтому новые Tailwind-поверхности
+   внутри дашборда оборачиваем в .v-light-scope — она возвращает светлые
+   значения токенов даже при .dark на <html>, чтобы новая модалка не оказалась
+   единственным тёмным островом. Снять, когда у дашборда появится настоящая
+   тёмная тема (тогда просто удалить класс из разметки). */
+.v-light-scope {
+  --v-background: #FDFCFB;
+  --v-foreground: #1A1A1A;
+  --v-card: #FFFFFF;
+  --v-card-foreground: #1A1A1A;
+  --v-popover: #FFFFFF;
+  --v-popover-foreground: #1A1A1A;
+  --v-primary-foreground: #FFFFFF;
+  --v-secondary: #F4F2F0;
+  --v-secondary-foreground: #1A1A1A;
+  --v-muted: #F4F2F0;
+  --v-muted-foreground: #666666;
+  --v-border: rgba(26, 26, 26, 0.08);
+  --v-input: rgba(26, 26, 26, 0.12);
 }
 
 /* Проброс токенов в утилиты Tailwind v4 (bg-primary, text-muted-foreground, …) */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-background: var(--v-background);
+  --color-foreground: var(--v-foreground);
+  --color-card: var(--v-card);
+  --color-card-foreground: var(--v-card-foreground);
+  --color-popover: var(--v-popover);
+  --color-popover-foreground: var(--v-popover-foreground);
+  --color-primary: var(--v-primary);
+  --color-primary-foreground: var(--v-primary-foreground);
+  --color-secondary: var(--v-secondary);
+  --color-secondary-foreground: var(--v-secondary-foreground);
+  --color-muted: var(--v-muted);
+  --color-muted-foreground: var(--v-muted-foreground);
+  --color-accent: var(--v-accent);
+  --color-accent-foreground: var(--v-accent-foreground);
+  --color-destructive: var(--v-destructive);
+  --color-border: var(--v-border);
+  --color-input: var(--v-input);
+  --color-ring: var(--v-ring);
 
   --font-sans: 'Manrope', sans-serif;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: calc(var(--v-radius) - 4px);
+  --radius-md: calc(var(--v-radius) - 2px);
+  --radius-lg: var(--v-radius);
+  --radius-xl: calc(var(--v-radius) + 4px);
 }

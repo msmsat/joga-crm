@@ -1,22 +1,15 @@
 /* ── MOCKUP OVERLAY ── */
-/* Блюр — отдельный статичный слой (::after), превью и затемнение ему СОСЕДИ, а
-   не потомки: перерисовка внутри элемента с backdrop-filter заставляет Chrome
-   размывать весь вьюпорт заново каждый кадр открытия. */
+/* Только затемнение, без backdrop-filter (см. .v-overlay в App.css): за тёмной
+   плашкой 0.8 блюра всё равно не видно, а стоил он размытия всего вьюпорта. */
 .mockup-overlay {
   position: fixed; inset: 0; z-index: 300;
   display: flex;
   overflow-y: auto; /* на низких окнах превью скроллится, а не режется */
   padding: 24px;
 }
-.mockup-overlay::after {
-  content: ''; position: fixed; inset: 0; z-index: -2;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transform: translateZ(0);
-}
 .mockup-overlay::before {
   content: ''; position: fixed; inset: 0; z-index: -1;
-  background: rgba(10, 10, 18, 0.75);
+  background: rgba(10, 10, 18, 0.8);
   animation: fadeIn 0.25s ease both;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

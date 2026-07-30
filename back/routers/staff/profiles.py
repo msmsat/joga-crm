@@ -372,7 +372,7 @@ async def update_staff(
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
-    role_changed = membership.role != data.role
+    role_changed = data.role is not None and membership.role != data.role
 
     user.name = data.name
     user.last_name = data.last_name
@@ -384,7 +384,8 @@ async def update_staff(
     user.rate_type = data.rate_type
     user.photo_url = data.photo_url
     user.services = services
-    membership.role = data.role
+    if data.role is not None:
+        membership.role = data.role
     await _replace_schedule(user.id, data.schedule, db)
     await db.commit()
     await db.refresh(user)

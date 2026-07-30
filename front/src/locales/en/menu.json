@@ -40,8 +40,13 @@
   "navbar": {
     "create": "Create"
   },
+  "userMenu": {
+    "accounts": "My studios",
+    "logout": "Log out"
+  },
   "tooltips": {
     "studioName": "Your studio: {{name}}",
-    "openProfile": "Open profile"
+    "openProfile": "Open profile",
+    "openAccountMenu": "Account menu"
   }
 }

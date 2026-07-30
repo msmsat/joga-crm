@@ -46,8 +46,7 @@
     "instructionStep3": "Номер подключится один раз — он же используется для уведомлений клиентам; вернитесь сюда и включите автоответчик",
     "connectButton": "Подключить WhatsApp",
     "connectedToast": "Номер WhatsApp подключён",
-    "connectFailedToast": "Не удалось подключить номер WhatsApp",
-    "notConfiguredToast": "Подключение WhatsApp ещё не настроено — обратитесь в поддержку"
+    "connectErrorToast": "Не удалось подключить номер WhatsApp"
   },
   "history": {
     "title": "История чатов",
@@ -122,6 +121,8 @@
     "statusDisabled": "Выключен",
     "statHandled": "Обработано",
     "statRating": "Оценка",
+    "styleTitle": "Стиль ответа",
+    "styleAllChannels": "действует во всех каналах",
     "toneLabel": "Тон ответа",
     "tone": {
       "friendly": "Дружелюбный",

@@ -35,7 +35,6 @@ export const aiApi = {
   disconnectInstagram: () =>
     client.delete<void>('/ai/instagram/connection'),
 
-  // Embedded Signup: code + id из окна Meta -> постоянный токен номера на сервере.
-  connectWhatsapp: (body: { code: string; waba_id: string; phone_number_id: string }) =>
-    client.post<{ display_phone_number: string }>('/ai/whatsapp/embedded-signup', body),
+  getWhatsappOauthUrl: () =>
+    client.get<{ url: string }>('/ai/whatsapp/oauth-url'),
 }

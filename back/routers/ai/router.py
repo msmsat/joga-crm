@@ -9,7 +9,11 @@ from .instagram import (
     webhook_router as instagram_webhook_router,
 )
 from .settings import router as settings_router
-from .whatsapp import router as whatsapp_router, webhook_router as whatsapp_webhook_router
+from .whatsapp import (
+    callback_router as whatsapp_callback_router,
+    router as whatsapp_router,
+    webhook_router as whatsapp_webhook_router,
+)
 
 router = APIRouter()
 
@@ -23,6 +27,9 @@ router.include_router(settings_router, dependencies=_gate)
 router.include_router(agents_router, dependencies=_gate)
 router.include_router(instagram_router, dependencies=_gate)
 router.include_router(whatsapp_router, dependencies=_gate)
+# Возврат браузера из мастера Embedded Signup — без Authorization-заголовка,
+# студию несёт подписанный state (та же схема, что у Instagram выше).
+router.include_router(whatsapp_callback_router)
 router.include_router(instagram_callback_router)
 # Вебхук Meta: ни JWT, ни подписки студии — за студию отвечает ig_user_id из тела,
 # за подлинность — verify-токен (GET) и X-Hub-Signature-256 (POST).

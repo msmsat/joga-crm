@@ -33,14 +33,16 @@ export default function AIPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   useEffect(() => {
-    const ig = searchParams.get('ig');
-    if (!ig) return;
-    if (ig === 'connected') {
+    // Instagram и WhatsApp возвращаются из мастера Meta одинаково: ?ig=/?wa=.
+    const channel = searchParams.get('ig') ? 'instagram' : searchParams.get('wa') ? 'whatsapp' : null;
+    if (!channel) return;
+    const result = searchParams.get(channel === 'instagram' ? 'ig' : 'wa');
+    if (result === 'connected') {
       // Подключение сразу открывает канал и в Уведомлениях/Интеграциях.
       invalidateChannelGroup(qc);
-      toast.success(t('instagram.connectedToast'));
-    } else if (ig === 'error') {
-      toast.error(t('instagram.connectErrorToast'));
+      toast.success(t(`${channel}.connectedToast`));
+    } else if (result === 'error') {
+      toast.error(t(`${channel}.connectErrorToast`));
     }
     // Затираем query, чтобы тост не повторялся на F5.
     navigate('/dashboard/ai', { replace: true });

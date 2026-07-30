@@ -46,8 +46,7 @@
     "instructionStep3": "The number is connected once — the same one is used for client notifications; come back here and switch the auto-responder on",
     "connectButton": "Connect WhatsApp",
     "connectedToast": "WhatsApp number connected",
-    "connectFailedToast": "Could not connect the WhatsApp number",
-    "notConfiguredToast": "WhatsApp signup is not configured yet — contact support"
+    "connectErrorToast": "Could not connect the WhatsApp number"
   },
   "history": {
     "title": "Chat history",
@@ -122,6 +121,8 @@
     "statusDisabled": "Disabled",
     "statHandled": "Handled",
     "statRating": "Rating",
+    "styleTitle": "Reply style",
+    "styleAllChannels": "applies to all channels",
     "toneLabel": "Reply tone",
     "tone": {
       "friendly": "Friendly",

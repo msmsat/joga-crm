@@ -1,13 +1,15 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Button, Tooltip, ConfirmModal } from '../../../../../components/ui/index';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ConfirmModal } from '../../../../../components/ui/index';
+import { Button } from '@/components/ui-shadcn/button';
+import { cn } from '@/lib/utils';
 import type { AgentChannel, AgentConfig, AgentTone } from '../../types';
 import PulseRingSVG from '../animations/PulseRingSVG';
-import CustomSelect from '../CustomSelect';
-import styles from '../../AI.module.css';
-
-const TG_TOKEN_RE = /^\d+:[\w-]{30,}$/;
+import WaveformSVG from '../animations/WaveformSVG';
+import ChannelPane from './ChannelPane';
+import PromptPane from './PromptPane';
+import { CTA, TelegramConnect, InstagramConnect, WhatsappConnect } from './ConnectAreas';
 
 interface AgentSetupModalProps {
   config: AgentConfig;
@@ -28,157 +30,75 @@ interface AgentSetupModalProps {
   onClose: () => void;
 }
 
-const TONE_VALUES: AgentTone[] = ['friendly', 'formal', 'neutral'];
+type Tab = AgentChannel | 'prompt';
 
-function StatBadge({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className={styles.statBadge}>
-      <div className={styles.statValue}>{value}</div>
-      <div className={styles.statLabel}>{label}</div>
-    </div>
-  );
-}
+const ICONS: Record<Tab, React.ReactNode> = {
+  telegram: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 2L11 13" /><path d="M22 2L15 22l-4-9-9-4 20-7z" />
+    </svg>
+  ),
+  instagram: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" strokeWidth="0" />
+    </svg>
+  ),
+  whatsapp: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  ),
+  prompt: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" /><path d="M18 17.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z" />
+    </svg>
+  ),
+};
 
-function ChannelSection({
-  label,
-  icon,
-  config,
-  onUpdate,
-  onToggle,
-  showOffHours,
-  tokenArea,
-  toggleDisabled,
-  toggleDisabledReason,
-  statsPendingCaption,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  config: AgentConfig['telegram'];
-  onUpdate: (field: string, value: string | number | boolean | AgentTone) => void;
-  onToggle: () => void;
-  showOffHours?: boolean;
-  tokenArea: React.ReactNode;
-  toggleDisabled?: boolean;
-  toggleDisabledReason?: string;
-  statsPendingCaption?: string;
-}) {
-  const { t } = useTranslation('ai');
-  const toneOptions = TONE_VALUES.map(v => ({ value: v, label: t(`agents.tone.${v}`) }));
-  const toggleBtn = (
-    <button
-      onClick={onToggle}
-      disabled={toggleDisabled}
-      className={`${styles.toggleSwitch} ${config.enabled ? styles.toggleSwitchOn : ''}`}
-    >
-      <div className={styles.toggleThumb} />
-    </button>
-  );
-
-  return (
-    <div className={styles.channelSection}>
-      <div className={styles.channelHeader}>
-        <div className={styles.channelIconWrap}>{icon}</div>
-        <div>
-          <div className={styles.channelName}>{label}</div>
-          <div className={styles.channelStatus}>
-            <PulseRingSVG active={config.enabled} size={8} />
-            <span style={{ color: config.enabled ? '#A3C9A8' : '#999', fontSize: 11, marginLeft: 4 }}>
-              {config.enabled ? t('common:status.active') : t('agents.statusDisabled')}
-            </span>
-          </div>
-        </div>
-        <div style={{ flex: 1 }} />
-        {toggleDisabled && toggleDisabledReason ? <Tooltip label={toggleDisabledReason}>{toggleBtn}</Tooltip> : toggleBtn}
-      </div>
-
-      {config.enabled && (
-        config.handledCount > 0 ? (
-          <div className={styles.statsRow}>
-            <StatBadge label={t('agents.statHandled')} value={config.handledCount} />
-            <StatBadge label={t('agents.statRating')} value={`${config.avgRating.toFixed(1)} ★`} />
-          </div>
-        ) : statsPendingCaption ? (
-          <div className={styles.statLabel}>{statsPendingCaption}</div>
-        ) : null
-      )}
-
-      <div className={styles.modalGrid}>
-        {tokenArea}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>{t('agents.toneLabel')}</label>
-          <CustomSelect
-            value={config.tone}
-            options={toneOptions}
-            onChange={v => onUpdate('tone', v as AgentTone)}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <Input
-            label={t('agents.maxLengthLabel')}
-            type="number"
-            value={String(config.maxLength)}
-            onChange={v => onUpdate('maxLength', Number(v))}
-            min={50}
-            max={4000}
-            step={50}
-            error={config.maxLength < 50 || config.maxLength > 4000 ? t('agents.maxLengthError') : undefined}
-          />
-        </div>
-        {showOffHours && (
-          <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                checked={config.offHoursOnly}
-                onChange={e => onUpdate('offHoursOnly', e.target.checked)}
-                className={styles.checkbox}
-              />
-              <span className={styles.checkLabel}>{t('agents.offHoursLabel')}</span>
-            </label>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+// Одно окно фиксированного размера: канал выбирается слева, содержимое справа
+// прокручивается внутри себя — модалка не «прыгает» при переключении вкладок.
+// Тон и лимит ответа общие для всех каналов и живут на вкладке промпта.
 export default function AgentSetupModal({
-  config,
-  isSaving,
-  tgConnected,
-  isVerifyingTelegram,
-  igConnected,
-  isConnectingInstagram,
-  waConnected,
-  isConnectingWhatsapp,
-  onConnectWhatsapp,
-  onToggleChannel,
-  onSave,
-  onVerifyTelegram,
-  onDisconnectTelegram,
-  onConnectInstagram,
-  onDisconnectInstagram,
-  onClose,
+  config, isSaving, tgConnected, isVerifyingTelegram, igConnected, isConnectingInstagram,
+  waConnected, isConnectingWhatsapp, onConnectWhatsapp, onToggleChannel, onSave,
+  onVerifyTelegram, onDisconnectTelegram, onConnectInstagram, onDisconnectInstagram, onClose,
 }: AgentSetupModalProps) {
-  const { t, i18n } = useTranslation('ai');
-  const [activeTab, setActiveTab] = useState<AgentChannel | 'prompt'>('telegram');
+  const { t } = useTranslation('ai');
+  const [activeTab, setActiveTab] = useState<Tab>('telegram');
   // Тон/лимит/офчасы/промпт правятся локально до «Сохранить» — enabled/статистика
   // всегда берутся из живого config (тумблер шлёт PATCH сразу, см. useAIAgent).
   const [draft, setDraft] = useState<AgentConfig>(config);
   const [confirmDisconnect, setConfirmDisconnect] = useState<'telegram' | 'instagram' | null>(null);
 
-  const updateChannel = (channel: AgentChannel, field: string, value: string | number | boolean | AgentTone) => {
+  useEffect(() => {
+    // Esc над открытым подтверждением закрывает только его (ConfirmModal кита).
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !confirmDisconnect) onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose, confirmDisconnect]);
+
+  const updateChannel = (channel: AgentChannel, field: string, value: string | number | boolean | AgentTone) =>
     setDraft(prev => ({ ...prev, [channel]: { ...prev[channel], [field]: value } }));
-  };
-  const updateSystemPrompt = (prompt: string) => setDraft(prev => ({ ...prev, systemPrompt: prompt }));
+
+  // Тон и лимит — одно значение на все каналы (на сервере поля per-channel).
+  const updateAllChannels = (field: 'tone' | 'maxLength', value: AgentTone | number) =>
+    setDraft(prev => ({
+      ...prev,
+      telegram: { ...prev.telegram, [field]: value },
+      instagram: { ...prev.instagram, [field]: value },
+      whatsapp: { ...prev.whatsapp, [field]: value },
+    }));
 
   // Не даём уйти на сервер невалидному tg_max_length/ig_max_length (бэк: 50–4000).
   const maxLengthInvalid = (n: number) => n < 50 || n > 4000;
   const canSave = !maxLengthInvalid(draft.telegram.maxLength) && !maxLengthInvalid(draft.instagram.maxLength)
     && !maxLengthInvalid(draft.whatsapp.maxLength);
 
-  // username — только для чтения (заполняется verify-эндпоинтом), не редактируется вручную —
-  // берём из живого config; token остаётся в draft, пока не подтверждён «Проверить и подключить».
+  // username/статистика — только для чтения (заполняются verify-эндпоинтом и
+  // счётчиками), поэтому берутся из живого config; token остаётся в draft, пока
+  // не подтверждён «Проверить и подключить».
   const display = {
     telegram: { ...draft.telegram, enabled: config.telegram.enabled, handledCount: config.telegram.handledCount, avgRating: config.telegram.avgRating, username: config.telegram.username },
     instagram: {
@@ -191,253 +111,209 @@ export default function AgentSetupModal({
     },
   };
 
-  const tgTokenTouched = draft.telegram.token.trim().length > 0;
-  const tgTokenValid = TG_TOKEN_RE.test(draft.telegram.token.trim());
-
   const handleDisconnectTelegram = async () => {
     await onDisconnectTelegram();
     updateChannel('telegram', 'token', '');
   };
 
-  const telegramTokenArea = (
-    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-      <label className={styles.formLabel}>{t('telegram.tokenLabel')}</label>
-      
-      {tgConnected && display.telegram.username ? (
-        /* Если бот подключен — показываем статус и кнопку отключения */
-        <div className={styles.tokenConnectedRow} style={{ marginTop: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className={styles.tokenBadge}>@{display.telegram.username}</span>
-            <span style={{ fontSize: 12, color: '#5BAB72', fontWeight: 600 }}>
-              ✓ {t('common:status.connected', 'Подключен')}
-            </span>
-          </div>
-          <button 
-            type="button" 
-            className={styles.tokenDisconnectBtn} 
-            onClick={() => setConfirmDisconnect('telegram')}
-          >
-            {t('telegram.disconnect')}
-          </button>
-        </div>
-      ) : (
-        /* Если токена нет — показываем поле ввода */
-        <div className={styles.tokenVerifyRow}>
-          <div style={{ flex: 1 }}>
-            <Input
-              value={draft.telegram.token}
-              onChange={v => updateChannel('telegram', 'token', v)}
-              placeholder={t('telegram.tokenPlaceholder')}
-              monospace
-              error={tgTokenTouched && !tgTokenValid ? t('telegram.tokenInvalidFormat') : undefined}
-            />
-          </div>
-          <Button 
-            onClick={() => onVerifyTelegram(draft.telegram.token.trim())} 
-            loading={isVerifyingTelegram} 
-            disabled={!tgTokenValid}
-          >
-            {t('telegram.verifyButton')}
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-
-  const instagramTokenArea = (
-    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-      {igConnected ? (
-        <div className={styles.tokenConnectedRow} style={{ marginTop: 0, flexWrap: 'wrap' }}>
-          <span className={styles.tokenBadge}>@{display.instagram.username}</span>
-          {display.instagram.expiresAt && (
-            <span style={{ fontSize: 12.5, color: '#999' }}>
-              {t('instagram.expiresUntil', {
-                date: new Intl.DateTimeFormat(i18n.language).format(new Date(display.instagram.expiresAt)),
-              })}
-            </span>
-          )}
-          <button type="button" className={styles.tokenDisconnectBtn} onClick={() => setConfirmDisconnect('instagram')}>
-            {t('instagram.disconnect')}
-          </button>
-        </div>
-      ) : (
-        <Button onClick={onConnectInstagram} loading={isConnectingInstagram}>
-          {t('instagram.connectButton')}
-        </Button>
-      )}
-    </div>
-  );
-
-  // Номер один на студию (он же канал Уведомлений), но подключить его можно и
-  // отсюда — Embedded Signup: окно Meta вместо ручного токена и Phone Number ID.
-  const whatsappTokenArea = (
-    <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-      <label className={styles.formLabel}>{t('whatsapp.numberLabel')}</label>
-      {waConnected ? (
-        <div className={styles.tokenConnectedRow} style={{ marginTop: 0 }}>
-          <span className={styles.tokenBadge}>{display.whatsapp.username}</span>
-          <span style={{ fontSize: 12, color: '#5BAB72', fontWeight: 600 }}>
-            {t('common:status.connected', 'Подключён')}
-          </span>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <Button onClick={onConnectWhatsapp} loading={isConnectingWhatsapp}>
-            {t('whatsapp.connectButton')}
-          </Button>
-          <Link to="/dashboard/notifications" className={styles.tokenDisconnectBtn} style={{ textDecoration: 'none' }}>
-            {t('whatsapp.connectLink')}
-          </Link>
-        </div>
-      )}
-    </div>
-  );
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'telegram', label: 'Telegram' },
+    { id: 'instagram', label: 'Instagram Direct' },
+    { id: 'whatsapp', label: 'WhatsApp' },
+    { id: 'prompt', label: t('agents.tabPrompt') },
+  ];
+  const activeLabel = tabs.find(tab => tab.id === activeTab)!.label;
+  const anyEnabled = display.telegram.enabled || display.instagram.enabled || display.whatsapp.enabled;
 
   return (
-    // v-blur-overlay — глобальный маркер: по нему App.css гасит анимации фона,
-    // пока висит блюр (на класс из CSS-модуля в :has() не сослаться).
-    <div className={`${styles.modalOverlay} v-blur-overlay`} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={styles.modal}>
-        <div className={styles.modalHeader}>
-          <div>
-            <div className={styles.modalTitle}>{t('agents.modalTitle')}</div>
-            <div className={styles.modalSubtitle}>{t('agents.modalSubtitle')}</div>
+    <div
+      className="v-light-scope fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(26,26,26,0.5)] p-4 fade-in duration-200"
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      {/* Фон карточки — жемчужный (--v-background), белыми остаются только
+          внутренние секции: иначе белое на белом сливается. */}
+      <div className="flex h-[628px] max-h-[calc(100vh-32px)] w-[920px] max-w-[calc(100vw-32px)] animate-in overflow-hidden rounded-[26px] bg-background font-sans text-foreground ring-1 ring-black/[0.06] fade-in duration-300"
+        style={{ boxShadow: '0 50px 120px -30px rgba(26,26,26,0.45), 0 16px 48px -16px rgba(26,26,26,0.16)' }}
+      >
+        {/* ─── левая колонка: каналы ─── */}
+        {/* dark:-вариантов в модалке нет намеренно: дашборд пока светлый целиком
+            (см. .v-light-scope в index.css) — иначе один блок уезжал бы в тёмный. */}
+        <aside className="flex w-[268px] shrink-0 flex-col gap-1 border-r border-border bg-gradient-to-b from-[#FFF5EF] via-[#FDFAF8] to-[#FDFCFB] p-5">
+          <div className="mb-6 flex items-start gap-3 px-1">
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#FCAE91] to-[#F9A08B] text-white shadow-[0_8px_18px_-10px_rgba(249,160,139,0.8)]">
+              {ICONS.prompt}
+            </div>
+            <div className="min-w-0">
+              <div className="text-[14.5px] font-extrabold leading-tight tracking-[-0.02em] text-foreground">{t('agents.modalTitle')}</div>
+              <div className="mt-1 text-[11.5px] leading-snug text-muted-foreground">{t('agents.modalSubtitle')}</div>
+            </div>
           </div>
-          <button onClick={onClose} className={styles.modalClose}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        <div className={styles.modalTabs}>
-          {([
-            { id: 'telegram', label: 'Telegram' },
-            { id: 'instagram', label: 'Instagram Direct' },
-            { id: 'whatsapp', label: 'WhatsApp' },
-            { id: 'prompt', label: t('agents.tabPrompt') },
-          ] as const).map(tab => (
+          {tabs.map(tab => {
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="group relative flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left"
+              >
+                {active && (
+                  <motion.span
+                    layoutId="agentTabPill"
+                    className="absolute inset-0 rounded-xl bg-card ring-1 ring-black/[0.05]"
+                    style={{ boxShadow: '0 10px 24px -14px rgba(26,26,26,0.45)' }}
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <span className={cn(
+                  'relative z-10 grid size-7 shrink-0 place-items-center rounded-lg transition-colors [&>svg]:size-4',
+                  active ? 'bg-primary/15 text-[#DE8163]' : 'text-muted-foreground group-hover:text-foreground',
+                )}>
+                  {ICONS[tab.id]}
+                </span>
+                <span className={cn(
+                  'relative z-10 flex-1 truncate text-[13px] font-bold transition-colors',
+                  active ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground',
+                )}>
+                  {tab.label}
+                </span>
+                {tab.id !== 'prompt' && (
+                  <span className="relative z-10 shrink-0"><PulseRingSVG active={display[tab.id].enabled} size={7} /></span>
+                )}
+              </button>
+            );
+          })}
+
+          <div className="mt-auto flex items-center gap-3 rounded-xl border border-border bg-card/70 px-3.5 py-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground/70">{t('settings.model')}</div>
+              <div className="mt-0.5 truncate text-[12.5px] font-extrabold text-foreground">{t('models.velora-3.5')}</div>
+            </div>
+            <WaveformSVG active={anyEnabled} width={40} height={20} barCount={9} />
+          </div>
+        </aside>
+
+        {/* ─── правая колонка: содержимое вкладки ─── */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-center gap-4 px-7 pt-6 pb-4">
+            <div className="text-[17px] font-extrabold tracking-[-0.02em] text-foreground">{activeLabel}</div>
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`${styles.modalTab} ${activeTab === tab.id ? styles.modalTabActive : ''}`}
+              onClick={onClose}
+              className="ml-auto grid size-8 shrink-0 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
             >
-              {tab.label}
-              {tab.id !== 'prompt' && display[tab.id].enabled && (
-                <PulseRingSVG active size={7} />
-              )}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
             </button>
-          ))}
-        </div>
+          </div>
 
-        <div className={styles.modalBody}>
-          {activeTab === 'telegram' && (
-            <ChannelSection
-              label="Telegram"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8">
-                  <path d="M22 2L11 13" /><path d="M22 2L15 22l-4-9-9-4 20-7z" />
-                </svg>
-              }
-              config={display.telegram}
-              onUpdate={(field, value) => updateChannel('telegram', field, value)}
-              onToggle={() => onToggleChannel('telegram')}
-              tokenArea={telegramTokenArea}
-              toggleDisabled={!tgConnected}
-              toggleDisabledReason={t('telegram.gateTooltip')}
-              statsPendingCaption={t('telegram.statsPending')}
-            />
-          )}
-          {activeTab === 'telegram' && !tgConnected && (
-            <div className={styles.promptHint} style={{ marginTop: 14 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('telegram.instructionTitle')}</div>
-              <div>1. {t('telegram.instructionStep1')}</div>
-              <div>2. {t('telegram.instructionStep2')}</div>
-              <div>3. {t('telegram.instructionStep3')}</div>
-              <div>4. {t('telegram.instructionStep4')}</div>
-            </div>
-          )}
+          <div className="min-h-0 flex-1 overflow-y-auto px-7 pb-6 [scrollbar-color:rgba(249,160,139,0.3)_transparent] [scrollbar-width:thin]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.16, ease: 'easeOut' }}
+              >
+                {activeTab === 'telegram' && (
+                  <ChannelPane
+                    label="Telegram"
+                    icon={ICONS.telegram}
+                    config={display.telegram}
+                    connected={tgConnected}
+                    gateReason={t('telegram.gateTooltip')}
+                    statsPending={t('telegram.statsPending')}
+                    stepsTitle={t('telegram.instructionTitle')}
+                    steps={[1, 2, 3, 4].map(i => t(`telegram.instructionStep${i}`))}
+                    onToggle={() => onToggleChannel('telegram')}
+                    onOffHoursChange={v => updateChannel('telegram', 'offHoursOnly', v)}
+                    connectArea={
+                      <TelegramConnect
+                        token={draft.telegram.token}
+                        username={display.telegram.username}
+                        connected={tgConnected}
+                        isVerifying={isVerifyingTelegram}
+                        onTokenChange={v => updateChannel('telegram', 'token', v)}
+                        onVerify={() => onVerifyTelegram(draft.telegram.token.trim())}
+                        onDisconnect={() => setConfirmDisconnect('telegram')}
+                      />
+                    }
+                  />
+                )}
 
-          {activeTab === 'instagram' && (
-            <ChannelSection
-              label="Instagram Direct"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8">
-                  <rect x="2" y="2" width="20" height="20" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="1.2" fill="#F9A08B" strokeWidth="0" />
-                </svg>
-              }
-              config={display.instagram}
-              onUpdate={(field, value) => updateChannel('instagram', field, value)}
-              onToggle={() => onToggleChannel('instagram')}
-              showOffHours
-              tokenArea={instagramTokenArea}
-              toggleDisabled={!igConnected}
-              toggleDisabledReason={t('instagram.gateTooltip')}
-              statsPendingCaption={t('instagram.statsPending')}
-            />
-          )}
-          {activeTab === 'instagram' && !igConnected && (
-            <div className={styles.promptHint} style={{ marginTop: 14 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('instagram.instructionTitle')}</div>
-              <div>1. {t('instagram.instructionStep1')}</div>
-              <div>2. {t('instagram.instructionStep2')}</div>
-              <div>3. {t('instagram.instructionStep3')}</div>
-              <div>4. {t('instagram.instructionStep4')}</div>
-            </div>
-          )}
+                {activeTab === 'instagram' && (
+                  <ChannelPane
+                    label="Instagram Direct"
+                    icon={ICONS.instagram}
+                    config={display.instagram}
+                    connected={igConnected}
+                    gateReason={t('instagram.gateTooltip')}
+                    statsPending={t('instagram.statsPending')}
+                    stepsTitle={t('instagram.instructionTitle')}
+                    steps={[1, 2, 3, 4].map(i => t(`instagram.instructionStep${i}`))}
+                    showOffHours
+                    onToggle={() => onToggleChannel('instagram')}
+                    onOffHoursChange={v => updateChannel('instagram', 'offHoursOnly', v)}
+                    connectArea={
+                      <InstagramConnect
+                        username={display.instagram.username}
+                        expiresAt={display.instagram.expiresAt}
+                        connected={igConnected}
+                        isConnecting={isConnectingInstagram}
+                        onConnect={onConnectInstagram}
+                        onDisconnect={() => setConfirmDisconnect('instagram')}
+                      />
+                    }
+                  />
+                )}
 
-          {activeTab === 'whatsapp' && (
-            <ChannelSection
-              label="WhatsApp"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                </svg>
-              }
-              config={display.whatsapp}
-              onUpdate={(field, value) => updateChannel('whatsapp', field, value)}
-              onToggle={() => onToggleChannel('whatsapp')}
-              showOffHours
-              tokenArea={whatsappTokenArea}
-              toggleDisabled={!waConnected}
-              toggleDisabledReason={t('whatsapp.gateTooltip')}
-              statsPendingCaption={t('whatsapp.statsPending')}
-            />
-          )}
-          {activeTab === 'whatsapp' && !waConnected && (
-            <div className={styles.promptHint} style={{ marginTop: 14 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6, color: '#1A1A1A' }}>{t('whatsapp.instructionTitle')}</div>
-              <div>1. {t('whatsapp.instructionStep1')}</div>
-              <div>2. {t('whatsapp.instructionStep2')}</div>
-              <div>3. {t('whatsapp.instructionStep3')}</div>
-            </div>
-          )}
+                {activeTab === 'whatsapp' && (
+                  <ChannelPane
+                    label="WhatsApp"
+                    icon={ICONS.whatsapp}
+                    config={display.whatsapp}
+                    connected={waConnected}
+                    gateReason={t('whatsapp.gateTooltip')}
+                    statsPending={t('whatsapp.statsPending')}
+                    stepsTitle={t('whatsapp.instructionTitle')}
+                    steps={[1, 2, 3].map(i => t(`whatsapp.instructionStep${i}`))}
+                    showOffHours
+                    onToggle={() => onToggleChannel('whatsapp')}
+                    onOffHoursChange={v => updateChannel('whatsapp', 'offHoursOnly', v)}
+                    connectArea={
+                      <WhatsappConnect
+                        number={display.whatsapp.username}
+                        connected={waConnected}
+                        isConnecting={isConnectingWhatsapp}
+                        onConnect={onConnectWhatsapp}
+                      />
+                    }
+                  />
+                )}
 
-          {activeTab === 'prompt' && (
-            <div className={styles.promptSection}>
-              <div className={styles.promptHint}>
-                {t('agents.promptHint')}
-              </div>
-              <textarea
-                value={draft.systemPrompt}
-                onChange={e => updateSystemPrompt(e.target.value)}
-                className={styles.promptTextarea}
-                rows={10}
-                maxLength={2000}
-                placeholder={t('agents.promptPlaceholder')}
-              />
-              <div className={styles.promptCount}>{t('agents.promptCount', { count: draft.systemPrompt.length })}</div>
-            </div>
-          )}
-        </div>
+                {activeTab === 'prompt' && (
+                  <PromptPane
+                    systemPrompt={draft.systemPrompt}
+                    tone={draft.telegram.tone}
+                    maxLength={draft.telegram.maxLength}
+                    onPromptChange={prompt => setDraft(prev => ({ ...prev, systemPrompt: prompt }))}
+                    onToneChange={tone => updateAllChannels('tone', tone)}
+                    onMaxLengthChange={n => updateAllChannels('maxLength', n)}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-        <div className={styles.modalFooter}>
-          <button onClick={onClose} className={styles.btnSecondary}>{t('common:buttons.cancel')}</button>
-          <button onClick={() => onSave(draft)} className={styles.btnPrimary} disabled={isSaving || !canSave}>
-            {isSaving ? t('common:buttons.saving') : t('common:buttons.save')}
-          </button>
+          <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-border px-7 py-4">
+            <Button variant="ghost" onClick={onClose} className="h-10 rounded-xl px-4 text-[13.5px] font-semibold text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground">
+              {t('common:buttons.cancel')}
+            </Button>
+            <Button onClick={() => onSave(draft)} disabled={isSaving || !canSave} className={CTA}>
+              {isSaving ? t('common:buttons.saving') : t('common:buttons.save')}
+            </Button>
+          </div>
         </div>
       </div>
 

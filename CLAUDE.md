@@ -216,7 +216,7 @@
 | `Input` | `components/ui/index` | Поле с label, glow-фокусом персиковым и состоянием `error` |
 | `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита |
 | `Switch` | `components/ui/index` | Тумблер вкл/выкл: капсула, персиковая заливка при `checked`, `disabled` |
-| `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: blur-оверлей, пружинный вход/выход, Esc |
+| `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: затемняющий оверлей (**без backdrop-filter — блюр во весь вьюпорт был причиной лагов открытия, не возвращать**), вход/выход по opacity, Esc |
 | `ConfirmModal` | `components/ui/index` | Замена `window.confirm` (danger-режим для удалений) |
 | `Tooltip` | `components/ui/index` | Ониксовая капсула, `side: top/bottom/left/right` |
 | `InfoHint` | `components/ui/index` | i-кнопка с Apple-style поповером-описанием по клику, `side: top/bottom/left/right` |

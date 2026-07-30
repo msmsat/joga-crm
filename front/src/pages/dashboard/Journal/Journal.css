@@ -69,9 +69,7 @@
 .btn-icon {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
@@ -103,9 +101,7 @@
 .btn-ghost-sm {
   height: 36px; padding: 0 16px;
   display: flex; align-items: center; gap: 8px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
@@ -652,9 +648,9 @@
    ════════════════════════════════════════════════════════════ */
 .booking-popup {
   position: fixed;
-  background: rgba(253, 252, 251, 0.85);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  /* Без backdrop-filter: попап висит над живой сеткой (refetch раз в минуту,
+     hover-переходы карточек) — блюр пересчитывался на каждой перерисовке. */
+  background: rgba(253, 252, 251, 0.98);
   border-radius: 24px;
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 32px 80px -16px rgba(26,26,26,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
@@ -758,23 +754,17 @@
 /* ════════════════════════════════════════════════════════════
    12. МОДАЛЬНОЕ ОКНО (добавление клиента)
    ════════════════════════════════════════════════════════════ */
-/* Блюр — отдельный статичный слой (::after), карточка и затемнение ему СОСЕДИ,
-   а не потомки: перерисовка внутри элемента с backdrop-filter заставляет Chrome
-   размывать весь вьюпорт заново каждый кадр, и открытие «подлагивает». */
+/* Только затемнение, без backdrop-filter: блюр во весь вьюпорт заставлял Chrome
+   размывать экран заново в каждом кадре, где под оверлеем что-то перерисовалось
+   (см. .v-overlay в App.css) — сетка Журнала под модалкой живая. */
 .modal-overlay {
   position: fixed; inset: 0;
   z-index: 10000; /* перекрывает шапки сетки (z-index: 8050) */
   display: flex; align-items: center; justify-content: center;
 }
-.modal-overlay::after {
-  content: ''; position: absolute; inset: 0; z-index: -2;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transform: translateZ(0);
-}
 .modal-overlay::before {
   content: ''; position: absolute; inset: 0; z-index: -1;
-  background: rgba(26,26,26,0.3);
+  background: rgba(26,26,26,0.45);
   animation: overlay-in 0.2s ease both;
 }
 @keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
@@ -1040,9 +1030,7 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0; right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #FFFFFF;
   border: 1px solid var(--border);
   border-radius: 12px;
   max-height: 160px;

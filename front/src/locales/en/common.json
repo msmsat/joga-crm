@@ -31,6 +31,7 @@
     "online": "Online",
     "offline": "Offline",
     "active": "Active",
+    "connected": "Connected",
     "inactive": "Not online",
     "loading": "Loading...",
     "notFound": "Not found",

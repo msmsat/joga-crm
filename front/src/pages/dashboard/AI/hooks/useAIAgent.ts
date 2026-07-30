@@ -7,7 +7,6 @@ import { ApiError } from '../../../../api/client';
 import { queryKeys } from '../../../../api/queryKeys';
 import { invalidateChannelGroup } from '../../../../api/channelGroup';
 import { useToast } from '../../../../components/ui/Toast';
-import { launchWhatsAppSignup } from '../../../../lib/whatsappSignup';
 import type { AISettings } from '../../../../api/ai/ai.types';
 import type { AgentChannel, AgentConfig, AgentTone, AIUISettings, AIModel, AILanguage } from '../types';
 
@@ -145,23 +144,12 @@ export function useAIAgent() {
     onError: (err) => toast.error(aiErrorText(err, t)),
   });
 
-  // Embedded Signup: окно Meta -> code -> обмен на сервере. Отмена в окне — не
-  // ошибка подключения, тост не нужен.
+  // Embedded Signup: мастер Meta открывается редиректом, результат прилетает не
+  // сюда, а в callback бэкенда — он же вернёт браузер на /dashboard/ai?wa=...
   const connectWhatsappMutation = useMutation({
-    mutationFn: async () => aiApi.connectWhatsapp(await launchWhatsAppSignup()),
-    onSuccess: () => {
-      // Номер один на студию: он же канал Уведомлений и Настроек → Интеграции.
-      invalidateChannelGroup(qc);
-      toast.success(t('whatsapp.connectedToast'));
-    },
-    onError: (err) => {
-      if (err instanceof Error && err.message === 'cancelled') return;
-      if (err instanceof Error && err.message === 'not_configured') {
-        toast.error(t('whatsapp.notConfiguredToast'));
-        return;
-      }
-      toast.error(t('whatsapp.connectFailedToast'));
-    },
+    mutationFn: () => aiApi.getWhatsappOauthUrl(),
+    onSuccess: ({ url }) => { window.location.href = url; },
+    onError: (err) => toast.error(aiErrorText(err, t)),
   });
 
   const disconnectInstagramMutation = useMutation({

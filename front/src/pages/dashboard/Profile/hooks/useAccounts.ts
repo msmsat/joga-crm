@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { authApi } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { errorMessage } from '../../../../api/errorMessage';
-import { useToast } from '../../../../components/ui/index';
+// Импорт напрямую из Toast, не из ui/index: index экспортирует Sidebar, а тот
+// тянет UserMenu → этот хук — через бочку получался цикл импортов.
+import { useToast } from '../../../../components/ui/Toast';
 
 export function useAccounts() {
   const navigate = useNavigate();

@@ -11,9 +11,8 @@ import { scheduleApi } from '../../api/schedule';
 import { toDateStr } from '../../pages/dashboard/Journal/utils';
 import { fetchBookings } from '../../pages/dashboard/Journal/hooks/useSchedule';
 import { useStudioSettings } from '../../hooks/useStudioCurrency';
-import { useMe } from '../../hooks/useMe';
-import { getInitials } from '../../pages/dashboard/Clients/utils/mapClient';
 import { Tooltip } from './Tooltip';
+import { UserMenu } from './UserMenu';
 
 // Префетч данных раздела по hover пункта меню: к клику страница уже из кэша.
 // staleTime бережёт от спама — повторный hover свежие данные не перезапрашивает.
@@ -45,7 +44,6 @@ export interface SidebarProps {
 export function Sidebar({ role }: SidebarProps) {
   const { t } = useTranslation('menu');
   const { data: studio } = useStudioSettings();
-  const { data: me } = useMe();
 
   // Счётчик клиентов для бейджа меню — реальные данные, не хардкод
   const [clientsCount, setClientsCount] = useState<number | null>(null);
@@ -174,11 +172,7 @@ export function Sidebar({ role }: SidebarProps) {
           </div>
         </NavLink>
 
-        <NavLink to="/dashboard/profile" className="user-pill" style={{ textDecoration: 'none' }} aria-label={t('tooltips.openProfile')}>
-          <div className="user-avatar">{getInitials(me?.name ?? '', me?.last_name)}</div>
-          <div className="user-email">{me?.email ?? ''}</div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
-        </NavLink>
+        <UserMenu />
       </div>
     </nav>
   );

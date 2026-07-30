@@ -40,8 +40,13 @@
   "navbar": {
     "create": "Создать"
   },
+  "userMenu": {
+    "accounts": "Мои студии",
+    "logout": "Выйти"
+  },
   "tooltips": {
     "studioName": "Ваша студия: {{name}}",
-    "openProfile": "Открыть профиль"
+    "openProfile": "Открыть профиль",
+    "openAccountMenu": "Меню аккаунта"
   }
 }

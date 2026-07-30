@@ -12,6 +12,7 @@ import { StaffStats } from './components/StaffStats';
 import { AddEmployeeModal }  from './components/modals/AddEmployeeModal';
 import EditStaffModal from '../../../components/modals/EditStaffModal';
 import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
+import { OwnerContactsModal } from './components/modals/OwnerContactsModal';
 import { useToast } from '../../../components/ui/Toast';
 import { ApiError, resolveImageUrl } from '../../../api/client';
 import { settingsApi } from '../../../api/settings/settings.api';
@@ -338,28 +339,27 @@ export default function Staff() {
                     {t('staff:profile.call')}
                   </button>
 
-                  {!isOwner && (
-                    <button
-                      onClick={() => setIsEditModalOpen(true)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        padding: '10px 20px', background: '#FFFFFF', color: '#1A1A1A',
-                        border: '1px solid rgba(26,26,26,0.1)', borderRadius: '12px',
-                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-                        transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                        fontFamily: "'Manrope', sans-serif",
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                      {t('common:buttons.edit')}
-                    </button>
-                  )}
+                  {/* Владелец правит только контакты — открывается OwnerContactsModal */}
+                  <button
+                    onClick={() => setIsEditModalOpen(true)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '10px 20px', background: '#FFFFFF', color: '#1A1A1A',
+                      border: '1px solid rgba(26,26,26,0.1)', borderRadius: '12px',
+                      fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                      transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                      fontFamily: "'Manrope', sans-serif",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    {t('common:buttons.edit')}
+                  </button>
                 </div>
 
                 <div className="hero-info">
@@ -724,9 +724,47 @@ export default function Staff() {
         }}
       />
 
+      {/* ── EDIT OWNER CONTACTS ──────────────────────────────────────────── */}
+      {isEditModalOpen && isOwner && profile && (
+      <OwnerContactsModal
+        owner={{
+          name: profile.name,
+          last_name: profile.last_name ?? undefined,
+          email: profile.email,
+          phone: profile.phone ?? '',
+          photo_url: resolveImageUrl(profile.photo_url),
+          is_online: profile.is_online,
+        }}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={async ({ email, phone }) => {
+          if (!activeStaffId) return;
+          try {
+            // PUT заменяет запись целиком — остальные поля отправляем как есть,
+            // role не отправляем вовсе, чтобы владелец остался владельцем.
+            await update(activeStaffId, {
+              name: profile.name,
+              last_name: profile.last_name ?? undefined,
+              email,
+              phone: phone || undefined,
+              rate: profile.rate ?? undefined,
+              rate_type: profile.rate_type ?? undefined,
+              service_ids: profile.services.map(s => s.id),
+              photo_url: profile.photo_url ?? undefined,
+              schedule: profile.week_working_hours,
+            });
+            refetchProfile();
+            showToast(t('staff:toasts.changesSaved'));
+          } catch (err) {
+            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+            throw err;
+          }
+        }}
+      />
+      )}
+
       {/* ── EDIT EMPLOYEE MODAL ──────────────────────────────────────────── */}
       <EditStaffModal
-        isOpen={isEditModalOpen}
+        isOpen={isEditModalOpen && !isOwner}
         staff={isEditModalOpen && profile ? {
           id: profile.id,
           name: profile.name,

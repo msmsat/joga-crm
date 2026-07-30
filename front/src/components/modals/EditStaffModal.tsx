@@ -272,7 +272,8 @@ function IdentityIllus({
 }
 
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
-function FieldLabel({ children }: { children: React.ReactNode }) {
+// Экспортируются: их переиспользует OwnerContactsModal (Staff/components/modals).
+export function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <label style={{
       display: "block", fontSize: "11px", fontWeight: 700, color: "#999",
@@ -283,7 +284,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FocusInput({
+export function FocusInput({
   value, onChange, placeholder, type = "text", onKeyDown, disabled, error
 }: {
   value: string; onChange: (v: string) => void; placeholder: string;

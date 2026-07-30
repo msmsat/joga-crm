@@ -5,39 +5,57 @@
 путями: руками (POST /settings/integrations/whatsapp) или через Embedded Signup —
 кнопка на странице Velora AI, ниже её серверная половина.
 
-Вебхук Meta (аналог routers/ai/instagram.py): GET проверяется verify-токеном,
-POST — подписью тела на app secret.
+Embedded Signup сделан редиректом, как Instagram OAuth (routers/ai/instagram.py),
+а не JS-библиотекой Meta: та выполняется в самой странице и требует от неё https,
+из-за чего дев-фронт на http перестаёт работать. При редиректе https нужен только
+от redirect_uri, то есть от бэкенда, — он и так за Cloudflare. Побочный эффект:
+waba_id/phone_number_id не прилетают событием из окна, их бэкенд достаёт сам —
+debug_token отдаёт WABA, к которым выдан доступ (_waba_from_token).
+
+Вебхук Meta: GET проверяется verify-токеном, POST — подписью тела на app secret.
 """
 import hashlib
 import hmac
 import json
 import logging
 import os
+from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 import aiohttp
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
+from jose import JWTError, jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import StudioContext, require_role
+from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings, StudioIntegration
-from schemas.ai import WaEmbeddedSignup
+from ratelimit import limiter
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+callback_router = APIRouter()
 webhook_router = APIRouter()
 
 WA_APP_ID = os.getenv("WA_APP_ID", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
+# Configuration ID конфигурации Facebook Login for Business с вариантом
+# WhatsApp Embedded Signup — именно он превращает обычный диалог логина в мастер
+# подключения номера.
+WA_CONFIG_ID = os.getenv("WA_CONFIG_ID", "")
+WA_REDIRECT_URI = os.getenv("WA_REDIRECT_URI", "")
 # PIN двухфакторки номера в Cloud API: задаётся при регистрации и нужен, чтобы
 # позже перерегистрировать тот же номер. Один на инсталляцию — кладём в config.
 WA_REGISTER_PIN = os.getenv("WA_REGISTER_PIN", "000000")
+WEB_APP_URL = os.getenv("WEB_APP_URL", "http://localhost:5173").rstrip("/")
 GRAPH = "https://graph.facebook.com/v23.0"
 _TIMEOUT_SECONDS = 10
+_STATE_TTL_MINUTES = 10
+_STATE_PURPOSE = "wa_oauth"
 
 
 def _valid_signature(raw: bytes, header: str | None) -> bool:
@@ -117,69 +135,130 @@ async def _graph(method: str, path: str, token: str = "", **kwargs) -> dict:
             return await resp.json()
 
 
-@router.post("/whatsapp/embedded-signup")
-async def whatsapp_embedded_signup(
-    body: WaEmbeddedSignup,
-    ctx: StudioContext = Depends(require_role("owner")),
+@router.get("/whatsapp/oauth-url")
+async def get_whatsapp_oauth_url(ctx: StudioContext = Depends(require_role("owner"))):
+    """Адрес мастера Embedded Signup. Студия — в подписанном state, не в сессии:
+    callback приходит без Authorization-заголовка (как у Instagram)."""
+    if not WA_APP_ID or not WA_CONFIG_ID or not WA_REDIRECT_URI:
+        raise HTTPException(status_code=503, detail="wa_signup_not_configured")
+    state = jwt.encode(
+        {
+            "studio_id": ctx.studio_id,
+            "purpose": _STATE_PURPOSE,
+            "exp": datetime.utcnow() + timedelta(minutes=_STATE_TTL_MINUTES),
+        },
+        SECRET_KEY, algorithm=ALGORITHM,
+    )
+    params = {
+        "client_id": WA_APP_ID,
+        "config_id": WA_CONFIG_ID,
+        "redirect_uri": WA_REDIRECT_URI,
+        "response_type": "code",
+        # Без него диалог вернёт access_token во фрагменте URL, до сервера он не
+        # дойдёт; нам нужен именно code, обмениваемый на стороне бэкенда.
+        "override_default_response_type": "true",
+        "state": state,
+    }
+    return {"url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
+
+
+def _decode_state(state: str | None) -> int | None:
+    """studio_id из подписанного state. Битый state — студии нет."""
+    if not state:
+        return None
+    try:
+        payload = jwt.decode(state, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        return None
+    if payload.get("purpose") != _STATE_PURPOSE:
+        return None
+    return payload.get("studio_id")
+
+
+async def _waba_from_token(token: str) -> str:
+    """WABA, к которому владелец дал доступ в мастере. В redirect-флоу его никто не
+    присылает (это JS-библиотека Meta шлёт его событием в окно), но debug_token
+    перечисляет выданные права вместе с target_ids — там он и лежит."""
+    data = await _graph("GET", "debug_token", params={
+        "input_token": token, "access_token": f"{WA_APP_ID}|{WA_APP_SECRET}",
+    })
+    for scope in (data.get("data") or {}).get("granular_scopes") or []:
+        if scope.get("scope") == "whatsapp_business_management" and scope.get("target_ids"):
+            return str(scope["target_ids"][0])
+    raise RuntimeError("в токене нет WABA: права whatsapp_business_management не выданы")
+
+
+@callback_router.get("/whatsapp/callback")
+@limiter.limit("20/minute")
+async def whatsapp_oauth_callback(
+    request: Request,
+    code: str | None = None,
+    state: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Финал Embedded Signup: code от FB.login -> постоянный токен студии, подписка
-    WABA на наш вебхук, регистрация номера в Cloud API, запись в wa_notify.
-
-    Номер один на студию, поэтому пишем в ту же интеграцию, что и ручное
-    подключение из Уведомлений, — Уведомления и агент увидят его сразу.
-    """
-    if not WA_APP_ID or not WA_APP_SECRET:
-        raise HTTPException(status_code=503, detail="wa_signup_not_configured")
+    """Возврат из мастера: code -> бессрочный токен студии, WABA и номер из Graph,
+    подписка на вебхук, регистрация номера, запись в ту же интеграцию wa_notify,
+    что и ручное подключение из Уведомлений."""
+    studio_id = _decode_state(state)
+    if studio_id is None or not code:
+        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=error")
 
     try:
-        data = await _graph("GET", "oauth/access_token", params={
-            "client_id": WA_APP_ID, "client_secret": WA_APP_SECRET, "code": body.code,
+        exchanged = await _graph("GET", "oauth/access_token", params={
+            "client_id": WA_APP_ID, "client_secret": WA_APP_SECRET,
+            "redirect_uri": WA_REDIRECT_URI, "code": code,
         })
-        token = data["access_token"]
-    except (aiohttp.ClientError, TimeoutError, RuntimeError, KeyError) as exc:
-        logger.error("wa embedded signup: обмен code не удался, studio_id=%s: %s", ctx.studio_id, exc)
-        raise HTTPException(status_code=400, detail="wa_signup_failed")
+        token = exchanged["access_token"]
+        # Конфигурация Embedded Signup бывает с бессрочным токеном и с 60-дневным;
+        # у второй expires_in приходит здесь и больше нигде. Просто сохраняем срок,
+        # чтобы потом было чем предупредить студию, — сейчас его никто не читает.
+        expires_in = exchanged.get("expires_in")
+        waba_id = await _waba_from_token(token)
+        numbers = (await _graph("GET", f"{waba_id}/phone_numbers", token=token)).get("data") or []
+        if not numbers:
+            raise RuntimeError("в WABA нет ни одного номера")
+        phone_number_id = str(numbers[0]["id"])
+        display_phone_number = numbers[0].get("display_phone_number")
+    except (aiohttp.ClientError, TimeoutError, RuntimeError, KeyError, ValueError) as exc:
+        logger.error("wa callback: подключение не удалось, studio_id=%s: %s", studio_id, exc)
+        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=error")
 
     # Подписка и регистрация — отдельными шагами: токен уже валиден, значит
     # подключение состоялось и исходящие уведомления заработают в любом случае.
     # Без subscribed_apps не придёт ни одного входящего — это видно по логу.
     try:
-        await _graph("POST", f"{body.waba_id}/subscribed_apps", token=token)
+        await _graph("POST", f"{waba_id}/subscribed_apps", token=token)
     except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
-        logger.error("wa embedded signup: subscribed_apps не прошёл, studio_id=%s: %s", ctx.studio_id, exc)
+        logger.error("wa callback: subscribed_apps не прошёл, studio_id=%s: %s", studio_id, exc)
     try:
-        await _graph("POST", f"{body.phone_number_id}/register", token=token,
+        await _graph("POST", f"{phone_number_id}/register", token=token,
                      json={"messaging_product": "whatsapp", "pin": WA_REGISTER_PIN})
     except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
         # Номер, уже зарегистрированный с другим PIN, сюда и попадает — отправка
         # с него всё равно работает, повторная регистрация не нужна.
-        logger.warning("wa embedded signup: register не прошёл, studio_id=%s: %s", ctx.studio_id, exc)
-
-    try:
-        info = await _graph("GET", body.phone_number_id, token=token, params={"fields": "display_phone_number"})
-        display_phone_number = info.get("display_phone_number")
-    except (aiohttp.ClientError, TimeoutError, RuntimeError):
-        display_phone_number = None  # гейт тумблера откатится на phone_number_id
+        logger.warning("wa callback: register не прошёл, studio_id=%s: %s", studio_id, exc)
 
     integ = (await db.execute(select(StudioIntegration).where(
-        StudioIntegration.studio_id == ctx.studio_id,
+        StudioIntegration.studio_id == studio_id,
         StudioIntegration.integration_type == "wa_notify",
     ))).scalar_one_or_none()
     if integ is None:
-        integ = StudioIntegration(studio_id=ctx.studio_id, integration_type="wa_notify")
+        integ = StudioIntegration(studio_id=studio_id, integration_type="wa_notify")
         db.add(integ)
     integ.config = {
         "token": token,
-        "phone_number_id": body.phone_number_id,
-        "waba_id": body.waba_id,
+        "phone_number_id": phone_number_id,
+        "waba_id": waba_id,
         "display_phone_number": display_phone_number,
         "pin": WA_REGISTER_PIN,
+        "token_expires_at": (
+            (datetime.utcnow() + timedelta(seconds=int(expires_in))).isoformat() if expires_in else None
+        ),
     }
     integ.is_connected = True
     await db.commit()
-    logger.info("wa embedded signup: номер подключён, studio_id=%s", ctx.studio_id)
-    return {"display_phone_number": display_phone_number or body.phone_number_id}
+    logger.info("wa callback: номер подключён, studio_id=%s", studio_id)
+    return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=connected")
 
 
 # --- Вебхук входящих сообщений -------------------------------------------------
