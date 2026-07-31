@@ -25,14 +25,17 @@ const VARIANTS: Record<ButtonVariant, { bg: string; bgHover: string; color: stri
     shadow: '0 8px 24px rgba(252,174,145,0.3)',
     shadowHover: '0 12px 28px rgba(252,174,145,0.42)',
   },
+  // Оникс задан токеном, а не литералом: в тёмной теме --onyx инвертируется,
+  // и кнопка становится светлой пилюлей с тёмным текстом (--bg), а не чёрной
+  // плашкой, слипающейся с фоном.
   dark: {
-    bg: '#1A1A1A', bgHover: '#2A2A2A',
-    color: '#FFFFFF', border: 'none',
+    bg: 'var(--onyx, #1A1A1A)', bgHover: 'var(--text2, #2A2A2A)',
+    color: 'var(--bg, #FDFCFB)', border: 'none',
     shadow: '0 4px 12px rgba(26,26,26,0.15)',
     shadowHover: '0 8px 20px rgba(26,26,26,0.2)',
   },
   ghost: {
-    bg: 'transparent', bgHover: 'rgba(26,26,26,0.04)',
+    bg: 'transparent', bgHover: 'rgba(var(--ink),0.04)',
     color: 'var(--text2, #666666)', border: '1.5px solid var(--border2, #EEEBE6)',
     shadow: 'none', shadowHover: 'none',
   },
@@ -81,7 +84,7 @@ export function Button({
         <>
           <span style={{
             width: '15px', height: '15px', borderRadius: '50%', display: 'inline-block',
-            border: `2px solid ${variant === 'ghost' ? 'rgba(26,26,26,0.2)' : 'rgba(255,255,255,0.4)'}`,
+            border: `2px solid ${variant === 'ghost' ? 'rgba(var(--ink),0.2)' : 'rgba(255,255,255,0.4)'}`,
             borderTopColor: variant === 'ghost' ? '#666' : '#FFFFFF',
             animation: 'vl-btn-spin 0.6s linear infinite',
           }} />

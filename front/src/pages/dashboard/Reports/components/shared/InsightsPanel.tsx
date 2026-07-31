@@ -46,7 +46,7 @@ export function InsightsPanel({ insights, variant = 'full' }: InsightsPanelProps
             alignItems: side ? 'stretch' : 'center',
             justifyContent: side ? 'flex-start' : 'space-between',
             gap: side ? '10px' : '12px',
-            padding: '10px 12px', borderRadius: '10px', background: 'rgba(26,26,26,0.025)',
+            padding: '10px 12px', borderRadius: '10px', background: 'rgba(var(--ink),0.025)',
           }}>
             <div style={{ display: 'flex', alignItems: side ? 'flex-start' : 'center', gap: '8px', minWidth: 0 }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: SEVERITY_COLOR[insight.severity], flexShrink: 0, marginTop: side ? '5px' : 0 }} />

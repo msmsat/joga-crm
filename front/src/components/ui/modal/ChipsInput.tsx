@@ -28,7 +28,7 @@ export function ChipsInput({ label, value, onChange, placeholder }: ChipsInputPr
   return (
     <div>
       {label && (
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#999', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '7px' }}>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--text3)', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '7px' }}>
           {label}
         </label>
       )}
@@ -36,8 +36,8 @@ export function ChipsInput({ label, value, onChange, placeholder }: ChipsInputPr
         style={{
           display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center',
           padding: '8px 10px', minHeight: '44px',
-          background: focused ? 'var(--bg-card, #fff)' : 'rgba(26,26,26,0.025)',
-          border: `1.5px solid ${focused ? '#FCAE91' : 'rgba(26,26,26,0.09)'}`,
+          background: focused ? 'var(--bg-card, #fff)' : 'rgba(var(--ink),0.025)',
+          border: `1.5px solid ${focused ? '#FCAE91' : 'rgba(var(--ink),0.09)'}`,
           borderRadius: '12px',
           boxShadow: focused ? '0 0 0 3px rgba(252,174,145,0.14)' : 'none',
           transition: 'all 0.18s ease', boxSizing: 'border-box',

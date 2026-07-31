@@ -116,7 +116,7 @@ export function ChannelModalShell({
       </div>
       <div style={{
         display: 'flex', gap: '10px', padding: '16px 26px',
-        borderTop: '1px solid var(--border, rgba(26,26,26,0.08))', flexShrink: 0,
+        borderTop: '1px solid var(--border, rgba(var(--ink),0.08))', flexShrink: 0,
       }}>
         {footer}
       </div>
@@ -149,11 +149,11 @@ function CloseButton() {
       aria-label="close"
       style={{
         width: '30px', height: '30px', borderRadius: '10px', flexShrink: 0,
-        background: 'rgba(26,26,26,0.05)', border: 'none', cursor: 'pointer', color: '#999',
+        background: 'rgba(var(--ink),0.05)', border: 'none', cursor: 'pointer', color: 'var(--text3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.18s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.1)'; e.currentTarget.style.color = '#1A1A1A'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.05)'; e.currentTarget.style.color = '#999'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.1)'; e.currentTarget.style.color = 'var(--onyx)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; e.currentTarget.style.color = 'var(--text3)'; }}
     >
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -209,7 +209,7 @@ export function Steps({ title, items }: { title: string; items: ReactNode[] }) {
 
 const NOTICE_TONE = {
   warn: { bg: 'rgba(232,166,58,0.09)', border: 'rgba(232,166,58,0.28)', fg: '#9A7420' },
-  info: { bg: 'rgba(26,26,26,0.03)', border: 'rgba(26,26,26,0.07)', fg: 'var(--text2, #666666)' },
+  info: { bg: 'rgba(var(--ink),0.03)', border: 'rgba(var(--ink),0.07)', fg: 'var(--text2, #666666)' },
   ok:   { bg: 'rgba(91,171,114,0.09)', border: 'rgba(91,171,114,0.26)', fg: '#3E8F5C' },
 } as const;
 
@@ -234,8 +234,8 @@ export function DetailRow({ label, value, mono }: { label: string; value: string
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
-      padding: '13px 15px', borderRadius: '14px', background: 'rgba(26,26,26,0.025)',
-      border: '1px solid rgba(26,26,26,0.05)',
+      padding: '13px 15px', borderRadius: '14px', background: 'rgba(var(--ink),0.025)',
+      border: '1px solid rgba(var(--ink),0.05)',
     }}>
       <span style={{ fontSize: '12px', fontWeight: 700, color: '#AAAAAA', flexShrink: 0 }}>{label}</span>
       <span style={{

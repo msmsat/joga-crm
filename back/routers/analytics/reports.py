@@ -19,6 +19,7 @@ from schemas.analytics.reports import (
 )
 from ._filters import (
     bucket_key,
+    check_report_range,
     date_bucket,
     fill_series,
     lesson_conds,
@@ -126,6 +127,7 @@ async def period_summary(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    check_report_range(date_from, date_to)
     sid = ctx.studio_id
     length = (date_to - date_from).days
     prev_from, prev_to = prev_range(
@@ -272,6 +274,7 @@ async def trainers_report(
 ):
     """Выручка (доходные операции по trainer_id) + число занятий (Lesson по teacher_id)
     за период. Выручка без trainer_id в срез не попадает — сумма ≤ /summary."""
+    check_report_range(date_from, date_to)
     sid = ctx.studio_id
     start_dt = datetime.combine(date_from, time.min)
     end_dt = datetime.combine(date_to, time.max)
@@ -341,6 +344,7 @@ async def services_report(
     db: AsyncSession = Depends(get_db),
 ):
     """Выручка по продуктам (доходные операции по product_id) и доля от суммы среза."""
+    check_report_range(date_from, date_to)
     sid = ctx.studio_id
     rows = (await db.execute(
         select(Product.name, func.coalesce(func.sum(Operation.amount), 0))

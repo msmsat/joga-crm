@@ -4,14 +4,24 @@
   @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
 
   :root {
+    color-scheme: light;
+    /* RGB-триплет «чернил»: все полупрозрачные подложки, бордеры и оверлеи в
+       проекте написаны как rgba(var(--ink), a). В тёмной теме триплет
+       переворачивается на белый — и ~800 таких мест переключаются сами.
+       ВАЖНО: тени намеренно НЕ используют --ink (иначе в тёмной теме
+       получилось бы белое свечение) — они остаются на rgba(0,0,0,…). */
+    --ink: 26, 26, 26;
     --peach: #F9A08B;
     --peach-light: #FCAE91;
     --peach-glow: rgba(249,160,139,0.18);
+    --tint-peach: var(--tint-peach);
+    --tint-rose: var(--tint-rose);
     --bg: #FDFCFB;
+    --bg2: #F7F5F3;
     --bg-card: #FFFFFF;
     --onyx: #1A1A1A;
     --muted: #666666;
-    --border: rgba(26,26,26,0.08);
+    --border: rgba(var(--ink),0.08);
     --pistachio: #A3C9A8;
     --rose: #D88C9A;
     --shadow: 0 8px 40px -8px rgba(26,26,26,0.10);
@@ -27,7 +37,7 @@
     --text3: #999999;
     --success: #A3C9A8;
     --error: #D88C9A;
-    --border2: rgba(26,26,26,0.14);
+    --border2: rgba(var(--ink),0.14);
     --dash-shadow: 0 8px 24px -4px rgba(26,26,26,0.04), 0 2px 8px -2px rgba(26,26,26,0.03);
     --dash-shadow-lg: 0 16px 48px -8px rgba(26,26,26,0.08), 0 4px 16px -4px rgba(26,26,26,0.04);
     --radius: 12px;
@@ -39,6 +49,39 @@
     --drawer-w: 420px;
     --ai-search-w: 540px;
     --font: 'Manrope', sans-serif;
+   }
+
+   /* ==========================================================================
+      DARK THEME
+      Класс .dark вешает ThemeProvider на <html> (light / dark / auto из
+      настроек «Внешний вид»). Селектор именно `:root.dark`, а не `.dark`:
+      Journal.css тоже объявляет свой `:root` и грузится позже App.css —
+      специфичность (0,2,0) гарантированно перебивает любой одиночный :root.
+      ========================================================================== */
+   :root.dark {
+    color-scheme: dark;
+    --ink: 255, 255, 255;
+    --peach-glow: rgba(249,160,139,0.26);
+    --peach-soft: rgba(249,160,139,0.16);
+    --tint-peach: rgba(249,160,139,0.08);
+    --tint-rose: rgba(216,140,154,0.10);
+    --bg: #121212;
+    --bg2: #181818;
+    --bg-card: #1E1E1E;
+    --card: #1E1E1E;
+    --onyx: #F0F0F0;
+    --text: #F0F0F0;
+    --text2: #A8A8A8;
+    --text3: #7C7C7C;
+    --muted: #A0A0A0;
+    --border: rgba(255,255,255,0.10);
+    --border2: rgba(255,255,255,0.16);
+    --shadow: 0 8px 40px -8px rgba(0,0,0,0.60);
+    --shadow-hover: 0 20px 60px -12px rgba(0,0,0,0.70);
+    --dash-shadow: 0 8px 24px -4px rgba(0,0,0,0.45), 0 2px 8px -2px rgba(0,0,0,0.35);
+    --dash-shadow-lg: 0 16px 48px -8px rgba(0,0,0,0.55), 0 4px 16px -4px rgba(0,0,0,0.40);
+    --shadow-card: 0 2px 16px rgba(0,0,0,0.40), 0 1px 4px rgba(0,0,0,0.30);
+    --shadow-float: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.40);
    }
 
    /* ==========================================================================
@@ -330,8 +373,8 @@
    }
    
    .btn-google:hover {
-     background: rgba(26,26,26,0.04);
-     border-color: rgba(26,26,26,0.16);
+     background: rgba(var(--ink),0.04);
+     border-color: rgba(var(--ink),0.16);
      box-shadow: var(--shadow);
      transform: translateY(-1px);
    }
@@ -435,7 +478,7 @@
     .input-field {
     width: 100%;
     height: 52px; /* Фиксированная высота предотвращает скачки */
-    background: rgba(26,26,26,0.03); /* Мягкая заливка вместо дешевой рамки */
+    background: rgba(var(--ink),0.03); /* Мягкая заливка вместо дешевой рамки */
     border: 1.5px solid transparent;
     border-radius: 14px; /* Более премиальное скругление */
     font-family: var(--font-main);
@@ -451,12 +494,12 @@
     }
 
     .input-field:hover {
-    background: rgba(26,26,26,0.05);
+    background: rgba(var(--ink),0.05);
     }
 
     .input-field.has-value {
     background: var(--bg-card);
-    border-color: rgba(26,26,26,0.12);
+    border-color: rgba(var(--ink),0.12);
     }
 
     /* Супер-эффект при фокусе */
@@ -469,7 +512,7 @@
 
     .input-field.has-error {
     border-color: var(--rose);
-    background: #FFF9FA;
+    background: var(--tint-rose);
     }
 
     .input-field.has-error:focus {
@@ -480,7 +523,7 @@
     .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
     .checkbox-box {
     width: 18px; height: 18px; border-radius: 5px;
-    border: 1.5px solid rgba(26,26,26,0.2);
+    border: 1.5px solid rgba(var(--ink),0.2);
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s ease; flex-shrink: 0;
     }
@@ -646,8 +689,8 @@
   transition: all 0.25s ease;
 }
 .btn-google:hover {
-  background: rgba(26,26,26,0.04);
-  border-color: rgba(26,26,26,0.16);
+  background: rgba(var(--ink),0.04);
+  border-color: rgba(var(--ink),0.16);
   box-shadow: var(--shadow);
   transform: translateY(-1px);
 }
@@ -711,7 +754,7 @@
 
 .input-field {
   width: 100%; height: 52px;
-  background: rgba(26,26,26,0.03);
+  background: rgba(var(--ink),0.03);
   border: 1.5px solid transparent; border-radius: 14px;
   font-size: 15px; font-weight: 500; color: var(--onyx);
   outline: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -719,20 +762,20 @@
 }
 .input-field.has-right { padding-right: 44px; }
 .input-field::placeholder { color: rgba(102,102,102,0.45); }
-.input-field:hover { background: rgba(26,26,26,0.05); }
-.input-field.has-value { background: var(--bg-card); border-color: rgba(26,26,26,0.12); }
+.input-field:hover { background: rgba(var(--ink),0.05); }
+.input-field.has-value { background: var(--bg-card); border-color: rgba(var(--ink),0.12); }
 .input-field:focus {
   background: var(--bg-card); border-color: var(--peach);
   box-shadow: 0 0 0 4px var(--peach-glow), 0 4px 14px rgba(249,160,139,0.12);
   transform: translateY(-1px);
 }
-.input-field.has-error { border-color: var(--rose); background: #FFF9FA; }
+.input-field.has-error { border-color: var(--rose); background: var(--tint-rose); }
 .input-field.has-error:focus { box-shadow: 0 0 0 4px rgba(216,140,154,0.14); border-color: var(--rose); }
 
 /* =========================================
    ИНДИКАТОР ПАРОЛЯ И ШАГОВ
    ========================================= */
-.strength-bar-track { height: 3px; border-radius: 4px; background: rgba(26,26,26,0.06); overflow: hidden; flex: 1; }
+.strength-bar-track { height: 3px; border-radius: 4px; background: rgba(var(--ink),0.06); overflow: hidden; flex: 1; }
 .strength-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s cubic-bezier(0.34,1.2,0.64,1), background 0.3s ease; }
 
 .step-dots { display: flex; align-items: center; gap: 6px; justify-content: center; }
@@ -802,7 +845,7 @@
   align-items: center;
   width: 100%;
   height: 52px;
-  background: rgba(26,26,26,0.03);
+  background: rgba(var(--ink),0.03);
   border: 1.5px solid transparent;
   border-radius: 14px;
   padding: 0 16px;
@@ -819,12 +862,12 @@
 }
 
 .phone-input-wrapper:hover {
-  background: rgba(26,26,26,0.05);
+  background: rgba(var(--ink),0.05);
 }
 
 .phone-input-wrapper.has-value {
   background: var(--bg-card);
-  border-color: rgba(26,26,26,0.12);
+  border-color: rgba(var(--ink),0.12);
 }
 
 .phone-input-wrapper.focused {
@@ -836,7 +879,7 @@
 
 .phone-input-wrapper.has-error {
   border-color: var(--rose);
-  background: #FFF9FA;
+  background: var(--tint-rose);
 }
 
 .phone-input-wrapper.has-error.focused {
@@ -975,6 +1018,16 @@
 .user-menu-name { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .user-menu-mail { font-size: 10.5px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .user-menu-role { display: block; font-size: 10.5px; font-weight: 600; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Роль в конкретной студии — пилюлей: в списке из нескольких студий это
+   единственное, что отличает «моя студия» от «работаю тренером». */
+.user-menu-role-chip {
+  display: inline-block; margin-top: 3px; padding: 2px 8px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.2px;
+  color: var(--text3); background: rgba(var(--ink),0.06); border-radius: 100px;
+}
+.user-menu-role-chip.is-owner { color: #C2764F; background: rgba(252,174,145,0.18); }
+.dark .user-menu-role-chip { background: rgba(255,255,255,0.08); }
+.dark .user-menu-role-chip.is-owner { color: #FCAE91; background: rgba(252,174,145,0.16); }
 .user-menu-sep { height: 1px; background: var(--border); margin: 2px 6px; }
 .user-menu-label { padding: 8px 10px 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); }
 .user-menu-list { max-height: 208px; overflow-y: auto; }
@@ -1056,7 +1109,7 @@
 .tabs { 
   display: flex; 
   gap: 4px; 
-  background: rgba(26,26,26,0.03); /* Мягкая заливка вместо жестких границ */
+  background: rgba(var(--ink),0.03); /* Мягкая заливка вместо жестких границ */
   padding: 4px; 
   border-radius: 10px; 
   width: fit-content; 
@@ -1141,7 +1194,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--text);
-  color: white;
+  color: var(--bg);
   font-size: 10px;
   font-weight: 600;
   padding: 5px 10px;
@@ -1318,7 +1371,7 @@
 .toggle-switch { margin-left: auto; position: relative; width: 36px; height: 20px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; inset: 0; background: var(--border2); border-radius: 20px; cursor: pointer; transition: all 0.2s; }
-.toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: var(--bg-card); border-radius: 50%; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 .toggle-switch input:checked ~ .toggle-slider { background: var(--accent); }
 .toggle-switch input:checked ~ .toggle-slider::before { transform: translateX(16px); }
 .notif-type-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 10px; }
@@ -1354,7 +1407,7 @@
 .jg-head { font-size: 11px; font-weight: 700; color: var(--text3); text-align: center; padding: 4px; }
 .jg-time { font-size: 10px; color: var(--text3); text-align: right; padding: 0 6px; line-height: 30px; }
 .jg-cell { height: 30px; border-radius: 3px; cursor: pointer; transition: all 0.12s; position: relative; }
-.jg-cell.empty { background: rgba(26,26,26,0.02); }
+.jg-cell.empty { background: rgba(var(--ink),0.02); }
 .jg-cell.empty:hover { background: rgba(252,174,145,0.08); }
 .jg-cell.booked { border-radius: 4px; display: flex; align-items: center; padding: 0 6px; font-size: 10px; overflow: hidden; }
 .journal-right { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--dash-shadow); overflow-y: auto; scrollbar-width: none; }
@@ -1461,7 +1514,7 @@
 }
 .subtype-pill:hover {
   background: rgba(252,174,145,0.12) !important;
-  color: #1A1A1A !important;
+  color: var(--onyx) !important;
 }
 .cta-btn:hover {
   transform: translateY(-1px);
@@ -1486,7 +1539,7 @@
   color: var(--active-color);
   
   /* Эффект матового стекла */
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, var(--bg-card) 85%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   
@@ -1510,7 +1563,7 @@
 
 /* Эффект при наведении на кнопку */
 .stat-more-btn:hover {
-  background: #ffffff;
+  background: var(--bg-card);
   border-color: var(--active-color);
   box-shadow: 0 6px 16px var(--active-glow), 0 4px 8px rgba(0,0,0,0.06);
   transform: translateY(-2px) scale(1.02) !important;
@@ -1559,7 +1612,7 @@
 .activity-item:hover .activity-action-btn,
 .activity-action-btn.is-open {
   opacity: 1;
-  background: rgba(26,26,26,0.04);
+  background: rgba(var(--ink),0.04);
   color: var(--text);
 }
 
@@ -1630,7 +1683,7 @@
 .hero-bg { position: absolute; inset: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .hero-actions { position: absolute; top: 14px; right: 16px; display: flex; gap: 6px; }
 .h-btn { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 8px; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.18s; color: var(--text2); }
-.h-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.h-btn:hover { background: var(--bg-card); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .h-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 .h-btn.primary:hover { background: var(--accent2); box-shadow: 0 4px 14px rgba(252,174,145,0.5); }
 .hero-info { 
@@ -1709,7 +1762,7 @@
 .upcoming-item:hover .up-actions { opacity: 1; }
 .up-icon-btn { width: 24px; height: 24px; border-radius: 6px; background: transparent; border: 1px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; color: var(--text3); }
 .up-icon-btn:hover { background: var(--card); color: var(--text); box-shadow: var(--dash-shadow); }
-.up-icon-btn.del:hover { background: #FFF5F5; border-color: rgba(216,140,154,0.4); color: #c05060; }
+.up-icon-btn.del:hover { background: var(--tint-rose); border-color: rgba(216,140,154,0.4); color: #c05060; }
 
 /* Owner Card & Load Bar */
 .owner-card { background: linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%); border: 1px dashed rgba(252,174,145,0.4); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
@@ -1719,11 +1772,11 @@
 .load-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 .load-bar-label { font-size: 11px; font-weight: 600; color: var(--text2); }
 .load-bar-pct { font-size: 11px; font-weight: 800; color: var(--text); }
-.load-bar-bg { height: 6px; background: rgba(26,26,26,0.06); border-radius: 6px; overflow: hidden; }
+.load-bar-bg { height: 6px; background: rgba(var(--ink),0.06); border-radius: 6px; overflow: hidden; }
 .load-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1); }
 
 /* Custom Overlays (Modals, Toasts, Tooltips) */
-.slot-tip { position: fixed; background: #1A1A1A; color: #fff; font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 8px; z-index: 1000; pointer-events: none; opacity: 0; transition: opacity 0.15s; white-space: nowrap; line-height: 1.5; box-shadow: 0 4px 14px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
+.slot-tip { position: fixed; background: var(--onyx); color: var(--bg); font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 8px; z-index: 1000; pointer-events: none; opacity: 0; transition: opacity 0.15s; white-space: nowrap; line-height: 1.5; box-shadow: 0 4px 14px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
 .slot-tip.show { opacity: 1; }
 .slot-sub { font-size: 9px; color: rgba(255,255,255,0.65); font-weight: 400; margin-top: 1px; }
 
@@ -1744,7 +1797,7 @@
 }
 .v-overlay::before {
   content: ''; position: absolute; inset: 0; z-index: -1;
-  background: var(--v-tint, rgba(26,26,26,0.5));
+  background: var(--v-tint, rgba(0,0,0,0.5));
   animation: v-tint-in 0.22s ease both;
 }
 .v-overlay.is-leaving::before { animation: v-tint-out 0.2s ease both; }
@@ -1758,6 +1811,41 @@
    страницах. Кривая и длительность общие для всех модалок приложения. */
 .v-modal { animation: v-modal-in 0.3s ease both; will-change: opacity; }
 .v-overlay.is-leaving .v-modal { animation: v-modal-out 0.2s ease both; }
+
+/* ── Двухколоночная модалка (size="lg"): превью слева, форма справа ────────
+   grid-template-rows: minmax(0,1fr) — ключевая строка. С дефолтным auto-треком
+   ряд растёт по контенту, вылезает за max-height карточки и просто обрезается
+   overflow:hidden — форма оказывалась без низа и без скролла. minmax(0,1fr)
+   зажимает ряд высотой карточки, и ModalBody (overflow-y:auto) наконец
+   скроллится сам. Ширины — через переменные, чтобы медиазапросы ниже могли их
+   перебить (инлайн-стиль они бы не перебили). */
+.v-modal-lg {
+  width: 100%;
+  max-width: var(--v-modal-w, 860px);
+  max-height: calc(100vh - 32px);
+  display: grid;
+  grid-template-columns: var(--v-left-w, 280px) 1fr;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+/* Узкий экран: сначала ужимаем колонку превью… */
+@media (max-width: 1180px) {
+  .v-modal-lg { grid-template-columns: minmax(0, 264px) 1fr; }
+}
+/* …а когда форме уже совсем тесно — превью убираем, оставляем только её. */
+@media (max-width: 920px) {
+  .v-modal-lg {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 560px;
+  }
+  .v-modal-lg > .v-modal-left { display: none; }
+}
+
+/* Низкие экраны: модалке нужен каждый пиксель высоты */
+@media (max-height: 700px) {
+  .v-overlay { padding: 10px; }
+  .v-modal-lg { max-height: calc(100vh - 20px); }
+}
 @keyframes v-modal-in  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes v-modal-out { from { opacity: 1 } to { opacity: 0 } }
 
@@ -1768,6 +1856,53 @@
 .ms-scroll::-webkit-scrollbar { width: 3px; }
 .ms-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
 
+/* ── Кит: подпись поля, палитра цвета, сегмент-переключатель ──────────────
+   Живут в App.css, а не в инлайновом <style> модалки: тег, вставляемый в DOM
+   на каждом открытии, заставляет браузер пересчитывать стили всего документа
+   ровно в кадр старта анимации (см. комментарий к cm-spin выше). */
+.vk-label {
+  display: block; font-size: 11px; font-weight: 700; color: var(--text3);
+  letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 7px;
+}
+
+.vk-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.vk-swatch {
+  position: relative; width: 30px; height: 30px; border-radius: 9px;
+  border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(26,26,26,0.07) inset;
+  cursor: pointer; padding: 0; overflow: hidden;
+  transition: transform 0.16s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.16s ease;
+}
+.vk-swatch:hover { transform: translateY(-2px) scale(1.06); }
+.vk-swatch.is-on {
+  border-color: var(--bg-card);
+  box-shadow: 0 0 0 2px #1A1A1A, 0 4px 10px -2px rgba(26,26,26,0.28);
+}
+.vk-swatch-custom {
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--ink),0.04); color: #AAA;
+}
+.vk-swatch-custom:hover { color: #F07B60; }
+
+.vk-seg {
+  position: relative; display: flex; padding: 3px; border-radius: 12px;
+  background: rgba(var(--ink),0.05); border: 1px solid rgba(var(--ink),0.05);
+}
+.vk-seg-thumb {
+  position: absolute; top: 3px; bottom: 3px; border-radius: 9px; background: var(--bg-card);
+  box-shadow: 0 2px 8px -2px rgba(26,26,26,0.18);
+  transition: left 0.3s cubic-bezier(0.22,1,0.36,1), width 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.vk-seg-btn {
+  position: relative; z-index: 1; flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 11px 8px; border: none; background: none; cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700;
+  color: #A0A0A0; transition: color 0.2s ease;
+}
+.vk-seg-btn:hover { color: #777; }
+.vk-seg-btn.is-on { color: var(--onyx); }
+.vk-seg-btn.is-on svg { color: #F07B60; }
+
 .modal-overlay { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; pointer-events: none; visibility: hidden; transition: visibility 0s linear 0.2s; }
 .modal-overlay::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(0,0,0,0.45); opacity: 0; transition: opacity 0.2s; }
 .modal-overlay.open { pointer-events: all; visibility: visible; transition-delay: 0s; }
@@ -1776,18 +1911,18 @@
 .modal-overlay.open .modal { opacity: 1; }
 .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
 .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
-.modal-textarea { width: 100%; min-height: 72px; background: rgba(26,26,26,0.03); border: 1.5px solid transparent; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 500; color: var(--text); outline: none; padding: 10px 12px; transition: all 0.2s; margin-bottom: 12px; resize: none; }
-.modal-textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--peach-glow); }
+.modal-textarea { width: 100%; min-height: 72px; background: rgba(var(--ink),0.03); border: 1.5px solid transparent; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 500; color: var(--text); outline: none; padding: 10px 12px; transition: all 0.2s; margin-bottom: 12px; resize: none; }
+.modal-textarea:focus { border-color: var(--accent); background: var(--bg-card); box-shadow: 0 0 0 3px var(--peach-glow); }
 .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 .mbtn { padding: 8px 16px; border-radius: 9px; font-family: var(--font-main); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: none; }
 .mbtn.cancel { background: var(--bg); color: var(--text2); border: 1px solid var(--border2); }
-.mbtn.cancel:hover { background: rgba(26,26,26,0.06); }
+.mbtn.cancel:hover { background: rgba(var(--ink),0.06); }
 .mbtn.confirm { background: var(--accent); color: #fff; box-shadow: 0 3px 10px rgba(252,174,145,0.4); }
 .mbtn.confirm:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 5px 14px rgba(252,174,145,0.5); }
 .mbtn.danger { background: #D88C9A; color: #fff; }
 .mbtn.danger:hover { background: #c07080; }
 
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1A1A1A; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 12px; font-weight: 600; z-index: 9999; opacity: 0; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--onyx); color: var(--bg); padding: 10px 18px; border-radius: 10px; font-size: 12px; font-weight: 600; z-index: 9999; opacity: 0; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @keyframes fadeSlide { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
@@ -1858,7 +1993,7 @@
   align-items: center;
   gap: 14px;
   padding: 14px;
-  background: rgba(26,26,26,0.02);
+  background: rgba(var(--ink),0.02);
   border: 1.5px solid transparent;
   border-radius: 14px;
   cursor: pointer;
@@ -1937,12 +2072,12 @@
 
 /* Кнопка "Очистить" */
 .btn-clear-sch {
-  background: rgba(26,26,26,0.03);
+  background: rgba(var(--ink),0.03);
   border: 1px solid var(--border);
   color: var(--muted);
 }
 .btn-clear-sch:hover {
-  background: #FFF5F5;
+  background: var(--tint-rose);
   border-color: rgba(216,140,154,0.3);
   color: #B25D6E;
   transform: translateY(-1px);
@@ -2027,7 +2162,7 @@
 
 .custom-checkbox-box:hover {
   border-color: var(--rose);
-  background: #FFF9FA;
+  background: var(--tint-rose);
 }
 
 .custom-checkbox-box.checked {

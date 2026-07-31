@@ -127,7 +127,7 @@ export default function AgentSetupModal({
 
   return (
     <div
-      className="v-light-scope fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(26,26,26,0.5)] p-4 fade-in duration-200"
+      className="fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(0,0,0,0.5)] p-4 fade-in duration-200"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       {/* Фон карточки — жемчужный (--v-background), белыми остаются только
@@ -136,9 +136,9 @@ export default function AgentSetupModal({
         style={{ boxShadow: '0 50px 120px -30px rgba(26,26,26,0.45), 0 16px 48px -16px rgba(26,26,26,0.16)' }}
       >
         {/* ─── левая колонка: каналы ─── */}
-        {/* dark:-вариантов в модалке нет намеренно: дашборд пока светлый целиком
-            (см. .v-light-scope в index.css) — иначе один блок уезжал бы в тёмный. */}
-        <aside className="flex w-[268px] shrink-0 flex-col gap-1 border-r border-border bg-gradient-to-b from-[#FFF5EF] via-[#FDFAF8] to-[#FDFCFB] p-5">
+        {/* Персиковый градиент колонки задан через токены темы, а не литералами:
+            в тёмной теме та же заливка уходит в графит (--bg-card / --bg). */}
+        <aside className="flex w-[268px] shrink-0 flex-col gap-1 border-r border-border bg-gradient-to-b from-[var(--tint-peach)] via-[var(--bg-card)] to-[var(--bg)] p-5">
           <div className="mb-6 flex items-start gap-3 px-1">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#FCAE91] to-[#F9A08B] text-white shadow-[0_8px_18px_-10px_rgba(249,160,139,0.8)]">
               {ICONS.prompt}

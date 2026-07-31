@@ -161,7 +161,7 @@ export function TrainersTable({ trainers, onRowClick, sortBy, sortNonce }: Train
                 <td style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', textAlign: 'right' }}>
                   <span style={{
                     padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 700,
-                    background: row.return_rate_pct >= 60 ? 'rgba(91,171,114,0.12)' : 'rgba(26,26,26,0.05)',
+                    background: row.return_rate_pct >= 60 ? 'rgba(91,171,114,0.12)' : 'rgba(var(--ink),0.05)',
                     color: row.return_rate_pct >= 60 ? '#5BAB72' : 'var(--text)',
                   }}>
                     {fmtPct(row.return_rate_pct)}

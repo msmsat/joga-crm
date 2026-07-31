@@ -54,7 +54,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(26, 26, 26, 0.04);
+  background: rgba(var(--ink), 0.04);
   color: var(--text3);
   display: flex;
   align-items: center;
@@ -312,9 +312,9 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(26, 26, 26, 0.04) 25%,
-    rgba(26, 26, 26, 0.07) 37%,
-    rgba(26, 26, 26, 0.04) 63%
+    rgba(var(--ink), 0.04) 25%,
+    rgba(var(--ink), 0.07) 37%,
+    rgba(var(--ink), 0.04) 63%
   );
   background-size: 200% 100%;
   animation: walletSkelShimmer 1.4s ease infinite;

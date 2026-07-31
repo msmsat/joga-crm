@@ -41,7 +41,7 @@ export default function WaveformSVG({
             width={barWidth}
             height={maxH}
             rx={barWidth / 2}
-            fill={active ? color : 'rgba(26,26,26,0.12)'}
+            fill={active ? color : 'rgba(var(--ink),0.12)'}
             style={{
               transformOrigin: `${x + barWidth / 2}px ${height / 2}px`,
               animation: active ? `wf-bar ${duration} ease-in-out ${delay} infinite` : 'none',

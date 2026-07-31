@@ -276,7 +276,7 @@ export const Grid: React.FC<GridProps> = ({
                       borderRadius: '10px', boxSizing: 'border-box', pointerEvents: 'none',
                       zIndex: 9999, overflow: 'hidden',
                       animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
-                      background: '#FFFFFF', 
+                      background: 'var(--bg-card)', 
                       boxShadow: `0 0 0 1.5px rgba(249,160,139,0.7), 0 16px 40px -4px rgba(26,26,26,0.15), 0 4px 12px rgba(249,160,139,0.2)`
                     }}
                   >
@@ -291,7 +291,7 @@ export const Grid: React.FC<GridProps> = ({
                       animation: 'live-dot 1.4s ease-in-out infinite',
                     }} />
                     <div style={{ position: 'relative', zIndex: 1, padding: '8px 18px 8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
-                      <div style={{ fontSize: '11.5px', fontWeight: 800, color: '#1A1A1A', lineHeight: 1.2, letterSpacing: '-0.2px' }}>
+                      <div style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--onyx)', lineHeight: 1.2, letterSpacing: '-0.2px' }}>
                         {newForm.title || t('grid.newLessonPreview')}
                       </div>
                       {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (

@@ -84,7 +84,7 @@ export function Heatmap({ cells, onCellClick }: HeatmapProps) {
                     const cell = byKey.get(`${wd}-${hour}`);
                     const fillPct = cell?.fill_pct ?? 0;
                     const lessons = cell?.lessons ?? 0;
-                    const bg = lessons === 0 ? 'rgba(26,26,26,0.035)' : stepColor(fillPct);
+                    const bg = lessons === 0 ? 'rgba(var(--ink),0.035)' : stepColor(fillPct);
                     const tooltipLabel = lessons > 0
                       ? t('schedule.heatmap.tooltip', { lessons, attendance: cell?.attendance ?? 0, pct: fillPct })
                       : t('schedule.heatmap.empty');

@@ -74,7 +74,7 @@ export default function IntegrationCard({
     <div
       style={{
         borderRadius: "14px",
-        background: isExpanded ? "#FFFFFF" : "rgba(0,0,0,0.015)",
+        background: isExpanded ? "var(--bg-card)" : "rgba(0,0,0,0.015)",
         border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(0,0,0,0.04)"}`,
         boxShadow: isExpanded ? "0 12px 32px rgba(252,174,145,0.1), 0 2px 6px rgba(252,174,145,0.05)" : "none",
         transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
@@ -99,7 +99,7 @@ export default function IntegrationCard({
           <StatusBadge type={connected ? "active" : "warning"}>
             {connected ? t("integrations.status.connected") : t("integrations.status.notActive")}
           </StatusBadge>
-          <button style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 14px", borderRadius: "8px", background: isExpanded ? "var(--peach)" : "#FFFFFF", color: isExpanded ? "#FFFFFF" : "var(--onyx)", border: isExpanded ? "1px solid var(--peach)" : "1px solid rgba(26,26,26,0.1)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)", boxShadow: isExpanded ? "0 4px 12px rgba(252,174,145,0.35)" : "0 2px 6px rgba(0,0,0,0.02)" }}>
+          <button style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 14px", borderRadius: "8px", background: isExpanded ? "var(--peach)" : "var(--bg-card)", color: isExpanded ? "#FFFFFF" : "var(--onyx)", border: isExpanded ? "1px solid var(--peach)" : "1px solid rgba(var(--ink),0.1)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)", boxShadow: isExpanded ? "0 4px 12px rgba(252,174,145,0.35)" : "0 2px 6px rgba(0,0,0,0.02)" }}>
             {connected ? t("integrations.actions.configure") : t("integrations.actions.connect")}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}>
               <polyline points="6 9 12 15 18 9"></polyline>

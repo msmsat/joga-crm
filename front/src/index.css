@@ -64,27 +64,9 @@
   --v-ring: #F9A08B;
 }
 
-/* Дашборд пока светлый целиком: легаси CSS-модули страниц не знают про .dark
-   и рисуют белые карточки в любой теме. Поэтому новые Tailwind-поверхности
-   внутри дашборда оборачиваем в .v-light-scope — она возвращает светлые
-   значения токенов даже при .dark на <html>, чтобы новая модалка не оказалась
-   единственным тёмным островом. Снять, когда у дашборда появится настоящая
-   тёмная тема (тогда просто удалить класс из разметки). */
-.v-light-scope {
-  --v-background: #FDFCFB;
-  --v-foreground: #1A1A1A;
-  --v-card: #FFFFFF;
-  --v-card-foreground: #1A1A1A;
-  --v-popover: #FFFFFF;
-  --v-popover-foreground: #1A1A1A;
-  --v-primary-foreground: #FFFFFF;
-  --v-secondary: #F4F2F0;
-  --v-secondary-foreground: #1A1A1A;
-  --v-muted: #F4F2F0;
-  --v-muted-foreground: #666666;
-  --v-border: rgba(26, 26, 26, 0.08);
-  --v-input: rgba(26, 26, 26, 0.12);
-}
+/* .v-light-scope удалён: у дашборда появилась настоящая тёмная тема
+   (`:root.dark` в App.css переворачивает легаси-палитру), и принудительно
+   светлые островки внутри неё больше не нужны. */
 
 /* Проброс токенов в утилиты Tailwind v4 (bg-primary, text-muted-foreground, …) */
 @theme inline {

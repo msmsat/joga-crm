@@ -60,7 +60,7 @@ export default function PromptPane({
               <SelectTrigger className="h-10 w-full rounded-xl text-[13.5px] font-semibold">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent position="popper" className="v-light-scope z-[1200] rounded-xl">
+              <SelectContent position="popper" className="z-[1200] rounded-xl">
                 {TONES.map(v => (
                   <SelectItem key={v} value={v} className="text-[13.5px]">{t(`agents.tone.${v}`)}</SelectItem>
                 ))}

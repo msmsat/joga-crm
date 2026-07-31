@@ -53,7 +53,7 @@ function Illus1({ name, contactsLabel, newBranchLabel }: { name: string; contact
       <rect x="32" y="84" width="196" height="16" fill="rgba(252,174,145,0.05)" />
 
       {/* Building icon */}
-      <rect x="108" y="66" width="44" height="36" rx="4" fill={hasName ? "url(#s1accent)" : "rgba(26,26,26,0.06)"} />
+      <rect x="108" y="66" width="44" height="36" rx="4" fill={hasName ? "url(#s1accent)" : "rgba(var(--ink),0.06)"} />
       <rect x="118" y="78" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.7)" />
       <rect x="134" y="78" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.7)" />
       <rect x="122" y="90" width="16" height="12" rx="2" fill="rgba(255,255,255,0.5)" />
@@ -66,10 +66,10 @@ function Illus1({ name, contactsLabel, newBranchLabel }: { name: string; contact
           {name.length > 18 ? name.slice(0, 18) + "…" : name}
         </text>
       ) : (
-        <rect x="84" y="119" width="92" height="8" rx="4" fill="rgba(26,26,26,0.07)" />
+        <rect x="84" y="119" width="92" height="8" rx="4" fill="rgba(var(--ink),0.07)" />
       )}
 
-      <rect x="100" y="136" width="60" height="5" rx="2.5" fill="rgba(26,26,26,0.04)" />
+      <rect x="100" y="136" width="60" height="5" rx="2.5" fill="rgba(var(--ink),0.04)" />
 
       {/* Bottom chips */}
       <rect x="48" y="154" width="68" height="12" rx="6" fill="rgba(252,174,145,0.15)" stroke="rgba(252,174,145,0.3)" strokeWidth="1" />
@@ -104,15 +104,15 @@ function Illus2({ city, country, cityLabel, newBranchStudioLabel }: { city: stri
 
       {/* Map grid lines */}
       {[60, 82, 104, 126].map(y => (
-        <line key={y} x1="28" y1={y} x2="232" y2={y} stroke="rgba(26,26,26,0.04)" strokeWidth="1" />
+        <line key={y} x1="28" y1={y} x2="232" y2={y} stroke="rgba(var(--ink),0.04)" strokeWidth="1" />
       ))}
       {[62, 96, 130, 164, 198].map(x => (
-        <line key={x} x1={x} y1="38" x2={x} y2="176" stroke="rgba(26,26,26,0.04)" strokeWidth="1" />
+        <line key={x} x1={x} y1="38" x2={x} y2="176" stroke="rgba(var(--ink),0.04)" strokeWidth="1" />
       ))}
 
       {/* Roads */}
-      <path d="M28 107 Q80 100 130 107 Q180 114 232 107" stroke="rgba(26,26,26,0.06)" strokeWidth="6" fill="none" />
-      <line x1="130" y1="38" x2="130" y2="176" stroke="rgba(26,26,26,0.05)" strokeWidth="5" />
+      <path d="M28 107 Q80 100 130 107 Q180 114 232 107" stroke="rgba(var(--ink),0.06)" strokeWidth="6" fill="none" />
+      <line x1="130" y1="38" x2="130" y2="176" stroke="rgba(var(--ink),0.05)" strokeWidth="5" />
 
       {/* Map pin */}
       <circle cx="130" cy="96" r="22" fill="rgba(252,174,145,0.15)" />
@@ -130,8 +130,8 @@ function Illus2({ city, country, cityLabel, newBranchStudioLabel }: { city: stri
         </>
       ) : (
         <>
-          <rect x="60" y="158" width="80" height="7" rx="3.5" fill="rgba(26,26,26,0.07)" />
-          <rect x="60" y="171" width="56" height="5" rx="2.5" fill="rgba(26,26,26,0.04)" />
+          <rect x="60" y="158" width="80" height="7" rx="3.5" fill="rgba(var(--ink),0.07)" />
+          <rect x="60" y="171" width="56" height="5" rx="2.5" fill="rgba(var(--ink),0.04)" />
         </>
       )}
       <circle cx="52" cy="171" r="6" fill="rgba(252,174,145,0.2)" />
@@ -192,7 +192,7 @@ function Illus3({ hasPhoto }: { hasPhoto: boolean }) {
       {/* Caption */}
       <rect x="52" y="138" width="156" height="36" rx="14" fill="white" filter="url(#s3shadow)" stroke="#F0EDE8" strokeWidth="1" />
       <rect x="66" y="149" width="100" height="7" rx="3.5" fill="rgba(163,201,168,0.35)" />
-      <rect x="80" y="161" width="72" height="5" rx="2.5" fill="rgba(26,26,26,0.06)" />
+      <rect x="80" y="161" width="72" height="5" rx="2.5" fill="rgba(var(--ink),0.06)" />
     </svg>
   );
 }
@@ -206,7 +206,7 @@ function StepDots({ current, total }: { current: number; total: number }) {
           width: i + 1 === current ? "22px" : "6px",
           height: "6px",
           borderRadius: "3px",
-          background: i + 1 <= current ? "#FCAE91" : "rgba(26,26,26,0.1)",
+          background: i + 1 <= current ? "#FCAE91" : "rgba(var(--ink),0.1)",
           transition: "all 0.3s cubic-bezier(0.34,1.1,0.64,1)",
         }} />
       ))}
@@ -333,8 +333,8 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
         @keyframes modalIn { from { opacity:0; transform: scale(0.93) translateY(20px) } to { opacity:1; transform: scale(1) translateY(0) } }
         @keyframes stepIn { from { opacity:0; transform: translateX(${dir === 1 ? 24 : -24}px) } to { opacity:1; transform: translateX(0) } }
         @keyframes pulse2 { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.5; transform:scale(1.5) } }
-        .asm-close-btn:hover { background: rgba(26,26,26,0.1) !important; }
-        .asm-back-btn:hover { background: rgba(26,26,26,0.04) !important; border-color: #DDD !important; }
+        .asm-close-btn:hover { background: rgba(var(--ink),0.1) !important; }
+        .asm-back-btn:hover { background: rgba(var(--ink),0.04) !important; border-color: var(--border2) !important; }
         .asm-scroll::-webkit-scrollbar { width: 3px; }
         .asm-scroll::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.25); border-radius: 3px; }
       `}</style>
@@ -342,7 +342,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
       <div
         style={{
           width: "100%", maxWidth: "860px", height: "min(580px, calc(100vh - 32px))",
-          background: "#FDFCFB", borderRadius: "24px",
+          background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "280px 1fr",
           overflow: "hidden",
@@ -353,7 +353,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
 
         {/* ──────────── LEFT PANEL ──────────── */}
         <div style={{
-          background: "white", padding: "36px 30px 28px",
+          background: "var(--bg-card)", padding: "36px 30px 28px",
           display: "flex", flexDirection: "column",
           borderRight: "1px solid #F0EDE8",
           position: "relative", overflow: "hidden",
@@ -371,10 +371,10 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
               {t("catalog:modals.addStudio.stepCounter", { current: step, total: 3 })}
             </p>
-            <h2 style={{ fontSize: "19px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
+            <h2 style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
               {current.title}
             </h2>
-            <p style={{ fontSize: "12px", color: "#999", lineHeight: 1.55, margin: "0 0 16px" }}>
+            <p style={{ fontSize: "12px", color: "var(--text3)", lineHeight: 1.55, margin: "0 0 16px" }}>
               {current.sub}
             </p>
             <StepDots current={step} total={3} />
@@ -402,7 +402,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                   background: "#A3C9A8", flexShrink: 0,
                   animation: "pulse2 2.2s infinite",
                 }} />
-                <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
+                <span style={{ fontSize: "11px", color: "var(--muted)", fontWeight: 500 }}>
                   {current.trustLabel}
                 </span>
               </div>
@@ -415,7 +415,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                 ].map(row => (
                   <div key={row.l} style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ fontSize: "11px", color: "#AAAAAA" }}>{row.l}</span>
-                    <span style={{ fontSize: "11px", fontWeight: 700, color: "#1A1A1A", maxWidth: "130px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.v || "—"}</span>
+                    <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--onyx)", maxWidth: "130px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.v || "—"}</span>
                   </div>
                 ))}
               </div>
@@ -435,7 +435,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             style={{
               position: "absolute", top: "14px", right: "14px",
               width: "28px", height: "28px",
-              background: "rgba(26,26,26,0.05)", border: "none",
+              background: "rgba(var(--ink),0.05)", border: "none",
               borderRadius: "8px", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "#AAA", transition: "background 0.15s",
@@ -452,7 +452,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {/* ══════════ STEP 1 ══════════ */}
               {step === 1 && (
                 <div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
+                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
                     {t("catalog:modals.addStudio.step1.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 24px" }}>
@@ -506,7 +506,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                           </svg>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: "13px", fontWeight: 700, color: "#1A1A1A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {data.name}
                           </div>
                           <div style={{ fontSize: "11px", color: "#AAA", marginTop: "2px" }}>
@@ -529,7 +529,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {/* ══════════ STEP 2 ══════════ */}
               {step === 2 && (
                 <div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
+                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
                     {t("catalog:modals.addStudio.step2.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 24px" }}>
@@ -578,7 +578,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                           </svg>
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: "13px", fontWeight: 700, color: "#1A1A1A" }}>
+                          <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>
                             {data.city}{data.country ? `, ${data.country}` : ""}
                           </div>
                           <div style={{ fontSize: "11px", color: "#AAA", marginTop: "2px" }}>
@@ -600,7 +600,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                         <line x1="12" y1="8" x2="12" y2="12"/>
                         <line x1="12" y1="16" x2="12.01" y2="16"/>
                       </svg>
-                      <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
+                      <p style={{ fontSize: "11.5px", color: "var(--text3)", margin: 0, lineHeight: 1.55 }}>
                         {t("catalog:modals.addStudio.step2.groupHint")}
                       </p>
                     </div>
@@ -611,7 +611,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               {/* ══════════ STEP 3 ══════════ */}
               {step === 3 && (
                 <div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
+                  <h3 style={{ fontSize: "20px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
                     {t("catalog:modals.addStudio.step3.heading")}
                   </h3>
                   <p style={{ fontSize: "12px", color: "#AAA", margin: "0 0 22px" }}>
@@ -634,9 +634,9 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                   {/* Summary of previous steps */}
                   <div style={{
                     padding: "14px 16px",
-                    background: "rgba(26,26,26,0.025)",
+                    background: "rgba(var(--ink),0.025)",
                     borderRadius: "14px",
-                    border: "1.5px solid rgba(26,26,26,0.07)",
+                    border: "1.5px solid rgba(var(--ink),0.07)",
                   }}>
                     <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 10px" }}>
                       {t("catalog:modals.addStudio.step3.summary")}
@@ -648,7 +648,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                     ].map((row, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: i < 2 ? "7px" : 0 }}>
                         {row.icon}
-                        <span style={{ fontSize: "12px", color: "#555", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: "12px", color: "var(--text2)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {row.label}
                         </span>
                       </div>
@@ -671,7 +671,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
               <button type="button" className="asm-back-btn" onClick={goBack} style={{
                 padding: "12px 16px",
                 background: "transparent", border: "1.5px solid #EEEBE6", borderRadius: "12px",
-                fontSize: "13px", fontWeight: 600, color: "#888",
+                fontSize: "13px", fontWeight: 600, color: "var(--text3)",
                 cursor: "pointer", display: "flex", alignItems: "center", gap: "5px",
                 fontFamily: "Manrope, sans-serif", transition: "all 0.15s", flexShrink: 0,
               }}>

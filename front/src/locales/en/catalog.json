@@ -7,9 +7,21 @@
   "modals": {
     "addStudio": {
       "steps": {
-        "about": { "title": "About the studio", "sub": "Name and contact details", "trust": "Your data is encrypted and never shared with third parties" },
-        "location": { "title": "Location", "sub": "Where is this branch located?", "trust": "The address is used in the schedule and maps" },
-        "photo": { "title": "Photo", "sub": "Studio cover — optional", "trust": "You can add it later in branch settings" }
+        "about": {
+          "title": "About the studio",
+          "sub": "Name and contact details",
+          "trust": "Your data is encrypted and never shared with third parties"
+        },
+        "location": {
+          "title": "Location",
+          "sub": "Where is this branch located?",
+          "trust": "The address is used in the schedule and maps"
+        },
+        "photo": {
+          "title": "Photo",
+          "sub": "Studio cover — optional",
+          "trust": "You can add it later in branch settings"
+        }
       },
       "stepCounter": "Step {{current}} of {{total}}",
       "step1": {
@@ -46,11 +58,20 @@
         "summary": "Summary",
         "uploadError": "Failed to upload the photo. Try another file or remove it."
       },
-      "summaryRows": { "name": "Name", "city": "City", "address": "Address" },
+      "summaryRows": {
+        "name": "Name",
+        "city": "City",
+        "address": "Address"
+      },
       "nextPhoto": "Next — photo",
       "submit": "Create studio",
       "skipPhoto": "Skip photo and create",
-      "illus": { "contacts": "Contacts", "newBranch": "New branch", "city": "City", "newBranchStudio": "New studio branch" }
+      "illus": {
+        "contacts": "Contacts",
+        "newBranch": "New branch",
+        "city": "City",
+        "newBranchStudio": "New studio branch"
+      }
     },
     "editBranch": {
       "title": "Edit branch",
@@ -82,7 +103,18 @@
       "equipmentPlaceholder": "Add equipment",
       "color": "Color",
       "isOnline": "Online hall",
-      "photo": "Hall photo"
+      "photo": "Hall photo",
+      "subtitle": "A room in the branch: seats, equipment, journal color",
+      "previewTitle": "Hall preview",
+      "sectionBasic": "Basics",
+      "sectionSpace": "Space",
+      "sectionLook": "Appearance",
+      "areaShort": "Area",
+      "hourlyRateShort": "Price per hour",
+      "statArea": "Area",
+      "statRate": "Price / hour",
+      "isOnlineHint": "Classes run online — no physical room.",
+      "colorHint": "This hall's classes are highlighted with this color in the journal."
     },
     "service": {
       "titleNew": "New service",
@@ -101,7 +133,16 @@
       "maxClientsPlaceholder": "15",
       "description": "Description",
       "descriptionPlaceholder": "Short service description",
-      "color": "Color"
+      "color": "Color",
+      "subtitle": "Shows up in the journal and online booking",
+      "previewTitle": "Journal preview",
+      "sectionBasic": "Basics",
+      "sectionPricing": "Price and time",
+      "sectionLook": "Appearance",
+      "priceShort": "Price",
+      "durationShort": "Duration",
+      "statSeats": "Seats",
+      "colorHint": "Classes are highlighted with this color in the journal grid."
     },
     "package": {
       "titleNew": "New package",
@@ -119,7 +160,20 @@
       "servicesHint": "Nothing selected — package applies to all classes",
       "isActive": "For sale",
       "soldAsSubscription": "Show in the \"Subscriptions\" tab",
-      "soldAsSingle": "Show in the \"Single visits\" tab"
+      "soldAsSingle": "Show in the \"Single visits\" tab",
+      "subtitle": "A pack of classes you sell to clients",
+      "previewTitle": "Pass preview",
+      "previewKind": "Pass",
+      "previewValid": "Valid for",
+      "sectionBasic": "Basics",
+      "sectionTerms": "Terms",
+      "sectionSale": "Sales",
+      "priceShort": "Pack price",
+      "statClasses": "Classes",
+      "statDays": "Days",
+      "statAll": "All",
+      "isActiveHint": "Clients can see and buy this pack.",
+      "soldAsSubscriptionHint": "Otherwise the pack stays in single visits only."
     }
   },
   "studios": {

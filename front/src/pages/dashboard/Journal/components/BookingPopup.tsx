@@ -232,7 +232,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           
           <div style={{
             padding: '6px 12px', borderRadius: '12px', fontSize: 11, fontWeight: 800,
-            background: isCancelled ? 'rgba(26,26,26,0.06)' : popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
+            background: isCancelled ? 'rgba(var(--ink),0.06)' : popupBooking.status === 'confirmed' ? 'rgba(163,201,168,0.15)' : 'rgba(216,140,154,0.15)',
             color: isCancelled ? 'var(--muted)' : popupBooking.status === 'confirmed' ? '#86b08c' : '#D88C9A',
             display: 'flex', alignItems: 'center', gap: 4, letterSpacing: '0.3px', textTransform: 'uppercase'
           }}>
@@ -423,7 +423,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                     style={{
                       flex: 1, height: '42px', padding: 0, margin: 0,
                       fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      ...(editForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'white', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {})
+                      ...(editForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'var(--bg)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {})
                     }}
                     onClick={(e) => { e.stopPropagation(); setEditForm(f => ({ ...f, hall: h })); }}
                   >
@@ -469,7 +469,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
             </div>
 
             {popupBooking.maxClients > 0 && (
-              <div style={{ marginTop: 8, background: 'rgba(26,26,26,0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.03)' }}>
+              <div style={{ marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.03)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {t('bookingPopup.fillRate')}
@@ -478,7 +478,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                     {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
                   </span>
                 </div>
-                <div style={{ height: 6, background: 'rgba(26,26,26,0.06)', borderRadius: 100, overflow: 'hidden' }}>
+                <div style={{ height: 6, background: 'rgba(var(--ink),0.06)', borderRadius: 100, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`,
                     background: popupBooking.color, borderRadius: 100,
@@ -495,7 +495,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 </div>
                 <div style={{ maxHeight: 168, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {bookedClients.map(c => (
-                    <div key={c.reservation_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(26,26,26,0.02)' }}>
+                    <div key={c.reservation_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(var(--ink),0.02)' }}>
                       <div style={{
                         width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
                         background: c.avatar_color ?? 'var(--peach)', color: 'white',

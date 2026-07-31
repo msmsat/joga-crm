@@ -51,7 +51,7 @@ export function LossSlices({
         description={t('descriptions.schedule.losses')}
         formulaKey="losses"
         actions={
-          <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.04)', borderRadius: '10px', padding: '3px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'rgba(var(--ink),0.04)', borderRadius: '10px', padding: '3px', flexShrink: 0 }}>
             {DIMS.map(d => (
               <button
                 key={d}
@@ -59,7 +59,7 @@ export function LossSlices({
                 style={{
                   padding: '5px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                   fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font)',
-                  background: dim === d ? '#fff' : 'transparent',
+                  background: dim === d ? 'var(--bg-card)' : 'transparent',
                   color: dim === d ? 'var(--text)' : 'var(--text3)',
                   boxShadow: dim === d ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
                 }}
@@ -92,7 +92,7 @@ export function LossSlices({
                   padding: '4px 6px', margin: '0 -6px', borderRadius: '8px',
                   cursor: clickable ? 'pointer' : 'default', background: idleBg,
                 }}
-                onMouseEnter={e => { if (clickable) e.currentTarget.style.background = 'rgba(26,26,26,0.03)'; }}
+                onMouseEnter={e => { if (clickable) e.currentTarget.style.background = 'rgba(var(--ink),0.03)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = idleBg; }}
               >
                 <span style={{

@@ -14,7 +14,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border, rgba(26,26,26,0.08));
+  border-right: 1px solid var(--border, rgba(var(--ink),0.08));
   background: var(--bg-card, #FFFFFF);
   overflow: hidden;
 }
@@ -46,9 +46,9 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  border: 1px solid var(--border, rgba(26,26,26,0.08));
+  border: 1px solid var(--border, rgba(var(--ink),0.08));
   background: transparent;
-  color: #999;
+  color: var(--text3);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -94,7 +94,7 @@
   height: 20px;
   border-radius: 6px;
   border: none;
-  background: rgba(26,26,26,0.05);
+  background: rgba(var(--ink),0.05);
   color: #B0ADA9;
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@
   text-align: center;
 }
 .sessionsRetryBtn {
-  border: 1.5px solid rgba(26,26,26,0.1);
+  border: 1.5px solid rgba(var(--ink),0.1);
   background: transparent;
   color: var(--muted, #666);
   font-size: 12.5px;
@@ -164,7 +164,7 @@
   100% { background-position: -200% 0; }
 }
 .skel {
-  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background: linear-gradient(90deg, rgba(var(--ink),0.04) 25%, rgba(var(--ink),0.07) 37%, rgba(var(--ink),0.04) 63%);
   background-size: 200% 100%;
   animation: skelShimmer 1.4s ease infinite;
   border-radius: 6px;
@@ -234,7 +234,7 @@
 .sessionTitle {
   font-size: 12.5px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--onyx);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -261,7 +261,7 @@
 
 /* ─── MINI SETTINGS ─────────────────────────────────────────────────────────── */
 .miniSettings {
-  border-top: 1px solid var(--border, rgba(26,26,26,0.08));
+  border-top: 1px solid var(--border, rgba(var(--ink),0.08));
   padding: 14px 12px 16px;
   flex-shrink: 0;
   display: flex;
@@ -291,7 +291,7 @@
 
 .miniSettingLabel {
   font-size: 12px;
-  color: #666;
+  color: var(--muted);
   font-weight: 500;
   font-family: var(--font, 'Manrope', sans-serif);
   flex-shrink: 0;
@@ -308,13 +308,13 @@
   gap: 6px;
   padding: 5px 9px;
   border-radius: 8px;
-  border: 1px solid rgba(26,26,26,0.1);
-  background: rgba(26,26,26,0.03);
+  border: 1px solid rgba(var(--ink),0.1);
+  background: rgba(var(--ink),0.03);
   font-size: 12.5px;
   font-weight: 600;
   font-family: var(--font, 'Manrope', sans-serif);
   cursor: pointer;
-  color: #1A1A1A;
+  color: var(--onyx);
   transition: all 0.18s ease;
   white-space: nowrap;
   outline: none;
@@ -336,10 +336,10 @@
 
 .customSelectDropdown {
   position: fixed;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-radius: 10px;
   padding: 4px;
-  border: 1px solid rgba(26,26,26,0.08);
+  border: 1px solid rgba(var(--ink),0.08);
   box-shadow: 0 8px 28px -4px rgba(26,26,26,0.14), 0 2px 8px -2px rgba(26,26,26,0.06);
   z-index: 200;
   min-width: 150px;
@@ -355,14 +355,14 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  color: #555;
+  color: var(--text2);
   transition: background 0.12s ease, color 0.12s ease;
   font-family: var(--font, 'Manrope', sans-serif);
   user-select: none;
 }
 .customSelectOption:hover {
   background: rgba(249,160,139,0.09);
-  color: #1A1A1A;
+  color: var(--onyx);
 }
 .customSelectOptionActive {
   color: #F9A08B;
@@ -375,10 +375,10 @@
 .customSelectFooterNote {
   padding: 8px 10px 6px;
   margin-top: 2px;
-  border-top: 1px solid rgba(26,26,26,0.06);
+  border-top: 1px solid rgba(var(--ink),0.06);
   font-size: 11px;
   font-weight: 500;
-  color: #999;
+  color: var(--text3);
   cursor: default;
   user-select: none;
   font-family: var(--font, 'Manrope', sans-serif);
@@ -392,7 +392,7 @@
 /* ─── AGENT CONFIG CARD ─────────────────────────────────────────────────────── */
 .agentCard {
   background: rgba(253,252,251,0.6);
-  border: 1px solid var(--border, rgba(26,26,26,0.08));
+  border: 1px solid var(--border, rgba(var(--ink),0.08));
   border-radius: 10px;
   padding: 10px 10px 8px;
   display: flex;
@@ -411,7 +411,7 @@
 .agentCardTitle {
   font-size: 11.5px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--onyx);
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
@@ -422,14 +422,14 @@
 }
 
 .agentIcon {
-  color: #999;
+  color: var(--text3);
   display: flex;
   align-items: center;
 }
 
 .agentLabel {
   font-size: 12px;
-  color: #666;
+  color: var(--muted);
   font-weight: 500;
   font-family: var(--font, 'Manrope', sans-serif);
 }
@@ -441,7 +441,7 @@
   height: 17px;
   border-radius: 8.5px;
   border: none;
-  background: rgba(26,26,26,0.12);
+  background: rgba(var(--ink),0.12);
   cursor: pointer;
   padding: 2px;
   display: flex;
@@ -457,7 +457,7 @@
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: white;
+  background: var(--bg-card);
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -502,10 +502,10 @@
   overflow-y: auto;
   padding: var(--content-pad, 28px) var(--content-pad, 28px) 16px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(26,26,26,0.07) transparent;
+  scrollbar-color: rgba(var(--ink),0.07) transparent;
 }
 .messagesArea::-webkit-scrollbar { width: 4px; }
-.messagesArea::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.07); border-radius: 2px; }
+.messagesArea::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.07); border-radius: 2px; }
 
 /* ─── MESSAGES SKELETON (эпик AI-4, задача 3) ───────────────────────────────── */
 .msgSkelList {
@@ -574,7 +574,7 @@
 .emptyTitle {
   font-size: 20px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
   letter-spacing: -0.5px;
   margin-top: -4px;
   font-family: var(--font, 'Manrope', sans-serif);
@@ -599,11 +599,11 @@
 .suggestionChip {
   padding: 9px 16px;
   border-radius: 20px;
-  border: 1px solid var(--border, rgba(26,26,26,0.08));
-  background: white;
+  border: 1px solid var(--border, rgba(var(--ink),0.08));
+  background: var(--bg-card);
   font-size: 13px;
   font-weight: 500;
-  color: #555;
+  color: var(--text2);
   cursor: pointer;
   font-family: var(--font, 'Manrope', sans-serif);
   transition: all 0.2s ease;
@@ -612,7 +612,7 @@
 .suggestionChip:hover {
   border-color: rgba(249,160,139,0.45);
   background: rgba(249,160,139,0.04);
-  color: #1A1A1A;
+  color: var(--onyx);
   transform: translateY(-1px);
   box-shadow: 0 5px 14px rgba(26,26,26,0.07);
 }
@@ -670,14 +670,14 @@
 }
 
 .aiBubble {
-  background: white;
+  background: var(--bg-card);
   border-radius: 4px 14px 14px 14px;
   padding: 12px 16px;
   font-size: 14px;
   line-height: 1.65;
-  color: #1A1A1A;
+  color: var(--onyx);
   box-shadow: 0 2px 12px rgba(26,26,26,0.05);
-  border: 1px solid rgba(26,26,26,0.05);
+  border: 1px solid rgba(var(--ink),0.05);
   border-left: 2px solid rgba(249,160,139,0.4);
   max-width: 560px;
   word-break: break-word;
@@ -693,8 +693,8 @@
 }
 
 .userBubble {
-  background: #1A1A1A;
-  color: white;
+  background: var(--onyx);
+  color: var(--bg);
   border-radius: 14px 14px 4px 14px;
   padding: 11px 16px;
   font-size: 14px;
@@ -749,7 +749,7 @@
   gap: 8px;
   padding: 8px 14px 8px 10px;
   border-radius: 20px;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid rgba(249,160,139,0.2);
   box-shadow: 0 2px 12px rgba(26,26,26,0.06);
 }
@@ -757,7 +757,7 @@
 .thinkingPillText {
   font-size: 12.5px;
   font-weight: 600;
-  color: #999;
+  color: var(--text3);
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
@@ -789,7 +789,7 @@
 /* ─── INPUT AREA ─────────────────────────────────────────────────────────────── */
 .inputArea {
   padding: 12px 28px 18px;
-  border-top: 1px solid var(--border, rgba(26,26,26,0.06));
+  border-top: 1px solid var(--border, rgba(var(--ink),0.06));
   background: var(--bg-card, white);
   flex-shrink: 0;
 }
@@ -798,8 +798,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: white;
-  border: 1px solid rgba(26,26,26,0.1);
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--ink),0.1);
   border-radius: 14px;
   padding: 10px 10px 10px 16px;
   box-shadow: 0 2px 10px rgba(26,26,26,0.04);
@@ -821,7 +821,7 @@
   background: transparent;
   font-size: 14px;
   font-family: var(--font, 'Manrope', sans-serif);
-  color: #1A1A1A;
+  color: var(--onyx);
   line-height: 1.55;
   max-height: 140px;
   overflow-y: auto;
@@ -839,8 +839,8 @@
   height: 34px;
   border-radius: 10px;
   border: none;
-  background: #1A1A1A;
-  color: white;
+  background: var(--onyx);
+  color: var(--bg);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -853,8 +853,8 @@
   transform: scale(1.08);
 }
 .sendBtn:disabled {
-  background: rgba(26,26,26,0.08);
-  color: rgba(26,26,26,0.25);
+  background: rgba(var(--ink),0.08);
+  color: rgba(var(--ink),0.25);
   cursor: not-allowed;
 }
 

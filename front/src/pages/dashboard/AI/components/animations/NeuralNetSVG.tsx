@@ -31,7 +31,7 @@ const EDGES = [
 export default function NeuralNetSVG({ thinking = false, size = 480 }: NeuralNetSVGProps) {
   const speed = thinking ? '0.8s' : '2.4s';
   const nodeColor = thinking ? '#F9A08B' : '#E0DDD9';
-  const edgeColor = thinking ? 'rgba(249,160,139,0.25)' : 'rgba(26,26,26,0.06)';
+  const edgeColor = thinking ? 'rgba(249,160,139,0.25)' : 'rgba(var(--ink),0.06)';
   const glowColor = thinking ? 'rgba(249,160,139,0.5)' : 'rgba(249,160,139,0.15)';
 
   return (

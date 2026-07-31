@@ -38,7 +38,7 @@ export function Tooltip({ label, children, side = 'top' }: TooltipProps) {
             left: placement ? `${placement.left}px` : 0,
             visibility: placement ? 'visible' : 'hidden',
             zIndex: 1200,
-            padding: '6px 10px', background: '#1A1A1A', color: '#FFFFFF',
+            padding: '6px 10px', background: 'var(--onyx)', color: 'var(--bg)',
             fontSize: '11.5px', fontWeight: 600, lineHeight: 1.3,
             fontFamily: 'var(--font, Manrope, sans-serif)',
             borderRadius: '8px', whiteSpace: 'nowrap', pointerEvents: 'none',

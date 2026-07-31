@@ -25,7 +25,7 @@
 
 /* ─── Skeletons (задача 8): вместо ложного «Не настроена» до прихода конфигов ─── */
 .skel {
-  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background: linear-gradient(90deg, rgba(var(--ink),0.04) 25%, rgba(var(--ink),0.07) 37%, rgba(var(--ink),0.04) 63%);
   background-size: 200% 100%;
   animation: skelShimmer 1.4s ease infinite;
   border-radius: 8px;
@@ -149,7 +149,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-card);
   transition: left 0.2s;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }

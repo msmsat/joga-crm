@@ -18,7 +18,7 @@ export function RingIndicator({ pct, size = 76, strokeWidth = 7, reduceMotion = 
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <circle cx={c} cy={c} r={r} fill="none" stroke="rgba(26,26,26,0.06)" strokeWidth={strokeWidth} />
+      <circle cx={c} cy={c} r={r} fill="none" stroke="rgba(var(--ink),0.06)" strokeWidth={strokeWidth} />
       <motion.circle
         cx={c} cy={c} r={r} fill="none" stroke="#FCAE91" strokeWidth={strokeWidth} strokeLinecap="round"
         strokeDasharray={circumference}

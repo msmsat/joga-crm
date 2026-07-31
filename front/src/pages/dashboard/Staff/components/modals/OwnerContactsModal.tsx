@@ -110,7 +110,7 @@ function OwnerCardIllus({
         <text x="122" y="130" textAnchor="middle" fontSize="12" fontWeight="700"
           fill="#1A1A1A" fontFamily="Manrope, sans-serif">{clip(name, 20)}</text>
       ) : (
-        <rect x="72" y="123" width="100" height="8" rx="4" fill="rgba(26,26,26,0.08)" />
+        <rect x="72" y="123" width="100" height="8" rx="4" fill="rgba(var(--ink),0.08)" />
       )}
 
       {/* Owner pill */}
@@ -125,8 +125,8 @@ function OwnerCardIllus({
       {rows.map((row, i) => (
         <g key={row.key} className={`oc-row oc-row-${i + 1}`}>
           <rect x="36" y={row.y} width="172" height="34" rx="12"
-            fill={row.ok ? "rgba(163,201,168,0.07)" : "rgba(26,26,26,0.02)"}
-            stroke={row.ok ? "rgba(163,201,168,0.30)" : "rgba(26,26,26,0.06)"} strokeWidth="1" />
+            fill={row.ok ? "rgba(163,201,168,0.07)" : "rgba(var(--ink),0.02)"}
+            stroke={row.ok ? "rgba(163,201,168,0.30)" : "rgba(var(--ink),0.06)"} strokeWidth="1" />
           <rect x="44" y={row.y + 8} width="18" height="18" rx="6"
             fill={row.ok ? "rgba(163,201,168,0.18)" : "rgba(252,174,145,0.14)"} />
           <g transform={`translate(47.5 ${row.y + 11.5}) scale(0.46)`}
@@ -147,7 +147,7 @@ function OwnerCardIllus({
             <text x="70" y={row.y + 26} fontSize="9.5" fontWeight="700"
               fill="#1A1A1A" fontFamily="Manrope, sans-serif">{clip(row.value, 18)}</text>
           ) : (
-            <rect className="oc-skeleton" x="70" y={row.y + 19} width="86" height="7" rx="3.5" fill="rgba(26,26,26,0.07)" />
+            <rect className="oc-skeleton" x="70" y={row.y + 19} width="86" height="7" rx="3.5" fill="rgba(var(--ink),0.07)" />
           )}
           {row.ok && (
             <g className="oc-check">
@@ -237,9 +237,9 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
         .oc-row-2    { animation-delay: .16s; }
 
         .oc-close    { transition: all .2s ease; }
-        .oc-close:hover { background: rgba(26,26,26,0.09) !important; color: #1A1A1A !important; }
+        .oc-close:hover { background: rgba(var(--ink),0.09) !important; color: var(--onyx) !important; }
         .oc-cancel   { transition: all .2s ease; }
-        .oc-cancel:hover { background: rgba(26,26,26,0.03) !important; border-color: #DDD !important; }
+        .oc-cancel:hover { background: rgba(var(--ink),0.03) !important; border-color: var(--border2) !important; }
         .oc-save     { transition: all .25s cubic-bezier(0.34,1.1,0.64,1); }
         .oc-save:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(252,174,145,0.34) !important; }
       `}</style>
@@ -249,7 +249,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
         style={{
           position: "relative",
           width: "100%", maxWidth: "820px", height: "min(544px, calc(100vh - 32px))",
-          background: "#FDFCFB", borderRadius: "24px",
+          background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "268px 1fr",
           overflow: "hidden", animation: "ocIn 0.32s cubic-bezier(0.34,1.1,0.64,1)",
@@ -258,7 +258,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
       >
         {/* ── LEFT: живая визитка ── */}
         <div style={{
-          background: "white", borderRight: "1px solid #F0EDE8",
+          background: "var(--bg-card)", borderRight: "1px solid #F0EDE8",
           display: "flex", flexDirection: "column",
           padding: "26px 22px 20px", position: "relative", overflow: "hidden",
         }}>
@@ -274,7 +274,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
             <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 4px" }}>
               {t("staff:ownerModal.header")}
             </p>
-            <h2 style={{ fontSize: "16px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.4px", margin: 0, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.4px", margin: 0, lineHeight: 1.3 }}>
               {fullName || t("staff:editModal.employeeFallback")}
             </h2>
             <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "3px 0 0" }}>
@@ -304,7 +304,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
           <button className="oc-close" onClick={onClose} style={{
             position: "absolute", top: "16px", right: "16px", zIndex: 10,
             width: "28px", height: "28px",
-            background: "rgba(26,26,26,0.05)", border: "none", borderRadius: "8px",
+            background: "rgba(var(--ink),0.05)", border: "none", borderRadius: "8px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
             color: "#AAAAAA",
           }}>
@@ -314,7 +314,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
           </button>
 
           <div style={{ flex: 1, overflowY: "auto", padding: "34px 30px 16px" }}>
-            <h3 style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", margin: "0 0 4px" }}>
               {t("staff:ownerModal.heading")}
             </h3>
             <p style={{ fontSize: "12px", color: "#AAAAAA", margin: "0 0 24px" }}>
@@ -356,13 +356,13 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
               {/* Что здесь не меняется */}
               <div style={{
                 padding: "12px 14px", borderRadius: "12px",
-                background: "rgba(26,26,26,0.02)", border: "1px solid rgba(26,26,26,0.07)",
+                background: "rgba(var(--ink),0.02)", border: "1px solid rgba(var(--ink),0.07)",
                 display: "flex", gap: "10px", alignItems: "flex-start",
               }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3C9A8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "1px" }}>
                   <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
+                <p style={{ fontSize: "11.5px", color: "var(--text3)", margin: 0, lineHeight: 1.55 }}>
                   {t("staff:ownerModal.lockedHint")}
                 </p>
               </div>
@@ -377,7 +377,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
             <button type="button" className="oc-cancel" onClick={onClose} style={{
               padding: "12px 18px", background: "transparent",
               border: "1.5px solid #EEEBE6", borderRadius: "12px",
-              fontSize: "13px", fontWeight: 600, color: "#888",
+              fontSize: "13px", fontWeight: 600, color: "var(--text3)",
               cursor: "pointer", fontFamily: "inherit",
             }}>
               {t("common:buttons.cancel")}
@@ -391,7 +391,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
                 background: saved
                   ? "linear-gradient(135deg, #A3C9A8, #7aab80)"
                   : !canSave
-                    ? "rgba(26,26,26,0.06)"
+                    ? "rgba(var(--ink),0.06)"
                     : "linear-gradient(135deg, #FCAE91, #F9A08B)",
                 border: "none", borderRadius: "12px",
                 fontSize: "14px", fontWeight: 700, color: !canSave && !saved ? "#AAAAAA" : "white",

@@ -85,13 +85,13 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
   ];
 
   if (loading) {
-    return <div style={{ padding: '64px 20px', textAlign: 'center', color: '#999999', fontSize: '14px', fontWeight: 600 }}>{t('salaries.loading')}</div>;
+    return <div style={{ padding: '64px 20px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px', fontWeight: 600 }}>{t('salaries.loading')}</div>;
   }
 
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '14px' }}>
-        <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A' }}>{t('tabs.salaries')}</div>
+        <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--onyx)' }}>{t('tabs.salaries')}</div>
         <InfoHint title={t('tabs.salaries')} text={t('info.salaries')} />
       </div>
 
@@ -100,7 +100,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
         {SUMMARY.map(s => (
           <div key={s.label} className="card" style={{ padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: '6px', borderLeft: `3px solid ${s.color}` }}>
             <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{s.label}</div>
-            <div style={{ fontSize: '26px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px', lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px', lineHeight: 1 }}>{s.value}</div>
             <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{s.sub}</div>
           </div>
         ))}
@@ -109,7 +109,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
       {/* Trainer list */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {rows.length === 0 && (
-          <div style={{ padding: '48px 20px', textAlign: 'center', color: '#999999', fontSize: '13px', fontWeight: 600 }}>{t('salaries.noRows')}</div>
+          <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text3)', fontSize: '13px', fontWeight: 600 }}>{t('salaries.noRows')}</div>
         )}
         {rows.map((row, i) => {
           const color = rowColor(row.user_id);
@@ -137,7 +137,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
 
                 {/* Name */}
                 <div style={{ minWidth: '156px' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>{row.name}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '2px' }}>{row.name}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{t('salaries.sessionsCount', { count: row.sessions_count })}</div>
                 </div>
 
@@ -155,7 +155,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
                       {row.rate_type === 'percent' ? `${row.rate}%` : `${currency}${row.rate}/${rateTypeLabel(row.rate_type, t)}`}
                     </span>
                   )}
-                  <span style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A' }}>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--onyx)' }}>
                     {fmt(row.amount)}<span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text3)', marginLeft: '3px' }}>{t('salaries.perMonth')}</span>
                   </span>
                 </div>
@@ -169,8 +169,8 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
                       height: '36px', padding: '0 16px', borderRadius: '8px', border: 'none',
                       fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font)',
                       cursor: isPaid || isPaying ? 'default' : 'pointer',
-                      background: isPaid ? 'rgba(26,26,26,0.05)' : '#F9A08B',
-                      color: isPaid ? '#999' : '#fff',
+                      background: isPaid ? 'rgba(var(--ink),0.05)' : '#F9A08B',
+                      color: isPaid ? 'var(--text3)' : '#fff',
                       boxShadow: isPaid ? 'none' : '0 4px 14px rgba(249,160,139,0.28)',
                       transition: 'filter 0.15s',
                     }}
@@ -193,7 +193,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
                 gridTemplateRows: isExpanded ? '1fr' : '0fr',
                 transition: 'grid-template-rows 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
                 borderBottom: i < rows.length - 1 ? '1px solid var(--border)' : 'none',
-                background: 'rgba(26,26,26,0.015)',
+                background: 'rgba(var(--ink),0.015)',
               }}>
                 <div style={{ overflow: 'hidden', minHeight: 0 }}>
                   <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px' }}>
@@ -203,19 +203,19 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
                       <RateRow row={row} color={color} currency={currency} t={t} />
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 600 }}>{t('salaries.sessionsInPeriod')}</span>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{row.sessions_count}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{row.sessions_count}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 600 }}>{t('salaries.hoursWorked')}</span>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{row.hours_worked.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{row.hours_worked.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 600 }}>{t('salaries.lessonsRevenue')}</span>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{fmt(row.lessons_revenue)}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{fmt(row.lessons_revenue)}</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px dashed rgba(26,26,26,0.08)', marginTop: '4px' }}>
-                        <span style={{ fontSize: '13px', color: '#1A1A1A', fontWeight: 700 }}>{t('salaries.totalToPay')}</span>
-                        <span style={{ fontSize: '22px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.4px' }}>{fmt(row.amount)}</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px dashed rgba(var(--ink),0.08)', marginTop: '4px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 700 }}>{t('salaries.totalToPay')}</span>
+                        <span style={{ fontSize: '22px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>{fmt(row.amount)}</span>
                       </div>
                       {isPaid && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -253,7 +253,7 @@ function SalaryHistoryColumn({ userId, enabled, fmt, t }: {
   const { data: history = [], isLoading } = useSalaryHistory(userId, enabled);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1px dashed rgba(26,26,26,0.08)', paddingLeft: '28px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1px dashed rgba(var(--ink),0.08)', paddingLeft: '28px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('salaries.historyTitle')}</div>
       {isLoading && (
         <div style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 600 }}>{t('salaries.historyLoading')}</div>
@@ -267,7 +267,7 @@ function SalaryHistoryColumn({ userId, enabled, fmt, t }: {
             <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 600 }}>
               {fmtDate(p.period_start)} – {fmtDate(p.period_end)}
             </span>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{fmt(p.amount)}</span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{fmt(p.amount)}</span>
           </div>
         </Tooltip>
       ))}

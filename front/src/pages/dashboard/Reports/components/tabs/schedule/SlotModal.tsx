@@ -34,7 +34,7 @@ function fmtDayMonth(iso: string): { day: string; month: string } {
 }
 
 function StatusChip({ status, label }: { status: string; label: string }) {
-  const style = LESSON_STATUS_STYLE[status] ?? { bg: 'rgba(26,26,26,0.05)', fg: 'var(--text2)' };
+  const style = LESSON_STATUS_STYLE[status] ?? { bg: 'rgba(var(--ink),0.05)', fg: 'var(--text2)' };
   return (
     <span style={{
       padding: '3px 9px', borderRadius: '7px', fontSize: '11px', fontWeight: 700,
@@ -62,7 +62,7 @@ function LessonCard({ row, index, reduceMotion }: { row: SlotLessonRow; index: n
       onClick={() => navigate(`/dashboard/journal?lesson_id=${row.id}`)}
       style={{
         display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', borderRadius: '12px',
-        cursor: 'pointer', background: hovered ? 'rgba(249,160,139,0.06)' : 'rgba(26,26,26,0.02)',
+        cursor: 'pointer', background: hovered ? 'rgba(249,160,139,0.06)' : 'rgba(var(--ink),0.02)',
         transition: 'background 0.15s ease',
       }}
     >

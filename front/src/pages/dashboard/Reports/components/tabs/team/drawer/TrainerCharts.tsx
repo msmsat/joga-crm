@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AreaChart, Area, BarChart, Bar, LabelList, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, LabelList, XAxis, YAxis } from 'recharts';
 import { EmptyState, InfoHint } from '../../../../../../../components/ui/index';
 import { fmtMoney } from '../../../../../../../lib/format';
 import { ChartFrame } from '../../../shared/ChartFrame';
-import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, LINE_CURSOR, PEACH_LIGHT } from '../../../shared/chartTheme';
+import { AXIS_X, BAR_CURSOR, LINE_CURSOR, PEACH_LIGHT } from '../../../shared/chartTheme';
+import { ChartTooltip } from '../../../shared/ChartTooltip';
 import { ZeroLabel } from '../../../shared/ZeroLabel';
 import { zeroAwareCells } from '../../../shared/zeroAwareCells';
 
@@ -48,7 +49,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
             <AreaChart data={revenueData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} isAnimationActive={false} />
+              <ChartTooltip formatter={(v) => fmtMoney(Number(v))} cursor={LINE_CURSOR} />
               <defs>
                 <linearGradient id="trainerRevGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#FCAE91" stopOpacity={0.4} />
@@ -71,7 +72,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
             description={t(`descriptions.team.load${dim === 'weekday' ? 'Weekday' : 'Hour'}`)}
             hintKey="occupancy"
           />
-          <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.04)', borderRadius: '10px', padding: '3px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'rgba(var(--ink),0.04)', borderRadius: '10px', padding: '3px', flexShrink: 0 }}>
             {LOAD_DIMS.map(d => (
               <button
                 key={d}
@@ -79,7 +80,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
                 style={{
                   padding: '5px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                   fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font)',
-                  background: dim === d ? '#fff' : 'transparent',
+                  background: dim === d ? 'var(--bg-card)' : 'transparent',
                   color: dim === d ? 'var(--text)' : 'var(--text3)',
                   boxShadow: dim === d ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
                 }}
@@ -96,7 +97,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
             <BarChart data={loadData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => `${v}%`} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} isAnimationActive={false} />
+              <ChartTooltip formatter={(v) => `${v}%`} cursor={BAR_CURSOR} />
               <Bar dataKey="fill_pct" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} activeBar={false}>
                 <LabelList dataKey="fill_pct" position="top" content={ZeroLabel} />
                 {zeroAwareCells(loadData, 'fill_pct', PEACH_LIGHT)}

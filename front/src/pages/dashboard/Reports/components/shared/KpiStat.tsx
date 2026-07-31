@@ -95,7 +95,7 @@ export function KpiStat({ label, value, trendPct, formulaKey, onClick, format = 
               <Tooltip label={scopeNote} side="top">
                 <span style={{
                   fontSize: '10.5px', fontWeight: 600, color: 'var(--text3)',
-                  background: 'rgba(26,26,26,0.05)', borderRadius: '6px', padding: '2px 6px',
+                  background: 'rgba(var(--ink),0.05)', borderRadius: '6px', padding: '2px 6px',
                 }}>
                   {t('scopeNote.label')}
                 </span>

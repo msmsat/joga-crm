@@ -94,7 +94,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
   };
 
   if (loading) {
-    return <div style={{ padding: '64px 20px', textAlign: 'center', color: '#999999', fontSize: '14px', fontWeight: 600 }}>{t('accounts.loading')}</div>;
+    return <div style={{ padding: '64px 20px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px', fontWeight: 600 }}>{t('accounts.loading')}</div>;
   }
 
   return (
@@ -105,11 +105,11 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
       <div className="finance-illus" style={{ marginBottom: '28px', display: 'flex', alignItems: 'center', padding: '0 32px', gap: '32px' }}>
         <DonutIllustration total={total} segments={segments} centerLabel={t('accounts.donutTotal', { symbol: currency })} />
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
             {t('accounts.totalCapital')}
             <InfoHint title={t('tabs.accounts')} text={t('info.accounts')} />
           </div>
-          <div style={{ fontSize: '40px', fontWeight: 800, letterSpacing: '-2px', color: '#1A1A1A', lineHeight: 1 }}>{fmt(total)}</div>
+          <div style={{ fontSize: '40px', fontWeight: 800, letterSpacing: '-2px', color: 'var(--onyx)', lineHeight: 1 }}>{fmt(total)}</div>
           <div style={{ marginTop: '12px' }}>
             <span style={{ fontSize: '12px', color: '#5BAB72', fontWeight: 700, background: 'rgba(163,201,168,0.12)', padding: '5px 14px', borderRadius: '20px' }}>
               ↑ +{fmt(accounts.reduce((s, a) => s + a.daily_change, 0))} {t('accounts.todayChange')}
@@ -121,8 +121,8 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
             <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: a.color, flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#1A1A1A' }}>{a.name}</div>
-                <div style={{ fontSize: '10px', color: '#666666' }}>{total > 0 ? Math.round(a.balance / total * 100) : 0}%</div>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--onyx)' }}>{a.name}</div>
+                <div style={{ fontSize: '10px', color: 'var(--muted)' }}>{total > 0 ? Math.round(a.balance / total * 100) : 0}%</div>
               </div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: a.color }}>{fmt(a.balance)}</div>
             </div>
@@ -144,7 +144,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
               onClick={() => { if (!isEditing && !isHistory) setSelected(isSelected ? null : acc.id); }}
               style={{
                 cursor: (isEditing || isHistory) ? 'default' : 'pointer', position: 'relative', overflow: 'hidden', padding: '24px',
-                border: isSelected ? `1.5px solid ${acc.color}` : '1.5px solid rgba(26, 26, 26, 0.06)', background: '#FFFFFF',
+                border: isSelected ? `1.5px solid ${acc.color}` : '1.5px solid rgba(var(--ink), 0.06)', background: 'var(--bg-card)',
                 transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', transform: isSelected ? 'translateY(-2px)' : 'none',
                 boxShadow: isSelected ? `0 16px 32px ${acc.color}15` : '0 4px 12px rgba(26,26,26,0.02)',
               }}
@@ -155,59 +155,59 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
                 <div className={styles.morphContainer} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                     <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Edit /></div>
-                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A' }}>{t('accounts.editTitle')}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--onyx)' }}>{t('accounts.editTitle')}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                    <input type="text" value={editName} placeholder={t('accounts.namePlaceholder')} onChange={e => setEditName(e.target.value)} onFocus={() => setIsEditInputFocused(true)} onBlur={() => setIsEditInputFocused(false)} style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isEditInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A', outline: 'none', boxShadow: isEditInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }} />
-                    <input type="text" value={editBalance} placeholder={t('accounts.balancePlaceholder', { symbol: currency })} onChange={e => handleNumberInput(e.target.value, setEditBalance)} onFocus={() => setIsEditBalanceFocused(true)} onBlur={() => setIsEditBalanceFocused(false)} style={{ width: '90px', padding: '10px 12px', background: '#FDFCFB', border: isEditBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isEditBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }} />
+                    <input type="text" value={editName} placeholder={t('accounts.namePlaceholder')} onChange={e => setEditName(e.target.value)} onFocus={() => setIsEditInputFocused(true)} onBlur={() => setIsEditInputFocused(false)} style={{ flex: 1, padding: '10px 12px', background: 'var(--bg)', border: isEditInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', outline: 'none', boxShadow: isEditInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }} />
+                    <input type="text" value={editBalance} placeholder={t('accounts.balancePlaceholder', { symbol: currency })} onChange={e => handleNumberInput(e.target.value, setEditBalance)} onFocus={() => setIsEditBalanceFocused(true)} onBlur={() => setIsEditBalanceFocused(false)} style={{ width: '90px', padding: '10px 12px', background: 'var(--bg)', border: isEditBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', outline: 'none', boxShadow: isEditBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }} />
                   </div>
                   {!acc.is_system && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '16px' }}>
                       {[{ id: 'cash', icon: <Ico.Cash />, label: t('accounts.types.cash') }, { id: 'bank', icon: <Ico.Card />, label: t('accounts.types.bank') }, { id: 'online', icon: <Ico.World />, label: t('accounts.types.online') }].map(btn => (
-                        <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : '#666666', transition: 'all 0.15s' }}>
+                        <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
                           {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
                         </button>
                       ))}
                     </div>
                   )}
                   <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={() => handleUpdate(acc.id)} disabled={!editName.trim()} style={{ flex: 1, padding: '10px', background: editName.trim() ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: editName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>{t('common.save')}</button>
-                    <button onClick={() => setEditingId(null)} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666666', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>{t('common.cancel')}</button>
+                    <button onClick={() => handleUpdate(acc.id)} disabled={!editName.trim()} style={{ flex: 1, padding: '10px', background: editName.trim() ? '#F9A08B' : 'rgba(var(--ink),0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: editName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>{t('common.save')}</button>
+                    <button onClick={() => setEditingId(null)} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(var(--ink),0.08)', borderRadius: '8px', color: 'var(--muted)', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>{t('common.cancel')}</button>
                   </div>
                 </div>
 
               ) : isHistory ? (
                 <div className={styles.morphContainer} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                    <button onClick={() => setHistoryId(null)} style={{ width: '28px', height: '28px', borderRadius: '8px', border: '1.5px solid rgba(26,26,26,0.08)', background: '#FDFCFB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1A1A1A', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(26,26,26,0.04)'} onMouseLeave={e => e.currentTarget.style.background = '#FDFCFB'}>
+                    <button onClick={() => setHistoryId(null)} style={{ width: '28px', height: '28px', borderRadius: '8px', border: '1.5px solid rgba(var(--ink),0.08)', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--onyx)', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(var(--ink),0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A' }}>{t('accounts.historyTitle', { name: acc.name })}</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)' }}>{t('accounts.historyTitle', { name: acc.name })}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                     <div style={{ flex: 1, padding: '10px', background: 'rgba(163,201,168,0.1)', borderRadius: '8px', border: '1px solid rgba(163,201,168,0.2)' }}><div style={{ fontSize: '9px', fontWeight: 800, color: '#7AA080', textTransform: 'uppercase', marginBottom: '4px' }}>{t('accounts.income30d')}</div><div style={{ fontSize: '14px', fontWeight: 800, color: '#4E885B', letterSpacing: '-0.3px' }}>+124.5K</div></div>
                     <div style={{ flex: 1, padding: '10px', background: 'rgba(216,140,154,0.1)', borderRadius: '8px', border: '1px solid rgba(216,140,154,0.2)' }}><div style={{ fontSize: '9px', fontWeight: 800, color: '#BA6D7D', textTransform: 'uppercase', marginBottom: '4px' }}>{t('accounts.expense30d')}</div><div style={{ fontSize: '14px', fontWeight: 800, color: '#A5495B', letterSpacing: '-0.3px' }}>-32.1K</div></div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'rgba(163,201,168,0.15)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Up /></div><div style={{ flex: 1 }}><div style={{ fontSize: '12px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>{t('accounts.samplePayment')}</div><div style={{ fontSize: '10px', color: '#999999', fontWeight: 500 }}>{t('accounts.sampleTime')}</div></div><div style={{ fontSize: '12px', fontWeight: 800, color: '#5BAB72' }}>+2 500</div></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'rgba(163,201,168,0.15)', color: '#5BAB72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ico.Up /></div><div style={{ flex: 1 }}><div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '2px' }}>{t('accounts.samplePayment')}</div><div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 500 }}>{t('accounts.sampleTime')}</div></div><div style={{ fontSize: '12px', fontWeight: 800, color: '#5BAB72' }}>+2 500</div></div>
                   </div>
-                  <button onClick={() => { setHistoryId(null); onNavigateToOperations(acc.name); }} style={{ width: '100%', padding: '10px', background: 'transparent', border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#1A1A1A', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.08)'; }}>{t('accounts.openAllOperations')}</button>
+                  <button onClick={() => { setHistoryId(null); onNavigateToOperations(acc.name); }} style={{ width: '100%', padding: '10px', background: 'transparent', border: '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', color: 'var(--onyx)', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--onyx)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(var(--ink),0.08)'; }}>{t('accounts.openAllOperations')}</button>
                 </div>
 
               ) : (
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', paddingTop: '4px' }}>
-                    <div style={{ fontSize: '11px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       {acc.name}
-                      {acc.is_system && <span style={{ background: 'rgba(26,26,26,0.05)', color: '#666', padding: '2px 6px', borderRadius: '4px', fontSize: '8.5px', fontWeight: 800 }}>{t('accounts.system')}</span>}
+                      {acc.is_system && <span style={{ background: 'rgba(var(--ink),0.05)', color: 'var(--muted)', padding: '2px 6px', borderRadius: '4px', fontSize: '8.5px', fontWeight: 800 }}>{t('accounts.system')}</span>}
                     </div>
                     <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: acc.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc.color }}><TypeIcon /></div>
                   </div>
-                  <div style={{ fontSize: '28px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.5px', color: '#1A1A1A' }}>{fmt(acc.balance)}</div>
+                  <div style={{ fontSize: '28px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.5px', color: 'var(--onyx)' }}>{fmt(acc.balance)}</div>
                   <div style={{ fontSize: '11px', color: '#5BAB72', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><Ico.Up /> +{fmt(acc.daily_change)} {t('accounts.today')}</div>
 
                   {isSelected && (
-                    <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(26,26,26,0.05)', display: 'flex', gap: '6px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
+                    <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(var(--ink),0.05)', display: 'flex', gap: '6px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
                       <Btn size="sm" onClick={() => { setHistoryId(null); setEditingId(acc.id); setEditName(acc.name); setEditBalance(acc.balance.toString()); setEditType(acc.type); }}><Ico.Edit />{t('common.edit')}</Btn>
                       <Btn size="sm" onClick={() => { setEditingId(null); setHistoryId(acc.id); }}><Ico.Bar />{t('accounts.history')}</Btn>
                       {!acc.is_system && (
@@ -222,31 +222,31 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
         })}
 
         {/* Плитка создания (Копилки) */}
-        <div style={{ border: addOpen ? '1.5px solid #F9A08B' : '1.5px dashed rgba(26,26,26,0.08)', borderRadius: '16px', padding: '24px', background: addOpen ? '#FFFFFF' : 'transparent', boxShadow: addOpen ? '0 12px 28px rgba(249, 160, 139, 0.04)' : 'none', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: "'Manrope', sans-serif", transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box' }}>
+        <div style={{ border: addOpen ? '1.5px solid #F9A08B' : '1.5px dashed rgba(var(--ink),0.08)', borderRadius: '16px', padding: '24px', background: addOpen ? 'var(--bg-card)' : 'transparent', boxShadow: addOpen ? '0 12px 28px rgba(249, 160, 139, 0.04)' : 'none', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: "'Manrope', sans-serif", transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box' }}>
           {addOpen ? (
             <div className={styles.morphContainer}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Plus /></div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A' }}>{t('accounts.newSavingsTitle')}</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--onyx)' }}>{t('accounts.newSavingsTitle')}</div>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                <input type="text" value={newName} placeholder={t('accounts.namePlaceholder')} onChange={e => setNewName(e.target.value)} onFocus={() => setIsNewInputFocused(true)} onBlur={() => setIsNewInputFocused(false)} style={{ flex: 1, padding: '10px 12px', background: '#FDFCFB', border: isNewInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A', outline: 'none', boxShadow: isNewInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }} />
-                <input type="text" value={newBalance} placeholder={t('accounts.balancePlaceholder', { symbol: currency })} onChange={e => handleNumberInput(e.target.value, setNewBalance)} onFocus={() => setIsNewBalanceFocused(true)} onBlur={() => setIsNewBalanceFocused(false)} style={{ width: '90px', padding: '10px 12px', background: '#FDFCFB', border: isNewBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: '#1A1A1A', outline: 'none', boxShadow: isNewBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }} />
+                <input type="text" value={newName} placeholder={t('accounts.namePlaceholder')} onChange={e => setNewName(e.target.value)} onFocus={() => setIsNewInputFocused(true)} onBlur={() => setIsNewInputFocused(false)} style={{ flex: 1, padding: '10px 12px', background: 'var(--bg)', border: isNewInputFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', outline: 'none', boxShadow: isNewInputFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', minWidth: 0 }} />
+                <input type="text" value={newBalance} placeholder={t('accounts.balancePlaceholder', { symbol: currency })} onChange={e => handleNumberInput(e.target.value, setNewBalance)} onFocus={() => setIsNewBalanceFocused(true)} onBlur={() => setIsNewBalanceFocused(false)} style={{ width: '90px', padding: '10px 12px', background: 'var(--bg)', border: isNewBalanceFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', outline: 'none', boxShadow: isNewBalanceFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.2s', textAlign: 'right' }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '18px' }}>
                 {[{ id: 'cash', icon: <Ico.Cash />, label: t('accounts.typesShort.cash') }, { id: 'bank', icon: <Ico.Card />, label: t('accounts.typesShort.bank') }, { id: 'online', icon: <Ico.World />, label: t('accounts.typesShort.online') }].map(btn => (
-                  <button key={btn.id} type="button" onClick={() => setNewType(btn.id)} style={{ padding: '8px 4px', background: newType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: newType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: newType === btn.id ? '#F9A08B' : '#666666', transition: 'all 0.15s' }}>
+                  <button key={btn.id} type="button" onClick={() => setNewType(btn.id)} style={{ padding: '8px 4px', background: newType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: newType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: newType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
                     {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
                   </button>
                 ))}
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
-                <button onClick={handleSaveNew} disabled={!newName.trim()} style={{ flex: 1, padding: '10px', background: newName.trim() ? '#F9A08B' : 'rgba(26,26,26,0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: newName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>{t('common.create')}</button>
-                <button onClick={() => { setAddOpen(false); setNewName(''); setNewBalance(''); }} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(26,26,26,0.08)', borderRadius: '8px', color: '#666666', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>{t('common.cancel')}</button>
+                <button onClick={handleSaveNew} disabled={!newName.trim()} style={{ flex: 1, padding: '10px', background: newName.trim() ? '#F9A08B' : 'rgba(var(--ink),0.04)', border: 'none', borderRadius: '8px', color: '#FFF', fontSize: '12px', fontWeight: 700, cursor: newName.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>{t('common.create')}</button>
+                <button onClick={() => { setAddOpen(false); setNewName(''); setNewBalance(''); }} style={{ padding: '10px 14px', background: 'transparent', border: '1px solid rgba(var(--ink),0.08)', borderRadius: '8px', color: 'var(--muted)', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>{t('common.cancel')}</button>
               </div>
             </div>
           ) : (
-            <button onClick={() => setAddOpen(true)} style={{ width: '100%', height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: '#666666', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.parentElement!.style.borderColor = '#F9A08B'; e.currentTarget.parentElement!.style.background = 'rgba(249,160,139,0.02)'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { if (!addOpen) { e.currentTarget.parentElement!.style.borderColor = 'rgba(26,26,26,0.08)'; e.currentTarget.parentElement!.style.background = 'transparent'; e.currentTarget.style.color = '#666666'; } }}>
+            <button onClick={() => setAddOpen(true)} style={{ width: '100%', height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.parentElement!.style.borderColor = '#F9A08B'; e.currentTarget.parentElement!.style.background = 'rgba(249,160,139,0.02)'; e.currentTarget.style.color = '#F9A08B'; }} onMouseLeave={e => { if (!addOpen) { e.currentTarget.parentElement!.style.borderColor = 'rgba(var(--ink),0.08)'; e.currentTarget.parentElement!.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)'; } }}>
               <Ico.Plus /> {t('accounts.createSavings')}
             </button>
           )}

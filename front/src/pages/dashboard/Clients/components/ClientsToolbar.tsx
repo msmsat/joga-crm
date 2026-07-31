@@ -97,7 +97,7 @@ export function ClientsToolbar({
           position: relative;
         }
         .ct-tab:hover {
-          background: rgba(26,26,26,0.04);
+          background: rgba(var(--ink),0.04);
           color: var(--text);
           transform: translateY(-1px);
         }

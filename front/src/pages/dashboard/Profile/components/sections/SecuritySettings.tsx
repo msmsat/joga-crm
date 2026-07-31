@@ -16,7 +16,7 @@ export default function SecuritySettings() {
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px',
           padding: '16px 20px', borderRadius: '14px',
-          background: '#FFFFFF', border: '1.5px solid rgba(26,26,26,0.06)',
+          background: 'var(--bg-card)', border: '1.5px solid rgba(var(--ink),0.06)',
           color: 'var(--onyx)', fontSize: '13px', fontWeight: 700,
           cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.015)',
         }}
@@ -27,7 +27,7 @@ export default function SecuritySettings() {
           e.currentTarget.style.boxShadow = '0 8px 24px rgba(252,174,145,0.12)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'rgba(26,26,26,0.06)';
+          e.currentTarget.style.borderColor = 'rgba(var(--ink),0.06)';
           e.currentTarget.style.color = 'var(--onyx)';
           e.currentTarget.style.transform = 'none';
           e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.015)';

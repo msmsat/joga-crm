@@ -33,10 +33,10 @@ export default function StepIdentity({ data, onChange }: Props) {
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
-        <h3 style={{ fontSize: "26px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-1px", margin: "0 0 8px" }}>
+        <h3 style={{ fontSize: "26px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-1px", margin: "0 0 8px" }}>
           {t("onboarding:identity.welcome")}
         </h3>
-        <p style={{ fontSize: "14px", color: "#888", margin: 0, lineHeight: "1.6" }}>
+        <p style={{ fontSize: "14px", color: "var(--text3)", margin: 0, lineHeight: "1.6" }}>
           {t("onboarding:identity.subtitle")}
         </p>
       </div>
@@ -95,11 +95,11 @@ export default function StepIdentity({ data, onChange }: Props) {
                 style={{
                   padding: "8px 12px", background: "transparent",
                   border: "1.5px solid #EEEBE6", borderRadius: "10px",
-                  fontSize: "13px", fontWeight: 600, color: "#999",
+                  fontSize: "13px", fontWeight: 600, color: "var(--text3)",
                   cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease",
                 }}
                 onMouseEnter={e => { e.currentTarget.style.color = "#D88C9A"; e.currentTarget.style.borderColor = "rgba(216,140,154,0.4)"; }}
-                onMouseLeave={e => { e.currentTarget.style.color = "#999"; e.currentTarget.style.borderColor = "#EEEBE6"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "var(--text3)"; e.currentTarget.style.borderColor = "#EEEBE6"; }}
               >
                 {t("onboarding:identity.removeLogo")}
               </button>
@@ -118,7 +118,7 @@ export default function StepIdentity({ data, onChange }: Props) {
         />
 
         <div>
-          <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#666", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px" }}>
+          <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "var(--muted)", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px" }}>
             {t("onboarding:identity.descriptionLabel")}
           </label>
           <textarea
@@ -129,9 +129,9 @@ export default function StepIdentity({ data, onChange }: Props) {
             rows={3}
             style={{
               width: "100%", padding: "13px 16px", boxSizing: "border-box",
-              background: "rgba(26,26,26,0.03)", border: "1.5px solid transparent",
+              background: "rgba(var(--ink),0.03)", border: "1.5px solid transparent",
               borderRadius: "14px", fontSize: "14px", fontFamily: "inherit",
-              color: "#1A1A1A", resize: "none", outline: "none",
+              color: "var(--onyx)", resize: "none", outline: "none",
               transition: "all 0.25s ease", lineHeight: "1.55",
             }}
             onFocus={e => { e.target.style.border = "1.5px solid #FCAE91"; e.target.style.boxShadow = "0 0 0 4px rgba(252,174,145,0.1)"; }}
@@ -160,7 +160,7 @@ export default function StepIdentity({ data, onChange }: Props) {
                 ) : initials}
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: "14px", color: "#1A1A1A" }}>{data.studioName}</div>
+                <div style={{ fontWeight: 700, fontSize: "14px", color: "var(--onyx)" }}>{data.studioName}</div>
                 {data.description && (
                   <div style={{ fontSize: "12px", color: "#AAAAAA", marginTop: "2px", lineHeight: "1.4" }}>
                     {data.description.slice(0, 60)}{data.description.length > 60 ? "..." : ""}

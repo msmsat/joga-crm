@@ -1,8 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { MIN_REPORT_DATE } from '../constants';
 import type { ReportFilters, ReportFiltersParams, ReportPeriod } from '../types';
 
 const toIso = (d: Date) => d.toISOString().slice(0, 10);
+
+/** ISO-даты сравниваются как строки, поэтому границы — обычный clamp. */
+const clampDate = (value: string, min: string, max: string) =>
+  (!value || value < min ? min : value > max ? max : value);
 
 /** Диапазон дат периода, заканчивающийся сегодня (day/week/month/year). */
 function rangeForPeriod(period: Exclude<ReportPeriod, 'custom'>): { from: string; to: string } {
@@ -46,7 +51,9 @@ export function useReportFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = (searchParams.get('period') as ReportPeriod | null) ?? 'month';
-  const defaultRange = period === 'custom' ? { from: '', to: '' } : rangeForPeriod(period);
+  // «Произвольный» стартует с уже заполненного месяца, а не с двух пустых полей:
+  // год и месяц не надо набивать заново, достаточно поправить нужную часть даты.
+  const defaultRange = rangeForPeriod(period === 'custom' ? 'month' : period);
   const dateFrom = searchParams.get('date_from') || defaultRange.from;
   const dateTo = searchParams.get('date_to') || defaultRange.to;
 
@@ -73,12 +80,17 @@ export function useReportFilters() {
     }, { replace: true });
   }, [setSearchParams]);
 
+  // Единственная точка входа произвольного периода: и поля тулбара, и правка URL
+  // руками подтягиваются к границам [MIN_REPORT_DATE .. сегодня], конец — не раньше начала.
   const setCustomRange = useCallback((from: string, to: string) => {
+    const today = toIso(new Date());
+    const safeFrom = clampDate(from, MIN_REPORT_DATE, today);
+    const safeTo = clampDate(to, safeFrom, today);
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('period', 'custom');
-      next.set('date_from', from);
-      next.set('date_to', to);
+      next.set('date_from', safeFrom);
+      next.set('date_to', safeTo);
       return next;
     }, { replace: true });
   }, [setSearchParams]);

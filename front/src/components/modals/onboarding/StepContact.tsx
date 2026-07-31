@@ -35,10 +35,10 @@ export default function StepContact({ data, onChange }: Props) {
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
-        <h3 style={{ fontSize: "24px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
+        <h3 style={{ fontSize: "24px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
           {t("onboarding:contact.title")}
         </h3>
-        <p style={{ fontSize: "13px", color: "#888", margin: 0, lineHeight: "1.6" }}>
+        <p style={{ fontSize: "13px", color: "var(--text3)", margin: 0, lineHeight: "1.6" }}>
           {t("onboarding:contact.subtitle")}
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function StepContact({ data, onChange }: Props) {
           <path d="M8 5V8.5" stroke="#A3C9A8" strokeWidth="1.3" strokeLinecap="round"/>
           <circle cx="8" cy="11" r="0.75" fill="#A3C9A8"/>
         </svg>
-        <span style={{ fontSize: "12px", color: "#666", lineHeight: "1.5" }}>
+        <span style={{ fontSize: "12px", color: "var(--muted)", lineHeight: "1.5" }}>
           {t("onboarding:contact.note")}
         </span>
       </div>

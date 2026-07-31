@@ -10,6 +10,8 @@ import { errorMessage } from '../../../../api/errorMessage';
 import { PackageModal } from './modals/EditPackage';
 import type { SubscriptionPackage, SubscriptionProgramConfig } from '../../../../api/catalog/catalog.types';
 
+const PUNCH_LIMIT = 14; // как в превью модалки: больше точек в пропуск не влезает
+
 // allow_transfer/auto_renewal возвращены в V5-7 (Блок 4.1/4.2) — логика заведена.
 const SETTINGS: { key: keyof Omit<SubscriptionProgramConfig, 'is_enabled'>; labelKey: string }[] = [
   { key: 'allow_freeze', labelKey: 'catalog:subscriptions.settings.allowFreeze' },
@@ -62,23 +64,23 @@ export function SubscriptionSection() {
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
             padding: '6px 16px 6px 6px', 
-            background: '#FFFFFF',
-            border: '1px solid rgba(26,26,26,0.06)',
+            background: 'var(--bg-card)',
+            border: '1px solid rgba(var(--ink),0.06)',
             borderRadius: '999px',
-            color: '#1A1A1A',
+            color: 'var(--onyx)',
             fontSize: '13px', fontWeight: 700,
             cursor: 'pointer',
             boxShadow: '0 2px 8px rgba(26,26,26,0.03)',
             transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(26,26,26,0.08)';
+            e.currentTarget.style.borderColor = 'rgba(var(--ink),0.15)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(var(--ink),0.08)';
             // Убрали translateY, кнопка визуально "приподнимается" только за счет глубокой тени
             e.currentTarget.style.transform = 'scale(1)'; 
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(26,26,26,0.06)';
+            e.currentTarget.style.borderColor = 'rgba(var(--ink),0.06)';
             e.currentTarget.style.boxShadow = '0 2px 8px rgba(26,26,26,0.03)';
             e.currentTarget.style.transform = 'scale(1)';
           }}
@@ -106,69 +108,63 @@ export function SubscriptionSection() {
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DDD" strokeWidth="1.2" style={{ marginBottom: '16px' }}>
             <rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18"/>
           </svg>
-          <div style={{ fontSize: '15px', fontWeight: 700, color: '#1A1A1A' }}>{t('catalog:subscriptions.empty.title')}</div>
+          <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('catalog:subscriptions.empty.title')}</div>
           <button className="cat-action-btn" style={{ marginTop: '16px' }} onClick={() => setPackageModal({ pkg: null })}>
             {t('catalog:subscriptions.empty.cta')}
           </button>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
-          {packages.map(pkg => (
-            <div
-              key={pkg.id}
-              onClick={() => setPackageModal({ pkg })}
-              style={{
-                padding: '20px', borderRadius: '16px',
-                border: '1px solid rgba(26,26,26,0.08)',
-                background: pkg.is_active ? '#FFFFFF' : 'rgba(26,26,26,0.02)',
-                opacity: pkg.is_active ? 1 : 0.7,
-                display: 'flex', flexDirection: 'column', gap: '10px',
-                cursor: 'pointer',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-                <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A' }}>{pkg.name}</div>
-                {!pkg.is_active && (
-                  <span style={{
-                    padding: '3px 9px', borderRadius: '20px', flexShrink: 0,
-                    background: 'rgba(216,140,154,0.15)', color: '#B4677A',
-                    fontSize: '10.5px', fontWeight: 700,
-                  }}>
-                    {t('catalog:subscriptions.card.inactiveBadge')}
+          {packages.map(pkg => {
+            const punches = Math.min(pkg.class_count, PUNCH_LIMIT);
+            return (
+              <div key={pkg.id} className="sub-card">
+                <div
+                  className={`cmod-pass${pkg.is_active ? '' : ' is-off'}`}
+                  onClick={() => setPackageModal({ pkg })}
+                >
+                  <div className="cmod-pass-kind">
+                    {pkg.is_active
+                      ? t('catalog:modals.package.previewKind')
+                      : t('catalog:subscriptions.card.inactiveBadge')}
+                  </div>
+                  <div className="cmod-pass-name">{pkg.name}</div>
+                  <div className="cmod-pass-price">{currency}{pkg.price.toLocaleString()}</div>
+                  <div className="cmod-punch">
+                    {Array.from({ length: punches }, (_, i) => (
+                      <b key={i} style={{ animationDelay: `${i * 28}ms` }} />
+                    ))}
+                    {pkg.class_count > PUNCH_LIMIT && <span>+{pkg.class_count - PUNCH_LIMIT}</span>}
+                  </div>
+                  <div className="cmod-pass-perf" />
+                  <div className="cmod-pass-foot">
+                    <div>
+                      <small>{t('catalog:modals.package.perVisitPrice')}</small>
+                      {pkg.per_visit_price > 0 ? `${currency}${pkg.per_visit_price.toLocaleString()}` : '—'}
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <small>{t('catalog:modals.package.previewValid')}</small>
+                      {t('catalog:subscriptions.card.duration', { count: pkg.duration_days })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sub-card-foot">
+                  <span className="cat-chip">
+                    {pkg.service_ids == null || pkg.service_ids.length === 0
+                      ? t('catalog:subscriptions.card.allServices')
+                      : t('catalog:subscriptions.card.serviceCount', { count: pkg.service_ids.length })}
                   </span>
-                )}
+                  <button
+                    className="cat-action-btn"
+                    onClick={() => (pkg.is_active ? setConfirmDeactivate(pkg) : doRestore(pkg))}
+                  >
+                    {pkg.is_active ? t('catalog:subscriptions.deactivate') : t('catalog:subscriptions.restore')}
+                  </button>
+                </div>
               </div>
-
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#FCAE91' }}>
-                {currency}{pkg.price.toLocaleString()}
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', fontSize: '12px', color: '#888' }}>
-                <span className="cat-chip">{t('catalog:subscriptions.card.classCount', { count: pkg.class_count })}</span>
-                <span className="cat-chip">{t('catalog:subscriptions.card.duration', { count: pkg.duration_days })}</span>
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {pkg.service_ids == null || pkg.service_ids.length === 0 ? (
-                  <span className="cat-chip">{t('catalog:subscriptions.card.allServices')}</span>
-                ) : (
-                  <span className="cat-chip">{t('catalog:subscriptions.card.serviceCount', { count: pkg.service_ids.length })}</span>
-                )}
-              </div>
-
-              <button
-                className="cat-action-btn"
-                style={{ marginTop: '4px' }}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (pkg.is_active) setConfirmDeactivate(pkg);
-                  else doRestore(pkg);
-                }}
-              >
-                {pkg.is_active ? t('catalog:subscriptions.deactivate') : t('catalog:subscriptions.restore')}
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -185,15 +181,15 @@ export function SubscriptionSection() {
               >
                 <div style={{
                   width: '34px', height: '20px', borderRadius: '10px', flexShrink: 0, position: 'relative',
-                  background: checked ? '#FCAE91' : 'rgba(26,26,26,0.15)', transition: 'background 0.18s',
+                  background: checked ? '#FCAE91' : 'rgba(var(--ink),0.15)', transition: 'background 0.18s',
                 }}>
                   <span style={{
                     position: 'absolute', top: '2px', left: checked ? '16px' : '2px',
-                    width: '16px', height: '16px', borderRadius: '50%', background: '#fff', transition: 'left 0.18s',
+                    width: '16px', height: '16px', borderRadius: '50%', background: 'var(--bg-card)', transition: 'left 0.18s',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                   }} />
                 </div>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>{t(labelKey)}</span>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)' }}>{t(labelKey)}</span>
               </label>
             );
           })}

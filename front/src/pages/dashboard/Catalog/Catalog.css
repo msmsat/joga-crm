@@ -30,9 +30,9 @@
   gap: 8px;
   padding: 10px 20px;
   border-radius: 12px;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
-  background: #FFFFFF;
-  color: #666;
+  border: 1.5px solid rgba(var(--ink), 0.08);
+  background: var(--bg-card);
+  color: var(--muted);
   font-size: 14px;
   font-weight: 700;
   font-family: var(--font);
@@ -42,20 +42,20 @@
 
 .cat-tab:hover {
   border-color: rgba(252, 174, 145, 0.4);
-  color: #1A1A1A;
+  color: var(--onyx);
 }
 
 .cat-tab.active {
-  background: #1A1A1A;
-  color: #FFFFFF;
+  background: var(--onyx);
+  color: var(--bg)FFF;
   border-color: transparent;
   box-shadow: 0 4px 14px rgba(26, 26, 26, 0.18);
 }
 
 /* ─── LEFT PANEL ───────────────────────────────────────────────────────────── */
 .cat-list-panel {
-  background: #FFFFFF;
-  border: 1px solid rgba(26, 26, 26, 0.07);
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--ink), 0.07);
   border-radius: 16px;
   overflow: hidden;
   display: flex;
@@ -65,7 +65,7 @@
 
 .cat-panel-hdr {
   padding: 16px 14px 13px;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+  border-bottom: 1px solid rgba(var(--ink), 0.06);
   background: linear-gradient(180deg, rgba(252, 174, 145, 0.04) 0%, transparent 100%);
   display: flex;
   align-items: center;
@@ -147,7 +147,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(26, 26, 26, 0.06);
+  background: rgba(var(--ink), 0.06);
 }
 
 .cat-item {
@@ -161,7 +161,7 @@
   position: relative;
 }
 
-.cat-item:hover { background: rgba(26, 26, 26, 0.03); }
+.cat-item:hover { background: rgba(var(--ink), 0.03); }
 
 .cat-item.active {
   background: rgba(252, 174, 145, 0.1);
@@ -191,7 +191,7 @@
 .cat-item-name {
   font-size: 13px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--onyx);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -227,8 +227,8 @@
 
 /* ─── RIGHT PANEL ──────────────────────────────────────────────────────────── */
 .cat-right {
-  background: #FFFFFF;
-  border: 1px solid rgba(26, 26, 26, 0.07);
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--ink), 0.07);
   border-radius: 16px;
   overflow: hidden;
   display: flex;
@@ -271,7 +271,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background: linear-gradient(to top, rgba(26, 26, 26, 0.55), transparent);
+  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
   transition: opacity 0.3s ease;
 }
 
@@ -289,14 +289,14 @@
 }
 
 .cat-hero.has-photo .cat-h-btn {
-  background: rgba(26, 26, 26, 0.35);
+  background: rgba(0,0,0,0.35);
   border-color: rgba(255, 255, 255, 0.25);
   color: #fff;
   backdrop-filter: blur(8px);
 }
 
 .cat-hero.has-photo .cat-h-btn:hover {
-  background: rgba(26, 26, 26, 0.5);
+  background: rgba(0,0,0,0.5);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -314,9 +314,9 @@
   gap: 6px;
   padding: 8px 16px;
   border-radius: 10px;
-  border: 1.5px solid rgba(26, 26, 26, 0.1);
-  background: rgba(255, 255, 255, 0.9);
-  color: #444;
+  border: 1.5px solid rgba(var(--ink), 0.1);
+  background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+  color: var(--text2);
   font-size: 12.5px;
   font-weight: 700;
   font-family: var(--font);
@@ -326,8 +326,8 @@
 }
 
 .cat-h-btn:hover {
-  border-color: rgba(26, 26, 26, 0.2);
-  background: #FFFFFF;
+  border-color: rgba(var(--ink), 0.2);
+  background: var(--bg-card);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08);
 }
@@ -371,13 +371,13 @@
 .cat-hero-name {
   font-size: 20px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
   letter-spacing: -0.4px;
 }
 
 .cat-hero-sub {
   font-size: 13px;
-  color: #888;
+  color: var(--text3);
   margin-top: 3px;
   font-weight: 500;
 }
@@ -413,9 +413,9 @@
   gap: 6px;
   padding: 7px 14px;
   border-radius: 10px;
-  border: 1.5px solid rgba(26, 26, 26, 0.1);
-  background: #FFFFFF;
-  color: #666;
+  border: 1.5px solid rgba(var(--ink), 0.1);
+  background: var(--bg-card);
+  color: var(--muted);
   font-size: 12.5px;
   font-weight: 700;
   font-family: var(--font);
@@ -424,14 +424,14 @@
 }
 
 .cat-hall-btn:hover {
-  border-color: rgba(26, 26, 26, 0.18);
-  color: #1A1A1A;
+  border-color: rgba(var(--ink), 0.18);
+  color: var(--onyx);
   transform: translateY(-1px);
 }
 
 .cat-hall-btn.active {
-  background: #1A1A1A;
-  color: #FFFFFF;
+  background: var(--onyx);
+  color: var(--bg)FFF;
   border-color: transparent;
 }
 
@@ -488,8 +488,8 @@
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  background: #FDFCFB;
-  border: 1.5px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg);
+  border: 1.5px solid rgba(var(--ink), 0.06);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
@@ -497,7 +497,7 @@
 
 .cat-hall-card:hover {
   border-color: rgba(252, 174, 145, 0.35);
-  background: #FFFFFF;
+  background: var(--bg-card);
   transform: translateX(2px);
   box-shadow: 0 4px 16px rgba(26, 26, 26, 0.06);
 }
@@ -514,7 +514,7 @@
 .cat-hall-name {
   font-size: 13.5px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--onyx);
 }
 
 .cat-hall-meta {
@@ -526,7 +526,7 @@
 .cat-hall-price {
   font-size: 13px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
 }
 
 /* ─── WORKING HOURS GRID ───────────────────────────────────────────────────── */
@@ -550,14 +550,14 @@
 }
 
 .cat-hours-cell.closed {
-  background: rgba(26, 26, 26, 0.03);
-  border-color: rgba(26, 26, 26, 0.05);
+  background: rgba(var(--ink), 0.03);
+  border-color: rgba(var(--ink), 0.05);
 }
 
 .cat-hours-day {
   font-size: 11px;
   font-weight: 800;
-  color: #888;
+  color: var(--text3);
   margin-bottom: 6px;
   letter-spacing: 0.3px;
 }
@@ -573,8 +573,8 @@
 
 /* ─── SERVICE SCHEDULE GRID ────────────────────────────────────────────────── */
 .cat-sch-wrap {
-  background: #FDFCFB;
-  border: 1.5px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg);
+  border: 1.5px solid rgba(var(--ink), 0.06);
   border-radius: 12px;
   overflow: hidden;
   margin-top: 8px;
@@ -610,7 +610,7 @@
 .cat-sch-cell {
   height: 20px;
   border-radius: 4px;
-  background: rgba(26, 26, 26, 0.04);
+  background: rgba(var(--ink), 0.04);
   transition: background 0.15s;
 }
 
@@ -626,9 +626,9 @@
   gap: 7px;
   padding: 10px 18px;
   border-radius: 11px;
-  border: 1.5px solid rgba(26, 26, 26, 0.1);
-  background: #FFFFFF;
-  color: #1A1A1A;
+  border: 1.5px solid rgba(var(--ink), 0.1);
+  background: var(--bg-card);
+  color: var(--onyx);
   font-size: 13px;
   font-weight: 700;
   font-family: var(--font);
@@ -637,7 +637,7 @@
 }
 
 .cat-action-btn:hover {
-  border-color: rgba(26, 26, 26, 0.2);
+  border-color: rgba(var(--ink), 0.2);
   box-shadow: 0 4px 12px rgba(26, 26, 26, 0.07);
   transform: translateY(-1px);
 }
@@ -651,13 +651,13 @@
 /* ─── DESCRIPTION ──────────────────────────────────────────────────────────── */
 .cat-description {
   font-size: 13.5px;
-  color: #666;
+  color: var(--muted);
   line-height: 1.65;
   margin: 8px 0 0;
   padding: 14px 16px;
-  background: #FDFCFB;
+  background: var(--bg);
   border-radius: 10px;
-  border: 1.5px solid rgba(26, 26, 26, 0.05);
+  border: 1.5px solid rgba(var(--ink), 0.05);
 }
 
 /* ─── EMPTY STATE ──────────────────────────────────────────────────────────── */
@@ -679,8 +679,8 @@
 }
 
 .cat-stat-card {
-  background: #FDFCFB;
-  border: 1.5px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg);
+  border: 1.5px solid rgba(var(--ink), 0.06);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
@@ -689,7 +689,7 @@
 .cat-stat-v {
   font-size: 20px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
   letter-spacing: -0.5px;
 }
 
@@ -712,12 +712,12 @@
   align-items: center;
   gap: 6px;
   padding: 7px 12px;
-  background: #FDFCFB;
-  border: 1.5px solid rgba(26, 26, 26, 0.07);
+  background: var(--bg);
+  border: 1.5px solid rgba(var(--ink), 0.07);
   border-radius: 9px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #444;
+  color: var(--text2);
   cursor: default;
   transition: all 0.15s;
 }
@@ -739,7 +739,7 @@
   justify-content: space-between;
   margin: 20px 0 0;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+  border-bottom: 1px solid rgba(var(--ink), 0.05);
 }
 
 /* ─── FADE IN ───────────────────────────────────────────────────────────────── */
@@ -761,9 +761,9 @@
 .cat-skel {
   background: linear-gradient(
     90deg,
-    rgba(26, 26, 26, 0.04) 25%,
-    rgba(26, 26, 26, 0.07) 37%,
-    rgba(26, 26, 26, 0.04) 63%
+    rgba(var(--ink), 0.04) 25%,
+    rgba(var(--ink), 0.07) 37%,
+    rgba(var(--ink), 0.04) 63%
   );
   background-size: 200% 100%;
   animation: catSkelShimmer 1.4s ease infinite;
@@ -801,4 +801,509 @@
   .cat-hero-info {
     min-width: 0; /* длинное название не выталкивает кнопки */
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   МОДАЛКИ КАТАЛОГА: услуга / абонемент / зал
+   Двухколоночный премиум-каркас: слева — живое превью того, что создаёшь
+   (карточка занятия в журнале, пропуск абонемента, план зала), справа — форма.
+   Превью обновляется по мере ввода, поэтому цвет, длительность и вместимость
+   видно ДО сохранения. Стили здесь, а не в инлайновом <style> модалки — тег
+   в DOM на каждом открытии рвёт кадр анимации (см. cm-spin в App.css).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.cmod-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.cmod-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #BDB2AC;
+  flex-shrink: 0;
+}
+.cmod-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--ink),0.09), transparent);
+}
+
+/* Стопка «превью + стат-пилюли».
+   Персиковое свечение под карточкой раньше рисовалось ::before-эллипсом,
+   вылезающим за края, и пульсировало по бесконечному кейфрейму: панель стала
+   скролл-контейнером — и вылет вправо включал горизонтальный скролл, а вечная
+   перерисовка большого градиента подтормаживала открытие. Теперь ореол — это
+   тёплая тень самих карточек: она не участвует в раскладке и ничего не
+   перерисовывает. */
+.cmod-glow {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ─── ПРЕВЬЮ УСЛУГИ: фрагмент журнала ──────────────────────────────────────
+   Высота карточки пропорциональна длительности занятия (--cmod-h), цвет —
+   выбранному цвету услуги: ровно так занятие и выглядит в сетке дня. */
+.cmod-jrn {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 12px 32px -10px rgba(26,26,26,0.14), 0 20px 48px -20px rgba(252,174,145,0.75);
+  overflow: hidden;
+}
+.cmod-jrn-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  height: 58px;
+}
+.cmod-jrn-time {
+  width: 38px;
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #C4BCB6;
+  transform: translateY(-4px);
+  font-variant-numeric: tabular-nums;
+}
+.cmod-jrn-row i {
+  flex: 1;
+  height: 1px;
+  background: rgba(var(--ink),0.055);
+  display: block;
+}
+
+.cmod-jcard {
+  position: absolute;
+  left: 60px;
+  right: 14px;
+  top: 14px;
+  height: var(--cmod-h, 58px);
+  border-radius: 12px;
+  padding: 9px 11px 9px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+  background: var(--cmod-c-soft);
+  border: 1px solid var(--cmod-c-line);
+  box-shadow: 0 8px 18px -8px var(--cmod-c-line);
+  transition: height 0.35s cubic-bezier(0.22,1,0.36,1), background 0.25s ease, border-color 0.25s ease;
+}
+.cmod-jcard::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cmod-c);
+  transition: background 0.25s ease;
+}
+.cmod-jcard-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--onyx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmod-jcard-name.is-empty { color: #C4BCB6; }
+.cmod-jcard-meta {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #8C8481;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.cmod-jcard-seats {
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.75);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--cmod-c-text);
+}
+
+/* ─── ПРЕВЬЮ АБОНЕМЕНТА: пропуск с отрывной линией ─────────────────────────
+   Точки-пробивки = число занятий в пакете: пакет читается за секунду.
+   Тот же пропуск используется и карточками списка абонементов (.sub-card),
+   поэтому цвета здесь фирменные персиковые, а не токены темы: пропуск —
+   «физический» объект и в тёмной теме остаётся персиковым. */
+.cmod-pass {
+  position: relative;
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  color: #fff;
+  background: linear-gradient(145deg, #FCAE91 0%, #F9A08B 48%, #F07B60 100%);
+  box-shadow: 0 16px 36px -12px rgba(240,123,96,0.55);
+  overflow: hidden;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+}
+.cmod-pass::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -50px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+}
+.cmod-pass.is-off { filter: grayscale(0.8); opacity: 0.7; }
+.cmod-pass-kind {
+  position: relative;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+}
+.cmod-pass-name {
+  position: relative;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 3px;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmod-pass-name.is-empty { color: rgba(255,255,255,0.55); }
+.cmod-pass-price {
+  position: relative;
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.cmod-punch {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  min-height: 10px;
+}
+.cmod-punch b {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  animation: cmodPop 0.32s cubic-bezier(0.34,1.5,0.64,1) both;
+}
+.cmod-punch span {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
+  margin-left: 2px;
+}
+@keyframes cmodPop {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.cmod-pass-perf {
+  position: relative;
+  margin: 14px -18px 12px;
+  border-top: 1.5px dashed rgba(255,255,255,0.45);
+}
+.cmod-pass-foot {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+}
+.cmod-pass-foot small {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.72);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* ─── КАРТОЧКА АБОНЕМЕНТА В СПИСКЕ ─────────────────────────────────────────
+   Обёртка вокруг .cmod-pass: сам пропуск кликабелен (открывает редактор),
+   действия и охват услуг вынесены под него, чтобы не спорить с билетом. */
+.sub-card { display: flex; flex-direction: column; gap: 10px; }
+.sub-card .cmod-pass {
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease,
+              filter 0.25s ease, opacity 0.25s ease;
+}
+.sub-card .cmod-pass:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -14px rgba(240,123,96,0.62);
+}
+.sub-card .cmod-pass.is-off:hover { filter: grayscale(0.55); opacity: 0.85; }
+.sub-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px;
+}
+.sub-card-foot .cat-action-btn { padding: 7px 13px; font-size: 12px; }
+
+/* ─── ПРЕВЬЮ ЗАЛА: план помещения ──────────────────────────────────────────
+   Ковриков в сетке ровно столько, сколько мест: вместимость видно, а не
+   читаешь цифру. Цвет комнаты — цвет зала в журнале. */
+.cmod-plan {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 12px 32px -10px rgba(26,26,26,0.14), 0 20px 48px -20px rgba(252,174,145,0.75);
+}
+.cmod-plan-room {
+  position: relative;
+  min-height: 152px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--cmod-c-line);
+  background: var(--cmod-c-soft);
+  padding: 14px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.cmod-plan-mats {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+}
+.cmod-mat {
+  width: 15px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--cmod-c);
+  opacity: 0.85;
+  animation: cmodPop 0.3s cubic-bezier(0.34,1.5,0.64,1) both;
+}
+.cmod-mat.is-more {
+  width: auto;
+  padding: 0 6px;
+  background: transparent;
+  color: var(--cmod-c-text);
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+}
+.cmod-plan-name {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--onyx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmod-plan-name.is-empty { color: #C4BCB6; }
+.cmod-plan-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.cmod-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card) 85%, transparent);
+  border: 1px solid rgba(var(--ink),0.06);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text2);
+}
+.cmod-plan-online {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--cmod-c-text);
+  font-size: 11px;
+  font-weight: 800;
+}
+.cmod-plan-photo {
+  position: relative;
+  height: 176px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px -10px rgba(26,26,26,0.24);
+}
+.cmod-plan-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cmod-plan-photo-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 42%, rgba(0,0,0,0.68) 100%);
+}
+.cmod-plan-photo-cap {
+  position: absolute; left: 14px; right: 14px; bottom: 12px;
+  color: #fff;
+  font-size: 14px; font-weight: 800;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ─── СТАТ-ПИЛЮЛИ ПОД ПРЕВЬЮ ───────────────────────────────────────────────── */
+.cmod-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.cmod-pill {
+  padding: 10px 11px;
+  background: rgba(252,174,145,0.07);
+  border: 1px solid rgba(252,174,145,0.17);
+  border-radius: 12px;
+  min-width: 0;
+  animation: cmodUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+}
+.cmod-pill svg { color: #F07B60; flex-shrink: 0; }
+.cmod-pill-v {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--onyx);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmod-pill-l {
+  font-size: 9px;
+  font-weight: 700;
+  color: #AFA8A3;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── ПРАВАЯ КОЛОНКА: форма ────────────────────────────────────────────────── */
+.cmod-sec {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin: 6px 0 -4px;
+}
+.cmod-sec:first-child { margin-top: 0; }
+.cmod-sec svg { color: #FCAE91; flex-shrink: 0; }
+
+.cmod-anim { animation: cmodUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes cmodUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cmod-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.cmod-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(var(--ink),0.07);
+  border-radius: 14px;
+  background: rgba(var(--ink),0.015);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.cmod-toggle:hover { border-color: rgba(252,174,145,0.4); background: rgba(252,174,145,0.04); }
+.cmod-toggle-t { font-size: 13px; font-weight: 700; color: var(--onyx); }
+.cmod-toggle-s { font-size: 11.5px; color: #A8A19C; margin-top: 2px; line-height: 1.4; }
+
+.cmod-picks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 168px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1.5px solid rgba(var(--ink),0.07);
+  border-radius: 14px;
+  background: rgba(var(--ink),0.015);
+}
+.cmod-picks::-webkit-scrollbar { width: 3px; }
+.cmod-picks::-webkit-scrollbar-thumb { background: rgba(249,160,139,0.3); border-radius: 3px; }
+.cmod-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.cmod-pick:hover { background: rgba(var(--ink),0.03); }
+.cmod-pick.is-on {
+  background: rgba(252,174,145,0.1);
+  border-color: rgba(252,174,145,0.32);
+  color: var(--onyx);
+}
+.cmod-pick-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.cmod-pick-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmod-check {
+  width: 19px; height: 19px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(var(--ink),0.16);
+  background: var(--bg-card);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.cmod-pick.is-on .cmod-check { background: #F9A08B; border-color: #F9A08B; }
+
+.cmod-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #A8A19C;
+}
+.cmod-hint svg { color: #FCAE91; flex-shrink: 0; margin-top: 1px; }
+
+/* Ноутбуки: превью-колонка ужимается, чтобы форма оставалась читаемой */
+@media (max-width: 1100px) {
+  .cmod-jrn-row { height: 46px; }
+  .cmod-plan-room { min-height: 124px; }
 }

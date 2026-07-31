@@ -191,7 +191,7 @@ function IdentityIllus({
           {name.length > 18 ? name.slice(0,17) + "…" : name}
         </text>
       ) : (
-        <rect x="72" y="117" width="100" height="8" rx="4" fill="rgba(26,26,26,0.08)" />
+        <rect x="72" y="117" width="100" height="8" rx="4" fill="rgba(var(--ink),0.08)" />
       )}
 
       {/* Role pill */}
@@ -234,8 +234,8 @@ function IdentityIllus({
         return (
           <g key={key}>
             <rect x={cx - 9} y="218" width="18" height="18" rx="5"
-              fill={enabled ? "#1A1A1A" : "rgba(26,26,26,0.02)"}
-              stroke={enabled ? "#1A1A1A" : "rgba(26,26,26,0.08)"} strokeWidth="1" />
+              fill={enabled ? "#1A1A1A" : "rgba(var(--ink),0.02)"}
+              stroke={enabled ? "#1A1A1A" : "rgba(var(--ink),0.08)"} strokeWidth="1" />
             {enabled && (
               <path d={`M${cx-3.5} 227 L${cx} 231 L${cx+5} 223`}
                 stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -253,7 +253,7 @@ function IdentityIllus({
       {/* Salary gradient bar */}
       {salary && (
         <g>
-          <rect x="40" y="262" width="164" height="4" rx="2" fill="rgba(26,26,26,0.05)" />
+          <rect x="40" y="262" width="164" height="4" rx="2" fill="rgba(var(--ink),0.05)" />
           <rect x="40" y="262"
             width={Math.min(164, 20 + Number(salary.replace(/\D/g, "")) / 1000)}
             height="4" rx="2" fill="url(#eiSalaryBar)" />
@@ -281,7 +281,7 @@ function IdentityIllus({
 export function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <label style={{
-      display: "block", fontSize: "11px", fontWeight: 700, color: "#999",
+      display: "block", fontSize: "11px", fontWeight: 700, color: "var(--text3)",
       letterSpacing: "0.6px", textTransform: "uppercase" as const, marginBottom: "7px",
     }}>
       {children}
@@ -306,9 +306,9 @@ export function FocusInput({
         onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         style={{
           width: "100%", padding: "11px 14px",
-          background: disabled ? "rgba(26,26,26,0.02)" : focused ? "#fff" : "rgba(26,26,26,0.025)",
-          border: error ? "1.5px solid #D88C9A" : focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.09)",
-          borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "#1A1A1A",
+          background: disabled ? "rgba(var(--ink),0.02)" : focused ? "var(--bg-card)" : "rgba(var(--ink),0.025)",
+          border: error ? "1.5px solid #D88C9A" : focused ? "1.5px solid #FCAE91" : "1.5px solid rgba(var(--ink),0.09)",
+          borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: "var(--onyx)",
           outline: "none", fontFamily: "Manrope, sans-serif",
           boxShadow: error ? "0 0 0 3px rgba(216,140,154,0.14)" : focused ? "0 0 0 3px rgba(252,174,145,0.14)" : "none",
           transition: "all 0.18s ease", boxSizing: "border-box" as const,
@@ -488,12 +488,12 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
   const selectStyle: React.CSSProperties = {
     padding: "7px 10px", 
-    background: "#FFFFFF",
-    border: "1.5px solid rgba(26,26,26,0.12)", 
+    background: "var(--bg-card)",
+    border: "1.5px solid rgba(var(--ink),0.12)", 
     borderRadius: "8px",
     fontSize: "12px", 
     fontWeight: 700, 
-    color: "#1A1A1A", 
+    color: "var(--onyx)", 
     outline: "none",
     fontFamily: "Manrope, sans-serif", 
     cursor: "pointer", 
@@ -521,37 +521,37 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         * 1. Табы (вкладки сверху) */
         .ei-tab { transition: all 0.25s ease; cursor: pointer; }
         .ei-tab:hover:not(.ei-tab-active) { 
-          background: rgba(26, 26, 26, 0.03) !important; /* Убрали розовый, сделали стильный светло-серый */
-          color: #1A1A1A !important; 
+          background: rgba(var(--ink), 0.03) !important; /* Убрали розовый, сделали стильный светло-серый */
+          color: var(--onyx) !important; 
         }
 
         /* 2. Карточки ролей (Владелец, Админ, Тренер) */
         .ei-role-card { transition: all 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); cursor: pointer; }
         .ei-role-card:hover { 
           transform: translateY(-2px); 
-          border-color: rgba(26, 26, 26, 0.15) !important; /* Четкая серая граница */
+          border-color: rgba(var(--ink), 0.15) !important; /* Четкая серая граница */
           box-shadow: 0 8px 24px rgba(26, 26, 26, 0.06) !important; /* Дорогая нейтральная тень вместо цветной */
         }
 
         /* 3. Пилюли услуг (теги) */
         .ei-svc-pill { transition: all 0.2s ease; cursor: pointer; }
         .ei-svc-pill:hover { 
-          border-color: #1A1A1A !important; /* Строгий черный контур при наведении */
-          background: #FFFFFF !important;
-          color: #1A1A1A !important; 
+          border-color: var(--onyx) !important; /* Строгий черный контур при наведении */
+          background: var(--bg-card) !important;
+          color: var(--onyx) !important; 
         }
 
         /* 4. Строки расписания */
         .ei-sched-row { transition: background 0.2s ease; }
         .ei-sched-row:hover { 
-          background: rgba(26, 26, 26, 0.02) !important; /* Едва заметное чистое затемнение */
+          background: rgba(var(--ink), 0.02) !important; /* Едва заметное чистое затемнение */
         }
 
         /* 5. Кнопка закрытия модалки (крестик) */
         .ei-close { transition: all 0.2s ease; }
         .ei-close:hover { 
-          background: rgba(26, 26, 26, 0.08) !important; 
-          color: #1A1A1A !important; 
+          background: rgba(var(--ink), 0.08) !important; 
+          color: var(--onyx) !important; 
         }
 
         /* 6. Главная кнопка "Сохранить" (оставляем персиковой, но делаем тень благороднее) */
@@ -564,7 +564,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         /* 7. Кнопка удаления сотрудника */
         .ei-del-btn { transition: all 0.25s ease; }
         .ei-del-btn:hover { 
-          background: #FFFFFF !important; /* Белый фон */
+          background: var(--bg-card) !important; /* Белый фон */
           border-color: #C06070 !important; /* Чистый красный контур */
           box-shadow: 0 4px 12px rgba(192, 96, 112, 0.1) !important; 
         }
@@ -572,26 +572,26 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         /* 8. Кнопка загрузки фото */
         .ei-photo-btn { transition: all 0.2s ease; }
         .ei-photo-btn:hover { 
-          border-color: #1A1A1A !important; 
-          background: #FFFFFF !important; 
-          color: #1A1A1A !important; 
+          border-color: var(--onyx) !important; 
+          background: var(--bg-card) !important; 
+          color: var(--onyx) !important; 
           box-shadow: 0 4px 12px rgba(26, 26, 26, 0.05);
         }
 
         /* 9. Скроллбар (полоса прокрутки) */
         .ei-scroll::-webkit-scrollbar { width: 4px; }
         .ei-scroll::-webkit-scrollbar-thumb { 
-          background: rgba(26, 26, 26, 0.12); /* Минималистичный серый вместо рыжего */
+          background: rgba(var(--ink), 0.12); /* Минималистичный серый вместо рыжего */
           border-radius: 4px; 
         }
         .ei-scroll::-webkit-scrollbar-thumb:hover { 
-          background: rgba(26, 26, 26, 0.25); 
+          background: rgba(var(--ink), 0.25); 
         }
 
         /* 10. Карточки типа зарплаты (Фикс, Процент, Часовая) */
         .ei-salary-type { transition: all 0.25s ease; }
         .ei-salary-type:hover { 
-          border-color: #1A1A1A !important; /* Жесткий контрастный фокус */
+          border-color: var(--onyx) !important; /* Жесткий контрастный фокус */
           box-shadow: 0 6px 16px rgba(26, 26, 26, 0.06) !important; 
           transform: translateY(-1px);
         }
@@ -600,9 +600,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         }
 
         .ei-add-svc-btn:hover {
-          border: 1.5px solid #1A1A1A !important;
-          background: #FFFFFF !important;
-          color: #1A1A1A !important;
+          border: 1.5px solid var(--onyx) !important;
+          background: var(--bg-card) !important;
+          color: var(--onyx) !important;
           transform: translateY(-2px);
           box-shadow: 0 8px 20px rgba(26, 26, 26, 0.08);
         }
@@ -611,7 +611,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           transition: all 0.2s ease;
         }
         .ei-time-select:hover, .ei-time-select:focus {
-          border-color: #1A1A1A !important;
+          border-color: var(--onyx) !important;
           box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
         }
       `}</style>
@@ -620,7 +620,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         style={{
           position: "relative",
           width: "100%", maxWidth: "860px", height: "min(600px, calc(100vh - 32px))",
-          background: "#FDFCFB", borderRadius: "24px",
+          background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
           display: "grid", gridTemplateColumns: "260px 1fr",
           overflow: "hidden",
@@ -631,7 +631,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
         {/* ──────────── LEFT PANEL ──────────── */}
         <div style={{
-          background: "white", borderRight: "1px solid #F0EDE8",
+          background: "var(--bg-card)", borderRight: "1px solid #F0EDE8",
           display: "flex", flexDirection: "column",
           padding: "28px 22px 22px", position: "relative", overflow: "hidden",
         }}>
@@ -649,7 +649,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 4px" }}>
               {t("staff:editModal.header")}
             </p>
-            <h2 style={{ fontSize: "16px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.4px", margin: 0, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.4px", margin: 0, lineHeight: 1.3 }}>
               {form.name || t("staff:editModal.employeeFallback")}
             </h2>
             <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "3px 0 0" }}>
@@ -676,8 +676,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           <div style={{ position: "relative", zIndex: 1 }}>
             <div style={{
               padding: "11px 13px", borderRadius: "10px",
-              background: "rgba(26,26,26,0.025)",
-              border: "1px solid rgba(26,26,26,0.07)",
+              background: "rgba(var(--ink),0.025)",
+              border: "1px solid rgba(var(--ink),0.07)",
               display: "flex", alignItems: "center",
               marginBottom: "10px",
             }}>
@@ -687,7 +687,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   background: form.is_online ? "#A3C9A8" : "#DDDDDD",
                   animation: form.is_online ? "eiPulse 2.2s infinite" : "none",
                 }} />
-                <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
+                <span style={{ fontSize: "11px", color: "var(--muted)", fontWeight: 500 }}>
                   {form.is_online ? t("staff:editModal.status.onlineNow") : t("staff:editModal.status.notOnline")}
                 </span>
               </div>
@@ -735,9 +735,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 </p>
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button onClick={() => setShowDeleteConfirm(false)} style={{
-                    flex: 1, padding: "7px", background: "white",
+                    flex: 1, padding: "7px", background: "var(--bg-card)",
                     border: "1px solid #EEEBE6", borderRadius: "8px",
-                    fontSize: "11px", fontWeight: 600, color: "#888",
+                    fontSize: "11px", fontWeight: 600, color: "var(--text3)",
                     cursor: "pointer", fontFamily: "Manrope, sans-serif",
                   }}>{t("common:buttons.cancel")}</button>
                   <button onClick={handleDelete} style={{
@@ -760,7 +760,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           <button className="ei-close" onClick={onClose} style={{
             position: "absolute", top: "16px", right: "16px", zIndex: 10,
             width: "28px", height: "28px",
-            background: "rgba(26,26,26,0.05)", border: "none", borderRadius: "8px",
+            background: "rgba(var(--ink),0.05)", border: "none", borderRadius: "8px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
             color: "#AAAAAA", transition: "background 0.15s",
           }}>
@@ -788,7 +788,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     borderBottom: isActive ? "2px solid #FCAE91" : "2px solid transparent",
                     borderRadius: "8px 8px 0 0",
                     fontSize: "12px", fontWeight: isActive ? 700 : 500,
-                    color: isActive ? "#1A1A1A" : "#AAAAAA",
+                    color: isActive ? "var(--onyx)" : "#AAAAAA",
                     cursor: "pointer", fontFamily: "Manrope, sans-serif",
                     display: "flex", alignItems: "center", gap: "6px",
                     transition: "all 0.15s",
@@ -833,8 +833,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: "none" }} />
                         <button type="button" className="ei-photo-btn" onClick={() => fileRef.current?.click()} style={{
                           padding: "8px 14px",
-                          background: "rgba(26,26,26,0.02)", border: "1.5px solid rgba(26,26,26,0.09)",
-                          borderRadius: "10px", fontSize: "12px", fontWeight: 600, color: "#555",
+                          background: "rgba(var(--ink),0.02)", border: "1.5px solid rgba(var(--ink),0.09)",
+                          borderRadius: "10px", fontSize: "12px", fontWeight: 600, color: "var(--text2)",
                           cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
                         }}>
                           {photoPreview ? t("staff:editModal.profile.replacePhoto") : t("staff:editModal.profile.uploadPhoto")}
@@ -870,9 +870,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         <div key={row.label}>
                           <FieldLabel>{row.label}</FieldLabel>
                           <div style={{
-                            padding: "12px 15px", background: "rgba(26,26,26,0.025)",
-                            border: "1.5px solid rgba(26,26,26,0.06)", borderRadius: "12px",
-                            fontSize: "14px", fontWeight: 500, color: "#888",
+                            padding: "12px 15px", background: "rgba(var(--ink),0.025)",
+                            border: "1.5px solid rgba(var(--ink),0.06)", borderRadius: "12px",
+                            fontSize: "14px", fontWeight: 500, color: "var(--text3)",
                             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                           }}>
                             {row.value}
@@ -905,7 +905,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3C9A8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "1px" }}>
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
-                    <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
+                    <p style={{ fontSize: "11.5px", color: "var(--text3)", margin: 0, lineHeight: 1.55 }}>
                       {t("staff:editModal.profile.notifyHint")}
                     </p>
                   </div>
@@ -925,8 +925,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             onClick={() => set("role", form.role === r.id ? "" : r.id)}
                             style={{
                               padding: "11px 6px",
-                              background: isSelected ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.02)",
-                              border: isSelected ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.08)",
+                              background: isSelected ? "rgba(252,174,145,0.1)" : "rgba(var(--ink),0.02)",
+                              border: isSelected ? "1.5px solid #FCAE91" : "1.5px solid rgba(var(--ink),0.08)",
                               borderRadius: "12px",
                               display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
                               boxShadow: isSelected ? "0 4px 16px rgba(252,174,145,0.15)" : "none",
@@ -953,7 +953,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             }}>
                               {ROLE_ICONS[r.id]}
                             </span>
-                            <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "#1A1A1A" : "#888", textAlign: "center", lineHeight: 1.2 }}>
+                            <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "var(--onyx)" : "var(--text3)", textAlign: "center", lineHeight: 1.2 }}>
                               {t(`staff:roles.${r.id}`)}
                             </span>
                           </button>
@@ -972,9 +972,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               onClick={() => toggleService(service.id)}
                               style={{
                                 padding: "7px 12px", borderRadius: "20px", cursor: "pointer",
-                                background: isSelected ? "rgba(252,174,145,0.14)" : "rgba(26,26,26,0.04)",
+                                background: isSelected ? "rgba(252,174,145,0.14)" : "rgba(var(--ink),0.04)",
                                 border: isSelected ? "1.5px solid rgba(252,174,145,0.55)" : "1.5px solid transparent",
-                                color: isSelected ? "#C07060" : "#666", fontSize: "12px",
+                                color: isSelected ? "#C07060" : "var(--muted)", fontSize: "12px",
                                 fontWeight: isSelected ? 700 : 500, fontFamily: "Manrope, sans-serif",
                               }}
                             >{isSelected ? "✓ " : ""}{service.name}</button>
@@ -989,8 +989,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             onClick={() => setShowCatalogConfirm(true)}
                             style={{
                               padding: "7px 12px", borderRadius: "20px", cursor: "pointer",
-                              background: "transparent", border: "1.5px dashed rgba(26,26,26,0.2)",
-                              color: "#888", fontSize: "12px", fontWeight: 600, fontFamily: "Manrope, sans-serif",
+                              background: "transparent", border: "1.5px dashed rgba(var(--ink),0.2)",
+                              color: "var(--text3)", fontSize: "12px", fontWeight: 600, fontFamily: "Manrope, sans-serif",
                               transition: "border-color 0.2s ease, color 0.2s ease, transform 0.2s ease",
                             }}
                           >
@@ -1011,8 +1011,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             marginTop: "12px", 
                             padding: "16px", 
                             borderRadius: "14px",
-                            background: "#FFFFFF", // Чистый белый фон для контраста
-                            border: "1px solid rgba(26,26,26,0.06)", // Едва заметная граница
+                            background: "var(--bg-card)", // Чистый белый фон для контраста
+                            border: "1px solid rgba(var(--ink),0.06)", // Едва заметная граница
                             boxShadow: "0 6px 16px rgba(26,26,26,0.04)", // Мягкая премиальная тень
                             display: "flex", 
                             flexDirection: "column", 
@@ -1034,7 +1034,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                                 </svg>
                               </div>
 
-                              <p style={{ margin: "2px 0 0", color: "#1A1A1A", fontSize: "12.5px", fontWeight: 700, lineHeight: 1.4, letterSpacing: "-0.2px" }}>
+                              <p style={{ margin: "2px 0 0", color: "var(--onyx)", fontSize: "12.5px", fontWeight: 700, lineHeight: 1.4, letterSpacing: "-0.2px" }}>
                                 {t("staff:editModal.role.catalogConfirm")}
                               </p>
                             </div>
@@ -1048,16 +1048,16 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                                 onClick={() => setShowCatalogConfirm(false)} 
                                 style={{
                                   flex: 1, padding: "10px", 
-                                  border: "1.5px solid rgba(26,26,26,0.08)", 
+                                  border: "1.5px solid rgba(var(--ink),0.08)", 
                                   borderRadius: "10px", cursor: "pointer",
                                   background: "transparent", 
-                                  color: "#666", 
+                                  color: "var(--muted)", 
                                   fontSize: "12px", fontWeight: 700, 
                                   fontFamily: "Manrope, sans-serif",
                                   transition: "all 0.2s ease"
                                 }}
-                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(26,26,26,0.03)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.15)"; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.08)"; }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(var(--ink),0.03)"; e.currentTarget.style.borderColor = "rgba(var(--ink),0.15)"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(var(--ink),0.08)"; }}
                               >
                                 {t("common:buttons.cancel")}
                               </button>
@@ -1070,8 +1070,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                                   flex: 1, padding: "10px", 
                                   border: "none", 
                                   borderRadius: "10px", cursor: "pointer",
-                                  background: "#1A1A1A", // Глубокий премиальный черный
-                                  color: "#FFFFFF", 
+                                  background: "var(--onyx)", // Глубокий премиальный черный
+                                  color: "var(--bg)", 
                                   fontSize: "12px", fontWeight: 700, 
                                   fontFamily: "Manrope, sans-serif",
                                   boxShadow: "0 4px 12px rgba(26,26,26,0.15)",
@@ -1079,7 +1079,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                                 }}
                                 onMouseEnter={e => { 
                                   e.currentTarget.style.transform = "translateY(-1px)"; 
-                                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(26,26,26,0.25)"; 
+                                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(var(--ink),0.25)"; 
                                 }}
                                 onMouseLeave={e => { 
                                   e.currentTarget.style.transform = "none"; 
@@ -1110,7 +1110,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAAAAA", textTransform: "uppercase", letterSpacing: "0.6px", margin: "0 0 6px" }}>
                       {t("staff:editModal.salary.currentLabel")}
                     </p>
-                    <div style={{ fontSize: "36px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-1.5px", lineHeight: 1 }}>
+                    <div style={{ fontSize: "36px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-1.5px", lineHeight: 1 }}>
                       {form.salary || "—"}
                       <span style={{ fontSize: "16px", fontWeight: 600, color: "#AAAAAA", marginLeft: "6px" }}>
                         {form.rate_type === "percent" ? "%" : form.rate_type === "hourly" ? `${currencySymbol}/ч` : form.salary ? currencySymbol : ""}
@@ -1148,15 +1148,15 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                             onClick={() => set("rate_type", id as any)} // id передаем сюда
                             style={{
                               flex: 1, padding: "13px 10px",
-                              background: isOn ? "rgba(252,174,145,0.1)" : "rgba(26,26,26,0.02)",
-                              border: isOn ? "1.5px solid #FCAE91" : "1.5px solid rgba(26,26,26,0.08)",
+                              background: isOn ? "rgba(252,174,145,0.1)" : "rgba(var(--ink),0.02)",
+                              border: isOn ? "1.5px solid #FCAE91" : "1.5px solid rgba(var(--ink),0.08)",
                               borderRadius: "12px", cursor: "pointer",
                               fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
                               display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
                             }}
                           >
                             <span style={{ display: "flex", color: isOn ? "#FCAE91" : "#CCCCCC", transition: "color 0.15s" }}>{icon}</span>
-                            <span style={{ fontSize: "11px", fontWeight: isOn ? 700 : 600, color: isOn ? "#1A1A1A" : "#888" }}>{label}</span>
+                            <span style={{ fontSize: "11px", fontWeight: isOn ? 700 : 600, color: isOn ? "var(--onyx)" : "var(--text3)" }}>{label}</span>
                             <span style={{ fontSize: "9.5px", color: isOn ? "#AAAAAA" : "#CCC", fontWeight: 500 }}>{sub}</span>
                           </button>
                         );
@@ -1202,7 +1202,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FCAE91" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "1px" }}>
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
-                    <p style={{ fontSize: "11.5px", color: "#888", margin: 0, lineHeight: 1.55 }}>
+                    <p style={{ fontSize: "11.5px", color: "var(--text3)", margin: 0, lineHeight: 1.55 }}>
                       {t("staff:editModal.salary.reportHint")}
                     </p>
                   </div>
@@ -1230,17 +1230,17 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     ].map(s => (
                       <div key={s.label} style={{
                         padding: "12px 10px", borderRadius: "12px",
-                        background: "rgba(26,26,26,0.025)", border: "1.5px solid rgba(26,26,26,0.07)",
+                        background: "rgba(var(--ink),0.025)", border: "1.5px solid rgba(var(--ink),0.07)",
                         textAlign: "center",
                       }}>
-                        <div style={{ fontSize: "20px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.5px" }}>{s.value}</div>
+                        <div style={{ fontSize: "20px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.5px" }}>{s.value}</div>
                         <div style={{ fontSize: "10px", color: "#BBBBBB", fontWeight: 600, marginTop: "2px" }}>{s.label}</div>
                       </div>
                     ))}
                   </div>
 
                   {/* Schedule rows */}
-                  <div style={{ border: "1.5px solid rgba(26,26,26,0.08)", borderRadius: "14px", overflow: "hidden" }}>
+                  <div style={{ border: "1.5px solid rgba(var(--ink),0.08)", borderRadius: "14px", overflow: "hidden" }}>
                     {DAYS_KEYS.map((key, idx) => {
                       const d = form.schedule[key];
                       const isLast = idx === DAYS_KEYS.length - 1;
@@ -1250,20 +1250,20 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           padding: "9px 14px",
                           minHeight: "54px", // 🔥 Секрет здесь: фиксируем высоту, чтобы строка не прыгала
                           boxSizing: "border-box", 
-                          borderBottom: isLast ? "none" : "1px solid rgba(26,26,26,0.05)",
-                          background: d.enabled ? "rgba(26,26,26,0.02)" : "transparent", // Строгий серый фон вместо персикового
+                          borderBottom: isLast ? "none" : "1px solid rgba(var(--ink),0.05)",
+                          background: d.enabled ? "rgba(var(--ink),0.02)" : "transparent", // Строгий серый фон вместо персикового
                         }}>
                           {/* Toggle */}
                           <div onClick={() => toggleDay(key)} style={{
                             width: "30px", height: "17px", borderRadius: "8.5px",
-                            background: d.enabled ? "#FCAE91" : "rgba(26,26,26,0.1)",
+                            background: d.enabled ? "#FCAE91" : "rgba(var(--ink),0.1)",
                             position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s",
                           }}>
                             <div style={{
                               position: "absolute", top: "1.5px",
                               left: d.enabled ? "14.5px" : "1.5px",
                               width: "14px", height: "14px", borderRadius: "50%",
-                              background: "white", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+                              background: "var(--bg-card)", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
                               transition: "left 0.2s cubic-bezier(0.34,1.2,0.64,1)",
                             }} />
                           </div>
@@ -1272,7 +1272,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           <span style={{
                             width: "94px", fontSize: "12px", flexShrink: 0,
                             fontWeight: d.enabled ? 600 : 400,
-                            color: d.enabled ? "#1A1A1A" : "#C0C0C0",
+                            color: d.enabled ? "var(--onyx)" : "#C0C0C0",
                             transition: "all 0.15s",
                           }}>{t(`common:days.${key}`)}</span>
 
@@ -1295,9 +1295,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               {/* Бейдж итоговых часов — Дорогая белая пилюля */}
                               <div style={{
                                 marginLeft: "auto",
-                                fontSize: "11px", fontWeight: 700, color: "#1A1A1A",
-                                background: "#FFFFFF",
-                                border: "1px solid rgba(26,26,26,0.12)",
+                                fontSize: "11px", fontWeight: 700, color: "var(--onyx)",
+                                background: "var(--bg-card)",
+                                border: "1px solid rgba(var(--ink),0.12)",
                                 boxShadow: "0 2px 8px rgba(26,26,26,0.04)",
                                 padding: "5px 12px", 
                                 borderRadius: "20px", 
@@ -1316,11 +1316,11 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               <span style={{ 
                                 fontSize: "10px", 
                                 fontWeight: 700, 
-                                color: "#999999", 
+                                color: "var(--text3)", 
                                 textTransform: "uppercase", 
                                 letterSpacing: "0.8px",
-                                background: "rgba(26,26,26,0.02)",
-                                border: "1px dashed rgba(26,26,26,0.12)",
+                                background: "rgba(var(--ink),0.02)",
+                                border: "1px dashed rgba(var(--ink),0.12)",
                                 padding: "4px 10px",
                                 borderRadius: "8px"
                               }}>
@@ -1348,7 +1348,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             <button type="button" onClick={onClose} style={{
               padding: "12px 18px",
               background: "transparent", border: "1.5px solid #EEEBE6", borderRadius: "12px",
-              fontSize: "13px", fontWeight: 600, color: "#888",
+              fontSize: "13px", fontWeight: 600, color: "var(--text3)",
               cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
             }}>
               {t("common:buttons.cancel")}
@@ -1366,7 +1366,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                 background: saved
                   ? "linear-gradient(135deg, #A3C9A8, #7aab80)"
                   : !canSave
-                    ? "rgba(26,26,26,0.06)"
+                    ? "rgba(var(--ink),0.06)"
                     : "linear-gradient(135deg, #FCAE91, #F9A08B)",
                 border: "none", borderRadius: "12px",
                 fontSize: "14px", fontWeight: 700, color: !canSave && !saved ? "#AAAAAA" : "white",

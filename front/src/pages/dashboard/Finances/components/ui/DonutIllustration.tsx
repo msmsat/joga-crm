@@ -7,7 +7,7 @@ export function DonutIllustration({ total, segments, centerLabel }: { total: num
 
   return (
     <svg width="120" height="120" viewBox="0 0 120 120" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.06))' }}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(26,26,26,0.05)" strokeWidth="12" />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(var(--ink),0.05)" strokeWidth="12" />
       <g>
         <animateTransform
           attributeName="transform" type="rotate"

@@ -30,7 +30,7 @@ export function CardHeading({ title, description, formulaKey, actions, style, sc
                 <Tooltip label={scopeNote} side="top">
                   <span style={{
                     fontSize: '10.5px', fontWeight: 600, color: 'var(--text3)',
-                    background: 'rgba(26,26,26,0.05)', borderRadius: '6px', padding: '2px 6px', flexShrink: 0,
+                    background: 'rgba(var(--ink),0.05)', borderRadius: '6px', padding: '2px 6px', flexShrink: 0,
                   }}>
                     {t('scopeNote.label')}
                   </span>

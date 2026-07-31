@@ -226,12 +226,12 @@ function AbonementCard({ used, total, color, onRemind }: { used: number; total: 
         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.abonement.title')}</div>
         <div style={{ fontSize: '11px', color: needsReminder ? '#D88C9A' : '#5BAB72', fontWeight: 700 }}>{isMissing ? t('panel.abonement.noSubscription') : t('panel.abonement.lessons', { remaining, total })}</div>
       </div>
-      <div style={{ position: 'relative', height: '8px', background: 'rgba(26,26,26,0.06)', borderRadius: '10px', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: '8px', background: 'rgba(var(--ink),0.06)', borderRadius: '10px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: isLow ? 'linear-gradient(90deg,#D88C9A,#c07080)' : `linear-gradient(90deg,${color},${color}bb)`, borderRadius: '10px', transition: 'width 0.6s ease' }}/>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
         {Array.from({ length: total }).map((_, i) => (
-          <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: i < remaining ? color : 'rgba(26,26,26,0.1)', transition: 'background 0.3s' }}/>
+          <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: i < remaining ? color : 'rgba(var(--ink),0.1)', transition: 'background 0.3s' }}/>
         ))}
       </div>
       {needsReminder && (
@@ -240,7 +240,7 @@ function AbonementCard({ used, total, color, onRemind }: { used: number; total: 
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             {isMissing ? t('panel.abonement.noSubscriptionWarning') : remaining === 0 ? t('panel.abonement.finishedWarning') : t('panel.abonement.lowWarning')}
           </div>
-          <button onClick={onRemind} style={{ marginTop: '8px', padding: '6px 9px', border: '1px solid rgba(216,140,154,0.45)', borderRadius: '7px', background: '#fff', color: '#B5677A', fontSize: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope' }}>
+          <button onClick={onRemind} style={{ marginTop: '8px', padding: '6px 9px', border: '1px solid rgba(216,140,154,0.45)', borderRadius: '7px', background: 'var(--bg-card)', color: '#B5677A', fontSize: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope' }}>
             {t('panel.abonement.remind')}
           </button>
         </div>
@@ -277,7 +277,7 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
   return (
     <div style={{
       padding: expanded ? '24px' : '14px 16px',
-      background: expanded ? '#FFFFFF' : 'rgba(26,26,26,0.02)',
+      background: expanded ? 'var(--bg-card)' : 'rgba(var(--ink),0.02)',
       borderRadius: '16px',
       border: expanded ? `1px solid ${c}40` : '1px solid var(--border)',
       marginBottom: '14px',
@@ -299,7 +299,7 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
               <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{t('panel.activity.detailedTitle')}</div>
               <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '2px' }}>{clientName}</div>
             </div>
-            <button onClick={e => { e.stopPropagation(); setExpanded(false); }} style={{ background: 'rgba(26,26,26,0.04)', border: 'none', width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background='rgba(216,140,154,0.1)'; e.currentTarget.style.color='#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background='rgba(26,26,26,0.04)'; e.currentTarget.style.color='var(--text3)'; }}>
+            <button onClick={e => { e.stopPropagation(); setExpanded(false); }} style={{ background: 'rgba(var(--ink),0.04)', border: 'none', width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background='rgba(216,140,154,0.1)'; e.currentTarget.style.color='#D88C9A'; }} onMouseLeave={e => { e.currentTarget.style.background='rgba(var(--ink),0.04)'; e.currentTarget.style.color='var(--text3)'; }}>
               <IconClose/>
             </button>
           </div>
@@ -309,18 +309,18 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
               <div style={{ fontSize: '32px', fontWeight: 800, color: c, letterSpacing: '-1.5px', lineHeight: 1 }}>{totalVisits}</div>
               <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: '6px' }}>{t('panel.activity.visitsInPeriod')}</div>
             </div>
-            <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(26,26,26,0.04)' }}>
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(var(--ink),0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(var(--ink),0.04)' }}>
               {(['month3','month6'] as const).map(p => (
-                <button key={p} onClick={e => { e.stopPropagation(); setPeriod(p); }} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope',sans-serif", background: period === p ? '#FFFFFF' : 'transparent', color: period === p ? 'var(--text)' : 'var(--text3)', boxShadow: period === p ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t(`panel.activity.periods.${p}`)}</button>
+                <button key={p} onClick={e => { e.stopPropagation(); setPeriod(p); }} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope',sans-serif", background: period === p ? 'var(--bg-card)' : 'transparent', color: period === p ? 'var(--text)' : 'var(--text3)', boxShadow: period === p ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t(`panel.activity.periods.${p}`)}</button>
               ))}
             </div>
           </div>
 
           <div style={{ height: '160px', display: 'flex', alignItems: 'flex-end', gap: '6px', justifyContent: 'center', position: 'relative', marginTop: '10px', width: '100%', minWidth: 0 }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 0 }}>
-              <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}/>
-              <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}/>
-              <div style={{ borderTop: '1px dashed rgba(26,26,26,0.06)', width: '100%' }}/>
+              <div style={{ borderTop: '1px dashed rgba(var(--ink),0.06)', width: '100%' }}/>
+              <div style={{ borderTop: '1px dashed rgba(var(--ink),0.06)', width: '100%' }}/>
+              <div style={{ borderTop: '1px dashed rgba(var(--ink),0.06)', width: '100%' }}/>
             </div>
             {detailedData.map((d, i) => {
               const hPct     = (d.v / detailedMax) * 100;
@@ -333,9 +333,9 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
                   onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}>
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative' }}>
                     {isHov && (
-                      <div style={{ position: 'absolute', bottom: `calc(${hPct}% + 8px)`, left: isFirst ? '0' : isLast ? '100%' : '50%', transform: isFirst ? 'translateX(0)' : isLast ? 'translateX(-100%)' : 'translateX(-50%)', background: '#1A1A1A', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, pointerEvents: 'none', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 20 }}>
+                      <div style={{ position: 'absolute', bottom: `calc(${hPct}% + 8px)`, left: isFirst ? '0' : isLast ? '100%' : '50%', transform: isFirst ? 'translateX(0)' : isLast ? 'translateX(-100%)' : 'translateX(-50%)', background: 'var(--onyx)', color: 'var(--bg)', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, pointerEvents: 'none', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 20 }}>
                         {t('panel.activity.visitsTooltip', { count: d.v })}
-                        <div style={{ position: 'absolute', bottom: '-4px', left: isFirst ? '15px' : isLast ? 'calc(100% - 15px)' : '50%', transform: 'translateX(-50%) rotate(45deg)', width: '10px', height: '10px', background: '#1A1A1A', borderRadius: '2px' }}/>
+                        <div style={{ position: 'absolute', bottom: '-4px', left: isFirst ? '15px' : isLast ? 'calc(100% - 15px)' : '50%', transform: 'translateX(-50%) rotate(45deg)', width: '10px', height: '10px', background: 'var(--onyx)', borderRadius: '2px' }}/>
                       </div>
                     )}
                     <div style={{ width: '100%', height: `${hPct}%`, background: `linear-gradient(180deg,${c} 0%,${c}20 100%)`, borderRadius: '6px 6px 4px 4px', transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)', opacity: hovered !== null && !isHov ? 0.4 : 1, transform: isHov ? 'scaleY(1.05)' : 'scaleY(1)', transformOrigin: 'bottom', border: isHov ? `1px solid ${c}` : '1px solid transparent', borderBottom: 'none' }}/>
@@ -452,22 +452,22 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   })();
 
   return (
-    <div style={{ flex: 1, background: '#fff', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ flex: 1, background: 'var(--bg-card)', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes fadeSlide { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes panelSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .cl-contact-link:hover .cl-cv { color: var(--peach) !important; }
         .cl-contact-link:hover .cl-cv-sub { color: var(--peach) !important; opacity: 0.6; }
-        .cl-copy-btn:hover { background: rgba(26,26,26,0.06) !important; color: var(--peach) !important; }
+        .cl-copy-btn:hover { background: rgba(var(--ink),0.06) !important; color: var(--peach) !important; }
         .cl-tag-suggest:hover { border-color: var(--peach) !important; color: var(--peach) !important; background: rgba(249,160,139,0.07) !important; }
         .cl-action-btn:hover { transform: translateY(-1px); }
         .cl-action-btn:active { transform: scale(0.94); }
-        .cl-ev-row:hover { border-color: rgba(0,0,0,0.1) !important; background: rgba(26,26,26,0.01) !important; }
+        .cl-ev-row:hover { border-color: rgba(0,0,0,0.1) !important; background: rgba(var(--ink),0.01) !important; }
         .cl-bonus-opt:hover { border-color: var(--peach) !important; background: rgba(249,160,139,0.06) !important; }
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: '#fdfcfb', flexShrink: 0 }}>
+      <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55`, flexShrink: 0 }}>{getInitials(client.name, client.last_name)}</div>
@@ -488,7 +488,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                   {showStatusDD && (
-                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '4px', background: '#fff', borderRadius: '10px', border: '1px solid var(--border)', boxShadow: '0 8px 24px -4px rgba(0,0,0,0.12)', zIndex: 10, overflow: 'hidden', minWidth: '140px' }}>
+                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '4px', background: 'var(--bg-card)', borderRadius: '10px', border: '1px solid var(--border)', boxShadow: '0 8px 24px -4px rgba(0,0,0,0.12)', zIndex: 10, overflow: 'hidden', minWidth: '140px' }}>
                       {STATUSES.map(s => (
                         <div key={s} onClick={() => { setShowStatusDD(false); actions.updateStatus(s); }} style={{ padding: '8px 12px', fontSize: '12px', fontWeight: 600, color: STATUS_COLORS[s], cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = `${STATUS_COLORS[s]}12`)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: STATUS_COLORS[s] }}/>{t(`status.${s}`)}
@@ -519,7 +519,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.background='rgba(26,26,26,0.06)'; e.currentTarget.style.color='var(--text)'; }} onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text3)'; }}>
+          <button onClick={onClose} style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.background='rgba(var(--ink),0.06)'; e.currentTarget.style.color='var(--text)'; }} onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text3)'; }}>
             <IconClose/>
           </button>
         </div>
@@ -603,7 +603,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     key={sub}
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '9px', marginBottom: '2px' }}
                   >
-                    <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', flexShrink: 0 }}>{icon}</div>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(var(--ink),0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', flexShrink: 0 }}>{icon}</div>
                     {edit ? (
                       <InlineEdit
                         key={client.id}
@@ -637,7 +637,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 { v: formatMoney(client.total_spent, currency),                                                                  l: t('panel.stats.spent'),        svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
                 { v: `${Math.max(0, (displaySubscription?.total ?? 0) - (displaySubscription?.used ?? 0))}/${displaySubscription?.total ?? 0}`, l: t('panel.stats.subscription'), svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> },
               ].map(({ v, l, svg }) => (
-                <div key={l} style={{ padding: '12px 10px', background: 'rgba(26,26,26,0.02)', borderRadius: '10px', border: '1px solid var(--border)', textAlign: 'center' }}>
+                <div key={l} style={{ padding: '12px 10px', background: 'rgba(var(--ink),0.02)', borderRadius: '10px', border: '1px solid var(--border)', textAlign: 'center' }}>
                   <div style={{ color: 'var(--text3)', marginBottom: '6px', display: 'flex', justifyContent: 'center' }}>{svg}</div>
                   <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>{v}</div>
                   <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '1px' }}>{l}</div>
@@ -656,9 +656,9 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: '8px' }}>{t('panel.tags.title')}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: (actions.showTagPanel || tags.length > 0) ? '10px' : '0' }}>
                 {tags.map(tag => (
-                  <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px 3px 10px', borderRadius: '20px', background: `${client.avatar_color ?? '#999'}18`, color: client.avatar_color ?? '#999', border: `1px solid ${client.avatar_color ?? '#999'}30`, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px 3px 10px', borderRadius: '20px', background: `${client.avatar_color ?? '#999'}18`, color: client.avatar_color ?? 'var(--text3)', border: `1px solid ${client.avatar_color ?? '#999'}30`, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     {tag}
-                    <button onClick={() => actions.removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.avatar_color ?? '#999', opacity: 0.5, padding: 0, lineHeight: 1, display: 'flex', alignItems: 'center', transition: 'opacity 0.15s' }} onMouseEnter={e => (e.currentTarget.style.opacity = '1')} onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}>
+                    <button onClick={() => actions.removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.avatar_color ?? 'var(--text3)', opacity: 0.5, padding: 0, lineHeight: 1, display: 'flex', alignItems: 'center', transition: 'opacity 0.15s' }} onMouseEnter={e => (e.currentTarget.style.opacity = '1')} onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                   </span>
@@ -671,7 +671,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 </button>
               </div>
               {actions.showTagPanel && (
-                <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(26,26,26,0.02)', border: '1px solid var(--border)', animation: 'fadeSlide 0.25s ease both' }}>
+                <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(var(--ink),0.02)', border: '1px solid var(--border)', animation: 'fadeSlide 0.25s ease both' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '8px' }}>
                     {(t('tags.suggested', { returnObjects: true }) as string[]).filter(tag => !tags.includes(tag)).map(tag => (
                       <button key={tag} className="cl-tag-suggest" onClick={() => actions.addTag(tag, tags)} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{tag}</button>
@@ -683,7 +683,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     onChange={e => setTagInput(e.target.value)}
                     placeholder={t('panel.tags.customPlaceholder')}
                     onKeyDown={e => { if (e.key === 'Enter' && tagInput.trim()) { actions.addTag(tagInput, tags); setTagInput(''); } }}
-                    style={{ width: '100%', padding: '6px 10px', borderRadius: '7px', border: '1px solid var(--border)', background: '#fff', fontSize: '12px', outline: 'none', fontFamily: 'Manrope', color: 'var(--text)', boxSizing: 'border-box', transition: 'border-color 0.2s, box-shadow 0.2s' }}
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: '7px', border: '1px solid var(--border)', background: 'var(--bg-card)', fontSize: '12px', outline: 'none', fontFamily: 'Manrope', color: 'var(--text)', boxSizing: 'border-box', transition: 'border-color 0.2s, box-shadow 0.2s' }}
                     onFocus={e => { e.target.style.borderColor='var(--peach)'; e.target.style.boxShadow='0 0 0 3px rgba(249,160,139,0.12)'; }}
                     onBlur={e => { e.target.style.borderColor='var(--border)'; e.target.style.boxShadow='none'; }}
                   />
@@ -733,7 +733,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             )}
 
             {apiEvents.map((ev, i) => (
-              <div key={i} className="cl-ev-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 12px', borderRadius: '10px', marginBottom: '4px', border: '1px solid var(--border)', background: '#fff', transition: 'all 0.15s', cursor: 'default', minWidth: 0 }}>
+              <div key={i} className="cl-ev-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 12px', borderRadius: '10px', marginBottom: '4px', border: '1px solid var(--border)', background: 'var(--bg-card)', transition: 'all 0.15s', cursor: 'default', minWidth: 0 }}>
                 <EventIcon type={ev.type} c={color}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
@@ -782,7 +782,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                       value={actions.editingNoteText}
                       onChange={e => actions.setEditingNoteText(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) actions.saveNote(note.id); }}
-                      style={{ width: '100%', minHeight: '80px', padding: '8px 10px', borderRadius: '8px', border: '2px solid var(--peach)', outline: 'none', boxShadow: '0 0 0 4px rgba(249,160,139,0.15)', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: '#fff' }}
+                      style={{ width: '100%', minHeight: '80px', padding: '8px 10px', borderRadius: '8px', border: '2px solid var(--peach)', outline: 'none', boxShadow: '0 0 0 4px rgba(249,160,139,0.15)', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)' }}
                     />
                     <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                       <button onClick={() => actions.saveNote(note.id)} style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
@@ -802,7 +802,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                   value={actions.newNoteText}
                   onChange={e => actions.setNewNoteText(e.target.value)}
                   placeholder={t('panel.notes.addPlaceholder')}
-                  style={{ width: '100%', minHeight: '72px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', outline: 'none', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: '#fff', transition: 'border-color 0.2s, box-shadow 0.2s' }}
+                  style={{ width: '100%', minHeight: '72px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', outline: 'none', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)', transition: 'border-color 0.2s, box-shadow 0.2s' }}
                   onFocus={e => { e.target.style.borderColor='var(--peach)'; e.target.style.boxShadow='0 0 0 4px rgba(249,160,139,0.12)'; }}
                   onBlur={e => { e.target.style.borderColor='var(--border)'; e.target.style.boxShadow='none'; }}
                 />
@@ -814,9 +814,9 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             ) : (
               <button
                 onClick={actions.startAddNote}
-                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(26,26,26,0.03)', fontSize: '12px', fontWeight: 600, color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(var(--ink),0.03)', fontSize: '12px', fontWeight: 600, color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.background='rgba(249,160,139,0.08)'; e.currentTarget.style.color='var(--peach)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background='rgba(26,26,26,0.03)'; e.currentTarget.style.color='var(--text2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background='rgba(var(--ink),0.03)'; e.currentTarget.style.color='var(--text2)'; }}
               >
                 <IconNote/>{t('panel.notes.add')}
               </button>
@@ -832,7 +832,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
 
       {/* П.13 — BOOKING PANEL */}
       {actions.showBooking && (
-        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)', background: '#fff', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0, maxHeight: '280px', overflowY: 'auto' }}>
+        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0, maxHeight: '280px', overflowY: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.bookingPanel.title')}</span>
             <button onClick={actions.toggleBooking} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex' }}><IconClose/></button>
@@ -909,7 +909,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
 
       {/* П.14 — BONUS PANEL */}
       {actions.showBonus && (
-        <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)', background: '#fff', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0 }}>
+        <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.bonusPanel.title')}</span>
             <button onClick={actions.toggleBonus} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex' }}><IconClose/></button>
@@ -980,7 +980,7 @@ export function ClientProfileSlider({ client, profile, isOpen, onClose, onDelete
             opacity 0.25s ease-out;
           overflow: hidden;
           pointer-events: none;
-          background: #fff;
+          background: var(--bg-card);
           box-shadow: -10px 0 30px rgba(0,0,0,0.03);
           border-radius: 16px;
         }

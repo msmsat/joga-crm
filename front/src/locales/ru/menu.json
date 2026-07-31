@@ -41,8 +41,8 @@
     "create": "Создать"
   },
   "userMenu": {
-    "accounts": "Мои студии",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "studios": "Мои студии"
   },
   "tooltips": {
     "studioName": "Ваша студия: {{name}}",

@@ -73,7 +73,7 @@ export default function PaymentMethodsTab(props: { showToast: (msg: string, t?: 
       </div>
 
       {isLoading ? (
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '64px 20px', textAlign: 'center', color: '#999999', fontSize: '14px', fontWeight: 600, border: '1px solid rgba(26,26,26,0.06)' }}>{t('common.loading')}</div>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '64px 20px', textAlign: 'center', color: 'var(--text3)', fontSize: '14px', fontWeight: 600, border: '1px solid rgba(var(--ink),0.06)' }}>{t('common.loading')}</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {rows.map(r => {
@@ -88,7 +88,7 @@ export default function PaymentMethodsTab(props: { showToast: (msg: string, t?: 
                   <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{r.count} {t('paymentMethods.transactions')}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A' }}>{fmt(r.amount)}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--onyx)' }}>{fmt(r.amount)}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600 }}>{t('paymentMethods.share')}: {share}%</div>
                 </div>
               </div>

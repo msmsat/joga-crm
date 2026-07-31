@@ -6,7 +6,7 @@ export interface ProgressBarProps {
 
 export function ProgressBar({ value, color = 'var(--accent)', height = 5 }: ProgressBarProps) {
   return (
-    <div style={{ background: 'rgba(26,26,26,0.06)', borderRadius: '99px', height, overflow: 'hidden' }}>
+    <div style={{ background: 'rgba(var(--ink),0.06)', borderRadius: '99px', height, overflow: 'hidden' }}>
       <div style={{
         width: `${Math.min(Math.max(value, 0), 100)}%`,
         height: '100%',

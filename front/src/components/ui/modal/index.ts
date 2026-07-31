@@ -2,6 +2,8 @@ export { ModalShell, useModalClose } from './ModalShell';
 export { ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from './ModalParts';
 export { Input } from './Input';
 export { ColorPicker } from './ColorPicker';
+export { COLOR_PRESETS } from './palette';
+export { Segmented } from './Segmented';
 export { PhotoUpload } from './PhotoUpload';
 export { ChipsInput } from './ChipsInput';
 export { WorkingHoursEditor } from './WorkingHoursEditor';

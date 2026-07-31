@@ -65,7 +65,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       style={{
         top, height, left: layout.left, width: layout.width,
         zIndex: isDragging ? 99999 : (isSelected ? 9999 : layout.zIndex),
-        background: layout.isCascade ? '#FFFFFF' : `${b.color}12`,
+        background: layout.isCascade ? 'var(--bg-card)' : `${b.color}12`,
         border: editDraft ? '2px dashed var(--peach)' : `2px solid ${b.color}`,
         color: b.color,
         cursor: b.status === 'cancelled' ? 'pointer' : (canEdit ? 'grab' : 'pointer'),

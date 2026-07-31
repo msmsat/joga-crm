@@ -34,6 +34,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const dark = theme === "dark"
       || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     applyDarkClass(dark);
+    // Кладём серверное значение в localStorage, а не только клик в AppearanceTab:
+    // иначе на новом устройстве первый заход всё равно мигнёт светлым (затравку
+    // читает инлайн-скрипт в index.html до старта React).
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   // auto → слушаем смену системной темы на лету.

@@ -65,7 +65,7 @@ export function StaffToolbar({
               style={{
                 padding: '5px 10px', borderRadius: '20px',
                 border: activeGroup === g ? '1.5px solid rgba(252,174,145,0.5)' : '1.5px solid transparent',
-                background: activeGroup === g ? 'rgba(252,174,145,0.14)' : 'rgba(26,26,26,0.04)',
+                background: activeGroup === g ? 'rgba(252,174,145,0.14)' : 'rgba(var(--ink),0.04)',
                 color: activeGroup === g ? '#C07060' : 'var(--text3)',
                 fontSize: '11px', fontWeight: activeGroup === g ? 700 : 500,
                 cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap', fontFamily: 'inherit',

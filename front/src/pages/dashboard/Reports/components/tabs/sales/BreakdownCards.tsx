@@ -35,7 +35,7 @@ function SliceCard({
                   {fmtMoney(row.amount)} <span style={{ color: 'var(--text3)', fontWeight: 500 }}>({row.share_pct}%)</span>
                 </span>
               </div>
-              <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(26,26,26,0.06)', overflow: 'hidden' }}>
+              <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(var(--ink),0.06)', overflow: 'hidden' }}>
                 <div style={{
                   width: `${row.share_pct}%`, height: '100%', borderRadius: '3px',
                   background: BAR_COLORS[i % BAR_COLORS.length], transition: 'width 0.3s ease',

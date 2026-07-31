@@ -61,7 +61,7 @@ export default function PlanLimitModal() {
             onClick={close}
             style={{
               flex: 1, height: '46px', borderRadius: '10px', cursor: 'pointer',
-              border: '1.5px solid rgba(26,26,26,0.1)', background: 'transparent',
+              border: '1.5px solid rgba(var(--ink),0.1)', background: 'transparent',
               color: 'var(--muted, #666666)', fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font)',
             }}
           >

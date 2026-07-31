@@ -24,7 +24,7 @@ export function Switch({ checked, onChange, disabled }: SwitchProps) {
     >
       <span style={{
         position: 'absolute', top: '3px', left: checked ? '21px' : '3px',
-        width: '16px', height: '16px', borderRadius: '50%', background: '#fff',
+        width: '16px', height: '16px', borderRadius: '50%', background: 'var(--bg-card)',
         transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
       }}/>
     </button>

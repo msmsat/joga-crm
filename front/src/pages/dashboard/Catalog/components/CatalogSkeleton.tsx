@@ -12,7 +12,7 @@ export function CatalogError({ message, onRetry }: { message: string; onRetry: (
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#D88C9A" strokeWidth="1.4" style={{ marginBottom: '14px' }}>
         <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
-      <div style={{ fontSize: '15px', fontWeight: 700, color: '#1A1A1A' }}>{t('errors.loadFailed')}</div>
+      <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('errors.loadFailed')}</div>
       <div style={{ fontSize: '13px', color: '#AAAAAA', marginTop: '4px' }}>{message}</div>
       <button className="cat-action-btn" style={{ marginTop: '16px' }} onClick={onRetry}>
         {t('errors.retry')}

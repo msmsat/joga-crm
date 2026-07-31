@@ -74,15 +74,15 @@ export default function SecurityTab() {
             </div>
             <button
               onClick={() => setShowPasswordModal(true)}
-              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid rgba(26,26,26,0.1)", color: "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(0,0,0,0.03)" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: "var(--bg-card)", border: "1px solid rgba(var(--ink),0.1)", color: "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(0,0,0,0.03)" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--peach)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(var(--ink),0.1)"; e.currentTarget.style.color = "var(--onyx)"; e.currentTarget.style.transform = "none"; }}
             >
               {secIcons.key} {t('security.password.change')}
             </button>
           </div>
 
-          <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+          <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "var(--bg-card)" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.sessions.title')}</div>
@@ -92,7 +92,7 @@ export default function SecurityTab() {
                 <StatusBadge type="info">{t('security.sessions.count', { count: sessions.length })}</StatusBadge>
                 <button
                   onClick={() => setSecExpanded(secExpanded === "sessions" ? null : "sessions")}
-                  style={{ padding: "8px 14px", borderRadius: "8px", background: secExpanded === "sessions" ? "var(--peach)" : "rgba(26,26,26,0.05)", border: "none", color: secExpanded === "sessions" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                  style={{ padding: "8px 14px", borderRadius: "8px", background: secExpanded === "sessions" ? "var(--peach)" : "rgba(var(--ink),0.05)", border: "none", color: secExpanded === "sessions" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
                 >
                   {secExpanded === "sessions" ? t('security.sessions.hide') : t('security.sessions.manage')}
                 </button>
@@ -106,7 +106,7 @@ export default function SecurityTab() {
                     {sessions.map(session => {
                       const isMobile = session.platform === "iOS" || session.platform === "Android";
                       return (
-                        <div key={session.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: session.is_current ? "rgba(163,201,168,0.06)" : "#FFF" }}>
+                        <div key={session.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: session.is_current ? "rgba(163,201,168,0.06)" : "var(--bg-card)" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                             <div style={{ color: session.is_current ? "#5A9A65" : "var(--muted)" }}>{isMobile ? secIcons.phone : secIcons.laptop}</div>
                             <div>
@@ -156,7 +156,7 @@ export default function SecurityTab() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "#FFFFFF" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+          <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "var(--bg-card)" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.danger.export.title')}</div>
@@ -164,7 +164,7 @@ export default function SecurityTab() {
               </div>
               <button
                 onClick={() => setSecExpanded(secExpanded === "export" ? null : "export")}
-                style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: secExpanded === "export" ? "var(--peach)" : "#FFFFFF", border: "1px solid", borderColor: secExpanded === "export" ? "var(--peach)" : "rgba(26,26,26,0.1)", color: secExpanded === "export" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", background: secExpanded === "export" ? "var(--peach)" : "var(--bg-card)", border: "1px solid", borderColor: secExpanded === "export" ? "var(--peach)" : "rgba(var(--ink),0.1)", color: secExpanded === "export" ? "#FFF" : "var(--onyx)", fontSize: "11.5px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
               >
                 {secExpanded === "export" ? t('security.danger.export.hide') : <>{secIcons.archive} {t('security.danger.export.prepare')}</>}
               </button>
@@ -186,8 +186,8 @@ export default function SecurityTab() {
                       >
                         <div style={{
                           width: "16px", height: "16px", borderRadius: "5px", flexShrink: 0,
-                          border: `1.5px solid ${exportChecked[key] ? "var(--peach)" : "rgba(26,26,26,0.2)"}`,
-                          background: exportChecked[key] ? "var(--peach)" : "#FFF",
+                          border: `1.5px solid ${exportChecked[key] ? "var(--peach)" : "rgba(var(--ink),0.2)"}`,
+                          background: exportChecked[key] ? "var(--peach)" : "var(--bg-card)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           transition: "all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)",
                           boxShadow: exportChecked[key] ? "0 2px 8px rgba(252,174,145,0.35)" : "none",

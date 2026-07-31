@@ -10,7 +10,7 @@ interface Props {
 
 const labelStyle: React.CSSProperties = {
   display: "block", fontSize: "12px", fontWeight: 700,
-  color: "#666", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px",
+  color: "var(--muted)", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px",
 };
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -30,7 +30,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
     >
       <div style={{
         width: "16px", height: "16px", borderRadius: "50%",
-        background: "white", boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
+        background: "var(--bg-card)", boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
       }} />
     </button>
   );
@@ -50,10 +50,10 @@ export default function StepSchedule({ data, onChange }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
-        <h3 style={{ fontSize: "22px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 6px" }}>
+        <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.8px", margin: "0 0 6px" }}>
           {t("onboarding:schedule.title")}
         </h3>
-        <p style={{ fontSize: "13px", color: "#888", margin: 0 }}>
+        <p style={{ fontSize: "13px", color: "var(--text3)", margin: 0 }}>
           {t("onboarding:schedule.subtitle")}
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function StepSchedule({ data, onChange }: Props) {
       <div>
         <label style={labelStyle}>{t("onboarding:schedule.scheduleLabel")}</label>
         <div style={{
-          background: "white", border: "1.5px solid #EEEBE6",
+          background: "var(--bg-card)", border: "1.5px solid #EEEBE6",
           borderRadius: "14px", overflow: "hidden",
         }}>
           {data.workingHours.map((day, idx) => (
@@ -71,13 +71,13 @@ export default function StepSchedule({ data, onChange }: Props) {
                 display: "flex", alignItems: "center", gap: "12px",
                 padding: "11px 16px",
                 borderBottom: idx < 6 ? "1px solid #F5F3F0" : "none",
-                background: day.isOpen ? "white" : "rgba(26,26,26,0.018)",
+                background: day.isOpen ? "var(--bg-card)" : "rgba(var(--ink),0.018)",
                 transition: "background 0.2s ease",
               }}
             >
               <span style={{
                 width: "26px", fontSize: "12px", fontWeight: 700,
-                color: day.isOpen ? "#1A1A1A" : "#BBBBBB",
+                color: day.isOpen ? "var(--onyx)" : "#BBBBBB",
                 flexShrink: 0, transition: "color 0.2s ease",
               }}>
                 {t(`common:days.short.${DOW_TO_DAY_KEY[day.dayOfWeek]}`)}
@@ -94,7 +94,7 @@ export default function StepSchedule({ data, onChange }: Props) {
                     style={{
                       padding: "5px 8px", border: "1.5px solid #EEEBE6",
                       borderRadius: "8px", fontSize: "12px", fontFamily: "inherit",
-                      color: "#1A1A1A", background: "rgba(26,26,26,0.02)",
+                      color: "var(--onyx)", background: "rgba(var(--ink),0.02)",
                       outline: "none", cursor: "pointer",
                       transition: "border-color 0.2s ease",
                     }}
@@ -109,7 +109,7 @@ export default function StepSchedule({ data, onChange }: Props) {
                     style={{
                       padding: "5px 8px", border: "1.5px solid #EEEBE6",
                       borderRadius: "8px", fontSize: "12px", fontFamily: "inherit",
-                      color: "#1A1A1A", background: "rgba(26,26,26,0.02)",
+                      color: "var(--onyx)", background: "rgba(var(--ink),0.02)",
                       outline: "none", cursor: "pointer",
                       transition: "border-color 0.2s ease",
                     }}

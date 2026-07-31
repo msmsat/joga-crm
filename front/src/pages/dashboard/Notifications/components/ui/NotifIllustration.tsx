@@ -58,7 +58,7 @@ export default function NotifIllustration() {
         <div key={chip.label} style={{
           position: 'absolute',
           top: chip.top, right: (chip as any).right, bottom: chip.bottom, left: (chip as any).left,
-          background: '#fff',
+          background: 'var(--bg-card)',
           border: `1px solid ${chip.color}30`,
           borderRadius: '20px',
           padding: '4px 10px',

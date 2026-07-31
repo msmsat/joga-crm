@@ -63,4 +63,4 @@ export const EVENT_META: Record<string, EventMeta> = {
 
 // Событие без записи в EVENT_META (новый event_id, ещё не расставлены иконки) —
 // нейтральный дефолт, чтобы матрица не падала, а редактор потом просто добавил строку выше.
-export const DEFAULT_EVENT_META: EventMeta = { icon: Icon.FileText, color: '#999999' };
+export const DEFAULT_EVENT_META: EventMeta = { icon: Icon.FileText, color: 'var(--text3)' };

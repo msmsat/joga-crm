@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AreaChart, Area, BarChart, Bar, CartesianGrid, LabelList, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, CartesianGrid, LabelList, ReferenceLine, XAxis, YAxis } from 'recharts';
 import type { CategoricalChartFunc } from 'recharts/types/chart/types';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { financesApi } from '../../../../../api/finances';
@@ -13,7 +13,8 @@ import { groupForRange } from '../../hooks/useReportFilters';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
 import { ChartFrame } from '../shared/ChartFrame';
-import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, LINE_CURSOR, PEACH, PEACH_LIGHT, ROSE } from '../shared/chartTheme';
+import { AXIS_X, BAR_CURSOR, LINE_CURSOR, PEACH, PEACH_LIGHT, ROSE } from '../shared/chartTheme';
+import { ChartTooltip } from '../shared/ChartTooltip';
 import { ZeroLabel } from '../shared/ZeroLabel';
 import { zeroAwareCells } from '../shared/zeroAwareCells';
 import { MainWithInsights } from '../shared/MainWithInsights';
@@ -235,7 +236,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
           description={t(`descriptions.overview.metric.${chartMetric}`)}
           formulaKey={FORMULA_BY_METRIC[chartMetric]}
           actions={
-            <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.04)', borderRadius: '10px', padding: '3px' }}>
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(var(--ink),0.04)', borderRadius: '10px', padding: '3px' }}>
               {CHART_METRICS.map(m => (
                 <button
                   key={m}
@@ -243,7 +244,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
                   style={{
                     padding: '5px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                     fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font)',
-                    background: chartMetric === m ? '#fff' : 'transparent',
+                    background: chartMetric === m ? 'var(--bg-card)' : 'transparent',
                     color: chartMetric === m ? 'var(--text)' : 'var(--text3)',
                     boxShadow: chartMetric === m ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
                   }}
@@ -272,10 +273,10 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
                     )}
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} stroke="rgba(26,26,26,0.05)" />
+                <CartesianGrid vertical={false} stroke="rgba(var(--ink),0.05)" />
                 <XAxis dataKey="label" {...AXIS_X} interval="preserveStartEnd" minTickGap={16} />
                 <YAxis hide domain={[(dataMin: number) => Math.min(0, dataMin), 'auto']} />
-                <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} isAnimationActive={false} />
+                <ChartTooltip formatter={(v) => fmtMoney(Number(v))} cursor={LINE_CURSOR} />
                 {chartMetric === 'profit' && <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />}
                 <Area
                   type="monotone" dataKey="value" stroke={PEACH} strokeWidth={2.5}
@@ -291,11 +292,9 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
               <BarChart data={chartData} onClick={handleChartClick}>
                 <XAxis dataKey="label" {...AXIS_X} />
                 <YAxis hide />
-                <Tooltip
+                <ChartTooltip
                   formatter={(v) => (chartMetric === 'fill_rate' ? `${v}%` : fmtInt(Number(v)))}
-                  contentStyle={TOOLTIP_STYLE}
                   cursor={BAR_CURSOR}
-                  isAnimationActive={false}
                 />
                 <Bar dataKey="value" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false} animationDuration={400}>
                   <LabelList dataKey="value" position="top" content={ZeroLabel} />

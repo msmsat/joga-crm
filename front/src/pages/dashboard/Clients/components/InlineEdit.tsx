@@ -42,7 +42,7 @@ export function InlineEdit({ value, type = 'text', title, clickToEdit = false, o
           if (e.key === 'Enter') e.currentTarget.blur();
           if (e.key === 'Escape') setEditing(false);
         }}
-        style={{ flex: 1, minWidth: 0, padding: '5px 8px', borderRadius: '7px', border: '1px solid var(--peach)', boxShadow: '0 0 0 3px rgba(249,160,139,0.12)', outline: 'none', fontSize: '12px', fontWeight: 600, fontFamily: 'Manrope', color: 'var(--text)', background: '#fff', boxSizing: 'border-box' }}
+        style={{ flex: 1, minWidth: 0, padding: '5px 8px', borderRadius: '7px', border: '1px solid var(--peach)', boxShadow: '0 0 0 3px rgba(249,160,139,0.12)', outline: 'none', fontSize: '12px', fontWeight: 600, fontFamily: 'Manrope', color: 'var(--text)', background: 'var(--bg-card)', boxSizing: 'border-box' }}
       />
     );
   }

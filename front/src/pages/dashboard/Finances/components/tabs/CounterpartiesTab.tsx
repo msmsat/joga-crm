@@ -77,9 +77,9 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
   const cancelEdit = () => setEditingId(null);
 
   const eInp = (key: string): React.CSSProperties => ({
-    width: '100%', padding: '7px 10px', background: '#FDFCFB',
-    border: editFocused === key ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.1)',
-    borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#1A1A1A',
+    width: '100%', padding: '7px 10px', background: 'var(--bg)',
+    border: editFocused === key ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.1)',
+    borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: 'var(--onyx)',
     outline: 'none',
     boxShadow: editFocused === key ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
     transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -91,9 +91,9 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
     onBlur:  () => setFocused(p => ({ ...p, [key]: false })),
     style: {
       width: '100%', padding: '12px 16px',
-      background: '#FDFCFB',
-      border: focused[key] ? '1.5px solid #F9A08B' : '1.5px solid rgba(26,26,26,0.08)',
-      borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: '#1A1A1A',
+      background: 'var(--bg)',
+      border: focused[key] ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.08)',
+      borderRadius: '8px', fontSize: '13px', fontWeight: 500, color: 'var(--onyx)',
       outline: 'none',
       boxShadow: focused[key] ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
       transition: 'all 0.2s', boxSizing: 'border-box' as const,
@@ -171,18 +171,18 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
 
       {/* ── Форма добавления (GoalsTab-паттерн) ── */}
       {adding && (
-        <div className={styles.morphContainer} style={{ padding: '32px', marginBottom: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
+        <div className={styles.morphContainer} style={{ padding: '32px', marginBottom: '20px', background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 16px 40px -8px rgba(26,26,26,0.06)' }}>
           {/* Заголовок */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-            <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>{t('counterparties.newTitle')}</div>
-            <button onClick={() => setAdding(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} onMouseEnter={e => e.currentTarget.style.color='#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color='#999'}><Ico.X /></button>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>{t('counterparties.newTitle')}</div>
+            <button onClick={() => setAdding(false)} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} onMouseEnter={e => e.currentTarget.style.color='var(--onyx)'} onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}><Ico.X /></button>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
             {/* Левая колонка: поля ввода */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.nameLabel')}</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.nameLabel')}</label>
                 <input
                   type="text"
                   placeholder={t('counterparties.namePlaceholder')}
@@ -195,7 +195,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
 
               <div style={{ display: 'flex', gap: '16px' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.innLabel')}</label>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.innLabel')}</label>
                   <input
                     type="text"
                     placeholder="7701234567"
@@ -206,7 +206,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.categoryLabel')}</label>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('counterparties.categoryLabel')}</label>
                   <input
                     type="text"
                     placeholder={t('counterparties.categoryPlaceholder')}
@@ -220,7 +220,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
 
             {/* Правая колонка: Тип + кнопка */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '12px' }}>{t('counterparties.typeLabel')}</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '12px' }}>{t('counterparties.typeLabel')}</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {TYPE_OPTIONS.map(opt => (
                   <div
@@ -228,18 +228,18 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                     onClick={() => setForm(p => ({ ...p, type: opt.value }))}
                     style={{
                       padding: '14px 16px', borderRadius: '12px',
-                      border: form.type === opt.value ? '2px solid #F9A08B' : '2px solid rgba(26,26,26,0.06)',
+                      border: form.type === opt.value ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)',
                       background: form.type === opt.value ? 'rgba(249,160,139,0.04)' : '#FDFCFB',
                       cursor: 'pointer', transition: 'all 0.2s',
                       display: 'flex', alignItems: 'center', gap: '12px',
                     }}
                   >
-                    <div style={{ color: form.type === opt.value ? '#F9A08B' : '#999', flexShrink: 0 }}>
+                    <div style={{ color: form.type === opt.value ? '#F9A08B' : 'var(--text3)', flexShrink: 0 }}>
                       {opt.icon}
                     </div>
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{t(`counterparties.types.${opt.key}.label`)}</div>
-                      <div style={{ fontSize: '11px', color: '#666666', marginTop: '1px' }}>{t(`counterparties.types.${opt.key}.desc`)}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{t(`counterparties.types.${opt.key}.label`)}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '1px' }}>{t(`counterparties.types.${opt.key}.desc`)}</div>
                     </div>
                   </div>
                 ))}
@@ -250,9 +250,9 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                 disabled={!canAdd}
                 style={{
                   marginTop: 'auto', paddingTop: '14px', paddingBottom: '14px',
-                  background: canAdd ? '#F9A08B' : 'rgba(26,26,26,0.04)',
+                  background: canAdd ? '#F9A08B' : 'rgba(var(--ink),0.04)',
                   border: 'none', borderRadius: '10px',
-                  color: canAdd ? '#FFFFFF' : '#999999',
+                  color: canAdd ? '#FFFFFF' : 'var(--text3)',
                   fontSize: '13px', fontWeight: 700,
                   cursor: canAdd ? 'pointer' : 'not-allowed',
                   transition: 'all 0.2s',
@@ -302,7 +302,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                   <div className={styles.morphContainer}>
                     {/* Название */}
                     <div style={{ marginBottom: '10px' }}>
-                      <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.nameLabel')}</label>
+                      <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.nameLabel')}</label>
                       <input
                         autoFocus
                         type="text" value={editName}
@@ -315,7 +315,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                     {/* ИНН + Категория */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.innLabel')}</label>
+                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.innLabel')}</label>
                         <input
                           type="text" value={editInn} maxLength={12}
                           onChange={e => setEditInn(e.target.value.replace(/\D/g, ''))}
@@ -324,7 +324,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                         />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.categoryLabel')}</label>
+                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px' }}>{t('counterparties.categoryLabel')}</label>
                         <input
                           type="text" value={editCategory}
                           onChange={e => setEditCategory(e.target.value)}
@@ -335,10 +335,10 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                     </div>
                     {/* Тип */}
                     <div style={{ marginBottom: '14px' }}>
-                      <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{t('counterparties.typeLabel')}</label>
+                      <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>{t('counterparties.typeLabel')}</label>
                       <div style={{ display: 'flex', gap: '6px' }}>
                         {TYPE_OPTIONS.map(opt => (
-                          <button key={opt.value} onClick={() => setEditType(opt.value)} style={{ flex: 1, padding: '7px 0', borderRadius: '8px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s', background: editType === opt.value ? '#F9A08B' : 'transparent', border: editType === opt.value ? 'none' : '1.5px solid rgba(26,26,26,0.1)', color: editType === opt.value ? '#fff' : '#888', boxShadow: editType === opt.value ? '0 3px 8px rgba(249,160,139,0.22)' : 'none' }}>
+                          <button key={opt.value} onClick={() => setEditType(opt.value)} style={{ flex: 1, padding: '7px 0', borderRadius: '8px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s', background: editType === opt.value ? '#F9A08B' : 'transparent', border: editType === opt.value ? 'none' : '1.5px solid rgba(var(--ink),0.1)', color: editType === opt.value ? '#fff' : 'var(--text3)', boxShadow: editType === opt.value ? '0 3px 8px rgba(249,160,139,0.22)' : 'none' }}>
                             {t(`counterparties.types.${opt.key}.label`)}
                           </button>
                         ))}
@@ -352,9 +352,9 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                         {t('common.save')}
                       </button>
-                      <button onClick={cancelEdit} style={{ padding: '7px 14px', background: 'none', border: '1.5px solid rgba(26,26,26,0.1)', borderRadius: '8px', color: '#666', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s' }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.22)'; e.currentTarget.style.color = '#333'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.color = '#666'; }}>
+                      <button onClick={cancelEdit} style={{ padding: '7px 14px', background: 'none', border: '1.5px solid rgba(var(--ink),0.1)', borderRadius: '8px', color: 'var(--muted)', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--ink),0.22)'; e.currentTarget.style.color = '#333'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(var(--ink),0.1)'; e.currentTarget.style.color = 'var(--muted)'; }}>
                         {t('common.cancel')}
                       </button>
                     </div>

@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../../../../../App.css";
-import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ColorPicker } from "../../../../../components/ui/modal";
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ColorPicker, COLOR_PRESETS, Segmented } from "../../../../../components/ui/modal";
 import { Select } from "../../../../../components/ui/Select";
 import { getCurrencySymbol } from "../../../../../components/UI";
 import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import { useValidation } from "./useValidation";
+import {
+  PreviewPanel, StatPills, SectionLabel, Field, Hint,
+  IconInfo, IconTag, IconClock, IconUsers, IconUser, IconPalette, IconLayers,
+} from "./previewKit";
+import { colorVars, LEFT_PANEL_STYLE } from "./previewStyle";
 import type { Service } from "../../types";
 import type { ServiceCreate } from "../../../../../api/studio/services.api";
 import { SERVICE_CATEGORIES } from "../../constants";
+
+const PREVIEW_HOURS = ["09:00", "10:00", "11:00"];
+const ROW_H = 58;   // высота часа в превью-журнале (совпадает с .cmod-jrn-row)
 
 interface ServiceModalProps {
   service: Service | null; // null → создание
@@ -66,46 +74,98 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
     }
   }
 
-  return (
-    <ModalShell size="sm" onClose={onClose}>
-      <ModalHeader title={service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")} />
-      <ModalBody>
-        <Input label={t("catalog:modals.service.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.service.namePlaceholder")} />
+  // Превью: высота карточки пропорциональна длительности (час = ROW_H),
+  // ограничена сеткой из трёх часов.
+  const durMin = Number(duration) > 0 ? Number(duration) : 0;
+  const cardH = Math.min(Math.max(Math.round((durMin / 60) * ROW_H), 38), ROW_H * PREVIEW_HOURS.length);
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+  const left = (
+    <PreviewPanel eyebrow={t("catalog:modals.service.previewTitle")}>
+      <div className="cmod-jrn" style={colorVars(color)}>
+        {PREVIEW_HOURS.map(h => (
+          <div key={h} className="cmod-jrn-row">
+            <span className="cmod-jrn-time">{h}</span>
+            <i />
+          </div>
+        ))}
+        <div className="cmod-jcard" style={{ ["--cmod-h" as string]: `${cardH}px` }}>
+          <div className={`cmod-jcard-name${name.trim() ? "" : " is-empty"}`}>
+            {name.trim() || t("catalog:modals.service.namePlaceholder")}
+          </div>
+          <div className="cmod-jcard-meta">
+            <IconClock size={11} />
+            {durMin || "—"} {t("common:units.min")}
+            {type === "group" && maxClients.trim() && (
+              <span className="cmod-jcard-seats">0/{maxClients}</span>
+            )}
+          </div>
+        </div>
+      </div>
+      <StatPills
+        items={[
+          { icon: <IconTag size={13} />, value: price ? `${currency}${Number(price).toLocaleString()}` : "—", label: t("catalog:services.stats.price") },
+          { icon: <IconClock size={13} />, value: durMin ? `${durMin} ${t("common:units.min")}` : "—", label: t("catalog:services.stats.duration") },
+          type === "group"
+            ? { icon: <IconUsers size={13} />, value: maxClients.trim() || "—", label: t("catalog:modals.service.statSeats") }
+            : { icon: <IconUser size={13} />, value: t("catalog:services.details.personal"), label: t("catalog:modals.service.type") },
+          { icon: <IconLayers size={13} />, value: tCat(category), label: t("catalog:modals.service.category") },
+        ]}
+      />
+    </PreviewPanel>
+  );
+
+  return (
+    <ModalShell size="lg" onClose={onClose} left={left} leftWidth="320px" maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
+      <ModalHeader
+        title={service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")}
+        subtitle={t("catalog:modals.service.subtitle")}
+      />
+      <ModalBody>
+        <SectionLabel icon={<IconInfo />} text={t("catalog:modals.service.sectionBasic")} />
+        <Field delay={40}>
+          <Input label={t("catalog:modals.service.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.service.namePlaceholder")} />
+        </Field>
+        <Field delay={70} className="cmod-row">
           <div>
-            <label style={fieldLabel}>{t("catalog:modals.service.category")}</label>
+            <label className="vk-label">{t("catalog:modals.service.category")}</label>
             <Select
               value={category}
               options={SERVICE_CATEGORIES.map(c => ({ value: c, label: tCat(c) }))}
               onChange={setCategory}
             />
           </div>
-          <div>
-            <label style={fieldLabel}>{t("catalog:modals.service.type")}</label>
-            <Select
-              value={type}
-              options={[
-                { value: "group", label: t("catalog:modals.service.typeGroup") },
-                { value: "individual", label: t("catalog:modals.service.typeIndividual") },
-              ]}
-              onChange={v => setType(v as "group" | "individual")}
-            />
-          </div>
-        </div>
+          <Segmented
+            label={t("catalog:modals.service.type")}
+            value={type}
+            onChange={setType}
+            options={[
+              { value: "group", label: t("catalog:modals.service.typeGroup"), icon: <IconUsers size={13} /> },
+              { value: "individual", label: t("catalog:modals.service.typeIndividual"), icon: <IconUser size={13} /> },
+            ]}
+          />
+        </Field>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          <Input label={t("catalog:modals.service.price", { currency })} type="number" value={price} onChange={setPrice} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} />
-          <Input label={t("catalog:modals.service.duration")} type="number" value={duration} onChange={setDuration} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} />
-        </div>
-
+        <SectionLabel icon={<IconTag />} text={t("catalog:modals.service.sectionPricing")} delay={100} />
+        <Field delay={130} className="cmod-row">
+          <Input label={t("catalog:modals.service.priceShort")} type="number" value={price} onChange={setPrice} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} suffix={currency} />
+          <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={setDuration} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
+        </Field>
         {type === "group" && (
-          <Input label={t("catalog:modals.service.maxClients")} type="number" value={maxClients} onChange={setMaxClients} onBlur={touch("maxClients")} error={show("maxClients")} placeholder={t("catalog:modals.service.maxClientsPlaceholder")} />
+          <Field delay={160}>
+            <Input label={t("catalog:modals.service.maxClients")} type="number" value={maxClients} onChange={setMaxClients} onBlur={touch("maxClients")} error={show("maxClients")} placeholder={t("catalog:modals.service.maxClientsPlaceholder")} />
+          </Field>
         )}
 
-        <Input label={t("catalog:modals.service.description")} value={description} onChange={setDescription} placeholder={t("catalog:modals.service.descriptionPlaceholder")} />
-
-        <ColorPicker label={t("catalog:modals.service.color")} value={color} onChange={setColor} />
+        <SectionLabel icon={<IconPalette />} text={t("catalog:modals.service.sectionLook")} delay={190} />
+        <Field delay={220}>
+          <ColorPicker label={t("catalog:modals.service.color")} value={color} onChange={setColor} presets={COLOR_PRESETS} />
+        </Field>
+        <Field delay={240}>
+          <Hint text={t("catalog:modals.service.colorHint")} />
+        </Field>
+        <Field delay={260}>
+          <Input label={t("catalog:modals.service.description")} value={description} onChange={setDescription} placeholder={t("catalog:modals.service.descriptionPlaceholder")} rows={3} />
+        </Field>
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t("common:buttons.cancel")}</GhostButton>
@@ -114,9 +174,3 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
     </ModalShell>
   );
 }
-
-const fieldLabel: React.CSSProperties = {
-  display: "block", fontSize: "11px", fontWeight: 700,
-  color: "#999", letterSpacing: "0.6px",
-  textTransform: "uppercase", marginBottom: "7px",
-};

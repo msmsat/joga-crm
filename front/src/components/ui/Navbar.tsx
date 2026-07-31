@@ -80,7 +80,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       padding: '0 24px',
       height: 'var(--topbar-h)',
       background: 'var(--bg-card, #FFFFFF)',
-      borderBottom: '1px solid rgba(26,26,26,0.04)',
+      borderBottom: '1px solid rgba(var(--ink),0.04)',
       zIndex: 100 /* Теперь это реально работает */
     }}>
 
@@ -116,7 +116,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           animation: velora-ai-dot-bounce 1s ease-in-out infinite;
         }
         .velora-ai-shimmer {
-          background: linear-gradient(90deg, #A0A0A0 0%, #1A1A1A 50%, #A0A0A0 100%);
+          background: linear-gradient(90deg, var(--text3) 0%, var(--onyx) 50%, var(--text3) 100%);
           background-size: 200% 100%;
           -webkit-background-clip: text;
           background-clip: text;
@@ -136,8 +136,8 @@ export function Navbar({ title, subtitle }: NavbarProps) {
 
       {/* 1. ЛЕВАЯ ЧАСТЬ (Заголовки) */}
       <div style={{ flex: '1 1 0%', minWidth: 0 }}>
-        <div className="topbar-title" style={{ fontSize: '20px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.4px' }}>{title}</div>
-        <div className="topbar-subtitle" style={{ fontSize: '13px', color: '#666666', marginTop: '2px' }}>{subtitle}</div>
+        <div className="topbar-title" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>{title}</div>
+        <div className="topbar-subtitle" style={{ fontSize: '13px', color: 'var(--muted)', marginTop: '2px' }}>{subtitle}</div>
       </div>
 
       {/* 2. ЦЕНТРАЛЬНАЯ ЧАСТЬ (Премиальный AI-Инпут) */}
@@ -147,10 +147,10 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           alignItems: 'center',
           gap: '12px',
           height: '44px',
-          background: '#FFFFFF',
+          background: 'var(--bg-card)',
           borderRadius: panelOpen ? '14px 14px 4px 4px' : '14px', // Срастается с панелью снизу, когда она открыта
-          border: isAiFocused ? '1px solid #F9A08B' : '1px solid rgba(26,26,26,0.08)',
-          borderBottom: panelOpen ? '1px solid rgba(26,26,26,0.06)' : undefined,
+          border: isAiFocused ? '1px solid #F9A08B' : '1px solid rgba(var(--ink),0.08)',
+          borderBottom: panelOpen ? '1px solid rgba(var(--ink),0.06)' : undefined,
           // Тот самый эффект "левитирующего Glow"
           boxShadow: isAiFocused
             ? '0 0 0 4px rgba(249,160,139,0.12), 0 8px 24px -4px rgba(26,26,26,0.08)'
@@ -189,7 +189,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
               fontSize: '14px',
               fontFamily: 'var(--font)',
               fontWeight: 500,
-              color: '#1A1A1A',
+              color: 'var(--onyx)',
               padding: 0
             }}
           />
@@ -199,7 +199,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             fontSize: '11px',
             fontWeight: 700,
             color: isAiFocused ? '#F9A08B' : '#A0A0A0',
-            background: isAiFocused ? 'rgba(249,160,139,0.1)' : 'rgba(26,26,26,0.04)',
+            background: isAiFocused ? 'rgba(249,160,139,0.1)' : 'rgba(var(--ink),0.04)',
             padding: '4px 8px',
             borderRadius: '6px',
             transition: 'all 0.3s',
@@ -223,9 +223,9 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           transition: 'max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
           pointerEvents: panelOpen ? 'auto' : 'none',
           zIndex: 20,
-          background: '#FFFFFF',
+          background: 'var(--bg-card)',
           borderRadius: '0 0 16px 16px', // Идеально круглые нижние углы
-          border: '1px solid rgba(26,26,26,0.1)', // Четкая, но тонкая граница
+          border: '1px solid rgba(var(--ink),0.1)', // Четкая, но тонкая граница
           borderTop: 'none', // Убираем верхнюю линию, чтобы сливалось с инпутом
           boxShadow: '0 24px 48px -12px rgba(26,26,26,0.18)' // Более глубокая тень
         }}>
@@ -239,7 +239,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
               <span style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                color: '#999999',
+                color: 'var(--text3)',
                 letterSpacing: '0.1px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -289,7 +289,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
               <div style={{
                 fontSize: '14.5px',
                 lineHeight: 1.6,
-                color: '#1A1A1A',
+                color: 'var(--onyx)',
                 fontWeight: 500,
                 animation: 'velora-ai-fade-up 0.35s ease both'
               }}>
@@ -329,8 +329,8 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             padding: '0 16px',
             height: '38px',
             borderRadius: '10px',
-            border: isDrawerOpen ? '1.5px solid rgba(249,160,139,0.5)' : '1.5px solid rgba(26,26,26,0.1)',
-            background: isDrawerOpen ? 'rgba(249,160,139,0.08)' : 'rgba(26,26,26,0.03)',
+            border: isDrawerOpen ? '1.5px solid rgba(249,160,139,0.5)' : '1.5px solid rgba(var(--ink),0.1)',
+            background: isDrawerOpen ? 'rgba(249,160,139,0.08)' : 'rgba(var(--ink),0.03)',
             color: isDrawerOpen ? '#F9A08B' : 'var(--muted)',
             fontSize: '13.5px',
             fontWeight: 700,
@@ -351,8 +351,8 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           style={{
             height: '38px',
             padding: '0 18px',
-            background: '#1A1A1A', // Строгий Оникс
-            color: '#FFFFFF',
+            background: 'var(--onyx)', // Строгий оникс, в тёмной теме — светлая пилюля
+            color: 'var(--bg)',
             border: 'none',
             borderRadius: '10px',
             fontSize: '13.5px',

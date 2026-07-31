@@ -222,7 +222,7 @@
 .bp-deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 
 .bp-mini-site {
-  background: white;
+  background: var(--bg-card);
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid rgba(0,0,0,0.06);
@@ -254,7 +254,7 @@
 .bp-mini-services { padding: 10px 12px; }
 .bp-mini-svc {
   display: flex; align-items: center; gap: 7px;
-  padding: 6px 0; border-bottom: 1px solid #F0EDE8;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
 }
 .bp-mini-svc:last-child { border-bottom: none; }
 .bp-mini-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -484,10 +484,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 9px 14px;
-  background: #FFFFFF;
-  border: 1.5px solid rgba(26, 26, 26, 0.09);
+  background: var(--bg-card);
+  border: 1.5px solid rgba(var(--ink), 0.09);
   border-radius: 12px;
-  color: #1A1A1A;
+  color: var(--onyx);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -495,7 +495,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .cs-trigger:hover {
-  background: #F6F6F6;
+  background: var(--bg2);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -506,7 +506,7 @@
 
 .cs-arrow {
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  color: rgba(26, 26, 26, 0.4);
+  color: rgba(var(--ink), 0.4);
 }
 .cs-trigger.active .cs-arrow {
   transform: rotate(180deg);
@@ -516,7 +516,8 @@
 .cs-dropdown {
   position: absolute;
   top: calc(100% + 6px);
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -537,8 +538,8 @@
   border-radius: 3px;
 }
 @keyframes csPopupIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.96); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 .cs-option {
@@ -576,17 +577,17 @@
 /* ── MODAL INTERNALS ── */
 .link-copy-block {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; background: #F6F6F6; border-radius: 10px;
-  border: 1px dashed #DDD; cursor: pointer; margin-top: 8px;
+  padding: 10px 14px; background: var(--bg2); border-radius: 10px;
+  border: 1px dashed var(--border2); cursor: pointer; margin-top: 8px;
   transition: all 0.2s;
 }
-.link-copy-block:hover { border-color: var(--accent); background: #FFF; }
+.link-copy-block:hover { border-color: var(--accent); background: var(--bg-card); }
 .link-copy-block span { font-size: 12px; font-weight: 700; color: var(--text); }
 
 .ins-step { display: flex; gap: 14px; margin-bottom: 16px; }
 .ins-num {
   width: 24px; height: 24px; border-radius: 50%; background: var(--text);
-  color: white; display: flex; align-items: center; justify-content: center;
+  color: var(--bg); display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 800; flex-shrink: 0;
 }
 .ins-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
@@ -605,7 +606,7 @@
   background: #1A1A1A; border-radius: 12px; padding: 16px;
   position: relative; margin-top: 20px;
 }
-.code-header { font-size: 10px; color: #666; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; }
+.code-header { font-size: 10px; color: var(--muted); font-weight: 800; margin-bottom: 12px; text-transform: uppercase; }
 .code-block pre {
   margin: 0; color: #A3C9A8; font-size: 12px; font-family: monospace;
   line-height: 1.5; overflow-x: auto;
@@ -686,7 +687,7 @@
 .wa-bubble {
   max-width: 85%; padding: 6px 9px; border-radius: 10px;
   font-size: 10px; line-height: 1.4; position: relative;
-  background: white; color: #111; align-self: flex-start;
+  background: var(--bg-card); color: var(--text2); align-self: flex-start;
 }
 .wa-bubble.bot {
   background: #DCF8C6; align-self: flex-end;

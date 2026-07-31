@@ -18,7 +18,7 @@
 .docRowActive {
   box-shadow: 0 4px 12px rgba(26,26,26,0.04);
   border-color: rgba(249,160,139,0.3) !important;
-  background: #FFFFFF !important;
+  background: var(--bg-card) !important;
   position: relative;
   z-index: 1000;
 }

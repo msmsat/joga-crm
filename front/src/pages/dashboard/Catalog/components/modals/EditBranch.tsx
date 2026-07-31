@@ -323,20 +323,20 @@ function BranchHero({ photoSrc, name, city, country }: { photoSrc: string | null
           fill="none"
         />
 
-        <rect x="146" y="150" width="48" height="90" rx="6" fill={hasName ? "url(#ebh-accent)" : "rgba(26,26,26,0.06)"} />
+        <rect x="146" y="150" width="48" height="90" rx="6" fill={hasName ? "url(#ebh-accent)" : "rgba(var(--ink),0.06)"} />
         <circle cx="182" cy="196" r="2.6" fill="rgba(255,255,255,0.85)" />
 
         <rect x="90" y="128" width="34" height="28" rx="5" fill="rgba(252,174,145,0.22)" stroke="#FCAE91" strokeWidth="1.5" />
         <rect x="216" y="128" width="34" height="28" rx="5" fill="rgba(252,174,145,0.22)" stroke="#FCAE91" strokeWidth="1.5" />
-        <rect x="90" y="170" width="34" height="24" rx="5" fill="rgba(26,26,26,0.04)" stroke="#EEE" strokeWidth="1.5" />
-        <rect x="216" y="170" width="34" height="24" rx="5" fill="rgba(26,26,26,0.04)" stroke="#EEE" strokeWidth="1.5" />
+        <rect x="90" y="170" width="34" height="24" rx="5" fill="rgba(var(--ink),0.04)" stroke="#EEE" strokeWidth="1.5" />
+        <rect x="216" y="170" width="34" height="24" rx="5" fill="rgba(var(--ink),0.04)" stroke="#EEE" strokeWidth="1.5" />
 
         {hasName ? (
           <text x="170" y="262" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1A1A1A" fontFamily="Manrope, sans-serif">
             {name.length > 26 ? name.slice(0, 26) + "…" : name}
           </text>
         ) : (
-          <rect x="120" y="254" width="100" height="8" rx="4" fill="rgba(26,26,26,0.07)" />
+          <rect x="120" y="254" width="100" height="8" rx="4" fill="rgba(var(--ink),0.07)" />
         )}
       </svg>
       {locationLabel && <div className="ebh-illus-loc">{locationLabel}</div>}
@@ -376,14 +376,14 @@ function BranchStyles() {
       .ebh-hero-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
       .ebh-hero-scrim {
         position: absolute; inset: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(26,26,26,0.6) 100%);
+        background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.6) 100%);
       }
       .ebh-hero-caption { position: relative; align-self: flex-start; margin-top: auto; padding: 16px; color: #fff; }
       .ebh-hero-name { font-size: 16px; font-weight: 800; }
       .ebh-hero-loc { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
       .ebh-svg { width: 100%; max-width: 260px; }
-      .ebh-illus-loc { font-size: 12px; color: #999; font-weight: 600; margin-top: 6px; }
+      .ebh-illus-loc { font-size: 12px; color: var(--text3); font-weight: 600; margin-top: 6px; }
 
       .ebh-glow-pulse { animation: ebhPulse 3.6s ease-in-out infinite; transform-origin: 170px 118px; }
       @keyframes ebhPulse {
@@ -426,17 +426,17 @@ function BranchStyles() {
         animation: ebhFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
       .ebh-stat-pill svg { color: #F07B60; }
-      .ebh-stat-v { font-size: 13px; font-weight: 800; color: #1A1A1A; line-height: 1; }
+      .ebh-stat-v { font-size: 13px; font-weight: 800; color: var(--onyx); line-height: 1; }
       .ebh-stat-l { font-size: 9px; font-weight: 700; color: #AAAAAA; text-transform: uppercase; letter-spacing: 0.4px; text-align: center; }
 
       .ebh-completeness { margin-top: 16px; }
       .ebh-completeness-top {
         display: flex; justify-content: space-between; align-items: center;
-        font-size: 11px; font-weight: 700; color: #999; margin-bottom: 6px;
+        font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 6px;
       }
       .ebh-completeness-pct { color: #F07B60; }
       .ebh-completeness-track {
-        height: 6px; width: 100%; background: rgba(26,26,26,0.06); border-radius: 999px; overflow: hidden;
+        height: 6px; width: 100%; background: rgba(var(--ink),0.06); border-radius: 999px; overflow: hidden;
       }
       .ebh-completeness-fill {
         height: 100%; border-radius: 999px;
@@ -446,7 +446,7 @@ function BranchStyles() {
 
       .ebh-section-label {
         display: flex; align-items: center; gap: 7px;
-        font-size: 11px; font-weight: 700; color: #999;
+        font-size: 11px; font-weight: 700; color: var(--text3);
         letter-spacing: 0.6px; text-transform: uppercase;
         margin: 18px 0 8px;
         animation: ebhFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -473,7 +473,7 @@ function BranchStyles() {
       .ebh-danger-btn {
         display: flex; align-items: center; gap: 6px; flex-shrink: 0;
         padding: 9px 14px; border-radius: 10px; border: 1px solid rgba(224,80,80,0.3);
-        background: #fff; color: #C43D3D; font-size: 12.5px; font-weight: 700;
+        background: var(--bg-card); color: #C43D3D; font-size: 12.5px; font-weight: 700;
         cursor: pointer; transition: background 0.15s ease, transform 0.15s ease;
       }
       .ebh-danger-btn:hover { background: rgba(224,80,80,0.08); transform: translateY(-1px); }

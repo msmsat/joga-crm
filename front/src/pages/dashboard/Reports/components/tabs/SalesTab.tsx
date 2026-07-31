@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ComposedChart, Bar, LabelList, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import { ComposedChart, Bar, LabelList, Line, XAxis, YAxis } from 'recharts';
 import type { CategoricalChartFunc } from 'recharts/types/chart/types';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { financesApi } from '../../../../../api/finances';
@@ -13,7 +13,8 @@ import { useHighlightRow } from '../../hooks/useHighlightRow';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
 import { ChartFrame } from '../shared/ChartFrame';
-import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, PEACH_LIGHT } from '../shared/chartTheme';
+import { AXIS_X, BAR_CURSOR, PEACH_LIGHT } from '../shared/chartTheme';
+import { ChartTooltip } from '../shared/ChartTooltip';
 import { ZeroLabel } from '../shared/ZeroLabel';
 import { zeroAwareCells } from '../shared/zeroAwareCells';
 import { MainWithInsights } from '../shared/MainWithInsights';
@@ -211,11 +212,9 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis yAxisId="revenue" hide />
               <YAxis yAxisId="count" orientation="right" hide />
-              <Tooltip
+              <ChartTooltip
                 formatter={(v, name) => (name === 'revenue' ? fmtMoney(Number(v)) : fmtInt(Number(v)))}
-                contentStyle={TOOLTIP_STYLE}
                 cursor={BAR_CURSOR}
-                isAnimationActive={false}
               />
               <Bar yAxisId="revenue" dataKey="revenue" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false}>
                 <LabelList dataKey="revenue" position="top" content={ZeroLabel} />

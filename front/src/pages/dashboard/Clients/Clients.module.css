@@ -25,7 +25,7 @@
 
 .gridWrap::-webkit-scrollbar { width: 4px; }
 .gridWrap::-webkit-scrollbar-track { background: transparent; }
-.gridWrap::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.12); border-radius: 4px; }
+.gridWrap::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.12); border-radius: 4px; }
 
 .cardSelected {
   border-color: var(--peach) !important;

@@ -367,7 +367,7 @@ export function StudioSection() {
                 }}>+</div>
               )}
             </div>
-            <div style={{ fontSize: '15px', fontWeight: 700, color: '#1A1A1A' }}>{t('catalog:studios.empty.title')}</div>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('catalog:studios.empty.title')}</div>
             <div style={{ fontSize: '13px', color: '#AAAAAA', marginTop: '4px' }}>{t('catalog:studios.empty.subtitle')}</div>
           </div>
         )}

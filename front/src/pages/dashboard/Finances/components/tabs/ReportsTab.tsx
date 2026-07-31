@@ -191,7 +191,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
     let offset = 0;
     return (
       <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.06))' }}>
-        <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(26,26,26,0.03)" strokeWidth="22" />
+        <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(var(--ink),0.03)" strokeWidth="22" />
         {currentBreakdown.map(item => {
           const pct = item.value / breakdownTotal;
           const dash = pct * circ, gap = circ - dash;
@@ -214,7 +214,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
   };
 
   const emptyState = (label: string) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '180px', color: '#999999', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '180px', color: 'var(--text3)', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>
       {label}
     </div>
   );
@@ -222,20 +222,20 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '14px' }}>
-        <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A' }}>{t('tabs.reports')}</div>
+        <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--onyx)' }}>{t('tabs.reports')}</div>
         <InfoHint title={t('tabs.reports')} text={t('info.reports')} />
       </div>
 
       {/* 1. Метрики */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
         {metrics.map(m => (
-          <div key={m.label} style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
+          <div key={m.label} style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '80px', height: '80px', background: `radial-gradient(circle, ${m.c2} 0%, transparent 70%)`, borderRadius: '50%' }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: '#666666', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{m.label}</div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{m.label}</div>
               <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: m.c2, color: m.c1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{m.icon}</div>
             </div>
-            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#1A1A1A', marginBottom: '8px' }}>{loading ? '—' : m.value}</div>
+            <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--onyx)', marginBottom: '8px' }}>{loading ? '—' : m.value}</div>
             {m.delta && (
               <div style={{ fontSize: '12px', fontWeight: 700, color: m.good ? '#5BAB72' : '#D88C9A', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ padding: '2px 6px', background: m.good ? 'rgba(91,171,114,0.1)' : 'rgba(216,140,154,0.1)', borderRadius: '6px' }}>{m.delta}</span> {t('reports.vsPreviousPeriod')}
@@ -247,21 +247,21 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px', alignItems: 'start' }}>
         {/* 2. Линейный график движения средств */}
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
 
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: '12px', marginBottom: '20px', gap: '12px' }}>
             <div style={{ flexShrink: 0 }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '4px' }}>{t('reports.cashflowTitle')}</div>
-              <div style={{ fontSize: '12px', color: '#666666', fontWeight: 500 }}>{t('reports.cashflowSub')}</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.3px', marginBottom: '4px' }}>{t('reports.cashflowTitle')}</div>
+              <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>{t('reports.cashflowSub')}</div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-end', rowGap: '10px' }}>
               {/* Мини-статистика */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', paddingRight: '16px', borderRight: '1px solid rgba(26,26,26,0.07)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', paddingRight: '16px', borderRight: '1px solid rgba(var(--ink),0.07)' }}>
 
                 {/* Период / дата */}
-                <div style={{ paddingRight: '12px', borderRight: '1px solid rgba(26,26,26,0.06)', minWidth: '70px' }}>
+                <div style={{ paddingRight: '12px', borderRight: '1px solid rgba(var(--ink),0.06)', minWidth: '70px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.period')}</div>
                   <div style={{ fontSize: '11px', fontWeight: 600, color: '#AAAAAA', whiteSpace: 'nowrap' }}>{dateLabel}</div>
                 </div>
@@ -269,7 +269,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 {/* Доход */}
                 <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.income')}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispIncome)}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispIncome)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: incDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {incDelta >= 0 ? '+' : '-'}{fmt(Math.abs(incDelta))} ({incDelta >= 0 ? '+' : ''}{incDeltaPct}%)
                   </div>
@@ -278,7 +278,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 {/* Расход */}
                 <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.expense')}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispExpense)}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispExpense)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: expDelta >= 0 ? '#D88C9A' : '#5BAB72', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {expDelta >= 0 ? '+' : '-'}{fmt(Math.abs(expDelta))} ({expDelta >= 0 ? '+' : ''}{expDeltaPct}%)
                   </div>
@@ -287,7 +287,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 {/* Прибыль */}
                 <div style={{ minWidth: '76px' }}>
                   <div style={{ fontSize: '10px', color: '#AAAAAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{t('reports.profit')}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispProfit)}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px', fontVariantNumeric: 'tabular-nums' }}>{fmt(dispProfit)}</div>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: profitDelta >= 0 ? '#5BAB72' : '#D88C9A', visibility: isSelection ? 'hidden' : 'visible' }}>
                     {profitDelta >= 0 ? '+' : '-'}{fmt(Math.abs(profitDelta))} ({profitDelta >= 0 ? '+' : ''}{profitDeltaPct}%)
                   </div>
@@ -354,7 +354,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 {/* Горизонтальные линии сетки */}
                 {[0.25, 0.5, 0.75].map(f => {
                   const gy = PAD_T + f * (SVG_H - PAD_T - PAD_B);
-                  return <line key={f} x1={0} y1={gy} x2={SVG_W} y2={gy} stroke="rgba(26,26,26,0.05)" strokeWidth={1} />;
+                  return <line key={f} x1={0} y1={gy} x2={SVG_W} y2={gy} stroke="rgba(var(--ink),0.05)" strokeWidth={1} />;
                 })}
 
                 {/* Заливка под линиями */}
@@ -374,14 +374,14 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 {/* Selection: two vertical boundary lines */}
                 {isSelection && (
                   <>
-                    <line x1={selX1} y1={0} x2={selX1} y2={SVG_H} stroke="rgba(26,26,26,0.3)" strokeWidth={1}/>
-                    <line x1={selX2} y1={0} x2={selX2} y2={SVG_H} stroke="rgba(26,26,26,0.3)" strokeWidth={1}/>
+                    <line x1={selX1} y1={0} x2={selX1} y2={SVG_H} stroke="rgba(var(--ink),0.3)" strokeWidth={1}/>
+                    <line x1={selX2} y1={0} x2={selX2} y2={SVG_H} stroke="rgba(var(--ink),0.3)" strokeWidth={1}/>
                   </>
                 )}
 
                 {/* Hover: вертикальная линия */}
                 {hoveredIdx !== null && (
-                  <line x1={toX(hoveredIdx)} y1={PAD_T} x2={toX(hoveredIdx)} y2={SVG_H} stroke="rgba(26,26,26,0.12)" strokeWidth={1} strokeDasharray="3,3" />
+                  <line x1={toX(hoveredIdx)} y1={PAD_T} x2={toX(hoveredIdx)} y2={SVG_H} stroke="rgba(var(--ink),0.12)" strokeWidth={1} strokeDasharray="3,3" />
                 )}
               </svg>
 
@@ -451,7 +451,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
                 return (
                   <div
                     key={i}
-                    style={{ flex: 1, textAlign: 'center', fontSize: '9px', color: hoveredIdx === i ? '#1A1A1A' : '#CCCCCC', fontWeight: hoveredIdx === i ? 700 : 500, transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}
+                    style={{ flex: 1, textAlign: 'center', fontSize: '9px', color: hoveredIdx === i ? 'var(--onyx)' : '#CCCCCC', fontWeight: hoveredIdx === i ? 700 : 500, transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}
                   >
                     {show ? d.label : ''}
                   </div>
@@ -462,11 +462,11 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
           )}
 
           {/* Footer legend */}
-          <div style={{ display: 'flex', gap: '20px', paddingTop: '16px', borderTop: '1px solid rgba(26,26,26,0.04)', marginTop: '12px', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
+          <div style={{ display: 'flex', gap: '20px', paddingTop: '16px', borderTop: '1px solid rgba(var(--ink),0.04)', marginTop: '12px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--muted)' }}>
               <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#5BAB72' }} /> {t('reports.legendIncome')}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#666666' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--muted)' }}>
               <div style={{ width: '14px', height: '3px', borderRadius: '2px', background: '#D88C9A' }} /> {t('reports.legendExpense')}
             </div>
             <div style={{ marginLeft: 'auto' }}>
@@ -476,10 +476,10 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
         </div>
 
         {/* 3. Детализация (Breakdown) */}
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(26,26,26,0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', gap: '4px', background: 'rgba(26,26,26,0.03)', border: '1px solid rgba(26,26,26,0.12)', borderRadius: '10px', padding: '4px', marginBottom: '24px' }}>
-            <button onClick={() => setBreakdownView('expense')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'expense' ? '#FFFFFF' : 'transparent', color: breakdownView === 'expense' ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'expense' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.expenseStructure')}</button>
-            <button onClick={() => setBreakdownView('income')}  style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'income'  ? '#FFFFFF' : 'transparent', color: breakdownView === 'income'  ? '#1A1A1A' : '#666666', boxShadow: breakdownView === 'income'  ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.incomeStructure')}</button>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'rgba(var(--ink),0.03)', border: '1px solid rgba(var(--ink),0.12)', borderRadius: '10px', padding: '4px', marginBottom: '24px' }}>
+            <button onClick={() => setBreakdownView('expense')} style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'expense' ? 'var(--bg-card)' : 'transparent', color: breakdownView === 'expense' ? 'var(--onyx)' : 'var(--muted)', boxShadow: breakdownView === 'expense' ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.expenseStructure')}</button>
+            <button onClick={() => setBreakdownView('income')}  style={{ flex: 1, padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Manrope', sans-serif", background: breakdownView === 'income'  ? 'var(--bg-card)' : 'transparent', color: breakdownView === 'income'  ? 'var(--onyx)' : 'var(--muted)', boxShadow: breakdownView === 'income'  ? '0 2px 8px rgba(26,26,26,0.06)' : 'none', transition: 'all 0.2s' }}>{t('reports.incomeStructure')}</button>
           </div>
 
           {!breakdownLoading && breakdownTotal === 0 ? emptyState(t('reports.noData')) : (
@@ -487,8 +487,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', position: 'relative' }} onMouseMove={e => setDonutMouse({ x: e.clientX, y: e.clientY })}>
             {renderDonut()}
             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: '#999999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>{t('reports.total')}</div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{fmt(breakdownTotal)}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>{t('reports.total')}</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>{fmt(breakdownTotal)}</div>
             </div>
           </div>
 
@@ -499,17 +499,17 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
               return (
                 <div
                   key={item.id}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', background: isHovered ? 'rgba(26,26,26,0.02)' : 'transparent', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid', borderColor: isHovered ? 'rgba(26,26,26,0.06)' : 'transparent' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', background: isHovered ? 'rgba(var(--ink),0.02)' : 'transparent', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid', borderColor: isHovered ? 'rgba(var(--ink),0.06)' : 'transparent' }}
                   onMouseEnter={() => setHoveredSegment(item.id)}
                   onMouseLeave={() => setHoveredSegment(null)}
                 >
                   <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: item.color, flexShrink: 0, transform: isHovered ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.2s' }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A' }}>{item.label}</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{item.label}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#1A1A1A' }}>{fmt(item.value)}</div>
-                    <div style={{ fontSize: '11px', color: '#999999', fontWeight: 600 }}>{pct}%</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)' }}>{fmt(item.value)}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 600 }}>{pct}%</div>
                   </div>
                 </div>
               );
@@ -545,8 +545,8 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', marginBottom: '6px' }}>{t('reports.insightsTitle')}</div>
-            <div style={{ fontSize: '13px', color: '#666666', lineHeight: 1.6 }}>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '6px' }}>{t('reports.insightsTitle')}</div>
+            <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
               {t('reports.insightsPlaceholder')}
             </div>
           </div>

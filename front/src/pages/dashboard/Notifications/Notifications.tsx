@@ -47,7 +47,7 @@ export default function Notifications() {
   }, [searchParams]);
 
   if (h.loading) {
-    return <div style={{ padding: '60px 24px', textAlign: 'center', color: '#666666', fontSize: '14px' }}>{t('loading')}</div>;
+    return <div style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--muted)', fontSize: '14px' }}>{t('loading')}</div>;
   }
 
   return (

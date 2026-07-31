@@ -1,7 +1,9 @@
 // ─── В самом верху UI.tsx ───
 import { GoogleIcon } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { placePopover } from "./ui/popoverPosition";
 
 // @ts-ignore
 import PhoneInput from 'react-phone-number-input/input';
@@ -163,7 +165,7 @@ export function StepDots({ current, total }: { current: number; total: number })
       {Array.from({ length: total }).map((_, i) => (
         <div key={i} className="step-dot" style={{
           width: i === current ? 20 : 7,
-          background: i === current ? "var(--peach)" : "rgba(26,26,26,0.10)",
+          background: i === current ? "var(--peach)" : "rgba(var(--ink),0.10)",
           boxShadow: i === current ? "0 2px 8px var(--peach-glow)" : "none",
         }} />
       ))}
@@ -180,7 +182,7 @@ export function IdentifierTabs({ active, onChange }: { active: IdentifierMode; o
     { key: "phone", label: "Телефон" }
   ];
   return (
-    <div style={{ display: "flex", background: "rgba(26,26,26,0.04)", borderRadius: "10px", padding: "3px", gap: "2px" }}>
+    <div style={{ display: "flex", background: "rgba(var(--ink),0.04)", borderRadius: "10px", padding: "3px", gap: "2px" }}>
       {tabs.map((t) => (
         <button key={t.key} onClick={() => onChange(t.key)} style={{ flex: 1, padding: "8px 12px", border: "none", borderRadius: "8px", fontSize: "13px", fontWeight: active === t.key ? 700 : 500, color: active === t.key ? "var(--onyx)" : "var(--muted)", background: active === t.key ? "var(--bg-card)" : "transparent", boxShadow: active === t.key ? "0 1px 6px rgba(26,26,26,0.08)" : "none", cursor: "pointer", transition: "all 0.2s ease" }}>
           {t.label}
@@ -256,7 +258,7 @@ export function PasswordStrength({ password }: { password: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <div style={{ display: "flex", gap: "4px" }}>
-        {[1, 2, 3, 4, 5].map((i) => <div key={i} style={{ flex: 1, height: "3px", borderRadius: "2px", background: i <= strength ? level.color : "rgba(26,26,26,0.08)", transition: "background 0.3s ease" }} />)}
+        {[1, 2, 3, 4, 5].map((i) => <div key={i} style={{ flex: 1, height: "3px", borderRadius: "2px", background: i <= strength ? level.color : "rgba(var(--ink),0.08)", transition: "background 0.3s ease" }} />)}
       </div>
       <p style={{ fontSize: "11px", fontWeight: 600, color: level.color, margin: 0, transition: "color 0.3s ease" }}>{level.label}</p>
     </div>
@@ -325,7 +327,7 @@ export function TestimonialCard({ quote, name, role, avatar, delay = 0 }: { quot
       <div style={{ display: "flex", gap: "3px", marginBottom: "16px" }}>
         {[...Array(5)].map((_, i) => <span key={i} style={{ color: "var(--peach)", fontSize: "14px" }}>★</span>)}
       </div>
-      <p style={{ fontSize: "15px", lineHeight: "1.7", color: "#333", margin: "0 0 24px", fontStyle: "italic" }}>"{quote}"</p>
+      <p style={{ fontSize: "15px", lineHeight: "1.7", color: "var(--text2)", margin: "0 0 24px", fontStyle: "italic" }}>"{quote}"</p>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: `linear-gradient(135deg, var(--peach-light), var(--peach))`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>{avatar}</div>
         <div>
@@ -525,10 +527,35 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  // Рендерим список в портал с position:fixed — иначе его обрезают overflow:hidden
+  // родители (например .ob-left/.ob-right-scroll в онбординге), см. Tooltip/InfoHint.
+  // Ширину/лево берём из rect кнопки напрямую (не из измерения самого портала —
+  // тот меряется на кадр позже и на первом open даёт 0, из-за чего список съезжал влево).
+  const [placement, setPlacement] = useState<{ top: number; left: number; width: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!open) return;
+    const recalc = () => {
+      if (!btnRef.current) return;
+      const rect = btnRef.current.getBoundingClientRect();
+      const { top, left } = placePopover(rect, { w: rect.width, h: 200 }, "bottom", 6);
+      setPlacement({ top, left, width: rect.width });
+    };
+    recalc();
+    window.addEventListener("resize", recalc);
+    window.addEventListener("scroll", recalc, true);
+    return () => {
+      window.removeEventListener("resize", recalc);
+      window.removeEventListener("scroll", recalc, true);
+    };
+  }, [open]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (ref.current?.contains(target) || listRef.current?.contains(target)) return;
+      setOpen(false);
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -539,12 +566,13 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
+        ref={btnRef}
         type="button"
         onClick={() => setOpen(!open)}
         style={{
-          width: "100%", padding: "13px 16px", background: "white",
+          width: "100%", padding: "13px 16px", background: "var(--bg-card)",
           border: open ? "1.5px solid #FCAE91" : "1.5px solid #EEEBE6",
-          borderRadius: "12px", fontSize: "15px", color: selected ? "#1A1A1A" : "#AAAAAA",
+          borderRadius: "12px", fontSize: "15px", color: selected ? "var(--onyx)" : "#AAAAAA",
           textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center",
           justifyContent: "space-between", transition: "all 0.2s ease",
           boxShadow: open ? "0 0 0 4px rgba(252,174,145,0.12)" : "none",
@@ -567,11 +595,15 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
         </svg>
       </button>
 
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
+      {open && createPortal(
+        <div ref={listRef} style={{
+          position: "fixed",
+          top: placement ? `${placement.top}px` : 0,
+          left: placement ? `${placement.left}px` : 0,
+          width: placement ? `${placement.width}px` : undefined,
+          visibility: placement ? "visible" : "hidden",
           background: "#1E1E1E", border: "1.5px solid rgba(255,255,255,0.08)", borderRadius: "14px",
-          zIndex: 100, maxHeight: "200px", overflowY: "auto",
+          zIndex: 1200, maxHeight: "200px", overflowY: "auto",
           boxShadow: "0 16px 48px rgba(0,0,0,0.4)", animation: "dropDown 0.15s cubic-bezier(0.34,1.1,0.64,1)",
         }}>
           {options.map((opt) => (
@@ -604,7 +636,8 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
               )}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -618,7 +651,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
       <div style={{
-        width: '200px', background: 'white', borderRadius: '18px',
+        width: '200px', background: 'var(--bg-card)', borderRadius: '18px',
         boxShadow: '0 20px 50px rgba(26,26,26,0.10), 0 4px 12px rgba(26,26,26,0.06)',
         border: '1px solid #F0EDE8', overflow: 'hidden',
         animation: 'floatLogin1 5s ease-in-out infinite',
@@ -636,7 +669,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
             }
           </div>
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            <div style={{ fontWeight: 800, fontSize: '12px', color: studioName ? '#1A1A1A' : '#AAAAAA', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontWeight: 800, fontSize: '12px', color: studioName ? 'var(--onyx)' : '#AAAAAA', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {studioName || t("onboarding:illustration.studioNamePlaceholder")}
             </div>
             <div style={{ fontSize: '10px', color: '#AAAAAA', marginTop: '1px' }}>Velora CRM</div>
@@ -646,7 +679,7 @@ export function Illustration1({ studioName, logoPreviewUrl }: { studioName: stri
         <div style={{ padding: '12px 16px 10px' }}>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
             {[{ v: '248', l: t("onboarding:illustration.clients"), c: '#FCAE91' }, { v: '94%', l: t("onboarding:illustration.attendance"), c: '#A3C9A8' }].map((s, i) => (
-              <div key={i} style={{ flex: 1, padding: '8px', background: '#FDFCFB', borderRadius: '8px', border: '1px solid #F0EDE8' }}>
+              <div key={i} style={{ flex: 1, padding: '8px', background: 'var(--bg)', borderRadius: '8px', border: '1px solid #F0EDE8' }}>
                 <div style={{ fontWeight: 800, fontSize: '14px', color: s.c }}>{s.v}</div>
                 <div style={{ fontSize: '9px', color: '#AAAAAA', marginTop: '1px' }}>{s.l}</div>
               </div>
@@ -750,21 +783,21 @@ export function Illustration3({ phone, email, address }: { phone: string; email:
         <line x1="140" y1="100" x2="140" y2="162" stroke="#F0EDE8" strokeWidth="1" strokeDasharray="3 4"/>
       </svg>
       <div style={{ position: 'absolute', top: '8px', left: '8px', transition: 'all 0.4s ease', opacity: hasPhone ? 1 : 0.4, animation: 'floatLogin2 5s ease-in-out infinite' }}>
-        <div style={{ background: 'white', border: `1.5px solid ${hasPhone ? 'rgba(252,174,145,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasPhone ? '0 8px 24px rgba(252,174,145,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
+        <div style={{ background: 'var(--bg-card)', border: `1.5px solid ${hasPhone ? 'rgba(252,174,145,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasPhone ? '0 8px 24px rgba(252,174,145,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
           <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.phoneLabel")}</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasPhone ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasPhone ? (phone.length > 13 ? phone.slice(0, 13) : phone) : t("onboarding:illustration.phonePlaceholder")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasPhone ? 'var(--onyx)' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasPhone ? (phone.length > 13 ? phone.slice(0, 13) : phone) : t("onboarding:illustration.phonePlaceholder")}</div>
         </div>
       </div>
       <div style={{ position: 'absolute', top: '8px', right: '8px', transition: 'all 0.4s ease', opacity: hasEmail ? 1 : 0.4, animation: 'floatLogin1 6s ease-in-out infinite' }}>
-        <div style={{ background: 'white', border: `1.5px solid ${hasEmail ? 'rgba(163,201,168,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasEmail ? '0 8px 24px rgba(163,201,168,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
+        <div style={{ background: 'var(--bg-card)', border: `1.5px solid ${hasEmail ? 'rgba(163,201,168,0.4)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasEmail ? '0 8px 24px rgba(163,201,168,0.14)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease' }}>
           <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.emailLabel")}</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasEmail ? '#1A1A1A' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasEmail ? (email.length > 15 ? email.slice(0, 12) + '…' : email) : t("onboarding:illustration.emailPlaceholder")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasEmail ? 'var(--onyx)' : '#CCCCCC', whiteSpace: 'nowrap' }}>{hasEmail ? (email.length > 15 ? email.slice(0, 12) + '…' : email) : t("onboarding:illustration.emailPlaceholder")}</div>
         </div>
       </div>
       <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', transition: 'all 0.4s ease', opacity: hasAddress ? 1 : 0.4, animation: 'floatLogin3 7s ease-in-out infinite' }}>
-        <div style={{ background: 'white', border: `1.5px solid ${hasAddress ? 'rgba(252,174,145,0.35)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasAddress ? '0 8px 24px rgba(252,174,145,0.12)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease', whiteSpace: 'nowrap' }}>
+        <div style={{ background: 'var(--bg-card)', border: `1.5px solid ${hasAddress ? 'rgba(252,174,145,0.35)' : '#F0EDE8'}`, borderRadius: '12px', padding: '10px 14px', boxShadow: hasAddress ? '0 8px 24px rgba(252,174,145,0.12)' : '0 4px 12px rgba(26,26,26,0.05)', transition: 'all 0.4s ease', whiteSpace: 'nowrap' }}>
           <div style={{ fontSize: '9px', fontWeight: 700, color: '#AAAAAA', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{t("onboarding:illustration.addressLabel")}</div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: hasAddress ? '#1A1A1A' : '#CCCCCC' }}>{hasAddress ? (address.length > 18 ? address.slice(0, 15) + '…' : address) : t("onboarding:illustration.addressPlaceholder")}</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: hasAddress ? 'var(--onyx)' : '#CCCCCC' }}>{hasAddress ? (address.length > 18 ? address.slice(0, 15) + '…' : address) : t("onboarding:illustration.addressPlaceholder")}</div>
         </div>
       </div>
     </div>
@@ -778,22 +811,22 @@ export function Illustration4({ timezone, currency, language }: { timezone: stri
   const tz = TIMEZONES.find(tz => tz.value === timezone);
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '4px 0' }}>
-      <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'white', border: '2px solid #F0EDE8', boxShadow: '0 8px 24px rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', animation: 'floatLogin1 5s ease-in-out infinite', flexShrink: 0 }}>
+      <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-card)', border: '2px solid #F0EDE8', boxShadow: '0 8px 24px rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', animation: 'floatLogin1 5s ease-in-out infinite', flexShrink: 0 }}>
         <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
           <circle cx="21" cy="21" r="18" stroke="#F0EDE8" strokeWidth="1.5"/>
           <path d="M21 9 L21 21 L30 21" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round"/>
           <circle cx="21" cy="21" r="2.5" fill="#FCAE91"/>
         </svg>
-        <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#1A1A1A', borderRadius: '8px', padding: '3px 7px', fontSize: '10px', fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
+        <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: 'var(--onyx)', borderRadius: '8px', padding: '3px 7px', fontSize: '10px', fontWeight: 700, color: 'var(--bg)', whiteSpace: 'nowrap' }}>
           {timezone || 'UTC+1'}
         </div>
       </div>
       <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
-        <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin2 6s ease-in-out infinite' }}>
+        <div style={{ background: 'var(--bg-card)', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin2 6s ease-in-out infinite' }}>
           <div style={{ fontSize: '22px', fontWeight: 900, color: '#FCAE91', lineHeight: '1' }}>{curr?.symbol || '$'}</div>
           <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{t(`onboarding:settings.currencies.${curr?.value ?? 'USD'}`)}</div>
         </div>
-        <div style={{ background: 'white', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin3 7s ease-in-out infinite' }}>
+        <div style={{ background: 'var(--bg-card)', border: '1.5px solid #F0EDE8', borderRadius: '12px', padding: '10px 16px', boxShadow: '0 4px 14px rgba(26,26,26,0.06)', textAlign: 'center', animation: 'floatLogin3 7s ease-in-out infinite' }}>
           <div style={{ fontSize: '20px', lineHeight: '1' }}>{lang?.flag || '🇬🇧'}</div>
           <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{(lang?.label ?? 'English').slice(0, 8)}</div>
         </div>
@@ -811,10 +844,10 @@ export function Illustration5({ workingHours }: { workingHours: Array<{ dayOfWee
     <div style={{ width: '100%', padding: '0 4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
       {workingHours.map((day, idx) => (
         <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}>
-          <span style={{ width: '22px', fontSize: '10px', fontWeight: 700, color: day.isOpen ? '#1A1A1A' : '#CCCCCC', flexShrink: 0, transition: 'color 0.3s ease' }}>
+          <span style={{ width: '22px', fontSize: '10px', fontWeight: 700, color: day.isOpen ? 'var(--onyx)' : '#CCCCCC', flexShrink: 0, transition: 'color 0.3s ease' }}>
             {t(`common:days.short.${DOW_TO_DAY_KEY[idx]}`)}
           </span>
-          <div style={{ flex: 1, height: '20px', borderRadius: '6px', background: day.isOpen ? 'linear-gradient(90deg, rgba(252,174,145,0.28), rgba(252,174,145,0.12))' : 'rgba(26,26,26,0.04)', transition: 'all 0.35s cubic-bezier(0.34,1.1,0.64,1)', display: 'flex', alignItems: 'center', paddingLeft: '8px' }}>
+          <div style={{ flex: 1, height: '20px', borderRadius: '6px', background: day.isOpen ? 'linear-gradient(90deg, rgba(252,174,145,0.28), rgba(252,174,145,0.12))' : 'rgba(var(--ink),0.04)', transition: 'all 0.35s cubic-bezier(0.34,1.1,0.64,1)', display: 'flex', alignItems: 'center', paddingLeft: '8px' }}>
             {day.isOpen
               ? <span style={{ fontSize: '9px', fontWeight: 600, color: '#F9A08B', whiteSpace: 'nowrap' }}>{day.openTime} – {day.closeTime}</span>
               : <span style={{ fontSize: '9px', color: '#CCCCCC', fontStyle: 'italic' }}>{t("onboarding:illustration.dayOff")}</span>

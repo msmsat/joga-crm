@@ -65,8 +65,8 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
         onKeyDown={onKeyDown}
         style={{
           width: '100%', padding: '12px 15px', textAlign: 'left',
-          background: open ? 'var(--bg-card, #FFFFFF)' : 'rgba(26,26,26,0.025)',
-          border: `1.5px solid ${open ? 'var(--peach-light, #FCAE91)' : 'rgba(26,26,26,0.09)'}`,
+          background: open ? 'var(--bg-card, #FFFFFF)' : 'rgba(var(--ink),0.025)',
+          border: `1.5px solid ${open ? 'var(--peach-light, #FCAE91)' : 'rgba(var(--ink),0.09)'}`,
           boxShadow: open ? '0 0 0 3px rgba(252,174,145,0.15)' : 'none',
           borderRadius: '12px', fontSize: '14px', fontWeight: 500,
           color: selected ? 'var(--text, #1A1A1A)' : '#AAAAAA',
@@ -91,7 +91,7 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
           style={{
             position: 'absolute', ...(openUp ? { bottom: 'calc(100% + 6px)' } : { top: 'calc(100% + 6px)' }), left: 0, right: 0, zIndex: 50,
             background: 'var(--bg-card, #FFFFFF)', borderRadius: '12px',
-            border: '1px solid rgba(26,26,26,0.08)',
+            border: '1px solid rgba(var(--ink),0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',
             padding: '6px', maxHeight: '240px', overflowY: 'auto',
             animation: 'sel-in 0.16s ease',

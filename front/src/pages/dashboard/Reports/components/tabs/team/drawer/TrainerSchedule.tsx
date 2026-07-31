@@ -50,7 +50,7 @@ export function TrainerSchedule({ trainerId, params }: TrainerScheduleProps) {
           {lessons.map(l => {
             const cancelled = l.status === 'cancelled';
             const hall = l.hall_id != null ? hallById.get(l.hall_id) : undefined;
-            const style = LESSON_STATUS_STYLE[l.status] ?? { bg: 'rgba(26,26,26,0.05)', fg: 'var(--text2)' };
+            const style = LESSON_STATUS_STYLE[l.status] ?? { bg: 'rgba(var(--ink),0.05)', fg: 'var(--text2)' };
             return (
               <div
                 key={l.id}

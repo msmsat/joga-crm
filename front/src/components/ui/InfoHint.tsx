@@ -73,12 +73,12 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
         style={{
           width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? 'rgba(249,160,139,0.14)' : 'rgba(26,26,26,0.05)',
-          border: 'none', cursor: 'pointer', color: open ? '#F9A08B' : '#999999',
+          background: open ? 'rgba(249,160,139,0.14)' : 'rgba(var(--ink),0.05)',
+          border: 'none', cursor: 'pointer', color: open ? '#F9A08B' : 'var(--text3)',
           transition: 'all 0.18s',
         }}
-        onMouseEnter={e => { if (!open) { e.currentTarget.style.background = 'rgba(26,26,26,0.08)'; e.currentTarget.style.color = '#666666'; } }}
-        onMouseLeave={e => { if (!open) { e.currentTarget.style.background = 'rgba(26,26,26,0.05)'; e.currentTarget.style.color = '#999999'; } }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background = 'rgba(var(--ink),0.08)'; e.currentTarget.style.color = 'var(--muted)'; } }}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; e.currentTarget.style.color = 'var(--text3)'; } }}
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -99,14 +99,14 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
             zIndex: 1200,
             width: 'min(260px, calc(100vw - 16px))',
             padding: '14px 16px',
-            background: '#1A1A1A', color: '#FFFFFF',
+            background: 'var(--onyx)', color: 'var(--bg)',
             borderRadius: '16px', boxShadow: '0 20px 48px -8px rgba(26,26,26,0.4)',
             fontFamily: "'Manrope', sans-serif",
             transformOrigin: TRANSFORM_ORIGIN[resolvedSide],
             animation: 'infoHintIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
-          <div style={{ position: 'absolute', background: '#1A1A1A', ...arrowStyle(resolvedSide, placement?.arrowOffset ?? 14) }} />
+          <div style={{ position: 'absolute', background: 'var(--onyx)', ...arrowStyle(resolvedSide, placement?.arrowOffset ?? 14) }} />
           <div style={{ fontSize: '12.5px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.1px' }}>{title}</div>
           <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{text}</div>
           <style>{`@keyframes infoHintIn { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }`}</style>

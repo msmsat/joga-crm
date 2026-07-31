@@ -187,7 +187,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                     <div
                       key={h}
                       className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
-                      style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {}}
+                      style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'var(--bg)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {}}
                       onClick={() => setNewForm(f => ({ ...f, hall: h }))}
                     >
                       {h}
@@ -268,7 +268,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   <input
                     className="modal-input"
                     type="number" min="1" max="50"
-                    style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'white', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
+                    style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'var(--bg-card)', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
                     value={newForm.maxClients}
                     onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
                   />
@@ -307,7 +307,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
             </div>
           </div>
 
-          <div style={{ padding: '16px 24px', background: '#FDFCFB', borderTop: '1px solid var(--border2)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <div style={{ padding: '16px 24px', background: 'var(--bg)', borderTop: '1px solid var(--border2)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button 
               type="button" 
               className="btn-ghost-sm" 

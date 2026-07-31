@@ -224,7 +224,7 @@ export function ServiceSection() {
         ) : (
           <div className="cat-empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DDD" strokeWidth="1.2" style={{ marginBottom: '16px' }}><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            <div style={{ fontSize: '15px', fontWeight: 700, color: '#1A1A1A' }}>{t('catalog:services.empty.title')}</div>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('catalog:services.empty.title')}</div>
             <div style={{ fontSize: '13px', color: '#AAAAAA', marginTop: '4px' }}>{t('catalog:services.empty.subtitle')}</div>
           </div>
         )}

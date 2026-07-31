@@ -44,7 +44,7 @@
   100% { background-position: -200% 0; }
 }
 
-/* Скелетон карточки текущей сессии (тёмный фон, тут rgba(26,26,26,...) не виден) */
+/* Скелетон карточки текущей сессии (тёмный фон, тут rgba(var(--ink),...) не виден) */
 .skelDark {
   background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.06) 63%);
   background-size: 200% 100%;
@@ -83,5 +83,154 @@
 .accCard:not(.accCardActive):hover .accAction {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* ─── «Добавить студию» — пунктирная карточка-приглашение под списком ─── */
+.addStudio {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 2px;
+  padding: 15px 16px;
+  text-align: left;
+  background: transparent;
+  border: 1.5px dashed rgba(var(--ink), 0.14);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.addStudio:hover {
+  border-color: var(--peach);
+  background: rgba(252, 174, 145, 0.05);
+  transform: scale(1.02);
+  box-shadow: 0 16px 32px rgba(252, 174, 145, 0.13);
+}
+
+.addStudioIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(252, 174, 145, 0.12);
+  color: var(--peach);
+  transition: all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.addStudio:hover .addStudioIcon {
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  color: #FFFFFF;
+  transform: rotate(90deg);
+  box-shadow: 0 6px 16px rgba(252, 174, 145, 0.35);
+}
+
+.addStudioTitle {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--onyx);
+}
+
+.addStudioSub {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* ─── Недавние аккаунты: вернуться можно, но только через пароль ─── */
+.recentRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid rgba(var(--ink), 0.06);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.recentRow:hover {
+  border-color: var(--peach);
+  box-shadow: 0 12px 26px rgba(252, 174, 145, 0.13);
+  transform: translateY(-1px);
+}
+
+.recentAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(var(--ink), 0.05);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.25s ease;
+}
+
+.recentRow:hover .recentAvatar {
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  color: #FFFFFF;
+}
+
+.recentName {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--onyx);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recentMail {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recentAction {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--peach);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all 0.25s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.recentRow:hover .recentAction {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.recentForget {
+  display: flex;
+  flex-shrink: 0;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recentForget:hover {
+  background: rgba(216, 140, 154, 0.12);
+  color: #D88C9A;
 }
 

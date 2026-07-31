@@ -16,7 +16,7 @@ interface Props {
 export default function PersonalInfoForm({ userInfo, setUserInfo, email, isLoading, isSavingInfo, phoneTaken, isCheckingPhone, handleSaveInfo }: Props) {
   const { t } = useTranslation(["profile", "common"]);
   return (
-    <div style={{ padding: '32px', background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>
+    <div style={{ padding: '32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>
       <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '24px', letterSpacing: '-0.2px' }}>
         {t("profile:personalInfo.heading")}
       </div>

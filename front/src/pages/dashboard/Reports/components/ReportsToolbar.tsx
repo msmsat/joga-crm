@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select } from '../../../../components/ui/index';
 import type { SelectOption } from '../../../../components/ui/index';
-import { TAB_FILTERS } from '../constants';
+import { MIN_REPORT_DATE, TAB_FILTERS } from '../constants';
 import type { Tab, ReportPeriod, ReportFilters } from '../types';
 
 const PERIODS: ReportPeriod[] = ['day', 'week', 'month', 'year', 'custom'];
@@ -11,7 +12,7 @@ function PeriodSelector({ value, onChange }: { value: ReportPeriod; onChange: (p
   const { t } = useTranslation('reports');
   return (
     <div style={{
-      display: 'flex', background: 'rgba(26,26,26,0.04)', borderRadius: '10px',
+      display: 'flex', background: 'rgba(var(--ink),0.04)', borderRadius: '10px',
       padding: '3px', gap: '2px', border: '1px solid var(--border)',
     }}>
       {PERIODS.map((p) => (
@@ -19,7 +20,7 @@ function PeriodSelector({ value, onChange }: { value: ReportPeriod; onChange: (p
           padding: '5px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
           fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font)',
           transition: 'all 0.2s cubic-bezier(0.34,1.2,0.64,1)',
-          background: value === p ? '#fff' : 'transparent',
+          background: value === p ? 'var(--bg-card)' : 'transparent',
           color: value === p ? 'var(--text)' : 'var(--text3)',
           boxShadow: value === p ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
           transform: value === p ? 'translateY(-0.5px)' : 'none',
@@ -32,24 +33,38 @@ function PeriodSelector({ value, onChange }: { value: ReportPeriod; onChange: (p
   );
 }
 
+const dateInputStyle: CSSProperties = {
+  padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border)',
+  fontSize: '12px', fontFamily: 'var(--font)', color: 'var(--text)', background: 'var(--bg-card, #fff)',
+};
+
+/**
+ * Дата с границами. Пока год добирается посимвольно, браузер шлёт промежуточные
+ * значения (2 → «0002-…»), поэтому наружу уходит только дата внутри [min..max];
+ * всё остальное живёт в черновике и на blur подтягивается к границе (2024 → 2025).
+ */
+function DateField({ value, min, max, onCommit }: { value: string; min: string; max: string; onCommit: (v: string) => void }) {
+  // draft !== null только пока поле правят: после blur показываем уже применённую дату.
+  const [draft, setDraft] = useState<string | null>(null);
+  return (
+    <input
+      type="date" value={draft ?? value} min={min} max={max} style={dateInputStyle}
+      onChange={e => {
+        setDraft(e.target.value);
+        if (e.target.value >= min && e.target.value <= max) onCommit(e.target.value);
+      }}
+      onBlur={() => { onCommit(draft ?? value); setDraft(null); }}
+    />
+  );
+}
+
 function DateRangeInputs({ from, to, onChange }: { from: string; to: string; onChange: (from: string, to: string) => void }) {
+  const today = new Date().toISOString().slice(0, 10);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <input
-        type="date" value={from} onChange={e => onChange(e.target.value, to)}
-        style={{
-          padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border)',
-          fontSize: '12px', fontFamily: 'var(--font)', color: 'var(--text)', background: 'var(--bg-card, #fff)',
-        }}
-      />
+      <DateField value={from} min={MIN_REPORT_DATE} max={to || today} onCommit={v => onChange(v, to)} />
       <span style={{ color: 'var(--text3)', fontSize: '12px' }}>—</span>
-      <input
-        type="date" value={to} onChange={e => onChange(from, e.target.value)}
-        style={{
-          padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border)',
-          fontSize: '12px', fontFamily: 'var(--font)', color: 'var(--text)', background: 'var(--bg-card, #fff)',
-        }}
-      />
+      <DateField value={to} min={from || MIN_REPORT_DATE} max={today} onCommit={v => onChange(from, v)} />
     </div>
   );
 }
@@ -64,7 +79,7 @@ function ComparisonBadge({ from, to, visible }: { from: string; to: string; visi
   const { t } = useTranslation('reports');
   return (
     <div style={{
-      padding: '5px 10px', borderRadius: '8px', background: 'rgba(26,26,26,0.04)',
+      padding: '5px 10px', borderRadius: '8px', background: 'rgba(var(--ink),0.04)',
       fontSize: '11px', fontWeight: 600, color: 'var(--text3)', whiteSpace: 'nowrap',
       minWidth: '172px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums',
       visibility: visible ? 'visible' : 'hidden',
@@ -142,7 +157,7 @@ export function ReportsToolbar({
       {exported && (
         <div style={{
           position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
-          background: '#1A1A1A', color: '#fff', padding: '12px 20px', borderRadius: '12px',
+          background: 'var(--onyx)', color: 'var(--bg)', padding: '12px 20px', borderRadius: '12px',
           fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font)',
           boxShadow: '0 8px 24px rgba(0,0,0,0.2)', zIndex: 9999, whiteSpace: 'nowrap',
           animation: 'rtToastIn 0.22s cubic-bezier(0.34,1.56,0.64,1)',

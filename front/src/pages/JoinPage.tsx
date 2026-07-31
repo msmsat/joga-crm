@@ -206,7 +206,7 @@ export default function JoinPage() {
 
                 {/* Уже вошли другим аккаунтом: принятие переключит сессию */}
                 {otherAccount && (
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "12px 14px", background: "rgba(26,26,26,0.03)", border: "1px solid rgba(26,26,26,0.07)", borderRadius: "12px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "12px 14px", background: "rgba(var(--ink),0.03)", border: "1px solid rgba(var(--ink),0.07)", borderRadius: "12px" }}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.9" strokeLinecap="round" style={{ flexShrink: 0, marginTop: "2px" }}>
                       <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" />
                     </svg>
@@ -271,7 +271,7 @@ export default function JoinPage() {
                     <div style={{ display: "flex", gap: "8px" }}>
                       <button
                         onClick={() => setConfirmDecline(false)}
-                        style={{ flex: 1, padding: "10px", background: "transparent", border: "1.5px solid rgba(26,26,26,0.1)", borderRadius: "10px", fontSize: "12.5px", fontWeight: 700, color: "var(--muted)", cursor: "pointer" }}
+                        style={{ flex: 1, padding: "10px", background: "transparent", border: "1.5px solid rgba(var(--ink),0.1)", borderRadius: "10px", fontSize: "12.5px", fontWeight: 700, color: "var(--muted)", cursor: "pointer" }}
                       >
                         {t("join:decline.keep")}
                       </button>

@@ -36,7 +36,7 @@ export function DeleteConfirmModal({
         className="v-modal"
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FFFFFF', width: '100%', maxWidth: '400px',
+          background: 'var(--bg-card)', width: '100%', maxWidth: '400px',
           borderRadius: '24px', padding: '32px',
           boxShadow: '0 24px 48px -12px rgba(26,26,26,0.15), 0 0 0 1px rgba(26,26,26,0.04)',
           display: 'flex', flexDirection: 'column', gap: '24px',
@@ -58,10 +58,10 @@ export function DeleteConfirmModal({
               <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
             </svg>
           </div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px', marginBottom: '8px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.3px', marginBottom: '8px' }}>
             {title}
           </div>
-          <div style={{ fontSize: '14px', color: '#666666', lineHeight: 1.5 }}>
+          <div style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.5 }}>
             {message}
           </div>
         </div>
@@ -70,13 +70,13 @@ export function DeleteConfirmModal({
         {onDontAskChange !== undefined && (
           <label style={{
             display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer',
-            padding: '12px 16px', background: 'rgba(26,26,26,0.03)',
-            borderRadius: '12px', border: '1px solid rgba(26,26,26,0.05)',
+            padding: '12px 16px', background: 'rgba(var(--ink),0.03)',
+            borderRadius: '12px', border: '1px solid rgba(var(--ink),0.05)',
           }}>
             <div style={{
               width: '20px', height: '20px', borderRadius: '6px', flexShrink: 0,
-              border: `1.5px solid ${dontAsk ? '#1A1A1A' : 'rgba(26,26,26,0.2)'}`,
-              background: dontAsk ? '#1A1A1A' : '#FFFFFF',
+              border: `1.5px solid ${dontAsk ? '#1A1A1A' : 'rgba(var(--ink),0.2)'}`,
+              background: dontAsk ? '#1A1A1A' : 'var(--bg-card)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.2s',
             }}>
@@ -92,7 +92,7 @@ export function DeleteConfirmModal({
               onChange={e => onDontAskChange(e.target.checked)}
               style={{ display: 'none' }}
             />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)' }}>
               {t('deleteModal.dontAsk')}
             </span>
           </label>
@@ -103,13 +103,13 @@ export function DeleteConfirmModal({
           <button
             onClick={onClose}
             style={{
-              flex: 1, padding: '13px', background: 'rgba(26,26,26,0.04)', color: '#666666',
-              border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '12px',
+              flex: 1, padding: '13px', background: 'rgba(var(--ink),0.04)', color: 'var(--muted)',
+              border: '1.5px solid rgba(var(--ink),0.08)', borderRadius: '12px',
               fontSize: '14px', fontWeight: 700, cursor: 'pointer',
               transition: 'all 0.2s', fontFamily: 'inherit',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.07)'; e.currentTarget.style.color = '#1A1A1A'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.04)'; e.currentTarget.style.color = '#666666'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.07)'; e.currentTarget.style.color = 'var(--onyx)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.04)'; e.currentTarget.style.color = 'var(--muted)'; }}
           >
             {t('common:buttons.cancel')}
           </button>

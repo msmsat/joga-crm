@@ -41,8 +41,8 @@
     "create": "Create"
   },
   "userMenu": {
-    "accounts": "My studios",
-    "logout": "Log out"
+    "logout": "Log out",
+    "studios": "My studios"
   },
   "tooltips": {
     "studioName": "Your studio: {{name}}",

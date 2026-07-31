@@ -39,9 +39,9 @@ export function PeriodDropdown({ value, options, onChange }: {
         onClick={() => setOpen(o => !o)}
         style={{
           display: 'flex', alignItems: 'center', gap: '6px', height: '36px', padding: '0 14px',
-          background: open ? '#FFFFFF' : 'rgba(26,26,26,0.03)',
-          border: `1px solid ${open ? '#F9A08B' : 'rgba(26,26,26,0.08)'}`,
-          borderRadius: '10px', fontSize: '12px', fontWeight: 700, color: '#1A1A1A',
+          background: open ? 'var(--bg-card)' : 'rgba(var(--ink),0.03)',
+          border: `1px solid ${open ? '#F9A08B' : 'rgba(var(--ink),0.08)'}`,
+          borderRadius: '10px', fontSize: '12px', fontWeight: 700, color: 'var(--onyx)',
           cursor: 'pointer', fontFamily: "'Manrope', sans-serif",
           boxShadow: open ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
           transition: 'all 0.18s',
@@ -59,7 +59,7 @@ export function PeriodDropdown({ value, options, onChange }: {
           role="listbox"
           style={{
             position: 'absolute', right: 0, top: 'calc(100% + 6px)', zIndex: 50, minWidth: '160px',
-            background: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(26,26,26,0.08)',
+            background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid rgba(var(--ink),0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',
             padding: '6px', animation: 'periodDropdownIn 0.18s cubic-bezier(0.34,1.56,0.64,1)',
           }}
@@ -76,10 +76,10 @@ export function PeriodDropdown({ value, options, onChange }: {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
                   borderRadius: '9px', cursor: 'pointer', fontSize: '13px',
-                  fontWeight: active ? 700 : 500, color: active ? '#F9A08B' : '#1A1A1A',
+                  fontWeight: active ? 700 : 500, color: active ? '#F9A08B' : 'var(--onyx)',
                   fontFamily: "'Manrope', sans-serif", transition: 'background 0.12s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(26,26,26,0.03)'}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(var(--ink),0.03)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: active ? '#F9A08B' : 'transparent', flexShrink: 0 }} />

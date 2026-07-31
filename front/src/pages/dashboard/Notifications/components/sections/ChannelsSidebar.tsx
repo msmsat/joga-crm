@@ -50,7 +50,7 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
       <NotifIllustration />
 
       <div className="card" style={{ padding: '20px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: '#999999', textTransform: 'uppercase', marginBottom: '16px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: '16px' }}>
           {t('channels.title')}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -86,18 +86,18 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
               >
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '8px',
-                  background: channels[ch.key] ? `${ch.color}18` : 'rgba(26,26,26,0.04)',
-                  color: channels[ch.key] ? ch.color : '#999999',
+                  background: channels[ch.key] ? `${ch.color}18` : 'rgba(var(--ink),0.04)',
+                  color: channels[ch.key] ? ch.color : 'var(--text3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s', flexShrink: 0,
                 }}>
                   <ch.IconComp />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: channels[ch.key] ? '#1A1A1A' : '#999999' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: channels[ch.key] ? 'var(--onyx)' : 'var(--text3)' }}>
                     {ch.label}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#999999', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {sub}
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
                     onClick={e => { e.stopPropagation(); onOpenModal(modalKey); }}
                     style={{
                       padding: '5px 10px', borderRadius: '8px', border: 'none',
-                      background: 'rgba(26,26,26,0.06)', color: '#666666',
+                      background: 'rgba(var(--ink),0.06)', color: 'var(--muted)',
                       fontSize: '11px', fontWeight: 700, cursor: 'pointer', flexShrink: 0,
                     }}
                   >
@@ -127,7 +127,7 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
         </div>
       </div>
 
-      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(249,160,139,0.08)', border: '1px solid rgba(249,160,139,0.2)', fontSize: '12px', color: '#666666', lineHeight: 1.6 }}>
+      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(249,160,139,0.08)', border: '1px solid rgba(249,160,139,0.2)', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
         <span style={{ color: '#F9A08B', fontWeight: 800 }}>{t('matrix.adviceLabel')}</span> {t('matrix.advice')}
       </div>
     </div>

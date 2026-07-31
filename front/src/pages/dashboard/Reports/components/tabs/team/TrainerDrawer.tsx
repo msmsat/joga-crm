@@ -66,7 +66,7 @@ export function TrainerDrawer({ trainer, params, paramsKey, onClose }: TrainerDr
 
             <motion.div
               {...fadeIn(0.12)}
-              style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 16px', borderRadius: '12px', background: 'rgba(26,26,26,0.025)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 16px', borderRadius: '12px', background: 'rgba(var(--ink),0.025)' }}
             >
               <RingIndicator pct={data?.return_rate_pct ?? 0} reduceMotion={reduceMotion} />
               <div>

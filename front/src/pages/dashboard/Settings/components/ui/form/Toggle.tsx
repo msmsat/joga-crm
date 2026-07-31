@@ -24,7 +24,7 @@ export default function Toggle({ checked, onChange }: { checked: boolean; onChan
         top: "2px",
         left: checked ? "22px" : "2px",
         width: "20px", height: "20px",
-        background: "white",
+        background: "var(--bg-card)",
         borderRadius: "50%",
         transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
         boxShadow: "0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1)",

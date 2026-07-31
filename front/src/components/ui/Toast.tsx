@@ -32,13 +32,23 @@ const VISIBLE_MS = 3000;   // пауза перед стартом exit-аним
 const UNDO_MS = 5000;      // таймер undo-тоста (решение владельца 2026-07-14)
 const EXIT_MS = 260;       // длительность exit-анимации (см. keyframes toastOut)
 
-// Success — онтикс-плашка (как у Staff), error — dusty rose. Через переменные,
+// Success — ониксовая плашка (как у Staff), error — dusty rose. Через переменные,
 // чтобы плашка следовала за темой, а не хардкодила цвет.
 const VARIANT_BG: Record<ToastVariant, string> = {
   success: 'var(--onyx, #1A1A1A)',
   info: 'var(--onyx, #1A1A1A)',
   undo: 'var(--onyx, #1A1A1A)',
   error: 'var(--rose, #D88C9A)',
+};
+
+// Текст обязан идти в паре с фоном: ониксовая плашка в тёмной теме становится
+// светлой (--onyx инвертируется), и белый текст на ней исчезает. Розовая
+// плашка цвет не меняет — там белый остаётся.
+const VARIANT_FG: Record<ToastVariant, string> = {
+  success: 'var(--bg, #FDFCFB)',
+  info: 'var(--bg, #FDFCFB)',
+  undo: 'var(--bg, #FDFCFB)',
+  error: '#FFFFFF',
 };
 
 // Живое состояние undo-тоста (колбэки + пауза таймера по hover). В ref, а не в
@@ -158,7 +168,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             .velora-toast {
               position: relative;
               overflow: hidden;
-              color: #fff;
               padding: 10px 18px;
               border-radius: 10px;
               font-size: 12px;
@@ -215,7 +224,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               <div
                 key={t.id}
                 className={`velora-toast${t.leaving ? ' leaving' : ''}`}
-                style={{ background: VARIANT_BG[t.variant] }}
+                style={{ background: VARIANT_BG[t.variant], color: VARIANT_FG[t.variant] }}
                 onAnimationEnd={e => { if (t.leaving && e.animationName === 'toastOut') remove(t.id); }}
                 onMouseEnter={t.variant === 'undo' ? () => pauseUndo(t.id) : undefined}
                 onMouseLeave={t.variant === 'undo' ? () => resumeUndo(t.id) : undefined}

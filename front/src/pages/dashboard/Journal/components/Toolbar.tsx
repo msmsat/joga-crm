@@ -82,7 +82,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             color: 'var(--onyx)',
             border: '1.5px solid var(--peach)',
             boxShadow: '0 0 0 3px var(--peach-glow)',
-            background: '#FFFFFF',
+            background: 'var(--bg-card)',
             outline: 'none',
             boxSizing: 'border-box',
             borderRadius: '12px',

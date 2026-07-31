@@ -52,7 +52,7 @@ export default function ChannelPane({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-[#FFF3EC] to-white p-5 shadow-[0_2px_10px_-6px_rgba(26,26,26,0.10)]">
+      <div className="flex items-center gap-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-[var(--tint-peach)] to-[var(--bg-card)] p-5 shadow-[0_2px_10px_-6px_rgba(26,26,26,0.10)]">
         <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#FCAE91] to-[#F9A08B] text-white shadow-[0_8px_18px_-10px_rgba(249,160,139,0.8)]">
           {icon}
         </div>

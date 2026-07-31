@@ -23,7 +23,7 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
       width: "clamp(224px, 18vw, 260px)",
       height: "100%",
       background: "transparent",
-      borderRight: "1px solid rgba(26,26,26,0.06)",
+      borderRight: "1px solid rgba(var(--ink),0.06)",
       padding: "24px 16px",
       display: "flex",
       flexDirection: "column",
@@ -32,7 +32,7 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
       flexShrink: 0,
       overflowY: "auto",
     }}>
-      <div style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "#999999", textTransform: "uppercase", letterSpacing: "1px" }}>
+      <div style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "1px" }}>
         {sectionLabel}
       </div>
 
@@ -45,25 +45,25 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
             style={{
               display: "flex", alignItems: "center", gap: "12px",
               width: "100%", padding: "12px 14px", borderRadius: "12px",
-              background: active ? "#FFFFFF" : "transparent",
-              border: active ? "1px solid rgba(26,26,26,0.04)" : "1px solid transparent",
-              color: active ? "#1A1A1A" : "#666666",
+              background: active ? "var(--bg-card)" : "transparent",
+              border: active ? "1px solid rgba(var(--ink),0.04)" : "1px solid transparent",
+              color: active ? "var(--onyx)" : "var(--muted)",
               fontSize: "14px", fontWeight: active ? 800 : 600, cursor: "pointer",
               transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
               textAlign: "left",
               boxShadow: active ? "0 4px 12px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02)" : "none",
             }}
-            onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = "rgba(26,26,26,0.03)"; e.currentTarget.style.color = "#1A1A1A"; } }}
-            onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#666666"; } }}
+            onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = "rgba(var(--ink),0.03)"; e.currentTarget.style.color = "var(--onyx)"; } }}
+            onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--muted)"; } }}
           >
-            <div style={{ color: active ? "#F9A08B" : "#999999", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ color: active ? "#F9A08B" : "var(--text3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
               {item.icon}
             </div>
             <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {item.label}
             </span>
             {item.badge && (
-              <span style={{ background: active ? "#F9A08B" : "rgba(26,26,26,0.06)", color: active ? "#FFF" : "#1A1A1A", fontSize: "11px", fontWeight: 800, padding: "2px 8px", borderRadius: "20px" }}>
+              <span style={{ background: active ? "#F9A08B" : "rgba(var(--ink),0.06)", color: active ? "#FFF" : "var(--onyx)", fontSize: "11px", fontWeight: 800, padding: "2px 8px", borderRadius: "20px" }}>
                 {item.badge}
               </span>
             )}
@@ -71,7 +71,7 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
         );
       })}
 
-      <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(26,26,26,0.06)", padding: "20px 0 0" }}>
+      <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(var(--ink),0.06)", padding: "20px 0 0" }}>
         <button
           onClick={onLogout}
           style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px", borderRadius: "12px", background: "transparent", border: "1px solid transparent", color: "#D88C9A", fontSize: "14px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease", textAlign: "left" }}

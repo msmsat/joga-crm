@@ -35,7 +35,7 @@ function UserMenuPanel({ onClose }: { onClose: () => void }) {
       {studios.length > 0 && (
         <>
           <div className="user-menu-sep" />
-          <div className="user-menu-label">{t('menu:userMenu.accounts')}</div>
+          <div className="user-menu-label">{t('menu:userMenu.studios')}</div>
           <div className="user-menu-list">
             {studios.map(studio => {
               const logoSrc = resolveImageUrl(studio.logo_url);
@@ -55,7 +55,11 @@ function UserMenuPanel({ onClose }: { onClose: () => void }) {
                   </span>
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span className="user-menu-name">{studio.name}</span>
-                    <span className="user-menu-role">{t(`staff:roles.${studio.role}`, { defaultValue: studio.role })}</span>
+                    {/* Роль в КАЖДОЙ студии своя — человек может быть владельцем
+                        одной и тренером другой, и по списку это должно читаться. */}
+                    <span className={`user-menu-role-chip${studio.role === 'owner' ? ' is-owner' : ''}`}>
+                      {t(`staff:roles.${studio.role}`, { defaultValue: studio.role })}
+                    </span>
                   </span>
                   {studio.is_current && (
                     <span className="user-menu-check">

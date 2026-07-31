@@ -3,10 +3,16 @@ import { useTranslation } from "react-i18next";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import "../../../../../App.css";
 import { PhoneField, getCurrencySymbol } from "../../../../../components/UI";
-import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, PhotoUpload, ChipsInput, ColorPicker, WorkingHoursEditor } from "../../../../../components/ui/modal";
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, PhotoUpload, ChipsInput, ColorPicker, COLOR_PRESETS, WorkingHoursEditor } from "../../../../../components/ui/modal";
 import type { WorkingHour } from "../../../../../components/ui/modal";
+import { Switch } from "../../../../../components/ui/index";
 import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
 import { useValidation } from "./useValidation";
+import {
+  PreviewPanel, StatPills, SectionLabel, Field, Hint,
+  IconInfo, IconRuler, IconPalette, IconPhoto, IconUsers, IconTag, IconBox, IconMonitor,
+} from "./previewKit";
+import { colorVars, LEFT_PANEL_STYLE } from "./previewStyle";
 import { studioApi } from "../../../../../api/studio/studio.api";
 import { resolveImageUrl } from "../../../../../api/client";
 import type { BranchDetail, BranchUpdate, HallBrief, HallCreate } from "../../../../../api/studio/studio.types";
@@ -133,7 +139,7 @@ export function EditStudioModal({ branch, onClose, onSubmit }: EditBranchProps) 
         </div>
         <Input label={t("catalog:modals.editBranch.address")} value={address} onChange={setAddress} placeholder={t("catalog:modals.editBranch.addressPlaceholder")} />
         <div>
-          <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#999", letterSpacing: "0.6px", textTransform: "uppercase", marginBottom: "7px" }}>
+          <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "var(--text3)", letterSpacing: "0.6px", textTransform: "uppercase", marginBottom: "7px" }}>
             {t("catalog:modals.editBranch.photo")}
           </label>
           <PhotoUpload
@@ -148,7 +154,7 @@ export function EditStudioModal({ branch, onClose, onSubmit }: EditBranchProps) 
           />
         </div>
         <div>
-          <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#999", letterSpacing: "0.6px", textTransform: "uppercase", marginBottom: "7px" }}>
+          <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "var(--text3)", letterSpacing: "0.6px", textTransform: "uppercase", marginBottom: "7px" }}>
             {t("catalog:modals.editBranch.workingHours")}
           </label>
           <WorkingHoursEditor
@@ -182,7 +188,7 @@ function BranchIllus({ name }: { name: string }) {
       </defs>
       <ellipse cx="130" cy="120" rx="90" ry="80" fill="url(#eb-bg)" />
       <rect x="32" y="52" width="196" height="136" rx="20" fill="white" filter="url(#eb-shadow)" stroke="#F0EDE8" strokeWidth="1" />
-      <rect x="108" y="74" width="44" height="36" rx="4" fill={hasName ? "url(#eb-accent)" : "rgba(26,26,26,0.06)"} />
+      <rect x="108" y="74" width="44" height="36" rx="4" fill={hasName ? "url(#eb-accent)" : "rgba(var(--ink),0.06)"} />
       <rect x="118" y="86" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.7)" />
       <rect x="134" y="86" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.7)" />
       <rect x="122" y="98" width="16" height="12" rx="2" fill="rgba(255,255,255,0.5)" />
@@ -192,14 +198,17 @@ function BranchIllus({ name }: { name: string }) {
           {name.length > 20 ? name.slice(0, 20) + "…" : name}
         </text>
       ) : (
-        <rect x="84" y="132" width="92" height="8" rx="4" fill="rgba(26,26,26,0.07)" />
+        <rect x="84" y="132" width="92" height="8" rx="4" fill="rgba(var(--ink),0.07)" />
       )}
-      <rect x="88" y="156" width="84" height="6" rx="3" fill="rgba(26,26,26,0.04)" />
+      <rect x="88" y="156" width="84" height="6" rx="3" fill="rgba(var(--ink),0.04)" />
     </svg>
   );
 }
 
 // ─── HALL FORM (create + edit) ────────────────────────────────────────────────
+
+const MAT_LIMIT = 20; // столько ковриков влезает в план — остаток показываем числом
+
 
 interface HallModalProps {
   hall: HallBrief | null; // null → создание
@@ -277,28 +286,111 @@ export function HallModal({ hall, onClose, onSubmit }: HallModalProps) {
     }
   }
 
+  const seats = Number(capacity) > 0 ? Number(capacity) : 0;
+  const mats = Math.min(seats, MAT_LIMIT);
+
+  const left = (
+    <PreviewPanel eyebrow={t("catalog:modals.hall.previewTitle")}>
+      {previewSrc ? (
+        <div className="cmod-plan-photo">
+          <img src={previewSrc} alt={t("catalog:modals.addStudio.step3.previewAlt")} />
+          <div className="cmod-plan-photo-scrim" />
+          <div className="cmod-plan-photo-cap">{name.trim() || t("catalog:modals.hall.namePlaceholder")}</div>
+        </div>
+      ) : (
+        <div className="cmod-plan" style={colorVars(color)}>
+          <div className="cmod-plan-room">
+            {isOnline ? (
+              <div className="cmod-plan-online">
+                <IconMonitor size={26} />
+                {t("catalog:modals.hall.isOnline")}
+              </div>
+            ) : (
+              <div className="cmod-plan-mats">
+                {Array.from({ length: mats }, (_, i) => (
+                  <span key={i} className="cmod-mat" style={{ animationDelay: `${i * 22}ms` }} />
+                ))}
+                {seats > MAT_LIMIT && <span className="cmod-mat is-more">+{seats - MAT_LIMIT}</span>}
+              </div>
+            )}
+            <div className={`cmod-plan-name${name.trim() ? "" : " is-empty"}`}>
+              {name.trim() || t("catalog:modals.hall.namePlaceholder")}
+            </div>
+            <div className="cmod-plan-badges">
+              <span className="cmod-plan-badge">
+                <IconUsers size={11} />
+                {seats || "—"}
+              </span>
+              {area.trim() && (
+                <span className="cmod-plan-badge">
+                  <IconRuler size={11} />
+                  {area} {t("common:units.sqm")}
+                </span>
+              )}
+              {equipment.length > 0 && (
+                <span className="cmod-plan-badge">
+                  <IconBox size={11} />
+                  {equipment.length}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      <StatPills
+        items={[
+          { icon: <IconUsers size={13} />, value: seats || "—", label: t("catalog:modals.hall.capacity") },
+          { icon: <IconRuler size={13} />, value: area.trim() ? `${area} ${t("common:units.sqm")}` : "—", label: t("catalog:modals.hall.statArea") },
+          { icon: <IconTag size={13} />, value: hourlyRate.trim() ? `${currency}${Number(hourlyRate).toLocaleString()}` : "—", label: t("catalog:modals.hall.statRate") },
+          { icon: <IconBox size={13} />, value: equipment.length || "—", label: t("catalog:modals.hall.equipment") },
+        ]}
+      />
+    </PreviewPanel>
+  );
+
   return (
-    <ModalShell size="sm" onClose={onClose}>
-      <ModalHeader title={hall ? t("catalog:modals.hall.titleEdit") : t("catalog:modals.hall.titleNew")} />
+    <ModalShell size="lg" onClose={onClose} left={left} leftWidth="320px" maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
+      <ModalHeader
+        title={hall ? t("catalog:modals.hall.titleEdit") : t("catalog:modals.hall.titleNew")}
+        subtitle={t("catalog:modals.hall.subtitle")}
+      />
       <ModalBody>
-        <Input label={t("catalog:modals.hall.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.hall.namePlaceholder")} />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        <SectionLabel icon={<IconInfo />} text={t("catalog:modals.hall.sectionBasic")} />
+        <Field delay={40}>
+          <Input label={t("catalog:modals.hall.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.hall.namePlaceholder")} />
+        </Field>
+        <Field delay={70}>
+          <div className="cmod-toggle">
+            <div>
+              <div className="cmod-toggle-t">{t("catalog:modals.hall.isOnline")}</div>
+              <div className="cmod-toggle-s">{t("catalog:modals.hall.isOnlineHint")}</div>
+            </div>
+            <Switch checked={isOnline} onChange={setIsOnline} />
+          </div>
+        </Field>
+
+        <SectionLabel icon={<IconRuler />} text={t("catalog:modals.hall.sectionSpace")} delay={100} />
+        <Field delay={130} className="cmod-row">
           <Input label={t("catalog:modals.hall.capacity")} type="number" value={capacity} onChange={setCapacity} onBlur={touch("capacity")} error={show("capacity")} placeholder="20" />
-          <Input label={t("catalog:modals.hall.area")} type="number" value={area} onChange={setArea} onBlur={touch("area")} error={show("area")} placeholder="45" />
-        </div>
-        <Input label={t("catalog:modals.hall.hourlyRate", { currency })} type="number" value={hourlyRate} onChange={setHourlyRate} onBlur={touch("hourlyRate")} error={show("hourlyRate")} placeholder={t("catalog:modals.hall.hourlyRatePlaceholder")} />
-        <ChipsInput label={t("catalog:modals.hall.equipment")} value={equipment} onChange={setEquipment} placeholder={t("catalog:modals.hall.equipmentPlaceholder")} />
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <ColorPicker label={t("catalog:modals.hall.color")} value={color} onChange={setColor} />
-          <label style={{ display: "flex", alignItems: "center", gap: "7px", marginLeft: "auto", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-            <input type="checkbox" checked={isOnline} onChange={e => setIsOnline(e.target.checked)} />
-            {t("catalog:modals.hall.isOnline")}
-          </label>
-        </div>
-        <div>
-          <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#999", letterSpacing: "0.6px", textTransform: "uppercase", marginBottom: "7px" }}>
-            {t("catalog:modals.hall.photo")}
-          </label>
+          <Input label={t("catalog:modals.hall.areaShort")} type="number" value={area} onChange={setArea} onBlur={touch("area")} error={show("area")} placeholder="45" suffix={t("common:units.sqm")} />
+        </Field>
+        <Field delay={160}>
+          <Input label={t("catalog:modals.hall.hourlyRateShort")} type="number" value={hourlyRate} onChange={setHourlyRate} onBlur={touch("hourlyRate")} error={show("hourlyRate")} placeholder={t("catalog:modals.hall.hourlyRatePlaceholder")} suffix={`${currency}${t("common:units.perHour")}`} />
+        </Field>
+        <Field delay={190}>
+          <ChipsInput label={t("catalog:modals.hall.equipment")} value={equipment} onChange={setEquipment} placeholder={t("catalog:modals.hall.equipmentPlaceholder")} />
+        </Field>
+
+        <SectionLabel icon={<IconPalette />} text={t("catalog:modals.hall.sectionLook")} delay={220} />
+        <Field delay={250}>
+          <ColorPicker label={t("catalog:modals.hall.color")} value={color} onChange={setColor} presets={COLOR_PRESETS} />
+        </Field>
+        <Field delay={270}>
+          <Hint text={t("catalog:modals.hall.colorHint")} />
+        </Field>
+
+        <SectionLabel icon={<IconPhoto />} text={t("catalog:modals.hall.photo")} delay={300} />
+        <Field delay={330}>
           <PhotoUpload
             preview={previewSrc}
             onFile={pickPhoto}
@@ -309,7 +401,7 @@ export function HallModal({ hall, onClose, onSubmit }: HallModalProps) {
             removeText={t("catalog:modals.addStudio.step3.remove")}
             previewAlt={t("catalog:modals.addStudio.step3.previewAlt")}
           />
-        </div>
+        </Field>
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t("common:buttons.cancel")}</GhostButton>

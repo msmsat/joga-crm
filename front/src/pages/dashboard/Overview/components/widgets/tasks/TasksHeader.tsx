@@ -81,7 +81,7 @@ export default function TasksHeader({
               {people.length === 0 ? (
                 <div style={{
                   padding: '12px 15px', borderRadius: 12, fontSize: 13, fontWeight: 500,
-                  color: 'var(--muted)', background: 'rgba(26,26,26,0.025)',
+                  color: 'var(--muted)', background: 'rgba(var(--ink),0.025)',
                 }}>
                   {t('state.empty')}
                 </div>

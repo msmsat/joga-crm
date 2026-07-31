@@ -28,17 +28,17 @@ export default function NotificationMatrix({
   const totalCount = events.length * activeChannels.length;
 
   return (
-    <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid rgba(26,26,26,0.08)' }}>
-      <div style={{ padding: '24px', borderBottom: '1px solid rgba(26,26,26,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid rgba(var(--ink),0.08)' }}>
+      <div style={{ padding: '24px', borderBottom: '1px solid rgba(var(--ink),0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: currentRole.bg, color: currentRole.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <currentRole.IconComp />
           </div>
           <div>
-            <div style={{ fontSize: '16px', fontWeight: 800, color: '#1A1A1A' }}>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--onyx)' }}>
               {t('matrix.scenariosFor', { role: t(`roles.${currentRole.key}`) })}
             </div>
-            <div style={{ fontSize: '12px', color: '#666666', marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>
               {t('matrix.configureFor', { count: events.length })}
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function NotificationMatrix({
             display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
             gap: '12px', padding: '16px 24px 8px', alignItems: 'center',
           }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
               {t('matrix.eventColumn')}
             </div>
             {activeChannels.map(ch => {
@@ -68,12 +68,12 @@ export default function NotificationMatrix({
         )}
 
         {activeChannels.length === 0 && (
-          <div style={{ padding: '60px 24px', textAlign: 'center', background: '#FAFAFA' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(26,26,26,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#999999' }}>
+          <div style={{ padding: '60px 24px', textAlign: 'center', background: 'var(--bg2)' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(var(--ink),0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--text3)' }}>
               <Icon.AlertTriangle />
             </div>
-            <div style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A1A', marginBottom: '4px' }}>{t('matrix.noActiveChannels')}</div>
-            <div style={{ fontSize: '12px', color: '#666666' }}>{t('matrix.noActiveChannelsHint')}</div>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '4px' }}>{t('matrix.noActiveChannels')}</div>
+            <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{t('matrix.noActiveChannelsHint')}</div>
           </div>
         )}
 
@@ -83,18 +83,18 @@ export default function NotificationMatrix({
             <div key={ev.event_id} className={styles.notifRow} style={{
               display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
               gap: '12px', padding: '14px 24px', alignItems: 'center',
-              background: i % 2 === 1 ? 'rgba(26,26,26,0.01)' : 'transparent',
-              borderBottom: i < events.length - 1 ? '1px solid rgba(26,26,26,0.04)' : 'none',
+              background: i % 2 === 1 ? 'rgba(var(--ink),0.01)' : 'transparent',
+              borderBottom: i < events.length - 1 ? '1px solid rgba(var(--ink),0.04)' : 'none',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${meta.color}15`, color: meta.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <meta.icon />
                 </div>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A1A', marginBottom: '2px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '2px' }}>
                     {t(`events.${ev.event_id}.title`)}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#666666' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
                     {t(`events.${ev.event_id}.desc`)}
                   </div>
                 </div>
@@ -114,8 +114,8 @@ export default function NotificationMatrix({
       </div>
 
       {activeChannels.length > 0 && (
-        <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(26,26,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FAFAFA' }}>
-          <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(var(--ink),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg2)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
             {t('matrix.activeCount', { count: activeCount, total: totalCount })}
           </span>
 
@@ -123,13 +123,13 @@ export default function NotificationMatrix({
             <span style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               fontSize: '12px', fontWeight: 700,
-              color: syncing ? '#666666' : saveFailed ? '#D88C9A' : '#A3C9A8',
+              color: syncing ? 'var(--muted)' : saveFailed ? '#D88C9A' : '#A3C9A8',
             }}>
               {syncing ? (
                 <>
                   <span style={{
                     width: '12px', height: '12px', borderRadius: '50%', display: 'inline-block', flexShrink: 0,
-                    border: '2px solid rgba(26,26,26,0.15)', borderTopColor: '#666666',
+                    border: '2px solid rgba(var(--ink),0.15)', borderTopColor: '#666666',
                     animation: 'vl-matrix-spin 0.6s linear infinite',
                   }} />
                   <style>{`@keyframes vl-matrix-spin { to { transform: rotate(360deg); } }`}</style>
@@ -150,9 +150,9 @@ export default function NotificationMatrix({
 
             <button
               onClick={toggleAllForRole}
-              style={{ fontSize: '12px', fontWeight: 800, color: '#1A1A1A', background: '#FFFFFF', border: '1px solid rgba(26,26,26,0.1)', cursor: 'pointer', padding: '8px 14px', borderRadius: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              style={{ fontSize: '12px', fontWeight: 800, color: 'var(--onyx)', background: 'var(--bg-card)', border: '1px solid rgba(var(--ink),0.1)', cursor: 'pointer', padding: '8px 14px', borderRadius: '8px', fontFamily: "'Manrope', sans-serif", transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--onyx)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(var(--ink),0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
             >
               {allOn ? t('matrix.deactivateAll') : t('matrix.activateAll')}
             </button>

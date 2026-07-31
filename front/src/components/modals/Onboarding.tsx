@@ -194,7 +194,7 @@ export default function OnboardingPage() {
       className="velora-modal ob-modal"
       style={{
         width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100vh - 40px))", maxHeight: "calc(100vh - 40px)",
-        background: "#FDFCFB", borderRadius: "24px",
+        background: "var(--bg)", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
         display: "flex", alignItems: "stretch", overflow: "hidden",
         animation: "modalIn 0.3s ease",
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
     >
       {/* ── LEFT PANEL ── */}
       <div className="ob-left" style={{
-        flex: "1 1 0", background: "white", padding: "44px 36px",
+        flex: "1 1 0", background: "var(--bg-card)", padding: "44px 36px",
         display: "flex", flexDirection: "column", justifyContent: "space-between",
         borderRight: "1px solid #F0EDE8", position: "relative", overflow: "hidden", minHeight: 0, minWidth: 0,
       }}>
@@ -231,10 +231,10 @@ export default function OnboardingPage() {
             <p style={{ fontSize: "11px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 8px" }}>
               {t("onboarding:wizard.stepOf", { step, total: 5 })}
             </p>
-            <h2 style={{ fontSize: "21px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.7px", lineHeight: 1.25, margin: "0 0 8px", whiteSpace: "pre-line" }}>
+            <h2 style={{ fontSize: "21px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.7px", lineHeight: 1.25, margin: "0 0 8px", whiteSpace: "pre-line" }}>
               {meta.title}
             </h2>
-            <p style={{ fontSize: "12px", color: "#999", lineHeight: "1.6", margin: 0 }}>
+            <p style={{ fontSize: "12px", color: "var(--text3)", lineHeight: "1.6", margin: 0 }}>
               {meta.desc}
             </p>
           </div>
@@ -261,7 +261,7 @@ export default function OnboardingPage() {
           borderRadius: "10px", position: "relative", zIndex: 1, flexShrink: 0,
         }}>
           <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#A3C9A8", animation: "stepPulse 2s infinite" }} />
-          <span style={{ fontSize: "11px", color: "#666", fontWeight: 500 }}>
+          <span style={{ fontSize: "11px", color: "var(--muted)", fontWeight: 500 }}>
             {t("onboarding:wizard.securityNote")}
           </span>
         </div>
@@ -301,7 +301,7 @@ export default function OnboardingPage() {
               style={{
                 padding: "13px 18px", background: "transparent",
                 border: "1.5px solid #EEEBE6", borderRadius: "12px",
-                fontSize: "14px", fontWeight: 600, color: "#888",
+                fontSize: "14px", fontWeight: 600, color: "var(--text3)",
                 cursor: "pointer", display: "flex", alignItems: "center",
                 gap: "6px", fontFamily: "inherit", transition: "background 0.15s ease",
               }}
@@ -362,7 +362,7 @@ export default function OnboardingPage() {
         onClick={closeErrorModal}
         style={{
           position: "fixed", inset: 0, zIndex: 1000,
-          background: "rgba(26,26,26,0.34)",
+          background: "rgba(var(--ink),0.34)",
           backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "20px", animation: "modalIn 0.22s ease",
@@ -371,9 +371,9 @@ export default function OnboardingPage() {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: "#FFFFFF", borderRadius: "24px", padding: "38px 34px 28px",
+            background: "var(--bg-card)", borderRadius: "24px", padding: "38px 34px 28px",
             maxWidth: "384px", width: "100%", textAlign: "center",
-            border: "1px solid rgba(26,26,26,0.05)",
+            border: "1px solid rgba(var(--ink),0.05)",
             boxShadow: "0 40px 100px rgba(26,26,26,0.22), 0 8px 24px rgba(26,26,26,0.07)",
             animation: "errorPopIn 0.32s cubic-bezier(0.34,1.28,0.64,1)",
           }}
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
             </svg>
           </div>
 
-          <h3 style={{ fontSize: "19px", fontWeight: 900, color: "#1A1A1A", margin: "0 0 10px", letterSpacing: "-0.5px" }}>
+          <h3 style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", margin: "0 0 10px", letterSpacing: "-0.5px" }}>
             {t("onboarding:wizard.errorTitle")}
           </h3>
           <p style={{ fontSize: "14px", color: "#8A8A8A", margin: "0 0 26px", lineHeight: "1.65" }}>

@@ -33,16 +33,16 @@ export function PhotoUpload({ preview, onFile, onRemove, ctaText, hintText, repl
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           style={{
-            border: '2px dashed rgba(26,26,26,0.12)', borderRadius: '16px', padding: '36px 24px',
+            border: '2px dashed rgba(var(--ink),0.12)', borderRadius: '16px', padding: '36px 24px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px',
             cursor: 'pointer', transition: 'all 0.18s ease',
-            background: hover ? 'rgba(252,174,145,0.06)' : 'rgba(26,26,26,0.015)',
-            borderColor: hover ? '#FCAE91' : 'rgba(26,26,26,0.12)',
+            background: hover ? 'rgba(252,174,145,0.06)' : 'rgba(var(--ink),0.015)',
+            borderColor: hover ? '#FCAE91' : 'rgba(var(--ink),0.12)',
           }}
         >
           <div style={{
             width: '52px', height: '52px', borderRadius: '14px',
-            background: hover ? 'rgba(252,174,145,0.18)' : 'rgba(26,26,26,0.05)',
+            background: hover ? 'rgba(252,174,145,0.18)' : 'rgba(var(--ink),0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'all 0.18s ease', transform: hover ? 'scale(1.08)' : 'scale(1)',
           }}>
@@ -51,7 +51,7 @@ export function PhotoUpload({ preview, onFile, onRemove, ctaText, hintText, repl
             </svg>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: hover ? '#FCAE91' : '#888', transition: 'color 0.18s' }}>{ctaText}</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: hover ? '#FCAE91' : 'var(--text3)', transition: 'color 0.18s' }}>{ctaText}</div>
             <div style={{ fontSize: '11px', color: '#BBBBBB', marginTop: '3px' }}>{hintText}</div>
           </div>
         </div>
@@ -59,7 +59,7 @@ export function PhotoUpload({ preview, onFile, onRemove, ctaText, hintText, repl
         <div style={{ position: 'relative' }}>
           <img src={preview} alt={previewAlt} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '16px', display: 'block', boxShadow: '0 8px 24px rgba(26,26,26,0.10)' }} />
           <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '6px' }}>
-            <button type="button" onClick={() => fileRef.current?.click()} style={pillStyle('#444', 'rgba(26,26,26,0.1)')}>{replaceText}</button>
+            <button type="button" onClick={() => fileRef.current?.click()} style={pillStyle('#444', 'rgba(var(--ink),0.1)')}>{replaceText}</button>
             <button type="button" onClick={onRemove} style={pillStyle('#C06070', 'rgba(216,140,154,0.3)')}>{removeText}</button>
           </div>
         </div>

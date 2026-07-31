@@ -63,7 +63,7 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
     <div style={{
       borderTop: '1px solid var(--border2)',
       flexShrink: 0,
-      background: isAddingTask ? 'rgba(26,26,26,0.02)' : 'transparent',
+      background: isAddingTask ? 'rgba(var(--ink),0.02)' : 'transparent',
       transition: 'background 0.3s ease',
     }}>
 
@@ -87,7 +87,7 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
               width: '100%', padding: '10px 14px', borderRadius: '10px',
               border: '1px solid var(--border)', outline: 'none',
               fontSize: '13px', fontWeight: 500, fontFamily: 'var(--font-main)',
-              background: '#fff', color: 'var(--onyx)', transition: 'all 0.2s',
+              background: 'var(--bg-card)', color: 'var(--onyx)', transition: 'all 0.2s',
               boxShadow: '0 2px 8px rgba(0,0,0,0.02)', boxSizing: 'border-box',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--peach)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--peach-glow)'; }}
@@ -107,11 +107,11 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
               onClick={() => setIsAddingTask(false)}
               style={{
                 flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border)',
-                background: '#fff', color: 'var(--text3)', fontSize: '13px', fontWeight: 700,
+                background: 'var(--bg-card)', color: 'var(--text3)', fontSize: '13px', fontWeight: 700,
                 cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'var(--font-main)',
               }}
               onMouseOver={e => { e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.color = 'var(--text2)'; }}
-              onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = 'var(--text3)'; }}
+              onMouseOut={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text3)'; }}
             >
               {t('tasks.cancel')}
             </button>
@@ -122,7 +122,7 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
                 flex: 1, padding: '10px', borderRadius: '10px', border: 'none',
                 background: canSubmit
                   ? 'linear-gradient(135deg, var(--peach-light), var(--peach))'
-                  : 'rgba(26,26,26,0.04)',
+                  : 'rgba(var(--ink),0.04)',
                 color: canSubmit ? '#FFFFFF' : 'var(--muted)',
                 boxShadow: canSubmit ? '0 4px 12px var(--peach-glow)' : 'none',
                 fontSize: '13px', fontWeight: 700,

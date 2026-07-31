@@ -363,15 +363,15 @@ export default function Staff() {
                     onClick={() => setIsEditModalOpen(true)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '8px',
-                      padding: '10px 20px', background: '#FFFFFF', color: '#1A1A1A',
-                      border: '1px solid rgba(26,26,26,0.1)', borderRadius: '12px',
+                      padding: '10px 20px', background: 'var(--bg-card)', color: 'var(--onyx)',
+                      border: '1px solid rgba(var(--ink),0.1)', borderRadius: '12px',
                       fontSize: '13px', fontWeight: 700, cursor: 'pointer',
                       transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                       fontFamily: "'Manrope', sans-serif",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = 'rgba(26,26,26,0.1)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = 'rgba(var(--ink),0.2)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = 'rgba(var(--ink),0.1)'; }}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -547,7 +547,7 @@ export default function Staff() {
                               const daysInMonth = new Date(year, month + 1, 0).getDate();
                               const firstDow = (new Date(year, month, 1).getDay() + 6) % 7;
                               for (let i = 0; i < firstDow; i++) {
-                                cells.push(<div key={`e${i}`} style={{ height: '28px', borderRadius: '5px', background: 'rgba(26,26,26,0.02)' }} />);
+                                cells.push(<div key={`e${i}`} style={{ height: '28px', borderRadius: '5px', background: 'rgba(var(--ink),0.02)' }} />);
                               }
                               for (let day = 1; day <= daysInMonth; day++) {
                                 const dayLessons = monthData?.lessons.filter(l => {

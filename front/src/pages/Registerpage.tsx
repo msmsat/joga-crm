@@ -269,7 +269,7 @@ export default function RegisterPage() {
                   <div className="flex-col" style={{ gap: 4 }}>
                     <label className="custom-checkbox-wrapper">
                       <input type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); clearErr("agree"); }} style={{ display: "none" }} />
-                      <div className="custom-checkbox-box" style={{ border: `1.5px solid ${agree ? "var(--peach)" : "rgba(26,26,26,0.2)"}`, background: agree ? "linear-gradient(135deg, var(--peach-light), var(--peach))" : "transparent", boxShadow: agree ? "0 2px 8px var(--peach-glow)" : "none" }}>
+                      <div className="custom-checkbox-box" style={{ border: `1.5px solid ${agree ? "var(--peach)" : "rgba(var(--ink),0.2)"}`, background: agree ? "linear-gradient(135deg, var(--peach-light), var(--peach))" : "transparent", boxShadow: agree ? "0 2px 8px var(--peach-glow)" : "none" }}>
                         {agree && <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ animation: "checkPop 0.22s ease" }}><path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                       </div>
                       <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>Я принимаю <a href="#" className="text-link">Условия использования</a> и <a href="#" className="text-link">Политику конфиденциальности</a></span>

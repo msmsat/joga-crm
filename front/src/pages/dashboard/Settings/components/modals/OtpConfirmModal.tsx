@@ -120,7 +120,7 @@ export function OtpConfirmModal({ action, title, onClose, onConfirmed, step1Body
                   disabled={busy}
                   style={{
                     width: "42px", height: "52px", textAlign: "center", fontSize: "20px", fontWeight: 800,
-                    borderRadius: "12px", border: `1.5px solid ${codeError ? "#D88C9A" : "rgba(26,26,26,0.12)"}`,
+                    borderRadius: "12px", border: `1.5px solid ${codeError ? "#D88C9A" : "rgba(var(--ink),0.12)"}`,
                     outline: "none", fontFamily: "Manrope, sans-serif", color: "var(--text, #1A1A1A)",
                     background: "var(--bg-card, #fff)",
                   }}

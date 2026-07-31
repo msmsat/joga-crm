@@ -47,7 +47,7 @@ export default function SelectCrm() {
           <div style={{ display: 'inline-flex', padding: '10px', borderRadius: '14px', background: 'rgba(252,174,145,0.1)', color: 'var(--peach)', marginBottom: '16px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
           </div>
-          <h1 style={{ fontSize: '32px', fontWeight: 950, color: '#1A1A1A', margin: 0, letterSpacing: '-1px' }}>{t('workspace.title')}</h1>
+          <h1 style={{ fontSize: '32px', fontWeight: 950, color: 'var(--onyx)', margin: 0, letterSpacing: '-1px' }}>{t('workspace.title')}</h1>
           <p style={{ fontSize: '14px', color: 'var(--muted)', marginTop: '6px', fontWeight: 500 }}>{t('workspace.subtitle')}</p>
         </div>
 
@@ -75,9 +75,9 @@ export default function SelectCrm() {
 
         <div
           onClick={() => navigate('/onboarding?new=1')}
-          style={{ borderRadius: '18px', background: '#FFFFFF', border: '1.5px dashed rgba(26,26,26,0.15)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--peach)', fontWeight: 700, fontSize: '13.5px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)' }}
+          style={{ borderRadius: '18px', background: 'var(--bg-card)', border: '1.5px dashed rgba(var(--ink),0.15)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--peach)', fontWeight: 700, fontSize: '13.5px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--peach)'; e.currentTarget.style.background = 'rgba(252,174,145,0.02)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,26,26,0.15)'; e.currentTarget.style.background = '#FFFFFF' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(var(--ink),0.15)'; e.currentTarget.style.background = 'var(--bg-card)' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
           {t('workspace.createNew')}
@@ -104,7 +104,7 @@ function StudioCard({ studio, selecting, onSelect }: { studio: StudioListItem; s
           {logoSrc ? <img src={logoSrc} alt={studio.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials(studio.name)}
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{studio.name}</div>
+          <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{studio.name}</div>
           <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>{t(`staff:roles.${studio.role}`, { defaultValue: studio.role })}</div>
         </div>
       </div>

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from typing import Callable, Literal, TypeVar
 
-from fastapi import Query
+from fastapi import HTTPException, Query
 from sqlalchemy import cast, func
 from sqlalchemy.types import DateTime
 
@@ -10,6 +10,10 @@ from models import Hall, Lesson, Operation, Reservation
 
 Group = Literal["hour", "day", "week", "month"]
 T = TypeVar("T")
+
+# Раньше 2025 данных в продукте нет, а дата вроде 0002-05-01 (браузер шлёт такое,
+# пока пользователь добирает год посимвольно) раздувает series_buckets в миллионы точек.
+MIN_REPORT_DATE = date(2025, 1, 1)
 
 # Однодневный период рисуем по часам. Окно — константа, а не рабочие часы
 # студии: рабочих часов у филиала может не быть заполнено, а ось нужна всегда.
@@ -26,6 +30,18 @@ class ReportFilters:
     service_id: int | None
 
 
+def check_report_range(date_from: date, date_to: date) -> None:
+    """Границы периода отчёта. Отдельная функция, потому что часть эндпоинтов
+    объявляет date_from/date_to своими Query, минуя report_filters."""
+    if min(date_from, date_to) < MIN_REPORT_DATE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Период отчёта не может начинаться раньше {MIN_REPORT_DATE.isoformat()}",
+        )
+    if date_to < date_from:
+        raise HTTPException(status_code=400, detail="Конец периода раньше его начала")
+
+
 def report_filters(
     date_from: date = Query(...),
     date_to: date = Query(...),
@@ -35,6 +51,7 @@ def report_filters(
     service_id: int | None = Query(None),
 ) -> ReportFilters:
     """Единые query-параметры отчётов — Depends на всех эндпоинтах."""
+    check_report_range(date_from, date_to)
     return ReportFilters(
         date_from=date_from,
         date_to=date_to,

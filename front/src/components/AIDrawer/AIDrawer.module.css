@@ -15,8 +15,8 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #FDFCFB;
-  border-left: 1px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg);
+  border-left: 1px solid rgba(var(--ink), 0.06);
   box-shadow: -8px 0 48px -8px rgba(26, 26, 26, 0.10);
   transform: translateX(100%);
   transition: transform 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -31,7 +31,7 @@
     top: var(--topbar-h, 72px);
     height: calc(100vh - var(--topbar-h, 72px));
     border-top-left-radius: 16px;
-    border-top: 1px solid rgba(26, 26, 26, 0.06);
+    border-top: 1px solid rgba(var(--ink), 0.06);
     box-shadow: -16px 0 64px -12px rgba(26, 26, 26, 0.22);
   }
 }
@@ -48,7 +48,7 @@
   padding: 0 16px 0 16px;
   height: 60px;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+  border-bottom: 1px solid rgba(var(--ink), 0.05);
 }
 
 /* ─── ULTIMATE ANIMATED HISTORY BUTTON ────────────────────── */
@@ -63,7 +63,7 @@
   border: 1.5px solid rgba(249, 160, 139, 0.2);
   background: rgba(249, 160, 139, 0.04);
   cursor: pointer;
-  color: #888888;
+  color: var(--text3);
   flex-shrink: 0;
   overflow: hidden;
   /* Пружинистый отклик кнопки */
@@ -107,14 +107,14 @@
   content: '';
   position: absolute;
   inset: 1.5px;
-  background: #FDFCFB;
+  background: var(--bg);
   border-radius: 8.5px;
   z-index: 1;
   transition: background 0.3s ease;
 }
 
 .historyBtn:hover::after {
-  background: #FFF9F7;
+  background: var(--tint-peach);
 }
 
 /* Слой для контейнера иконок с анимацией вылета */
@@ -162,7 +162,7 @@
   flex: 1;
   font-size: 14.5px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
   letter-spacing: -0.3px;
 }
 
@@ -179,9 +179,9 @@
   padding: 0 11px;
   height: 28px;
   border-radius: 8px;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
+  border: 1.5px solid rgba(var(--ink), 0.08);
   background: transparent;
-  color: #888888;
+  color: var(--text3);
   font-size: 12px;
   font-weight: 600;
   font-family: var(--font);
@@ -190,8 +190,8 @@
 }
 
 .newChatBtn:hover {
-  border-color: rgba(26, 26, 26, 0.15);
-  color: #1A1A1A;
+  border-color: rgba(var(--ink), 0.15);
+  color: var(--onyx);
   transform: translateY(-1px);
 }
 
@@ -211,8 +211,8 @@
 }
 
 .closeBtn:hover {
-  background: rgba(26, 26, 26, 0.05);
-  color: #1A1A1A;
+  background: rgba(var(--ink), 0.05);
+  color: var(--onyx);
 }
 
 .backBtn {
@@ -223,7 +223,7 @@
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #888888;
+  color: var(--text3);
   font-size: 13px;
   font-weight: 600;
   font-family: var(--font);
@@ -232,8 +232,8 @@
 }
 
 .backBtn:hover {
-  background: rgba(26, 26, 26, 0.05);
-  color: #1A1A1A;
+  background: rgba(var(--ink), 0.05);
+  color: var(--onyx);
 }
 
 /* ─── NAVIGATION SCREENS ────────────────────────────────────── */
@@ -288,7 +288,7 @@
 }
 
 .messagesArea::-webkit-scrollbar-thumb {
-  background: rgba(26, 26, 26, 0.08);
+  background: rgba(var(--ink), 0.08);
   border-radius: 4px;
 }
 
@@ -309,7 +309,7 @@
 .emptyTitle {
   font-size: 16px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--onyx);
   letter-spacing: -0.3px;
   margin: 0;
   text-align: center;
@@ -335,11 +335,11 @@
 .pill {
   padding: 7px 13px;
   border-radius: 20px;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
-  background: #FFFFFF;
+  border: 1.5px solid rgba(var(--ink), 0.08);
+  background: var(--bg-card);
   font-size: 12px;
   font-weight: 600;
-  color: #666666;
+  color: var(--muted);
   cursor: pointer;
   font-family: var(--font);
   transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -378,16 +378,16 @@
 }
 
 .userBubble {
-  background: #1A1A1A;
-  color: #FFFFFF;
+  background: var(--onyx);
+  color: var(--bg)FFF;
   border-radius: 16px 16px 4px 16px;
   font-weight: 500;
 }
 
 .aiBubble {
-  background: #FFFFFF;
-  color: #1A1A1A;
-  border: 1px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg-card);
+  color: var(--onyx);
+  border: 1px solid rgba(var(--ink), 0.06);
   box-shadow: 0 2px 8px rgba(26, 26, 26, 0.04);
   border-radius: 4px 16px 16px 16px;
 }
@@ -407,8 +407,8 @@
 }
 
 .thinkingBubble {
-  background: #FFFFFF;
-  border: 1px solid rgba(26, 26, 26, 0.06);
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--ink), 0.06);
   box-shadow: 0 2px 8px rgba(26, 26, 26, 0.04);
   border-radius: 4px 16px 16px 16px;
   padding: 10px 14px;
@@ -452,7 +452,7 @@
 .inputArea {
   padding: 10px 14px 14px;
   flex-shrink: 0;
-  border-top: 1px solid rgba(26, 26, 26, 0.05);
+  border-top: 1px solid rgba(var(--ink), 0.05);
 }
 
 .charCount {
@@ -467,8 +467,8 @@
   display: flex;
   align-items: center; /* однострочный вид: текст по центру рядом с кнопкой */
   gap: 10px;
-  background: #FFFFFF;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
+  background: var(--bg-card);
+  border: 1.5px solid rgba(var(--ink), 0.08);
   border-radius: 12px;
   padding: 6px 6px 6px 12px;
   transition: border-color 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -491,7 +491,7 @@
   font-size: 13.5px;
   font-family: var(--font);
   font-weight: 500;
-  color: #1A1A1A;
+  color: var(--onyx);
   resize: none;
   line-height: 1.55;
   max-height: 120px;
@@ -515,8 +515,8 @@
   height: 32px;
   border-radius: 9px;
   border: none;
-  background: #1A1A1A;
-  color: #FFFFFF;
+  background: var(--onyx);
+  color: var(--bg)FFF;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -529,7 +529,7 @@
 }
 
 .sendBtn:disabled {
-  background: rgba(26, 26, 26, 0.07);
+  background: rgba(var(--ink), 0.07);
   color: #D0CCC9;
   cursor: not-allowed;
 }
@@ -549,7 +549,7 @@
 }
 
 .historyList::-webkit-scrollbar-thumb {
-  background: rgba(26, 26, 26, 0.08);
+  background: rgba(var(--ink), 0.08);
   border-radius: 4px;
 }
 
@@ -577,7 +577,7 @@
 .sessionTitle {
   font-size: 13px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--onyx);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -607,7 +607,7 @@
   font-size: 10px;
   font-weight: 700;
   color: #C0BDB9;
-  background: rgba(26, 26, 26, 0.05);
+  background: rgba(var(--ink), 0.05);
   padding: 2px 6px;
   border-radius: 10px;
 }
@@ -618,7 +618,7 @@
   100% { background-position: -200% 0; }
 }
 .skel {
-  background: linear-gradient(90deg, rgba(26,26,26,0.04) 25%, rgba(26,26,26,0.07) 37%, rgba(26,26,26,0.04) 63%);
+  background: linear-gradient(90deg, rgba(var(--ink),0.04) 25%, rgba(var(--ink),0.07) 37%, rgba(var(--ink),0.04) 63%);
   background-size: 200% 100%;
   animation: skelShimmer 1.4s ease infinite;
   border-radius: 6px;
@@ -649,9 +649,9 @@
   font-size: 13px;
 }
 .retryBtn {
-  border: 1.5px solid rgba(26,26,26,0.1);
+  border: 1.5px solid rgba(var(--ink),0.1);
   background: transparent;
-  color: #666;
+  color: var(--muted);
   font-size: 12.5px;
   font-weight: 700;
   padding: 7px 16px;

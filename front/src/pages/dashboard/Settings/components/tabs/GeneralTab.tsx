@@ -92,13 +92,13 @@ export default function GeneralTab() {
           <label style={{
             width: "90px", height: "90px", borderRadius: "16px", flexShrink: 0,
             background: logoSrc ? "transparent" : "#FDFCFB",
-            border: logoSrc ? "none" : "1.5px dashed rgba(26,26,26,0.15)",
+            border: logoSrc ? "none" : "1.5px dashed rgba(var(--ink),0.15)",
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             gap: "6px", cursor: uploadLogo.isPending ? "default" : "pointer", transition: "all 0.25s ease",
             overflow: "hidden", position: "relative"
           }}
             onMouseOver={(e) => { if (!logoSrc) e.currentTarget.style.borderColor = "var(--peach)"; }}
-            onMouseOut={(e) => { if (!logoSrc) e.currentTarget.style.borderColor = "rgba(26,26,26,0.15)"; }}
+            onMouseOut={(e) => { if (!logoSrc) e.currentTarget.style.borderColor = "rgba(var(--ink),0.15)"; }}
           >
             <input type="file" hidden disabled={uploadLogo.isPending} onChange={handleLogoUpload} accept="image/png,image/jpeg,image/webp" />
             {uploadLogo.isPending ? (

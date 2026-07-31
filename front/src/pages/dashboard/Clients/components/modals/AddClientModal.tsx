@@ -113,7 +113,7 @@ function Field({ label, value, onChange, error, hint, placeholder, type = 'text'
           width: '100%', padding: '11px 14px', borderRadius: '10px',
           border: `1.5px solid ${error ? '#D88C9A' : focused ? 'var(--peach)' : 'var(--border)'}`,
           outline: 'none', fontSize: '13px', fontWeight: 500, color: 'var(--text)',
-          background: focused ? 'rgba(249,160,139,0.02)' : 'rgba(26,26,26,0.015)',
+          background: focused ? 'rgba(249,160,139,0.02)' : 'rgba(var(--ink),0.015)',
           fontFamily: "'Manrope',sans-serif", transition: 'border-color 0.2s, box-shadow 0.2s',
           boxShadow: focused ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
           boxSizing: 'border-box',
@@ -141,7 +141,7 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   return (
     <div>
       <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{t('addModal.step2.tags')}</div>
-      <div style={{ minHeight: '44px', padding: '6px 10px', borderRadius: '10px', border: '1.5px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center', cursor: 'text', boxSizing: 'border-box', transition: 'border-color 0.2s', background: 'rgba(26,26,26,0.015)' }}>
+      <div style={{ minHeight: '44px', padding: '6px 10px', borderRadius: '10px', border: '1.5px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center', cursor: 'text', boxSizing: 'border-box', transition: 'border-color 0.2s', background: 'rgba(var(--ink),0.015)' }}>
         {tags.map(tag => (
           <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', border: '1px solid rgba(249,160,139,0.25)', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
             {tag}
@@ -274,7 +274,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
           onClick={e => e.stopPropagation()}
           style={{
             width: 'min(780px, calc(100vw - 48px))', height: 'min(556px, calc(100vh - 32px))',
-            background: '#fff', borderRadius: '24px', overflow: 'hidden',
+            background: 'var(--bg-card)', borderRadius: '24px', overflow: 'hidden',
             display: 'flex', boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
             animation: 'acModalIn 0.3s ease both',
           }}
@@ -312,7 +312,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                   borderRadius: '10px', transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
                   background: i + 1 <= step
                     ? `linear-gradient(90deg,#FCAE91,#F9A08B)`
-                    : 'rgba(26,26,26,0.1)',
+                    : 'rgba(var(--ink),0.1)',
                 }}/>
               ))}
             </div>
@@ -344,7 +344,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
               <button
                 onClick={handleClose}
                 style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,26,26,0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -419,7 +419,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                         width: '100%', padding: '11px 14px', borderRadius: '10px',
                         border: '1.5px solid var(--border)', outline: 'none',
                         fontSize: '13px', fontWeight: 500, color: 'var(--text)',
-                        background: 'rgba(26,26,26,0.015)', fontFamily: "'Manrope',sans-serif",
+                        background: 'rgba(var(--ink),0.015)', fontFamily: "'Manrope',sans-serif",
                         resize: 'vertical', lineHeight: 1.6, transition: 'border-color 0.2s',
                         boxSizing: 'border-box',
                       }}
@@ -432,7 +432,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>{t('addModal.step3.classCount')}</div>
 
                     {activePackages.length === 0 ? (
-                      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(26,26,26,0.02)', border: '1px dashed var(--border)', textAlign: 'center' }}>
+                      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(var(--ink),0.02)', border: '1px dashed var(--border)', textAlign: 'center' }}>
                         <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '8px' }}>{t('addModal.step3.noPackages')}</div>
                         <Link to="/dashboard/catalog" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--peach)' }}>{t('addModal.step3.noPackagesLink')}</Link>
                       </div>
@@ -523,7 +523,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                   </div>
 
                   {/* Summary card */}
-                  <div style={{ padding: '20px', borderRadius: '14px', background: 'rgba(26,26,26,0.02)', border: '1px solid var(--border)', marginBottom: '16px' }}>
+                  <div style={{ padding: '20px', borderRadius: '14px', background: 'rgba(var(--ink),0.02)', border: '1px solid var(--border)', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                       <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg,#FCAE91,#F9A08B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 800, color: '#fff', flexShrink: 0 }}>
                         {form.name.trim().split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase() || '?'}
@@ -543,7 +543,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                         { l: t('addModal.step4.fields.subscription'), v: selectedPackage ? selectedPackage.name : t('addModal.step3.noPackage') },
                         { l: t('addModal.step4.fields.tags'),         v: form.tags.length ? form.tags.join(', ') : '—' },
                       ].map(({ l, v }) => (
-                        <div key={l} style={{ padding: '10px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--border)' }}>
+                        <div key={l} style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                           <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{l}</div>
                           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</div>
                         </div>
@@ -555,7 +555,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '16px 26px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(26,26,26,0.01)' }}>
+            <div style={{ padding: '16px 26px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(var(--ink),0.01)' }}>
               <button
                 onClick={step === 1 ? handleClose : goBack}
                 style={{ padding: '10px 20px', borderRadius: '10px', border: '1px solid var(--border)', background: 'transparent', fontSize: '13px', fontWeight: 700, color: 'var(--text3)', cursor: 'pointer', fontFamily: "'Manrope',sans-serif", transition: 'all 0.2s' }}
@@ -573,7 +573,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     disabled={!canGoNext()}
                     style={{
                       padding: '10px 28px', borderRadius: '10px', border: 'none',
-                      background: canGoNext() ? 'linear-gradient(135deg,#FCAE91,#F9A08B)' : 'rgba(26,26,26,0.06)',
+                      background: canGoNext() ? 'linear-gradient(135deg,#FCAE91,#F9A08B)' : 'rgba(var(--ink),0.06)',
                       color: canGoNext() ? '#fff' : 'var(--text3)',
                       fontSize: '13px', fontWeight: 700, cursor: canGoNext() ? 'pointer' : 'not-allowed',
                       fontFamily: "'Manrope',sans-serif",

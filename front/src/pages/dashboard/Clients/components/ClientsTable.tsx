@@ -101,7 +101,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
           border-radius: 16px;
           padding: 18px 18px 16px;
           cursor: pointer;
-          border: 1.5px solid rgba(26,26,26,0.06);
+          border: 1.5px solid rgba(var(--ink),0.06);
           box-shadow: 0 2px 12px -4px rgba(26,26,26,0.07), 0 1px 3px rgba(26,26,26,0.03);
           transition:
             transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
@@ -160,7 +160,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
         .ct2-info { flex: 1; min-width: 0; }
         .ct2-name {
           font-size: 14px; font-weight: 700;
-          color: #1A1A1A; line-height: 1.25;
+          color: var(--onyx); line-height: 1.25;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
           margin-bottom: 4px;
         }
@@ -185,12 +185,12 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
         .ct2-spent-row {
           display: flex; align-items: center; justify-content: space-between;
           padding: 8px 10px;
-          background: rgba(26,26,26,0.025);
+          background: rgba(var(--ink),0.025);
           border-radius: 10px;
           margin-bottom: 12px;
         }
         .ct2-spent-lbl { font-size: 11px; color: var(--text3); font-weight: 500; }
-        .ct2-spent-val { font-size: 14px; font-weight: 800; color: #1A1A1A; letter-spacing: -0.3px; }
+        .ct2-spent-val { font-size: 14px; font-weight: 800; color: var(--onyx); letter-spacing: -0.3px; }
 
         .ct2-ab-row {
           display: flex; align-items: center; justify-content: space-between;
@@ -200,7 +200,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
         .ct2-ab-val { font-size: 11px; font-weight: 700; }
         .ct2-bar {
           height: 4px; border-radius: 999px;
-          background: rgba(26,26,26,0.06);
+          background: rgba(var(--ink),0.06);
           margin-bottom: 14px;
         }
         .ct2-bar-fill {

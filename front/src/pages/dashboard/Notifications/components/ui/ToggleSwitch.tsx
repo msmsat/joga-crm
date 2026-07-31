@@ -38,7 +38,7 @@ export default function ToggleSwitch({ on, onChange, disabled, 'aria-label': ari
         width: '16px',
         height: '16px',
         borderRadius: '50%',
-        background: '#fff',
+        background: 'var(--bg-card)',
         transition: 'left 0.25s cubic-bezier(0.4,0,0.2,1)',
         boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
       }} />

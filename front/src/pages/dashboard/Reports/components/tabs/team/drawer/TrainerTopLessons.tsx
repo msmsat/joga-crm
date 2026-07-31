@@ -31,7 +31,7 @@ export function TrainerTopLessons({ lessons }: TrainerTopLessonsProps) {
               initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reduceMotion ? 0 : Math.min(i * 0.04, 0.3), duration: 0.24, ease: EASE }}
-              style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(26,26,26,0.025)' }}
+              style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(var(--ink),0.025)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text2)' }}>{lesson.name}</span>

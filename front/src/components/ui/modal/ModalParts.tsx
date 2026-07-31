@@ -18,7 +18,7 @@ export function ModalHeader({ title, subtitle }: { title: string; subtitle?: str
         type="button"
         onClick={close}
         style={{
-          width: '28px', height: '28px', background: 'rgba(26,26,26,0.05)', border: 'none',
+          width: '28px', height: '28px', background: 'rgba(var(--ink),0.05)', border: 'none',
           borderRadius: '8px', cursor: 'pointer', flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#AAA',
         }}

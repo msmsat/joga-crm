@@ -2,6 +2,10 @@ import type { Tab } from './types';
 
 export const TABS: Tab[] = ['overview', 'sales', 'clients', 'team', 'schedule'];
 
+// Нижняя граница произвольного периода — совпадает с MIN_REPORT_DATE
+// в back/routers/analytics/_filters.py (бэк отвечает 400 на всё, что раньше).
+export const MIN_REPORT_DATE = '2025-01-01';
+
 export type FilterKey = 'branch' | 'hall' | 'trainer' | 'service';
 
 // Какие фильтры вкладка реально умеет применять — см. матрицу применимости в

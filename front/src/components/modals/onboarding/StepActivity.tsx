@@ -12,10 +12,10 @@ export default function StepActivity({ data, onChange }: Props) {
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
-        <h3 style={{ fontSize: "24px", fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
+        <h3 style={{ fontSize: "24px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.8px", margin: "0 0 8px" }}>
           {t("onboarding:activity.title")}
         </h3>
-        <p style={{ fontSize: "13px", color: "#888", margin: 0, lineHeight: "1.6" }}>
+        <p style={{ fontSize: "13px", color: "var(--text3)", margin: 0, lineHeight: "1.6" }}>
           {t("onboarding:activity.subtitle")}
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function StepActivity({ data, onChange }: Props) {
               style={{
                 display: "flex", alignItems: "center", gap: "18px",
                 padding: "20px 22px", textAlign: "left", fontFamily: "inherit",
-                background: isSelected ? "rgba(252,174,145,0.08)" : "white",
+                background: isSelected ? "rgba(252,174,145,0.08)" : "var(--bg-card)",
                 border: isSelected ? "2px solid #FCAE91" : "2px solid #EEEBE6",
                 borderRadius: "16px", cursor: "pointer", width: "100%",
                 transition: "all 0.25s cubic-bezier(0.34,1.1,0.64,1)",
@@ -46,14 +46,14 @@ export default function StepActivity({ data, onChange }: Props) {
               onMouseLeave={e => {
                 if (!isSelected) {
                   e.currentTarget.style.borderColor = "#EEEBE6";
-                  e.currentTarget.style.background = "white";
+                  e.currentTarget.style.background = "var(--bg-card)";
                 }
               }}
             >
               <div style={{
                 width: "56px", height: "56px", borderRadius: "16px", flexShrink: 0,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                background: isSelected ? "rgba(252,174,145,0.15)" : "rgba(26,26,26,0.04)",
+                background: isSelected ? "rgba(252,174,145,0.15)" : "rgba(var(--ink),0.04)",
                 color: isSelected ? "#F9A08B" : "#AAAAAA",
                 transition: "all 0.25s cubic-bezier(0.34,1.1,0.64,1)",
               }}>
@@ -61,7 +61,7 @@ export default function StepActivity({ data, onChange }: Props) {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{
-                  fontSize: "16px", fontWeight: 800, color: isSelected ? "#1A1A1A" : "#444",
+                  fontSize: "16px", fontWeight: 800, color: isSelected ? "var(--onyx)" : "var(--text2)",
                   letterSpacing: "-0.3px", marginBottom: "3px",
                 }}>
                   {t(`onboarding:activity.types.${activity.id}.label`)}

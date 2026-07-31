@@ -89,8 +89,8 @@ export function ConfirmModal({ title, message, confirmText, cancelText, danger =
             onClick={onClose}
             disabled={busy}
             style={{
-              flex: 1, padding: '13px', background: 'rgba(26,26,26,0.04)', color: 'var(--text2, #666666)',
-              border: '1.5px solid rgba(26,26,26,0.08)', borderRadius: '12px',
+              flex: 1, padding: '13px', background: 'rgba(var(--ink),0.04)', color: 'var(--text2, #666666)',
+              border: '1.5px solid rgba(var(--ink),0.08)', borderRadius: '12px',
               fontSize: '14px', fontWeight: 700, cursor: busy ? 'default' : 'pointer',
               transition: 'all 0.2s', fontFamily: 'inherit', opacity: busy ? 0.5 : 1,
             }}

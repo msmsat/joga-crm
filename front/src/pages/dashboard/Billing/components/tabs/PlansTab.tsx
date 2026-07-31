@@ -190,7 +190,7 @@ export default function PlansTab({
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                     {isCurrent && <span style={{ padding: '3px 10px', background: 'rgba(252,174,145,0.15)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--peach)' }}>{t('planCards.current')}</span>}
-                    {planId === 'business' && <span style={{ padding: '3px 10px', background: 'rgba(26,26,26,0.08)', border: '1px solid rgba(26,26,26,0.12)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--onyx)' }}>{t('planCards.enterprise')}</span>}
+                    {planId === 'business' && <span style={{ padding: '3px 10px', background: 'rgba(var(--ink),0.08)', border: '1px solid rgba(var(--ink),0.12)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--onyx)' }}>{t('planCards.enterprise')}</span>}
                   </div>
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '4px' }}>{plan.name}</div>
@@ -213,7 +213,7 @@ export default function PlansTab({
                     </div>
                   ))}
                 </div>
-                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : planId === 'business' ? 'var(--bg)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   {isCurrent ? t('continuePlan') : t('planCards.choosePlan')}
                   <ArrowRightIcon />
                 </button>
@@ -266,7 +266,7 @@ export default function PlansTab({
       )}
 
       {/* ── FAQ / TRUST BLOCK ── */}
-      <div style={{ padding: '28px 32px', background: 'linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ padding: '28px 32px', background: 'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%)', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-40%', right: '-10%', width: '300px', height: '300px', background: 'radial-gradient(ellipse, rgba(252,174,145,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>

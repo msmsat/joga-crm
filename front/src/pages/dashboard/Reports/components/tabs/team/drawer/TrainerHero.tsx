@@ -36,7 +36,7 @@ function StarIcon({ filled }: { filled: boolean }) {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(26,26,26,0.025)' }}>
+    <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(var(--ink),0.025)' }}>
       <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
         {label}
       </div>

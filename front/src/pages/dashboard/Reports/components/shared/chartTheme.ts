@@ -20,7 +20,7 @@ export const BLUE = '#4A80C4';
 export const ROSE = '#D88C9A';
 
 // Заливка нулевого слота — виден сам слот, но не как полноценная колонка.
-export const ZERO_FILL = 'rgba(26,26,26,0.06)';
+export const ZERO_FILL = 'rgba(var(--ink),0.06)';
 
 // Цвета статуса занятия — общие для SlotModal и TrainerSchedule (дровер тренера).
 export const LESSON_STATUS_STYLE: Record<string, { bg: string; fg: string }> = {

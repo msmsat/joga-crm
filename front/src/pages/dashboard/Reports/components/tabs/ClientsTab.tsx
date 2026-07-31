@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { BarChart, Bar, LabelList, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, LabelList, XAxis, YAxis, Legend } from 'recharts';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { queryKeys } from '../../../../../api/queryKeys';
 import { fmtInt, fmtDateRange } from '../../../../../lib/format';
@@ -10,7 +10,8 @@ import { useToast } from '../../../../../components/ui/index';
 import { KpiStat } from '../shared/KpiStat';
 import { ChartCard } from '../shared/ChartCard';
 import { ChartFrame } from '../shared/ChartFrame';
-import { AXIS_X, TOOLTIP_STYLE, BAR_CURSOR, PEACH_LIGHT, BLUE } from '../shared/chartTheme';
+import { AXIS_X, BAR_CURSOR, PEACH_LIGHT, BLUE } from '../shared/chartTheme';
+import { ChartTooltip } from '../shared/ChartTooltip';
 import { ZeroLabel } from '../shared/ZeroLabel';
 import { zeroAwareCells } from '../shared/zeroAwareCells';
 import { MainWithInsights } from '../shared/MainWithInsights';
@@ -236,7 +237,7 @@ export function ClientsTab({ params, paramsKey, registerCsvExport, onWidenPeriod
             <BarChart data={chartData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => fmtInt(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} isAnimationActive={false} />
+              <ChartTooltip formatter={(v) => fmtInt(Number(v))} cursor={BAR_CURSOR} />
               <Legend
                 formatter={(value) => (value === 'new' ? t('clients.chart.new') : t('clients.chart.returned'))}
                 wrapperStyle={{ fontSize: '12px' }}

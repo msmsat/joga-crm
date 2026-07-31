@@ -169,7 +169,7 @@ export default function Landing() {
             opacity: heroVisible ? 1 : 0,
             transform: heroVisible ? "translateY(0) rotate(-1deg)" : "translateY(40px) rotate(-1deg)",
             transition: "all 0.9s cubic-bezier(0.34,1.1,0.64,1) 0.5s",
-            filter: "drop-shadow(0 40px 80px rgba(26,26,26,0.10))",
+            filter: "drop-shadow(0 40px 80px rgba(var(--ink),0.10))",
           }}>
             <DashboardMockup />
           </div>

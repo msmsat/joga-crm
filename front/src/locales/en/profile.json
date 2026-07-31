@@ -17,7 +17,9 @@
     "count_other": "{{count}} studios",
     "enter": "Open",
     "login": "Log in",
-    "register": "Sign up"
+    "register": "Sign up",
+    "addStudio": "Add studio",
+    "addStudioSub": "A new workspace — you become its owner"
   },
   "session": {
     "current": "Current session",
@@ -26,13 +28,11 @@
   "toasts": {
     "infoSaved": "Personal data updated successfully"
   },
-  "accountSwitcher": {
-    "title": "Accounts",
-    "count_one": "{{count}} account",
-    "count_other": "{{count}} accounts",
-    "add": "Sign in to another account",
-    "forget": "Remove from list",
-    "emptyTitle": "Only this account so far",
-    "expired": "The session for {{email}} has expired — sign in again"
+  "otherAccount": {
+    "title": "Another account",
+    "sub": "Signing in as someone else ends the current session in this browser — you can come back with a regular sign-in.",
+    "recentTitle": "You signed in before",
+    "return": "Sign in",
+    "forget": "Forget account"
   }
 }

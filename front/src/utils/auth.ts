@@ -1,19 +1,24 @@
 /**
- * Активный токен и «связка ключей» из нескольких аккаунтов.
+ * Активный токен и память о недавних аккаунтах.
  *
  * Аккаунт в продукте глобальный (один email — один человек), а студий у него
  * может быть много. Это разные оси: студии переключает `/auth/select-studio`
- * (тот же человек), а здесь мы держим токены РАЗНЫХ людей — чтобы владелец,
- * вошедший ещё и как тренер, менял аккаунты без повторного ввода пароля.
+ * (тот же человек, новый токен), а смена аккаунта — это смена человека.
+ *
+ * ЖИВОЙ ТОКЕН РОВНО ОДИН — у активного аккаунта. Сменил человека: токен
+ * прежнего немедленно забывается, и «переключиться обратно» без пароля нельзя.
+ * Раньше связка держала токены всех входивших, и один открытый браузер означал
+ * несколько живых сессий разных людей сразу.
+ *
+ * От прежних аккаунтов остаётся только email с именем — чтобы вернуться было
+ * куда: список показывается в профиле и на входе, вход по нему обычный, с
+ * паролем.
  *
  * Хранилище — localStorage, там же, где всегда лежал единственный `token`.
- * Отдельного риска это не добавляет: токен активного аккаунта и раньше лежал
- * рядом, а срок жизни и отзыв сессии остаются за сервером — протухшую запись
- * связка выбрасывает при первой же неудачной попытке переключения.
  *
  * ЕДИНСТВЕННАЯ точка записи токена в приложении: писать `localStorage.token`
- * мимо `setActiveToken` нельзя — аккаунт не попадёт в связку и «пропадёт» из
- * переключателя ровно так, как это и происходило до появления этого модуля.
+ * мимо `setActiveToken` нельзя — иначе аккаунт не попадёт в список недавних, а
+ * токен прежнего останется жить.
  */
 
 const TOKEN_KEY = 'token';
@@ -21,9 +26,10 @@ const JAR_KEY = 'accounts';
 
 export interface StoredAccount {
   email: string;
-  token: string;
   /** Заполняется после первого `/auth/me` — до него показываем email. */
   name?: string;
+  /** Есть ТОЛЬКО у активного аккаунта: у остальных живого токена не бывает. */
+  token?: string;
 }
 
 /** Payload JWT без проверки подписи: только для подсказок UI, не для доступа. */
@@ -65,12 +71,16 @@ export function listAccounts(): StoredAccount[] {
   try {
     const raw = JSON.parse(localStorage.getItem(JAR_KEY) ?? '[]');
     if (!Array.isArray(raw)) return [];
-    return raw.filter((a): a is StoredAccount =>
-      Boolean(a && typeof a.email === 'string' && typeof a.token === 'string')
-    );
+    return raw.filter((a): a is StoredAccount => Boolean(a && typeof a.email === 'string'));
   } catch {
     return [];
   }
+}
+
+/** Аккаунты, в которые уже входили на этом устройстве, кроме активного. */
+export function listRecentAccounts(): StoredAccount[] {
+  const active = getActiveEmail();
+  return listAccounts().filter(a => a.email !== active);
 }
 
 function saveAccounts(accounts: StoredAccount[]): void {
@@ -78,22 +88,26 @@ function saveAccounts(accounts: StoredAccount[]): void {
 }
 
 /**
- * Делает токен активным и кладёт аккаунт в связку.
+ * Делает токен активным; прежний аккаунт остаётся в списке недавних, но БЕЗ
+ * токена — сменил человека, и старая сессия в браузере не живёт.
  *
  * Ключ — email из токена, поэтому смена студии тем же человеком просто
- * обновляет его токен (в нём меняются studio_id и role), а не плодит записи.
+ * обновляет его токен (в нём меняются studio_id и role), а не плодит записи и
+ * ничего не забывает.
  */
 export function setActiveToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
 
   const email = (decodeToken(token)?.sub as string) ?? null;
-  if (!email) return;   // токен нечитаем — активным сделали, в связку не пишем
+  if (!email) return;   // токен нечитаем — активным сделали, в список не пишем
 
   const accounts = listAccounts();
   const previous = accounts.find(a => a.email === email);
   saveAccounts([
     { email, token, name: previous?.name },
-    ...accounts.filter(a => a.email !== email),
+    // Инвариант «живой токен только у активного» держим здесь, а не в вызывающем:
+    // так его нельзя обойти, забыв про него на новом пути входа.
+    ...accounts.filter(a => a.email !== email).map(a => ({ email: a.email, name: a.name })),
   ]);
 }
 
@@ -119,18 +133,30 @@ export function rememberAccountName(email: string, name: string): void {
   if (token && getActiveEmail() === email) saveAccounts([{ email, token, name }, ...accounts]);
 }
 
-/** Убрать аккаунт из связки. Активный при этом перестаёт быть залогиненным. */
+// Разовая уборка при загрузке приложения: до этой версии связка держала ЖИВЫЕ
+// токены всех аккаунтов, входивших на устройстве. Просто перестать их писать
+// мало — уже сохранённые надо выбросить, иначе чужие сессии останутся лежать в
+// браузере до следующего входа.
+(function dropForeignTokens(): void {
+  const active = getActiveEmail();
+  const accounts = listAccounts();
+  if (!accounts.some(a => a.token && a.email !== active)) return;
+  saveAccounts(accounts.map(a => (a.email === active ? a : { email: a.email, name: a.name })));
+})();
+
+/** Убрать аккаунт из списка недавних. Активный при этом разлогинивается. */
 export function forgetAccount(email: string): void {
   saveAccounts(listAccounts().filter(a => a.email !== email));
   if (getActiveEmail() === email) localStorage.removeItem(TOKEN_KEY);
 }
 
 /**
- * Выход: активный токен выбрасываем и его же убираем из связки — сервер эту
- * сессию отзывает, держать мёртвый токен незачем. Остальные аккаунты остаются.
+ * Выход: токен выбрасываем (сервер эту сессию отзывает), а email оставляем в
+ * недавних — чтобы вход обратно был в один клик по своей же карточке.
  */
 export function clearActiveToken(): void {
   const email = getActiveEmail();
   localStorage.removeItem(TOKEN_KEY);
-  if (email) saveAccounts(listAccounts().filter(a => a.email !== email));
+  if (!email) return;
+  saveAccounts(listAccounts().map(a => (a.email === email ? { email: a.email, name: a.name } : a)));
 }

@@ -62,8 +62,8 @@ export default function LinkedAccounts({ studios, isLoading, isError, refetch, s
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '16px', borderRadius: '16px',
-                  background: studio.is_current ? 'rgba(252,174,145,0.03)' : '#FFFFFF',
-                  border: `1.5px solid ${studio.is_current ? 'var(--peach)' : 'rgba(26,26,26,0.06)'}`,
+                  background: studio.is_current ? 'rgba(252,174,145,0.03)' : 'var(--bg-card)',
+                  border: `1.5px solid ${studio.is_current ? 'var(--peach)' : 'rgba(var(--ink),0.06)'}`,
                   cursor: studio.is_current ? 'default' : 'pointer',
                   boxShadow: studio.is_current ? '0 8px 24px rgba(252,174,145,0.12)' : '0 2px 6px rgba(0,0,0,0.015)',
                   transform: loading ? 'scale(0.98)' : 'none',
@@ -88,8 +88,21 @@ export default function LinkedAccounts({ studios, isLoading, isError, refetch, s
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '1px' }}>
-                      {t(`staff:roles.${studio.role}`, { defaultValue: studio.role })} · {t("settings:workspace.membersCount", { count: studio.members_count })}
+                    {/* Роль — главное, что человек хочет знать про студию в списке:
+                        где он владелец, а где просто тренер. Поэтому пилюлей, а
+                        не строчкой мелкого текста. */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '4px' }}>
+                      <span style={{
+                        fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.2px',
+                        color: studio.role === 'owner' ? '#C2764F' : 'var(--muted)',
+                        background: studio.role === 'owner' ? 'rgba(252,174,145,0.16)' : 'rgba(var(--ink),0.05)',
+                        padding: '3px 9px', borderRadius: '100px',
+                      }}>
+                        {t(`staff:roles.${studio.role}`, { defaultValue: studio.role })}
+                      </span>
+                      <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>
+                        {t("settings:workspace.membersCount", { count: studio.members_count })}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -113,16 +126,19 @@ export default function LinkedAccounts({ studios, isLoading, isError, refetch, s
             );
           })}
 
-          {/* Вход/регистрация в другой аккаунт: текущий токен не трогаем —
-              ?switch=1 отключает редирект PublicRoute на дашборд. */}
-          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
-            <Button variant="primary" icon={icons.login} style={{ flex: 1 }} onClick={() => navigate('/login?switch=1')}>
-              {t("profile:accounts.login")}
-            </Button>
-            <Button variant="dark" icon={icons.plus} style={{ flex: 1 }} onClick={() => navigate('/register')}>
-              {t("profile:accounts.register")}
-            </Button>
-          </div>
+          {/* Своя студия — это новое рабочее пространство ТОГО ЖЕ аккаунта, а не
+              новый аккаунт: тот же мастер онбординга с ?new=1. */}
+          <button
+            type="button"
+            className={styles.addStudio}
+            onClick={() => navigate('/onboarding?new=1')}
+          >
+            <span className={styles.addStudioIcon}>{icons.plus}</span>
+            <span>
+              <span className={styles.addStudioTitle}>{t("profile:accounts.addStudio")}</span>
+              <span className={styles.addStudioSub}>{t("profile:accounts.addStudioSub")}</span>
+            </span>
+          </button>
         </div>
       )}
     </div>

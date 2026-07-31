@@ -22,8 +22,8 @@
   font-family: 'Manrope', sans-serif;
   text-align: left;
   width: 100%;
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba(26,26,26,0.08);
+  background-color: var(--bg-card);
+  border: 1.5px solid rgba(var(--ink),0.08);
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   outline: none;
@@ -52,8 +52,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background-color: rgba(26,26,26,0.04);
-  color: #999999;
+  background-color: rgba(var(--ink),0.04);
+  color: var(--text3);
   transition:
     background-color 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
     color 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -70,7 +70,7 @@
 }
 
 .notifRow:hover {
-  background: rgba(26, 26, 26, 0.02) !important;
+  background: rgba(var(--ink), 0.02) !important;
   transform: translateX(2px);
   border-left-color: var(--peach);
 }

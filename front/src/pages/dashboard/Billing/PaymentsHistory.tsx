@@ -15,7 +15,7 @@ const STATUS_META: Record<string, { key: string; color: string; bg: string }> = 
   paid:     { key: 'status.paid',     color: '#2A6B35', bg: 'rgba(163,201,168,0.18)' },
   pending:  { key: 'status.pending',  color: '#8A6D1A', bg: 'rgba(252,174,145,0.16)' },
   failed:   { key: 'status.failed',   color: '#B4535F', bg: 'rgba(216,140,154,0.16)' },
-  refunded: { key: 'status.refunded', color: '#666666', bg: 'rgba(102,102,102,0.10)' },
+  refunded: { key: 'status.refunded', color: 'var(--muted)', bg: 'rgba(102,102,102,0.10)' },
 };
 
 function fmtDate(iso: string | null): string {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "../App.css"; // Обязательный импорт глобальных стилей
 import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn,
    Divider, Checkbox, SocialProof, PasswordStrength, ErrorAlert, PhoneField } from "../components/UI";
@@ -12,8 +12,11 @@ import { setActiveToken } from '../utils/auth';
 export default function LoginPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"login" | "register" | "forgot" | "login2fa">("login");
+  // ?email=… — возврат в аккаунт из «Недавних» в профиле: адрес подставляем,
+  // пароль спрашиваем как обычно (живого токена у прежнего аккаунта уже нет).
+  const [searchParams] = useSearchParams();
   const [identifierMode, setIdentifierMode] = useState<IdentifierMode>("email");
-  const [identifier, setIdentifier] = useState("");
+  const [identifier, setIdentifier] = useState(() => searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
