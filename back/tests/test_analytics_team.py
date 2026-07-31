@@ -25,6 +25,10 @@ async def _seed() -> tuple[int, int, int]:
         trainer = User(email="trainer-team-test@x.com", hashed_password="x", name="Anna", last_name="Yudina")
         db.add(trainer); await db.flush()
         tid = trainer.id
+        # Подпись тренера в отчёте берётся с членства, а не с аккаунта
+        # (docs/ROADMAP_ACCOUNTS, решение 9) — без него он безымянный.
+        db.add(StudioMember(studio_id=sid, user_id=tid, role="trainer",
+                            name="Anna", last_name="Yudina"))
 
         client = Client(studio_id=sid, name="Client")
         db.add(client); await db.flush()
@@ -139,8 +143,8 @@ async def _seed_hourly() -> tuple[int, int, int]:
         db.add_all([trainer, idle]); await db.flush()
         tid, idle_tid = trainer.id, idle.id
         db.add_all([
-            StudioMember(studio_id=sid, user_id=tid, role="trainer"),
-            StudioMember(studio_id=sid, user_id=idle_tid, role="trainer"),
+            StudioMember(studio_id=sid, user_id=tid, role="trainer", name="Тренер"),
+            StudioMember(studio_id=sid, user_id=idle_tid, role="trainer", name="Без занятий"),
         ])
 
         client = Client(studio_id=sid, name="Client"); db.add(client); await db.flush()
@@ -233,8 +237,8 @@ async def _seed_two_trainers() -> tuple[int, int, int]:
         db.add_all([a, b]); await db.flush()
         tid_a, tid_b = a.id, b.id
         db.add_all([
-            StudioMember(studio_id=sid, user_id=tid_a, role="trainer"),
-            StudioMember(studio_id=sid, user_id=tid_b, role="trainer"),
+            StudioMember(studio_id=sid, user_id=tid_a, role="trainer", name="Тренер A"),
+            StudioMember(studio_id=sid, user_id=tid_b, role="trainer", name="Тренер B"),
         ])
 
         for tid, name in ((tid_a, "Anna"), (tid_b, "Boris")):

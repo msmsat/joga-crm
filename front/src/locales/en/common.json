@@ -1,4 +1,8 @@
 {
+  "phoneGate": {
+    "title": "Add your phone number",
+    "sub": "The phone is your account's second contact: it recovers access and receives notifications. The studio number does not fit here — this one has to be yours."
+  },
   "buttons": {
     "cancel": "Cancel",
     "save": "Save",

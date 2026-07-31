@@ -28,7 +28,8 @@
     "hide": "Hide"
   },
   "cta": {
-    "enter": "Sign in to the studio"
+    "enter": "Sign in to the studio",
+    "accept": "Accept invitation"
   },
   "forgotHint": "Forgot your password?",
   "forgotLink": "Recover access",
@@ -43,5 +44,16 @@
     "passwordRequired": "Enter your password",
     "phoneRequired": "Enter your phone number with the country code"
   },
-  "newAccountHint": "The password is not in the email — that is the point: a link alone is not enough to get in. If you were not given one, ask your manager."
+  "newAccountHint": "The password is not in the email — that is the point: a link alone is not enough to get in. If you were not given one, ask your manager.",
+  "decline": {
+    "cta": "Decline invitation",
+    "confirm": "The invitation to “{{studio}}” will be removed. You will not join the team, and only the studio owner can send it again.",
+    "keep": "Keep",
+    "confirmCta": "Decline",
+    "pending": "Declining…"
+  },
+  "declined": {
+    "title": "Invitation declined",
+    "sub": "We did not add you to the studio. If that was a mistake, ask the owner to send the invitation again."
+  }
 }

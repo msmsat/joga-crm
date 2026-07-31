@@ -10,7 +10,9 @@ from sqlalchemy.future import select
 from database import get_db
 from models import Studio, StudioMember, User
 from ratelimit import limiter
-from schemas import InviteAcceptRequest, InviteInfoResponse, TokenResponse
+from schemas import (
+    InviteAcceptRequest, InviteDeclineRequest, InviteInfoResponse, TokenResponse,
+)
 from security import verify_password
 from services.contacts import ensure_user_contacts_free
 from services.invites import decode_invite
@@ -49,7 +51,9 @@ async def get_invite(token: str, db: AsyncSession = Depends(get_db)):
     user, studio, membership = await _resolve_invite(token, db)
     return InviteInfoResponse(
         email=user.email,
-        name=user.name,
+        # Имя из членства: человека зовут в конкретную студию, и подпись на
+        # странице должна совпадать с тем, как его назвал владелец.
+        name=membership.name,
         studio_name=studio.name,
         studio_logo_url=studio.logo_url,
         role=membership.role,
@@ -65,13 +69,18 @@ async def accept_invite(
     data: InviteAcceptRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Вход по ДВУМ факторам: ссылка из письма плюс пароль, известный человеку
-    вне почты. Одной ссылки мало осознанно — перехваченное или пересланное письмо
-    не должно открывать доступ к студии.
+    """ПРИНЯТИЕ приглашения: согласие человека работать в этой студии.
 
-    Пароль всегда сверяется с хэшем в БД, и для обоих случаев это одна проверка:
-    у нового сотрудника там пароль, который задал владелец и передал ему лично;
-    у человека с уже существующим аккаунтом Velora — его собственный.
+    До этого момента членство висит `pending` и доступа не даёт — ни в токене, ни
+    в /select-crm, ни через переключение студий. Поэтому владелец, знающий чужой
+    email, может только позвать, но не зачислить (решение 10).
+
+    Согласие подтверждается ДВУМЯ факторами: ссылка из письма плюс пароль,
+    известный человеку вне почты. Одной ссылки мало осознанно — перехваченное или
+    пересланное письмо не должно открывать доступ к студии. Пароль всегда
+    сверяется с хэшем в БД: у нового сотрудника там пароль, который задал
+    владелец и передал ему лично; у человека с уже существующим аккаунтом
+    Velora — его собственный, то есть согласие даёт именно владелец аккаунта.
 
     Первый успешный вход подтверждает аккаунт (`is_verified`): до него /login
     закрыт, а карточка сотрудника в списке студии висит серой «ожидает».
@@ -96,6 +105,48 @@ async def accept_invite(
     if not user.is_verified:
         user.is_verified = True
 
+    # Собственно согласие. Повторный переход по той же ссылке безвреден: статус
+    # уже active, и письмо работает просто как вход в студию.
+    membership.status = "active"
+
     await db.commit()
 
     return await _finish_login(user, request, db, studio_id=membership.studio_id)
+
+
+@router.post("/invite/decline", status_code=204)
+@limiter.limit("10/minute")
+async def decline_invite(
+    request: Request,
+    data: InviteDeclineRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """ОТКАЗ от приглашения. Согласие обязано быть отклоняемым — иначе это не
+    приглашение, а зачисление с лишним шагом.
+
+    Пароль здесь не спрашиваем: отказ ничего не открывает и ничем не рискует —
+    худшее, что делает чужой человек с перехваченной ссылкой, это возвращает
+    студию в исходное состояние (владелец видит это в списке и зовёт заново).
+    Требовать пароль значило бы держать людей в командах, куда их записали без
+    спроса, пока они не вспомнят пароль.
+
+    Принятое членство так не снимается: у него свой путь — увольнение владельцем.
+    """
+    user, _studio, membership = await _resolve_invite(data.token, db)
+
+    if membership.status != "pending":
+        raise HTTPException(status_code=400, detail="Приглашение уже принято")
+
+    await db.delete(membership)
+
+    # Аккаунт, заведённый этой же студией и никуда больше не принятый, после
+    # отказа остаётся мусором с паролем, который знает владелец. Убираем.
+    others = (await db.execute(
+        select(StudioMember.id).where(
+            StudioMember.user_id == user.id, StudioMember.id != membership.id
+        ).limit(1)
+    )).first()
+    if others is None and not user.is_verified:
+        await db.delete(user)
+
+    await db.commit()

@@ -6,6 +6,7 @@ import { useAIDrawer } from '../contexts/AIDrawerContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import AIDrawer from '../components/AIDrawer';
 import PlanLimitModal from '../components/PlanLimitModal';
+import PhoneGate from '../components/PhoneGate';
 import { getUserRoleFromToken } from '../utils/auth';
 import { billingApi } from '../api/billing/billing.api';
 import type { BillingPlan } from '../api/billing/billing.types';
@@ -122,6 +123,9 @@ export default function DashboardLayout() {
 
       <AIDrawer />
       <PlanLimitModal />
+      {/* Аккаунт = email + телефон: если номера нет (Google-вход, старые
+          владельцы), спрашиваем один раз здесь — на входе в кабинет. */}
+      <PhoneGate />
     </div>
     </ThemeProvider>
   );

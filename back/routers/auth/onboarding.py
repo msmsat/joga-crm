@@ -10,7 +10,6 @@ from models import Client, User, Studio, StudioWorkingHours, StudioMember, Studi
 from routers.billing.plans import PLANS
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
-from services.contacts import ensure_user_contacts_free
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
@@ -67,10 +66,18 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
                 close_time=wh.closeTime,
             ))
 
+    # Профиль владельца в новой студии начинается с имени его аккаунта — другого
+    # источника нет. Дальше он правит его в «Сотрудниках», и на личное имя
+    # аккаунта (и на его профиль в других студиях) это уже не влияет.
     db.add(StudioMember(
         user_id=user.id,
         studio_id=new_studio.id,
         role="owner",
+        # Свою студию человек создаёт сам — приглашать его в неё некому.
+        status="active",
+        name=user.name,
+        last_name=user.last_name,
+        photo_url=user.photo_url,
     ))
 
     # Бесплатный триал на 14 дней с лимитами Pro (задача 8b). До онбординга строки
@@ -98,13 +105,13 @@ async def complete_onboarding(
         raise HTTPException(status_code=400, detail="Онбординг уже пройден")
     _validate_onboarding_request(request)
 
-    # Сравнение по цифрам, а не по строке: «+7 999 …» и «79999…» — один номер.
-    await ensure_user_contacts_free(db, phone=request.phone, exclude_id=current_user.id)
-
+    # Телефон студии в аккаунт владельца НЕ переносится и на уникальность не
+    # проверяется: это контакт бизнеса, его можно указать хоть общий на сеть
+    # студий, хоть чужой (docs/ROADMAP_ACCOUNTS, «Вне scope»). Личный номер
+    # владельца спрашивает PhoneGate при входе в кабинет, если его ещё нет.
     new_studio = await _create_studio_with_defaults(current_user, request, db)
 
     current_user.is_onboarded = True
-    current_user.phone = request.phone.strip()
     await db.commit()
 
     access_token = create_access_token(
@@ -121,8 +128,7 @@ async def create_studio(
 ):
     """Дополнительная студия для уже онбординженного пользователя (мультистудийность,
     EPIC 7 задача 3) — тот же мастер (/onboarding?new=1 на фронте), но без блокировки
-    is_onboarded и без проверки глобальной уникальности телефона: номер уже
-    закреплён за этим же пользователем первой студией."""
+    is_onboarded."""
     _validate_onboarding_request(request)
     new_studio = await _create_studio_with_defaults(current_user, request, db)
     await db.commit()
@@ -147,7 +153,9 @@ async def list_studios(
     rows = (await db.execute(
         select(StudioMember, Studio)
         .join(Studio, StudioMember.studio_id == Studio.id)
-        .where(StudioMember.user_id == current_user.id)
+        # Непринятое приглашение в список рабочих пространств не попадает: студия
+        # появится здесь, когда человек примет его по ссылке из письма.
+        .where(StudioMember.user_id == current_user.id, StudioMember.status == "active")
         .order_by(Studio.id)
     )).all()
     studio_ids = [studio.id for _, studio in rows]
@@ -188,6 +196,9 @@ async def select_studio(
             select(StudioMember).where(
                 StudioMember.user_id == current_user.id,
                 StudioMember.studio_id == request.studio_id,
+                # Непринятое приглашение — не доступ: переключиться в такую
+                # студию нельзя, сначала принять письмо.
+                StudioMember.status == "active",
             )
         )
     ).scalar_one_or_none()

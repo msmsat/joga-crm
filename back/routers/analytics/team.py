@@ -15,7 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Lesson, Operation, Reservation, StudioMember, User
+from models import Lesson, Operation, Reservation, StudioMember
+from services.members import member_names
 from schemas.analytics.reports import (
     Insight,
     Kpi,
@@ -65,17 +66,6 @@ def _working_days(d_from: date, d_to: date) -> int:
         if (d_from + timedelta(days=full_weeks * 7 + i)).weekday() != 6:
             count += 1
     return count
-
-
-async def _trainer_names(ids: set[int], db: AsyncSession) -> dict[int, str]:
-    """ids уже отфильтрованы по studio_id на стороне Lesson/Operation — User.studio_id не существует
-    (принадлежность к студии — через StudioMember), достаточно IN по id."""
-    if not ids:
-        return {}
-    rows = (await db.execute(
-        select(User.id, User.name, User.last_name).where(User.id.in_(ids))
-    )).all()
-    return {uid: " ".join(filter(None, [name, last_name])) for uid, name, last_name in rows}
 
 
 async def _lesson_stats(f: ReportFilters, sid: int, db: AsyncSession) -> dict[int, dict]:
@@ -209,7 +199,7 @@ async def _build_trainer_rows(f: ReportFilters, sid: int, db: AsyncSession) -> t
     # приезжает по всей студии (op_conds их не знает) — union добавил бы
     # тренеров, у которых в этом зале нет ни одного занятия.
     trainer_ids = set(lesson_stats) if _money_scoped(f) else set(lesson_stats) | set(revenue)
-    names = await _trainer_names(trainer_ids, db)
+    names = await member_names(db, sid, trainer_ids)
     rows: list[TrainerRow] = []
     votes_by_trainer: dict[int, int] = {}
     for tid in trainer_ids:

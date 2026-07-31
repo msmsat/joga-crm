@@ -14,7 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Hall, Lesson, Reservation, User
+from models import Hall, Lesson, Reservation
+from services.members import member_names
 from schemas.analytics.reports import (
     ChronicLowRow,
     HallUtilRow,
@@ -296,15 +297,6 @@ async def _halls(f: ReportFilters, sid: int, db: AsyncSession) -> list[HallUtilR
     return result
 
 
-async def _teacher_names(ids: set[int], db: AsyncSession) -> dict[int, str]:
-    if not ids:
-        return {}
-    rows = (await db.execute(
-        select(User.id, User.name, User.last_name).where(User.id.in_(ids))
-    )).all()
-    return {uid: " ".join(filter(None, [name, last_name])) for uid, name, last_name in rows}
-
-
 def _loss_rows(bucket: dict, key_fn, label_fn, ref_fn, limit: Optional[int] = TOP_SLICE_LIMIT) -> list[LossSliceRow]:
     rows = [
         LossSliceRow(
@@ -356,7 +348,7 @@ async def _losses(f: ReportFilters, sid: int, db: AsyncSession) -> LossSlices:
             entry["noshows"] += 1
             entry["lost_spots"] += 1
 
-    names = await _teacher_names({tid for tid in by_trainer if tid is not None}, db)
+    names = await member_names(db, sid, {tid for tid in by_trainer if tid is not None})
 
     return LossSlices(
         by_hour=_loss_rows(by_hour, lambda h: f"hour:{h}", lambda h: f"{h:02d}:00", lambda h: None, limit=None),

@@ -35,10 +35,10 @@ async def _seed():
         oid, aid, t1id, t2id = owner.id, admin.id, t1.id, t2.id
 
         db.add_all([
-            StudioMember(user_id=oid, studio_id=sid, role="owner"),
-            StudioMember(user_id=aid, studio_id=sid, role="admin"),
-            StudioMember(user_id=t1id, studio_id=sid, role="trainer"),
-            StudioMember(user_id=t2id, studio_id=sid, role="trainer"),
+            StudioMember(user_id=oid, studio_id=sid, role="owner", name="Владелец"),
+            StudioMember(user_id=aid, studio_id=sid, role="admin", name="Админ"),
+            StudioMember(user_id=t1id, studio_id=sid, role="trainer", name="Тренер 1"),
+            StudioMember(user_id=t2id, studio_id=sid, role="trainer", name="Тренер 2"),
         ])
 
         # По задаче на каждого, автор — owner (что не мешает scope-фильтрации по assignee_id).

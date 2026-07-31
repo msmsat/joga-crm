@@ -225,15 +225,18 @@ async def get_eligible_clients(
 
 
 async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSession) -> str:
-    """Тренер должен состоять в студии; возвращает денормализованное имя. Иначе 404."""
-    teacher = (await db.execute(
-        select(User)
-        .join(StudioMember, StudioMember.user_id == User.id)
-        .where(User.id == teacher_id, StudioMember.studio_id == studio_id)
+    """Тренер должен состоять в студии; возвращает денормализованное имя. Иначе 404.
+
+    Имя берём с членства: в журнале этой студии он подписан так, как его назвал
+    её владелец (docs/ROADMAP_ACCOUNTS, решение 9).
+    """
+    member = (await db.execute(
+        select(StudioMember)
+        .where(StudioMember.user_id == teacher_id, StudioMember.studio_id == studio_id)
     )).scalar_one_or_none()
-    if teacher is None:
+    if member is None:
         raise HTTPException(status_code=404, detail="Тренер не найден в студии")
-    return f"{teacher.name} {teacher.last_name}".strip() if teacher.last_name else teacher.name
+    return full_name(member)
 
 
 async def _assert_hall_in_studio(hall_id: int, studio_id: int, db: AsyncSession) -> None:

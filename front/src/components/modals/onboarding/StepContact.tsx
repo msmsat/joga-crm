@@ -5,8 +5,6 @@ import type { OnboardingData } from "./types";
 interface Props {
   data: OnboardingData;
   onChange: (patch: Partial<OnboardingData>) => void;
-  phoneError?: string | null;
-  isCheckingPhone?: boolean;
 }
 
 const IconPin = () => (
@@ -32,7 +30,7 @@ const IconGlobe = () => (
   </svg>
 );
 
-export default function StepContact({ data, onChange, phoneError, isCheckingPhone }: Props) {
+export default function StepContact({ data, onChange }: Props) {
   const { t } = useTranslation("onboarding");
   return (
     <div>
@@ -51,22 +49,6 @@ export default function StepContact({ data, onChange, phoneError, isCheckingPhon
           value={data.phone}
           onChange={(v: string) => onChange({ phone: v || "" })}
         />
-        {isCheckingPhone && (
-          <div style={{ fontSize: "12px", color: "#AAAAAA", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
-            <span className="spinner" style={{ width: "10px", height: "10px", borderWidth: "1.5px", borderTopColor: "#FCAE91", flexShrink: 0 }} />
-            {t("onboarding:contact.checkingPhone")}
-          </div>
-        )}
-        {phoneError && !isCheckingPhone && (
-          <div style={{ fontSize: "12px", color: "#D88C9A", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
-              <circle cx="6" cy="6" r="5" stroke="#D88C9A" strokeWidth="1.2"/>
-              <path d="M6 3.5V6.5" stroke="#D88C9A" strokeWidth="1.2" strokeLinecap="round"/>
-              <circle cx="6" cy="8.5" r="0.6" fill="#D88C9A"/>
-            </svg>
-            {phoneError}
-          </div>
-        )}
 
         <InputField
           label={t("onboarding:contact.addressLabel")}

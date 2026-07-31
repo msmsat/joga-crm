@@ -8,7 +8,6 @@ import {
   Illustration1, Illustration2, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
-import { useContactCheck } from '../../hooks/useContactCheck';
 import StepIdentity from "./onboarding/StepIdentity";
 import StepActivity from "./onboarding/StepActivity";
 import StepContact from "./onboarding/StepContact";
@@ -78,11 +77,10 @@ export default function OnboardingPage() {
     { title: t("onboarding:steps.schedule.title"), desc: t("onboarding:steps.schedule.desc") },
   ];
 
-  // Телефон становится контактом аккаунта владельца — занятый чужим аккаунтом не пропускаем.
-  const phoneCheck = useContactCheck('user', 'phone', data.phone, {
-    enabled: !!data.phone && isValidPhoneNumber(data.phone),
-  });
-  const phoneError = phoneCheck.taken ? t("onboarding:wizard.phoneTaken") : null;
+  // Это контакт БИЗНЕСА, а не аккаунта владельца: на занятость не проверяем —
+  // один номер можно указать и студии, и филиалу, и тренеру одновременно
+  // (docs/ROADMAP_ACCOUNTS, «Вне scope»). Личный номер владельца спрашивает
+  // PhoneGate в кабинете. Проверяем только формат.
 
   function goNext() {
     if (animating) return;
@@ -170,7 +168,7 @@ export default function OnboardingPage() {
 
   const canProceed1 = data.studioName.trim().length >= 2;
   const canProceed2 = data.activityType !== "";
-  const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone) && !phoneError && !phoneCheck.checking;
+  const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone);
   const canProceed4 = !!(data.timezone && data.language && data.currency);
   const canProceed5 = true;
 
@@ -189,8 +187,6 @@ export default function OnboardingPage() {
       ? (dir === 1 ? "slideOutRight 0.2s ease forwards" : "slideOutLeft 0.2s ease forwards")
       : (dir === 1 ? "slideInRight 0.3s cubic-bezier(0.34,1.1,0.64,1)" : "slideInLeft 0.3s cubic-bezier(0.34,1.1,0.64,1)"),
   };
-
-  const isPhoneTaken = errorModal.message.includes("номер");
 
   return (
     <>
@@ -286,7 +282,7 @@ export default function OnboardingPage() {
           <div key={step} style={animStyle}>
             {step === 1 && <StepIdentity data={data} onChange={patch} />}
             {step === 2 && <StepActivity data={data} onChange={patch} />}
-            {step === 3 && <StepContact data={data} onChange={patch} phoneError={phoneError} isCheckingPhone={phoneCheck.checking} />}
+            {step === 3 && <StepContact data={data} onChange={patch} />}
             {step === 4 && <StepSettings data={data} onChange={patch} />}
             {step === 5 && <StepSchedule data={data} onChange={patch} />}
           </div>
@@ -396,7 +392,7 @@ export default function OnboardingPage() {
           </div>
 
           <h3 style={{ fontSize: "19px", fontWeight: 900, color: "#1A1A1A", margin: "0 0 10px", letterSpacing: "-0.5px" }}>
-            {isPhoneTaken ? t("onboarding:wizard.phoneTakenTitle") : t("onboarding:wizard.errorTitle")}
+            {t("onboarding:wizard.errorTitle")}
           </h3>
           <p style={{ fontSize: "14px", color: "#8A8A8A", margin: "0 0 26px", lineHeight: "1.65" }}>
             {errorModal.message}
@@ -417,7 +413,7 @@ export default function OnboardingPage() {
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 14px 32px rgba(252,174,145,0.42)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 10px 26px rgba(252,174,145,0.34)"; }}
           >
-            {isPhoneTaken ? t("onboarding:wizard.changeNumber") : t("onboarding:wizard.gotIt")}
+            {t("onboarding:wizard.gotIt")}
           </button>
         </div>
       </div>

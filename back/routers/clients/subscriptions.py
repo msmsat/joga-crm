@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.clients.subscriptions import (
     ClientSubscriptionRead, ClientWallet, SubscriptionSaleCreate, SubscriptionTransferRequest,
 )
+from services.members import member_name
 from services.notifier import notify_payment
 from services.pricing import resolve_price
 
@@ -236,7 +237,7 @@ async def transfer_subscription(
 
     sub.client_id = body.target_client_id
 
-    actor_name = f"{ctx.user.name} {ctx.user.last_name or ''}".strip()
+    actor_name = await member_name(db, ctx.studio_id, ctx.user.id)
     source_name = f"{source.name} {source.last_name or ''}".strip()
     target_name = f"{target.name} {target.last_name or ''}".strip()
     log_activity(

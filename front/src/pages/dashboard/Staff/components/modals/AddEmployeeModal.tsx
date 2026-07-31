@@ -457,17 +457,18 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const emailFormatOk = EMAIL_RE.test(data.email.trim());
 
-  // Email уникален глобально: занятый — ошибка. Подставлять вместо введённых
-  // данных существующий аккаунт бэкенд больше не будет, поэтому форму дальше не
-  // пускаем — иначе владелец узнал бы о проблеме только по 409 на последнем шаге.
+  // Email уже принадлежит аккаунту Velora — это тот же человек, и он будет
+  // привязан к студии (имя и фото владелец задаёт свои, они студийные). Ошибка
+  // ровно одна: человек уже в этой команде.
   const emailCheck = useContactCheck("staff", "email", data.email, { enabled: isOpen && emailFormatOk });
+  const willLinkAccount = emailCheck.taken && !emailCheck.inStudio;
 
   const nameError     = data.name.trim().length > 0 && data.name.trim().length < 2 ? t("addModal.step1.errors.name") : undefined;
   const emailError    = data.email.trim().length > 0 && !emailFormatOk ? t("addModal.step1.errors.email")
-    : emailCheck.inStudio ? t("common:validation.emailInStudio")
-    : emailCheck.taken ? t("addModal.step1.errors.emailTaken") : undefined;
+    : emailCheck.inStudio ? t("common:validation.emailInStudio") : undefined;
   // Требования — те же, что у бэкенда (validate_strong_password): это настоящий
-  // пароль от аккаунта сотрудника, а не одноразовый код.
+  // пароль от аккаунта сотрудника, а не одноразовый код. У привязываемого
+  // аккаунта пароль уже свой — тогда поле не показываем вовсе.
   const passwordStrongOk = data.password.length >= 8
     && /[A-Za-zА-Яа-я]/.test(data.password) && /[0-9]/.test(data.password);
   const passwordError = data.password.length > 0 && !passwordStrongOk
@@ -477,7 +478,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
   const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
   const canStep1         = data.name.trim().length >= 2
     && emailFormatOk
-    && passwordStrongOk
+    && (willLinkAccount || passwordStrongOk)
     && !nameError && !emailError
     && !emailCheck.checking;
   const canStep2         = data.role.trim().length >= 2;
@@ -689,11 +690,24 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                       <FocusInput type="email" value={data.email} onChange={v => set("email", v)} placeholder="anna@velora.studio" error={emailError} hint={emailCheck.checking ? checkingHint : undefined}/>
                     </div>
                     {/* Пароль задаёт владелец и передаёт сотруднику лично: письмо
-                        даёт только ссылку, и без пароля она не откроет студию. */}
-                    <div>
-                      <FieldLabel>{t("addModal.step1.passwordLabel")} *</FieldLabel>
-                      <FocusInput type="password" value={data.password} onChange={v => set("password", v)} placeholder={t("addModal.step1.passwordPlaceholder")} error={passwordError}/>
-                    </div>
+                        даёт только ссылку, и без пароля она не откроет студию.
+                        У существующего аккаунта пароль свой — поле прячем, чтобы
+                        владелец не задавал его человеку, который в продукте уже есть. */}
+                    {willLinkAccount ? (
+                      <div style={{ padding: "12px 14px", background: "rgba(163,201,168,0.1)", borderRadius: "12px", border: "1px solid rgba(163,201,168,0.28)", display: "flex", gap: "9px", alignItems: "flex-start", animation: "stepIn 0.25s ease" }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7aab80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "1px" }}>
+                          <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                        <p style={{ fontSize: "11.5px", color: "#5f7f65", margin: 0, lineHeight: 1.55 }}>
+                          {t("common:validation.accountWillBeLinked")}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <FieldLabel>{t("addModal.step1.passwordLabel")} *</FieldLabel>
+                        <FocusInput type="password" value={data.password} onChange={v => set("password", v)} placeholder={t("addModal.step1.passwordPlaceholder")} error={passwordError}/>
+                      </div>
+                    )}
                     {data.name.trim().length >= 2 && (
                       <div style={{
                         padding: "13px 15px",

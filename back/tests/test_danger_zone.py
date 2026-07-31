@@ -42,7 +42,7 @@ async def _make_studio_with_owner(db, suffix: str):
     db.add(user)
     await db.flush()
 
-    db.add(StudioMember(user_id=user.id, studio_id=studio.id, role="owner"))
+    db.add(StudioMember(user_id=user.id, studio_id=studio.id, role="owner", name=user.name))
     await db.commit()
     await db.refresh(studio)
     await db.refresh(user)
@@ -162,7 +162,7 @@ async def test_delete_account_blocked_when_other_owner_exists():
         )
         db.add(other)
         await db.flush()
-        db.add(StudioMember(user_id=other.id, studio_id=studio.id, role="owner"))
+        db.add(StudioMember(user_id=other.id, studio_id=studio.id, role="owner", name=other.name))
         await db.commit()
         try:
             ctx = StudioContext(user=user, studio_id=studio.id, role="owner")

@@ -646,7 +646,9 @@ export default function Staff() {
               name: data.name,
               last_name: data.last_name || undefined,
               email: data.email,
-              password: data.password,
+              // Пусто — email принадлежит существующему аккаунту: он входит
+              // своим паролем, и задавать ему чужой нельзя (бэк это и требует).
+              password: data.password || undefined,
               role: data.role,
               salary: data.salary ? Number(data.salary) : undefined,
               rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
@@ -721,6 +723,7 @@ export default function Staff() {
           role: profile.role,
           avatar_gradient: profile.avatar_gradient ?? undefined,
           is_online: profile.is_online,
+          is_active: profile.is_active,
           rate: profile.rate ?? undefined,
           rate_type: profile.rate_type ?? '',
           service_ids: profile.services.map(s => s.id),

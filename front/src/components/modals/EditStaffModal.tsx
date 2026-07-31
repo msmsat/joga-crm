@@ -29,6 +29,9 @@ export interface StaffMember {
   schedule?: Record<string, ScheduleDay>;
   photo_url?: string;
   service_ids?: number[];
+  /** true — сотрудник принял приглашение и владеет аккаунтом: его email и телефон
+   *  студия больше не правит (PUT /staff вернёт 403), это личные контакты. */
+  is_active?: boolean;
 }
 
 interface EditStaffModalProps {
@@ -463,11 +466,15 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   // Контакт сотрудника — идентификатор его аккаунта: занят кем-то ещё → «Сохранить» серая.
   // Себя исключаем (exclude_id), и проверяем только изменённое — ровно то, что проверит
   // сервер на PUT: исторические дубли не должны запирать правку остальных полей.
+  // Активированный аккаунт правит контакты сам, в своём профиле — форма их
+  // только показывает, и проверять занятость незачем (бэк ответит 403).
+  const contactsLocked = staff?.is_active === true;
+
   const emailCheck = useContactCheck("staff", "email", form.email, {
-    excludeId: form.id, enabled: isOpen && emailFormatOk && form.email !== staff?.email,
+    excludeId: form.id, enabled: isOpen && !contactsLocked && emailFormatOk && form.email !== staff?.email,
   });
   const phoneCheck = useContactCheck("staff", "phone", form.phone, {
-    excludeId: form.id, enabled: isOpen && phoneFormatOk && form.phone !== (staff?.phone ?? ""),
+    excludeId: form.id, enabled: isOpen && !contactsLocked && phoneFormatOk && form.phone !== (staff?.phone ?? ""),
   });
 
   const nameError = form.name.trim().length > 0 && form.name.trim().length < 2 ? t("staff:editModal.profile.errors.name") : undefined;
@@ -852,17 +859,42 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <FocusInput value={form.name} onChange={v => set("name", v)} placeholder={t("staff:editModal.profile.namePlaceholder")} error={nameError} />
                   </div>
 
-                  {/* Phone + Email in a row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <div>
-                      <FieldLabel>{t("common:fields.phone")}</FieldLabel>
-                      <PhoneField value={form.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : undefined} />
+                  {/* Phone + Email in a row. Аккаунт активирован — контакты
+                      принадлежат человеку, студия их только показывает. */}
+                  {contactsLocked ? (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      {[
+                        { label: t("common:fields.phone"), value: form.phone || "—" },
+                        { label: t("common:fields.email"), value: form.email },
+                      ].map(row => (
+                        <div key={row.label}>
+                          <FieldLabel>{row.label}</FieldLabel>
+                          <div style={{
+                            padding: "12px 15px", background: "rgba(26,26,26,0.025)",
+                            border: "1.5px solid rgba(26,26,26,0.06)", borderRadius: "12px",
+                            fontSize: "14px", fontWeight: 500, color: "#888",
+                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                          }}>
+                            {row.value}
+                          </div>
+                        </div>
+                      ))}
+                      <p style={{ gridColumn: "1 / -1", fontSize: "11px", color: "#AAAAAA", margin: 0, lineHeight: 1.5 }}>
+                        {t("staff:editModal.profile.contactsOwnedByEmployee")}
+                      </p>
                     </div>
-                    <div>
-                      <FieldLabel>{t("common:fields.email")}</FieldLabel>
-                      <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} hint={emailCheck.checking ? checkingHint : undefined} />
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      <div>
+                        <FieldLabel>{t("common:fields.phone")}</FieldLabel>
+                        <PhoneField value={form.phone} onChange={(v: string | undefined) => set("phone", v || "")} error={phoneError} hint={phoneCheck.checking ? checkingHint : undefined} />
+                      </div>
+                      <div>
+                        <FieldLabel>{t("common:fields.email")}</FieldLabel>
+                        <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} hint={emailCheck.checking ? checkingHint : undefined} />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Info tip */}
                   <div style={{

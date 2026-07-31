@@ -11,8 +11,13 @@ async def _build_token_for_user(user, db: AsyncSession, studio_id: int | None = 
     количеству членств. Без него поведение прежнее: одно членство — пишем его,
     несколько — токен без студии, и `get_studio_context` уводит на /select-crm.
     """
+    # Только принятые членства: непринятое приглашение не должно ни попасть в
+    # токен, ни считаться «единственной студией» (решение 10).
     memberships = (
-        await db.execute(select(StudioMember).where(StudioMember.user_id == user.id))
+        await db.execute(select(StudioMember).where(
+            StudioMember.user_id == user.id,
+            StudioMember.status == "active",
+        ))
     ).scalars().all()
 
     if studio_id is not None:

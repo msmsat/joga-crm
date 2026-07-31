@@ -4,12 +4,12 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import StudioMember, StudioTask, User
+from models import StudioMember, StudioTask
 from schemas.analytics.tasks import AssigneeOption, StudioTaskCreate, StudioTaskRead, StudioTaskUpdate
+from services.members import full_name, member_names
 
 router = APIRouter()
 
@@ -39,12 +39,9 @@ async def _assignable_ids(ctx: StudioContext, db: AsyncSession) -> set[int]:
     return {ctx.user.id} | await _member_ids(ctx.studio_id, _DELEGATABLE[ctx.role], db)
 
 
-def _full_name(u: User | None) -> str | None:
-    return " ".join(filter(None, [u.name, u.last_name])) if u else None
-
-
-def _task_read(task: StudioTask) -> dict:
-    """ORM → payload StudioTaskRead. Требует загруженного task.assignee."""
+def _task_read(task: StudioTask, names: dict[int, str]) -> dict:
+    """ORM → payload StudioTaskRead. `names` — подписи исполнителей в этой студии
+    (services/members.member_names): имя сотрудника студийное, не с аккаунта."""
     return {
         "id": task.id,
         "text": task.text,
@@ -54,7 +51,7 @@ def _task_read(task: StudioTask) -> dict:
         "done_at": task.done_at,
         "created_at": task.created_at,
         "assignee_id": task.assignee_id,
-        "assignee_name": _full_name(task.assignee),
+        "assignee_name": names.get(task.assignee_id),
     }
 
 
@@ -62,7 +59,6 @@ async def _get_task_scoped(task_id: int, ctx: StudioContext, db: AsyncSession) -
     """Задача студии, к которой у роли есть доступ. 404 — чужая студия, 403 — чужой исполнитель."""
     task = (await db.execute(
         select(StudioTask)
-        .options(selectinload(StudioTask.assignee))
         .where(StudioTask.id == task_id, StudioTask.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
     if task is None:
@@ -83,7 +79,6 @@ async def list_tasks(
 ):
     stmt = (
         select(StudioTask)
-        .options(selectinload(StudioTask.assignee))
         .where(StudioTask.studio_id == ctx.studio_id)
     )
 
@@ -104,7 +99,8 @@ async def list_tasks(
 
     stmt = stmt.order_by(StudioTask.is_done, StudioTask.created_at.desc())
     tasks = (await db.execute(stmt)).scalars().all()
-    return [_task_read(t) for t in tasks]
+    names = await member_names(db, ctx.studio_id, {t.assignee_id for t in tasks if t.assignee_id})
+    return [_task_read(t, names) for t in tasks]
 
 
 @router.get("/tasks/assignees", response_model=list[AssigneeOption])
@@ -115,13 +111,12 @@ async def list_assignees(
     roles = _DELEGATABLE[ctx.role]
     if not roles:
         return []                                   # тренеру делегировать некому
-    rows = (await db.execute(
-        select(User, StudioMember.role)
-        .join(StudioMember, StudioMember.user_id == User.id)
+    members = (await db.execute(
+        select(StudioMember)
         .where(StudioMember.studio_id == ctx.studio_id, StudioMember.role.in_(roles))
-        .order_by(User.name)
-    )).all()
-    return [{"user_id": u.id, "name": _full_name(u), "role": role} for u, role in rows]
+        .order_by(StudioMember.name)
+    )).scalars().all()
+    return [{"user_id": m.user_id, "name": full_name(m), "role": m.role} for m in members]
 
 
 @router.post("/tasks", status_code=201, response_model=StudioTaskRead)
@@ -143,9 +138,8 @@ async def create_task(
     )
     db.add(task)
     await db.commit()
-    # refresh с загруженным assignee — иначе _task_read словит MissingGreenlet
-    await db.refresh(task, attribute_names=["assignee"])
-    return _task_read(task)
+    await db.refresh(task)
+    return _task_read(task, await member_names(db, ctx.studio_id, [task.assignee_id]))
 
 
 @router.patch("/tasks/{task_id}", response_model=StudioTaskRead)
@@ -166,8 +160,8 @@ async def update_task(
     for field, value in data.items():
         setattr(task, field, value)
     await db.commit()
-    await db.refresh(task, attribute_names=["assignee"])
-    return _task_read(task)
+    await db.refresh(task)
+    return _task_read(task, await member_names(db, ctx.studio_id, [task.assignee_id]))
 
 
 @router.delete("/tasks/{task_id}", status_code=204)

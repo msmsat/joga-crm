@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.checkout import (
     CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult, CheckoutServiceOut,
 )
+from services.members import member_name
 from services.notifier import notify_payment
 from services.pricing import resolve_price
 
@@ -331,7 +332,7 @@ async def pay(
     log_activity(
         db, ctx.studio_id, "payment",
         title=f"Оплата «{package.name}» — {client.name}",
-        actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
+        actor_name=await member_name(db, ctx.studio_id, current_user.id),
         entity_type=entity_type, entity_id=entity_id,
     )
 

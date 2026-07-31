@@ -6,8 +6,9 @@ export interface StaffCreate {
   email: string
   phone?: string | null
   // Пароль задаёт владелец и передаёт сотруднику лично — второй фактор к ссылке
-  // из письма. В письмо он не попадает.
-  password: string
+  // из письма. В письмо он не попадает. Не передаётся, если email принадлежит
+  // существующему аккаунту: тот входит своим паролем.
+  password?: string
   role: string
   department?: string | null
   salary?: number | null

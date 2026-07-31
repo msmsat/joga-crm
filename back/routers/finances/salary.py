@@ -9,6 +9,7 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import Lesson, Operation, SalaryPayment, StudioMember, User
 from schemas.finances.salary import SalaryPayRequest, SalaryRead, SalaryRow
+from services.members import full_name
 from services.notifier import notify
 
 router = APIRouter()
@@ -84,7 +85,7 @@ async def list_salaries(
         )
         rows.append(SalaryRow(
             user_id=u.id,
-            name=f"{u.name} {u.last_name or ''}".strip(),
+            name=full_name(sm),
             sessions_count=sessions,
             hours_worked=hours,
             lessons_revenue=revenue,
@@ -173,7 +174,7 @@ async def pay_salary(
         studio_id=ctx.studio_id,
         trainer_id=user_id,
         type="out",
-        title=f"Зарплата: {user.name} {user.last_name or ''}".strip(),
+        title=f"Зарплата: {full_name(member)}",
         amount=amount,
         op_date=now.date(),
         category="Зарплата",

@@ -127,6 +127,11 @@ export interface AcceptInvitePayload {
   phone?: string
 }
 
+// Отказ от приглашения: пароль не нужен — отказ ничего не открывает.
+export interface DeclineInvitePayload {
+  token: string
+}
+
 // EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).
 export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'enable_2fa' | 'login_2fa'
 

@@ -16,6 +16,7 @@ from models import Account, Client, Counterparty, Operation
 from routers.clients.loyalty import accrue_points, register_purchase
 from schemas.common import Page
 from schemas.finances.operations import CategoryStat, MethodStat, OperationCreate, OperationRead, OperationUpdate
+from services.members import member_name
 from services.notifier import LARGE_PAYMENT, notify
 
 router = APIRouter()
@@ -180,7 +181,7 @@ async def export_operations(
     filename = f"operations_{date_from or 'all'}_{date_to or 'all'}.csv"
 
     await notify(db, ctx.studio_id, "owner", "o9", {
-        "staff_name": f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+        "staff_name": await member_name(db, ctx.studio_id, ctx.user.id),
         "kind": "операции",
     })
 
@@ -281,7 +282,7 @@ async def create_operation(
     log_activity(
         db, ctx.studio_id, "operation",
         title=f"{sign}{body.amount:.0f} ₽ · {body.title}",
-        actor_name=f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+        actor_name=await member_name(db, ctx.studio_id, ctx.user.id),
         entity_type="operation", entity_id=op.id,
     )
     # операция, сдвиг баланса и запись в ленту — один commit: упадёт середина, откатится всё

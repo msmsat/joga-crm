@@ -21,6 +21,7 @@ from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
 )
 from services.invites import send_invite
+from services.members import full_name
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 
@@ -73,6 +74,16 @@ async def _resolve_services(service_ids: list[int], studio_id: int, db: AsyncSes
     return list(services)
 
 
+def _apply_studio_services(user: User, studio_id: int, services: list[Service]) -> None:
+    """Услуги ЭТОЙ студии заменяем, чужие оставляем нетронутыми.
+
+    `user.services` — глобальная коллекция аккаунта, и присваивание целиком
+    стёрло бы услуги человека в другой студии (услуги скоупятся через
+    Service.studio_id). Требует загруженного `user.services`.
+    """
+    user.services = [s for s in user.services if s.studio_id != studio_id] + services
+
+
 async def _replace_schedule(
     user_id: int, studio_id: int, schedule: list[StaffWorkingHoursItem], db: AsyncSession
 ) -> None:
@@ -105,20 +116,23 @@ def _is_online(user: User) -> bool:
 
 
 def _staff_list_item(user: User, membership: StudioMember) -> dict:
-    """Личные поля — с аккаунта, студийные (роль, должность) — с membership."""
+    """Контакты — с аккаунта, профиль в студии (имя, фото, роль) — с membership."""
     return {
         "id": user.id,
-        "name": user.name,
-        "last_name": user.last_name,
+        # Имя и фото — студийные: как владелец назвал человека у СЕБЯ в команде.
+        # Личное имя аккаунта (user.name) сюда не течёт (решение 9).
+        "name": membership.name,
+        "last_name": membership.last_name,
         "email": user.email,
         "phone": user.phone,
         "role": membership.role,
         "department": membership.department,
         "is_online": _is_online(user),
-        # Приглашённый, но ещё не принявший приглашение сотрудник — не активен:
-        # пароля у него нет, войти он не может (см. services/invites.py).
-        "is_active": user.is_verified,
-        "photo_url": user.photo_url,
+        # Активен = принял приглашение В ЭТУ студию. Не `user.is_verified`: у
+        # человека с уже готовым аккаунтом Velora он давно true, но в этой
+        # команде его ещё нет, пока он не согласился (решение 10).
+        "is_active": membership.status == "active",
+        "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
     }
 
@@ -138,7 +152,7 @@ async def list_staff(
         select(User, StudioMember)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id)
-        .order_by(User.name)
+        .order_by(StudioMember.name)
     )
     rows = result.all()
 
@@ -339,17 +353,17 @@ async def get_staff_profile(
 
     return {
         "id": user.id,
-        "name": user.name,
-        "last_name": user.last_name,
+        "name": membership.name,
+        "last_name": membership.last_name,
         "email": user.email,
         "phone": user.phone,
         "role": membership.role,
-        # Должность и деньги — условия работы В ЭТОЙ студии, поэтому с membership.
-        # avg_rating остаётся с аккаунта: это оценка человека, а не студии.
+        # Имя, фото, должность и деньги — профиль и условия В ЭТОЙ студии, поэтому
+        # с membership. avg_rating остаётся с аккаунта: это оценка человека.
         "department": membership.department,
         "is_online": _is_online(user),
-        "is_active": user.is_verified,
-        "photo_url": user.photo_url,
+        "is_active": membership.status == "active",
+        "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
         "salary": membership.salary,
         "rate": membership.rate,
@@ -381,46 +395,62 @@ async def create_staff(
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
-    # Занятый контакт — ОШИБКА, а не повод подставить чужой аккаунт.
-    #
-    # Раньше здесь была «привязка»: если email (а до того и телефон) уже
-    # принадлежал аккаунту продукта, его молча делали сотрудником этой студии.
-    # На практике это значило, что владелец заводит «Матвейку», а в списке
-    # появляется «Mat Sad» с чужим именем, чужим телефоном и уже подтверждённым
-    # аккаунтом — то есть сразу активный, без ожидания приглашения.
-    # Введённые данные при этом пропадали: личные поля чужого аккаунта
-    # перезаписывать нельзя, и не перезаписывались.
-    #
-    # Теперь правило одно и предсказуемое: что владелец ввёл — то и создаётся,
-    # а занятый email или телефон он видит ошибкой прямо в форме.
-    # ponytail: мультистудийного тренера (один аккаунт в двух студиях) это
-    # закрывает; понадобится — вернуть отдельным явным действием «пригласить
-    # существующий аккаунт» с подтверждением, а не догадкой по совпадению.
-    await ensure_user_contacts_free(db, email=data.email, phone=data.phone)
+    # Аккаунт с таким email уже есть → это ТОТ ЖЕ человек, а не ошибка: имя и
+    # фото теперь студийные, и владельцу есть куда положить введённое — в
+    # membership, не трогая чужую личность (docs/ROADMAP_ACCOUNTS, решения 8 и 9).
+    # Ошибка остаётся ровно одна — человек уже в этой команде.
+    user = (await db.execute(
+        select(User)
+        .options(selectinload(User.services))
+        .where(normalized_column(User, "email") == normalize("email", data.email))
+    )).scalars().first()
 
-    user = User(
-        email=data.email,
-        name=data.name,
-        last_name=data.last_name,
-        phone=data.phone,
-        photo_url=data.photo_url,
-        # Пароль от владельца — он же второй фактор на странице приглашения.
-        # В письмо он не попадает никогда (services/invites.py): иначе
-        # ссылка и секрет ехали бы одним каналом и смысл пары пропал.
-        hashed_password=get_password_hash(data.password),
-        # Вход закрыт, пока сотрудник не активировался по ссылке: пароль сам
-        # по себе не пускает, а карточка в списке остаётся серой.
-        is_verified=False,
-        is_onboarded=True,      # онбординг только для владельца новой студии
-        services=services,
-    )
-    db.add(user)
-    await db.flush()
+    if user is not None:
+        if await _membership_of(user.id, studio_id, db) is not None:
+            raise HTTPException(status_code=409, detail="Этот человек уже работает в вашей студии")
+        # Телефон формой больше не спрашивается, но если пришёл — он обязан быть
+        # свободен или уже принадлежать этому же аккаунту.
+        await ensure_user_contacts_free(db, phone=data.phone, exclude_id=user.id)
+        # Личное не трогаем: пароль, email, телефон и имя аккаунта принадлежат
+        # человеку. Пароль из формы здесь просто игнорируется — на /join этот
+        # сотрудник войдёт своим (services/invites.py, ветка lead_existing).
+        _apply_studio_services(user, studio_id, services)
+    else:
+        if not data.password:
+            raise HTTPException(status_code=400, detail="Задайте пароль для нового сотрудника")
+        await ensure_user_contacts_free(db, email=data.email, phone=data.phone)
+        user = User(
+            email=data.email,
+            # Личное имя нового аккаунта = то, что ввёл владелец: другого
+            # источника нет, человек в продукте впервые. Дальше он правит его
+            # у себя в профиле, и на подпись в студии это не влияет.
+            name=data.name,
+            last_name=data.last_name,
+            phone=data.phone,
+            photo_url=data.photo_url,
+            # Пароль от владельца — он же второй фактор на странице приглашения.
+            # В письмо он не попадает никогда (services/invites.py): иначе
+            # ссылка и секрет ехали бы одним каналом и смысл пары пропал.
+            hashed_password=get_password_hash(data.password),
+            # Вход закрыт, пока сотрудник не активировался по ссылке: пароль сам
+            # по себе не пускает, а карточка в списке остаётся серой.
+            is_verified=False,
+            is_onboarded=True,      # онбординг только для владельца новой студии
+            services=services,
+        )
+        db.add(user)
+        await db.flush()
 
     membership = StudioMember(
         user_id=user.id,
         studio_id=studio_id,
+        # Приглашение, а не зачисление: доступ к студии человек получит, только
+        # приняв его по ссылке из письма (routers/auth/invite.py).
+        status="pending",
         role=data.role,
+        name=data.name,
+        last_name=data.last_name,
+        photo_url=data.photo_url,
         department=data.department,
         salary=data.salary,
         rate=data.rate,
@@ -433,11 +463,11 @@ async def create_staff(
     await db.refresh(membership)
 
     await notify(db, studio_id, "owner", "o5", {
-        "staff_name": f"{user.name} {user.last_name or ''}".strip(),
+        "staff_name": full_name(membership),
     })
 
     studio = await _studio_of(studio_id, db)
-    invite_url = await send_invite(user, studio, membership.role)
+    invite_url = await send_invite(user, studio, membership.role, name=membership.name)
     return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
 
 
@@ -457,7 +487,7 @@ async def resend_invite(
     """
     user, membership = await _get_staff_member(staff_id, ctx.studio_id, db)
     studio = await _studio_of(ctx.studio_id, db)
-    invite_url = await send_invite(user, studio, membership.role)
+    invite_url = await send_invite(user, studio, membership.role, name=membership.name)
     return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
 
 
@@ -482,6 +512,17 @@ async def update_staff(
         raise HTTPException(status_code=404, detail="Сотрудник не найден")
     user, membership = row
 
+    # Контакты — это сам аккаунт, а не карточка в студии. Менять их вправе только
+    # владелец собственных контактов и студия, которая этот аккаунт завела и он
+    # ещё не активирован. Иначе владелец студии Б переписал бы email тренера,
+    # работающего в студии А, и увёл бы аккаунт себе.
+    contacts_changed = data.email != user.email or data.phone != user.phone
+    if contacts_changed and user.id != ctx.user.id and user.is_verified:
+        raise HTTPException(
+            status_code=403,
+            detail="Email и телефон принадлежат аккаунту сотрудника — их меняет он сам в профиле",
+        )
+
     # Проверяем только изменённые контакты: в БД остались исторические дубли по email
     # (docs/ROADMAP_ACCOUNTS, решение 3 — чистка), и на них нельзя запирать правку
     # остальных полей карточки. Новый конфликт при этом ввести всё равно нельзя.
@@ -496,14 +537,14 @@ async def update_staff(
 
     role_changed = data.role is not None and membership.role != data.role
 
-    user.name = data.name
-    user.last_name = data.last_name
     user.email = data.email
     user.phone = data.phone
-    user.photo_url = data.photo_url
-    user.services = services
-    # Условия работы — в membership этой студии. У человека, работающего ещё
-    # где-то, там своя ставка и своя должность, и они остаются нетронутыми.
+    _apply_studio_services(user, studio_id, services)
+    # Профиль и условия работы — в membership этой студии. У человека, работающего
+    # ещё где-то, там своё имя, своя ставка и своя должность — они не меняются.
+    membership.name = data.name
+    membership.last_name = data.last_name
+    membership.photo_url = data.photo_url
     membership.department = data.department
     membership.salary = data.salary
     membership.rate = data.rate
@@ -516,7 +557,7 @@ async def update_staff(
 
     if role_changed:
         await notify(db, studio_id, "owner", "o7", {
-            "staff_name": f"{user.name} {user.last_name or ''}".strip(),
+            "staff_name": full_name(membership),
             "role": data.role,
         })
 

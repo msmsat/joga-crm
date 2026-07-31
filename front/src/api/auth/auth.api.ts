@@ -1,6 +1,7 @@
 import { client } from '../client'
 import type {
   AcceptInvitePayload,
+  DeclineInvitePayload,
   ChangePasswordPayload,
   ContactCheckResponse,
   ContactField,
@@ -52,6 +53,9 @@ export const authApi = {
 
   acceptInvite: (payload: AcceptInvitePayload) =>
     client.post<TokenResponse>('/auth/invite/accept', payload, { auth: false }),
+
+  declineInvite: (payload: DeclineInvitePayload) =>
+    client.post<void>('/auth/invite/decline', payload, { auth: false }),
 
   getMe: (signal?: AbortSignal) =>
     client.get<UserMe>('/auth/me', { signal }),

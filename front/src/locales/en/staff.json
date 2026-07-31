@@ -102,10 +102,26 @@
     "nameFallback": "them",
     "employeeFallback": "Employee",
     "steps": {
-      "1": { "title": "About employee",     "sub": "What's the new team member's name?",     "trust": "Employee data is protected" },
-      "2": { "title": "Role & services",    "sub": "Position and list of services",          "trust": "Role can be changed at any time" },
-      "3": { "title": "Schedule & salary",  "sub": "When do they work and how much do they earn?", "trust": "Schedule syncs with journal" },
-      "4": { "title": "Done!",              "sub": "Invitation sent to {{name}}",            "trust": "" }
+      "1": {
+        "title": "About employee",
+        "sub": "What's the new team member's name?",
+        "trust": "Employee data is protected"
+      },
+      "2": {
+        "title": "Role & services",
+        "sub": "Position and list of services",
+        "trust": "Role can be changed at any time"
+      },
+      "3": {
+        "title": "Schedule & salary",
+        "sub": "When do they work and how much do they earn?",
+        "trust": "Schedule syncs with journal"
+      },
+      "4": {
+        "title": "Done!",
+        "sub": "Invitation sent to {{name}}",
+        "trust": ""
+      }
     },
     "step1": {
       "heading": "Personal details",
@@ -142,10 +158,10 @@
     "step4": {
       "exclaim": "Great!",
       "added": "added",
-      "sub": "The invitation is already on its way — now just wait for the employee to sign in.",
+      "sub": "Invitation sent. The employee joins the team once they accept it.",
       "inviteLinkLabel": "Invite link",
       "sendInviteLabel": "Send invitation",
-      "inviteInfo": "The employee follows the link, enters the password you gave them and appears in the system right away. The link is valid for 7 days. The password is not in the email — hand it over in person.",
+      "inviteInfo": "The employee gets the email, follows the link and confirms the invitation with their password — only then do they join the team and get access. The link is valid for 7 days. The password is not in the email — hand it over in person.",
       "emailSentTitle": "Email sent",
       "resend": "Send again",
       "resentOk": "Email sent again",
@@ -191,7 +207,8 @@
       "errors": {
         "name": "Name is required",
         "email": "Invalid email"
-      }
+      },
+      "contactsOwnedByEmployee": "Email and phone belong to the employee's account — they change them in their own profile."
     },
     "role": {
       "heading": "Role & specialization",

@@ -101,16 +101,16 @@ async def run() -> None:
         print("  несколько сотрудников без телефона: ok")
 
         # 3. Один аккаунт — две студии, условия работы разные.
-        ma = StudioMember(user_id=person.id, studio_id=a.id, role="trainer",
+        ma = StudioMember(user_id=person.id, studio_id=a.id, role="trainer", name="Аня в A",
                           rate=1000.0, rate_type="hourly", department="pilates")
-        mb = StudioMember(user_id=person.id, studio_id=b.id, role="admin",
+        mb = StudioMember(user_id=person.id, studio_id=b.id, role="admin", name="Анна Б.",
                           rate=2500.0, rate_type="fixed", department="admin")
         session.add_all([ma, mb])
         await session.flush()
 
         # Второе членство в ТОЙ ЖЕ студии — ошибка (uq_studio_member).
         await _expect_conflict(
-            session, StudioMember(user_id=person.id, studio_id=a.id, role="trainer"),
+            session, StudioMember(user_id=person.id, studio_id=a.id, role="trainer", name="дубль"),
             "второе членство в одной студии")
 
         rows = (await session.execute(
@@ -211,9 +211,9 @@ async def run_attach() -> None:
             session.add_all([owner, trainer])
             await session.flush()
             session.add_all([
-                StudioMember(user_id=owner.id, studio_id=guest.id, role="owner"),
+                StudioMember(user_id=owner.id, studio_id=guest.id, role="owner", name="Хозяин"),
                 # Тренер уже работает в другой (home) студии со своей ставкой.
-                StudioMember(user_id=trainer.id, studio_id=home.id, role="trainer",
+                StudioMember(user_id=trainer.id, studio_id=home.id, role="trainer", name="Родное Имя",
                              rate=800.0, rate_type="hourly", department="yoga"),
             ])
             await session.flush()
@@ -225,9 +225,14 @@ async def run_attach() -> None:
                 department="admin", rate=1700.0, rate_type="fixed", schedule=[],
             )
 
-            # check_plan_limit и notify ходят в биллинг/почту — здесь не нужны.
+            # check_plan_limit, notify и письмо-приглашение ходят в биллинг и SMTP —
+            # здесь не нужны (и слать реальное письмо на тестовый адрес нельзя).
             profiles.check_plan_limit = lambda *a, **k: asyncio.sleep(0)
             profiles.notify = lambda *a, **k: asyncio.sleep(0)
+
+            async def _no_mail(*a, **k):
+                return "https://example.test/join?token=stub"
+            profiles.send_invite = _no_mail
 
             # Проверка контакта ДО добавления: человек существует, но в этой студии
             # его нет. Форма добавления смотрит на in_studio, поэтому не должна
@@ -278,7 +283,14 @@ async def run_attach() -> None:
             # Личные данные чужого аккаунта владелец не перезаписывает.
             await session.refresh(trainer)
             assert trainer.name != "Чужое Имя", "владелец перетёр имя чужого аккаунта"
-            print("  личные данные чужого аккаунта не тронуты: ok")
+            assert trainer.hashed_password == "x", "владелец перезадал пароль чужого аккаунта"
+            print("  личные данные и пароль чужого аккаунта не тронуты: ok")
+
+            # Решение 9: имя, которое ввёл владелец, легло в ЕГО студию — и только
+            # в неё. В прежней студии человек подписан по-прежнему.
+            assert by_studio[guest.id].name == "Чужое Имя", "имя не попало в профиль студии"
+            assert by_studio[home.id].name == "Родное Имя", "имя в home-студии затёрто"
+            print("  имя студийное: своё в guest, прежнее в home: ok")
 
             # Повторное добавление в ТУ ЖЕ студию — настоящая ошибка.
             from fastapi import HTTPException

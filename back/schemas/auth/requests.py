@@ -101,6 +101,12 @@ class InviteAcceptRequest(BaseSchema):
     phone: OptPhone = None
 
 
+class InviteDeclineRequest(BaseSchema):
+    """Отказ от приглашения. Только токен: пароль для отказа не нужен (см.
+    routers/auth/invite.decline_invite)."""
+    token: str
+
+
 class ProfileUpdate(BaseSchema):
     name: Optional[str] = None
     last_name: Optional[str] = None

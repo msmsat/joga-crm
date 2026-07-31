@@ -102,8 +102,13 @@ async def get_studio_context(
     # Достаём из БД. Если членство ровно одно — берём его; если несколько,
     # активную студию выбрать нельзя без подсказки в токене → просим выбрать.
     if not studio_id or not role:
+        # status == active: непринятое приглашение студией не считается, иначе
+        # приглашённый попал бы в неё, просто войдя в аккаунт (решение 10).
         memberships = (await db.execute(
-            select(StudioMember).where(StudioMember.user_id == user.id)
+            select(StudioMember).where(
+                StudioMember.user_id == user.id,
+                StudioMember.status == "active",
+            )
         )).scalars().all()
         if not memberships:
             raise HTTPException(status_code=403, detail="Пользователь не состоит ни в одной студии")

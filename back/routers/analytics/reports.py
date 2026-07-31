@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import ActivityLog, Client, Hall, Lesson, Operation, Product, Reservation, User
+from models import ActivityLog, Client, Hall, Lesson, Operation, Product, Reservation, StudioMember
+from services.members import member_names
 from schemas.analytics.reports import (
     ActivityLogRead,
     PeriodSummaryRead,
@@ -275,14 +276,19 @@ async def trainers_report(
     start_dt = datetime.combine(date_from, time.min)
     end_dt = datetime.combine(date_to, time.max)
 
+    # Подпись тренера — из его членства в ЭТОЙ студии (решение 9), поэтому join
+    # к studio_members, а не к users: в другой студии он подписан иначе.
     rev_rows = (await db.execute(
         select(
             Operation.trainer_id,
-            User.name,
-            User.last_name,
+            StudioMember.name,
+            StudioMember.last_name,
             func.coalesce(func.sum(Operation.amount), 0),
         )
-        .join(User, Operation.trainer_id == User.id)
+        .join(
+            StudioMember,
+            (StudioMember.user_id == Operation.trainer_id) & (StudioMember.studio_id == sid),
+        )
         .where(
             Operation.studio_id == sid,
             Operation.type == "in",
@@ -290,7 +296,7 @@ async def trainers_report(
             Operation.op_date >= date_from,
             Operation.op_date <= date_to,
         )
-        .group_by(Operation.trainer_id, User.name, User.last_name)
+        .group_by(Operation.trainer_id, StudioMember.name, StudioMember.last_name)
     )).all()
 
     lesson_rows = (await db.execute(
@@ -317,12 +323,7 @@ async def trainers_report(
     # выручка почти всегда без trainer_id, так что сюда попадает вся команда — по
     # запросу на тренера это был N+1 и заметная часть времени ответа.
     if lessons_by_trainer:
-        names = dict(
-            (uid, " ".join(filter(None, (name, last_name))))
-            for uid, name, last_name in (await db.execute(
-                select(User.id, User.name, User.last_name).where(User.id.in_(lessons_by_trainer))
-            )).all()
-        )
+        names = await member_names(db, sid, lessons_by_trainer)
         for tid, cnt in lessons_by_trainer.items():
             rows[tid] = {"name": names.get(tid) or str(tid), "revenue": 0, "lessons_count": cnt}
 

@@ -47,6 +47,11 @@ export default function JoinPage() {
   const [fieldError, setFieldError] = useState<{ password?: string; phone?: string }>({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  // Отказ — вторая половина согласия. Спрашиваем подтверждение: приглашение
+  // снимается насовсем, и владельцу придётся звать заново.
+  const [confirmDecline, setConfirmDecline] = useState(false);
+  const [declining, setDeclining] = useState(false);
+  const [declined, setDeclined] = useState(false);
 
   // Кто уже сидит в этом браузере. Токен НЕ трогаем, пока приглашение не принято:
   // человек мог открыть ссылку из чужой вкладки и передумать.
@@ -106,6 +111,21 @@ export default function JoinPage() {
     }
   };
 
+  const handleDecline = async () => {
+    if (declining) return;
+    setDeclining(true);
+    setSubmitError("");
+    try {
+      await authApi.declineInvite({ token });
+      setDeclined(true);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof ApiError ? err.message : t("join:errors.network"));
+      setConfirmDecline(false);
+    } finally {
+      setDeclining(false);
+    }
+  };
+
   const logoSrc = resolveImageUrl(invite?.studio_logo_url);
   const roleLabel = invite ? t(`staff:roles.${invite.role}`, { defaultValue: invite.role }) : "";
 
@@ -150,7 +170,19 @@ export default function JoinPage() {
               </div>
             )}
 
-            {!loading && invite && (
+            {/* Отказ принят: членство снято, в студию человека не добавили */}
+            {!loading && declined && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", textAlign: "center" }}>
+                <div style={{ width: "56px", height: "56px", borderRadius: "18px", background: "rgba(163,201,168,0.14)", color: "#7aab80", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto" }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+                <h1 style={{ fontSize: "22px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", margin: 0 }}>{t("join:declined.title")}</h1>
+                <p style={{ fontSize: "14px", color: "var(--muted)", margin: 0, lineHeight: 1.6 }}>{t("join:declined.sub")}</p>
+                <PrimaryBtn onClick={() => navigate(LOGIN)} fullWidth>{t("join:expired.cta")}</PrimaryBtn>
+              </div>
+            )}
+
+            {!loading && invite && !declined && (
               <>
                 {/* Карточка студии — человек должен сразу видеть, куда именно его зовут */}
                 <div style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 16px", background: "rgba(252,174,145,0.06)", border: "1.5px solid rgba(252,174,145,0.22)", borderRadius: "16px" }}>
@@ -226,8 +258,40 @@ export default function JoinPage() {
                 )}
 
                 <PrimaryBtn onClick={handleSubmit} loading={submitting} fullWidth>
-                  {t("join:cta.enter")}
+                  {t("join:cta.accept")}
                 </PrimaryBtn>
+
+                {/* Отказ. Второй шаг — подтверждение: приглашение снимается
+                    насовсем, и вернуть его может только владелец студии. */}
+                {confirmDecline ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "14px 16px", background: "rgba(216,140,154,0.06)", border: "1.5px solid rgba(216,140,154,0.22)", borderRadius: "14px" }}>
+                    <p style={{ fontSize: "12.5px", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
+                      {t("join:decline.confirm", { studio: invite.studio_name })}
+                    </p>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        onClick={() => setConfirmDecline(false)}
+                        style={{ flex: 1, padding: "10px", background: "transparent", border: "1.5px solid rgba(26,26,26,0.1)", borderRadius: "10px", fontSize: "12.5px", fontWeight: 700, color: "var(--muted)", cursor: "pointer" }}
+                      >
+                        {t("join:decline.keep")}
+                      </button>
+                      <button
+                        onClick={handleDecline}
+                        disabled={declining}
+                        style={{ flex: 1, padding: "10px", background: "#D88C9A", border: "none", borderRadius: "10px", fontSize: "12.5px", fontWeight: 700, color: "#FFFFFF", cursor: declining ? "default" : "pointer", opacity: declining ? 0.6 : 1 }}
+                      >
+                        {declining ? t("join:decline.pending") : t("join:decline.confirmCta")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDecline(true)}
+                    style={{ background: "none", border: "none", color: "var(--muted)", fontWeight: 600, fontSize: "12.5px", cursor: "pointer", padding: 0, textDecoration: "underline", textUnderlineOffset: "3px" }}
+                  >
+                    {t("join:decline.cta")}
+                  </button>
+                )}
 
                 {!isNewAccount && (
                   <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0, textAlign: "center", lineHeight: 1.6 }}>

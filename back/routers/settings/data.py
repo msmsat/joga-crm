@@ -17,6 +17,7 @@ from dependencies import StudioContext, require_role
 from models import Client, ClientSubscription, Lesson, Operation
 from schemas.settings.data import ExportEstimateOut, ExportKind
 from services.exporter import csv_stream
+from services.members import member_name
 from services.notifier import _CURRENCY_SIGNS, _studio_prefs
 
 router = APIRouter()
@@ -252,7 +253,8 @@ async def export_data(
 
     # Приватность (§ задачи 1): экспорт отдаёт персональные данные студии целиком —
     # факт выгрузки логируем в ленту событий, это единственный след при разборе утечки.
-    log_activity(db, ctx.studio_id, "export", f"Экспорт данных: {kind}", actor_name=ctx.user.name)
+    log_activity(db, ctx.studio_id, "export", f"Экспорт данных: {kind}",
+                 actor_name=await member_name(db, ctx.studio_id, ctx.user.id))
     await db.commit()
 
     fname = f"velora-{kind}-{date.today().isoformat()}.csv"

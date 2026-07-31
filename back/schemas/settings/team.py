@@ -16,13 +16,17 @@ class StaffCreate(BaseSchema):
     # Пароль задаёт ВЛАДЕЛЕЦ и передаёт сотруднику лично (не письмом!).
     # Это второй фактор к ссылке из почты: одного перехваченного письма для входа
     # в студию мало — нужен ещё и пароль, о котором договорились вне канала.
-    password: str
+    #
+    # None допустим ровно в одном случае: email принадлежит уже существующему
+    # аккаунту — тогда человек войдёт своим паролем, а чужой ему не задают.
+    # Роутер это и проверяет: нет аккаунта и нет пароля → 400.
+    password: Optional[str] = None
     role: Literal["admin", "trainer"]
 
     @field_validator("password")
     @classmethod
-    def validate_password(cls, value: str) -> str:
-        return validate_strong_password(value)
+    def validate_password(cls, value: Optional[str]) -> Optional[str]:
+        return validate_strong_password(value) if value else value
     department: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None

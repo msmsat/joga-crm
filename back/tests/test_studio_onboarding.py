@@ -29,6 +29,11 @@ class _User:
         self.email = email
         self.is_onboarded = is_onboarded
         self.phone = None
+        # Профиль владельца в новой студии стартует с имени аккаунта
+        # (docs/ROADMAP_ACCOUNTS, решение 9).
+        self.name = "Owner"
+        self.last_name = None
+        self.photo_url = None
 
 
 class _Studio:

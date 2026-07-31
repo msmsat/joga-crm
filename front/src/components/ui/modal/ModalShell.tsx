@@ -9,6 +9,7 @@ export interface ModalShellProps {
   leftStyle?: React.CSSProperties; // переопределяет фон/паддинг левой панели (full-bleed hero)
   maxWidth?: string;            // ширина карточки, если дефолт (460/860) не подходит
   closeOnBackdrop?: boolean;    // клик мимо закрывает (по умолчанию true)
+  dismissible?: boolean;        // false — не закрыть ни Esc, ни кликом мимо (гейт)
 }
 
 const EXIT_MS = 200;
@@ -23,21 +24,22 @@ export const useModalClose = () => useContext(CloseContext);
 // Содержимое (Header/поля/Footer) передаётся как children.
 // Анимация — в классах .v-overlay / .v-modal (App.css). Без backdrop-filter:
 // блюр во весь вьюпорт и был причиной лагов открытия (см. комментарий там).
-export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, maxWidth, closeOnBackdrop = true }: ModalShellProps) {
+export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, maxWidth, closeOnBackdrop = true, dismissible = true }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
 
   const requestClose = () => {
-    if (leaving) return;
+    if (leaving || !dismissible) return;
     setLeaving(true);
     setTimeout(onClose, EXIT_MS);
   };
 
   useEffect(() => {
+    if (!dismissible) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') requestClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dismissible]);
 
   const isLg = size === 'lg';
 

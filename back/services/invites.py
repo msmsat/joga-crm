@@ -53,33 +53,35 @@ _STRINGS = {
         "subject": "{studio} приглашает вас в команду",
         "preheader": "Ваш доступ в CRM студии {studio}",
         "hello": "Здравствуйте, {name}!",
-        "lead_new": "Вас добавили в команду студии <b>{studio}</b> как <b>{role}</b>. "
-                    "Чтобы войти, нажмите кнопку ниже и введите пароль, который вам передал руководитель. "
+        "lead_new": "Вас приглашают в команду студии <b>{studio}</b> как <b>{role}</b>. "
+                    "Чтобы принять приглашение, нажмите кнопку ниже и введите пароль, который вам передал руководитель. "
                     "В этом письме пароля нет и быть не может — так одной лишь ссылки для доступа недостаточно.",
-        "lead_existing": "Вас добавили в команду студии <b>{studio}</b> как <b>{role}</b>. "
-                         "Войдите паролем от своего аккаунта Velora — студия появится в списке ваших рабочих пространств.",
-        "cta_new": "Войти в студию",
-        "cta_existing": "Войти в студию",
+        "lead_existing": "Вас приглашают в команду студии <b>{studio}</b> как <b>{role}</b>. "
+                         "Чтобы принять, войдите паролем от своего аккаунта Velora — студия появится в списке ваших рабочих пространств.",
+        "cta_new": "Принять приглашение",
+        "cta_existing": "Принять приглашение",
         "role_label": "Роль",
         "studio_label": "Студия",
         "expires": "Ссылка действует {days} дней. Если кнопка не открывается, скопируйте адрес в браузер:",
-        "ignore": "Если вы не ждали это письмо — просто проигнорируйте его.",
+        "ignore": "Не ждали приглашения? Ничего делать не нужно: без вашего согласия доступ к студии "
+                  "не откроется. На странице приглашения есть кнопка «Отклонить» — она снимет приглашение сразу.",
     },
     "en": {
         "subject": "{studio} invites you to the team",
         "preheader": "Your access to {studio} CRM",
         "hello": "Hi {name}!",
-        "lead_new": "You have been added to <b>{studio}</b> as <b>{role}</b>. "
-                    "Click the button below and enter the password your manager gave you. "
+        "lead_new": "You are invited to join <b>{studio}</b> as <b>{role}</b>. "
+                    "To accept, click the button below and enter the password your manager gave you. "
                     "This email does not contain the password — that way the link alone is not enough to get in.",
-        "lead_existing": "You have been added to <b>{studio}</b> as <b>{role}</b>. "
-                         "Sign in with your Velora account password — the studio will appear in your workspaces.",
-        "cta_new": "Sign in to the studio",
-        "cta_existing": "Sign in to the studio",
+        "lead_existing": "You are invited to join <b>{studio}</b> as <b>{role}</b>. "
+                         "To accept, sign in with your Velora account password — the studio will appear in your workspaces.",
+        "cta_new": "Accept invitation",
+        "cta_existing": "Accept invitation",
         "role_label": "Role",
         "studio_label": "Studio",
         "expires": "The link is valid for {days} days. If the button does not work, paste this address into your browser:",
-        "ignore": "If you were not expecting this email, just ignore it.",
+        "ignore": "Not expecting an invitation? You do not have to do anything — nobody gets access to the studio "
+                  "without your consent. The invitation page also has a Decline button that removes it right away.",
     },
 }
 
@@ -133,9 +135,12 @@ def _render(s: dict, *, name: str, studio: str, role: str, url: str, is_new_acco
 </table>"""
 
 
-async def send_invite(user: User, studio: Studio, role: str) -> str:
+async def send_invite(user: User, studio: Studio, role: str, *, name: str) -> str:
     """Шлёт приглашение и возвращает ссылку (её же показываем владельцу в модалке,
     чтобы передать сотруднику руками, если письмо не дошло).
+
+    `name` — как человека зовут В ЭТОЙ студии (studio_members.name), а не личное
+    имя аккаунта: письмо зовёт его именно в эту команду.
 
     Сбой SMTP не валит создание сотрудника: человек в студию уже добавлен, и
     откатывать это из-за почты нельзя — ссылку владелец видит в интерфейсе.
@@ -151,7 +156,7 @@ async def send_invite(user: User, studio: Studio, role: str) -> str:
             s["subject"].format(studio=studio.name),
             _render(
                 s,
-                name=user.name,
+                name=name,
                 studio=studio.name,
                 role=role_name,
                 url=url,
