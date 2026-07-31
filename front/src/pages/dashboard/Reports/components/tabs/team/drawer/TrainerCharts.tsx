@@ -48,7 +48,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
             <AreaChart data={revenueData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} />
+              <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} isAnimationActive={false} />
               <defs>
                 <linearGradient id="trainerRevGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#FCAE91" stopOpacity={0.4} />
@@ -96,7 +96,7 @@ export function TrainerCharts({ revenueData, loadWeekdayData, loadHourData }: Tr
             <BarChart data={loadData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => `${v}%`} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} />
+              <Tooltip formatter={(v) => `${v}%`} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} isAnimationActive={false} />
               <Bar dataKey="fill_pct" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} activeBar={false}>
                 <LabelList dataKey="fill_pct" position="top" content={ZeroLabel} />
                 {zeroAwareCells(loadData, 'fill_pct', PEACH_LIGHT)}

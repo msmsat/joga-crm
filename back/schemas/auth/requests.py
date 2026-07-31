@@ -96,6 +96,9 @@ class InviteAcceptRequest(BaseSchema):
     """
     token: str
     password: str
+    # Обязателен, только если телефона у аккаунта ещё нет (`needs_phone` из
+    # GET /auth/invite): владелец заводит сотрудника по одному email.
+    phone: OptPhone = None
 
 
 class ProfileUpdate(BaseSchema):

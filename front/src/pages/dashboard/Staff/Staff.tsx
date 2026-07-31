@@ -33,6 +33,7 @@ function toEmployee(item: StaffListItem): Employee {
     role: item.role,
     department: item.department,
     is_online: item.is_online,
+    is_active: item.is_active,
     photo_url: item.photo_url ?? undefined,
     avatar_gradient: item.avatar_gradient ?? undefined,
     stats: { total_bookings: 0, total_attended: 0, load_percent: 0, total_revenue: 0 },
@@ -97,7 +98,7 @@ export default function Staff() {
   const { t, i18n } = useTranslation(['staff', 'common']);
 
   // ── API hooks ─────────────────────────────────────────────────────────────
-  const { rawStaff, isLoading: listLoading, create, update, deleteStaff } = useStaffList();
+  const { rawStaff, isLoading: listLoading, refetch: refetchStaff, create, update, deleteStaff } = useStaffList();
   const [activeStaffId, setActiveStaffId] = useState<number | null>(() => {
     const saved = localStorage.getItem('staff_active_id');
     return saved ? Number(saved) : null;
@@ -123,15 +124,21 @@ export default function Staff() {
   const ownerCount = rawStaff.filter(s => s.role === 'owner').length;
 
   const selectStaff = (id: number | null) => {
+    // Пока приглашение не принято, показывать в профиле нечего — карточка в
+    // списке и так не кликается, но выбор мог прийти и из localStorage.
+    if (id != null && rawStaff.find(s => s.id === id)?.is_active === false) return;
     if (id != null) localStorage.setItem('staff_active_id', String(id));
     else localStorage.removeItem('staff_active_id');
     setActiveStaffId(id);
   };
 
   useEffect(() => {
-    if (rawStaff.length === 0) return;
-    if (activeStaffId && rawStaff.some(s => s.id === activeStaffId)) return;
-    const fallback = rawStaff.find(s => s.role === 'owner') ?? rawStaff[0];
+    // Автовыбор только среди принявших приглашение: иначе правая панель встала
+    // бы на человеке, профиля у которого ещё нет.
+    const selectable = rawStaff.filter(s => s.is_active);
+    if (selectable.length === 0) return;
+    if (activeStaffId && selectable.some(s => s.id === activeStaffId)) return;
+    const fallback = selectable.find(s => s.role === 'owner') ?? selectable[0];
     setActiveStaffId(fallback.id);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawStaff]);
@@ -237,18 +244,45 @@ export default function Staff() {
 
   const showToast = toast.success;
 
-  // Повторная отправка приглашения — сотрудник ещё не задал пароль (is_active=false).
-  const [resendingInvite, setResendingInvite] = useState(false);
+  // Действия над ожидающей карточкой — единственное, что с ней можно сделать,
+  // пока сотрудник не принял приглашение.
+  const [resendingId, setResendingId] = useState<number | null>(null);
+
   const resendInvite = async (staffId: number) => {
-    setResendingInvite(true);
+    if (resendingId !== null) return;
+    setResendingId(staffId);
     try {
       await staffApi.resendInvite(staffId);
       showToast(t('staff:toasts.inviteResent'));
+      // Человек мог принять приглашение как раз между опросами — тогда карточка
+      // разблокируется прямо сейчас, а не через интервал.
+      await refetchStaff();
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
     } finally {
-      setResendingInvite(false);
+      setResendingId(null);
     }
+  };
+
+  // Отмена присоединения = снятие членства в студии. Сам аккаунт и его работа в
+  // других студиях не трогаются (delete_staff удаляет StudioMember, не User).
+  const cancelInvite = (staffId: number) => {
+    const person = rawStaff.find(s => s.id === staffId);
+    setDeleteModal({
+      isOpen: true,
+      title: t('staff:deleteModal.cancelInvite'),
+      message: person ? `${person.name} · ${person.email}` : '',
+      confirmText: t('staff:deleteModal.cancelInviteConfirm'),
+      onConfirm: async () => {
+        closeDeleteModal();
+        try {
+          await deleteStaff(staffId);
+          showToast(t('staff:toasts.inviteCancelled'));
+        } catch (err) {
+          toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorDelete'));
+        }
+      },
+    });
   };
 
   const deleteEvent = (i: number) => {
@@ -292,6 +326,9 @@ export default function Staff() {
           onGroupChange={setActiveGroup}
           availableGroups={availableGroups}
           onAddClick={() => setIsAddModalOpen(true)}
+          onResendInvite={resendInvite}
+          onCancelInvite={cancelInvite}
+          resendingId={resendingId}
         />
 
         {/* RIGHT PANEL: PROFILE */}
@@ -308,19 +345,8 @@ export default function Staff() {
                 <div className="hero-bg" style={{ background: 'rgba(252,174,145,0.08)' }} />
 
                 <div className="hero-actions">
-                  {/* Приглашение ещё не принято — единственный способ дожать сотрудника */}
-                  {!profile.is_active && (
-                    <button
-                      className="h-btn"
-                      style={{ color: '#F9A08B', opacity: resendingInvite ? 0.5 : 1 }}
-                      disabled={resendingInvite}
-                      onClick={() => resendInvite(profile.id)}
-                    >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                      {t('staff:profile.resendInvite')}
-                    </button>
-                  )}
-
+                  {/* Приглашение и его отмена живут на карточке в левом списке:
+                      профиль для ожидающего сотрудника не открывается вовсе. */}
                   {profile.phone && (
                     <button
                       className="h-btn"
@@ -393,19 +419,10 @@ export default function Staff() {
 
                 {/* Info chips */}
                 <div className="info-row">
-                  {/* «Активен» ставим по факту принятого приглашения, а не всем подряд:
-                      приглашённый сотрудник пароля ещё не задал и войти не может. */}
-                  {profile.is_active ? (
-                    <div className="chip status-on">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      {t('common:status.active')}
-                    </div>
-                  ) : (
-                    <div className="chip" style={{ color: '#C98B5E', background: 'rgba(252,174,145,0.12)' }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 14"/></svg>
-                      {t('staff:profile.invitePending')}
-                    </div>
-                  )}
+                  <div className="chip status-on">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    {t('common:status.active')}
+                  </div>
                   <div className="chip" onClick={() => showToast(t('staff:toasts.emailCopied'))}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     {profile.email}
@@ -629,7 +646,7 @@ export default function Staff() {
               name: data.name,
               last_name: data.last_name || undefined,
               email: data.email,
-              phone: data.phone || undefined,
+              password: data.password,
               role: data.role,
               salary: data.salary ? Number(data.salary) : undefined,
               rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
@@ -639,11 +656,7 @@ export default function Staff() {
             if (result?.staff?.id) setActiveStaffId(result.staff.id);
             // Модалку не закрываем: она сама покажет последний шаг со ссылкой-приглашением
             // и закроется по «Готово» (AddEmployeeModal.handleClose → onClose).
-            // Привязали существующий аккаунт — говорим это прямо: в списке появится
-            // его имя, а не введённое, и «Приглашение отправлено» тут вводит в заблуждение.
-            showToast(result?.linked_existing
-              ? t('staff:toasts.employeeLinked', { name: result.staff.name })
-              : t('staff:toasts.inviteSent', { email: result?.staff.email ?? data.email }));
+            showToast(t('staff:toasts.inviteSent', { email: data.email }));
             return result;
           } catch (err) {
             // 402 (лимит тарифа) уже показан глобальной модалкой апселла — закрываем молча.

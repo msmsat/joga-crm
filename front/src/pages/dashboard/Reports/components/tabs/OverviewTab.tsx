@@ -275,7 +275,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
                 <CartesianGrid vertical={false} stroke="rgba(26,26,26,0.05)" />
                 <XAxis dataKey="label" {...AXIS_X} interval="preserveStartEnd" minTickGap={16} />
                 <YAxis hide domain={[(dataMin: number) => Math.min(0, dataMin), 'auto']} />
-                <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} />
+                <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={LINE_CURSOR} isAnimationActive={false} />
                 {chartMetric === 'profit' && <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />}
                 <Area
                   type="monotone" dataKey="value" stroke={PEACH} strokeWidth={2.5}
@@ -295,6 +295,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
                   formatter={(v) => (chartMetric === 'fill_rate' ? `${v}%` : fmtInt(Number(v)))}
                   contentStyle={TOOLTIP_STYLE}
                   cursor={BAR_CURSOR}
+                  isAnimationActive={false}
                 />
                 <Bar dataKey="value" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false} animationDuration={400}>
                   <LabelList dataKey="value" position="top" content={ZeroLabel} />

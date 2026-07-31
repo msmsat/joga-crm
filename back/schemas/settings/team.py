@@ -1,7 +1,8 @@
 from typing import Optional, Literal
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, field_validator
 
-from schemas._base import BaseSchema, NormEmail, OptPhone, Phone
+from schemas._base import BaseSchema, NormEmail, OptPhone
+from schemas.auth.requests import validate_strong_password
 from schemas.staff.staff import StaffWorkingHoursItem
 
 
@@ -9,10 +10,19 @@ class StaffCreate(BaseSchema):
     name: str
     last_name: Optional[str] = None
     email: NormEmail
-    phone: Phone  # телефон обязателен при создании сотрудника
-    # Пароля здесь нет: сотрудник задаёт его сам по ссылке-приглашению из письма
-    # (services/invites.py). Владелец не должен знать пароль от чужого аккаунта.
+    # Телефона у владельца при заведении сотрудника может не быть — его спросят
+    # у самого сотрудника на странице приглашения (routers/auth/invite.py).
+    phone: OptPhone = None
+    # Пароль задаёт ВЛАДЕЛЕЦ и передаёт сотруднику лично (не письмом!).
+    # Это второй фактор к ссылке из почты: одного перехваченного письма для входа
+    # в студию мало — нужен ещё и пароль, о котором договорились вне канала.
+    password: str
     role: Literal["admin", "trainer"]
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return validate_strong_password(value)
     department: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None

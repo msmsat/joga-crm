@@ -60,6 +60,8 @@ export interface Employee {
   role: string;
   department?: string | null;
   is_online: boolean;
+  /** false — приглашение отправлено, но сотрудник ещё не задал пароль и не входил. */
+  is_active: boolean;
   photo_url?: string;
   avatar_gradient?: string;
   salary?: number;

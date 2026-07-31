@@ -15,6 +15,9 @@ export interface StaffListProps {
   onGroupChange: (group: string) => void;
   availableGroups: string[];
   onAddClick: () => void;
+  onResendInvite: (id: number) => void;
+  onCancelInvite: (id: number) => void;
+  resendingId: number | null;
 }
 
 export function StaffList({
@@ -27,6 +30,9 @@ export function StaffList({
   onGroupChange,
   availableGroups,
   onAddClick,
+  onResendInvite,
+  onCancelInvite,
+  resendingId,
 }: StaffListProps) {
   const { t } = useTranslation('common');
   return (
@@ -57,6 +63,9 @@ export function StaffList({
                 employee={employee}
                 isActive={activeStaffId === employee.id}
                 onSelect={() => onSelect(employee.id)}
+                onResendInvite={() => onResendInvite(employee.id)}
+                onCancelInvite={() => onCancelInvite(employee.id)}
+                isResending={resendingId === employee.id}
               />
             </React.Fragment>
           ))

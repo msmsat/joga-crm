@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MetricConfig, SeriesPoint } from '../../types';
 import { fmtMoneyCompact } from '../../../../../lib/format';
@@ -10,6 +11,8 @@ interface Props {
   currencySymbol: string;
 }
 
+interface HoverState { index: number; left: number; top: number; }
+
 /** ISO-дата бакета → короткая подпись бара. */
 function barLabel(iso: string, period: Props['period'], locale: string): string {
   const d = new Date(iso);
@@ -18,24 +21,16 @@ function barLabel(iso: string, period: Props['period'], locale: string): string 
   return d.toLocaleDateString(locale, { month: 'short' });
 }
 
-/** Центрируем тултип над баром; если бар у́же тултипа и центр вылезает за
- * #dash-chart (обрезается его overflow-x), прижимаем к внутреннему краю. */
-function positionTooltip(bar: HTMLDivElement) {
-  const chart = bar.closest('#dash-chart') as HTMLElement | null;
-  const tip = bar.querySelector<HTMLDivElement>('.bar-tooltip');
-  if (!chart || !tip) return;
-  const chartRect = chart.getBoundingClientRect();
-  const barRect = bar.getBoundingClientRect();
-  const half = tip.offsetWidth / 2;
-  const center = barRect.left + barRect.width / 2;
-  const clamped = Math.min(Math.max(center, chartRect.left + half), chartRect.right - half);
-  tip.style.left = `${clamped - barRect.left}px`;
-  tip.style.transform = 'translate(-50%, -4px)';
-}
-
-function resetTooltip(bar: HTMLDivElement) {
-  const tip = bar.querySelector<HTMLDivElement>('.bar-tooltip');
-  if (tip) { tip.style.left = ''; tip.style.transform = ''; }
+/** Бар под курсором по X (или ближайший, если курсор попал в зазор между барами). */
+function barIndexAtX(bars: HTMLDivElement[], clientX: number): number {
+  const rects = bars.map(b => b.getBoundingClientRect());
+  const hit = rects.findIndex(r => clientX >= r.left && clientX < r.right);
+  if (hit !== -1) return hit;
+  return rects.reduce((best, r, i) => {
+    const mid = r.left + r.width / 2;
+    const bestMid = rects[best].left + rects[best].width / 2;
+    return Math.abs(mid - clientX) < Math.abs(bestMid - clientX) ? i : best;
+  }, 0);
 }
 
 export default function AnalyticsChart({ activeConfig, period, setPeriod, series, currencySymbol }: Props) {
@@ -49,6 +44,37 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
   };
   const periodSub: Record<Props['period'], string> = {
     week: t('chart.subWeek'), month: t('chart.subMonth'), year: t('chart.subYear'),
+  };
+
+  const [hover, setHover] = useState<HoverState | null>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
+
+  // Курсор двигается по всей колонке-«свече» (не только по видимому телу
+  // бара) — иначе над короткими барами тултип гас и «дёргался». Прячем его
+  // только когда курсор реально покинул #dash-chart (onMouseLeave контейнера).
+  const handleChartMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const chart = container.closest('#dash-chart') as HTMLElement | null;
+    const bars = Array.from(container.querySelectorAll<HTMLDivElement>('.bar'));
+    if (!chart || bars.length === 0) return;
+
+    const index = barIndexAtX(bars, e.clientX);
+    const chartRect = chart.getBoundingClientRect();
+    const barRect = bars[index].getBoundingClientRect();
+    // ponytail: ширина/высота тултипа берутся из предыдущего рендера (контент
+    // меняется только на 1 кадр раньше React) — расхождение в пару px для
+    // коротких чисел незаметно, апгрейд — useLayoutEffect, если понадобится точнее.
+    const tipW = tipRef.current?.offsetWidth ?? 0;
+    const tipH = tipRef.current?.offsetHeight ?? 24;
+
+    const centerX = barRect.left + barRect.width / 2;
+    const clampedX = Math.min(Math.max(centerX, chartRect.left + tipW / 2), chartRect.right - tipW / 2);
+
+    const margin = 12;
+    const desiredTop = e.clientY - tipH - margin;
+    const clampedTop = Math.min(Math.max(desiredTop, chartRect.top), chartRect.bottom - tipH);
+
+    setHover({ index, left: clampedX - chartRect.left, top: clampedTop - chartRect.top });
   };
 
   return (
@@ -78,24 +104,25 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
         </div>
       ) : (
         <div id="dash-chart">
-          <div className="chart-bars">
+          <div className="chart-bars" onMouseMove={handleChartMouseMove} onMouseLeave={() => setHover(null)}>
             {series.map((p, i) => {
               const baseColor = activeConfig.glow;
               const hoverColor = activeConfig.color;
-              const last = i === series.length - 1;
+              const active = hover ? hover.index === i : i === series.length - 1;
               return (
                 <div
                   key={p.period}
                   className="bar"
-                  style={{ height: `${Math.max(4, (p.value / max) * 100)}%`, background: last ? hoverColor : baseColor }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = hoverColor; positionTooltip(e.currentTarget); }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = last ? hoverColor : baseColor; resetTooltip(e.currentTarget); }}
-                >
-                  <div className="bar-tooltip">{fmt(p.value)}</div>
-                </div>
+                  style={{ height: `${Math.max(4, (p.value / max) * 100)}%`, background: active ? hoverColor : baseColor }}
+                />
               );
             })}
           </div>
+          {hover && (
+            <div ref={tipRef} className="bar-tooltip" style={{ left: hover.left, top: hover.top, opacity: 1 }}>
+              {fmt(series[hover.index].value)}
+            </div>
+          )}
           <div className="chart-labels">
             {series.map((p) => <div key={p.period} className="chart-label">{barLabel(p.period, period, i18n.language)}</div>)}
           </div>

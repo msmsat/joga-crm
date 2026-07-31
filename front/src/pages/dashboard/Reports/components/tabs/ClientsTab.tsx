@@ -236,7 +236,7 @@ export function ClientsTab({ params, paramsKey, registerCsvExport, onWidenPeriod
             <BarChart data={chartData}>
               <XAxis dataKey="label" {...AXIS_X} />
               <YAxis hide />
-              <Tooltip formatter={(v) => fmtInt(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} />
+              <Tooltip formatter={(v) => fmtInt(Number(v))} contentStyle={TOOLTIP_STYLE} cursor={BAR_CURSOR} isAnimationActive={false} />
               <Legend
                 formatter={(value) => (value === 'new' ? t('clients.chart.new') : t('clients.chart.returned'))}
                 wrapperStyle={{ fontSize: '12px' }}

@@ -215,6 +215,7 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
                 formatter={(v, name) => (name === 'revenue' ? fmtMoney(Number(v)) : fmtInt(Number(v)))}
                 contentStyle={TOOLTIP_STYLE}
                 cursor={BAR_CURSOR}
+                isAnimationActive={false}
               />
               <Bar yAxisId="revenue" dataKey="revenue" fill={PEACH_LIGHT} radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={3} cursor="pointer" activeBar={false}>
                 <LabelList dataKey="revenue" position="top" content={ZeroLabel} />

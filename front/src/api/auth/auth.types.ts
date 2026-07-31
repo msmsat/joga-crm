@@ -113,14 +113,18 @@ export interface InviteInfo {
   studio_name: string
   studio_logo_url: string | null
   role: string
-  // true — аккаунта у человека ещё не было, страница просит ПРИДУМАТЬ пароль;
-  // false — аккаунт есть, и нужен его СУЩЕСТВУЮЩИЙ пароль.
-  needs_password: boolean
+  // Пароль страница спрашивает всегда — ссылка это лишь первый фактор. Флаг
+  // меняет только формулировку: true — пароль передал владелец, false — свой.
+  is_new_account: boolean
+  // Телефона у аккаунта нет — страница спрашивает его вместе с паролем.
+  needs_phone: boolean
 }
 
 export interface AcceptInvitePayload {
   token: string
   password: string
+  // Только при needs_phone — иначе бэкенд поле игнорирует.
+  phone?: string
 }
 
 // EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).

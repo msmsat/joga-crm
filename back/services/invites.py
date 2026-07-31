@@ -54,10 +54,11 @@ _STRINGS = {
         "preheader": "Ваш доступ в CRM студии {studio}",
         "hello": "Здравствуйте, {name}!",
         "lead_new": "Вас добавили в команду студии <b>{studio}</b> как <b>{role}</b>. "
-                    "Осталось придумать пароль — и рабочее место готово.",
+                    "Чтобы войти, нажмите кнопку ниже и введите пароль, который вам передал руководитель. "
+                    "В этом письме пароля нет и быть не может — так одной лишь ссылки для доступа недостаточно.",
         "lead_existing": "Вас добавили в команду студии <b>{studio}</b> как <b>{role}</b>. "
                          "Войдите паролем от своего аккаунта Velora — студия появится в списке ваших рабочих пространств.",
-        "cta_new": "Создать пароль и войти",
+        "cta_new": "Войти в студию",
         "cta_existing": "Войти в студию",
         "role_label": "Роль",
         "studio_label": "Студия",
@@ -69,10 +70,11 @@ _STRINGS = {
         "preheader": "Your access to {studio} CRM",
         "hello": "Hi {name}!",
         "lead_new": "You have been added to <b>{studio}</b> as <b>{role}</b>. "
-                    "Just set a password — and your workspace is ready.",
+                    "Click the button below and enter the password your manager gave you. "
+                    "This email does not contain the password — that way the link alone is not enough to get in.",
         "lead_existing": "You have been added to <b>{studio}</b> as <b>{role}</b>. "
                          "Sign in with your Velora account password — the studio will appear in your workspaces.",
-        "cta_new": "Set password and sign in",
+        "cta_new": "Sign in to the studio",
         "cta_existing": "Sign in to the studio",
         "role_label": "Role",
         "studio_label": "Studio",
@@ -87,9 +89,9 @@ _ROLE_NAMES = {
 }
 
 
-def _render(s: dict, *, name: str, studio: str, role: str, url: str, needs_password: bool) -> str:
-    lead = (s["lead_new"] if needs_password else s["lead_existing"]).format(studio=studio, role=role)
-    cta = s["cta_new"] if needs_password else s["cta_existing"]
+def _render(s: dict, *, name: str, studio: str, role: str, url: str, is_new_account: bool) -> str:
+    lead = (s["lead_new"] if is_new_account else s["lead_existing"]).format(studio=studio, role=role)
+    cta = s["cta_new"] if is_new_account else s["cta_existing"]
     # Вёрстка письма — таблицами и инлайновыми стилями: Gmail и Outlook вырезают
     # <style> и не понимают flex/grid, а внешние картинки режут по умолчанию,
     # поэтому логотип — текстом, акцент — фоном ячейки.
@@ -154,8 +156,8 @@ async def send_invite(user: User, studio: Studio, role: str) -> str:
                 role=role_name,
                 url=url,
                 # Непроверенный аккаунт = человека в продукте раньше не было:
-                # его завела эта же студия минуту назад, пароля у него нет.
-                needs_password=not user.is_verified,
+                # его завела эта же студия, и пароль ему задал владелец.
+                is_new_account=not user.is_verified,
             ),
         )
     except Exception:

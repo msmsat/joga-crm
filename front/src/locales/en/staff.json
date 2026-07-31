@@ -26,9 +26,7 @@
     "staffHalls": "Staff halls",
     "noName": "Name not set",
     "noRole": "No role",
-    "addEventStub": "Add event form...",
-    "resendInvite": "Send invitation",
-    "invitePending": "Invitation pending"
+    "addEventStub": "Add event form..."
   },
   "cards": {
     "trainer": {
@@ -80,7 +78,9 @@
   },
   "deleteModal": {
     "cancelLesson": "Cancel class?",
-    "dontAsk": "Don't ask again when deleting"
+    "dontAsk": "Don't ask again when deleting",
+    "cancelInvite": "Cancel joining?",
+    "cancelInviteConfirm": "Cancel invitation"
   },
   "toasts": {
     "lessonCanceled": "Class canceled",
@@ -94,7 +94,7 @@
     "ringing": "Calling...",
     "inviteSent": "Invitation sent to {{email}}",
     "inviteResent": "Invitation sent again",
-    "employeeLinked": "An existing account was added to the studio: {{name}}"
+    "inviteCancelled": "Invitation cancelled"
   },
   "addModal": {
     "stepIndicator": "Step {{current}} of {{total}}",
@@ -111,16 +111,18 @@
       "heading": "Personal details",
       "sub": "Let's start with the name and contact info",
       "namePlaceholder": "E.g. Anna Smith",
-      "phoneLabel": "Phone number",
       "emailLabel": "Email address",
       "contactsNotSet": "No contacts provided",
-      "inviteHint": "An invitation goes to this email — the employee sets their own password and signs in via the link.",
+      "inviteHint": "Give the password to the employee in person — it never goes into the email. The email carries only the link, and without the password it will not open the studio.",
       "errors": {
         "name": "Name is required",
         "phone": "Invalid phone number",
         "email": "Invalid email",
-        "phoneTaken": "This number already belongs to another Velora account"
-      }
+        "password": "At least 8 characters, letters and digits required",
+        "emailTaken": "This email already belongs to another Velora account"
+      },
+      "passwordLabel": "Sign-in password for the employee",
+      "passwordPlaceholder": "At least 8 characters, letters and digits"
     },
     "step2": {
       "heading": "Role & services",
@@ -143,13 +145,12 @@
       "sub": "The invitation is already on its way — now just wait for the employee to sign in.",
       "inviteLinkLabel": "Invite link",
       "sendInviteLabel": "Send invitation",
-      "inviteInfo": "The employee follows the link, sets a password and appears in the system right away. The link is valid for 7 days; if the email did not arrive, share it any way you like.",
+      "inviteInfo": "The employee follows the link, enters the password you gave them and appears in the system right away. The link is valid for 7 days. The password is not in the email — hand it over in person.",
       "emailSentTitle": "Email sent",
       "resend": "Send again",
       "resentOk": "Email sent again",
       "resendError": "Sending failed — retry",
-      "copied": "Copied",
-      "linkedExisting": "An account with this email already exists in Velora — its owner, {{name}} ({{email}}), was added to the studio. The name and phone you entered were not applied: personal data belongs to the person, not to the studio."
+      "copied": "Copied"
     },
     "illus": {
       "contacts": "Contacts",
@@ -248,5 +249,11 @@
     "cardNote": "email is the sign-in login",
     "loginWarning": "Email is the owner's login. After saving, sign in with the new address.",
     "lockedHint": "Name, photo, role and access rights are not edited here — they live in the «Profile» section."
+  },
+  "list": {
+    "pendingLabel": "Invitation pending",
+    "pendingHint": "The profile opens once the employee accepts the invitation",
+    "resendInvite": "Send the invitation again",
+    "cancelInvite": "Cancel joining"
   }
 }

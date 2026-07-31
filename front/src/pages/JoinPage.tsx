@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../App.css";
-import { Orbs, Logo, InputField, PrimaryBtn, PasswordStrength, ErrorAlert } from "../components/UI";
+import { Orbs, Logo, InputField, PhoneField, PrimaryBtn, ErrorAlert } from "../components/UI";
 import { authApi, ApiError } from "../api";
 import { resolveImageUrl } from "../api/client";
 import type { InviteInfo, UserMe } from "../api/auth/auth.types";
@@ -16,13 +16,6 @@ const LOGIN = "/login?switch=1";
 // Инициалы студии для карточки без лого — как в LinkedAccounts / SelectCrm.
 function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? "").join("");
-}
-
-// Базовые требования бэкенда (validate_strong_password): гасим самые частые
-// промахи до запроса. Остальные его правила — повторы и «123qwe» — остаются за
-// сервером: он авторитет, а его текст ошибки страница и так показывает.
-function looksStrong(pw: string): boolean {
-  return pw.length >= 8 && /[A-Za-zА-Яа-я]/.test(pw) && /[0-9]/.test(pw);
 }
 
 const ICON_LOCK = (
@@ -47,9 +40,11 @@ export default function JoinPage() {
   const [mounted, setMounted] = useState(false);
 
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [fieldError, setFieldError] = useState<{ password?: string; confirm?: string }>({});
+  // Телефон спрашиваем только у тех, у кого его в аккаунте нет: владелец заводит
+  // сотрудника по одному email, а номер знает сам сотрудник.
+  const [phone, setPhone] = useState("");
+  const [fieldError, setFieldError] = useState<{ password?: string; phone?: string }>({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,16 +67,19 @@ export default function JoinPage() {
     authApi.getMe().then(setCurrentUser).catch(() => setCurrentUser(null));
   }, []);
 
-  const needsPassword = invite?.needs_password ?? false;
+  const isNewAccount = invite?.is_new_account ?? false;
+  const needsPhone = invite?.needs_phone ?? false;
   // Приглашение адресовано другому аккаунту, а в браузере открыт этот — предупреждаем
   // заранее: принятие заменит активную сессию (переключение аккаунта).
   const otherAccount = currentUser && invite && currentUser.email !== invite.email ? currentUser : null;
 
+  // Пароль здесь вводят, а не придумывают, поэтому проверяем только «непусто» —
+  // верность решает сервер, сверяя с хэшем.
   const validate = () => {
-    const errs: { password?: string; confirm?: string } = {};
+    const errs: { password?: string; phone?: string } = {};
     if (!password) errs.password = t("join:errors.passwordRequired");
-    else if (needsPassword && !looksStrong(password)) errs.password = t("join:errors.passwordWeak");
-    if (needsPassword && confirm !== password) errs.confirm = t("join:errors.confirmMismatch");
+    // Формат добивает бэкенд (E.164): здесь достаточно «номер есть и он не огрызок».
+    if (needsPhone && phone.replace(/\D/g, "").length < 8) errs.phone = t("join:errors.phoneRequired");
     setFieldError(errs);
     return Object.keys(errs).length === 0;
   };
@@ -91,7 +89,7 @@ export default function JoinPage() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      const data = await authApi.acceptInvite({ token, password });
+      const data = await authApi.acceptInvite({ token, password, phone: needsPhone ? phone : undefined });
       if (data.two_fa_required) {
         // У аккаунта включена 2FA — код уже отправлен, добиваем вход обычной формой.
         navigate(LOGIN);
@@ -167,10 +165,10 @@ export default function JoinPage() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <h1 style={{ fontSize: "26px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.8px", margin: 0, lineHeight: 1.1 }}>
-                    {needsPassword ? t("join:title.new", { name: invite.name }) : t("join:title.existing", { name: invite.name })}
+                    {isNewAccount ? t("join:title.new", { name: invite.name }) : t("join:title.existing", { name: invite.name })}
                   </h1>
                   <p style={{ fontSize: "14px", color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>
-                    {needsPassword ? t("join:sub.new") : t("join:sub.existing", { email: invite.email })}
+                    {isNewAccount ? t("join:sub.new") : t("join:sub.existing", { email: invite.email })}
                   </p>
                 </div>
 
@@ -190,11 +188,11 @@ export default function JoinPage() {
                   <ErrorAlert message={submitError} />
 
                   <InputField
-                    label={needsPassword ? t("join:fields.newPassword") : t("join:fields.password")}
+                    label={isNewAccount ? t("join:fields.newPassword") : t("join:fields.password")}
                     type={showPassword ? "text" : "password"}
-                    placeholder={needsPassword ? t("join:fields.newPasswordPlaceholder") : t("join:fields.passwordPlaceholder")}
+                    placeholder={isNewAccount ? t("join:fields.newPasswordPlaceholder") : t("join:fields.passwordPlaceholder")}
                     value={password}
-                    autoComplete={needsPassword ? "new-password" : "current-password"}
+                    autoComplete="current-password"
                     onChange={(v: string) => { setPassword(v); setFieldError(e => ({ ...e, password: undefined })); }}
                     icon={ICON_LOCK}
                     rightSlot={
@@ -208,28 +206,30 @@ export default function JoinPage() {
                     error={fieldError.password}
                   />
 
-                  {needsPassword && (
-                    <>
-                      <PasswordStrength password={password} />
-                      <InputField
-                        label={t("join:fields.confirm")}
-                        type={showPassword ? "text" : "password"}
-                        placeholder={t("join:fields.confirmPlaceholder")}
-                        value={confirm}
-                        autoComplete="new-password"
-                        onChange={(v: string) => { setConfirm(v); setFieldError(e => ({ ...e, confirm: undefined })); }}
-                        icon={ICON_LOCK}
-                        error={fieldError.confirm}
-                      />
-                    </>
+                  {needsPhone && (
+                    <PhoneField
+                      label={t("join:fields.phone")}
+                      value={phone}
+                      onChange={(v: string | undefined) => { setPhone(v || ""); setFieldError(e => ({ ...e, phone: undefined })); }}
+                      error={fieldError.phone}
+                      hint={t("join:fields.phoneHint")}
+                    />
                   )}
+
                 </div>
 
+                {/* Человек ждёт письма с паролем — объясняем, почему его там нет */}
+                {isNewAccount && (
+                  <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0, lineHeight: 1.6 }}>
+                    {t("join:newAccountHint")}
+                  </p>
+                )}
+
                 <PrimaryBtn onClick={handleSubmit} loading={submitting} fullWidth>
-                  {needsPassword ? t("join:cta.new") : t("join:cta.existing")}
+                  {t("join:cta.enter")}
                 </PrimaryBtn>
 
-                {!needsPassword && (
+                {!isNewAccount && (
                   <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0, textAlign: "center", lineHeight: 1.6 }}>
                     {t("join:forgotHint")}{" "}
                     <button

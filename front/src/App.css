@@ -1136,27 +1136,21 @@
   background: var(--accent); 
 }
 
-.bar-tooltip { 
-  position: absolute; 
-  top: -28px; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  background: var(--text); 
-  color: white; 
-  font-size: 10px; 
-  font-weight: 600; 
-  padding: 5px 10px; 
+.bar-tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 10px;
   border-radius: 6px; /* Тултип тоже делаем чуть мягче */
-  white-space: nowrap; 
-  opacity: 0; 
-  pointer-events: none; 
-  transition: all 0.2s ease;
-  z-index: 10; 
-}
-
-.bar:hover .bar-tooltip {
-  opacity: 1;
-  transform: translate(-50%, -4px);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  /* без transition: React монтирует/убирает узел и сразу задаёт left/top —
+     позиция двигается рывком, без доездов за курсором */
 }
 
 .chart-labels { 

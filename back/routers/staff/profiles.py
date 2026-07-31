@@ -1,9 +1,8 @@
-import secrets
 from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import delete, func, or_, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -42,27 +41,6 @@ async def _get_staff_member(
     if not row:
         raise HTTPException(status_code=404, detail="Сотрудник не найден")
     return row[0], row[1]
-
-
-async def _find_user_by_contacts(
-    email: str, phone: Optional[str], db: AsyncSession
-) -> Optional[User]:
-    """Аккаунт продукта с таким email или телефоном, если он уже существует.
-
-    Сравнение нормализованное: в БД до миграции могли остаться значения в разных
-    форматах, и «+7 999 …» не должен разойтись с «79999…».
-    """
-    conditions = [
-        normalized_column(User, field) == normalize(field, value)
-        for field, value in (("email", email), ("phone", phone))
-        if normalize(field, value) is not None
-    ]
-    if not conditions:
-        return None
-    result = await db.execute(
-        select(User).options(selectinload(User.services)).where(or_(*conditions)).limit(1)
-    )
-    return result.scalars().first()
 
 
 async def _studio_of(studio_id: int, db: AsyncSession) -> Studio:
@@ -204,22 +182,14 @@ async def check_staff_contact(
 ):
     """Два разных факта об одном контакте — форма берёт нужный ей.
 
-    `in_studio` — человек с этим контактом УЖЕ работает в этой студии. При
-    добавлении это настоящая ошибка: второе членство в одной студии запрещено
-    (uq_studio_member).
+    `taken` — контакт принадлежит какому-то аккаунту продукта. И для email, и для
+    телефона это ОШИБКА: оба уникальны глобально, второй аккаунт с ними создать
+    нельзя, а подставлять вместо введённых данных уже существующего человека
+    create_staff больше не будет (см. его комментарий).
 
-    `taken` — контакт принадлежит какому-то аккаунту продукта, возможно из чужой
-    студии. Смысл разный по полю:
-
-    - EMAIL: при добавлении это НЕ ошибка. Email — личность аккаунта, значит это
-      тот же человек: привяжем его к студии вторым членством (решение 8). Форму
-      не блокируем, но предупреждаем — в студию попадёт ЕГО имя, не введённое.
-    - ТЕЛЕФОН: ошибка. Номер уникален глобально (uq_users_phone), и занят он
-      аккаунтом с ДРУГИМ email, то есть другим человеком. Раньше форма молча
-      подставляла владельцу этот чужой аккаунт целиком (см. create_staff).
-
-    При ПРАВКЕ карточки ошибка в обоих случаях: там контакт переписывается, и
-    update_staff ответит 409.
+    `in_studio` — этот контакт принадлежит человеку, который уже работает в этой
+    студии. Отдельный признак нужен ради текста ошибки: «уже у вас в команде»
+    объясняет ситуацию, а «email занят» в этом случае только путает.
     """
     normalized = normalize(field, value)
     if normalized is None:
@@ -411,50 +381,41 @@ async def create_staff(
 
     services = await _resolve_services(data.service_ids, studio_id, db)
 
-    # Личность аккаунта — ЭТО EMAIL: по нему входят, по нему же ищет
-    # get_current_user. Совпал email — это тот же человек, и мы ПРИВЯЗЫВАЕМ его к
-    # студии вторым членством, а не заводим дубль (ROADMAP_ACCOUNTS, решение 8).
+    # Занятый контакт — ОШИБКА, а не повод подставить чужой аккаунт.
     #
-    # Телефон в поиск НЕ входит осознанно. Раньше входил — и совпадение по одному
-    # телефону молча подставляло чужой аккаунт целиком: владелец заводил «Анну» с
-    # новым email, а в студии появлялся «John» с его именем и почтой, потому что
-    # личные данные существующего аккаунта мы (правильно) не перезаписываем.
-    # Новый email означает другого человека, и «другой человек с тем же номером» —
-    # это ошибка ввода, а не повод отдать владельцу чужую личность.
-    user = await _find_user_by_contacts(data.email, None, db)
-    linked_existing = user is not None
+    # Раньше здесь была «привязка»: если email (а до того и телефон) уже
+    # принадлежал аккаунту продукта, его молча делали сотрудником этой студии.
+    # На практике это значило, что владелец заводит «Матвейку», а в списке
+    # появляется «Mat Sad» с чужим именем, чужим телефоном и уже подтверждённым
+    # аккаунтом — то есть сразу активный, без ожидания приглашения.
+    # Введённые данные при этом пропадали: личные поля чужого аккаунта
+    # перезаписывать нельзя, и не перезаписывались.
+    #
+    # Теперь правило одно и предсказуемое: что владелец ввёл — то и создаётся,
+    # а занятый email или телефон он видит ошибкой прямо в форме.
+    # ponytail: мультистудийного тренера (один аккаунт в двух студиях) это
+    # закрывает; понадобится — вернуть отдельным явным действием «пригласить
+    # существующий аккаунт» с подтверждением, а не догадкой по совпадению.
+    await ensure_user_contacts_free(db, email=data.email, phone=data.phone)
 
-    if user is None:
-        # Телефон уникален глобально (uq_users_phone), поэтому создать второй
-        # аккаунт с ним всё равно нельзя — честная 409 вместо падения на индексе.
-        await ensure_user_contacts_free(db, phone=data.phone)
-        user = User(
-            email=data.email,
-            name=data.name,
-            last_name=data.last_name,
-            phone=data.phone,
-            photo_url=data.photo_url,
-            # Пароля ещё нет — его задаст сам сотрудник по ссылке из письма.
-            # Хэш всё равно ставим случайный, а не пустой: NOT NULL в схеме, и
-            # подобрать «пустой пароль» на /login должно быть невозможно.
-            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
-            is_verified=False,      # станет True, когда сотрудник примет приглашение
-            is_onboarded=True,      # онбординг только для владельца новой студии
-            services=services,
-        )
-        db.add(user)
-        await db.flush()
-    else:
-        # Уже в этой студии — настоящая ошибка, а не приглашение.
-        if await _membership_of(user.id, studio_id, db) is not None:
-            raise HTTPException(
-                status_code=409,
-                detail="Этот человек уже работает в вашей студии",
-            )
-        # Личные данные чужого аккаунта не перезаписываем: имя, пароль, фото и
-        # контакты принадлежат человеку, а не студии, которая его позвала.
-        # Услуги студийные (Service.studio_id), поэтому их добавить можно.
-        user.services = list({*user.services, *services})
+    user = User(
+        email=data.email,
+        name=data.name,
+        last_name=data.last_name,
+        phone=data.phone,
+        photo_url=data.photo_url,
+        # Пароль от владельца — он же второй фактор на странице приглашения.
+        # В письмо он не попадает никогда (services/invites.py): иначе
+        # ссылка и секрет ехали бы одним каналом и смысл пары пропал.
+        hashed_password=get_password_hash(data.password),
+        # Вход закрыт, пока сотрудник не активировался по ссылке: пароль сам
+        # по себе не пускает, а карточка в списке остаётся серой.
+        is_verified=False,
+        is_onboarded=True,      # онбординг только для владельца новой студии
+        services=services,
+    )
+    db.add(user)
+    await db.flush()
 
     membership = StudioMember(
         user_id=user.id,
@@ -477,14 +438,7 @@ async def create_staff(
 
     studio = await _studio_of(studio_id, db)
     invite_url = await send_invite(user, studio, membership.role)
-    return {
-        "ok": True,
-        "staff": _staff_list_item(user, membership),
-        "invite_url": invite_url,
-        # Владельцу это нужно сказать вслух: он ввёл одно имя, а в списке появится
-        # другое — имя владельца аккаунта. Молча подменять личность нельзя.
-        "linked_existing": linked_existing,
-    }
+    return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
 
 
 # ─── POST /staff/{staff_id}/invite ────────────────────────────────────────────

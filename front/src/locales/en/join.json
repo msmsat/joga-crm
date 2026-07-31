@@ -7,29 +7,28 @@
     "roleLine": "Team invitation · {{role}}"
   },
   "title": {
-    "new": "Welcome, {{name}}",
+    "new": "Hello, {{name}}",
     "existing": "Welcome back, {{name}}"
   },
   "sub": {
-    "new": "Set a password — and your workspace is ready.",
+    "new": "Enter the password your studio manager gave you.",
     "existing": "Enter the password for {{email}} to accept the invitation."
   },
   "switch": {
     "notice": "You are signed in as {{current}}. This invitation is for {{next}} — accepting it switches you to that account. You can switch back from your profile."
   },
   "fields": {
-    "newPassword": "Create a password",
-    "newPasswordPlaceholder": "At least 8 characters",
+    "newPassword": "Password",
+    "newPasswordPlaceholder": "Password from your manager",
     "password": "Password",
     "passwordPlaceholder": "Your Velora password",
-    "confirm": "Repeat password",
-    "confirmPlaceholder": "Once again",
+    "phone": "Phone number",
+    "phoneHint": "We do not have your number yet — enter it with the country code",
     "show": "Show",
     "hide": "Hide"
   },
   "cta": {
-    "new": "Set password and sign in",
-    "existing": "Accept invitation"
+    "enter": "Sign in to the studio"
   },
   "forgotHint": "Forgot your password?",
   "forgotLink": "Recover access",
@@ -42,7 +41,7 @@
     "noToken": "The link has no invitation code — open it from the email in full.",
     "network": "Connection error",
     "passwordRequired": "Enter your password",
-    "passwordWeak": "Password is too simple — at least 8 characters, letters and digits",
-    "confirmMismatch": "Passwords do not match"
-  }
+    "phoneRequired": "Enter your phone number with the country code"
+  },
+  "newAccountHint": "The password is not in the email — that is the point: a link alone is not enough to get in. If you were not given one, ask your manager."
 }

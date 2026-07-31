@@ -5,6 +5,9 @@ export interface StaffCreate {
   last_name?: string | null
   email: string
   phone?: string | null
+  // Пароль задаёт владелец и передаёт сотруднику лично — второй фактор к ссылке
+  // из письма. В письмо он не попадает.
+  password: string
   role: string
   department?: string | null
   salary?: number | null
@@ -16,7 +19,7 @@ export interface StaffCreate {
 }
 
 // role необязателен: у владельца роль не меняется — поле просто не отправляем.
-export type StaffUpdate = Omit<StaffCreate, 'role'> & { role?: string }
+export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string }
 
 export interface StaffMessagePayload {
   text: string
@@ -134,9 +137,6 @@ export interface StaffMutateResponse {
   // Только у create/resendInvite: ссылка из письма — показываем владельцу,
   // чтобы он мог передать её сотруднику руками, если почта не дошла.
   invite_url?: string | null
-  // true — email уже принадлежал аккаунту продукта, и в студию привязан ОН со
-  // своим именем; введённые владельцем имя и телефон не применились.
-  linked_existing?: boolean
 }
 
 // ─── Schedule responses ───────────────────────────────────────────────────────

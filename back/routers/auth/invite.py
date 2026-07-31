@@ -11,8 +11,8 @@ from database import get_db
 from models import Studio, StudioMember, User
 from ratelimit import limiter
 from schemas import InviteAcceptRequest, InviteInfoResponse, TokenResponse
-from schemas.auth import validate_strong_password
-from security import get_password_hash, verify_password
+from security import verify_password
+from services.contacts import ensure_user_contacts_free
 from services.invites import decode_invite
 from .login import _finish_login
 
@@ -53,7 +53,8 @@ async def get_invite(token: str, db: AsyncSession = Depends(get_db)):
         studio_name=studio.name,
         studio_logo_url=studio.logo_url,
         role=membership.role,
-        needs_password=not user.is_verified,
+        is_new_account=not user.is_verified,
+        needs_phone=not user.phone,
     )
 
 
@@ -64,31 +65,37 @@ async def accept_invite(
     data: InviteAcceptRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Две ветки, и обе заканчиваются токеном именно ЭТОЙ студии с выданной ролью.
+    """Вход по ДВУМ факторам: ссылка из письма плюс пароль, известный человеку
+    вне почты. Одной ссылки мало осознанно — перехваченное или пересланное письмо
+    не должно открывать доступ к студии.
 
-    Аккаунта не было (`is_verified=False` — его завёл владелец при добавлении
-    сотрудника) → человек придумывает пароль, и почта считается подтверждённой:
-    по ссылке из письма прошёл владелец адреса.
+    Пароль всегда сверяется с хэшем в БД, и для обоих случаев это одна проверка:
+    у нового сотрудника там пароль, который задал владелец и передал ему лично;
+    у человека с уже существующим аккаунтом Velora — его собственный.
 
-    Аккаунт уже есть → он вводит СВОЙ существующий пароль. Пускать по одной
-    только ссылке здесь нельзя: пересланное письмо открывало бы чужой аккаунт со
-    всеми его студиями. Проверка пароля — та же, что на /login, поэтому 2FA
-    (через `_finish_login`) тоже соблюдается.
+    Первый успешный вход подтверждает аккаунт (`is_verified`): до него /login
+    закрыт, а карточка сотрудника в списке студии висит серой «ожидает».
     """
     user, _studio, membership = await _resolve_invite(data.token, db)
 
-    if not user.is_verified:
-        try:
-            validate_strong_password(data.password)
-        except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
-        user.hashed_password = get_password_hash(data.password)
-        user.is_verified = True
-        await db.commit()
-    elif not verify_password(data.password, user.hashed_password):
+    if not verify_password(data.password, user.hashed_password):
         # 400, а не 401: 401 на фронте — глобальный сигнал «сессия истекла»,
         # клиент по нему стирает токен и уходит на /login (api/client.ts), и
         # опечатка в пароле выбрасывала бы человека со страницы приглашения.
         raise HTTPException(status_code=400, detail="Неверный пароль")
+
+    # Телефон спрашиваем здесь, а не у владельца: он заводит сотрудника по одному
+    # email, а номер знает сам сотрудник. Уже указанный номер этой формой не
+    # меняется — это вход, а не редактирование профиля.
+    if not user.phone:
+        if not data.phone:
+            raise HTTPException(status_code=400, detail="Укажите номер телефона")
+        await ensure_user_contacts_free(db, phone=data.phone, exclude_id=user.id)
+        user.phone = data.phone
+
+    if not user.is_verified:
+        user.is_verified = True
+
+    await db.commit()
 
     return await _finish_login(user, request, db, studio_id=membership.studio_id)
