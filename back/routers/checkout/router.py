@@ -223,28 +223,42 @@ async def pay(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Подтверждение оплаты наличными. Одна транзакция: доход в Финансы,
-    списание бонусов, начисление продукта, лог в События. Сбой на любом шаге
-    откатывает всё — единственный db.commit() в конце.
+    """Подтверждение оплаты наличными. Оплата картой сюда не приходит — она идёт
+    через POST /checkout/session и проводится тем же perform_pay уже после того,
+    как Stripe подтвердил списание.
+    """
+    return await perform_pay(db, ctx.studio_id, current_user.id, body, method=body.payment_method)
+
+
+async def perform_pay(
+    db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *, method: str,
+) -> CheckoutPayResult:
+    """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
+    начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
+    единственный db.commit() в конце.
+
+    `method` отделён от `body.payment_method`, потому что вызывающих двое: касса
+    шлёт то, что выбрал кассир ("cash"), а вебхук Stripe — "stripe". Схема роута
+    "stripe" не принимает, поэтому снаружи объявить деньги пришедшими нельзя.
 
     «Разовое» (product_type="single") не создаёт Reservation — запись на
     конкретное занятие клиент делает отдельно через Журнал/Кошелёк уже как
     оплативший; здесь только проводится доход и продаётся право визита.
     """
-    client, package = await _get_client_package(db, ctx.studio_id, body.client_id, body.product_id, body.product_type)
+    client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
     if body.account_id is None:
-        account = await get_or_create_default_account(db, ctx.studio_id)
+        account = await get_or_create_default_account(db, studio_id)
     else:
         account = (await db.execute(
-            select(Account).where(Account.id == body.account_id, Account.studio_id == ctx.studio_id)
+            select(Account).where(Account.id == body.account_id, Account.studio_id == studio_id)
         )).scalar_one_or_none()
         if account is None:
             raise HTTPException(status_code=404, detail={"code": "checkout.account_not_found", "message": "Счёт не найден"})
 
     # Пересчёт цены на сервере заново — не доверяем присланному с фронта итогу.
     quote = await _quote(
-        db, ctx.studio_id, body.client_id, package,
+        db, studio_id, body.client_id, package,
         body.product_type, body.promo_code, body.use_bonuses,
         body.use_deposit, body.certificate_code,
     )
@@ -255,15 +269,17 @@ async def pay(
         raise HTTPException(status_code=400, detail={"code": "checkout.promo_expired", "message": "Промокод больше недействителен"})
     # Остаток после скидок/сертификата/депозита/бонусов может быть покрыт полностью —
     # тогда метод оплаты не участвует и card/иные методы не нужны (V5-6, 1.1).
-    if quote.total_price > 0 and body.payment_method != "cash":
-        raise HTTPException(status_code=400, detail={"code": "checkout.card_unavailable", "message": "Оплата картой пока недоступна"})
+    # Карта с ненулевым остатком сюда попасть не должна: её проводит вебхук Stripe
+    # (method="stripe") после реального списания, а не кассир нажатием кнопки.
+    if quote.total_price > 0 and method == "card":
+        raise HTTPException(status_code=400, detail={"code": "checkout.card_via_stripe", "message": "Оплата картой проводится через Stripe"})
     resolved = quote.resolved
 
     subscription_id: int | None = None
     if body.product_type == "subscription":
         sub = await attach_subscription(
-            db, ctx.studio_id, body.client_id, package, account,
-            mark_paid=True, price=quote.total_price, payment_method=body.payment_method,
+            db, studio_id, body.client_id, package, account,
+            mark_paid=True, price=quote.total_price, payment_method=method,
         )
         await db.flush()
         subscription_id = sub.id
@@ -277,13 +293,13 @@ async def pay(
         op = None
         if quote.total_price > 0:
             op = Operation(
-                studio_id=ctx.studio_id,
+                studio_id=studio_id,
                 type="in",
                 title=f"Разовое посещение «{package.name}»",
                 amount=quote.total_price,
                 op_date=date.today(),
                 category="Услуги",
-                method=body.payment_method,
+                method=method,
                 account_id=account.id,
                 client_id=body.client_id,
                 # Разовое продаётся из Каталог → Услуги, значит package.id — это
@@ -304,21 +320,21 @@ async def pay(
         db.add(payment)
         # Баллы начисляются от реально уплаченной суммы, не от прайса —
         # attach_subscription делает это сам для subscription; для single дублируем.
-        await accrue_points(db, ctx.studio_id, body.client_id, quote.total_price)
-        await register_purchase(db, ctx.studio_id, body.client_id, quote.total_price)
+        await accrue_points(db, studio_id, body.client_id, quote.total_price)
+        await register_purchase(db, studio_id, body.client_id, quote.total_price)
         await db.flush()
         entity_type, entity_id = ("operation", op.id) if op is not None else ("client_payment", payment.id)
 
     if quote.deposit_applied > 0:
         await apply_deposit_change(
-            body.client_id, ctx.studio_id, -quote.deposit_applied, "Оплата депозитом", db,
+            body.client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
         )
     if quote.certificate_applied > 0:
         quote.certificate.status = "used"
         quote.certificate.used_at = datetime.utcnow()
     if quote.bonuses_applied > 0:
         await apply_points_change(
-            body.client_id, ctx.studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
+            body.client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
         )
 
     if resolved.promo is not None:
@@ -328,9 +344,9 @@ async def pay(
         resolved.offer.used_at = datetime.utcnow()
 
     log_activity(
-        db, ctx.studio_id, "payment",
+        db, studio_id, "payment",
         title=f"Оплата «{package.name}» — {client.name}",
-        actor_name=await member_name(db, ctx.studio_id, current_user.id),
+        actor_name=await member_name(db, studio_id, user_id),
         entity_type=entity_type, entity_id=entity_id,
     )
 
@@ -338,7 +354,7 @@ async def pay(
 
     # Успешная оплата (c4 клиенту, a4 админу) — покрывает и абонемент, и разовое;
     # оплата 0 ₽ (всё погашено депозитом/сертификатом) внутри тихо пропускается.
-    await notify_payment(db, ctx.studio_id, body.client_id, quote.total_price)
+    await notify_payment(db, studio_id, body.client_id, quote.total_price)
 
     return CheckoutPayResult(
         total_price=quote.total_price,

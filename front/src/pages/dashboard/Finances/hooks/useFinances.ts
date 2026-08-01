@@ -43,10 +43,20 @@ export function useGateways() {
     onError: (err) => toast.error(errorMessage(err, t)),
   });
 
+  // Уводим владельца на форму Stripe. Не открываем в новой вкладке: Stripe вернёт
+  // его на наш return_url, и вкладка-родитель осталась бы со старым статусом.
+  const connectMut = useMutation({
+    mutationFn: () => financesApi.connectStripe(),
+    onSuccess: ({ url }) => { window.location.href = url; },
+    onError: (err) => toast.error(errorMessage(err, t)),
+  });
+
   return {
     gateways: query.data ?? [],
     isLoading: query.isLoading,
     updateGateway: (type: GatewayType, payload: GatewayUpdate) => mutation.mutateAsync({ type, payload }),
+    connectStripe: () => connectMut.mutate(),
+    isConnecting: connectMut.isPending,
   };
 }
 

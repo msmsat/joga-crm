@@ -25,7 +25,7 @@ from routers.loyalty import router as loyalty_router
 from routers.loyalty.packages import router as catalog_subscriptions_router
 from routers.booking import router as booking_router
 from routers.billing import router as billing_router
-from routers.checkout import router as checkout_router
+from routers.checkout import router as checkout_router, webhook_router as checkout_webhook_router
 from dependencies import require_active_subscription
 from fastapi import Depends
 
@@ -87,6 +87,10 @@ app.include_router(staff_router, prefix="/staff", tags=["Staff"], dependencies=_
 app.include_router(loyalty_router, prefix="/loyalty", tags=["Loyalty"], dependencies=_sub_gate)
 app.include_router(catalog_subscriptions_router, prefix="/catalog", tags=["Catalog"], dependencies=_sub_gate)
 app.include_router(checkout_router, tags=["Checkout"], dependencies=_sub_gate)
+# Вебхук Stripe — тот же префикс /checkout, но отдельным роутером без JWT и без
+# гейта подписки: Stripe наш токен не носит, а деньги клиента уже списаны —
+# просроченный тариф студии не повод потерять оплату. Путь с гейтованными не пересекается.
+app.include_router(checkout_webhook_router, tags=["Checkout"])
 # /booking смешивает публичные (без JWT) и owner-настройки в одном роутере — гейт вешаем
 # на settings-подроутер внутри booking/router.py, НЕ на весь префикс.
 app.include_router(booking_router, prefix="/booking", tags=["Booking"])

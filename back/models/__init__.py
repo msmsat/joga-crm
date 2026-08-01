@@ -30,6 +30,7 @@ from .finances import (
     FinancialGoal,
     SalaryPayment,
     OnlineChannelMetric,
+    StripeCheckout,
 )
 from .ai import StudioAISettings, AIChatSession, AIChatMessage
 from .loyalty import (
@@ -93,6 +94,7 @@ __all__ = [
     "FinancialGoal",
     "SalaryPayment",
     "OnlineChannelMetric",
+    "StripeCheckout",
     "StudioAISettings",
     "AIChatSession",
     "AIChatMessage",

@@ -54,16 +54,7 @@ export default function GeneralTab() {
   // Те же списки значений и подписи (namespace "onboarding"), что и на шаге
   // регион-настроек онбординга (StepSettings) — набор валют/поясов/языков
   // должен совпадать один в один, обычный kit Select, без визуальных правок.
-  const currencyOptions = CURRENCIES.map(c => ({
-    value: c.value,
-    label: t(`onboarding:settings.currencies.${c.value}`),
-    icon: (
-      <span style={{
-        width: "22px", height: "22px", flexShrink: 0, background: "rgba(252,174,145,0.15)", borderRadius: "6px",
-        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#FCAE91",
-      }}>{c.symbol}</span>
-    ),
-  }));
+  const currencyOptions = CURRENCIES.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
   const languageOptions = LANGUAGES;
   const dateFormatOptions = zip(DATE_FORMATS, DATE_FORMAT_LABELS);
   const firstDayOptions = zip(FIRST_DAY_OPTIONS, t('general.locale.firstDayLabels', { returnObjects: true }) as string[]);

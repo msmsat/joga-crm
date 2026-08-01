@@ -99,11 +99,19 @@ export default function LoginPage() {
 
       // ── ФЛОУ: СОХРАНЕНИЕ НОВОГО ПАРОЛЯ (ШАГ 2) ──
       else if (mode === "forgot" && forgotStep === 2) {
-        await authApi.resetPassword({ email: identifier, code: resetCode, new_password: newPassword });
-        setMode("login");
-        setForgotStep(1);
-        setPassword("");
-        setSuccessMsg("Пароль успешно изменен! Теперь вы можете войти.");
+        const data = await authApi.resetPassword({ email: identifier, code: resetCode, new_password: newPassword });
+        // Код с почты — то же подтверждение личности, что и пароль: бэкенд сразу
+        // отдаёт токен, и вводить свежесозданный пароль ещё раз незачем.
+        if (data.access_token) {
+          setActiveToken(data.access_token);
+          navigate("/dashboard");
+        } else {
+          // Токена нет — у аккаунта не нашлось активной студии. Вход обычный.
+          setMode("login");
+          setForgotStep(1);
+          setPassword("");
+          setSuccessMsg("Пароль успешно изменён! Теперь вы можете войти.");
+        }
       }
 
       // ── ФЛОУ: ПОДТВЕРЖДЕНИЕ КОДА 2FA (ШАГ 2 ВХОДА) ──
@@ -321,9 +329,9 @@ export default function LoginPage() {
               {mode === "forgot" && forgotStep === 2 && (
                 <>
                   <InputField 
-                    label="Код из письма" type="text" placeholder="1234" maxLength={4} 
-                    value={resetCode} 
-                    onChange={(v: string) => { setResetCode(v.replace(/\D/g, '')); setErrors((e) => ({ ...e, resetCode: undefined })); }} 
+                    label="Код из письма" type="text" placeholder="123456" maxLength={6}
+                    value={resetCode}
+                    onChange={(v: string) => { setResetCode(v.replace(/\D/g, '').slice(0, 6)); setErrors((e) => ({ ...e, resetCode: undefined })); }}
                     icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
                     error={errors.resetCode} 
                   />

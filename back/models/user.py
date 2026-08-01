@@ -64,6 +64,13 @@ class User(Base):
     theme: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     accent_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
 
+    # Студия, в которой человек работал в прошлый раз: при входе токен минтится
+    # сразу на неё, и мультистудийного пользователя не встречает /select-crm.
+    # SET NULL — студию могли удалить; тогда выбор снова спросят.
+    last_studio_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("studios.id", ondelete="SET NULL"), nullable=True
+    )
+
     account_label: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     avatar_gradient: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     primary_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)

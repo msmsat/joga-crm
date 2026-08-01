@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, DateTime, Date, ForeignKey, UniqueConstraint, func
+from sqlalchemy import Integer, String, Float, Boolean, DateTime, Date, ForeignKey, JSON, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -103,6 +103,10 @@ class OnlineChannel(Base):
     monthly_sessions: Mapped[int] = mapped_column(Integer, default=0)
     public_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     secret_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Stripe Connect: id подключённого аккаунта студии (acct_…). Не секрет — все
+    # запросы уходят под ключом платформы с заголовком Stripe-Account: этим id,
+    # поэтому secret_key студии нам не нужен и не хранится (для stripe он всегда null).
+    account_id: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="online_channels")
     metrics: Mapped[List["OnlineChannelMetric"]] = relationship(back_populates="channel", cascade="all, delete-orphan")
@@ -179,3 +183,29 @@ class OnlineChannelMetric(Base):
     transactions_count: Mapped[int] = mapped_column(Integer, default=0)
 
     channel: Mapped["OnlineChannel"] = relationship(back_populates="metrics")
+
+
+class StripeCheckout(Base):
+    """Заявка на оплату картой в кассе: создана при уходе в Stripe, помечается
+    paid ровно один раз.
+
+    Тот же смысл, что у BillingInvoice для подписки на саму CRM: пока клиент не
+    заплатил, деньги в CRM не двигаются — ни дохода, ни абонемента, ни списания
+    бонусов. `payload` хранит тело CheckoutPayRequest, чтобы провести оплату
+    ровно теми же условиями (промокод, бонусы, сертификат), какие видел кассир.
+
+    Идемпотентность держится на `session_id` + `status`: и вебхук, и возврат на
+    success_url зовут одну функцию, второй пришедший — no-op.
+    """
+    __tablename__ = "stripe_checkouts"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # Кассир, начавший продажу — от его имени пойдёт запись в ленту событий.
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    session_id: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    account_id: Mapped[str] = mapped_column(String(60))
+    payload: Mapped[dict] = mapped_column(JSON)
+    amount: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())

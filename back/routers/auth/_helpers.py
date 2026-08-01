@@ -6,10 +6,13 @@ from security import create_access_token
 
 
 async def _build_token_for_user(user, db: AsyncSession, studio_id: int | None = None) -> str:
-    """JWT сессии. `studio_id` — когда активная студия известна заранее (принятие
-    приглашения): роль в токен кладём из членства в ЭТОЙ студии, а не гадаем по
-    количеству членств. Без него поведение прежнее: одно членство — пишем его,
-    несколько — токен без студии, и `get_studio_context` уводит на /select-crm.
+    """JWT сессии. Активную студию берём по порядку: явно переданная (принятие
+    приглашения) → та, в которой человек работал в прошлый раз
+    (`user.last_studio_id`) → единственная. Ничего не подошло — токен без студии,
+    и `get_studio_context` уводит на /select-crm.
+
+    Прошлая студия нужна, чтобы мультистудийного пользователя при каждом входе
+    не встречал экран выбора: он сразу попадает туда, где закончил.
     """
     # Только принятые членства: непринятое приглашение не должно ни попасть в
     # токен, ни считаться «единственной студией» (решение 10).
@@ -20,17 +23,24 @@ async def _build_token_for_user(user, db: AsyncSession, studio_id: int | None = 
         ))
     ).scalars().all()
 
-    if studio_id is not None:
-        m = next((m for m in memberships if m.studio_id == studio_id), None)
-        if m is not None:
-            return create_access_token(
-                data={"sub": user.email, "studio_id": m.studio_id, "role": m.role}
-            )
-
-    if len(memberships) == 1:
+    m = None
+    for candidate_id in (studio_id, user.last_studio_id):
+        if candidate_id is not None:
+            m = next((x for x in memberships if x.studio_id == candidate_id), None)
+            if m is not None:
+                break
+    if m is None and len(memberships) == 1:
         m = memberships[0]
-        data = {"sub": user.email, "studio_id": m.studio_id, "role": m.role}
-    else:
-        data = {"sub": user.email}
 
-    return create_access_token(data=data)
+    if m is None:
+        return create_access_token(data={"sub": user.email})
+
+    # Запоминаем выбор на следующий вход здесь, а не только в /select-studio:
+    # через эту функцию проходит любая выдача сессионного токена.
+    if user.last_studio_id != m.studio_id:
+        user.last_studio_id = m.studio_id
+        await db.commit()
+
+    return create_access_token(
+        data={"sub": user.email, "studio_id": m.studio_id, "role": m.role}
+    )

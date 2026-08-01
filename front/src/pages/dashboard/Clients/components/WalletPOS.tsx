@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { checkoutApi } from '../../../../api/checkout';
-import type { CheckoutProductType } from '../../../../api/checkout';
+import type { CheckoutProductType, CheckoutSessionResult } from '../../../../api/checkout';
+import { StripeCheckoutModal } from './modals/StripeCheckoutModal';
 import { financesApi } from '../../../../api/finances/finances.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
@@ -35,6 +36,7 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   const [useDeposit, setUseDeposit] = useState(false);
   const [method, setMethod] = useState<'cash' | 'card'>('cash');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [session, setSession] = useState<CheckoutSessionResult | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setPromoCode(promoInput.trim()), PROMO_DEBOUNCE_MS);
@@ -64,25 +66,42 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   // Итог 0 — весь товар погашен депозитом/сертификатом/бонусами, метод оплаты не нужен (V5-7, 1.3).
   const totalCovered = quote?.total_price === 0;
 
+  const payload = {
+    client_id: clientId, product_id: productId, product_type: productType,
+    account_id: cashAccount?.id, promo_code: promoCode || undefined,
+    use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
+  };
+
+  // Карта с ненулевым остатком уходит в Stripe студии; наличные и полностью
+  // покрытая сумма проводятся здесь же. Метод шлём тот, что выбрал кассир —
+  // бэк всё равно пересчитывает цену и решает сам (Zero Trust).
+  const viaStripe = method === 'card' && !totalCovered;
+
+  // Оплата задевает счета, кошелёк, историю и списки — один и тот же набор
+  // независимо от того, наличными провели или картой.
+  const afterPaid = useCallback(() => {
+    qc.invalidateQueries({ queryKey: queryKeys.finAccounts });
+    qc.invalidateQueries({ queryKey: queryKeys.wallet(clientId) });
+    qc.invalidateQueries({ queryKey: queryKeys.client(clientId) });
+    qc.invalidateQueries({ queryKey: queryKeys.clientEventsAll(clientId) });
+    qc.invalidateQueries({ queryKey: queryKeys.clientsAll });
+    qc.invalidateQueries({ queryKey: queryKeys.loyaltyDepositStats });
+    qc.invalidateQueries({ queryKey: queryKeys.loyaltyCertificates });
+    qc.invalidateQueries({ queryKey: queryKeys.loyaltyCards });
+    toast.success(t('panel.wallet.paySuccess'));
+    onPaid();
+  }, [qc, clientId, toast, t, onPaid]);
+
+  // Форма Stripe открывается модалкой поверх кассы — кассир со страницы не уходит.
+  const stripeMut = useMutation({
+    mutationFn: () => checkoutApi.createSession({ ...payload, payment_method: 'card' }),
+    onSuccess: setSession,
+    onError: (e: unknown) => toast.error(errorMessage(e, t)),
+  });
+
   const payMut = useMutation({
-    mutationFn: () => checkoutApi.pay({
-      client_id: clientId, product_id: productId, product_type: productType,
-      account_id: cashAccount?.id, promo_code: promoCode || undefined,
-      use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
-      payment_method: 'cash',
-    }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.finAccounts });
-      qc.invalidateQueries({ queryKey: queryKeys.wallet(clientId) });
-      qc.invalidateQueries({ queryKey: queryKeys.client(clientId) });
-      qc.invalidateQueries({ queryKey: queryKeys.clientEventsAll(clientId) });
-      qc.invalidateQueries({ queryKey: queryKeys.clientsAll });
-      qc.invalidateQueries({ queryKey: queryKeys.loyaltyDepositStats });
-      qc.invalidateQueries({ queryKey: queryKeys.loyaltyCertificates });
-      qc.invalidateQueries({ queryKey: queryKeys.loyaltyCards });
-      toast.success(t('panel.wallet.paySuccess'));
-      onPaid();
-    },
+    mutationFn: () => checkoutApi.pay({ ...payload, payment_method: 'cash' }),
+    onSuccess: afterPaid,
     onError: (e: unknown) => toast.error(errorMessage(e, t)),
   });
 
@@ -133,27 +152,43 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
           <button type="button" className={method === 'card' ? s.tabActive : s.tab} style={{ flex: 1 }} onClick={() => setMethod('card')}>
             {t('panel.wallet.card')}
           </button>
-          <InfoHint title={t('panel.wallet.card')} text={t('panel.wallet.cardStub')}/>
+          <InfoHint title={t('panel.wallet.card')} text={t('panel.wallet.cardStripe')}/>
         </div>
       </div>
 
       <Button
         variant="primary" fullWidth
         style={{ marginTop: '16px' }}
-        disabled={(method === 'card' && !totalCovered) || !quote || isFetching}
-        loading={payMut.isPending}
+        disabled={!quote || isFetching}
+        loading={payMut.isPending || stripeMut.isPending}
         onClick={() => setConfirmOpen(true)}
       >
-        {totalCovered ? t('panel.wallet.confirmPayCovered') : t('panel.wallet.confirmPay')}
+        {totalCovered ? t('panel.wallet.confirmPayCovered') : viaStripe ? t('panel.wallet.payByCard') : t('panel.wallet.confirmPay')}
       </Button>
 
       {confirmOpen && (
         <ConfirmModal
           title={t('panel.wallet.confirmTitle')}
-          message={totalCovered ? t('panel.wallet.confirmMessageCovered') : t('panel.wallet.confirmMessage', { amount: quote ? `${currency}${quote.total_price}` : '' })}
-          confirmText={totalCovered ? t('panel.wallet.confirmPayCovered') : t('panel.wallet.confirmPay')}
-          onConfirm={async () => { await payMut.mutateAsync(); }}
+          message={
+            totalCovered ? t('panel.wallet.confirmMessageCovered')
+              : viaStripe ? t('panel.wallet.confirmMessageCard', { amount: quote ? `${currency}${quote.total_price}` : '' })
+                : t('panel.wallet.confirmMessage', { amount: quote ? `${currency}${quote.total_price}` : '' })
+          }
+          confirmText={totalCovered ? t('panel.wallet.confirmPayCovered') : viaStripe ? t('panel.wallet.payByCard') : t('panel.wallet.confirmPay')}
+          onConfirm={async () => { await (viaStripe ? stripeMut : payMut).mutateAsync(); }}
           onClose={() => setConfirmOpen(false)}
+        />
+      )}
+
+      {session && (
+        <StripeCheckoutModal
+          session={session}
+          title={t('panel.wallet.payByCard')}
+          subtitle={t('panel.wallet.payToStudio')}
+          quote={quote}
+          currency={currency}
+          onClose={() => setSession(null)}
+          onPaid={() => { setSession(null); afterPaid(); }}
         />
       )}
     </div>

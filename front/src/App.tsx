@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './api/queryClient';
 import { authApi, type UserMe } from './api';
 import { AIDrawerProvider } from './contexts/AIDrawerContext';
+import { DarkClassGuard } from './contexts/ThemeContext';
 import { ToastProvider } from './components/ui/index';
 import Landing from "./pages/Landingpage";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
@@ -115,6 +116,9 @@ export default function App() {
     <ToastProvider>
     <AIDrawerProvider>
     <Router>
+      {/* Тёмная тема — свойство кабинета: вне /dashboard класс снимается всегда,
+          кем бы он ни был поставлен (см. DarkClassGuard). */}
+      <DarkClassGuard />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />

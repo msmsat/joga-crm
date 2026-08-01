@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 export interface SelectOption {
   value: string;
   label: string;
-  /** Значок перед подписью (например, символ валюты) — рисуется и в кнопке, и в списке. */
-  icon?: React.ReactNode;
 }
 
 export interface SelectProps {
@@ -78,11 +76,8 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
           transition: 'border-color 0.18s, box-shadow 0.18s',
         }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
-          {selected?.icon}
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {selected ? selected.label : (placeholder ?? '')}
-          </span>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selected ? selected.label : (placeholder ?? '')}
         </span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" strokeWidth="2.4"
           style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s' }}>
@@ -122,10 +117,7 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
                   fontFamily: 'Manrope, sans-serif',
                 }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                  {o.icon}
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
-                </span>
+                {o.label}
                 {active && (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
                     <polyline points="20 6 9 17 4 12" />

@@ -120,6 +120,10 @@ export const financesApi = {
   updateGateway: (type: GatewayType, payload: GatewayUpdate) =>
     client.put<Gateway>(`/finances/gateways/${type}`, payload),
 
+  // Ссылка одноразовая и живёт минуты — запрашиваем по клику, не кэшируем.
+  connectStripe: () =>
+    client.post<{ url: string }>('/finances/gateways/stripe/connect', {}),
+
   getMethodStats: (dateFrom: string, dateTo: string) =>
     client.get<MethodStat[]>(`/finances/operations/method-stats?date_from=${dateFrom}&date_to=${dateTo}`),
 

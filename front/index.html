@@ -12,10 +12,15 @@
          ThemeProvider: он монтируется в DashboardLayout и больше нигде. -->
     <script>
       try {
-        var t = localStorage.getItem('velora_theme');
-        if (location.pathname.indexOf('/dashboard') === 0 &&
-            (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)))
-          document.documentElement.classList.add('dark');
+        if (location.pathname.indexOf('/dashboard') === 0) {
+          // Ключ затравки — на аккаунт (`velora_theme:<email>`, см. utils/auth.ts),
+          // поэтому email достаём из payload токена: чужую тему не подхватим.
+          var tk = localStorage.getItem('token');
+          var sub = tk && JSON.parse(atob(tk.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub;
+          var t = sub && localStorage.getItem('velora_theme:' + sub);
+          if (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches))
+            document.documentElement.classList.add('dark');
+        }
       } catch (e) {}
     </script>
   </head>

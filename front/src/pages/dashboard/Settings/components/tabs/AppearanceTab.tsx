@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
-import { InfoHint, useToast } from "../../../../../components/ui/index";
+import { useToast } from "../../../../../components/ui/index";
 import { settingsApi } from "../../../../../api/settings/settings.api";
 import { queryKeys } from "../../../../../api/queryKeys";
 import { errorMessage } from "../../../../../api/errorMessage";
-import { THEME_STORAGE_KEY } from "../../../../../contexts/ThemeContext";
+import { saveThemeSeed } from "../../../../../utils/auth";
 import type { AppearanceSettings, AppearanceUpdate } from "../../../../../api/settings/settings.types";
 
 export default function AppearanceTab() {
@@ -19,7 +19,6 @@ export default function AppearanceTab() {
     queryFn: () => settingsApi.getAppearance(),
   });
   const themeMode = (data?.theme ?? "light") as "light" | "dark" | "auto";
-  const accentColor = data?.accent_color ?? "#FCAE91";
 
   // Optimistic UI: клик перекрашивает интерфейс мгновенно (ThemeProvider читает
   // тот же кэш-ключ), откат — по onError. Тема дополнительно уходит в
@@ -35,7 +34,7 @@ export default function AppearanceTab() {
       return { prev };
     },
     onSuccess: (_data, patch) => {
-      if (patch.theme) localStorage.setItem(THEME_STORAGE_KEY, patch.theme);
+      if (patch.theme) saveThemeSeed(patch.theme);
       toast.success(t('toast.saved'));
     },
     onError: (err, _patch, ctx) => {
@@ -49,15 +48,6 @@ export default function AppearanceTab() {
     { id: "dark", label: t('appearance.theme.dark'), icon: icons.moon, preview: ["#121212", "#1E1E1E", "#FCAE91"] },
     { id: "auto", label: t('appearance.theme.auto'), icon: icons.toggle, preview: ["#ECECEC", "#F5F5F5", "#FCAE91"] },
   ] as const;
-
-  const accentColors = [
-    { color: "#FCAE91", label: t('appearance.accent.colors.peach') },
-    { color: "#A3C9A8", label: t('appearance.accent.colors.pistachio') },
-    { color: "#9BB5D8", label: t('appearance.accent.colors.lavender') },
-    { color: "#D88C9A", label: t('appearance.accent.colors.pink') },
-    { color: "#E8C97A", label: t('appearance.accent.colors.gold') },
-    { color: "#8BBFBF", label: t('appearance.accent.colors.mint') },
-  ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -124,57 +114,6 @@ export default function AppearanceTab() {
               </button>
             );
           })}
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: "28px" }}>
-        <SectionHeader icon={icons.zap} title={t('appearance.accent.title')} subtitle={t('appearance.accent.subtitle')} />
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "12px" }}>
-          {accentColors.map((c, i) => {
-            const isSelected = c.color === accentColor;
-            return (
-              <button
-                key={i}
-                title={c.label}
-                disabled={save.isPending}
-                onClick={() => save.mutate({ accent_color: c.color })}
-                style={{
-                  width: "36px", height: "36px", borderRadius: "10px",
-                  background: c.color,
-                  border: isSelected ? `3px solid ${c.color}` : "3px solid transparent",
-                  outline: isSelected ? `2px solid white` : "none",
-                  cursor: save.isPending ? "default" : "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "white",
-                  transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  transform: isSelected ? "scale(1.12)" : "scale(1)",
-                  opacity: save.isPending ? 0.7 : 1,
-                  boxShadow: isSelected
-                    ? `0 0 0 2px ${c.color}, 0 8px 24px ${c.color}60`
-                    : `0 4px 12px ${c.color}25`,
-                }}
-                onMouseOver={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.transform = "scale(1.15)";
-                    e.currentTarget.style.boxShadow = `0 6px 16px ${c.color}40`;
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.transform = "scale(1)";
-                    e.currentTarget.style.boxShadow = `0 4px 12px ${c.color}25`;
-                  }
-                }}
-              >
-                {isSelected && (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "csCheckPop 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                )}
-              </button>
-            );
-          })}
-          <InfoHint title={t('appearance.accent.noteTitle')} text={t('appearance.accent.note')} side="right" />
         </div>
       </div>
     </div>

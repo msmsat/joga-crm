@@ -65,13 +65,9 @@ class ResetPasswordRequest(BaseSchema):
     @field_validator("new_password")
     @classmethod
     def validate_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Пароль должен содержать минимум 8 символов")
-        if not re.search(r"[A-Za-zА-Яа-я]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну букву")
-        if not re.search(r"[0-9]", value):
-            raise ValueError("Пароль должен содержать хотя бы одну цифру")
-        return value
+        # Те же требования, что при регистрации и смене пароля: восстановление —
+        # не лазейка завести аккаунту пароль слабее, чем он мог задать сам.
+        return validate_strong_password(value)
 
 
 class ChangePasswordRequest(BaseSchema):

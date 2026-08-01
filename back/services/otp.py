@@ -18,6 +18,7 @@ MAX_ATTEMPTS = 5
 
 _SUBJECTS = {
     "change_password": "Код для смены пароля Velora",
+    "reset_password": "Код восстановления пароля Velora",
     "delete_data": "Код для очистки данных студии Velora",
     "delete_account": "Код для удаления студии Velora",
     "enable_2fa": "Код для включения двухфакторной аутентификации Velora",

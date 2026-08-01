@@ -28,7 +28,7 @@
     "salaries": "Salaries are calculated from the staff member's rate (fixed, hourly or percent) for the selected period.",
     "counterparties": "Counterparties are organizations and individuals the studio settles with: suppliers, landlords, partners.",
     "documents": "Documents are contracts, acts and invoices linked to counterparties, or internal documents.",
-    "onlinePayments": "Online payments are the channels clients use to pay: link, QR code, website widget.",
+    "onlinePayments": "Online payments — connecting Stripe for card payments. The account is created for your studio, so the money goes straight to you, bypassing Velora.",
     "paymentMethods": "Payment methods show which ways clients pay at the studio, and stats for each.",
     "reports": "Reports show income, expense and profit trends over the selected period.",
     "goals": "Financial goals are the studio's savings plan with automatic or manual progress tracking."
@@ -293,27 +293,42 @@
     }
   },
   "onlinePayments": {
-    "description": "Connect the Stripe and Fondy payment providers. Accepting payments will appear once connected.",
+    "description": "Connect Stripe and your clients can pay by card at the till. The money lands directly in your studio's account — Velora never holds it and takes no cut of payments.",
     "gatewaysTitle": "Payment providers",
     "gateways": {
-      "stripe": { "name": "Stripe", "desc": "International card payment processing" },
-      "fondy": { "name": "Fondy", "desc": "Card payments and local payment methods" },
-      "connected": "Connected",
-      "notConnected": "Not connected",
-      "connect": "Connect",
-      "editKeys": "Edit keys",
-      "maskedKey": "Public key: {{key}}"
-    },
-    "keysModal": {
-      "subtitle": "Provider API keys",
-      "publicKey": "Public key",
-      "publicKeyPlaceholder": "pk_live_...",
-      "secretKey": "Secret key",
-      "secretKeyPlaceholder": "sk_live_...",
-      "secretKeyPlaceholderSet": "Leave blank to keep unchanged"
+      "stripe": { "name": "Stripe" },
+      "states": {
+        "none": {
+          "label": "Not connected",
+          "hint": "Accept card payments into the studio's account",
+          "action": "Connect"
+        },
+        "incomplete": {
+          "label": "Details missing",
+          "hint": "Stripe is waiting for your studio's details — payments stay off until then",
+          "action": "Continue"
+        },
+        "action": {
+          "label": "Action needed",
+          "hint": "Stripe rejected some details and is waiting for fixes — it won't clear on its own",
+          "action": "Fix details"
+        },
+        "review": {
+          "label": "In review",
+          "hint": "Details submitted, Stripe is reviewing them. This usually takes up to a day",
+          "action": "Open Stripe"
+        },
+        "active": {
+          "label": "Connected",
+          "hint": "Card payments land in the studio's Stripe account",
+          "action": "Settings"
+        }
+      }
     },
     "toasts": {
-      "gatewayUpdated": "Gateway settings updated"
+      "gatewayUpdated": "Gateway settings updated",
+      "stripeReturned": "Details submitted to Stripe",
+      "stripeLinkExpired": "The Stripe link expired — press Connect again"
     }
   },
   "paymentMethods": {

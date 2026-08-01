@@ -179,9 +179,17 @@ export type GatewayType = 'stripe' | 'fondy'
 
 export interface Gateway {
   gateway_type: GatewayType
+  /** Готов принимать оплату. Для stripe = charges_enabled, статус с их стороны. */
   connected: boolean
   is_active: boolean
   public_key: string | null
+  /** Stripe Connect: acct_… подключённой студии; null = не подключён. */
+  account_id: string | null
+  /** Анкета Stripe отправлена (но могла ещё не пройти проверку). */
+  details_submitted: boolean
+  charges_enabled: boolean
+  /** Stripe ждёт данные от владельца — само не рассосётся, в отличие от проверки. */
+  requirements_due: boolean
 }
 
 export interface GatewayUpdate {

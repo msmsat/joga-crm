@@ -149,9 +149,11 @@ export const Grid: React.FC<GridProps> = ({
                   </div>
                 );
               })() : (
-                  trainer ? (
+                  trainer ? (() => {
+                      const singleColumn = columns.length === 1;
+                      return (
                   <>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 12, width: '100%' }}>
                       <div className="j-hdr-avatar" style={{
                           width: 38, height: 38, borderRadius: '12px',
                           background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
@@ -162,17 +164,18 @@ export const Grid: React.FC<GridProps> = ({
                       }}>
                           {trainer.initials}
                       </div>
-                      <div className="j-hdr-namewrap">
+                      <div className="j-hdr-namewrap" style={singleColumn ? { textAlign: 'center' } : undefined}>
                           <div className="j-hdr-name" style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
                           <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
                       </div>
                       </div>
-                      <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 6, width: '100%' }}>
                       <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
                       {colBookings.length} {t('grid.classes')} · {colBookings.reduce((s, b) => s + b.clients, 0)} {t('grid.peopleShort')}
                       </div>
                   </>
-                  ) : (
+                      );
+                  })() : (
                   <>
                       <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
                       <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} {t('grid.classesToday')}</div>

@@ -112,6 +112,7 @@ async def complete_onboarding(
     new_studio = await _create_studio_with_defaults(current_user, request, db)
 
     current_user.is_onboarded = True
+    current_user.last_studio_id = new_studio.id
     await db.commit()
 
     access_token = create_access_token(
@@ -131,6 +132,8 @@ async def create_studio(
     is_onboarded."""
     _validate_onboarding_request(request)
     new_studio = await _create_studio_with_defaults(current_user, request, db)
+    # Создал студию — в ней и остался: следующий вход откроет её, а не /select-crm.
+    current_user.last_studio_id = new_studio.id
     await db.commit()
 
     access_token = create_access_token(
@@ -205,6 +208,10 @@ async def select_studio(
 
     if not member:
         raise HTTPException(status_code=403, detail="Нет доступа к этой студии")
+
+    # Выбор запоминаем: следующий вход откроет эту студию сразу, без /select-crm.
+    current_user.last_studio_id = member.studio_id
+    await db.commit()
 
     access_token = create_access_token(
         data={"sub": current_user.email, "studio_id": member.studio_id, "role": member.role}

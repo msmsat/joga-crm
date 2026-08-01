@@ -113,9 +113,11 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selected
                   onClick={() => setSelectedDay(d)}
                   style={{
                     background: isHighlighted ? 'transparent' : undefined,
-                    color: isHighlighted ? (isToday ? 'var(--peach)' : 'white') : undefined,
+                    // var(--bg), не 'white': --onyx (фон плашки) в тёмной теме светлеет,
+                    // и захардкоженный белый/персиковый текст сливался с ним (см. .mc-day.today.selected).
+                    color: isHighlighted ? 'var(--bg)' : undefined,
                     fontWeight: isHighlighted ? 700 : undefined,
-                    boxShadow: isHighlighted && isToday ? 'none' : undefined,
+                    boxShadow: isHighlighted && isToday ? '0 0 0 2px var(--peach)' : undefined,
                   }}
                 >
                   {d}

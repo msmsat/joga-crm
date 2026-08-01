@@ -13,7 +13,7 @@ const ORDER: { type: IntegrationType; color: string }[] = [
   { type: "telegram", color: "#229ED9" },
   { type: "whatsapp", color: "#25D366" },
   { type: "instagram", color: "#E1306C" },
-  { type: "google_calendar", color: "#4285F4" },
+  // ponytail: google_calendar скрыт по просьбе владельца, код и бэкенд остаются — просто убран из ORDER
 ];
 
 export default function IntegrationsTab() {

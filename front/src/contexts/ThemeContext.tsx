@@ -1,17 +1,32 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import type { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { settingsApi } from "../api/settings/settings.api";
 import { queryKeys } from "../api/queryKeys";
-import { THEME_STORAGE_KEY } from "../utils/auth";
-
-// Ключ живёт в utils/auth рядом с токеном: затравка — часть сессии и гаснет
-// вместе с ней (localStorage — только анти-мигание, сервер остаётся источником
-// истины).
-export { THEME_STORAGE_KEY };
+import { readThemeSeed, saveThemeSeed } from "../utils/auth";
 
 function applyDarkClass(dark: boolean) {
   document.documentElement.classList.toggle("dark", dark);
+}
+
+/**
+ * Снимает `.dark` везде, кроме кабинета. Живёт отдельно от ThemeProvider и
+ * висит на роутере, а не на layout'е, потому что класс ставится ДО React
+ * (инлайн-скрипт в index.html), а ThemeProvider может не смонтироваться вовсе:
+ * на /dashboard с протухшим токеном ProtectedRoute уводит на /login, а
+ * DashboardLayout так и не появляется — и снять класс становится некому.
+ * Ставить класс по-прежнему может ТОЛЬКО ThemeProvider; здесь — только снятие.
+ * Условие пути — то же самое, что в инлайн-скрипте index.html.
+ */
+export function DarkClassGuard() {
+  const { pathname } = useLocation();
+  // Именно layout-эффект: обычный сработал бы после отрисовки, и редирект
+  // /dashboard → /login успел бы мигнуть чёрным кадром.
+  useLayoutEffect(() => {
+    if (!pathname.startsWith("/dashboard")) applyDarkClass(false);
+  }, [pathname]);
+  return null;
 }
 
 // Единственная задача — держать класс .dark на <html> синхронно с
@@ -22,27 +37,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data } = useQuery({
     queryKey: queryKeys.appearance,
     queryFn: () => settingsApi.getAppearance(),
-    // Пока первый запрос в пути, берём последнюю известную тему из localStorage,
-    // чтобы избежать вспышки светлого экрана при theme === 'dark' в БД.
+    // Пока первый запрос в пути, берём тему этого аккаунта с прошлого раза,
+    // чтобы не мигать светлым при theme === 'dark' в БД.
     initialData: () => {
-      const cached = localStorage.getItem(THEME_STORAGE_KEY);
+      const cached = readThemeSeed();
       return cached ? { theme: cached, accent_color: null } : undefined;
     },
   });
   const theme = data?.theme ?? "light";
 
-  useEffect(() => {
+  // Layout-эффект, а не обычный: при входе кабинет открывается без перезагрузки
+  // страницы, и класс должен встать ДО первого кадра — иначе видна вспышка
+  // светлого, ради устранения которой всё и затевалось.
+  useLayoutEffect(() => {
     const dark = theme === "dark"
       || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     applyDarkClass(dark);
-    // Кладём серверное значение в localStorage, а не только клик в AppearanceTab:
-    // иначе на новом устройстве первый заход всё равно мигнёт светлым (затравку
-    // читает инлайн-скрипт в index.html до старта React).
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-    // Уходим из кабинета (выход, лендинг, логин) — снимаем класс за собой:
-    // провайдер там не смонтирован, и снять его больше некому, а `:root.dark`
-    // из общего бандла покрасит и лендинг, и форму входа.
-    return () => applyDarkClass(false);
+    // Затравку пишем и с серверного ответа, а не только по клику в AppearanceTab:
+    // иначе на новом устройстве первый заход мигнёт светлым (её читает инлайн-
+    // скрипт в index.html ещё до старта React).
+    saveThemeSeed(theme);
   }, [theme]);
 
   // auto → слушаем смену системной темы на лету.

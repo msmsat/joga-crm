@@ -43,6 +43,20 @@ export interface CheckoutPayResult {
   subscription_id: number | null
 }
 
+export interface CheckoutSessionResult {
+  /** Секрет сессии для встроенной формы Stripe. Не путать с секретным ключом. */
+  client_secret: string
+  session_id: string
+  publishable_key: string
+  /** acct_… студии: Stripe.js обязан подняться с тем же аккаунтом, иначе не найдёт сессию. */
+  account_id: string
+}
+
+export interface CheckoutConfirmResult {
+  /** true — оплата проведена в CRM (этим вызовом или раньше вебхуком). */
+  paid: boolean
+}
+
 export interface CheckoutService {
   id: number
   name: string

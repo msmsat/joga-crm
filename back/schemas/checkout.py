@@ -49,6 +49,27 @@ class CheckoutPayResult(BaseSchema):
     subscription_id: int | None = None
 
 
+class CheckoutSessionResult(BaseSchema):
+    """Всё, что нужно фронту, чтобы отрисовать форму оплаты в своей модалке.
+
+    `account_id` обязателен: Stripe.js должен инициализироваться с тем же
+    подключённым аккаунтом, на котором создана сессия, иначе форма не найдёт её.
+    """
+    client_secret: str
+    session_id: str
+    publishable_key: str
+    account_id: str
+
+
+class CheckoutConfirmRequest(BaseSchema):
+    session_id: str
+
+
+class CheckoutConfirmResult(BaseSchema):
+    """paid=true — оплата проведена в CRM (этим вызовом или ранее вебхуком)."""
+    paid: bool
+
+
 class CheckoutServiceOut(BaseSchema):
     """Услуга Каталога в кассе клиента — вкладка «Разовые визиты»."""
     id: int

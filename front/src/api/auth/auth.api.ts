@@ -42,8 +42,10 @@ export const authApi = {
   forgotPassword: (payload: ForgotPasswordPayload) =>
     client.post<void>('/auth/forgot-password', payload, { auth: false }),
 
+  // Отдаёт свежий токен: код с почты — то же подтверждение личности, что пароль
+  // на /login, поэтому после сброса входить заново не нужно.
   resetPassword: (payload: ResetPasswordPayload) =>
-    client.post<void>('/auth/reset-password', payload, { auth: false }),
+    client.post<TokenResponse>('/auth/reset-password', payload, { auth: false }),
 
   // Приглашение сотрудника (/join?token=…). Обе ручки публичные: права даёт сам
   // токен из письма, поэтому auth: false — иначе чужой токен в localStorage

@@ -172,7 +172,27 @@
       "current": "Current password",
       "currentPh": "Enter your current password",
       "new": "New password",
-      "newPh": "At least 8 characters"
+      "newPh": "At least 8 characters",
+      "repeat": "Repeat password",
+      "repeatPh": "Enter the new password again",
+      "mismatch": "Passwords do not match",
+      "forgot": "Forgot your password?",
+      "resetTitle": "Password recovery",
+      "step1Sub": "Let's confirm it's you",
+      "step2Sub": "Code sent to {{email}}",
+      "step3Sub": "Choose a new password",
+      "resetIntro": "We'll email a 6-digit code to your account address. No need to know the current password — the code proves the inbox is yours.",
+      "sendCode": "Send code",
+      "back": "Back",
+      "save": "Save password",
+      "resetDone": "Password updated",
+      "resetLogoutHint": "Other devices will be signed out — you stay signed in on this one.",
+      "rules": {
+        "len": "8+ characters",
+        "letter": "Has a letter",
+        "digit": "Has a digit",
+        "simple": "No 111 or qwerty"
+      }
     },
     "sessions": {
       "title": "Active sessions",
