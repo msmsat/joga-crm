@@ -207,5 +207,8 @@ class StripeCheckout(Base):
     account_id: Mapped[str] = mapped_column(String(60))
     payload: Mapped[dict] = mapped_column(JSON)
     amount: Mapped[int] = mapped_column(Integer)
+    # pending — ждём Stripe; paid — деньги списаны и продажа проведена;
+    # cancelled — сессия протухла/банк отказал, списания не было;
+    # failed — деньги СПИСАНЫ, а провести не удалось (нужен разбор и возврат).
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())

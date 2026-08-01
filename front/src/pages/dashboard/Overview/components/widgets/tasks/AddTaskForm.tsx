@@ -72,7 +72,9 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
         overflow: 'hidden',
         maxHeight: isAddingTask ? (needsAssignee ? '230px' : '200px') : '0px',
         opacity: isAddingTask ? 1 : 0,
-        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        // max-height/padding двигают границу со списком задач сверху — без overshoot-кривой
+        // (та дёргала эту линию туда-обратно), opacity отдельно и мягче (см. Navbar).
+        transition: 'max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), padding 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
         padding: isAddingTask ? '16px' : '0 16px',
         boxSizing: 'border-box',
       }}>
@@ -160,7 +162,7 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
         overflow: 'hidden',
         maxHeight: isAddingTask ? '0px' : '80px',
         opacity: isAddingTask ? 0 : 1,
-        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        transition: 'max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), padding 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
         padding: isAddingTask ? '0 16px' : '12px 16px',
         boxSizing: 'border-box',
       }}>

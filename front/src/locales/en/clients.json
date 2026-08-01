@@ -126,6 +126,7 @@
       "paySuccess": "Payment recorded",
       "payCancelled": "Payment cancelled — nothing was charged",
       "payNotCompleted": "Stripe hasn't confirmed the payment yet. If the card was charged, refresh in a minute.",
+      "payNotApplied": "The card was charged but the sale could not be recorded: the terms changed (certificate, promo code or package). Record the sale manually or refund in Stripe.",
       "transfer": "Transfer",
       "transferTitle": "Transfer subscription",
       "transferSearchLabel": "Transfer to",

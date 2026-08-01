@@ -187,6 +187,24 @@ async def _get_client_package(
     return client, package
 
 
+async def resolve_account(db: AsyncSession, studio_id: int, account_id: int | None) -> Account:
+    """Счёт студии, на который ляжет доход (дефолтный, если кассир не выбрал).
+
+    Вынесено из perform_pay, чтобы оплата картой проверяла счёт ДО списания:
+    иначе битый account_id всплывал бы только в вебхуке — деньги у студии, а
+    провести их некуда.
+    """
+    if account_id is None:
+        return await get_or_create_default_account(db, studio_id)
+
+    account = (await db.execute(
+        select(Account).where(Account.id == account_id, Account.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if account is None:
+        raise HTTPException(status_code=404, detail={"code": "checkout.account_not_found", "message": "Счёт не найден"})
+    return account
+
+
 @router.post("/calculate", response_model=CheckoutCalculateResult)
 async def calculate(
     body: CheckoutCalculateRequest,
@@ -247,14 +265,7 @@ async def perform_pay(
     """
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
-    if body.account_id is None:
-        account = await get_or_create_default_account(db, studio_id)
-    else:
-        account = (await db.execute(
-            select(Account).where(Account.id == body.account_id, Account.studio_id == studio_id)
-        )).scalar_one_or_none()
-        if account is None:
-            raise HTTPException(status_code=404, detail={"code": "checkout.account_not_found", "message": "Счёт не найден"})
+    account = await resolve_account(db, studio_id, body.account_id)
 
     # Пересчёт цены на сервере заново — не доверяем присланному с фронта итогу.
     quote = await _quote(

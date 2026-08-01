@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface SelectOption {
   value: string;
@@ -15,23 +16,50 @@ export interface SelectProps {
   openUp?: boolean;
 }
 
+interface TriggerRect { top: number; bottom: number; left: number; width: number; }
+
 // Общий выпадающий список: минимализм, glow-фокус, клавиатура (стрелки + Enter),
 // закрытие по Esc и клику мимо. Без поиска и мультивыбора — мелкие списки (YAGNI).
+// Список рендерится в портал с position: fixed — иначе его обрезает overflow:hidden
+// родителя (карточка, модалка), как у Tooltip/InfoHint.
 export function Select({ value, options, onChange, placeholder, disabled, openUp }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
+  const [trigger, setTrigger] = useState<TriggerRect | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const selected = options.find(o => o.value === value) ?? null;
 
-  // Клик мимо — закрыть.
+  // Клик мимо — закрыть (список теперь в портале вне ref, проверяем и его).
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (ref.current?.contains(target) || listRef.current?.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+
+  // Позиция триггера в viewport — список больше не в потоке родителя, поэтому
+  // пересчитываем при открытии и на scroll/resize (capture — ловит скролл вложенных карточек).
+  useLayoutEffect(() => {
+    if (!open) return;
+    const recalc = () => {
+      if (!buttonRef.current) return;
+      const r = buttonRef.current.getBoundingClientRect();
+      setTrigger({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+    };
+    recalc();
+    window.addEventListener('scroll', recalc, { passive: true, capture: true });
+    window.addEventListener('resize', recalc, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', recalc, true);
+      window.removeEventListener('resize', recalc);
+    };
   }, [open]);
 
   // При открытии подсветить текущий выбор.
@@ -59,6 +87,7 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%' }}>
       <button
+        ref={buttonRef}
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen(o => !o)}
@@ -85,15 +114,20 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
         </svg>
       </button>
 
-      {open && (
+      {open && trigger && createPortal(
         <div
+          ref={listRef}
           role="listbox"
           style={{
-            position: 'absolute', ...(openUp ? { bottom: 'calc(100% + 6px)' } : { top: 'calc(100% + 6px)' }), left: 0, right: 0, zIndex: 50,
+            position: 'fixed',
+            ...(openUp
+              ? { bottom: `${window.innerHeight - trigger.top + 6}px` }
+              : { top: `${trigger.bottom + 6}px` }),
+            left: `${trigger.left}px`, width: `${trigger.width}px`, zIndex: 1200,
             background: 'var(--bg-card, #FFFFFF)', borderRadius: '12px',
             border: '1px solid rgba(var(--ink),0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',
-            padding: '6px', maxHeight: '240px', overflowY: 'auto',
+            padding: '6px', maxHeight: '240px', overflowY: 'auto', boxSizing: 'border-box',
             animation: 'sel-in 0.16s ease',
           }}
         >
@@ -126,7 +160,8 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
               </div>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -2,11 +2,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js';
+import { ApiError } from '../../../../../api/client';
 import { checkoutApi } from '../../../../../api/checkout';
 import type { CheckoutCalculateResult, CheckoutSessionResult } from '../../../../../api/checkout';
 import { Button, ModalShell, ModalHeader, ModalBody } from '../../../../../components/ui/index';
 
-type Status = 'form' | 'confirming' | 'failed';
+type Status = 'form' | 'confirming' | 'failed' | 'notApplied';
 
 function SummaryRow({ label, value, muted, total }: {
   label: string; value: string; muted?: boolean; total?: boolean;
@@ -67,10 +68,15 @@ export function StripeCheckoutModal({ session, title, subtitle, quote, currency,
         return;
       }
       setStatus('failed');
-    } catch {
+    } catch (e) {
       // Деньги могли уже уйти — вебхук проведёт оплату сам, поэтому здесь
       // только сообщаем, а не пытаемся откатывать.
-      setStatus('failed');
+      //
+      // paid_not_applied — отдельный случай: списание ТОЧНО прошло, а продажу
+      // бэк провести не смог. Показать тут обычное «оплата не завершена» значит
+      // подтолкнуть кассира списать деньги второй раз.
+      setStatus(e instanceof ApiError && e.code === 'checkout.paid_not_applied'
+        ? 'notApplied' : 'failed');
     }
   }, [session.session_id, onPaid]);
 
@@ -124,10 +130,13 @@ export function StripeCheckoutModal({ session, title, subtitle, quote, currency,
           </div>
         )}
 
-        {status === 'failed' && (
+        {(status === 'failed' || status === 'notApplied') && (
           <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
-            <div style={{ fontSize: '13px', color: 'var(--muted)', textAlign: 'center', lineHeight: 1.5 }}>
-              {t('panel.wallet.payNotCompleted')}
+            <div style={{
+              fontSize: '13px', textAlign: 'center', lineHeight: 1.5,
+              color: status === 'notApplied' ? 'var(--error, #D88C9A)' : 'var(--muted)',
+            }}>
+              {t(status === 'notApplied' ? 'panel.wallet.payNotApplied' : 'panel.wallet.payNotCompleted')}
             </div>
             <Button variant="ghost" onClick={onClose}>{t('panel.wallet.close')}</Button>
           </div>

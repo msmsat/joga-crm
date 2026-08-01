@@ -91,7 +91,7 @@
     "errorDelete": "Ошибка при удалении",
     "errorSave": "Не удалось сохранить изменения",
     "emailCopied": "Email скопирован",
-    "ringing": "Звоним...",
+    "phoneCopied": "Телефон скопирован",
     "inviteSent": "Приглашение отправлено на {{email}}",
     "inviteResent": "Приглашение отправлено повторно",
     "inviteCancelled": "Приглашение отменено"

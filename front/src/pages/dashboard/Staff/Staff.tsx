@@ -244,6 +244,12 @@ export default function Staff() {
 
   const showToast = toast.success;
 
+  const copyToClipboard = (value: string, successMsg: string) => {
+    navigator.clipboard.writeText(value)
+      .then(() => showToast(successMsg))
+      .catch(() => toast.error(t('common:toasts.copyFailed')));
+  };
+
   // Действия над ожидающей карточкой — единственное, что с ней можно сделать,
   // пока сотрудник не принял приглашение.
   const [resendingId, setResendingId] = useState<number | null>(null);
@@ -423,12 +429,12 @@ export default function Staff() {
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                     {t('common:status.active')}
                   </div>
-                  <div className="chip" onClick={() => showToast(t('staff:toasts.emailCopied'))}>
+                  <div className="chip" onClick={() => copyToClipboard(profile.email, t('staff:toasts.emailCopied'))}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     {profile.email}
                   </div>
                   {profile.phone && (
-                    <div className="chip" onClick={() => showToast(t('staff:toasts.ringing'))}>
+                    <div className="chip" onClick={() => copyToClipboard(profile.phone!, t('staff:toasts.phoneCopied'))}>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.92 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                       {profile.phone}
                     </div>

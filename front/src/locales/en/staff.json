@@ -91,7 +91,7 @@
     "errorDelete": "Error deleting",
     "errorSave": "Failed to save changes",
     "emailCopied": "Email copied",
-    "ringing": "Calling...",
+    "phoneCopied": "Phone copied",
     "inviteSent": "Invitation sent to {{email}}",
     "inviteResent": "Invitation sent again",
     "inviteCancelled": "Invitation cancelled"
