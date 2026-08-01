@@ -21,7 +21,7 @@ export default function MiniCheck({ on, onChange, color, disabled, title }: Prop
         height: '24px',
         borderRadius: '8px',
         border: `1.5px solid ${on ? c : 'rgba(var(--ink),0.15)'}`,
-        background: on ? c : '#FDFCFB',
+        background: on ? c : 'var(--bg)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

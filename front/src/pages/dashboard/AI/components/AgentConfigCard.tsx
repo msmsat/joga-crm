@@ -16,39 +16,48 @@ interface AgentConfigCardProps {
   onOpenSetup: () => void;
 }
 
+// Строка канала: плитка-иконка держит состояние цветом, под названием — словесный
+// статус. Раньше «выключен» и «не подключён» выглядели одинаково (просто серый
+// тумблер), и понять, почему агент молчит, было нельзя.
 function ChannelRow({
   icon,
   label,
   enabled,
+  connected,
   onToggle,
-  disabled,
   disabledReason,
 }: {
   icon: React.ReactNode;
   label: string;
   enabled: boolean;
+  connected: boolean;
   onToggle: () => void;
-  disabled?: boolean;
-  disabledReason?: string;
+  disabledReason: string;
 }) {
   const { t } = useTranslation('ai');
+  const on = enabled && connected;
   const toggle = (
     <button
       onClick={onToggle}
-      disabled={disabled}
-      className={`${styles.miniToggle} ${enabled ? styles.miniToggleOn : ''}`}
-      title={disabled ? undefined : enabled ? t('agents.disable') : t('agents.enable')}
+      disabled={!connected}
+      className={`${styles.miniToggle} ${on ? styles.miniToggleOn : ''}`}
+      title={!connected ? undefined : enabled ? t('agents.disable') : t('agents.enable')}
     >
       <div className={styles.miniToggleThumb} />
     </button>
   );
   return (
-    <div className={styles.agentRow}>
-      <PulseRingSVG active={enabled} size={10} />
-      <span className={styles.agentIcon}>{icon}</span>
-      <span className={styles.agentLabel}>{label}</span>
+    <div className={`${styles.agentRow} ${on ? styles.agentRowOn : ''}`}>
+      <span className={styles.agentIconTile}>{icon}</span>
+      <span className={styles.agentRowText}>
+        <span className={styles.agentLabel}>{label}</span>
+        <span className={`${styles.agentState} ${on ? styles.agentStateOn : ''}`}>
+          {on && <PulseRingSVG active size={9} />}
+          {!connected ? t('agents.stateOffline') : on ? t('agents.stateOn') : t('agents.statusDisabled')}
+        </span>
+      </span>
       <div className={styles.agentSpacer} />
-      {disabled && disabledReason ? <Tooltip label={disabledReason}>{toggle}</Tooltip> : toggle}
+      {connected ? toggle : <Tooltip label={disabledReason}>{toggle}</Tooltip>}
     </div>
   );
 }
@@ -66,6 +75,12 @@ export default function AgentConfigCard({
   onOpenSetup,
 }: AgentConfigCardProps) {
   const { t } = useTranslation('ai');
+  const activeCount = [
+    telegramEnabled && telegramConnected,
+    instagramEnabled && instagramConnected,
+    whatsappEnabled && whatsappConnected,
+  ].filter(Boolean).length;
+
   return (
     <div className={styles.agentCard}>
       <div className={styles.agentCardHeader}>
@@ -74,6 +89,10 @@ export default function AgentConfigCard({
           <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
         </svg>
         <span className={styles.agentCardTitle}>{t('agents.title')}</span>
+        <span className={`${styles.agentCount} ${activeCount ? styles.agentCountOn : ''}`}>
+          {/* именно active, а не count: count включил бы плюрализацию i18next */}
+          {t('agents.activeCount', { active: activeCount, total: 3 })}
+        </span>
       </div>
 
       <ChannelRow
@@ -85,7 +104,7 @@ export default function AgentConfigCard({
         label="Telegram"
         enabled={telegramEnabled}
         onToggle={onToggleTelegram}
-        disabled={!telegramConnected}
+        connected={telegramConnected}
         disabledReason={t('telegram.gateTooltip')}
       />
 
@@ -100,7 +119,7 @@ export default function AgentConfigCard({
         label="Instagram"
         enabled={instagramEnabled}
         onToggle={onToggleInstagram}
-        disabled={!instagramConnected}
+        connected={instagramConnected}
         disabledReason={t('instagram.gateTooltip')}
       />
 
@@ -113,7 +132,7 @@ export default function AgentConfigCard({
         label="WhatsApp"
         enabled={whatsappEnabled}
         onToggle={onToggleWhatsapp}
-        disabled={!whatsappConnected}
+        connected={whatsappConnected}
         disabledReason={t('whatsapp.gateTooltip')}
       />
 

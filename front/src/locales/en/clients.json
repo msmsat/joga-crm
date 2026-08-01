@@ -87,7 +87,6 @@
       "emptyActive": "No active products",
       "emptyArchived": "No archived products",
       "emptyCatalog": "This studio has no subscription packages yet",
-      "subscriptionsDisabled": "The subscriptions program is disabled — enable it in the Catalog section",
       "lessons": "{{remaining}}/{{total}} lessons",
       "lessonsCount": "{{count}} lessons",
       "perVisit": "Per single visit",

@@ -28,6 +28,9 @@ class HallUpdate(BaseSchema):
 class HallRead(BaseSchema):
     id: int
     name: str
+    # Филиал зала — Отчёты сужают по нему список залов: пара «филиал А + зал
+    # филиала Б» физически не даёт ни одного занятия, предлагать её нельзя.
+    branch_id: Optional[int] = None
     color: Optional[str] = None
     capacity: int
     is_online: bool

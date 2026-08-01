@@ -100,7 +100,36 @@
       "amount": "Amount",
       "lesson": "Lesson",
       "time": "Time",
-      "occupancy": "Occupancy"
+      "occupancy": "Occupancy",
+      "date": "Date",
+      "method": "Method",
+      "trainer": "Trainer",
+      "rowsCount": "records",
+      "search": "Search the table",
+      "shownOf": "Showing {{shown}} of {{total}}",
+      "noMatches": "Nothing found for “{{query}}”",
+      "reset": "Reset",
+      "export": "Export CSV",
+      "subtitle": {
+        "money": "Operations in this slice",
+        "lessons": "Lessons in this slice"
+      },
+      "hint": {
+        "operations": "Click a row to open the operation in Finances",
+        "lessons": "Click a row to open that day in the Journal"
+      },
+      "stat": {
+        "net": "Net",
+        "income": "Income",
+        "expense": "Expense",
+        "operations": "Operations",
+        "topCategory": "Top category",
+        "lessons": "Lessons",
+        "booked": "Booked of seats",
+        "avgFill": "Average occupancy",
+        "trainers": "Trainers",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "sales": {

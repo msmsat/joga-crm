@@ -429,14 +429,21 @@ async def analytics_clients_report_segment(
 async def analytics_clients_report_week(
     period: date = Query(...),
     kind: Literal["new", "returned"] = Query(...),
+    f: ReportFilters = Depends(report_filters),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    """Клиенты одного столбца недельного графика. Фильтры тулбара обязаны быть
+    те же, что у самого графика (_weekly), иначе список не совпадает со
+    столбцом, по которому кликнули: период сужаем до недели, остальные условия
+    берём из f как есть."""
     sid = ctx.studio_id
     week_start = datetime.combine(period, time.min)
     week_end = week_start + timedelta(days=7)
 
     if kind == "new":
+        # «Новые» — по registration_date: у клиента нет ни зала, ни тренера,
+        # фильтры к нему физически не применяются (матрица R13, в UI подписано).
         rows = (await db.execute(
             select(Client.id, Client.name, Client.last_name, Client.phone, Client.last_visit_date)
             .where(
@@ -446,18 +453,22 @@ async def analytics_clients_report_week(
             )
         )).all()
     else:
-        rows = (await db.execute(
+        week_f = replace(f, date_from=period, date_to=period + timedelta(days=6))
+        stmt = (
             select(Client.id, Client.name, Client.last_name, Client.phone, Client.last_visit_date)
+            .select_from(Client)
             .join(Reservation, Reservation.client_id == Client.id)
             .join(Lesson, Lesson.id == Reservation.lesson_id)
-            .where(
+        )
+        if needs_hall_join(week_f):
+            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        rows = (await db.execute(
+            stmt.where(
+                *lesson_conds(week_f, sid),
                 Client.studio_id == sid,
                 Reservation.status == "attended",
-                Lesson.start_time >= week_start,
-                Lesson.start_time < week_end,
                 Client.registration_date < week_start,
-            )
-            .distinct()
+            ).distinct()
         )).all()
 
     return [

@@ -62,8 +62,8 @@ export default function RetentionBoard() {
                     contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', fontSize: '12px', background: 'var(--bg-card)' }}
                   />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
-                  <Bar dataKey="sold" name={t('retention.sold')} fill="#FCAE91" radius={[6, 6, 0, 0]} maxBarSize={28} />
-                  <Bar dataKey="renewed" name={t('retention.renewed')} fill="#5BAB72" radius={[6, 6, 0, 0]} maxBarSize={28} />
+                  <Bar dataKey="sold" name={t('retention.sold')} fill="#FCAE91" radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={2} />
+                  <Bar dataKey="renewed" name={t('retention.renewed')} fill="#5BAB72" radius={[6, 6, 0, 0]} maxBarSize={28} minPointSize={2} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

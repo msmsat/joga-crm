@@ -164,7 +164,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
                   {!acc.is_system && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '16px' }}>
                       {[{ id: 'cash', icon: <Ico.Cash />, label: t('accounts.types.cash') }, { id: 'bank', icon: <Ico.Card />, label: t('accounts.types.bank') }, { id: 'online', icon: <Ico.World />, label: t('accounts.types.online') }].map(btn => (
-                        <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
+                        <button key={btn.id} type="button" onClick={() => setEditType(btn.id)} style={{ padding: '8px 4px', background: editType === btn.id ? 'rgba(249, 160, 139, 0.05)' : 'var(--bg)', border: editType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: editType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
                           {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
                         </button>
                       ))}
@@ -235,7 +235,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '18px' }}>
                 {[{ id: 'cash', icon: <Ico.Cash />, label: t('accounts.typesShort.cash') }, { id: 'bank', icon: <Ico.Card />, label: t('accounts.typesShort.bank') }, { id: 'online', icon: <Ico.World />, label: t('accounts.typesShort.online') }].map(btn => (
-                  <button key={btn.id} type="button" onClick={() => setNewType(btn.id)} style={{ padding: '8px 4px', background: newType === btn.id ? 'rgba(249, 160, 139, 0.05)' : '#FDFCFB', border: newType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: newType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
+                  <button key={btn.id} type="button" onClick={() => setNewType(btn.id)} style={{ padding: '8px 4px', background: newType === btn.id ? 'rgba(249, 160, 139, 0.05)' : 'var(--bg)', border: newType === btn.id ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: newType === btn.id ? '#F9A08B' : 'var(--muted)', transition: 'all 0.15s' }}>
                     {btn.icon}<span style={{ fontSize: '9px', fontWeight: 700 }}>{btn.label}</span>
                   </button>
                 ))}

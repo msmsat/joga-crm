@@ -11,7 +11,7 @@ from sqlalchemy import delete, select
 
 from database import async_session_maker, engine
 from dependencies import StudioContext
-from models import Client, ClientSubscription, Operation, Product, Studio
+from models import Client, ClientSubscription, Operation, Product, Service, Studio
 from routers.analytics.sales import analytics_sales, analytics_sales_series
 from routers.analytics._filters import ReportFilters
 
@@ -119,10 +119,66 @@ async def _run():
         await engine.dispose()
 
 
+async def _run_service_filter():
+    """Фильтр «Услуга» режет выручку по Operation.service_id.
+
+    До миграции d1c47f0a9b32 op_conds сравнивал id услуги с Operation.product_id —
+    ключом на ДРУГУЮ таблицу. Здесь товар и услуга специально разведены: под
+    фильтром по услуге в срез обязана попасть только операция этой услуги, а
+    операция с product_id — нет, каким бы ни был её номер."""
+    async with async_session_maker() as db:
+        s = Studio(name="TEST-SALES-SERVICE"); db.add(s); await db.flush()
+        sid = s.id
+        today = date.today()
+
+        hatha = Service(studio_id=sid, name="Хатха", price=1500)
+        pilates = Service(studio_id=sid, name="Пилатес", price=2000)
+        product = Product(studio_id=sid, name="Абонемент 8", product_type="subscription", price=8000)
+        db.add_all([hatha, pilates, product]); await db.flush()
+
+        db.add_all([
+            Operation(studio_id=sid, service_id=hatha.id, type="in", title="Разовое «Хатха»",
+                      amount=1500, op_date=today - timedelta(days=2), category="Услуги", method="cash"),
+            Operation(studio_id=sid, service_id=pilates.id, type="in", title="Разовое «Пилатес»",
+                      amount=2000, op_date=today - timedelta(days=2), category="Услуги", method="cash"),
+            Operation(studio_id=sid, product_id=product.id, type="in", title="Абонемент 8",
+                      amount=8000, op_date=today - timedelta(days=2), category="Абонементы", method="card"),
+        ])
+        await db.commit()
+
+    try:
+        today = date.today()
+        ctx = StudioContext(user=None, studio_id=sid, role="owner")
+        base = dict(date_from=today - timedelta(days=10), date_to=today,
+                    branch_id=None, hall_id=None, trainer_id=None)
+
+        async with async_session_maker() as db:
+            total = await analytics_sales(f=ReportFilters(**base, service_id=None), ctx=ctx, db=db)
+            only_hatha = await analytics_sales(f=ReportFilters(**base, service_id=hatha.id), ctx=ctx, db=db)
+
+        assert total.kpi.revenue.value == 11500, total.kpi.revenue.value
+        # 1500, а не 0 (услуги нет среди product_id) и не 8000 (чужой товар).
+        assert only_hatha.kpi.revenue.value == 1500, only_hatha.kpi.revenue.value
+        assert only_hatha.kpi.sales_count.value == 1, only_hatha.kpi.sales_count.value
+    finally:
+        async with async_session_maker() as db:
+            await db.execute(delete(Operation).where(Operation.studio_id == sid))
+            await db.execute(delete(Service).where(Service.studio_id == sid))
+            await db.execute(delete(Product).where(Product.studio_id == sid))
+            await db.execute(delete(Studio).where(Studio.id == sid))
+            await db.commit()
+        await engine.dispose()
+
+
 def test_analytics_sales():
     asyncio.run(_run())
 
 
+def test_analytics_sales_service_filter():
+    asyncio.run(_run_service_filter())
+
+
 if __name__ == "__main__":
     test_analytics_sales()
+    test_analytics_sales_service_filter()
     print("ALL PASS")

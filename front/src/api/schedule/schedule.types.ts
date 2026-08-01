@@ -1,6 +1,9 @@
 export interface Hall {
   id: number
   name: string
+  // Филиал зала (null — зал ни к одному не привязан). Отчёты сужают по нему
+  // список залов в тулбаре.
+  branch_id: number | null
   color: string
   capacity: number
   is_online: boolean

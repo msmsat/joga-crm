@@ -26,10 +26,21 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
   goals: <Ico.Target />,
 };
 
+// Переходы из Отчётов ведут сюда с ?tab=operations&search=<название операции>.
+function initialFromUrl(): { tab: Tab; search: string } {
+  const q = new URLSearchParams(window.location.search);
+  const tab = q.get('tab') as Tab | null;
+  return {
+    tab: tab && FINANCE_TABS.includes(tab) ? tab : 'accounts',
+    search: q.get('search') ?? '',
+  };
+}
+
 export default function Finances() {
   const { t } = useTranslation('finances');
-  const [activeTab, setActiveTab] = useState<Tab>('accounts');
-  const [operationsSearch, setOperationsSearch] = useState('');
+  const [initial] = useState(initialFromUrl);
+  const [activeTab, setActiveTab] = useState<Tab>(initial.tab);
+  const [operationsSearch, setOperationsSearch] = useState(initial.search);
   const toast = useToast();
   const showToast = useCallback((msg: string, type: ToastType = 'success') => toast[type](msg), [toast]);
 

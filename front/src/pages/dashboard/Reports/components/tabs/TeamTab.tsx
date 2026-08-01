@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { analyticsApi } from '../../../../../api/analytics/analytics.api';
 import { scheduleApi } from '../../../../../api/schedule';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { fmtDateRange } from '../../../../../lib/format';
+import { fmtDateRange, fmtInt } from '../../../../../lib/format';
 import { KpiStat } from '../shared/KpiStat';
 import { InsightsPanel } from '../shared/InsightsPanel';
 import { EmptyTabState } from '../shared/EmptyTabState';
@@ -27,6 +28,7 @@ export interface TeamTabProps {
 
 export function TeamTab({ params, paramsKey, registerCsvExport, onWidenPeriod }: TeamTabProps) {
   const { t, i18n } = useTranslation('reports');
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<TrainerRow | null>(null);
   const [trainerSortBy, setTrainerSortBy] = useState<TrainerSortKey | undefined>(undefined);
   const [trainerSortNonce, setTrainerSortNonce] = useState(0);
@@ -81,15 +83,34 @@ export function TeamTab({ params, paramsKey, registerCsvExport, onWidenPeriod }:
   const lessonColumns: DrilldownColumn[] = [
     { key: 'name', label: t('overview.drilldown.lesson') },
     { key: 'time', label: t('overview.drilldown.time') },
-    { key: 'occupancy', label: t('overview.drilldown.occupancy') },
+    { key: 'trainer', label: t('overview.drilldown.trainer') },
+    { key: 'occupancy', label: t('overview.drilldown.occupancy'), align: 'right' },
   ];
   const lessonRows = (periodLessons ?? []).map(l => ({
+    _id: l.id,
+    _date: l.start_time.slice(0, 10),
     name: l.name,
     time: new Date(l.start_time).toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
       day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
     }),
+    trainer: l.teacher_name ?? '—',
     occupancy: `${l.booked_count}/${l.total_spots}`,
   }));
+
+  // Агрегаты левой панели — по сырым занятиям периода (в строках уже текст).
+  const lessonSummary = useMemo(() => {
+    const items = periodLessons ?? [];
+    const spots = items.reduce((s, l) => s + l.total_spots, 0);
+    const booked = items.reduce((s, l) => s + l.booked_count, 0);
+    return {
+      count: items.length,
+      booked,
+      spots,
+      fillPct: spots ? Math.round((booked / spots) * 100) : 0,
+      cancelled: items.filter(l => l.status === 'cancelled').length,
+      trainers: new Set(items.map(l => l.teacher_id).filter(id => id != null)).size,
+    };
+  }, [periodLessons]);
 
   if (isEmpty) {
     return <EmptyTabState icon="clients" onWiden={onWidenPeriod} />;
@@ -161,9 +182,21 @@ export function TeamTab({ params, paramsKey, registerCsvExport, onWidenPeriod }:
         open={showLessons}
         onClose={() => setShowLessons(false)}
         title={`${t('team.kpi.lessonsCount')} · ${fmtDateRange(params.date_from, params.date_to)}`}
+        subtitle={t('overview.drilldown.subtitle.lessons')}
+        icon="calendar"
+        hero={{ value: fmtInt(lessonSummary.count), label: t('overview.drilldown.stat.lessons') }}
+        stats={[
+          { label: t('overview.drilldown.stat.booked'), value: `${fmtInt(lessonSummary.booked)} / ${fmtInt(lessonSummary.spots)}` },
+          { label: t('overview.drilldown.stat.avgFill'), value: `${lessonSummary.fillPct}%` },
+          { label: t('overview.drilldown.stat.trainers'), value: fmtInt(lessonSummary.trainers) },
+          { label: t('overview.drilldown.stat.cancelled'), value: fmtInt(lessonSummary.cancelled), tone: lessonSummary.cancelled ? 'negative' : undefined },
+        ]}
+        rowHint={t('overview.drilldown.hint.lessons')}
+        exportName={`team-lessons-${params.date_from}_${params.date_to}`}
         columns={lessonColumns}
         rows={lessonRows}
         loading={lessonsLoading}
+        onRowClick={row => navigate(`/dashboard/journal?date=${row._date}`)}
       />
     </>
   );

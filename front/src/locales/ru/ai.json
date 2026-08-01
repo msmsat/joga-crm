@@ -112,6 +112,9 @@
   },
   "agents": {
     "title": "AI-агенты",
+    "activeCount": "{{active}} / {{total}}",
+    "stateOn": "Отвечает",
+    "stateOffline": "Не подключён",
     "configureButton": "Настроить агентов",
     "enable": "Включить",
     "disable": "Выключить",

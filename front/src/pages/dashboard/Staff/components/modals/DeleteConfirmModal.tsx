@@ -75,13 +75,13 @@ export function DeleteConfirmModal({
           }}>
             <div style={{
               width: '20px', height: '20px', borderRadius: '6px', flexShrink: 0,
-              border: `1.5px solid ${dontAsk ? '#1A1A1A' : 'rgba(var(--ink),0.2)'}`,
-              background: dontAsk ? '#1A1A1A' : 'var(--bg-card)',
+              border: `1.5px solid ${dontAsk ? 'var(--onyx)' : 'rgba(var(--ink),0.2)'}`,
+              background: dontAsk ? 'var(--onyx)' : 'var(--bg-card)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.2s',
             }}>
               {dontAsk && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               )}

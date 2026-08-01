@@ -112,6 +112,9 @@
   },
   "agents": {
     "title": "AI agents",
+    "activeCount": "{{active}} / {{total}}",
+    "stateOn": "Replying",
+    "stateOffline": "Not connected",
     "configureButton": "Configure agents",
     "enable": "Enable",
     "disable": "Disable",

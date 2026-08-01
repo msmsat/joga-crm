@@ -109,7 +109,12 @@ def needs_hall_join(f: ReportFilters) -> bool:
 
 
 def op_conds(f: ReportFilters, sid: int) -> list:
-    """Условия для запросов по Operation. У операций нет зала/филиала — игнор."""
+    """Условия для запросов по Operation. У операций нет зала/филиала — игнор.
+
+    service_id сравнивается с Operation.service_id, а не с product_id: селект
+    тулбара наполняется из GET /studio/services, то есть присылает id услуги, а
+    product_id — внешний ключ на products. Раньше сравнивались id из разных
+    таблиц, и под фильтром «Услуга» выручка была не той (миграция d1c47f0a9b32)."""
     conds = [
         Operation.studio_id == sid,
         Operation.op_date >= f.date_from,
@@ -118,7 +123,7 @@ def op_conds(f: ReportFilters, sid: int) -> list:
     if f.trainer_id is not None:
         conds.append(Operation.trainer_id == f.trainer_id)
     if f.service_id is not None:
-        conds.append(Operation.product_id == f.service_id)
+        conds.append(Operation.service_id == f.service_id)
     return conds
 
 

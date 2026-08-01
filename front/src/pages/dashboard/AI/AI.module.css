@@ -8,6 +8,9 @@
 }
 
 /* ─── LEFT PANEL ─────────────────────────────────────────────────────────────── */
+/* Своей заливки нет намеренно: панель сидит на фоне страницы, отделяет её
+   только линия справа. Раньше здесь был --bg-card, и вся колонка с историей и
+   агентами выпирала белым прямоугольником поверх жемчужного фона. */
 .leftPanel {
   width: 300px;
   min-width: 300px;
@@ -15,7 +18,6 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border, rgba(var(--ink),0.08));
-  background: var(--bg-card, #FFFFFF);
   overflow: hidden;
 }
 
@@ -391,13 +393,17 @@
 
 /* ─── AGENT CONFIG CARD ─────────────────────────────────────────────────────── */
 .agentCard {
-  background: rgba(253,252,251,0.6);
+  /* Панель теперь на фоне страницы, поэтому карточка приподнята: белая
+     поверхность с мягким персиковым замесом сверху. */
+  background:
+    linear-gradient(158deg, rgba(249,160,139,0.09) 0%, rgba(249,160,139,0) 62%),
+    var(--bg-card);
   border: 1px solid var(--border, rgba(var(--ink),0.08));
-  border-radius: 10px;
-  padding: 10px 10px 8px;
+  border-radius: 14px;
+  padding: 12px 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
   margin-top: 2px;
 }
 
@@ -405,7 +411,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 2px;
+  padding: 0 4px;
+  margin-bottom: 6px;
 }
 
 .agentCardTitle {
@@ -415,24 +422,77 @@
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
+/* Счётчик активных каналов — блок сразу отвечает «сколько агентов работает». */
+.agentCount {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: rgba(var(--ink),0.05);
+  color: var(--text3);
+  font-family: var(--font, 'Manrope', sans-serif);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.agentCountOn {
+  background: rgba(249,160,139,0.16);
+  color: #F9A08B;
+}
+
 .agentRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 9px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  transition: background 0.18s ease;
 }
+.agentRow:hover { background: rgba(var(--ink),0.03); }
 
-.agentIcon {
-  color: var(--text3);
+.agentIconTile {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: rgba(var(--ink),0.05);
+  color: var(--text3);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.agentRowOn .agentIconTile {
+  background: rgba(249,160,139,0.15);
+  color: #F9A08B;
+}
+
+.agentRowText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .agentLabel {
   font-size: 12px;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font, 'Manrope', sans-serif);
+  transition: color 0.25s ease;
+}
+.agentRowOn .agentLabel { color: var(--onyx); }
+
+.agentState {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
   font-family: var(--font, 'Manrope', sans-serif);
 }
+.agentStateOn { color: #5BAB72; }
 
 .agentSpacer { flex: 1; }
 
@@ -450,8 +510,9 @@
   position: relative;
   flex-shrink: 0;
 }
-.miniToggleOn { background: #A3C9A8; }
-.miniToggle:disabled { cursor: not-allowed; opacity: 0.5; }
+/* Персиковый, как у Switch из кита: активные состояния в продукте одного цвета. */
+.miniToggleOn { background: #F9A08B; }
+.miniToggle:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .miniToggleThumb {
   width: 13px;
@@ -468,8 +529,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 10px;
-  border-radius: 8px;
+  padding: 9px 10px;
+  margin-top: 6px;
+  border-radius: 10px;
   border: 1px solid rgba(249,160,139,0.25);
   background: rgba(249,160,139,0.06);
   color: #F9A08B;
@@ -478,7 +540,6 @@
   font-family: var(--font, 'Manrope', sans-serif);
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 2px;
 }
 .agentSetupBtn:hover {
   background: rgba(249,160,139,0.12);
@@ -494,13 +555,16 @@
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
+  /* Лента и композер сидят на ОДНОЙ поверхности: раньше низ был --bg-card, верх
+     --bg, и стык читался как склейка двух прямоугольников. */
+  background: var(--bg);
 }
 
 .messagesArea {
   flex: 1;
   min-height: 0; /* сжимается на низких окнах, иначе инпут выталкивается за экран */
   overflow-y: auto;
-  padding: var(--content-pad, 28px) var(--content-pad, 28px) 16px;
+  padding: var(--content-pad, 28px) var(--content-pad, 28px) 8px;
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--ink),0.07) transparent;
 }
@@ -787,30 +851,45 @@
 }
 
 /* ─── INPUT AREA ─────────────────────────────────────────────────────────────── */
+/* Ни рамки, ни своей заливки: вместо разделительной линии лента растворяется
+   в фоне под градиентом (::before), а поле ввода парит капсулой поверх. */
 .inputArea {
-  padding: 12px 28px 18px;
-  border-top: 1px solid var(--border, rgba(var(--ink),0.06));
-  background: var(--bg-card, white);
+  position: relative;
+  padding: 6px 28px 18px;
+  background: transparent;
   flex-shrink: 0;
 }
 
+.inputArea::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -36px;
+  height: 36px;
+  background: linear-gradient(to top, var(--bg) 40%, transparent);
+  pointer-events: none; /* растворяются только пиксели, не клики по сообщениям */
+}
+
 .inputBox {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   background: var(--bg-card);
-  border: 1px solid rgba(var(--ink),0.1);
-  border-radius: 14px;
-  padding: 10px 10px 10px 16px;
-  box-shadow: 0 2px 10px rgba(26,26,26,0.04);
-  transition: all 0.22s ease;
+  border: 1px solid rgba(var(--ink),0.08);
+  border-radius: 20px;
+  padding: 10px 10px 10px 18px;
+  box-shadow: 0 10px 28px -10px rgba(0,0,0,0.12), 0 2px 6px -2px rgba(0,0,0,0.05);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
   max-width: 740px;
   margin: 0 auto;
 }
 
 .inputBoxFocused {
   border-color: rgba(249,160,139,0.45);
-  box-shadow: 0 0 0 3px rgba(249,160,139,0.09), 0 4px 14px rgba(26,26,26,0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(249,160,139,0.10), 0 14px 32px -12px rgba(0,0,0,0.16);
 }
 
 .inputTextarea {
@@ -830,7 +909,7 @@
   display: block;
 }
 .inputTextarea::placeholder {
-  color: #C0BDB9;
+  color: var(--text3);
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
@@ -862,7 +941,8 @@
   display: flex;
   gap: 6px;
   font-size: 11px;
-  color: #D0CCC8;
+  color: var(--text3);
+  opacity: 0.75;
   margin-top: 7px;
   justify-content: center;
   font-family: var(--font, 'Manrope', sans-serif);

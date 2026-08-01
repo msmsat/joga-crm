@@ -23,6 +23,14 @@
 
 const TOKEN_KEY = 'token';
 const JAR_KEY = 'accounts';
+/**
+ * Затравка темы для анти-мигания (см. ThemeContext.tsx и инлайн-скрипт в
+ * index.html). Живёт здесь, потому что это ключ сессии: он привязан к человеку,
+ * а не к устройству, и гаснуть должен вместе с токеном — иначе на общем
+ * компьютере следующий вошедший увидит чужую тёмную тему до ответа
+ * `GET /settings/appearance`.
+ */
+export const THEME_STORAGE_KEY = 'velora_theme';
 
 export interface StoredAccount {
   email: string;
@@ -96,9 +104,13 @@ function saveAccounts(accounts: StoredAccount[]): void {
  * ничего не забывает.
  */
 export function setActiveToken(token: string): void {
+  const previousEmail = getActiveEmail();
   localStorage.setItem(TOKEN_KEY, token);
 
   const email = (decodeToken(token)?.sub as string) ?? null;
+  // Вошёл другой человек — чужая затравка темы не должна пережить вход. Смена
+  // студии тем же email её сохраняет: тема-то его.
+  if (email !== previousEmail) localStorage.removeItem(THEME_STORAGE_KEY);
   if (!email) return;   // токен нечитаем — активным сделали, в список не пишем
 
   const accounts = listAccounts();
@@ -147,7 +159,7 @@ export function rememberAccountName(email: string, name: string): void {
 /** Убрать аккаунт из списка недавних. Активный при этом разлогинивается. */
 export function forgetAccount(email: string): void {
   saveAccounts(listAccounts().filter(a => a.email !== email));
-  if (getActiveEmail() === email) localStorage.removeItem(TOKEN_KEY);
+  if (getActiveEmail() === email) clearActiveToken();
 }
 
 /**
@@ -157,6 +169,7 @@ export function forgetAccount(email: string): void {
 export function clearActiveToken(): void {
   const email = getActiveEmail();
   localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(THEME_STORAGE_KEY);
   if (!email) return;
   saveAccounts(listAccounts().map(a => (a.email === email ? { email: a.email, name: a.name } : a)));
 }

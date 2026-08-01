@@ -48,7 +48,7 @@ export default function DataTab() {
               <div
                 key={kind}
                 onClick={() => !disabled && exportKind(kind)}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderRadius: "12px", border: isExporting ? "1.5px solid var(--peach)" : "1.5px solid rgba(var(--ink),0.06)", background: isExporting ? "rgba(252,174,145,0.02)" : "#FDFCFB", cursor: disabled ? "default" : "pointer", opacity: isEmpty ? 0.55 : 1, transition: "all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderRadius: "12px", border: isExporting ? "1.5px solid var(--peach)" : "1.5px solid rgba(var(--ink),0.06)", background: isExporting ? "rgba(252,174,145,0.02)" : "var(--bg)", cursor: disabled ? "default" : "pointer", opacity: isEmpty ? 0.55 : 1, transition: "all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
                 onMouseEnter={el => { if (!disabled) { el.currentTarget.style.borderColor = "var(--peach)"; el.currentTarget.style.transform = "translateY(-1px)"; el.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.02)"; } }}
                 onMouseLeave={el => { if (!disabled) { el.currentTarget.style.borderColor = "rgba(var(--ink),0.06)"; el.currentTarget.style.transform = "none"; el.currentTarget.style.boxShadow = "none"; } }}
               >

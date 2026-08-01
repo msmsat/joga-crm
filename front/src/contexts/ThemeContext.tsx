@@ -3,11 +3,12 @@ import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { settingsApi } from "../api/settings/settings.api";
 import { queryKeys } from "../api/queryKeys";
+import { THEME_STORAGE_KEY } from "../utils/auth";
 
-// Тот же ключ, что и в onSuccess мутации AppearanceTab — анти-мигание тёмной
-// темой между заходами (localStorage — только затравка, сервер остаётся
-// источником истины).
-export const THEME_STORAGE_KEY = "velora_theme";
+// Ключ живёт в utils/auth рядом с токеном: затравка — часть сессии и гаснет
+// вместе с ней (localStorage — только анти-мигание, сервер остаётся источником
+// истины).
+export { THEME_STORAGE_KEY };
 
 function applyDarkClass(dark: boolean) {
   document.documentElement.classList.toggle("dark", dark);
@@ -38,6 +39,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // иначе на новом устройстве первый заход всё равно мигнёт светлым (затравку
     // читает инлайн-скрипт в index.html до старта React).
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+    // Уходим из кабинета (выход, лендинг, логин) — снимаем класс за собой:
+    // провайдер там не смонтирован, и снять его больше некому, а `:root.dark`
+    // из общего бандла покрасит и лендинг, и форму входа.
+    return () => applyDarkClass(false);
   }, [theme]);
 
   // auto → слушаем смену системной темы на лету.

@@ -581,11 +581,14 @@
   color: var(--bg);
   font-weight: 700;
 }
+/* «Сегодня» + «выбрано»: плашка отвечает за выбор, персиковое кольцо — за
+   сегодня. Персиковый текст на плашке жил только в светлой теме: в тёмной
+   --onyx светлеет, и надпись сливалась с фоном. */
 .mc-day.today.selected {
   background: var(--onyx);
-  color: var(--peach);
+  color: var(--bg);
   font-weight: 800;
-  box-shadow: 0 6px 16px rgba(26,26,26,0.2);
+  box-shadow: 0 0 0 2px var(--peach), 0 6px 16px rgba(0,0,0,0.28);
 }
 
 .mc-day.has-event::after {

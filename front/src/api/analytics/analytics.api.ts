@@ -65,8 +65,9 @@ export const analyticsApi = {
   getClientsReportSegment: (key: string, params: ReportFiltersParams) =>
     client.get<SegmentClientRow[]>(`/analytics/clients-report/segment?key=${encodeURIComponent(key)}&${reportQs(params)}`),
 
-  getClientsReportWeek: (period: string, kind: 'new' | 'returned') =>
-    client.get<SegmentClientRow[]>(`/analytics/clients-report/week?period=${period}&kind=${kind}`),
+  // Фильтры обязательны: список столбца должен совпадать с самим столбцом графика.
+  getClientsReportWeek: (period: string, kind: 'new' | 'returned', params: ReportFiltersParams) =>
+    client.get<SegmentClientRow[]>(`/analytics/clients-report/week?period=${period}&kind=${kind}&${reportQs(params)}`),
 
   getTeam: (params: ReportFiltersParams) =>
     client.get<TeamRead>(`/analytics/team?${reportQs(params)}`),

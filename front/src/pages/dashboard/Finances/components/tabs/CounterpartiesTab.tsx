@@ -229,7 +229,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                     style={{
                       padding: '14px 16px', borderRadius: '12px',
                       border: form.type === opt.value ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)',
-                      background: form.type === opt.value ? 'rgba(249,160,139,0.04)' : '#FDFCFB',
+                      background: form.type === opt.value ? 'rgba(249,160,139,0.04)' : 'var(--bg)',
                       cursor: 'pointer', transition: 'all 0.2s',
                       display: 'flex', alignItems: 'center', gap: '12px',
                     }}

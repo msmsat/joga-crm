@@ -3,11 +3,9 @@ import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import { Button, EmptyState, Input, Select, useToast } from "../../../../../components/ui/index";
+import { CURRENCIES, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
 import { resolveImageUrl } from "../../../../../api/client";
-import {
-  CURRENCIES, DATE_FORMATS, DATE_FORMAT_LABELS, FIRST_DAY_OPTIONS,
-  LANGUAGES, LANGUAGE_LABELS, TIMEZONES,
-} from "../../constants";
+import { DATE_FORMATS, DATE_FORMAT_LABELS, FIRST_DAY_OPTIONS } from "../../constants";
 import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import type { GeneralSettings, GeneralUpdate } from "../../../../../api/settings/settings.types";
 
@@ -22,10 +20,11 @@ const EDITABLE_FIELDS = [
 ] as const;
 
 export default function GeneralTab() {
-  const { t } = useTranslation('settings');
+  const { t } = useTranslation(['settings', 'onboarding']);
   const toast = useToast();
   const { data, isLoading, isError, refetch, save, uploadLogo } = useGeneralSettings();
   const [draft, setDraft] = useState<GeneralSettings | null>(null);
+  const [logoHover, setLogoHover] = useState(false);
   // Черновик синхронизируется с ответом сервера при смене ссылки на data (первая
   // загрузка, ответ save/uploadLogo) — правка состояния во время рендера, не в
   // useEffect (react-hooks/set-state-in-effect): нет лишнего цикла рендера.
@@ -52,11 +51,23 @@ export default function GeneralTab() {
     );
   }
 
-  const currencyOptions = zip(CURRENCIES, t('general.locale.currencyLabels', { returnObjects: true }) as string[]);
-  const languageOptions = zip(LANGUAGES, LANGUAGE_LABELS);
+  // Те же списки значений и подписи (namespace "onboarding"), что и на шаге
+  // регион-настроек онбординга (StepSettings) — набор валют/поясов/языков
+  // должен совпадать один в один, обычный kit Select, без визуальных правок.
+  const currencyOptions = CURRENCIES.map(c => ({
+    value: c.value,
+    label: t(`onboarding:settings.currencies.${c.value}`),
+    icon: (
+      <span style={{
+        width: "22px", height: "22px", flexShrink: 0, background: "rgba(252,174,145,0.15)", borderRadius: "6px",
+        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#FCAE91",
+      }}>{c.symbol}</span>
+    ),
+  }));
+  const languageOptions = LANGUAGES;
   const dateFormatOptions = zip(DATE_FORMATS, DATE_FORMAT_LABELS);
   const firstDayOptions = zip(FIRST_DAY_OPTIONS, t('general.locale.firstDayLabels', { returnObjects: true }) as string[]);
-  const timezoneOptions = zip(TIMEZONES, t('general.locale.timezoneLabels', { returnObjects: true }) as string[]);
+  const timezoneOptions = TIMEZONES.map(tz => ({ value: tz.value, label: t(`onboarding:settings.timezones.${tz.value}`) }));
 
   const dirty = EDITABLE_FIELDS.some(k => draft[k] !== data[k]);
 
@@ -89,16 +100,30 @@ export default function GeneralTab() {
       <div className="card" style={{ padding: "28px 28px 24px" }}>
         <SectionHeader icon={icons.building} title={t('general.company.title')} subtitle={t('general.company.subtitle')} />
         <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
-          <label style={{
-            width: "90px", height: "90px", borderRadius: "16px", flexShrink: 0,
-            background: logoSrc ? "transparent" : "#FDFCFB",
-            border: logoSrc ? "none" : "1.5px dashed rgba(var(--ink),0.15)",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: "6px", cursor: uploadLogo.isPending ? "default" : "pointer", transition: "all 0.25s ease",
-            overflow: "hidden", position: "relative"
-          }}
-            onMouseOver={(e) => { if (!logoSrc) e.currentTarget.style.borderColor = "var(--peach)"; }}
-            onMouseOut={(e) => { if (!logoSrc) e.currentTarget.style.borderColor = "rgba(var(--ink),0.15)"; }}
+          <label
+            onMouseEnter={() => setLogoHover(true)}
+            onMouseLeave={() => setLogoHover(false)}
+            style={{
+              width: "96px", height: "96px", borderRadius: "20px", flexShrink: 0,
+              background: logoSrc
+                ? "transparent"
+                : logoHover
+                  ? "linear-gradient(135deg, rgba(252,174,145,0.16), rgba(249,160,139,0.06))"
+                  : "linear-gradient(135deg, rgba(252,174,145,0.07), rgba(var(--ink),0.02))",
+              border: logoSrc ? "none" : `2px dashed ${logoHover ? "var(--peach)" : "rgba(var(--ink),0.14)"}`,
+              boxShadow: logoHover
+                ? logoSrc
+                  ? "0 14px 28px -8px rgba(249,160,139,0.35), 0 0 0 1px rgba(var(--ink),0.05)"
+                  : "0 10px 24px -8px rgba(249,160,139,0.35), 0 0 0 4px var(--peach-glow)"
+                : logoSrc
+                  ? "0 4px 14px rgba(26,26,26,0.10), 0 0 0 1px rgba(var(--ink),0.05)"
+                  : "none",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              gap: "6px", cursor: uploadLogo.isPending ? "default" : "pointer",
+              transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              transform: logoHover ? "translateY(-2px)" : "none",
+              overflow: "hidden", position: "relative"
+            }}
           >
             <input type="file" hidden disabled={uploadLogo.isPending} onChange={handleLogoUpload} accept="image/png,image/jpeg,image/webp" />
             {uploadLogo.isPending ? (
@@ -107,19 +132,44 @@ export default function GeneralTab() {
               </svg>
             ) : logoSrc ? (
               <>
-                <img src={logoSrc} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={logoSrc} alt="Logo" style={{
+                  width: "100%", height: "100%", objectFit: "cover",
+                  transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  transform: logoHover ? "scale(1.06)" : "scale(1)",
+                }} />
                 <div style={{
-                  position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)",
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  opacity: 0, transition: "opacity 0.2s", color: "white"
-                }} onMouseOver={e => e.currentTarget.style.opacity = "1"} onMouseOut={e => e.currentTarget.style.opacity = "0"}>
-                  {icons.edit}
+                  opacity: logoHover ? 1 : 0, transition: "opacity 0.25s ease", color: "white"
+                }}>
+                  <div style={{
+                    width: "30px", height: "30px", borderRadius: "10px",
+                    background: "linear-gradient(135deg, var(--peach-light), var(--peach))",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                    transform: logoHover ? "scale(1)" : "scale(0.7)",
+                    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}>
+                    {icons.edit}
+                  </div>
                 </div>
               </>
             ) : (
               <>
-                <div style={{ color: "var(--peach)" }}>{icons.plus}</div>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)" }}>{t('common:buttons.upload')}</span>
+                <div style={{
+                  width: "34px", height: "34px", borderRadius: "12px",
+                  background: logoHover ? "linear-gradient(135deg, var(--peach-light), var(--peach))" : "rgba(var(--ink),0.05)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: logoHover ? "white" : "var(--peach)",
+                  transform: logoHover ? "scale(1.1) rotate(90deg)" : "scale(1) rotate(0deg)",
+                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}>
+                  {icons.plus}
+                </div>
+                <span style={{ fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.2px", color: logoHover ? "var(--peach)" : "var(--muted)", transition: "color 0.2s ease" }}>
+                  {t('common:buttons.upload')}
+                </span>
               </>
             )}
           </label>
@@ -164,6 +214,10 @@ export default function GeneralTab() {
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.firstDay')}</div>
             <div style={{ width: "260px" }}><Select value={draft.first_day_of_week ?? ''} onChange={v => set('first_day_of_week', v)} options={firstDayOptions} /></div>
           </div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "20px" }}>
+          <Button variant="ghost" onClick={handleReset}>{t('general.reset')}</Button>
+          <Button variant="primary" onClick={handleSave} disabled={!dirty} loading={save.isPending}>{t('common:buttons.save')}</Button>
         </div>
       </div>
     </div>

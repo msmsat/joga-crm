@@ -87,7 +87,6 @@
       "emptyActive": "Нет активных продуктов",
       "emptyArchived": "Нет архивных продуктов",
       "emptyCatalog": "В студии пока нет пакетов абонементов",
-      "subscriptionsDisabled": "Программа абонементов выключена — включите её в разделе Каталог",
       "lessons": "{{remaining}}/{{total}} занятий",
       "lessonsCount": "{{count}} занятий",
       "perVisit": "За одно посещение",

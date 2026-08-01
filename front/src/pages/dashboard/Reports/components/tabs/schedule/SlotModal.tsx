@@ -168,7 +168,9 @@ export function SlotModal({ open, onClose, title, subtitle, rows, loading }: Slo
         ) : rows.length === 0 ? (
           <EmptyState size="sm" icon="calendar" title={t('empty.noLessons')} />
         ) : (
-          <div className="ms-scroll" style={{ maxHeight: 'min(60vh, 520px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          // Список скроллится сам (см. тот же приём в ClientListModal), а не
+          // тело модалки: короткий не растягивает её, длинный ужимается по высоте.
+          <div className="ms-scroll" style={{ flex: '0 1 auto', minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {rows.map((row, i) => (
               <LessonCard key={row.id} row={row} index={i} reduceMotion={reduceMotion} />
             ))}

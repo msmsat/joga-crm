@@ -160,24 +160,50 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
   const operationColumns: DrilldownColumn[] = [
     { key: 'title', label: t('overview.drilldown.title') },
     { key: 'category', label: t('overview.drilldown.category') },
-    { key: 'amount', label: t('overview.drilldown.amount') },
+    { key: 'amount', label: t('overview.drilldown.amount'), align: 'right' },
   ];
   const operationRows = (dayOperations?.items ?? []).map(op => ({
+    _id: op.id,
     title: op.title,
-    category: op.category ?? '',
+    category: op.category ? t(`overview.category.${op.category}`, op.category) : '—',
     amount: fmtMoney(op.type === 'in' ? op.amount : -op.amount),
   }));
+
+  // Агрегаты левой панели — по сырым операциям дня, а не по строкам таблицы
+  // (в них суммы уже отформатированы в текст).
+  const moneySummary = useMemo(() => {
+    const items = dayOperations?.items ?? [];
+    const income = items.filter(op => op.type === 'in').reduce((s, op) => s + op.amount, 0);
+    const expense = items.filter(op => op.type === 'out').reduce((s, op) => s + op.amount, 0);
+    return { income, expense, net: income - expense, count: items.length };
+  }, [dayOperations]);
 
   const lessonColumns: DrilldownColumn[] = [
     { key: 'name', label: t('overview.drilldown.lesson') },
     { key: 'time', label: t('overview.drilldown.time') },
-    { key: 'occupancy', label: t('overview.drilldown.occupancy') },
+    { key: 'trainer', label: t('overview.drilldown.trainer') },
+    { key: 'occupancy', label: t('overview.drilldown.occupancy'), align: 'right' },
   ];
   const lessonRows = (dayLessons ?? []).map(l => ({
+    _id: l.id,
     name: l.name,
     time: new Date(l.start_time).toLocaleTimeString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    trainer: l.teacher_name ?? '—',
     occupancy: `${l.booked_count}/${l.total_spots}`,
   }));
+
+  const lessonSummary = useMemo(() => {
+    const items = dayLessons ?? [];
+    const spots = items.reduce((s, l) => s + l.total_spots, 0);
+    const booked = items.reduce((s, l) => s + l.booked_count, 0);
+    return {
+      count: items.length,
+      booked,
+      spots,
+      fillPct: spots ? Math.round((booked / spots) * 100) : 0,
+      cancelled: items.filter(l => l.status === 'cancelled').length,
+    };
+  }, [dayLessons]);
 
   if (isEmpty) {
     return <EmptyTabState icon="chart" onWiden={onWidenPeriod} />;
@@ -321,9 +347,31 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
         open={!!drilldown}
         onClose={() => setDrilldown(null)}
         title={drilldown ? fmtBucket(drilldown.date, 'day') : ''}
+        subtitle={drilldown ? t(`overview.drilldown.subtitle.${drilldown.kind}`) : undefined}
+        icon={drilldown?.kind === 'money' ? 'money' : 'calendar'}
+        hero={drilldown?.kind === 'money'
+          ? { value: fmtMoney(moneySummary.net), label: t('overview.drilldown.stat.net') }
+          : { value: fmtInt(lessonSummary.count), label: t('overview.drilldown.stat.lessons') }}
+        stats={drilldown?.kind === 'money'
+          ? [
+            { label: t('overview.drilldown.stat.income'), value: fmtMoney(moneySummary.income), tone: 'positive' as const },
+            { label: t('overview.drilldown.stat.expense'), value: fmtMoney(moneySummary.expense), tone: 'negative' as const },
+            { label: t('overview.drilldown.stat.operations'), value: fmtInt(moneySummary.count) },
+          ]
+          : [
+            { label: t('overview.drilldown.stat.booked'), value: `${fmtInt(lessonSummary.booked)} / ${fmtInt(lessonSummary.spots)}` },
+            { label: t('overview.drilldown.stat.avgFill'), value: `${lessonSummary.fillPct}%` },
+            { label: t('overview.drilldown.stat.cancelled'), value: fmtInt(lessonSummary.cancelled), tone: lessonSummary.cancelled ? 'negative' as const : undefined },
+          ]}
+        rowHint={t(`overview.drilldown.hint.${drilldown?.kind === 'money' ? 'operations' : 'lessons'}`)}
+        exportName={drilldown ? `${drilldown.kind}-${drilldown.date}` : undefined}
         columns={drilldown?.kind === 'money' ? operationColumns : lessonColumns}
         rows={drilldown?.kind === 'money' ? operationRows : lessonRows}
         loading={drilldown?.kind === 'money' ? opsLoading : lessonsLoading}
+        onRowClick={row => {
+          if (drilldown?.kind === 'money') navigate(`/dashboard/finances?tab=operations&search=${encodeURIComponent(String(row.title))}`);
+          else navigate(`/dashboard/journal?date=${drilldown?.date ?? ''}`);
+        }}
       />
     </>
   );

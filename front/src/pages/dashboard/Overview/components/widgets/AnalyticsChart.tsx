@@ -104,19 +104,21 @@ export default function AnalyticsChart({ activeConfig, period, setPeriod, series
         </div>
       ) : (
         <div id="dash-chart">
-          <div className="chart-bars" onMouseMove={handleChartMouseMove} onMouseLeave={() => setHover(null)}>
-            {series.map((p, i) => {
-              const baseColor = activeConfig.glow;
-              const hoverColor = activeConfig.color;
-              const active = hover ? hover.index === i : i === series.length - 1;
-              return (
-                <div
-                  key={p.period}
-                  className="bar"
-                  style={{ height: `${Math.max(4, (p.value / max) * 100)}%`, background: active ? hoverColor : baseColor }}
-                />
-              );
-            })}
+          <div className="chart-bars-clip">
+            <div className="chart-bars" onMouseMove={handleChartMouseMove} onMouseLeave={() => setHover(null)}>
+              {series.map((p, i) => {
+                const baseColor = activeConfig.glow;
+                const hoverColor = activeConfig.color;
+                const active = hover ? hover.index === i : i === series.length - 1;
+                return (
+                  <div
+                    key={p.period}
+                    className="bar"
+                    style={{ height: `${Math.max(4, (p.value / max) * 100)}%`, background: active ? hoverColor : baseColor }}
+                  />
+                );
+              })}
+            </div>
           </div>
           {hover && (
             <div ref={tipRef} className="bar-tooltip" style={{ left: hover.left, top: hover.top, opacity: 1 }}>

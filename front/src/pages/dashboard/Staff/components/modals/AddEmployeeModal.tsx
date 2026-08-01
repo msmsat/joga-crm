@@ -761,7 +761,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                             style={{
                               padding: "14px 8px", // Чуть больше воздуха для премиальности
                               background: isSelected ? "rgba(var(--ink),0.02)" : "var(--bg-card)",
-                              border: isSelected ? "1.5px solid #1A1A1A" : "1.5px solid rgba(var(--ink),0.08)",
+                              border: isSelected ? "1.5px solid var(--onyx)" : "1.5px solid rgba(var(--ink),0.08)",
                               borderRadius: "12px", cursor: "pointer",
                               display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
                               boxShadow: isSelected ? "0 4px 16px rgba(26,26,26,0.04)" : "none",
@@ -772,11 +772,11 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                               <div style={{
                                 position: "absolute", top: "6px", right: "6px",
                                 width: "14px", height: "14px",
-                                background: "#1A1A1A", borderRadius: "50%",
+                                background: "var(--onyx)", borderRadius: "50%",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 animation: "checkpop 0.25s cubic-bezier(0.34,1.1,0.64,1)",
                               }}>
-                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4 L3 5.5 L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4 L3 5.5 L6.5 2" stroke="var(--bg)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                               </div>
                             )}
                             <span style={{ display: "flex", alignItems: "center", justifyContent: "center", color: isSelected ? "var(--onyx)" : "var(--text3)", transition: "color 0.18s" }}>
@@ -801,9 +801,9 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                                 onClick={() => toggleService(service.id)}
                                 style={{
                                   padding: "8px 14px", borderRadius: "20px", cursor: "pointer",
-                                  background: isSelected ? "#1A1A1A" : "rgba(var(--ink),0.02)",
-                                  border: isSelected ? "1.5px solid #1A1A1A" : "1.5px solid rgba(var(--ink),0.08)",
-                                  color: isSelected ? "#FFFFFF" : "var(--muted)", fontSize: "12px",
+                                  background: isSelected ? "var(--onyx)" : "rgba(var(--ink),0.02)",
+                                  border: isSelected ? "1.5px solid var(--onyx)" : "1.5px solid rgba(var(--ink),0.08)",
+                                  color: isSelected ? "var(--bg)" : "var(--muted)", fontSize: "12px",
                                   fontWeight: isSelected ? 700 : 600, fontFamily: "Manrope, sans-serif",
                                   display: "flex", alignItems: "center", gap: "6px"
                                 }}
@@ -917,10 +917,10 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                         return (
                           <button key={type} type="button" onClick={() => set("rate_type", type)} style={{
                             flex: 1, padding: "10px 8px",
-                            background: isOn ? "#1A1A1A" : "rgba(var(--ink),0.02)",
-                            border: isOn ? "1.5px solid #1A1A1A" : "1.5px solid rgba(var(--ink),0.08)",
+                            background: isOn ? "var(--onyx)" : "rgba(var(--ink),0.02)",
+                            border: isOn ? "1.5px solid var(--onyx)" : "1.5px solid rgba(var(--ink),0.08)",
                             borderRadius: "10px", fontSize: "11.5px", fontWeight: isOn ? 700 : 600,
-                            color: isOn ? "#FFFFFF" : "var(--muted)", cursor: "pointer",
+                            color: isOn ? "var(--bg)" : "var(--muted)", cursor: "pointer",
                             fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
                             boxShadow: isOn ? "0 4px 12px rgba(26,26,26,0.15)" : "none"
                           }}>
@@ -969,7 +969,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                             {/* Строгий черный свитчер */}
                             <div onClick={() => toggleDay(key)} style={{
                               width: "32px", height: "18px", borderRadius: "9px",
-                              background: d.enabled ? "#1A1A1A" : "rgba(var(--ink),0.1)",
+                              background: d.enabled ? "var(--onyx)" : "rgba(var(--ink),0.1)",
                               display: "flex", alignItems: "center", padding: "2px",
                               cursor: "pointer", flexShrink: 0, transition: "background 0.2s",
                             }}>

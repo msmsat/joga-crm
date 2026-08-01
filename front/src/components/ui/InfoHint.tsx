@@ -69,7 +69,7 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
         ref={buttonRef}
         type="button"
         aria-label={title}
-        onClick={() => setOpen(o => !o)}
+        onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
         style={{
           width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -108,7 +108,9 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
         >
           <div style={{ position: 'absolute', background: 'var(--onyx)', ...arrowStyle(resolvedSide, placement?.arrowOffset ?? 14) }} />
           <div style={{ fontSize: '12.5px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.1px' }}>{title}</div>
-          <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{text}</div>
+          {/* color наследуется от плашки (var(--bg)), яркость гасим opacity: белый
+              литерал исчезал на светлой плашке в тёмной теме. */}
+          <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, opacity: 0.75 }}>{text}</div>
           <style>{`@keyframes infoHintIn { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }`}</style>
         </div>,
         document.body

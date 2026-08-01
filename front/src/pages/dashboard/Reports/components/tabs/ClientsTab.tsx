@@ -83,8 +83,8 @@ export function ClientsTab({ params, paramsKey, registerCsvExport, onWidenPeriod
 
   const weekDrilldown = drilldown?.kind === 'week' ? drilldown : null;
   const { data: weekRows, isFetching: weekLoading } = useQuery({
-    queryKey: queryKeys.report('clients-week', weekDrilldown ? `${weekDrilldown.period}-${weekDrilldown.weekKind}` : 'none'),
-    queryFn: () => analyticsApi.getClientsReportWeek(weekDrilldown!.period, weekDrilldown!.weekKind),
+    queryKey: queryKeys.report('clients-week', weekDrilldown ? `${weekDrilldown.period}-${weekDrilldown.weekKind}-${paramsKey}` : 'none'),
+    queryFn: () => analyticsApi.getClientsReportWeek(weekDrilldown!.period, weekDrilldown!.weekKind, params),
     enabled: !!weekDrilldown,
   });
 

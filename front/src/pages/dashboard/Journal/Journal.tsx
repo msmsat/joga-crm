@@ -32,10 +32,12 @@ export default function Journal() {
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const today = new Date();
 
-  // Восстанавливаем последний открытый день (YYYY-MM-DD) — парсим по частям,
+  // Открываем день из ?date=YYYY-MM-DD (переходы из Отчётов ведут на конкретную
+  // дату), иначе — последний открытый день из localStorage. Парсим по частям,
   // чтобы new Date не сдвинул день из-за UTC. Битое значение → сегодня.
   const initialDate = React.useMemo(() => {
-    const [y, m, d] = (localStorage.getItem(JOURNAL_DATE_KEY) ?? '').split('-').map(Number);
+    const fromUrl = new URLSearchParams(window.location.search).get('date');
+    const [y, m, d] = (fromUrl ?? localStorage.getItem(JOURNAL_DATE_KEY) ?? '').split('-').map(Number);
     return (y && m && d) ? new Date(y, m - 1, d) : today;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

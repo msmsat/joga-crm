@@ -1,7 +1,8 @@
-"""POST /checkout/{calculate,pay} с product_type="subscription" при выключенной
-программе абонементов (V5-8, Блок 1 / V5-7 4.3) — должно возвращать 400
-checkout.subscriptions_disabled. «Разовые» (product_type="single") не зависят
-от этого флага — не про абонементы. Реальная БД, откат.
+"""POST /checkout/{calculate,pay} с product_type="subscription" при выключенном
+флаге программы абонементов (config.is_enabled=false) — продажа ПРОХОДИТ:
+пакет, добавленный в каталог с is_active=true, продаётся сам по себе, флаг
+программы его больше не гейтит (снять с продажи = is_active=false). Разовые
+(product_type="single") от флага не зависели и не зависят. Реальная БД, откат.
 
 Запуск из back/:  python -m tests.test_checkout_subscriptions_disabled
 """
@@ -16,7 +17,7 @@ from fastapi import HTTPException
 from database import async_session_maker
 from dependencies import StudioContext
 from models import Client, Service, Studio, StudioSubscriptionProgramConfig, SubscriptionPackage
-from schemas.checkout import CheckoutCalculateRequest, CheckoutPayRequest
+from schemas.checkout import CheckoutCalculateRequest
 
 CO = importlib.import_module("routers.checkout.router")
 
@@ -57,11 +58,21 @@ async def _setup(db, *, is_enabled: bool, with_config: bool = True):
 
 
 async def _run():
-    current_user = _User()
-
-    # ─── Программа выключена → calculate 400 checkout.subscriptions_disabled ──
+    # ─── Флаг программы выключен → calculate всё равно считает пакет ──────────
     async with async_session_maker() as db:
         sid, pkg, _service, client = await _setup(db, is_enabled=False)
+
+        body = CheckoutCalculateRequest(client_id=client.id, product_id=pkg.id, product_type="subscription")
+        result = await CO.calculate(body, _ctx(sid), db)
+        assert result.total_price == 10000
+
+        await db.rollback()
+
+    # ─── Пакет снят с продажи (is_active=false) → 400 package_inactive ────────
+    async with async_session_maker() as db:
+        sid, pkg, _service, client = await _setup(db, is_enabled=False)
+        pkg.is_active = False
+        await db.flush()
 
         body = CheckoutCalculateRequest(client_id=client.id, product_id=pkg.id, product_type="subscription")
         try:
@@ -69,28 +80,11 @@ async def _run():
             raise AssertionError("ожидали 400")
         except HTTPException as e:
             assert e.status_code == 400
-            assert e.detail["code"] == "checkout.subscriptions_disabled"
+            assert e.detail["code"] == "checkout.package_inactive"
 
         await db.rollback()
 
-    # ─── Программа выключена → pay тоже 400, ничего не проведено ──────────────
-    async with async_session_maker() as db:
-        sid, pkg, _service, client = await _setup(db, is_enabled=False)
-
-        body = CheckoutPayRequest(
-            client_id=client.id, product_id=pkg.id, product_type="subscription",
-            payment_method="cash",
-        )
-        try:
-            await CO.pay(body, _ctx(sid), current_user, db)
-            raise AssertionError("ожидали 400")
-        except HTTPException as e:
-            assert e.status_code == 400
-            assert e.detail["code"] == "checkout.subscriptions_disabled"
-
-        await db.rollback()
-
-    # ─── Программа включена → calculate проходит как обычно ───────────────────
+    # ─── Флаг включён → calculate проходит как обычно ─────────────────────────
     async with async_session_maker() as db:
         sid, pkg, _service, client = await _setup(db, is_enabled=True)
 
@@ -117,4 +111,4 @@ def test_checkout_subscriptions_disabled():
 
 if __name__ == "__main__":
     test_checkout_subscriptions_disabled()
-    print("ALL PASS — checkout subscriptions-disabled V5-8 Блок 1 зелёные")
+    print("ALL PASS — продажа пакета не зависит от флага программы абонементов")

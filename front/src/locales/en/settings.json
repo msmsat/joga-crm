@@ -51,9 +51,7 @@
       "language": "Interface language",
       "dateFormat": "Date format",
       "firstDay": "First day of week",
-      "currencyLabels": ["Ruble (₽)", "Dollar ($)", "Euro (€)", "Tenge (₸)", "Hryvnia (₴)", "Pound (£)", "Dirham (د.إ)", "Lira (₺)"],
-      "firstDayLabels": ["Monday", "Sunday"],
-      "timezoneLabels": ["Kaliningrad (UTC+2)", "Moscow (UTC+3)", "Samara (UTC+4)", "Yekaterinburg (UTC+5)", "Omsk (UTC+6)", "Krasnoyarsk (UTC+7)", "Irkutsk (UTC+8)", "Yakutsk (UTC+9)", "Vladivostok (UTC+10)", "Magadan (UTC+11)", "Kamchatka (UTC+12)", "Berlin (UTC+1)", "London (UTC+0)", "New York (UTC-5)", "Los Angeles (UTC-8)"]
+      "firstDayLabels": ["Monday", "Sunday"]
     }
   },
   "appearance": {

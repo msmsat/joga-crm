@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { loyaltyApi } from '../../../../api/loyalty/loyalty.api';
 import { checkoutApi } from '../../../../api/checkout';
-import { catalogApi } from '../../../../api/catalog/catalog.api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { Card, Button } from '../../../../components/ui/index';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -67,19 +66,13 @@ export function WalletCatalog({ onBack, onSelect }: {
     queryFn: () => checkoutApi.getServices(),
     enabled: !isSubs,
   });
-  const { data: subscriptionConfig, isLoading: configLoading } = useQuery({
-    queryKey: queryKeys.subscriptionConfig,
-    queryFn: () => catalogApi.getSubscriptionConfig(),
-    enabled: isSubs,
-  });
-  const isLoading = isSubs ? (packagesLoading || configLoading) : servicesLoading;
-  const subscriptionsDisabled = isSubs && !subscriptionConfig?.is_enabled;
+  const isLoading = isSubs ? packagesLoading : servicesLoading;
 
   // «Абонементы» — пакеты лояльности (владелец настраивает в Лояльность →
   // Абонементы). «Разовые визиты» — реальные услуги Каталога, не пакеты.
   const subsFiltered = packages.filter((p: SubscriptionPackage) => p.is_active && p.sold_as_subscription);
   const tabFiltered = isSubs ? subsFiltered : services;
-  const listEmpty = subscriptionsDisabled || (isSubs ? subsFiltered.length === 0 : services.length === 0);
+  const listEmpty = isSubs ? subsFiltered.length === 0 : services.length === 0;
   const visible = showAll ? tabFiltered : tabFiltered.slice(0, VISIBLE_THRESHOLD);
 
   return (
@@ -109,7 +102,7 @@ export function WalletCatalog({ onBack, onSelect }: {
               <div className={s.emptyCard}>
                 <div className={s.emptyCardIcon}><EmptyIcon/></div>
                 <div className={s.emptyCardText}>
-                  {t(subscriptionsDisabled ? 'panel.wallet.subscriptionsDisabled' : isSubs ? 'panel.wallet.emptyCatalog' : 'panel.wallet.noSingles')}
+                  {t(isSubs ? 'panel.wallet.emptyCatalog' : 'panel.wallet.noSingles')}
                 </div>
               </div>
             </Card>

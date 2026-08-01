@@ -90,14 +90,14 @@ def test_rejects_unknown_currency():
 
 def test_rejects_unknown_timezone():
     try:
-        GeneralUpdate(timezone="Mars/Olympus_Mons")
+        GeneralUpdate(timezone="Europe/Moscow")  # IANA-ключ — не в списке офсетов онбординга
         raise AssertionError("ожидали ValidationError")
     except ValidationError:
         pass
 
 
 def test_accepts_known_timezone():
-    GeneralUpdate(timezone="Europe/Moscow")  # не должно бросить
+    GeneralUpdate(timezone="UTC+3")  # не должно бросить — тот же список, что и на онбординге
 
 
 def test_rejects_malformed_email():

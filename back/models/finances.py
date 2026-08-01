@@ -32,6 +32,11 @@ class Operation(Base):
     counterparty_id: Mapped[Optional[int]] = mapped_column(ForeignKey("counterparties.id", ondelete="SET NULL"), nullable=True, index=True)
     trainer_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     product_id: Mapped[Optional[int]] = mapped_column(ForeignKey("products.id", ondelete="SET NULL"), nullable=True, index=True)
+    # Услуга Каталога, за которую пришли деньги (разовое посещение из кассы).
+    # Абонемент/сертификат/пополнение депозита к одной услуге не сводятся — там null.
+    # До этой колонки фильтр Отчётов «Услуга» сравнивался с product_id, то есть с
+    # id из ДРУГОЙ таблицы (products) — выручка под фильтром была неверной.
+    service_id: Mapped[Optional[int]] = mapped_column(ForeignKey("services.id", ondelete="SET NULL"), nullable=True, index=True)
     type: Mapped[str] = mapped_column(String(10))
     title: Mapped[str] = mapped_column(String(200))
     amount: Mapped[int] = mapped_column(Integer)
@@ -46,6 +51,7 @@ class Operation(Base):
     counterparty: Mapped[Optional["Counterparty"]] = relationship(back_populates="operations")
     trainer: Mapped[Optional["User"]] = relationship(foreign_keys=[trainer_id])
     product: Mapped[Optional["Product"]] = relationship(foreign_keys=[product_id])
+    service: Mapped[Optional["Service"]] = relationship(foreign_keys=[service_id])
 
 
 class Counterparty(Base):

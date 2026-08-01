@@ -141,14 +141,38 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
 
   const operationColumns: DrilldownColumn[] = [
     { key: 'title', label: t('overview.drilldown.title') },
+    { key: 'date', label: t('overview.drilldown.date') },
     { key: 'category', label: t('overview.drilldown.category') },
-    { key: 'amount', label: t('overview.drilldown.amount') },
+    { key: 'method', label: t('overview.drilldown.method') },
+    { key: 'amount', label: t('overview.drilldown.amount'), align: 'right' },
   ];
   const operationRows = operations.map(op => ({
+    _id: op.id,
     title: op.title,
-    category: op.category ? t(`overview.category.${op.category}`, op.category) : '',
+    date: fmtBucket(op.op_date, 'day'),
+    category: op.category ? t(`overview.category.${op.category}`, op.category) : '—',
+    method: op.method ? t(`sales.method.${op.method}`, op.method) : '—',
     amount: fmtMoney(op.amount),
   }));
+
+  // Агрегаты левой панели — по сырым операциям среза (в строках таблицы суммы
+  // уже текст). Средний чек считаем здесь же, а не берём KPI периода: срез
+  // (категория/метод/продукт/день) у KPI своего значения не имеет.
+  const drilldownSummary = useMemo(() => {
+    const total = operations.reduce((s, op) => s + op.amount, 0);
+    const byCategory = new Map<string, number>();
+    operations.forEach(op => {
+      const key = op.category ?? '—';
+      byCategory.set(key, (byCategory.get(key) ?? 0) + op.amount);
+    });
+    const top = [...byCategory.entries()].sort((a, b) => b[1] - a[1])[0];
+    return {
+      total,
+      count: operations.length,
+      avgCheck: operations.length ? Math.round(total / operations.length) : 0,
+      topCategory: top ? t(`overview.category.${top[0]}`, top[0]) : '—',
+    };
+  }, [operations, t]);
 
   if (isEmpty) {
     return <EmptyTabState icon="money" onWiden={onWidenPeriod} />;
@@ -242,9 +266,20 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
         open={!!drilldown}
         onClose={() => setDrilldown(null)}
         title={drilldown?.title ?? ''}
+        subtitle={t('overview.drilldown.subtitle.money')}
+        icon="money"
+        hero={{ value: fmtMoney(drilldownSummary.total), label: t('sales.kpi.revenue') }}
+        stats={[
+          { label: t('overview.drilldown.stat.operations'), value: fmtInt(drilldownSummary.count) },
+          { label: t('sales.kpi.avgCheck'), value: fmtMoney(drilldownSummary.avgCheck) },
+          { label: t('overview.drilldown.stat.topCategory'), value: drilldownSummary.topCategory },
+        ]}
+        rowHint={t('overview.drilldown.hint.operations')}
+        exportName={`sales-${drilldownKeyPart}`}
         columns={operationColumns}
         rows={operationRows}
         loading={opsLoading}
+        onRowClick={row => navigate(`/dashboard/finances?tab=operations&search=${encodeURIComponent(String(row.title))}`)}
       />
     </>
   );

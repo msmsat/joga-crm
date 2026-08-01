@@ -14,7 +14,7 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Operation, Service,
-    StudioSubscriptionProgramConfig, SubscriptionPackage, User,
+    SubscriptionPackage, User,
 )
 from routers.clients.loyalty import accrue_points, apply_deposit_change, apply_points_change, expire_points, register_purchase
 from routers.clients.subscriptions import attach_subscription
@@ -181,15 +181,9 @@ async def _get_client_package(
     if not package.is_active:
         raise HTTPException(status_code=400, detail={"code": "checkout.package_inactive", "message": "Пакет снят с продажи"})
 
-    config = (await db.execute(
-        select(StudioSubscriptionProgramConfig).where(StudioSubscriptionProgramConfig.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if config is None or not config.is_enabled:
-        raise HTTPException(
-            status_code=400,
-            detail={"code": "checkout.subscriptions_disabled", "message": "Программа абонементов выключена"},
-        )
-
+    # Флаг программы (config.is_enabled) продажу не гейтит: пакет в каталоге
+    # с is_active=true и есть решение владельца продавать (снял с продажи —
+    # is_active=false). Флаг остаётся только для allow_freeze/transfer/renewal.
     return client, package
 
 
@@ -292,6 +286,10 @@ async def pay(
                 method=body.payment_method,
                 account_id=account.id,
                 client_id=body.client_id,
+                # Разовое продаётся из Каталог → Услуги, значит package.id — это
+                # Service.id: единственный доход, который честно сводится к одной
+                # услуге. Отчёты фильтруют выручку по этой ссылке.
+                service_id=package.id,
             )
             db.add(op)
             account.balance += quote.total_price

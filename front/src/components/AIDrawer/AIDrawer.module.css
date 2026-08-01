@@ -379,7 +379,7 @@
 
 .userBubble {
   background: var(--onyx);
-  color: var(--bg)FFF;
+  color: var(--bg);
   border-radius: 16px 16px 4px 16px;
   font-weight: 500;
 }
@@ -516,14 +516,16 @@
   border-radius: 9px;
   border: none;
   background: var(--onyx);
-  color: var(--bg)FFF;
+  color: var(--bg);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Персиковый, а не #333: база кнопки — var(--onyx) с текстом var(--bg), и в
+   тёмной теме тёмный ховер съедал иконку (тёмное на тёмном). */
 .sendBtn:hover:not(:disabled) {
-  background: #333333;
+  background: #F9A08B;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(26, 26, 26, 0.2);
 }

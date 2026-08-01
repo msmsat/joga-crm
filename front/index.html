@@ -6,11 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>front</title>
     <!-- Ставим .dark до первой отрисовки: иначе при theme=dark экран успевает
-         мигнуть светлым, пока грузится React (ключ тот же, что THEME_STORAGE_KEY). -->
+         мигнуть светлым, пока грузится React (ключ тот же, что THEME_STORAGE_KEY).
+         ТОЛЬКО под /dashboard: тема — свойство кабинета, а лендинг, вход,
+         регистрация и онбординг всегда светлые. Граница ровно та же, что у
+         ThemeProvider: он монтируется в DashboardLayout и больше нигде. -->
     <script>
       try {
         var t = localStorage.getItem('velora_theme');
-        if (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches))
+        if (location.pathname.indexOf('/dashboard') === 0 &&
+            (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)))
           document.documentElement.classList.add('dark');
       } catch (e) {}
     </script>

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { studioApi } from '../../../api/studio/studio.api';
@@ -43,9 +43,24 @@ export default function Reports() {
   const { data: staff = [] } = useQuery({ queryKey: queryKeys.staff, queryFn: () => staffApi.getList().then(res => res.staff.items) });
   const { data: services = [] } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
 
+  // Зал принадлежит филиалу: под выбранным филиалом предлагаем только его залы.
+  // Пара «филиал А + зал филиала Б» физически не даёт ни одного занятия — такой
+  // выбор молча обнуляет всю вкладку, и владелец читает это как сломанный отчёт.
+  const branchHalls = filters.branchId == null
+    ? halls
+    : halls.filter(h => h.branch_id === filters.branchId);
+
+  // Зал из другого филиала остался бы в URL и продолжал фильтровать данные, а
+  // селект показывал бы «Все залы» (значения нет среди опций) — цифры расходятся
+  // с экраном. Ждём загрузки залов, иначе сбросим фильтр на пустом списке.
+  useEffect(() => {
+    if (filters.hallId == null || filters.branchId == null || halls.length === 0) return;
+    if (!branchHalls.some(h => h.id === filters.hallId)) setFilter('hallId', null);
+  }, [filters.hallId, filters.branchId, halls, branchHalls, setFilter]);
+
   const options = {
     branches: branches.map(b => ({ value: String(b.id), label: b.name })),
-    halls: halls.map(h => ({ value: String(h.id), label: h.name })),
+    halls: branchHalls.map(h => ({ value: String(h.id), label: h.name })),
     trainers: staff.map(s => ({ value: String(s.id), label: [s.name, s.last_name].filter(Boolean).join(' ') })),
     services: services.map(s => ({ value: String(s.id), label: s.name })),
   };

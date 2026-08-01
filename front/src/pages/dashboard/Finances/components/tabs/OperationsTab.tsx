@@ -335,7 +335,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
             <div style={{ display: 'flex', gap: '6px', gridColumn: '1 / -1' }}>
               {(['in', 'out'] as const).map(opType => (
-                <button key={opType} type="button" onClick={() => setNType(opType)} style={{ flex: 1, padding: '10px', background: nType === opType ? (opType === 'in' ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)') : '#FDFCFB', border: nType === opType ? `1.5px solid ${opType === 'in' ? '#5BAB72' : '#D88C9A'}` : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: nType === opType ? (opType === 'in' ? '#5BAB72' : '#D88C9A') : 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                <button key={opType} type="button" onClick={() => setNType(opType)} style={{ flex: 1, padding: '10px', background: nType === opType ? (opType === 'in' ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)') : 'var(--bg)', border: nType === opType ? `1.5px solid ${opType === 'in' ? '#5BAB72' : '#D88C9A'}` : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: nType === opType ? (opType === 'in' ? '#5BAB72' : '#D88C9A') : 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
                   {opType === 'in' ? t('operations.income') : t('operations.expense')}
                 </button>
               ))}

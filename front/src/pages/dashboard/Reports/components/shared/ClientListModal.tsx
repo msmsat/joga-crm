@@ -160,7 +160,7 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
           <EmptyState size="sm" icon="clients" title={t('empty.noRows')} />
         ) : (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
               <div style={{ flex: 1 }}>
                 <Input
                   value={search}
@@ -186,7 +186,10 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
                 action={<GhostButton onClick={() => setSearch('')}>{t('clients.resetSearch')}</GhostButton>}
               />
             ) : (
-              <div className="ms-scroll" style={{ maxHeight: 'min(60vh, 520px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              // Скроллится сам список, а не тело модалки: поиск и счётчик
+              // остаются на месте. flex:0 1 auto — короткий список не растягивает
+              // модалку, длинный ужимается до её высоты и скроллится внутри.
+              <div className="ms-scroll" style={{ flex: '0 1 auto', minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 {filteredRows.map((row, i) => (
                   <ClientRow key={row.id} row={row} valueLabel={valueLabel} index={i} reduceMotion={reduceMotion} />
                 ))}

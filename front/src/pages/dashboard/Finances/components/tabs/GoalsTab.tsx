@@ -191,14 +191,14 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '12px' }}>{t('goals.trackingLabel')}</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'auto' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'auto' ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)', background: form.trackingMode === 'auto' ? 'rgba(249,160,139,0.04)' : '#FDFCFB', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
+                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'auto' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'auto' ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)', background: form.trackingMode === 'auto' ? 'rgba(249,160,139,0.04)' : 'var(--bg)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
                   <div style={{ color: form.trackingMode === 'auto' ? '#F9A08B' : 'var(--text3)', marginTop: '2px' }}><Ico.Bar /></div>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '2px' }}>{t('goals.trackingAuto')}</div>
                     <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.4 }}>{t('goals.trackingAutoDesc')}</div>
                   </div>
                 </div>
-                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'manual' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'manual' ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)', background: form.trackingMode === 'manual' ? 'rgba(249,160,139,0.04)' : '#FDFCFB', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
+                <div onClick={() => setForm(p => ({ ...p, trackingMode: 'manual' }))} style={{ padding: '16px', borderRadius: '12px', border: form.trackingMode === 'manual' ? '2px solid #F9A08B' : '2px solid rgba(var(--ink),0.06)', background: form.trackingMode === 'manual' ? 'rgba(249,160,139,0.04)' : 'var(--bg)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '12px' }}>
                   <div style={{ color: form.trackingMode === 'manual' ? '#F9A08B' : 'var(--text3)', marginTop: '2px' }}><Ico.Edit /></div>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '2px' }}>{t('goals.trackingManual')}</div>
@@ -211,7 +211,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('goals.opTypeLabel')}</label>
                   <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
                     {(['in', 'out'] as const).map(ot => (
-                      <button key={ot} type="button" onClick={() => setForm(p => ({ ...p, opType: ot, category: '' }))} style={{ flex: 1, padding: '10px', background: form.opType === ot ? (ot === 'in' ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)') : '#FDFCFB', border: form.opType === ot ? `1.5px solid ${ot === 'in' ? '#5BAB72' : '#D88C9A'}` : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: form.opType === ot ? (ot === 'in' ? '#5BAB72' : '#D88C9A') : 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                      <button key={ot} type="button" onClick={() => setForm(p => ({ ...p, opType: ot, category: '' }))} style={{ flex: 1, padding: '10px', background: form.opType === ot ? (ot === 'in' ? 'rgba(163,201,168,0.12)' : 'rgba(216,140,154,0.12)') : 'var(--bg)', border: form.opType === ot ? `1.5px solid ${ot === 'in' ? '#5BAB72' : '#D88C9A'}` : '1.5px solid rgba(var(--ink),0.08)', borderRadius: '8px', fontSize: '13px', fontWeight: 700, color: form.opType === ot ? (ot === 'in' ? '#5BAB72' : '#D88C9A') : 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
                         {ot === 'in' ? t('operations.income') : t('operations.expense')}
                       </button>
                     ))}

@@ -46,10 +46,10 @@
 }
 
 .cat-tab.active {
-  background: var(--onyx);
-  color: var(--bg)FFF;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  color: #FFFFFF;
   border-color: transparent;
-  box-shadow: 0 4px 14px rgba(26, 26, 26, 0.18);
+  box-shadow: 0 8px 20px rgba(249, 160, 139, 0.35);
 }
 
 /* ─── LEFT PANEL ───────────────────────────────────────────────────────────── */
@@ -430,9 +430,9 @@
 }
 
 .cat-hall-btn.active {
-  background: var(--onyx);
-  color: var(--bg)FFF;
-  border-color: transparent;
+  background: rgba(252, 174, 145, 0.14);
+  color: #F9A08B;
+  border-color: rgba(252, 174, 145, 0.5);
 }
 
 .cat-hall-btn.cat-add-hall {
@@ -1287,10 +1287,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  /* Галка появляется вместе с персиковой заливкой: белым по белому её раньше
+     просто не было видно, хотя в разметке она есть всегда. */
+  color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
-.cmod-pick.is-on .cmod-check { background: #F9A08B; border-color: #F9A08B; }
+.cmod-pick.is-on .cmod-check { background: #F9A08B; border-color: #F9A08B; color: #fff; }
 
 .cmod-hint {
   display: flex;
