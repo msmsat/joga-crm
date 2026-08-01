@@ -2,14 +2,16 @@ from typing import Literal, Optional
 
 from schemas._base import BaseSchema
 
-GatewayType = Literal["stripe", "fondy"]
+# Единственный шлюз приёма оплат студии. Остался список (а не голая строка),
+# потому что и роут, и фронт устроены как перечень карточек — второй провайдер
+# добавляется сюда одной строкой.
+GatewayType = Literal["stripe"]
 
 
 class GatewayRead(BaseSchema):
     gateway_type: GatewayType
     connected: bool
     is_active: bool
-    public_key: Optional[str] = None
     # Stripe Connect. Статус берётся у Stripe, а не из нашей колонки: он меняется
     # без нашего участия (верификация, просроченный документ → приём на паузе).
     # details_submitted — анкета отправлена; charges_enabled — можно принимать деньги.
@@ -22,8 +24,7 @@ class GatewayRead(BaseSchema):
 
 
 class GatewayUpdate(BaseSchema):
-    public_key: Optional[str] = None
-    secret_key: Optional[str] = None
+    """Своих ключей у студии нет — Connect их не требует. Остаётся только тумблер."""
     is_active: Optional[bool] = None
 
 

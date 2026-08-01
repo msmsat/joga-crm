@@ -15,7 +15,7 @@ from services import stripe_connect
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-GATEWAY_TYPES: tuple[GatewayType, ...] = ("stripe", "fondy")
+GATEWAY_TYPES: tuple[GatewayType, ...] = ("stripe",)
 
 WEB_APP_URL = os.getenv("WEB_APP_URL", "http://localhost:5173").rstrip("/")
 # tab=onlinePayments — ключ вкладки, который читает Finances.tsx (initialFromUrl).
@@ -27,17 +27,6 @@ _REFRESH_URL = f"{WEB_APP_URL}/dashboard/finances?tab=onlinePayments&stripe=refr
 # локально Apple/Google Pay в форме не появятся — это ограничение Apple, не наше.
 _WALLET_DOMAIN = urlparse(WEB_APP_URL).hostname or ""
 _WALLET_DOMAIN_PUBLIC = bool(_WALLET_DOMAIN) and _WALLET_DOMAIN not in ("localhost", "127.0.0.1")
-
-
-def _to_read(gateway_type: GatewayType, channel: OnlineChannel | None) -> GatewayRead:
-    if channel is None:
-        return GatewayRead(gateway_type=gateway_type, connected=False, is_active=False, public_key=None)
-    return GatewayRead(
-        gateway_type=gateway_type,
-        connected=bool(channel.secret_key),
-        is_active=channel.is_active,
-        public_key=channel.public_key,
-    )
 
 
 async def _stripe_read(channel: OnlineChannel | None) -> GatewayRead:
@@ -89,10 +78,7 @@ async def list_gateways(
         )
     )).scalars().all()
     by_type = {c.channel_type: c for c in channels}
-    return [
-        await _stripe_read(by_type.get("stripe")) if t == "stripe" else _to_read(t, by_type.get(t))
-        for t in GATEWAY_TYPES
-    ]
+    return [await _stripe_read(by_type.get(t)) for t in GATEWAY_TYPES]
 
 
 @router.post("/gateways/stripe/connect", response_model=GatewayConnectResult)
@@ -159,6 +145,11 @@ async def update_gateway(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    """Тумблер «принимать оплаты» — единственное, что тут можно менять.
+
+    Ключей студии схема не принимает вовсе: Connect их не требует, а принять
+    значило бы снова начать хранить чужой secret_key.
+    """
     channel = (await db.execute(
         select(OnlineChannel).where(
             OnlineChannel.studio_id == ctx.studio_id,
@@ -169,15 +160,9 @@ async def update_gateway(
         channel = OnlineChannel(studio_id=ctx.studio_id, channel_type=gateway_type)
         db.add(channel)
 
-    fields = body.model_dump(exclude_unset=True)
-    # У Stripe своих ключей студии нет — только тумблер. Приняв их здесь, мы бы
-    # снова начали хранить чужой secret_key, ради отказа от которого и Connect.
-    if gateway_type == "stripe":
-        fields = {k: v for k, v in fields.items() if k == "is_active"}
-
-    for field, value in fields.items():
+    for field, value in body.model_dump(exclude_unset=True).items():
         setattr(channel, field, value)
 
     await db.commit()
     await db.refresh(channel)
-    return await _stripe_read(channel) if gateway_type == "stripe" else _to_read(gateway_type, channel)
+    return await _stripe_read(channel)

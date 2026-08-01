@@ -57,7 +57,17 @@ class ClientSubscription(Base):
     total_classes: Mapped[int] = mapped_column(Integer)
     used_classes: Mapped[int] = mapped_column(Integer, default=0)
     expires_at: Mapped[date] = mapped_column(Date)
+    # active — срок идёт; pending — куплен поверх незаконченного и ждёт своей
+    # очереди (срок ещё не начался); finished — занятия кончились.
     status: Mapped[str] = mapped_column(String(20), default="active")
+    # Отложенный старт очереди: пока status == "pending", starts_at is null, а
+    # expires_at держит провизорную дату и НИГДЕ не читается для решений (все
+    # запросы фильтруют по status == "active"). Обе даты выставляются в момент
+    # активации — когда клиент отходил первое занятие по этому абонементу.
+    starts_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    # Нужен, чтобы посчитать expires_at при активации: пакет к тому времени могли
+    # удалить или поменять ему длительность.
+    duration_days: Mapped[int] = mapped_column(Integer, default=90, server_default="90")
     is_frozen: Mapped[bool] = mapped_column(Boolean, default=False)
     frozen_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     freeze_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
@@ -84,6 +94,22 @@ class ClientPayment(Base):
     item_key: Mapped[str] = mapped_column(String(50))
 
     client: Mapped["Client"] = relationship(back_populates="payments")
+
+
+class StudioClientSegmentConfig(Base):
+    """Пороги, по которым считаются категории клиентов (services/client_segments).
+
+    Одна строка на студию, создаётся лениво с дефолтами при первом чтении —
+    поэтому у студий, которые настройку не открывали, строки нет вовсе.
+    """
+    __tablename__ = "studio_client_segment_configs"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), unique=True, index=True)
+    new_client_days: Mapped[int] = mapped_column(Integer, default=15, server_default="15")
+    active_within_days: Mapped[int] = mapped_column(Integer, default=60, server_default="60")
+    vip_min_spent: Mapped[int] = mapped_column(Integer, default=50000, server_default="50000")
+    vip_min_visits: Mapped[int] = mapped_column(Integer, default=30, server_default="30")
 
 
 class ClientNote(Base):

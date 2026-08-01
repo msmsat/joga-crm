@@ -141,6 +141,22 @@ async def _quote(
     )
 
 
+def reject_dead_promo(promo_code: str | None, quote: PriceQuote) -> None:
+    """400, если кассир ввёл промокод, а он больше не действует.
+
+    calculate тихо игнорирует невалидный промокод (promo_valid=false, чтобы не
+    ронять предпросмотр цены), но там деньги не двигаются. Везде, где двигаются,
+    правило одно: клиент явно ожидает скидку — молча списать полную цену нельзя.
+
+    Общая точка наличных (perform_pay) и карты (create_session): проверка в одном
+    perform_pay означала, что карта уже списана по полной цене, а продажа падает.
+    """
+    if promo_code and not quote.promo_valid:
+        raise HTTPException(status_code=400, detail={
+            "code": "checkout.promo_expired", "message": "Промокод больше недействителен",
+        })
+
+
 @dataclass
 class ServiceAsProduct:
     """Услуга Каталога в форме, ожидаемой _quote/pay (те же поля, что у
@@ -249,7 +265,8 @@ async def pay(
 
 
 async def perform_pay(
-    db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *, method: str,
+    db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *,
+    method: str, expected_total: int | None = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -262,6 +279,12 @@ async def perform_pay(
     «Разовое» (product_type="single") не создаёт Reservation — запись на
     конкретное занятие клиент делает отдельно через Журнал/Кошелёк уже как
     оплативший; здесь только проводится доход и продаётся право визита.
+
+    `expected_total` — сумма, которую УЖЕ списали (карта): пересчёт обязан с ней
+    сойтись, иначе в Финансы осядет не то, что забрали у клиента. Расходятся они,
+    если между созданием сессии и оплатой у клиента потратили бонусы/депозит или
+    поменяли цену пакета в другом окне. Наличным передавать нечего — там оплата и
+    пересчёт происходят в одном запросе.
     """
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
@@ -273,11 +296,13 @@ async def perform_pay(
         body.product_type, body.promo_code, body.use_bonuses,
         body.use_deposit, body.certificate_code,
     )
-    # calculate тихо игнорирует невалидный промокод (promo_valid=false, чтобы не
-    # ронять предпросмотр цены), но здесь клиент явно ожидает скидку — молча
-    # списать полную цену вместо неё нельзя. Ничего ещё не добавлено в сессию.
-    if body.promo_code and not quote.promo_valid:
-        raise HTTPException(status_code=400, detail={"code": "checkout.promo_expired", "message": "Промокод больше недействителен"})
+    # Ничего ещё не добавлено в сессию — обе проверки ниже падают без отката.
+    reject_dead_promo(body.promo_code, quote)
+    if expected_total is not None and quote.total_price != expected_total:
+        raise HTTPException(status_code=409, detail={
+            "code": "checkout.amount_changed",
+            "message": "Сумма изменилась с момента оплаты — проведите продажу вручную",
+        })
     # Остаток после скидок/сертификата/депозита/бонусов может быть покрыт полностью —
     # тогда метод оплаты не участвует и card/иные методы не нужны (V5-6, 1.1).
     # Карта с ненулевым остатком сюда попасть не должна: её проводит вебхук Stripe

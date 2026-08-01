@@ -1,5 +1,8 @@
-export const STATUSES = ['active', 'vip', 'new', 'inactive', 'frozen'] as const;
-
+/**
+ * Цвета статусов. Сам статус руками не задаётся — считается из данных
+ * (регистрация, визиты, оплаты, см. back/services/client_segments.py),
+ * пороги правятся в панели «О фильтрах». Заморозка — отдельной кнопкой.
+ */
 export const STATUS_COLORS: Record<string, string> = {
   active:   '#5BAB72',
   vip:      '#c8a84b',

@@ -24,7 +24,7 @@ interface Props {
 export default function PaymentMethodTab({ cards, loaded, plan, renew, renewState, setAutopay }: Props) {
   const { t } = useTranslation('billing');
 
-  // Карта из rectoken Fondy: показываем основную, иначе первую сохранённую.
+  // Карта, сохранённая у Stripe: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;
   // Автосписание доступно только при оплате картой (аудит §4) — бэк дублирует запрет.
   const canAutopay = card?.method_type === 'card';

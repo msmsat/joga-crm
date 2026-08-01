@@ -56,9 +56,18 @@ app = FastAPI(title="Velora CRM API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Источники берём из окружения: зашитый localhost означал, что на проде фронт
+# просто не достучится до API. CORS_ORIGINS — список через запятую; не задан —
+# один WEB_APP_URL (он уже есть в .env и на деве равен localhost:5173).
+_ALLOWED_ORIGINS = [
+    o.strip() for o in os.getenv(
+        "CORS_ORIGINS", os.getenv("WEB_APP_URL", "http://localhost:5173"),
+    ).split(",") if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

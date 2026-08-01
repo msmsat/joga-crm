@@ -101,8 +101,9 @@ class OnlineChannel(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     monthly_amount: Mapped[int] = mapped_column(Integer, default=0)
     monthly_sessions: Mapped[int] = mapped_column(Integer, default=0)
-    public_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
-    secret_key: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Ключей платёжных шлюзов здесь больше нет: единственный шлюз — Stripe Connect,
+    # а он по построению не требует хранить чужие секреты (колонки public_key/
+    # secret_key жили под Fondy и удалены вместе с ним).
     # Stripe Connect: id подключённого аккаунта студии (acct_…). Не секрет — все
     # запросы уходят под ключом платформы с заголовком Stripe-Account: этим id,
     # поэтому secret_key студии нам не нужен и не хранится (для stripe он всегда null).
@@ -209,6 +210,8 @@ class StripeCheckout(Base):
     amount: Mapped[int] = mapped_column(Integer)
     # pending — ждём Stripe; paid — деньги списаны и продажа проведена;
     # cancelled — сессия протухла/банк отказал, списания не было;
-    # failed — деньги СПИСАНЫ, а провести не удалось (нужен разбор и возврат).
+    # failed — деньги СПИСАНЫ, а провести не удалось (нужен разбор и возврат);
+    # refunded / disputed — оплата вернулась клиенту (возврат в дашборде Stripe
+    # или чарджбэк), продажа в CRM при этом НЕ откачена — см. _mark_reversed.
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())

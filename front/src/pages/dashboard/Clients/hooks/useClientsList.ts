@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientsApi } from '../../../../api/clients';
-import type { ClientCreate, ClientUpdate } from '../../../../api/clients/clients.types';
+import type { ClientCreate, ClientUpdate, SegmentRules } from '../../../../api/clients/clients.types';
 import { catalogApi } from '../../../../api/catalog/catalog.api';
 import { loyaltyApi } from '../../../../api/loyalty/loyalty.api';
 import { queryKeys } from '../../../../api/queryKeys';
@@ -66,6 +66,29 @@ export function useClientCategories() {
     queryFn: () => clientsApi.getCategories(),
   });
   return categories;
+}
+
+/**
+ * Пороги категорий. Сохранение переопределяет статусы всех клиентов, поэтому
+ * после мутации сбрасываем весь префикс 'clients' — и список, и счётчики табов,
+ * и открытую карточку (бейдж в ней считается теми же правилами).
+ */
+export function useSegmentRules() {
+  const qc = useQueryClient();
+  const { data: rules = null } = useQuery({
+    queryKey: queryKeys.clientSegmentRules,
+    queryFn: () => clientsApi.getSegmentRules(),
+  });
+
+  const save = useMutation({
+    mutationFn: (next: SegmentRules) => clientsApi.updateSegmentRules(next),
+    onSuccess: (saved) => {
+      qc.setQueryData(queryKeys.clientSegmentRules, saved);
+      qc.invalidateQueries({ queryKey: queryKeys.clientsAll });
+    },
+  });
+
+  return { rules, save: save.mutateAsync, isSaving: save.isPending };
 }
 
 export function useClientProfile(clientId: number | null) {
@@ -186,11 +209,6 @@ export function useClientMutations() {
     onSuccess: (_r, { id }) => { invalidateCore(id); invalidateCategories(); },
   });
 
-  const updateStatusMut = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) => clientsApi.updateStatus(id, status),
-    onSuccess: (_r, { id }) => { invalidateCore(id); invalidateCategories(); },
-  });
-
   const freezeMut = useMutation({
     mutationFn: ({ id, frozen }: { id: number; frozen: boolean }) => clientsApi.freeze(id, frozen),
     onSuccess: (_r, { id }) => {
@@ -247,7 +265,6 @@ export function useClientMutations() {
     create: (data: ClientCreate) => createMut.mutateAsync(data),
     delete: (id: number) => deleteMut.mutateAsync(id),
     update: (id: number, data: ClientUpdate) => updateMut.mutateAsync({ id, data }),
-    updateStatus: (id: number, status: string) => updateStatusMut.mutateAsync({ id, status }),
     freeze: (id: number, frozen: boolean) => freezeMut.mutateAsync({ id, frozen }),
     updateRegistrationDate: (id: number, registration_date: string) =>
       updateRegistrationDateMut.mutateAsync({ id, registration_date }),

@@ -10,6 +10,10 @@ export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
 export { InfoHint } from './InfoHint';
 export type { InfoHintProps } from './InfoHint';
+// Позиционирование поповеров в портале (Tooltip/InfoHint строятся на нём) —
+// для собственных всплывающих панелей страниц.
+export { usePopoverPosition, placePopover } from './popoverPosition';
+export type { Placement, Side } from './popoverPosition';
 export { Select } from './Select';
 export type { SelectOption, SelectProps } from './Select';
 export { Switch } from './Switch';

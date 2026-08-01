@@ -29,7 +29,6 @@ const ICONS: Record<string, React.ReactNode> = {
   qr: <Ico.QR />,
   transfer: <Ico.World />,
   stripe: <Ico.Dollar />,
-  fondy: <Ico.Dollar />,
   '': <Ico.Dots />,
 };
 

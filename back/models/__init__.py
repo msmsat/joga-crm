@@ -3,7 +3,7 @@ from .studio import Studio
 from .studio_branch import StudioBranch, BranchWorkingHours
 from .studio_member import StudioMember
 from .user import User
-from .client import Client, ClientSubscription, ClientPayment, ClientNote
+from .client import Client, ClientSubscription, ClientPayment, ClientNote, StudioClientSegmentConfig
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceScheduleSlot
 from .settings import (
@@ -68,6 +68,7 @@ __all__ = [
     "ClientSubscription",
     "ClientPayment",
     "ClientNote",
+    "StudioClientSegmentConfig",
     "Hall",
     "Lesson",
     "Reservation",

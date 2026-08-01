@@ -8,14 +8,17 @@
 import asyncio
 import hashlib
 import hmac
+import inspect
 import json
 import time
+from types import SimpleNamespace
 
 from fastapi import HTTPException
 from sqlalchemy import Update
 
 import routers.checkout.stripe_pay as S
 import services.stripe_connect as SC
+from routers.checkout.router import perform_pay, reject_dead_promo
 from schemas.checkout import CheckoutPayResult
 
 _PAYLOAD = {"client_id": 1, "product_id": 2, "product_type": "subscription", "payment_method": "cash"}
@@ -74,8 +77,12 @@ class _DB:
 
 def _run(db, calls, total=1500, raises=None, account_id=None, commit_first=False):
     """apply_paid с подменённым perform_pay — считаем, сколько раз провели оплату."""
-    async def _fake_perform_pay(_db, _studio_id, _user_id, _body, *, method):
+    async def _fake_perform_pay(_db, _studio_id, _user_id, _body, *, method, expected_total=None):
         calls.append(method)
+        # Контракт настоящего perform_pay: пересчёт разошёлся со списанным — 409
+        # ДО любых изменений в БД.
+        if expected_total is not None and total != expected_total:
+            raise HTTPException(status_code=409, detail={"code": "checkout.amount_changed"})
         if raises is not None:
             # commit_first — сбой уже ПОСЛЕ проведения (perform_pay коммитит сам,
             # падают уведомления следом).
@@ -120,13 +127,42 @@ def test_unknown_session_is_ignored():
     assert calls == []
 
 
-def test_amount_mismatch_still_records_but_warns():
-    """Пересчёт разошёлся со списанной суммой — оплату теряем, а не проводим
-    молча: деньги уже у студии. Расхождение уходит в лог (ponytail-потолок)."""
+def test_amount_mismatch_is_not_recorded_silently():
+    """Пересчёт разошёлся со списанной суммой (бонусы потратили в другом окне) —
+    в Финансы нельзя записать не то, что забрали у клиента. Заявка в failed,
+    кассиру paid_not_applied, разбор вручную."""
     checkout = _Checkout(amount=1500)
     calls = []
-    assert _run(_DB(checkout), calls, total=1200) is True
-    assert checkout.status == "paid"
+
+    try:
+        _run(_DB(checkout), calls, total=1200)
+    except HTTPException as exc:
+        assert exc.detail["code"] == "checkout.paid_not_applied"
+    else:
+        raise AssertionError("расхождение суммы не должно проводиться молча")
+
+    assert checkout.status == "failed"
+
+
+def test_dead_promo_blocks_both_money_paths():
+    """Протухший промокод обязан отваливаться ДО Stripe, а не после списания.
+    Гард общий у наличных (perform_pay) и карты (create_session)."""
+    quote_bad = SimpleNamespace(promo_valid=False)
+    quote_ok = SimpleNamespace(promo_valid=True)
+
+    try:
+        reject_dead_promo("SUMMER30", quote_bad)
+    except HTTPException as exc:
+        assert exc.detail["code"] == "checkout.promo_expired"
+    else:
+        raise AssertionError("невалидный промокод должен падать 400")
+
+    # Промокода не вводили — оплата идёт как обычно.
+    assert reject_dead_promo(None, quote_bad) is None
+    assert reject_dead_promo("SUMMER30", quote_ok) is None
+    # Оба денежных пути зовут именно этот гард.
+    assert "reject_dead_promo" in inspect.getsource(S.create_session)
+    assert "reject_dead_promo" in inspect.getsource(perform_pay)
 
 
 def test_event_from_foreign_account_is_ignored():
@@ -288,7 +324,8 @@ if __name__ == "__main__":
     test_pending_checkout_is_paid_once()
     test_second_delivery_is_noop()
     test_unknown_session_is_ignored()
-    test_amount_mismatch_still_records_but_warns()
+    test_amount_mismatch_is_not_recorded_silently()
+    test_dead_promo_blocks_both_money_paths()
     test_event_from_foreign_account_is_ignored()
     test_business_rejection_marks_failed_and_raises()
     test_failure_after_commit_is_not_reported_as_lost()

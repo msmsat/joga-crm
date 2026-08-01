@@ -1,7 +1,7 @@
 """GET/PUT /finances/gateways.
 
-Stripe (Connect): статус берётся у Stripe по account_id, свои ключи студии не
-хранятся вообще. Fondy: connected по secret_key, ключ наружу не течёт (FN-3.1).
+Stripe (Connect) — единственный шлюз: статус берётся у Stripe по account_id,
+свои ключи студии не хранятся вообще (колонок под них больше нет).
 
 Запуск из back/:  python -m tests.test_gateways
 """
@@ -17,12 +17,10 @@ class _Ctx:
 
 
 class _Channel:
-    def __init__(self, channel_type, is_active=False, public_key=None, secret_key=None, account_id=None):
+    def __init__(self, channel_type, is_active=False, account_id=None):
         self.studio_id = 7
         self.channel_type = channel_type
         self.is_active = is_active
-        self.public_key = public_key
-        self.secret_key = secret_key
         self.account_id = account_id
 
 
@@ -91,11 +89,11 @@ def _with_stripe(fake, fn):
         G.stripe_connect = saved
 
 
-def test_list_gateways_always_two_virtual_when_absent():
-    db = _DB([[]])  # ни stripe, ни fondy в БД
+def test_list_gateways_virtual_when_absent():
+    db = _DB([[]])  # шлюзов в БД нет вовсе
     result = _with_stripe(_FakeStripe(), lambda: asyncio.run(G.list_gateways(_Ctx(), db)))
 
-    assert [r.gateway_type for r in result] == ["stripe", "fondy"]
+    assert [r.gateway_type for r in result] == ["stripe"]
     assert all(r.connected is False and r.is_active is False for r in result)
     assert result[0].account_id is None
 
@@ -153,18 +151,20 @@ def test_stripe_unreachable_is_not_reported_as_connected():
 
 
 def test_update_stripe_ignores_keys():
-    """Секретные ключи студии не сохраняются даже если их прислали: в Connect они
-    не нужны, а хранение чужого sk_ — та самая ответственность, от которой ушли."""
+    """Ключи студии сюда не проходят даже если их прислали: схема их не знает, а
+    хранение чужого sk_ — та самая ответственность, от которой ушли в Connect."""
     channel = _Channel("stripe", account_id="acct_123")
     db = _DB([channel])
-    body = G.GatewayUpdate(public_key="pk_live_123", secret_key="sk_live_456", is_active=True)
+    body = G.GatewayUpdate.model_validate({
+        "public_key": "pk_live_123", "secret_key": "sk_live_456", "is_active": True,
+    })
 
     _with_stripe(_FakeStripe(charges=True, submitted=True), lambda: asyncio.run(
         G.update_gateway("stripe", body, _Ctx(), db)
     ))
 
-    assert channel.secret_key is None
-    assert channel.public_key is None
+    assert not hasattr(body, "secret_key")     # схема отбросила ключи ещё на входе
+    assert not hasattr(channel, "secret_key")  # и колонки под них больше нет
     assert channel.is_active is True  # тумблер — единственное, что здесь меняется
 
 
@@ -199,23 +199,9 @@ def test_connect_without_platform_key_is_refused():
         raise AssertionError("ожидали отказ без ключа платформы")
 
 
-def test_update_gateway_empty_secret_key_sets_connected_false():
-    existing = _Channel("fondy", is_active=True, public_key="pk_old", secret_key="sk_old")
-    db = _DB([existing])
-    body = G.GatewayUpdate(is_active=False)  # secret_key не передан -> остаётся старым
-    result = asyncio.run(G.update_gateway("fondy", body, _Ctx(), db))
-
-    assert result.connected is True
-    assert not hasattr(result, "secret_key")
-
-    db2 = _DB([existing])
-    body2 = G.GatewayUpdate(secret_key="")
-    result2 = asyncio.run(G.update_gateway("fondy", body2, _Ctx(), db2))
-    assert result2.connected is False
-
 
 if __name__ == "__main__":
-    test_list_gateways_always_two_virtual_when_absent()
+    test_list_gateways_virtual_when_absent()
     test_stripe_status_comes_from_stripe_not_from_db()
     test_rejected_verification_is_not_reported_as_pending_review()
     test_stripe_unreachable_is_not_reported_as_connected()
@@ -223,5 +209,4 @@ if __name__ == "__main__":
     test_connect_reuses_existing_account()
     test_connect_creates_account_once_when_absent()
     test_connect_without_platform_key_is_refused()
-    test_update_gateway_empty_secret_key_sets_connected_false()
     print("ALL PASS")

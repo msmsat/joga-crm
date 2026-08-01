@@ -343,7 +343,6 @@
       "qr": { "name": "SBP (QR)" },
       "transfer": { "name": "Transfer" },
       "stripe": { "name": "Stripe" },
-      "fondy": { "name": "Fondy" },
       "": { "name": "Not specified" }
     }
   },

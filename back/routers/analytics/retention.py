@@ -26,6 +26,7 @@ from schemas.analytics.reports import (
     SegmentCount,
     WeeklyPoint,
 )
+from services.client_segments import get_segment_rules, vip_cond
 from services.loyalty_matching import (
     _days_since,
     Match,
@@ -315,7 +316,7 @@ async def _insights_vip_inactive(sid: int, db: AsyncSession) -> list[Insight]:
     rows = (await db.execute(
         select(Client.id, Client.name, Client.last_visit_date).where(
             Client.studio_id == sid,
-            Client.status == "vip",
+            vip_cond(await get_segment_rules(db, sid)),
             Client.last_visit_date.is_not(None),
             Client.last_visit_date < threshold,
         ).order_by(Client.last_visit_date.asc()).limit(VIP_INACTIVE_MAX_INSIGHTS)

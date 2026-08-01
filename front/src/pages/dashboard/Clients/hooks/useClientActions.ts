@@ -204,7 +204,6 @@ export function useClientActions(clientId: number) {
     eventFilter, setEventFilter,
     copyToClipboard, openWhatsApp,
     remindAboutSubscription,
-    updateStatus: (status: string) => mutations.updateStatus(clientId, status).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateField: (field: 'phone' | 'email' | 'birth_date' | 'city', value: string | null) =>
       mutations.update(clientId, { [field]: value } as ClientUpdate).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateRegistrationDate: (date: string) => mutations.updateRegistrationDate(clientId, date).catch((e: Error) => toast.error(errorMessage(e, t))),

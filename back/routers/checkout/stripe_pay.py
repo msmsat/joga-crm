@@ -20,6 +20,7 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from activity import log_activity
 from database import async_session_maker, get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import OnlineChannel, StripeCheckout, Studio, User
@@ -28,7 +29,7 @@ from schemas.checkout import (
 )
 from services import stripe_connect
 
-from .router import _get_client_package, _quote, perform_pay, resolve_account
+from .router import _get_client_package, _quote, perform_pay, reject_dead_promo, resolve_account
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,9 @@ logger = logging.getLogger(__name__)
 _PAID_EVENTS = ("checkout.session.completed", "checkout.session.async_payment_succeeded")
 # Денег не будет: форма протухла или банк отказал по отложенному методу.
 _DEAD_EVENTS = ("checkout.session.expired", "checkout.session.async_payment_failed")
+# Деньги были и ушли обратно. Приходят как Charge, а не Session (см. _mark_reversed).
+_DISPUTE_EVENT = "charge.dispute.created"
+_REVERSED_EVENTS = ("charge.refunded", _DISPUTE_EVENT)
 
 # Один и тот же ответ поднимают apply_paid и confirm — деньги у Stripe, продажи в
 # CRM нет. Фронт ловит код и показывает кассиру «не платите второй раз».
@@ -123,6 +127,11 @@ async def create_session(
         body.product_type, body.promo_code, body.use_bonuses,
         body.use_deposit, body.certificate_code,
     )
+    # Ровно та же проверка, что в perform_pay, и обязательно ДО Stripe: раньше
+    # протухший промокод пропускался сюда, карта списывалась по полной цене, и
+    # только потом perform_pay отказывался проводить продажу — деньги у студии,
+    # клиент ни с чем. Фронт от этого не защищает: кнопка оплаты активна.
+    reject_dead_promo(body.promo_code, quote)
     if quote.total_price <= 0:
         raise HTTPException(status_code=400, detail={
             "code": "checkout.nothing_to_pay",
@@ -199,9 +208,13 @@ async def apply_paid(db: AsyncSession, session_id: str, *, account_id: str | Non
     # проведение — откатилась и пометка, заявка снова pending и повтор сработает.
     checkout.status = "paid"
     try:
-        result = await perform_pay(
+        await perform_pay(
             db, checkout.studio_id, checkout.user_id,
             CheckoutPayRequest.model_validate(checkout.payload), method="stripe",
+            # Пересчёт обязан сойтись со списанной суммой, иначе в Финансы
+            # осядет не то, что забрали у клиента. Не сошлось — 409 из
+            # perform_pay, дальше общая ветка «списано, но не проведено».
+            expected_total=checkout.amount,
         )
     except HTTPException as exc:
         # Деньги у Stripe УЖЕ списаны, а бизнес-правило отвергло проведение:
@@ -229,15 +242,6 @@ async def apply_paid(db: AsyncSession, session_id: str, *, account_id: str | Non
         )
         raise HTTPException(status_code=409, detail=_NOT_APPLIED) from exc
 
-    # ponytail: цена пересчитывается на момент проведения, а списали её на момент
-    # создания сессии. Разойтись они могут, только если между этим у клиента
-    # потратили бонусы/депозит в другом окне — тогда в Финансах осядет не та сумма.
-    # Лечится снимком цены в заявке; пока — предупреждение в логе.
-    if result.total_price != checkout.amount:
-        logger.warning(
-            "Stripe: сумма разошлась, session=%s списано=%s проведено=%s",
-            session_id, checkout.amount, result.total_price,
-        )
     return True
 
 
@@ -278,14 +282,16 @@ async def confirm(
 @webhook_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
     """Колбэк Stripe. На валидное событие ВСЕГДА 200 — 4xx/5xx заставит Stripe
-    ретраить, а обработка уже прошла (тот же принцип, что в вебхуке Fondy)."""
+    ретраить, а обработка уже прошла (тот же принцип, что в вебхуке биллинга)."""
     event = stripe_connect.parse_webhook(
         await request.body(), request.headers.get("stripe-signature", ""),
     )
     if event is None:
         return {"status": "ignored"}
 
-    session = event["data"]["object"]
+    # data.object — Session у событий об оплате и Charge у событий о возврате.
+    obj = event["data"]["object"]
+    account_id = getattr(event, "account", None)
     # У StripeObject (stripe 15.x) НЕТ метода .get() — это не dict. Обращение к
     # возможно отсутствующему полю только через getattr с дефолтом, иначе
     # AttributeError роняет хендлер в 500 ещё до проведения, и Stripe трое суток
@@ -293,10 +299,10 @@ async def stripe_webhook(request: Request):
     if event["type"] in _PAID_EVENTS:
         # Оплата может быть отложенной (банковский перевод) — проводим только
         # когда деньги реально списаны.
-        if getattr(session, "payment_status", None) == "paid":
+        if getattr(obj, "payment_status", None) == "paid":
             async with async_session_maker() as db:
                 try:
-                    await apply_paid(db, session["id"], account_id=getattr(event, "account", None))
+                    await apply_paid(db, obj["id"], account_id=account_id)
                 except HTTPException:
                     # Уже помечено failed и залогировано внутри apply_paid.
                     # Отдать Stripe ошибку значит получить те же ретраи впустую.
@@ -308,9 +314,67 @@ async def stripe_webhook(request: Request):
         async with async_session_maker() as db:
             await db.execute(
                 update(StripeCheckout)
-                .where(StripeCheckout.session_id == session["id"], StripeCheckout.status == "pending")
+                .where(StripeCheckout.session_id == obj["id"], StripeCheckout.status == "pending")
                 .values(status="cancelled")
             )
             await db.commit()
+    elif event["type"] in _REVERSED_EVENTS:
+        await _mark_reversed(obj, event["type"], account_id)
 
     return {"status": "ok"}
+
+
+async def _mark_reversed(charge, event_type: str, account_id: str | None) -> None:
+    """Возврат или чарджбэк по проведённой оплате: помечаем заявку и кричим в ленту.
+
+    Без этого CRM молча расходится с банком — деньги у клиента вернулись, а
+    абонемент числится действующим и выручка в Финансах стоит как была.
+
+    ponytail: продажу автоматически НЕ откатываем. Возврат бывает частичным, а
+    абонемент к этому моменту может быть наполовину отходен — решение «сколько
+    вернуть» бизнесовое, машине его не отдать. Апгрейд: отдельная ручка
+    «оформить возврат» по образцу billing/refunds.py, когда появится ТЗ.
+    """
+    payment_intent = getattr(charge, "payment_intent", None)
+    if not payment_intent or not account_id:
+        logger.error("Stripe: %s без payment_intent/account — заявку не найти", event_type)
+        return
+
+    try:
+        session_id = await stripe_connect.session_id_for_payment_intent(payment_intent, account_id)
+    except Exception:
+        logger.exception("Stripe: не удалось найти сессию по %s", payment_intent)
+        return
+    if session_id is None:
+        logger.info("Stripe: %s по платежу %s вне кассы CRM", event_type, payment_intent)
+        return
+
+    status = "disputed" if event_type == _DISPUTE_EVENT else "refunded"
+    async with async_session_maker() as db:
+        checkout = (await db.execute(
+            select(StripeCheckout).where(
+                StripeCheckout.session_id == session_id,
+                StripeCheckout.status == "paid",
+            )
+        )).scalar_one_or_none()
+        if checkout is None:
+            # Заявка не в paid: возврат по неудавшейся продаже (failed) — там уже
+            # был разбор вручную, второй сигнал ничего не добавит.
+            logger.info("Stripe: %s по заявке %s не в статусе paid", event_type, session_id)
+            return
+
+        checkout.status = status
+        log_activity(
+            db, checkout.studio_id, "payment",
+            title=(
+                f"Чарджбэк по оплате картой на {checkout.amount} — разберите вручную"
+                if status == "disputed"
+                else f"Возврат по оплате картой на {checkout.amount} — разберите вручную"
+            ),
+            entity_type="client", entity_id=checkout.payload.get("client_id"),
+        )
+        await db.commit()
+    logger.error(
+        "Stripe: %s по заявке %s (студия %s, сумма %s) — продажа в CRM НЕ откачена",
+        event_type, session_id, checkout.studio_id, checkout.amount,
+    )

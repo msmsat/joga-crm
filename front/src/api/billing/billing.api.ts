@@ -56,7 +56,7 @@ export const billingApi = {
   getPaymentCards: () =>
     client.get<PaymentCard[]>('/billing/cards'),
 
-  // Оплата через ссылку Fondy: сумму считает сервер, редирект на checkout_url.
+  // Оплата через ссылку Stripe: сумму считает сервер, редирект на checkout_url.
   checkout: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
     client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
 
@@ -71,7 +71,7 @@ export const billingApi = {
   activateModel: (body: ActivateModelRequest) =>
     client.post<BillingPlan>('/billing/model', body),
 
-  // IBAN-ветка: без редиректа на Fondy, возвращает тестовый IBAN + инвойс для модалки.
+  // IBAN-ветка: без редиректа на Stripe, возвращает тестовый IBAN + инвойс для модалки.
   checkoutIban: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
     client.post<IbanCheckout>('/billing/checkout/iban', { plan, period_months }),
 

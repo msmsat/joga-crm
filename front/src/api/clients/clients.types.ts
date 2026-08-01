@@ -38,6 +38,14 @@ export interface CategoryStat {
   count: number
 }
 
+/** Пороги, по которым считаются категории клиентов (back/services/client_segments.py). */
+export interface SegmentRules {
+  new_client_days: number
+  active_within_days: number
+  vip_min_spent: number
+  vip_min_visits: number
+}
+
 export interface EventRecord {
   date: string | null
   type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze'

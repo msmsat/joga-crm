@@ -25,11 +25,11 @@ from schemas.settings.billing import (
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
 )
-from services import fondy
+from services import stripe_billing
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import router as checkout_router
-from .webhook import router as webhook_router, apply_status
+from .webhook import router as webhook_router, amount_matches, apply_status
 from .refunds import router as refunds_router
 
 logger = logging.getLogger(__name__)
@@ -277,11 +277,11 @@ async def sync_invoice(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Сверка статуса счёта с платёжным сервисом — когда вебхук не дошёл.
+    """Сверка статуса счёта со Stripe — когда вебхук не дошёл.
 
-    Истина о платеже по-прежнему у банка: тянем статус по order_id и применяем тем
-    же переходом, что и вебхук (apply_status) — оплата так же активирует подписку.
-    Заказ, о котором банк не знает (оплату не начинали), остаётся как был.
+    Истина о платеже по-прежнему у Stripe: тянем сессию по order_id и применяем
+    тем же переходом, что и вебхук (apply_status) — оплата так же активирует
+    подписку. Счёт без сессии (IBAN, оплату не начинали) остаётся как был.
     """
     inv = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
@@ -289,16 +289,24 @@ async def sync_invoice(
     ))).scalar_one_or_none()
     if inv is None:
         raise HTTPException(status_code=404, detail="Счёт не найден")
-    if not inv.order_id:
+    if not inv.order_id or not inv.order_id.startswith("cs_"):
         raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
 
     try:
-        payload = await fondy.status(inv.order_id)
+        session = await stripe_billing.fetch_session(inv.order_id)
     except Exception:
-        logger.exception("Сверка статуса не удалась, инвойс %s", inv.id)
+        logger.exception("Сверка статуса не удалась, счёт %s", inv.id)
         raise HTTPException(status_code=502, detail="Платёжный сервис недоступен")
 
-    await apply_status(db, inv, payload)
+    # Сумму сверяем и на ручном пути: активация не должна зависеть от того,
+    # каким маршрутом до неё дошли.
+    if getattr(session, "payment_status", None) == "paid" and amount_matches(
+        inv, getattr(session, "amount_total", None), getattr(session, "currency", None),
+    ):
+        await apply_status(db, inv, "paid", session_id=inv.order_id)
+    elif getattr(session, "status", None) == "expired":
+        await apply_status(db, inv, "failed")
+
     await db.refresh(inv)
     return _to_invoice_read(inv)
 

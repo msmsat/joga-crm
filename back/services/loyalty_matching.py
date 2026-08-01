@@ -17,6 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Client, ClientSubscription, Lesson, Reservation
+from services.client_segments import get_segment_rules, vip_cond
 
 
 @dataclass
@@ -162,7 +163,7 @@ async def seg_vip_idle(db: AsyncSession, studio_id: int, days: int = 14) -> list
     rows = (await db.execute(
         select(Client.id, Client.name, Client.last_visit_date).where(
             Client.studio_id == studio_id,
-            Client.status == "vip",
+            vip_cond(await get_segment_rules(db, studio_id)),
             Client.last_visit_date.is_not(None),
             Client.last_visit_date <= cutoff,
         )

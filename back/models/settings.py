@@ -156,7 +156,11 @@ class PaymentCard(Base):
     card_expiry: Mapped[str] = mapped_column(String(5))
     cardholder_name: Mapped[str] = mapped_column(String(100))
     is_primary: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Идентификаторы сохранённой карты у Stripe: rectoken — pm_…, вместе с
+    # customer'ом их хватает на off-session списание в «Продлить». Номер карты к
+    # нам не попадает никогда, только маска в card_last4.
     rectoken: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     method_type: Mapped[str] = mapped_column(String(10), default="card")  # card | iban
 
     user: Mapped["User"] = relationship(back_populates="payment_cards")

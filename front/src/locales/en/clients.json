@@ -9,12 +9,39 @@
     "frozen": "Frozen",
     "birthday": "Birthday"
   },
+  "categoriesInfo": {
+    "all": { "text": "The full client list of the studio, with no status filter applied." },
+    "vip": { "text": "Successful payments totalling 50,000+ or 30+ visits. VIP can also be pinned manually in the client card — a manual pin holds regardless of the amounts." },
+    "active": { "text": "At least one visit in the last 60 days. Based on attendance marked in the journal — the status updates itself, no need to set it by hand." },
+    "new": { "text": "The first 15 days from the registration date — whether the client was added manually or came through online booking. On day 16 they automatically move to Active or Inactive." },
+    "has_subscription": { "text": "Has a live subscription: not expired, not frozen, classes remaining. Updates immediately on purchase, on each class used, and when it expires." },
+    "inactive": { "text": "No visits in the last 60 days — or never visited at all and more than 15 days have passed since registration." },
+    "frozen": { "text": "Freezing via the button in the client card — the only status set by hand. After unfreezing the client returns to their automatic status." },
+    "birthday": { "text": "Whose birthday is today — day and month match, year is ignored. The list refreshes automatically every day." }
+  },
   "status": {
     "active": "Active",
     "vip": "VIP",
     "new": "New",
     "inactive": "Inactive",
     "frozen": "Frozen"
+  },
+  "filtersGuide": {
+    "trigger": "About filters",
+    "title": "Client filters",
+    "subtitle": "How each category is calculated. Click a card to apply the filter, or change a threshold — statuses recalculate right away.",
+    "close": "Close",
+    "rule": {
+      "new_client_days": "New for",
+      "active_within_days": "Visit within",
+      "vip_min_spent": "Spent from",
+      "vip_min_visits": "or visits"
+    },
+    "unit": {
+      "days": "days",
+      "money": "",
+      "visits": "visits"
+    }
   },
   "toolbar": {
     "searchPlaceholder": "Search client...",

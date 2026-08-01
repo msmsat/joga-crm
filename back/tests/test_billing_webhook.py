@@ -1,29 +1,37 @@
-"""Сквозная проверка вебхука Fondy на уровне логики — чек-лист задачи 13, без сети
-и без реального Fondy: гоняем настоящий обработчик fondy_webhook с фейковой сессией.
+"""Сквозная проверка вебхука оплаты тарифа — без сети и без реального Stripe:
+гоняем настоящий обработчик stripe_webhook с фейковой сессией БД.
 
-Тестовый мерчант в Fondy остаётся ручным прогоном (клик по checkout-странице,
-реальные колбэки через туннель) — а вот рискованные ветки (подпись, идемпотентность,
-провал, возврат, лимиты) закрываем здесь, чтобы они были зелёными ДО туннеля.
+События проходят НАСТОЯЩИЙ construct_event с настоящей подписью, а не подсовываются
+разобранными: иначе тесты не заметили бы, что у StripeObject нет `.get()` и разбор
+metadata падает на первом же реальном событии.
 
 Запуск из back/:  python -m tests.test_billing_webhook
 """
 import asyncio
+import hashlib
+import hmac
+import json
+import time
 from datetime import datetime, timedelta
 
 import routers.billing.webhook as W
-from services import fondy
+from services import stripe_billing
 from services.plan_limits import _limit_for
 from routers.billing.plans import amount_for
+
+_SECRET = "whsec_test"
 
 
 # ─── Фейки моделей и сессии (паттерн tests/test_loyalty_points.py) ──────────────
 class _Invoice:
-    def __init__(self, status="pending", order_id="velora-1-x", studio_id=1,
-                 user_id=1, plan_name="pro", period_months=1, invoice_id=1):
+    def __init__(self, status="pending", studio_id=1, user_id=None,
+                 plan_name="pro", period_months=1, invoice_id=1):
         self.id = invoice_id
         self.status = status
-        self.order_id = order_id
+        self.order_id = None
         self.studio_id = studio_id
+        # user_id=None по умолчанию: с ним _activate не идёт сохранять карту, а
+        # значит не ходит в сеть. Тест карты подсовывает fetch_session сам.
         self.user_id = user_id
         self.plan_name = plan_name
         self.period_months = period_months
@@ -34,13 +42,12 @@ class _Invoice:
 
 
 class _Plan:
-    def __init__(self, studio_id=1, plan_name="pro", status="active",
-                 expires_at=None, auto_renewal=True):
+    def __init__(self, studio_id=1, plan_name="pro", status="active", expires_at=None):
         self.studio_id = studio_id
         self.plan_name = plan_name
         self.status = status
         self.expires_at = expires_at
-        self.auto_renewal = auto_renewal
+        self.auto_renewal = True
         self.max_staff = 5
 
 
@@ -65,115 +72,259 @@ class _DB:
 
 
 class _Req:
-    """Мини-Request: только то, что читает fondy_webhook (заголовки + form)."""
-    def __init__(self, payload):
-        self.headers = {"content-type": "application/x-www-form-urlencoded"}
-        self._payload = payload
+    """Мини-Request: только то, что читает stripe_webhook."""
+    def __init__(self, body: bytes, signature: str):
+        self._body = body
+        self.headers = {"stripe-signature": signature}
 
-    async def form(self): return self._payload
-    async def json(self): return self._payload
-
-
-def _signed(payload: dict) -> dict:
-    """Добавляет валидную подпись Fondy (password из fondy.PASSWORD)."""
-    p = dict(payload)
-    p["signature"] = fondy.build_signature(p)
-    return p
+    async def body(self) -> bytes: return self._body
 
 
-def _run_webhook(payload, db):
-    """Гоняет настоящий обработчик, подсунув фейковую сессию вместо async_session_maker."""
-    orig = W.async_session_maker
+def _signed(payload: dict) -> tuple[bytes, str]:
+    body = json.dumps(payload).encode()
+    ts = str(int(time.time()))
+    sig = hmac.new(_SECRET.encode(), ts.encode() + b"." + body, hashlib.sha256).hexdigest()
+    return body, f"t={ts},v1={sig}"
+
+
+def _session_event(event_type: str, *, invoice_id=1, payment_status="paid",
+                   amount_total=None, currency=None, session_id="cs_test_1", account=None):
+    obj = {"id": session_id, "object": "checkout.session", "metadata": {"invoice_id": str(invoice_id)}}
+    if payment_status is not None:
+        obj["payment_status"] = payment_status
+    if amount_total is not None:
+        obj["amount_total"] = amount_total
+    obj["currency"] = currency if currency is not None else stripe_billing.CURRENCY
+    event = {"id": "evt_1", "object": "event", "type": event_type, "data": {"object": obj}}
+    if account is not None:
+        event["account"] = account
+    return _signed(event)
+
+
+def _run_webhook(signed, db):
+    """Гоняет настоящий обработчик, подсунув фейковую сессию и секрет подписи."""
+    body, sig = signed
+    saved_secret, saved_maker = stripe_billing.WEBHOOK_SECRET, W.async_session_maker
+    stripe_billing.WEBHOOK_SECRET = _SECRET
     W.async_session_maker = lambda: db
     try:
-        return asyncio.run(W.fondy_webhook(_Req(payload)))
+        return asyncio.run(W.stripe_webhook(_Req(body, sig)))
     finally:
-        W.async_session_maker = orig
+        stripe_billing.WEBHOOK_SECRET = saved_secret
+        W.async_session_maker = saved_maker
 
 
-# ─── Чек-лист задачи 13 ─────────────────────────────────────────────────────────
+# ─── Чек-лист ───────────────────────────────────────────────────────────────────
 def test_success_activates():
-    """1. approved тестовой картой → инвойс paid, подписка active, срок +период."""
+    """1. Оплата картой → счёт paid, подписка active, срок +период."""
     inv = _Invoice(status="pending", plan_name="pro", period_months=1)
     plan = _Plan(status="active", expires_at=None)
-    db = _DB([inv, plan])  # 1) поиск инвойса, 2) поиск подписки в _activate
-    res = _run_webhook(_signed({"order_id": inv.order_id, "order_status": "approved"}), db)
+    db = _DB([inv, plan])  # 1) поиск счёта, 2) поиск подписки в _activate
+    res = _run_webhook(_session_event("checkout.session.completed", amount_total=inv.amount), db)
+
     assert res == {"status": "ok"}
     assert inv.status == "paid"
     assert inv.paid_at is not None
+    assert inv.order_id == "cs_test_1"
     assert inv.pdf_url is not None and inv.pdf_url.endswith(f"/billing/invoices/{inv.id}/receipt.pdf")
     assert plan.status == "active"
     assert plan.expires_at is not None and plan.expires_at > datetime.utcnow()
     assert db.committed is True
 
 
-def test_declined_no_activation():
-    """2. declined → инвойс failed, подписки не касаемся (без активации)."""
+def test_unpaid_session_does_nothing():
+    """2. completed по отложенному методу приходит неоплаченным — денег ещё нет."""
     inv = _Invoice(status="pending")
-    db = _DB([inv])  # только поиск инвойса; _activate не вызывается
-    res = _run_webhook(_signed({"order_id": inv.order_id, "order_status": "declined"}), db)
+    db = _DB([inv])
+    res = _run_webhook(_session_event("checkout.session.completed", payment_status="unpaid"), db)
+
+    assert res == {"status": "ok"}
+    assert inv.status == "pending"
+    assert db.committed is False
+
+
+def test_expired_session_fails_invoice():
+    """3. Страница протухла → счёт failed, подписки не касаемся."""
+    inv = _Invoice(status="pending")
+    db = _DB([inv])
+    res = _run_webhook(_session_event("checkout.session.expired", payment_status=None), db)
+
     assert res == {"status": "ok"}
     assert inv.status == "failed"
     assert db.committed is True
 
 
-def test_reversed_refunds_and_rolls_back():
-    """3. reversed → инвойс refunded, срок откатан на период; если в прошлом — expired."""
+def test_refund_rolls_back_subscription():
+    """4. charge.refunded → счёт refunded, срок откатан; в прошлом → expired."""
     inv = _Invoice(status="paid", period_months=1)
     # срок кончается через 10 дней; откат на 1 мес уводит его в прошлое → expired
     plan = _Plan(status="active", expires_at=datetime.utcnow() + timedelta(days=10))
     db = _DB([inv, plan])
-    res = _run_webhook(_signed({"order_id": inv.order_id, "order_status": "reversed"}), db)
+    res = _run_webhook(_session_event("charge.refunded", payment_status=None), db)
+
     assert res == {"status": "ok"}
     assert inv.status == "refunded"
     assert plan.expires_at < datetime.utcnow()
     assert plan.status == "expired"
 
 
-def test_idempotent_repeat_approved():
-    """4. Повторный approved по уже paid-инвойсу → no-op, тариф не начисляется дважды."""
+def test_idempotent_repeat_paid():
+    """5. Ретрай Stripe по уже оплаченному счёту → no-op, тариф не начисляется дважды."""
     inv = _Invoice(status="paid")
     plan = _Plan(status="active", expires_at=datetime.utcnow() + timedelta(days=30))
     before = plan.expires_at
     db = _DB([inv])  # обработчик выйдет на идемпотентности ДО чтения подписки
-    res = _run_webhook(_signed({"order_id": inv.order_id, "order_status": "approved"}), db)
+    res = _run_webhook(_session_event("checkout.session.completed", amount_total=inv.amount), db)
+
     assert res == {"status": "ok"}
     assert plan.expires_at == before          # срок не сдвинулся
     assert db.committed is False              # ничего не коммитили
-    assert plan is not None                   # (plan не читался — что и требовалось)
 
 
-def test_bad_signature_403():
-    """5. Вебхук с неверной подписью → 403, база не трогается."""
+def test_bad_signature_changes_nothing():
+    """6. Подделанное событие не должно ничего активировать."""
     inv = _Invoice(status="pending")
-    db = _DB([inv])  # не должен быть даже прочитан
-    payload = {"order_id": inv.order_id, "order_status": "approved", "signature": "deadbeef"}
-    res = _run_webhook(payload, db)
-    assert res.status_code == 403
-    assert inv.status == "pending"            # инвойс нетронут
+    db = _DB([inv])
+    body, _sig = _session_event("checkout.session.completed", amount_total=inv.amount)
+    res = _run_webhook((body, "t=1,v1=deadbeef"), db)
+
+    assert res == {"status": "ignored"}
+    assert inv.status == "pending"
+    assert db.committed is False
+
+
+def test_wrong_amount_does_not_activate():
+    """7. Заплатили не ту сумму — тариф не выдаём: иначе оплата на 1 крону
+    активировала бы Business на два года."""
+    inv = _Invoice(status="pending", plan_name="business", period_months=24)
+    db = _DB([inv])  # до _activate дело не доходит — подписка не читается
+    res = _run_webhook(_session_event("checkout.session.completed", amount_total=100), db)
+
+    assert res == {"status": "ok"}
+    assert inv.status == "pending"
+    assert db.committed is False
+
+
+def test_wrong_currency_does_not_activate():
+    """8. Та же сумма, но в другой валюте — это другие деньги."""
+    inv = _Invoice(status="pending")
+    db = _DB([inv])
+    res = _run_webhook(
+        _session_event("checkout.session.completed", amount_total=inv.amount, currency="xxx"), db,
+    )
+
+    assert res == {"status": "ok"}
+    assert inv.status == "pending"
+
+
+def test_expired_event_cannot_unpay_invoice():
+    """9. Брошенная вкладка протухает уже ПОСЛЕ оплаты с другого устройства —
+    оплаченный счёт назад в failed не роняем."""
+    inv = _Invoice(status="paid")
+    db = _DB([inv])
+    res = _run_webhook(_session_event("checkout.session.expired", payment_status=None), db)
+
+    assert res == {"status": "ok"}
+    assert inv.status == "paid"
+    assert db.committed is False
+
+
+def test_missing_metadata_is_ignored():
+    """10. Событие без metadata.invoice_id (чужой платёж на том же аккаунте) —
+    не наш счёт, молча пропускаем, а не падаем в 500."""
+    body, sig = _signed({
+        "id": "evt_1", "object": "event", "type": "checkout.session.completed",
+        "data": {"object": {"id": "cs_x", "object": "checkout.session", "payment_status": "paid"}},
+    })
+    db = _DB([])  # ни одного запроса в БД быть не должно
+    assert _run_webhook((body, sig), db) == {"status": "ok"}
+
+
+def test_card_saved_from_session():
+    """11. После оплаты сохраняется карта для кнопки «Продлить» — маска и
+    идентификаторы Stripe, номер карты к нам не попадает."""
+    inv = _Invoice(status="pending", user_id=7)
+    plan = _Plan(status="active")
+    db = _DB([inv, plan, None])  # счёт, подписка, поиск существующей карты
+
+    class _Card:
+        last4, brand, exp_month, exp_year = "4242", "visa", 4, 2031
+
+    class _Method:
+        id, card = "pm_123", _Card()
+
+    class _Session:
+        payment_intent = type("PI", (), {"payment_method": _Method()})()
+        customer = "cus_123"
+
+    async def _fake_fetch(_sid): return _Session()
+
+    saved, stripe_billing.fetch_session = stripe_billing.fetch_session, _fake_fetch
+    try:
+        res = _run_webhook(_session_event("checkout.session.completed", amount_total=inv.amount), db)
+    finally:
+        stripe_billing.fetch_session = saved
+
+    assert res == {"status": "ok"}
+    assert inv.status == "paid"
+    card = next(x for x in db.added if getattr(x, "rectoken", None) == "pm_123")
+    assert card.card_last4 == "4242"
+    assert card.card_brand == "visa"
+    assert card.card_expiry == "04/31"
+    assert card.stripe_customer_id == "cus_123"
+
+
+def test_event_from_connected_account_is_ignored():
+    """13. Тариф платят платформе. Событие подключённого аккаунта отбрасываем:
+    metadata на своём аккаунте задаёт его владелец, и студия выписала бы себе
+    оплаченный счёт, заплатив ту же сумму самой себе."""
+    inv = _Invoice(status="pending")
+    db = _DB([])  # ни одного запроса в БД быть не должно
+    res = _run_webhook(
+        _session_event("checkout.session.completed", amount_total=inv.amount, account="acct_evil"), db,
+    )
+
+    assert res == {"status": "ignored"}
+    assert inv.status == "pending"
+    assert db.committed is False
+
+
+def test_refunded_invoice_cannot_be_reactivated():
+    """14. Возврат конечен: сессия у Stripe так и осталась paid, и повторное
+    событие (или ручная сверка) не должно начислять период второй раз."""
+    inv = _Invoice(status="refunded")
+    plan = _Plan(status="expired", expires_at=datetime.utcnow() - timedelta(days=1))
+    before = plan.expires_at
+    db = _DB([inv])  # выходим на статусе ДО чтения подписки
+    res = _run_webhook(_session_event("checkout.session.completed", amount_total=inv.amount), db)
+
+    assert res == {"status": "ok"}
+    assert inv.status == "refunded"
+    assert plan.expires_at == before
     assert db.committed is False
 
 
 def test_limits_before_and_after_upgrade():
-    """6. Лимиты: Старт ограничен, Pro/free_trial свободнее, Business безлимит."""
+    """12. Лимиты: Старт ограничен, Pro/free_trial свободнее, Business безлимит."""
     assert _limit_for("start", "staff") == 3
     assert _limit_for("pro", "staff") == 15
     assert _limit_for("free_trial", "staff") == 15    # триал = лимиты Pro
     assert _limit_for("business", "staff") is None     # безлимит
 
 
-def test_signature_survives_json_and_form():
-    """Подпись не зависит от транспорта: одинаковая для JSON и form-полей."""
-    p = {"order_id": "velora-9-z", "order_status": "approved", "amount": 249000}
-    assert fondy.verify_signature(_signed(p)) is True
-
-
 if __name__ == "__main__":
     test_success_activates()
-    test_declined_no_activation()
-    test_reversed_refunds_and_rolls_back()
-    test_idempotent_repeat_approved()
-    test_bad_signature_403()
+    test_unpaid_session_does_nothing()
+    test_expired_session_fails_invoice()
+    test_refund_rolls_back_subscription()
+    test_idempotent_repeat_paid()
+    test_bad_signature_changes_nothing()
+    test_wrong_amount_does_not_activate()
+    test_wrong_currency_does_not_activate()
+    test_expired_event_cannot_unpay_invoice()
+    test_missing_metadata_is_ignored()
+    test_card_saved_from_session()
+    test_event_from_connected_account_is_ignored()
+    test_refunded_invoice_cannot_be_reactivated()
     test_limits_before_and_after_upgrade()
-    test_signature_survives_json_and_form()
-    print("ALL PASS — чек-лист 13 (пп. 1-6) зелёный на уровне логики")
+    print("ALL PASS — вебхук оплаты тарифа зелёный на уровне логики")

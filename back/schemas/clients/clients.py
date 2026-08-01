@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import Field
 
@@ -31,12 +31,25 @@ class ClientUpdate(BaseSchema):
     source: Optional[str] = None
 
 
-class ClientStatusUpdate(BaseSchema):
-    status: str  # new / active / vip / inactive / frozen
-
-
 class ClientFreezeUpdate(BaseSchema):
     frozen: bool
+
+
+class SegmentRulesOut(BaseSchema):
+    """Пороги, по которым считаются категории клиентов."""
+    new_client_days: int
+    active_within_days: int
+    vip_min_spent: int
+    vip_min_visits: int
+
+
+class SegmentRulesUpdate(BaseSchema):
+    # Границы, чтобы студия не выставила бессмысленное правило: 0 дней сделал бы
+    # категорию всегда пустой, а 10 лет — всегда полной.
+    new_client_days: int = Field(ge=1, le=365)
+    active_within_days: int = Field(ge=1, le=365)
+    vip_min_spent: int = Field(ge=0, le=100_000_000)
+    vip_min_visits: int = Field(ge=1, le=10_000)
 
 
 class ClientRegistrationDateUpdate(BaseSchema):

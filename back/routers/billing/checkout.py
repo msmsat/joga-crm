@@ -1,8 +1,10 @@
-"""Создание платежа (задача 4): выбор тарифа/периода → pending-инвойс + ссылка Fondy.
+"""Создание платежа за тариф: выбор тарифа/периода → pending-счёт + ссылка Stripe.
 
-Сумма считается ТОЛЬКО тут по каталогу (plans.py) — фронту не доверяем (правило 6).
-Каждый checkout — новый инвойс с уникальным order_id `velora-{invoice_id}-{uuid4}`;
-старые pending протухают у Fondy сами, order_id не переиспользуем (правило 4).
+Сумма считается ТОЛЬКО тут по каталогу (plans.py) — фронту не доверяем.
+Каждый checkout — новый счёт; чужой или уже оплаченный не переиспользуем.
+
+Деньги идут на платформенный аккаунт Velora (services/stripe_billing.py), а не
+на аккаунт студии — приём оплат клиентов студии живёт отдельно, в кассе.
 """
 import os
 import uuid
@@ -19,14 +21,39 @@ from schemas.settings.billing import (
     CheckoutRequest, CheckoutResponse, RenewResponse,
     IbanCheckoutRequest, IbanCheckoutResponse,
 )
-from services import fondy
+from services import stripe_billing
 from .plans import PLANS, PERIOD_DISCOUNTS, amount_for
 
 router = APIRouter()
 
-# Вебхук Fondy бьёт в бэкенд, redirect юзера — во фронт. Оба нужны публичными.
+# Вебхук Stripe бьёт в бэкенд, возврат пользователя — во фронт. Оба публичные.
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 WEB_APP_URL = os.getenv("WEB_APP_URL", "http://localhost:5173").rstrip("/")
+_RETURN_URL = f"{WEB_APP_URL}/dashboard/billing?payment=return"
+
+_NOT_CONFIGURED = {
+    "code": "billing.stripe_not_configured",
+    "message": "Приём оплат не настроен на сервере",
+}
+
+
+def _new_invoice(ctx: StudioContext, plan: str, period_months: int, **extra) -> BillingInvoice:
+    """Pending-счёт по каталогу. Сумму берём только из plans.py (правило 6)."""
+    return BillingInvoice(
+        studio_id=ctx.studio_id,
+        user_id=ctx.user.id,
+        plan_name=plan,
+        period_months=period_months,
+        amount=amount_for(plan, period_months),
+        status="pending",
+        **extra,
+    )
+
+
+def _validate(plan: str, period_months: int) -> None:
+    # Literal в схеме уже отсекает мусор до сюда; страховка на случай рассинхрона каталога.
+    if plan not in PLANS or period_months not in PERIOD_DISCOUNTS:
+        raise HTTPException(status_code=422, detail="Неизвестный план или период")
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
@@ -35,34 +62,33 @@ async def create_checkout(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    # Literal в схеме уже отсекает мусор до сюда; страховка на случай рассинхрона каталога.
-    if body.plan not in PLANS or body.period_months not in PERIOD_DISCOUNTS:
-        raise HTTPException(status_code=422, detail="Неизвестный план или период")
+    if not stripe_billing.configured():
+        raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
+    _validate(body.plan, body.period_months)
 
-    amount = amount_for(body.plan, body.period_months)
-
-    invoice = BillingInvoice(
-        studio_id=ctx.studio_id,
-        user_id=ctx.user.id,
-        plan_name=body.plan,
-        period_months=body.period_months,
-        amount=amount,
-        status="pending",
-    )
+    invoice = _new_invoice(ctx, body.plan, body.period_months)
     db.add(invoice)
-    await db.flush()  # нужен invoice.id для order_id
-
-    invoice.order_id = f"velora-{invoice.id}-{uuid.uuid4()}"
+    # Счёт коммитим ДО похода в Stripe: его id уезжает в metadata сессии и остаётся
+    # единственной привязкой оплаты к счёту, если ответ Stripe потеряется по дороге.
     await db.commit()
 
-    checkout_url = await fondy.create_checkout(
-        order_id=invoice.order_id,
-        amount=amount,
-        description=f"Velora {PLANS[body.plan]['name']}, {body.period_months} мес.",
-        server_callback_url=f"{BACKEND_URL}/billing/webhook/fondy",
-        response_url=f"{WEB_APP_URL}/dashboard/billing?payment=return",
-    )
-    return CheckoutResponse(checkout_url=checkout_url)
+    try:
+        session_id, url = await stripe_billing.create_checkout(
+            invoice_id=invoice.id,
+            amount=invoice.amount,
+            description=f"Velora {PLANS[body.plan]['name']}, {body.period_months} мес.",
+            success_url=_RETURN_URL,
+            cancel_url=f"{WEB_APP_URL}/dashboard/billing",
+            customer_email=ctx.user.email,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail={
+            "code": "billing.stripe_error", "message": "Stripe отклонил запрос",
+        }) from exc
+
+    invoice.order_id = session_id
+    await db.commit()
+    return CheckoutResponse(checkout_url=url)
 
 
 def fake_iban(studio_id: int) -> str:
@@ -77,26 +103,16 @@ async def create_iban_checkout(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """IBAN-ветка оплаты (аудит §4): без Fondy — тестовый IBAN + pending-инвойс,
-    показывается в модалке для банковского перевода. В paid переводится вне UI-скоупа
-    (реального шлюза для IBAN нет — см. skip в эпике B2)."""
-    if body.plan not in PLANS or body.period_months not in PERIOD_DISCOUNTS:
-        raise HTTPException(status_code=422, detail="Неизвестный план или период")
+    """IBAN-ветка оплаты: без платёжного шлюза — тестовый IBAN + pending-счёт,
+    показывается в модалке для банковского перевода. В paid переводится вручную
+    (реального шлюза для IBAN нет)."""
+    _validate(body.plan, body.period_months)
 
-    amount = amount_for(body.plan, body.period_months)
-
-    invoice = BillingInvoice(
-        studio_id=ctx.studio_id,
-        user_id=ctx.user.id,
-        plan_name=body.plan,
-        period_months=body.period_months,
-        amount=amount,
-        status="pending",
-        payment_method="iban",
-    )
+    invoice = _new_invoice(ctx, body.plan, body.period_months, payment_method="iban")
     db.add(invoice)
-    await db.flush()  # нужен invoice.id для order_id
+    await db.flush()  # нужен invoice.id для назначения платежа
 
+    # У перевода нет сессии Stripe — назначение платежа генерируем сами.
     invoice.order_id = f"velora-{invoice.id}-{uuid.uuid4()}"
     await db.commit()
 
@@ -104,7 +120,7 @@ async def create_iban_checkout(
         invoice_id=invoice.id,
         invoice_number=f"INV-{datetime.utcnow().year}-{invoice.id:06d}",
         iban=fake_iban(ctx.studio_id),
-        amount=amount,
+        amount=invoice.amount,
         reference=invoice.order_id,
     )
 
@@ -114,16 +130,20 @@ async def renew(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Продление по сохранённой карте без редиректа (задача 7).
+    """Продление по сохранённой карте без редиректа.
 
-    Списываем rectoken на тот же план/период, что покупали в последний раз; итог
-    (approved/declined) прилетит в тот же вебхук, что и обычная оплата. Крон-
-    автосписания нет — это ручная кнопка; auto_renewal остаётся флагом для UI.
+    Списываем на тот же план/период, что покупали в последний раз. В отличие от
+    оплаты по ссылке итог известен сразу — вебхука не ждём, статус ставим здесь
+    же общим apply_status. Крон-автосписания нет: это ручная кнопка, auto_renewal
+    остаётся флагом для UI.
     """
+    if not stripe_billing.configured():
+        raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
+
     card = (await db.execute(
         select(PaymentCard).where(PaymentCard.user_id == ctx.user.id)
     )).scalar_one_or_none()
-    if card is None or not card.rectoken:
+    if card is None or not card.rectoken or not card.stripe_customer_id:
         raise HTTPException(status_code=400, detail="Нет сохранённой карты для продления")
 
     # Что продлеваем: план — из текущей подписки, период/сумму — из последней оплаты.
@@ -138,28 +158,37 @@ async def renew(
     if plan is None or last_paid is None or plan.plan_name not in PLANS:
         raise HTTPException(status_code=400, detail="Нет активной подписки для продления")
 
-    period_months = last_paid.period_months
-    amount = amount_for(plan.plan_name, period_months)
-
-    invoice = BillingInvoice(
-        studio_id=ctx.studio_id,
-        user_id=ctx.user.id,
-        plan_name=plan.plan_name,
-        period_months=period_months,
-        amount=amount,
-        status="pending",
-    )
+    invoice = _new_invoice(ctx, plan.plan_name, last_paid.period_months, payment_method="card")
     db.add(invoice)
-    await db.flush()  # нужен invoice.id для order_id
-
-    invoice.order_id = f"velora-{invoice.id}-{uuid.uuid4()}"
     await db.commit()
 
-    await fondy.recurring(
-        order_id=invoice.order_id,
-        amount=amount,
-        description=f"Velora {PLANS[plan.plan_name]['name']}, {period_months} мес. (продление)",
-        rectoken=card.rectoken,
-        server_callback_url=f"{BACKEND_URL}/billing/webhook/fondy",
-    )
+    try:
+        intent_id, status = await stripe_billing.charge_saved_card(
+            invoice_id=invoice.id,
+            amount=invoice.amount,
+            description=f"Velora {PLANS[plan.plan_name]['name']}, {invoice.period_months} мес. (продление)",
+            customer_id=card.stripe_customer_id,
+            payment_method_id=card.rectoken,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail={
+            "code": "billing.stripe_error", "message": "Stripe отклонил запрос",
+        }) from exc
+
+    invoice.order_id = intent_id or invoice.order_id
+    # Импорт здесь, а не сверху: webhook импортирует BACKEND_URL из этого модуля,
+    # на уровне модуля вышел бы цикл.
+    from .webhook import apply_status
+
+    if status == "succeeded":
+        await apply_status(db, invoice, "paid")
+    else:
+        # Отказ банка или требование 3-D Secure: карта off-session не проходит,
+        # продлевать надо обычной оплатой по ссылке.
+        await apply_status(db, invoice, "failed")
+        raise HTTPException(status_code=402, detail={
+            "code": "billing.card_declined",
+            "message": "Банк отклонил списание — оплатите тариф обычным способом",
+        })
+
     return RenewResponse(invoice_id=invoice.id)

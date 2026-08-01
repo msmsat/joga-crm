@@ -1,4 +1,3 @@
-import os
 from dataclasses import dataclass
 from datetime import date, datetime
 from fastapi import Depends, Header, HTTPException
@@ -9,10 +8,11 @@ from jose import jwt, JWTError
 
 from database import get_db
 from models import StudioBillingPlan, StudioMember, User, UserSession
+# Ключ и алгоритм — один источник (security.py), иначе второй дефолт живёт своей
+# жизнью и переживает ротацию первого.
+from security import ALGORITHM, SECRET_KEY
 from services.sessions import hash_token
 
-SECRET_KEY = os.getenv("SECRET_KEY", "velora_super_secret_key_2026")
-ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
@@ -93,34 +93,44 @@ async def get_studio_context(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> StudioContext:
-    """Кто вошёл, его активная студия и роль. Одна строка на любой роутер."""
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    studio_id = payload.get("studio_id")
-    role = payload.get("role")
+    """Кто вошёл, его активная студия и роль. Одна строка на любой роутер.
 
-    # Ловушка: у мультистудийных пользователей токен НЕ содержит studio_id/role.
-    # Достаём из БД. Если членство ровно одно — берём его; если несколько,
-    # активную студию выбрать нельзя без подсказки в токене → просим выбрать.
-    if not studio_id or not role:
-        # status == active: непринятое приглашение студией не считается, иначе
-        # приглашённый попал бы в неё, просто войдя в аккаунт (решение 10).
-        memberships = (await db.execute(
-            select(StudioMember).where(
-                StudioMember.user_id == user.id,
-                StudioMember.status == "active",
-            )
-        )).scalars().all()
-        if not memberships:
-            raise HTTPException(status_code=403, detail="Пользователь не состоит ни в одной студии")
-        if len(memberships) > 1:
-            # code машиночитаемый (не голая строка) — фронт ловит его глобально в client.ts
-            # и ведёт на /select-crm, а не показывает голую ошибку (EPIC 7, задача 4).
-            raise HTTPException(status_code=400, detail={
-                "code": "no_active_studio",
-                "message": "Не выбрана активная студия",
-            })
+    `studio_id` из токена — только ВЫБОР студии; членство и роль всегда сверяются
+    с БД. Раньше роль бралась из claim'а как есть, и токен переживал понижение
+    owner→trainer и удаление из студии на все 7 дней своей жизни.
+    """
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    claimed_studio_id = payload.get("studio_id")
+
+    # status == active: непринятое приглашение студией не считается, иначе
+    # приглашённый попал бы в неё, просто войдя в аккаунт (решение 10).
+    memberships = (await db.execute(
+        select(StudioMember).where(
+            StudioMember.user_id == user.id,
+            StudioMember.status == "active",
+        )
+    )).scalars().all()
+    if not memberships:
+        raise HTTPException(status_code=403, detail="Пользователь не состоит ни в одной студии")
+
+    if claimed_studio_id:
+        m = next((x for x in memberships if x.studio_id == int(claimed_studio_id)), None)
+        if m is None:
+            # Членство отозвали (или его никогда не было — токен подделан).
+            raise HTTPException(status_code=403, detail="Нет доступа к этой студии")
+    elif len(memberships) > 1:
+        # Ловушка: у мультистудийных пользователей токен НЕ содержит studio_id.
+        # Активную студию выбрать нельзя без подсказки в токене → просим выбрать.
+        # code машиночитаемый (не голая строка) — фронт ловит его глобально в client.ts
+        # и ведёт на /select-crm, а не показывает голую ошибку (EPIC 7, задача 4).
+        raise HTTPException(status_code=400, detail={
+            "code": "no_active_studio",
+            "message": "Не выбрана активная студия",
+        })
+    else:
         m = memberships[0]
-        studio_id, role = m.studio_id, m.role
+
+    studio_id, role = m.studio_id, m.role
 
     # Онлайн = «сегодня заходил в CRM» (задача 12): одна запись в БД на пользователя в день.
     today = date.today()

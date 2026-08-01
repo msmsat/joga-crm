@@ -175,14 +175,14 @@ export interface GoalUpdate {
   op_type?: 'in' | 'out'
 }
 
-export type GatewayType = 'stripe' | 'fondy'
+/** Единственный шлюз приёма оплат студии. Второй провайдер добавляется сюда одной строкой. */
+export type GatewayType = 'stripe'
 
 export interface Gateway {
   gateway_type: GatewayType
   /** Готов принимать оплату. Для stripe = charges_enabled, статус с их стороны. */
   connected: boolean
   is_active: boolean
-  public_key: string | null
   /** Stripe Connect: acct_… подключённой студии; null = не подключён. */
   account_id: string | null
   /** Анкета Stripe отправлена (но могла ещё не пройти проверку). */

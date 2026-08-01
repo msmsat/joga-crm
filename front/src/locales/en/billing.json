@@ -198,7 +198,7 @@
       "noStorage": "Card data never touches our servers",
       "autoLink": "Card is linked on first payment"
     },
-    "noCardDetail": "No need to enter details separately — payment happens on Fondy's secure page.",
+    "noCardDetail": "No need to enter details separately — payment happens on Stripe's secure page.",
     "renewDone": "Invoice created — payment processing",
     "renewBusy": "Creating invoice…",
     "renewSuccess": "Renewal invoice created",

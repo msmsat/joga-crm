@@ -30,12 +30,12 @@ export function useBillingCalculator() {
   // в копейках, UI считает и рисует в рублях → делим на 100 один раз тут.
   const [prices, setPrices] = useState<Record<PlanType, number>>(EMPTY_PRICES);
   const [periodDiscounts, setPeriodDiscounts] = useState<Record<number, number>>({ 1: 0, 6: 0, 12: 0, 24: 0 });
-  // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на Fondy.
+  // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
   const [showPayModal, setShowPayModal] = useState(false);
   const [payBranch, setPayBranch] = useState<'choose' | 'iban' | 'card'>('choose');
   const [ibanData, setIbanData] = useState<IbanCheckout | null>(null);
   const [payBusy, setPayBusy] = useState(false);
-  // Возврат с оплаты Fondy (?payment=return). Истина о платеже — вебхук, он мог
+  // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
   const [paymentReturn] = useState(
@@ -108,7 +108,7 @@ export function useBillingCalculator() {
 
   const closePayModal = () => setShowPayModal(false);
 
-  // Ветка IBAN: тестовый инвойс+реквизиты вместо редиректа на Fondy (эпик B2/B4).
+  // Ветка IBAN: тестовый инвойс+реквизиты вместо редиректа на оплату (эпик B2/B4).
   const payWithIban = () => {
     if (payBusy) return;
     setPayBusy(true);
@@ -118,7 +118,7 @@ export function useBillingCalculator() {
       .finally(() => setPayBusy(false));
   };
 
-  // Ветка карты: сервер считает сумму и отдаёт ссылку Fondy, уходим на неё (правило 6).
+  // Ветка карты: сервер считает сумму и отдаёт ссылку Stripe, уходим на неё (правило 6).
   const payWithCard = () => {
     if (payBusy) return;
     setPayBusy(true);

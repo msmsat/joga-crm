@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ClientData, EventRecord } from '../types';
 import type { ClientProfile } from '../../../../api/clients/clients.types';
-import { STATUSES, STATUS_COLORS, EVENT_FILTER_TABS, BONUS_OPTION_IDS, BONUS_POINTS } from '../constants';
+import { STATUS_COLORS, EVENT_FILTER_TABS, BONUS_OPTION_IDS, BONUS_POINTS } from '../constants';
 import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
@@ -401,7 +401,6 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const { t, i18n: i18nInstance } = useTranslation('clients');
   const currency = getCurrencySymbol(useStudioCurrency());
   const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
-  const [showStatusDD, setShowStatusDD] = useState(false);
   const [tagInput,     setTagInput]     = useState('');
   const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
   const [editingReg,   setEditingReg]   = useState(false);
@@ -428,7 +427,6 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   // вручную вместо остатка предыдущей вкладки/дропдауна/черновика.
   useEffect(() => {
     setActiveTab('info');
-    setShowStatusDD(false);
     setTagInput('');
     setRegValue(client.registration_date ?? '');
     setEditingReg(false);
@@ -481,22 +479,12 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
-                  <button onClick={() => setShowStatusDD(v => !v)} style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: `1px solid ${sc}44`, background: `${sc}18`, color: sc, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'Manrope' }}>
-                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sc, display: 'inline-block' }}/>
-                    {t(`status.${status}`, { defaultValue: status })}
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  {showStatusDD && (
-                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '4px', background: 'var(--bg-card)', borderRadius: '10px', border: '1px solid var(--border)', boxShadow: '0 8px 24px -4px rgba(0,0,0,0.12)', zIndex: 10, overflow: 'hidden', minWidth: '140px' }}>
-                      {STATUSES.map(s => (
-                        <div key={s} onClick={() => { setShowStatusDD(false); actions.updateStatus(s); }} style={{ padding: '8px 12px', fontSize: '12px', fontWeight: 600, color: STATUS_COLORS[s], cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = `${STATUS_COLORS[s]}12`)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: STATUS_COLORS[s] }}/>{t(`status.${s}`)}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Статус только показываем: он считается из данных (регистрация,
+                    визиты, оплаты), пороги правятся в панели «О фильтрах». */}
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: `1px solid ${sc}44`, background: `${sc}18`, color: sc, display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'Manrope' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sc, display: 'inline-block' }}/>
+                  {t(`status.${status}`, { defaultValue: status })}
+                </span>
                 <span style={{ fontSize: '10px', color: 'var(--text3)' }}>·</span>
                 {editingReg ? (
                   <input

@@ -343,7 +343,6 @@
       "qr": { "name": "СБП (QR)" },
       "transfer": { "name": "Перевод" },
       "stripe": { "name": "Stripe" },
-      "fondy": { "name": "Fondy" },
       "": { "name": "Не указан" }
     }
   },

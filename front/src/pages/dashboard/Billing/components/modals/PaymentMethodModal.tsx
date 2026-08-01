@@ -16,7 +16,7 @@ interface Props {
 }
 
 // Тестовый контур: настоящей интеграции Apple/Google Pay нет (Payment Request API) —
-// обе кнопки ведут на тот же Fondy checkout_url, что и «Оплатить картой» (аудит §4).
+// обе кнопки ведут на тот же Stripe checkout_url, что и «Оплатить картой» (аудит §4).
 const hasApplePay = typeof window !== 'undefined' && 'ApplePaySession' in window;
 
 function CopyRow({ label, value }: { label: string; value: string }) {
@@ -43,8 +43,8 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Модалка выбора способа оплаты (эпик B4): заменяет прямой редирект на Fondy.
-// IBAN — тестовый инвойс+реквизиты показываются тут же; Карта — редирект на Fondy
+// Модалка выбора способа оплаты (эпик B4): заменяет прямой редирект на оплату.
+// IBAN — тестовый инвойс+реквизиты показываются тут же; Карта — редирект на Stripe
 // (реквизиты вводятся там, PAN/CVV в наш фронт не попадают — PCI, §5).
 export default function PaymentMethodModal({ currency, branch, setBranch, ibanData, busy, onChooseIban, onPayCard, onClose }: Props) {
   const { t } = useTranslation('billing');
@@ -129,7 +129,7 @@ export default function PaymentMethodModal({ currency, branch, setBranch, ibanDa
             </div>
 
             {/* Превью-заглушка полей карты (§4/§5): недоступны для ввода — реквизиты
-                вводятся на защищённой странице Fondy, submit туда и уводит. */}
+                вводятся на защищённой странице Stripe, submit туда и уводит. */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <Input label={t('payModal.cardNumber')} value="" onChange={() => {}} placeholder="•••• •••• •••• ••••" disabled monospace />
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>

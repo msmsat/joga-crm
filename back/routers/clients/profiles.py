@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
@@ -14,13 +15,16 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, ActivityLog, Client, ClientNote, ClientPayment, ClientSubscription,
-    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, StudioSubscriptionProgramConfig,
-    SubscriptionPackage, User,
+    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, StudioClientSegmentConfig,
+    StudioSubscriptionProgramConfig, SubscriptionPackage, User,
 )
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
 from services.booking_access import assert_can_book
+from services.client_segments import (
+    CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
+)
 from services.contacts import contact_taken, ensure_client_contacts_free
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 from schemas import (
@@ -35,7 +39,6 @@ from schemas import (
     ClientListItemOut,
     ClientProfileOut,
     ClientRegistrationDateUpdate,
-    ClientStatusUpdate,
     ClientTagAction,
     ClientUpdate,
     CountOut,
@@ -47,6 +50,8 @@ from schemas import (
     NoteUpdate,
     OkFrozenOut,
     OkOut,
+    SegmentRulesOut,
+    SegmentRulesUpdate,
     TagsOut,
 )
 from schemas.clients.responses import ActiveSubscriptionOut
@@ -64,7 +69,7 @@ _AVATAR_COLORS = [
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-def _client_list_item(client: Client) -> ClientListItemOut:
+def _client_list_item(client: Client, rules: SegmentRules = DEFAULT_RULES) -> ClientListItemOut:
     visit_count = sum(1 for r in client.reservations if r.status == "attended")
     total_spent = sum(p.amount for p in client.payments if p.status == "success")
     active_sub = next(
@@ -82,7 +87,9 @@ def _client_list_item(client: Client) -> ClientListItemOut:
         phone=client.phone,
         email=client.email,
         avatar_color=client.avatar_color,
-        status=client.status,
+        # Статус выводится из данных (регистрация/визиты/оплаты), а не берётся из
+        # колонки — см. services/client_segments.
+        status=resolve_status(client, visit_count=visit_count, total_spent=total_spent, rules=rules),
         tags=client.tags or [],
         visit_count=visit_count,
         total_spent=total_spent,
@@ -174,6 +181,7 @@ async def list_clients(
     limit: int = Query(40, ge=1, le=100),
 ):
     studio_id = ctx.studio_id
+    rules = await get_segment_rules(db, studio_id)
     conditions = [Client.studio_id == studio_id]
 
     if search:
@@ -185,20 +193,13 @@ async def list_clients(
             Client.email.ilike(s),
         ))
 
-    if status:
-        conditions.append(Client.status == status)
-
-    if category == "has_subscription":
-        sub_q = select(ClientSubscription.client_id).where(ClientSubscription.status == "active")
-        conditions.append(Client.id.in_(sub_q))
-    elif category == "birthday":
-        today = date.today()
-        conditions.append(and_(
-            extract("month", Client.birth_date) == today.month,
-            extract("day", Client.birth_date) == today.day,
-        ))
-    elif category in ("vip", "active", "new", "inactive", "frozen"):
-        conditions.append(Client.status == category)
+    # status и category резолвятся одним и тем же правилом — иначе бейдж клиента
+    # и таб-фильтр разошлись бы.
+    for key in (status, category):
+        if key:
+            cond = category_condition(key, rules=rules)
+            if cond is not None:
+                conditions.append(cond)
 
     if tag:
         conditions.append(cast(Client.tags, JSONB).contains([tag]))
@@ -222,7 +223,7 @@ async def list_clients(
     )
     clients = (await db.execute(q)).scalars().all()
     return Page(
-        items=[_client_list_item(c) for c in clients],
+        items=[_client_list_item(c, rules) for c in clients],
         total=total,
         offset=offset,
         limit=limit,
@@ -254,43 +255,65 @@ async def get_categories(
 ):
     studio_id = ctx.studio_id
     today = date.today()
+    rules = await get_segment_rules(db, studio_id)
     base = Client.studio_id == studio_id
 
-    async def _count(*extra):
+    async def _count(key: str) -> int:
+        cond = category_condition(key, today, rules)
+        extra = () if cond is None else (cond,)
         return (await db.execute(
             select(func.count(Client.id)).where(base, *extra)
         )).scalar() or 0
 
-    total = await _count()
-    vip = await _count(Client.status == "vip")
-    active = await _count(Client.status == "active")
-    new = await _count(Client.status == "new")
-    inactive = await _count(Client.status == "inactive")
-    frozen = await _count(Client.status == "frozen")
-
-    sub_ids = (await db.execute(
-        select(ClientSubscription.client_id)
-        .distinct()
-        .join(Client, Client.id == ClientSubscription.client_id)
-        .where(Client.studio_id == studio_id, ClientSubscription.status == "active")
-    )).scalars().all()
-    has_subscription = len(sub_ids)
-
-    birthday = await _count(
-        extract("month", Client.birth_date) == today.month,
-        extract("day", Client.birth_date) == today.day,
-    )
+    # Порядок табов; подписи фронт переводит сам по key (categories.*).
+    order = ["all", "vip", "active", "new", "has_subscription", "inactive", "frozen", "birthday"]
+    labels = {
+        "all": "Все", "vip": "VIP", "active": "Активные", "new": "Новые",
+        "has_subscription": "С абонементом", "inactive": "Неактивные",
+        "frozen": "Заморожены", "birthday": "День рождения",
+    }
+    assert set(order) == set(CATEGORY_KEYS), "таб без правила в client_segments"
 
     return [
-        CategoryStatOut(key="all", label="Все", count=total),
-        CategoryStatOut(key="vip", label="VIP", count=vip),
-        CategoryStatOut(key="active", label="Активные", count=active),
-        CategoryStatOut(key="new", label="Новые", count=new),
-        CategoryStatOut(key="has_subscription", label="С абонементом", count=has_subscription),
-        CategoryStatOut(key="inactive", label="Неактивные", count=inactive),
-        CategoryStatOut(key="frozen", label="Заморожены", count=frozen),
-        CategoryStatOut(key="birthday", label="День рождения", count=birthday),
+        CategoryStatOut(key=key, label=labels[key], count=await _count(key))
+        for key in order
     ]
+
+
+# ─── GET/PATCH /clients/segment-rules ─────────────────────────────────────────
+# Объявлены до /{client_id}, иначе FastAPI прочитает «segment-rules» как int.
+
+@router.get("/segment-rules", response_model=SegmentRulesOut)
+async def get_client_segment_rules(
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    rules = await get_segment_rules(db, ctx.studio_id)
+    return SegmentRulesOut(**asdict(rules))
+
+
+@router.patch("/segment-rules", response_model=SegmentRulesOut)
+async def update_client_segment_rules(
+    body: SegmentRulesUpdate,
+    ctx: StudioContext = Depends(require_role("owner")),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Правила меняет только владелец: они переопределяют статусы всех клиентов."""
+    studio_id = ctx.studio_id
+    cfg = (await db.execute(
+        select(StudioClientSegmentConfig).where(StudioClientSegmentConfig.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if cfg is None:
+        cfg = StudioClientSegmentConfig(studio_id=studio_id)
+        db.add(cfg)
+
+    for field, value in body.model_dump().items():
+        setattr(cfg, field, value)
+
+    await db.commit()
+    return SegmentRulesOut(**body.model_dump())
 
 
 # ─── GET /clients/check-contact ───────────────────────────────────────────────
@@ -329,7 +352,7 @@ async def get_client(
     client = await _get_client_or_404(client_id, studio_id, db, load_relations=True)
     if await expire_points(db, studio_id, client_id):
         await db.commit()
-    base = _client_list_item(client)
+    base = _client_list_item(client, await get_segment_rules(db, studio_id))
     subscription_alert = _subscription_for_reminder(client)
     return ClientProfileOut(
         **base.model_dump(),
@@ -691,23 +714,6 @@ async def update_client(
         if field == "name" and not value:
             continue  # name в БД NOT NULL — пустое значение не применяем
         setattr(client, field, value)
-    await db.commit()
-    return OkOut(ok=True)
-
-
-# ─── PATCH /clients/{id}/status ───────────────────────────────────────────────
-
-@router.patch("/{client_id}/status", response_model=OkOut)
-async def update_client_status(
-    client_id: int,
-    body: ClientStatusUpdate,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
-    client.status = body.status
     await db.commit()
     return OkOut(ok=True)
 

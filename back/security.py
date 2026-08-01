@@ -6,8 +6,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Секретный ключ для подписи токена (в идеале добавить его в .env)
-SECRET_KEY = os.getenv("SECRET_KEY", "velora_super_secret_key_2026")
+# Секретный ключ для подписи токена. Дефолта НЕТ и быть не может: значение,
+# лежащее в исходниках, знает каждый, у кого есть репозиторий, — а из него
+# подписывается токен с любым `studio_id` и `role: owner`, то есть полный доступ
+# к чужим деньгам. Не задан — приложение не поднимается, это не «удобный дев-режим».
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "SECRET_KEY не задан в .env — JWT подписывать нечем. "
+        "Сгенерируйте: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # Токен будет жить 7 дней
 

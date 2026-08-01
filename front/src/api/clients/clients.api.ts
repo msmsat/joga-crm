@@ -21,6 +21,7 @@ import type {
   OkFrozenOut,
   OkOut,
   PointsBalanceOut,
+  SegmentRules,
   TagsOut,
   WalletSubscription,
 } from './clients.types'
@@ -53,6 +54,13 @@ export const clientsApi = {
 
   getCategories: () =>
     client.get<CategoryStat[]>('/clients/categories'),
+
+  // Пороги категорий: читают владелец и админ, меняет только владелец.
+  getSegmentRules: () =>
+    client.get<SegmentRules>('/clients/segment-rules'),
+
+  updateSegmentRules: (rules: SegmentRules) =>
+    client.patch<SegmentRules>('/clients/segment-rules', rules),
 
   // ─── PROFILE ──────────────────────────────────────────────────────────────
   getProfile: (id: number) =>
@@ -99,9 +107,6 @@ export const clientsApi = {
   // ─── MUTATIONS ────────────────────────────────────────────────────────────
   update: (id: number, payload: ClientUpdate) =>
     client.patch<OkOut>(`/clients/${id}`, payload),
-
-  updateStatus: (id: number, status: string) =>
-    client.patch<OkOut>(`/clients/${id}/status`, { status }),
 
   freeze: (id: number, frozen: boolean) =>
     client.patch<OkFrozenOut>(`/clients/${id}/freeze`, { frozen }),

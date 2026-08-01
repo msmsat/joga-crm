@@ -7,7 +7,8 @@
 
 Секретные ключи студий мы не храним и не спрашиваем: в этом весь смысл Connect.
 
-Прямой модуль без абстракций — тот же паттерн, что `services/fondy.py`.
+Прямой модуль без абстракций — тот же паттерн, что `services/stripe_billing.py`
+(там платформенный аккаунт Velora, здесь — счета студий).
 """
 import asyncio
 import logging
@@ -142,6 +143,19 @@ async def create_checkout_session(
         stripe_account=account_id,
     )
     return session.id, session.client_secret
+
+
+async def session_id_for_payment_intent(payment_intent: str, account_id: str) -> str | None:
+    """Сессия, из которой вырос этот платёж, или None.
+
+    В событиях о возврате и чарджбэке приходит Charge, а заявка в CRM живёт по
+    session_id — в самом Charge его нет, связать можно только запросом.
+    """
+    sessions = await asyncio.to_thread(
+        stripe.checkout.Session.list,
+        payment_intent=payment_intent, limit=1, stripe_account=account_id,
+    )
+    return sessions.data[0].id if sessions.data else None
 
 
 async def session_paid(session_id: str, account_id: str) -> bool:

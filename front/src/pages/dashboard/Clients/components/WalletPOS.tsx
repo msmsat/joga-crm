@@ -65,6 +65,9 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   const cashAccount = accounts.find(a => a.type === 'cash') ?? accounts[0];
   // Итог 0 — весь товар погашен депозитом/сертификатом/бонусами, метод оплаты не нужен (V5-7, 1.3).
   const totalCovered = quote?.total_price === 0;
+  // Промокод введён, но не действует: бэк такую оплату отвергает (и наличные, и
+  // карту) — не даём кассиру дойти до формы оплаты ради ошибки.
+  const promoBlocks = !!promoCode && !!quote && !quote.promo_valid;
 
   const payload = {
     client_id: clientId, product_id: productId, product_type: productType,
@@ -159,7 +162,7 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
       <Button
         variant="primary" fullWidth
         style={{ marginTop: '16px' }}
-        disabled={!quote || isFetching}
+        disabled={!quote || isFetching || promoBlocks}
         loading={payMut.isPending || stripeMut.isPending}
         onClick={() => setConfirmOpen(true)}
       >

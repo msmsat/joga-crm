@@ -2,10 +2,11 @@ from schemas.clients.clients import (
     ClientCreate,
     ClientFreezeUpdate,
     ClientRegistrationDateUpdate,
-    ClientStatusUpdate,
     ClientTagAction,
     ClientUpdate,
     MessageSend,
+    SegmentRulesOut,
+    SegmentRulesUpdate,
 )
 from schemas.clients.notes import NoteCreate, NoteUpdate
 from schemas.clients.responses import (
@@ -31,10 +32,11 @@ __all__ = [
     "ClientCreate",
     "ClientFreezeUpdate",
     "ClientRegistrationDateUpdate",
-    "ClientStatusUpdate",
     "ClientTagAction",
     "ClientUpdate",
     "MessageSend",
+    "SegmentRulesOut",
+    "SegmentRulesUpdate",
     "NoteCreate",
     "NoteUpdate",
     # responses
