@@ -93,6 +93,25 @@ export interface AssigneeOption {
   role: 'admin' | 'trainer'
 }
 
+// ─── GET /analytics/me: KPI Дашборда для админа и тренера ─────────────────
+// Набор метрик зависит от роли (тренер: lessons/attendance/fill_rate/rating,
+// админ: bookings/attendance/fill_rate/active_clients), поэтому список с id,
+// а не фиксированные поля. Подпись и формат карточки — по id на фронте.
+export type MyKpiId =
+  | 'lessons' | 'attendance' | 'fill_rate' | 'rating'
+  | 'bookings' | 'active_clients'
+
+export interface MyKpi {
+  id: MyKpiId
+  value: number
+  prev_pct: number | null
+}
+
+export interface MySummary {
+  role: StudioRole
+  kpi: MyKpi[]
+}
+
 // ─── Отчёты (5 вкладок, ROADMAP_REPORTS) ──────────────────────────────────
 export interface Insight {
   key: string

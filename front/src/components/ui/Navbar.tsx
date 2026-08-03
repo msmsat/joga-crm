@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAIDrawer } from '../../contexts/AIDrawerContext';
 import { useAssistant } from '../../hooks/useAssistant';
+import { getStudioRole } from '../../utils/auth';
 
 export interface NavbarProps {
   title: string;
@@ -16,8 +18,13 @@ export function Navbar({ title, subtitle }: NavbarProps) {
   const { t } = useTranslation('ai');
   const { isOpen: isDrawerOpen, toggle: toggleDrawer, open: openDrawer } = useAIDrawer();
   const { messages, isThinking, sendMessage } = useAssistant();
+  const navigate = useNavigate();
 
-  const handlePrimaryBtn = () => alert('Создать новую запись');
+  // «+ Создать» ведёт в Журнал — там и создаётся запись (ТЗ 2.0). Раньше здесь
+  // висела заглушка с alert(). Тренеру кнопки нет вовсе: расписание меняют
+  // владелец и администратор, вести его к экрану, где он ничего не создаст, незачем.
+  const canCreate = getStudioRole() !== 'trainer';
+  const handlePrimaryBtn = () => navigate('/dashboard/journal');
 
   const [isAiFocused, setIsAiFocused] = useState(false); // Для Glow-эффекта
   const [aiQuery, setAiQuery] = useState(''); // Для текста в инпуте
@@ -350,7 +357,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           <span className="tb-label">AI</span>
         </button>
 
-        <button
+        {canCreate && <button
           onClick={handlePrimaryBtn}
           className="topbar-action"
           aria-label={t('menu:navbar.create')}
@@ -382,7 +389,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
           <span className="tb-label">{t('menu:navbar.create')}</span>
-        </button>
+        </button>}
       </div>
     </div>
   );

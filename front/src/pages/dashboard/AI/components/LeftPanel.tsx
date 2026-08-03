@@ -8,6 +8,7 @@ import type { AIChatSession, AIUISettings } from '../types';
 import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
 import AgentConfigCard from './AgentConfigCard';
 import CustomSelect from './CustomSelect';
+import { getStudioRole } from '../../../../utils/auth';
 import styles from '../AI.module.css';
 
 interface LeftPanelProps {
@@ -72,6 +73,10 @@ export default function LeftPanel({
   const { t } = useTranslation('ai');
   const groups = groupByDay(sessions, t);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  // Модель, язык ассистента и ИИ-агенты — настройки студии, одни на всех
+  // (PATCH /ai/settings и ручки каналов на бэке owner-only). Админу и тренеру
+  // остаётся чат и своя история: они этими настройками пользуются, а не правят.
+  const isOwner = getStudioRole() === 'owner';
 
   return (
     <div className={styles.leftPanel}>
@@ -134,7 +139,7 @@ export default function LeftPanel({
         )}
       </div>
 
-      <div className={styles.miniSettings}>
+      {isOwner && <div className={styles.miniSettings}>
         <div className={styles.miniSettingsHeader}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <circle cx="12" cy="12" r="3" />
@@ -174,7 +179,7 @@ export default function LeftPanel({
           onToggleWhatsapp={onToggleWhatsapp}
           onOpenSetup={onOpenAgentSetup}
         />
-      </div>
+      </div>}
 
       {confirmDeleteId != null && (
         <ConfirmModal

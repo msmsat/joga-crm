@@ -6,6 +6,11 @@ import type { Booking } from '../../types';
 import { formatIndexToTimeStr } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
+// Порог, после которого нажатие считается попыткой перетащить, а не кликом.
+// Столько же «люфта» даёт клику браузер на тач-экране — палец никогда не стоит
+// ровно на месте.
+const DRAG_SLOP_PX = 6;
+
 interface BookingCardProps {
   booking: Booking;
   layout: any;
@@ -25,6 +30,29 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
 }) => {
   const { t } = useTranslation('journal');
+
+  // Роль без права правки: нажатие — это ещё не перетаскивание, по клику карточка
+  // должна спокойно открыться. Раньше тост «нет прав» выскакивал прямо на
+  // pointerdown, то есть на каждый обычный клик по своему же занятию. Теперь
+  // ждём реального сдвига: потащил — сказали, что нельзя; кликнул — открыли.
+  const warnOnDragAttempt = (e: React.PointerEvent) => {
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const onMove = (ev: PointerEvent) => {
+      if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) < DRAG_SLOP_PX) return;
+      showToast(t('toasts.noPermission'));
+      stop();
+    };
+    const stop = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', stop);
+      window.removeEventListener('pointercancel', stop);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+  };
+
   const isResizeTop = drag?.type === 'resize-top' && drag?.id === b.id;
   const isResizeBottom = drag?.type === 'resize-bottom' && drag?.id === b.id;
   const isResize = isResizeTop || isResizeBottom;
@@ -51,7 +79,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       onPointerDown={e => {
         if (b.status === 'cancelled') return;
         if (!canEdit) {
-          showToast(t('toasts.noPermission'));
+          warnOnDragAttempt(e);
           return;
         }
         initDrag(e, b.id, 'move');
@@ -82,7 +110,9 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         {b.status === 'cancelled' ? (
           <span className="b-cancelled-badge">{t('grid.cancelled')}</span>
         ) : (
-          height > 36 && canEdit && (
+          // Заполненность видна и тренеру: это его занятие, сколько человек
+          // придёт — первое, что он смотрит в сетке.
+          height > 36 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
               <Icons.Users />
               <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>

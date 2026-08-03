@@ -1,4 +1,4 @@
-import type { MetricPresenter, Task } from './types';
+import type { MetricPresenter, MyKpiId, Task } from './types';
 
 // Заголовки резолвятся через t('metrics.'+id) в useOverviewData — реагируют на смену языка.
 export const METRIC_PRESENTERS: MetricPresenter[] = [
@@ -7,6 +7,18 @@ export const METRIC_PRESENTERS: MetricPresenter[] = [
   { id: 'bookings',  color: '#4A80C4', glow: 'rgba(74,128,196,0.2)',  route: '/dashboard/booking' },
   { id: 'retention', color: '#D88C9A', glow: 'rgba(216,140,154,0.2)', route: '/dashboard/reports' },
 ];
+
+// Метрики админа и тренера (GET /analytics/me). Порядок карточек задаёт сервер —
+// здесь только оформление и куда ведёт «Подробнее». Роуты отличаются от owner-ряда:
+// Отчёты, Финансы и Онлайн-запись этим ролям недоступны, всё ведёт в Журнал/Клиентов.
+export const MY_METRIC_PRESENTERS: Record<MyKpiId, Omit<MetricPresenter, 'id'>> = {
+  lessons:        { color: '#4A80C4', glow: 'rgba(74,128,196,0.2)',  route: '/dashboard/journal' },
+  bookings:       { color: '#4A80C4', glow: 'rgba(74,128,196,0.2)',  route: '/dashboard/journal' },
+  attendance:     { color: '#5BAB72', glow: 'rgba(91,171,114,0.2)',  route: '/dashboard/journal' },
+  fill_rate:      { color: '#FCAE91', glow: 'rgba(252,174,145,0.2)', route: '/dashboard/journal' },
+  rating:         { color: '#D88C9A', glow: 'rgba(216,140,154,0.2)', route: '/dashboard/journal' },
+  active_clients: { color: '#5BAB72', glow: 'rgba(91,171,114,0.2)',  route: '/dashboard/clients' },
+};
 
 /** Палитра для баров сводок (услуги/тренеры). */
 export const BAR_COLORS = ['#FCAE91', '#5BAB72', '#4A80C4', '#f0c040', '#D88C9A', '#7B6CD4'];

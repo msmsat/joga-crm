@@ -167,10 +167,11 @@ export function useReferralEnabled(enabled: boolean) {
  * 403 для admin проглатывается). Дефолт true — совпадает с дефолтом модели, чтобы
  * admin (не видящий конфиг) не терял рабочую кнопку, если владелец её не трогал;
  * реальный запрет всё равно проверяется на бэке при попытке заморозить. */
-export function useFreezeEnabled() {
+export function useFreezeEnabled(enabled = true) {
   const { data } = useQuery({
     queryKey: queryKeys.subscriptionConfig,
     queryFn: () => catalogApi.getSubscriptionConfig(),
+    enabled,   // тренеру кнопки заморозки нет — и запроса, который ему 403, тоже
     retry: false,
   });
   return data?.allow_freeze ?? true;

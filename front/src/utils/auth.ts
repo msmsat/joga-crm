@@ -21,6 +21,12 @@
  * токен прежнего останется жить.
  */
 
+// Напрямую из файла, не из бочки `../api`: та тянет client.ts, который импортирует
+// этот модуль — получился бы цикл. queryClient.ts не зависит ни от чего своего.
+import { queryClient } from '../api/queryClient';
+// Только тип — на рантайм не влияет и цикла не создаёт (файл типов ничего не импортирует).
+import type { StudioRole } from '../api/analytics/analytics.types';
+
 const TOKEN_KEY = 'token';
 const JAR_KEY = 'accounts';
 /**
@@ -81,6 +87,18 @@ export function getUserRoleFromToken(): string | null {
   return (payload?.role as string) ?? null;
 }
 
+const ROLES: StudioRole[] = ['owner', 'admin', 'trainer'];
+
+/**
+ * Роль для подсказок UI (что рисовать, какие запросы слать). Не распозналась —
+ * падаем в минимальные права, не в максимальные: доступ всё равно решает сервер,
+ * а лишний owner-запрос от тренера вернул бы 403 и сломал экран.
+ */
+export function getStudioRole(): StudioRole {
+  const raw = getUserRoleFromToken();
+  return ROLES.includes(raw as StudioRole) ? (raw as StudioRole) : 'trainer';
+}
+
 /** Email активного аккаунта — по нему связка отличает «этот» от остальных. */
 export function getActiveEmail(): string | null {
   const token = getActiveToken();
@@ -119,6 +137,10 @@ function saveAccounts(accounts: StoredAccount[]): void {
  */
 export function setActiveToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
+  // Сменилась личность — кэш квери набит данными прежней (тема, студии, профиль).
+  // Без этого дефолтный staleTime 30s держит на экране чужой кабинет до полминуты.
+  // Чистим здесь, а не на каждом входе: точек входа восемь, забыть — вопрос времени.
+  queryClient.clear();
 
   const email = (decodeToken(token)?.sub as string) ?? null;
   if (!email) return;   // токен нечитаем — активным сделали, в список не пишем
@@ -183,6 +205,7 @@ export function forgetAccount(email: string): void {
 export function clearActiveToken(): void {
   const email = getActiveEmail();
   localStorage.removeItem(TOKEN_KEY);
+  queryClient.clear();   // вышли — данные аккаунта в памяти не оставляем
   if (!email) return;
   saveAccounts(listAccounts().map(a => (a.email === email ? { email: a.email, name: a.name } : a)));
 }

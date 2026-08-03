@@ -4,6 +4,7 @@ import { useToast } from "../../../../components/ui/index";
 import { billingApi } from "../../../../api/billing/billing.api";
 import { queryKeys } from "../../../../api/queryKeys";
 import { errorMessage } from "../../../../api/errorMessage";
+import { getStudioRole } from "../../../../utils/auth";
 import type { AutopaySettings, BillingPlan } from "../../../../api/billing/billing.types";
 
 // Вкладка «Подписка» — сводка + вход в /dashboard/billing (эпик 4). Калькулятор
@@ -12,13 +13,18 @@ export function useBilling() {
   const qc = useQueryClient();
   const { t } = useTranslation('settings');
   const toast = useToast();
+  // Хук зовётся в Settings.tsx безусловно, а вкладка «Подписка» есть только у
+  // владельца (весь /billing на сервере owner-only). Без гейта каждый заход
+  // админа или тренера в Настройки стоил трёх гарантированных 403.
+  const isOwner = getStudioRole() === "owner";
 
-  const plan = useQuery({ queryKey: queryKeys.billingPlan, queryFn: () => billingApi.getPlan() });
+  const plan = useQuery({ queryKey: queryKeys.billingPlan, queryFn: () => billingApi.getPlan(), enabled: isOwner });
   const invoices = useQuery({
     queryKey: queryKeys.billingInvoices(12),
     queryFn: () => billingApi.getInvoices({ limit: 12 }),
+    enabled: isOwner,
   });
-  const cards = useQuery({ queryKey: queryKeys.billingCards, queryFn: () => billingApi.getPaymentCards() });
+  const cards = useQuery({ queryKey: queryKeys.billingCards, queryFn: () => billingApi.getPaymentCards(), enabled: isOwner });
 
   // Оптимистичный флип свитча (роадмап SETTINGS, общее решение №3) — мгновенный
   // отклик, откат по onError.

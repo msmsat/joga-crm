@@ -102,7 +102,16 @@ export function Sidebar({ role }: SidebarProps) {
         <div className="sidebar-logo">
           <div className="logo-row">
             <div className="logo-name">
-              <span className="logo-dot"></span>
+              {/* Знак Velora: четыре окошка без подложки. Плитки упираются в границы
+                  вьюбокса — оптический центр совпадает с геометрическим сам собой. */}
+              <span className="sidebar-mark">
+                <svg width="100%" height="100%" viewBox="0 0 20 20" fill="currentColor">
+                  <rect width="9" height="9" rx="2.6" />
+                  <rect x="11" width="9" height="9" rx="2.6" opacity="0.55" />
+                  <rect y="11" width="9" height="9" rx="2.6" opacity="0.55" />
+                  <rect x="11" y="11" width="9" height="9" rx="2.6" />
+                </svg>
+              </span>
               <span className="nav-label">{t('brand.product')}</span>
             </div>
             {canToggle && (

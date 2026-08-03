@@ -11,11 +11,13 @@ export interface ClientsToolbarProps {
   searchQuery: string;
   onSearch: (q: string) => void;
   onAddClick: () => void;
+  /** Тренер клиентов не заводит — создание клиента на сервере owner+admin. */
+  canAdd?: boolean;
 }
 
 export function ClientsToolbar({
   categories, activeCatKey, onCatChange,
-  searchQuery, onSearch, onAddClick,
+  searchQuery, onSearch, onAddClick, canAdd = true,
 }: ClientsToolbarProps) {
   const { t } = useTranslation('clients');
 
@@ -221,12 +223,14 @@ export function ClientsToolbar({
           />
         </div>
 
-        <button className="ct-add-btn" onClick={onAddClick}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          <span className="ct-add-label">{t('toolbar.addClient')}</span>
-        </button>
+        {canAdd && (
+          <button className="ct-add-btn" onClick={onAddClick}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span className="ct-add-label">{t('toolbar.addClient')}</span>
+          </button>
+        )}
       </div>
     </>
   );

@@ -11,7 +11,22 @@
     "clients": "Active clients",
     "bookings": "Bookings this month",
     "retention": "Retention rate",
+    "lessons": "Classes this month",
+    "attendance": "Attendance this month",
+    "fill_rate": "Fill rate",
+    "rating": "Average rating",
+    "active_clients": "Active clients",
     "more": "Details"
+  },
+  "today": {
+    "titleTrainer": "My classes today",
+    "titleAdmin": "Today's schedule",
+    "subtitle": "{{count}} classes · {{booked}} of {{spots}} spots",
+    "subtitle_one": "{{count}} class · {{booked}} of {{spots}} spots",
+    "openJournal": "Open journal",
+    "empty": "No classes today",
+    "emptyHintTrainer": "A free day — new bookings will show up here",
+    "emptyHintAdmin": "Nothing scheduled for today"
   },
   "chart": {
     "byDay": "by day",

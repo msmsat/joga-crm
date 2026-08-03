@@ -63,6 +63,10 @@ class User(Base):
 
     theme: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     accent_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
+    # Язык интерфейса — личный, рядом с темой. NULL значит «как в студии»
+    # (Studio.language): владелец задаёт язык студии, а сотрудник может выбрать
+    # себе другой, не трогая настройки студии.
+    language: Mapped[Optional[str]] = mapped_column(String(5), nullable=True)
 
     # Студия, в которой человек работал в прошлый раз: при входе токен минтится
     # сразу на неё, и мультистудийного пользователя не встречает /select-crm.

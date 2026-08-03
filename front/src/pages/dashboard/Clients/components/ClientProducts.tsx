@@ -5,7 +5,8 @@ interface ClientProductsProps {
   products: ClientProduct[];
   color: string;
   frozen: boolean;
-  onRemind: () => void;
+  /** null — роль не вправе слать напоминание (тренер): кнопку не рисуем. */
+  onRemind: (() => void) | null;
 }
 
 const LOW_RATIO = 0.25;
@@ -132,7 +133,7 @@ export function ClientProducts({ products, color, frozen, onRemind }: ClientProd
                   ? t('panel.products.startsOnFirstVisit')
                   : t('panel.products.until', { date: fmtDate(p.expires_at, i18n.language) })}
               </span>
-              {isLow && (
+              {isLow && onRemind && (
                 <button className="cp-remind" onClick={onRemind}>
                   {t('panel.abonement.remind')}
                 </button>
@@ -145,7 +146,7 @@ export function ClientProducts({ products, color, frozen, onRemind }: ClientProd
   );
 }
 
-function EmptyProducts({ onRemind }: { onRemind: () => void }) {
+function EmptyProducts({ onRemind }: { onRemind: (() => void) | null }) {
   const { t } = useTranslation('clients');
   return (
     <div style={{
@@ -163,16 +164,18 @@ function EmptyProducts({ onRemind }: { onRemind: () => void }) {
         </svg>
         {t('panel.abonement.noSubscriptionWarning')}
       </div>
-      <button
-        onClick={onRemind}
-        style={{
-          marginTop: 8, padding: '6px 9px', border: '1px solid rgba(216,140,154,0.45)',
-          borderRadius: 7, background: 'var(--bg-card)', color: '#B5677A',
-          fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope',
-        }}
-      >
-        {t('panel.abonement.remind')}
-      </button>
+      {onRemind && (
+        <button
+          onClick={onRemind}
+          style={{
+            marginTop: 8, padding: '6px 9px', border: '1px solid rgba(216,140,154,0.45)',
+            borderRadius: 7, background: 'var(--bg-card)', color: '#B5677A',
+            fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope',
+          }}
+        >
+          {t('panel.abonement.remind')}
+        </button>
+      )}
     </div>
   );
 }

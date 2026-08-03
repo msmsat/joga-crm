@@ -76,10 +76,13 @@ class GeneralUpdate(BaseSchema):
 class AppearanceRead(BaseSchema):
     theme: Optional[str] = None
     accent_color: Optional[str] = None
+    # null — язык не выбран лично, интерфейс идёт за языком студии.
+    language: Optional[str] = None
 
 
 class AppearanceUpdate(BaseSchema):
     theme: Optional[Literal["light", "dark", "auto"]] = None
+    language: Optional[Literal["ru", "en"]] = None
     # Валидация цвета обязательна: значение уходит прямо в CSS-переменную/style
     # на фронте — без неё это инъекция в стиль.
     accent_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")

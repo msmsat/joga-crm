@@ -41,7 +41,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // чтобы не мигать светлым при theme === 'dark' в БД.
     initialData: () => {
       const cached = readThemeSeed();
-      return cached ? { theme: cached, accent_color: null } : undefined;
+      // language здесь null, а не «затравка»: язык из кэша подставлять нельзя —
+      // DashboardLayout принял бы его за личный выбор и перебил язык студии.
+      return cached ? { theme: cached, accent_color: null, language: null } : undefined;
     },
   });
   const theme = data?.theme ?? "light";

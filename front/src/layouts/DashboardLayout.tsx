@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, Navigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import '../App.css';
 import { useAIDrawer } from '../contexts/AIDrawerContext';
@@ -12,6 +13,8 @@ import { billingApi } from '../api/billing/billing.api';
 import type { BillingPlan } from '../api/billing/billing.types';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 import { useStudioSettings } from '../hooks/useStudioCurrency';
+import { settingsApi } from '../api/settings/settings.api';
+import { queryKeys } from '../api/queryKeys';
 import i18n from '../i18n';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
 import { Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
@@ -52,14 +55,22 @@ export default function DashboardLayout() {
 
   const routeKey = ROUTE_KEY[location.pathname.replace(/\/$/, '')] ?? 'dashboard';
 
-  // Язык студии из БД → i18next. Мутация в Настройках уже зовёт
-  // changeLanguage сама; это — для входа в приложение и смены студии.
+  // Язык интерфейса → i18next. Личный выбор сотрудника (Настройки → Внешний
+  // вид) главнее языка студии; не выбран — идём за студией, как раньше.
+  // Мутации в Настройках зовут changeLanguage сами; это — для входа в
+  // приложение и смены студии.
   const { data: studio } = useStudioSettings();
+  const { data: appearance } = useQuery({
+    queryKey: queryKeys.appearance,
+    queryFn: () => settingsApi.getAppearance(),
+    staleTime: 5 * 60_000,
+  });
+  const uiLanguage = appearance?.language ?? studio?.language;
   useEffect(() => {
-    if (studio?.language && studio.language !== i18n.language) {
-      i18n.changeLanguage(studio.language);
+    if (uiLanguage && uiLanguage !== i18n.language) {
+      i18n.changeLanguage(uiLanguage);
     }
-  }, [studio?.language]);
+  }, [uiLanguage]);
 
   // Пейволл (задача 12b): подписка не активна → пускаем только на «Тариф» и «Профиль».
   // /billing/plan — только для owner; admin/trainer план не тянут (undefined = не блокируем,

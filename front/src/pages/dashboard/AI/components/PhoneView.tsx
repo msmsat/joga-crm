@@ -6,6 +6,7 @@ import drawer from '../../../../components/AIDrawer/AIDrawer.module.css';
 import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
 import type { AIChatMessage, AIChatSession, AIUISettings } from '../types';
 import CustomSelect from './CustomSelect';
+import { getStudioRole } from '../../../../utils/auth';
 import styles from '../AI.module.css';
 
 interface PhoneViewProps {
@@ -48,6 +49,9 @@ export default function PhoneView({
 }: PhoneViewProps) {
   const { t } = useTranslation('ai');
   const [showHistory, setShowHistory] = useState(false);
+  // Тот же гейт, что в десктопной LeftPanel: агенты и настройки ассистента —
+  // студийные, их правит владелец.
+  const isOwner = getStudioRole() === 'owner';
 
   const selectSession = (id: number) => { onLoadSession(id); setShowHistory(false); };
   const startNewChat = () => { onNewChat(); setShowHistory(false); };
@@ -114,7 +118,7 @@ export default function PhoneView({
 
           {/* Подвал экрана истории: список чатов — то, за чем сюда заходят,
               агенты и настройки трогают раз в месяц. */}
-          <div className={styles.phoneHistoryFoot}>
+          {isOwner && <div className={styles.phoneHistoryFoot}>
             <button type="button" className={styles.phoneAgentsRow} onClick={onOpenAgentSetup}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F9A08B" strokeWidth="2.2">
                 <circle cx="12" cy="12" r="3" />
@@ -146,7 +150,7 @@ export default function PhoneView({
                 onChange={v => onUpdateSettings({ language: v as AIUISettings['language'] })}
               />
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </>

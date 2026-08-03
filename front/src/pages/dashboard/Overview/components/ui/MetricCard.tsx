@@ -33,7 +33,34 @@ const ICONS: Record<string, JSX.Element> = {
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   ),
+  // ── Личные метрики админа и тренера (GET /analytics/me) ──
+  lessons: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A80C4" strokeWidth="2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5V12l3 1.8" />
+    </svg>
+  ),
+  attendance: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5BAB72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5V12a9 9 0 1 1-5.3-8.2" />
+      <path d="M9 11.5l3 3L21.5 5" />
+    </svg>
+  ),
+  fill_rate: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round">
+      <path d="M4 18a8 8 0 1 1 16 0" />
+      <path d="M12 18l4.5-5" />
+    </svg>
+  ),
+  rating: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D88C9A" strokeWidth="2" strokeLinejoin="round">
+      <path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8L3.5 9.7l5.9-.9z" />
+    </svg>
+  ),
 };
+
+// «Активных клиентов» админа — та же метрика, что у владельца: и иконка та же.
+ICONS.active_clients = ICONS.clients;
 
 interface Props {
   metric: MetricConfig;

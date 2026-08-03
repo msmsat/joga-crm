@@ -2,19 +2,12 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { analyticsApi } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
-import { getUserRoleFromToken } from '../../../../utils/auth';
-import type { StudioRole, StudioTask, StudioTaskCreate, TaskScope } from '../../../../api/analytics';
-
-// Роль из JWT может не распознаться — падаем в минимальные права, не в максимальные.
-const ROLES: StudioRole[] = ['owner', 'admin', 'trainer'];
-function currentRole(): StudioRole {
-  const raw = getUserRoleFromToken();
-  return ROLES.includes(raw as StudioRole) ? (raw as StudioRole) : 'trainer';
-}
+import { getStudioRole } from '../../../../utils/auth';
+import type { StudioTask, StudioTaskCreate, TaskScope } from '../../../../api/analytics';
 
 export function useOverviewTasks() {
   const qc = useQueryClient();
-  const role = currentRole();
+  const role = getStudioRole();
 
   // UI-состояние каскада (не серверные данные → useState)
   const [scope, setScope] = useState<TaskScope>('mine');

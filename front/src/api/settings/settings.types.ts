@@ -20,6 +20,8 @@ export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url'>>
 export interface AppearanceSettings {
   theme: string | null
   accent_color: string | null
+  /** Личный язык интерфейса. null — идём за языком студии (Studio.language). */
+  language: string | null
 }
 
 export type AppearanceUpdate = Partial<AppearanceSettings>

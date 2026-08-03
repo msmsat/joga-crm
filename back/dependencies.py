@@ -150,6 +150,10 @@ def require_role(*roles: str):
         if ctx.role not in roles:
             raise HTTPException(status_code=403, detail="Нет доступа")
         return ctx
+    # Роли снаружи читаемы: по ним tests/test_rbac_matrix.py собирает карту
+    # доступов и ловит случайно открытую ручку. Без этого их пришлось бы
+    # выковыривать из __closure__ гварда.
+    guard.allowed_roles = roles
     return guard
 
 

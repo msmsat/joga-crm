@@ -11,7 +11,23 @@
     "clients": "Активных клиентов",
     "bookings": "Записей за месяц",
     "retention": "Уровень удержания",
+    "lessons": "Занятий за месяц",
+    "attendance": "Посещений за месяц",
+    "fill_rate": "Заполняемость",
+    "rating": "Средний рейтинг",
+    "active_clients": "Активных клиентов",
     "more": "Подробнее"
+  },
+  "today": {
+    "titleTrainer": "Мои занятия сегодня",
+    "titleAdmin": "Расписание на сегодня",
+    "subtitle": "{{count}} занятий · {{booked}} из {{spots}} мест",
+    "subtitle_one": "{{count}} занятие · {{booked}} из {{spots}} мест",
+    "subtitle_few": "{{count}} занятия · {{booked}} из {{spots}} мест",
+    "openJournal": "В журнал",
+    "empty": "Сегодня занятий нет",
+    "emptyHintTrainer": "Свободный день — записи появятся здесь автоматически",
+    "emptyHintAdmin": "Ни одного занятия в расписании на сегодня"
   },
   "chart": {
     "byDay": "по дням",

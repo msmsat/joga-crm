@@ -4,7 +4,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import get_current_user, oauth2_scheme, require_role, StudioContext
+from dependencies import get_current_user, require_role, StudioContext
 from models import Studio, User
 
 router = APIRouter()
@@ -98,10 +98,15 @@ async def upload_studio_logo(
     return {"logo_url": new_url}
 
 
+# Все три загрузчика ниже обслуживают Каталог и Сотрудники — страницы владельца
+# (ТЗ 2.5, 2.6). Гейтом был голый oauth2_scheme: он только достаёт строку из
+# заголовка Authorization и не проверяет ни пользователя, ни роль — то есть
+# писать десятимегабайтные файлы в static/ мог кто угодно с любым токеном.
+
 @router.post("/upload-branch-photo")
 async def upload_branch_photo(
     file: UploadFile = File(...),
-    _token: str = Depends(oauth2_scheme),
+    _ctx: StudioContext = Depends(require_role("owner")),
 ):
     url = await _save_image(file, BRANCH_PHOTOS_DIR, max_size_mb=10)
     return {"url": url}
@@ -110,7 +115,7 @@ async def upload_branch_photo(
 @router.post("/upload-staff-photo")
 async def upload_staff_photo(
     file: UploadFile = File(...),
-    _token: str = Depends(oauth2_scheme),
+    _ctx: StudioContext = Depends(require_role("owner")),
 ):
     url = await _save_image(file, STAFF_PHOTOS_DIR, max_size_mb=5)
     return {"url": url}
@@ -119,7 +124,7 @@ async def upload_staff_photo(
 @router.post("/upload-hall-photo")
 async def upload_hall_photo(
     file: UploadFile = File(...),
-    _token: str = Depends(oauth2_scheme),
+    _ctx: StudioContext = Depends(require_role("owner")),
 ):
     url = await _save_image(file, HALL_PHOTOS_DIR, max_size_mb=10)
     return {"url": url}

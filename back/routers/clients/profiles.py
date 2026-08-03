@@ -18,6 +18,7 @@ from models import (
     Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, StudioClientSegmentConfig,
     StudioSubscriptionProgramConfig, SubscriptionPackage, User,
 )
+from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
@@ -167,12 +168,16 @@ def _subscription_for_reminder(client: Client) -> ClientSubscription | None:
 
 async def _get_client_or_404(
     client_id: int,
-    studio_id: int,
+    ctx: StudioContext,
     db: AsyncSession,
     *,
     load_relations: bool = False,
 ) -> Client:
-    q = select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
+    """Берёт ctx, а не studio_id, намеренно: скоуп роли применяется здесь один
+    раз и его физически нельзя забыть — через эту функцию ходят все ручки
+    карточки. Чужой клиент для тренера — 404, а не 403: 403 подтвердил бы, что
+    такой клиент в студии есть."""
+    q = select(Client).where(Client.id == client_id, *client_scope(ctx))
     if load_relations:
         q = q.options(
             selectinload(Client.subscriptions),
@@ -204,7 +209,7 @@ def _last_12_months() -> list[str]:
 
 @router.get("/", response_model=Page[ClientListItemOut])
 async def list_clients(
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     search: Optional[str] = Query(None),
@@ -216,7 +221,7 @@ async def list_clients(
 ):
     studio_id = ctx.studio_id
     rules = await get_segment_rules(db, studio_id)
-    conditions = [Client.studio_id == studio_id]
+    conditions = client_scope(ctx)   # тренеру — только его клиенты
 
     if search:
         s = f"%{search}%"
@@ -268,13 +273,14 @@ async def list_clients(
 
 @router.get("/count", response_model=CountOut)
 async def get_clients_count(
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = ctx.studio_id
+    """Бейдж бокового меню — висит на КАЖДОЙ странице. Тренеру он показывает
+    число его клиентов, а не студии."""
     count = (await db.execute(
-        select(func.count(Client.id)).where(Client.studio_id == studio_id)
+        select(func.count(Client.id)).where(*client_scope(ctx))
     )).scalar() or 0
     return CountOut(count=count)
 
@@ -283,20 +289,20 @@ async def get_clients_count(
 
 @router.get("/categories", response_model=list[CategoryStatOut])
 async def get_categories(
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
     today = date.today()
     rules = await get_segment_rules(db, studio_id)
-    base = Client.studio_id == studio_id
+    base = client_scope(ctx)   # счётчики табов считаем по тому же срезу, что и список
 
     async def _count(key: str) -> int:
         cond = category_condition(key, today, rules)
         extra = () if cond is None else (cond,)
         return (await db.execute(
-            select(func.count(Client.id)).where(base, *extra)
+            select(func.count(Client.id)).where(*base, *extra)
         )).scalar() or 0
 
     # Порядок табов; подписи фронт переводит сам по key (categories.*).
@@ -319,7 +325,9 @@ async def get_categories(
 
 @router.get("/segment-rules", response_model=SegmentRulesOut)
 async def get_client_segment_rules(
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    # Читать пороги может любая роль — по ним рисуется бейдж статуса в списке;
+    # менять (PATCH ниже) по-прежнему только владелец.
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -378,12 +386,12 @@ async def check_client_contact(
 @router.get("/{client_id}", response_model=ClientProfileOut)
 async def get_client(
     client_id: int,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db, load_relations=True)
+    client = await _get_client_or_404(client_id, ctx, db, load_relations=True)
     if await expire_points(db, studio_id, client_id):
         await db.commit()
     base = _client_list_item(client, await get_segment_rules(db, studio_id))
@@ -419,13 +427,13 @@ async def get_client(
 @router.get("/{client_id}/events", response_model=list[EventRecordOut])
 async def get_client_events(
     client_id: int,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     event_type: Optional[str] = Query(None, description="payment | visit | booking | cancel | bonus | freeze"),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
 
     events: list[EventRecordOut] = []
 
@@ -542,12 +550,12 @@ async def get_client_events(
 @router.get("/{client_id}/notes", response_model=list[NoteOut])
 async def get_client_notes(
     client_id: int,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
 
     notes = (await db.execute(
         select(ClientNote)
@@ -571,12 +579,12 @@ async def get_client_notes(
 @router.get("/{client_id}/activity", response_model=list[ActivityPointOut])
 async def get_client_activity(
     client_id: int,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
 
     months = _last_12_months()
     today = date.today()
@@ -734,7 +742,7 @@ async def update_client(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     patch = body.model_dump(exclude_unset=True)
     # Только изменённые контакты: прежние значения — свои же, и на исторические
     # дубли (до появления проверки) нельзя запирать правку остальных полей.
@@ -763,7 +771,7 @@ async def freeze_client(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
 
     if body.frozen:
         config = (await db.execute(
@@ -799,7 +807,7 @@ async def update_registration_date(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     client.registration_date = datetime.combine(body.registration_date, datetime.min.time())
     await db.commit()
     return OkOut(ok=True)
@@ -816,7 +824,7 @@ async def add_tag(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     tags = list(client.tags or [])
     if body.tag not in tags:
         tags.append(body.tag)
@@ -836,7 +844,7 @@ async def remove_tag(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     tags = [t for t in (client.tags or []) if t != body.tag]
     client.tags = tags
     await db.commit()
@@ -854,7 +862,7 @@ async def add_note(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
     note = ClientNote(
         client_id=client_id,
         studio_id=studio_id,
@@ -879,7 +887,7 @@ async def update_note(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
     note = (await db.execute(
         select(ClientNote).where(ClientNote.id == note_id, ClientNote.client_id == client_id)
     )).scalar_one_or_none()
@@ -902,7 +910,7 @@ async def delete_note(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
     note = (await db.execute(
         select(ClientNote).where(ClientNote.id == note_id, ClientNote.client_id == client_id)
     )).scalar_one_or_none()
@@ -924,7 +932,7 @@ async def book_lesson(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    await _get_client_or_404(client_id, studio_id, db)
+    await _get_client_or_404(client_id, ctx, db)
 
     lesson = (await db.execute(
         select(Lesson).where(Lesson.id == body.lesson_id, Lesson.studio_id == studio_id)
@@ -989,7 +997,7 @@ async def log_call(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     return ActionMessageOut(ok=True, message=f"Звонок клиенту {client.name} инициирован")
 
 
@@ -1001,7 +1009,7 @@ async def send_subscription_reminder(
     ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    client = await _get_client_or_404(client_id, ctx.studio_id, db, load_relations=True)
+    client = await _get_client_or_404(client_id, ctx, db, load_relations=True)
     subscription = _subscription_for_reminder(client)
     remaining = max(0, subscription.total_classes - subscription.used_classes) if subscription else 0
     event_id = "c6" if remaining == 0 else "c5"
@@ -1026,7 +1034,7 @@ async def send_message(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     return ActionMessageOut(ok=True, message=f"Сообщение отправлено клиенту {client.name} через {body.channel}")
 
 
@@ -1040,7 +1048,7 @@ async def delete_client(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    client = await _get_client_or_404(client_id, studio_id, db)
+    client = await _get_client_or_404(client_id, ctx, db)
     await db.delete(client)
     await db.commit()
     return OkOut(ok=True)

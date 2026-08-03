@@ -53,7 +53,10 @@
       "language": "Язык интерфейса",
       "dateFormat": "Формат даты",
       "firstDay": "Первый день недели",
-      "firstDayLabels": ["Понедельник", "Воскресенье"]
+      "firstDayLabels": [
+        "Понедельник",
+        "Воскресенье"
+      ]
     }
   },
   "appearance": {
@@ -77,6 +80,10 @@
         "gold": "Золотой",
         "mint": "Минт"
       }
+    },
+    "language": {
+      "title": "Язык интерфейса",
+      "subtitle": "Ваш личный язык — на настройки студии не влияет"
     }
   },
   "notifications": {
@@ -85,7 +92,11 @@
       "subtitle": "Личные предпочтения — не влияют на остальную студию",
       "hint": "Обязательные уведомления отключить нельзя — они нужны, чтобы вы не пропустили изменения в расписании и оплаты.",
       "empty": "Для вашей роли нет дополнительных уведомлений",
-      "channels": { "email": "Email", "telegram": "Telegram", "whatsapp": "WhatsApp" }
+      "channels": {
+        "email": "Email",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
     },
     "telegram": {
       "title": "Telegram для уведомлений",
@@ -108,8 +119,17 @@
     }
   },
   "billing": {
-    "plans": { "start": "Старт", "pro": "Pro", "business": "Business", "free_trial": "Пробный период" },
-    "status": { "active": "Активен", "trial": "Пробный период", "expired": "Истёк" },
+    "plans": {
+      "start": "Старт",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Пробный период"
+    },
+    "status": {
+      "active": "Активен",
+      "trial": "Пробный период",
+      "expired": "Истёк"
+    },
     "plan": {
       "title": "Текущий тариф",
       "expiresAt": "Действует до {{date}}",
@@ -141,7 +161,12 @@
       "showAll": "Показать все",
       "period": "{{count}} мес.",
       "noDate": "—",
-      "status": { "paid": "Оплачено", "pending": "Ожидает", "failed": "Ошибка", "refunded": "Возврат" }
+      "status": {
+        "paid": "Оплачено",
+        "pending": "Ожидает",
+        "failed": "Ошибка",
+        "refunded": "Возврат"
+      }
     },
     "toast": {
       "autopaySaved": "Настройки автопродления сохранены",
@@ -260,12 +285,27 @@
     "subtitle": "Подключите внешние каналы и экосистемы в один клик",
     "loadError": "Не удалось загрузить статус интеграций",
     "items": {
-      "telegram": { "name": "Telegram Bot", "sub": "Уведомления клиентам и запись через бота" },
-      "whatsapp": { "name": "WhatsApp Business", "sub": "Рассылки сообщений и автоуведомления клиентам" },
-      "instagram": { "name": "Instagram Direct", "sub": "ИИ-агент автоответчик и онлайн-запись" },
-      "google_calendar": { "name": "Google Calendar", "sub": "Синхронизация расписания студии" }
+      "telegram": {
+        "name": "Telegram Bot",
+        "sub": "Уведомления клиентам и запись через бота"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Рассылки сообщений и автоуведомления клиентам"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "ИИ-агент автоответчик и онлайн-запись"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Синхронизация расписания студии"
+      }
     },
-    "status": { "connected": "Подключено", "notActive": "Не подключено" },
+    "status": {
+      "connected": "Подключено",
+      "notActive": "Не подключено"
+    },
     "actions": {
       "configure": "Настроить",
       "connect": "Подключить",
@@ -343,7 +383,10 @@
       "selectCalendar": "Выберите календарь",
       "loadingCalendars": "Загрузка календарей…",
       "syncMode": "Режим синхронизации",
-      "syncModeOptions": { "push": "Только выгрузка из CRM", "two_way": "Двусторонняя" },
+      "syncModeOptions": {
+        "push": "Только выгрузка из CRM",
+        "two_way": "Двусторонняя"
+      },
       "syncNow": "Синхронизировать сейчас",
       "lastSync": "Последняя синхронизация: {{date}}",
       "neverSynced": "Ещё не синхронизировалось",
@@ -362,10 +405,18 @@
       "subtitle": "Выгрузите файлы в табличных форматах для бухгалтерии и аналитики",
       "clearFilter": "Сбросить период",
       "items": {
-        "clients": { "name": "Список клиентов" },
-        "schedule": { "name": "История занятий и записей" },
-        "finances": { "name": "Финансовый отчёт" },
-        "subscriptions": { "name": "Абонементы клиентов" }
+        "clients": {
+          "name": "Список клиентов"
+        },
+        "schedule": {
+          "name": "История занятий и записей"
+        },
+        "finances": {
+          "name": "Финансовый отчёт"
+        },
+        "subscriptions": {
+          "name": "Абонементы клиентов"
+        }
       },
       "rows_one": "{{count}} запись",
       "rows_few": "{{count}} записи",

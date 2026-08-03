@@ -1,5 +1,7 @@
 import type {
   ActivityLog,
+  MyKpi,
+  MyKpiId,
   PeriodSummary,
   SeriesPoint,
   ServiceReportRow,
@@ -7,14 +9,20 @@ import type {
   TrainerReportRow,
 } from '../../../api/analytics';
 
-export type { ActivityLog, PeriodSummary, SeriesPoint, ServiceReportRow, TrainerReportRow, StudioTask };
+export type { ActivityLog, MyKpi, MyKpiId, PeriodSummary, SeriesPoint, ServiceReportRow, TrainerReportRow, StudioTask };
 
 export type Task = StudioTask;
 export type RecentEvent = ActivityLog;
 
+/** Метрики владельца (кликабельны — переключают график). */
+export type OwnerMetricId = 'revenue' | 'clients' | 'bookings' | 'retention';
+
+/** Владелец видит сводку студии, админ и тренер — свою (GET /analytics/me). */
+export type MetricId = OwnerMetricId | MyKpiId;
+
 /** Статическая презентация метрики (иконка, цвет, роут). Заголовок — из словаря, значение и тренд — из API. */
 export interface MetricPresenter {
-  id: 'revenue' | 'clients' | 'bookings' | 'retention';
+  id: MetricId;
   color: string;
   glow: string;
   route: string;

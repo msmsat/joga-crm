@@ -12,6 +12,7 @@ import { WalletTab } from './WalletTab';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ConfirmModal } from '../../../../components/ui/index';
 
@@ -363,6 +364,13 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
 }) {
   void profile;
   const { t, i18n: i18nInstance } = useTranslation('clients');
+  // Тренер карточку своего клиента читает, но не правит: все мутации клиента —
+  // owner+admin на сервере, и кнопка, которая гарантированно вернёт 403, хуже
+  // отсутствующей. Роль берём здесь, а не пробрасываем пропом через слайдер:
+  // выше по дереву она никому не нужна.
+  const role = getStudioRole();
+  const canEdit = role !== 'trainer';
+  const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
   const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
   const [tagInput,     setTagInput]     = useState('');
@@ -370,7 +378,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const [editingReg,   setEditingReg]   = useState(false);
   const status = client.status;
   const frozen = client.frozen ?? false;
-  const freezeEnabled = useFreezeEnabled();
+  const freezeEnabled = useFreezeEnabled(canEdit);
   const freezeBlocked = !frozen && !freezeEnabled;
   const displaySubscription = client.active_subscription ?? client.subscription_alert;
   const tags = client.tags;
@@ -459,7 +467,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingReg(false); }}
                     style={{ fontSize: '11px', color: 'var(--peach)', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(249,160,139,0.5)', outline: 'none', fontFamily: 'Manrope', fontWeight: 600, width: '120px', padding: '0 2px' }}
                   />
-                ) : (
+                ) : canEdit ? (
                   <span
                     onClick={() => setEditingReg(true)}
                     title={t('panel.editDateHint')}
@@ -467,6 +475,10 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     onMouseEnter={e => { e.currentTarget.style.color='var(--peach)'; e.currentTarget.style.textDecoration='underline dotted'; }}
                     onMouseLeave={e => { e.currentTarget.style.color='var(--text3)'; e.currentTarget.style.textDecoration='none'; }}
                   >{t('panel.since', { date: formatDate(regValue) || regValue })}</span>
+                ) : (
+                  <span style={{ fontSize: '11px', color: 'var(--text3)' }}>
+                    {t('panel.since', { date: formatDate(regValue) || regValue })}
+                  </span>
                 )}
               </div>
             </div>
@@ -489,7 +501,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             <IconWhatsApp/>WhatsApp
           </button>
           {/* П.13 — Записать */}
-          <button
+          {canEdit && <button
             className="cl-action-btn"
             onClick={actions.toggleBooking}
             style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${actions.showBooking ? 'var(--peach)' : 'rgba(249,160,139,0.4)'}`, background: actions.showBooking ? 'rgba(249,160,139,0.12)' : 'rgba(249,160,139,0.06)', color: 'var(--peach)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
@@ -497,9 +509,9 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             onMouseLeave={e => { if (!actions.showBooking) { e.currentTarget.style.background='rgba(249,160,139,0.06)'; e.currentTarget.style.borderColor='rgba(249,160,139,0.4)'; } }}
           >
             <IconCalendar/>{t('panel.actions.book')}
-          </button>
+          </button>}
           {/* П.14 — Бонус */}
-          <button
+          {canEdit && <button
             className="cl-action-btn"
             onClick={actions.toggleBonus}
             style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${actions.showBonus ? '#f0c040' : 'var(--border)'}`, background: actions.showBonus ? 'rgba(240,192,64,0.1)' : 'transparent', color: '#c8a84b', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
@@ -507,7 +519,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             onMouseLeave={e => { if (!actions.showBonus) { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='var(--border)'; } }}
           >
             <IconGift/>{t('panel.actions.bonus')}
-          </button>
+          </button>}
         </div>
 
         {/* ── TABS ── */}
@@ -598,9 +610,14 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             </div>
 
             <LoyaltyIllus points={client.loyalty_points}/>
-            <InviteCodeCard clientId={client.id} onCopy={actions.copyToClipboard}/>
-            <ClientProducts products={client.products} color={client.avatar_color ?? '#999'} frozen={frozen} onRemind={actions.remindAboutSubscription}/>
-            <ClientOffersPanel clientId={client.id}/>
+            {/* Реферальный код и персональные офферы — раздел «Лояльность», а он
+                по ТЗ 2.9 только владельца: конфиг рефералки и /loyalty/offers на
+                сервере owner-only, у админа оба блока молча ловили 403. */}
+            {isOwner && <InviteCodeCard clientId={client.id} onCopy={actions.copyToClipboard}/>}
+            {/* onRemind шлёт клиенту напоминание об абонементе — POST owner+admin;
+                тренеру кнопку не даём, показываем только сами продукты. */}
+            <ClientProducts products={client.products} color={client.avatar_color ?? '#999'} frozen={frozen} onRemind={canEdit ? actions.remindAboutSubscription : null}/>
+            {isOwner && <ClientOffersPanel clientId={client.id}/>}
             <ActivityChart clientId={client.id} c={client.avatar_color ?? '#999'} clientName={client.name}/>
 
             {/* П.5 — Теги */}
@@ -610,17 +627,17 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 {tags.map(tag => (
                   <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px 3px 10px', borderRadius: '20px', background: `${client.avatar_color ?? '#999'}18`, color: client.avatar_color ?? 'var(--text3)', border: `1px solid ${client.avatar_color ?? '#999'}30`, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     {tag}
-                    <button onClick={() => actions.removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.avatar_color ?? 'var(--text3)', opacity: 0.5, padding: 0, lineHeight: 1, display: 'flex', alignItems: 'center', transition: 'opacity 0.15s' }} onMouseEnter={e => (e.currentTarget.style.opacity = '1')} onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}>
+                    {canEdit && <button onClick={() => actions.removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.avatar_color ?? 'var(--text3)', opacity: 0.5, padding: 0, lineHeight: 1, display: 'flex', alignItems: 'center', transition: 'opacity 0.15s' }} onMouseEnter={e => (e.currentTarget.style.opacity = '1')} onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
+                    </button>}
                   </span>
                 ))}
-                <button
+                {canEdit && <button
                   onClick={actions.toggleTagPanel}
                   style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', background: actions.showTagPanel ? 'rgba(249,160,139,0.1)' : 'transparent', border: `1px ${actions.showTagPanel ? 'solid rgba(249,160,139,0.4)' : 'dashed var(--border)'}`, color: actions.showTagPanel ? 'var(--peach)' : 'var(--text3)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px', fontFamily: 'Manrope', transition: 'all 0.2s' }}
                 >
                   <IconPlus/>{actions.showTagPanel ? t('panel.tags.close') : t('panel.tags.add')}
-                </button>
+                </button>}
               </div>
               {actions.showTagPanel && (
                 <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(var(--ink),0.02)', border: '1px solid var(--border)', animation: 'fadeSlide 0.25s ease both' }}>
@@ -644,7 +661,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             </div>
 
             {/* П.6 + П.7 — Заморозить / Удалить */}
-            <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid rgba(216,140,154,0.2)', background: 'rgba(216,140,154,0.03)', display: 'flex', gap: '6px' }}>
+            {canEdit && <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid rgba(216,140,154,0.2)', background: 'rgba(216,140,154,0.03)', display: 'flex', gap: '6px' }}>
               <button
                 onClick={() => actions.toggleFreeze(frozen)}
                 disabled={freezeBlocked}
@@ -663,7 +680,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               >
                 <IconTrash/>{t('panel.danger.delete')}
               </button>
-            </div>
+            </div>}
           </div>
         )}
 
@@ -710,7 +727,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               <div key={note.id} style={{ padding: '12px 14px', borderRadius: '12px', background: 'rgba(249,160,139,0.05)', border: '1px solid rgba(249,160,139,0.18)', marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{t('panel.notes.prefix', { date: note.date })}</span>
-                  {actions.editingNoteId !== note.id && (
+                  {canEdit && actions.editingNoteId !== note.id && (
                     <div style={{ display: 'flex', gap: '2px' }}>
                       <button
                         onClick={() => actions.startEditNote(note.id, note.text)}
@@ -763,7 +780,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                   <button onClick={actions.cancelAddNote} style={{ padding: '7px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
                 </div>
               </div>
-            ) : (
+            ) : canEdit ? (
               <button
                 onClick={actions.startAddNote}
                 style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(var(--ink),0.03)', fontSize: '12px', fontWeight: 600, color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
@@ -772,7 +789,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               >
                 <IconNote/>{t('panel.notes.add')}
               </button>
-            )}
+            ) : null}
           </div>
         )}
 

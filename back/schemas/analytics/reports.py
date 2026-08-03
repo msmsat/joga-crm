@@ -51,6 +51,19 @@ class OverviewRead(BaseSchema):
     insights: list[Insight]
 
 
+class MyKpi(Kpi):
+    """Личный KPI Дашборда (GET /analytics/me). Набор метрик зависит от роли,
+    поэтому не фиксированный набор полей, а список с `id`: тренеру приезжают
+    lessons/attendance/fill_rate/rating, администратору — bookings/attendance/
+    fill_rate/active_clients. Подпись и формат карточки фронт берёт по id."""
+    id: str
+
+
+class MySummaryRead(BaseSchema):
+    role: str
+    kpi: list[MyKpi]
+
+
 class SalesKpi(BaseSchema):
     revenue: Kpi
     sales_count: Kpi

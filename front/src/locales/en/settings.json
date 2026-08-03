@@ -51,7 +51,10 @@
       "language": "Interface language",
       "dateFormat": "Date format",
       "firstDay": "First day of week",
-      "firstDayLabels": ["Monday", "Sunday"]
+      "firstDayLabels": [
+        "Monday",
+        "Sunday"
+      ]
     }
   },
   "appearance": {
@@ -75,6 +78,10 @@
         "gold": "Gold",
         "mint": "Mint"
       }
+    },
+    "language": {
+      "title": "Interface language",
+      "subtitle": "Your personal language — does not affect studio settings"
     }
   },
   "notifications": {
@@ -83,7 +90,11 @@
       "subtitle": "Personal preferences — don't affect the rest of the studio",
       "hint": "Required notifications can't be turned off — they make sure you never miss schedule changes and payments.",
       "empty": "No optional notifications for your role",
-      "channels": { "email": "Email", "telegram": "Telegram", "whatsapp": "WhatsApp" }
+      "channels": {
+        "email": "Email",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
     },
     "telegram": {
       "title": "Telegram for notifications",
@@ -106,8 +117,17 @@
     }
   },
   "billing": {
-    "plans": { "start": "Start", "pro": "Pro", "business": "Business", "free_trial": "Free trial" },
-    "status": { "active": "Active", "trial": "Trial", "expired": "Expired" },
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Free trial"
+    },
+    "status": {
+      "active": "Active",
+      "trial": "Trial",
+      "expired": "Expired"
+    },
     "plan": {
       "title": "Current plan",
       "expiresAt": "Active until {{date}}",
@@ -139,7 +159,12 @@
       "showAll": "Show all",
       "period": "{{count}} mo",
       "noDate": "—",
-      "status": { "paid": "Paid", "pending": "Pending", "failed": "Failed", "refunded": "Refunded" }
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      }
     },
     "toast": {
       "autopaySaved": "Auto-renewal settings saved",
@@ -258,12 +283,27 @@
     "subtitle": "Connect external channels and ecosystems in one click",
     "loadError": "Failed to load integration status",
     "items": {
-      "telegram": { "name": "Telegram Bot", "sub": "Client notifications and booking via bot" },
-      "whatsapp": { "name": "WhatsApp Business", "sub": "Message broadcasts and auto-notifications to clients" },
-      "instagram": { "name": "Instagram Direct", "sub": "AI auto-responder agent and online booking" },
-      "google_calendar": { "name": "Google Calendar", "sub": "Studio schedule sync" }
+      "telegram": {
+        "name": "Telegram Bot",
+        "sub": "Client notifications and booking via bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Message broadcasts and auto-notifications to clients"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI auto-responder agent and online booking"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Studio schedule sync"
+      }
     },
-    "status": { "connected": "Connected", "notActive": "Not connected" },
+    "status": {
+      "connected": "Connected",
+      "notActive": "Not connected"
+    },
     "actions": {
       "configure": "Configure",
       "connect": "Connect",
@@ -341,7 +381,10 @@
       "selectCalendar": "Select a calendar",
       "loadingCalendars": "Loading calendars…",
       "syncMode": "Sync mode",
-      "syncModeOptions": { "push": "CRM to Google only", "two_way": "Two-way" },
+      "syncModeOptions": {
+        "push": "CRM to Google only",
+        "two_way": "Two-way"
+      },
       "syncNow": "Sync now",
       "lastSync": "Last synced: {{date}}",
       "neverSynced": "Not synced yet",
@@ -360,10 +403,18 @@
       "subtitle": "Download files in table formats for accounting and analytics",
       "clearFilter": "Clear period",
       "items": {
-        "clients": { "name": "Client list" },
-        "schedule": { "name": "Journal & booking history" },
-        "finances": { "name": "Financial report" },
-        "subscriptions": { "name": "Client subscriptions" }
+        "clients": {
+          "name": "Client list"
+        },
+        "schedule": {
+          "name": "Journal & booking history"
+        },
+        "finances": {
+          "name": "Financial report"
+        },
+        "subscriptions": {
+          "name": "Client subscriptions"
+        }
       },
       "rows_one": "{{count}} record",
       "rows_other": "{{count}} records",

@@ -16,7 +16,7 @@ import { OtpConfirmModal } from "../modals/OtpConfirmModal";
 import { authApi } from "../../../../../api";
 import { fmtLastActive } from "../../../../../lib/format";
 import type { ExportArchivePayload } from "../../../../../api/settings/settings.types";
-import { clearActiveToken } from '../../../../../utils/auth';
+import { clearActiveToken, getStudioRole } from '../../../../../utils/auth';
 
 function maskEmail(email: string): string {
   const [local, domain] = email.split('@');
@@ -34,6 +34,10 @@ export default function SecurityTab() {
   const security = useSecurity();
   const generalQuery = useGeneralSettings();
   const studioName = generalQuery.data?.name ?? '';
+  // Опасная зона — операции над данными и аккаунтом ВСЕЙ студии (выгрузка
+  // архива, стирание данных, удаление аккаунта). На бэке все три owner-only.
+  // Админу и тренеру остаётся личная часть: двухфакторка, пароль, сессии.
+  const isOwner = getStudioRole() === 'owner';
 
   const [exportChecked, setExportChecked] = useState<Record<ExportKey, boolean>>({ clients: true, finances: true, schedule: true });
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -148,7 +152,7 @@ export default function SecurityTab() {
         </div>
       </div>
 
-      <div className="card" style={{ padding: "28px", border: "1.5px solid rgba(216,140,154,0.3)", position: "relative", overflow: "hidden" }}>
+      {isOwner && <div className="card" style={{ padding: "28px", border: "1.5px solid rgba(216,140,154,0.3)", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, left: 0, width: "4px", height: "100%", background: "#D88C9A" }} />
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
           <span style={{ color: "#C0607A" }}>{icons.alertTriangle}</span>
@@ -248,7 +252,7 @@ export default function SecurityTab() {
             </button>
           </div>
         </div>
-      </div>
+      </div>}
 
       {showPasswordModal && (
         <ChangePasswordModal

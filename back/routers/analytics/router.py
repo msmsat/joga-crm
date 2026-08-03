@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from .overview import router as overview_router
+from .personal import router as personal_router
 from .reports import router as reports_router
 from .retention import router as retention_router
 from .sales import router as sales_router
@@ -9,6 +10,7 @@ from .utilization import router as utilization_router
 
 router = APIRouter()
 router.include_router(overview_router)
+router.include_router(personal_router)
 router.include_router(reports_router)
 router.include_router(retention_router)
 router.include_router(sales_router)

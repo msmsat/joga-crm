@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
@@ -11,7 +11,6 @@ import { setActiveToken } from '../../../../utils/auth';
 
 export function useAccounts() {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const { t } = useTranslation("profile");
   const toast = useToast();
 
@@ -23,9 +22,8 @@ export function useAccounts() {
   const select = useMutation({
     mutationFn: (studioId: number) => authApi.selectStudio(studioId),
     onSuccess: (data) => {
+      // Кэш прошлой студии чистит сам setActiveToken — иначе увидим чужие данные.
       if (data.access_token) setActiveToken(data.access_token);
-      // Кэш набит данными прошлой студии — иначе пользователь увидит чужие данные.
-      qc.clear();
       navigate('/dashboard');
     },
     onError: (err) => toast.error(errorMessage(err, t)),

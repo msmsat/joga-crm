@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import i18n from "../../../../../i18n";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
-import { useToast } from "../../../../../components/ui/index";
+import { Select, useToast } from "../../../../../components/ui/index";
 import { settingsApi } from "../../../../../api/settings/settings.api";
 import { queryKeys } from "../../../../../api/queryKeys";
 import { errorMessage } from "../../../../../api/errorMessage";
@@ -29,16 +30,20 @@ export default function AppearanceTab() {
       await qc.cancelQueries({ queryKey: queryKeys.appearance });
       const prev = qc.getQueryData<AppearanceSettings>(queryKeys.appearance);
       qc.setQueryData<AppearanceSettings>(queryKeys.appearance, (o) => ({
-        theme: o?.theme ?? null, accent_color: o?.accent_color ?? null, ...patch,
+        theme: o?.theme ?? null, accent_color: o?.accent_color ?? null, language: o?.language ?? null, ...patch,
       }));
+      // Язык переключаем сразу: ждать ответа сервера, чтобы перерисовать
+      // подписи, — заметная пауза на действие, которое видно целиком.
+      if (patch.language) i18n.changeLanguage(patch.language);
       return { prev };
     },
     onSuccess: (_data, patch) => {
       if (patch.theme) saveThemeSeed(patch.theme);
       toast.success(t('toast.saved'));
     },
-    onError: (err, _patch, ctx) => {
+    onError: (err, patch, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKeys.appearance, ctx.prev);
+      if (patch.language && ctx?.prev?.language) i18n.changeLanguage(ctx.prev.language);
       toast.error(errorMessage(err, t));
     },
   });
@@ -117,6 +122,24 @@ export default function AppearanceTab() {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Язык интерфейса — личный, а не студийный: вкладка «Основные» (где живёт
+          язык студии) администратору и тренеру закрыта, а свой язык выбрать они
+          должны. Список — только реально переведённые локали, а не восемь
+          вариантов из настроек студии. */}
+      <div className="card" style={{ padding: "28px" }}>
+        <SectionHeader icon={icons.globe} title={t('appearance.language.title')} subtitle={t('appearance.language.subtitle')} />
+        <div style={{ width: "min(300px, 100%)" }}>
+          <Select
+            value={data?.language ?? i18n.language}
+            onChange={(v) => save.mutate({ language: v })}
+            options={[
+              { value: "ru", label: "Русский" },
+              { value: "en", label: "English" },
+            ]}
+          />
         </div>
       </div>
     </div>

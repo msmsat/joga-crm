@@ -17,6 +17,7 @@ from models import (
     Account, Client, ClientPayment, ClientSubscription, Operation,
     StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
+from routers.clients._scope import client_scope
 from routers.clients.loyalty import accrue_points, register_purchase
 from routers.finances.accounts import get_or_create_default_account
 from routers.loyalty.promocodes import find_valid_promo
@@ -136,13 +137,15 @@ def _to_read(sub: ClientSubscription) -> ClientSubscriptionRead:
 @router.get("/{client_id}/wallet", response_model=ClientWallet)
 async def get_wallet(
     client_id: int,
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    # Тренеру нужен остаток занятий своего клиента — пускать ли его на урок.
+    # Скоуп «свой клиент» — тот же, что у списка и карточки.
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     db: AsyncSession = Depends(get_db),
 ):
     """Активные и архивные продукты клиента текущей студии (CL-6.5). «Разовые» —
     пустой список до первой покупки разового через кассу (CL-6.9)."""
     client = (await db.execute(
-        select(Client.id).where(Client.id == client_id, Client.studio_id == ctx.studio_id)
+        select(Client.id).where(Client.id == client_id, *client_scope(ctx))
     )).scalar_one_or_none()
     if client is None:
         raise HTTPException(status_code=404, detail="Клиент не найден")

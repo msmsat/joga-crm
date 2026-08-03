@@ -23,7 +23,8 @@
 // billingInvoices(limit)/billingInvoicesAll/billingInvoicesHistory(dateFrom, dateTo),
 // sessions, integrations, integration(type), workspaces, me, dataExportEstimate(kind, dateFrom, dateTo).
 // Дашбордом (роадмап DASHBOARD, эпик D5): overviewSummary(from, to), overviewSeries(metric, group, from, to),
-// overviewTrainers(from, to), overviewServices(from, to), overviewActivity, overviewTasks(scope, assigneeId)/overviewTasksAll, overviewAssignees.
+// overviewTrainers(from, to), overviewServices(from, to), overviewActivity, overviewTasks(scope, assigneeId)/overviewTasksAll, overviewAssignees,
+// overviewMy(from, to) и overviewToday(day) — Дашборд администратора и тренера.
 // Правило инвалидации: мутация обязана перечислить ВСЕ ключи, где видна
 // изменённая сущность — напр. смена валюты трогает studioSettings (её читает
 // пол-приложения через useStudioCurrency), смена тарифа — billingPlan и billingInvoicesAll.
@@ -116,6 +117,8 @@ export const queryKeys = {
   overviewTrainers: (from: string, to: string) => ['overview', 'trainers', from, to] as const,
   overviewServices: (from: string, to: string) => ['overview', 'services', from, to] as const,
   overviewActivity: ['overview', 'activity'] as const,
+  overviewMy: (from: string, to: string) => ['overview', 'me', from, to] as const,
+  overviewToday: (day: string) => ['overview', 'today', day] as const,
   overviewTasks: (scope: string, assigneeId: number | null) =>
     ['overview', 'tasks', scope, assigneeId] as const, // используется в D4
   overviewTasksAll: ['overview', 'tasks'] as const, // префикс инвалидации (D4)

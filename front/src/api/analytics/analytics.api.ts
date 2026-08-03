@@ -3,6 +3,7 @@ import type {
   ActivityLog,
   AssigneeOption,
   ClientsReportRead,
+  MySummary,
   OverviewRead,
   PeriodSummary,
   SalesRead,
@@ -49,6 +50,11 @@ export const analyticsApi = {
 
   getSeries: ({ group = 'day', ...rest }: SeriesParams) =>
     client.get<SeriesPoint[]>(`/analytics/series?${reportQs(rest)}&group=${group}`),
+
+  // Дашборд администратора и тренера: студийная аналитика им закрыта, здесь —
+  // тот же период, но в охвате их роли (тренеру — только его занятия).
+  getMySummary: (params: DateRange) =>
+    client.get<MySummary>(`/analytics/me?${qs(params)}`),
 
   getOverview: (params: ReportFiltersParams) =>
     client.get<OverviewRead>(`/analytics/overview?${reportQs(params)}`),

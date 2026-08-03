@@ -8,11 +8,15 @@ import { ClientsTable } from './components/ClientsTable';
 import { ClientProfileSlider } from './components/ClientProfileSlider';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { ConfirmModal, useToast } from '../../../components/ui/index';
+import { getStudioRole } from '../../../utils/auth';
 import { mapProfile } from './utils/mapClient';
 
 export default function Clients() {
   const { t } = useTranslation('clients');
   const toast = useToast();
+  // Тренер видит только своих клиентов (сервер сужает список сам) и только читает:
+  // создание и удаление клиента — owner+admin.
+  const canEdit = getStudioRole() !== 'trainer';
   // Категории с сервера: используем только key + count, label серверный (ru) игнорируем.
   const categories = useClientCategories();
   const [activeCatKey, setActiveCatKey] = useState('all');
@@ -88,6 +92,7 @@ export default function Clients() {
         searchQuery={rawSearch}
         onSearch={setRawSearch}
         onAddClick={() => setIsAddModalOpen(true)}
+        canAdd={canEdit}
       />
 
       <div className={styles.panelContainer}>

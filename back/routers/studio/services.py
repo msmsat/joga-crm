@@ -59,7 +59,10 @@ async def _bookings_last_30d_by_service(studio_id: int, db: AsyncSession) -> dic
 
 @router.get("/services", response_model=list[ServiceRead])
 async def list_services(
-    ctx: StudioContext = Depends(require_role("owner")),
+    # Каталог — владельцу (ТЗ 2.6), но список услуг нужен и форме занятия в
+    # Журнале, а расписанием по ТЗ 2.3 заведует ещё и администратор: без этого
+    # у него в «Создать занятие» пустой селект услуг и 403 в консоли.
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
     services = (await db.execute(

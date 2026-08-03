@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { usePopoverPosition } from '../../../../components/ui/index';
 import { useSegmentRules } from '../hooks/useClientsList';
+import { getStudioRole } from '../../../../utils/auth';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from './categoryIcons';
 import { RuleStepper, type RuleField } from './RuleStepper';
 import type { CategoryStat, SegmentRules } from '../../../../api/clients/clients.types';
@@ -57,8 +58,11 @@ export function FiltersGuide({ categories, activeCatKey, onCatChange }: FiltersG
   const pick = (key: string) => { onCatChange(key); setOpen(false); };
 
   const { rules, save } = useSegmentRules();
-  // Правила меняет только владелец — админу показываем их, но не даём трогать.
-  const canEdit = rules !== null;
+  // Правила меняет только владелец (PATCH /clients/segment-rules) — остальным
+  // показываем пороги, но не даём трогать. Раньше признаком была загруженность
+  // самих правил (`rules !== null`), а читать их может и админ, и тренер — у них
+  // степперы были живыми и молча ловили 403.
+  const canEdit = rules !== null && getStudioRole() === 'owner';
 
   const commit = (key: keyof SegmentRules, value: number) => {
     if (!rules) return;

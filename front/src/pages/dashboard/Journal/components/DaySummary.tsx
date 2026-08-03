@@ -55,8 +55,10 @@ export const DaySummary: React.FC<DaySummaryProps> = ({
         <div className="ds-key">{t('daySummary.trainersActive')}</div>
       </div>
 
-      {/* Переключатель шага сетки */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
+      {/* Переключатель шага сетки. Шаг влияет только на прилипание при
+          перетаскивании и растягивании занятия — тренеру, который расписание не
+          меняет, это мёртвый тумблер. */}
+      {canEdit && <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
         <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{t('daySummary.gridStep')}</span>
         <div className="premium-step-toggle">
           <div
@@ -73,7 +75,7 @@ export const DaySummary: React.FC<DaySummaryProps> = ({
             </button>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* Undo/Redo — стрелки на месте бывшего статус-бейджа черновика (V4-3, задача 4) */}
       {canEdit && (

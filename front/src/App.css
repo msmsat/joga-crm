@@ -1065,6 +1065,9 @@
 .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); overflow: hidden; }
 .sidebar-logo .logo-name { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; }
+/* Фирменный знак в меню: сами окошки персиковые, подложки нет — квадрат-градиент
+   рядом с текстом смотрелся тяжело и вечно казался съехавшим. */
+.sidebar-mark { display: flex; flex-shrink: 0; width: 22px; height: 22px; color: var(--accent); }
 /* Название студии под логотипом: подпись, а не второй логотип.
    Все цвета — токены, поэтому работает и в тёмной теме. */
 .studio-badge {
@@ -1115,7 +1118,7 @@
 
 .sidebar.is-rail .sidebar-logo { padding: 20px 0 16px; text-align: center; }
 .sidebar.is-rail .sidebar-logo .logo-name { justify-content: center; gap: 0; }
-.sidebar.is-rail .logo-dot { width: 11px; height: 11px; box-shadow: 0 0 0 4px rgba(252,174,145,0.16); }
+.sidebar.is-rail .sidebar-mark { width: 26px; height: 26px; }
 
 .sidebar.is-rail .sidebar-nav { padding: 12px 8px; }
 .sidebar.is-rail .nav-item { justify-content: center; gap: 0; padding: 10px 0; }
@@ -1141,9 +1144,10 @@
 .sidebar-logo .logo-name { flex: 1; min-width: 0; }
 .sidebar-toggle {
   flex-shrink: 0;
-  width: 30px; height: 30px; padding: 0;
+  /* Квадрат один в один с фирменным знаком слева — ряд читается как пара */
+  width: 32px; height: 32px; padding: 0;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid transparent; border-radius: 9px;
+  border: 1px solid transparent; border-radius: 10px;
   background: rgba(26,26,26,0.03); color: var(--text3);
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
@@ -1159,9 +1163,11 @@
   outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(252,174,145,0.22);
 }
-/* В рельсе рядом с точкой-логотипом кнопке не встать — уходит под неё */
-.sidebar.is-rail .logo-row { flex-direction: column; gap: 12px; }
-.sidebar.is-rail .sidebar-toggle { width: 28px; height: 28px; }
+/* В рельсе рядом со знаком кнопке не встать — уходит под него.
+   Отступ намеренно щедрый (20px): знак и кнопка — разные сущности,
+   слипшийся столбик читался бы как один элемент. */
+.sidebar.is-rail .logo-row { flex-direction: column; gap: 20px; }
+.sidebar.is-rail .sidebar-toggle { width: 30px; height: 30px; }
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .sidebar-toggle { transition: none; }
 }

@@ -141,19 +141,26 @@ def _staff_list_item(user: User, membership: StudioMember) -> dict:
 
 @router.get("/", response_model=StaffListResponse)
 async def list_staff(
-    ctx: StudioContext = Depends(require_role("owner")),
+    # Страница «Сотрудники» — владельцу (ТЗ 2.5), но список нужен и Журналу:
+    # это его колонки-тренеры. Админу — вся команда, тренеру — только он сам:
+    # состав студии его не касается, а своя колонка в сетке нужна.
+    ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     db: AsyncSession = Depends(get_db),
     offset: int = Query(0, ge=0),
     limit: int = Query(40, ge=1, le=100),
 ):
     studio_id = ctx.studio_id
 
-    result = await db.execute(
+    stmt = (
         select(User, StudioMember)
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id)
         .order_by(StudioMember.name)
     )
+    if ctx.role == "trainer":
+        stmt = stmt.where(StudioMember.user_id == ctx.user.id)
+
+    result = await db.execute(stmt)
     rows = result.all()
 
     # summary считаем по всей студии, страницу вырезаем из уже загруженных строк.
