@@ -15,7 +15,11 @@ export function Card({ children, padding = 24, hover = false, onClick, style, id
   const lifted = hover && hovered;
 
   return (
+    // Класс — единственная зацепка для медиазапросов: размеры карточка задаёт
+    // инлайном, и на телефоне 24px полей с каждой стороны (см. блок «ТЕЛЕФОН»
+    // в App.css) отнимали седьмую часть экрана у самих данных.
     <div
+      className="v-card"
       id={id}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}

@@ -851,3 +851,25 @@
   from { width: 0%; }
   to   { width: 100%; }
 }
+
+/* ── ТЕЛЕФОН ──────────────────────────────────────────────────────────────────
+   Страница — четыре канала и три карточки настроек подряд. На 320px каналы
+   шли по одному в ряд карточками в 150px высотой (600px только на выбор
+   канала), а над двумя карточками настроек стояли декоративные графики. */
+@media (max-width: 767px) {
+  /* Каналы: две плитки в ряд, от карточки остаётся иконка, название и статус.
+     Описание («приём записей через Telegram-бота») повторяет название канала
+     и разворачивало плитку вдвое. */
+  .channels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .channel-card { padding: 10px 11px; border-radius: 12px; }
+  .channel-card::after { display: none; }
+  .channel-icon-wrap { width: 30px; height: 30px; border-radius: 9px; margin-bottom: 7px; }
+  .channel-icon-wrap svg { width: 16px; height: 16px; }
+  .channel-name { font-size: 12px; margin-bottom: 3px; }
+  .channel-desc { display: none; }
+  .channel-status { font-size: 8.5px; padding: 2px 6px; }
+
+  /* Иллюстрации над «Основными настройками» и «Правилами»: 80px каждая,
+     ничего не сообщают и не нажимаются. */
+  .bk-decor { display: none !important; }
+}

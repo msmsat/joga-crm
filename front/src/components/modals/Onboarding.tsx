@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -30,6 +30,7 @@ export default function OnboardingPage() {
   // меняется только конечный вызов; is_onboarded у пользователя не трогаем (см. App.tsx).
   const [searchParams] = useSearchParams();
   const isNewStudio = searchParams.get("new") === "1";
+  const navigate = useNavigate();
 
   const [step, setStep] = useState<Step>(1);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -218,13 +219,36 @@ export default function OnboardingPage() {
         <div style={{ position: "relative", zIndex: 1, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
             <Logo />
-            <div style={{ width: "132px", flexShrink: 0 }}>
-              <PremiumSelect
-                value={data.language}
-                onChange={(v) => patch({ language: v })}
-                options={LANGUAGES}
-                placeholder={t("onboarding:settings.languagePlaceholder")}
-              />
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+              <div style={{ width: "132px", flexShrink: 0 }}>
+                <PremiumSelect
+                  value={data.language}
+                  onChange={(v) => patch({ language: v })}
+                  options={LANGUAGES}
+                  placeholder={t("onboarding:settings.languagePlaceholder")}
+                />
+              </div>
+              {/* Выход — только для дополнительной студии. Первичный онбординг
+                  закрывать некуда: без студии в CRM работать нельзя, поэтому
+                  там крестика нет намеренно. А из «создать ещё одну» иначе не
+                  выбраться — только перезагрузкой страницы. */}
+              {isNewStudio && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/select-crm")}
+                  aria-label={t("common:buttons.close", { defaultValue: "Закрыть" })}
+                  style={{
+                    width: "34px", height: "34px", flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    border: "none", borderRadius: "10px",
+                    background: "rgba(var(--ink),0.05)", color: "var(--muted)", cursor: "pointer",
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
           <div style={{ marginTop: "28px" }}>

@@ -12,7 +12,9 @@ interface Props {
 export default function RolesSelector({ activeRole, switchRole, countActive }: Props) {
   const { t } = useTranslation('notifications');
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
+    // Класс, а не только инлайн: на телефоне auto-fit от 160px даёт одну
+    // колонку, и четыре получателя занимают четыре этажа (см. .roles).
+    <div className={styles.roles} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
       {ROLES.map(role => {
         const cnt = countActive(role.key);
         const isActive = activeRole === role.key;

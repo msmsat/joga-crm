@@ -3,21 +3,26 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useAssistant } from '../../../hooks/useAssistant';
+import { useDrawerChat } from '../../../components/AIDrawer/hooks/useDrawerChat';
+import { usePhone } from '../../../hooks/usePhone';
 import { useToast } from '../../../components/ui/Toast';
 import { invalidateChannelGroup } from '../../../api/channelGroup';
 import { useAIAgent } from './hooks/useAIAgent';
 import LeftPanel from './components/LeftPanel';
 import ChatPanel from './components/ChatPanel';
+import PhoneView from './components/PhoneView';
 import AgentSetupModal from './components/modals/AgentSetupModal';
 import styles from './AI.module.css';
 
 export default function AIPage() {
+  // useDrawerChat — тот же useAssistant плюс ref автоскролла: телефонный вид
+  // собран из компонентов дровера и ждёт этот ref (на десктопе он не нужен и
+  // остаётся пустым).
   const {
     sessions, sessionsLoading, sessionsError, refetchSessions,
     activeSessionId, messages, messagesLoading, messagesError, refetchMessages, isThinking,
-    sendMessage, newChat, loadSession, deleteSession,
-  } = useAssistant();
+    sendMessage, newChat, loadSession, deleteSession, messagesEndRef,
+  } = useDrawerChat();
   const {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, isVerifyingTelegram,
     igConnected, isConnectingInstagram, waConnected,
@@ -25,10 +30,14 @@ export default function AIPage() {
     connectInstagram, disconnectInstagram, connectWhatsapp, isConnectingWhatsapp,
   } = useAIAgent();
   const [agentModalOpen, setAgentModalOpen] = useState(false);
-  // Телефон: колонка истории и агентов не помещается рядом с чатом, поэтому
-  // выезжает поверх него по кнопке. На десктопе класс ни на что не влияет —
-  // панель там в потоке (см. медиазапрос 767px в AI.module.css).
-  const [panelOpen, setPanelOpen] = useState(false);
+  // Телефон показывает интерфейс AI-дровера вместо двух колонок — набор
+  // компонентов другой, медиазапросом это не выразить.
+  const isPhone = usePhone();
+  const activeAgents = [
+    agentConfig.telegram.enabled && tgConnected,
+    agentConfig.instagram.enabled && igConnected,
+    agentConfig.whatsapp.enabled && waConnected,
+  ].filter(Boolean).length;
 
   // Возврат с Instagram OAuth (AI-3, задача 5): бэкенд редиректит сюда с ?ig=connected|error.
   const { t } = useTranslation('ai');
@@ -60,32 +69,56 @@ export default function AIPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionsError, messagesError]);
 
-  // Выбрал диалог или начал новый — панель уходит и открывает чат: держать её
-  // поверх того, что только что открыли, значит требовать второго тапа впустую.
-  // Закрывают ровно эти два действия: настройки и тумблеры агентов в той же
-  // панели меняют, не выходя из неё.
-  const openSession = (id: number) => { loadSession(id); setPanelOpen(false); };
-  const startNewChat = () => { newChat(); setPanelOpen(false); };
+  // Одна модалка на оба вида страницы: на телефоне это единственное место, где
+  // каналы включаются и выключаются.
+  const agentModal = (
+    <AgentSetupModal
+      config={agentConfig}
+      isSaving={isSaving}
+      tgConnected={tgConnected}
+      isVerifyingTelegram={isVerifyingTelegram}
+      igConnected={igConnected}
+      isConnectingInstagram={isConnectingInstagram}
+      waConnected={waConnected}
+      isConnectingWhatsapp={isConnectingWhatsapp}
+      onConnectWhatsapp={connectWhatsapp}
+      onToggleChannel={toggleChannel}
+      onSave={saveChannelFields}
+      onVerifyTelegram={verifyTelegram}
+      onDisconnectTelegram={disconnectTelegram}
+      onConnectInstagram={connectInstagram}
+      onDisconnectInstagram={disconnectInstagram}
+      onClose={() => setAgentModalOpen(false)}
+    />
+  );
+
+  if (isPhone) {
+    return (
+      <div className={styles.phonePage}>
+        <PhoneView
+          messages={messages}
+          isThinking={isThinking}
+          messagesEndRef={messagesEndRef}
+          onSend={sendMessage}
+          sessions={sessions}
+          sessionsLoading={sessionsLoading}
+          sessionsError={sessionsError}
+          onRetrySessions={() => void refetchSessions()}
+          activeSessionId={activeSessionId}
+          onLoadSession={loadSession}
+          onNewChat={newChat}
+          aiSettings={aiSettings}
+          onUpdateSettings={updateAISettings}
+          activeAgents={activeAgents}
+          onOpenAgentSetup={() => isLoaded && setAgentModalOpen(true)}
+        />
+        {agentModalOpen && createPortal(agentModal, document.body)}
+      </div>
+    );
+  }
 
   return (
-    <div className={`${styles.page} ${panelOpen ? styles.pagePanelOpen : ''}`}>
-      {/* Кнопка и затемнение живут только на телефоне (CSS): на десктопе
-          панель в потоке, и открывать/закрывать там нечего. */}
-      <button
-        type="button"
-        className={styles.panelToggle}
-        onClick={() => setPanelOpen(v => !v)}
-        aria-label={t('history.title')}
-        aria-expanded={panelOpen}
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          {panelOpen
-            ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-            : <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="14" y2="18" /></>}
-        </svg>
-      </button>
-      {panelOpen && <div className={styles.panelScrim} onClick={() => setPanelOpen(false)} />}
-
+    <div className={styles.page}>
       <LeftPanel
         sessions={sessions}
         sessionsLoading={sessionsLoading}
@@ -99,8 +132,8 @@ export default function AIPage() {
         instagramConnected={igConnected}
         whatsappEnabled={agentConfig.whatsapp.enabled}
         whatsappConnected={waConnected}
-        onNewChat={startNewChat}
-        onLoadSession={openSession}
+        onNewChat={newChat}
+        onLoadSession={loadSession}
         onDeleteSession={deleteSession}
         onUpdateSettings={updateAISettings}
         onToggleTelegram={() => toggleChannel('telegram')}
@@ -118,27 +151,7 @@ export default function AIPage() {
         onSend={sendMessage}
       />
 
-      {agentModalOpen && createPortal(
-        <AgentSetupModal
-          config={agentConfig}
-          isSaving={isSaving}
-          tgConnected={tgConnected}
-          isVerifyingTelegram={isVerifyingTelegram}
-          igConnected={igConnected}
-          isConnectingInstagram={isConnectingInstagram}
-          waConnected={waConnected}
-          isConnectingWhatsapp={isConnectingWhatsapp}
-          onConnectWhatsapp={connectWhatsapp}
-          onToggleChannel={toggleChannel}
-          onSave={saveChannelFields}
-          onVerifyTelegram={verifyTelegram}
-          onDisconnectTelegram={disconnectTelegram}
-          onConnectInstagram={connectInstagram}
-          onDisconnectInstagram={disconnectInstagram}
-          onClose={() => setAgentModalOpen(false)}
-        />,
-        document.body
-      )}
+      {agentModalOpen && createPortal(agentModal, document.body)}
     </div>
   );
 }

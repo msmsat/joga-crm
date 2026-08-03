@@ -14,8 +14,17 @@ import { UserMenu } from './UserMenu';
 // закреплённая внизу кнопка, здесь он второй вкладкой. filter вместо
 // NAV.find(...)! — переименование ключа должно стоить одной пропавшей вкладки,
 // а не undefined.to и белого экрана на всём телефоне.
-const TAB_KEYS = ['dashboard', 'journal', 'clients', 'ai'];
-const BY_KEY = new Map([...NAV, JOURNAL_ENTRY].map(item => [item.key, item]));
+//
+// Velora AI вкладкой не занимает слот: ассистент открывается кнопкой AI в
+// верхней панели с ЛЮБОЙ страницы, то есть до него и так один тап, а слотов
+// внизу всего четыре. На освободившееся место — Настройки.
+// Ключи здесь не проходят проверку роли (TABS рендерится без visible()),
+// поэтому вкладкой может быть только раздел, доступный всем ролям: из
+// оставшихся это Настройки — у тренера и администратора там свои личные
+// вкладки. Любой owner-раздел на этом месте просто пропал бы у половины
+// пользователей, оставив панель с тремя кнопками.
+const TAB_KEYS = ['dashboard', 'journal', 'clients', 'settings'];
+const BY_KEY = new Map([...NAV, ...NAV_BOTTOM, JOURNAL_ENTRY].map(item => [item.key, item]));
 const TABS: NavEntry[] = TAB_KEYS.map(k => BY_KEY.get(k)).filter((i): i is NavEntry => !!i);
 const TAB_KEY_SET = new Set(TAB_KEYS);
 
@@ -138,8 +147,11 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
               ))}
             </div>
 
+            {/* Шит закрывается вместе с панелью аккаунтов: тап по «Профилю»
+                уводит на страницу, а шит без этого оставался висеть поверх неё
+                (клик по .msheet-grid сюда не доходит — это соседний блок). */}
             <div className="msheet-account">
-              <UserMenu />
+              <UserMenu onNavigate={() => setSheetOpen(false)} />
             </div>
           </div>
         </div>

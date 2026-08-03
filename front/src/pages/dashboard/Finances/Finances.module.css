@@ -118,4 +118,54 @@
   /* Строка документа: реквизиты и кнопки переносятся, а не сжимаются в кашу */
   .docRow { flex-wrap: wrap; row-gap: 8px; padding: 14px !important; }
   .docRow:hover { transform: none; }
+
+}
+
+/* Скролл-контейнер вкладок финансов. Своей роли на десктопе нет — класс
+   существует ради телефонных правил ниже: карточки всех девяти вкладок
+   свёрстаны инлайном, и дотянуться до них можно только отсюда. */
+.finPane { min-width: 0; }
+
+@media (max-width: 767px) {
+  /* ── Финансы на телефоне: плитки вместо простыней ───────────────────────
+     Каждая вкладка начинается со сводки из 3-4 карточек. auto-fit от 160-260px
+     на 298px ширины давал одну колонку — четыре карточки по 120px, то есть
+     экран с половиной до первой таблицы. Плитки встают по две в ряд и худеют:
+     24px полей, 28-32px цифры и декоративные блики в углах — это оформление,
+     а не данные.
+     Селекторы по атрибуту style — тот же приём, что и в App.css: другого
+     общего признака у инлайновых карточек нет. Скоуп .finPane держит правила
+     внутри финансов. */
+  .finPane [style*="minmax(min(160px, 100%)"],
+  .finPane [style*="minmax(min(200px, 100%)"],
+  .finPane [style*="minmax(min(260px, 100%)"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .finPane [style*="padding: 24px"],
+  .finPane [style*="padding: 28px"],
+  .finPane [style*="padding: 32px"] { padding: 11px !important; }
+  .finPane [style*="border-radius: 16px"] { border-radius: 12px !important; }
+
+  .finPane [style*="font-size: 32px"],
+  .finPane [style*="font-size: 28px"] { font-size: 19px !important; }
+  .finPane [style*="font-size: 24px"] { font-size: 17px !important; }
+
+  /* Радиальный блик в углу плитки и подписи-капсы */
+  .finPane [style*="radial-gradient"] { display: none !important; }
+  .finPane [style*="text-transform: uppercase"] {
+    font-size: 8.5px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  /* Цели: карточек сводки ровно три — им ряд по три, а не два плюс один.
+     Стоит после общего правила: специфичность та же, решает порядок.
+     Порядок детей карточки: блик (снят правилом radial-gradient выше),
+     строка «иконка + подпись», число. */
+  .finPane .goalSum { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+  .finPane .goalSumCard { padding: 9px 7px !important; }
+  .finPane .goalSumCard > div:nth-child(2) { margin-bottom: 3px !important; gap: 6px !important; }
+  .finPane .goalSumCard > div:nth-child(2) > div:first-child { display: none !important; }
+  .finPane .goalSumCard > div:nth-child(3) { font-size: 17px !important; }
 }

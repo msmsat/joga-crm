@@ -240,6 +240,18 @@ export function FiltersGuide({ categories, activeCatKey, onCatChange }: FiltersG
           transition: opacity 0.2s, transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
         }
         .fg-saved.on { opacity: 1; transform: scale(1); }
+
+        /* Телефон: от кнопки остаётся одна иконка — подпись и шеврон съедали
+           60px первого ряда, а иконка фильтров читается однозначно.
+           font-size: 0 гасит текстовый узел, не трогая svg (у него свои
+           width/height) — обходимся без обёртки-спана в разметке. */
+        @media (max-width: 767px) {
+          .fg-trigger { font-size: 0; gap: 0; padding: 8px 9px; }
+          .fg-chev { display: none; }
+          .fg-panel { padding: 14px; border-radius: 16px; }
+          .fg-card { padding: 11px 12px; }
+          .fg-tune { margin-left: 0; }
+        }
       `}</style>
 
       <button

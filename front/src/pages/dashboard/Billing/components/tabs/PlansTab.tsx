@@ -5,6 +5,7 @@ import type { BillingMode, PlanType, BillingPlan } from '../../types';
 import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
 import { planFeatures } from '../../constants';
 import { formatMoney } from '../../../../../lib/money';
+import { usePhone } from '../../../../../hooks/usePhone';
 import { Button, ConfirmModal } from '../../../../../components/ui/index';
 import {
   CheckIcon, XIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
@@ -66,30 +67,45 @@ export default function PlansTab({
   const scrollToPayment = () =>
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  // Вынесено из разметки: описание выбранного метода печатается ещё и под
+  // рядом плиток (телефон, см. .bl-mode-pick).
+  // На телефоне названия короткие — «Фиксированная подписка» в плитке шириной
+  // 90px не помещается ни при каком кегле.
+  const isPhone = usePhone();
+  const MODES = [
+    { id: 'subscription' as const, icon: <CreditCardIcon />, title: t(isPhone ? 'mode.short.subscription' : 'mode.subscription'), desc: t('mode.descriptions.subscription'), badge: t('mode.badges.popular') },
+    { id: 'percent'      as const, icon: <PercentIcon />,    title: t(isPhone ? 'mode.short.percent'      : 'mode.percent'),      desc: t('mode.descriptions.percent'),      badge: null },
+    { id: 'fixed'        as const, icon: <ZapIcon />,        title: t(isPhone ? 'mode.short.combo'        : 'mode.combo'),        desc: t('mode.descriptions.combo'),        badge: t('mode.badges.flexible') },
+  ];
+
   return (
     <div style={{ padding: '0 var(--card-pad)' }}>
 
       {/* ── BILLING MODE SELECTOR ── */}
-      <div style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
+      <div className="bl-card" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
           <PercentIcon />
           <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('mode.title')}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
-          {([
-            { id: 'subscription' as const, icon: <CreditCardIcon />, title: t('mode.subscription'), desc: t('mode.descriptions.subscription'), badge: t('mode.badges.popular') },
-            { id: 'percent'      as const, icon: <PercentIcon />,    title: t('mode.percent'),       desc: t('mode.descriptions.percent'),      badge: null },
-            { id: 'fixed'        as const, icon: <ZapIcon />,        title: t('mode.combo'),         desc: t('mode.descriptions.combo'),        badge: t('mode.badges.flexible') },
-          ]).map(mode => (
+        <div className="bl-modes" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
+          {MODES.map(mode => (
             <button key={mode.id} onClick={() => setBillingMode(mode.id)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${billingMode === mode.id ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: billingMode === mode.id ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'transparent', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: billingMode === mode.id ? '0 4px 20px rgba(252,174,145,0.15)' : 'none' }}>
               {mode.badge && <div style={{ position: 'absolute', top: '-8px', right: '12px', padding: '2px 10px', background: 'var(--peach)', color: 'white', fontSize: '10px', fontWeight: 700, borderRadius: '100px', letterSpacing: '0.5px' }}>{mode.badge}</div>}
-              <div style={{ marginBottom: '10px' }}>{mode.icon}</div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '6px' }}>{mode.title}</div>
-              <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: '1.5' }}>{mode.desc}</div>
+              <div className="bl-mode-ico" style={{ marginBottom: '10px' }}>{mode.icon}</div>
+              <div className="bl-mode-title" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '6px' }}>{mode.title}</div>
+              <div className="bl-mode-desc" style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: '1.5' }}>{mode.desc}</div>
               {billingMode === mode.id && <div style={{ position: 'absolute', bottom: '14px', right: '14px' }}><CheckIcon size={18} /></div>}
             </button>
           ))}
+        </div>
+
+        {/* Телефон: описания трёх методов сразу — это три абзаца на выбор из
+            трёх слов. В плитках остаются иконка и название, а описание —
+            только у выбранного, одной строкой под рядом (на десктопе скрыто,
+            там описания стоят в самих плитках). */}
+        <div className="bl-mode-pick">
+          {MODES.find(m => m.id === billingMode)?.desc}
         </div>
 
         {/* Percent model — единственный тариф 3%, без калькулятора (аудит §3) */}
@@ -118,7 +134,7 @@ export default function PlansTab({
                 ))}
               </div>
               <Button variant="primary" loading={modelBusy} onClick={() => requestActivate({ mode: 'percent' })}>
-                {t('mode.percentCard.cta')}
+                {t(isPhone ? 'mode.percentCard.ctaShort' : 'mode.percentCard.cta')}
               </Button>
             </div>
           </div>
@@ -134,7 +150,7 @@ export default function PlansTab({
       {/* ── COMBO REGIMES: 3 фикс-режима ÷2 от подписки + 1.5% (аудит §3) ── */}
       {billingMode === 'fixed' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
+          <div className="bl-combo" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
             {(['start', 'pro', 'business'] as const).map(planId => {
               const plan = plans[planId];
               const comboFixed = Math.round(plan.monthly / 2);
@@ -142,8 +158,8 @@ export default function PlansTab({
               return (
                 <button key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: isSelected ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'var(--bg-card)', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: isSelected ? '0 4px 20px rgba(252,174,145,0.15)' : 'var(--shadow)' }}>
                   {isSelected && <div style={{ position: 'absolute', top: '14px', right: '14px' }}><CheckIcon size={16} /></div>}
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px' }}>{plan.name}</div>
-                  <div style={{ marginBottom: '10px' }}>
+                  <div className="bl-combo-name" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px' }}>{plan.name}</div>
+                  <div className="bl-combo-price" style={{ marginBottom: '10px' }}>
                     <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>{formatMoney(comboFixed, currency)}</span>
                     <span style={{ fontSize: '12px', color: 'var(--muted)', marginLeft: '4px' }}>{t('planCards.perMonth')}</span>
                   </div>
@@ -155,7 +171,7 @@ export default function PlansTab({
             })}
           </div>
 
-          <div style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="bl-card bl-combo-sum" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--onyx)' }}>
               {t('combo.summary', {
                 fixed: formatMoney(Math.round((plans[selectedPlan].monthly / 2) * (1 - (periodDiscounts[selectedPeriod] || 0))), currency),
@@ -167,7 +183,7 @@ export default function PlansTab({
               loading={modelBusy}
               onClick={() => requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
             >
-              {t('combo.cta')}
+              {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
             </Button>
           </div>
         </>
@@ -175,7 +191,7 @@ export default function PlansTab({
 
       {/* ── PLAN CARDS ── */}
       {billingMode === 'subscription' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
+        <div className="bl-plans" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
           {(['start', 'pro', 'business'] as const).map((planId, i) => {
             const plan = plans[planId];
             const features = planFeatures[planId];
@@ -183,7 +199,7 @@ export default function PlansTab({
             const isSelected = selectedPlan === planId;
             const isCurrent = currentPlanId === planId;
             return (
-              <div key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '28px', background: 'var(--bg-card)', border: `2px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '20px', cursor: 'pointer', position: 'relative', boxShadow: isSelected ? '0 8px 40px rgba(252,174,145,0.18)' : 'var(--shadow)', transition: 'all 0.3s cubic-bezier(0.34,1.1,0.64,1)', transform: isSelected ? 'translateY(-3px)' : 'none', opacity: animateCards ? 1 : 0, transitionDelay: `${i * 0.08}s` }}>
+              <div key={planId} className={`bl-plan${isSelected ? ' sel' : ''}`} onClick={() => setSelectedPlan(planId)} style={{ padding: '28px', background: 'var(--bg-card)', border: `2px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '20px', cursor: 'pointer', position: 'relative', boxShadow: isSelected ? '0 8px 40px rgba(252,174,145,0.18)' : 'var(--shadow)', transition: 'all 0.3s cubic-bezier(0.34,1.1,0.64,1)', transform: isSelected ? 'translateY(-3px)' : 'none', opacity: animateCards ? 1 : 0, transitionDelay: `${i * 0.08}s` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `${plan.color}20`, border: `1.5px solid ${plan.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: plan.color }} />
@@ -205,7 +221,7 @@ export default function PlansTab({
                   </div>
                 )}
                 <div style={{ height: '1px', background: 'var(--border)', margin: '16px 0' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+                <div className="bl-plan-feats" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
                   {features.map((feat, fi) => (
                     <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: feat.on ? 1 : 0.4 }}>
                       {feat.on ? <CheckIcon size={16} color={plan.color === '#1A1A1A' ? 'var(--onyx)' : plan.color} /> : <XIcon size={16} />}
@@ -266,14 +282,14 @@ export default function PlansTab({
       )}
 
       {/* ── FAQ / TRUST BLOCK ── */}
-      <div style={{ padding: '28px 32px', background: 'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%)', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
+      <div className="bl-trust" style={{ padding: '28px 32px', background: 'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%)', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-40%', right: '-10%', width: '300px', height: '300px', background: 'radial-gradient(ellipse, rgba(252,174,145,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
             <ShieldIcon />
             <span style={{ fontSize: '15px', fontWeight: 700, color: 'white' }}>{t('trust.title')}</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px' }}>
+          <div className="bl-reviews" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px' }}>
             {reviews.map((review, i) => (
               <div key={i} style={{ padding: '18px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px' }}>
                 <div style={{ display: 'flex', gap: '2px', marginBottom: '10px' }}>

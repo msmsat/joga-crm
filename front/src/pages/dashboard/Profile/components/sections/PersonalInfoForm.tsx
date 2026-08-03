@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from '../../../../../components/ui/index';
+import styles from '../../Profile.module.css';
 import type { UserInfo } from '../../types';
 
 interface Props {
@@ -66,7 +67,10 @@ export default function PersonalInfoForm({ userInfo, setUserInfo, email, isLoadi
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+      {/* На телефоне кнопка встаёт по центру (см. .save в Profile.module.css):
+          прижатая к правому краю, она читается как «дальше», а не как «сохранить
+          то, что выше». */}
+      <div className={styles.save} style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
         <Button
           variant="primary"
           onClick={handleSaveInfo}

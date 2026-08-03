@@ -895,24 +895,80 @@
    оставаться на виду. Уменьшается только сам рельс, чтобы профилю досталось
    больше половины высоты. */
 @media (max-width: 767px) {
-  .staff-list-panel { border-radius: 14px; }
-  .panel-hdr { padding: 6px 2px 6px 10px; }
+  /* Рамки, скругления и тени двух карточек-панелей съедали и зазор между ними,
+     и по 12px ширины на поля: на телефоне «карточка» ничего не отделяет — обе
+     панели и так на весь экран. Содержимое идёт от края до края. */
+  .staff-layout { gap: 6px; }
+  .staff-list-panel, .premium-right {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+  }
+  .panel-hdr { padding: 6px 2px 6px 2px; }
   /* Заголовок панели на телефоне только отнимает строку: рельс под ним и так
      очевидно список команды, а поиск подписан плейсхолдером. */
   .panel-hdr .panel-title { display: none; }
-  .staff-list { padding: 7px 8px; gap: 5px; }
-  .s-item { width: 150px; padding: 6px 9px; }
-  .ava { width: 28px; height: 28px; font-size: 10px; }
+  .staff-list { padding: 5px 4px; gap: 5px; }
+  .s-item { width: 142px; padding: 6px 8px; gap: 7px; }
+  .ava { width: 26px; height: 26px; font-size: 9.5px; }
   .s-name { font-size: 11.5px; }
-  .s-role { font-size: 9.5px; }
+  .s-role { font-size: 9.5px; max-width: none; }
+  .staff-search { padding: 6px 6px !important; }
+  .staff-groups { padding: 6px 6px 6px 0 !important; }
 
-  /* Шапка профиля: 130px декоративного градиента на 360px-экране — это треть
-     карточки до первой цифры. */
-  .staff-layout .premium-hero { height: 88px; }
-  .staff-layout .hero-ava { width: 52px; height: 52px; font-size: 16px; border-width: 3px; }
-  .staff-layout .hero-name { font-size: 14.5px; }
-  .staff-layout .hero-actions { top: 10px; right: 10px; gap: 5px; }
-  .staff-layout .hero-info { bottom: 14px; left: 14px; gap: 12px; }
+  /* Сводка команды уходит целиком: четыре цифры («всего», «на смене»,
+     «тренеры», «админы») считаются по тому же списку, который стоит строкой
+     ниже, — а стоили полосы в 50px, которых не хватало скроллу профиля. */
+  .staff-summary { display: none !important; }
+
+  /* ── Шапка профиля перестаёт быть «обложкой» ────────────────────────────
+     Аватар с именем и кнопки действий лежали абсолютом в разных углах одной
+     коробки: на 320px кнопка WhatsApp с подписью занимала всю ширину и
+     ложилась прямо на имя. Шапка становится обычной строкой — аватар, имя,
+     справа действия иконками, — и заодно отдаёт профилю ~40px высоты.
+     font-size: 0 гасит подписи кнопок, не трогая svg (у них свои размеры):
+     подписи — текстовые узлы прямо в кнопках, спана под них нет.
+     !important — у кнопки «Редактировать» размеры заданы инлайном. */
+  .staff-layout .premium-hero {
+    height: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .staff-layout .hero-info {
+    position: static;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+  .staff-layout .hero-info > div { min-width: 0; }
+  .staff-layout .hero-ava { width: 44px; height: 44px; font-size: 14px; border-width: 3px; }
+  .staff-layout .hero-name {
+    font-size: 14px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .staff-layout .hero-role { font-size: 10px; }
+  .staff-layout .hero-actions {
+    position: static;
+    order: 2; /* в разметке кнопки идут перед аватаром */
+    flex-shrink: 0;
+    gap: 6px;
+  }
+  .staff-layout .hero-actions button {
+    font-size: 0 !important;
+    gap: 0 !important;
+    padding: 9px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Тело профиля: поля карточки съедали по 20px с каждой стороны */
+  .premium-body { padding: 12px 12px 10px; }
+  .stats-row { gap: 8px; margin-bottom: 12px; }
+  .stat-card { padding: 9px 10px; }
+  .info-row { margin-bottom: 12px; }
   /* Сетка недельного расписания: 36px под подписи часов на 360px-экране
      оставляли каждому дню по 44px — столбики склеивались. */
   .sch-grid { grid-template-columns: 26px repeat(7, 1fr); padding: 6px; }

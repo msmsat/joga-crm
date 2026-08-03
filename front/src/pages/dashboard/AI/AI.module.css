@@ -1032,69 +1032,60 @@
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
-/* ─── Кнопка колонки истории (только телефон) ───────────────────────────────
-   Вне медиазапроса — display:none, чтобы на десктопе не перекрывала шапку
-   чата: там колонка стоит в потоке и прятать её не от чего. */
-.panelToggle { display: none; }
-.panelScrim { display: none; }
 
-/* ─── ТЕЛЕФОН: история и агенты выезжают поверх чата ────────────────────────
-   200px колонки от 360px экрана — это чат в оставшейся половине, где не
-   помещается ни сообщение, ни поле ввода. Колонка уходит за левый край и
-   возвращается по кнопке; чат получает экран целиком. */
-@media (max-width: 767px) {
-  .page { position: relative; }
-
-  .leftPanel {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 40;
-    width: min(300px, 84vw);
-    min-width: 0;
-    background: var(--bg);
-    box-shadow: 12px 0 40px -12px rgba(0,0,0,0.28);
-    transform: translateX(-102%);
-    transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  .pagePanelOpen .leftPanel { transform: none; }
-
-  .panelScrim {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: 35;
-    background: rgba(0,0,0,0.4);
-    animation: aiScrimIn 0.22s ease both;
-  }
-
-  /* У ленты чата своей шапки нет, поэтому кнопка висит над ней — освобождаем
-     ей строку, иначе первое сообщение уезжает под кнопку. */
-  .messagesArea { padding-top: 56px; }
-  .emptyState { min-height: 0; }
-  /* Иллюстрация пустого состояния нарисована на 300px — шире, чем колонка
-     чата на 320px-экране, и вылезала за неё. */
-  .emptyState svg { max-width: 100%; height: auto; }
-
-  /* Кнопка сидит там, где на десктопе край колонки истории */
-  .panelToggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 45;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text2);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
+/* ─── ТЕЛЕФОН: страница = интерфейс AI-дровера ────────────────────────────────
+   Двухколоночная раскладка на 320px схлопывалась в панель поверх чата, то есть
+   в тот же дровер, только со своей вёрсткой. Страница отдаёт экран чату целиком
+   (см. PhoneView: те же компоненты и та же таблица стилей, что у кнопки AI в
+   верхней панели), а история, агенты и настройки уезжают на второй экран. */
+.phonePage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg, #FDFCFB);
+  font-family: var(--font, 'Manrope', sans-serif);
 }
 
-@keyframes aiScrimIn { from { opacity: 0 } to { opacity: 1 } }
+/* Подвал второго экрана: агенты и настройки под списком чатов.
+   flex-shrink: 0 — скроллится список над ними, а не подвал. */
+.phoneHistoryFoot {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(var(--ink), 0.06);
+}
+
+/* Агенты — одна строка вместо карточки с тремя каналами: тумблеры переехали
+   в модалку, где рядом с ними видно, подключён канал вообще или нет. */
+.phoneAgentsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(249, 160, 139, 0.28);
+  background: rgba(249, 160, 139, 0.07);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phoneAgentsLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--onyx);
+}
+
+.phoneSettingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 0;
+}

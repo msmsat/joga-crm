@@ -63,6 +63,11 @@
 /* ════════════════════════════════════════════════════════════
    2. ТУЛБАР И КНОПКИ
    ════════════════════════════════════════════════════════════ */
+/* Обёртка второй строки тулбара: на десктопе её в раскладке нет — дети ведут
+   себя как прямые дети .j-toolbar. Телефонный блок в конце файла делает из неё
+   отдельную листающуюся строку. */
+.j-tb-controls { display: contents; }
+
 .j-toolbar {
   height: 56px;
   padding: 0 20px;
@@ -1222,6 +1227,27 @@
   overflow-x: auto;
   flex-shrink: 0;
 }
+/* scrollbar-width — не дубль к ::-webkit-scrollbar: в свежем Chromium
+   стандартное свойство выигрывает у псевдоэлемента, и под сводкой дня
+   оставалась honest-полоса в 16px, съедавшая строку на экране телефона. */
+/* Крестик попапа занятия — та же капсула, что у крестика модалок кита. */
+.bp-close {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: rgba(var(--ink), 0.05);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.bp-close:hover { background: rgba(var(--ink), 0.1); color: var(--onyx); }
+
+.day-stats { scrollbar-width: none; }
 .day-stats::-webkit-scrollbar { display: none; }
 .ds-item {
   display: flex; flex-direction: column;
@@ -1578,18 +1604,108 @@
     --j-col-min: 124px;
   }
 
+  /* ── Тулбар: ровно две строки вместо четырёх ────────────────────────────
+     Было 177px из 568 — вместе со сводкой дня расписанию оставалось 80px,
+     то есть чуть больше одного часа сетки. Строка навигации по дате остаётся
+     сверху, всё остальное уходит во вторую строку, которая листается вбок. */
   .j-toolbar {
     height: auto;
-    padding: 8px 10px;
-    gap: 8px;
-    row-gap: 8px;
+    padding: 6px 10px;
+    gap: 6px;
+    row-gap: 6px;
     flex-wrap: wrap;
   }
-  /* Вертикальные отбивки в две строки читаются как случайные палочки */
-  .j-sep { display: none; }
-  /* Фильтры тренеров/залов забирают вторую строку целиком и листаются вбок */
-  .j-filter-pills { flex: 1 0 100%; order: 3; }
-  .view-toggle { order: 2; }
+  /* Первая отбивка работает переносом строки (у flex нет break-after),
+     вторая просто не нужна. */
+  .j-toolbar > .j-sep { flex: 1 0 100%; width: auto !important; height: 0 !important; background: none !important; }
+  .j-tb-controls .j-sep { display: none; }
+
+  .j-tb-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 0 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .j-tb-controls::-webkit-scrollbar { display: none; }
+  .j-tb-controls > * { flex-shrink: 0; }
+  /* Распорка между фильтрами и «День/Неделя» на телефоне только съедала бы
+     ширину листающейся строки. */
+  .j-tb-controls > div[style*="flex: 1"] { display: none; }
+
+  /* Кнопки тулбара ниже: 36px на четырёх контролах — это лишние 8px строки */
+  .j-toolbar .btn-icon,
+  .j-toolbar .btn-ghost-sm { height: 32px; }
+  .j-toolbar .view-toggle { height: 32px; }
+
+  /* Дата и «Сегодня» делят первую строку и ужимаются: у кнопки даты ширина
+     задана инлайном (clamp(132px…)), и вместе с «Сегодня» строка не сходилась —
+     «Сегодня» уезжала на отдельный этаж. */
+  .j-toolbar > .btn-ghost-sm {
+    width: auto !important;
+    min-width: 0;
+    /* Долями, а не шорткатом flex: базовый .btn-ghost-sm задаёт flex-shrink: 0
+       отдельным лонгхендом, и шорткат его почему-то не перебивал — кнопка
+       росла до 216px и выталкивала «Сегодня» на свой этаж. */
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    overflow: hidden;
+    padding: 0 10px;
+  }
+  .j-toolbar > .btn-ghost-sm span { overflow: hidden; text-overflow: ellipsis; }
+  /* Год в дате и подпись «Сегодня» — то самое лишнее: год виден в шапке
+     недельного вида и меняется раз в год, а иконка календаря со стрелкой
+     читается без слова. Без них строка навигации встаёт в одну. */
+  .j-date-year { display: none; }
+  .j-today-btn .j-today-label { display: none; }
+  .j-today-btn { padding: 0 9px !important; }
+
+  .j-filter-pills { display: flex; gap: 4px; }
+
+  /* ── Сводка дня: одна строка вместо трёх этажей ──────────────────────────
+     Столбик «число сверху, подпись снизу» на 320px переносил подпись на две
+     строки и раздувал полосу до 101px. Кладём число и подпись в строку —
+     смысл тот же, высота втрое меньше. */
+  .day-stats { padding: 7px 12px; }
+  /* «Шаг сетки» (1/2/5/15 мин) — инструмент точного перетаскивания мышью:
+     пальцем в минуту всё равно не целятся, а полоса из-за него была 256px
+     шириной и 80px высотой. Отмена/повтор рядом остаются.
+     !important — display: flex у обёртки задан инлайном. */
+  .day-stats > div:has(.premium-step-toggle) { display: none !important; }
+  /* Отмена/повтор — строка, а не столбик: общее телефонное правило переноса
+     в App.css ставит инлайновым flex-рядам flex-wrap: wrap, и две кнопки по
+     36px вставали друг под друга, задавая всей полосе высоту 80px. Здесь
+     перенос не нужен — полоса и так листается вбок.
+     !important обязателен: у общего правила четыре :not([style*=…]), а :not()
+     берёт специфичность своего аргумента — вместе это (0,5,0) против (0,1,1)
+     у селектора ниже. */
+  .day-stats > div { flex-wrap: nowrap !important; }
+  .ds-item {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 4px;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+  .ds-val { font-size: 13px; }
+  .ds-key { font-size: 10px; margin-top: 0; }
+
+  /* ── Шапка колонки: 94px на аватар с должностью и статистикой ────────────
+     Должность и «2 занятий · 0 чел.» дублируют сводку дня строкой выше, а
+     занимают полсетки. Оставляем аватар и имя. */
+  /* Высоту шапки Grid.tsx берёт из --j-header-h — задаём переменную, а не
+     перебиваем инлайн через !important. */
+  .j-root { --j-header-h: 52px; }
+  .j-col-header { padding: 8px !important; }
+  .j-hdr-avatar { width: 28px !important; height: 28px !important; font-size: 10px !important; border-radius: 9px !important; }
+  .j-hdr-name { font-size: 12px !important; }
+  /* Убираем должность («тренер» под именем): она одинакова у всех колонок и
+     ничего не добавляет. Строка «2 занятий · 0 чел.» остаётся — это
+     единственная статистика по конкретному тренеру. */
+  .j-hdr-sub { display: none; }
 
   /* Каждый пиксель ширины — сетке: время слева и шапки колонок ужимаются.
      Ширину самих колонок задаёт --j-col-min выше (правило min-width на
@@ -1612,7 +1728,20 @@
     border-radius: 22px 22px 0 0;
     animation: popup-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   }
+  /* Шапка попапа: заголовок — статус — крестик в одну строку. Общее правило
+     переноса из App.css уводило крестик на отдельную строку под время, где он
+     читался как случайная кнопка. min-width:0 у заголовка — чтобы длинное
+     название переносило текст, а не распирало строку. */
   .bp-header { padding: 18px 18px 12px; }
+  .bp-header > div { flex-wrap: nowrap !important; gap: 8px !important; }
+  .bp-header > div > div:first-child { min-width: 0; }
+  /* Бейдж статуса ужимаем: на 11px с разрядкой он забирал 138px из 292 и
+     ломал «10:00 – 11:00» на две строки. */
+  .bp-header > div > div:nth-child(2) {
+    font-size: 10px !important;
+    padding: 5px 8px !important;
+    letter-spacing: 0 !important;
+  }
   .bp-body { padding: 0 18px 12px; gap: 13px; }
   /* Три действия («Добавить», «Изменить», удалить) требуют 302px, а попап на
      320px даёт 270 — кнопка удаления выезжала за правый край. Режем поля

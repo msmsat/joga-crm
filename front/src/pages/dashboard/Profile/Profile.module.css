@@ -46,6 +46,22 @@
 @media (max-width: 767px) {
   .page { padding: 16px 14px; min-height: 0; }
   .grid { gap: 14px; }
+
+  /* «Войти» и «Регистрация» — вход в ЧУЖОЙ аккаунт, действие редкое: две
+     кнопки во всю ширину читались как главное на странице. Ужимаются до
+     содержимого и встают по центру. !important — flex задан инлайном. */
+  .authRow { justify-content: center; gap: 8px !important; }
+  .authRow > button {
+    flex: 0 1 auto !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    gap: 6px !important;
+  }
+  .authRow svg { width: 13px; height: 13px; }
+
+  /* Сохранение относится ко всей форме над ним, а не к правой колонке */
+  .save { justify-content: center !important; margin-top: 16px !important; }
+  .save > button { min-width: 60%; }
 }
 
 @keyframes spin {

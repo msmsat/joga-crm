@@ -42,7 +42,7 @@ export function BookingSettings(s: Props) {
 
       {/* Основные настройки */}
       <div className="card">
-        <div style={{ position: 'relative', marginBottom: '20px' }}>
+        <div className="bk-decor" style={{ position: 'relative', marginBottom: '20px' }}>
           <svg width="100%" height="60" viewBox="0 0 380 60" fill="none" style={{ display: 'block' }}>
             <line x1="0" y1="30" x2="380" y2="30" stroke="var(--border)" strokeWidth="1" strokeDasharray="4 4"/>
             {[
@@ -100,7 +100,7 @@ export function BookingSettings(s: Props) {
 
       {/* Ограничения и правила */}
       <div className="card">
-        <div style={{ position: 'relative', marginBottom: '20px' }}>
+        <div className="bk-decor" style={{ position: 'relative', marginBottom: '20px' }}>
           <svg width="100%" height="60" viewBox="0 0 380 60" fill="none" style={{ display: 'block' }}>
             {[0, 1, 2, 3, 4, 5, 6].map(i => (
               <rect key={i} x={10 + i * 52} y={10} width={40} height={40} rx="6" fill="var(--bg2)" fillOpacity="0.5"/>

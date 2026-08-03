@@ -96,7 +96,17 @@
    собственной строке, а внутри строк — горизонтальный скролл. */
 @media (max-width: 767px) {
   .bar { gap: 8px; margin-bottom: 12px; }
-  .barCtl { flex: 1 0 100%; justify-content: flex-start; }
+  /* nowrap — иначе переключатель периода занимал строку целиком и выталкивал
+     экспорт на собственный ряд. На телефоне период вообще не сегменты, а одна
+     кнопка с поповером (см. PeriodPicker в ReportsToolbar): она тянется на всю
+     строку, экспорт стоит справа. */
+  .barCtl {
+    flex: 1 0 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .barCtl :global(.rt-export) { flex-shrink: 0; }
   .barFilters {
     flex: 1 0 100%;
     flex-wrap: nowrap;
@@ -109,4 +119,7 @@
   /* Фиксированная ширина, а не flex:1 — иначе четыре фильтра делят 360px */
   .barFilter { flex: 0 0 auto; min-width: 132px; }
   .financeIllus { display: none; }
+
+  /* 20px между блоками отчёта — это полторы строки таблицы на каждый стык */
+  .mainWithInsights { gap: 10px; margin-bottom: 12px; }
 }

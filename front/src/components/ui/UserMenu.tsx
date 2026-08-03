@@ -15,6 +15,9 @@ function studioInitials(name: string): string {
 // Панель вынесена в отдельный компонент: запрос списка студий стартует только
 // при первом открытии меню, а не на каждой загрузке каркаса.
 function UserMenuPanel({ onClose }: { onClose: () => void }) {
+  // onClose закрывает и саму панель, и то, во что она вложена (шит «Ещё» на
+  // телефоне): переход в профиль не должен оставлять поверх страницы висеть
+  // ни панель аккаунтов, ни шит, из которого её открыли.
   const { t } = useTranslation(['menu', 'staff']);
   const { data: me } = useMe();
   const { studios, switchingId, handleSwitchAccount } = useAccounts();
@@ -95,7 +98,7 @@ function UserMenuPanel({ onClose }: { onClose: () => void }) {
 
 // Пилюля профиля внизу каркаса: клик раскрывает меню аккаунтов над ней,
 // каретка разворачивается. Закрытие — клик вне, Esc или выбор пункта.
-export function UserMenu() {
+export function UserMenu({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { t } = useTranslation('menu');
   const { data: me } = useMe();
   const [open, setOpen] = useState(false);
@@ -117,7 +120,7 @@ export function UserMenu() {
 
   return (
     <div className="user-menu" ref={ref}>
-      {open && <UserMenuPanel onClose={() => setOpen(false)} />}
+      {open && <UserMenuPanel onClose={() => { setOpen(false); onNavigate?.(); }} />}
 
       <button
         type="button"

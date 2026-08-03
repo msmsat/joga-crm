@@ -1134,20 +1134,34 @@
 /* Меню аккаунтов шире рельсы — иначе строки студий нечитаемы */
 .sidebar.is-rail .user-menu-panel { right: auto; width: 248px; transform-origin: bottom left; }
 
-/* Тумблер сворачивания: кружок на границе меню, стрелка разворачивается */
+/* Тумблер сворачивания живёт в шапке меню, справа от логотипа: раньше он висел
+   кружком на самой границе панели (right:-11px, opacity:0 до наведения) — половина
+   кнопки уезжала под контент и ловилась мышью только по краю. Места в шапке хватает. */
+.sidebar-logo .logo-row { display: flex; align-items: center; gap: 8px; }
+.sidebar-logo .logo-name { flex: 1; min-width: 0; }
 .sidebar-toggle {
-  position: absolute; top: calc(var(--topbar-h) / 2 - 11px); right: -11px; z-index: 120;
-  width: 22px; height: 22px; padding: 0;
+  flex-shrink: 0;
+  width: 30px; height: 30px; padding: 0;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border2); border-radius: 50%;
-  background: var(--card); color: var(--text3);
-  cursor: pointer; opacity: 0;
-  box-shadow: 0 2px 8px rgba(26,26,26,0.10);
-  transition: opacity 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.26s cubic-bezier(0.16,1,0.3,1);
+  border: 1px solid transparent; border-radius: 9px;
+  background: rgba(26,26,26,0.03); color: var(--text3);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
-.sidebar:hover .sidebar-toggle, .sidebar-toggle:focus-visible { opacity: 1; }
-.sidebar-toggle:hover { color: var(--accent2); border-color: rgba(252,174,145,0.55); }
-.sidebar.is-rail .sidebar-toggle { transform: rotate(180deg); }
+.dark .sidebar-toggle { background: rgba(255,255,255,0.06); }
+.sidebar-toggle:hover {
+  background: rgba(252,174,145,0.14);
+  border-color: rgba(252,174,145,0.42);
+  color: var(--accent2);
+}
+.sidebar-toggle:active { transform: scale(0.93); }
+.sidebar-toggle:focus-visible {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(252,174,145,0.22);
+}
+/* В рельсе рядом с точкой-логотипом кнопке не встать — уходит под неё */
+.sidebar.is-rail .logo-row { flex-direction: column; gap: 12px; }
+.sidebar.is-rail .sidebar-toggle { width: 28px; height: 28px; }
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .sidebar-toggle { transition: none; }
 }
@@ -2629,13 +2643,16 @@
    ========================================================================== */
 @media (max-width: 767px) {
   :root {
-    --content-pad: 14px;
-    --card-pad: 16px;
-    --card-pad-sm: 14px;
-    --grid-gap: 10px;
+    /* Поля считаны от 320px: 14px по бокам плюс 16px в карточке — это 60px
+       из 320, пятая часть экрана под воздух, пока таблицам и подписям не
+       хватает места. Воздух режется, размер данных остаётся. */
+    --content-pad: 11px;
+    --card-pad: 13px;
+    --card-pad-sm: 11px;
+    --grid-gap: 9px;
     --stat-v: 22px;
-    --stat-pad: 14px 15px;
-    --section-gap: 12px;
+    --stat-pad: 12px 13px;
+    --section-gap: 10px;
     --chart-h: 210px;
     --topbar-h: 56px;
     --radius-lg: 16px;
@@ -2691,6 +2708,15 @@
   .cat-tabs::-webkit-scrollbar { display: none; }
   .tab, .cat-chip, .ftab, .hall-chip, .chip, .filter-pill, .cat-tab { flex: 0 0 auto; white-space: nowrap; }
 
+  /* Поля вкладок и чипов режутся, подписи — нет: в листающейся строке это
+     два-три лишних видимых пункта, а не сокращённые слова. */
+  .tabs { padding: 3px; margin-bottom: 12px; }
+  .tab { padding: 6px 11px; }
+  .cat-chip { padding: 5px 11px; }
+  .chip { padding: 5px 9px; }
+  .sec-title { margin-bottom: 8px; }
+  .sch-wrap { margin-bottom: 12px; }
+
   /* ── Кнопка не вылезает из своей карточки ──────────────────────────────
      Строки вида «подпись слева — действие справа» свёрстаны по всему кабинету
      инлайновым `display:flex; justify-content:space-between` без класса. На
@@ -2703,20 +2729,36 @@
      когда содержимое перестало помещаться, а не сплющивает подпись. */
   [style*="space-between"] { row-gap: 10px; }
 
-  /* Перенос разрешаем всем инлайновым flex-рядам, а не только строкам со
-     space-between: ряды «две кнопки подряд», «подпись — селект», сегментные
-     переключатели свёрстаны так же и так же выезжают за карточку. Перенос
-     срабатывает только когда содержимое перестало помещаться, поэтому на
-     широком экране не меняется ничего.
-     :not(…column…) — колоночные контейнеры трогать нельзя: при ограниченной
-     высоте перенос разложил бы их в несколько колонок вместо одной. */
-  [style*="display: flex"]:not([style*="column"]),
-  [style*="display: inline-flex"]:not([style*="column"]) { flex-wrap: wrap; }
+  /* Перенос разрешаем инлайновым flex-рядам: ряды «подпись — кнопка», «две
+     кнопки подряд», «подпись — селект», сегментные переключатели свёрстаны так
+     по всему кабинету и так же выезжают за карточку. Перенос срабатывает
+     только когда содержимое перестало помещаться, поэтому на широком экране
+     не меняется ничего.
+
+     Три исключения — не перестраховка, каждое закрывает поломку раскладки:
+     • …column… — колоночному контейнеру перенос раскладывает содержимое в
+       несколько колонок вместо одной;
+     • overflow:hidden и 100vh/100dvh — признак каркасного контейнера, который
+       сам держит высоту экрана. Без этого исключения правило цепляло
+       .dash-root (инлайновый flex-ряд с height:100vh и overflow:hidden):
+       строка переносилась, высота flex-линии считалась по содержимому, .main
+       вырастал до 1954px внутри экрана в 568 — и всё ниже первого экрана
+       обрезалось без всякой возможности доскроллить. */
+  [style*="display: flex"]:not([style*="column"]):not([style*="overflow: hidden"]):not([style*="100vh"]):not([style*="100dvh"]),
+  [style*="display: inline-flex"]:not([style*="column"]):not([style*="overflow: hidden"]):not([style*="100vh"]):not([style*="100dvh"]) {
+    flex-wrap: wrap;
+  }
 
   /* У flex-элемента min-width по умолчанию auto, то есть он не сжимается ниже
      своего содержимого. Именно поэтому «flex: 1» блоки (имя сессии, подпись
      настройки) оказывались шире родителя вместо того, чтобы перенести текст. */
   [style*="flex: 1"] { min-width: 0; }
+
+  /* Отбивка 20px между блоками (ряды KPI, секции отчётов, карточки финансов)
+     проставлена инлайном по всему кабинету — на 568px это по трети строки
+     данных на каждый стык. Селектор по атрибуту style — тот же приём, что и
+     у правил выше: другого общего признака у этих блоков нет. */
+  [style*="margin-bottom: 20px"] { margin-bottom: 12px !important; }
 
   /* Та же беда у инлайновых сеток «1fr 1fr» (их в кабинете три десятка): на
      320px колонка выходит по 140px, и кнопка с иконкой и подписью в неё уже не
@@ -2727,8 +2769,10 @@
   [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
 
   /* Строка настройки «подпись — контрол»: группа контролов помечена
-     flex-shrink:0 инлайном и не сжимается, вылезая за карточку. */
-  .settings-row { flex-wrap: wrap; row-gap: 10px; }
+     flex-shrink:0 инлайном и не сжимается, вылезая за карточку.
+     Отбивка 14px сверху и снизу на дюжине строк подряд (Онлайн-запись,
+     Настройки, Уведомления) — это целый экран воздуха между тумблерами. */
+  .settings-row { flex-wrap: wrap; row-gap: 8px; padding: 10px 0; }
   .settings-row > * { flex-shrink: 1 !important; min-width: 0; }
 
   /* 31 столбик по 4px плюс отбивки по 10px — это 424px в карточке шириной
@@ -2745,10 +2789,34 @@
   .finance-illus, .booking-preview { display: none !important; }
 
   .stat-icon { width: 30px; height: 30px; margin-bottom: 8px; }
+
+  /* «Подробнее ↗» — абсолютная плашка в углу карточки: на десктопе она встаёт
+     справа от иконки, а в карточке шириной 136px ложится прямо на иконку и
+     подпись метрики. Возвращаем её в поток последней строкой (order — потому
+     что в разметке она идёт сразу после иконки): заодно выходит честная
+     тач-цель во всю ширину карточки вместо плашки в 100px. */
+  .stat-card { display: flex; flex-direction: column; }
+  .stat-card .stat-more-btn {
+    position: static;
+    order: 9;
+    margin-top: 10px;
+    justify-content: center;
+    transform: none;
+  }
   .plan-price { font-size: 27px; }
 
   /* Карточки — меньше воздуха, больше строк на экран */
   .client-card, .loyalty-card, .channel-card, .plan-card { padding: 16px; }
+
+  /* Карточка кита — основа Отчётов, Лояльности, Финансов и Уведомлений.
+     24px полей с каждой стороны на 320px-экране — это 48px из 298 доступных,
+     то есть шестая часть строки графика или таблицы. !important: размеры
+     заданы инлайном (см. Card.tsx). */
+  .v-card { padding: 13px !important; border-radius: 13px !important; }
+
+  /* Кнопка кита: 12/20px полей при кегле 14 — на 320px это плашка почти во
+     всю строку под подпись из двух слов. !important — размеры инлайновые. */
+  .v-btn { padding: 10px 15px !important; font-size: 13px !important; border-radius: 11px !important; }
   .loyalty-card-icon { width: 38px; height: 38px; font-size: 19px; margin-bottom: 10px; }
 
   /* Hover-эффекты на тач-экране только мешают: подъём карточки срабатывает

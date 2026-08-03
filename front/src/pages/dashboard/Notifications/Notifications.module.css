@@ -87,6 +87,22 @@
    grid-column: 1 / -1 у первого ребёнка — то, что позволяет оставить одну
    grid-разметку на оба режима, не трогая инлайновые стили строк. */
 @media (max-width: 767px) {
+  /* Получатели — две карточки в ряд вместо четырёх этажей: на 320px auto-fit
+     от 160px не набирал вторую колонку и разворачивал список в столбик выше
+     самой матрицы событий. Иконка и подписи ужимаются под ~130px колонки.
+     !important: сетка задана инлайном (RolesSelector). */
+  .roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .roleBtn { padding: 9px 10px; gap: 8px; border-radius: 12px; }
+  .roleBtnIcon { width: 30px; height: 30px; border-radius: 9px; }
+  .roleBtn svg { width: 15px; height: 15px; }
+  /* Подпись получателя не режется в «Админист…»: на своей строке она
+     переносится, а высоту карточки задаёт иконка. */
+  .roleBtn > div:last-child > div:first-child { font-size: 12px !important; white-space: normal !important; }
+  .roleBtn > div:last-child > div:last-child { font-size: 10px !important; margin-top: 1px !important; }
+
   .matrixHead { display: none !important; }
 
   .notifRow {

@@ -4,6 +4,11 @@
     "invoices": "Payment history",
     "method": "Payment method"
   },
+  "tabsShort": {
+    "plans": "Plans",
+    "invoices": "History",
+    "method": "Payment"
+  },
   "paymentsHistory": {
     "title": "Full payment history",
     "subtitle": "All invoices for this studio",
@@ -50,6 +55,7 @@
     "subscription": "Fixed subscription",
     "percent": "% of online payments",
     "combo": "Fixed + % combo",
+    "short": { "subscription": "Fixed", "percent": "Percent", "combo": "Combo" },
     "descriptions": {
       "subscription": "Pay one amount per month. Predictable and cost-effective.",
       "percent": "Pay only when you earn. From 2% to 8% of transactions.",
@@ -65,7 +71,8 @@
       "noFixed": "No fixed fee",
       "payForResult": "Pay for results",
       "oneClick": "1-click activation",
-      "cta": "Activate the 3% model"
+      "cta": "Activate the 3% model",
+      "ctaShort": "Activate 3%"
     },
     "activateSuccess": "Payment model updated",
     "activateError": "Couldn't update the payment model",
@@ -75,7 +82,8 @@
   "combo": {
     "rateBadge": "{{rate}}%",
     "summary": "Fixed {{fixed}}/mo. + {{rate}}% of online payments",
-    "cta": "Activate the Combo plan"
+    "cta": "Activate the Combo plan",
+    "ctaShort": "Activate combo"
   },
   "period": {
     "1": "1 month",

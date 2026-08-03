@@ -239,6 +239,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
             {popupBooking.status === 'confirmed' && <span style={{ transform: 'scale(0.85)' }}><Icons.Check /></span>}
             {isCancelled ? t('bookingPopup.cancelled') : popupBooking.status === 'confirmed' ? t('bookingPopup.confirmed') : t('bookingPopup.pending')}
           </div>
+
+          {/* Крестик: на десктопе попап закрывался кликом мимо, но на телефоне
+              он раскрыт шитом почти во весь экран — «мимо» там негде. */}
+          <button
+            type="button"
+            className="bp-close"
+            aria-label={t('common:buttons.close', { defaultValue: 'Закрыть' })}
+            onClick={(e) => { e.stopPropagation(); setPopupBooking(null); }}
+          >
+            <Icons.X />
+          </button>
         </div>
       </div>
 

@@ -100,9 +100,28 @@ export function Sidebar({ role }: SidebarProps) {
     <>
       <nav className={isRail ? 'sidebar is-rail' : 'sidebar'}>
         <div className="sidebar-logo">
-          <div className="logo-name">
-            <span className="logo-dot"></span>
-            <span className="nav-label">{t('brand.product')}</span>
+          <div className="logo-row">
+            <div className="logo-name">
+              <span className="logo-dot"></span>
+              <span className="nav-label">{t('brand.product')}</span>
+            </div>
+            {canToggle && (
+              <button
+                type="button"
+                className="sidebar-toggle"
+                onClick={toggle}
+                aria-label={t(isRail ? 'sidebar.expand' : 'sidebar.collapse')}
+                title={t(isRail ? 'sidebar.expand' : 'sidebar.collapse')}
+              >
+                {/* Иконка панели: рамка со «стенкой» слева, шеврон показывает,
+                    в какую сторону поедет меню — разворачивать нечего. */}
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3.5" width="18" height="17" rx="3" />
+                  <line x1="9.5" y1="3.5" x2="9.5" y2="20.5" />
+                  <path d={isRail ? 'M14 9.5l2.5 2.5L14 14.5' : 'M17 9.5L14.5 12l2.5 2.5'} />
+                </svg>
+              </button>
+            )}
           </div>
           {studio?.name && (
             <Tooltip label={t('tooltips.studioName', { name: studio.name })} side="bottom">
@@ -110,20 +129,6 @@ export function Sidebar({ role }: SidebarProps) {
             </Tooltip>
           )}
         </div>
-
-        {canToggle && (
-          <button
-            type="button"
-            className="sidebar-toggle"
-            onClick={toggle}
-            aria-label={t(isRail ? 'sidebar.expand' : 'sidebar.collapse')}
-            title={t(isRail ? 'sidebar.expand' : 'sidebar.collapse')}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        )}
 
         <div className="sidebar-nav">
           {NAV.map(renderItem)}

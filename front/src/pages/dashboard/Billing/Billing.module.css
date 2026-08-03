@@ -93,3 +93,187 @@
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-4px); }
 }
+
+/* Корень страницы тарифа. Своей роли на десктопе нет — класс существует ради
+   телефонных правил ниже: страница свёрстана инлайном, и дотянуться до её
+   карточек можно только отсюда. */
+.blPane { min-width: 0; }
+
+/* Описание выбранного метода оплаты печатается только на телефоне: на десктопе
+   описания стоят в самих плитках. */
+.blPane :global(.bl-mode-pick) { display: none; }
+
+/* ══ ТЕЛЕФОН ═══════════════════════════════════════════════════════════════
+   Страница-лендинг: крупная шапка, четыре плитки статистики в столбик, три
+   метода оплаты с абзацами описаний, три тарифа с полными списками
+   возможностей и три отзыва. На 320px это восемь экранов до кнопки оплаты.
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* ── Шапка ──────────────────────────────────────────────────────────────
+     Заголовок 32px и подзаголовок-слоган — рекламный блок над данными. */
+  .blPane :global(.bl-head) { padding: 10px 11px 0 !important; margin-bottom: 12px !important; }
+  .blPane :global(.bl-head) h1 { font-size: 20px !important; letter-spacing: -0.6px !important; margin-bottom: 4px !important; }
+  .blPane :global(.bl-head) p { display: none; }
+
+  /* Текущий тариф — плашка во всю ширину под заголовком, а не колонка справа */
+  .blPane :global(.bl-now) {
+    flex: 1 0 100%;
+    padding: 9px 11px !important;
+    border-radius: 12px !important;
+    text-align: left !important;
+  }
+  .blPane :global(.bl-now) > div:nth-child(2) { font-size: 15px !important; }
+  .blPane :global(.bl-now) > div:last-child { justify-content: flex-start !important; }
+
+  /* ── Статистика: две плитки в ряд ──────────────────────────────────────── */
+  .blPane :global(.bl-stats) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    margin-top: 12px !important;
+  }
+  .blPane :global(.bl-stats) > div { padding: 9px 10px !important; gap: 8px !important; border-radius: 12px !important; }
+  .blPane :global(.bl-stats) > div > div:first-child { width: 28px !important; height: 28px !important; border-radius: 9px !important; }
+  .blPane :global(.bl-stats) > div > div:last-child > div:first-child { font-size: 15px !important; }
+  .blPane :global(.bl-stats) > div > div:last-child > div:last-child { font-size: 9.5px !important; line-height: 1.25; }
+
+  /* ── Вкладки: три кнопки делят строку, а не переносятся ─────────────────── */
+  .blPane :global(.bl-tabs) { display: flex !important; width: 100%; gap: 3px !important; }
+  .blPane :global(.bl-tabs) button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 4px !important;
+    font-size: 11.5px !important;
+    /* Подписи на телефоне короткие (tabsShort в billing.json), но обрезка —
+       страховка: длинное слово в другом языке иначе распирает кнопку и она
+       наезжает на соседнюю. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Карточки-обёртки секций снимаются ──────────────────────────────────
+     Рамка и 32px полей вокруг ряда кнопок ничего не отделяют: секция и так во
+     всю ширину экрана. Ширина уходит содержимому. */
+  .blPane :global(.bl-card) {
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* ── Методы оплаты: три в ряд, без описаний ─────────────────────────────── */
+  .blPane :global(.bl-modes) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+  .blPane :global(.bl-modes) button { padding: 10px 6px !important; border-radius: 12px !important; text-align: center !important; }
+  .blPane :global(.bl-mode-ico) { margin-bottom: 5px !important; display: flex; justify-content: center; }
+  .blPane :global(.bl-mode-title) {
+    font-size: 10.5px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0 !important;
+    /* Плитка 90px: подпись переносится внутри неё, а не вылезает за рамку */
+    overflow-wrap: anywhere;
+  }
+  .blPane :global(.bl-mode-desc) { display: none; }
+  /* Галочка выбранного и бейджи «популярно/гибко» в плитке 90px не помещаются:
+     выбор виден заливкой и рамкой, а бейдж — реклама. */
+  .blPane :global(.bl-modes) button > div[style*="position: absolute"] { display: none !important; }
+
+  /* Описание выбранного метода — одной строкой под рядом */
+  .blPane :global(.bl-mode-pick) {
+    display: block;
+    margin-top: 8px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    background: rgba(252, 174, 145, 0.07);
+    border: 1px solid rgba(252, 174, 145, 0.22);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--text2);
+  }
+
+  /* ── Период оплаты: две плитки в ряд ──────────────────────────────────────
+     Бейдж «Лучший выбор» висит на −8px над своей плиткой (третьей, то есть во
+     втором ряду) — поэтому между рядами зазор вдвое больше, чем между
+     колонками, и есть отступ сверху: иначе бейдж ложится на плитку выше. */
+  .blPane :global(.bl-periods) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 7px !important;
+    row-gap: 18px !important;
+    margin-top: 10px;
+  }
+  .blPane :global(.bl-periods) button { padding: 10px 6px !important; border-radius: 12px !important; }
+
+  /* Шапка секции раскладывается «сквозной»: плашка «скидка активна» становится
+     обычным элементом колонки и уезжает под плитки (order), а не жмётся в угол
+     над ними, где на неё наезжал бейдж «Лучший выбор». */
+  .blPane :global(.bl-period) { display: flex; flex-direction: column; }
+  .blPane :global(.bl-period-head) { display: contents; }
+  .blPane :global(.bl-period-title) { margin-bottom: 2px; }
+  .blPane :global(.bl-period-badge) {
+    order: 3;
+    align-self: flex-start;
+    margin-top: 10px;
+    font-size: 11px !important;
+  }
+  .blPane :global(.bl-periods) button > div:nth-last-child(2) { font-size: 12.5px !important; }
+  .blPane :global(.bl-periods) button > div:last-child { font-size: 10.5px !important; }
+
+  /* «Активировать 3%» / «Активировать комбо» — единственное действие своей
+     секции: тянется во всю ширину, чтобы не висеть узкой пилюлей по центру. */
+  .blPane :global(.bl-card) :global(.v-btn) { width: 100%; }
+  /* Сводка комбо — строка «фикс + %» и кнопка под ней, а не по краям пустой
+     карточки (сама карточка на телефоне снята правилом .bl-card выше). */
+  .blPane :global(.bl-combo-sum) { gap: 10px !important; }
+  .blPane :global(.bl-combo-sum) > span { font-size: 12.5px !important; }
+
+  /* ── Комбо-режимы: три в ряд ────────────────────────────────────────────── */
+  .blPane :global(.bl-combo) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+  .blPane :global(.bl-combo) button { padding: 10px 7px !important; border-radius: 12px !important; }
+  .blPane :global(.bl-combo-name) { font-size: 11px !important; margin-bottom: 6px !important; }
+  .blPane :global(.bl-combo-price) { margin-bottom: 6px !important; }
+  .blPane :global(.bl-combo-price) span:first-child { font-size: 15px !important; }
+  /* «/мес» подписывает все три плитки одинаково — в колонке 90px это перенос
+     строки ради слова, которое и так стоит в заголовке секции. */
+  .blPane :global(.bl-combo-price) span:last-child { display: none; }
+  .blPane :global(.bl-combo) button > span { font-size: 9.5px !important; padding: 2px 6px !important; }
+
+  /* ── Тарифы: список возможностей только у выбранного ─────────────────────
+     Восемь строк «есть/нет» на каждой из трёх карточек — три экрана подряд,
+     хотя сравнивают их по цене, а разбирают одну. Карточка тарифа кликабельна
+     и так (выбирает тариф), поэтому раскрытие ничего нового не требует. */
+  .blPane :global(.bl-plans) { gap: 8px !important; }
+  .blPane :global(.bl-plan) { padding: 12px !important; border-radius: 14px !important; }
+  .blPane :global(.bl-plan-feats) { display: none !important; }
+  .blPane :global(.bl-plan.sel) :global(.bl-plan-feats) {
+    display: flex !important;
+    gap: 7px !important;
+    margin-bottom: 12px !important;
+  }
+  .blPane :global(.bl-plan-feats) span { font-size: 12px !important; }
+  /* Плитка-кружок тарифа: цвет тарифа несёт и рамка карточки */
+  .blPane :global(.bl-plan) > div:first-child { margin-bottom: 8px !important; }
+  .blPane :global(.bl-plan) > div:first-child > div:first-child { width: 30px !important; height: 30px !important; border-radius: 10px !important; }
+  .blPane :global(.bl-plan) span[style*="font-size: 32px"] { font-size: 23px !important; }
+  .blPane :global(.bl-plan) > div[style*="height: 1px"] { margin: 10px 0 !important; }
+  .blPane :global(.bl-plan) > button { padding: 10px !important; font-size: 12.5px !important; }
+
+  /* ── Отзывы: рельс вбок вместо трёх карточек друг под другом ────────────── */
+  .blPane :global(.bl-trust) { padding: 13px !important; border-radius: 14px !important; }
+  .blPane :global(.bl-trust) > div > div:first-child { margin-bottom: 12px !important; }
+  .blPane :global(.bl-reviews) {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .blPane :global(.bl-reviews)::-webkit-scrollbar { display: none; }
+  .blPane :global(.bl-reviews) > div {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+    padding: 11px 12px !important;
+    border-radius: 12px !important;
+  }
+  .blPane :global(.bl-reviews) > div > div:nth-child(2) { font-size: 12px !important; line-height: 1.5 !important; }
+}

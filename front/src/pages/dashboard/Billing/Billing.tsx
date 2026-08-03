@@ -7,13 +7,16 @@ import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
 import UpgradeModal from './components/modals/UpgradeModal';
 import PaymentMethodModal from './components/modals/PaymentMethodModal';
+import styles from './Billing.module.css';
 
 export default function Billing() {
   const { t } = useTranslation('billing');
   const h = useBillingCalculator();
 
   return (
-    <div style={{ padding: '0 0 60px 0' }}>
+    // Класс — зацепка для телефонных правил: страница свёрстана инлайном
+    // (см. блок «ТЕЛЕФОН» в Billing.module.css).
+    <div className={styles.blPane} style={{ padding: '0 0 60px 0' }}>
       <BillingHeader
         activeTab={h.activeTab}
         setActiveTab={h.setActiveTab}

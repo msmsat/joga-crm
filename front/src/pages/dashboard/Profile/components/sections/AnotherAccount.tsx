@@ -39,7 +39,9 @@ export default function AnotherAccount() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px' }}>
+      {/* На телефоне кнопки не растягиваются на пол-экрана каждая (см. .authRow):
+          это редкое действие — войти в чужой аккаунт, — а не главный CTA страницы. */}
+      <div className={styles.authRow} style={{ display: 'flex', gap: '10px' }}>
         <Button variant="primary" icon={icons.login} style={{ flex: 1 }} onClick={() => goLogin()}>
           {t('profile:accounts.login')}
         </Button>

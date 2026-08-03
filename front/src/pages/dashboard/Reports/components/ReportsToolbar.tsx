@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Select } from '../../../../components/ui/index';
+import { Select, usePopoverPosition } from '../../../../components/ui/index';
 import type { SelectOption } from '../../../../components/ui/index';
+import { usePhone } from '../../../../hooks/usePhone';
 import s from '../Reports.module.css';
 import { MIN_REPORT_DATE, TAB_FILTERS } from '../constants';
 import type { Tab, ReportPeriod, ReportFilters } from '../types';
@@ -71,6 +73,103 @@ function DateRangeInputs({ from, to, onChange }: { from: string; to: string; onC
   );
 }
 
+/**
+ * Телефон: пять сегментов периода — это 280px, то есть вся строка, и кнопка
+ * экспорта уезжала на свою. Вместо сегментов — одна кнопка во всю оставшуюся
+ * ширину с текущим периодом; выбор и поля произвольного диапазона живут в
+ * поповере, который она открывает. Экспорт остаётся справа от неё.
+ */
+function PeriodPicker({
+  value, from, to, onChange, onRangeChange,
+}: {
+  value: ReportPeriod;
+  from: string;
+  to: string;
+  onChange: (p: ReportPeriod) => void;
+  onRangeChange: (from: string, to: string) => void;
+}) {
+  const { t } = useTranslation('reports');
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const close = () => setOpen(false);
+  const placement = usePopoverPosition(open, btnRef, popRef, 'bottom', close);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (btnRef.current?.contains(target) || popRef.current?.contains(target)) return;
+      close();
+    };
+    window.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, [open]);
+
+  // Произвольный период подписан самим диапазоном: слово «произвольный» на
+  // кнопке не говорит, какие даты выбраны.
+  const label = value === 'custom' && from && to
+    ? `${fmtShort(from)} — ${fmtShort(to)}`
+    : t(`toolbar.period.${value}`);
+
+  return (
+    <>
+      <button ref={btnRef} type="button" className="rt-period-btn" onClick={() => setOpen(o => !o)}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="2.5" /><path d="M3 10h18M8 2v4M16 2v4" />
+        </svg>
+        <span className="rt-period-btn-label">{label}</span>
+        <svg className="rt-period-btn-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {open && createPortal(
+        <div
+          ref={popRef}
+          className="rt-period-pop"
+          role="dialog"
+          style={{
+            position: 'fixed',
+            top: placement ? `${placement.top}px` : 0,
+            left: placement ? `${placement.left}px` : 0,
+            visibility: placement ? 'visible' : 'hidden',
+            zIndex: 1200,
+          }}
+        >
+          {PERIODS.map(p => (
+            <button
+              key={p}
+              type="button"
+              className={`rt-period-opt${value === p ? ' active' : ''}`}
+              onClick={() => { onChange(p); if (p !== 'custom') close(); }}
+            >
+              {t(`toolbar.period.${p}`)}
+              {value === p && (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+
+          {value === 'custom' && (
+            <div className="rt-period-range">
+              <DateRangeInputs from={from} to={to} onChange={onRangeChange} />
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
 function fmtShort(iso: string): string {
   if (!iso) return '';
   const [, m, d] = iso.split('-');
@@ -130,6 +229,7 @@ export function ReportsToolbar({
   const { t } = useTranslation('reports');
   const [exported, setExported] = useState(false);
   const visibleFilters = TAB_FILTERS[activeTab];
+  const isPhone = usePhone();
 
   const fire = () => {
     onExport();
@@ -165,6 +265,48 @@ export function ReportsToolbar({
           .rt-export { padding: 8px !important; }
           .rt-export-label { display: none; }
         }
+
+        /* Телефон: кнопка периода тянется на всю строку, кроме экспорта */
+        .rt-period-btn {
+          display: flex; align-items: center; gap: 8px;
+          flex: 1 1 0; min-width: 0;
+          padding: 8px 11px; border-radius: 10px;
+          border: 1px solid var(--border);
+          background: var(--bg-card);
+          color: var(--text2);
+          font-size: 12.5px; font-weight: 700; font-family: var(--font);
+          cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .rt-period-btn svg { flex-shrink: 0; }
+        .rt-period-btn-label {
+          flex: 1; min-width: 0; text-align: left; color: var(--text);
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .rt-period-btn-chev { opacity: 0.5; }
+
+        .rt-period-pop {
+          width: min(260px, calc(100vw - 24px));
+          padding: 6px;
+          background: var(--bg-card, #FFFFFF);
+          border: 1px solid rgba(var(--ink),0.08);
+          border-radius: 14px;
+          box-shadow: 0 24px 56px -12px rgba(26,26,26,0.24), 0 6px 16px -8px rgba(26,26,26,0.1);
+          font-family: var(--font, 'Manrope', sans-serif);
+          box-sizing: border-box;
+        }
+        .rt-period-opt {
+          display: flex; align-items: center; justify-content: space-between; gap: 8px;
+          width: 100%; padding: 10px 11px;
+          border: none; border-radius: 9px; background: none;
+          font-size: 13px; font-weight: 700; font-family: inherit;
+          color: var(--text2); cursor: pointer; text-align: left;
+        }
+        .rt-period-opt.active { background: rgba(249,160,139,0.1); color: #F9A08B; }
+        .rt-period-range {
+          margin-top: 4px; padding: 10px 11px 4px;
+          border-top: 1px dashed rgba(var(--ink),0.1);
+        }
+        .rt-period-range input { flex: 1 1 0; min-width: 0; }
       `}</style>
 
       {exported && (
@@ -198,11 +340,23 @@ export function ReportsToolbar({
             «резерв» под диапазон дат тоже убран — он висел даже когда период
             не «произвольный», и съедал 236px просто так. */}
         <div className={s.barCtl}>
-          <PeriodSelector value={filters.period} onChange={onPeriodChange} />
-          {filters.period === 'custom' && (
-            <div className="rt-dates" style={{ flexShrink: 0 }}>
-              <DateRangeInputs from={filters.dateFrom} to={filters.dateTo} onChange={onCustomRangeChange} />
-            </div>
+          {isPhone ? (
+            <PeriodPicker
+              value={filters.period}
+              from={filters.dateFrom}
+              to={filters.dateTo}
+              onChange={onPeriodChange}
+              onRangeChange={onCustomRangeChange}
+            />
+          ) : (
+            <>
+              <PeriodSelector value={filters.period} onChange={onPeriodChange} />
+              {filters.period === 'custom' && (
+                <div className="rt-dates" style={{ flexShrink: 0 }}>
+                  <DateRangeInputs from={filters.dateFrom} to={filters.dateTo} onChange={onCustomRangeChange} />
+                </div>
+              )}
+            </>
           )}
           <ComparisonBadge from={comparisonRange?.from ?? ''} to={comparisonRange?.to ?? ''} visible={!!comparisonRange} />
           <button

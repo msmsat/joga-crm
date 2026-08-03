@@ -90,7 +90,10 @@ export default function GeneralTab() {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div className="card" style={{ padding: "28px 28px 24px" }}>
         <SectionHeader icon={icons.building} title={t('general.company.title')} subtitle={t('general.company.subtitle')} />
-        <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
+        {/* Класс нужен телефону: там логотип 96px рядом с полями оставлял им
+            71px ширины — в поле не влезало даже название студии. На узком
+            экране строка становится колонкой (см. Settings.css). */}
+        <div className="set-logo-row" style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
           <label
             onMouseEnter={() => setLogoHover(true)}
             onMouseLeave={() => setLogoHover(false)}

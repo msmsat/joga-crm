@@ -13,19 +13,22 @@ export default function PeriodSelector({ selectedPeriod, setSelectedPeriod, peri
   const { t } = useTranslation('billing');
 
   return (
-    <div style={{ padding: '24px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div className="bl-card bl-period" style={{ padding: '24px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
+      {/* На телефоне шапка раскладывается display:contents (см. .bl-period-head),
+          и плашка «скидка активна» уходит под плитки — над ними она садилась на
+          бейдж «Лучший выбор». */}
+      <div className="bl-period-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div className="bl-period-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <CalendarIcon />
           <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('period.title')}</span>
         </div>
         {selectedPeriod > 1 && (
-          <div style={{ padding: '4px 12px', background: 'rgba(163,201,168,0.15)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '100px', fontSize: '12px', fontWeight: 700, color: 'var(--pistachio)' }}>
+          <div className="bl-period-badge" style={{ padding: '4px 12px', background: 'rgba(163,201,168,0.15)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '100px', fontSize: '12px', fontWeight: 700, color: 'var(--pistachio)' }}>
             {t('period.discountActive', { percent: periodDiscounts[selectedPeriod] * 100 })}
           </div>
         )}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
+      <div className="bl-periods" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
         {([
           { period: 1  as const, discount: 0,  popular: false },
           { period: 6  as const, discount: 20, popular: false },

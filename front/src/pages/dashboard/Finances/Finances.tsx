@@ -13,6 +13,7 @@ import PaymentMethodsTab from './components/tabs/PaymentMethodsTab';
 import ReportsTab from './components/tabs/ReportsTab';
 import GoalsTab from './components/tabs/GoalsTab';
 import SalariesTab from './components/tabs/SalariesTab';
+import styles from './Finances.module.css';
 
 const TAB_ICONS: Record<Tab, React.ReactNode> = {
   accounts: <Ico.Dollar />,
@@ -86,9 +87,12 @@ export default function Finances() {
         ))}
       </div>
 
-      {/* Контент — собственный скролл-контейнер; key сбрасывает скролл при смене таба */}
+      {/* Контент — собственный скролл-контейнер; key сбрасывает скролл при смене таба.
+          Класс нужен телефонным правилам: карточки всех вкладок свёрстаны
+          инлайном, и уплотнить их можно только отсюда (см. .finPane). */}
       <div
         key={activeTab}
+        className={styles.finPane}
         style={{
           flex: 1,
           overflowY: 'auto',

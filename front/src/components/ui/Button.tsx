@@ -59,7 +59,11 @@ export function Button({
   const lift = hovered && !off && variant !== 'ghost';
 
   return (
+    // Класс — зацепка для медиазапросов: размеры кнопка задаёт инлайном, а на
+    // телефоне 12/20px полей при кегле 14 — это кнопка почти во весь экран
+    // (см. блок «ТЕЛЕФОН» в App.css).
     <button
+      className="v-btn"
       type={type}
       onClick={onClick}
       disabled={off}

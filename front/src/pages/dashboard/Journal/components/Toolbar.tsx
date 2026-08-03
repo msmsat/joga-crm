@@ -102,8 +102,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           style={{ width: 'clamp(132px, 12vw, 180px)', flexShrink: 0, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)', gap: '10px' }}
         >
           <Icons.Calendar />
+          {/* Год и подпись «Сегодня» вынесены в span-ы не для красоты: на
+              телефоне их прячет CSS, иначе строка навигации по дате не
+              помещается в 320px и «Сегодня» уезжает на отдельный этаж. */}
           <span style={{ display: 'inline-block', textAlign: 'center' }}>
-            {selectedDay} {monthName(calMonth, i18n.language)} {calYear}
+            {selectedDay} {monthName(calMonth, i18n.language)}{' '}
+            <span className="j-date-year">{calYear}</span>
           </span>
         </button>
       )}
@@ -113,15 +117,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </button>
 
       <button
-        className="btn-ghost-sm"
+        className="btn-ghost-sm j-today-btn"
         onClick={onGoToToday}
+        title={t('toolbar.today')}
       >
         <Icons.Today />
-        {t('toolbar.today')}
+        <span className="j-today-label">{t('toolbar.today')}</span>
       </button>
 
       <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
+      {/* Обёртка нужна только телефону: там она становится второй строкой
+          тулбара, которая листается вбок, — иначе переключатели и фильтры
+          расползались на три этажа и съедали 177px из 568. На десктопе у неё
+          display:contents, то есть в раскладке её просто нет. */}
+      <div className="j-tb-controls">
       {/* Вид: тренеры / залы */}
       <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
         <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
@@ -185,6 +195,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           {t('toolbar.week')}
         </button>
+      </div>
       </div>
     </div>
   );

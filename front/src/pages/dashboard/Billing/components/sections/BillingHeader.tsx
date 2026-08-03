@@ -3,6 +3,7 @@ import type { BillingTab, BillingPlan, PlanType } from '../../types';
 import type { BillingStats } from '../../../../../api/billing/billing.types';
 import { CalendarIcon, CreditCardIcon, TrendingIcon, ZapIcon } from '../ui/BillingIcons';
 import AnimatedCounter from '../ui/AnimatedCounter';
+import { usePhone } from '../../../../../hooks/usePhone';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { formatMoney } from '../../../../../lib/money';
@@ -20,6 +21,9 @@ const TAB_IDS: BillingTab[] = ['plans', 'invoices', 'method'];
 
 export default function BillingHeader({ activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
   const { t, i18n } = useTranslation('billing');
+  // «Тарифы и планы» + «История платежей» + «Способ оплаты» — 320px в трёх
+  // кнопках, которые делят 298. На телефоне подписи короткие.
+  const isPhone = usePhone();
   const currency = useStudioCurrency();
   const currencySymbol = getCurrencySymbol(currency);
 
@@ -57,7 +61,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
 
   return (
     <>
-      <div style={{ padding: '32px 32px 0', marginBottom: '32px' }}>
+      <div className="bl-head" style={{ padding: '32px 32px 0', marginBottom: '32px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--peach)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>
@@ -71,7 +75,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
             </p>
           </div>
 
-          <div style={{ padding: '16px 24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '16px', textAlign: 'right' }}>
+          <div className="bl-now" style={{ padding: '16px 24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '16px', textAlign: 'right' }}>
             <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>{t('header.currentPlan')}</div>
             <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)' }}>
               {planLabel}
@@ -92,7 +96,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px', marginTop: '24px' }}>
+        <div className="bl-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px', marginTop: '24px' }}>
           {STATS.map((stat, i) => (
             <div key={i} style={{
               padding: '16px 20px', background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -116,7 +120,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
       </div>
 
       <div style={{ padding: '0 var(--card-pad)', marginBottom: '28px' }}>
-        <div style={{ display: 'inline-flex', gap: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '4px' }}>
+        <div className="bl-tabs" style={{ display: 'inline-flex', gap: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '4px' }}>
           {TAB_IDS.map(id => (
             <button
               key={id}
@@ -128,7 +132,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
                 color: activeTab === id ? 'white' : 'var(--muted)',
                 boxShadow: activeTab === id ? '0 2px 12px rgba(252,174,145,0.35)' : 'none',
               }}
-            >{t(`tabs.${id}`)}</button>
+            >{t(isPhone ? `tabsShort.${id}` : `tabs.${id}`)}</button>
           ))}
         </div>
       </div>
