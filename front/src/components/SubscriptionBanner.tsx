@@ -51,9 +51,9 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
   const bg = willRenew ? 'rgba(163,201,168,0.12)' : 'rgba(249,160,139,0.12)';
 
   return (
-    <div style={{
+    <div className="sub-banner" style={{
       display: 'flex', alignItems: 'center', gap: '12px',
-      padding: '10px 24px', background: bg, borderBottom: `1px solid ${accent}40`,
+      padding: '10px var(--content-pad, 24px)', background: bg, borderBottom: `1px solid ${accent}40`,
       fontSize: '13.5px', fontWeight: 600, color: 'var(--text, #1A1A1A)',
     }}>
       <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: accent, flexShrink: 0 }} />

@@ -92,7 +92,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px', marginTop: '24px' }}>
           {STATS.map((stat, i) => (
             <div key={i} style={{
               padding: '16px 20px', background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -115,7 +115,7 @@ export default function BillingHeader({ activeTab, setActiveTab, animateCards, p
         </div>
       </div>
 
-      <div style={{ padding: '0 32px', marginBottom: '28px' }}>
+      <div style={{ padding: '0 var(--card-pad)', marginBottom: '28px' }}>
         <div style={{ display: 'inline-flex', gap: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '4px' }}>
           {TAB_IDS.map(id => (
             <button

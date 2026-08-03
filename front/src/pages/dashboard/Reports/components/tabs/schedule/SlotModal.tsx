@@ -127,7 +127,9 @@ export function SlotModal({ open, onClose, title, subtitle, rows, loading }: Slo
   if (!open) return null;
 
   const left = (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    // vml-summary: на планшете колонка разворачивается лентой над списком —
+    // цифр сводки нет в таблице, терять их нельзя (см. App.css).
+    <div className="vml-summary" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ fontSize: '32px', fontWeight: 900, color: 'var(--text)', letterSpacing: '-1px' }}>
         {fmtInt(summary.totalLessons)}
       </div>

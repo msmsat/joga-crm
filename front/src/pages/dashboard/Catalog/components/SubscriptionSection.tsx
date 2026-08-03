@@ -114,7 +114,7 @@ export function SubscriptionSection() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gap: '16px' }}>
           {packages.map(pkg => {
             const punches = Math.min(pkg.class_count, PUNCH_LIMIT);
             return (

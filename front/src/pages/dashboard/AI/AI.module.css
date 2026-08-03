@@ -21,10 +21,22 @@
   overflow: hidden;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1440px) {
   .leftPanel {
     width: 264px;
     min-width: 264px;
+  }
+}
+@media (max-width: 1280px) {
+  .leftPanel {
+    width: 232px;
+    min-width: 232px;
+  }
+}
+@media (max-width: 1040px) {
+  .leftPanel {
+    width: 200px;
+    min-width: 200px;
   }
 }
 
@@ -438,6 +450,78 @@
 .agentCountOn {
   background: rgba(249,160,139,0.16);
   color: #F9A08B;
+}
+
+/* ─── AGENT INFO POPOVER ────────────────────────────────────────────────────── */
+/* i-кнопка 22px не должна раздувать шапку карточки (заголовок ~14px). */
+.agentInfoBtn {
+  display: inline-flex;
+  margin: -4px 0 -4px -1px;
+}
+
+/* Внутри ониксовой плашки InfoHint: цвет текста наследуем от плашки и гасим
+   прозрачностью — литеральный белый пропал бы на светлой плашке тёмной темы. */
+.agentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
+.agentInfoLead {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.agentInfoList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.agentInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.agentInfoIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(140deg, #FCAE91 0%, #F9A08B 100%);
+  color: #3A2118;
+  box-shadow: 0 3px 10px -3px rgba(249,160,139,0.55);
+}
+
+.agentInfoText {
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.agentInfoDivider {
+  height: 1px;
+  background: currentColor;
+  opacity: 0.14;
+}
+
+.agentInfoNote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  line-height: 1.35;
+  opacity: 0.6;
 }
 
 .agentRow {
@@ -947,3 +1031,70 @@
   justify-content: center;
   font-family: var(--font, 'Manrope', sans-serif);
 }
+
+/* ─── Кнопка колонки истории (только телефон) ───────────────────────────────
+   Вне медиазапроса — display:none, чтобы на десктопе не перекрывала шапку
+   чата: там колонка стоит в потоке и прятать её не от чего. */
+.panelToggle { display: none; }
+.panelScrim { display: none; }
+
+/* ─── ТЕЛЕФОН: история и агенты выезжают поверх чата ────────────────────────
+   200px колонки от 360px экрана — это чат в оставшейся половине, где не
+   помещается ни сообщение, ни поле ввода. Колонка уходит за левый край и
+   возвращается по кнопке; чат получает экран целиком. */
+@media (max-width: 767px) {
+  .page { position: relative; }
+
+  .leftPanel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    width: min(300px, 84vw);
+    min-width: 0;
+    background: var(--bg);
+    box-shadow: 12px 0 40px -12px rgba(0,0,0,0.28);
+    transform: translateX(-102%);
+    transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .pagePanelOpen .leftPanel { transform: none; }
+
+  .panelScrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 35;
+    background: rgba(0,0,0,0.4);
+    animation: aiScrimIn 0.22s ease both;
+  }
+
+  /* У ленты чата своей шапки нет, поэтому кнопка висит над ней — освобождаем
+     ей строку, иначе первое сообщение уезжает под кнопку. */
+  .messagesArea { padding-top: 56px; }
+  .emptyState { min-height: 0; }
+  /* Иллюстрация пустого состояния нарисована на 300px — шире, чем колонка
+     чата на 320px-экране, и вылезала за неё. */
+  .emptyState svg { max-width: 100%; height: auto; }
+
+  /* Кнопка сидит там, где на десктопе край колонки истории */
+  .panelToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 45;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text2);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@keyframes aiScrimIn { from { opacity: 0 } to { opacity: 1 } }

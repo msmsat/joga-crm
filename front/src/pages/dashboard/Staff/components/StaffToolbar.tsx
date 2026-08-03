@@ -28,7 +28,9 @@ export function StaffToolbar({
         <button className="add-btn" onClick={onAddClick} title={t('toolbar.addEmployee')}>+</button>
       </div>
 
-      <div style={{ padding: '8px 10px 0' }}>
+      {/* Классы нужны планшетной раскладке: там панель ложится строкой и
+          поиску с фильтрами задают ширину из Staff.css (см. max-width: 900px) */}
+      <div className="staff-search" style={{ padding: '8px 10px 0' }}>
         <div style={{ position: 'relative' }}>
           <svg
             width="12" height="12" viewBox="0 0 24 24"
@@ -57,7 +59,7 @@ export function StaffToolbar({
       </div>
 
       {availableGroups.length > 2 && (
-        <div style={{ padding: '8px 10px 6px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+        <div className="staff-groups" style={{ padding: '8px 10px 6px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {availableGroups.map(g => (
             <button
               key={g}

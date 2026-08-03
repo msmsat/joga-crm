@@ -77,7 +77,8 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 24px',
+      padding: '0 var(--content-pad)',
+      gap: '8px',
       height: 'var(--topbar-h)',
       background: 'var(--bg-card, #FFFFFF)',
       borderBottom: '1px solid rgba(var(--ink),0.04)',
@@ -135,18 +136,18 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       `}</style>
 
       {/* 1. ЛЕВАЯ ЧАСТЬ (Заголовки) */}
-      <div style={{ flex: '1 1 0%', minWidth: 0 }}>
-        <div className="topbar-title" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>{title}</div>
-        <div className="topbar-subtitle" style={{ fontSize: '13px', color: 'var(--muted)', marginTop: '2px' }}>{subtitle}</div>
+      <div className="topbar-head" style={{ flex: '1 1 0%', minWidth: 0 }}>
+        <div className="topbar-title" style={{ fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>{title}</div>
+        <div className="topbar-subtitle" style={{ color: 'var(--muted)', marginTop: '2px' }}>{subtitle}</div>
       </div>
 
       {/* 2. ЦЕНТРАЛЬНАЯ ЧАСТЬ (Премиальный AI-Инпут) */}
-      <div ref={aiSearchRef} style={{ flex: '0 1 var(--ai-search-w)', padding: '0 24px', position: 'relative' }}>
+      <div ref={aiSearchRef} className="topbar-ai" style={{ flex: '0 1 var(--ai-search-w)', minWidth: 0, position: 'relative' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          height: '44px',
+          height: 'var(--tb-ai-h, 44px)',
           background: 'var(--bg-card)',
           borderRadius: panelOpen ? '14px 14px 4px 4px' : '14px', // Срастается с панелью снизу, когда она открыта
           border: isAiFocused ? '1px solid #F9A08B' : '1px solid rgba(var(--ink),0.08)',
@@ -214,12 +215,13 @@ export function Navbar({ title, subtitle }: NavbarProps) {
         <div style={{
           position: 'absolute',
           top: '100%',
-          left: '24px',
-          right: '24px',
-          maxHeight: panelOpen ? '420px' : '0px',
+          left: 'var(--tb-ai-pad, 24px)',
+          right: 'var(--tb-ai-pad, 24px)',
+          maxHeight: panelOpen ? 'min(420px, calc(100vh - var(--topbar-h) - 32px))' : '0px',
+          overflowY: panelOpen ? 'auto' : 'hidden',
           opacity: panelOpen ? 1 : 0,
           transform: panelOpen ? 'translateY(0)' : 'translateY(-6px)',
-          overflow: 'hidden',
+          overflowX: 'hidden',
           transition: 'max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
           pointerEvents: panelOpen ? 'auto' : 'none',
           zIndex: 20,
@@ -318,16 +320,18 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       </div>
 
       {/* 3. ПРАВАЯ ЧАСТЬ (Кнопки) */}
-      <div style={{ flex: '1 1 0%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+      <div className="topbar-actions" style={{ flex: '1 1 0%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
 
         <button
           onClick={toggleDrawer}
+          className="topbar-action"
+          aria-label="AI"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
             padding: '0 16px',
-            height: '38px',
+            height: 'var(--tb-btn-h, 38px)',
             borderRadius: '10px',
             border: isDrawerOpen ? '1.5px solid rgba(249,160,139,0.5)' : '1.5px solid rgba(var(--ink),0.1)',
             background: isDrawerOpen ? 'rgba(249,160,139,0.08)' : 'rgba(var(--ink),0.03)',
@@ -343,13 +347,18 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>
           </svg>
-          AI
+          <span className="tb-label">AI</span>
         </button>
 
         <button
           onClick={handlePrimaryBtn}
+          className="topbar-action"
+          aria-label={t('menu:navbar.create')}
           style={{
-            height: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            height: 'var(--tb-btn-h, 38px)',
             padding: '0 18px',
             background: 'var(--onyx)', // Строгий оникс, в тёмной теме — светлая пилюля
             color: 'var(--bg)',
@@ -371,7 +380,8 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             e.currentTarget.style.boxShadow = '0 4px 12px rgba(26,26,26,0.15)';
           }}
         >
-          + {t('menu:navbar.create')}
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          <span className="tb-label">{t('menu:navbar.create')}</span>
         </button>
       </div>
     </div>

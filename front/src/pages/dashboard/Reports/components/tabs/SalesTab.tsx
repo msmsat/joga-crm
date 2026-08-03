@@ -180,7 +180,7 @@ export function SalesTab({ params, paramsKey, registerCsvExport, onWidenPeriod }
 
   return (
     <>
-      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: '20px' }}>
+      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', marginBottom: '20px' }}>
         <KpiStat
           label={t('sales.kpi.revenue')}
           value={kpi?.revenue.value ?? 0}

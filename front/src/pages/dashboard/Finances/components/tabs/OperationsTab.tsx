@@ -256,7 +256,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
   return (
     <>
       {/* 1. Сводные карточки — по загруженным операциям */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 'var(--grid-gap)', marginBottom: 'var(--section-gap)' }}>
         <div style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(var(--ink),0.04)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s', cursor: 'default' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
           <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(163,201,168,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -292,7 +292,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
       </div>
 
       {/* 2. Панель управления */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', background: 'var(--bg-card)', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.04)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--grid-gap)', marginBottom: 'var(--section-gap)', background: 'var(--bg-card)', padding: '12px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.04)', boxShadow: '0 8px 32px -8px rgba(26,26,26,0.04)', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
           <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: isSearchFocused ? '#F9A08B' : 'var(--text3)', transition: 'color 0.2s', pointerEvents: 'none' }}><Ico.Search /></div>
           <input type="text" placeholder={t('operations.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} style={{ width: '100%', height: '48px', paddingLeft: '44px', paddingRight: search ? '40px' : '16px', background: 'var(--bg)', border: isSearchFocused ? '1.5px solid #F9A08B' : '1.5px solid rgba(var(--ink),0.06)', borderRadius: '12px', fontSize: '14px', fontWeight: 500, color: 'var(--onyx)', outline: 'none', boxShadow: isSearchFocused ? '0 0 0 3px rgba(249, 160, 139, 0.12)' : 'none', transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box', fontFamily: "'Manrope', sans-serif" }} />

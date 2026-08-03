@@ -332,3 +332,19 @@
   transform: translateX(-50%);
 }
 .tooltipWrap:hover .tooltipBox { display: block; }
+
+/* ─── ТЕЛЕФОН ──────────────────────────────────────────────────────────────
+   Панель настройки программы разворачивается во весь экран (--drawer-w на
+   телефоне равна 100vw), но останавливается над нижней панелью навигации:
+   иначе та легла бы поверх кнопок «Сохранить»/«Отмена» в футере панели. */
+@media (max-width: 767px) {
+  .drawer {
+    bottom: var(--mnav-safe, 60px);
+    border-left: none;
+    border-top-right-radius: 16px;
+  }
+  .drawerHeader { padding: 16px 16px 14px; }
+  .drawerBody { padding: 16px; }
+  .drawerFooter { padding: 12px 16px 14px; }
+  .programCard { padding: 16px; }
+}

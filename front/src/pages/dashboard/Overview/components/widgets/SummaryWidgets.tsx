@@ -38,7 +38,7 @@ export default function SummaryWidgets({ services, trainers, summary, currencySy
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
                 <span>{s.service}</span><span style={{ fontWeight: 700 }}>{Math.round(s.share_pct)}%</span>
               </div>
-              <div style={{ height: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px' }}>
+              <div style={{ height: '4px', background: 'rgba(var(--ink),0.05)', borderRadius: '4px' }}>
                 <div style={{ width: `${s.share_pct}%`, height: '100%', background: BAR_COLORS[i % BAR_COLORS.length], borderRadius: '4px', transition: 'width 1s' }} />
               </div>
             </div>
@@ -58,7 +58,7 @@ export default function SummaryWidgets({ services, trainers, summary, currencySy
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
                   <span>{tr.name}</span><span style={{ fontWeight: 700 }}>{pct}%</span>
                 </div>
-                <div style={{ height: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px' }}>
+                <div style={{ height: '4px', background: 'rgba(var(--ink),0.05)', borderRadius: '4px' }}>
                   <div style={{ width: `${pct}%`, height: '100%', background: BAR_COLORS[i % BAR_COLORS.length], borderRadius: '4px' }} />
                 </div>
               </div>

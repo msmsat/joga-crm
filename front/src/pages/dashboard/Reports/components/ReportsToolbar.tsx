@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select } from '../../../../components/ui/index';
 import type { SelectOption } from '../../../../components/ui/index';
+import s from '../Reports.module.css';
 import { MIN_REPORT_DATE, TAB_FILTERS } from '../constants';
 import type { Tab, ReportPeriod, ReportFilters } from '../types';
 
@@ -11,20 +12,21 @@ const PERIODS: ReportPeriod[] = ['day', 'week', 'month', 'year', 'custom'];
 function PeriodSelector({ value, onChange }: { value: ReportPeriod; onChange: (p: ReportPeriod) => void }) {
   const { t } = useTranslation('reports');
   return (
-    <div style={{
+    <div className="rt-periods" style={{
       display: 'flex', background: 'rgba(var(--ink),0.04)', borderRadius: '10px',
       padding: '3px', gap: '2px', border: '1px solid var(--border)',
     }}>
       {PERIODS.map((p) => (
-        <button key={p} onClick={() => onChange(p)} style={{
-          padding: '5px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+        <button key={p} onClick={() => onChange(p)} className="rt-period" style={{
+          padding: 'var(--rt-period-pad, 5px 12px)', borderRadius: '8px', border: 'none', cursor: 'pointer',
+          minWidth: 'var(--rt-period-w, 62px)',
           fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font)',
           transition: 'all 0.2s cubic-bezier(0.34,1.2,0.64,1)',
           background: value === p ? 'var(--bg-card)' : 'transparent',
           color: value === p ? 'var(--text)' : 'var(--text3)',
           boxShadow: value === p ? '0 1px 6px rgba(26,26,26,0.1)' : 'none',
           transform: value === p ? 'translateY(-0.5px)' : 'none',
-          minWidth: '62px', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto',
         }}>
           {t(`toolbar.period.${p}`)}
         </button>
@@ -78,7 +80,9 @@ function fmtShort(iso: string): string {
 function ComparisonBadge({ from, to, visible }: { from: string; to: string; visible: boolean }) {
   const { t } = useTranslation('reports');
   return (
-    <div style={{
+    // На узком экране бейдж «vs предыдущий период» скрывается (.rt-vs) —
+    // это подпись к цифрам, а не управляющий элемент.
+    <div className="rt-vs" style={{
       padding: '5px 10px', borderRadius: '8px', background: 'rgba(var(--ink),0.04)',
       fontSize: '11px', fontWeight: 600, color: 'var(--text3)', whiteSpace: 'nowrap',
       minWidth: '172px', textAlign: 'center', flexShrink: 0, fontVariantNumeric: 'tabular-nums',
@@ -139,7 +143,7 @@ export function ReportsToolbar({
     allOptions: SelectOption[],
     allLabel: string,
   ) => (
-    <div style={{ minWidth: '140px' }}>
+    <div className={s.barFilter} key={key}>
       <Select
         value={value != null ? String(value) : ''}
         options={[{ value: '', label: allLabel }, ...allOptions]}
@@ -152,6 +156,15 @@ export function ReportsToolbar({
     <>
       <style>{`
         @keyframes rtToastIn { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+        @media (max-width: 1400px) { .rt-vs { display: none; } }
+        /* Планшет: период и экспорт ужимаются, чтобы фильтры влезли в тот же
+           ряд. У экспорта остаётся иконка — подпись дублирует и title, и
+           единственную кнопку такого цвета на экране. */
+        @media (max-width: 1024px) {
+          :root { --rt-period-w: 0px; --rt-period-pad: 5px 9px; }
+          .rt-export { padding: 8px !important; }
+          .rt-export-label { display: none; }
+        }
       `}</style>
 
       {exported && (
@@ -168,8 +181,11 @@ export function ReportsToolbar({
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-        <div className="tabs" style={{ margin: 0 }}>
+      {/* Один контейнер на три группы: строки собирает flex-basis, а не
+          разметка, поэтому на планшете фильтры переезжают в ряд к периоду
+          без второго варианта JSX (см. .bar в Reports.module.css). */}
+      <div className={s.bar}>
+        <div className={`tabs ${s.barTabs}`} style={{ margin: 0 }}>
           {tabs.map(tab => (
             <div key={tab} className={`tab ${activeTab === tab ? 'active' : ''}`} onClick={() => onTabChange(tab)}>
               {t(`tabs.${tab}`)}
@@ -177,16 +193,22 @@ export function ReportsToolbar({
           ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto', flexWrap: 'nowrap' }}>
+        {/* wrap, а не nowrap: на ноутбуке период + диапазон + бейдж + экспорт
+            в одну строку не влезали и уезжали за край карточки. Пустой
+            «резерв» под диапазон дат тоже убран — он висел даже когда период
+            не «произвольный», и съедал 236px просто так. */}
+        <div className={s.barCtl}>
           <PeriodSelector value={filters.period} onChange={onPeriodChange} />
-          <div style={{ width: '236px', flexShrink: 0 }}>
-            {filters.period === 'custom' && (
+          {filters.period === 'custom' && (
+            <div className="rt-dates" style={{ flexShrink: 0 }}>
               <DateRangeInputs from={filters.dateFrom} to={filters.dateTo} onChange={onCustomRangeChange} />
-            )}
-          </div>
+            </div>
+          )}
           <ComparisonBadge from={comparisonRange?.from ?? ''} to={comparisonRange?.to ?? ''} visible={!!comparisonRange} />
           <button
             onClick={fire}
+            className="rt-export"
+            title={t('toolbar.export')}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '7px 14px', borderRadius: '10px', border: 'none',
@@ -194,20 +216,19 @@ export function ReportsToolbar({
               fontSize: '12px', fontWeight: 700, color: '#fff',
               cursor: 'pointer', fontFamily: 'var(--font)',
               boxShadow: '0 4px 14px rgba(249,160,139,0.3)',
+              flexShrink: 0,
             }}
           >
-            <CsvIcon />{t('toolbar.export')}
+            <CsvIcon /><span className="rt-export-label">{t('toolbar.export')}</span>
           </button>
         </div>
-      </div>
 
-      {/* minHeight = высота Select кита — ряд не схлопывается и не дёргает страницу,
-          когда вкладка показывает 2 фильтра вместо 4 (см. R10, борьба с layout shift). */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '20px', minHeight: '45px' }}>
-        {visibleFilters.includes('branch') && selectFilter('branchId', filters.branchId, options.branches, t('toolbar.allBranches'))}
-        {visibleFilters.includes('hall') && selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
-        {visibleFilters.includes('trainer') && selectFilter('trainerId', filters.trainerId, options.trainers, t('toolbar.allTrainers'))}
-        {visibleFilters.includes('service') && selectFilter('serviceId', filters.serviceId, options.services, t('toolbar.allServices'))}
+        <div className={s.barFilters}>
+          {visibleFilters.includes('branch') && selectFilter('branchId', filters.branchId, options.branches, t('toolbar.allBranches'))}
+          {visibleFilters.includes('hall') && selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
+          {visibleFilters.includes('trainer') && selectFilter('trainerId', filters.trainerId, options.trainers, t('toolbar.allTrainers'))}
+          {visibleFilters.includes('service') && selectFilter('serviceId', filters.serviceId, options.services, t('toolbar.allServices'))}
+        </div>
       </div>
     </>
   );

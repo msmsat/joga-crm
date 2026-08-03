@@ -112,6 +112,14 @@
   },
   "agents": {
     "title": "AI agents",
+    "info": {
+      "title": "What AI agents are",
+      "lead": "An assistant that replies to clients in your studio's messengers while you're busy.",
+      "b1": "Replies around the clock — no one waits for an admin",
+      "b2": "Knows your studio's schedule, services and prices",
+      "b3": "You set the tone and length of the replies",
+      "note": "A channel starts working once it's connected in settings"
+    },
     "activeCount": "{{active}} / {{total}}",
     "stateOn": "Replying",
     "stateOffline": "Not connected",

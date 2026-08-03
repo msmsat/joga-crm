@@ -19,7 +19,9 @@ interface SettingsNavProps {
 
 export default function SettingsNav({ sectionLabel, navItems, activeSection, onSelect, logoutLabel, onLogout }: SettingsNavProps) {
   return (
-    <aside style={{
+    // На планшете колонка сворачивается в «рельсу» иконок — тем же жестом, что
+    // и главное меню приложения (см. .set-nav в Settings.css).
+    <aside className="set-nav" style={{
       width: "clamp(224px, 18vw, 260px)",
       height: "100%",
       background: "transparent",
@@ -32,7 +34,7 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
       flexShrink: 0,
       overflowY: "auto",
     }}>
-      <div style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "1px" }}>
+      <div className="set-nav-title" style={{ padding: "0 10px", marginBottom: "20px", fontSize: "11px", fontWeight: 800, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "1px" }}>
         {sectionLabel}
       </div>
 
@@ -42,6 +44,8 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
           <button
             key={item.id}
             onClick={() => onSelect(item.id)}
+            className="set-nav-item"
+            title={item.label}
             style={{
               display: "flex", alignItems: "center", gap: "12px",
               width: "100%", padding: "12px 14px", borderRadius: "12px",
@@ -59,11 +63,11 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
             <div style={{ color: active ? "#F9A08B" : "var(--text3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
               {item.icon}
             </div>
-            <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <span className="set-nav-label" style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {item.label}
             </span>
             {item.badge && (
-              <span style={{ background: active ? "#F9A08B" : "rgba(var(--ink),0.06)", color: active ? "#FFF" : "var(--onyx)", fontSize: "11px", fontWeight: 800, padding: "2px 8px", borderRadius: "20px" }}>
+              <span className="set-nav-badge" style={{ background: active ? "#F9A08B" : "rgba(var(--ink),0.06)", color: active ? "#FFF" : "var(--onyx)", fontSize: "11px", fontWeight: 800, padding: "2px 8px", borderRadius: "20px" }}>
                 {item.badge}
               </span>
             )}
@@ -71,15 +75,17 @@ export default function SettingsNav({ sectionLabel, navItems, activeSection, onS
         );
       })}
 
-      <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(var(--ink),0.06)", padding: "20px 0 0" }}>
+      <div className="set-nav-logout" style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(var(--ink),0.06)", padding: "20px 0 0" }}>
         <button
           onClick={onLogout}
+          className="set-nav-item"
+          title={logoutLabel}
           style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px", borderRadius: "12px", background: "transparent", border: "1px solid transparent", color: "#D88C9A", fontSize: "14px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease", textAlign: "left" }}
           onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(216,140,154,0.08)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icons.logout}</div>
-          {logoutLabel}
+          <span className="set-nav-label">{logoutLabel}</span>
         </button>
       </div>
     </aside>

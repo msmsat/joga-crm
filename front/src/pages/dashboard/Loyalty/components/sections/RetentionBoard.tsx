@@ -42,7 +42,7 @@ export default function RetentionBoard() {
             <div style={{ fontSize: '11px', opacity: 0.5 }}>{t('retention.emptySub')}</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: '24px', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: 'var(--grid-gap)', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>{t('retention.renewalRate')}</div>
@@ -53,8 +53,10 @@ export default function RetentionBoard() {
                 <div style={{ fontSize: '30px', fontWeight: 900, color: '#FCAE91' }}>{data.avg_packages_per_client}</div>
               </div>
             </div>
+            {/* height числом — иначе recharts предупреждает про width(-1)/height(-1)
+                на первом рендере, до замера контейнера (см. ChartFrame). */}
             <div style={{ height: '200px' }}>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text3)' }} axisLine={false} tickLine={false} />
                   <Tooltip

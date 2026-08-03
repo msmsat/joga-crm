@@ -211,7 +211,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
 
   return (
     <>
-      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: '20px' }}>
+      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', marginBottom: '20px' }}>
         <KpiStat
           label={t('overview.kpi.revenue')}
           value={kpi?.revenue.value ?? 0}

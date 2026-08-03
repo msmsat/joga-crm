@@ -47,7 +47,7 @@ export default function NotificationMatrix({
 
       <div>
         {activeChannels.length > 0 && (
-          <div style={{
+          <div className={styles.matrixHead} style={{
             display: 'grid', gridTemplateColumns: `1fr repeat(${activeChannels.length}, 44px)`,
             gap: '12px', padding: '16px 24px 8px', alignItems: 'center',
           }}>
@@ -99,15 +99,25 @@ export default function NotificationMatrix({
                   </div>
                 </div>
               </div>
-              {activeChannels.map(ch => (
-                <div key={ch.key} style={{ display: 'flex', justifyContent: 'center' }}>
-                  <MiniCheck
-                    on={ev.channels[ch.key as ChannelKey] ?? false}
-                    onChange={() => toggleCheck(ev.event_id, ch.key as ChannelKey)}
-                    color={CHANNEL_META[ch.key].color}
-                  />
-                </div>
-              ))}
+              {activeChannels.map(ch => {
+                const chMeta = CHANNEL_META[ch.key];
+                return (
+                  <div key={ch.key} style={{ display: 'flex', justifyContent: 'center' }}>
+                    {/* Иконка канала видна только на телефоне: там строка ломается
+                        на два яруса и шапка таблицы с подписями колонок уходит,
+                        а без неё галочка не сообщает, какой это канал. */}
+                    <span className={styles.cellChannelIcon} style={{ color: chMeta.color }}>
+                      <chMeta.IconComp />
+                    </span>
+                    <MiniCheck
+                      on={ev.channels[ch.key as ChannelKey] ?? false}
+                      onChange={() => toggleCheck(ev.event_id, ch.key as ChannelKey)}
+                      color={chMeta.color}
+                      title={chMeta.label}
+                    />
+                  </div>
+                );
+              })}
             </div>
           );
         })}

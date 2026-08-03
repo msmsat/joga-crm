@@ -38,3 +38,77 @@
   from { transform: scale(0); }
   to   { transform: scale(1); }
 }
+
+/* ── Планшет: колонка разделов сворачивается в рельсу иконок ───────────────
+   224px навигации от 680px экрана оставляли форме 456px, и двухколоночные
+   поля настроек уходили под 210px. Тот же жест, что у главного меню
+   приложения: остаются иконки, подписи — в title. !important обязателен,
+   размеры кнопок и aside заданы инлайном (см. SettingsNav.tsx). */
+@media (max-width: 900px) {
+  .set-nav {
+    width: 60px !important;
+    padding: 16px 8px !important;
+    align-items: center;
+  }
+  .set-nav-title,
+  .set-nav-label { display: none; }
+  .set-nav-item {
+    position: relative;
+    justify-content: center;
+    gap: 0 !important;
+    padding: 12px 0 !important;
+  }
+  /* Счётчик уведомлений рядом с иконкой не помещается — вешаем его на угол */
+  .set-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    padding: 0 5px !important;
+    font-size: 9px !important;
+    line-height: 15px;
+  }
+}
+
+/* ── Телефон: рельса разделов ложится строкой ──────────────────────────────
+   Вертикальная рельса в 60px забирала шестую часть ширины экрана под десять
+   иконок, из которых восемь всегда были ниже сгиба. Строкой они и помещаются
+   целиком, и листаются вбок — тот же жест, что у списков в Каталоге и
+   Сотрудниках. !important везде: раскладка задана инлайном (SettingsNav.tsx),
+   а инлайн перебивает медиазапрос. */
+@media (max-width: 767px) {
+  .set-layout { flex-direction: column !important; align-items: stretch !important; }
+
+  .set-nav {
+    flex-direction: row !important;
+    flex-shrink: 0;
+    width: 100% !important;
+    height: auto !important;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(var(--ink),0.06);
+    overflow-x: auto;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .set-nav::-webkit-scrollbar { display: none; }
+  .set-nav-item {
+    width: auto !important;
+    flex: 0 0 auto;
+    padding: 10px 12px !important;
+  }
+  /* Смена студии в ряду разделов читалась бы как ещё один раздел; тот же
+     переход остаётся в меню аккаунта (шит «Ещё» внизу экрана). */
+  .set-nav-logout { display: none !important; }
+
+  /* 32px полей по бокам от 360px экрана — это шестая часть ширины формы.
+     height:auto + min-height:0 — чтобы в колонке скроллилась именно панель
+     содержимого, а не вылезала за нижний край экрана. */
+  .set-content {
+    padding: 14px !important;
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0;
+  }
+}

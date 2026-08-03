@@ -340,11 +340,13 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
       `}</style>
 
       <div
+        className="v-modal-lg v-modal-wizard v-modal-steps"
         style={{
-          width: "100%", maxWidth: "860px", height: "min(580px, calc(100vh - 32px))",
+          ["--v-modal-w" as string]: "860px",
+          ["--v-left-w" as string]: "280px",
+          ["--vm-wizard-h" as string]: "580px",
           background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
-          display: "grid", gridTemplateColumns: "280px 1fr",
           overflow: "hidden",
           animation: "modalIn 0.3s ease",
         }}
@@ -352,10 +354,10 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
       >
 
         {/* ──────────── LEFT PANEL ──────────── */}
-        <div style={{
+        <div className="v-modal-left" style={{
           background: "var(--bg-card)", padding: "36px 30px 28px",
           display: "flex", flexDirection: "column",
-          borderRight: "1px solid #F0EDE8",
+          borderRight: "1px solid var(--border)",
           position: "relative", overflow: "hidden",
         }}>
           <div style={{
@@ -366,21 +368,21 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             `,
           }} />
 
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ marginBottom: "28px" }}><Logo /></div>
-            <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
+          <div className="vml-head" style={{ position: "relative", zIndex: 1 }}>
+            <div className="vml-logo" style={{ marginBottom: "28px" }}><Logo /></div>
+            <p className="vml-step" style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
               {t("catalog:modals.addStudio.stepCounter", { current: step, total: 3 })}
             </p>
-            <h2 style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
+            <h2 className="vml-title" style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
               {current.title}
             </h2>
-            <p style={{ fontSize: "12px", color: "var(--text3)", lineHeight: 1.55, margin: "0 0 16px" }}>
+            <p className="vml-sub" style={{ fontSize: "12px", color: "var(--text3)", lineHeight: 1.55, margin: "0 0 16px" }}>
               {current.sub}
             </p>
-            <StepDots current={step} total={3} />
+            <div className="vml-dots"><StepDots current={step} total={3} /></div>
           </div>
 
-          <div style={{
+          <div className="vml-illus" style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
             padding: "12px 0", position: "relative", zIndex: 1,
           }}>
@@ -389,7 +391,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
             {step === 3 && <Illus3 hasPhoto={!!photoPreview} />}
           </div>
 
-          <div style={{
+          <div className="vml-aside" style={{
             padding: "11px 13px",
             background: "rgba(163,201,168,0.08)",
             borderRadius: "10px",
@@ -664,13 +666,13 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
           <div style={{
             display: "flex", alignItems: "center", gap: "10px",
             marginTop: "20px", paddingTop: "16px",
-            borderTop: "1px solid #F0EDE8",
+            borderTop: "1px solid var(--border)",
             flexShrink: 0,
           }}>
             {step > 1 && (
               <button type="button" className="asm-back-btn" onClick={goBack} style={{
                 padding: "12px 16px",
-                background: "transparent", border: "1.5px solid #EEEBE6", borderRadius: "12px",
+                background: "transparent", border: "1.5px solid var(--border)", borderRadius: "12px",
                 fontSize: "13px", fontWeight: 600, color: "var(--text3)",
                 cursor: "pointer", display: "flex", alignItems: "center", gap: "5px",
                 fontFamily: "Manrope, sans-serif", transition: "all 0.15s", flexShrink: 0,

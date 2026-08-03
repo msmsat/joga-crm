@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from '../../../../components/ui/Tooltip';
+import { InfoHint } from '../../../../components/ui/index';
 import PulseRingSVG from './animations/PulseRingSVG';
 import styles from '../AI.module.css';
 
@@ -62,6 +63,52 @@ function ChannelRow({
   );
 }
 
+// Тело поповера «что такое AI-агенты»: короткий лид + три выгоды с персиковыми
+// плитками. Плитки залиты градиентом, а глиф — тёмный литерал: заливка одинакова
+// в обеих темах, поэтому контраст не зависит от того, светлая плашка или тёмная.
+function AgentInfoBody() {
+  const { t } = useTranslation('ai');
+  const items = [
+    {
+      key: 'b1',
+      icon: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></>,
+    },
+    {
+      key: 'b2',
+      icon: <><rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+    },
+    {
+      key: 'b3',
+      icon: <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2.2" /><circle cx="15" cy="12" r="2.2" /><circle cx="7" cy="18" r="2.2" /></>,
+    },
+  ];
+
+  return (
+    <div className={styles.agentInfo}>
+      <div className={styles.agentInfoLead}>{t('agents.info.lead')}</div>
+      <div className={styles.agentInfoList}>
+        {items.map(({ key, icon }) => (
+          <div key={key} className={styles.agentInfoItem}>
+            <span className={styles.agentInfoIcon}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {icon}
+              </svg>
+            </span>
+            <span className={styles.agentInfoText}>{t(`agents.info.${key}`)}</span>
+          </div>
+        ))}
+      </div>
+      <div className={styles.agentInfoDivider} />
+      <div className={styles.agentInfoNote}>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M13 2L4.5 13H12l-1 9 8.5-11H12l1-9z" />
+        </svg>
+        {t('agents.info.note')}
+      </div>
+    </div>
+  );
+}
+
 export default function AgentConfigCard({
   telegramEnabled,
   telegramConnected,
@@ -89,6 +136,9 @@ export default function AgentConfigCard({
           <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
         </svg>
         <span className={styles.agentCardTitle}>{t('agents.title')}</span>
+        <span className={styles.agentInfoBtn}>
+          <InfoHint side="right" title={t('agents.info.title')} text={<AgentInfoBody />} />
+        </span>
         <span className={`${styles.agentCount} ${activeCount ? styles.agentCountOn : ''}`}>
           {/* именно active, а не count: count включил бы плюрализацию i18next */}
           {t('agents.activeCount', { active: activeCount, total: 3 })}

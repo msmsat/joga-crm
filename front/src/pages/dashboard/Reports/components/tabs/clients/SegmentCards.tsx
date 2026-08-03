@@ -63,7 +63,7 @@ export function SegmentCards({ riskSegments, loyalSegments, onList, onCampaign }
     <>
       <div style={{ marginBottom: '20px' }}>
         <CardHeading title={t('clients.riskTitle')} description={t('descriptions.clients.riskSegments')} formulaKey="riskSegments" scopeNote={scopeNote} />
-        <div className="grid-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+        <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))' }}>
           {risk.map(s => (
             <SegmentCard key={s.key} segment={s} onList={() => onList(s.key)} onCampaign={() => onCampaign(s.key)} />
           ))}
@@ -72,7 +72,7 @@ export function SegmentCards({ riskSegments, loyalSegments, onList, onCampaign }
 
       <div style={{ marginBottom: '20px' }}>
         <CardHeading title={t('clients.loyalTitle')} description={t('descriptions.clients.loyalSegments')} formulaKey="loyalSegments" scopeNote={scopeNote} />
-        <div className="grid-2" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))' }}>
           {loyal.map(s => (
             <SegmentCard key={s.key} segment={s} onList={() => onList(s.key)} />
           ))}

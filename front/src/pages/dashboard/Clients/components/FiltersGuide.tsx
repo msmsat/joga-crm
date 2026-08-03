@@ -66,7 +66,10 @@ export function FiltersGuide({ categories, activeCatKey, onCatChange }: FiltersG
   };
 
   return (
-    <div ref={rootRef} style={{ display: 'inline-flex' }}>
+    // flexShrink: 0 — на узком экране ряд категорий не переносится, и кнопка
+    // «Фильтры» становится единственным доступом к спрятанным категориям:
+    // сжиматься ей нельзя (см. .ct-tabs в ClientsToolbar).
+    <div ref={rootRef} style={{ display: 'inline-flex', flexShrink: 0 }}>
       <style>{`
         .fg-trigger {
           display: flex; align-items: center; gap: 6px;

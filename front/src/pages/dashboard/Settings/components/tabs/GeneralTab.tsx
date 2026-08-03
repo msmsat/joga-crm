@@ -187,23 +187,23 @@ export default function GeneralTab() {
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.timezone')}</div>
-            <div style={{ width: "260px" }}><Select value={draft.timezone ?? ''} onChange={v => set('timezone', v)} options={timezoneOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.timezone ?? ''} onChange={v => set('timezone', v)} options={timezoneOptions} /></div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.currency')}</div>
-            <div style={{ width: "260px" }}><Select value={draft.currency ?? ''} onChange={v => set('currency', v)} options={currencyOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.currency ?? ''} onChange={v => set('currency', v)} options={currencyOptions} /></div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.language')}</div>
-            <div style={{ width: "260px" }}><Select value={draft.language ?? ''} onChange={v => set('language', v)} options={languageOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.language ?? ''} onChange={v => set('language', v)} options={languageOptions} /></div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.dateFormat')}</div>
-            <div style={{ width: "260px" }}><Select value={draft.date_format ?? ''} onChange={v => set('date_format', v)} options={dateFormatOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.date_format ?? ''} onChange={v => set('date_format', v)} options={dateFormatOptions} /></div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.firstDay')}</div>
-            <div style={{ width: "260px" }}><Select value={draft.first_day_of_week ?? ''} onChange={v => set('first_day_of_week', v)} options={firstDayOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.first_day_of_week ?? ''} onChange={v => set('first_day_of_week', v)} options={firstDayOptions} /></div>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "20px" }}>

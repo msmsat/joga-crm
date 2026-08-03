@@ -20,11 +20,15 @@ export function WorkingHoursEditor({ value, onChange, dayLabels }: WorkingHoursE
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {value.map(wh => (
+        // Flex с переносом, а не сетка «1fr auto auto»: тумблер с подписью и два
+        // поля времени вместе требуют ~345px, а модалка на экране 320px даёт
+        // 250 — в сетке колонки не переносятся, и поля уезжали за её край.
+        // Здесь при нехватке места время просто встаёт под день.
         <div key={wh.day_of_week} style={{
-          display: 'grid', gridTemplateColumns: '1fr auto auto', alignItems: 'center', gap: '10px',
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px',
           padding: '8px 12px', borderRadius: '10px', background: 'rgba(var(--ink),0.02)',
         }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '9px', cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '9px', cursor: 'pointer', flex: '1 1 auto', minWidth: 0 }}>
             <span
               role="switch"
               aria-checked={wh.is_open}
@@ -46,12 +50,14 @@ export function WorkingHoursEditor({ value, onChange, dayLabels }: WorkingHoursE
           </label>
 
           {wh.is_open ? (
-            <>
+            // Оба поля в одной обёртке — чтобы при переносе они уезжали вниз
+            // парой, а не «с» на первой строке и «до» на второй.
+            <div style={{ display: 'flex', gap: '10px', flexShrink: 0, marginLeft: 'auto' }}>
               <TimeInput value={wh.open_time} onChange={v => patch(wh.day_of_week, { open_time: v })} />
               <TimeInput value={wh.close_time} onChange={v => patch(wh.day_of_week, { close_time: v })} />
-            </>
+            </div>
           ) : (
-            <span style={{ gridColumn: '2 / 4', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#BBB' }}>—</span>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: 600, color: '#BBB' }}>—</span>
           )}
         </div>
       ))}

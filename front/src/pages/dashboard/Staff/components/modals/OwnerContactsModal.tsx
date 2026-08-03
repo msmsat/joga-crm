@@ -245,20 +245,22 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
       `}</style>
 
       <div
+        className="v-modal-lg v-modal-wizard"
         onClick={e => e.stopPropagation()}
         style={{
           position: "relative",
-          width: "100%", maxWidth: "820px", height: "min(544px, calc(100vh - 32px))",
+          ["--v-modal-w" as string]: "820px",
+          ["--v-left-w" as string]: "268px",
+          ["--vm-wizard-h" as string]: "544px",
           background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
-          display: "grid", gridTemplateColumns: "268px 1fr",
           overflow: "hidden", animation: "ocIn 0.32s cubic-bezier(0.34,1.1,0.64,1)",
           fontFamily: "Manrope, sans-serif",
         }}
       >
         {/* ── LEFT: живая визитка ── */}
-        <div style={{
-          background: "var(--bg-card)", borderRight: "1px solid #F0EDE8",
+        <div className="v-modal-left" style={{
+          background: "var(--bg-card)", borderRight: "1px solid var(--border)",
           display: "flex", flexDirection: "column",
           padding: "26px 22px 20px", position: "relative", overflow: "hidden",
         }}>
@@ -371,12 +373,12 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
 
           {/* ── Footer ── */}
           <div style={{
-            padding: "14px 30px 18px", borderTop: "1px solid #F0EDE8",
+            padding: "14px 30px 18px", borderTop: "1px solid var(--border)",
             display: "flex", gap: "10px", alignItems: "center", flexShrink: 0,
           }}>
             <button type="button" className="oc-cancel" onClick={onClose} style={{
               padding: "12px 18px", background: "transparent",
-              border: "1.5px solid #EEEBE6", borderRadius: "12px",
+              border: "1.5px solid var(--border)", borderRadius: "12px",
               fontSize: "13px", fontWeight: 600, color: "var(--text3)",
               cursor: "pointer", fontFamily: "inherit",
             }}>

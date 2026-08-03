@@ -15,6 +15,7 @@ from schemas.schedule.lessons import (
 )
 from services import gcal
 from services.booking_access import can_book
+from services.members import full_name
 from services.notifier import notify
 from services.subscription_charge import refund_reservation
 

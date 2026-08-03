@@ -25,7 +25,7 @@ export default function PeriodSelector({ selectedPeriod, setSelectedPeriod, peri
           </div>
         )}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
         {([
           { period: 1  as const, discount: 0,  popular: false },
           { period: 6  as const, discount: 20, popular: false },

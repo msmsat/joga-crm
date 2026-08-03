@@ -4,7 +4,8 @@ import { usePopoverPosition, type Side } from './popoverPosition';
 
 export interface InfoHintProps {
   title: string;
-  text: string;
+  /** Строка рисуется приглушённым абзацем; ReactNode — как есть (богатый контент). */
+  text: React.ReactNode;
   side?: Side;
 }
 
@@ -109,8 +110,11 @@ export function InfoHint({ title, text, side = 'bottom' }: InfoHintProps) {
           <div style={{ position: 'absolute', background: 'var(--onyx)', ...arrowStyle(resolvedSide, placement?.arrowOffset ?? 14) }} />
           <div style={{ fontSize: '12.5px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.1px' }}>{title}</div>
           {/* color наследуется от плашки (var(--bg)), яркость гасим opacity: белый
-              литерал исчезал на светлой плашке в тёмной теме. */}
-          <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, opacity: 0.75 }}>{text}</div>
+              литерал исчезал на светлой плашке в тёмной теме. ReactNode отдаём без
+              обёртки — opacity родителя нельзя перебить изнутри. */}
+          {typeof text === 'string'
+            ? <div style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.5, opacity: 0.75 }}>{text}</div>
+            : text}
           <style>{`@keyframes infoHintIn { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }`}</style>
         </div>,
         document.body

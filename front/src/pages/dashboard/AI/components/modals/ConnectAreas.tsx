@@ -46,7 +46,7 @@ export function TelegramConnect({
     <section className={SECTION}>
       <label className={SECTION_LABEL}>{t('telegram.tokenLabel')}</label>
       {connected && username ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <ConnectedBadge>@{username}</ConnectedBadge>
           <span className="text-[12.5px] font-semibold text-muted-foreground">{t('common:status.connected')}</span>
           <button type="button" className={`ml-auto ${LINK_BTN}`} onClick={onDisconnect}>
@@ -130,7 +130,7 @@ export function WhatsappConnect({
     <section className={SECTION}>
       <label className={SECTION_LABEL}>{t('whatsapp.numberLabel')}</label>
       {connected ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <ConnectedBadge>{number}</ConnectedBadge>
           <span className="text-[12.5px] font-semibold text-muted-foreground">{t('common:status.connected')}</span>
         </div>

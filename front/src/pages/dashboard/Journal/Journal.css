@@ -16,6 +16,18 @@
   --radius: 14px;
   --radius-sm: 8px;
   --font: 'Manrope', 'Inter', -apple-system, sans-serif;
+  --popup-glass: rgba(253, 252, 251, 0.98);
+  --popup-glass-border: rgba(255,255,255,0.6);
+  --popup-glass-highlight: rgba(255,255,255,0.8);
+}
+
+/* Попап карточки занятия — «матовое стекло»: в тёмной теме стекло тоже
+   должно быть тёмным, иначе var(--onyx) (светлый в dark) читается светлым
+   текстом по светлому стеклу. */
+:root.dark {
+  --popup-glass: rgba(30, 30, 30, 0.98);
+  --popup-glass-border: rgba(255,255,255,0.08);
+  --popup-glass-highlight: rgba(255,255,255,0.05);
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -399,7 +411,10 @@
 /* ════════════════════════════════════════════════════════════
    6. ПЕРЕТАСКИВАНИЕ (DRAG & DROP)
    ════════════════════════════════════════════════════════════ */
-.is-dragging-global { user-select: none !important; -webkit-user-select: none !important; }
+/* touch-action — на время переноса пальцем: прокрутка расписания под карточкой
+   перехватила бы жест. Ставится только когда перенос уже начался (класс висит
+   на .j-root, пока drag активен), поэтому обычный скролл сетки не страдает. */
+.is-dragging-global { user-select: none !important; -webkit-user-select: none !important; touch-action: none; }
 .is-dragging-global * { cursor: grabbing !important; }
 .is-dragging-global .j-empty-slot { z-index: auto !important; }
 
@@ -653,13 +668,15 @@
   position: fixed;
   /* Без backdrop-filter: попап висит над живой сеткой (refetch раз в минуту,
      hover-переходы карточек) — блюр пересчитывался на каждой перерисовке. */
-  background: rgba(253, 252, 251, 0.98);
+  background: var(--popup-glass);
   border-radius: 24px;
-  border: 1px solid rgba(255,255,255,0.6);
-  box-shadow: 0 32px 80px -16px rgba(26,26,26,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
-  width: 360px;
+  border: 1px solid var(--popup-glass-border);
+  box-shadow: 0 32px 80px -16px rgba(0,0,0,0.35), inset 0 1px 1px var(--popup-glass-highlight);
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
   z-index: 9000;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   animation: popup-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
   display: flex;
   flex-direction: column;
@@ -776,7 +793,7 @@
   background: var(--bg-card);
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(26,26,26,0.16);
-  width: 420px; max-height: 80vh;
+  width: min(420px, calc(100vw - 32px)); max-height: min(80vh, calc(100vh - 32px));
   overflow-y: auto;
   position: relative;
   z-index: 10001;
@@ -844,7 +861,8 @@
 .premium-modal {
   background: var(--bg-card);
   width: 600px;
-  max-width: 95vw;
+  max-width: min(600px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
   border-radius: 28px;
   box-shadow: 0 32px 80px -12px rgba(26, 26, 26, 0.35);
   display: flex; flex-direction: column;
@@ -862,6 +880,7 @@
   padding: 32px 36px 24px;
   position: relative;
   border-bottom: 1px solid rgba(var(--ink),0.04);
+  flex-shrink: 0; /* тело — flex:1, шапке ужиматься нельзя */
 }
 .pm-title { font-size: 24px; font-weight: 800; color: var(--onyx); letter-spacing: -0.5px; }
 .pm-sub { font-size: 14px; color: var(--muted); margin-top: 6px; font-weight: 500; }
@@ -874,10 +893,13 @@
 }
 .pm-close:hover { background: rgba(var(--ink),0.08); color: var(--onyx); transform: rotate(90deg) scale(1.1); }
 
+/* Высоту задаёт сама карточка (max-height: 100vh - 32px), а тело забирает
+   остаток. Было max-height: 60vh — на экране 768px форма жила в окошке 460px,
+   пока под ней пустовало полмодалки, и поля приходилось прокручивать в щели. */
 .pm-body {
   padding: 28px 36px;
   display: flex; flex-direction: column; gap: 28px;
-  max-height: 60vh; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto;
 }
 .pm-body::-webkit-scrollbar { width: 4px; }
 .pm-body::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.1); border-radius: 4px; }
@@ -947,6 +969,7 @@
   padding: 24px 36px 32px; background: var(--bg-card);
   border-top: 1px solid rgba(var(--ink),0.04);
   display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0; /* тело — flex:1, футеру ужиматься нельзя */
 }
 .pm-btn-cancel {
   height: 52px; padding: 0 24px; border-radius: 14px;
@@ -971,6 +994,21 @@
 .pm-btn-submit:active:not(:disabled) { transform: scale(0.96); box-shadow: none; }
 .pm-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(50%); }
 
+/* Низкий экран: шапка, поля и кнопки отдают высоту содержимому. Блок стоит
+   в конце секции намеренно — медиазапрос не добавляет специфичности, и выше
+   его перебили бы собственные базовые правила .pm-*. */
+@media (max-height: 820px) {
+  .pm-header { padding: 20px 24px 16px; }
+  .pm-close { top: 20px; right: 20px; width: 30px; height: 30px; }
+  .pm-title { font-size: 20px; }
+  .pm-sub { font-size: 13px; margin-top: 4px; }
+  .pm-body { padding: 18px 24px; gap: 18px; }
+  .pm-input { height: 44px; }
+  .pm-grid-2 { gap: 14px; }
+  .pm-footer { padding: 14px 24px 18px; }
+  .pm-btn-cancel, .pm-btn-submit { height: 44px; }
+}
+
 /* ════════════════════════════════════════════════════════════
    14. KEYPAD-МОДАЛКА — НОВОЕ ЗАНЯТИЕ
    ════════════════════════════════════════════════════════════ */
@@ -979,19 +1017,70 @@
   border-radius: 20px;
   box-shadow: 0 32px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(26,26,26,0.04);
   width: 580px;
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
   overflow: hidden;
   overflow-y: auto;
   animation: modal-in 0.3s ease;
 }
+.kp-head {
+  padding: 24px 24px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border2);
+}
+.kp-head-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.kp-head-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(249,160,139,0.1); color: var(--peach);
+  display: flex; align-items: center; justify-content: center;
+}
+.kp-head-title { font-size: 16px; font-weight: 900; color: var(--onyx); letter-spacing: -0.3px; }
+.kp-head-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+
 .kp-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: var(--grid-gap);
+  padding: var(--card-pad);
 }
+.kp-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.kp-halls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kp-times { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .kp-section { display: flex; flex-direction: column; gap: 8px; }
+
+.kp-limit {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg); padding: 0 6px 0 14px; border-radius: 10px;
+  height: 40px; box-sizing: border-box;
+}
+.kp-limit-label { font-size: 12px; font-weight: 700; color: var(--muted); }
+.kp-limit-input { width: 56px; height: 28px; }
+
+.kp-trainers { display: flex; flex-direction: column; gap: 8px; }
+.kp-trainer {
+  padding: 0 12px 0 5px; border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  height: 40px; box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+.kp-trainer-av {
+  width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; transition: all 0.2s;
+}
+.kp-trainer-name {
+  font-size: 13px; flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.kp-foot {
+  padding: 16px 24px; background: var(--bg);
+  border-top: 1px solid var(--border2);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+.kp-foot > button { height: 38px; border-radius: 8px; font-size: 12.5px; }
+.kp-foot > .btn-ghost-sm { padding: 0 16px; }
+.kp-foot > .btn-primary-sm { padding: 0 24px; }
 .kp-section-title {
   font-size: 11px;
   font-weight: 800;
@@ -1057,6 +1146,51 @@
 }
 .kp-time-item:hover { background: var(--bg2); color: var(--peach); }
 .kp-time-item.active-time-item { background: var(--peach); color: white; }
+.kp-time-input { height: 40px; }
+
+/* Тесный экран (ноут 1366×768, окно вполовину и т.п.): якорь к слоту больше
+   не работает — по бокам сетки места нет, а по высоте модалка упиралась в
+   верх «полезной зоны» и уезжала за нижний край. Поэтому центрируем её по
+   вьюпорту и ужимаем всё до компактных размеров. Блок в конце секции: медиа
+   не добавляет специфичности, выше его перебили бы базовые .kp-*. */
+@media (max-width: 1100px), (max-height: 820px) {
+  /* left/top считает usePopupPosition и пишет инлайном — только !important */
+  .kp-anchor {
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+  }
+  /* Модалка больше не «висит» рядом со слотом — затемняем фон, чтобы связь
+     с сеткой не терялась визуально (без backdrop-filter, см. CLAUDE.md) */
+  .kp-backdrop { background: rgba(26,26,26,0.32); }
+
+  .keypad-modal { width: 520px; max-height: calc(100vh - 24px); }
+  .kp-head { padding: 14px 16px 12px; }
+  .kp-head-icon { width: 32px; height: 32px; border-radius: 9px; }
+  .kp-head-title { font-size: 14.5px; }
+  .kp-head-sub { font-size: 11px; }
+
+  .kp-grid { padding: 14px 16px; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(196px, 100%), 1fr)); }
+  .kp-col { gap: 12px; }
+  .kp-section { gap: 5px; }
+  .kp-section-title { font-size: 10px; margin-bottom: 0; }
+  .kp-halls, .kp-times { gap: 6px; }
+
+  .kp-chip { height: 34px; padding: 0; font-size: 12px; }
+  .kp-time-input, .kp-limit { height: 34px; }
+  .kp-limit { padding: 0 5px 0 10px; }
+  .kp-limit-label { font-size: 11px; }
+  .kp-limit-input { width: 46px; height: 24px; }
+
+  /* Тренеров может быть много — список скроллится сам, а не растит модалку */
+  .kp-trainers { gap: 6px; max-height: 170px; overflow-y: auto; }
+  .kp-trainer { height: 34px; }
+  .kp-trainer-av { width: 24px; height: 24px; border-radius: 6px; font-size: 10px; }
+  .kp-trainer-name { font-size: 12px; }
+
+  .kp-foot { padding: 10px 16px; }
+  .kp-foot > button { height: 34px; }
+}
 
 /* ════════════════════════════════════════════════════════════
    16. ТОСТ-УВЕДОМЛЕНИЕ
@@ -1186,6 +1320,27 @@
    АДАПТИВ: компактный режим для маленьких ноутбуков (≤1280px).
    Блок в конце файла, чтобы побеждать базовые правила по каскаду.
    ════════════════════════════════════════════════════════════ */
+/* Лента фильтров (тренеры / залы) едет вбок внутри тулбара: при десятке
+   тренеров она иначе выдавливала переключатель «День/Неделя» за край. */
+.j-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.j-filter-pills::-webkit-scrollbar { display: none; }
+.j-filter-pills > * { flex-shrink: 0; }
+
+@media (max-width: 1440px) {
+  .j-root { --j-col-min: 158px; }
+  .j-right { width: 236px; }
+  .j-toolbar { gap: 9px; padding: 0 16px; }
+  .j-grid { min-width: 100%; }
+  .j-col-header, .j-empty-slot { min-width: var(--j-col-min, 158px); }
+}
+
 @media (max-width: 1280px) {
   .j-root { --j-col-min: 150px; }
   .j-right { width: 240px; }
@@ -1194,6 +1349,30 @@
      и 5 тренеров влезают без горизонтального скролла */
   .j-grid { min-width: 100%; }
   .j-col-header, .j-empty-slot { min-width: var(--j-col-min, 150px); }
+}
+
+/* Совсем тесно: правая панель (сводка дня + AI) уходит — расписание важнее.
+   Обе её функции дублируются: сводка есть в Дашборде, AI — в дровере. */
+@media (max-width: 1100px) {
+  .j-root { --j-col-min: 136px; }
+  .j-right { display: none; }
+  .j-col-header { padding: 12px 10px; }
+}
+
+/* Планшет: тулбар не помещается в одну строку — дата, «Сегодня», вид,
+   фильтры и день/неделя вместе просят ~700px при доступных ~650. Строка
+   фиксированной высоты просто срезала бы хвост (nowrap + overflow), поэтому
+   разрешаем перенос: высота становится по контенту, ничего не теряется. */
+@media (max-width: 900px) {
+  .j-toolbar {
+    height: auto;
+    min-height: 52px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 8px 12px;
+  }
+  /* Пилюли фильтров занимают остаток своей строки и скроллятся вбок сами */
+  .j-filter-pills { flex: 1 1 140px; }
 }
 
 /* ── Сжатие шапки колонок при скролле расписания (компактные экраны) ──
@@ -1379,3 +1558,77 @@
   transition: opacity 0.15s;
 }
 .j-load-error-retry:hover { opacity: 0.88; }
+
+/* ════════════════════════════════════════════════════════════
+   ТЕЛЕФОН (<768px)
+   Сетка расписания — единственный экран приложения, который честно шире
+   телефона: колонки тренеров нельзя ни сложить, ни переставить, не потеряв
+   смысл. Поэтому сама сетка остаётся сеткой и листается вбок пальцем, а весь
+   бюджет экономии снимается с хрома вокруг неё: тулбар складывается в два
+   ряда, разделители уходят, колонка времени и шапки ужимаются.
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Высота считается флексом, а не арифметикой по вьюпорту: под нижнюю панель
+     навигации место уже отнято у всей колонки контента (.main в App.css), и
+     повторное вычитание высоты панели оставило бы под сеткой пустую полосу. */
+  .j-root {
+    height: auto;
+    flex: 1;
+    min-height: 0;
+    --j-col-min: 124px;
+  }
+
+  .j-toolbar {
+    height: auto;
+    padding: 8px 10px;
+    gap: 8px;
+    row-gap: 8px;
+    flex-wrap: wrap;
+  }
+  /* Вертикальные отбивки в две строки читаются как случайные палочки */
+  .j-sep { display: none; }
+  /* Фильтры тренеров/залов забирают вторую строку целиком и листаются вбок */
+  .j-filter-pills { flex: 1 0 100%; order: 3; }
+  .view-toggle { order: 2; }
+
+  /* Каждый пиксель ширины — сетке: время слева и шапки колонок ужимаются.
+     Ширину самих колонок задаёт --j-col-min выше (правило min-width на
+     .j-col-header/.j-empty-slot уже действует с 1440px), здесь — только
+     отбивка строк, которая в ту схему не входила. */
+  .j-time-col { width: 42px; }
+  .j-time-cell { padding: 6px 7px 0 0; font-size: 10px; }
+  .j-col-header { padding: 10px 8px; }
+  .j-row-sep { min-width: var(--j-col-min, 124px); }
+
+  /* Попап записи — шит снизу: карточка «рядом со слотом» на телефоне всё
+     равно оказывается посреди экрана, а до её кнопок надо тянуться вверх. */
+  .booking-popup {
+    left: 0 !important;
+    right: 0;
+    top: auto !important;
+    bottom: 0;
+    width: 100%;
+    max-height: 88dvh;
+    border-radius: 22px 22px 0 0;
+    animation: popup-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .bp-header { padding: 18px 18px 12px; }
+  .bp-body { padding: 0 18px 12px; gap: 13px; }
+  /* Три действия («Добавить», «Изменить», удалить) требуют 302px, а попап на
+     320px даёт 270 — кнопка удаления выезжала за правый край. Режем поля
+     строки и самих кнопок: подписи при этом остаются целиком. */
+  .bp-actions {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding-left: 18px;
+    padding-right: 18px;
+    gap: 8px;
+  }
+  .bp-btn.text-btn { padding: 0 10px; }
+
+  /* Модалка нового занятия уже центрируется с 1100px — здесь только ширина */
+  .keypad-modal { width: 100%; max-width: 100%; }
+}
+@keyframes popup-sheet-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

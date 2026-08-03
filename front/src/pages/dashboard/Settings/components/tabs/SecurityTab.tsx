@@ -56,7 +56,7 @@ export default function SecurityTab() {
         <SecurityIllustration />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(var(--ink),0.015)" }}>
             <div>
               <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.twoFa.title')}</div>
               <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.twoFa.sub')}</div>
@@ -67,7 +67,7 @@ export default function SecurityTab() {
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(var(--ink),0.015)" }}>
             <div>
               <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.password.title')}</div>
               <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.password.sub')}</div>
@@ -82,7 +82,7 @@ export default function SecurityTab() {
             </button>
           </div>
 
-          <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "var(--bg-card)" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+          <div style={{ borderRadius: "12px", background: secExpanded === "sessions" ? "var(--bg-card)" : "rgba(var(--ink),0.015)", border: `1px solid ${secExpanded === "sessions" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s cubic-bezier(0.34,1.5,0.64,1)", overflow: "hidden", boxShadow: secExpanded === "sessions" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.sessions.title')}</div>
@@ -101,7 +101,7 @@ export default function SecurityTab() {
             <div style={{ display: "grid", gridTemplateRows: secExpanded === "sessions" ? "1fr" : "0fr", transition: "grid-template-rows 0.3s" }}>
               <div style={{ minHeight: 0 }}>
                 <div style={{ padding: "0 16px 16px" }}>
-                  <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
+                  <div style={{ width: "100%", height: "1px", background: "rgba(var(--ink),0.06)", marginBottom: "16px" }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {sessions.map(session => {
                       const isMobile = session.platform === "iOS" || session.platform === "Android";
@@ -156,7 +156,7 @@ export default function SecurityTab() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "var(--bg-card)" : "rgba(0,0,0,0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
+          <div style={{ borderRadius: "12px", background: secExpanded === "export" ? "var(--bg-card)" : "rgba(var(--ink),0.015)", border: `1px solid ${secExpanded === "export" ? "var(--peach)" : "transparent"}`, transition: "all 0.3s", overflow: "hidden", boxShadow: secExpanded === "export" ? "0 8px 24px rgba(252,174,145,0.12)" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--onyx)" }}>{t('security.danger.export.title')}</div>
@@ -172,7 +172,7 @@ export default function SecurityTab() {
             <div style={{ display: "grid", gridTemplateRows: secExpanded === "export" ? "1fr" : "0fr", transition: "grid-template-rows 0.3s" }}>
               <div style={{ minHeight: 0 }}>
                 <div style={{ padding: "0 16px 16px" }}>
-                  <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "16px" }} />
+                  <div style={{ width: "100%", height: "1px", background: "rgba(var(--ink),0.06)", marginBottom: "16px" }} />
                   <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
                     {([
                       ["clients", t('security.danger.export.clients')],
@@ -220,7 +220,7 @@ export default function SecurityTab() {
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(0,0,0,0.015)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderRadius: "12px", background: "rgba(var(--ink),0.015)" }}>
             <div>
               <div style={{ fontSize: "13px", fontWeight: 700, color: "#C0607A" }}>{t('security.danger.wipe.title')}</div>
               <div style={{ fontSize: "11.5px", color: "var(--muted)", marginTop: "2px" }}>{t('security.danger.wipe.sub')}</div>

@@ -11,7 +11,8 @@ from schemas.schedule.reservations import ReservationCreate, ReservationRead
 from services.booking_access import assert_can_book
 from services.notifier import notify
 from services.subscription_charge import (
-    charge_reservation, notify_subscription_remaining, refund_reservation,
+    activate_pending_after_visit, charge_reservation, notify_subscription_remaining,
+    refund_reservation,
 )
 
 router = APIRouter()
@@ -158,9 +159,10 @@ async def attend_reservation(
 ):
     """Отметить, что клиент пришёл: status=attended + Client.last_visit_date.
 
-    Абонемент здесь не трогаем: занятие списывается в момент записи и
-    возвращается при отмене (services/subscription_charge.py) — приход клиента
-    ничего не меняет в остатке.
+    Остаток занятий здесь не меняется: занятие списывается в момент записи и
+    возвращается при отмене (services/subscription_charge.py). Но именно приход
+    запускает срок абонемента из очереди — купленный поверх незаконченного ждёт
+    первого реального визита (activate_pending_after_visit).
 
     Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
     Повторная отметка идемпотентна: статус уже attended — просто возвращаем запись.
@@ -182,6 +184,7 @@ async def attend_reservation(
             .where(Client.id == reservation.client_id)
             .values(last_visit_date=date.today())
         )
+        await activate_pending_after_visit(db, reservation)
 
         await db.commit()
         await db.refresh(reservation)

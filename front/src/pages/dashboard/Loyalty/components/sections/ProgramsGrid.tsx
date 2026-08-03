@@ -12,7 +12,7 @@ interface Props {
 export default function ProgramsGrid({ programsList, openDrawer, toggleProgram }: Props) {
   const { t } = useTranslation('loyalty');
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: '16px', marginBottom: '24px' }}>
       {programsList.map((prog, i) => {
         const configKey = prog.key === 'promocodes' || prog.key === 'deposit' ? null : prog.key;
         return (

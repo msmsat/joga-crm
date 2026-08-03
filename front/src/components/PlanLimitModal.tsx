@@ -26,7 +26,6 @@ export default function PlanLimitModal() {
     <div
       className="v-overlay"
       onClick={close}
-      style={{ padding: '24px' }}
     >
       <div
         className="v-modal"

@@ -84,7 +84,7 @@ export function ScheduleTab({ params, paramsKey, registerCsvExport, onWidenPerio
 
   return (
     <>
-      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: '20px' }}>
+      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', marginBottom: '20px' }}>
         <KpiStat
           label={t('schedule.kpi.avgFillPct')}
           value={kpi?.avg_fill_pct.value ?? 0}

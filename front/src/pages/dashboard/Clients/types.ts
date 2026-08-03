@@ -1,5 +1,5 @@
-import type { ActiveSubscription, ClientNote } from '../../../api/clients/clients.types';
-export type { ActiveSubscription, ClientNote };
+import type { ActiveSubscription, ClientNote, ClientProduct } from '../../../api/clients/clients.types';
+export type { ActiveSubscription, ClientNote, ClientProduct };
 
 export interface ClientData {
   id: number;
@@ -12,6 +12,7 @@ export interface ClientData {
   total_spent: number;
   active_subscription?: ActiveSubscription;
   subscription_alert?: ActiveSubscription;
+  products: ClientProduct[];
   loyalty_points: number;
   last_visit_date?: string;
   registration_date?: string;

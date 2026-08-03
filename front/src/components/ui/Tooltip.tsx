@@ -6,12 +6,13 @@ export interface TooltipProps {
   label: string;
   children: React.ReactNode;
   side?: Side;
+  block?: boolean;   // якорь на всю ширину (пункт меню, строка списка), а не inline
 }
 
 // Тултип кита: ониксовая капсула, появляется по hover/focus с мягким fade.
 // Рендерится в портал с position: fixed — не режется overflow таблицы/карточки
 // и не уезжает за viewport у крайних ячеек (см. EPIC_R9_INFO_TEXTS).
-export function Tooltip({ label, children, side = 'top' }: TooltipProps) {
+export function Tooltip({ label, children, side = 'top', block = false }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
   const popoverRef = useRef<HTMLSpanElement>(null);
@@ -21,7 +22,9 @@ export function Tooltip({ label, children, side = 'top' }: TooltipProps) {
   return (
     <span
       ref={anchorRef}
-      style={{ position: 'relative', display: 'inline-flex' }}
+      style={block
+        ? { position: 'relative', display: 'block', width: '100%' }
+        : { position: 'relative', display: 'inline-flex' }}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}

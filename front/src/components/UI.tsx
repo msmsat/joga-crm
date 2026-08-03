@@ -353,15 +353,17 @@ export function DashboardMockup() {
         <div style={{ width:"56px", background:"#F9F8F7", borderRight:`1px solid var(--border)`, display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"20px", gap:"18px" }}>
           {["🏡","📅","👥","💬","📊","⚙️"].map((ico,i) => <div key={i} style={{ width:"34px",height:"34px",borderRadius:"9px", background: i===0 ? `linear-gradient(135deg, var(--peach-light), var(--peach))` : "transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"15px", cursor:"pointer" }}>{ico}</div>)}
         </div>
-        <div style={{ flex:1, padding:"24px", overflowY:"auto" }}>
+        {/* minWidth:0 — иначе flex-колонка не сжимается ниже min-content своих
+            карточек и тянет весь герой лендинга шире экрана телефона. */}
+        <div style={{ flex:1, minWidth:0, padding:"clamp(12px, 4vw, 24px)", overflowY:"auto" }}>
           <div style={{ marginBottom:"20px" }}>
             <div style={{ fontWeight:800, fontSize:"18px", color:"var(--onyx)", letterSpacing:"-0.4px" }}>Дашборд</div>
             <div style={{ fontSize:"12px", color:"var(--muted)", marginTop:"2px" }}>Понедельник, 1 июня 2026</div>
           </div>
           <div style={{ display:"flex", gap:"10px", marginBottom:"20px" }}>
             {[{ v:"248", l:"Записей", c: "var(--peach)" }, { v:"94%", l:"Заполн.", c: "var(--pistachio)" }, { v:"₽186K", l:"Выручка", c: "#7BA7D4" }].map((s,i) => (
-              <div key={i} style={{ flex:1, padding:"12px 14px", background:"var(--bg-card)", borderRadius:"12px", border:`1px solid var(--border)`, boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}>
-                <div style={{ fontWeight:800, fontSize:"20px", color: s.c, letterSpacing:"-0.5px" }}>{s.v}</div>
+              <div key={i} style={{ flex:1, minWidth:0, padding:"12px clamp(8px, 3vw, 14px)", background:"var(--bg-card)", borderRadius:"12px", border:`1px solid var(--border)`, boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontWeight:800, fontSize:"clamp(15px, 5vw, 20px)", color: s.c, letterSpacing:"-0.5px" }}>{s.v}</div>
                 <div style={{ fontSize:"10px", color:"var(--muted)", marginTop:"2px" }}>{s.l}</div>
               </div>
             ))}

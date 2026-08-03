@@ -115,7 +115,7 @@ export interface SlicesCardsProps {
 export function SlicesCards({ topProfitable, topFilled, chronicLow, halls }: SlicesCardsProps) {
   const { t } = useTranslation('reports');
   return (
-    <div className="grid-2" style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '20px' }}>
+    <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', marginBottom: '20px' }}>
       <SectionCard title={t('schedule.slices.topProfitable')} description={t('descriptions.schedule.topProfitable')} formulaKey="topProfitable">
         <LessonSliceList rows={topProfitable} valueKey="revenue" />
       </SectionCard>

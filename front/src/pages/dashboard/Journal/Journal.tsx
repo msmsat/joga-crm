@@ -214,7 +214,11 @@ export default function Journal() {
 
     // 🔥 Сохраняем индекс колонки в стейт
     setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd, columnIndex });
-    setNewForm({ serviceId: null, title: '', hall: hallNames[0] ?? '', maxClients: '8' });
+    // В режиме «Залы» колонка и есть зал — берём её, иначе превью (оно считает
+    // колонку из newForm.hall) утащит новое занятие в первый зал.
+    // В недельном виде колонки — даты, зал оттуда не достать → первый.
+    const col = columns[columnIndex];
+    setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8' });
     setShowNewForm(true);
   };
 

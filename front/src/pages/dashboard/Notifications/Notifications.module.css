@@ -74,3 +74,35 @@
   transform: translateX(2px);
   border-left-color: var(--peach);
 }
+
+/* Подпись канала у галочки нужна только там, где нет шапки таблицы */
+.cellChannelIcon { display: none; }
+
+/* ── Телефон: матрица «событие × канал» ломается на два яруса ──────────────
+   Шесть колонок по 44px — это 300px из 360px под галочки, названию события
+   остаются пять символов. Строка перестаёт быть строкой таблицы: сверху —
+   событие во всю ширину, под ним ряд каналов, где каждая галочка подписана
+   иконкой своего канала (шапку с подписями колонок в таком виде не удержать —
+   она уходит, а вместе с ней и связь «колонка → канал»).
+   grid-column: 1 / -1 у первого ребёнка — то, что позволяет оставить одну
+   grid-разметку на оба режима, не трогая инлайновые стили строк. */
+@media (max-width: 767px) {
+  .matrixHead { display: none !important; }
+
+  .notifRow {
+    grid-template-columns: repeat(auto-fill, 46px) !important;
+    justify-content: start;
+    gap: 10px 6px !important;
+    padding: 12px 14px !important;
+  }
+  .notifRow > :first-child { grid-column: 1 / -1; }
+  .notifRow:hover { transform: none; }
+
+  .cellChannelIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+  }
+  .cellChannelIcon svg { width: 13px; height: 13px; }
+}

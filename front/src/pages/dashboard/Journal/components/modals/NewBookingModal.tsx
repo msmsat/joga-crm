@@ -140,23 +140,25 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   return createPortal(
     <>
       <div
+        className="kp-backdrop"
         style={{ position: 'fixed', inset: 0, zIndex: 200 }}
         onMouseDown={closeNewForm}
       />
       <div
+        className="kp-anchor"
         style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 210 }}
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="keypad-modal" ref={modalRef}>
-          
-          <div style={{ padding: '24px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border2)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(249,160,139,0.1)', color: 'var(--peach)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+          <div className="kp-head">
+            <div className="kp-head-l">
+              <div className="kp-head-icon">
                 <Icons.Plus />
               </div>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.3px' }}>{t('newBooking.title')}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>
+                <div className="kp-head-title">{t('newBooking.title')}</div>
+                <div className="kp-head-sub">
                   {t('newBooking.slotTime')}: <span style={{ color: 'var(--peach)', fontWeight: 800 }}>
                     {[...TIMES, '22:00', '23:00'][newBookingSlot.timeStart] || '00:00'} – {[...TIMES, '22:00', '23:00'][newBookingSlot.timeEnd] || '00:00'}
                   </span>
@@ -167,8 +169,8 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
           </div>
 
           <div className="kp-grid">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              
+            <div className="kp-col">
+
               <div className="kp-section">
                 <div className="kp-section-title">{t('newBooking.service')}</div>
                 <Select
@@ -182,7 +184,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
               <div className="kp-section">
                 <div className="kp-section-title">{t('newBooking.location')}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div className="kp-halls">
                   {halls.map(h => (
                     <div
                       key={h}
@@ -196,14 +198,14 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="kp-times">
                 <div className="kp-section" onClick={e => e.stopPropagation()}>
                   <div className="kp-section-title">{t('newBooking.start')}</div>
                   <div className="kp-time-container">
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={startInput}
                       onFocus={(e) => { e.target.select(); setActiveDropdown('start'); }}
                       onChange={e => setStartInput(e.target.value)}
@@ -232,7 +234,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, height: '40px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={endInput}
                       onFocus={(e) => { e.target.select(); setActiveDropdown('end'); }}
                       onChange={e => setEndInput(e.target.value)}
@@ -263,12 +265,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
               <div className="kp-section">
                 <div className="kp-section-title">{t('newBooking.groupLimit')}</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg)', padding: '0 6px 0 14px', borderRadius: '10px', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, height: '40px', boxSizing: 'border-box' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>{t('newBooking.maxSpots')}</span>
+                <div className="kp-limit" style={{ border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}` }}>
+                  <span className="kp-limit-label">{t('newBooking.maxSpots')}</span>
                   <input
-                    className="modal-input"
+                    className="modal-input kp-limit-input"
                     type="number" min="1" max="50"
-                    style={{ width: 56, height: 28, margin: 0, textAlign: 'center', padding: 0, background: 'var(--bg-card)', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
+                    style={{ margin: 0, textAlign: 'center', padding: 0, background: 'var(--bg-card)', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
                     value={newForm.maxClients}
                     onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
                   />
@@ -279,27 +281,24 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
             <div className="kp-section">
               <div className="kp-section-title">{t('newBooking.assignTrainer')}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="kp-trainers">
                 {trainers.map(t => {
                   const isActive = newBookingSlot.trainer === t.id;
                   return (
                     <div
                       key={t.id}
+                      className="kp-trainer"
                       onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
                       style={{
-                        padding: '0 12px 0 5px', borderRadius: '10px', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', gap: '10px',
                         border: `1px solid ${isActive ? t.color : 'var(--border)'}`,
                         background: isActive ? t.bg : 'var(--bg)',
-                        height: '40px', boxSizing: 'border-box',
-                        transition: 'all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1)',
                         boxShadow: isActive ? `0 4px 12px ${t.color}20` : 'none',
                         transform: isActive ? 'translateY(-1px)' : 'none'
                       }}
                     >
-                      <div style={{ width: 28, height: 28, borderRadius: '7px', background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, transition: 'all 0.2s' }}>{t.initials}</div>
-                      <span style={{ fontSize: 13, fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)', flex: 1 }}>{t.name}</span>
-                      {isActive && <span style={{ color: t.color, display: 'flex' }}><Icons.Check /></span>}
+                      <div className="kp-trainer-av" style={{ background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)' }}>{t.initials}</div>
+                      <span className="kp-trainer-name" style={{ fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)' }}>{t.name}</span>
+                      {isActive && <span style={{ color: t.color, display: 'flex', flexShrink: 0 }}><Icons.Check /></span>}
                     </div>
                   );
                 })}
@@ -307,11 +306,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
             </div>
           </div>
 
-          <div style={{ padding: '16px 24px', background: 'var(--bg)', borderTop: '1px solid var(--border2)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button 
-              type="button" 
-              className="btn-ghost-sm" 
-              style={{ height: 38, padding: '0 16px', fontSize: 12.5, borderRadius: '8px' }} 
+          <div className="kp-foot">
+            <button
+              type="button"
+              className="btn-ghost-sm"
               onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); closeNewForm(); }}
             >
               {t('newBooking.cancel')}
@@ -320,7 +318,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
               type="button"
               className="btn-primary-sm"
               disabled={hasErrors}
-              style={{ height: 38, padding: '0 24px', fontSize: 12.5, borderRadius: '8px', opacity: hasErrors ? 0.5 : 1, cursor: hasErrors ? 'not-allowed' : 'pointer' }}
+              style={{ opacity: hasErrors ? 0.5 : 1, cursor: hasErrors ? 'not-allowed' : 'pointer' }}
               onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); createBooking(); }}
             >
               {t('newBooking.create')}

@@ -207,6 +207,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             .velora-toast:hover .undo-progress { animation-play-state: paused; }
           `}</style>
           <div
+            className="velora-toast-stack"
             style={{
               position: 'fixed',
               bottom: '20px',

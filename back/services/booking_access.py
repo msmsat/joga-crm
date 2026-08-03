@@ -5,6 +5,7 @@ profiles.py) должны проверять одно и то же право, �
 и вызывается из обеих. "Разовое" (оплаченное тут же через кассу, CL-6.9) этот
 гейт не проходит — его право есть сам факт оплаты.
 """
+from datetime import date
 from typing import Optional
 
 from sqlalchemy.future import select
@@ -17,21 +18,33 @@ from models import ClientSubscription, Lesson, SubscriptionPackage
 async def find_eligible_subscription(
     db: AsyncSession, client_id: int, lesson: Lesson
 ) -> Optional[ClientSubscription]:
-    """Активный незамороженный абонемент клиента с остатком, подходящий под
-    тип занятия lesson. Возвращает первый подходящий или None.
+    """Незамороженный абонемент клиента с остатком, подходящий под тип занятия
+    lesson. Возвращает первый подходящий или None.
 
-    Порядок по expires_at: с абонемента списывается занятие при записи
-    (services/subscription_charge.py), и тратить надо тот, что сгорит раньше."""
+    Порядок: сначала идущие (status="active") по expires_at — с абонемента
+    списывается занятие при записи (services/subscription_charge.py), и тратить
+    надо тот, что сгорит раньше. Потом очередь (status="pending") по порядку
+    покупки: она уже оплачена, поэтому записываться по ней можно, но свой срок
+    такой абонемент начнёт только когда занятие реально пройдёт
+    (subscription_charge.activate_pending_after_visit).
+    """
     subs = (await db.execute(
         select(ClientSubscription).where(
             ClientSubscription.client_id == client_id,
-            ClientSubscription.status == "active",
+            ClientSubscription.status.in_(("active", "pending")),
             ClientSubscription.is_frozen == False,
             ClientSubscription.used_classes < ClientSubscription.total_classes,
-        ).order_by(ClientSubscription.expires_at)
+        )
     )).scalars().all()
     if not subs:
         return None
+
+    # date.max для очереди: её провизорный expires_at сравнивать не с чем.
+    subs.sort(key=lambda s: (
+        s.status != "active",
+        s.expires_at if s.status == "active" else date.max,
+        s.id,
+    ))
 
     package_ids = {sub.package_id for sub in subs if sub.package_id is not None}
     packages_by_id = {}
@@ -71,10 +84,10 @@ async def assert_can_book(
     has_any_subscription = (await db.execute(
         select(ClientSubscription.id).where(
             ClientSubscription.client_id == client_id,
-            ClientSubscription.status == "active",
+            ClientSubscription.status.in_(("active", "pending")),
             ClientSubscription.is_frozen == False,
             ClientSubscription.used_classes < ClientSubscription.total_classes,
-        )
+        ).limit(1)
     )).scalar_one_or_none()
     if has_any_subscription is not None:
         raise HTTPException(

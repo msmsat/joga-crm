@@ -74,8 +74,8 @@ export default function IntegrationCard({
     <div
       style={{
         borderRadius: "14px",
-        background: isExpanded ? "var(--bg-card)" : "rgba(0,0,0,0.015)",
-        border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(0,0,0,0.04)"}`,
+        background: isExpanded ? "var(--bg-card)" : "rgba(var(--ink),0.015)",
+        border: `1px solid ${isExpanded ? "var(--peach)" : "rgba(var(--ink),0.04)"}`,
         boxShadow: isExpanded ? "0 12px 32px rgba(252,174,145,0.1), 0 2px 6px rgba(252,174,145,0.05)" : "none",
         transition: "all 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)",
       }}
@@ -111,7 +111,7 @@ export default function IntegrationCard({
       <div style={{ display: "grid", gridTemplateRows: isExpanded ? "1fr" : "0fr", transition: "grid-template-rows 0.3s cubic-bezier(0.34, 1.5, 0.64, 1)" }}>
         <div style={{ minHeight: 0, overflow: "hidden" }}>
           <div style={{ padding: "0 20px 20px 20px" }}>
-            <div style={{ width: "100%", height: "1px", background: "rgba(0,0,0,0.06)", marginBottom: "20px" }} />
+            <div style={{ width: "100%", height: "1px", background: "rgba(var(--ink),0.06)", marginBottom: "20px" }} />
 
             {!connected && (
               <ConnectGuide type={type} loading={connectLoading} onSubmit={handleSubmit} onGoogleConnect={() => startGoogleAuth.mutate()} />
@@ -135,7 +135,7 @@ export default function IntegrationCard({
                 </div>
 
                 {type === "google_calendar" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "16px", background: "rgba(0,0,0,0.015)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "16px", background: "rgba(var(--ink),0.015)", borderRadius: "12px", border: "1px solid var(--border)" }}>
                     {!studioTimezone && (
                       <div style={{ fontSize: "11.5px", color: "#C0607A", background: "rgba(216,140,154,0.08)", border: "1px solid rgba(216,140,154,0.2)", borderRadius: "8px", padding: "8px 12px" }}>
                         {t("integrations.google.timezoneWarning")}

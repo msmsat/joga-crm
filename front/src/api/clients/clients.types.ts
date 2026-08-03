@@ -7,6 +7,18 @@ export interface ActiveSubscription {
   type: string
 }
 
+/**
+ * Купленный продукт клиента — абонемент или разовое занятие (у разового
+ * total === 1, в БД это тот же ClientSubscription).
+ */
+export interface ClientProduct extends ActiveSubscription {
+  id: number
+  is_frozen: boolean
+  /** Куплен поверх незаконченного: срок начнётся с первого посещения, expires_at пока условный. */
+  is_pending: boolean
+  starts_at: string | null
+}
+
 // GET /clients/{id}/wallet (CL-6.5) — полная форма абонемента, как отдаёт бэк
 // (ClientSubscriptionRead), в отличие от урезанной ActiveSubscription в профиле.
 export interface WalletSubscription {
@@ -75,6 +87,7 @@ export interface ClientListItem {
   visit_count: number
   total_spent: number
   active_subscription: ActiveSubscription | null
+  products: ClientProduct[]
   loyalty_points: number
   last_visit_date: string | null
   registration_date: string | null

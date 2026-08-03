@@ -54,7 +54,7 @@ from schemas import (
     SegmentRulesUpdate,
     TagsOut,
 )
-from schemas.clients.responses import ActiveSubscriptionOut
+from schemas.clients.responses import ActiveSubscriptionOut, ClientProductOut
 from schemas.common import Page
 from services.plan_limits import check_plan_limit
 from services.notifier import notify
@@ -69,16 +69,49 @@ _AVATAR_COLORS = [
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────────
 
+def _live_products(client: Client) -> list[ClientSubscription]:
+    """Живые продукты клиента: идущие абонементы/разовые + ждущая очередь.
+
+    Порядок показа тот же, в каком они будут тратиться (booking_access):
+    сначала идущие по дате сгорания, потом очередь по порядку покупки. У ждущих
+    expires_at провизорный, сортировать по нему нельзя.
+    """
+    today = date.today()
+    live = [
+        s for s in client.subscriptions
+        if s.used_classes < s.total_classes
+        and (s.status == "pending" or (s.status == "active" and s.expires_at >= today))
+    ]
+    live.sort(key=lambda s: (
+        s.status != "active",
+        s.expires_at if s.status == "active" else date.max,
+        s.id,
+    ))
+    return live
+
+
+def _product_out(sub: ClientSubscription) -> ClientProductOut:
+    pending = sub.status == "pending"
+    return ClientProductOut(
+        id=sub.id,
+        used=sub.used_classes,
+        total=sub.total_classes,
+        # У ждущего дата условная — фронт её не показывает, рисует бейдж очереди.
+        expires_at=sub.expires_at.isoformat(),
+        type=sub.type,
+        is_frozen=sub.is_frozen,
+        is_pending=pending,
+        starts_at=sub.starts_at.isoformat() if sub.starts_at else None,
+    )
+
+
 def _client_list_item(client: Client, rules: SegmentRules = DEFAULT_RULES) -> ClientListItemOut:
     visit_count = sum(1 for r in client.reservations if r.status == "attended")
     total_spent = sum(p.amount for p in client.payments if p.status == "success")
-    active_sub = next(
-        (
-            s for s in sorted(client.subscriptions, key=lambda s: s.expires_at)
-            if s.status == "active" and not s.is_frozen and s.used_classes < s.total_classes
-        ),
-        None,
-    )
+    products = _live_products(client)
+    # Для таблицы клиентов — первый в том же порядке (ближайший к сгоранию),
+    # но только реально идущий: очередь в одну строку выводить нечего.
+    active_sub = next((s for s in products if s.status == "active" and not s.is_frozen), None)
     loyalty_points = client.loyalty_card.points_balance if client.loyalty_card else 0
     return ClientListItemOut(
         id=client.id,
@@ -99,6 +132,7 @@ def _client_list_item(client: Client, rules: SegmentRules = DEFAULT_RULES) -> Cl
             expires_at=active_sub.expires_at.isoformat(),
             type=active_sub.type,
         ) if active_sub else None,
+        products=[_product_out(s) for s in products],
         loyalty_points=loyalty_points,
         last_visit_date=client.last_visit_date.isoformat() if client.last_visit_date else None,
         registration_date=client.registration_date.date().isoformat() if client.registration_date else None,

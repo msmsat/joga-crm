@@ -50,14 +50,16 @@ export function KpiStat({ label, value, trendPct, formulaKey, onClick, format = 
         onMouseLeave={clickable ? () => setHovered(false) : undefined}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text3)' }}>{label}</span>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text3)', minWidth: 0 }}>{label}</span>
           <InfoHint
             title={t(`formulas.${formulaKey}.title`)}
             text={t(`formulas.${formulaKey}.text`)}
           />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+          {/* clamp вместо жёстких 28px: в двух колонках по 137px на экране
+              320px «16 709 ₴» отрывало символ валюты на вторую строку. */}
+          <div style={{ fontSize: 'clamp(20px, 6.5vw, 28px)', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
             {formatValue(value, format, currencySymbol)}
           </div>
           {clickable && (

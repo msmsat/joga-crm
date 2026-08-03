@@ -271,41 +271,44 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
       <div className="v-overlay" onClick={handleClose}>
         {/* Modal */}
         <div
+          className="v-modal-lg v-modal-wizard v-modal-steps"
           onClick={e => e.stopPropagation()}
           style={{
-            width: 'min(780px, calc(100vw - 48px))', height: 'min(556px, calc(100vh - 32px))',
+            ['--v-modal-w' as string]: '780px',
+            ['--v-left-w' as string]: '236px',
+            ['--vm-wizard-h' as string]: '556px',
             background: 'var(--bg-card)', borderRadius: '24px', overflow: 'hidden',
-            display: 'flex', boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
+            boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
             animation: 'acModalIn 0.3s ease both',
           }}
         >
           {/* ─ LEFT PANEL ─ */}
-          <div style={{
-            width: '236px', flexShrink: 0, padding: '30px 24px',
-            background: 'linear-gradient(160deg, #fff9f6 0%, #fff4ef 60%, #fdeee8 100%)',
+          <div className="v-modal-left" style={{
+            padding: '30px 24px',
+            background: 'linear-gradient(160deg, var(--peach-glow) 0%, transparent 55%), var(--bg-card)',
             borderRight: '1px solid rgba(252,174,145,0.18)',
             display: 'flex', flexDirection: 'column',
           }}>
             {/* Logo */}
-            <div style={{ fontSize: '16px', fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--text)', marginBottom: '32px' }}>
+            <div className="vml-logo" style={{ fontSize: '16px', fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--text)', marginBottom: '32px' }}>
               velora<span style={{ color: 'var(--peach)' }}>.</span>
             </div>
 
             {/* Step label */}
-            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(249,160,139,0.8)', marginBottom: '8px' }}>
+            <div className="vml-step" style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(249,160,139,0.8)', marginBottom: '8px' }}>
               {t('addModal.stepCounter', { current: step, total: TOTAL })}
             </div>
 
             {/* Title */}
-            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.25, marginBottom: '8px' }}>
+            <div className="vml-title" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.25, marginBottom: '8px' }}>
               {stepMeta[step - 1].title}
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '28px' }}>
+            <div className="vml-sub" style={{ fontSize: '12px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '28px' }}>
               {stepMeta[step - 1].sub}
             </div>
 
             {/* Step dots */}
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '28px' }}>
+            <div className="vml-dots" style={{ display: 'flex', gap: '6px', marginBottom: '28px' }}>
               {Array.from({ length: TOTAL }).map((_, i) => (
                 <div key={i} style={{
                   height: '4px', flex: i + 1 <= step ? '2' : '1',
@@ -318,7 +321,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             </div>
 
             {/* Illustration */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="vml-illus" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {step === 1 && <IllusStep1 name={form.name}/>}
               {step === 2 && <IllusStep2/>}
               {step === 3 && <IllusStep3 label={t('panel.abonement.title')}/>}
@@ -326,7 +329,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
             </div>
 
             {/* Trust signal */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(249,160,139,0.06)', borderRadius: '10px', border: '1px solid rgba(249,160,139,0.15)' }}>
+            <div className="vml-aside" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(249,160,139,0.06)', borderRadius: '10px', border: '1px solid rgba(249,160,139,0.15)' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--peach)" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>

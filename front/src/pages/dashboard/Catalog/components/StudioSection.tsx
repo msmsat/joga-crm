@@ -235,7 +235,7 @@ export function StudioSection() {
                   </div>
 
                   {/* Stats */}
-                  <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: '16px' }}>
+                  <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', marginTop: '16px' }}>
                     <div className="cat-stat-card">
                       <div className="cat-stat-v">{activeStudio.halls.length}</div>
                       <div className="cat-stat-l">{t('catalog:studios.stats.halls')}</div>
@@ -290,7 +290,7 @@ export function StudioSection() {
                   {activeHall.is_online && (
                     <span className="cat-online-badge" style={{ marginBottom: '12px' }}>{t('common:status.online')}</span>
                   )}
-                  <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                  <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))' }}>
                     <div className="cat-stat-card">
                       <div className="cat-stat-v" style={{ color: activeHall.color ?? '#FCAE91' }}>{activeHall.capacity}</div>
                       <div className="cat-stat-l">{t('catalog:studios.hall.stats.seats')}</div>

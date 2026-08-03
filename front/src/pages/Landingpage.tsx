@@ -29,7 +29,7 @@ export default function Landing() {
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <Logo />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+        <div className="lp-nav-links" style={{ display: "flex", alignItems: "center", gap: "32px" }}>
           <a href="#" className="nav-link">О продукте</a>
           <a href="#" className="nav-link">Возможности</a>
           <a href="#" className="nav-link">Тарифы</a>
@@ -57,15 +57,12 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{
-        minHeight: "100vh",
+      <section className="lp-hero" style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        paddingTop: "120px", paddingBottom: "80px",
         position: "relative", zIndex: 1,
-        maxWidth: "1200px", margin: "0 auto",
-        padding: "120px 48px 80px",
+        margin: "0 auto",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "80px", width: "100%" }}>
+        <div className="lp-hero-grid" style={{ display: "flex", alignItems: "center", width: "100%" }}>
           {/* Left copy */}
           <div style={{ flex: "1", maxWidth: "560px" }}>
             <div style={{
@@ -77,7 +74,9 @@ export default function Landing() {
             </div>
 
             <h1 style={{
-              fontSize: "clamp(42px, 5vw, 62px)",
+              /* Нижняя граница 30, а не 42: «пользоваться» на 42px не влезает
+                 в 320px и растягивает всю секцию шире экрана. */
+              fontSize: "clamp(30px, 5vw, 62px)",
               fontWeight: 900,
               color: "var(--onyx)",
               letterSpacing: "-2px",
@@ -130,6 +129,7 @@ export default function Landing() {
             {/* Social proof row */}
             <div style={{
               display: "flex", alignItems: "center", gap: "16px", marginTop: "32px",
+              flexWrap: "wrap",
               opacity: heroVisible ? 1 : 0,
               transition: "opacity 0.6s ease 1.1s",
             }}>
@@ -179,10 +179,10 @@ export default function Landing() {
       {/* ── STATS STRIP ── */}
       <section style={{
         maxWidth: "1200px", margin: "0 auto",
-        padding: "0 48px 80px",
+        padding: "0 var(--lp-pad) var(--lp-gap-sm)",
         position: "relative", zIndex: 1,
       }}>
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: "16px" }}>
           <StatCard value="2 400+" label="Активных бизнесов" icon="🏢" />
           <StatCard value="14.2M" label="Записей обработано" icon="📋" />
           <StatCard value="99.9%" label="Uptime за 2025" icon="⚡" />
@@ -193,15 +193,15 @@ export default function Landing() {
       {/* ── ABOUT ── */}
       <section style={{
         maxWidth: "1200px", margin: "0 auto",
-        padding: "0 48px 100px",
+        padding: "0 var(--lp-pad) var(--lp-gap)",
         position: "relative", zIndex: 1,
       }}>
         <div style={{
-          padding: "64px",
+          padding: "var(--lp-inner-pad)",
           background: `linear-gradient(135deg, rgba(249,160,139,0.06) 0%, rgba(163,201,168,0.05) 100%)`,
           borderRadius: "24px",
           border: `1px solid rgba(249,160,139,0.14)`,
-          display: "flex", gap: "80px", alignItems: "center",
+          display: "flex", gap: "var(--lp-col-gap)", alignItems: "center", flexWrap: "wrap",
         }}>
           <div style={{ flex: "1" }}>
             <p style={{
@@ -223,7 +223,7 @@ export default function Landing() {
               громоздких CRM. Мы убрали всё лишнее и оставили только то, что
               реально работает. Минимум кликов — максимум результата.
             </p>
-            <div style={{ display:"flex", gap:"32px" }}>
+            <div style={{ display:"flex", gap:"32px", flexWrap:"wrap" }}>
               {[["2021", "Год основания"], ["42", "Сотрудника"], ["18", "Стран"]].map(([v,l])=>(
                 <div key={l}>
                   <div style={{
@@ -271,10 +271,10 @@ export default function Landing() {
       {/* ── FEATURES ── */}
       <section style={{
         maxWidth: "1200px", margin: "0 auto",
-        padding: "0 48px 100px",
+        padding: "0 var(--lp-pad) var(--lp-gap)",
         position: "relative", zIndex: 1,
       }}>
-        <div style={{ textAlign:"center", marginBottom:"56px" }}>
+        <div style={{ textAlign:"center", marginBottom:"var(--lp-head-gap)" }}>
           <p style={{
             fontSize:"11px", fontWeight:700, color:"var(--peach)",
             letterSpacing:"2px", textTransform:"uppercase", marginBottom:"12px",
@@ -288,7 +288,7 @@ export default function Landing() {
 
         <div style={{
           display:"grid",
-          gridTemplateColumns:"repeat(3, 1fr)",
+          gridTemplateColumns:"repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
           gap:"16px",
         }}>
           {[
@@ -307,10 +307,10 @@ export default function Landing() {
       {/* ── TESTIMONIALS ── */}
       <section style={{
         maxWidth: "1200px", margin: "0 auto",
-        padding: "0 48px 100px",
+        padding: "0 var(--lp-pad) var(--lp-gap)",
         position: "relative", zIndex: 1,
       }}>
-        <div style={{ textAlign:"center", marginBottom:"56px" }}>
+        <div style={{ textAlign:"center", marginBottom:"var(--lp-head-gap)" }}>
           <p style={{
             fontSize:"11px", fontWeight:700, color:"var(--peach)",
             letterSpacing:"2px", textTransform:"uppercase", marginBottom:"12px",
@@ -321,7 +321,7 @@ export default function Landing() {
           }}>Они уже выбрали<br />Velora</h2>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"16px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap:"16px" }}>
           <TestimonialCard
             quote="После Altegio мы думали, что найти что-то лучше нереально. Velora разнесла все ожидания — интерфейс как у Apple, функции как у Oracle."
             name="Мария Ковалёва" role="Владелец, студия пилатеса FORM"
@@ -343,11 +343,11 @@ export default function Landing() {
       {/* ── CTA BLOCK ── */}
       <section style={{
         maxWidth: "1200px", margin: "0 auto",
-        padding: "0 48px 120px",
+        padding: "0 var(--lp-pad) calc(var(--lp-gap) + 20px)",
         position: "relative", zIndex: 1,
       }}>
         <div style={{
-          padding: "80px 64px",
+          padding: "var(--lp-cta-pad)",
           background: `linear-gradient(135deg, var(--onyx) 0%, #2A2A2A 100%)`,
           borderRadius: "28px",
           textAlign: "center",
@@ -357,7 +357,7 @@ export default function Landing() {
           <div style={{
             position:"absolute", top:"-40%", left:"50%",
             transform:"translateX(-50%)",
-            width:"600px", height:"300px",
+            width:"min(600px, 160%)", height:"300px",
             background:"radial-gradient(ellipse, var(--peach-glow) 0%, transparent 70%)",
             pointerEvents:"none",
           }} />
@@ -409,14 +409,15 @@ export default function Landing() {
       {/* ── FOOTER ── */}
       <footer style={{
         borderTop: `1px solid var(--border)`,
-        padding: "40px 48px",
+        padding: "40px var(--lp-pad)",
         maxWidth: "1200px", margin: "0 auto",
         display:"flex", alignItems:"center", justifyContent:"space-between",
+        gap:"16px", flexWrap:"wrap",
         position:"relative", zIndex:1,
       }}>
         <Logo />
         <div style={{
-          display:"flex", gap:"24px",
+          display:"flex", gap:"24px", flexWrap:"wrap",
           fontSize:"13px", color:"var(--muted)",
         }}>
           <a href="#" style={{ color:"var(--muted)", textDecoration:"none", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--muted)"}>Конфиденциальность</a>

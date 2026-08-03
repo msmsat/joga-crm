@@ -120,7 +120,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
   return (
     <>
       {/* 1. Карточки сводки */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 'var(--grid-gap)', marginBottom: 'var(--section-gap)' }}>
         <div style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(249,160,139,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
@@ -170,7 +170,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
             <button onClick={() => setAddOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='var(--onyx)'} onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}><Ico.X /></button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+          <div className="split-tablet" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('goals.titleLabel')}</label>
@@ -232,7 +232,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
       )}
 
       {/* 4. Список целей */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '20px' }}>
         {goals.map(g => {
           const color = goalColor(g.id);
           const pct = Math.min(Math.round(g.current_amount / g.target_amount * 100), 100);

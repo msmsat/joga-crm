@@ -114,13 +114,22 @@ def _active_cond(today: date, rules: SegmentRules):
 
 
 def _has_subscription_cond(today: date):
-    """Живой абонемент: не истёк, не заморожен и остались занятия."""
+    """Живой абонемент: не истёк, не заморожен и остались занятия.
+
+    Очередь (status="pending") тоже считается: клиент абонемент купил, просто его
+    срок ещё не начался — у такого expires_at провизорный и сравнивать его нельзя.
+    """
     return Client.id.in_(
         select(ClientSubscription.client_id).where(
-            ClientSubscription.status == "active",
             ClientSubscription.is_frozen.is_(False),
-            ClientSubscription.expires_at >= today,
             ClientSubscription.used_classes < ClientSubscription.total_classes,
+            or_(
+                ClientSubscription.status == "pending",
+                and_(
+                    ClientSubscription.status == "active",
+                    ClientSubscription.expires_at >= today,
+                ),
+            ),
         )
     )
 

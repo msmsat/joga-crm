@@ -313,7 +313,9 @@ export default function Staff() {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: 'calc(100vh - 56px - 56px)', display: 'flex', flexDirection: 'column', gap: '16px', overflow: 'hidden' }}>
+    // Высота — не арифметика по вьюпорту (она врала при другом топбаре и с
+    // баннером подписки), а честное «занять всю область .content» (flex-колонка).
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 'var(--grid-gap)', overflow: 'hidden' }}>
 
       {/* ── SUMMARY STATS ─────────────────────────────────────────────────── */}
       <StaffStats staff={adaptedStaff} />
@@ -412,7 +414,7 @@ export default function Staff() {
               <div className="premium-body fade-in" key={profile.id}>
 
                 {/* Stats cards — JSON-driven per role */}
-                <div className="stats-row" style={{ gridTemplateColumns: `repeat(${roleCards.length}, 1fr)` }}>
+                <div className="stats-row" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(140px, 100%), 1fr))` }}>
                   {roleCards.map((card) => (
                     <div key={card.id} className="stat-card">
                       <div className="stat-v">{resolveCardValue(card, profile)}</div>

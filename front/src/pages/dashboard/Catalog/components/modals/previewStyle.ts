@@ -27,6 +27,6 @@ export function colorVars(raw: string | null | undefined): React.CSSProperties {
 // а не сливалось с ней.
 export const LEFT_PANEL_STYLE: React.CSSProperties = {
   background: 'var(--bg)',
-  borderRight: '1px solid #F0EDE8',
+  borderRight: '1px solid var(--border)',
   padding: '26px 22px',
 };

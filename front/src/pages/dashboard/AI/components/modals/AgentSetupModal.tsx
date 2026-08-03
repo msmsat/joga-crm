@@ -127,19 +127,25 @@ export default function AgentSetupModal({
 
   return (
     <div
-      className="fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(0,0,0,0.5)] p-4 fade-in duration-200"
+      className="fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(0,0,0,0.5)] p-4 fade-in duration-200 max-[767px]:items-end max-[767px]:p-0"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       {/* Фон карточки — жемчужный (--v-background), белыми остаются только
           внутренние секции: иначе белое на белом сливается. */}
-      <div className="flex h-[628px] max-h-[calc(100vh-32px)] w-[920px] max-w-[calc(100vw-32px)] animate-in overflow-hidden rounded-[26px] bg-background font-sans text-foreground ring-1 ring-black/[0.06] fade-in duration-300"
+      {/* На телефоне двухколоночная раскладка не работает: колонке каналов
+          нужно 190px из 288 доступных, содержимому вкладки оставалось 98 и оно
+          обрезалось. Ниже 768px модалка становится шитом снизу, а каналы —
+          горизонтальным рельсом над содержимым. */}
+      <div className="flex h-[628px] max-h-[calc(100vh-32px)] w-[920px] max-w-[calc(100vw-32px)] animate-in overflow-hidden rounded-[26px] bg-background font-sans text-foreground ring-1 ring-black/[0.06] fade-in duration-300 max-[900px]:w-[620px] max-[767px]:h-[92dvh] max-[767px]:max-h-[92dvh] max-[767px]:w-full max-[767px]:max-w-full max-[767px]:!flex-col max-[767px]:rounded-b-none"
         style={{ boxShadow: '0 50px 120px -30px rgba(26,26,26,0.45), 0 16px 48px -16px rgba(26,26,26,0.16)' }}
       >
         {/* ─── левая колонка: каналы ─── */}
         {/* Персиковый градиент колонки задан через токены темы, а не литералами:
             в тёмной теме та же заливка уходит в графит (--bg-card / --bg). */}
-        <aside className="flex w-[268px] shrink-0 flex-col gap-1 border-r border-border bg-gradient-to-b from-[var(--tint-peach)] via-[var(--bg-card)] to-[var(--bg)] p-5">
-          <div className="mb-6 flex items-start gap-3 px-1">
+        <aside className="flex w-[268px] shrink-0 flex-col gap-1 border-r border-border bg-gradient-to-b from-[var(--tint-peach)] via-[var(--bg-card)] to-[var(--bg)] p-5 max-[1180px]:w-[228px] max-[900px]:w-[190px] max-[900px]:p-3 max-[767px]:w-full max-[767px]:!flex-row max-[767px]:gap-2 max-[767px]:overflow-x-auto max-[767px]:border-r-0 max-[767px]:border-b max-[767px]:p-2.5 max-[767px]:[scrollbar-width:none]">
+          {/* Заголовок и подпись дублируют шапку модалки, а плитка модели —
+              справочная: на телефоне обе только отнимают экран у формы. */}
+          <div className="mb-6 flex items-start gap-3 px-1 max-[767px]:hidden">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#FCAE91] to-[#F9A08B] text-white shadow-[0_8px_18px_-10px_rgba(249,160,139,0.8)]">
               {ICONS.prompt}
             </div>
@@ -155,7 +161,7 @@ export default function AgentSetupModal({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="group relative flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left"
+                className="group relative flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left max-[767px]:w-auto max-[767px]:shrink-0 max-[767px]:whitespace-nowrap"
               >
                 {active && (
                   <motion.span
@@ -184,7 +190,7 @@ export default function AgentSetupModal({
             );
           })}
 
-          <div className="mt-auto flex items-center gap-3 rounded-xl border border-border bg-card/70 px-3.5 py-3">
+          <div className="mt-auto flex items-center gap-3 rounded-xl border border-border bg-card/70 px-3.5 py-3 max-[767px]:hidden">
             <div className="min-w-0 flex-1">
               <div className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground/70">{t('settings.model')}</div>
               <div className="mt-0.5 truncate text-[12.5px] font-extrabold text-foreground">{t('models.velora-3.5')}</div>
@@ -195,7 +201,7 @@ export default function AgentSetupModal({
 
         {/* ─── правая колонка: содержимое вкладки ─── */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-4 px-7 pt-6 pb-4">
+          <div className="flex items-center gap-4 px-7 pt-6 pb-4 max-[767px]:px-4 max-[767px]:pt-4 max-[767px]:pb-3">
             <div className="text-[17px] font-extrabold tracking-[-0.02em] text-foreground">{activeLabel}</div>
             <button
               onClick={onClose}
@@ -207,7 +213,7 @@ export default function AgentSetupModal({
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-7 pb-6 [scrollbar-color:rgba(249,160,139,0.3)_transparent] [scrollbar-width:thin]">
+          <div className="min-h-0 flex-1 overflow-y-auto px-7 pb-6 max-[767px]:px-4 [scrollbar-color:rgba(249,160,139,0.3)_transparent] [scrollbar-width:thin]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -306,7 +312,7 @@ export default function AgentSetupModal({
             </AnimatePresence>
           </div>
 
-          <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-border px-7 py-4">
+          <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-border px-7 py-4 max-[767px]:px-4 max-[767px]:pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <Button variant="ghost" onClick={onClose} className="h-10 rounded-xl px-4 text-[13.5px] font-semibold text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground">
               {t('common:buttons.cancel')}
             </Button>

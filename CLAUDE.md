@@ -224,6 +224,7 @@
 | `Toast` (`useToast`) | `components/ui/index` | Уведомления об успехе/ошибке |
 | `EmptyState` | `components/ui/index` | Пустое состояние: SVG-иллюстрация в персиковом круге, заголовок, подпись, действие; `size: sm/lg` |
 | `Sidebar`, `Navbar` | `components/ui/index` | Каркас приложения (используются только в `DashboardLayout`) |
+| `MobileNav` | `components/ui/index` | Нижняя панель навигации телефона (<768px) + шит «Ещё»; рендерится внутри `Sidebar`, показывается медиазапросом. Пункты меню — общий модуль `components/ui/navItems.tsx` |
 | `ErrorBoundary` | `components/ui/index` | Классовый компонент, ловит ошибки рендера; fallback-карточка + «Обновить страницу»; оборачивает контент `DashboardLayout` вокруг `Outlet` |
 
 Правила:
@@ -266,6 +267,18 @@
   - *Padding:* Generous internal padding (24px - 32px minimum in cards). Let the UI breathe. Use negative space instead of divider lines.
 - **Shadows:** Ultra-soft, levitating. Example: `Y: 8, Blur: 24, Spread: -4, Black 4%`.
 - **Inputs:** Minimalist. Light gray border. On focus: Soft glow with Primary Accent (`#FCAE91`) and light shadow.
+
+### 📱 Адаптив
+Плотность интерфейса живёт в токенах `:root` в `App.css` (`--content-pad`, `--card-pad`, `--grid-gap`, `--stat-v`, `--section-gap`, `--chart-h`, `--topbar-h`) — размеры берутся оттуда, а не пишутся числом инлайн. Ступени: 1600 → 1440 → 1366 → 1280 → 1180 → 1024 (планшет) → **767 (телефон)**, плюс низкоэкранные `max-height`.
+
+**Телефон (<768px)** — не «то же самое, но уже», а другая раскладка:
+- боковое меню уходит, навигация переезжает в нижнюю панель `MobileNav` (4 раздела + шит «Ещё»); место под неё отнимается у `.main`, а не у `.content` — иначе полноэкранные страницы получают полосу пустоты;
+- модалки кита превращаются в шиты снизу (`.v-overlay`/`.v-modal` в блоке «ТЕЛЕФОН» в конце `App.css`);
+- панели-дроверы (AI, Лояльность, карточка клиента) разворачиваются во весь экран и останавливаются над нижней панелью;
+- ряды вкладок, чипов и фильтров листаются вбок, а не переносятся в три этажа;
+- `env(safe-area-inset-bottom)` — под индикатор жестов iPhone (`viewport-fit=cover` уже в `index.html`).
+
+Правила телефона — **последним блоком в файле**: медиазапрос не добавляет специфичности, и выше его перебили бы собственные базовые правила. По той же причине то, что на телефоне должно быть видно, а на десктопе нет, скрывается через `@media (min-width: 768px)` ПОСЛЕ базового правила.
 
 ---
 

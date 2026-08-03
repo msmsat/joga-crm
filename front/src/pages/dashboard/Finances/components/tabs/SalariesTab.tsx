@@ -96,7 +96,7 @@ export default function SalariesTab({ showToast }: { showToast: (msg: string, t?
       </div>
 
       {/* Summary cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 'var(--grid-gap)', marginBottom: 'var(--section-gap)' }}>
         {SUMMARY.map(s => (
           <div key={s.label} className="card" style={{ padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: '6px', borderLeft: `3px solid ${s.color}` }}>
             <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{s.label}</div>

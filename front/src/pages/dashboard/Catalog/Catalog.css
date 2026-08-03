@@ -1,9 +1,9 @@
 /* ─── LAYOUT ───────────────────────────────────────────────────────────────── */
 .cat-page {
-  padding: 24px;
+  padding: var(--card-pad);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--grid-gap);
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -11,11 +11,16 @@
 
 .cat-layout {
   display: grid;
-  grid-template-columns: 228px 1fr;
-  gap: 20px;
+  grid-template-columns: var(--cat-list-w, 228px) minmax(0, 1fr);
+  gap: var(--grid-gap);
   height: 100%;
   overflow: hidden;
 }
+/* Список филиалов/услуг уступает ширину карточке — на ноутбуке она важнее */
+@media (max-width: 1440px) { .cat-layout { --cat-list-w: 204px; } }
+@media (max-width: 1280px) { .cat-layout { --cat-list-w: 184px; } }
+@media (max-width: 1080px) { .cat-layout { --cat-list-w: 160px; } }
+
 
 /* ─── TABS ─────────────────────────────────────────────────────────────────── */
 .cat-tabs {
@@ -812,12 +817,20 @@
    в DOM на каждом открытии рвёт кадр анимации (см. cm-spin в App.css).
    ══════════════════════════════════════════════════════════════════════════ */
 
+/* Панель занимает всю высоту колонки, а не «висит» по её центру: раньше
+   ModalShell центрировал её (justify-content: safe center), и подпись
+   «ПРЕВЬЮ В ЖУРНАЛЕ» всплывала где придётся — на короткой модалке ровно
+   вровень с подзаголовком формы, читаясь как второй текст поверх первого.
+   Теперь подпись прибита к верху и работает как заголовок колонки (в одну
+   линию с заголовком модалки), а само превью центрируется внутри остатка. */
 .cmod-left {
   display: flex;
   flex-direction: column;
   gap: 14px;
   min-width: 0;
+  flex: 1;
 }
+
 
 .cmod-eyebrow {
   display: flex;
@@ -848,6 +861,12 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  /* Забирает остаток колонки под собой и центрирует превью внутри него —
+     подпись при этом остаётся прибитой к верху (см. .cmod-left).
+     safe center, а не center: если превью выше колонки, оно прижимается
+     к началу и доступно скроллом, а не срезается сверху. */
+  flex: 1;
+  justify-content: safe center;
 }
 
 /* ─── ПРЕВЬЮ УСЛУГИ: фрагмент журнала ──────────────────────────────────────
@@ -1227,7 +1246,12 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.cmod-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* minmax(0,1fr), а не 1fr: у 1fr минимум — min-content, и «Индивидуальная»
+   в сегмент-переключателе распирала свою колонку, выталкивая соседнюю за край
+   модалки — подписи наезжали друг на друга. Теперь колонка честно делится
+   пополам, а содержимое ужимается внутри неё. */
+.cmod-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.cmod-row > * { min-width: 0; }
 
 .cmod-toggle {
   display: flex;
@@ -1308,4 +1332,100 @@
 @media (max-width: 1100px) {
   .cmod-jrn-row { height: 46px; }
   .cmod-plan-room { min-height: 124px; }
+}
+
+/* ── Планшет: список ложится строкой над карточкой ─────────────────────────
+   160px колонки на 768px — это обрезанные названия филиалов, пока карточке
+   не хватает ширины на фото, залы и сетку часов работы. Список становится
+   горизонтальным рельсом: выбор на виду, скроллится вбок, карточка получает
+   весь экран. Заголовок панели уходит — группы в рельсе сами подписаны. */
+@media (max-width: 900px) {
+  .cat-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .cat-list-panel { flex-direction: row; align-items: stretch; }
+
+  .cat-panel-hdr {
+    border-bottom: none;
+    border-right: 1px solid rgba(var(--ink), 0.06);
+    background: none;
+    padding: 10px 12px;
+  }
+  .cat-panel-title { display: none; }
+
+  .cat-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 10px;
+  }
+  /* Группы («Филиалы», «Залы») обёрнуты своим div — он тоже становится строкой */
+  .cat-list > * { display: flex; align-items: center; gap: 6px; }
+  .cat-sep { padding: 0 4px; white-space: nowrap; flex-shrink: 0; }
+  .cat-sep::after { display: none; }
+
+  .cat-item { flex: 0 0 auto; width: 178px; padding: 8px 11px; }
+  /* Маркер выбора с левой грани на нижнюю: в строке полоска слева читалась бы
+     как разделитель, а не как «выбрано». */
+  .cat-item.active {
+    border-left: none;
+    padding-left: 11px;
+    box-shadow: inset 0 -2px 0 #FCAE91;
+  }
+}
+
+/* ── Низкий экран: шапка карточки отдаёт высоту содержимому ────────────────
+   148px декоративной шапки с фото на экране 768px — это треть карточки,
+   пока залам, часам работы и услугам не хватает места. Блок в конце файла
+   намеренно: медиазапрос не добавляет специфичности, выше его перебили бы
+   собственные базовые правила .cat-hero. */
+@media (max-height: 820px) {
+  .cat-hero { height: 112px; padding: 14px 18px; }
+  .cat-hero-name { font-size: 19px; }
+  .cat-body { padding: 14px 18px; }
+}
+
+/* ── Телефон: рельс филиалов сжимается, карточка забирает остальное ────────
+   Горизонтальный рельс с 900px остаётся — сложить его некуда, а выбранный
+   филиал должен быть виден. Ужимается сам рельс и шапка карточки: 148px
+   градиента с фото на 360px-экране — это треть высоты до первых данных. */
+@media (max-width: 767px) {
+  .cat-list-panel { border-radius: 14px; }
+  .cat-panel-hdr { padding: 8px 10px; }
+  .cat-list { padding: 7px 8px; gap: 5px; }
+  .cat-item { width: 148px; padding: 7px 9px; }
+  .cat-item-icon { width: 26px; height: 26px; }
+  .cat-item-name { font-size: 11.5px; }
+  .cat-item-sub { font-size: 9.5px; }
+
+  /* Неделя в одну строку: семь ячеек по 26px, где «09:00» уже не помещается,
+     и последние дни уезжали за карточку. Пусть встают в три ряда — сколько
+     влезло по 64px, столько и будет. */
+  .cat-hours-grid { grid-template-columns: repeat(auto-fit, minmax(min(64px, 100%), 1fr)); gap: 6px; }
+
+  /* Шапка филиала. Блок «низких экранов» выше (max-height: 820px, а телефон
+     под него подпадает) кладёт кнопки и название в одну строку с min-width:0
+     у названия — на 320px две кнопки с подписями «Редактировать филиал» и
+     «Удалить филиал» забирали строку целиком, название сжималось до нуля и
+     наезжало на них. Возвращаем два яруса: название сверху, действия под ним.
+     column-reverse, а не column: в разметке кнопки идут первыми. */
+  .cat-hero {
+    height: auto;
+    min-height: 104px;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  /* Две кнопки делят строку поровну, а не выезжают за край: сумма их
+     собственных ширин на 320px больше самой шапки. */
+  .cat-hero-actions { justify-content: stretch; }
+  .cat-hero-actions .cat-h-btn { flex: 1 1 0; min-width: 0; justify-content: center; text-align: center; }
+  .cat-hero-name { font-size: 17px; }
+  .cat-body { padding: 12px 14px 16px; }
 }

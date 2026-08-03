@@ -50,10 +50,12 @@ export function useDragAndDrop({
     const stepPx = timeStep * 1.2; 
     const stepHours = timeStep / 60;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: PointerEvent) => {
+      // Пока карточку тащат, палец не должен прокручивать расписание под ней.
+      if (drag.isDragging) e.preventDefault();
       const deltaX = e.clientX - drag.startX;
       const deltaY = e.clientY - drag.startY;
-      
+
       if (!drag.isDragging && drag.type === 'move' && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
          setDrag(prev => prev ? { ...prev, isDragging: true, deltaX, deltaY } : null);
       } else if (drag.isDragging) {
@@ -115,7 +117,7 @@ export function useDragAndDrop({
       }
     };
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = (e: PointerEvent) => {
       if (drag.isDragging) {
         // Пре-драг версия карточки — для отката, если сервер ответит ошибкой
         const original = bookings.find(b => b.id === drag.id);
@@ -185,29 +187,47 @@ export function useDragAndDrop({
       setDrag(null);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    // Указатель отобрали — бросаем перенос, ничего не сохраняя.
+    const handleCancel = () => setDrag(null);
+
+    // Pointer, а не mouse: те же события приходят от мыши, стилуса и пальца,
+    // поэтому перенос и растягивание занятия работают и на телефоне. Палец
+    // отличается только точкой старта — см. initDrag (долгое нажатие).
+    // pointercancel обязателен: система забирает указатель (жест «назад»,
+    // входящий звонок) без pointerup, и без обработчика карточка осталась бы
+    // висеть в состоянии перетаскивания навсегда.
+    document.addEventListener('pointermove', handleMouseMove);
+    document.addEventListener('pointerup', handleMouseUp);
+    document.addEventListener('pointercancel', handleCancel);
     return () => {
-       document.removeEventListener('mousemove', handleMouseMove);
-       document.removeEventListener('mouseup', handleMouseUp);
+       document.removeEventListener('pointermove', handleMouseMove);
+       document.removeEventListener('pointerup', handleMouseUp);
+       document.removeEventListener('pointercancel', handleCancel);
     };
   }, [drag, viewMode, calendarView, columns, bookings, timeStep, showToast, onCommit, t]); // 🔥 Добавили calendarView в зависимости
 
+  // Порог удержания для пальца. 420мс — заметно дольше тапа (открыть карточку)
+  // и короче, чем ощущается как «зависло».
+  const TOUCH_HOLD_MS = 420;
+  const TOUCH_SLOP_PX = 8;
+
   const initDrag = (
-    e: React.MouseEvent,
+    e: React.PointerEvent,
     id: number,
     type: 'move' | 'resize-top' | 'resize-bottom',
     booking?: Booking
   ) => {
     e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const el = e.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
     const offsetYInsideCard = type === 'move' ? e.clientY - rect.top : 0;
+    const { clientX: startX, clientY: startY, pointerId, pointerType } = e;
 
-    setDrag({
+    const start = () => setDrag({
       id,
       type,
-      startX: e.clientX,
-      startY: e.clientY,
+      startX,
+      startY,
       deltaX: 0,
       deltaY: 0,
       offsetYInsideCard,
@@ -219,6 +239,37 @@ export function useDragAndDrop({
         originalEnd: booking.timeEnd
       } : {})
     });
+
+    // Мышь и стилус: перенос начинается сразу, как и раньше.
+    if (pointerType !== 'touch') { start(); return; }
+
+    // Палец: сначала удержание. Иначе любая попытка проскроллить расписание,
+    // начатая на карточке (а карточками занята бо́льшая часть плотного дня),
+    // превращалась бы в перенос занятия. Ждём неподвижности — значит браузер
+    // ещё не начал прокрутку, и захват указателя её уже не даст начать.
+    let held = false;
+    const timer = window.setTimeout(() => {
+      held = true;
+      cleanup();
+      el.setPointerCapture?.(pointerId);
+      start();
+    }, TOUCH_HOLD_MS);
+
+    const onMove = (ev: PointerEvent) => {
+      if (Math.abs(ev.clientX - startX) > TOUCH_SLOP_PX || Math.abs(ev.clientY - startY) > TOUCH_SLOP_PX) {
+        cleanup();   // палец поехал — это скролл, а не перенос
+      }
+    };
+    const cleanup = () => {
+      if (!held) window.clearTimeout(timer);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', cleanup);
+      document.removeEventListener('pointercancel', cleanup);
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', cleanup);
+    document.addEventListener('pointercancel', cleanup);
   };
 
   return { drag, wasDragging, initDrag };

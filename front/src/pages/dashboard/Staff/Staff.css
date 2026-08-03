@@ -5,12 +5,17 @@
 /* ─── 1. ГЛАВНЫЙ ЛЕЙАУТ ──────────────────────────────────────────────────── */
 .staff-layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: var(--staff-list-w, 220px) minmax(0, 1fr);
   grid-template-rows: 1fr;
-  gap: 20px;
-  height: calc(100vh - 128px);
+  gap: var(--grid-gap);
+  min-height: 0;
   overflow: hidden;
 }
+/* Список команды на ноутбуке уже — профилю нужнее ширина, чем именам */
+@media (max-width: 1440px) { .staff-layout { --staff-list-w: 196px; } }
+@media (max-width: 1280px) { .staff-layout { --staff-list-w: 176px; } }
+@media (max-width: 1080px) { .staff-layout { --staff-list-w: 156px; } }
+
 
 /* ─── 2. ЛЕВАЯ ПАНЕЛЬ: СПИСОК КОМАНДЫ ────────────────────────────────────── */
 .staff-list-panel {
@@ -271,7 +276,7 @@
 
 /* ─── 4. ПРАВАЯ ПАНЕЛЬ: КОНТЕНТ (СТАТИСТИКА, ЧИПЫ) ───────────────────────── */
 .premium-body {
-  padding: 24px 28px 20px;
+  padding: var(--card-pad) calc(var(--card-pad) + 4px) calc(var(--card-pad) - 4px);
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -522,6 +527,16 @@
 
 .sch-cell:hover {
   background: rgba(252, 174, 145, 0.25);
+}
+
+/* Низкий экран: 18 часовых строк по 22px — это 400px, весь профиль целиком.
+   Сетка здесь читается как тепловая полоса, а не как таблица со значениями,
+   поэтому строка ужимается без потери смысла. */
+@media (max-height: 820px) {
+  .sch-grid { gap: 2px; padding: 6px; }
+  .sch-cell { height: 14px; border-radius: 3px; }
+  .sch-time { font-size: 8.5px; line-height: 14px; }
+  .sch-head { font-size: 9px; padding: 1px 0 4px; }
 }
 
 .sch-cell.booked {
@@ -788,4 +803,117 @@
     top: 14px; /* верх = top кнопок .hero-actions */
     bottom: auto;
   }
+}
+
+/* ── Планшет: список команды ложится строкой ───────────────────────────────
+   Колонка в 156px на 768px — это обрезанные фамилии и четверть экрана под
+   навигацию, пока профилю не хватает места на статистику и расписание.
+   Панель разворачивается в горизонтальный рельс: заголовок, поиск и фильтры
+   в одну строку, карточки сотрудников скроллятся вбок под ними. */
+@media (max-width: 900px) {
+  .staff-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .staff-list-panel { flex-direction: row; flex-wrap: wrap; align-items: center; }
+
+  /* Каждая полоса «хрома» здесь отнимается у профиля: на 768×768 под него
+     остаётся меньше половины экрана, поэтому шапка рельса выжата досуха. */
+  .panel-hdr {
+    flex: 0 0 auto;
+    border-bottom: none;
+    background: none;
+    padding: 7px 2px 7px 12px;
+    gap: 8px;
+  }
+  .staff-search { flex: 1 1 140px; padding: 7px 10px !important; }
+  .staff-groups {
+    flex: 0 1 auto;
+    padding: 7px 10px 7px 0 !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .staff-groups::-webkit-scrollbar { display: none; }
+
+  .staff-list {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 10px;
+    border-top: 1px solid var(--border);
+  }
+  .role-sep { padding: 0 4px; white-space: nowrap; flex-shrink: 0; }
+  .role-sep::after { display: none; }
+
+  .s-item { flex: 0 0 auto; width: 178px; margin-bottom: 0; padding: 7px 10px; }
+  .s-item:hover, .s-item.active { transform: none; }
+  /* Маркер выбора переезжает с левого края на нижний — в строке полоска
+     слева читалась бы как разделитель между карточками. */
+  .s-item.active::before {
+    left: 12px; right: 12px; top: auto; bottom: 0;
+    width: auto; height: 3px; transform: none;
+    border-radius: 4px 4px 0 0;
+  }
+  .s-name, .s-role { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Сводка команды — одна полоса, а не карточка в два этажа. Подписи под
+     цифрами на планшете лишние: цифры и так идут в том же порядке, что и
+     фильтры-группы рядом, а 60px высоты нужнее профилю. */
+  .staff-summary { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
+  .staff-summary::-webkit-scrollbar { display: none; }
+  .staff-sum-item { padding: 6px 12px !important; flex-shrink: 0; }
+  .staff-sum-v { font-size: 17px !important; }
+  .staff-sum-l { font-size: 9px !important; }
+}
+
+/* ── Низкий экран: шапка профиля отдаёт высоту содержимому ─────────────────
+   На 768×768 под профиль остаётся меньше половины экрана, и 160px из них
+   забирала одна декоративная шапка с аватаром — карточкам, контактам и
+   расписанию доставалась щель. Шапка ужимается вместе с аватаром.
+   Блок в конце файла намеренно: медиазапрос не добавляет специфичности,
+   выше его перебили бы собственные базовые правила .premium-hero и .hero-ava. */
+@media (max-height: 820px) {
+  /* Высоту hero и позицию инфо-блока задаёт секция 9 выше (там селектор
+     .staff-layout .premium-hero — специфичнее, дублировать нельзя).
+     Здесь — только то, что она не трогает: сам аватар и ритм тела профиля. */
+  .staff-layout .premium-hero { height: 92px; }
+  .staff-layout .hero-ava { width: 58px; height: 58px; font-size: 18px; border-width: 3px; }
+  .staff-layout .hero-name { font-size: 15px; }
+  .stats-row { margin-bottom: 13px; }
+  .info-row { margin-bottom: 13px; }
+  .stat-card { padding: 11px 12px; }
+}
+
+/* ── Телефон: рельс команды сжимается, профиль забирает остальное ──────────
+   Горизонтальный рельс с 900px работает и здесь — менять его на телефоне не
+   на что: колонка списка съела бы весь экран, а выбор сотрудника должен
+   оставаться на виду. Уменьшается только сам рельс, чтобы профилю досталось
+   больше половины высоты. */
+@media (max-width: 767px) {
+  .staff-list-panel { border-radius: 14px; }
+  .panel-hdr { padding: 6px 2px 6px 10px; }
+  /* Заголовок панели на телефоне только отнимает строку: рельс под ним и так
+     очевидно список команды, а поиск подписан плейсхолдером. */
+  .panel-hdr .panel-title { display: none; }
+  .staff-list { padding: 7px 8px; gap: 5px; }
+  .s-item { width: 150px; padding: 6px 9px; }
+  .ava { width: 28px; height: 28px; font-size: 10px; }
+  .s-name { font-size: 11.5px; }
+  .s-role { font-size: 9.5px; }
+
+  /* Шапка профиля: 130px декоративного градиента на 360px-экране — это треть
+     карточки до первой цифры. */
+  .staff-layout .premium-hero { height: 88px; }
+  .staff-layout .hero-ava { width: 52px; height: 52px; font-size: 16px; border-width: 3px; }
+  .staff-layout .hero-name { font-size: 14.5px; }
+  .staff-layout .hero-actions { top: 10px; right: 10px; gap: 5px; }
+  .staff-layout .hero-info { bottom: 14px; left: 14px; gap: 12px; }
+  /* Сетка недельного расписания: 36px под подписи часов на 360px-экране
+     оставляли каждому дню по 44px — столбики склеивались. */
+  .sch-grid { grid-template-columns: 26px repeat(7, 1fr); padding: 6px; }
 }

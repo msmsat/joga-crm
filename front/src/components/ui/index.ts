@@ -22,6 +22,7 @@ export { ConfirmModal } from './ConfirmModal';
 export type { ConfirmModalProps } from './ConfirmModal';
 export { ToastProvider, useToast } from './Toast';
 export { Sidebar } from './Sidebar';
+export { MobileNav } from './MobileNav';
 export { Navbar } from './Navbar';
 export { ErrorBoundary } from './ErrorBoundary';
 export { EmptyState } from './EmptyState';

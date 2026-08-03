@@ -227,7 +227,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
       </div>
 
       {/* 1. Метрики */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: 'var(--grid-gap)', marginBottom: 'var(--section-gap)' }}>
         {metrics.map(m => (
           <div key={m.label} style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '80px', height: '80px', background: `radial-gradient(circle, ${m.c2} 0%, transparent 70%)`, borderRadius: '50%' }} />
@@ -245,7 +245,7 @@ export default function ReportsTab({ showToast }: { showToast: (msg: string, t?:
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px', alignItems: 'start' }}>
+      <div className="split-tablet" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px', alignItems: 'start' }}>
         {/* 2. Линейный график движения средств */}
         <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.12)', boxShadow: '0 12px 32px -4px rgba(26,26,26,0.02)', padding: '28px', display: 'flex', flexDirection: 'column' }}>
 

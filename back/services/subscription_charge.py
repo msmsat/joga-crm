@@ -8,6 +8,7 @@
 
 Ни одна функция не коммитит — вызывается внутри транзакции роутера.
 """
+from datetime import date, timedelta
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,10 +38,42 @@ async def charge_reservation(
     sub.used_classes += 1
     reservation.subscription_id = sub.id
     remaining = sub.total_classes - sub.used_classes
-    if remaining <= 0:
+    # Абонемент из очереди не закрываем: он ещё не начинал срок, и пометка
+    # "finished" здесь сломала бы и активацию (она ждёт status == "pending"), и
+    # возврат при отмене (тот поднимает "finished" обратно в "active", выдав
+    # ждущему абонементу провизорный срок). Закроет его активация после визита.
+    if remaining <= 0 and sub.status == "active":
         sub.status = "finished"
         await _try_auto_renew(db, studio_id, reservation.client_id, sub)
     return remaining
+
+
+async def activate_pending_after_visit(db: AsyncSession, reservation: Reservation) -> bool:
+    """Занятие прошло → абонемент из очереди начинает свой срок.
+
+    Абонемент, купленный поверх незаконченного, лежит в status="pending": по нему
+    уже можно записываться и с него списываются занятия, но срок не идёт. Стартует
+    он именно здесь — когда клиент реально пришёл. Поэтому запись и отмена срок не
+    двигают: записался и не пришёл — абонемент так и остался нетронутым.
+
+    Возвращает True, если абонемент активирован. Не коммитит.
+    """
+    if reservation.subscription_id is None:
+        return False
+
+    sub = await db.get(ClientSubscription, reservation.subscription_id)
+    if sub is None or sub.status != "pending":
+        return False
+
+    today = date.today()
+    sub.status = "active"
+    sub.starts_at = today
+    sub.expires_at = today + timedelta(days=sub.duration_days)
+    # Занятия могли кончиться ровно этим визитом (абонемент на одно занятие —
+    # «разовое»): тогда он сразу и закрывается, срок ему уже не нужен.
+    if sub.used_classes >= sub.total_classes:
+        sub.status = "finished"
+    return True
 
 
 async def refund_reservation(db: AsyncSession, reservation: Reservation) -> None:

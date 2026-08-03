@@ -10,6 +10,20 @@ class ActiveSubscriptionOut(BaseSchema):
     type: str
 
 
+class ClientProductOut(ActiveSubscriptionOut):
+    """Один купленный продукт клиента — абонемент или разовое занятие.
+
+    Разовое от абонемента отличается только числом занятий (total == 1): в БД
+    это тот же ClientSubscription, проданный из пакета с sold_as_single.
+    """
+    id: int
+    is_frozen: bool = False
+    # Куплен поверх незаконченного и ждёт своей очереди: срок начнётся, когда
+    # клиент отходит по нему первое занятие, поэтому expires_at пока условный.
+    is_pending: bool = False
+    starts_at: Optional[str] = None
+
+
 class NoteOut(BaseSchema):
     id: int
     text: str
@@ -28,7 +42,10 @@ class ClientListItemOut(BaseSchema):
     tags: List[str] = []
     visit_count: int
     total_spent: int
+    # Ближайший к сгоранию продукт — оставлен для таблицы клиентов (одна строка).
     active_subscription: Optional[ActiveSubscriptionOut] = None
+    # Все живые продукты клиента: несколько абонементов, разовые, очередь.
+    products: List[ClientProductOut] = []
     loyalty_points: int
     last_visit_date: Optional[str] = None
     registration_date: Optional[str] = None

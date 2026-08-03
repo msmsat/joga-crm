@@ -30,10 +30,10 @@ export default function PaymentMethodTab({ cards, loaded, plan, renew, renewStat
   const canAutopay = card?.method_type === 'card';
 
   return (
-    <div style={{ padding: '0 32px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
+    <div style={{ padding: '0 var(--card-pad)', animation: 'fadeSlideIn 0.4s ease forwards' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '32px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: 'calc(var(--grid-gap) * 2)', alignItems: 'start' }}>
 
           {/* Токен-бейдж (эпик B4, §5) — вместо отрисовки номера карты: PAN/CVV/держатель
               нигде не хранятся и не показываются, только брендинг + маскированный хвост токена. */}
@@ -119,7 +119,7 @@ export default function PaymentMethodTab({ cards, loaded, plan, renew, renewStat
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M11 2L3 11H10L9 18L17 9H10L11 2Z" fill="var(--peach)" fillOpacity="0.2" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.autopayTitle')}</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
             {AUTOPAY_FIELDS.map(({ key, field }) => {
               const disabled = !canAutopay || !plan;
               return (

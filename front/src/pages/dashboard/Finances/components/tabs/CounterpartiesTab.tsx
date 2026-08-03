@@ -178,7 +178,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
             <button onClick={() => setAdding(false)} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} onMouseEnter={e => e.currentTarget.style.color='var(--onyx)'} onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}><Ico.X /></button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+          <div className="split-tablet" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
             {/* Левая колонка: поля ввода */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
@@ -362,7 +362,7 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
                 ) : (
                   /* ── View mode ── */
                   <>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '14px' }}>
                       {[[t('counterparties.dealsLabel'), cp.deals_count], [t('counterparties.debtLabel'), fmt(Math.abs(cp.balance))], [t('counterparties.categoryLabel'), cp.category ?? t('counterparties.otherCategory')]].map(([l, v]) => (
                         <div key={l as string}>
                           <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600, marginBottom: '3px', textTransform: 'uppercase' }}>{l}</div>

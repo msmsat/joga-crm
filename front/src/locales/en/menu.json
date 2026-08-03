@@ -16,7 +16,8 @@
     "settings": "Settings",
     "billing": "Plan & billing",
     "journal": "Journal",
-    "profile": "Profile"
+    "profile": "Profile",
+    "more": "More"
   },
   "subtitles": {
     "dashboard": "Welcome to Velora CRM",
@@ -48,5 +49,9 @@
     "studioName": "Your studio: {{name}}",
     "openProfile": "Open profile",
     "openAccountMenu": "Account menu"
+  },
+  "sidebar": {
+    "expand": "Expand menu",
+    "collapse": "Collapse menu"
   }
 }

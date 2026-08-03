@@ -42,7 +42,7 @@ export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = 
           <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 10px 0', letterSpacing: '-0.3px', lineHeight: 1.3 }}>
             {title}
           </h3>
-          <p style={{ fontSize: '13.5px', color: 'var(--text3)', margin: 0, fontWeight: 400, lineHeight: 1.6 }}>
+          <p style={{ fontSize: '13.5px', color: '#999999', margin: 0, fontWeight: 400, lineHeight: 1.6 }}>
             {text}
           </p>
         </div>

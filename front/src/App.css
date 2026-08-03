@@ -44,11 +44,24 @@
     --radius-sm: 8px;
     --radius-lg: 16px;
     --sidebar: 240px;
+    --sidebar-rail: 68px;      /* ширина «рельсы» — только иконки */
     --topbar-h: 72px;
     --content-pad: 28px;
     --drawer-w: 420px;
     --ai-search-w: 540px;
     --font: 'Manrope', sans-serif;
+
+    /* ── Токены плотности (см. ADAPTIVE LAYOUT TOKENS ниже) ──────────────
+       Всё, что должно ужиматься на ноутбучных экранах, берёт размер отсюда,
+       а не пишет число инлайном. Меняем значение в одном медиазапросе —
+       ужимается вся сетка приложения разом. */
+    --card-pad: 24px;          /* внутренний отступ .card */
+    --card-pad-sm: 18px;       /* .card-sm, компактные плитки */
+    --grid-gap: 16px;          /* зазор сеток .grid-2/3/4 */
+    --stat-v: 28px;            /* размер цифры в .stat-value */
+    --stat-pad: 20px 22px;     /* паддинг .stat-card */
+    --section-gap: 20px;       /* вертикальный ритм между блоками страницы */
+    --chart-h: 300px;          /* высота графиков-«полотен» */
    }
 
    /* ==========================================================================
@@ -104,21 +117,98 @@
       --content-pad: 22px;
       --drawer-w: 360px;
       --ai-search-w: 440px;
+      --card-pad: 20px;
+      --card-pad-sm: 16px;
+      --grid-gap: 14px;
+      --stat-v: 25px;
+      --stat-pad: 16px 18px;
+      --section-gap: 16px;
+    }
+   }
+
+   /* 1366×768 — самый массовый «маленький ноутбук». */
+   @media (max-width: 1366px) {
+    :root {
+      --sidebar: 196px;
+      --content-pad: 20px;
+      --drawer-w: 348px;
+      --ai-search-w: 400px;
+      --card-pad: 18px;
+      --card-pad-sm: 15px;
+      --grid-gap: 12px;
+      --stat-v: 24px;
+      --stat-pad: 14px 16px;
+      --radius-lg: 14px;
     }
    }
 
    @media (max-width: 1280px) {
     :root {
-      --sidebar: 200px;
-      --content-pad: 20px;
+      --content-pad: 18px;
       --drawer-w: 340px;
-      --ai-search-w: 400px;
+      --ai-search-w: 340px;
+      --card-pad: 16px;
+      --card-pad-sm: 14px;
+      --grid-gap: 12px;
+      --stat-v: 23px;
+      --section-gap: 14px;
     }
    }
 
-   @media (max-height: 820px) {
+   /* Ниже этой ширины боковое меню всегда «рельса» (см. .sidebar). */
+   @media (max-width: 1180px) {
     :root {
-      --topbar-h: 64px;
+      --content-pad: 16px;
+      --ai-search-w: 300px;
+      --card-pad: 15px;
+      --stat-v: 22px;
+    }
+   }
+
+   /* ── Низкие экраны: вертикаль дороже горизонтали ─────────────────────── */
+   @media (max-height: 860px) {
+    :root {
+      --topbar-h: 62px;
+      --card-pad: 18px;
+      --card-pad-sm: 15px;
+      --grid-gap: 13px;
+      --stat-pad: 14px 16px;
+      --section-gap: 15px;
+      --chart-h: 250px;
+    }
+   }
+
+   @media (max-height: 760px) {
+    :root {
+      --topbar-h: 56px;
+      --content-pad: 16px;
+      --card-pad: 15px;
+      --card-pad-sm: 13px;
+      --grid-gap: 11px;
+      --stat-v: 22px;
+      --stat-pad: 12px 14px;
+      --section-gap: 12px;
+      --chart-h: 210px;
+    }
+   }
+
+   /* Планшет. Меню здесь уже «рельса», поэтому дальше ужимаем только воздух:
+      отступы карточек, зазоры сеток и размер цифр. Ниже 768px начинается
+      телефон — там меняется сама раскладка, см. блок «ТЕЛЕФОН» в конце файла.
+      Блок стоит ПОСЛЕ низкоэкранных: на планшете 768×768 совпадают оба, а
+      узкая ширина — более жёсткое ограничение, чем невысокий экран. */
+   @media (max-width: 1024px) {
+    :root {
+      --sidebar-rail: 60px;
+      --content-pad: 14px;
+      --card-pad: 14px;
+      --card-pad-sm: 12px;
+      --grid-gap: 10px;
+      --stat-v: 21px;
+      --stat-pad: 12px 14px;
+      --section-gap: 12px;
+      --radius-lg: 14px;
+      --drawer-w: 320px;
     }
    }
 
@@ -257,6 +347,15 @@
      background: rgba(253,252,251,0.85);
      border-color: rgba(249,160,139,0.18);
      box-shadow: 0 8px 40px -12px rgba(26,26,26,0.12);
+   }
+
+   /* Шапка лендинга на ноутбуке: сначала теснее, потом без якорных ссылок —
+      они дублируются в футере, а «Войти» и CTA обязаны остаться видимыми. */
+   @media (max-width: 1100px) {
+     .navbar { padding: 12px 18px; width: calc(100% - 32px); }
+   }
+   @media (max-width: 880px) {
+     .lp-nav-links { display: none !important; }
    }
    
    /* Nav Links */
@@ -604,7 +703,16 @@
      background: var(--bg-card); border-radius: 24px;
      border: 1px solid var(--border);
      box-shadow: 0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04);
-     padding: 40px; display: flex; flex-direction: column; gap: 24px;
+     padding: var(--auth-card-pad, 40px); display: flex; flex-direction: column;
+     gap: var(--auth-card-gap, 24px);
+   }
+   /* Низкий ноутбук: карточка входа не должна упираться в края экрана —
+      скролла на этих страницах нет, форма обязана влезать целиком. */
+   @media (max-height: 800px) {
+     :root { --auth-card-pad: 30px 32px; --auth-card-gap: 18px; }
+   }
+   @media (max-height: 700px) {
+     :root { --auth-card-pad: 22px 26px; --auth-card-gap: 14px; }
    }
    
    /* ==========================================================================
@@ -628,6 +736,54 @@
      border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
    }
    
+   /* ==========================================================================
+      ЛЕНДИНГ — ритм страницы
+      Все отступы секций Landingpage.tsx написаны инлайном через эти переменные
+      (инлайн-стиль медиазапросом не перебить, а переменную — можно).
+      ========================================================================== */
+   :root {
+     --lp-pad: 48px;          /* горизонтальные поля секции */
+     --lp-gap: 100px;         /* воздух между секциями */
+     --lp-gap-sm: 80px;
+     --lp-inner-pad: 64px;    /* паддинг «карточки-секции» (О нас) */
+     --lp-cta-pad: 80px 64px;
+     --lp-col-gap: 80px;      /* зазор двух колонок */
+     --lp-head-gap: 56px;     /* заголовок секции → контент */
+     --lp-hero-pad: 120px 48px 80px;
+   }
+   .lp-hero { min-height: 100vh; max-width: 1200px; padding: var(--lp-hero-pad); }
+   .lp-hero-grid { gap: var(--lp-col-gap); }
+
+   /* Ноутбук: хиро больше не обязан занимать целый экран — на 768px это
+      значило «ниже сгиба нет вообще ничего», а секции жмутся по ритму. */
+   @media (max-width: 1280px), (max-height: 860px) {
+     :root {
+       --lp-pad: 36px;
+       --lp-gap: 76px;
+       --lp-gap-sm: 60px;
+       --lp-inner-pad: 44px;
+       --lp-cta-pad: 60px 44px;
+       --lp-col-gap: 48px;
+       --lp-head-gap: 40px;
+       --lp-hero-pad: 104px 36px 60px;
+     }
+     .lp-hero { min-height: auto; }
+   }
+   /* Две колонки в хиро/«О нас» больше не помещаются — складываем в одну */
+   @media (max-width: 1040px) {
+     :root {
+       --lp-pad: 24px;
+       --lp-gap: 56px;
+       --lp-gap-sm: 44px;
+       --lp-inner-pad: 32px;
+       --lp-cta-pad: 48px 28px;
+       --lp-col-gap: 36px;
+       --lp-hero-pad: 96px 24px 48px;
+     }
+     .lp-hero-grid { flex-direction: column; }
+     .lp-hero-grid > * { max-width: 100% !important; width: 100%; }
+   }
+
    /* ==========================================================================
       MEDIA QUERIES (Mobile responsiveness)
       ========================================================================== */
@@ -902,8 +1058,11 @@
 @media (max-width: 1600px) {
   .dash-root.drawer-open { padding-right: 0; }
 }
-.sidebar { width: var(--sidebar); min-width: var(--sidebar); height: 100vh; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; z-index: 100; position: relative; }
-.sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); }
+/* overflow: visible — из меню наружу торчат две вещи: тумблер сворачивания
+   (кружок на границе) и панель аккаунтов в режиме рельсы. Обрезку берут на
+   себя внутренние блоки (.sidebar-nav скроллится, .sidebar-logo клипует). */
+.sidebar { width: var(--sidebar); min-width: var(--sidebar); height: 100vh; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: visible; z-index: 100; position: relative; }
+.sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); overflow: hidden; }
 .sidebar-logo .logo-name { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; }
 /* Название студии под логотипом: подпись, а не второй логотип.
@@ -931,7 +1090,67 @@
 .nav-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 18px; background: var(--accent); border-radius: 0 3px 3px 0; }
 .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.6; }
 .nav-item.active .nav-icon, .nav-item:hover .nav-icon { opacity: 1; }
-.nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; min-width: 18px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; min-width: 18px; text-align: center; flex-shrink: 0; }
+/* «NEW» у Velora AI — тот же бейдж, только градиентом и капсом */
+.nav-badge-new {
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  font-size: 9px; font-weight: 800; letter-spacing: 0.4px;
+  padding: 2px 6px; border-radius: 5px; line-height: 1;
+}
+
+/* ==========================================================================
+   БОКОВОЕ МЕНЮ — РЕЖИМ «РЕЛЬСЫ» (только иконки)
+   Включается классом .is-rail из Sidebar.tsx: принудительно ≤1180px,
+   по умолчанию ≤1400px, дальше — ручной тумблер. Подписи не удаляются из
+   DOM, а прячутся (.nav-label) — переключение остаётся мгновенным, а
+   тултипы берут тот же текст из портала.
+   ========================================================================== */
+.sidebar { transition: width 0.26s cubic-bezier(0.16,1,0.3,1), min-width 0.26s cubic-bezier(0.16,1,0.3,1); }
+.sidebar.is-rail { width: var(--sidebar-rail); min-width: var(--sidebar-rail); }
+.sidebar.is-rail .nav-label,
+.sidebar.is-rail .studio-badge,
+.sidebar.is-rail .user-email,
+.sidebar.is-rail .user-pill-caret,
+.sidebar.is-rail .journal-sub { display: none; }
+
+.sidebar.is-rail .sidebar-logo { padding: 20px 0 16px; text-align: center; }
+.sidebar.is-rail .sidebar-logo .logo-name { justify-content: center; gap: 0; }
+.sidebar.is-rail .logo-dot { width: 11px; height: 11px; box-shadow: 0 0 0 4px rgba(252,174,145,0.16); }
+
+.sidebar.is-rail .sidebar-nav { padding: 12px 8px; }
+.sidebar.is-rail .nav-item { justify-content: center; gap: 0; padding: 10px 0; }
+.sidebar.is-rail .nav-icon { width: 19px; height: 19px; }
+/* Счётчик клиентов в рельсе не влезает строкой — становится точкой-индикатором */
+.sidebar.is-rail .nav-badge {
+  position: absolute; top: 4px; right: 8px; margin: 0;
+  min-width: 7px; width: 7px; height: 7px; padding: 0;
+  font-size: 0; line-height: 0; border-radius: 50%;
+}
+.sidebar.is-rail .sidebar-divider { margin: 8px 12px; }
+
+.sidebar.is-rail .sidebar-bottom { padding: 10px 8px; }
+.sidebar.is-rail .sidebar-journal { justify-content: center; gap: 0; padding: 9px 0; }
+.sidebar.is-rail .user-pill { justify-content: center; padding: 8px 0; gap: 0; }
+/* Меню аккаунтов шире рельсы — иначе строки студий нечитаемы */
+.sidebar.is-rail .user-menu-panel { right: auto; width: 248px; transform-origin: bottom left; }
+
+/* Тумблер сворачивания: кружок на границе меню, стрелка разворачивается */
+.sidebar-toggle {
+  position: absolute; top: calc(var(--topbar-h) / 2 - 11px); right: -11px; z-index: 120;
+  width: 22px; height: 22px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border2); border-radius: 50%;
+  background: var(--card); color: var(--text3);
+  cursor: pointer; opacity: 0;
+  box-shadow: 0 2px 8px rgba(26,26,26,0.10);
+  transition: opacity 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.26s cubic-bezier(0.16,1,0.3,1);
+}
+.sidebar:hover .sidebar-toggle, .sidebar-toggle:focus-visible { opacity: 1; }
+.sidebar-toggle:hover { color: var(--accent2); border-color: rgba(252,174,145,0.55); }
+.sidebar.is-rail .sidebar-toggle { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .sidebar-toggle { transition: none; }
+}
 .sidebar-divider { height: 1px; background: var(--border); margin: 8px 10px; }
 .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
 .sidebar-journal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(135deg, rgba(252,174,145,0.2) 0%, rgba(249,160,139,0.1) 100%); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.18s; border: 1px solid rgba(252,174,145,0.3); margin-bottom: 8px; }
@@ -1066,8 +1285,37 @@
    каждой странице и удорожал любую перерисовку сверху. Разница в виде нулевая
    (было 0.9 альфы), выигрыш — минус один постоянный render surface. */
 .topbar { height: 56px; background: var(--bg, #FDFCFB); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; flex-shrink: 0; z-index: 50; }
-.topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
-.topbar-subtitle { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.topbar-title { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-subtitle { font-size: 13px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-ai { padding: 0 var(--tb-ai-pad, 24px); }
+
+/* ── Верхняя панель на ноутбучных экранах ─────────────────────────────────
+   Порядок жертв: подзаголовок → отступы AI-строки → подписи кнопок →
+   сама AI-строка. Заголовок раздела и обе кнопки не исчезают никогда. */
+@media (max-width: 1440px) {
+  .topbar-title { font-size: 18px; }
+  .topbar-subtitle { font-size: 12px; }
+  :root { --tb-ai-pad: 16px; }
+}
+@media (max-width: 1280px), (max-height: 760px) {
+  .topbar-subtitle { display: none; }
+  .topbar-title { font-size: 17px; }
+  :root { --tb-ai-h: 38px; --tb-btn-h: 34px; --tb-ai-pad: 12px; }
+}
+/* Совсем тесно: кнопки становятся квадратными иконками */
+@media (max-width: 1180px) {
+  .topbar-action .tb-label { display: none; }
+  .topbar-action { padding: 0 !important; width: var(--tb-btn-h, 34px); justify-content: center; }
+}
+/* Ноутбук-«половинка» экрана: AI-строку убираем, она есть в дровере и на /ai */
+@media (max-width: 980px) {
+  .topbar-ai { display: none; }
+}
+/* Планшет: панель дышит теми же 14px, что и контент под ней — иначе заголовок
+   раздела отбит от левого края сильнее, чем карточки страницы. */
+@media (max-width: 1024px) {
+  .topbar { padding: 0 var(--content-pad); gap: 10px; }
+}
 .topbar-spacer { flex: 1; }
 .topbar-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.18s; box-shadow: 0 2px 8px rgba(252,174,145,0.4); }
 .topbar-btn:hover { background: #f9a080; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(252,174,145,0.5); }
@@ -1080,12 +1328,43 @@
 .section { display: none; animation: fadeIn 0.3s ease; }
 .section.active { display: block; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--dash-shadow); }
-.card-sm { padding: 18px 20px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--dash-shadow); }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.grid-2 > * { min-width: 0; } /* иначе Recharts распирает трек и рвёт вёрстку */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--card-pad); box-shadow: var(--dash-shadow); }
+.card-sm { padding: var(--card-pad-sm) calc(var(--card-pad-sm) + 2px); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--dash-shadow); }
+/* auto-fit + minmax вместо repeat(N,1fr): на широком экране колонок ровно
+   столько же (пустые треки схлопываются), на узком ряд переносится сам,
+   без отдельного медиазапроса под каждую сетку. */
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: var(--grid-gap); }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: var(--grid-gap); }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--grid-gap); }
+.grid-2 > *, .grid-3 > *, .grid-4 > * { min-width: 0; } /* иначе Recharts распирает трек и рвёт вёрстку */
+/* Пара «график + список» на узком экране складывается в колонку —
+   иначе оба трека уходят под 300px и график становится нечитаемым. */
+@media (max-width: 1120px) {
+  .grid-2:not([style*="grid-template-columns"]) { grid-template-columns: minmax(0, 1fr); }
+}
+/* Планшет: auto-fit при 190px давал у .grid-4 три колонки — четвёртая плитка
+   уезжала на свою строку и ряд метрик читался как «3 + сирота». Ровные 2×2
+   честнее и оставляют цифрам ширину. */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Пара «широкая колонка + узкая» (график + сводка, форма + подсказка), у
+   которой grid-template-columns прописан инлайном: на планшете обе колонки
+   уходят под 300px и график становится нечитаемым — складываем в одну.
+   !important обязателен: инлайн-стиль иначе не перебить. */
+@media (max-width: 1024px) {
+  .split-tablet {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: var(--section-gap) !important;
+  }
+  /* Таблица счетов: пять колонок в 28px полях не оставляли статусу места на
+     слово целиком. Отдаём поля колонкам — сама сетка не меняется. */
+  .bill-inv-row {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
 
 /* Recharts v3 после клика оставляет focus-outline на секторе — в дизайне его нет */
 .recharts-wrapper :focus,
@@ -1093,18 +1372,18 @@
 .recharts-surface :focus { outline: none; }
 .recharts-rectangle, .recharts-sector { transition: opacity .15s ease; }
 
-.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--dash-shadow); transition: all 0.2s; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--stat-pad); box-shadow: var(--dash-shadow); transition: all 0.2s; min-width: 0; }
 .stat-card:hover { 
   box-shadow: var(--dash-shadow-lg); 
   transform: translateY(-4px); /* Делаем аккуратное поднятие при наведении, без скачков */
 }
 .stat-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.3px; text-transform: uppercase; }
-.stat-value { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 6px 0 4px; color: var(--text); }
+.stat-value { font-size: var(--stat-v); font-weight: 800; letter-spacing: -1px; margin: 6px 0 4px; color: var(--text); overflow-wrap: anywhere; }
 .stat-change { font-size: 11px; font-weight: 600; }
 .stat-change.up { color: #5BAB72; }
 .stat-change.down { color: var(--error); }
 .stat-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-.mb-20 { margin-bottom: 20px; }
+.mb-20 { margin-bottom: var(--section-gap); }
 
 .tabs { 
   display: flex; 
@@ -1145,7 +1424,7 @@
 }
 
 #dash-chart {
-  height: 300px; /* Даем премиальную высоту всей зоне графика */
+  height: var(--chart-h); /* Даем премиальную высоту всей зоне графика */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1158,11 +1437,6 @@
   padding-top: 28px; /* место сверху под тултип (top: -28px), чтобы не наезжал на карточку выше */
 }
 
-/* На низких экранах (ноутбуки 720-820px) график компактнее,
-   чтобы Overview влезал без лишнего скролла */
-@media (max-height: 820px) {
-  #dash-chart { height: 240px; }
-}
 
 .chart-bars-clip {
   height: 100%;
@@ -1331,7 +1605,7 @@
 .report-bar-outer { height: 200px; display: flex; align-items: flex-end; gap: 6px; padding: 10px 0 0; }
 .rbar { flex: 1; border-radius: 4px 4px 0 0; cursor: pointer; position: relative; transition: all 0.3s; min-width: 0; }
 .rbar:hover { opacity: 0.85; transform: scaleY(1.03); transform-origin: bottom; }
-.report-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.report-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 12px; margin-bottom: 20px; }
 .booking-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--dash-shadow-lg); max-width: 340px; }
 .booking-preview-header { background: var(--accent); padding: 20px; color: white; text-align: center; }
 .booking-preview-header .bp-logo { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
@@ -1348,10 +1622,12 @@
 .channel-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 .channel-desc { font-size: 11px; color: var(--text2); }
 /* Только затемнение, без backdrop-filter (см. .v-overlay) */
-.tg-modal-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; }
+.tg-modal-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
 .tg-modal-overlay::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(0,0,0,0.5); }
 .tg-modal-overlay.open { display: flex; }
-.tg-modal { background: var(--card); border-radius: var(--radius-lg); padding: 28px; width: 480px; max-width: 90vw; max-height: calc(100vh - 48px); overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: modalIn 0.3s ease; }
+.tg-modal { background: var(--card); border-radius: var(--radius-lg); padding: var(--tg-modal-pad, 28px); width: 480px; max-width: min(480px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: modalIn 0.3s ease; }
+@media (max-height: 820px) { :root { --tg-modal-pad: 22px; } }
+@media (max-height: 700px) { :root { --tg-modal-pad: 18px; } .tg-modal-overlay { padding: 10px; } }
 /* Общий вход модалок: только проявление, без масштаба и сдвига (см. .v-modal) */
 @keyframes modalIn { from { opacity:0 } to { opacity:1 } }
 /* Точечное исключение для модалки ошибки онбординга: одна карточка на экране,
@@ -1363,14 +1639,28 @@
 .instruction-box .ins-title { font-size: 12px; font-weight: 700; color: var(--accent2); margin-bottom: 6px; }
 .instruction-box ol { padding-left: 16px; }
 .instruction-box li { font-size: 12px; color: var(--text2); margin-bottom: 3px; }
-.finance-tabs-big { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 20px; background: var(--bg); }
+.finance-tabs-big { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: var(--section-gap); background: var(--bg); }
 .ftab { flex: 1; padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--text3); cursor: pointer; transition: all 0.18s; text-align: center; border-right: 1px solid var(--border); user-select: none; }
 .ftab:last-child { border-right: none; }
 .ftab.active { background: var(--card); color: var(--text); }
 .ftab:hover:not(.active) { color: var(--text2); background: rgba(var(--ink),0.05); }
-.finance-illus { position: relative; height: 180px; background: linear-gradient(135deg, rgba(252,174,145,0.08) 0%, rgba(249,160,139,0.04) 100%); border-radius: var(--radius-lg); border: 1px solid rgba(252,174,145,0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+/* Девять вкладок Финансов на ноутбуке в строку не влезают: вместо переноса в
+   две строки лента едет вбок. flex: 1 0 auto — на широком экране заполняет
+   ширину как раньше, на узком не ужимает подписи ниже текста. */
+@media (max-width: 1500px) {
+  .finance-tabs-big { overflow-x: auto; scrollbar-width: none; }
+  .finance-tabs-big::-webkit-scrollbar { display: none; }
+  .ftab { flex: 1 0 auto; white-space: nowrap; padding: 9px 12px; }
+}
+.finance-illus { position: relative; height: var(--fin-illus-h, 180px); background: linear-gradient(135deg, rgba(252,174,145,0.08) 0%, rgba(249,160,139,0.04) 100%); border-radius: var(--radius-lg); border: 1px solid rgba(252,174,145,0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: var(--section-gap); }
+@media (max-height: 860px) { :root { --fin-illus-h: 140px; } }
+@media (max-height: 760px) { :root { --fin-illus-h: 116px; } }
 .donut-svg { animation: rotateFade 20s linear infinite; }
 @keyframes rotateFade { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* Уведомления: каналы слева, матрица «событие × канал» справа */
+.notif-layout { grid-template-columns: clamp(220px, 21vw, 280px) minmax(0, 1fr); }
+@media (max-width: 1000px) { .notif-layout { grid-template-columns: minmax(0, 1fr); } }
+
 .notif-channel { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; transition: all 0.18s; }
 .notif-channel:hover { border-color: var(--border2); }
 .channel-icon-sm { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -1716,6 +2006,9 @@
 .premium-body::-webkit-scrollbar { width: 3px; }
 .premium-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
+/* Планшетные/низкоэкранные правила для профиля живут в Staff.css: там те же
+   .premium-* объявлены заново и, загружаясь после App.css, перебивают его. */
+
 /* Stats & Chips */
 .stats-row { display: grid; gap: 10px; margin-bottom: 20px; }
 .stat-card { background: var(--bg); border-radius: 10px; padding: 12px 14px; text-align: center; border: 1px solid var(--border); transition: all 0.18s; cursor: default; }
@@ -1798,9 +2091,12 @@
    спасали — убран сам блюр. Так уже сделана .premium-modal-overlay в Журнале
    («без backdrop-filter — стабильнее») — теперь одинаково по всему киту.
    Настройки: --v-tint (затемнение), z-index — инлайном. */
+/* safe center, а не center: если модалка оказалась выше вьюпорта (много полей
+   на низком экране), обычное центрирование срезает её ВЕРХ и до шапки с
+   вкладками нельзя доскроллить. safe в этом случае прижимает к началу. */
 .v-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: safe center; justify-content: center;
   padding: 16px; box-sizing: border-box;
 }
 .v-overlay::before {
@@ -1835,25 +2131,141 @@
   grid-template-columns: var(--v-left-w, 280px) 1fr;
   grid-template-rows: minmax(0, 1fr);
 }
+/* без этого длинная строка/таблица в правой колонке распирает трек 1fr */
+.v-modal-lg > * { min-width: 0; }
 
 /* Узкий экран: сначала ужимаем колонку превью… */
 @media (max-width: 1180px) {
   .v-modal-lg { grid-template-columns: minmax(0, 264px) 1fr; }
 }
-/* …а когда форме уже совсем тесно — превью убираем, оставляем только её. */
+/* …а когда форме уже совсем тесно — превью убираем, оставляем только её.
+   620px, а не 560: на планшете 768px под карточку остаётся 736px, и узкая
+   колонка посреди пустого экрана читалась как недоделанная модалка. */
 @media (max-width: 920px) {
   .v-modal-lg {
     grid-template-columns: minmax(0, 1fr);
-    max-width: 560px;
+    max-width: 620px;
   }
-  .v-modal-lg > .v-modal-left { display: none; }
+  /* !important обязателен: display:flex у панели задан ИНЛАЙНОМ (ModalShell и
+     ручные двойники — EditStaffModal, OwnerContactsModal), а инлайн перебивает
+     медиазапрос. Без него панель оставалась видимой, попадала во вторую строку
+     грида и ломала все lg-модалки на планшете: у «Сотрудника» вкладки прыгали
+     при переключении раздела, у «Филиала» от фото оставалась верхняя полоска,
+     а «ПРЕВЬЮ В ЖУРНАЛЕ» слипалось с подзаголовком шапки (услуга/зал/абонемент). */
+  .v-modal-lg > .v-modal-left { display: none !important; }
 }
 
-/* Низкие экраны: модалке нужен каждый пиксель высоты */
+/* ── Планшет: мастер не теряет ориентир ───────────────────────────────────
+   Левая панель мастеров (Каталог, Сотрудники, Клиенты) несёт не только
+   иллюстрацию, но и «шаг N из M» с точками прогресса. Пряча её целиком, мы
+   оставляли пользователя в форме без единого признака, где он и сколько
+   осталось. Теперь у .v-modal-wizard панель не исчезает, а сплющивается в
+   тонкую шапку: счётчик шага + точки, остальное скрыто.
+   Класс вешают только пошаговые мастера (.v-modal-steps): у модалок-карточек
+   в левой панели живое превью, а не прогресс — им сплющивание не нужно.
+   Разметка мастера размечена классами vml-* (см. AddStudioModal и соседей). */
+@media (max-width: 920px) {
+  .v-modal-steps { grid-template-rows: auto minmax(0, 1fr); }
+  /* !important почти везде: у панелей мастеров display/flex-direction/padding/
+     border/overflow заданы инлайном, а инлайн перебивает медиазапрос. */
+  .v-modal-steps > .v-modal-left {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 18px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    overflow: visible !important;
+  }
+  /* Шапка левой колонки сама становится строкой (а не display:contents —
+     тогда потерялись бы её position:relative/z-index, и декоративный
+     градиент-оверлей панели лёг бы поверх счётчика шагов). */
+  .v-modal-steps .vml-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+  .v-modal-steps .vml-logo,
+  .v-modal-steps .vml-title,
+  .v-modal-steps .vml-sub,
+  .v-modal-steps .vml-illus,
+  .v-modal-steps .vml-aside { display: none !important; }
+  .v-modal-steps .vml-step { margin: 0 !important; white-space: nowrap; }
+  .v-modal-steps .vml-dots { flex: 1; margin: 0 !important; max-width: 240px; }
+}
+
+/* ── Планшет: сводка отчётной модалки не пропадает ────────────────────────
+   У модалок-детализаций (Отчёты) левая колонка — не превью, а сводка: сколько
+   занятий, средняя заполненность, свободные места, упущенная выручка. Ничего
+   из этого в таблице нет, и скрывать колонку целиком значило выкинуть
+   половину смысла окна. Вместо этого она разворачивается лентой над телом.
+   :has() — чтобы не заводить ещё один проп у ModalShell: признаком служит
+   сам класс на содержимом панели. */
+@media (max-width: 920px) {
+  .v-modal-lg:has(.vml-summary) { grid-template-rows: auto minmax(0, 1fr); }
+  /* !important: ширину/скролл/паддинг панели ModalShell задаёт инлайном */
+  .v-modal-lg:has(.vml-summary) > .v-modal-left {
+    display: block !important;
+    padding: 13px 20px !important;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  .vml-summary {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 22px;
+    height: auto !important;
+    min-width: max-content;
+  }
+  /* Вертикальные отбивки колонки в ленте превращаются в лишний сдвиг вниз */
+  .vml-summary > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0;
+  }
+}
+
+/* Блок, который на широком экране живёт в левой панели модалки (удаление,
+   экспорт), а на планшете переезжает в тело — там панели уже нет.
+   Пара классов вместо копии логики: тот же JSX рисуется дважды, показывается
+   ровно один. `display` с !important — рядом стоят инлайновые стили. */
+.vm-narrow-only { display: none !important; }
+@media (max-width: 920px) {
+  .vm-narrow-only { display: block !important; }
+  .vm-wide-only { display: none !important; }
+}
+
+/* Низкие экраны: модалке нужен каждый пиксель высоты.
+   Паддинги Header/Body/Footer живут переменными (см. ModalParts) — здесь
+   ужимаются разом для всех модалок кита. */
+@media (max-height: 820px) {
+  :root {
+    --vm-head-pad: 18px 20px 13px;
+    --vm-body-pad: 16px 20px;
+    --vm-body-gap: 13px;
+    --vm-foot-pad: 13px 20px;
+  }
+}
 @media (max-height: 700px) {
   .v-overlay { padding: 10px; }
   .v-modal-lg { max-height: calc(100vh - 20px); }
+  :root {
+    --vm-head-pad: 14px 18px 11px;
+    --vm-body-pad: 13px 18px;
+    --vm-body-gap: 11px;
+    --vm-foot-pad: 11px 18px;
+  }
 }
+/* Высокие «мастера» с инлайновой высотой (min(600px, …)) — тот же класс,
+   чтобы медиазапросы выше доставали и до них. */
+.v-modal-wizard { height: min(var(--vm-wizard-h, 600px), calc(100vh - 32px)); }
+@media (max-height: 700px) { .v-modal-wizard { height: calc(100vh - 20px); } }
 @keyframes v-modal-in  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes v-modal-out { from { opacity: 1 } to { opacity: 0 } }
 
@@ -1908,12 +2320,21 @@
   box-shadow: 0 2px 8px -2px rgba(26,26,26,0.18);
   transition: left 0.3s cubic-bezier(0.22,1,0.36,1), width 0.3s cubic-bezier(0.22,1,0.36,1);
 }
+/* min-width: 0 + ellipsis: без них длинная подпись («Индивидуальная») задавала
+   кнопке min-content, переключатель распирал свою колонку и лез на соседнюю.
+   Иконка исчезает первой — она дублирует смысл подписи, а не несёт свой. */
 .vk-seg-btn {
-  position: relative; z-index: 1; flex: 1;
+  position: relative; z-index: 1; flex: 1; min-width: 0;
   display: flex; align-items: center; justify-content: center; gap: 6px;
   padding: 11px 8px; border: none; background: none; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700;
   color: #A0A0A0; transition: color 0.2s ease;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vk-seg-btn svg { flex-shrink: 0; }
+@media (max-width: 920px) {
+  .vk-seg-btn { padding: 11px 6px; gap: 0; font-size: 12px; }
+  .vk-seg-btn svg { display: none; }
 }
 .vk-seg-btn:hover { color: #777; }
 .vk-seg-btn.is-on { color: var(--onyx); }
@@ -2195,3 +2616,468 @@
   background: rgba(252,174,145,0.04) !important;
   border-radius: 10px;
 }
+
+/* ==========================================================================
+   ТЕЛЕФОН (<768px)
+   Заявленный минимум приложения был 768px; ниже начинается телефон, и это не
+   «тот же экран, только уже». Меняются три вещи разом:
+     1. навигация уезжает вниз, под большой палец (.mnav вместо .sidebar);
+     2. всё, что дублирует или украшает, снимается — ширина отдаётся данным;
+     3. модалки перестают быть карточками по центру и становятся шитами снизу.
+   Блок стоит последним в файле намеренно: медиазапрос не добавляет
+   специфичности, и выше его перебили бы собственные базовые правила.
+   ========================================================================== */
+@media (max-width: 767px) {
+  :root {
+    --content-pad: 14px;
+    --card-pad: 16px;
+    --card-pad-sm: 14px;
+    --grid-gap: 10px;
+    --stat-v: 22px;
+    --stat-pad: 14px 15px;
+    --section-gap: 12px;
+    --chart-h: 210px;
+    --topbar-h: 56px;
+    --radius-lg: 16px;
+    --drawer-w: 100vw;
+    /* Высота нижней панели без «безопасной зоны» — её прибавляют там, где
+       нужно (padding контента, отступ плавающих кнопок). */
+    --mnav-h: 60px;
+    --mnav-safe: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ── Каркас ────────────────────────────────────────────────────────────
+     100dvh, а не 100vh: в мобильных браузерах адресная строка съезжает, и
+     фиксированная 100vh прячет нижнюю панель под неё. */
+  .dash-root { height: 100dvh !important; padding-right: 0 !important; }
+  .sidebar { display: none !important; }
+
+  /* Место под нижнюю панель отнимается у ВСЕЙ колонки контента, а не у одного
+     .content: половина страниц (Журнал, Каталог, Сотрудники, AI, Настройки)
+     тянется на всю доступную высоту, и padding у скролл-контейнера оставлял
+     бы им полосу пустоты над панелью вместо экрана. */
+  .main { padding-bottom: var(--mnav-safe); }
+
+  /* ── Топбар: заголовок + две кнопки ──────────────────────────────────── */
+  .topbar { padding: 0 var(--content-pad); gap: 8px; }
+  .topbar-title { font-size: 16.5px; letter-spacing: -0.3px; }
+  /* Заголовок забирает всё, что не нужно кнопкам: на 360px «Тариф и оплата»
+     иначе схлопывается в «Тари…» рядом с половиной пустой строки. */
+  .topbar-head { flex: 1 1 auto !important; }
+  .topbar-actions { flex: 0 0 auto !important; }
+  .topbar-actions > button { margin-right: 0 !important; }
+  .topbar-actions > button:first-child { margin-right: 8px !important; }
+
+  /* ── Сетки: две колонки только там, где значение коротко ─────────────── */
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .clients-grid, .report-metrics { grid-template-columns: minmax(0, 1fr); }
+  .staff-stats, .client-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split-tablet { grid-template-columns: minmax(0, 1fr) !important; }
+
+  /* Ряды вкладок и чипов листаются вбок, а не переносятся в три этажа:
+     четыре строки фильтров над таблицей — это экран без единой цифры. */
+  .tabs, .category-chips, .finance-tabs-big, .hall-select, .info-row, .cat-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar,
+  .category-chips::-webkit-scrollbar,
+  .finance-tabs-big::-webkit-scrollbar,
+  .hall-select::-webkit-scrollbar,
+  .info-row::-webkit-scrollbar,
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .tab, .cat-chip, .ftab, .hall-chip, .chip, .filter-pill, .cat-tab { flex: 0 0 auto; white-space: nowrap; }
+
+  /* ── Кнопка не вылезает из своей карточки ──────────────────────────────
+     Строки вида «подпись слева — действие справа» свёрстаны по всему кабинету
+     инлайновым `display:flex; justify-content:space-between` без класса. На
+     десктопе всё влезает, на 320px подпись занимает всю строку и выталкивает
+     кнопку за край карточки. Разрешаем перенос — тогда кнопка уходит под
+     подпись, а не за границу блока.
+     Селектор по атрибуту style — единственный общий признак этих строк;
+     flex-wrap в инлайне не задан, поэтому конфликта со специфичностью нет.
+     min-width детям НЕ трогаем: без него перенос срабатывает ровно тогда,
+     когда содержимое перестало помещаться, а не сплющивает подпись. */
+  [style*="space-between"] { row-gap: 10px; }
+
+  /* Перенос разрешаем всем инлайновым flex-рядам, а не только строкам со
+     space-between: ряды «две кнопки подряд», «подпись — селект», сегментные
+     переключатели свёрстаны так же и так же выезжают за карточку. Перенос
+     срабатывает только когда содержимое перестало помещаться, поэтому на
+     широком экране не меняется ничего.
+     :not(…column…) — колоночные контейнеры трогать нельзя: при ограниченной
+     высоте перенос разложил бы их в несколько колонок вместо одной. */
+  [style*="display: flex"]:not([style*="column"]),
+  [style*="display: inline-flex"]:not([style*="column"]) { flex-wrap: wrap; }
+
+  /* У flex-элемента min-width по умолчанию auto, то есть он не сжимается ниже
+     своего содержимого. Именно поэтому «flex: 1» блоки (имя сессии, подпись
+     настройки) оказывались шире родителя вместо того, чтобы перенести текст. */
+  [style*="flex: 1"] { min-width: 0; }
+
+  /* Та же беда у инлайновых сеток «1fr 1fr» (их в кабинете три десятка): на
+     320px колонка выходит по 140px, и кнопка с иконкой и подписью в неё уже не
+     влезает. Схлопываем в одну колонку — ровно то же, что .grid-2/.grid-3
+     делают выше для сеток с классом.
+     Подстрока ловит и «1fr 1fr 1fr» — на телефоне им тем более не место.
+     !important: значение задано инлайном, медиазапрос его иначе не перебьёт. */
+  [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
+
+  /* Строка настройки «подпись — контрол»: группа контролов помечена
+     flex-shrink:0 инлайном и не сжимается, вылезая за карточку. */
+  .settings-row { flex-wrap: wrap; row-gap: 10px; }
+  .settings-row > * { flex-shrink: 1 !important; min-width: 0; }
+
+  /* 31 столбик по 4px плюс отбивки по 10px — это 424px в карточке шириной
+     248, и хвост месяца просто обрезался (.chart-bars-clip прячет
+     переполнение). Подписи держат тот же шаг, иначе колонки разъезжаются. */
+  .chart-bars, .chart-labels { gap: 3px; }
+
+  /* Тач-цель: 22px чекбокс матрицы уведомлений пальцем не берётся */
+  .mini-check { width: 30px; height: 30px; }
+  .notif-checks { gap: 8px; }
+
+  /* Декор, который на телефоне занимает экран и ничего не сообщает.
+     !important: у иллюстрации счетов display задан инлайном (AccountsTab). */
+  .finance-illus, .booking-preview { display: none !important; }
+
+  .stat-icon { width: 30px; height: 30px; margin-bottom: 8px; }
+  .plan-price { font-size: 27px; }
+
+  /* Карточки — меньше воздуха, больше строк на экран */
+  .client-card, .loyalty-card, .channel-card, .plan-card { padding: 16px; }
+  .loyalty-card-icon { width: 38px; height: 38px; font-size: 19px; margin-bottom: 10px; }
+
+  /* Hover-эффекты на тач-экране только мешают: подъём карточки срабатывает
+     от тапа и остаётся висеть, пока не тапнешь в другое место. */
+  .client-card:hover, .loyalty-card:hover, .channel-card:hover,
+  .plan-card:hover, .stat-card:hover, .upcoming-item:hover {
+    transform: none;
+    box-shadow: var(--dash-shadow);
+  }
+  /* Действия строки, спрятанные до наведения, на телефоне не показать никак */
+  .up-actions, .activity-action-btn { opacity: 1 !important; }
+
+  /* Баннер подписки: текст важнее полей по краям */
+  .sub-banner { gap: 8px; font-size: 12.5px; }
+
+  /* ── История счетов: строка таблицы → карточка ──────────────────────────
+     Пять колонок (дата, описание, сумма, статус, чек) на 360px — это по
+     50px на ячейку, где не помещается даже сумма. Строка раскладывается в
+     два яруса: сверху описание и сумма, под ними дата и статус, чек —
+     отдельной строкой. Порядок задаётся grid-областями, а не разметкой:
+     на десктопе это по-прежнему одна честная строка таблицы.
+     Шапка колонок в таком виде подписывает не то и уходит. */
+  .bill-inv-head { display: none !important; }
+  .bill-inv-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    row-gap: 3px;
+    column-gap: 10px;
+    align-items: center;
+  }
+  .bill-inv-row > :nth-child(1) { grid-area: 2 / 1; }             /* дата */
+  .bill-inv-row > :nth-child(2) { grid-area: 1 / 1; }             /* описание */
+  .bill-inv-row > :nth-child(3) { grid-area: 1 / 2; justify-self: end; } /* сумма */
+  .bill-inv-row > :nth-child(4) { grid-area: 2 / 2; justify-self: end; } /* статус */
+  .bill-inv-row > :nth-child(5) { grid-area: 3 / 1 / 3 / -1; }    /* чек */
+
+  /* Тосты всплывают над нижней панелью, а не под ней. !important — стопка
+     позиционируется инлайном (см. ToastProvider). */
+  .velora-toast-stack {
+    bottom: calc(var(--mnav-safe) + 12px) !important;
+    left: 12px !important;
+    right: 12px !important;
+    transform: none !important;
+    align-items: stretch !important;
+  }
+}
+
+/* ==========================================================================
+   ТЕЛЕФОН: ПУБЛИЧНЫЕ СТРАНИЦЫ (лендинг, вход, регистрация, онбординг)
+   Ритм секций лендинга уже собран на переменных --lp-* и складывается в одну
+   колонку с 1040px — здесь дожимается то, что переменными не описано.
+   ========================================================================== */
+@media (max-width: 767px) {
+  :root {
+    --lp-pad: 18px;
+    --lp-gap: 44px;
+    --lp-gap-sm: 34px;
+    --lp-inner-pad: 22px;
+    --lp-cta-pad: 36px 20px;
+    --lp-col-gap: 28px;
+    --lp-head-gap: 28px;
+    --lp-hero-pad: 88px 18px 40px;
+    /* Поля карточки входа/регистрации: 40px по бокам от 360px — четверть
+       ширины формы уходит в пустоту вокруг полей ввода. */
+    --auth-card-pad: 26px 20px;
+    --auth-card-gap: 16px;
+  }
+
+  /* Шапка лендинга: логотип и две кнопки в 360px помещаются, только если
+     кнопки перестают быть «просторными». Ссылки разделов ушли ещё на 880px. */
+  .navbar { padding: 10px 14px; width: calc(100% - 20px); top: 10px; }
+  .btn-size-normal { padding: 10px 15px; font-size: 13px; }
+  /* Поля 24px + «Попробовать 14 дней бесплатно» не влезают в 320px и тянут
+     всю секцию героя шире экрана — режем поля и кегль. */
+  .btn-size-large { padding: 13px 16px; font-size: 14px; }
+
+  /* Шапка и подвал форм входа и регистрации задают поля инлайном (40px по
+     бокам). Плюс «Нет аккаунта? Зарегистрироваться →» рядом с логотипом в
+     320px одной строкой не встаёт — разрешаем перенос.
+     :not(.navbar) — чтобы не задеть шапку лендинга: у неё свои поля выше. */
+  .page-wrapper > nav:not(.navbar),
+  .page-wrapper > footer.flex-between {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  /* Декоративные пятна масштабируются под экран: 520px-круг на 360px-экране
+     превращался в сплошную заливку половины страницы. */
+  .orb-1 { width: 300px; height: 300px; }
+  .orb-2 { width: 240px; height: 240px; }
+  .orb-3 { display: none; }
+
+  /* Онбординг: панель-иллюстрация ушла на 820px, форме нужны поля поменьше,
+     а карточка — весь экран: скруглённое окно 920px посреди телефона
+     оставляло формам полосу в 300px при пустых 30px по краям. */
+  .ob-right { padding: 22px 18px !important; }
+  .ob-page { padding: 0 !important; }
+  .ob-modal {
+    max-width: 100% !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (MobileNav)
+   Показывается только медиазапросом выше; здесь — её вид.
+   ========================================================================== */
+.mnav {
+  display: flex;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 150;
+  align-items: stretch;
+  height: calc(var(--mnav-h, 60px) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  /* Без backdrop-filter — по той же причине, что и у оверлеев модалок
+     (см. .v-overlay): размытие во весь вьюпорт роняет кадры. */
+  box-shadow: 0 -8px 32px -12px rgba(0,0,0,0.14);
+}
+
+/* Прячется на десктопе через min-width, а не показывается на телефоне через
+   max-width: телефонный блок стоит в файле ВЫШЕ этих правил, и при равной
+   специфичности базовое значение перебило бы его — панель либо не появилась
+   бы на телефоне, либо осталась висеть на десктопе. */
+@media (min-width: 768px) {
+  .mnav { display: none; }
+}
+
+.mnav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.18s ease;
+}
+
+/* Иконка сидит в «пилюле», которая проявляется у активного раздела: акцент
+   даёт форма, а не заливка всей вкладки. */
+.mnav-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 28px;
+  border-radius: 10px;
+  transition: background 0.22s cubic-bezier(0.34,1.4,0.64,1), transform 0.16s ease;
+}
+.mnav-icon .nav-icon { width: 20px; height: 20px; opacity: 1; }
+
+.mnav-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mnav-item.active { color: var(--accent2); }
+.mnav-item.active .mnav-icon { background: rgba(252,174,145,0.16); }
+.mnav-item:active .mnav-icon { transform: scale(0.92); }
+
+/* Счётчик клиентов и метка NEW — на углу иконки: в подпись они не помещаются,
+   а знать «что-то появилось» на телефоне нужнее, чем сколько именно. */
+.mnav-badge {
+  position: absolute;
+  top: -1px;
+  right: 3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* ── Шит «Ещё» ──────────────────────────────────────────────────────────── */
+.msheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0,0,0,0.44);
+  animation: msheet-tint 0.2s ease both;
+}
+@keyframes msheet-tint { from { opacity: 0 } to { opacity: 1 } }
+
+.msheet {
+  width: 100%;
+  max-height: 82dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 14px calc(var(--mnav-safe, 60px) + 14px);
+  background: var(--bg-card);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -24px 64px -12px rgba(0,0,0,0.28);
+  animation: msheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+  transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes msheet-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
+
+/* «Ручка» — она же зона свайпа вниз, поэтому у неё своя высота, а не 4px */
+.msheet-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  margin-bottom: 6px;
+  cursor: grab;
+  touch-action: none;
+}
+.msheet-grip span {
+  width: 38px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(var(--ink),0.16);
+}
+
+.msheet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.msheet-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: rgba(var(--ink),0.03);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.msheet-item .nav-icon { width: 18px; height: 18px; opacity: 0.75; flex-shrink: 0; }
+.msheet-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msheet-item:active { background: rgba(252,174,145,0.14); }
+.msheet-item.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
+.msheet-item.active .nav-icon { opacity: 1; }
+
+/* Аккаунт внизу шита — та же плитка, что в боковом меню. */
+.msheet-account {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* Список студий и «Выйти» встают в поток шита, а не всплывают над плиткой:
+   всплывающая панель (position: absolute, bottom: 100%) обрезалась бы
+   собственным скроллом шита (overflow-y: auto), и до выхода из аккаунта было
+   не добраться. В потоке шит просто становится выше и доскролливается. */
+.msheet-account .user-menu-panel {
+  position: static;
+  margin-top: 8px;
+  animation: none;
+  box-shadow: none;
+  background: transparent;
+}
+.msheet-account .user-menu-list { max-height: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .msheet, .msheet-overlay { animation: none; }
+  .mnav-icon { transition: none; }
+}
+
+/* ==========================================================================
+   ТЕЛЕФОН: МОДАЛКИ → ШИТЫ СНИЗУ
+   Карточка по центру промахивается мимо двух вещей сразу: до её кнопок надо
+   тянуться вверх, а поля формы жмутся в 300px при пустых полях по бокам. Шит
+   снизу решает оба: ширина во весь экран, действия — у большого пальца.
+   Много !important: размеры карточки ModalShell задаёт инлайном (см.
+   комментарии там), а инлайн перебивает медиазапрос.
+   ========================================================================== */
+@media (max-width: 767px) {
+  .v-overlay, .tg-modal-overlay.open {
+    align-items: flex-end;
+    justify-content: stretch;
+    padding: 0;
+  }
+
+  .v-modal, .tg-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    border-radius: 22px 22px 0 0 !important;
+    animation: v-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) both !important;
+  }
+  .v-overlay.is-leaving .v-modal { animation: v-sheet-out 0.22s ease both !important; }
+
+  /* Одна колонка: превью-панель скрыта ещё на 920px, здесь схлопывается
+     остаток — и высота мастеров перестаёт быть фиксированной. */
+  .v-modal-lg { grid-template-columns: minmax(0, 1fr) !important; }
+  .v-modal-wizard { height: auto !important; max-height: 92dvh !important; }
+
+  /* Отступы шапки/тела/футера и безопасная зона под кнопками */
+  :root {
+    --vm-head-pad: 16px 18px 12px;
+    --vm-body-pad: 14px 18px;
+    --vm-body-gap: 13px;
+    --vm-foot-pad: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+@keyframes v-sheet-in  { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
+@keyframes v-sheet-out { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(24px) } }

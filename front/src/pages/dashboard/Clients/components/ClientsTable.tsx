@@ -91,7 +91,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
         }
         .ct2-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
           gap: 12px;
           min-width: 0;
           width: 100%;
@@ -221,6 +221,18 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
         .ct2-visits {
           margin-left: auto;
           font-size: 11px; color: var(--text3); font-weight: 500;
+        }
+
+        /* Телефон: одна колонка карточек. 320px минимума при 332px доступных
+           формально дают одну колонку и здесь, но без запаса — любая правка
+           отступов роняла бы сетку в скролл. */
+        @media (max-width: 767px) {
+          .ct2-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+          .ct2-card { padding: 15px 15px 14px; }
+          .ct2-avatar { width: 42px; height: 42px; font-size: 13px; }
+          .ct2-header { margin-bottom: 12px; }
+          /* Подъём карточки от тапа остаётся висеть до тапа в другое место */
+          .ct2-card:hover { transform: none; }
         }
       `}</style>
 

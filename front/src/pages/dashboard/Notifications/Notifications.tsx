@@ -51,7 +51,9 @@ export default function Notifications() {
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'clamp(240px, 21vw, 280px) 1fr', gap: '24px', alignItems: 'start' }}>
+    // Колонка каналов ужимается вместе с окном, а ниже 1000px уезжает над
+    // матрицей: два трека по 300px читаются хуже, чем один под другим.
+    <div className="notif-layout" style={{ display: 'grid', gap: 'var(--grid-gap)', alignItems: 'start' }}>
       <ChannelsSidebar
         channels={h.channels}
         toggleChannel={h.toggleChannel}
@@ -59,7 +61,7 @@ export default function Notifications() {
         channelStatuses={ci.channels}
         onOpenModal={setOpenModal}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)', minWidth: 0 }}>
         <RolesSelector activeRole={h.activeRole} switchRole={h.switchRole} countActive={h.countActive} />
         <NotificationMatrix
           currentRole={h.currentRole}

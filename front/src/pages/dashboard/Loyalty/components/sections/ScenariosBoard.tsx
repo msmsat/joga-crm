@@ -192,7 +192,7 @@ export default function ScenariosBoard() {
           <div style={{ fontSize: '12px', opacity: 0.7 }}>{t('scenarios.emptySub')}</div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(360px, 100%), 1fr))', gap: '14px' }}>
           {scenarios.map(s => (
             <div key={s.id} className={`${styles.scenarioCard} ${!s.is_enabled ? styles.scenarioCardDisabled : ''}`}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
@@ -220,7 +220,7 @@ export default function ScenariosBoard() {
         <Dialog onClose={() => setPickerOpen(false)}>
           <ModalHeader title={t('scenarios.pickTemplate')} subtitle={t('scenarios.pickTemplateSub')} />
           <ModalBody>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '24px' }}>
               {TEMPLATE_KEYS.map(tpl => {
                 const active = tpl === template;
                 return (

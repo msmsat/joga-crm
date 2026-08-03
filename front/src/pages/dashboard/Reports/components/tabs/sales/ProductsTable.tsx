@@ -76,6 +76,9 @@ export function ProductsTable({ products, onRowClick, sortBy }: ProductsTablePro
       {products.length === 0 ? (
         <EmptyState size="sm" icon="search" title={t('empty.noProducts')} />
       ) : (
+        // Таблица шире карточки на ноутбуке — скроллим её саму, а не страницу:
+        // колонки с whiteSpace:nowrap иначе распирали карточку.
+        <div className="ms-scroll" style={{ overflowX: 'auto', minWidth: 0 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <thead>
             <tr>
@@ -145,6 +148,7 @@ export function ProductsTable({ products, onRowClick, sortBy }: ProductsTablePro
             })}
           </tbody>
         </table>
+        </div>
       )}
     </Card>
   );

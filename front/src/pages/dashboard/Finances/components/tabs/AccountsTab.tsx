@@ -131,7 +131,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
       </div>
 
       {/* Сетка карточек счетов */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gap: '20px', marginBottom: '20px' }}>
         {accounts.map(acc => {
           const TypeIcon = acc.type === 'cash' ? Ico.Cash : acc.type === 'bank' ? Ico.Card : Ico.World;
           const isSelected = selected === acc.id;

@@ -509,6 +509,67 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
   if (!isOpen || !staff) return null;
 
+  // Удаление живёт в левой панели, а на планшете панель скрыта целиком — там
+  // же пропадала и единственная кнопка «Удалить сотрудника». Блок вынесен в
+  // переменную и рисуется дважды (в панели и внизу формы), видим всегда ровно
+  // один: класс .vm-wide-only / .vm-narrow-only переключает их по ширине.
+  const deleteBlock = staff?.role === 'owner' && (ownerCount ?? 1) <= 1 ? (
+    <div style={{
+      padding: "11px 13px", borderRadius: "10px",
+      background: "rgba(216,140,154,0.07)",
+      border: "1.5px solid rgba(216,140,154,0.22)",
+      display: "flex", alignItems: "center", gap: "8px",
+    }}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C06070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span style={{ fontSize: "11px", fontWeight: 600, color: "#C06070", fontFamily: "Manrope, sans-serif", lineHeight: 1.4 }}>
+        {t("staff:editModal.cannotDeleteLastOwner")}
+      </span>
+    </div>
+  ) : !showDeleteConfirm ? (
+    <button type="button" className="ei-del-btn" onClick={() => setShowDeleteConfirm(true)} style={{
+      width: "100%", padding: "10px",
+      background: "rgba(216,140,154,0.08)",
+      border: "1.5px solid rgba(216,140,154,0.25)",
+      borderRadius: "10px", fontSize: "12px", fontWeight: 700,
+      color: "#C06070", cursor: "pointer", fontFamily: "Manrope, sans-serif",
+      display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+      transition: "all 0.15s",
+    }}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polyline points="3,6 5,6 21,6" /><path d="M19,6l-1,14H6L5,6" /><path d="M10,11v6M14,11v6" /><path d="M9,6V4h6v2" />
+      </svg>
+      {t("staff:editModal.deleteEmployee")}
+    </button>
+  ) : (
+    <div style={{
+      padding: "11px 13px", borderRadius: "10px",
+      background: "rgba(216,140,154,0.10)",
+      border: "1.5px solid rgba(216,140,154,0.35)",
+      animation: "eiSlideIn 0.2s ease",
+    }}>
+      <p style={{ fontSize: "11px", fontWeight: 700, color: "#C06070", margin: "0 0 8px", textAlign: "center" }}>
+        {t("staff:editModal.deleteConfirm", { name: form.name.split(" ")[0] || t("staff:editModal.defaultName") })}
+      </p>
+      <div style={{ display: "flex", gap: "6px" }}>
+        <button onClick={() => setShowDeleteConfirm(false)} style={{
+          flex: 1, padding: "7px", background: "var(--bg-card)",
+          border: "1px solid var(--border)", borderRadius: "8px",
+          fontSize: "11px", fontWeight: 600, color: "var(--text3)",
+          cursor: "pointer", fontFamily: "Manrope, sans-serif",
+        }}>{t("common:buttons.cancel")}</button>
+        <button onClick={handleDelete} style={{
+          flex: 1, padding: "7px",
+          background: "linear-gradient(135deg, #D88C9A, #C07080)",
+          border: "none", borderRadius: "8px",
+          fontSize: "11px", fontWeight: 700, color: "white",
+          cursor: "pointer", fontFamily: "Manrope, sans-serif",
+        }}>{t("common:buttons.delete")}</button>
+      </div>
+    </div>
+  );
+
   return createPortal(
     <div className="v-overlay" onClick={onClose}>
       <style>{`
@@ -579,6 +640,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         }
 
         /* 9. Скроллбар (полоса прокрутки) */
+        .ei-tabs { scrollbar-width: none; }
+        .ei-tabs::-webkit-scrollbar { display: none; }
         .ei-scroll::-webkit-scrollbar { width: 4px; }
         .ei-scroll::-webkit-scrollbar-thumb { 
           background: rgba(var(--ink), 0.12); /* Минималистичный серый вместо рыжего */
@@ -617,12 +680,14 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
       `}</style>
 
       <div
+        className="v-modal-lg v-modal-wizard"
         style={{
           position: "relative",
-          width: "100%", maxWidth: "860px", height: "min(600px, calc(100vh - 32px))",
+          ["--v-modal-w" as string]: "860px",
+          ["--v-left-w" as string]: "260px",
+          ["--vm-wizard-h" as string]: "600px",
           background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
-          display: "grid", gridTemplateColumns: "260px 1fr",
           overflow: "hidden",
           animation: "eiModalIn 0.3s ease",
         }}
@@ -630,8 +695,8 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
       >
 
         {/* ──────────── LEFT PANEL ──────────── */}
-        <div style={{
-          background: "var(--bg-card)", borderRight: "1px solid #F0EDE8",
+        <div className="v-modal-left" style={{
+          background: "var(--bg-card)", borderRight: "1px solid var(--border)",
           display: "flex", flexDirection: "column",
           padding: "28px 22px 22px", position: "relative", overflow: "hidden",
         }}>
@@ -694,62 +759,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             </div>
 
             {/* Delete */}
-            {staff?.role === 'owner' && (ownerCount ?? 1) <= 1 ? (
-              <div style={{
-                padding: "11px 13px", borderRadius: "10px",
-                background: "rgba(216,140,154,0.07)",
-                border: "1.5px solid rgba(216,140,154,0.22)",
-                display: "flex", alignItems: "center", gap: "8px",
-              }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C06070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span style={{ fontSize: "11px", fontWeight: 600, color: "#C06070", fontFamily: "Manrope, sans-serif", lineHeight: 1.4 }}>
-                  {t("staff:editModal.cannotDeleteLastOwner")}
-                </span>
-              </div>
-            ) : !showDeleteConfirm ? (
-              <button type="button" className="ei-del-btn" onClick={() => setShowDeleteConfirm(true)} style={{
-                width: "100%", padding: "10px",
-                background: "rgba(216,140,154,0.08)",
-                border: "1.5px solid rgba(216,140,154,0.25)",
-                borderRadius: "10px", fontSize: "12px", fontWeight: 700,
-                color: "#C06070", cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                transition: "all 0.15s",
-              }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="3,6 5,6 21,6" /><path d="M19,6l-1,14H6L5,6" /><path d="M10,11v6M14,11v6" /><path d="M9,6V4h6v2" />
-                </svg>
-                {t("staff:editModal.deleteEmployee")}
-              </button>
-            ) : (
-              <div style={{
-                padding: "11px 13px", borderRadius: "10px",
-                background: "rgba(216,140,154,0.10)",
-                border: "1.5px solid rgba(216,140,154,0.35)",
-                animation: "eiSlideIn 0.2s ease",
-              }}>
-                <p style={{ fontSize: "11px", fontWeight: 700, color: "#C06070", margin: "0 0 8px", textAlign: "center" }}>
-                  {t("staff:editModal.deleteConfirm", { name: form.name.split(" ")[0] || t("staff:editModal.defaultName") })}
-                </p>
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button onClick={() => setShowDeleteConfirm(false)} style={{
-                    flex: 1, padding: "7px", background: "var(--bg-card)",
-                    border: "1px solid #EEEBE6", borderRadius: "8px",
-                    fontSize: "11px", fontWeight: 600, color: "var(--text3)",
-                    cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                  }}>{t("common:buttons.cancel")}</button>
-                  <button onClick={handleDelete} style={{
-                    flex: 1, padding: "7px",
-                    background: "linear-gradient(135deg, #D88C9A, #C07080)",
-                    border: "none", borderRadius: "8px",
-                    fontSize: "11px", fontWeight: 700, color: "white",
-                    cursor: "pointer", fontFamily: "Manrope, sans-serif",
-                  }}>{t("common:buttons.delete")}</button>
-                </div>
-              </div>
-            )}
+            {deleteBlock}
           </div>
         </div>
 
@@ -769,10 +779,13 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             </svg>
           </button>
 
-          {/* Tab bar */}
-          <div style={{
-            display: "flex", gap: "2px", padding: "16px 24px 0",
-            borderBottom: "1px solid #F0EDE8", flexShrink: 0,
+          {/* Панель разделов. Своя строка вне области скролла (flexShrink: 0) —
+              она обязана оставаться на месте на любом разделе. Правее крестика
+              не залезает: место под него зарезервировано отступом справа. */}
+          <div className="ei-tabs" style={{
+            display: "flex", gap: "2px", padding: "16px 52px 0 24px",
+            borderBottom: "1px solid var(--border)", flexShrink: 0,
+            overflowX: "auto", overflowY: "hidden",
           }}>
             {TABS.map(tabId => {
               const isActive = activeTab === tabId;
@@ -782,6 +795,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   className={`ei-tab${isActive ? " ei-tab-active" : ""}`}
                   onClick={() => setActiveTab(tabId)}
                   style={{
+                    flexShrink: 0,
                     padding: "9px 14px 10px",
                     background: isActive ? "rgba(252,174,145,0.1)" : "transparent",
                     border: "none",
@@ -805,7 +819,11 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           </div>
 
           {/* Scrollable content */}
-          <div className="ei-scroll" style={{ flex: 1, overflowY: "auto", padding: "20px 24px 16px" }}>
+          {/* minHeight: 0 обязателен. Без него у flex-элемента min-height: auto
+              равен высоте содержимого, flex:1 не может его ужать — колонка
+              распирает модалку изнутри, и при переключении на длинный раздел
+              панель вкладок уезжала за верхний край, а футер за нижний. */}
+          <div className="ei-scroll" style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "20px 24px 16px" }}>
             <div key={activeTab} style={{ animation: "eiSlideIn 0.22s cubic-bezier(0.34,1.1,0.64,1)" }}>
 
               {/* ══ TAB: PROFILE ══ */}
@@ -1338,16 +1356,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             </div>
           </div>
 
+          {/* Удаление на планшете: левой панели нет, блок приезжает сюда */}
+          <div className="vm-narrow-only" style={{ padding: "12px 24px 0", flexShrink: 0 }}>
+            {deleteBlock}
+          </div>
+
           {/* ── Footer: Save button ── */}
           <div style={{
             padding: "14px 24px 16px",
-            borderTop: "1px solid #F0EDE8",
+            borderTop: "1px solid var(--border)",
             display: "flex", gap: "10px", alignItems: "center",
             flexShrink: 0,
           }}>
             <button type="button" onClick={onClose} style={{
               padding: "12px 18px",
-              background: "transparent", border: "1.5px solid #EEEBE6", borderRadius: "12px",
+              background: "transparent", border: "1.5px solid var(--border)", borderRadius: "12px",
               fontSize: "13px", fontWeight: 600, color: "var(--text3)",
               cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s",
             }}>

@@ -119,6 +119,16 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
 
   if (!open) return null;
 
+  // На планшете левая панель модалки скрыта — вместе с ней исчезали и оба
+  // действия. Те же кнопки рисуются вторым экземпляром внизу списка,
+  // видим всегда ровно один (см. .vm-narrow-only в App.css).
+  const actions = (
+    <>
+      {onCampaign && <PrimaryButton onClick={onCampaign}>{t('clients.campaign')}</PrimaryButton>}
+      <GhostButton onClick={() => exportCsv(filteredRows)}>{t('clients.exportList')}</GhostButton>
+    </>
+  );
+
   const left = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ color: 'rgba(249,160,139,0.55)', marginBottom: '20px' }}>
@@ -144,8 +154,7 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
       )}
 
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>
-        {onCampaign && <PrimaryButton onClick={onCampaign}>{t('clients.campaign')}</PrimaryButton>}
-        <GhostButton onClick={() => exportCsv(filteredRows)}>{t('clients.exportList')}</GhostButton>
+        {actions}
       </div>
     </div>
   );
@@ -197,6 +206,9 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
             )}
           </>
         )}
+        <div className="vm-narrow-only" style={{ flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '8px' }}>{actions}</div>
+        </div>
       </ModalBody>
     </ModalShell>
   );

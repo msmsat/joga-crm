@@ -13,11 +13,11 @@ interface StatItemProps {
 
 function StatItem({ value, label, color }: StatItemProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 24px', gap: '2px' }}>
-      <span style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', color: color ?? 'var(--text)' }}>
+    <div className="staff-sum-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px clamp(12px, 1.6vw, 24px)', gap: '2px' }}>
+      <span className="staff-sum-v" style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', color: color ?? 'var(--text)' }}>
         {value}
       </span>
-      <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', whiteSpace: 'nowrap' }}>
+      <span className="staff-sum-l" style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.4px', whiteSpace: 'nowrap' }}>
         {label}
       </span>
     </div>
@@ -42,8 +42,10 @@ export function StaffStats({ staff }: StaffStatsProps) {
   const admins   = staff.filter(s => ADMIN_ROLE_IDS.has(s.role)).length;
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center',
+    // nowrap на планшете (см. .staff-summary в Staff.css): перенос делал из
+    // полосы двухэтажную карточку и съедал 60px высоты у профиля.
+    <div className="staff-summary" style={{
+      display: 'flex', alignItems: 'center', flexWrap: 'wrap',
       background: 'var(--card)', border: '1px solid var(--border)',
       borderRadius: 'var(--radius-lg)', boxShadow: 'var(--dash-shadow)',
       overflow: 'hidden', flexShrink: 0,
@@ -56,7 +58,7 @@ export function StaffStats({ staff }: StaffStatsProps) {
       <Divider />
       <StatItem value={admins}   label={t('stats.administrators')} />
 
-      <div style={{ marginLeft: 'auto', padding: '0 20px' }}>
+      <div style={{ marginLeft: 'auto', padding: '0 16px' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '7px',
           padding: '7px 14px', borderRadius: '10px',

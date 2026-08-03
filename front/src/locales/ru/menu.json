@@ -16,7 +16,8 @@
     "settings": "Настройки",
     "billing": "Тариф и оплата",
     "journal": "Журнал",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "more": "Ещё"
   },
   "subtitles": {
     "dashboard": "Добро пожаловать в Velora CRM",
@@ -48,5 +49,9 @@
     "studioName": "Ваша студия: {{name}}",
     "openProfile": "Открыть профиль",
     "openAccountMenu": "Меню аккаунта"
+  },
+  "sidebar": {
+    "expand": "Развернуть меню",
+    "collapse": "Свернуть меню"
   }
 }

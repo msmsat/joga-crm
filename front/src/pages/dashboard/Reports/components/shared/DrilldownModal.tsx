@@ -85,8 +85,23 @@ export function DrilldownModal({
 
   if (!open) return null;
 
+  // Экспортируем то, что видно на экране (с учётом поиска), и под
+  // человеческими заголовками колонок — не под ключами.
+  // Кнопка живёт в левой панели, а на планшете панели нет: второй экземпляр
+  // уходит под таблицу, видим всегда один (.vm-narrow-only в App.css).
+  const exportBtn = exportName && (
+    <GhostButton onClick={() => exportCSV(
+      filteredRows.map(r => Object.fromEntries(columns.map(c => [c.label, cellText(r[c.key])]))),
+      exportName,
+    )}>
+      {t('overview.drilldown.export')}
+    </GhostButton>
+  );
+
   const left = (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    // vml-summary: на планшете колонка разворачивается лентой над таблицей —
+    // hero и stats в самой таблице не повторяются (см. App.css).
+    <div className="vml-summary" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ color: 'rgba(249,160,139,0.55)', marginBottom: '20px', flexShrink: 0 }}>
         <circle cx="12" cy="12" r="11" fill="rgba(249,160,139,0.08)" />
         {ICONS[icon]}
@@ -120,20 +135,13 @@ export function DrilldownModal({
         </div>
       )}
 
-      <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {/* На планшете лента-сводка идёт строкой, а кнопка экспорта уже
+          отрисована под таблицей — иначе она была бы на экране дважды. */}
+      <div className="vm-wide-only" style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {onRowClick && rowHint && (
           <div style={{ fontSize: '11px', color: 'var(--text3)', lineHeight: 1.4 }}>{rowHint}</div>
         )}
-        {exportName && (
-          // Экспортируем то, что видно на экране (с учётом поиска), и под
-          // человеческими заголовками колонок — не под ключами.
-          <GhostButton onClick={() => exportCSV(
-            filteredRows.map(r => Object.fromEntries(columns.map(c => [c.label, cellText(r[c.key])]))),
-            exportName,
-          )}>
-            {t('overview.drilldown.export')}
-          </GhostButton>
-        )}
+        {exportBtn}
       </div>
     </div>
   );
@@ -181,6 +189,10 @@ export function DrilldownModal({
               // Своя область скролла (а не общий скролл тела): поиск и шапка
               // таблицы остаются на месте, когда список длинный.
               <div className="ms-scroll" style={{ flex: '0 1 auto', minHeight: 0, overflowY: 'auto' }}>
+                {/* Таблица шире карточки на ноутбуке — скроллим её саму, а не
+                    страницу: колонки с whiteSpace:nowrap распирали карточку.
+                    (Строки были обычными // — JSX печатал их как текст.) */}
+                <div className="ms-scroll" style={{ overflowX: 'auto', minWidth: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead>
                     <tr>
@@ -220,10 +232,12 @@ export function DrilldownModal({
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </>
         )}
+        {exportBtn && <div className="vm-narrow-only" style={{ flexShrink: 0 }}>{exportBtn}</div>}
       </ModalBody>
       {footer && <ModalFooter>{footer}</ModalFooter>}
     </ModalShell>

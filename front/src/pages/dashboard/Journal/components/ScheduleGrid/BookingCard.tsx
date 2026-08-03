@@ -13,7 +13,7 @@ interface BookingCardProps {
   canEdit: boolean;
   popupBooking: Booking | null;
   wasDragging: boolean;
-  initDrag: (e: React.MouseEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
+  initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
@@ -48,7 +48,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     <div
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
-      onMouseDown={e => {
+      onPointerDown={e => {
         if (b.status === 'cancelled') return;
         if (!canEdit) {
           showToast(t('toasts.noPermission'));
@@ -115,11 +115,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 
-            onMouseDown={(e) => { setPopupBooking(null); initDrag(e, b.id, 'resize-top', b); }} 
+            onPointerDown={(e) => { setPopupBooking(null); initDrag(e, b.id, 'resize-top', b); }}
           />
           <div 
             style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 
-            onMouseDown={(e) => { setPopupBooking(null); initDrag(e, b.id, 'resize-bottom', b); }} 
+            onPointerDown={(e) => { setPopupBooking(null); initDrag(e, b.id, 'resize-bottom', b); }}
           />
         </>
       )}

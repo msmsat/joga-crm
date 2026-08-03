@@ -270,7 +270,11 @@ export default function LoginPage() {
               <>
                 <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
                   <GoogleLogin
-                      width="320"
+                      /* Ширина кнопки Google — жёсткий пиксель внутри iframe:
+                         320 не влезает в карточку на 320px-экране и вылезает
+                         за край. Считаем один раз при монтировании — поворот
+                         экрана в форме входа переживём. */
+                      width={String(Math.min(320, window.innerWidth - 76))}
                       onSuccess={(credentialResponse) => {
                           if (credentialResponse.credential) {
                           handleGoogleSuccess(credentialResponse.credential);

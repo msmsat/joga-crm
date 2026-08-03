@@ -54,7 +54,7 @@ export default function Settings() {
   };
 
   return (
-    <div style={{ display: "flex", width: "100%", alignItems: "start", height: "100%", overflow: "hidden" }}>
+    <div className="set-layout" style={{ display: "flex", width: "100%", alignItems: "start", height: "100%", overflow: "hidden" }}>
       <SettingsNav
         sectionLabel={t('nav.sectionLabel')}
         navItems={navItems}
@@ -67,7 +67,8 @@ export default function Settings() {
       {/* ─── CONTENT ─── */}
       <div
         ref={rightPanelRef}
-        style={{ flex: 1, padding: "32px 40px", width: "100%", maxWidth: "100%", boxSizing: "border-box", height: "100%", overflowY: "auto" }}
+        className="set-content"
+        style={{ flex: 1, minWidth: 0, padding: "calc(var(--card-pad) + 8px) calc(var(--card-pad) + 16px)", width: "100%", maxWidth: "100%", boxSizing: "border-box", height: "100%", overflowY: "auto" }}
       >
         <div key={activeSection} className="settings-content-anim" style={{ display: "flex", flexDirection: "column", gap: "0" }}>
           {sectionContent[activeSection] ?? sectionContent["general"]}

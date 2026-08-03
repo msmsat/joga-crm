@@ -94,7 +94,7 @@ export function BreakdownCards({ byCategory, byMethod, byBuyerType, onCategoryCl
   const { t } = useTranslation('reports');
 
   return (
-    <div className="grid-2" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '20px' }}>
+    <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', marginBottom: '20px' }}>
       <SliceCard
         title={t('sales.breakdown.byCategory')}
         description={t('descriptions.sales.byCategory')}

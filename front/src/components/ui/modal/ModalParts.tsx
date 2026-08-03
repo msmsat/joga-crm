@@ -6,13 +6,20 @@ export function ModalHeader({ title, subtitle }: { title: string; subtitle?: str
   return (
     <div style={{
       display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-      padding: '22px 24px 16px', borderBottom: '1px solid var(--border, #F0EDE8)', flexShrink: 0,
+      padding: 'var(--vm-head-pad, 22px 24px 16px)', borderBottom: '1px solid var(--border, #F0EDE8)', flexShrink: 0,
     }}>
-      <div>
-        <h2 style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text, #1A1A1A)', letterSpacing: '-0.5px', margin: 0 }}>
+      {/* minWidth: 0 — длинный заголовок обязан переноситься, а не выталкивать
+          крестик. Подзаголовок отбит от заголовка полноценной строкой (было
+          4px — он читался как второй ярус заголовка, а не как пояснение). */}
+      <div style={{ minWidth: 0 }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text, #1A1A1A)', letterSpacing: '-0.5px', lineHeight: 1.25, margin: 0 }}>
           {title}
         </h2>
-        {subtitle && <p style={{ fontSize: '12px', color: '#AAA', margin: '4px 0 0' }}>{subtitle}</p>}
+        {subtitle && (
+          <p style={{ fontSize: '12px', lineHeight: 1.45, color: 'var(--text3, #AAA)', margin: '7px 0 0' }}>
+            {subtitle}
+          </p>
+        )}
       </div>
       <button
         type="button"
@@ -34,7 +41,7 @@ export function ModalHeader({ title, subtitle }: { title: string; subtitle?: str
 // Тело модалки: скролл-контейнер с отступами (поля кладутся сюда).
 export function ModalBody({ children }: { children: React.ReactNode }) {
   return (
-    <div className="ms-scroll" style={{ padding: '20px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, minHeight: 0 }}>
+    <div className="ms-scroll" style={{ padding: 'var(--vm-body-pad, 20px 24px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--vm-body-gap, 16px)', flex: 1, minHeight: 0 }}>
       {children}
     </div>
   );
@@ -43,7 +50,7 @@ export function ModalBody({ children }: { children: React.ReactNode }) {
 // Футер: Ghost (Отмена) + Primary (submit). По умолчанию Ghost закрывает модалку.
 export function ModalFooter({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', gap: '10px', padding: '16px 24px', borderTop: '1px solid var(--border, #F0EDE8)', flexShrink: 0 }}>
+    <div style={{ display: 'flex', gap: '10px', padding: 'var(--vm-foot-pad, 16px 24px)', borderTop: '1px solid var(--border, #F0EDE8)', flexShrink: 0 }}>
       {children}
     </div>
   );

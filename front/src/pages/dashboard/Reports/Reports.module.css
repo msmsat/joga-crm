@@ -18,6 +18,59 @@
   }
 }
 
+/* ─── ТУЛБАР ОТЧЁТОВ ───────────────────────────────────────────────────────
+   Один flex-контейнер на три группы вместо двух вложенных: так порядок строк
+   задаётся flex-basis/order, а не разметкой, и на планшете ряды можно
+   переклеить, не трогая JSX.
+   Десктоп: строка 1 — вкладки + период/экспорт справа, строка 2 — фильтры. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.barCtl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+/* min-height = высота Select кита: ряд не схлопывается и не дёргает страницу,
+   когда вкладка показывает 2 фильтра вместо 4 (борьба с layout shift). */
+.barFilters {
+  flex: 1 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-height: 45px;
+}
+
+.barFilter { min-width: 140px; }
+
+/* Планшет: три ряда (вкладки / период+экспорт / фильтры) съедали пол-экрана
+   до первой цифры. Вкладки забирают строку целиком, а фильтры встают в один
+   ряд с периодом и экспортом и делят остаток ширины поровну (flex:1 1 0 +
+   ellipsis внутри Select), поэтому четвёртый фильтр не выталкивает ряд. */
+@media (max-width: 1024px) {
+  .bar { gap: 10px; margin-bottom: 14px; }
+  .barTabs {
+    flex: 1 0 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .barTabs::-webkit-scrollbar { display: none; }
+  .barCtl { margin-left: 0; flex: 0 0 auto; }
+  .barFilters { flex: 1 1 200px; min-height: 0; justify-content: flex-end; flex-wrap: nowrap; }
+  .barFilter { min-width: 0; flex: 1 1 0; }
+}
+
 .mainWithInsights {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -34,4 +87,26 @@
   .mainWithInsightsSide {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* ── Телефон: тулбар отчётов в три листающихся ряда ────────────────────────
+   Правило 1024px сводило период, экспорт и четыре фильтра в один ряд с
+   flex:1 1 0 — на 360px это шесть контролов по 55px, где не читается ни один.
+   Возвращаем перенос: вкладки, период с экспортом и фильтры получают по
+   собственной строке, а внутри строк — горизонтальный скролл. */
+@media (max-width: 767px) {
+  .bar { gap: 8px; margin-bottom: 12px; }
+  .barCtl { flex: 1 0 100%; justify-content: flex-start; }
+  .barFilters {
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .barFilters::-webkit-scrollbar { display: none; }
+  /* Фиксированная ширина, а не flex:1 — иначе четыре фильтра делят 360px */
+  .barFilter { flex: 0 0 auto; min-width: 132px; }
+  .financeIllus { display: none; }
 }

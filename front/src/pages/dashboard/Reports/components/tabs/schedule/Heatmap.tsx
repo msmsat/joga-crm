@@ -55,7 +55,7 @@ export function Heatmap({ cells, onCellClick }: HeatmapProps) {
           <div style={{ minWidth: '480px' }}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(52px, 1fr))`,
+              gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(min(52px, 100%), 1fr))`,
               gap: '3px', marginBottom: '3px',
             }}>
               <div />
@@ -73,7 +73,7 @@ export function Heatmap({ cells, onCellClick }: HeatmapProps) {
                   id={`heatmap-row-${hour}`}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(52px, 1fr))`,
+                    gridTemplateColumns: `48px repeat(${WEEKDAYS_ISODOW.length}, minmax(min(52px, 100%), 1fr))`,
                     gap: '3px', borderRadius: '6px',
                   }}
                 >

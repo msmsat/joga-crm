@@ -17,7 +17,8 @@ class _User:
 
 
 class _Sub:
-    def __init__(self, id, status="active", used=0, total=10, expires_days=30, is_frozen=False):
+    def __init__(self, id, status="active", used=0, total=10, expires_days=30, is_frozen=False,
+                 starts_at=None):
         self.id = id
         self.type = "Йога 10 занятий"
         self.status = status
@@ -25,6 +26,10 @@ class _Sub:
         self.total_classes = total
         self.expires_at = date.today() + timedelta(days=expires_days)
         self.is_frozen = is_frozen
+        # Очередь (status="pending") ещё не стартовала — starts_at is None.
+        self.starts_at = starts_at if starts_at is not None else (
+            None if status == "pending" else date.today()
+        )
 
 
 class _R:
@@ -83,6 +88,19 @@ def test_exhausted_goes_archived():
     wallet = _run(db)
     assert wallet.active == []
     assert [w.id for w in wallet.archived] == [1]
+
+
+# ─── Очередь (pending) → active, а не в архив ────────────────────────────────
+def test_pending_stays_active():
+    """Оплачен и ждёт первого визита. Его expires_at провизорный, поэтому
+    сравнивать его с сегодняшней датой нельзя — даже «просроченный» на бумаге
+    ждущий абонемент остаётся живым продуктом."""
+    sub = _Sub(id=1, status="pending", used=0, total=10, expires_days=-5)
+    db = _DB([1, [sub]])
+    wallet = _run(db)
+    assert [w.id for w in wallet.active] == [1]
+    assert wallet.active[0].is_pending is True
+    assert wallet.active[0].starts_at is None
 
 
 # ─── Просрочен (expires_at < today) → archived ───────────────────────────────

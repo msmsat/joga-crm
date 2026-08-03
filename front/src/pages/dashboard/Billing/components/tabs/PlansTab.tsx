@@ -67,7 +67,7 @@ export default function PlansTab({
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <div style={{ padding: '0 32px' }}>
+    <div style={{ padding: '0 var(--card-pad)' }}>
 
       {/* ── BILLING MODE SELECTOR ── */}
       <div style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
@@ -76,7 +76,7 @@ export default function PlansTab({
           <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('mode.title')}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
           {([
             { id: 'subscription' as const, icon: <CreditCardIcon />, title: t('mode.subscription'), desc: t('mode.descriptions.subscription'), badge: t('mode.badges.popular') },
             { id: 'percent'      as const, icon: <PercentIcon />,    title: t('mode.percent'),       desc: t('mode.descriptions.percent'),      badge: null },
@@ -134,7 +134,7 @@ export default function PlansTab({
       {/* ── COMBO REGIMES: 3 фикс-режима ÷2 от подписки + 1.5% (аудит §3) ── */}
       {billingMode === 'fixed' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
             {(['start', 'pro', 'business'] as const).map(planId => {
               const plan = plans[planId];
               const comboFixed = Math.round(plan.monthly / 2);
@@ -175,7 +175,7 @@ export default function PlansTab({
 
       {/* ── PLAN CARDS ── */}
       {billingMode === 'subscription' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
           {(['start', 'pro', 'business'] as const).map((planId, i) => {
             const plan = plans[planId];
             const features = planFeatures[planId];
@@ -273,7 +273,7 @@ export default function PlansTab({
             <ShieldIcon />
             <span style={{ fontSize: '15px', fontWeight: 700, color: 'white' }}>{t('trust.title')}</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px' }}>
             {reviews.map((review, i) => (
               <div key={i} style={{ padding: '18px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px' }}>
                 <div style={{ display: 'flex', gap: '2px', marginBottom: '10px' }}>

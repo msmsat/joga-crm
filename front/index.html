@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover — чтобы нижняя панель навигации на iPhone могла
+         подложить env(safe-area-inset-bottom) под индикатор жестов. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>front</title>
     <!-- Ставим .dark до первой отрисовки: иначе при theme=dark экран успевает
          мигнуть светлым, пока грузится React (ключ тот же, что THEME_STORAGE_KEY).

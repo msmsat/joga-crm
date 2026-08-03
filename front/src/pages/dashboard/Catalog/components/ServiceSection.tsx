@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Service } from '../types';
 import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
@@ -134,7 +134,7 @@ export function ServiceSection() {
 
             <div className="cat-body cat-fade" key={activeServiceId}>
               {/* Stats */}
-              <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+              <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))' }}>
                 <div className="cat-stat-card">
                   <div className="cat-stat-v">{currency}{activeService.price.toLocaleString()}</div>
                   <div className="cat-stat-l">{t('catalog:services.stats.price')}</div>
@@ -196,8 +196,10 @@ export function ServiceSection() {
                       {SCH_TIMES.map((time, ti) => {
                         const hour = Number(time.split(':')[0]);
                         return (
-                          <>
-                            <div key={`t${ti}`} className="cat-sch-time">{time}</div>
+                          // Fragment, а не <>: ключ строки нужен самому элементу
+                          // списка, короткий синтаксис его не принимает.
+                          <Fragment key={time}>
+                            <div className="cat-sch-time">{time}</div>
                             {[0,1,2,3,4,5,6].map(di => {
                               const booked = bookedSlots.has(`${hour}:${di}`);
                               return (
@@ -208,7 +210,7 @@ export function ServiceSection() {
                                 />
                               );
                             })}
-                          </>
+                          </Fragment>
                         );
                       })}
                     </div>

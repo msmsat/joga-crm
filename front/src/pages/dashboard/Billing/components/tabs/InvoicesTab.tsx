@@ -113,7 +113,7 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
   };
 
   return (
-    <div style={{ padding: '0 32px' }}>
+    <div style={{ padding: '0 var(--card-pad)' }}>
       <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -141,7 +141,7 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'rgba(102,102,102,0.03)' }}>
+            <div className="bill-inv-row bill-inv-head" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'rgba(102,102,102,0.03)' }}>
               {[t('table.date'), t('table.description'), t('table.amount'), t('table.status'), t('table.receipt')].map(h => (
                 <div key={h} style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{h}</div>
               ))}
@@ -150,7 +150,7 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
             {invoices.map((inv, i) => (
               <div
                 key={inv.id}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', padding: '16px 28px', borderBottom: i < invoices.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center', transition: 'background 0.15s ease' }}
+                className="bill-inv-row" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', padding: '16px 28px', borderBottom: i < invoices.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center', transition: 'background 0.15s ease' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(252,174,145,0.03)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >

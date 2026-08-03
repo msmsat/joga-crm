@@ -94,7 +94,7 @@ export default function StatsBoard({ configuredCount, mounted }: Props) {
   return (
     <>
       {/* ─── Headline row: сводка-результат (5 метрик) ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', gap: '12px', marginBottom: '24px' }}>
         {headlineCard(t('stats.revenueHeadline'), enabled ? fmtMoney(stats?.revenue_from_members ?? 0) : null, t('stats.perMonth'), '#5BAB72', '0.1s')}
         {headlineCard(t('stats.returnedClients'), enabled ? String(stats?.returned_clients ?? 0) : null, t('stats.returnedClientsSub'), '#4A80C4', '0.15s')}
         {headlineCard(t('stats.avgCheckHeadline'), enabled ? fmtMoney(stats?.avg_check ?? 0) : null, t('stats.byMembers'), '#FCAE91', '0.2s')}

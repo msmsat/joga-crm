@@ -184,7 +184,7 @@ export function ClientsTab({ params, paramsKey, registerCsvExport, onWidenPeriod
 
   return (
     <>
-      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: '20px' }}>
+      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', marginBottom: '20px' }}>
         <KpiStat
           label={t('clients.kpi.new')}
           value={kpi?.new.value ?? 0}

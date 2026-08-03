@@ -153,7 +153,7 @@ export default function RegisterPage() {
         <div style={{ width: "100%", maxWidth: 420, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(24px)", transition: "all 0.6s cubic-bezier(0.34,1.2,0.64,1)" }}>
 
           {/* ── CARD ── */}
-          <div className="login-card flex-col gap-24" style={{ background: "var(--bg-card)", borderRadius: 24, border: "1px solid var(--border)", boxShadow: "0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04)", padding: 40 }}>
+          <div className="login-card flex-col gap-24" style={{ background: "var(--bg-card)", borderRadius: 24, border: "1px solid var(--border)", boxShadow: "0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04)", padding: "var(--auth-card-pad, 40px)" }}>
 
             {done ? (
               /* ── SUCCESS STATE ── */
@@ -183,7 +183,9 @@ export default function RegisterPage() {
 
                 <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
                   <GoogleLogin
-                      width="320"
+                      /* См. Loginpage: 320px кнопки Google не влезают в
+                         карточку на самом узком экране. */
+                      width={String(Math.min(320, window.innerWidth - 76))}
                       onSuccess={(credentialResponse) => {
                           if (credentialResponse.credential) {
                           handleGoogleSuccess(credentialResponse.credential);

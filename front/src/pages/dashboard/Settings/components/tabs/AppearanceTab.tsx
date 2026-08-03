@@ -62,7 +62,10 @@ export default function AppearanceTab() {
                 disabled={save.isPending}
                 onClick={() => save.mutate({ theme: th.id })}
                 style={{
-                  flex: 1, padding: "16px 12px",
+                  // minWidth:0 — у flex-элемента он по умолчанию auto, и три
+                  // карточки темы не сжимались ниже ширины подписи «Системная»,
+                  // вылезая за карточку на узком экране.
+                  flex: 1, minWidth: 0, padding: "16px 12px",
                   borderRadius: "12px",
                   border: `1.5px solid ${selected ? "var(--peach)" : "var(--border)"}`,
                   background: selected ? "rgba(252,174,145,0.07)" : "transparent",

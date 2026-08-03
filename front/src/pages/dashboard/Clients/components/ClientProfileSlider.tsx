@@ -7,6 +7,7 @@ import { STATUS_COLORS, EVENT_FILTER_TABS, BONUS_OPTION_IDS, BONUS_POINTS } from
 import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
+import { ClientProducts } from './ClientProducts';
 import { WalletTab } from './WalletTab';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -208,43 +209,6 @@ function InviteCodeCard({ clientId, onCopy }: { clientId: number; onCopy: (value
       >
         <IconCopy/>{t('panel.referral.copy')}
       </button>
-    </div>
-  );
-}
-
-// ─── ABONEMENT CARD ───────────────────────────────────────────────────────────
-function AbonementCard({ used, total, color, onRemind }: { used: number; total: number; color: string; onRemind: () => void }) {
-  const { t } = useTranslation('clients');
-  const remaining = Math.max(0, total - used);
-  const pct   = total > 0 ? (remaining / total) * 100 : 0;
-  const isMissing = total === 0;
-  const isLow = total > 0 && remaining / total <= 0.25;
-  const needsReminder = isMissing || isLow;
-  return (
-    <div style={{ padding: '14px 16px', background: needsReminder ? 'rgba(216,140,154,0.06)' : 'rgba(91,171,114,0.05)', borderRadius: '12px', border: `1px solid ${needsReminder ? 'rgba(216,140,154,0.2)' : 'rgba(91,171,114,0.18)'}`, marginBottom: '12px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.abonement.title')}</div>
-        <div style={{ fontSize: '11px', color: needsReminder ? '#D88C9A' : '#5BAB72', fontWeight: 700 }}>{isMissing ? t('panel.abonement.noSubscription') : t('panel.abonement.lessons', { remaining, total })}</div>
-      </div>
-      <div style={{ position: 'relative', height: '8px', background: 'rgba(var(--ink),0.06)', borderRadius: '10px', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: isLow ? 'linear-gradient(90deg,#D88C9A,#c07080)' : `linear-gradient(90deg,${color},${color}bb)`, borderRadius: '10px', transition: 'width 0.6s ease' }}/>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-        {Array.from({ length: total }).map((_, i) => (
-          <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: i < remaining ? color : 'rgba(var(--ink),0.1)', transition: 'background 0.3s' }}/>
-        ))}
-      </div>
-      {needsReminder && (
-        <div style={{ marginTop: '10px', color: '#D88C9A', fontSize: '11px', fontWeight: 600 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            {isMissing ? t('panel.abonement.noSubscriptionWarning') : remaining === 0 ? t('panel.abonement.finishedWarning') : t('panel.abonement.lowWarning')}
-          </div>
-          <button onClick={onRemind} style={{ marginTop: '8px', padding: '6px 9px', border: '1px solid rgba(216,140,154,0.45)', borderRadius: '7px', background: 'var(--bg-card)', color: '#B5677A', fontSize: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope' }}>
-            {t('panel.abonement.remind')}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -635,7 +599,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
 
             <LoyaltyIllus points={client.loyalty_points}/>
             <InviteCodeCard clientId={client.id} onCopy={actions.copyToClipboard}/>
-            <AbonementCard used={displaySubscription?.used ?? 0} total={displaySubscription?.total ?? 0} color={frozen ? '#93b5d8' : (client.avatar_color ?? '#999')} onRemind={actions.remindAboutSubscription}/>
+            <ClientProducts products={client.products} color={client.avatar_color ?? '#999'} frozen={frozen} onRemind={actions.remindAboutSubscription}/>
             <ClientOffersPanel clientId={client.id}/>
             <ActivityChart clientId={client.id} c={client.avatar_color ?? '#999'} clientName={client.name}/>
 
@@ -982,6 +946,26 @@ export function ClientProfileSlider({ client, profile, isOpen, onClose, onDelete
           height: 100%;
           display: flex; flex-direction: column;
           overscroll-behavior: contain;
+        }
+
+        /* Телефон: карточка клиента — не панель сбоку, а полный экран.
+           Выезжает снизу (по горизонтали ехать некуда — она и так во всю
+           ширину) и не закрывает нижнюю навигацию: из карточки уходят и
+           крестиком, и переключением раздела. */
+        @media (max-width: 767px) {
+          .right-panel-wrapper {
+            position: fixed;
+            top: var(--topbar-h, 56px);
+            left: 0; right: 0;
+            bottom: var(--mnav-safe, 60px);
+            width: auto;
+            height: auto;
+            z-index: 120;
+            transform: translateY(calc(100% + 24px));
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -20px 48px -12px rgba(0,0,0,0.22);
+          }
+          .right-panel-inner { width: 100%; }
         }
       `}</style>
       <div className={`right-panel-wrapper ${isOpen ? 'is-open' : ''}`}>

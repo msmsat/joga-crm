@@ -49,6 +49,7 @@ export function mapListItem(item: ClientListItem): ClientData {
     last_visit_date:   item.last_visit_date   ?? undefined,
     registration_date: item.registration_date ?? undefined,
     active_subscription: item.active_subscription ?? undefined,
+    products: item.products ?? [],
     frozen: item.status === 'frozen',
   }
 }

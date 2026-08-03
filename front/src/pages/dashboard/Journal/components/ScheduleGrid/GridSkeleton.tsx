@@ -3,7 +3,7 @@
 // и листание дней (keepPreviousData в useSchedule) скелетон не показывают.
 export function GridSkeleton({ columns = 4 }: { columns?: number }) {
   return (
-    <div className="j-grid j-skel-grid" style={{ gridTemplateColumns: `56px repeat(${columns}, minmax(170px, 1fr))` }}>
+    <div className="j-grid j-skel-grid" style={{ gridTemplateColumns: `56px repeat(${columns}, minmax(min(170px, 100%), 1fr))` }}>
       <div className="j-top-left-corner" />
       {Array.from({ length: columns }).map((_, ci) => (
         <div key={ci} className="j-col-header" style={{ display: 'flex', alignItems: 'center' }}>

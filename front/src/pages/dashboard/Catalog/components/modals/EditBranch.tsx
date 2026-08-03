@@ -137,9 +137,12 @@ export function EditBranchModal({ branch, onClose, onSubmit, onDelete }: EditBra
     }
   }
 
-  // ВАЖНО: Фиксированная ширина левой колонки, чтобы она не разъезжалась
+  // Ширина фиксирована, чтобы колонка не разъезжалась.
+  // margin по вертикали — НЕ auto: панель-родитель скроллится (overflow-y:auto),
+  // а вертикальный auto-margin у переполняющего flex-элемента срезает его верх
+  // и до него нельзя доскроллить — от фото оставалась нижняя полоска.
   const left = (
-    <div style={{ width: "100%", maxWidth: "340px", margin: "auto", display: "flex", flexDirection: "column", padding: "16px" }}>
+    <div style={{ width: "100%", maxWidth: "340px", margin: "0 auto", display: "flex", flexDirection: "column", padding: "16px" }}>
       <BranchHero
         photoSrc={previewSrc}
         name={name}
@@ -347,23 +350,22 @@ function BranchHero({ photoSrc, name, city, country }: { photoSrc: string | null
 function BranchStyles() {
   return (
     <style>{`
-      /* Ограничиваем высоту формы и делаем красивый скролл */
+      /* Скроллом заведует ModalBody — он и так растянут на всю высоту карточки.
+         Здесь стоял max-height: 60vh, и на экране 768px форма жила в окошке
+         460px: половина модалки пустовала, а «Основное / Контакты / Локация»
+         приходилось прокручивать в щели. Своего скролла у формы больше нет,
+         остаётся только собственная ширина (min-width:0 против распирания). */
       .ebh-scrollable-form {
-        max-height: 60vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding-right: 12px;
-        margin-right: -12px;
+        min-width: 0;
+        flex-shrink: 0;
       }
-      .ebh-scrollable-form::-webkit-scrollbar { width: 4px; }
-      .ebh-scrollable-form::-webkit-scrollbar-track { background: transparent; }
-      .ebh-scrollable-form::-webkit-scrollbar-thumb { background: #D9D9D9; border-radius: 4px; }
-      .ebh-scrollable-form::-webkit-scrollbar-thumb:hover { background: #BFBFBF; }
 
+      /* Высота по вьюпорту, а не жёсткие 220/260: на невысоком экране шапка
+         занимала половину колонки, и превью приходилось выискивать скроллом. */
       .ebh-hero {
         position: relative;
         width: 100%;
-        height: 220px; /* Фиксированная высота для SVG */
+        height: clamp(150px, 26vh, 220px);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -372,7 +374,7 @@ function BranchStyles() {
         overflow: hidden;
         flex-shrink: 0;
       }
-      .ebh-hero-photo { height: 260px; /* Чуть повыше для реального фото */ }
+      .ebh-hero-photo { height: clamp(170px, 30vh, 260px); /* Чуть повыше для реального фото */ }
       .ebh-hero-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
       .ebh-hero-scrim {
         position: absolute; inset: 0;
@@ -410,7 +412,7 @@ function BranchStyles() {
 
       .ebh-stats-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
         gap: 8px;
         margin-top: 16px;
       }

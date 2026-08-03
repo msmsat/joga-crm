@@ -100,7 +100,7 @@ const OnboardingRoute = () => {
   const isNewStudio = searchParams.get('new') === '1';
   return (
     <ProtectedRoute requireOnboarding={isNewStudio}>
-      <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+      <div className="ob-page" style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
         <OnboardingPage />
       </div>
     </ProtectedRoute>

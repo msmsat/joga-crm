@@ -75,7 +75,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           }}
           autoFocus
           style={{
-            width: 180,
+            width: 'clamp(132px, 12vw, 180px)',
+            flexShrink: 0,
             textAlign: 'center',
             fontWeight: 700,
             fontSize: 13,
@@ -98,7 +99,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             setDateInputVal(`${pad(selectedDay)}.${pad(calMonth + 1)}.${calYear}`);
             setIsEditingDate(true);
           }}
-          style={{ width: 180, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)', gap: '10px' }}
+          style={{ width: 'clamp(132px, 12vw, 180px)', flexShrink: 0, justifyContent: 'center', fontWeight: 700, fontSize: 13, color: 'var(--onyx)', gap: '10px' }}
         >
           <Icons.Calendar />
           <span style={{ display: 'inline-block', textAlign: 'center' }}>
@@ -119,7 +120,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         {t('toolbar.today')}
       </button>
 
-      <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+      <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
       {/* Вид: тренеры / залы */}
       <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
@@ -131,11 +132,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+      <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
       {/* Фильтры тренеров */}
       {viewMode === 'trainers' && (
-        <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+        <div className="j-filter-pills">
           {trainers.map(t => (
             <button
               key={t.id}
@@ -151,7 +152,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       {/* Фильтры залов */}
       {viewMode === 'halls' && (
-        <div style={{ display: 'flex', gap: 5 }}>
+        <div className="j-filter-pills">
           {halls.map(h => (
             <button
               key={h}

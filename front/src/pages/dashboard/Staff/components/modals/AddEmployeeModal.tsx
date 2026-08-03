@@ -566,21 +566,23 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
       `}</style>
 
       <div
+        className="v-modal-lg v-modal-wizard v-modal-steps"
         style={{
-          width: "100%", maxWidth: "860px", height: "min(596px, calc(100vh - 32px))",
+          ["--v-modal-w" as string]: "860px",
+          ["--v-left-w" as string]: "280px",
+          ["--vm-wizard-h" as string]: "596px",
           background: "var(--bg)", borderRadius: "24px",
           boxShadow: "0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)",
-          display: "grid", gridTemplateColumns: "280px 1fr",
           overflow: "hidden", animation: "modalIn 0.3s ease",
         }}
         onClick={e => e.stopPropagation()}
       >
 
         {/* ── LEFT PANEL ── */}
-        <div style={{
+        <div className="v-modal-left" style={{
           background: "var(--bg-card)", padding: "36px 30px 28px",
           display: "flex", flexDirection: "column",
-          borderRight: "1px solid #F0EDE8",
+          borderRight: "1px solid var(--border)",
           position: "relative", overflow: "hidden",
         }}>
           <div style={{
@@ -591,21 +593,21 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
             `,
           }}/>
 
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ marginBottom: "28px" }}><Logo/></div>
-            <p style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
+          <div className="vml-head" style={{ position: "relative", zIndex: 1 }}>
+            <div className="vml-logo" style={{ marginBottom: "28px" }}><Logo/></div>
+            <p className="vml-step" style={{ fontSize: "10px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 6px" }}>
               {t("addModal.stepIndicator", { current: step, total: 4 })}
             </p>
-            <h2 style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
+            <h2 className="vml-title" style={{ fontSize: "19px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.6px", lineHeight: 1.25, margin: "0 0 6px" }}>
               {current.title}
             </h2>
-            <p style={{ fontSize: "12px", color: "var(--text3)", lineHeight: 1.55, margin: "0 0 16px" }}>
+            <p className="vml-sub" style={{ fontSize: "12px", color: "var(--text3)", lineHeight: 1.55, margin: "0 0 16px" }}>
               {current.sub}
             </p>
-            <StepDots current={step} total={4}/>
+            <div className="vml-dots"><StepDots current={step} total={4}/></div>
           </div>
 
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "12px 0", position: "relative", zIndex: 1 }}>
+          <div className="vml-illus" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "12px 0", position: "relative", zIndex: 1 }}>
             {step === 1 && <Illus1
               name={data.name}
               contactsLabel={t("addModal.illus.contacts")}
@@ -630,7 +632,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
             />}
           </div>
 
-          <div style={{
+          <div className="vml-aside" style={{
             padding: "11px 13px",
             background: step === 4 ? "rgba(163,201,168,0.1)" : "rgba(163,201,168,0.08)",
             borderRadius: "10px", position: "relative", zIndex: 1,
@@ -752,7 +754,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                   
                   <div style={{ marginBottom: "20px" }}>
                     <FieldLabel>{t("addModal.step2.positionLabel")}</FieldLabel>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "16px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))", gap: "8px", marginBottom: "16px" }}>
                       {PRESET_ROLES.map(r => {
                         const isSelected = data.role === r.id;
                         return (
@@ -1062,7 +1064,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     <div style={{ padding: "16px 18px", background: "rgba(var(--ink),0.025)", borderRadius: "14px", border: "1.5px solid rgba(var(--ink),0.08)", marginBottom: "14px" }}>
                       <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 7px" }}>{t("addModal.step4.inviteLinkLabel")}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <div style={{ flex: 1, minWidth: 0, padding: "9px 12px", background: "var(--bg-card)", border: "1px solid #F0EDE8", borderRadius: "10px", fontSize: "11px", fontWeight: 600, color: "var(--text3)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <div style={{ flex: 1, minWidth: 0, padding: "9px 12px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "11px", fontWeight: 600, color: "var(--text3)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {created.inviteUrl}
                         </div>
                         <button type="button" onClick={handleCopy} style={{ padding: "9px 13px", background: copied ? "rgba(163,201,168,0.16)" : "rgba(252,174,145,0.12)", border: `1.5px solid ${copied ? "rgba(163,201,168,0.4)" : "rgba(252,174,145,0.3)"}`, borderRadius: "10px", fontSize: "12px", fontWeight: 700, color: copied ? "#7aab80" : "#F9A08B", cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s", whiteSpace: "nowrap" }}>
@@ -1099,10 +1101,10 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
           </div>
 
           {/* ── ACTION BUTTONS ── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid #F0EDE8", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border)", flexShrink: 0 }}>
             {step > 1 && step < 4 && (
               <button type="button" className="as-back-btn" onClick={goBack} style={{
-                padding: "12px 16px", background: "transparent", border: "1.5px solid #EEEBE6",
+                padding: "12px 16px", background: "transparent", border: "1.5px solid var(--border)",
                 borderRadius: "12px", fontSize: "13px", fontWeight: 600, color: "var(--text3)",
                 cursor: "pointer", display: "flex", alignItems: "center", gap: "5px",
                 fontFamily: "Manrope, sans-serif", transition: "all 0.15s", flexShrink: 0,

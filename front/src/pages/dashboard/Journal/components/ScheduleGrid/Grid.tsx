@@ -25,7 +25,7 @@ interface GridProps {
   newBookingSlot: { trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null; // 🔥 Добавили columnIndex
   newForm: { title: string; hall: string; maxClients: string };
   previewRef: React.RefObject<HTMLDivElement | null>;
-  initDrag: (e: React.MouseEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
+  initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
@@ -228,6 +228,12 @@ export const Grid: React.FC<GridProps> = ({
                 }}
                 onMouseDown={(e) => {
                   if (!canEdit || showNewForm || popupBooking || drag || wasDragging) return;
+                  // Тап по карточке занятия не должен создавать новое занятие.
+                  // На тач-экране mousedown синтезируется уже ПОСЛЕ pointerup, когда
+                  // drag снят и wasDragging сброшен, — все проверки выше проходят,
+                  // и вместо занятия открывалась модалка создания. На мыши это не
+                  // видно: там pointerdown идёт до mousedown и drag уже выставлен.
+                  if ((e.target as HTMLElement).closest('.booking-card')) return;
                   e.stopPropagation();
                   const trainerIdx = isTrainerMode ? trainer!.id : 0;
                   openNewSlot(trainerIdx, ti, ci);

@@ -104,6 +104,13 @@
       "remind": "Remind client",
       "reminderSent": "Reminder sent to client"
     },
+    "products": {
+      "single": "single",
+      "pending": "queued",
+      "frozen": "frozen",
+      "until": "Valid until {{date}}",
+      "startsOnFirstVisit": "Term starts with the first class"
+    },
     "wallet": {
       "buy": "Buy",
       "active": "Active",

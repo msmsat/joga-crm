@@ -82,7 +82,7 @@ export default function SegmentsBoard() {
 
       {isError && <div style={{ fontSize: '12px', color: '#D88C9A', marginBottom: '12px' }}>{t('toasts.loadFailed')}</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '14px' }}>
         {SEGMENT_META.map(({ key, color, action }) => {
           const seg = byKey.get(key);
           const count = seg?.count ?? 0;

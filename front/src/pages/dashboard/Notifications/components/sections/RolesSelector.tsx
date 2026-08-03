@@ -12,7 +12,7 @@ interface Props {
 export default function RolesSelector({ activeRole, switchRole, countActive }: Props) {
   const { t } = useTranslation('notifications');
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
       {ROLES.map(role => {
         const cnt = countActive(role.key);
         const isActive = activeRole === role.key;

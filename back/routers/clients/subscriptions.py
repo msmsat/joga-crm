@@ -30,6 +30,23 @@ from services.pricing import resolve_price
 router = APIRouter()
 
 
+async def _has_live_subscription(db: AsyncSession, client_id: int) -> bool:
+    """Есть ли у клиента идущий абонемент с остатком занятий.
+
+    Замороженный тоже считается живым: заморозка — пауза, а не конец, и купленный
+    в это время абонемент не должен «съесть» её, начав свой срок.
+    """
+    row = (await db.execute(
+        select(ClientSubscription.id).where(
+            ClientSubscription.client_id == client_id,
+            ClientSubscription.status == "active",
+            ClientSubscription.expires_at >= date.today(),
+            ClientSubscription.used_classes < ClientSubscription.total_classes,
+        ).limit(1)
+    )).scalar_one_or_none()
+    return row is not None
+
+
 async def attach_subscription(
     db: AsyncSession,
     studio_id: int,
@@ -41,20 +58,30 @@ async def attach_subscription(
     price: int | None = None,
     payment_method: str = "",
 ) -> ClientSubscription:
-    """Создаёт активный абонемент клиенту и, если оплачен, проводит деньги в кассу.
+    """Создаёт абонемент клиенту и, если оплачен, проводит деньги в кассу.
 
     Общий кусок для продажи абонемента (`sell_subscription`) и создания клиента
     с сразу выбранным абонементом (`create_client`, CL-8.2). Не коммитит —
     вызывающий отвечает за единый commit всей транзакции.
+
+    Куплен поверх незаконченного — встаёт в очередь (status="pending"): срок
+    начнётся не сейчас, а когда клиент отходит по нему первое занятие
+    (services/subscription_charge.activate_pending_after_visit).
     """
     price = package.price if price is None else price
+    today = date.today()
+    queued = await _has_live_subscription(db, client_id)
     sub = ClientSubscription(
         client_id=client_id,
         type=package.name,
         total_classes=package.class_count,
         used_classes=0,
-        expires_at=date.today() + timedelta(days=package.duration_days),
-        status="active",
+        # У «ждущего» expires_at провизорный: его пересчитают при активации, а до
+        # тех пор он нигде не читается (все запросы фильтруют status == "active").
+        expires_at=today + timedelta(days=package.duration_days),
+        starts_at=None if queued else today,
+        duration_days=package.duration_days,
+        status="pending" if queued else "active",
         package_id=package.id,  # V5-4 задача 7: для аналитики продлений
     )
     db.add(sub)
@@ -101,6 +128,8 @@ def _to_read(sub: ClientSubscription) -> ClientSubscriptionRead:
         expires_at=sub.expires_at.isoformat(),
         status=sub.status,
         is_frozen=sub.is_frozen,
+        is_pending=sub.status == "pending",
+        starts_at=sub.starts_at.isoformat() if sub.starts_at else None,
     )
 
 
@@ -127,10 +156,12 @@ async def get_wallet(
     for sub in subs:
         # is_frozen не выводит в архив — заморозка временная, продукт остаётся
         # активным «на паузе» (карточка клиента показывает бейдж заморозки).
-        is_active = (
-            sub.status == "active"
-            and sub.expires_at >= today
-            and sub.used_classes < sub.total_classes
+        # Очередь (pending) — тоже живой продукт: он оплачен и ждёт первого
+        # визита, а его expires_at провизорный и сравнивать его с today нельзя.
+        has_classes = sub.used_classes < sub.total_classes
+        is_active = has_classes and (
+            sub.status == "pending"
+            or (sub.status == "active" and sub.expires_at >= today)
         )
         (active if is_active else archived).append(_to_read(sub))
 
