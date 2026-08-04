@@ -23,7 +23,7 @@ from routers.analytics import router as analytics_router
 from routers.staff import router as staff_router
 from routers.loyalty import router as loyalty_router
 from routers.loyalty.packages import router as catalog_subscriptions_router
-from routers.booking import router as booking_router
+from routers.booking import router as booking_router, miniapp_router
 from routers.billing import router as billing_router
 from routers.checkout import router as checkout_router, webhook_router as checkout_webhook_router
 from dependencies import require_active_subscription
@@ -103,6 +103,9 @@ app.include_router(checkout_webhook_router, tags=["Checkout"])
 # /booking смешивает публичные (без JWT) и owner-настройки в одном роутере — гейт вешаем
 # на settings-подроутер внутри booking/router.py, НЕ на весь префикс.
 app.include_router(booking_router, prefix="/booking", tags=["Booking"])
+# Мини-приложение клиента ходит по путям бэкенда-предшественника (/global/...),
+# без JWT и без гейта подписки — как и остальная публичная запись.
+app.include_router(miniapp_router, prefix="/global", tags=["Miniapp"])
 app.include_router(billing_router, prefix="/billing", tags=["Billing"])
 
 try:

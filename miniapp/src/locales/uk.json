@@ -1,0 +1,216 @@
+{
+  "auth": {
+    "title": "Знайомимось",
+    "subtitle": "Один акаунт — усі студії Velora. Це займе десять секунд.",
+    "name_label": "Ім'я",
+    "name_placeholder": "Валерія",
+    "phone_label": "Телефон",
+    "phone_placeholder": "380671234567",
+    "name_error": "Введіть ім'я",
+    "phone_error": "Перевірте номер телефону",
+    "note": "Паролів немає: вхід зберігається на цьому пристрої, у будь-якій студії ви одразу свої.",
+    "submit": "Продовжити",
+    "submitting": "Створюємо профіль...",
+    "failed": "Не вдалося зареєструвати. Спробуйте ще раз."
+  },
+  "common": {
+    "currency": "Kč",
+    "minutes": "хв",
+    "classes_count": "занять"
+  },
+  "lesson": {
+    "name": {
+      "yoga": "Йога у потоці",
+      "pilates": "Пілатес",
+      "reformer_glow": "Reformer Glow",
+      "mfr": "МФР",
+      "healthy_back": "Здорова спина",
+      "breathing": "Дихальні практики"
+    },
+    "level": {
+      "all_levels": "Всі рівні",
+      "beginner": "Для новачків",
+      "pro": "Для просунутих"
+    },
+    "equipment": {
+      "mat": "Килимок",
+      "reformer": "Реформер",
+      "none": "Без обладнання"
+    }
+  },
+  "subscription": {
+    "light_flow": { "name": "Light Flow" },
+    "balance_pro": { "name": "Balance Pro" },
+    "zen_master": { "name": "Zen Master" },
+    "unlimited": { "name": "Unlimited" },
+    "unlimited_desc": "Безліміт"
+  },
+  "payment": {
+    "action": {
+      "buy_subscription": "Оплата абонемента: {{item}}"
+    }
+  },
+  "profile": {
+    "title": "Профіль",
+    "guest": "Гість",
+    "in_studio_since": "У студії з {{date}}",
+    "recently": "недавно",
+    "loading": "Завантаження...",
+    "searching_data": "Шукаємо дані...",
+    "current_sub": "Поточний абонемент",
+    "checking_subs": "Перевіряємо абонементи...",
+    "no_sub": "У вас немає активного абонемента",
+    "buy_sub_hint": "Натисніть тут, щоб обрати та придбати абонемент",
+    "queue": "Абонементи в черзі",
+    "auto_activates": "Активується автоматично",
+    "settings": "Налаштування",
+    "buy_btn": "Купити абонемент",
+    "notifications": "Сповіщення",
+    "history": "Історія оплат",
+    "invite": "Запросити подругу",
+    "support": "Підтримка студії",
+    "reminders": "Нагадування перед заняттям",
+    "about_studio": "Про студію",
+    "language": "Мова",
+    "used_classes": "Використано {{used}} з {{total}}",
+    "left_classes": "Залишилось {{left}} з {{total}}",
+    "expires": "до {{date}}"
+  },
+  "mylessons": {
+    "title": "Мої заняття",
+    "loading": "Шукаємо ваші заняття...",
+    "remaining": "Залишилось {{hours}}г {{minutes}}хв",
+    "lesson_started": "Заняття почалося",
+    "status": {
+      "upcoming": "Заплановано",
+      "past": "Пройшло"
+    },
+    "your_rating": "Твоя оцінка",
+    "counting_time": "Рахуємо час...",
+    "mat_label": "Килимок №{{spot}}",
+    "save_review_error": "Сталася помилка при збереженні відгуку.",
+    "no_lessons": "Ви ще не відвідували заняття"
+  },
+  "schedule": {
+    "title": "Розклад",
+    "today": "Сьогодні",
+    "loading": "Завантаження розкладу...",
+    "booked": "Ви записані",
+    "almost_full": "Майже заповнено",
+    "available": "Є місця",
+    "no_classes": "На цей день занять не заплановано",
+    "booking_error": "Не вдалося забронювати. Спробуйте ще раз.",
+    "cancel_success": "Запис скасовано. Килимок знову вільний!",
+    "cancel_error": "Не вдалося скасувати. Спробуйте ще раз.",
+    "days": {
+      "sun": "Нд",
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб"
+    }
+  },
+  "bookingModal": {
+    "training": "Тренування",
+    "today": "Сьогодні",
+    "level": "Рівень",
+    "spots": "Місця",
+    "spots_count": "{{left}} з {{total}}",
+    "no_spots": "Місць немає",
+    "equipment": "Обладнання",
+    "price": "Вартість",
+    "already_booked": "Ви вже записані на це заняття",
+    "processing": "Обробляємо...",
+    "cancel_booking": "Скасувати запис",
+    "choose_spot": "Оберіть місце",
+    "pay": "Оплатити · {{price}}"
+  },
+  "directionModal": {
+    "tag": "Напрямок",
+    "sub": "Тренування на сьогодні",
+    "searching": "Шукаємо вільні килимки...",
+    "almost_full": "Майже заповнено",
+    "available": "Є місця",
+    "empty": "Сьогодні за цим напрямком занять немає"
+  },
+  "buyModal": {
+    "tag": "Прайс студії",
+    "title": "Обрати абонемент",
+    "sub": "Всі абонементи діють 30 днів",
+    "popular": "Популярний",
+    "pay": "Оплатити · {{price}}",
+    "close": "Закрити",
+    "success": "Абонемент \"{{name}}\" успішно оплачено! Заняття зараховані на ваш баланс.",
+    "activate_error": "Сталася помилка при активації абонемента."
+  },
+  "successModal": {
+    "title": "Ви записані", 
+    "subtitle": "Заняття {{name}} сьогодні о {{time}} заброньовано. До зустрічі на килимку.",
+    "default_lesson": "Тренування",
+    "button": "Чудово"
+  },
+  "historyModal": {
+    "tag": "Фінанси",
+    "title": "Історія оплат",
+    "sub": "Твої транзакції за останні 3 місяці",
+    "searching": "Шукаємо ваші чеки...",
+    "status_success": "Успішно",
+    "no_payments": "У вас ще немає оплат",
+    "close": "Закрити"
+  },
+  "supportModal": {
+    "tag": "Допомога",
+    "title": "Підтримка",
+    "description": "Ви можете написати будь-яке повідомлення прямо в цьому боті — наша команда отримає його та відповість найближчим часом.",
+    "button": "Зрозуміло"
+  },
+  "paymentModal": {
+    "tag": "Безпечна оплата",
+    "title": "Оформлення замовлення",
+    "service": "Послуга",
+    "amount_due": "До сплати",
+    "pay_card": "Оплатити карткою",
+    "or_other": "або іншим способом",
+    "processing_transaction": "Обробка транзакції...",
+    "processing": "Обробка...",
+    "cancel": "Скасувати"
+  },
+  "nav": {
+    "home": "Головна",
+    "schedule": "Розклад",
+    "my_lessons": "Мої заняття",
+    "profile": "Профіль"
+  },
+  "home": {
+    "greeting_morning": "Доброго ранку",
+    "greeting_afternoon": "Добрий день",
+    "greeting_evening": "Доброго вечора",
+    "greeting": "Привіт, ",
+    "guest_name": "Красуне",
+    "today_is_your_day": "Сьогодні твій день.",
+    "directions": "Напрямки",
+    "body_spirit_balance": "Тіло. Дух. Баланс.",
+    "studio_description": "Йога-студія Namaste — простір для гармонії та саморозвитку в Одесі",
+    "referral_title": "Запроси подругу",
+    "referral_subtitle": "Отримай знижку 20% на наступний абонемент",
+    "referral_link_copied": "Посилання скопійовано!",
+    "today": "Сьогодні",
+    "tomorrow": "Завтра",
+    "booking_error": "Сталася помилка при бронюванні",
+    "cancel_booking_success": "Запис успішно скасовано. Килимок знову вільний!",
+    "cancel_booking_error": "Сталася помилка при скасуванні",
+    "default_duration": "60 хв",
+    "spots": "місця",
+    "level_all": "Всі рівні",
+    "level_beginner": "Початківці"
+    ,"book_now": "Записатися",
+    "flow_yoga": "Йога",
+    "flow_pilates": "Пілатес",
+    "flow_reformer_glow": "Reformer Glow",
+    "flow_mfr": "МФР",
+    "flow_healthy_back": "Здорова спина",
+    "flow_breathing": "Дихальні практики"
+  }
+}

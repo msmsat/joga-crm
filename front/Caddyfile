@@ -1,0 +1,17 @@
+# SITE_ADDRESS не задан -> слушаем :80 (локально). Задан домен (crm.example.com)
+# -> Caddy сам получит и продлит Let's Encrypt-сертификат, certbot не нужен.
+{$SITE_ADDRESS::80} {
+	encode gzip zstd
+
+	# Фронт и API на одном домене: CORS не участвует вообще.
+	# handle_path срезает /api, бэкенд получает свои родные пути (/auth, /clients, /static).
+	handle_path /api/* {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

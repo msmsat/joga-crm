@@ -1,0 +1,216 @@
+{
+  "auth": {
+    "title": "Nice to meet you",
+    "subtitle": "One account for every Velora studio. Ten seconds, no more.",
+    "name_label": "Name",
+    "name_placeholder": "Valeria",
+    "phone_label": "Phone",
+    "phone_placeholder": "380671234567",
+    "name_error": "Please enter your name",
+    "phone_error": "Please check the phone number",
+    "note": "No passwords: this device stays signed in, and every studio already knows you.",
+    "submit": "Continue",
+    "submitting": "Creating your profile...",
+    "failed": "Sign-up failed. Please try again."
+  },
+  "common": {
+    "currency": "Kč",
+    "minutes": "min",
+    "classes_count": "classes"
+  },
+  "lesson": {
+    "name": {
+      "yoga": "Yoga Flow",
+      "pilates": "Pilates",
+      "reformer_glow": "Reformer Glow",
+      "mfr": "MFR",
+      "healthy_back": "Healthy Back",
+      "breathing": "Breathwork"
+    },
+    "level": {
+      "all_levels": "All levels",
+      "beginner": "Beginner",
+      "pro": "Pro"
+    },
+    "equipment": {
+      "mat": "Mat",
+      "reformer": "Reformer",
+      "none": "No equipment"
+    }
+  },
+  "subscription": {
+    "light_flow": { "name": "Light Flow" },
+    "balance_pro": { "name": "Balance Pro" },
+    "zen_master": { "name": "Zen Master" },
+    "unlimited": { "name": "Unlimited" },
+    "unlimited_desc": "Unlimited classes"
+  },
+  "payment": {
+    "action": {
+      "buy_subscription": "Subscription payment: {{item}}"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "guest": "Guest",
+    "in_studio_since": "Member since {{date}}",
+    "recently": "recently",
+    "loading": "Loading...",
+    "searching_data": "Searching data...",
+    "current_sub": "Current Subscription",
+    "checking_subs": "Checking subscriptions...",
+    "no_sub": "You don't have an active subscription",
+    "buy_sub_hint": "Tap here to choose and buy a subscription",
+    "queue": "Queued Subscriptions",
+    "auto_activates": "Activates automatically",
+    "settings": "Settings",
+    "buy_btn": "Buy Subscription",
+    "notifications": "Notifications",
+    "history": "Payment History",
+    "invite": "Invite a Friend",
+    "support": "Studio Support",
+    "reminders": "Class reminders",
+    "about_studio": "About the Studio",
+    "language": "Language",
+    "used_classes": "Used {{used}} of {{total}}",
+    "left_classes": "{{left}} of {{total}} left",
+    "expires": "expires {{date}}"
+  },
+  "mylessons": {
+    "title": "My Lessons",
+    "loading": "Searching your lessons...",
+    "remaining": "{{hours}}h {{minutes}}m left",
+    "lesson_started": "Lesson has started",
+    "status": {
+      "upcoming": "Planned",
+      "past": "Completed"
+    },
+    "your_rating": "Your rating",
+    "counting_time": "Counting time...",
+    "mat_label": "Mat #{spot}",
+    "save_review_error": "Failed to save review. Please try again.",
+    "no_lessons": "You haven't attended lessons yet"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "today": "Today",
+    "loading": "Loading schedule...",
+    "booked": "You are booked",
+    "almost_full": "Almost full",
+    "available": "Spots available",
+    "no_classes": "No classes scheduled for this day",
+    "booking_error": "Booking failed. Please try again.",
+    "cancel_success": "Booking canceled. The mat is free again!",
+    "cancel_error": "Cancellation failed. Please try again.",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
+  },
+  "bookingModal": {
+    "training": "Training",
+    "today": "Today",
+    "level": "Level",
+    "spots": "Spots",
+    "spots_count": "{{left}} of {{total}}",
+    "no_spots": "No spots available",
+    "equipment": "Equipment",
+    "price": "Price",
+    "already_booked": "You are already booked for this lesson",
+    "processing": "Processing...",
+    "cancel_booking": "Cancel booking",
+    "choose_spot": "Choose a spot",
+    "pay": "Pay · {{price}}"
+  },
+  "directionModal": {
+    "tag": "Direction",
+    "sub": "Workouts for today",
+    "searching": "Searching free spots...",
+    "almost_full": "Almost full",
+    "available": "Spots available",
+    "empty": "No classes in this direction today"
+  },
+  "buyModal": {
+    "tag": "Studio price",
+    "title": "Choose subscription",
+    "sub": "All subscriptions are valid for 30 days",
+    "popular": "Popular",
+    "pay": "Pay · {{price}}",
+    "close": "Close",
+    "success": "Subscription \"{{name}}\" successfully paid! Lessons have been credited to your balance.",
+    "activate_error": "Subscription activation error."
+  },
+  "successModal": {
+    "title": "You are booked",
+    "subtitle": "Lesson {{name}} today at {{time}} is booked. See you on the mat.",
+    "default_lesson": "Training",
+    "button": "Great"
+  },
+  "historyModal": {
+    "tag": "Finances",
+    "title": "Payment History",
+    "sub": "Your transactions over the last 3 months",
+    "searching": "Searching your receipts...",
+    "status_success": "Successful",
+    "no_payments": "You have no payments yet",
+    "close": "Close"
+  },
+  "supportModal": {
+    "tag": "Help",
+    "title": "Support",
+    "description": "You can write any message directly in this bot — our team will receive it and reply soon.",
+    "button": "Got it"
+  },
+  "paymentModal": {
+    "tag": "Secure payment",
+    "title": "Checkout",
+    "service": "Service",
+    "amount_due": "Amount due",
+    "pay_card": "Pay with card",
+    "or_other": "or another way",
+    "processing_transaction": "Processing transaction...",
+    "processing": "Processing...",
+    "cancel": "Cancel"
+  },
+  "nav": {
+    "home": "Home",
+    "schedule": "Schedule",
+    "my_lessons": "My Lessons",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good day",
+    "greeting_evening": "Good evening",
+    "greeting": "Hello ",
+    "guest_name": "Beautiful",
+    "today_is_your_day": "Today is your day.",
+    "directions": "Directions",
+    "body_spirit_balance": "Body. Mind. Balance.",
+    "studio_description": "Namaste yoga studio is a space for harmony and self-development in Odesa",
+    "referral_title": "Invite a friend",
+    "referral_subtitle": "Get 20% off your next subscription",
+    "referral_link_copied": "Link copied!",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "booking_error": "Booking failed. Please try again.",
+    "cancel_booking_success": "Booking canceled. The mat is free again!",
+    "cancel_booking_error": "Cancellation failed. Please try again.",
+    "default_duration": "60 min",
+    "spots": "spots",
+    "level_all": "All levels",
+    "level_beginner": "Beginner"
+    ,"book_now": "Book now",
+    "flow_yoga": "Yoga",
+    "flow_pilates": "Pilates",
+    "flow_reformer_glow": "Reformer Glow",
+    "flow_mfr": "MFR",
+    "flow_healthy_back": "Healthy Back",
+    "flow_breathing": "Breathwork"
+  }
+}

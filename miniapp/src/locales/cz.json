@@ -1,0 +1,216 @@
+{
+  "auth": {
+    "title": "Seznámíme se",
+    "subtitle": "Jeden účet pro všechna studia Velora. Zabere to deset sekund.",
+    "name_label": "Jméno",
+    "name_placeholder": "Valerie",
+    "phone_label": "Telefon",
+    "phone_placeholder": "420601123456",
+    "name_error": "Zadejte jméno",
+    "phone_error": "Zkontrolujte telefonní číslo",
+    "note": "Žádná hesla: přihlášení zůstává v tomto zařízení a v každém studiu už vás znají.",
+    "submit": "Pokračovat",
+    "submitting": "Vytváříme profil...",
+    "failed": "Registrace se nezdařila. Zkuste to znovu."
+  },
+  "common": {
+    "currency": "Kč",
+    "minutes": "min",
+    "classes_count": "lekcí"
+  },
+  "lesson": {
+    "name": {
+      "yoga": "Jóga Flow",
+      "pilates": "Pilates",
+      "reformer_glow": "Reformer Glow",
+      "mfr": "MFR",
+      "healthy_back": "Zdravá záda",
+      "breathing": "Dechové praxe"
+    },
+    "level": {
+      "all_levels": "Všechny úrovně",
+      "beginner": "Pro začátečníky",
+      "pro": "Pro pokročilé"
+    },
+    "equipment": {
+      "mat": "Podložka",
+      "reformer": "Reformer",
+      "none": "Bez vybavení"
+    }
+  },
+  "subscription": {
+    "light_flow": { "name": "Light Flow" },
+    "balance_pro": { "name": "Balance Pro" },
+    "zen_master": { "name": "Zen Master" },
+    "unlimited": { "name": "Unlimited" },
+    "unlimited_desc": "Neomezený počet lekcí"
+  },
+  "payment": {
+    "action": {
+      "buy_subscription": "Platba za předplatné: {{item}}"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "guest": "Host",
+    "in_studio_since": "Ve studiu od {{date}}",
+    "recently": "nedávno",
+    "loading": "Načítání...",
+    "searching_data": "Hledání dat...",
+    "current_sub": "Aktuální předplatné",
+    "checking_subs": "Kontrola předplatného...",
+    "no_sub": "Nemáte aktivní předplatné",
+    "buy_sub_hint": "Klikněte zde pro výběr a zakoupení předplatného",
+    "queue": "Předplatná ve frontě",
+    "auto_activates": "Aktivuje se automaticky",
+    "settings": "Nastavení",
+    "buy_btn": "Koupit předplatné",
+    "notifications": "Oznámení",
+    "history": "Historie plateb",
+    "invite": "Pozvat kamarádku",
+    "support": "Podpora studia",
+    "reminders": "Připomenutí lekce",
+    "about_studio": "O studiu",
+    "language": "Jazyk",
+    "used_classes": "Využito {{used}} z {{total}}",
+    "left_classes": "Zbývá {{left}} z {{total}}",
+    "expires": "platí do {{date}}"
+  },
+  "mylessons": {
+    "title": "Moje lekce",
+    "loading": "Hledání vašich lekcí...",
+    "remaining": "Zbývá {{hours}}h {{minutes}}m",
+    "lesson_started": "Lekce začala",
+    "status": {
+      "upcoming": "Naplánováno",
+      "past": "Proběhlo"
+    },
+    "your_rating": "Tvoje hodnocení",
+    "counting_time": "Odpočítávání času...",
+    "mat_label": "Podložka č.{{spot}}",
+    "save_review_error": "Při ukládání hodnocení došlo k chybě.",
+    "no_lessons": "Zatím jste nenavštívili žádné lekce"
+  },
+  "schedule": {
+    "title": "Rozvrh",
+    "today": "Dnes",
+    "loading": "Načítání rozvrhu...",
+    "booked": "Jste zapsáni",
+    "almost_full": "Téměř plno",
+    "available": "Jsou volná místa",
+    "no_classes": "Na tento den nejsou naplánovány žádné lekce",
+    "booking_error": "Při rezervaci došlo k chybě. Zkuste to prosím znovu.",
+    "cancel_success": "Rezervace zrušena. Podložka je opět volná!",
+    "cancel_error": "Zrušení se nezdařilo. Zkuste to prosím znovu.",
+    "days": {
+      "sun": "Ne",
+      "mon": "Po",
+      "tue": "Út",
+      "wed": "St",
+      "thu": "Čt",
+      "fri": "Pá",
+      "sat": "So"
+    }
+  },
+  "bookingModal": {
+    "training": "Trénink",
+    "today": "Dnes",
+    "level": "Úroveň",
+    "spots": "Místa",
+    "spots_count": "{{left}} z {{total}}",
+    "no_spots": "Žádná volná místa",
+    "equipment": "Vybavení",
+    "price": "Cena",
+    "already_booked": "Na tuto lekci jste již zapsáni",
+    "processing": "Zpracovává se...",
+    "cancel_booking": "Zrušit rezervaci",
+    "choose_spot": "Vyberte si místo",
+    "pay": "Zaplatit · {{price}}"
+  },
+  "directionModal": {
+    "tag": "Zaměření",
+    "sub": "Dnešní tréninky",
+    "searching": "Hledání volných podložek...",
+    "almost_full": "Téměř plno",
+    "available": "Jsou volná místa",
+    "empty": "Dnes v tomto zaměření nejsou žádné lekce"
+  },
+  "buyModal": {
+    "tag": "Ceník studia",
+    "title": "Vybrat předplatné",
+    "sub": "Všechna předplatná platí 30 dní",
+    "popular": "Oblíbené",
+    "pay": "Zaplatit · {{price}}",
+    "close": "Zavřít",
+    "success": "Předplatné \"{{name}}\" bylo úspěšně zaplaceno! Lekce byly připsány na váš zůstatek.",
+    "activate_error": "Při aktivaci předplatného došlo k chybě."
+  },
+  "successModal": {
+    "title": "Jste zapsáni",
+    "subtitle": "Lekce {{name}} dnes v {{time}} je rezervována. Uvidíme se na podložce.",
+    "default_lesson": "Trénink",
+    "button": "Skvělé"
+  },
+  "historyModal": {
+    "tag": "Finance",
+    "title": "Historie plateb",
+    "sub": "Vaše transakce za poslední 3 měsíce",
+    "searching": "Hledání vašich účtenek...",
+    "status_success": "Úspěšně",
+    "no_payments": "Zatím nemáte žádné platby",
+    "close": "Zavřít"
+  },
+  "supportModal": {
+    "tag": "Nápověda",
+    "title": "Podpora",
+    "description": "Můžete napsat jakoukoli zprávu přímo do tohoto bota — náš tým ji obdrží a brzy odpoví.",
+    "button": "Rozumím"
+  },
+  "paymentModal": {
+    "tag": "Bezpečná platba",
+    "title": "Pokladna",
+    "service": "Služba",
+    "amount_due": "K úhradě",
+    "pay_card": "Zaplatit kartou",
+    "or_other": "nebo jiným způsobem",
+    "processing_transaction": "Zpracování transakce...",
+    "processing": "Zpracování...",
+    "cancel": "Zrušit"
+  },
+  "nav": {
+    "home": "Domů",
+    "schedule": "Rozvrh",
+    "my_lessons": "Moje lekce",
+    "profile": "Profil"
+  },
+  "home": {
+    "greeting_morning": "Dobré ráno",
+    "greeting_afternoon": "Dobrý den",
+    "greeting_evening": "Dobrý večer",
+    "greeting": "Ahoj, ",
+    "guest_name": "Krásko",
+    "today_is_your_day": "Dnes je tvůj den.",
+    "directions": "Zaměření",
+    "body_spirit_balance": "Tělo. Mysl. Rovnováha.",
+    "studio_description": "Jógové studio Namaste je prostor pro harmonii a seberozvoj",
+    "referral_title": "Pozvi kamarádku",
+    "referral_subtitle": "Získejte 20% slevu na další předplatné",
+    "referral_link_copied": "Odkaz zkopírován!",
+    "today": "Dnes",
+    "tomorrow": "Zítra",
+    "booking_error": "Při rezervaci došlo k chybě",
+    "cancel_booking_success": "Rezervace byla úspěšně zrušena. Podložka je opět volná!",
+    "cancel_booking_error": "Při rušení došlo k chybě",
+    "default_duration": "60 min",
+    "spots": "míst",
+    "level_all": "Všechny úrovně",
+    "level_beginner": "Začátečníci",
+    "book_now": "Rezervovat",
+    "flow_yoga": "Jóga",
+    "flow_pilates": "Pilates",
+    "flow_reformer_glow": "Reformer Glow",
+    "flow_mfr": "MFR",
+    "flow_healthy_back": "Zdravá záda",
+    "flow_breathing": "Dechové praxe"
+  }
+}

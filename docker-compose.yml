@@ -1,0 +1,54 @@
+# Весь продакшен одной командой:  docker compose up -d --build
+# Переменные ниже берутся из корневого .env (см. .env.example рядом).
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: velora
+      POSTGRES_DB: velora
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан в корневом .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U velora"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build: ./back
+    # Все ключи (SECRET_KEY, Stripe, SMTP, Google, Telegram) берём из существующего
+    # back/.env — второй копии секретов не заводим.
+    env_file: ./back/.env
+    environment:
+      # Перебивает DATABASE_URL из env_file: в контейнере база не на localhost.
+      DATABASE_URL: postgresql+asyncpg://velora:${POSTGRES_PASSWORD}@db:5432/velora
+    volumes:
+      # Загруженные лого и файлы должны переживать пересборку образа.
+      - ./back/static:/app/static
+      - ./back/uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: /api
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  caddy_data:

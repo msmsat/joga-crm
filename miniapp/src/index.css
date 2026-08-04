@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+/* Manrope подключён <link>'ом в index.html, а не @import'ом: @import внутри CSS
+   выстраивает водопад (шрифт не запрашивается, пока не распарсится стиль). */
+
+/* dark-режим по классу — Telegram отдаёт тему пользователя в colorScheme */
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Дизайн-токены мини-приложения Velora.
+
+   Слой один в один повторяет мост из front/src/index.css (те же
+   значения ДС), с одним расхождением: акцент здесь — ПЕРЕМЕННАЯ.
+   По ТЗ §2.7 фирменный цвет мини-приложения задаёт студия в разделе
+   «Онлайн-запись», поэтому персиковый Velora тут дефолт, а не константа.
+   Всё остальное (жемчуг, оникс, фисташка, пыльная роза) — жёстко из ДС.
+
+   Префикс --v-* сохранён намеренно: App.css грузится позже и НЕ в слое,
+   поэтому канонические имена он бы перебил. Та же грабля, что описана
+   в front/src/index.css.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Брендовый акцент студии. Дефолт — персиковый Velora. */
+  --v-brand: #F9A08B;
+  --v-brand-light: #FCAE91;
+  /* Оникс, а не белый: белый текст на персике даёт 2.1:1 и проваливает WCAG,
+     оникс — 8.3:1. Одинаков в обеих темах, потому что сам персик не меняется. */
+  --v-brand-foreground: #1A1A1A;
+
+  --v-background: #FDFCFB;
+  --v-foreground: #1A1A1A;
+  --v-card: #FFFFFF;
+  --v-card-foreground: #1A1A1A;
+
+  --v-muted: #F4F2F0;
+  --v-muted-foreground: #666666;
+  --v-border: rgba(26, 26, 26, 0.08);
+
+  --v-success: #A3C9A8;   /* фисташка */
+  --v-danger: #D88C9A;    /* пыльная роза */
+
+  /* Soft UI Evolution: тени мягче флэта, чётче нейморфизма.
+     Разделительных линий в макете нет — глубину держат только они. */
+  --v-shadow-soft: 0 8px 24px -4px rgba(26, 26, 26, 0.05);
+  --v-shadow-lift: 0 16px 40px -8px rgba(26, 26, 26, 0.10);
+  --v-shadow-brand: 0 12px 28px -8px rgba(249, 160, 139, 0.50);
+}
+
+.dark {
+  --v-brand: #F9A08B;
+  --v-brand-light: #FCAE91;
+  --v-brand-foreground: #1A1A1A;
+
+  /* Капсула навигации: в светлой теме оникс (--v-foreground), в тёмной он
+     сливается с фоном, поэтому там приподнятая поверхность (--v-muted). */
+  --v-background: #121212;
+  --v-foreground: #F5F5F5;
+  --v-card: #1E1E1E;
+  --v-card-foreground: #F5F5F5;
+
+  --v-muted: #262626;
+  --v-muted-foreground: #A0A0A0;
+  --v-border: rgba(255, 255, 255, 0.10);
+
+  --v-success: #A3C9A8;
+  --v-danger: #D88C9A;
+
+  /* На графите чёрная тень не читается — глубину даёт затемнение сильнее. */
+  --v-shadow-soft: 0 8px 24px -4px rgba(0, 0, 0, 0.40);
+  --v-shadow-lift: 0 16px 40px -8px rgba(0, 0, 0, 0.55);
+  --v-shadow-brand: 0 12px 28px -8px rgba(249, 160, 139, 0.30);
+}
+
+/* Проброс в утилиты Tailwind: bg-brand, text-muted-foreground, shadow-lift, … */
+@theme inline {
+  --color-brand: var(--v-brand);
+  --color-brand-light: var(--v-brand-light);
+  --color-brand-foreground: var(--v-brand-foreground);
+
+  --color-background: var(--v-background);
+  --color-foreground: var(--v-foreground);
+  --color-card: var(--v-card);
+  --color-card-foreground: var(--v-card-foreground);
+
+  --color-muted: var(--v-muted);
+  --color-muted-foreground: var(--v-muted-foreground);
+  --color-border: var(--v-border);
+
+  --color-success: var(--v-success);
+  --color-danger: var(--v-danger);
+
+  --font-sans: 'Manrope', system-ui, sans-serif;
+
+  /* Радиусы крупнее десктопных: телефонная идиома, не дашборд. */
+  --radius-md: 14px;  /* кнопки, чипы */
+  --radius-lg: 18px;  /* карточки */
+  --radius-xl: 24px;  /* шиты, герой */
+
+  --shadow-soft: var(--v-shadow-soft);
+  --shadow-lift: var(--v-shadow-lift);
+  --shadow-brand: var(--v-shadow-brand);
+}
+
+@layer base {
+  html,
+  body {
+    font-family: var(--font-sans);
+    background: var(--v-background);
+    color: var(--v-foreground);
+    /* Резинка на границах прокрутки выдаёт «сайт в вебвью», а не приложение. */
+    overscroll-behavior: none;
+  }
+
+  /* Убирает серую вспышку и 300ms задержку тапа в вебвью Telegram. */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Полосы прокрутки внутри экранов приложения не нужны. */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    scrollbar-width: none;
+  }
+}
+
+@layer utilities {
+  /* Под индикатор жестов iPhone. viewport-fit=cover должен стоять в index.html. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}

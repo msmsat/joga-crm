@@ -1,0 +1,45 @@
+import { motion } from 'framer-motion';
+
+type Props = {
+  /** «Доброго ранку» */
+  greeting: string;
+  /** Имя клиента */
+  name: string;
+};
+
+/**
+ * Шапка главной. Никакой заливки акцентом — ДС Velora прямо запрещает крупные
+ * персиковые плашки, цвет на этом экране несут фотографии студий. Премиальность
+ * здесь держится на одном приёме: разрыв масштабов между 10px меткой с широким
+ * трекингом и 40px именем с плотным отрицательным.
+ */
+export default function HomeGreeting({ greeting, name }: Props) {
+  return (
+    <div className="pt-safe px-5">
+      <div className="flex items-center justify-between pt-5">
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-foreground">
+            Velora
+          </span>
+        </div>
+
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-card text-[13px] font-extrabold text-foreground shadow-soft">
+          {name.charAt(0).toUpperCase()}
+        </span>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="pt-9"
+      >
+        <div className="text-[14px] font-medium text-muted-foreground">{greeting},</div>
+        <h1 className="mt-1 text-[40px] font-extrabold leading-[0.98] tracking-[-0.035em] text-foreground">
+          {name}
+        </h1>
+      </motion.div>
+    </div>
+  );
+}

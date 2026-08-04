@@ -1,0 +1,216 @@
+{
+  "auth": {
+    "title": "Знакомимся",
+    "subtitle": "Один аккаунт — все студии Velora. Это займёт десять секунд.",
+    "name_label": "Имя",
+    "name_placeholder": "Валерия",
+    "phone_label": "Телефон",
+    "phone_placeholder": "380671234567",
+    "name_error": "Введите имя",
+    "phone_error": "Проверьте номер телефона",
+    "note": "Паролей нет: вход сохраняется на этом устройстве, в любой студии вы сразу свои.",
+    "submit": "Продолжить",
+    "submitting": "Создаём профиль...",
+    "failed": "Не удалось зарегистрировать. Попробуйте ещё раз."
+  },
+  "common": {
+    "currency": "Kč",
+    "minutes": "мин",
+    "classes_count": "занятий"
+  },
+  "lesson": {
+    "name": {
+      "yoga": "Йога в потоке",
+      "pilates": "Пилатес",
+      "reformer_glow": "Reformer Glow",
+      "mfr": "МФР",
+      "healthy_back": "Здоровая спина",
+      "breathing": "Дыхательные практики"
+    },
+    "level": {
+      "all_levels": "Все уровни",
+      "beginner": "Для новичков",
+      "pro": "Для продвинутых"
+    },
+    "equipment": {
+      "mat": "Коврик",
+      "reformer": "Реформер",
+      "none": "Без оборудования"
+    }
+  },
+  "subscription": {
+    "light_flow": { "name": "Light Flow" },
+    "balance_pro": { "name": "Balance Pro" },
+    "zen_master": { "name": "Zen Master" },
+    "unlimited": { "name": "Unlimited" },
+    "unlimited_desc": "Безлимит"
+  },
+  "payment": {
+    "action": {
+      "buy_subscription": "Оплата абонемента: {{item}}"
+    }
+  },
+  "profile": {
+    "title": "Профиль",
+    "guest": "Гость",
+    "in_studio_since": "В студии с {{date}}",
+    "recently": "недавно",
+    "loading": "Загрузка...",
+    "searching_data": "Ищем данные...",
+    "current_sub": "Текущий абонемент",
+    "checking_subs": "Проверяем абонементы...",
+    "no_sub": "У вас нет активного абонемента",
+    "buy_sub_hint": "Нажмите здесь, чтобы выбрать и купить абонемент",
+    "queue": "Абонементы в очереди",
+    "auto_activates": "Активируется автоматически",
+    "settings": "Настройки",
+    "buy_btn": "Купить абонемент",
+    "notifications": "Уведомления",
+    "history": "История оплат",
+    "invite": "Пригласить подругу",
+    "support": "Поддержка студии",
+    "reminders": "Напоминания перед занятием",
+    "about_studio": "О студии",
+    "language": "Язык",
+    "used_classes": "Использовано {{used}} из {{total}}",
+    "left_classes": "Осталось {{left}} из {{total}}",
+    "expires": "до {{date}}"
+  },
+  "mylessons": {
+    "title": "Мои занятия",
+    "loading": "Ищем ваши занятия...",
+    "remaining": "Осталось {{hours}}ч {{minutes}}мин",
+    "lesson_started": "Занятие началось",
+    "status": {
+      "upcoming": "Запланировано",
+      "past": "Прошло"
+    },
+    "your_rating": "Твоя оценка",
+    "counting_time": "Считаем время...",
+    "mat_label": "Коврик №{{spot}}",
+    "save_review_error": "Произошла ошибка при сохранении отзыва.",
+    "no_lessons": "Вы еще не посещали занятия"
+  },
+  "schedule": {
+    "title": "Расписание",
+    "today": "Сегодня",
+    "loading": "Загрузка расписания...",
+    "booked": "Вы записаны",
+    "almost_full": "Почти заполнено",
+    "available": "Есть места",
+    "no_classes": "На этот день занятия не запланированы",
+    "booking_error": "Не удалось забронировать. Попробуйте еще раз.",
+    "cancel_success": "Запись отменена. Коврик снова свободен!",
+    "cancel_error": "Не удалось отменить. Попробуйте еще раз.",
+    "days": {
+      "sun": "Вс",
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб"
+    }
+  },
+  "bookingModal": {
+    "training": "Тренировка",
+    "today": "Сегодня",
+    "level": "Уровень",
+    "spots": "Места",
+    "spots_count": "{{left}} из {{total}}",
+    "no_spots": "Мест нет",
+    "equipment": "Оборудование",
+    "price": "Стоимость",
+    "already_booked": "Вы уже записаны на это занятие",
+    "processing": "Обработка...",
+    "cancel_booking": "Отменить запись",
+    "choose_spot": "Выберите место",
+    "pay": "Оплатить · {{price}}"
+  },
+  "directionModal": {
+    "tag": "Направление",
+    "sub": "Тренировки на сегодня",
+    "searching": "Ищем свободные коврики...",
+    "almost_full": "Почти заполнено",
+    "available": "Есть места",
+    "empty": "Сегодня по этому направлению занятий нет"
+  },
+  "buyModal": {
+    "tag": "Прайс студии",
+    "title": "Выбрать абонемент",
+    "sub": "Все абонементы действуют 30 дней",
+    "popular": "Популярный",
+    "pay": "Оплатить · {{price}}",
+    "close": "Закрыть",
+    "success": "Абонемент \"{{name}}\" успешно оплачен! Занятия зачислены на ваш баланс.",
+    "activate_error": "Произошла ошибка при активации абонемента."
+  },
+  "successModal": {
+    "title": "Вы записаны",
+    "subtitle": "Занятие {{name}} сегодня в {{time}} забронировано. До встречи на коврике.",
+    "default_lesson": "Тренировка",
+    "button": "Отлично"
+  },
+  "historyModal": {
+    "tag": "Финансы",
+    "title": "История оплат",
+    "sub": "Твои транзакции за последние 3 месяца",
+    "searching": "Ищем ваши чеки...",
+    "status_success": "Успешно",
+    "no_payments": "У вас еще нет оплат",
+    "close": "Закрыть"
+  },
+  "supportModal": {
+    "tag": "Помощь",
+    "title": "Поддержка",
+    "description": "Вы можете написать любое сообщение прямо в этом боте — наша команда получит его и ответит в ближайшее время.",
+    "button": "Понятно"
+  },
+  "paymentModal": {
+    "tag": "Безопасная оплата",
+    "title": "Оформление заказа",
+    "service": "Услуга",
+    "amount_due": "К оплате",
+    "pay_card": "Оплатить картой",
+    "or_other": "или другим способом",
+    "processing_transaction": "Обработка транзакции...",
+    "processing": "Обработка...",
+    "cancel": "Отменить"
+  },
+  "nav": {
+    "home": "Главная",
+    "schedule": "Расписание",
+    "my_lessons": "Мои занятия",
+    "profile": "Профиль"
+  },
+  "home": {
+    "greeting_morning": "Доброе утро",
+    "greeting_afternoon": "Добрый день",
+    "greeting_evening": "Добрый вечер",
+    "greeting": "Привет, ",
+    "guest_name": "Красотка",
+    "today_is_your_day": "Сегодня твой день.",
+    "directions": "Направления",
+    "body_spirit_balance": "Тело. Дух. Баланс.",
+    "studio_description": "Йога-студия Namaste — пространство для гармонии и саморазвития",
+    "referral_title": "Пригласи подругу",
+    "referral_subtitle": "Получи скидку 20% на следующий абонемент",
+    "referral_link_copied": "Ссылка скопирована!",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "booking_error": "Произошла ошибка при бронировании",
+    "cancel_booking_success": "Запись успешно отменена. Коврик снова свободен!",
+    "cancel_booking_error": "Произошла ошибка при отмене",
+    "default_duration": "60 мин",
+    "spots": "мест",
+    "level_all": "Все уровни",
+    "level_beginner": "Новички",
+    "book_now": "Записаться",
+    "flow_yoga": "Йога",
+    "flow_pilates": "Пилатес",
+    "flow_reformer_glow": "Reformer Glow",
+    "flow_mfr": "МФР",
+    "flow_healthy_back": "Здоровая спина",
+    "flow_breathing": "Дыхательные практики"
+  }
+}

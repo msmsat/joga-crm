@@ -1,0 +1,11 @@
+venv/
+node_modules/
+__pycache__/
+**/__pycache__/
+*.pyc
+tests/
+uploads/
+static/
+# .env НЕ копируем в образ: database.py делает load_dotenv(override=True), и файл
+# внутри контейнера перебил бы DATABASE_URL, переданный из docker-compose.
+.env
