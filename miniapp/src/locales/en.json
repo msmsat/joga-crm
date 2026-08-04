@@ -13,8 +13,23 @@
     "submitting": "Creating your profile...",
     "failed": "Sign-up failed. Please try again."
   },
+  "studio": {
+    "open": "Open",
+    "closing_soon": "Closing soon",
+    "closed": "Closed",
+    "opening_soon": "Opening soon",
+    "map": "Map",
+    "map_title": "Studios on the map",
+    "map_sub": "Tap a pin to choose a studio",
+    "choose_studio": "Choose a studio",
+    "open_studio": "Choose {{name}}",
+    "services": "Studio services",
+    "schedule": "Schedule",
+    "no_slots": "No classes coming up",
+    "like": "Add to favourites",
+    "reviews": "{{count}} reviews"
+  },
   "common": {
-    "currency": "Kč",
     "minutes": "min",
     "classes_count": "classes"
   },
@@ -60,6 +75,8 @@
     "current_sub": "Current Subscription",
     "checking_subs": "Checking subscriptions...",
     "no_sub": "You don't have an active subscription",
+    "load_error": "Couldn't load your profile",
+    "sub_load_error": "Couldn't load your subscriptions",
     "buy_sub_hint": "Tap here to choose and buy a subscription",
     "queue": "Queued Subscriptions",
     "auto_activates": "Activates automatically",
@@ -72,9 +89,15 @@
     "reminders": "Class reminders",
     "about_studio": "About the Studio",
     "language": "Language",
+    "community": "Community",
+    "invite_hint": "Starting together is easier — send a friend your link",
+    "subscription_group": "Membership",
+    "notifications_group": "Notifications",
+    "app_group": "App",
     "used_classes": "Used {{used}} of {{total}}",
     "left_classes": "{{left}} of {{total}} left",
-    "expires": "expires {{date}}"
+    "expires": "expires {{date}}",
+    "frozen": "Frozen · until {{date}}"
   },
   "mylessons": {
     "title": "My Lessons",
@@ -89,7 +112,16 @@
     "counting_time": "Counting time...",
     "mat_label": "Mat #{spot}",
     "save_review_error": "Failed to save review. Please try again.",
-    "no_lessons": "You haven't attended lessons yet"
+    "no_lessons": "You haven't attended lessons yet",
+    "period_month": "Month",
+    "period_year": "Year",
+    "stat_visited": "Attended",
+    "stat_ahead": "Ahead",
+    "stat_total": "All time",
+    "favourite": "You pick {{name}} most often",
+    "load_error": "Couldn't load your classes",
+    "no_lessons_period": "Nothing in this period",
+    "no_lessons_period_hint": "Use the arrows — they might be earlier"
   },
   "schedule": {
     "title": "Schedule",
@@ -102,6 +134,16 @@
     "booking_error": "Booking failed. Please try again.",
     "cancel_success": "Booking canceled. The mat is free again!",
     "cancel_error": "Cancellation failed. Please try again.",
+    "filters": "Filters",
+    "filters_title": "Tune the schedule",
+    "filter_studio": "Studio",
+    "filter_service": "Service",
+    "filter_teacher": "Teacher",
+    "filter_all": "All",
+    "reset": "Reset",
+    "show_results": "Show · {{count}}",
+    "no_matches": "Nothing matches these filters",
+    "no_matches_hint": "Try removing one of them",
     "days": {
       "sun": "Sun",
       "mon": "Mon",
@@ -139,6 +181,7 @@
     "tag": "Studio price",
     "title": "Choose subscription",
     "sub": "All subscriptions are valid for 30 days",
+    "choose_plan": "Choose a plan",
     "popular": "Popular",
     "pay": "Pay · {{price}}",
     "close": "Close",
@@ -157,6 +200,7 @@
     "sub": "Your transactions over the last 3 months",
     "searching": "Searching your receipts...",
     "status_success": "Successful",
+    "load_error": "Couldn't load your payment history",
     "no_payments": "You have no payments yet",
     "close": "Close"
   },
@@ -175,7 +219,12 @@
     "or_other": "or another way",
     "processing_transaction": "Processing transaction...",
     "processing": "Processing...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "expiry_placeholder": "MM/YY"
+  },
+  "languageModal": {
+    "tag": "Settings",
+    "sub": "Interface language"
   },
   "nav": {
     "home": "Home",
@@ -198,6 +247,10 @@
     "referral_link_copied": "Link copied!",
     "today": "Today",
     "tomorrow": "Tomorrow",
+    "studios": "Studios",
+    "lesson_today_at": "Class today at {{time}}",
+    "lesson_tomorrow_at": "Class tomorrow at {{time}}",
+    "no_next_lesson": "No upcoming classes",
     "booking_error": "Booking failed. Please try again.",
     "cancel_booking_success": "Booking canceled. The mat is free again!",
     "cancel_booking_error": "Cancellation failed. Please try again.",

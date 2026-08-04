@@ -13,8 +13,23 @@
     "submitting": "Vytváříme profil...",
     "failed": "Registrace se nezdařila. Zkuste to znovu."
   },
+  "studio": {
+    "open": "Otevřeno",
+    "closing_soon": "Brzy zavíráme",
+    "closed": "Zavřeno",
+    "opening_soon": "Brzy otevíráme",
+    "map": "Mapa",
+    "map_title": "Studia na mapě",
+    "map_sub": "Klepnutím na značku vyberte studio",
+    "choose_studio": "Vyberte studio",
+    "open_studio": "Vybrat {{name}}",
+    "services": "Služby studia",
+    "schedule": "Rozvrh",
+    "no_slots": "V nejbližší době nejsou žádné lekce",
+    "like": "Do oblíbených",
+    "reviews": "{{count}} recenzí"
+  },
   "common": {
-    "currency": "Kč",
     "minutes": "min",
     "classes_count": "lekcí"
   },
@@ -60,6 +75,8 @@
     "current_sub": "Aktuální předplatné",
     "checking_subs": "Kontrola předplatného...",
     "no_sub": "Nemáte aktivní předplatné",
+    "load_error": "Nepodařilo se načíst profil",
+    "sub_load_error": "Nepodařilo se načíst předplatné",
     "buy_sub_hint": "Klikněte zde pro výběr a zakoupení předplatného",
     "queue": "Předplatná ve frontě",
     "auto_activates": "Aktivuje se automaticky",
@@ -72,9 +89,15 @@
     "reminders": "Připomenutí lekce",
     "about_studio": "O studiu",
     "language": "Jazyk",
+    "community": "Komunita",
+    "invite_hint": "Spolu se začíná lépe — pošlete kamarádce odkaz",
+    "subscription_group": "Předplatné",
+    "notifications_group": "Oznámení",
+    "app_group": "Aplikace",
     "used_classes": "Využito {{used}} z {{total}}",
     "left_classes": "Zbývá {{left}} z {{total}}",
-    "expires": "platí do {{date}}"
+    "expires": "platí do {{date}}",
+    "frozen": "Zmrazeno · platí do {{date}}"
   },
   "mylessons": {
     "title": "Moje lekce",
@@ -89,7 +112,16 @@
     "counting_time": "Odpočítávání času...",
     "mat_label": "Podložka č.{{spot}}",
     "save_review_error": "Při ukládání hodnocení došlo k chybě.",
-    "no_lessons": "Zatím jste nenavštívili žádné lekce"
+    "no_lessons": "Zatím jste nenavštívili žádné lekce",
+    "period_month": "Měsíc",
+    "period_year": "Rok",
+    "stat_visited": "Navštíveno",
+    "stat_ahead": "Před vámi",
+    "stat_total": "Celkem",
+    "favourite": "Nejčastěji si vybíráte {{name}}",
+    "load_error": "Nepodařilo se načíst lekce",
+    "no_lessons_period": "V tomto období nejsou žádné lekce",
+    "no_lessons_period_hint": "Posuňte se šipkami — mohly být dříve"
   },
   "schedule": {
     "title": "Rozvrh",
@@ -102,6 +134,16 @@
     "booking_error": "Při rezervaci došlo k chybě. Zkuste to prosím znovu.",
     "cancel_success": "Rezervace zrušena. Podložka je opět volná!",
     "cancel_error": "Zrušení se nezdařilo. Zkuste to prosím znovu.",
+    "filters": "Filtry",
+    "filters_title": "Nastavit rozvrh",
+    "filter_studio": "Studio",
+    "filter_service": "Služba",
+    "filter_teacher": "Lektor",
+    "filter_all": "Vše",
+    "reset": "Zrušit filtry",
+    "show_results": "Zobrazit · {{count}}",
+    "no_matches": "Pro tyto filtry nejsou žádné lekce",
+    "no_matches_hint": "Zkuste některý filtr odebrat",
     "days": {
       "sun": "Ne",
       "mon": "Po",
@@ -139,6 +181,7 @@
     "tag": "Ceník studia",
     "title": "Vybrat předplatné",
     "sub": "Všechna předplatná platí 30 dní",
+    "choose_plan": "Vyberte předplatné",
     "popular": "Oblíbené",
     "pay": "Zaplatit · {{price}}",
     "close": "Zavřít",
@@ -157,6 +200,7 @@
     "sub": "Vaše transakce za poslední 3 měsíce",
     "searching": "Hledání vašich účtenek...",
     "status_success": "Úspěšně",
+    "load_error": "Nepodařilo se načíst historii plateb",
     "no_payments": "Zatím nemáte žádné platby",
     "close": "Zavřít"
   },
@@ -175,7 +219,12 @@
     "or_other": "nebo jiným způsobem",
     "processing_transaction": "Zpracování transakce...",
     "processing": "Zpracování...",
-    "cancel": "Zrušit"
+    "cancel": "Zrušit",
+    "expiry_placeholder": "MM/RR"
+  },
+  "languageModal": {
+    "tag": "Nastavení",
+    "sub": "Jazyk rozhraní aplikace"
   },
   "nav": {
     "home": "Domů",
@@ -198,6 +247,10 @@
     "referral_link_copied": "Odkaz zkopírován!",
     "today": "Dnes",
     "tomorrow": "Zítra",
+    "studios": "Studia",
+    "lesson_today_at": "Lekce dnes v {{time}}",
+    "lesson_tomorrow_at": "Lekce zítra v {{time}}",
+    "no_next_lesson": "Žádné nadcházející lekce",
     "booking_error": "Při rezervaci došlo k chybě",
     "cancel_booking_success": "Rezervace byla úspěšně zrušena. Podložka je opět volná!",
     "cancel_booking_error": "Při rušení došlo k chybě",

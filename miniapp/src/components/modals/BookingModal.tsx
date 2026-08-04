@@ -1,10 +1,9 @@
-import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Sheet, SheetAction } from '../ui/Sheet';
+import { useTelegram } from '../../hooks/useTelegram';
 import type { LessonResponse } from '../../api/lessons';
 
-const tg = (window as any).Telegram?.WebApp;
-
-// Описываем, какие данные модалка будет получать из App.tsx
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -14,6 +13,8 @@ interface BookingModalProps {
   onPay: () => void;
   onCancel: () => void;
   lesson: LessonResponse | null;
+  /** Поверх листа расписания — иначе бронь открывается под ним. */
+  layer?: number;
 }
 
 export default function BookingModal({
@@ -25,123 +26,159 @@ export default function BookingModal({
   onPay,
   onCancel,
   lesson,
+  layer = 0,
 }: BookingModalProps) {
   const { t } = useTranslation();
+  const { vibrateLight } = useTelegram();
 
-  return createPortal(
-    <div 
-      className={`modal-overlay ${isOpen ? 'open' : ''}`} 
-      id="modal" 
-      onClick={(e) => (e.target as any).id === 'modal' && onClose()}
+  const total = lesson?.total_spots || 0;
+  const taken = lesson?.taken_spots?.length || 0;
+  const left = total - taken;
+  const isBooked = Boolean(lesson?.is_booked_by_user);
+
+  const facts = [
+    {
+      label: t('bookingModal.level'),
+      value: lesson?.level
+        ? t(`lesson.level.${lesson.level}`, { defaultValue: lesson.level })
+        : '—',
+    },
+    {
+      label: t('bookingModal.spots'),
+      value: left > 0 ? t('bookingModal.spots_count', { left, total }) : t('bookingModal.no_spots'),
+    },
+    {
+      label: t('bookingModal.equipment'),
+      value: lesson?.equipment
+        ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment })
+        : '—',
+    },
+    { label: t('bookingModal.price'), value: lesson?.price_str ?? '—' },
+  ];
+
+  const initials = (lesson?.teacher ?? '')
+    .split(' ')
+    .map((part) => part[0])
+    .join('');
+
+  return (
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      layer={layer}
+      kicker={`${
+        lesson?.equipment
+          ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment })
+          : t('bookingModal.training')
+      } · ${lesson?.time ?? ''}`}
+      title={
+        lesson?.name ? t(`lesson.name.${lesson.name}`, { defaultValue: lesson.name }) : ''
+      }
+      footer={
+        isBooked ? (
+          <SheetAction tone="danger" onClick={onCancel} disabled={isProcessing}>
+            {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
+          </SheetAction>
+        ) : (
+          <SheetAction onClick={onPay} disabled={isProcessing || !selectedSpot}>
+            {isProcessing
+              ? t('bookingModal.processing')
+              : t('bookingModal.pay', { price: lesson?.price_str || '0' })}
+          </SheetAction>
+        )
+      }
     >
-      <div className="modal-sheet">
-        <div className="modal-content">
-          {/* 1. Динамический тег и название */}
-          <div className="modal-tag">
-            {lesson?.equipment ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment }) : t('bookingModal.training')} · {t('bookingModal.today')}
+      {/* Тренер — лицо занятия, поэтому он идёт первым и с аватаром: клиент
+          выбирает не «пилатес в 18:00», а «пилатес у Олены». */}
+      <div className="flex items-center gap-3 rounded-[20px] bg-background px-4 py-3.5">
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-brand-foreground"
+          style={{ background: lesson?.color || 'var(--v-brand)' }}
+        >
+          {initials}
+        </span>
+        <div className="min-w-0">
+          <div className="truncate text-[14px] font-extrabold tracking-[-0.015em] text-foreground">
+            {lesson?.teacher}
           </div>
-          <div className="modal-title">
-            {lesson?.name ? t(`lesson.name.${lesson.name}`, { defaultValue: lesson.name }) : ''}
+          <div className="mt-0.5 text-[11.5px] font-medium text-muted-foreground">
+            {lesson?.time} · {lesson?.duration_min} {t('common.minutes')}
           </div>
-          
-          
-          {/* 2. Тренер, время и длительность */}
-          <div className="modal-sub">{lesson?.teacher} · {lesson?.time} · {lesson?.dur}</div>
-          
-          <div className="modal-details">
-            <div className="modal-detail">
-              <div className="modal-detail-label">{t('bookingModal.level')}</div>
-              <div className="modal-detail-val">
-                {/* Динамически подставляем тип из базы. 
-                    Например, если lesson.level = "all_levels", он запросит t('lesson.level.all_levels') 
-                    defaultValue спасает, если в базе вдруг остался старый текст на украинском! */}
-                {lesson?.level ? t(`lesson.level.${lesson.level}`, { defaultValue: lesson.level }) : '—'}
-              </div>
-            </div>
-            <div className="modal-detail">
-              <div className="modal-detail-label">{t('bookingModal.spots')}</div>
-              <div className="modal-detail-val">
-                {/* Вычисляем остаток: общее кол-во минус количество занятых мест */}
-                {(() => {
-                  const total = lesson?.total_spots || 0;
-                  const taken = lesson?.taken_spots?.length || 0;
-                  const left = total - taken;
-                  return left > 0 
-                    ? t('bookingModal.spots_count', { left, total }) 
-                    : t('bookingModal.no_spots');
-                })()}
-              </div>
-            </div>
-            <div className="modal-detail">
-              <div className="modal-detail-label">{t('bookingModal.equipment')}</div>
-              <div className="modal-detail-val">
-                {lesson?.equipment ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment }) : '—'}
-              </div>
-            </div>
-            <div className="modal-detail">
-              <div className="modal-detail-label">{t('bookingModal.price')}</div>
-              <div className="modal-detail-val">{lesson?.price_str}</div>
-            </div>
-          </div>
-          
-          {/* 🔥 Якщо користувач ВЖЕ записаний — показуємо кнопку скасування */}
-          {lesson?.is_booked_by_user ? (
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <div style={{ marginBottom: '15px', fontSize: '14px', color: 'var(--ink)' }}>
-                {t('bookingModal.already_booked')}
-              </div>
-              <button 
-                className="pay-btn" 
-                onClick={onCancel} 
-                disabled={isProcessing}
-                style={{ 
-                  background: 'transparent', 
-                  color: '#d32f2f', 
-                  border: '1px solid #d32f2f',
-                  opacity: isProcessing ? 0.6 : 1 
-                }}
-              >
-                {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
-              </button>
-            </div>
-          ) : (
-            // 🔥 Якщо НЕ записаний — показуємо вибір килимка і кнопку оплати (твій старий код)
-            <>
-              <div style={{ fontSize: '9px', color: 'var(--ink-lt)', marginBottom: '12px', textAlign: 'center', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '16px' }}>
-                {t('bookingModal.choose_spot')}
-              </div>
-              
-              <div className="spots-map" id="spots">
-                {Array.from({ length: lesson?.total_spots || 8 }, (_, i) => i + 1).map(i => {
-                  const isTaken = lesson?.taken_spots?.includes(i) || false;
-                  return (
-                    <div
-                      key={i}
-                      className={`spot ${isTaken ? 'taken' : ''} ${selectedSpot === i ? 'selected' : ''}`}
-                      onClick={() => {
-                        if (!isTaken) {
-                          onSpotSelect(i);
-                          if (tg) tg.HapticFeedback.impactOccurred('light');
-                        }
-                      }}
-                    />
-                  );
-                })}
-              </div>
-              
-              <button 
-                className="pay-btn" 
-                onClick={onPay} 
-                disabled={isProcessing || !selectedSpot}
-                style={{ opacity: (isProcessing || !selectedSpot) ? 0.6 : 1 }}
-              >
-                {isProcessing ? t('bookingModal.processing') : t('bookingModal.pay', { price: lesson?.price_str || '0 ₴' })}
-              </button>
-            </>
-          )}
         </div>
       </div>
-    </div>,
-    document.body
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {facts.map((fact) => (
+          <div key={fact.label} className="rounded-[18px] bg-background px-4 py-3.5">
+            <div className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+              {fact.label}
+            </div>
+            <div className="mt-1.5 text-[14px] font-extrabold tracking-[-0.015em] text-foreground">
+              {fact.value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {isBooked ? (
+        <div className="mt-5 flex items-center gap-2.5 rounded-[18px] bg-success/14 px-4 py-3.5">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--v-success)"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4 shrink-0"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span className="text-[13px] font-bold text-foreground">
+            {t('bookingModal.already_booked')}
+          </span>
+        </div>
+      ) : (
+        <div className="mt-6">
+          <div className="text-[9.5px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
+            {t('bookingModal.choose_spot')}
+          </div>
+
+          {/* Коврики нумерованы: «мій — сьомий» клиент запоминает числом, а не
+              позицией в сетке. Занятый гасится, а не прячется — так видно,
+              насколько полон зал. */}
+          <div className="mt-3.5 grid grid-cols-5 gap-2.5">
+            {Array.from({ length: total }, (_, i) => i + 1).map((spot) => {
+              const isTaken = lesson?.taken_spots?.includes(spot) || false;
+              const isSelected = selectedSpot === spot;
+
+              return (
+                <motion.button
+                  key={spot}
+                  type="button"
+                  disabled={isTaken}
+                  whileTap={isTaken ? undefined : { scale: 0.9 }}
+                  animate={{ scale: isSelected ? 1.06 : 1 }}
+                  transition={{ type: 'spring', stiffness: 480, damping: 26 }}
+                  onClick={() => {
+                    onSpotSelect(spot);
+                    vibrateLight();
+                  }}
+                  className={[
+                    'flex aspect-square items-center justify-center rounded-[14px] text-[12.5px] font-extrabold tabular-nums transition-colors',
+                    isSelected
+                      ? 'bg-brand text-brand-foreground shadow-brand'
+                      : isTaken
+                        ? 'bg-muted text-muted-foreground/40'
+                        : 'bg-background text-foreground ring-1 ring-foreground/8',
+                  ].join(' ')}
+                >
+                  {spot}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </Sheet>
   );
 }

@@ -1,28 +1,33 @@
 import { BASE_URL } from './config';
+import { apiGet, apiPatch, apiPost } from './client';
 
-// Формируем базовый URL именно для юзеров
+// Формируем базовый URL именно для юзеров (поки лишається для buySubscription — блок 6)
 const API_URL = `${BASE_URL}/users`;
 
 // ==========================================
-// 📝 ИНТЕРФЕЙСЫ 
+// 📝 ИНТЕРФЕЙСЫ
 // ==========================================
 
+// Повторяет MiniappMe з back/routers/booking/miniapp_users.py
 export interface UserProfile {
+  id: number;
   name: string;
   notifs_enabled: boolean;
   reminders_enabled: boolean;
   registration_date: string;
-  reg_date_str: string;
+  invite_code: string;
 }
 
+// Повторяет MiniappSubscription
 export interface UserSubscription {
+  id: number;
   type: string;
   total_classes: number;
   used_classes: number;
-  expires_at: string; 
+  expires_at: string;
   classes_left: number;
-  expires_str: string;
   status: string;
+  is_frozen: boolean;
 }
 
 export interface BuySubscriptionRequest {
@@ -32,15 +37,20 @@ export interface BuySubscriptionRequest {
   valid_days: number;
 }
 
+// Повторяет MiniappPayment
 export interface PaymentResponse {
   amount: number;
   description: string;
   status: string;
   created_at: string;
   amount_str: string;
-  date_str: string;
   action_type: string; // "buy_subscription"
   item_key: string;  // item_key — це те, що ми будемо використовувати для отримання перекладу назви абонемента.
+}
+
+interface MeSettingsResponse {
+  notifs_enabled: boolean;
+  reminders_enabled: boolean;
 }
 
 export interface SuccessResponse {
@@ -49,20 +59,16 @@ export interface SuccessResponse {
 }
 
 export interface BookLessonRequest {
-  tg_id: number;
   lesson_id: number;
   spot_number: number;
 }
 
-export interface RateLessonRequest {
-  tg_id: number;
+export interface ReservationResponse {
+  id: number;
   lesson_id: number;
-  rating: number;
-}
-
-export interface CancelLessonRequest {
-  tg_id: number;
-  lesson_id: number;
+  spot_number: number;
+  status: string;
+  rating: number | null;
 }
 
 
@@ -70,27 +76,12 @@ export interface CancelLessonRequest {
 // 🚀 ФУНКЦИИ ЗАПРОСОВ К API
 // ==========================================
 
-// 1. Отримання профілю
-export const getUserProfile = async (tgId: number): Promise<UserProfile> => {
-  // 🔥 Додали антикеш: ?_t=${Date.now()}
-  const response = await fetch(`${API_URL}/${tgId}/profile?_t=${Date.now()}`);
-  if (!response.ok) {
-    throw new Error('Помилка завантаження профілю');
-  }
-  return response.json();
-};
+// 1. Отримання профілю. Ендпоінт: GET /global/me
+export const getUserProfile = (): Promise<UserProfile> => apiGet('/global/me');
 
-// 2. Отримання абонемента (обробляємо 404 помилку як норму)
-export const getUserSubscription = async (tgId: number): Promise<UserSubscription[]> => {
-  // 🔥 Додали антикеш: ?_t=${Date.now()}
-  const response = await fetch(`${API_URL}/${tgId}/subscription?_t=${Date.now()}`);
-  
-  if (!response.ok) {
-    throw new Error('Помилка завантаження абонементів');
-  }
-  
-  return response.json(); 
-};
+// 2. Отримання абонементів. Ендпоінт: GET /global/me/subscriptions
+export const getUserSubscription = (): Promise<UserSubscription[]> =>
+  apiGet('/global/me/subscriptions');
 
 // 3. Купівля абонемента (POST)
 export const buySubscription = async (tgId: number, data: BuySubscriptionRequest): Promise<SuccessResponse> => {
@@ -105,91 +96,25 @@ export const buySubscription = async (tgId: number, data: BuySubscriptionRequest
   return response.json();
 };
 
-// 4. Отримання історії оплат
-export const getUserPayments = async (tgId: number): Promise<PaymentResponse[]> => {
-  // 🔥 Додали антикеш: ?_t=${Date.now()}
-  const response = await fetch(`${API_URL}/${tgId}/payments?_t=${Date.now()}`);
-  if (!response.ok) {
-    throw new Error('Помилка завантаження історії оплат');
-  }
-  return response.json();
-};
+// 4. Отримання історії оплат. Ендпоінт: GET /global/me/payments
+export const getUserPayments = (): Promise<PaymentResponse[]> => apiGet('/global/me/payments');
 
-// 5. Оновлення налаштувань (Повідомлення) (PATCH)
-export const updateNotifications = async (tgId: number, enabled: boolean): Promise<SuccessResponse> => {
-  const response = await fetch(`${API_URL}/${tgId}/settings/notifications`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ enabled }),
-  });
-  if (!response.ok) throw new Error('Помилка оновлення налаштувань');
-  return response.json();
-};
+// 5-6. Налаштування — одна ручка на бекенді (PATCH /global/me/settings), обидва поля
+// опціональні; лишаємо дві тонкі функції, щоб не міняти виклики в profile.tsx.
+export const updateNotifications = (enabled: boolean): Promise<MeSettingsResponse> =>
+  apiPatch('/global/me/settings', { notifs_enabled: enabled });
 
-// 6. Оновлення налаштувань (Нагадування) (PATCH)
-export const updateReminders = async (tgId: number, enabled: boolean): Promise<SuccessResponse> => {
-  const response = await fetch(`${API_URL}/${tgId}/settings/reminders`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ enabled }),
-  });
-  if (!response.ok) throw new Error('Помилка оновлення налаштувань');
-  return response.json();
-};
+export const updateReminders = (enabled: boolean): Promise<MeSettingsResponse> =>
+  apiPatch('/global/me/settings', { reminders_enabled: enabled });
 
-/**
- * Бронює конкретний килимок на занятті для користувача.
- * Ендпоінт: POST /users/book (зміни префікс /users на свій, якщо в роутері він інший)
- */
-export const bookLesson = async (data: BookLessonRequest): Promise<SuccessResponse> => {
-  const response = await fetch(`${BASE_URL}/users/book`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json', // Обов'язково кажемо серверу, що шлемо JSON
-    },
-    body: JSON.stringify(data), // Перетворюємо наш об'єкт у рядок
-  });
+/** Бронює конкретний килимок на занятті. Ендпоінт: POST /global/reservations */
+export const bookLesson = (data: BookLessonRequest): Promise<ReservationResponse> =>
+  apiPost('/global/reservations', data);
 
-  if (!response.ok) {
-    // Якщо бэкенд викинув помилку 400 (наприклад, "Це місце вже зайнято"),
-    // ми витягуємо текст цієї помилки з поля detail і прокидаємо її далі
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || 'Помилка при бронюванні заняття');
-  }
+/** Скасовує власну активну бронь на занятті. Ендпоінт: POST /global/reservations/{lesson_id}/cancel */
+export const cancelLesson = (lessonId: number): Promise<ReservationResponse> =>
+  apiPost(`/global/reservations/${lessonId}/cancel`);
 
-  return response.json();
-};
-
-export const cancelLesson = async (data: CancelLessonRequest): Promise<SuccessResponse> => {
-  const response = await fetch(`${BASE_URL}/users/cancel`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || 'Не вдалося скасувати запис');
-  }
-
-  return response.json();
-};
-
-export const rateLesson = async (data: RateLessonRequest): Promise<SuccessResponse> => {
-  const response = await fetch(`${BASE_URL}/users/rate-lesson`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || 'Не вдалося зберегти оцінку заняття');
-  }
-
-  return response.json();
-};
+/** Оцінює минуле заняття. Ендпоінт: POST /global/reservations/{lesson_id}/rate */
+export const rateLesson = (lessonId: number, rating: number): Promise<ReservationResponse> =>
+  apiPost(`/global/reservations/${lessonId}/rate`, { rating });

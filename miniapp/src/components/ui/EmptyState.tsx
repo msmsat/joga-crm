@@ -8,18 +8,23 @@ export function EmptyState({
   title,
   hint,
   icon,
+  size = 'lg',
 }: {
   title: string;
   hint?: string;
   /** Содержимое <svg viewBox="0 0 24 24"> — линейное, без заливки */
   icon?: React.ReactNode;
+  /** sm — внутри листа, где вертикаль на вес золота */
+  size?: 'sm' | 'lg';
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col items-center px-10 py-14 text-center"
+      className={`flex flex-col items-center text-center ${
+        size === 'sm' ? 'px-6 py-8' : 'px-10 py-14'
+      }`}
     >
       <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand/10">
         <svg

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom'; // 🔥 Тот самый инструмент!
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Sheet } from '../ui/Sheet';
 import { useTelegram } from '../../hooks/useTelegram';
 
 interface LanguageModalProps {
@@ -51,42 +51,18 @@ function FlagRU() {
   );
 }
 
+const LANGUAGES = [
+  { code: 'uk', name: 'Українська', flag: <FlagUA /> },
+  { code: 'en', name: 'English', flag: <FlagGB /> },
+  { code: 'cz', name: 'Čeština', flag: <FlagCZ /> },
+  { code: 'ru', name: 'Русский', flag: <FlagRU /> },
+];
+
 export default function LanguageModal({ isOpen, onClose }: LanguageModalProps) {
   const { i18n, t } = useTranslation();
   const { tg } = useTelegram();
-  
-  // Два стейта: один для рендера в HTML, другой для запуска CSS-анимации
-  const [show, setShow] = useState(false);
-  const [render, setRender] = useState(false);
 
-  // Магия плавной анимации
-  useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    if (isOpen) {
-      setRender(true);
-      // Даем браузеру миллисекунду на отрисовку перед выездом
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setShow(true));
-      });
-    } else {
-      setShow(false);
-      // Ждем 300мс пока модалка уедет вниз, прежде чем удалять её
-      timeoutId = setTimeout(() => setRender(false), 300);
-    }
-    return () => clearTimeout(timeoutId);
-  }, [isOpen]);
-
-  if (!render) return null;
-
-  const languages = [
-    { code: 'uk', name: 'Українська', flag: <FlagUA /> },
-    { code: 'en', name: 'English', flag: <FlagGB /> },
-    { code: 'cz', name: 'Čeština', flag: <FlagCZ /> },
-    { code: 'ru', name: 'Русский', flag: <FlagRU /> }
-  ];
-
-  // Безопасное получение языка
-  const currentLang = i18n.language || 'uk';
+  const current = i18n.language || 'uk';
 
   const handleSelect = (code: string) => {
     i18n.changeLanguage(code);
@@ -94,97 +70,69 @@ export default function LanguageModal({ isOpen, onClose }: LanguageModalProps) {
     onClose();
   };
 
-  const modalContent = (
-    <div 
-      onClick={onClose} 
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 99999, // 🔥 Поверх абсолютно всего
-        display: 'flex',
-        alignItems: 'flex-end', // Прижимаем к низу
-        justifyContent: 'center',
-        opacity: show ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-        WebkitTapHighlightColor: 'transparent'
-      }}
+  return (
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      kicker={t('languageModal.tag')}
+      title={t('profile.language', 'Мова')}
+      subtitle={t('languageModal.sub')}
     >
-      <div 
-        onClick={e => e.stopPropagation()} 
-        style={{
-          width: '100%',
-          padding: '24px 20px 40px',
-          backgroundColor: 'var(--warm-white, #FAF8F5)',
-          borderTopLeftRadius: '24px',
-          borderTopRightRadius: '24px',
-          // 🔥 Идеальный выезд снизу
-          transform: show ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.1)'
-        }}
-      >
-        
-        {/* Шапка */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: 'var(--ink)' }}>
-            {t('profile.language', 'Мова')}
-          </h2>
-          <button 
-            onClick={onClose} 
-            style={{ 
-              background: 'var(--linen, #E8E0D4)', 
-              border: 'none', 
-              width: '32px', height: '32px', 
-              borderRadius: '50%', 
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer' 
-            }}
-          >
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-          </button>
-        </div>
+      <div className="flex flex-col gap-2">
+        {LANGUAGES.map((lang, i) => {
+          // Детектор языка отдаёт и «en-US», поэтому сверяем по префиксу.
+          const isSelected = current === lang.code || current.startsWith(`${lang.code}-`);
 
-        {/* Список языков */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {languages.map((lang) => {
-            const isSelected = currentLang === lang.code
-             || (currentLang.startsWith('en') && lang.code === 'en')
-             || (currentLang.startsWith('cz') && lang.code === 'cz')
-             || (currentLang.startsWith('ru') && lang.code === 'ru');
-            
-            return (
-              <div 
-                key={lang.code}
-                onClick={() => handleSelect(lang.code)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px',
-                  background: isSelected ? 'var(--linen, #E8E0D4)' : 'var(--warm-white, #FAF8F5)',
-                  border: isSelected ? '1px solid var(--gold, #C8A87A)' : '1px solid var(--linen-dk, #D4C9B8)',
-                  borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s ease'
-                }}
+          return (
+            <motion.button
+              key={lang.code}
+              type="button"
+              onClick={() => handleSelect(lang.code)}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+              whileTap={{ scale: 0.985 }}
+              className={`flex items-center gap-3.5 rounded-[18px] px-4 py-4 text-left transition ${
+                isSelected ? 'bg-brand/10 ring-1 ring-brand/45' : 'bg-background'
+              }`}
+            >
+              <span className="flex h-5 w-7 shrink-0 overflow-hidden rounded-[3px] ring-1 ring-foreground/10">
+                {lang.flag}
+              </span>
+              <span
+                className={`flex-1 text-[15px] tracking-[-0.01em] ${
+                  isSelected ? 'font-extrabold text-foreground' : 'font-semibold text-foreground/80'
+                }`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <span style={{ display: 'flex', width: '28px', height: '20px', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.08)' }}>
-                    {lang.flag}
-                  </span>
-                  <span style={{ fontSize: '16px', fontWeight: isSelected ? 600 : 500, color: 'var(--ink)' }}>
-                    {lang.name}
-                  </span>
-                </div>
-                <div style={{
-                  width: '22px', height: '22px', borderRadius: '50%',
-                  border: isSelected ? '6px solid var(--gold, #C8A87A)' : '2px solid var(--linen-dk, #D4C9B8)',
-                  background: isSelected ? '#fff' : 'transparent', transition: 'all 0.2s ease'
-                }}></div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
+                {lang.name}
+              </span>
 
-  // 🔥 РЕНДЕРИМ ПРЯМО В BODY - обходит любые CSS-препятствия страницы!
-  return createPortal(modalContent, document.body);
+              <span
+                className={`flex h-[22px] w-[22px] items-center justify-center rounded-full ${
+                  isSelected ? 'bg-brand' : 'ring-1 ring-foreground/15'
+                }`}
+              >
+                {isSelected && (
+                  <motion.svg
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 24 }}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--v-brand-foreground)"
+                    strokeWidth="3.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-3 w-3"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </motion.svg>
+                )}
+              </span>
+            </motion.button>
+          );
+        })}
+      </div>
+    </Sheet>
+  );
 }

@@ -5,26 +5,40 @@ import Shedule from './pages/shedule';
 import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
 import BottomNav from './components/BottomNav';
-import Welcome from './components/Welcome';
-import { checkUser, registerUser, type UserResponse } from './api/auth';
+import AmbientBackdrop from './components/home/AmbientBackdrop';
+import { authTelegram, type UserResponse } from './api/auth';
+import { getStudioCatalog, type StudioCatalog } from './api/studio';
 import { useTelegram } from './hooks/useTelegram';
-import { getSession, saveSession, newDeviceId } from './lib/session';
+import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
+
+/**
+ * `start_param` приходит из deep link `t.me/<bot>?startapp=s<studio_id>` —
+ * например `s42` для студии 42, или `s42_refABC123` для реферальной ссылки
+ * (код всегда хвостом после студии, ведущий `s<id>` не задет).
+ */
+function parseStudioId(startParam: string | undefined): number | null {
+  if (!startParam) return null;
+  const match = /^s(\d+)/.exec(startParam);
+  return match ? Number(match[1]) : null;
+}
+
+function parseReferralCode(startParam: string | undefined): string | undefined {
+  if (!startParam) return undefined;
+  const match = /_ref([A-Za-z0-9]+)$/.exec(startParam);
+  return match ? match[1] : undefined;
+}
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const { tg, user: tgUser } = useTelegram();
+  const { tg } = useTelegram();
 
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [catalog, setCatalog] = useState<StudioCatalog | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [needsSignup, setNeedsSignup] = useState(false);
-
-  // Ключ общий на все студии, поэтому знакомство спрашивается ровно один раз:
-  // выбор другой студии на него не влияет, вход после него не нужен.
-  const remember = (profile: UserResponse) => {
-    saveSession({ tg_id: profile.tg_id, name: profile.name, phone: profile.phone });
-    setUser(profile);
-  };
+  // Приложение открыли не из Telegram (нет initData) либо без deep-link на
+  // студию (нет start_param) — валидного способа авторизоваться нет.
+  const [needsTelegram, setNeedsTelegram] = useState(false);
 
   useEffect(() => {
     if (tg) {
@@ -32,49 +46,58 @@ export default function App() {
       tg.expand();
     }
 
-    const authUser = async () => {
+    const boot = async () => {
+      // Токен уже сохранён — доверяем ему сразу, без похода на бэкенд:
+      // эндпоинта на валидацию токена нет, а если он всё же протух, первый
+      // же авторизованный запрос поймает 401 и client.ts сам сбросит сессию
+      // (см. api/client.ts).
       const session = getSession();
-      // Сохранённый ключ важнее Telegram: он переживает и смену студии, и заход
-      // с сайта вместо бота.
-      const id = session?.tg_id ?? tgUser?.id;
+      if (session?.token) {
+        // Полного профиля тут ещё нет — из downstream-страниц используется
+        // только .name (home.tsx), остальное подтянется из /global/me, когда
+        // экраны его запросят (профиль уже это делает).
+        setUser({ name: session.name } as UserResponse);
+      } else {
+        const initData: string | undefined = tg?.initData;
+        const studioId = parseStudioId(tg?.initDataUnsafe?.start_param);
 
-      // Ключа нет и Telegram не представил юзера — знакомимся.
-      if (!id) {
-        setNeedsSignup(true);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const result = await checkUser(id);
-
-        if (result.exists && result.user) {
-          remember(result.user);
-        } else if (tgUser) {
-          // Внутри бота имя уже известно — форму показывать незачем.
-          remember(await registerUser({ tg_id: id, name: tgUser.first_name }));
-        } else {
-          // Ключ есть, а профиля в базе нет (базу чистили) — знакомимся заново.
-          setNeedsSignup(true);
+        if (!initData || !studioId) {
+          setNeedsTelegram(true);
+          setIsLoading(false);
+          return;
         }
-      } catch (error) {
-        // Сервер не ответил — ключ остаётся валидным, регистрацию не переспрашиваем.
-        console.error('Помилка при авторизації/реєстрації:', error);
-        if (!session) setNeedsSignup(true);
-      } finally {
-        setIsLoading(false);
+
+        try {
+          const { token, user: authedUser } = await authTelegram({
+            init_data: initData,
+            studio_id: studioId,
+            referral_code: parseReferralCode(tg?.initDataUnsafe?.start_param),
+          });
+          saveSession({ token, name: authedUser.name });
+          setUser(authedUser);
+        } catch (error) {
+          console.error('Помилка авторизації через Telegram:', error);
+          // На случай, если в сторадже лежал протухший токен.
+          clearSession();
+          setNeedsTelegram(true);
+          setIsLoading(false);
+          return;
+        }
       }
+
+      // Один снимок каталога студии на весь сеанс — филиалы/послуги/пакеты
+      // не меняются настолько часто, чтобы держать их за TanStack Query
+      // (эпик прямо отказывается от неё, см. "Явно НЕ делаем").
+      try {
+        setCatalog(await getStudioCatalog());
+      } catch (error) {
+        console.error('Не вдалося завантажити дані студії:', error);
+      }
+      setIsLoading(false);
     };
 
-    authUser();
+    boot();
   }, []);
-
-  // Ошибку намеренно не глушим: её показывает форма знакомства.
-  const completeSignup = async (name: string, phone: string) => {
-    const id = tgUser?.id ?? getSession()?.tg_id ?? newDeviceId();
-    remember(await registerUser({ tg_id: id, name, phone }));
-    setNeedsSignup(false);
-  };
 
   const switchTab = (tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');
@@ -97,15 +120,55 @@ export default function App() {
     );
   }
 
-  if (needsSignup) {
-    return <Welcome onSubmit={completeSignup} defaultName={tgUser?.first_name ?? ''} />;
+  if (needsTelegram) {
+    return (
+      <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-8 text-center">
+        <AmbientBackdrop tint="#F9A08B" />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+          className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-brand shadow-brand"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--v-brand-foreground)"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-7 w-7"
+          >
+            <path d="M12 21c-4-2.5-6-5.6-6-9a6 6 0 0112 0c0 3.4-2 6.5-6 9z" />
+            <path d="M12 21c4-2.5 6-5.6 6-9" opacity="0.45" />
+            <circle cx="12" cy="11" r="2" />
+          </svg>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="pt-6"
+        >
+          <h1 className="text-[26px] font-extrabold leading-[1.08] tracking-[-0.03em] text-foreground">
+            Відкрийте застосунок у Telegram
+          </h1>
+          <p className="mt-2.5 max-w-[19rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground">
+            Це кабінет клієнта студії — увійти можна лише за посиланням на
+            запис у Telegram-боті вашої студії.
+          </p>
+        </motion.div>
+      </div>
+    );
   }
 
   const screens: Record<string, React.ReactNode> = {
-    home: <Home user={user} />,
-    sched: <Shedule />,
+    home: <Home user={user} catalog={catalog} />,
+    sched: <Shedule catalog={catalog} />,
     my: <MyLessons />,
-    prof: <Profile />,
+    prof: <Profile catalog={catalog} />,
   };
 
   // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME

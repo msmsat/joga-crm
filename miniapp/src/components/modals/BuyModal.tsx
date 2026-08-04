@@ -1,161 +1,134 @@
-import { createPortal } from 'react-dom';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import PaymentModal from './PaymentModal'; // Імпортуємо
+import { Sheet, SheetAction } from '../ui/Sheet';
+import PaymentModal from './PaymentModal';
 import { useTelegram } from '../../hooks/useTelegram';
 import { buySubscription } from '../../api/user';
+import { notify } from '../../lib/notify';
+import type { SubscriptionPackageInfo } from '../../api/studio';
 
 interface BuyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  packages: SubscriptionPackageInfo[];
 }
 
-export default function BuyModal({ isOpen, onClose, onSuccess }: BuyModalProps) {
+export default function BuyModal({ isOpen, onClose, onSuccess, packages }: BuyModalProps) {
   const { t } = useTranslation();
-  const { tg, tg_id } = useTelegram();
-  // 🔥 Стейт раскрытой карточки живет прямо внутри модалки!
-  const [expandedBuyId, setExpandedBuyId] = useState<number | null>(null);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [selectedSub, setSelectedSub] = useState<any>(null);
+  // ponytail: tg_id остаётся здесь до блока 6 EPIC_MA_REAL_BACKEND — buySubscription
+  // ниже последний потребитель tg_id, уйдёт вместе с переходом на Stripe Checkout.
+  const { tg_id, vibrateLight } = useTelegram();
 
-  const handleSelectAbonement = (opt: any) => {
-    setSelectedSub(opt);     // Запам'ятовуємо, ЩО саме купуємо
-    setIsPaymentOpen(true);  // Відкриваємо вікно з чеком
-  };
+  // Раскрывающаяся карточка заменена на выбор: раскрытие прятало кнопку оплаты
+  // внутрь карточки, и до неё было два тапа вместо одного.
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+  const selected = packages.find((plan) => plan.id === selectedId) ?? null;
+  const nameOf = (plan: SubscriptionPackageInfo) =>
+    t(`subscription.${plan.name}.name`, { defaultValue: plan.name });
 
   const finishPurchase = async () => {
-    if (!selectedSub) return;
+    if (!selected) return;
 
     try {
-      // Відправляємо реальний POST запит на бэкенд FastAPI
       await buySubscription(tg_id, {
-        type: selectedSub.key,
-        total_classes: selectedSub.classes,
-        amount: selectedSub.priceNum,
-        valid_days: 30 // За умовою всі абонементи діють 30 днів
+        type: selected.name,
+        total_classes: selected.class_count,
+        amount: selected.price,
+        valid_days: selected.duration_days,
       });
 
-      // 🔥 2. СПОЧАТКУ оновлюємо дані у профілі! (Запит полетить у фоні)
+      // Сначала обновляем профиль (запрос уходит в фон), потом показываем текст —
+      // пока клиент его читает, экран позади уже перерисован.
       if (onSuccess) onSuccess();
-
-      // 🔥 3. ТОДІ показуємо повідомлення. Поки клієнт його читає, UI позаду вже зміниться!
-      alert(t('buyModal.success', { name: t(`subscription.${selectedSub.key}.name`) }));
-      
-      // 4. Закриваємо модалку
+      notify(t('buyModal.success', { name: nameOf(selected) }));
       handleClose();
-
-    } catch (error: any) {
-      // Якщо бэкенд поверне помилку, ми зловимо її тут
-      alert(error.message || t('buyModal.activate_error'));
+    } catch (error) {
+      notify(error instanceof Error ? error.message : t('buyModal.activate_error'));
     }
   };
 
-  // Кастомная функция закрытия, которая заодно сворачивает открытую карточку
   const handleClose = () => {
-    setExpandedBuyId(null);
+    setSelectedId(null);
     onClose();
   };
 
   return (
     <>
-      {createPortal(
-        <div 
-          className={`modal-overlay ${isOpen ? 'open' : ''}`} 
-          id="buy-modal" 
-          onClick={(e) => (e.target as any).id === 'buy-modal' && handleClose()}
-        >
-          <div className="modal-sheet">
-            <div className="modal-handle"></div>
-            <div className="modal-content">
-              <div className="modal-tag">{t('buyModal.tag')}</div>
-              <div className="modal-title">{t('buyModal.title')}</div>
-              <div className="modal-sub">{t('buyModal.sub')}</div>
-              
-              <div className="buy-options" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-                {[
-                  { id: 1, key: 'light_flow', priceNum: 1800, classes: 4, popular: false },
-                  { id: 2, key: 'balance_pro', priceNum: 3200, classes: 8, popular: true },
-                  { id: 3, key: 'zen_master', priceNum: 4500, classes: 12, popular: false },
-                  { id: 4, key: 'unlimited', priceNum: 6000, classes: 999, popular: false },
-                ].map((opt) => {
-                  const isExpanded = expandedBuyId === opt.id;
+      <Sheet
+        isOpen={isOpen}
+        onClose={handleClose}
+        kicker={t('buyModal.tag')}
+        title={t('buyModal.title')}
+        subtitle={t('buyModal.sub')}
+        footer={
+          <SheetAction onClick={() => setIsPaymentOpen(true)} disabled={!selected}>
+            {selected ? t('buyModal.pay', { price: selected.price_str }) : t('buyModal.choose_plan')}
+          </SheetAction>
+        }
+      >
+        <div className="flex flex-col gap-2.5">
+          {packages.map((plan, i) => {
+            const isSelected = selectedId === plan.id;
 
-                  return (
-                    <div 
-                      key={opt.id} 
-                      className="buy-card" 
-                      onClick={() => {
-                        setExpandedBuyId(isExpanded ? null : opt.id);
-                        if (tg) tg.HapticFeedback.impactOccurred('light');
-                      }}
-                      style={{
-                        padding: '16px',
-                        borderRadius: 'var(--r-card)',
-                        border: opt.popular ? '2px solid var(--gold)' : '1px solid var(--linen-dk)',
-                        background: 'var(--warm-white)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        position: 'relative',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {opt.popular && <span style={{ position: 'absolute', top: '-10px', right: '12px', background: 'var(--gold)', color: 'white', fontSize: '8px', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase' }}>{t('buyModal.popular')}</span>}
-                      
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontWeight: 500, color: 'var(--ink)' }}>{t(`subscription.${opt.key}.name`)}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--ink-lt)' }}>{opt.classes === 999 
-                            ? t('subscription.unlimited_desc') 
-                            : `${opt.classes} ${t('common.classes_count')}`}</div>
-                        </div>
-                        <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ fontWeight: 600, color: 'var(--navy-md)' }}>{opt.priceNum.toLocaleString('ru-RU')} {t('common.currency')}</div>
-                          <div style={{ 
-                            color: 'var(--gold)', 
-                            transition: 'transform 0.3s ease', 
-                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                            fontSize: '12px'
-                          }}>
-                            ▼
-                          </div>
-                        </div>
-                      </div>
+            return (
+              <motion.button
+                key={plan.id}
+                type="button"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.34, delay: i * 0.045, ease: [0.16, 1, 0.3, 1] }}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => {
+                  setSelectedId(plan.id);
+                  vibrateLight();
+                }}
+                className={`relative flex items-center gap-3 rounded-[20px] px-4 py-4 text-left transition ${
+                  isSelected ? 'bg-brand/10 ring-1 ring-brand/50' : 'bg-background'
+                }`}
+              >
+                <span
+                  className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full ${
+                    isSelected ? 'bg-brand' : 'ring-1 ring-foreground/15'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.span
+                      initial={{ scale: 0.3 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 520, damping: 24 }}
+                      className="h-2 w-2 rounded-full bg-brand-foreground"
+                    />
+                  )}
+                </span>
 
-                      {isExpanded && (
-                        <div style={{ marginTop: '16px', borderTop: '1px solid var(--linen-dk)', paddingTop: '16px', animation: 'fadeIn 0.3s ease' }}>
-                          <button 
-                            className="pay-btn" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleClose();
-                              handleSelectAbonement(opt);
-                            }}
-                          >
-                            {t('buyModal.pay', { price: `${opt.priceNum.toLocaleString('ru-RU')} ${t('common.currency')}` })}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-extrabold tracking-[-0.02em] text-foreground">
+                    {nameOf(plan)}
+                  </span>
+                  <span className="mt-0.5 block text-[11.5px] font-medium text-muted-foreground">
+                    {plan.class_count} {t('common.classes_count')}
+                  </span>
+                </span>
 
-              <button className="pay-btn" style={{ marginTop: '24px' }} onClick={handleClose}>
-                {t('buyModal.close')}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-      <PaymentModal 
-      isOpen={isPaymentOpen}
-      onClose={() => setIsPaymentOpen(false)}
-      itemName={selectedSub?.name || ''}
-      amountStr={selectedSub?.priceNum?.toLocaleString('ru-RU') || ''}
-      onSuccess={finishPurchase}
+                <span className="shrink-0 text-[15px] font-extrabold tabular-nums tracking-[-0.025em] text-foreground">
+                  {plan.price_str}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
+      </Sheet>
+
+      <PaymentModal
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        itemName={selected ? nameOf(selected) : ''}
+        amountStr={selected ? selected.price_str : ''}
+        onSuccess={finishPurchase}
       />
     </>
   );

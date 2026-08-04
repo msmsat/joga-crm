@@ -1,5 +1,4 @@
 // src/hooks/useTelegram.ts
-import { getSession } from '../lib/session';
 
 // Вытягиваем глобальный объект Telegram (один раз на весь проект)
 const tg = (window as any).Telegram?.WebApp;
@@ -8,11 +7,10 @@ export function useTelegram() {
   // Вытаскиваем юзера, если мы внутри Telegram
   const user = tg?.initDataUnsafe?.user;
 
-  // 🔥 ЕДИНАЯ ТОЧКА ПРАВДЫ ДЛЯ TG_ID
-  // Внутри Telegram — id из бота. Снаружи (сайт, Instagram) — id из сохранённого
-  // ключа, который выдаётся один раз при знакомстве и живёт на устройстве.
-  // Нуля не бывает: без ключа App показывает экран знакомства, а не экраны данных.
-  const tg_id = user?.id ?? getSession()?.tg_id ?? 0;
+  // ponytail: tg_id остаётся здесь до блока 6 эпика EPIC_MA_REAL_BACKEND — как только
+  // последний потребитель (BuyModal → buySubscription) перейдёт на client.ts без tg_id,
+  // это поле уходит из хука целиком.
+  const tg_id = user?.id ?? 0;
 
   return {
     tg,               // Сам оригинальный объект (на всякий случай)

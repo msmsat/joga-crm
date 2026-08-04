@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react';
 import StudioCard from './StudioCard';
-import type { Studio } from '../../data/studios';
+import type { Studio } from '../../api/studio';
 
 type Props = {
   studios: Studio[];
   activeId: number;
   onSelect: (id: number) => void;
+  /** id студий в избранном */
+  liked: number[];
+  onOpen: (studio: Studio) => void;
+  onToggleLike: (id: number) => void;
+  accentColor: string;
 };
 
 /**
@@ -16,7 +21,15 @@ type Props = {
  * Замер идёт в rAF: событие scroll на телефоне летит десятками кадров,
  * и без throttle это лишние layout-чтения на каждый пиксель.
  */
-export default function StudioRail({ studios, activeId, onSelect }: Props) {
+export default function StudioRail({
+  studios,
+  activeId,
+  onSelect,
+  liked,
+  onOpen,
+  onToggleLike,
+  accentColor,
+}: Props) {
   const railRef = useRef<HTMLDivElement>(null);
   const frame = useRef(0);
 
@@ -66,7 +79,13 @@ export default function StudioRail({ studios, activeId, onSelect }: Props) {
           key={studio.id}
           studio={studio}
           isActive={studio.id === activeId}
-          onClick={() => onSelect(studio.id)}
+          isLiked={liked.includes(studio.id)}
+          onOpen={() => {
+            onSelect(studio.id);
+            onOpen(studio);
+          }}
+          onToggleLike={() => onToggleLike(studio.id)}
+          accentColor={accentColor}
         />
       ))}
       {/* Хвост, чтобы последняя карточка доезжала до центра экрана */}

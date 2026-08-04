@@ -7,7 +7,9 @@ import BuyModal from '../components/modals/BuyModal';
 import LanguageModal from '../components/modals/LanguageModal';
 import SubscriptionCard from '../components/profile/SubscriptionCard';
 import SettingRow from '../components/profile/SettingRow';
+import AmbientBackdrop from '../components/home/AmbientBackdrop';
 import { SectionLabel } from '../components/ui/SectionLabel';
+import { EmptyState } from '../components/ui/EmptyState';
 import { useTelegram } from '../hooks/useTelegram';
 import {
   getUserProfile,
@@ -17,38 +19,45 @@ import {
   type UserProfile,
   type UserSubscription,
 } from '../api/user';
+import type { StudioCatalog } from '../api/studio';
 
-const tg = (window as any).Telegram?.WebApp;
+interface ProfileProps {
+  catalog: StudioCatalog | null;
+}
 
-export default function Profile() {
+export default function Profile({ catalog }: ProfileProps) {
+  const { t, i18n } = useTranslation();
+  const { tg, vibrateLight } = useTelegram();
+
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [subscriptions, setSubscriptions] = useState<UserSubscription[]>([]);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isLoadingSub, setIsLoadingSub] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [subError, setSubError] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
+
   const [notifs, setNotifs] = useState(true);
   const [reminders, setReminders] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
-  const { tg_id } = useTelegram(); // Берем ID из нашего хука
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [subscriptions, setSubscriptions] = useState<UserSubscription[]>([]);
-  const [isLoadingSub, setIsLoadingSub] = useState(true);
-  const [refreshTick, setRefreshTick] = useState(0);
-  const { t } = useTranslation();
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
-  const closeSupportModal = () => setIsSupportModalOpen(false);
-  const closeHistoryModal = () => setIsHistoryModalOpen(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isBuyOpen, setIsBuyOpen] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       setIsLoadingProfile(true);
+      setProfileError(null);
       try {
-        const data = await getUserProfile(tg_id);
+        const data = await getUserProfile();
         setProfile(data);
         setNotifs(data.notifs_enabled);
         setReminders(data.reminders_enabled);
       } catch (error) {
         console.error('Помилка завантаження профілю:', error);
+        setProfileError(error instanceof Error ? error.message : t('profile.load_error'));
       } finally {
         setIsLoadingProfile(false);
       }
@@ -56,11 +65,12 @@ export default function Profile() {
 
     const fetchSubscriptionData = async () => {
       setIsLoadingSub(true);
+      setSubError(null);
       try {
-        const subData = await getUserSubscription(tg_id);
-        setSubscriptions(subData); // Якщо абонемента немає, повернеться null
+        setSubscriptions(await getUserSubscription());
       } catch (error) {
         console.error('Помилка завантаження абонемента:', error);
+        setSubError(error instanceof Error ? error.message : t('profile.sub_load_error'));
       } finally {
         setIsLoadingSub(false);
       }
@@ -68,60 +78,41 @@ export default function Profile() {
 
     fetchProfileData();
     fetchSubscriptionData();
-  }, [tg_id, refreshTick]);
+  }, [refreshTick, t]);
 
   const toggleNotifs = async () => {
-    const newVal = !notifs;
-    setNotifs(newVal); // Оптимістичний UI: миттєво перемикаємо
-    if (tg) tg.HapticFeedback.impactOccurred('light');
-
+    const next = !notifs;
+    setNotifs(next); // Оптимистично: тумблер не должен ждать сеть
+    vibrateLight();
     try {
-      await updateNotifications(tg_id, newVal);
-    } catch (e) {
-      setNotifs(!newVal); // Відкат, якщо виникла помилка інтернету
-      console.error(e);
+      await updateNotifications(next);
+    } catch (error) {
+      setNotifs(!next);
+      console.error(error);
     }
   };
 
-  // 🔥 5. Обробка натискання на перемикач "Нагадування"
   const toggleReminders = async () => {
-    const newVal = !reminders;
-    setReminders(newVal); // Оптимістичний UI
-    if (tg) tg.HapticFeedback.impactOccurred('light');
-
+    const next = !reminders;
+    setReminders(next);
+    vibrateLight();
     try {
-      await updateReminders(tg_id, newVal);
-    } catch (e) {
-      setReminders(!newVal); // Відкат при помилці
-      console.error(e);
+      await updateReminders(next);
+    } catch (error) {
+      setReminders(!next);
+      console.error(error);
     }
   };
-
-  const openSupportModal = () => {
-    setIsSupportModalOpen(true);
-    if (tg) tg.HapticFeedback.impactOccurred('medium');
-  };
-
-  const openHistoryModal = () => {
-    setIsHistoryModalOpen(true);
-    if (tg) tg.HapticFeedback.impactOccurred('medium');
-  };
-
-  const openBuyModal = () => {
-    setIsBuyModalOpen(true);
-    if (tg) tg.HapticFeedback.impactOccurred('medium');
-  };
-
-  const closeBuyModal = () => setIsBuyModalOpen(false);
 
   const handleCopyLink = () => {
-    navigator.clipboard
-      .writeText('https://jogaua.online/invite') // Сюда впишешь реальную реф. ссылку
-      .then(() => {
-        setIsCopied(true); // Включаем галочку
-        if (tg) tg.HapticFeedback.notificationOccurred('success'); // Дзынь! (вибрация успеха)
+    const botUsername = catalog?.studio.bot_username;
+    if (!botUsername || !profile?.invite_code) return;
 
-        // Через 2 секунды возвращаем иконку копирования
+    navigator.clipboard
+      .writeText(`https://t.me/${botUsername}?startapp=s${catalog!.studio.id}_ref${profile.invite_code}`)
+      .then(() => {
+        setIsCopied(true);
+        if (tg) tg.HapticFeedback.notificationOccurred('success');
         setTimeout(() => setIsCopied(false), 2000);
       })
       .catch((err) => console.error('Помилка копіювання: ', err));
@@ -129,49 +120,81 @@ export default function Profile() {
 
   const openInstagram = () => {
     const url = 'https://www.instagram.com/sadovskiy_matvii_/';
-    if (tg && tg.openLink) {
-      tg.openLink(url); // Открывает внутри Telegram
-    } else {
-      window.open(url, '_blank'); // Обычный браузер
-    }
-    if (tg) tg.HapticFeedback.impactOccurred('light');
+    if (tg && tg.openLink) tg.openLink(url);
+    else window.open(url, '_blank');
+    vibrateLight();
   };
 
-  const openLanguageModal = () => {
-    setIsLanguageModalOpen(true);
-    if (tg) tg.HapticFeedback.impactOccurred('light');
+  const open = (setter: (value: boolean) => void) => () => {
+    setter(true);
+    if (tg) tg.HapticFeedback.impactOccurred('medium');
   };
 
-  const avatarLetter = profile?.name ? profile.name.charAt(0).toUpperCase() : 'А';
-
+  const avatarLetter = profile?.name ? profile.name.charAt(0).toUpperCase() : 'A';
   const activeSub = subscriptions.find((s) => s.status === 'active');
-  const queuedSubs = subscriptions.filter((s) => s.status === 'waiting');
+  const queuedSubs = subscriptions.filter((s) => s.status === 'pending');
+
+  // Профиль не загрузился — дальше показывать нечего: имя, абонемент,
+  // настройки, всё завязано на него. Честная ошибка вместо тихого "Гостя".
+  if (!isLoadingProfile && profileError) {
+    return (
+      <div className="relative flex min-h-[70dvh] items-center justify-center">
+        <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
+        <EmptyState
+          title={t('profile.load_error')}
+          hint={profileError}
+          icon={
+            <>
+              <circle cx="12" cy="12" r="9" />
+              <line x1="12" y1="8" x2="12" y2="13" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
-    <>
+    <div className="relative">
+      <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
+
+      {/* Шапка профиля: аватар в двойном кольце — это единственный портрет во
+          всём приложении, и он должен читаться как оправа, а не как иконка. */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-safe px-5"
+        className="pt-safe flex flex-col items-center px-5 pt-10 text-center"
       >
-        <div className="flex items-center gap-4 pt-9">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand text-[24px] font-extrabold text-brand-foreground shadow-brand">
+        <div className="relative flex h-[92px] w-[92px] items-center justify-center">
+          <motion.span
+            animate={{ scale: [1, 1.06, 1], opacity: [0.35, 0.15, 0.35] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute inset-0 rounded-full bg-brand/30"
+          />
+          <span className="absolute inset-[7px] rounded-full ring-1 ring-brand/40" />
+          <span className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-brand text-[26px] font-extrabold text-brand-foreground shadow-brand">
             {avatarLetter}
           </span>
-          <div className="min-w-0">
-            <h1 className="truncate text-[26px] font-extrabold leading-tight tracking-[-0.03em] text-foreground">
-              {isLoadingProfile ? t('profile.loading') : profile?.name || t('profile.guest')}
-            </h1>
-            <p className="mt-1 truncate text-[12.5px] font-medium text-muted-foreground">
-              {isLoadingProfile
-                ? t('profile.searching_data')
-                : t('profile.in_studio_since', {
-                    date: profile?.reg_date_str || t('profile.recently'),
-                  })}
-            </p>
-          </div>
         </div>
+
+        <h1 className="mt-5 max-w-full truncate text-[28px] font-extrabold leading-tight tracking-[-0.035em] text-foreground">
+          {isLoadingProfile ? t('profile.loading') : profile?.name || t('profile.guest')}
+        </h1>
+        <p className="mt-1.5 text-[12.5px] font-medium text-muted-foreground">
+          {isLoadingProfile
+            ? t('profile.searching_data')
+            : t('profile.in_studio_since', {
+                date: profile?.registration_date
+                  ? new Date(profile.registration_date).toLocaleDateString(i18n.language, {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : t('profile.recently'),
+              })}
+        </p>
       </motion.div>
 
       <div className="pt-8">
@@ -186,15 +209,20 @@ export default function Profile() {
           total={activeSub?.total_classes}
           expires={
             activeSub
-              ? t('profile.expires', { date: activeSub.expires_str || activeSub.expires_at })
+              ? t(activeSub.is_frozen ? 'profile.frozen' : 'profile.expires', {
+                  date: new Date(activeSub.expires_at).toLocaleDateString(i18n.language, {
+                    day: 'numeric',
+                    month: 'long',
+                  }),
+                })
               : undefined
           }
           unitLabel={t('common.classes_count')}
           isLoading={isLoadingSub}
           loadingLabel={t('profile.checking_subs')}
-          emptyTitle={t('profile.no_sub')}
-          emptyHint={t('profile.buy_sub_hint')}
-          onBuy={openBuyModal}
+          emptyTitle={subError ? t('profile.sub_load_error') : t('profile.no_sub')}
+          emptyHint={subError ?? t('profile.buy_sub_hint')}
+          onBuy={open(setIsBuyOpen)}
         />
       </div>
 
@@ -227,16 +255,86 @@ export default function Profile() {
         </>
       )}
 
-      <SectionLabel>{t('profile.settings')}</SectionLabel>
+      {/* Спільнота: приглашение — не строка настроек, а отдельная карточка с
+          собственной иллюстрацией. Это единственное место, где клиент делает
+          что-то не для себя, и оно должно выглядеть как приглашение, а не пункт
+          списка. */}
+      <SectionLabel>{t('profile.community')}</SectionLabel>
+      <div className="px-5">
+        <motion.button
+          type="button"
+          onClick={handleCopyLink}
+          whileTap={{ scale: 0.985 }}
+          transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+          className="relative flex w-full items-center gap-4 overflow-hidden rounded-[22px] bg-card p-5 text-left shadow-soft"
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-brand/10"
+          />
 
+          <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand/12">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+            </svg>
+          </span>
+
+          <span className="relative min-w-0 flex-1">
+            <span className="block text-[15px] font-extrabold tracking-[-0.02em] text-card-foreground">
+              {t('profile.invite')}
+            </span>
+            <span className="mt-1 block text-[11.5px] font-medium leading-relaxed text-muted-foreground">
+              {isCopied ? t('home.referral_link_copied') : t('profile.invite_hint')}
+            </span>
+          </span>
+
+          {isCopied ? (
+            <motion.svg
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--v-success)"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="relative h-5 w-5 shrink-0"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </motion.svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="relative h-4 w-4 shrink-0">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          )}
+        </motion.button>
+      </div>
+
+      <SectionLabel>{t('profile.subscription_group')}</SectionLabel>
       <div className="flex flex-col gap-2 px-5">
         <SettingRow
           accent
           label={t('profile.buy_btn')}
-          onClick={openBuyModal}
+          onClick={open(setIsBuyOpen)}
           icon={<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z M3 6h18 M16 10a4 4 0 01-8 0" />}
         />
+        <SettingRow
+          label={t('profile.history')}
+          onClick={open(setIsHistoryOpen)}
+          icon={
+            <>
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </>
+          }
+        />
+      </div>
 
+      <SectionLabel>{t('profile.notifications_group')}</SectionLabel>
+      <div className="flex flex-col gap-2 px-5">
         <SettingRow
           label={t('profile.notifications')}
           onClick={toggleNotifs}
@@ -244,7 +342,6 @@ export default function Profile() {
           checked={notifs}
           icon={<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />}
         />
-
         <SettingRow
           label={t('profile.reminders')}
           onClick={toggleReminders}
@@ -257,81 +354,29 @@ export default function Profile() {
             </>
           }
         />
+      </div>
 
-        <SettingRow
-          label={t('profile.history')}
-          onClick={openHistoryModal}
-          icon={
-            <>
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-              <line x1="1" y1="10" x2="23" y2="10" />
-            </>
-          }
-        />
-
-        <SettingRow
-          label={t('profile.invite')}
-          onClick={handleCopyLink}
-          icon={
-            <>
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-            </>
-          }
-          trailing={
-            isCopied ? (
-              <motion.svg
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--v-success)"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-[18px] w-[18px] shrink-0"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </motion.svg>
-            ) : (
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--v-muted-foreground)"
-                strokeWidth="1.9"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-[18px] w-[18px] shrink-0"
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </svg>
-            )
-          }
-        />
-
+      <SectionLabel>{t('profile.app_group')}</SectionLabel>
+      <div className="flex flex-col gap-2 px-5">
         <SettingRow
           label={t('profile.support')}
-          onClick={openSupportModal}
+          onClick={open(setIsSupportOpen)}
           icon={<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}
         />
-
         <SettingRow
           label={t('profile.about_studio')}
           onClick={openInstagram}
           icon={
             <>
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2" />
+              <rect x="2" y="2" width="20" height="20" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="1" />
             </>
           }
         />
-
         <SettingRow
           label={t('profile.language', 'Мова')}
-          onClick={openLanguageModal}
+          onClick={open(setIsLanguageOpen)}
           icon={
             <>
               <circle cx="12" cy="12" r="10" />
@@ -342,16 +387,15 @@ export default function Profile() {
         />
       </div>
 
-      {/* МОДАЛКИ */}
-      <SupportModal isOpen={isSupportModalOpen} onClose={closeSupportModal} />
-      <HistoryModal isOpen={isHistoryModalOpen} onClose={closeHistoryModal} />
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       <BuyModal
-        isOpen={isBuyModalOpen}
-        onClose={closeBuyModal}
-        onSuccess={() => setRefreshTick((prev) => prev + 1)}
+        isOpen={isBuyOpen}
+        onClose={() => setIsBuyOpen(false)}
+        onSuccess={() => setRefreshTick((tick) => tick + 1)}
+        packages={catalog?.packages ?? []}
       />
-      {/* 🔥 НАША НОВАЯ МОДАЛКА ЯЗЫКА */}
-      <LanguageModal isOpen={isLanguageModalOpen} onClose={() => setIsLanguageModalOpen(false)} />
-    </>
+      <LanguageModal isOpen={isLanguageOpen} onClose={() => setIsLanguageOpen(false)} />
+    </div>
   );
 }

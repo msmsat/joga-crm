@@ -1,47 +1,94 @@
-import { createPortal } from 'react-dom';import { useTranslation } from 'react-i18next';import { type LessonResponse } from '../../api/lessons';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { Sheet, SheetAction } from '../ui/Sheet';
+import { type LessonResponse } from '../../api/lessons';
 
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   lesson: LessonResponse | null;
+  /** Поверх брони, из которой он и появился. */
+  layer?: number;
 }
 
-export default function SuccessModal({ isOpen, onClose, lesson }: SuccessModalProps) {
+/**
+ * Подтверждение записи.
+ *
+ * Лотос рисуется линией на глазах у клиента: три контура проступают один за
+ * другим за секунду. Это единственная «награда» в приложении, и она должна
+ * ощущаться как выдох, а не как системный алерт «успешно».
+ */
+export default function SuccessModal({ isOpen, onClose, lesson, layer = 0 }: SuccessModalProps) {
   const { t } = useTranslation();
 
-  return createPortal(
-    <div className={`success-overlay ${isOpen ? 'show' : ''}`} id="success">
-      <div className="success-leaves">
-        {[
-          { x: 5, y: 10, w: 80, h: 120, delay: 0 },
-          { x: 60, y: 5, w: 60, h: 90, delay: 1 },
-          { x: 75, y: 50, w: 70, h: 100, delay: 2 },
-          { x: 0, y: 55, w: 65, h: 95, delay: 1.5 },
-          { x: 30, y: 75, w: 50, h: 80, delay: 0.5 },
-        ].map((leaf, idx) => (
-          <svg key={idx} className="success-leaf" style={{ left: `${leaf.x}%`, top: `${leaf.y}%`, width: `${leaf.w}px`, height: `${leaf.h}px`, animationDelay: `${leaf.delay}s` }} viewBox="0 0 70 100">
-            <path d="M35 98 C35 98 5 75 6 42 C7 12 35 2 35 2 C35 2 65 14 63 45 C62 76 35 98 35 98Z" />
-            <line x1="35" y1="98" x2="35" y2="2" />
-            <path d="M35 50 C24 44 18 36 17 28" />
-            <path d="M35 65 C46 58 52 49 52 40" />
+  const petal = (d: string, delay: number, opacity: number) => (
+    <motion.path
+      d={d}
+      stroke="var(--v-brand)"
+      strokeWidth="1.1"
+      strokeLinecap="round"
+      fill="none"
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{ pathLength: 1, opacity }}
+      transition={{ duration: 1.1, delay, ease: 'easeInOut' }}
+    />
+  );
+
+  return (
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      layer={layer}
+      footer={<SheetAction onClick={onClose}>{t('successModal.button')}</SheetAction>}
+    >
+      <div className="flex flex-col items-center pb-2 pt-4 text-center">
+        <div className="relative flex h-[124px] w-[124px] items-center justify-center">
+          <motion.span
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+            className="absolute inset-0 rounded-full bg-brand/10"
+          />
+          <svg viewBox="0 0 72 72" fill="none" className="relative h-[92px] w-[92px]">
+            {petal('M36 60 C36 60 20 48 20 36 C20 26 28 20 36 20 C44 20 52 26 52 36 C52 48 36 60 36 60Z', 0.15, 0.9)}
+            {petal('M36 60 C36 60 12 52 10 36 C8 22 22 14 36 14 C50 14 64 22 62 36 C60 52 36 60 36 60Z', 0.35, 0.6)}
+            {petal('M36 60 C36 60 4 56 2 36 C0 18 18 8 36 8 C54 8 72 18 70 36 C68 56 36 60 36 60Z', 0.55, 0.32)}
+            <motion.circle
+              cx="36"
+              cy="36"
+              r="5"
+              fill="var(--v-brand)"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.35 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.9 }}
+              style={{ transformOrigin: '36px 36px' }}
+            />
           </svg>
-        ))}
+        </div>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-6 text-[30px] font-extrabold leading-[1.02] tracking-[-0.035em] text-card-foreground"
+        >
+          {t('successModal.title')}
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-3 max-w-[20rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground"
+        >
+          {t('successModal.subtitle', {
+            name: lesson?.name
+              ? t(`lesson.name.${lesson.name}`, { defaultValue: lesson.name })
+              : t('successModal.default_lesson'),
+            time: lesson?.time || '',
+          })}
+        </motion.p>
       </div>
-      <div className="lotus-wrap">
-        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-          <path d="M36 60 C36 60 20 48 20 36 C20 26 28 20 36 20 C44 20 52 26 52 36 C52 48 36 60 36 60Z" stroke="rgba(200,168,122,0.6)" strokeWidth="1.2" />
-          <path d="M36 60 C36 60 12 52 10 36 C8 22 22 14 36 14 C50 14 64 22 62 36 C60 52 36 60 36 60Z" stroke="rgba(200,168,122,0.4)" strokeWidth="1" />
-          <path d="M36 60 C36 60 4 56 2 36 C0 18 18 8 36 8 C54 8 72 18 70 36 C68 56 36 60 36 60Z" stroke="rgba(200,168,122,0.25)" strokeWidth="0.8" />
-          <circle cx="36" cy="36" r="6" fill="rgba(200,168,122,0.3)" stroke="rgba(200,168,122,0.6)" strokeWidth="1" />
-          <line x1="36" y1="60" x2="36" y2="8" stroke="rgba(200,168,122,0.2)" strokeWidth="0.8" />
-        </svg>
-      </div>
-      <div className="success-title">{t('successModal.title')}</div>
-      <div className="success-sub">
-        {t('successModal.subtitle', { name: lesson?.name || t('successModal.default_lesson'), time: lesson?.time || '' })}
-      </div>
-      <button className="success-close" onClick={onClose}>{t('successModal.button')}</button>
-    </div>,
-    document.body
+    </Sheet>
   );
 }

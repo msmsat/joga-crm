@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Press } from '../ui/Press';
 import { Badge } from '../ui/Badge';
 import type { LessonResponse } from '../../api/lessons';
@@ -30,6 +31,8 @@ export default function LessonCard({
   index,
   onClick,
 }: Props) {
+  const { t } = useTranslation();
+
   const initials = lesson.teacher
     .split(' ')
     .map((part) => part[0])
@@ -52,7 +55,9 @@ export default function LessonCard({
           <div className="text-[19px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground">
             {lesson.time}
           </div>
-          <div className="mt-1.5 text-[10.5px] font-bold text-muted-foreground">{lesson.dur}</div>
+          <div className="mt-1.5 text-[10.5px] font-bold text-muted-foreground">
+            {lesson.duration_min} {t('common.minutes')}
+          </div>
         </div>
 
         <div className="min-w-0 flex-1">

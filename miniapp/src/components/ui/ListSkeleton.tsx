@@ -5,9 +5,16 @@
  * поэтому при появлении данных вёрстка не прыгает (CLS). Пульсация — на opacity,
  * без анимации размеров.
  */
-export function ListSkeleton({ rows = 3 }: { rows?: number }) {
+export function ListSkeleton({
+  rows = 3,
+  flush = false,
+}: {
+  rows?: number;
+  /** Внутри листа отступы уже заданы снаружи — свои добавлять нельзя. */
+  flush?: boolean;
+}) {
   return (
-    <div className="flex flex-col gap-3 px-5">
+    <div className={`flex flex-col gap-3 ${flush ? '' : 'px-5'}`}>
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
