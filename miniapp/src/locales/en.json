@@ -186,7 +186,9 @@
     "pay": "Pay · {{price}}",
     "close": "Close",
     "success": "Subscription \"{{name}}\" successfully paid! Lessons have been credited to your balance.",
-    "activate_error": "Subscription activation error."
+    "activate_error": "Subscription activation error.",
+    "checking_payment": "Checking payment status — your subscription will appear here once the bank confirms it",
+    "pay_in_studio": "You can buy a subscription at the studio"
   },
   "successModal": {
     "title": "You are booked",
@@ -217,6 +219,7 @@
     "amount_due": "Amount due",
     "pay_card": "Pay with card",
     "or_other": "or another way",
+    "redirect_hint": "A secure Stripe page will open — return to Telegram once you're done",
     "processing_transaction": "Processing transaction...",
     "processing": "Processing...",
     "cancel": "Cancel",

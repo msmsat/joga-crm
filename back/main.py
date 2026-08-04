@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -113,6 +114,35 @@ try:
     app.mount("/static", StaticFiles(directory="static"), name="static")
 except Exception:
     pass
+
+# --- Клиентское мини-приложение ------------------------------------------------
+# Раздаём собранный miniapp/dist с ЭТОГО же домена. Причина простая: кнопка
+# web_app в ответе бота на /start требует публичный HTTPS, а публичный HTTPS у
+# проекта ровно один — этот бэкенд. Отдельный хостинг и вторая DNS-запись ради
+# трёх статических файлов не нужны, а раздача с того же origin заодно убирает
+# CORS между мини-приложением и API.
+# Монтируем ТОЧЕЧНО (/assets + два файла + /s/{id}), а не StaticFiles на "/":
+# та перехватила бы все нераспознанные пути и вернула index.html вместо 404 API.
+_MINIAPP_DIST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "miniapp", "dist")
+_MINIAPP_INDEX = os.path.join(_MINIAPP_DIST, "index.html")
+
+if os.path.isfile(_MINIAPP_INDEX):
+    app.mount("/assets", StaticFiles(directory=os.path.join(_MINIAPP_DIST, "assets")), name="miniapp-assets")
+
+    @app.get("/favicon.svg", include_in_schema=False)
+    async def miniapp_favicon():
+        return FileResponse(os.path.join(_MINIAPP_DIST, "favicon.svg"))
+
+    @app.get("/icons.svg", include_in_schema=False)
+    async def miniapp_icons():
+        return FileResponse(os.path.join(_MINIAPP_DIST, "icons.svg"))
+
+    # Единственный маршрут самого приложения: студию оно читает из пути
+    # (miniapp/src/lib/entry.ts), роутера внутри нет — экраны переключаются
+    # состоянием, поэтому других путей отдавать не нужно.
+    @app.get("/s/{studio_id}", include_in_schema=False)
+    async def miniapp_index(studio_id: int):
+        return FileResponse(_MINIAPP_INDEX)
 
 
 @app.get("/")

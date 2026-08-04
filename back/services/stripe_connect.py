@@ -145,6 +145,41 @@ async def create_checkout_session(
     return session.id, session.client_secret
 
 
+async def create_hosted_checkout_session(
+    account_id: str,
+    amount_minor: int,
+    currency: str,
+    description: str,
+    metadata: dict,
+    success_url: str,
+    cancel_url: str,
+) -> tuple[str, str]:
+    """Оплата на счёт студии → (session_id, url) хостед-страницы Stripe.
+
+    В отличие от `create_checkout_session` (embedded, для кассы CRM — форма
+    живёт в модалке Velora), здесь клиент мини-приложения уходит на страницу
+    Stripe снаружи (`tg.openLink`, без Stripe.js на клиенте) и возвращается по
+    `success_url`/`cancel_url` — поэтому обычный hosted-режим, не embedded.
+    """
+    session = await asyncio.to_thread(
+        stripe.checkout.Session.create,
+        mode="payment",
+        line_items=[{
+            "price_data": {
+                "currency": currency.lower(),
+                "product_data": {"name": description},
+                "unit_amount": amount_minor,
+            },
+            "quantity": 1,
+        }],
+        metadata=metadata,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        stripe_account=account_id,
+    )
+    return session.id, session.url
+
+
 async def session_id_for_payment_intent(payment_intent: str, account_id: str) -> str | None:
     """Сессия, из которой вырос этот платёж, или None.
 

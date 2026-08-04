@@ -47,20 +47,33 @@ export function TgModal({ connected, botName, token, onConnect, onDisconnect, on
         {connected ? (
           /* ── View B: Connected ── */
           <div className="tg-connected-view">
-            <div className="tg-check-circle">
+            <a
+              href={`https://t.me/${botName}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tg-check-circle tg-check-circle-link"
+              aria-label={t('tg.openInTelegram')}
+              title={t('tg.openInTelegram')}
+            >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-            </div>
+            </a>
 
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(91,171,114,0.12)', color: '#5BAB72', borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 600, marginBottom: '12px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#5BAB72', display: 'inline-block' }}/>
                 {t('tg.connected')}
               </div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '4px' }}>
+              <a
+                href={`https://t.me/${botName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tg-botname-link"
+                title={t('tg.openInTelegram')}
+              >
                 @{botName}
-              </div>
+              </a>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text3)', fontFamily: 'monospace', letterSpacing: '0.03em' }}>
                 <span>{tokenVisible ? token : maskToken(token)}</span>
                 <button

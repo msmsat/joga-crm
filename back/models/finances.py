@@ -187,13 +187,21 @@ class OnlineChannelMetric(Base):
 
 
 class StripeCheckout(Base):
-    """Заявка на оплату картой в кассе: создана при уходе в Stripe, помечается
-    paid ровно один раз.
+    """Заявка на оплату картой: создана при уходе в Stripe, помечается paid
+    ровно один раз. Два источника заявок делят одну таблицу и различаются по
+    `user_id`:
+
+    - кассир CRM продаёт из Журнала/Клиентов (`user_id` задан — от его имени
+      пойдёт запись в ленту событий), `payload` хранит тело CheckoutPayRequest,
+      чтобы провести оплату ровно теми же условиями (промокод, бонусы,
+      сертификат), какие видел кассир — см. `routers/checkout/stripe_pay.py`;
+    - клиент покупает абонемент сам в мини-приложении (`user_id` = NULL — не
+      сотрудник CRM), `payload` хранит только `{client_id, package_id}` — см.
+      `routers/booking/miniapp_users.py`.
 
     Тот же смысл, что у BillingInvoice для подписки на саму CRM: пока клиент не
     заплатил, деньги в CRM не двигаются — ни дохода, ни абонемента, ни списания
-    бонусов. `payload` хранит тело CheckoutPayRequest, чтобы провести оплату
-    ровно теми же условиями (промокод, бонусы, сертификат), какие видел кассир.
+    бонусов.
 
     Идемпотентность держится на `session_id` + `status`: и вебхук, и возврат на
     success_url зовут одну функцию, второй пришедший — no-op.
@@ -203,7 +211,8 @@ class StripeCheckout(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     # Кассир, начавший продажу — от его имени пойдёт запись в ленту событий.
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    # NULL — заявка мини-приложения, клиент купил абонемент сам.
+    user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     session_id: Mapped[str] = mapped_column(String(200), unique=True, index=True)
     account_id: Mapped[str] = mapped_column(String(60))
     payload: Mapped[dict] = mapped_column(JSON)

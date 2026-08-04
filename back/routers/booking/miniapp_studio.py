@@ -8,7 +8,7 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -100,6 +100,44 @@ def _branch_hours_today(hours: list[BranchWorkingHours]) -> tuple[str, str]:
         if wh is not None and wh.is_open:
             return wh.open_time, wh.close_time
     return "00:00", "00:00"
+
+
+class StudioBrand(BaseSchema):
+    name: str
+    logo_url: Optional[str]
+    accent_color: str
+    language: str
+
+
+@router.get("/public/{studio_id}/brand", response_model=StudioBrand)
+@limiter.limit("30/minute")
+async def get_studio_brand(
+    request: Request,
+    studio_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Витрина студии для экрана входа — без токена, потому что токена там ещё
+    нет: человек только что открыл ссылку `/s/<studio_id>` в браузере и должен
+    увидеть, в чей кабинет он входит, ДО того как вводить почту. Ответ строго
+    публичный (то же, что видно на вывеске), никаких данных клиентов.
+
+    Полный каталог (`GET /studio`) остаётся за токеном — он отдаёт цены,
+    расписание и пакеты, это уже не витрина.
+    """
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
+    if studio is None:
+        raise HTTPException(status_code=404, detail="Студия не найдена")
+
+    settings = (await db.execute(
+        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
+    )).scalar_one_or_none()
+
+    return StudioBrand(
+        name=studio.name,
+        logo_url=studio.logo_url,
+        accent_color=(settings.widget_accent_color if settings else None) or DEFAULT_ACCENT_COLOR,
+        language=studio.language or "ru",
+    )
 
 
 @router.get("/studio", response_model=StudioCatalog)

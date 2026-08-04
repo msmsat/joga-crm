@@ -5,6 +5,7 @@ import SupportModal from '../components/modals/SupportModal';
 import HistoryModal from '../components/modals/HistoryModal';
 import BuyModal from '../components/modals/BuyModal';
 import LanguageModal from '../components/modals/LanguageModal';
+import Auth from './auth';
 import SubscriptionCard from '../components/profile/SubscriptionCard';
 import SettingRow from '../components/profile/SettingRow';
 import AmbientBackdrop from '../components/home/AmbientBackdrop';
@@ -45,6 +46,7 @@ export default function Profile({ catalog }: ProfileProps) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isLinkEmailOpen, setIsLinkEmailOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -136,6 +138,23 @@ export default function Profile({ catalog }: ProfileProps) {
 
   // Профиль не загрузился — дальше показывать нечего: имя, абонемент,
   // настройки, всё завязано на него. Честная ошибка вместо тихого "Гостя".
+  // Привязка почты — тот же экран входа, но под живой сессией: бэкенд в этом
+  // случае не логинит, а записывает подтверждённый адрес текущему клиенту
+  // (back/routers/booking/miniapp_email_auth.py). Отдельной формы не заводим —
+  // шаги, валидация и тексты ошибок обязаны совпадать со входом.
+  if (isLinkEmailOpen && catalog) {
+    return (
+      <Auth
+        studioId={catalog.studio.id}
+        linkMode
+        onDone={() => {
+          setIsLinkEmailOpen(false);
+          setRefreshTick((tick) => tick + 1);
+        }}
+      />
+    );
+  }
+
   if (!isLoadingProfile && profileError) {
     return (
       <div className="relative flex min-h-[70dvh] items-center justify-center">
@@ -358,6 +377,26 @@ export default function Profile({ catalog }: ProfileProps) {
 
       <SectionLabel>{t('profile.app_group')}</SectionLabel>
       <div className="flex flex-col gap-2 px-5">
+        {/* Почта — ключ ко входу из браузера. Привязана — показываем адрес и
+            больше не зовём: перепривязка это уже смена контакта, её место в
+            CRM у администратора, а не в самообслуживании клиента. */}
+        <SettingRow
+          label={profile?.email ?? t('profile.link_email', 'Прив’язати пошту')}
+          onClick={() => { if (!profile?.email) setIsLinkEmailOpen(true); }}
+          trailing={
+            profile?.email ? (
+              <span className="shrink-0 text-[10px] font-extrabold uppercase tracking-[0.08em] text-success">
+                {t('profile.email_linked', 'Прив’язано')}
+              </span>
+            ) : undefined
+          }
+          icon={
+            <>
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="M22 6l-10 7L2 6" />
+            </>
+          }
+        />
         <SettingRow
           label={t('profile.support')}
           onClick={open(setIsSupportOpen)}
@@ -394,6 +433,7 @@ export default function Profile({ catalog }: ProfileProps) {
         onClose={() => setIsBuyOpen(false)}
         onSuccess={() => setRefreshTick((tick) => tick + 1)}
         packages={catalog?.packages ?? []}
+        canPayOnline={catalog?.can_pay_online ?? false}
       />
       <LanguageModal isOpen={isLanguageOpen} onClose={() => setIsLanguageOpen(false)} />
     </div>

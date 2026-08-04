@@ -8,7 +8,7 @@ import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
 import type { ChannelStatus } from '../types'
 
-export function useChannels() {
+export function useChannels(stripeReady?: boolean) {
   const qc = useQueryClient()
   const { t } = useTranslation()
   const toast = useToast()
@@ -20,8 +20,10 @@ export function useChannels() {
   const channels = Object.fromEntries(rows.map(r => [r.channel_type, r])) as Record<string, BookingChannel>
 
   const statusOf = (type: BookingChannelType): ChannelStatus => {
-    if (type !== 'telegram') return 'connected'
     const ch = channels[type]
+    // Веб/Instagram/WhatsApp — ссылки на одно и то же мини-приложение, своего
+    // подключения у них нет: «подключён» для них = студия может принимать оплату.
+    if (type !== 'telegram') return stripeReady ? 'connected' : null
     return ch?.is_active ? 'connected' : null
   }
 

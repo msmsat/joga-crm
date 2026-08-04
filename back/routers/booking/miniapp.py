@@ -100,18 +100,22 @@ class TelegramAuthRequest(BaseSchema):
     referral_code: Optional[str] = None
 
 
-class TelegramAuthUser(BaseSchema):
+class ClientAuthUser(BaseSchema):
+    """Общая форма ответа на вход клиента — и телеграмного, и по email
+    (miniapp_email_auth.py). `tg_id` optional именно поэтому: у клиента,
+    зашедшего по ссылке в браузере, Telegram-аккаунта может не быть вовсе.
+    """
     id: int
-    tg_id: int
+    tg_id: Optional[int]
     name: str
     notifs_enabled: bool
     reminders_enabled: bool
     registration_date: datetime
 
 
-class TelegramAuthResponse(BaseSchema):
+class ClientAuthResponse(BaseSchema):
     token: str
-    user: TelegramAuthUser
+    user: ClientAuthUser
 
 
 async def _create_pending_referral(db: AsyncSession, studio_id: int, client: Client, code: str) -> None:
@@ -148,7 +152,7 @@ async def check_user(
     return CheckUserResponse(exists=exists)
 
 
-@router.post("/auth/telegram", response_model=TelegramAuthResponse)
+@router.post("/auth/telegram", response_model=ClientAuthResponse)
 @limiter.limit("10/minute")
 async def auth_telegram(
     request: Request,
@@ -248,9 +252,9 @@ async def auth_telegram(
         {"sub": str(client.id), "typ": "client", "studio_id": client.studio_id},
         expires_minutes=60 * 24 * 30,
     )
-    return TelegramAuthResponse(
+    return ClientAuthResponse(
         token=token,
-        user=TelegramAuthUser(
+        user=ClientAuthUser(
             id=client.id,
             tg_id=client.tg_id,
             name=client.name,

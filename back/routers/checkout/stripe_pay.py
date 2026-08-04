@@ -23,11 +23,13 @@ from sqlalchemy.future import select
 from activity import log_activity
 from database import async_session_maker, get_db
 from dependencies import get_current_user, require_role, StudioContext
-from models import OnlineChannel, StripeCheckout, Studio, User
+from models import OnlineChannel, StripeCheckout, Studio, SubscriptionPackage, User
 from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
 )
+from routers.clients.subscriptions import attach_subscription
 from services import stripe_connect
+from services.notifier import notify_payment
 
 from .router import _get_client_package, _quote, perform_pay, reject_dead_promo, resolve_account
 
@@ -173,6 +175,42 @@ async def create_session(
     )
 
 
+async def _apply_client_subscription_purchase(db: AsyncSession, checkout: StripeCheckout) -> None:
+    """Клиент купил абонемент сам в мини-приложении (`checkout.user_id is
+    None` — не кассир). Тот же контракт, что у `perform_pay`: один `commit` и
+    `notify_payment` внутри — `apply_paid` вызывает эту функцию ВМЕСТО
+    `perform_pay` для заявок мини-приложения, а не вместе с ней.
+    """
+    client_id = checkout.payload["client_id"]
+    package_id = checkout.payload["package_id"]
+
+    package = (await db.execute(
+        select(SubscriptionPackage).where(SubscriptionPackage.id == package_id)
+    )).scalar_one_or_none()
+    if package is None:
+        # Пакет сняли с продажи между созданием сессии Stripe и оплатой —
+        # деньги списаны, проводить нечем. Ловит общая ветка _NOT_APPLIED.
+        raise HTTPException(status_code=400, detail="Пакет абонемента снят с продажи")
+
+    # attach_subscription с price > 0 обращается к account.id — без реального
+    # счёта упадёт AttributeError. Клиент мини-приложения счёт не выбирает
+    # (это понятие только у кассы), поэтому берём дефолтный счёт студии — та
+    # же ветка, что у кассира, который тоже не выбрал счёт.
+    account = await resolve_account(db, checkout.studio_id, None)
+    await attach_subscription(
+        db, checkout.studio_id, client_id, package, account,
+        mark_paid=True, price=checkout.amount,
+    )
+    log_activity(
+        db, checkout.studio_id, "payment",
+        title=f"Абонемент «{package.name}» куплен в мини-приложении",
+        actor_name="Мини-приложение",
+        entity_type="client", entity_id=client_id,
+    )
+    await db.commit()
+    await notify_payment(db, checkout.studio_id, client_id, checkout.amount)
+
+
 async def apply_paid(db: AsyncSession, session_id: str, *, account_id: str | None = None) -> bool:
     """Провести оплату по заявке ровно один раз. True — провели именно сейчас.
 
@@ -204,18 +242,24 @@ async def apply_paid(db: AsyncSession, session_id: str, *, account_id: str | Non
     if checkout.status != "pending":
         return False
 
-    # Пометка и проведение уходят одним commit'ом внутри perform_pay: упало
-    # проведение — откатилась и пометка, заявка снова pending и повтор сработает.
+    # Пометка и проведение уходят одним commit'ом внутри perform_pay /
+    # _apply_client_subscription_purchase: упало проведение — откатилась и
+    # пометка, заявка снова pending и повтор сработает.
     checkout.status = "paid"
     try:
-        await perform_pay(
-            db, checkout.studio_id, checkout.user_id,
-            CheckoutPayRequest.model_validate(checkout.payload), method="stripe",
-            # Пересчёт обязан сойтись со списанной суммой, иначе в Финансы
-            # осядет не то, что забрали у клиента. Не сошлось — 409 из
-            # perform_pay, дальше общая ветка «списано, но не проведено».
-            expected_total=checkout.amount,
-        )
+        if checkout.user_id is None:
+            # Заявка мини-приложения: клиент купил абонемент сам, не через
+            # кассу — своя проводка, а не CheckoutPayRequest кассира.
+            await _apply_client_subscription_purchase(db, checkout)
+        else:
+            await perform_pay(
+                db, checkout.studio_id, checkout.user_id,
+                CheckoutPayRequest.model_validate(checkout.payload), method="stripe",
+                # Пересчёт обязан сойтись со списанной суммой, иначе в Финансы
+                # осядет не то, что забрали у клиента. Не сошлось — 409 из
+                # perform_pay, дальше общая ветка «списано, но не проведено».
+                expected_total=checkout.amount,
+            )
     except HTTPException as exc:
         # Деньги у Stripe УЖЕ списаны, а бизнес-правило отвергло проведение:
         # сертификат погасили в другом окне, промокод кончился, пакет сняли с

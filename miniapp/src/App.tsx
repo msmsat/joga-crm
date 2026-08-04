@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Home from './pages/home';
 import Shedule from './pages/shedule';
@@ -6,28 +6,13 @@ import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
 import BottomNav from './components/BottomNav';
 import AmbientBackdrop from './components/home/AmbientBackdrop';
+import Auth from './pages/auth';
 import { authTelegram, type UserResponse } from './api/auth';
 import { getStudioCatalog, type StudioCatalog } from './api/studio';
 import { useTelegram } from './hooks/useTelegram';
+import { readEntry } from './lib/entry';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
-
-/**
- * `start_param` приходит из deep link `t.me/<bot>?startapp=s<studio_id>` —
- * например `s42` для студии 42, или `s42_refABC123` для реферальной ссылки
- * (код всегда хвостом после студии, ведущий `s<id>` не задет).
- */
-function parseStudioId(startParam: string | undefined): number | null {
-  if (!startParam) return null;
-  const match = /^s(\d+)/.exec(startParam);
-  return match ? Number(match[1]) : null;
-}
-
-function parseReferralCode(startParam: string | undefined): string | undefined {
-  if (!startParam) return undefined;
-  const match = /_ref([A-Za-z0-9]+)$/.exec(startParam);
-  return match ? match[1] : undefined;
-}
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -36,9 +21,29 @@ export default function App() {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [catalog, setCatalog] = useState<StudioCatalog | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // Приложение открыли не из Telegram (нет initData) либо без deep-link на
-  // студию (нет start_param) — валидного способа авторизоваться нет.
-  const [needsTelegram, setNeedsTelegram] = useState(false);
+  // Студия известна, сессии нет → показываем вход по почте. Студия неизвестна
+  // (голый адрес без `/s/<id>` и без deep-link) → показать нечего: в какой
+  // кабинет пускать, приложение не знает.
+  // useMemo, а не голый вызов: ссылка на entry уходит в зависимости boot-эффекта,
+  // и пересоздание объекта на каждый рендер гоняло бы авторизацию по кругу.
+  const entry = useMemo(
+    () => readEntry(tg?.initDataUnsafe?.start_param, Boolean(tg)),
+    [tg],
+  );
+  const [needsAuth, setNeedsAuth] = useState(false);
+
+  /** Каталог грузится один раз после входа — любым способом. */
+  const loadCatalog = async () => {
+    // Один снимок каталога студии на весь сеанс — филиалы/послуги/пакеты
+    // не меняются настолько часто, чтобы держать их за TanStack Query
+    // (эпик прямо отказывается от неё, см. "Явно НЕ делаем").
+    try {
+      setCatalog(await getStudioCatalog());
+    } catch (error) {
+      console.error('Не вдалося завантажити дані студії:', error);
+    }
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     if (tg) {
@@ -50,7 +55,8 @@ export default function App() {
       // Токен уже сохранён — доверяем ему сразу, без похода на бэкенд:
       // эндпоинта на валидацию токена нет, а если он всё же протух, первый
       // же авторизованный запрос поймает 401 и client.ts сам сбросит сессию
-      // (см. api/client.ts).
+      // (см. api/client.ts). Это же и есть «запомнить меня»: токен живёт
+      // 30 дней и лежит в localStorage независимо от того, какой дверью вошли.
       const session = getSession();
       if (session?.token) {
         // Полного профиля тут ещё нет — из downstream-страниц используется
@@ -59,45 +65,38 @@ export default function App() {
         setUser({ name: session.name } as UserResponse);
       } else {
         const initData: string | undefined = tg?.initData;
-        const studioId = parseStudioId(tg?.initDataUnsafe?.start_param);
 
-        if (!initData || !studioId) {
-          setNeedsTelegram(true);
-          setIsLoading(false);
-          return;
-        }
-
-        try {
-          const { token, user: authedUser } = await authTelegram({
-            init_data: initData,
-            studio_id: studioId,
-            referral_code: parseReferralCode(tg?.initDataUnsafe?.start_param),
-          });
-          saveSession({ token, name: authedUser.name });
-          setUser(authedUser);
-        } catch (error) {
-          console.error('Помилка авторизації через Telegram:', error);
-          // На случай, если в сторадже лежал протухший токен.
-          clearSession();
-          setNeedsTelegram(true);
+        // Telegram — молчаливый вход: подпись initData уже доказала личность,
+        // спрашивать почту сверху было бы лишним экраном на ровном месте.
+        if (initData && entry.studioId) {
+          try {
+            const { token, user: authedUser } = await authTelegram({
+              init_data: initData,
+              studio_id: entry.studioId,
+              referral_code: entry.referralCode,
+            });
+            saveSession({ token, name: authedUser.name });
+            setUser(authedUser);
+          } catch (error) {
+            console.error('Помилка авторизації через Telegram:', error);
+            // На случай, если в сторадже лежал протухший токен.
+            clearSession();
+            setNeedsAuth(true);
+            setIsLoading(false);
+            return;
+          }
+        } else {
+          setNeedsAuth(true);
           setIsLoading(false);
           return;
         }
       }
 
-      // Один снимок каталога студии на весь сеанс — филиалы/послуги/пакеты
-      // не меняются настолько часто, чтобы держать их за TanStack Query
-      // (эпик прямо отказывается от неё, см. "Явно НЕ делаем").
-      try {
-        setCatalog(await getStudioCatalog());
-      } catch (error) {
-        console.error('Не вдалося завантажити дані студії:', error);
-      }
-      setIsLoading(false);
+      await loadCatalog();
     };
 
     boot();
-  }, []);
+  }, [tg, entry]);
 
   const switchTab = (tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');
@@ -120,7 +119,26 @@ export default function App() {
     );
   }
 
-  if (needsTelegram) {
+  // Студию знаем — значит вход возможен и вне Telegram: по коду на почту.
+  if (needsAuth && entry.studioId) {
+    return (
+      <Auth
+        studioId={entry.studioId}
+        referralCode={entry.referralCode}
+        onDone={(authedUser, token) => {
+          saveSession({ token, name: authedUser.name });
+          setUser(authedUser);
+          setNeedsAuth(false);
+          setIsLoading(true);
+          loadCatalog();
+        }}
+      />
+    );
+  }
+
+  // Студии нет вовсе: открыли голый адрес без `/s/<id>` и без deep-link.
+  // Единственное, что можно честно сказать — нужна ссылка студии.
+  if (needsAuth) {
     return (
       <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-8 text-center">
         <AmbientBackdrop tint="#F9A08B" />
@@ -153,11 +171,11 @@ export default function App() {
           className="pt-6"
         >
           <h1 className="text-[26px] font-extrabold leading-[1.08] tracking-[-0.03em] text-foreground">
-            Відкрийте застосунок у Telegram
+            Потрібне посилання студії
           </h1>
           <p className="mt-2.5 max-w-[19rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground">
-            Це кабінет клієнта студії — увійти можна лише за посиланням на
-            запис у Telegram-боті вашої студії.
+            Це кабінет клієнта. Відкрийте його за посиланням вашої студії —
+            з Telegram, Instagram або сайту.
           </p>
         </motion.div>
       </div>

@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List, Optional
-from sqlalchemy import BigInteger, Integer, String, DateTime, Date, Boolean, ForeignKey, CheckConstraint, Text, JSON, func
+from sqlalchemy import BigInteger, Integer, String, DateTime, Date, Boolean, ForeignKey, CheckConstraint, Text, JSON, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -125,3 +125,30 @@ class ClientNote(Base):
 
     client: Mapped["Client"] = relationship(back_populates="notes")
     author: Mapped[Optional["User"]] = relationship()
+
+
+class ClientEmailOtp(Base):
+    """Код подтверждения email — вход клиента в мини-приложение вне Telegram.
+
+    Своя таблица, а не колонки на clients: код запрашивают ДО того, как клиент
+    существует (первый заход по ссылке `/s/<studio_id>` — карточки ещё нет), а
+    заводить Client на каждый введённый в форму адрес значило бы набивать
+    студии базу мусором с любого случайного захода.
+
+    Механика повторяет services/otp.py (там она привязана к User и потому
+    напрямую не переиспользуется): код лежит хэшем — дамп БД не даёт войти,
+    живёт CODE_TTL и умирает после MAX_ATTEMPTS промахов, чтобы шесть цифр
+    нельзя было перебрать. Строка одна на пару (студия, email): повторный
+    запрос кода затирает предыдущий, а не копит параллельно валидные.
+    """
+    __tablename__ = "client_email_otp"
+    __table_args__ = (
+        UniqueConstraint("studio_id", "email", name="uq_client_email_otp_studio_email"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    email: Mapped[str] = mapped_column(String(255))
+    code_hash: Mapped[str] = mapped_column(String(255))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+    attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

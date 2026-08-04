@@ -24,9 +24,12 @@ services:
       # Перебивает DATABASE_URL из env_file: в контейнере база не на localhost.
       DATABASE_URL: postgresql+asyncpg://velora:${POSTGRES_PASSWORD}@db:5432/velora
     volumes:
-      # Загруженные лого и файлы должны переживать пересборку образа.
-      - ./back/static:/app/static
-      - ./back/uploads:/app/uploads
+      # Именованные тома, а НЕ ./back/static — папка отслеживается git-ом, и
+      # загруженные клиентами файлы попадали бы в рабочую копию: git status вечно
+      # грязный, а `git checkout .` перед обновлением стёр бы их подчистую.
+      # Здесь они лежат вне дерева репозитория и переживают и пересборку, и git pull.
+      - static_data:/app/static
+      - uploads_data:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -49,6 +52,23 @@ services:
       - api
     restart: unless-stopped
 
+  # Домашний ПК как сервер: белого IP и проброса портов не требует — соединение
+  # исходящее. HTTPS терминирует Cloudflare, поэтому SITE_ADDRESS оставляем :80
+  # (Caddy сам сертификат не получит: снаружи до его :80 не достучаться).
+  # Не поднимается по умолчанию, только с  --profile tunnel.
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    # Именно ${...:-}, а не ${...:?}: compose подставляет переменные ДО применения
+    # профилей, и обязательная переменная роняла бы обычный запуск на сервере,
+    # где туннель не нужен. Пустой токен отловит сам cloudflared при старте.
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN:-}
+    profiles: [tunnel]
+    depends_on:
+      - web
+    restart: unless-stopped
+
 volumes:
-  pgdata:
-  caddy_data:
+  pgdata:        # база
+  static_data:   # логотипы, фото филиалов и сотрудников
+  uploads_data:  # прочие загрузки
+  caddy_data:    # сертификаты Let's Encrypt

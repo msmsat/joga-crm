@@ -7,6 +7,8 @@ StudioIntegration/tg_notify (рассылка уведомлений) и Booking
 токены-сироты. Всё подключение/отключение теперь идёт только через этот модуль,
 одной транзакцией на все три таблицы.
 """
+import logging
+import os
 from datetime import datetime
 
 import aiohttp
@@ -17,7 +19,44 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models import BookingChannelConfig, StudioIntegration
 from services.assistant import get_or_create_ai_settings
 
+logger = logging.getLogger(__name__)
+
 _VERIFY_TIMEOUT_SECONDS = 5
+_WEBHOOK_TIMEOUT_SECONDS = 5
+# Публичный адрес бэкенда — на него Telegram шлёт апдейты (см. BACKEND_URL в .env.example,
+# тот же приём, что и у server_callback вебхука Fondy).
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+
+
+async def _set_webhook(token: str) -> None:
+    """Подписывает бота на апдейты /booking/telegram/webhook/{token} — оттуда
+    отвечает /start (routers/booking/telegram_webhook.py).
+
+    Ошибку глушим: без вебхука просто не будет ответа на /start, а не сломанное
+    подключение — токен уже проверен verify_bot_token, отменять его из-за сети не за что.
+    """
+    try:
+        timeout = aiohttp.ClientTimeout(total=_WEBHOOK_TIMEOUT_SECONDS)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(
+                f"https://api.telegram.org/bot{token}/setWebhook",
+                json={"url": f"{BACKEND_URL}/booking/telegram/webhook/{token}"},
+            ) as resp:
+                if resp.status >= 400:
+                    logger.warning("Telegram setWebhook: %s (%s)", resp.status, (await resp.text())[:200])
+    except (aiohttp.ClientError, TimeoutError) as exc:
+        logger.warning("Telegram setWebhook не удался: %s", exc)
+
+
+async def _delete_webhook(token: str) -> None:
+    try:
+        timeout = aiohttp.ClientTimeout(total=_WEBHOOK_TIMEOUT_SECONDS)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(f"https://api.telegram.org/bot{token}/deleteWebhook") as resp:
+                if resp.status >= 400:
+                    logger.warning("Telegram deleteWebhook: %s (%s)", resp.status, (await resp.text())[:200])
+    except (aiohttp.ClientError, TimeoutError) as exc:
+        logger.warning("Telegram deleteWebhook не удался: %s", exc)
 
 
 async def verify_bot_token(token: str) -> str:
@@ -88,11 +127,15 @@ async def connect_telegram_bot(db: AsyncSession, studio_id: int, token: str, use
         channel.connected_at = datetime.utcnow()
 
     await db.commit()
+    # После коммита: подписка на вебхук не должна откатывать уже сохранённое
+    # подключение, если Telegram недоступен (см. _set_webhook).
+    await _set_webhook(token)
 
 
 async def disconnect_telegram_bot(db: AsyncSession, studio_id: int) -> None:
     """Стирает токен из всех трёх таблиц. Коммитит сам."""
     ai = await get_or_create_ai_settings(studio_id, db)
+    old_token = ai.tg_token
     ai.tg_token = None
     ai.tg_username = None
     ai.tg_enabled = False
@@ -107,3 +150,5 @@ async def disconnect_telegram_bot(db: AsyncSession, studio_id: int) -> None:
     channel.connected_at = None
 
     await db.commit()
+    if old_token:
+        await _delete_webhook(old_token)

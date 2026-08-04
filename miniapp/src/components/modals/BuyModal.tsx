@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PaymentModal from './PaymentModal';
 import { useTelegram } from '../../hooks/useTelegram';
-import { buySubscription } from '../../api/user';
+import { createCheckoutSession } from '../../api/user';
 import { notify } from '../../lib/notify';
 import type { SubscriptionPackageInfo } from '../../api/studio';
 
@@ -13,13 +13,13 @@ interface BuyModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   packages: SubscriptionPackageInfo[];
+  /** Студия подключила приём онлайн-оплаты (Stripe Connect). */
+  canPayOnline: boolean;
 }
 
-export default function BuyModal({ isOpen, onClose, onSuccess, packages }: BuyModalProps) {
+export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayOnline }: BuyModalProps) {
   const { t } = useTranslation();
-  // ponytail: tg_id остаётся здесь до блока 6 EPIC_MA_REAL_BACKEND — buySubscription
-  // ниже последний потребитель tg_id, уйдёт вместе с переходом на Stripe Checkout.
-  const { tg_id, vibrateLight } = useTelegram();
+  const { tg, vibrateLight } = useTelegram();
 
   // Раскрывающаяся карточка заменена на выбор: раскрытие прятало кнопку оплаты
   // внутрь карточки, и до неё было два тапа вместо одного.
@@ -30,30 +30,42 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages }: BuyMo
   const nameOf = (plan: SubscriptionPackageInfo) =>
     t(`subscription.${plan.name}.name`, { defaultValue: plan.name });
 
-  const finishPurchase = async () => {
+  const handleClose = () => {
+    setSelectedId(null);
+    setIsPaymentOpen(false);
+    onClose();
+  };
+
+  /**
+   * Stripe открывается снаружи (`tg.openLink`, без Stripe.js на клиенте) —
+   * подтверждение оплаты приходит бэку по вебхуку, а не нам напрямую. Здесь
+   * нельзя честно сказать «оплата прошла»: мы просто не знаем, оплатил клиент
+   * или закрыл вкладку. Единственный честный шаг — перечитать абонементы,
+   * когда клиент вернулся в Telegram, и показать то, что реально в базе.
+   */
+  const waitForReturnAndRefresh = () => {
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', onVisible);
+      if (onSuccess) onSuccess();
+      notify(t('buyModal.checking_payment'));
+      handleClose();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+  };
+
+  const startPayment = async () => {
     if (!selected) return;
 
     try {
-      await buySubscription(tg_id, {
-        type: selected.name,
-        total_classes: selected.class_count,
-        amount: selected.price,
-        valid_days: selected.duration_days,
-      });
-
-      // Сначала обновляем профиль (запрос уходит в фон), потом показываем текст —
-      // пока клиент его читает, экран позади уже перерисован.
-      if (onSuccess) onSuccess();
-      notify(t('buyModal.success', { name: nameOf(selected) }));
-      handleClose();
+      const { url } = await createCheckoutSession(selected.id);
+      if (tg?.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
+      setIsPaymentOpen(false);
+      waitForReturnAndRefresh();
     } catch (error) {
       notify(error instanceof Error ? error.message : t('buyModal.activate_error'));
     }
-  };
-
-  const handleClose = () => {
-    setSelectedId(null);
-    onClose();
   };
 
   return (
@@ -65,9 +77,16 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages }: BuyMo
         title={t('buyModal.title')}
         subtitle={t('buyModal.sub')}
         footer={
-          <SheetAction onClick={() => setIsPaymentOpen(true)} disabled={!selected}>
-            {selected ? t('buyModal.pay', { price: selected.price_str }) : t('buyModal.choose_plan')}
-          </SheetAction>
+          canPayOnline ? (
+            <SheetAction onClick={() => setIsPaymentOpen(true)} disabled={!selected}>
+              {selected ? t('buyModal.pay', { price: selected.price_str }) : t('buyModal.choose_plan')}
+            </SheetAction>
+          ) : (
+            // Пустая кнопка, ведущая в ошибку (Stripe не подключён), хуже честного текста.
+            <div className="rounded-[18px] bg-muted px-4 py-3.5 text-center text-[13px] font-semibold text-muted-foreground">
+              {t('buyModal.pay_in_studio')}
+            </div>
+          )
         }
       >
         <div className="flex flex-col gap-2.5">
@@ -128,7 +147,7 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages }: BuyMo
         onClose={() => setIsPaymentOpen(false)}
         itemName={selected ? nameOf(selected) : ''}
         amountStr={selected ? selected.price_str : ''}
-        onSuccess={finishPurchase}
+        onPay={startPayment}
       />
     </>
   );

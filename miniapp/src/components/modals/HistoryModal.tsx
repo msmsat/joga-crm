@@ -83,7 +83,7 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
             >
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[13.5px] font-bold text-foreground">
-                  {item.action_type === 'buy_subscription'
+                  {item.action_type === 'subscription'
                     ? t('payment.action.buy_subscription', {
                         item: t(`subscription.${item.item_key}.name`, {
                           defaultValue: item.description,

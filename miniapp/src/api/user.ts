@@ -1,8 +1,4 @@
-import { BASE_URL } from './config';
 import { apiGet, apiPatch, apiPost } from './client';
-
-// Формируем базовый URL именно для юзеров (поки лишається для buySubscription — блок 6)
-const API_URL = `${BASE_URL}/users`;
 
 // ==========================================
 // 📝 ИНТЕРФЕЙСЫ
@@ -12,6 +8,8 @@ const API_URL = `${BASE_URL}/users`;
 export interface UserProfile {
   id: number;
   name: string;
+  /** null — почта не привязана: профиль зовёт привязать, чтобы открыть вход из браузера. */
+  email: string | null;
   notifs_enabled: boolean;
   reminders_enabled: boolean;
   registration_date: string;
@@ -30,11 +28,8 @@ export interface UserSubscription {
   is_frozen: boolean;
 }
 
-export interface BuySubscriptionRequest {
-  type: string;
-  total_classes: number;
-  amount: number;
-  valid_days: number;
+export interface CheckoutSessionResponse {
+  url: string;
 }
 
 // Повторяет MiniappPayment
@@ -44,18 +39,13 @@ export interface PaymentResponse {
   status: string;
   created_at: string;
   amount_str: string;
-  action_type: string; // "buy_subscription"
+  action_type: string; // "subscription" — так его пишет attach_subscription на бэке
   item_key: string;  // item_key — це те, що ми будемо використовувати для отримання перекладу назви абонемента.
 }
 
 interface MeSettingsResponse {
   notifs_enabled: boolean;
   reminders_enabled: boolean;
-}
-
-export interface SuccessResponse {
-  status: string;
-  message: string;
 }
 
 export interface BookLessonRequest {
@@ -83,18 +73,15 @@ export const getUserProfile = (): Promise<UserProfile> => apiGet('/global/me');
 export const getUserSubscription = (): Promise<UserSubscription[]> =>
   apiGet('/global/me/subscriptions');
 
-// 3. Купівля абонемента (POST)
-export const buySubscription = async (tgId: number, data: BuySubscriptionRequest): Promise<SuccessResponse> => {
-  const response = await fetch(`${API_URL}/${tgId}/buy-subscription`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+// 3. Оплата абонемента — хостед-сесія Stripe. Ендпоінт: POST /global/checkout/session
+// in_telegram вирішує, КУДИ Stripe поверне після оплати: у t.me чи на веб-адресу
+// міні-застосунку. З браузера повернення в Telegram викинуло б людину зі вкладки,
+// в якій вона платила. Сам URL будує сервер — див. _checkout_return_base.
+export const createCheckoutSession = (packageId: number): Promise<CheckoutSessionResponse> =>
+  apiPost('/global/checkout/session', {
+    package_id: packageId,
+    in_telegram: Boolean((window as { Telegram?: { WebApp?: unknown } }).Telegram?.WebApp),
   });
-  if (!response.ok) {
-    throw new Error('Помилка при покупці абонемента');
-  }
-  return response.json();
-};
 
 // 4. Отримання історії оплат. Ендпоінт: GET /global/me/payments
 export const getUserPayments = (): Promise<PaymentResponse[]> => apiGet('/global/me/payments');

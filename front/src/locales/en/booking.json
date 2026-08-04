@@ -61,9 +61,40 @@
     "codeCopied": "Code copied!",
     "linkCopied": "Link copied!"
   },
+  "stripeGate": {
+    "kicker": "Required for online booking",
+    "none": {
+      "title": "Set up payments first",
+      "sub": "Clients book and pay in one flow. Until the Stripe account is connected, they cannot pay for a booking.",
+      "action": "Connect Stripe"
+    },
+    "incomplete": {
+      "title": "Finish the Stripe setup",
+      "sub": "The account exists, but Stripe has not enabled payments yet — the form is still incomplete.",
+      "action": "Continue setup"
+    },
+    "disabled": {
+      "title": "Payments are turned off",
+      "sub": "Stripe is connected and ready to accept payments, but it's switched off in the Finances section.",
+      "action": "Open Finances"
+    },
+    "loading": {
+      "title": "Checking the connection",
+      "sub": "Asking Stripe whether the studio account is ready to accept payments.",
+      "action": "Checking…"
+    },
+    "perks": {
+      "direct": "Money lands directly on the studio account",
+      "methods": "Cards, Apple Pay and Google Pay out of the box",
+      "fee": "Velora takes no cut of your payments"
+    },
+    "later": "Later",
+    "note": "The Stripe form will open. When you are done, you return to Finances."
+  },
   "tg": {
     "title": "Telegram bot",
     "connected": "Connected",
+    "openInTelegram": "Open the bot in Telegram",
     "showToken": "Show token",
     "hideToken": "Hide token",
     "acceptsBookings": "Bot accepts bookings from clients",
