@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ModalShell, useModalClose } from '../../../../../components/ui/index';
 import type { ChannelBrand } from './channelBrand';
 
-// Общий каркас четырёх канальных модалок (Telegram / WhatsApp / Instagram / Email):
+// Общий каркас трёх канальных модалок (Telegram / WhatsApp / Email):
 // слева — ониксовый герой канала (логотип, статус, реквизит), справа — заголовок,
 // тело и футер. Герой намеренно в палитре Velora (оникс + персик), а не в цветах
 // бренда канала: фирменный цвет живёт только в логотипе и еле заметном свечении,

@@ -2,15 +2,16 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ChannelKey } from '../../types';
 import { CHANNELS } from '../../constants';
-import { waBusinessVerified, waPaymentConnected } from '../../utils';
+import { waEnableBlocker } from '../../utils';
+import { Tooltip } from '../../../../../components/ui/index';
 import NotifIllustration from '../ui/NotifIllustration';
 import ToggleSwitch from '../ui/ToggleSwitch';
 import type { NotifyChannelsStatus } from '../../../../../api/notifications/notifications.types';
 
 // Каналы, для которых есть реальное подключение (модалка).
 // SMS/Push подключаются в других разделах — клик по ним не открывает модалку.
-const MODAL_KEY: Partial<Record<ChannelKey, 'tg' | 'email' | 'wa' | 'ig'>> = {
-  telegram: 'tg', email: 'email', whatsapp: 'wa', instagram: 'ig',
+const MODAL_KEY: Partial<Record<ChannelKey, 'tg' | 'email' | 'wa'>> = {
+  telegram: 'tg', email: 'email', whatsapp: 'wa',
 };
 
 function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key: ChannelKey): boolean | null {
@@ -18,7 +19,6 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
   if (key === 'telegram') return statuses.telegram.connected;
   if (key === 'email') return statuses.email.connected;
   if (key === 'whatsapp') return statuses.whatsapp.connected;
-  if (key === 'instagram') return statuses.instagram.connected;
   return null;
 }
 
@@ -26,13 +26,11 @@ function integrationSub(statuses: NotifyChannelsStatus | undefined, key: Channel
   const details = key === 'telegram' ? statuses?.telegram.details
     : key === 'email' ? statuses?.email.details
     : key === 'whatsapp' ? statuses?.whatsapp.details
-    : key === 'instagram' ? statuses?.instagram.details
     : undefined;
   if (!details) return fallback;
   const value = key === 'telegram' ? (details.bot_username && `@${details.bot_username}`)
     : key === 'email' ? details.email
     : key === 'whatsapp' ? details.display_phone_number
-    : key === 'instagram' ? (details.username && `@${details.username}`)
     : undefined;
   return (value as string | undefined) || '—';
 }
@@ -42,7 +40,7 @@ interface Props {
   toggleChannel: (key: ChannelKey) => void;
   channelSaving?: boolean;
   channelStatuses?: NotifyChannelsStatus;
-  onOpenModal: (modal: 'tg' | 'email' | 'wa' | 'ig') => void;
+  onOpenModal: (modal: 'tg' | 'email' | 'wa') => void;
 }
 
 export default function ChannelsSidebar({ channels, toggleChannel, channelSaving, channelStatuses, onOpenModal }: Props) {
@@ -62,20 +60,17 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
             const integrationConnected = isIntegrationConnected(channelStatuses, ch.key);
             const needsConnect = requiresIntegration && integrationConnected === false;
             const sub = requiresIntegration ? integrationSub(channelStatuses, ch.key, ch.sub) : ch.sub;
-            // Номер подключён, а карты на WABA нет: канал живой (авто-ответчик
-            // отвечает в 24-часовом окне), но напоминания Meta отклонит. Молча
-            // это оставлять нельзя — иначе владелец узнает о проблеме только по
-            // тому, что клиентам ничего не приходит.
-            const paymentMissing = ch.key === 'whatsapp'
-              && integrationConnected === true
-              && waPaymentConnected(channelStatuses?.whatsapp) === false;
-            // Верификация — отдельное условие запуска. Показываем только когда
-            // Meta прямо ответила «не пройдена», и не дублируем предупреждение
-            // об оплате: два жёлтых блока подряд читаются как шум.
-            const notVerified = ch.key === 'whatsapp'
-              && integrationConnected === true
-              && !paymentMissing
-              && waBusinessVerified(channelStatuses?.whatsapp) === false;
+            // Номер подключён, но Meta ещё не сняла один из трёх барьеров (карта,
+            // верификация бизнеса, одобренные шаблоны) — доставка ровно ноль.
+            // Тумблер в этом состоянии не даём включить вовсе: включённый, он
+            // обещал бы рассылку, о поломке которой владелец узнал бы только по
+            // тому, что клиентам ничего не приходит. Показываем ПЕРВЫЙ барьер —
+            // три жёлтых блока подряд читались бы как шум, а закрывают их
+            // по очереди.
+            const waBlocker = ch.key === 'whatsapp' ? waEnableBlocker(channelStatuses?.whatsapp) : null;
+            // Выключить уже включённый канал можно всегда: запрет на ВКЛЮЧЕНИЕ
+            // не должен превращаться в ловушку (бэкенд гейтит ровно так же).
+            const toggleLocked = waBlocker !== null && !channels[ch.key];
 
             const handleClick = () => {
               if (modalKey) onOpenModal(modalKey);
@@ -129,6 +124,21 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
                   >
                     {t('channels.connect')}
                   </button>
+                ) : toggleLocked ? (
+                  // Тултип на обёртке, а не на кнопке: disabled-кнопка не шлёт
+                  // события мыши, поэтому тумблер здесь ещё и прозрачен для
+                  // указателя (pointerThrough) — иначе подсказка не появилась бы
+                  // именно там, где нужнее всего, а клик по нему не открывал бы
+                  // модалку канала с инструкцией.
+                  <Tooltip label={t('channels.waLockedHint')}>
+                    <ToggleSwitch
+                      on={false}
+                      onChange={() => {}}
+                      disabled
+                      pointerThrough
+                      aria-label={ch.label}
+                    />
+                  </Tooltip>
                 ) : (
                   <ToggleSwitch
                     on={channels[ch.key]}
@@ -139,7 +149,10 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
                 )}
               </div>
 
-              {(paymentMissing || notVerified) && (
+              {/* Текстом, а не только тултипом: с клавиатуры до заблокированного
+                  тумблера не добраться, а причина нужна всем. Строка кликабельна
+                  и ведёт в модалку канала — там расписано, что делать. */}
+              {waBlocker && (
                 <button
                   type="button"
                   onClick={() => onOpenModal('wa')}
@@ -156,7 +169,7 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
                     <line x1="12" y1="9" x2="12" y2="13" /><circle cx="12" cy="17" r="0.6" fill="currentColor" />
                   </svg>
                   <span style={{ minWidth: 0 }}>
-                    {t(paymentMissing ? 'channels.waPaymentMissing' : 'channels.waNotVerified')}
+                    {t(`channels.waBlocker.${waBlocker}`)}
                   </span>
                 </button>
               )}

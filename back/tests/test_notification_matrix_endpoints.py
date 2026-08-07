@@ -53,15 +53,19 @@ async def _run():
         assert len(matrix.events) == 38, len(matrix.events)  # весь каталог, не только тронутые
         assert all(r.locked is False and r.locked_channels == [] for r in matrix.events)
         c3 = by_id["c3"]
-        assert c3.channels == {"email": True, "telegram": True, "whatsapp": False, "instagram": False}, c3.channels
-        print("OK: GET /matrix — без локов, каналы по дефолтам каталога")
+        assert c3.channels == {"email": True, "telegram": True, "whatsapp": False}, c3.channels
+        # Instagram каналом уведомлений быть перестал — его нет ни в одной строке
+        # матрицы и ни в списке каналов (24-часовое окно Meta, см. notifier.py).
+        assert all("instagram" not in r.channels for r in matrix.events)
+        assert [c.key for c in matrix.channels] == ["email", "telegram", "whatsapp"], matrix.channels
+        print("OK: GET /matrix — без локов, каналы по дефолтам каталога, без Instagram")
 
-        # 1b) Персоналу telegram/instagram структурно недоступны (ROLE_CHANNELS) —
-        #     в строке трениера/админа/владельца этих ключей нет вообще, не
-        #     просто false: фронту нечего рисовать кликабельной галочкой.
+        # 1b) Персоналу telegram структурно недоступен (ROLE_CHANNELS) — в строке
+        #     тренера/админа/владельца этого ключа нет вообще, не просто false:
+        #     фронту нечего рисовать кликабельной галочкой.
         t1 = by_id["t1"]
         assert t1.channels == {"email": True, "whatsapp": True}, t1.channels
-        assert "telegram" not in t1.channels and "instagram" not in t1.channels, t1.channels
+        assert "telegram" not in t1.channels, t1.channels
         print("OK: GET /matrix — у персонала в строке только email/whatsapp")
 
         # 2) PATCH /events на critical проходит: замков в матрице больше нет,
@@ -99,6 +103,19 @@ async def _run():
             except HTTPException as e:
                 assert e.status_code == 422 and e.detail["code"] == "notifications.unknown_event", e.detail
         print("OK: role/event mismatch -> 422")
+
+        # 3b) instagram каналом уведомлений быть перестал — curl мимо интерфейса
+        #     тоже не заведёт по нему галку ни одной роли (ROLE_CHANNELS).
+        async with async_session_maker() as db:
+            try:
+                await upsert_event_toggle(
+                    body=EventToggle(role="client", event_id="c1", channel_key="instagram", is_enabled=True),
+                    ctx=owner, db=db,
+                )
+                raise AssertionError("ожидали 422 — instagram больше не канал уведомлений")
+            except HTTPException as e:
+                assert e.status_code == 422 and e.detail["code"] == "notifications.channel_unavailable_for_role", e.detail
+        print("OK: channel_key=instagram -> 422")
 
         # 4) c1 (email+telegram default) — email уже выключен шагом 3; гасим и
         #    telegram, последний канал. Тоже проходит: пустой набор превращается

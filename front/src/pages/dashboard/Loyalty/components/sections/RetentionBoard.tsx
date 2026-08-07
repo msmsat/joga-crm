@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -11,6 +12,11 @@ function monthLabel(key: string, locale: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'short' });
 }
 
+// Ширина одной пары столбцов (продано + продлено) с промежутком: столбцы держим
+// тонкими (maxBarSize 28), лишнюю ширину тратим на количество месяцев, а не на толщину.
+const PAIR_W = 44;
+const MIN_MONTHS = 6;
+
 export default function RetentionBoard() {
   const { t, i18n } = useTranslation('loyalty');
 
@@ -19,7 +25,21 @@ export default function RetentionBoard() {
     queryFn: () => loyaltyApi.getRetention(),
   });
 
-  const chartData = (data?.months ?? []).map(m => ({
+  // Бэкенд отдаёт 12 месяцев, показываем столько последних, сколько влезает
+  // по реальной ширине контейнера: на широком мониторе — все 12, на телефоне — 6.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxW, setBoxW] = useState(0);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setBoxW(e.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [data?.has_data]);
+
+  const months = data?.months ?? [];
+  const visible = Math.max(MIN_MONTHS, Math.min(months.length, Math.floor(boxW / PAIR_W)));
+  const chartData = months.slice(-visible).map(m => ({
     name: monthLabel(m.month, i18n.language),
     sold: m.sold,
     renewed: m.renewed,
@@ -42,8 +62,10 @@ export default function RetentionBoard() {
             <div style={{ fontSize: '11px', opacity: 0.5 }}>{t('retention.emptySub')}</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: 'var(--grid-gap)', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          // flex, а не grid 1fr 1fr: статам хватает 180px, остальное забирает график
+          // (столбцов тем больше, чем шире). Узкий экран — перенос в две строки.
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--grid-gap)', alignItems: 'center' }}>
+            <div style={{ flex: '0 1 180px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>{t('retention.renewalRate')}</div>
                 <div style={{ fontSize: '30px', fontWeight: 900, color: '#5BAB72' }}>{data.renewal_rate}%</div>
@@ -55,9 +77,11 @@ export default function RetentionBoard() {
             </div>
             {/* height числом — иначе recharts предупреждает про width(-1)/height(-1)
                 на первом рендере, до замера контейнера (см. ChartFrame). */}
-            <div style={{ height: '200px' }}>
+            <div ref={boxRef} style={{ flex: '1 1 320px', minWidth: 0, height: '200px' }}>
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+                {/* barCategoryGap в % — ширина столбцов считается от ширины контейнера,
+                    а не фиксируется числом: на широком экране график заполняется целиком. */}
+                <BarChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }} barCategoryGap="20%">
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text3)' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     cursor={{ fill: 'rgba(252,174,145,0.08)' }}

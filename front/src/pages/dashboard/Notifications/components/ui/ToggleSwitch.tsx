@@ -2,10 +2,18 @@ interface Props {
   on: boolean;
   onChange: () => void;
   disabled?: boolean;
+  // Пропускать указатель насквозь: выключенная кнопка не шлёт события мыши и
+  // «съедает» hover у родителя, из-за чего не появился бы ни тултип обёртки, ни
+  // клик по строке канала (ChannelsSidebar). Только для НАВСЕГДА заблокированного
+  // тумблера — на время сохранения этого делать нельзя, иначе случайный второй
+  // клик уходил бы в строку и открывал модалку.
+  pointerThrough?: boolean;
   'aria-label'?: string;
 }
 
-export default function ToggleSwitch({ on, onChange, disabled, 'aria-label': ariaLabel }: Props) {
+export default function ToggleSwitch({
+  on, onChange, disabled, pointerThrough, 'aria-label': ariaLabel,
+}: Props) {
   return (
     <button
       type="button"
@@ -22,6 +30,7 @@ export default function ToggleSwitch({ on, onChange, disabled, 'aria-label': ari
         border: 'none',
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.6 : 1,
+        pointerEvents: pointerThrough ? 'none' : undefined,
         background: on ? 'var(--peach)' : '#E5E3DF',
         transition: 'background 0.25s cubic-bezier(0.4,0,0.2,1)',
         flexShrink: 0,

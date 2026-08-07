@@ -9,9 +9,8 @@ import services.notifier as N
 
 
 class _FakeUser:
-    def __init__(self, id, email, tg_id, phone, ig_id=None):
+    def __init__(self, id, email, tg_id, phone):
         self.id, self.email, self.tg_id, self.phone = id, email, tg_id, phone
-        self.ig_id = ig_id
 
 
 class _Settings:
@@ -19,7 +18,6 @@ class _Settings:
         self.email_notifications = enabled
         self.telegram_notifications = enabled
         self.whatsapp_notifications = enabled
-        self.instagram_notifications = enabled
 
 
 class _StudioPrefs:
@@ -171,8 +169,11 @@ def test_notify_staff_fanout_hits_telegram_and_whatsapp():
     calls = []
 
     async def fake_deliver(db_, channel, recipient, subject, text, html, *, studio_id,
-                           tg_text=None, wa_template=None):
+                           tg_text=None, wa_template=None, event_id=None, context=None):
         calls.append(channel)
+        # event_id/context нужны журналу отправок (N-10) — без них ключ дедупа
+        # схлопнул бы все события студии в одну строку.
+        assert event_id == "o1" and context is not None, (event_id, context)
         # Telegram получает форматированную версию, остальные каналы — нет.
         assert (tg_text is not None) == (channel == "telegram"), (channel, tg_text)
         # WhatsApp — только шаблоном: свободный текст Meta доставит лишь внутри

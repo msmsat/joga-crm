@@ -43,4 +43,4 @@ class RetentionRead(BaseSchema):
     renewal_rate: int             # % продливших (0–100)
     avg_packages_per_client: float
     has_data: bool                # есть ли вообще продажи с датой (для empty-state)
-    months: list[RetentionMonth]  # 6 месяцев
+    months: list[RetentionMonth]  # последние 12 месяцев; сколько показать — решает фронт по ширине

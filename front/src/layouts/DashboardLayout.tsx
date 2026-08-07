@@ -8,6 +8,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import AIDrawer from '../components/AIDrawer';
 import PlanLimitModal from '../components/PlanLimitModal';
 import PhoneGate from '../components/PhoneGate';
+import { useMe } from '../hooks/useMe';
 import { getUserRoleFromToken } from '../utils/auth';
 import { billingApi } from '../api/billing/billing.api';
 import type { BillingPlan } from '../api/billing/billing.types';
@@ -93,6 +94,16 @@ export default function DashboardLayout() {
   const paywalled =
     subActive === false && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
 
+  // PhoneGate (ниже) блокирует экран целиком и закрыть его нельзя — но сам Outlet
+  // (Дашборд с графиками, живой лентой на 60с-поллинге и т.д.) всё равно монтировался
+  // и рендерился под ним. На первом входе после онбординга, на слабом мобильном CPU,
+  // это соревнование за главный поток и было причиной лагов при вводе телефона —
+  // не в самой модалке (она уже без backdrop-filter, см. .v-overlay), а в том, что
+  // крутилось позади неё. me ещё не загружен → not needsPhone, Outlet рендерится как
+  // раньше (не мигает пустотой у обычных пользователей с уже заполненным телефоном).
+  const { data: me } = useMe();
+  const needsPhone = !!me && !me.phone;
+
   return (
     <ThemeProvider>
     <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
@@ -124,7 +135,7 @@ export default function DashboardLayout() {
           position: 'relative', // 🔥 Включает контекст наложения для этой области
           zIndex: 1             // 🔥 Делает весь контент и графики ниже уровня topbar
         }}>
-          {paywalled ? <Navigate to="/dashboard/billing" replace /> : (
+          {paywalled ? <Navigate to="/dashboard/billing" replace /> : needsPhone ? null : (
             <ErrorBoundary key={location.pathname}>
               <Outlet />
             </ErrorBoundary>

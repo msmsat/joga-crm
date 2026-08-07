@@ -3,11 +3,14 @@
 возвращает {} — поэтому whatsapp-ветка (нет подключённого канала) тоже не
 делает сетевых вызовов. Проверяем только маршрутизацию и защитные ветки (нет
 email/tg_id/cfg → False, не пытаемся слать).
+Журнал отправок (N-10) тоже подменён: он ходит в БД своей сессией, а этот тест
+сознательно не трогает ни сеть, ни базу. Сам журнал покрыт test_outbox.py.
 Запуск из back/:  python -m tests.test_deliver
 """
 import asyncio
 
 import services.notifier as N
+import services.outbox as O
 
 
 class _Client:
@@ -31,8 +34,19 @@ async def _run():
     async def fake_integration_config(db, studio_id, kind):
         return {}
 
+    logged = []
+
+    async def fake_claim(studio_id, event_id, channel, recipient, context):
+        logged.append((channel, event_id))
+        return 1  # строка занята, слать надо
+
+    async def fake_finish(log_id, status, error=None):
+        logged.append((log_id, status))
+
     orig_email, orig_tg, orig_cfg = N.send_email, N.send_telegram, N._integration_config
+    orig_claim, orig_finish = O.claim, O.finish
     N.send_email, N.send_telegram, N._integration_config = fake_send_email, fake_send_telegram, fake_integration_config
+    O.claim, O.finish = fake_claim, fake_finish
     try:
         # email: есть адрес — шлёт html, возвращает True
         ok = await N.deliver(None, "email", _Client(email="a@x.com"), "Тема", "текст", "<p>текст</p>", studio_id=1)
@@ -73,8 +87,14 @@ async def _run():
             "Тема", "текст", "<p>текст</p>", studio_id=1,
         )
         assert ok is False and calls == []
+
+        # Каждая отправка, удачная или нет, оставила в журнале и claim, и finish:
+        # запись «мы пытались» не должна зависеть от исхода.
+        assert ("email", None) in logged and (1, "sent") in logged
+        assert (1, "rejected") in logged, logged
     finally:
         N.send_email, N.send_telegram, N._integration_config = orig_email, orig_tg, orig_cfg
+        O.claim, O.finish = orig_claim, orig_finish
 
 
 async def _run_wa_phone_guard():

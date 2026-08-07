@@ -34,7 +34,7 @@ from services.notifier import NOTIFY_CHANNELS
 
 _STUDIO_NAME = "TEST-NOTIF-ALL-EVENTS"
 # Канал -> integration_type, который делает его «подключённым» (см. резолвер).
-_INTEGRATIONS = ("tg_notify", "wa_notify", "ig_dm")
+_INTEGRATIONS = ("tg_notify", "wa_notify")  # ig_dm — не канал уведомлений (см. notifier.py)
 
 
 async def _seed() -> int:

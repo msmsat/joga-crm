@@ -72,6 +72,43 @@ class UserNotificationPreference(Base):
     user: Mapped["User"] = relationship(back_populates="notification_preferences")
 
 
+class NotificationLog(Base):
+    """Журнал отправок (эпик N-10): что, кому, когда и с каким исходом ушло.
+
+    Append-only, как activity_logs. Отвечает на вопрос поддержки «вы отправляли
+    клиенту напоминание?» — до него ответом был только logger.warning в потоке
+    логов, а на платном канале к этому добавлялось «за что списаны деньги».
+
+    dedup_key уникален и держит защиту от повтора: рестарт daily_notify между
+    отправкой и commit'ом состояния больше не задваивает напоминание. Как он
+    считается и почему в него входит час — services/outbox.py.
+    """
+    __tablename__ = "notification_logs"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # None — отправка не из матрицы уведомлений (сценарии лояльности зовут
+    # deliver() напрямую); роль не храним — она читается из самого event_id.
+    event_id: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    channel: Mapped[str] = mapped_column(String(20))
+    # Client.id для событий клиента, User.id для остальных; None — точечный
+    # адресат по to_email, которого нет в users.
+    recipient_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    # Реквизит, по которому реально ушло: email, телефон, tg_id, IGSID. Хранится
+    # строкой и на момент отправки — в споре важно, куда слали ТОГДА, а не куда
+    # ведёт карточка сейчас.
+    recipient_address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    dedup_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    # pending — попытка начата, исхода нет (процесс упал прямо в отправке);
+    # sent — провайдер принял; rejected — провайдер ответил отказом (сообщение не
+    # ушло, денег не списано); error — ответа не было (сеть, таймаут), и вот
+    # ЗДЕСЬ списание неизвестно. Ради этого разделения статусов журнал и нужен.
+    status: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    error: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+
+
 class StudioBookingSettings(Base):
     __tablename__ = "studio_booking_settings"
 

@@ -12,8 +12,10 @@ class Client(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     tg_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True, index=True, nullable=True)
-    # IGSID клиента — адрес доставки канала instagram (см. notifier.deliver).
-    # ponytail: заполняется только вручную/импортом — Instagram отдаёт IGSID лишь
+    # IGSID клиента. Каналом уведомлений Instagram быть перестал (24-часовое окно
+    # Meta делало проактивную рассылку недоставляемой — см. services/notifier.py),
+    # колонка оставлена недеструктивно: ничего не пишет и ничего не читает.
+    # ponytail: заполнялась только вручную/импортом — Instagram отдаёт IGSID лишь
     # во входящем сообщении директа и не даёт сопоставить его с телефоном/почтой.
     ig_id: Mapped[Optional[str]] = mapped_column(String(50), index=True, nullable=True)
     name: Mapped[str] = mapped_column(String(100))

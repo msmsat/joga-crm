@@ -131,7 +131,13 @@ async def _apply_action(db: AsyncSession, scenario: LoyaltyScenario, match: Matc
     if rendered is None:
         return
     subject, text, html = rendered
-    delivered = await deliver(db, scenario.channel, client, subject, text, html, studio_id=scenario.studio_id)
+    # context нужен журналу отправок (N-10): у сценариев нет event_id из каталога,
+    # и без различающего поля два РАЗНЫХ сценария одному клиенту в один час дали бы
+    # один ключ дедупликации — второй подарок молча не уехал бы.
+    delivered = await deliver(
+        db, scenario.channel, client, subject, text, html,
+        studio_id=scenario.studio_id, context={"scenario_id": scenario.id},
+    )
     if not delivered:
         logger.info("scenario %s: delivery via %s failed/unavailable for client %s, gift applied anyway",
                     scenario.id, scenario.channel, client.id)

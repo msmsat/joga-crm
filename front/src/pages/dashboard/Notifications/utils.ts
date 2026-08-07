@@ -28,6 +28,26 @@ export function waTemplates(status?: ChannelStatus): WaTemplateSummary | null {
   return value && typeof value === 'object' ? (value as WaTemplateSummary) : null;
 }
 
+// Что мешает ВКЛЮЧИТЬ WhatsApp тумблером, либо null — можно. Зеркало
+// services/whatsapp.enable_blocker: тот же порядок барьеров (карта -> верификация
+// -> шаблоны), потому что бэкенд всё равно ответит 409 с этим же кодом, и
+// подсказка обязана совпадать с отказом. Здесь это нужно, чтобы тумблер был
+// заблокирован ДО клика, а не ругался после.
+//
+// Канал не подключён (или статусы ещё грузятся) — не наш случай: там рисуется
+// кнопка «Подключить», а запирать тумблер на время загрузки незачем.
+export type WaBlocker = 'payment' | 'verification' | 'templates';
+
+export function waEnableBlocker(status?: ChannelStatus): WaBlocker | null {
+  if (!status?.connected) return null;
+  if (waPaymentConnected(status) !== true) return 'payment';
+  if (waBusinessVerified(status) !== true) return 'verification';
+  // Ни одного одобренного шаблона — писать первым нечем, доставка ноль.
+  // null (статусы ещё не читали) считаем блокирующим: «не знаем» ≠ «работает».
+  if (!waTemplates(status)?.approved) return 'templates';
+  return null;
+}
+
 // Оптимистичная правка одной ячейки — до ответа сервера. Локи не пересчитываем
 // здесь (это знает только бэк); onSuccess подменит строку целиком через mergeMatrixRow.
 export function optimisticToggle(matrix: MatrixRead, eventId: string, channel: ChannelKey, isEnabled: boolean): MatrixRead {

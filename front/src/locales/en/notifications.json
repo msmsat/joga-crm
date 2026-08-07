@@ -19,8 +19,12 @@
     "connect": "Connect",
     "connected": "Connected",
     "openSettings": "{{channel}} settings",
-    "waPaymentMissing": "No payment method — reminders aren't delivered. Set up",
-    "waNotVerified": "Business not verified with Meta — 250/day limit. How to fix"
+    "waLockedHint": "The channel unlocks once Meta has your payment method, a verified business and approved templates",
+    "waBlocker": {
+      "payment": "No payment method — reminders aren't delivered. Set up",
+      "verification": "Business not verified with Meta — 250/day limit. How to fix",
+      "templates": "Templates still under Meta review — nothing will be sent. Details"
+    }
   },
   "roles": {
     "client": "Client",
@@ -190,25 +194,32 @@
     "close": "Close",
     "cancel": "Cancel"
   },
-  "ig": {
-    "title": "Instagram",
-    "subtitleConnected": "Channel connected",
-    "subtitleDisconnected": "Sign in with Instagram",
-    "connected": "Connected",
-    "howToConnect": "How it works:",
-    "steps": {
-      "1": "Hit “Connect with Instagram” — the official Instagram sign-in page opens",
-      "2": "Sign in to the studio's business account and grant access to messages",
-      "3": "You land back here with the channel connected — Velora stores and refreshes the token itself"
+  "tabs": {
+    "matrix": "Settings",
+    "log": "Delivery log"
+  },
+  "log": {
+    "title": "Delivery log",
+    "subtitle": "What went out, to whom and when, and how each send ended.",
+    "status": {
+      "sent": "Delivered",
+      "rejected": "Rejected",
+      "error": "Connection failure",
+      "pending": "In progress"
     },
-    "requirement": "Requires an Instagram business or creator account linked to a Facebook page. No token or ID to type in.",
-    "windowWarning": "Direct doesn't reach everyone",
-    "windowNotice": "Messages only reach people who have already messaged the studio on Direct, and only within the 24-hour conversation window — the client must have an Instagram ID on file.",
-    "connect": "Connect with Instagram",
-    "disconnect": "Disconnect",
-    "disconnectTitle": "Disconnect Instagram?",
-    "disconnectMessage": "Clients and staff will stop receiving notifications through this channel.",
-    "close": "Close",
-    "cancel": "Cancel"
+    "searchPlaceholder": "Phone, email or event code",
+    "allChannels": "All channels",
+    "reset": "Reset",
+    "refreshing": "Refreshing…",
+    "otherEvent": "Send outside the catalog",
+    "empty": "Nothing has been sent yet",
+    "emptyHint": "Every notification the studio sends to clients and staff will show up here.",
+    "emptyFiltered": "Nothing found",
+    "emptyFilteredHint": "Try changing the filters or searching for a different number.",
+    "loadError": "Could not load the log",
+    "loadErrorHint": "Refresh the page — if that does not help, contact support.",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "prev": "Back",
+    "next": "Next"
   }
 }

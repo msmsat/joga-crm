@@ -350,9 +350,18 @@ export default function OnboardingPage() {
               fontWeight: 700, color: "white", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
               gap: "8px", letterSpacing: "-0.1px",
-              boxShadow: "0 8px 24px rgba(252,174,145,0.3)",
+              boxShadow: "0 8px 24px rgba(252,174,145,0.42)",
               transition: "all 0.2s ease", fontFamily: "inherit",
               opacity: (isSubmitting || !canProceedCurrent) ? 0.45 : 1,
+            }}
+            onMouseEnter={e => {
+              if (isSubmitting || !canProceedCurrent) return;
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 12px 30px rgba(252,174,145,0.55)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = "none";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(252,174,145,0.42)";
             }}
           >
             {isSubmitting

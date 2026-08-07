@@ -100,6 +100,8 @@
     "retry": "Retry",
     "invalid_bot_token": "Telegram rejected this token — make sure the bot exists",
     "wa_payment_required": "No payment method. Without a card on WhatsApp Business, Meta won't deliver a single notification — open the WhatsApp channel settings and add payment",
+    "wa_verification_required": "Your business hasn't passed Meta's verification. Until it does, the number stays rate-limited and nothing goes out — open the WhatsApp channel settings for the walkthrough",
+    "wa_templates_pending": "Templates aren't approved by Meta yet. Without an approved template you can't message a client first — wait for the review to finish, the status is in the WhatsApp channel settings",
     "checkout": {
       "package_not_found": "Package not found",
       "package_inactive": "Package is no longer for sale",

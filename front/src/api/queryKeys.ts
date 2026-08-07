@@ -74,6 +74,8 @@ export const queryKeys = {
   notificationSettings: ['notification-settings'] as const,
   notificationMatrix: ['notification-matrix'] as const,
   notificationMyPrefs: ['notification-my-prefs'] as const,
+  // Фильтры в ключе — как у finOperations: смена фильтра = отдельный запрос.
+  notificationLog: (filters: string) => ['notification-log', filters] as const,
   finAccounts: ['finances', 'accounts'] as const,
   finGateways: ['finances', 'gateways'] as const,
   finMethodStats: (dateFrom: string, dateTo: string) => ['finances', 'method-stats', dateFrom, dateTo] as const,

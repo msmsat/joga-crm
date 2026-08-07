@@ -8,10 +8,16 @@ notify() сам решает:
   - From (от кого): сама студия — токены каналов берутся из её StudioIntegration;
   - Message (что): _render(event_id, context, lang, currency) — текст на языке
     студии (Studio.language, ru/en) и в её валюте (Studio.currency);
-  - Network (куда): NOTIFY_CHANNELS = ("email", "telegram", "whatsapp",
-    "instagram") — только каналы, включённые и глобально
-    (StudioNotificationSettings), и в матрице события (NotificationEventToggle);
-    sms/push не участвуют.
+  - Network (куда): NOTIFY_CHANNELS = ("email", "telegram", "whatsapp") —
+    только каналы, включённые и глобально (StudioNotificationSettings), и в
+    матрице события (NotificationEventToggle); sms/push не участвуют.
+
+Instagram проактивным каналом БОЛЬШЕ НЕ ЯВЛЯЕТСЯ. Meta доставляет в Direct
+только внутри 24-часового окна диалога, а системное уведомление (напоминание,
+день рождения) по определению приходит вне его — доставляемость такого канала
+0%, а галочка в матрице обещала владельцу студии рассылку, которой нет.
+Реактивная сторона цела: ИИ-агент отвечает на входящие в Директе как раньше
+(routers/ai/instagram.py, интеграция ig_dm).
 
 notify не должен валить основной запрос: вся отправка в try/except с логом.
 Возвращает True, если хотя бы один канал реально доставил сообщение.
@@ -22,12 +28,16 @@ tg_id (CL-5.4, бонусы лояльности). Bot API не умеет пи�
 мест, где у клиента уже есть Client.tg_id. token — бот студии; не передан —
 fallback на общий env TG_BOT_TOKEN.
 
+Каждая отправка через deliver() попадает в журнал (services/outbox.py): строка
+«кому, когда, по какому событию, чем кончилось» плюс ключ дедупликации, который
+не даёт заплатить дважды за одно и то же сообщение.
+
 deliver(db, channel, recipient, subject, text, html, *, studio_id, tg_text=None)
 — диспетчер каналов для сценариев лояльности (V5-5, задача 6) и фан-аута
-notify(): email, telegram, whatsapp и instagram реально шлют по реквизитам
-студии из StudioIntegration (N-2). recipient — Recipient(id, email, tg_id,
-phone, ig_id); Client/User подходят под этот интерфейс напрямую. Нет токена
-канала или нужного поля у получателя (email/tg_id/phone/ig_id) → False.
+notify(): email, telegram и whatsapp реально шлют по реквизитам студии из
+StudioIntegration (N-2). recipient — Recipient(id, email, tg_id, phone);
+Client/User подходят под этот интерфейс напрямую. Нет токена канала или нужного
+поля у получателя (email/tg_id/phone) → False.
 tg_text — готовая Telegram-версия сообщения (эмодзи + жирный заголовок,
 tg_format()); передана → шлём с parse_mode=HTML, нет → канал получает голый
 text как раньше (путь сценариев лояльности, где текст пишет владелец).
@@ -46,15 +56,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from contact_format import to_e164
 from models import Client, Studio, StudioIntegration, StudioMember, User
+from services import outbox
 from services.mailer import send_email
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-NOTIFY_CHANNELS = ("email", "telegram", "whatsapp", "instagram")
+NOTIFY_CHANNELS = ("email", "telegram", "whatsapp")
 _CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴"}
 GRAPH = "https://graph.facebook.com/v23.0"
-IG_GRAPH = "https://graph.instagram.com/v23.0"  # Instagram API with Instagram Login
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000
 
@@ -97,14 +107,13 @@ def tg_format(event_id: str, subject: str, text: str) -> str:
 
 class Recipient(NamedTuple):
     """Лёгкий получатель уведомления — общий для клиента и сотрудника (N-9.2).
-    id — для логов; email/tg_id/phone/ig_id — реквизиты каналов, любое может
-    быть None (канал просто не сработает). Client и User обоих совместимы по
+    id — для логов; email/tg_id/phone — реквизиты каналов, любое может быть
+    None (канал просто не сработает). Client и User обоих совместимы по
     атрибутам, поэтому deliver() принимает и живой Client напрямую."""
     id: int | None
     email: str | None
     tg_id: int | None
     phone: str | None
-    ig_id: str | None = None
 
 
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
@@ -203,46 +212,35 @@ async def _send_whatsapp(
         async with session.post(f"{GRAPH}/{phone_number_id}/messages", json=payload, headers=headers) as resp:
             if resp.status != 200:
                 # Причина отказа («шаблон не одобрен», «вне окна», «нет оплаты»)
-                # написана только в теле. Без лога канал молчал бы незаметно.
-                logger.warning("whatsapp: Graph %s: %s", resp.status, (await resp.text())[:400])
-                return False
+                # написана только в теле — она же попадает в журнал отправок и
+                # становится доказательством в споре о списании.
+                raise ProviderRejected(f"Graph {resp.status}: {(await resp.text())[:400]}")
             return True
-
-
-async def _send_instagram(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
-    """Отправка в Instagram Direct через Messenger Platform. Нет токена или IGSID
-    получателя → False. Как и у WhatsApp, свободный текст доставляется только в
-    24-часовом окне диалога — проверяет Meta, не мы (MVP).
-
-    Хост зависит от того, как подключён аккаунт (services/instagram_account):
-    токен из OAuth на странице AI («Instagram Login») ходит только на
-    graph.instagram.com, ручной токен Facebook Login — только на graph.facebook.com.
-    Ключа нет — строка досталась от ручного подключения, поведение прежнее."""
-    ig_user_id = cfg.get("ig_user_id")
-    token = cfg.get("token")
-    ig_id = getattr(recipient, "ig_id", None)
-    if not ig_user_id or not token or not ig_id:
-        return False
-    base = IG_GRAPH if cfg.get("api") == "instagram_login" else GRAPH
-    payload = {"recipient": {"id": ig_id}, "message": {"text": text}}
-    headers = {"Authorization": f"Bearer {token}"}
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{base}/{ig_user_id}/messages", json=payload, headers=headers) as resp:
-            return resp.status == 200
 
 
 # Повтор ТОЛЬКО при неустановленном соединении (см. deliver ниже).
 _RETRY_BACKOFF_SECONDS = (0.5, 2.0)
 
 
+class ProviderRejected(Exception):
+    """Провайдер ОТВЕТИЛ отказом: сообщение не ушло, денег не списано.
+
+    Отдельно от сетевого сбоя намеренно — это два разных ответа на «списались ли
+    деньги», и журнал отправок обязан их различать (services/outbox.py). Раньше
+    оба сводились к False, и в споре со студией отличить «Meta отклонила шаблон»
+    от «мы не дозвонились до Meta» было нельзя.
+    """
+
+
 async def deliver(
     db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
     *, studio_id: int, tg_text: str | None = None, wa_template: dict | None = None,
+    event_id: str | None = None, context: dict[str, Any] | None = None,
 ) -> bool:
     """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4; N-9,
-    задача 2): email, telegram, whatsapp и instagram реально шлют по реквизитам
-    студии. recipient — Recipient или любой объект с .id/.email/.tg_id/.phone/
-    .ig_id (Client, User). tg_text — форматированная версия для Telegram
+    задача 2): email, telegram и whatsapp реально шлют по реквизитам студии.
+    recipient — Recipient или любой объект с .id/.email/.tg_id/.phone (Client,
+    User). tg_text — форматированная версия для Telegram
     (tg_format); не передана — в Telegram уходит тот же голый text.
     Возвращает True, только если сообщение реально ушло; исключения не
     пробрасывает.
@@ -251,29 +249,55 @@ async def deliver(
     (ClientConnectorError): сервер запроса не видел, поэтому повтор физически
     не может задвоить сообщение. Таймауты и 5xx сюда сознательно НЕ включены —
     там запрос мог дойти, и слепой повтор списал бы деньги за второе платное
-    сообщение WhatsApp. Полная защита от дублей — это дедуп по ключу в outbox
-    (эпик N-10), а не ретрай в этом месте.
+    сообщение WhatsApp.
+
+    Каждая попытка проходит через журнал отправок (services/outbox.py):
+    claim до отправки — он же отсекает дубль по ключу, finish после — с реальным
+    исходом. event_id и context нужны только журналу: из них считается ключ
+    дедупликации и по ним потом отвечают студии, что и когда ей уходило.
     """
+    log_id = await outbox.claim(studio_id, event_id, channel, recipient, context)
+    if log_id is None:
+        # Уже доставлено либо уходит прямо сейчас в соседнем процессе. True, а не
+        # False: для вызывающего (clients_notified) сообщение состоялось, и
+        # показывать «не отправлено» из-за собственной защиты от дубля — врать.
+        return True
+
     for attempt in range(len(_RETRY_BACKOFF_SECONDS) + 1):
         try:
-            return await _deliver_once(
+            ok = await _deliver_once(
                 db, channel, recipient, subject, text, html,
                 studio_id=studio_id, tg_text=tg_text, wa_template=wa_template,
             )
+            # False здесь — не отказ провайдера, а «слать было нечем»: нет адреса
+            # у получателя, канал не подключён, шаблон не одобрен. Денег такое не
+            # стоит, и в журнале это должно выглядеть иначе, чем отказ Meta.
+            await outbox.finish(log_id, outbox.SENT if ok else outbox.REJECTED,
+                                None if ok else "не отправлено: нет реквизитов канала или получателя")
+            return ok
+        except ProviderRejected as exc:
+            logger.warning("deliver: провайдер отклонил, channel=%s recipient=%s: %s",
+                           channel, recipient.id, exc)
+            await outbox.finish(log_id, outbox.REJECTED, str(exc))
+            return False
         except aiohttp.ClientConnectorError:
             if attempt >= len(_RETRY_BACKOFF_SECONDS):
                 logger.exception(
                     "deliver: не удалось соединиться после %s попыток, channel=%s recipient=%s",
                     attempt + 1, channel, recipient.id,
                 )
+                await outbox.finish(log_id, outbox.ERROR,
+                                    f"нет соединения после {attempt + 1} попыток")
                 return False
             logger.warning(
                 "deliver: нет соединения, повтор %s/%s через %sс, channel=%s",
                 attempt + 1, len(_RETRY_BACKOFF_SECONDS), _RETRY_BACKOFF_SECONDS[attempt], channel,
             )
             await asyncio.sleep(_RETRY_BACKOFF_SECONDS[attempt])
-        except Exception:
+        except Exception as exc:
             logger.exception("deliver failed: channel=%s recipient=%s", channel, recipient.id)
+            # Ответа не было — списание НЕИЗВЕСТНО, и в споре это надо видеть как есть.
+            await outbox.finish(log_id, outbox.ERROR, f"{type(exc).__name__}: {exc}")
             return False
     return False
 
@@ -308,11 +332,6 @@ async def _deliver_once(
         if not await template_approved(db, studio_id, cfg, wa_template):
             return False  # Meta отклонила шаблон — отправка всё равно не дошла бы
         return await _send_whatsapp(cfg, recipient, text, wa_template)
-    if channel == "instagram":
-        cfg = await _integration_config(db, studio_id, "ig_dm")
-        if not cfg:
-            return False
-        return await _send_instagram(cfg, recipient, text)
     return False
 
 
@@ -530,7 +549,7 @@ _render("c1", {}, "ru", "RUB")
 
 
 def _user_recipient(user: User) -> Recipient:
-    return Recipient(user.id, user.email, user.tg_id, user.phone, user.ig_id)
+    return Recipient(user.id, user.email, user.tg_id, user.phone)
 
 
 async def _recipient(
@@ -560,7 +579,7 @@ async def _recipient(
         )).scalar_one_or_none()
         if client is None:
             return []
-        return [Recipient(client.id, client.email, client.tg_id, client.phone, client.ig_id)]
+        return [Recipient(client.id, client.email, client.tg_id, client.phone)]
 
     to_email = context.get("to_email")
     if to_email:
@@ -638,16 +657,18 @@ async def notify(
             channels, forced = await resolve_channels(db, studio_id, role, event_id, recipient_user_id)
             if forced:
                 logger.warning("notify: forced fallback studio=%s role=%s event=%s", studio_id, role, event_id)
+            # event_id/context идут дальше только ради журнала отправок: по ним
+            # считается ключ дедупликации и по ним же студии потом отвечают,
+            # что именно ей уходило (services/outbox.py).
+            log = {"event_id": event_id, "context": context}
             if "email" in channels and r.email:
-                sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id) or sent
+                sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id, **log) or sent
             if "telegram" in channels and r.tg_id:
-                sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id, tg_text=tg) or sent
+                sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id, tg_text=tg, **log) or sent
             if "whatsapp" in channels and r.phone:
                 sent = await deliver(
-                    db, "whatsapp", r, subject, text, html, studio_id=studio_id, wa_template=wa_template,
+                    db, "whatsapp", r, subject, text, html, studio_id=studio_id, wa_template=wa_template, **log,
                 ) or sent
-            if "instagram" in channels and r.ig_id:
-                sent = await deliver(db, "instagram", r, subject, text, html, studio_id=studio_id) or sent
         return sent
     except Exception:
         logger.exception("notify failed: studio=%s role=%s event=%s", studio_id, role, event_id)

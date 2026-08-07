@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ChannelKey, Role } from '../types';
 import { ROLES } from '../constants';
-import { optimisticToggle, mergeMatrixRow } from '../utils';
+import { optimisticToggle, mergeMatrixRow, waEnableBlocker } from '../utils';
 import { notificationsApi } from '../../../../api/notifications';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useNotificationsStore } from '../../../../stores/notificationsStore';
@@ -17,14 +17,15 @@ export function useEnableChannel() {
   const setChannel = useNotificationsStore(s => s.setChannel);
   const qc = useQueryClient();
   // После подключения канала в модалке: интеграция уже сохранена на бэке,
-  // здесь включаем сам тумблер настроек (PATCH + локальный стейт), без отката
-  // при ошибке — подключение уже состоялось, тумблер лишь отражает его.
-  // Инвалидация в finally подтягивает реальное состояние с сервера даже если
-  // PATCH упал, и снимает расхождение локального стора с кэшем React Query.
+  // здесь включаем сам тумблер настроек (PATCH + локальный стейт).
+  // Откат при ошибке обязателен: у WhatsApp подключение номера и право включить
+  // канал — разные вещи, и сразу после Embedded Signup PATCH законно отвечает
+  // 409 (шаблоны на модерации, бизнес не верифицирован). Без отката тумблер
+  // мигал бы «включено» до ответа рефетча — ровно та ложь, от которой уходим.
   return (key: ChannelKey) => {
     setChannel(key, true);
     notificationsApi.updateSettings({ [key]: true })
-      .catch(() => {})
+      .catch(() => setChannel(key, false))
       .finally(() => qc.invalidateQueries({ queryKey: queryKeys.notificationSettings }));
   };
 }
@@ -48,7 +49,7 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   useEffect(() => {
     if (!settingsQ.data) return;
     const data = settingsQ.data;
-    hydrateChannels({ telegram: data.telegram, whatsapp: data.whatsapp, instagram: data.instagram, email: data.email });
+    hydrateChannels({ telegram: data.telegram, whatsapp: data.whatsapp, email: data.email });
   }, [settingsQ.data, hydrateChannels]);
 
   // Канал сохраняется сразу (оптимистично); при ошибке откатываем + тост.
@@ -58,10 +59,18 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
       onNeedsConnect?.(key);
       return;
     }
+    // Включение WhatsApp, пока Meta не сняла все три барьера, не даём даже
+    // отправить: сайдбар такой тумблер уже блокирует, но состояние приходит из
+    // кэша и могло устареть, а гонять пользователя через 409 ради ответа,
+    // который у нас уже есть, незачем. Сам отказ бэкенд всё равно продублирует.
+    if (next && key === 'whatsapp' && waEnableBlocker(channelStatuses?.whatsapp)) {
+      toast.error(t('notifications:channels.waLockedHint'));
+      return;
+    }
     setChannel(key, next);
-    // Включение WhatsApp бэкенд может отклонить (wa_payment_required): без карты
-    // на WABA Meta не доставит ни одного уведомления, поэтому тумблер не должен
-    // обещать доставку. Откат + тост здесь общие для всех каналов.
+    // Включение WhatsApp бэкенд может отклонить (wa_payment_required и соседи):
+    // без карты, верификации и одобренных шаблонов Meta не доставит ни одного
+    // уведомления. Откат + тост здесь общие для всех каналов.
     updateSettingsMut.mutate({ [key]: next }, {
       onError: (e: unknown) => {
         setChannel(key, !next);
@@ -131,10 +140,10 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   const currentRole = ROLES.find(r => r.key === activeRole)!;
   const events = (matrixQ.data?.events ?? []).filter(r => r.role === activeRole);
 
-  // Каналы, применимые к ТЕКУЩЕЙ роли: персоналу telegram/instagram не
-  // доставить структурно (ROLE_CHANNELS на бэке — открывать клиентское
-  // мини-приложение тренеру/админу незачем), поэтому матрица не должна
-  // рисовать по ним кликабельную, но нерабочую колонку. Источник — сами
+  // Каналы, применимые к ТЕКУЩЕЙ роли: персоналу telegram не доставить
+  // структурно (ROLE_CHANNELS на бэке — открывать клиентское мини-приложение
+  // тренеру/админу незачем), поэтому матрица не должна рисовать
+  // по нему кликабельную, но нерабочую колонку. Источник — сами
   // строки: все строки одной роли делят один набор ключей channels (его
   // строит _matrix_row по ROLE_CHANNELS[role]).
   const roleChannelKeys = new Set(Object.keys(events[0]?.channels ?? {}));
@@ -177,6 +186,5 @@ function isIntegrationConnected(statuses: NotifyChannelsStatus | undefined, key:
   if (key === 'telegram') return statuses.telegram.connected;
   if (key === 'email') return statuses.email.connected;
   if (key === 'whatsapp') return statuses.whatsapp.connected;
-  if (key === 'instagram') return statuses.instagram.connected;
   return false;
 }

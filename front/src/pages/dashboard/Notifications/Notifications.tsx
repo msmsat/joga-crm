@@ -6,38 +6,44 @@ import { invalidateChannelGroup } from '../../../api/channelGroup';
 import { useToast } from '../../../components/ui/Toast';
 import { useNotifications, useEnableChannel } from './hooks/useNotifications';
 import { useChannelIntegrations } from './hooks/useChannelIntegrations';
+import { Segmented } from '../../../components/ui/modal';
+import { useNotificationLog } from './hooks/useNotificationLog';
 import ChannelsSidebar from './components/sections/ChannelsSidebar';
 import RolesSelector from './components/sections/RolesSelector';
 import NotificationMatrix from './components/sections/NotificationMatrix';
+import NotificationLog from './components/sections/NotificationLog';
 import { TgTokenModal } from './components/modals/TgTokenModal';
 import { EmailVerifyModal } from './components/modals/EmailVerifyModal';
 import { WaConnectModal } from './components/modals/WaConnectModal';
-import { IgConnectModal } from './components/modals/IgConnectModal';
 
-const MODAL_BY_CHANNEL: Record<'telegram' | 'whatsapp' | 'instagram' | 'email', 'tg' | 'wa' | 'ig' | 'email'> = {
-  telegram: 'tg', whatsapp: 'wa', instagram: 'ig', email: 'email',
+const MODAL_BY_CHANNEL: Record<'telegram' | 'whatsapp' | 'email', 'tg' | 'wa' | 'email'> = {
+  telegram: 'tg', whatsapp: 'wa', email: 'email',
 };
 
 export default function Notifications() {
   const { t } = useTranslation('notifications');
-  const [openModal, setOpenModal] = useState<'tg' | 'email' | 'wa' | 'ig' | null>(null);
+  const [openModal, setOpenModal] = useState<'tg' | 'email' | 'wa' | null>(null);
+  // Настройка и журнал — два разных занятия: одно «что слать», другое «что ушло».
+  // Вкладки, а не секция ниже, — иначе матрица из 38 строк каждый раз стоит между
+  // поддержкой и таблицей, ради которой экран и открыли.
+  const [tab, setTab] = useState<'matrix' | 'log'>('matrix');
   const enableChannel = useEnableChannel();
   const ci = useChannelIntegrations(enableChannel);
   const h = useNotifications(ci.channels, key => setOpenModal(MODAL_BY_CHANNEL[key]));
+  const log = useNotificationLog();
 
-  // Возврат из мастера Meta: бэк редиректит сюда с ?ig=|?wa=connected|error,
-  // если подключение начали отсюда (routers/ai/*.py, _RETURN_PAGES).
+  // Возврат из мастера Meta: бэк редиректит сюда с ?wa=connected|error, если
+  // подключение начали отсюда (routers/ai/whatsapp.py, _RETURN_PAGES).
   const toast = useToast();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   useEffect(() => {
-    // Instagram и WhatsApp возвращаются одинаково — как на Velora AI (AI.tsx).
-    const channel = searchParams.get('ig') ? 'instagram' : searchParams.get('wa') ? 'whatsapp' : null;
-    if (!channel) return;
-    if (searchParams.get(channel === 'instagram' ? 'ig' : 'wa') === 'connected') {
+    const wa = searchParams.get('wa');
+    if (!wa) return;
+    if (wa === 'connected') {
       invalidateChannelGroup(qc);
-      enableChannel(channel);
+      enableChannel('whatsapp');
       toast.success(t('chModal.connected'));
     } else {
       toast.error(t('common:errors.unknown', 'Не удалось подключить канал'));
@@ -63,17 +69,34 @@ export default function Notifications() {
         onOpenModal={setOpenModal}
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)', minWidth: 0 }}>
-        <RolesSelector activeRole={h.activeRole} switchRole={h.switchRole} countActive={h.countActive} />
-        <NotificationMatrix
-          currentRole={h.currentRole}
-          events={h.events}
-          allChannels={h.allChannels}
-          toggleCheck={h.toggleCheck}
-          toggleAllForRole={h.toggleAllForRole}
-          allOn={h.allOn}
-          syncing={h.syncing}
-          saveFailed={h.saveFailed}
-        />
+        <div style={{ maxWidth: '360px' }}>
+          <Segmented
+            value={tab}
+            onChange={setTab}
+            options={[
+              { value: 'matrix', label: t('tabs.matrix') },
+              { value: 'log', label: t('tabs.log') },
+            ]}
+          />
+        </div>
+
+        {tab === 'matrix' ? (
+          <>
+            <RolesSelector activeRole={h.activeRole} switchRole={h.switchRole} countActive={h.countActive} />
+            <NotificationMatrix
+              currentRole={h.currentRole}
+              events={h.events}
+              allChannels={h.allChannels}
+              toggleCheck={h.toggleCheck}
+              toggleAllForRole={h.toggleAllForRole}
+              allOn={h.allOn}
+              syncing={h.syncing}
+              saveFailed={h.saveFailed}
+            />
+          </>
+        ) : (
+          <NotificationLog log={log} />
+        )}
       </div>
 
       {openModal === 'tg' && (
@@ -99,14 +122,6 @@ export default function Notifications() {
           disconnectMut={ci.disconnectWhatsApp}
           checkPaymentMut={ci.checkWaPayment}
           syncTemplatesMut={ci.syncWaTemplates}
-          onClose={() => setOpenModal(null)}
-        />
-      )}
-      {openModal === 'ig' && (
-        <IgConnectModal
-          status={ci.channels?.instagram}
-          connectMut={ci.connectInstagram}
-          disconnectMut={ci.disconnectInstagram}
           onClose={() => setOpenModal(null)}
         />
       )}

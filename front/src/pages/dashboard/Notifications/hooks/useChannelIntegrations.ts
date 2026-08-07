@@ -7,7 +7,7 @@ import { invalidateChannelGroup } from '../../../../api/channelGroup'
 import { useTranslation } from 'react-i18next'
 import type { NotifyChannelsStatus } from '../../../../api/notifications/notifications.types'
 
-export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'instagram' | 'email') => void) {
+export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'email') => void) {
   const qc = useQueryClient()
   const toast = useToast()
   const { t } = useTranslation()
@@ -67,9 +67,9 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onError,
   })
 
-  // WhatsApp — Embedded Signup, как Instagram: уходим в мастер Meta полным
-  // редиректом и возвращаемся сюда с ?wa=... Кэш здесь не трогаем — страница
-  // всё равно перезагрузится после возврата.
+  // WhatsApp — Embedded Signup: уходим в мастер Meta полным редиректом и
+  // возвращаемся сюда с ?wa=... Кэш здесь не трогаем — страница всё равно
+  // перезагрузится после возврата.
   const connectWhatsApp = useMutation({
     mutationFn: () => notificationsApi.getWhatsappOauthUrl(),
     onSuccess: ({ url }) => { window.location.href = url },
@@ -122,25 +122,9 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onError,
   })
 
-  // Instagram — только OAuth: уходим на страницу согласия Instagram полным
-  // редиректом (не попап, как и на Velora AI), возвращаемся сюда с ?ig=...
-  // Кэш здесь не трогаем — страница всё равно перезагрузится после возврата.
-  const connectInstagram = useMutation({
-    mutationFn: () => notificationsApi.getInstagramOauthUrl(),
-    onSuccess: ({ url }) => { window.location.href = url },
-    onError,
-  })
-
-  const disconnectInstagram = useMutation({
-    mutationFn: () => notificationsApi.disconnectInstagram(),
-    onSuccess: () => {
-      invalidateAfterDisconnect()
-      invalidateChannelGroup(qc)
-      toast.success(t('common:actions.saved', 'Отключено'))
-    },
-    onError,
-  })
-
+  // Instagram здесь больше нет: каналом рассылок он быть перестал (24-часовое
+  // окно Meta, см. back/services/notifier.py). Подключение живёт там, где им
+  // пользуется ИИ-агент — Velora AI и Настройки → Интеграции.
   return {
     channels: data,
     loading: isPending,
@@ -153,7 +137,5 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     disconnectWhatsApp,
     checkWaPayment,
     syncWaTemplates,
-    connectInstagram,
-    disconnectInstagram,
   }
 }

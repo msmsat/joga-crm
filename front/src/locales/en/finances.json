@@ -293,7 +293,7 @@
     }
   },
   "onlinePayments": {
-    "description": "Connect Stripe and your clients can pay by card at the till. The money lands directly in your studio's account — Velora never holds it and takes no cut of payments.",
+    "description": "Connect Stripe and your clients can pay by card at the till. The money lands directly in your studio's account — Velora never holds it. Commission follows your plan.",
     "gatewaysTitle": "Payment providers",
     "gateways": {
       "stripe": { "name": "Stripe" },

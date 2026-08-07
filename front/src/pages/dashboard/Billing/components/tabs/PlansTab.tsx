@@ -153,17 +153,25 @@ export default function PlansTab({
           <div className="bl-combo" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
             {(['start', 'pro', 'business'] as const).map(planId => {
               const plan = plans[planId];
-              const comboFixed = Math.round(plan.monthly / 2);
+              const comboBase = Math.round(plan.monthly / 2);
+              const comboDiscount = periodDiscounts[selectedPeriod] || 0;
+              const comboFixed = Math.round(comboBase * (1 - comboDiscount));
               const isSelected = selectedPlan === planId;
               return (
                 <button key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: isSelected ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'var(--bg-card)', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: isSelected ? '0 4px 20px rgba(252,174,145,0.15)' : 'var(--shadow)' }}>
                   {isSelected && <div style={{ position: 'absolute', top: '14px', right: '14px' }}><CheckIcon size={16} /></div>}
                   <div className="bl-combo-name" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px' }}>{plan.name}</div>
-                  <div className="bl-combo-price" style={{ marginBottom: '10px' }}>
+                  <div className="bl-combo-price" style={{ marginBottom: '4px' }}>
                     <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>{formatMoney(comboFixed, currency)}</span>
                     <span style={{ fontSize: '12px', color: 'var(--muted)', marginLeft: '4px' }}>{t('planCards.perMonth')}</span>
                   </div>
-                  <span style={{ padding: '2px 8px', background: 'rgba(163,201,168,0.15)', borderRadius: '100px', color: 'var(--pistachio)', fontSize: '11px', fontWeight: 700 }}>
+                  {comboDiscount > 0 && (
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '6px' }}>
+                      <span style={{ textDecoration: 'line-through' }}>{formatMoney(comboBase, currency)}</span>
+                      <span style={{ color: 'var(--pistachio)', fontWeight: 700, marginLeft: '6px' }}>−{comboDiscount * 100}%</span>
+                    </div>
+                  )}
+                  <span style={{ padding: '2px 8px', background: 'rgba(163,201,168,0.15)', borderRadius: '100px', color: 'var(--pistachio)', fontSize: '11px', fontWeight: 700, display: 'inline-block', marginTop: comboDiscount > 0 ? 0 : '4px' }}>
                     {t('combo.rateBadge', { rate: 1.5 })}
                   </span>
                 </button>

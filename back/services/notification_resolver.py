@@ -28,7 +28,11 @@ from services.notifier import NOTIFY_CHANNELS
 
 logger = logging.getLogger(__name__)
 
-_CHANNEL_INTEGRATION = {"telegram": "tg_notify", "whatsapp": "wa_notify", "instagram": "ig_dm"}
+# ig_dm здесь больше нет: Instagram перестал быть проактивным каналом (см.
+# докстринг services/notifier.py). Осиротевшие строки NotificationEventToggle с
+# channel_key="instagram" отсекает studio_channels — она перебирает
+# NOTIFY_CHANNELS, а не то, что лежит в таблице.
+_CHANNEL_INTEGRATION = {"telegram": "tg_notify", "whatsapp": "wa_notify"}
 
 
 async def studio_channels(db: AsyncSession, studio_id: int, role: str, event_id: str, default_channels: tuple[str, ...]) -> set[str]:
@@ -58,8 +62,8 @@ async def _user_channels(db: AsyncSession, user_id: int, event_id: str) -> set[s
     return {ch for ch in NOTIFY_CHANNELS if overrides.get(ch, True)}
 
 
-# Дефолты колонок StudioNotificationSettings (email/telegram/whatsapp — True,
-# instagram — False), прочитанные из самой модели, чтобы не разъехались с ней.
+# Дефолты колонок StudioNotificationSettings (email/telegram/whatsapp — True),
+# прочитанные из самой модели, чтобы не разъехались с ней.
 _DEFAULT_ENABLED = frozenset(
     ch for ch in NOTIFY_CHANNELS
     if StudioNotificationSettings.__table__.c[f"{ch}_notifications"].default.arg
@@ -84,8 +88,8 @@ async def _enabled_global(db: AsyncSession, studio_id: int) -> set[str]:
 
 async def connected_channels(db: AsyncSession, studio_id: int) -> set[str]:
     """email всегда «подключён» — уходит через платформенный SMTP (см. deliver()),
-    отдельной интеграции не требует. telegram/whatsapp/instagram — только если
-    StudioIntegration реально подключена (tg_notify/wa_notify/ig_dm)."""
+    отдельной интеграции не требует. telegram/whatsapp — только если
+    StudioIntegration реально подключена (tg_notify/wa_notify)."""
     connected = {"email"}
     kinds = (await db.execute(
         select(StudioIntegration.integration_type).where(

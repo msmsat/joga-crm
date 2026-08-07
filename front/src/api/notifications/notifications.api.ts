@@ -3,6 +3,8 @@ import type {
   EventToggle,
   MatrixRead,
   MatrixEventRow,
+  NotificationLogQuery,
+  NotificationLogRead,
   UserPrefRead,
   UserPrefRow,
   UserPrefUpdate,
@@ -36,6 +38,17 @@ export const notificationsApi = {
 
   updateMyPref: (payload: UserPrefUpdate) =>
     client.patch<UserPrefRow>('/settings/notifications/me', payload),
+
+  // Журнал отправок (N-10): чем закончилась каждая отправка. Пустые фильтры не
+  // шлём — бэк отличает «не задан» от «пустая строка».
+  getLog: (q: NotificationLogQuery = {}) => {
+    const params = new URLSearchParams()
+    Object.entries(q).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, String(v))
+    })
+    const qs = params.toString()
+    return client.get<NotificationLogRead>(`/settings/notifications/log${qs ? `?${qs}` : ''}`)
+  },
 
   getChannelIntegrations: () =>
     client.get<NotifyChannelsStatus>('/settings/integrations/notify-channels'),
@@ -76,13 +89,4 @@ export const notificationsApi = {
   syncWaTemplates: () =>
     client.post<WaTemplatesSyncResult>('/settings/integrations/whatsapp/templates-sync', {}),
 
-  // Instagram подключается только по OAuth — тем же эндпоинтом, что и на Velora AI
-  // (аккаунт один на обе поверхности, см. services/instagram_account.py). back
-  // говорит бэку, куда вернуть браузер после согласия в Instagram.
-  getInstagramOauthUrl: () =>
-    client.get<{ url: string }>('/ai/instagram/oauth-url?back=notifications'),
-
-  // Отдельного DELETE у Instagram нет — гасит общий /settings/integrations/{type}.
-  disconnectInstagram: () =>
-    client.delete<ChannelStatus>('/settings/integrations/instagram'),
 }

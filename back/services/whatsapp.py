@@ -346,8 +346,11 @@ async def template_approved(
 
     Блокируем ТОЛЬКО когда Meta явно сказала про ЭТОТ шаблон и ЭТОТ язык что-то
     кроме APPROVED. Неизвестный шаблон пропускаем: его просто нет на WABA, Meta
-    откажет сама и денег не спишет, — а держать канал закрытым из-за пустого кэша
-    та же ошибка, что и запирать студию из-за таймаута (см. can_enable_channel).
+    откажет сама и денег не спишет, — а хоронить событие из-за пустого кэша хуже.
+
+    Гейт ОТПРАВКИ мягче гейта ВКЛЮЧЕНИЯ (enable_blocker ниже) сознательно: там
+    решается, честен ли тумблер, здесь — уходит ли конкретное сообщение, и лишний
+    отказ тут стоит студии доставки.
 
     Статус не-APPROVED перечитываем: модерация идёт на стороне Meta и молча, и без
     этого шаблон, одобренный через час после подключения, остался бы мёртвым.
@@ -371,24 +374,56 @@ async def template_approved(
     return False
 
 
-async def can_enable_channel(db: AsyncSession, studio_id: int) -> bool:
-    """Можно ли включить WhatsApp тумблером в Уведомлениях.
+async def enable_blocker(db: AsyncSession, studio_id: int) -> str | None:
+    """Что мешает включить WhatsApp тумблером в Уведомлениях, либо None — можно.
 
-    Проверяем вживую, а не по сохранённому флагу: карту могли привязать минуту
-    назад, и отказывать по вчерашним данным нельзя.
+    Три условия запуска Meta, и выполнены должны быть ВСЕ ТРИ — иначе доставка
+    ровно ноль, а зелёный тумблер обещает рассылку, которой нет:
+      - привязана карта (нет 141006), иначе исходящие от бизнеса блокируются;
+      - бизнес прошёл верификацию (нет 141010), иначе номер сидит в пониженном
+        лимите и шаблоны не выходят из модерации;
+      - хотя бы один шаблон одобрен (APPROVED), иначе написать первым нечем.
 
-    Блокируем ТОЛЬКО когда точно знаем, что карты нет (False). Если Meta не
-    ответила (None) — пропускаем: запереть студию с оплаченным номером из-за
-    таймаута хуже, чем пропустить редкий случай. Номер не подключён — тоже не
-    наша забота, это ловит отдельная проверка на фронте.
+    Порядок проверок — порядок действий студии: карта, верификация, шаблоны.
+    Возвращаем первый неснятый барьер, он же становится detail 409 и текстом
+    подсказки на фронте.
+
+    Оба состояния перечитываем вживую: карту и верификацию — каждый раз (их
+    меняют в Business Manager, вебхука нам об этом никто не шлёт), статусы
+    шаблонов — не чаще _STATUS_RECHECK_SECONDS, иначе клик по тумблеру устраивал
+    бы шквал запросов к Graph.
+
+    Отличие от прежнего поведения (07.08.2026): «Meta не ответила» больше НЕ
+    трактуется как «можно». Раньше пропускали любое состояние, кроме явного
+    False, чтобы не запереть студию из-за таймаута — но цена ошибки
+    несимметрична: запертый на минуту тумблер честен, а открытый при нулевой
+    доставке — нет. Сохранённые значения при этом не затираются (см.
+    refresh_payment_status), так что таймаут откатывает решение к прошлой
+    проверке, а не к «всё плохо».
+
+    Номер не подключён — не наша забота: это ловит отдельная проверка на фронте
+    (кнопка «Подключить» вместо тумблера).
     """
     integ = await wa_integration(db, studio_id)
     if integ is None or not integ.is_connected:
-        return True
-    fresh = await refresh_payment_status(db, integ)
-    if fresh is None:
-        fresh = (integ.config or {}).get("payment_connected")
-    return fresh is not False
+        return None
+
+    await refresh_payment_status(db, integ)  # None (Meta молчит) -> остаются прошлые значения
+    config = integ.config or {}
+    if config.get("payment_connected") is not True:
+        return "wa_payment_required"
+    if config.get("business_verified") is not True:
+        return "wa_verification_required"
+
+    await refresh_template_statuses(db, integ, max_age_seconds=_STATUS_RECHECK_SECONDS)
+    # ponytail: «хотя бы один APPROVED», а не «одобрены все шаблоны языка студии».
+    # Модерация идёт пачками и растягивается на часы: требовать все 38 значило бы
+    # держать канал закрытым дольше, чем он реально мёртв. Если понадобится строже —
+    # сузить до ключей с суффиксом языка студии (status_key: "<имя>:<lang>").
+    summary = template_summary(integ.config or {})
+    if not summary or not summary["approved"]:
+        return "wa_templates_pending"
+    return None
 
 
 if __name__ == "__main__":
@@ -502,5 +537,46 @@ if __name__ == "__main__":
     assert asyncio.run(template_approved(
         _EmptyDb(), 1, {"templates_status": {"vlr_c1:ru": "REJECTED", "vlr_c1:en": "APPROVED"}},
         _tpl)) is False
+
+    # Гейт ВКЛЮЧЕНИЯ: три условия и порядок, в котором студия их закрывает.
+    # Сеть подменяем — проверяем решение по конфигу, а не поход в Graph.
+    class _FakeInteg:
+        def __init__(self, config):
+            self.is_connected, self.config = True, config
+
+    async def _blocker(config):
+        integ = _FakeInteg(config)
+        async def _noop(*_a, **_kw):
+            return None
+        global refresh_payment_status, refresh_template_statuses, wa_integration
+        orig = (refresh_payment_status, refresh_template_statuses, wa_integration)
+        refresh_payment_status = refresh_template_statuses = _noop
+        async def _fake_wa_integration(*_a, **_kw):
+            return integ
+        wa_integration = _fake_wa_integration
+        try:
+            return await enable_blocker(None, 1)
+        finally:
+            refresh_payment_status, refresh_template_statuses, wa_integration = orig
+
+    _ok_templates = {"templates_status": {"vlr_c1:ru": "APPROVED"}}
+    # Ни одной проверки не пройдено -> первым называем карту: с неё начинают.
+    assert asyncio.run(_blocker({})) == "wa_payment_required"
+    # Карта есть, верификации нет -> вторая ступень, а не «оплата».
+    assert asyncio.run(_blocker({"payment_connected": True})) == "wa_verification_required"
+    # Карта и верификация закрыты, шаблоны висят в PENDING -> третья ступень.
+    # Ровно состояние dev-студии на 07.08.2026: 76 шаблонов, 0 одобренных.
+    assert asyncio.run(_blocker({
+        "payment_connected": True, "business_verified": True,
+        "templates_status": {"vlr_c1:ru": "PENDING", "vlr_c1:en": "PENDING"},
+    })) == "wa_templates_pending"
+    # Статусы не читали вовсе — тоже не пускаем: «не знаем» это не «работает».
+    assert asyncio.run(_blocker({"payment_connected": True, "business_verified": True})) == "wa_templates_pending"
+    # Все три условия сняты -> тумблер свободен.
+    assert asyncio.run(_blocker({
+        "payment_connected": True, "business_verified": True, **_ok_templates,
+    })) is None
+    # Meta не ответила ни разу (нет сохранённых значений) — запираем, а не пускаем.
+    assert asyncio.run(_blocker({"business_verified": True, **_ok_templates})) == "wa_payment_required"
 
     print("whatsapp health self-check ok")

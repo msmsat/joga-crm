@@ -95,7 +95,7 @@
     "perks": {
       "direct": "Money lands directly on the studio account",
       "methods": "Cards, Apple Pay and Google Pay out of the box",
-      "fee": "Velora takes no cut of your payments"
+      "fee": "Commission follows your Velora plan"
     },
     "later": "Later",
     "note": "The Stripe form will open. When you are done, you return to this page."

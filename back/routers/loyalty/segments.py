@@ -112,10 +112,15 @@ def _month_key(d: date) -> str:
     return f"{d.year:04d}-{d.month:02d}"
 
 
-def _last_six_months(today: date) -> list[str]:
+# Отдаём год целиком: сколько столбцов реально показать, решает фронт по ширине
+# контейнера (RetentionBoard) — так ширина не зависит от лишнего запроса на ресайз.
+CHART_MONTHS = 12
+
+
+def _last_months(today: date, count: int = CHART_MONTHS) -> list[str]:
     keys: list[str] = []
     y, m = today.year, today.month
-    for _ in range(6):
+    for _ in range(count):
         keys.append(f"{y:04d}-{m:02d}")
         m -= 1
         if m == 0:
@@ -220,11 +225,11 @@ async def get_retention(
     if not rows:
         return RetentionRead(
             renewal_rate=0, avg_packages_per_client=0.0, has_data=False,
-            months=[RetentionMonth(month=k, sold=0, renewed=0) for k in _last_six_months(today)],
+            months=[RetentionMonth(month=k, sold=0, renewed=0) for k in _last_months(today)],
         )
 
-    six_months = _last_six_months(today)
-    stats = compute_renewal_stats(rows, today, six_months=set(six_months))
+    chart_months = _last_months(today)
+    stats = compute_renewal_stats(rows, today, six_months=set(chart_months))
 
     avg_packages = round(stats.total_subs / stats.distinct_clients, 1) if stats.distinct_clients else 0.0
     renewal_rate = (
@@ -241,6 +246,6 @@ async def get_retention(
                 sold=stats.sold_by_month.get(k, 0),
                 renewed=stats.renewed_by_month.get(k, 0),
             )
-            for k in six_months
+            for k in chart_months
         ],
     )

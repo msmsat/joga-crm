@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type NotifChannel = 'telegram' | 'whatsapp' | 'instagram' | 'email';
+// instagram каналом рассылок больше не является: Meta доставляет в Direct только
+// в 24-часовом окне диалога, поэтому системное уведомление туда не уходит вообще
+// (см. back/services/notifier.py). Директ остался у ИИ-агента — страница Velora AI.
+export type NotifChannel = 'telegram' | 'whatsapp' | 'email';
 export type NotifRole = 'client' | 'trainer' | 'admin' | 'owner';
 
 type NotificationsUIState = {
@@ -18,7 +21,7 @@ export const useNotificationsStore = create<NotificationsUIState>()(
   persist(
     (set) => ({
       activeRole: 'client',
-      channels: { telegram: false, whatsapp: false, instagram: false, email: false },
+      channels: { telegram: false, whatsapp: false, email: false },
       setActiveRole: (activeRole) => set({ activeRole }),
       setChannel: (k, v) => set((s) => ({ channels: { ...s.channels, [k]: v } })),
       hydrateChannels: (channels) => set({ channels }),

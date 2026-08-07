@@ -1,6 +1,7 @@
+// instagram здесь нет: проактивным каналом он быть перестал (24-часовое окно
+// Meta — см. back/services/notifier.py). Колонка в БД цела, схема её не отдаёт.
 export interface NotificationSettings {
   telegram: boolean
-  instagram: boolean
   whatsapp: boolean
   email: boolean
   sms: boolean
@@ -65,7 +66,6 @@ export interface ChannelStatus {
 export interface NotifyChannelsStatus {
   telegram: ChannelStatus
   whatsapp: ChannelStatus
-  instagram: ChannelStatus
   email: ChannelStatus
 }
 
@@ -93,6 +93,48 @@ export interface WaTemplateSummary {
   rejected: number
   rejected_events: string[]
   checked_at: string | null
+}
+
+// Журнал отправок (эпик N-10): строка «кому, когда, по какому событию, чем
+// кончилось». status: sent — провайдер принял; rejected — ответил отказом
+// (сообщение не ушло, денег не списано); error — ответа не было, и списание
+// НЕИЗВЕСТНО; pending — попытка начата, исхода нет.
+export type NotificationLogStatus = 'sent' | 'rejected' | 'error' | 'pending'
+
+export interface NotificationLogRow {
+  id: number
+  event_id: string | null
+  channel: string
+  recipient_id: number | null
+  recipient_address: string | null
+  status: NotificationLogStatus
+  // Тело ответа провайдера — доказательство в споре о списании.
+  error: string | null
+  created_at: string
+  finished_at: string | null
+}
+
+export interface NotificationLogSummary {
+  sent: number
+  rejected: number
+  error: number
+  pending: number
+}
+
+export interface NotificationLogRead {
+  summary: NotificationLogSummary
+  items: NotificationLogRow[]
+  total: number
+  offset: number
+  limit: number
+}
+
+export interface NotificationLogQuery {
+  status?: NotificationLogStatus
+  channel?: string
+  search?: string
+  offset?: number
+  limit?: number
 }
 
 export interface WaConnectPayload {

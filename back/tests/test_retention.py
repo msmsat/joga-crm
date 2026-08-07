@@ -63,7 +63,7 @@ async def _run():
         assert r.renewal_rate == 50, r.renewal_rate
         # 4 суба / 3 клиента = 1.3
         assert r.avg_packages_per_client == 1.3, r.avg_packages_per_client
-        assert len(r.months) == 6
+        assert len(r.months) == 12
         assert sum(m.sold for m in r.months) == 4
         assert sum(m.renewed for m in r.months) == 1
     finally:
@@ -75,7 +75,7 @@ async def _run():
     try:
         async with async_session_maker() as db:
             r2 = await get_retention(ctx=StudioContext(user=None, studio_id=sid2, role="owner"), db=db)
-        assert r2.has_data is False and r2.renewal_rate == 0 and len(r2.months) == 6
+        assert r2.has_data is False and r2.renewal_rate == 0 and len(r2.months) == 12
     finally:
         async with async_session_maker() as db:
             await db.execute(delete(Studio).where(Studio.id == sid2)); await db.commit()

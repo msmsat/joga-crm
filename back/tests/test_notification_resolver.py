@@ -230,6 +230,24 @@ async def _run():
             ).values(email_notifications=True, whatsapp_notifications=True))
             await db.commit()
 
+        # 9e) Instagram больше не канал уведомлений (24-часовое окно Meta —
+        #     доставляемость проактивной рассылки 0%). Осиротевшую строку матрицы
+        #     с channel_key="instagram" никто не удалял, ig_dm подключён и жив для
+        #     ИИ-агента — и всё равно канала в наборе быть не должно: studio_channels
+        #     перебирает NOTIFY_CHANNELS, а не содержимое таблицы.
+        async with async_session_maker() as db:
+            db.add_all([
+                StudioIntegration(studio_id=studio_id, integration_type="ig_dm", is_connected=True),
+                NotificationEventToggle(studio_id=studio_id, role="client", event_id="c1",
+                                        channel_key="instagram", is_enabled=True),
+            ])
+            await db.commit()
+        async with async_session_maker() as db:
+            channels, forced = await resolve_channels(db, studio_id, "client", "c1", None)
+        assert "instagram" not in channels, channels
+        assert channels == {"email", "telegram"}, channels
+        print("OK: осиротевший instagram-тумблер игнорируется, даже при живом ig_dm")
+
         # 10) Неизвестный event_id или чужая роль -> пусто, не forced.
         async with async_session_maker() as db:
             channels, forced = await resolve_channels(db, studio_id, "client", "__unknown__", None)

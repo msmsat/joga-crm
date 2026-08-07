@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal, Optional
 
 from pydantic import Field
@@ -6,9 +7,10 @@ from schemas._base import BaseSchema
 
 
 # Фронт шлёт короткие ключи (telegram, email, ...); колонки модели — *_notifications.
+# instagram_notifications в схемах нет: Instagram перестал быть проактивным
+# каналом (см. докстринг services/notifier.py), колонка в БД осталась нетронутой.
 class NotificationSettingsRead(BaseSchema):
     telegram: bool = Field(alias="telegram_notifications")
-    instagram: bool = Field(alias="instagram_notifications")
     whatsapp: bool = Field(alias="whatsapp_notifications")
     email: bool = Field(alias="email_notifications")
     sms: bool = Field(alias="sms_notifications")
@@ -20,7 +22,6 @@ class NotificationSettingsRead(BaseSchema):
 
 class NotificationSettingsUpdate(BaseSchema):
     telegram: Optional[bool] = Field(default=None, alias="telegram_notifications")
-    instagram: Optional[bool] = Field(default=None, alias="instagram_notifications")
     whatsapp: Optional[bool] = Field(default=None, alias="whatsapp_notifications")
     email: Optional[bool] = Field(default=None, alias="email_notifications")
     sms: Optional[bool] = Field(default=None, alias="sms_notifications")
@@ -33,8 +34,11 @@ class NotificationSettingsUpdate(BaseSchema):
 class EventToggle(BaseSchema):
     role: Literal["client", "trainer", "admin", "owner"]
     event_id: str = Field(pattern=r"^[ctao]\d{1,2}$")
-    # instagram/sms/push — колонки БД сохранены недеструктивно (ROADMAP_NOTIFICATIONS),
-    # хотя UI и notify() их больше не используют — старые строки матрицы валидны.
+    # instagram/sms/push остаются в Literal ТОЛЬКО ради чтения: GET
+    # /notifications/events отдаёт живые строки таблицы, а там лежат осиротевшие
+    # instagram-тумблеры, заведённые до отключения канала. На запись их отобьёт
+    # _validate_toggles (канал недоступен ни одной роли), на отправку —
+    # resolve_channels (перебирает NOTIFY_CHANNELS).
     channel_key: Literal["telegram", "whatsapp", "email", "instagram", "sms", "push"]
     is_enabled: bool
 
@@ -78,3 +82,38 @@ class UserPrefUpdate(BaseSchema):
     event_id: str = Field(pattern=r"^[ctao]\d{1,2}$")
     channel_key: Literal["telegram", "whatsapp", "email", "instagram", "sms", "push"]
     is_enabled: bool
+
+
+# ─── Журнал отправок (эпик N-10) ──────────────────────────────────────────────
+
+class NotificationLogRow(BaseSchema):
+    """Строка журнала. dedup_key наружу не отдаём — он служебный и ни на один
+    вопрос поддержки не отвечает."""
+    id: int
+    event_id: Optional[str] = None
+    channel: str
+    recipient_id: Optional[int] = None
+    recipient_address: Optional[str] = None
+    status: str
+    # Тело ответа провайдера («шаблон не одобрен», «вне окна») — то самое, чем
+    # спор о списании закрывается по существу.
+    error: Optional[str] = None
+    created_at: datetime
+    finished_at: Optional[datetime] = None
+
+
+class NotificationLogSummary(BaseSchema):
+    """Счётчики по тем же фильтрам, что и список: rejected > 0 — это и есть тот
+    самый «никто не узнает», из-за которого события умирали молча."""
+    sent: int = 0
+    rejected: int = 0
+    error: int = 0
+    pending: int = 0
+
+
+class NotificationLogRead(BaseSchema):
+    summary: NotificationLogSummary
+    items: list[NotificationLogRow]
+    total: int
+    offset: int
+    limit: int
