@@ -1,33 +1,40 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { staffApi } from '../../../../api/staff'
 import type { StaffProfile, StaffMonthScheduleResponse } from '../../../../api/staff/staff.types'
 
 export function useStaffProfile(staffId: number | null) {
-  const [profile, setProfile] = useState<StaffProfile | null>(null)
+  // Профиль храним вместе с id, для которого он загружен: «грузим» и «показываем
+  // чужой профиль» тогда различаются без отдельных флагов, а ответ на устаревший
+  // запрос отбрасывается сам.
+  const [loaded, setLoaded] = useState<{ id: number | null; profile: StaffProfile | null }>({ id: null, profile: null })
   const [monthData, setMonthData] = useState<StaffMonthScheduleResponse | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+
+  const load = (id: number) => staffApi.getProfile(id).then(p => setLoaded({ id, profile: p }))
 
   useEffect(() => {
     if (!staffId) return
-    setIsLoading(true)
-    setProfile(null)
-    staffApi.getProfile(staffId).then(setProfile).finally(() => setIsLoading(false))
+    load(staffId)
   }, [staffId])
+
+  const profile = loaded.id === staffId ? loaded.profile : null
+  const isLoading = staffId != null && loaded.id !== staffId
 
   const refetchProfile = () => {
     if (!staffId) return
-    staffApi.getProfile(staffId).then(setProfile)
+    load(staffId)
   }
 
-  const fetchMonth = async (year?: number, month?: number) => {
+  // useCallback: Staff.tsx держит fetchMonth в зависимостях эффекта — без
+  // стабильной ссылки месяц перезапрашивался бы на каждый рендер.
+  const fetchMonth = useCallback(async (year?: number, month?: number) => {
     if (!staffId) return
     setMonthData(await staffApi.getMonthSchedule(staffId, year, month))
-  }
+  }, [staffId])
 
   const cancelLesson = async (lessonId: number) => {
     if (!staffId) return
     await staffApi.cancelLesson(staffId, lessonId)
-    staffApi.getProfile(staffId).then(setProfile)
+    load(staffId)
   }
 
   return { profile, monthData, isLoading, refetchProfile, fetchMonth, cancelLesson }

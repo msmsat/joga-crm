@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Clients.module.css';
 import type { ClientData } from './types';
@@ -37,6 +38,28 @@ export default function Clients() {
 
   const { profile: activeProfile } = useClientProfile(isPanelOpen ? activeClientId : null);
   const activeClient = activeProfile ? mapProfile(activeProfile) : (clients.find(c => c.id === activeClientId) ?? null);
+
+  // Переход по ссылке извне (лента событий дашборда, инсайты отчётов): /dashboard/clients?client=<id>
+  // сразу открывает карточку клиента, даже если его ещё нет в загруженной странице списка.
+  // Локальное состояние правим во время рендера (react-hooks/set-state-in-effect, паттерн
+  // как в GeneralTab.tsx), а вот саму строку URL — во внешнем useEffect: история браузера
+  // внешняя система, ей и место в эффекте.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [syncedClientParam, setSyncedClientParam] = useState<string | null>(null);
+  const clientParam = searchParams.get('client');
+  if (clientParam !== syncedClientParam) {
+    setSyncedClientParam(clientParam);
+    const id = clientParam ? Number(clientParam) : NaN;
+    if (Number.isFinite(id)) {
+      setActiveClientId(id);
+      setIsPanelOpen(true);
+    }
+  }
+  useEffect(() => {
+    if (searchParams.has('client')) {
+      setSearchParams(prev => { prev.delete('client'); return prev; }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleCatChange = useCallback((key: string) => {
     setActiveCatKey(key);

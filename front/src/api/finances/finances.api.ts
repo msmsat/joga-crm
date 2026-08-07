@@ -121,8 +121,13 @@ export const financesApi = {
     client.put<Gateway>(`/finances/gateways/${type}`, payload),
 
   // Ссылка одноразовая и живёт минуты — запрашиваем по клику, не кэшируем.
-  connectStripe: () =>
-    client.post<{ url: string }>('/finances/gateways/stripe/connect', {}),
+  // return_path — страница CRM, куда Stripe вернёт владельца с анкеты (бэк
+  // пропускает только свои относительные пути, см. gateways.py:_stripe_links).
+  connectStripe: (returnPath?: string) =>
+    client.post<{ url: string }>(
+      `/finances/gateways/stripe/connect${returnPath ? `?return_path=${encodeURIComponent(returnPath)}` : ''}`,
+      {},
+    ),
 
   getMethodStats: (dateFrom: string, dateTo: string) =>
     client.get<MethodStat[]>(`/finances/operations/method-stats?date_from=${dateFrom}&date_to=${dateTo}`),

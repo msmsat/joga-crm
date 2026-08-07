@@ -3,7 +3,6 @@ interface Segment { pct: number; color: string; label: string; }
 export function DonutIllustration({ total, segments, centerLabel }: { total: number; segments: Segment[]; centerLabel: string }) {
   const r = 46, cx = 60, cy = 60;
   const circ = 2 * Math.PI * r;
-  let offset = 0;
 
   return (
     <svg width="120" height="120" viewBox="0 0 120 120" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.06))' }}>
@@ -17,7 +16,10 @@ export function DonutIllustration({ total, segments, centerLabel }: { total: num
         {segments.map((seg, i) => {
           const dash = seg.pct * circ;
           const gap = circ - dash;
-          const el = (
+          // Сегмент начинается там, где кончились предыдущие. Считаем суммой, а не
+          // счётчиком-мутацией: render должен оставаться чистым.
+          const offset = segments.slice(0, i).reduce((sum, s) => sum + s.pct, 0);
+          return (
             <circle key={i} cx={cx} cy={cy} r={r}
               fill="none" stroke={seg.color} strokeWidth="12"
               strokeDasharray={`${dash} ${gap}`}
@@ -27,8 +29,6 @@ export function DonutIllustration({ total, segments, centerLabel }: { total: num
               style={{ opacity: 0.9 }}
             />
           );
-          offset += seg.pct;
-          return el;
         })}
       </g>
       <circle cx={cx} cy={cy} r={32} fill="var(--card)" />

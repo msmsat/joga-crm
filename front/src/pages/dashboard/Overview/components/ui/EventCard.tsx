@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import type { RecentEvent } from '../../types';
@@ -20,6 +21,7 @@ interface Props {
 
 export default function EventCard({ event }: Props) {
   const { t, i18n } = useTranslation('dashboard');
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<{ bottom: number; right: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -84,12 +86,17 @@ export default function EventCard({ event }: Props) {
             style={{ position: 'fixed', bottom: menuPos.bottom, right: menuPos.right, top: 'auto', zIndex: 9999 }}
             onMouseDown={e => e.stopPropagation()}
           >
-            <div className="dropdown-item">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-              </svg>
-              {t('events.openProfile')}
-            </div>
+            {event.entity_type === 'client' && event.entity_id != null && (
+              <div
+                className="dropdown-item"
+                onClick={() => { setIsOpen(false); navigate(`/dashboard/clients?client=${event.entity_id}`); }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+                {t('events.openProfile')}
+              </div>
+            )}
             {event.event_type === 'booking' && (
               <div className="dropdown-item">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

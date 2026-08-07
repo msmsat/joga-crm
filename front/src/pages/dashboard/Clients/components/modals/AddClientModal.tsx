@@ -10,7 +10,7 @@ import { useClientMutations } from '../../hooks/useClientsList';
 import { loyaltyApi } from '../../../../../api/loyalty/loyalty.api';
 import { queryKeys } from '../../../../../api/queryKeys';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
-import { getCurrencySymbol } from '../../../../../components/UI';
+import { getCurrencySymbol, PhoneField } from '../../../../../components/UI';
 import { formatMoney } from '../../utils/mapClient';
 import { useToast } from '../../../../../components/ui/Toast';
 import { errorMessage } from '../../../../../api/errorMessage';
@@ -380,11 +380,14 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     </div>
                   )}
                   <Field label={t('addModal.step1.name')} value={form.name} onChange={v => set('name', v)} error={errors.name} placeholder={t('addModal.step1.namePlaceholder')}/>
-                  <Field
-                    label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v)}
+                  {/* Не свободный текст: по этому номеру уходят платные шаблоны
+                      WhatsApp, а бэкенд требует E.164 с кодом страны и «999 123-45-67»
+                      теперь отклоняет (schemas/_base.Phone). PhoneField — тот же
+                      компонент, что в онбординге и профиле сотрудника. */}
+                  <PhoneField
+                    label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v ?? '')}
                     error={errors.phone ?? (phoneCheck.taken ? t('common:validation.phoneTaken') : undefined)}
                     hint={phoneCheck.checking ? t('common:validation.checkingContact') : undefined}
-                    placeholder={t('addModal.step1.phonePlaceholder')} type="tel"
                   />
                   <Field
                     label={t('addModal.step1.email')} value={form.email} onChange={v => set('email', v)}

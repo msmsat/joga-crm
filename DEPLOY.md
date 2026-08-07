@@ -4,11 +4,31 @@
 
 ---
 
+## Требования к серверу
+
+Минимум **1 GB RAM + 2 GB swap**, 15 GB диска. Бесплатные машины (GCP `e2-micro`,
+AWS `t2.micro`) — ровно 1 GB без swap, и на них `npm ci` + `vite build` падают с
+OOM: сборка фронта одна съедает больше гигабайта. Swap добавляется один раз и
+решает проблему целиком:
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab   # переживёт ребут
+free -h
+```
+
+Альтернатива, если swap добавить нельзя: собрать образы на своей машине и
+залить в реестр, а на сервере делать только `docker compose up -d`.
+
+---
+
 ## Первый запуск на сервере
 
 ```bash
 # 1. Docker
 curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER && newgrp docker   # чтобы не писать sudo каждый раз
 
 # 2. Код
 git clone https://github.com/msmsat/joga-crm.git && cd joga-crm
@@ -46,6 +66,8 @@ docker compose up -d --build
 ```
 
 Первый билд 5–10 минут. Миграции накатываются сами при старте контейнера.
+
+**Клиентское мини-приложение собирается на хосте, не в образе:** `cd miniapp && npm ci && npm run build`. Контейнер `api` монтирует готовый `miniapp/dist` и раздаёт его по `/s/{studio_id}` — нет папки, нет мини-апа (API при этом работает). Пересобирать образ после правок мини-апа не нужно, достаточно `npm run build`.
 
 ---
 

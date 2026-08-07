@@ -1,13 +1,17 @@
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { IconInstagram } from '../ui/BookingIcons'
 import { useToast } from '../../../../../components/ui/Toast'
 
-interface Props { onClose(): void }
+interface Props { connected: boolean; username: string; onClose(): void }
 
-export function InstaModal({ onClose }: Props) {
+export function InstaModal({ connected, username, onClose }: Props) {
   const { t } = useTranslation('booking')
   const toast = useToast()
+  // Аккаунт у студии один на всю CRM и подключается в Уведомлениях — здесь его
+  // можно только увидеть, поэтому вместо «Подключить» ведём туда.
+  const navigate = useNavigate()
 
   return createPortal(
     <div className="tg-modal-overlay open" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
@@ -27,6 +31,25 @@ export function InstaModal({ onClose }: Props) {
         <div className="modal-sub" style={{ marginBottom: '16px' }}>
           {t('insta.sub')}
         </div>
+
+        {connected ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(91,171,114,0.12)', color: '#5BAB72', borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 600 }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#5BAB72', display: 'inline-block' }}/>
+              {t('channels.connected')}
+            </span>
+            {username && <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)' }}>@{username}</span>}
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate('/dashboard/notifications')}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginBottom: '16px', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '12px', fontWeight: 600, fontFamily: 'var(--font)', cursor: 'pointer', textAlign: 'left' }}
+          >
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }}/>
+            {t('channels.connectInNotifications')}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: 'auto' }}><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        )}
 
         <div className="instruction-box">
           <div className="ins-step">

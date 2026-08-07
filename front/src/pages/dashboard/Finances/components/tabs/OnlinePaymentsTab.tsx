@@ -150,7 +150,9 @@ export default function OnlinePaymentsTab({ showToast }: { showToast: (msg: stri
         {stripe && (
           <StripeCard
             gateway={stripe}
-            onConnect={connectStripe}
+            /* Стрелка обязательна: connectStripe принимает return_path, а
+               голый обработчик клика передал бы туда MouseEvent. */
+            onConnect={() => connectStripe()}
             isConnecting={isConnecting}
             onToggle={() => handleToggle(stripe)}
           />

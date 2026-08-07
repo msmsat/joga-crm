@@ -5,7 +5,15 @@ import { staffApi } from '../../../../api/staff';
 import { queryKeys } from '../../../../api/queryKeys';
 import { colorForStaffId, lessonToBooking, staffToTrainer, toDateStr } from '../utils';
 import type { StaffListItem } from '../../../../api/staff/staff.types';
-import type { Hall } from '../types';
+import type { Booking, Hall } from '../types';
+
+// Стабильные «пусто»: `const { data: x = [] }` создаёт НОВЫЙ массив на каждый
+// рендер, пока запрос в пути. Такая ссылка течёт в мемо/эффекты потребителей
+// (сидирование фильтров в Journal) и зацикливает их до «Too many re-renders»
+// ровно на время первой загрузки. Один общий литерал — ссылка не меняется.
+const EMPTY_STAFF: StaffListItem[] = [];
+const EMPTY_HALLS: Hall[] = [];
+const EMPTY_BOOKINGS: Booking[] = [];
 
 // Диапазон видимых дат: день / неделя (Пн–Вс)
 export function visibleRange(
@@ -63,7 +71,7 @@ export function useSchedule(
   const qc = useQueryClient();
 
   const {
-    data: staff = [],
+    data: staff = EMPTY_STAFF,
     isSuccess: staffLoaded,
     error: staffError,
     refetch: refetchStaff,
@@ -72,7 +80,7 @@ export function useSchedule(
     queryFn: () => staffApi.getList().then(res => res.staff.items),
   });
   const {
-    data: halls = [],
+    data: halls = EMPTY_HALLS,
     isSuccess: hallsLoaded,
     error: hallsError,
     refetch: refetchHalls,
@@ -88,7 +96,7 @@ export function useSchedule(
   // Booking[], потому что мутации (useJournalMutations) пишут в этот же кэш
   // напрямую через setQueryData и должны видеть тот же тип.
   const {
-    data: bookings = [],
+    data: bookings = EMPTY_BOOKINGS,
     isPending: bookingsPending,
     error: bookingsError,
     refetch: refetchBookings,

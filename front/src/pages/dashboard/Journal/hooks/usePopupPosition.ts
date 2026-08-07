@@ -1,5 +1,5 @@
 // src/hooks/usePopupPosition.ts
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import type { Booking } from '../types';
 
 interface UsePopupPositionProps {
@@ -39,10 +39,13 @@ export function usePopupPosition({
   // его rect и есть честная геометрия, без захардкоженных ширин панелей.
   // Считаем на каждый пересчёт, а не кэшируем: compactHeaders меняет высоту
   // топбара сетки на лету.
-  const getZoneRect = () => gridWrapperRef.current?.getBoundingClientRect() ?? null;
+  const getZoneRect = useCallback(() => gridWrapperRef.current?.getBoundingClientRect() ?? null, []);
 
-  // 3. Высчитываем модалку создания записи
-  const recalcModalPos = () => {
+  // 3. Высчитываем модалку создания записи.
+  // useCallback обязателен: эти функции — и слушатели scroll/resize, и зависимости
+  // эффектов ниже. Новая ссылка на каждый рендер означала бы переподписку и
+  // пересчёт позиции в цикле.
+  const recalcModalPos = useCallback(() => {
     if (!previewRef.current || !newBookingSlot) return;
     const zone = getZoneRect();
     if (!zone) return;
@@ -87,10 +90,10 @@ export function usePopupPosition({
     }
 
     setNewFormPos({ x: finalX, y: finalY });
-  };
+  }, [newBookingSlot, getZoneRect]);
 
   // 4. Высчитываем popup карточки
-  const recalcPopupPos = () => {
+  const recalcPopupPos = useCallback(() => {
     if (!popupBooking || !popupRef.current) return;
 
     const activeCard = document.querySelector(`[data-booking-id="${popupBooking.id}"]`);
@@ -132,7 +135,7 @@ export function usePopupPosition({
     }
 
     setPopupPos({ x: finalX, y: finalY });
-  };
+  }, [popupBooking, getZoneRect]);
 
   // 5. Подписки на скролл, ресайз и DOM изменения
   useLayoutEffect(() => {
@@ -156,7 +159,7 @@ export function usePopupPosition({
       window.removeEventListener('resize', recalcPopupPos);
       if (ro && popupEl) ro.unobserve(popupEl);
     };
-  }, [popupBooking, isEditingBooking, editFormTimeStart, editFormTimeEnd, editFormHall]);
+  }, [popupBooking, isEditingBooking, editFormTimeStart, editFormTimeEnd, editFormHall, recalcPopupPos]);
 
   useEffect(() => {
     if (!showNewForm) return;
@@ -172,7 +175,7 @@ export function usePopupPosition({
       window.removeEventListener('resize', recalcModalPos);
       clearTimeout(timer);
     };
-  }, [showNewForm, newBookingSlot?.timeStart, newBookingSlot?.timeEnd, newBookingSlot?.trainer]);
+  }, [showNewForm, recalcModalPos]);
 
   // Возвращаем все необходимые данные наружу
   return {

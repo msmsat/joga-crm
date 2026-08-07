@@ -1,11 +1,11 @@
 // ─── В самом верху UI.tsx ───
-import { GoogleIcon } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
+import { GoogleIcon, Droplet, Comb, Dumbbell, Sparkle, Scissors, Home, Calendar, Users, ChatBubble, ChartBar, Gear } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import type { ReactNode, FocusEvent } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { placePopover } from "./ui/popoverPosition";
 
-// @ts-ignore
 import PhoneInput from 'react-phone-number-input/input';
 import 'react-phone-number-input/style.css';
 
@@ -38,7 +38,21 @@ export function Logo() {
 }
 
 // ─── INPUT FIELD ──────────────────────────────────────────────────────────────
-export function InputField({ label, type = "text", placeholder, value, onChange, onFocus, icon, rightSlot, error, autoComplete, maxLength }: any) {
+interface InputFieldProps {
+  label?: ReactNode;
+  type?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+  onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
+  icon?: ReactNode;
+  rightSlot?: ReactNode;
+  error?: ReactNode;
+  autoComplete?: string;
+  maxLength?: number;
+}
+
+export function InputField({ label, type = "text", placeholder, value, onChange, onFocus, icon, rightSlot, error, autoComplete, maxLength }: InputFieldProps) {
   const [focused, setFocused] = useState(false);
   const hasValue = value.length > 0;
 
@@ -84,7 +98,15 @@ export function InputField({ label, type = "text", placeholder, value, onChange,
 // label необязателен: в модалках, где подпись рисует свой <FieldLabel>, пустой
 // <label> добавлял лишний отступ. hint — строка-подсказка под полем (например
 // «проверяем…», пока идёт живая проверка занятости номера).
-export function PhoneField({ label, value, onChange, error, hint }: any) {
+interface PhoneFieldProps {
+  label?: ReactNode;
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+  error?: ReactNode;
+  hint?: ReactNode;
+}
+
+export function PhoneField({ label, value, onChange, error, hint }: PhoneFieldProps) {
   const [focused, setFocused] = useState(false);
   const hasValue = value && value.length > 0;
 
@@ -201,7 +223,12 @@ export function GoogleBtn({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function PrimaryBtn({ children, onClick, loading = false, fullWidth = false }: any) {
+export function PrimaryBtn({ children, onClick, loading = false, fullWidth = false }: {
+  children: ReactNode;
+  onClick?: () => void;
+  loading?: boolean;
+  fullWidth?: boolean;
+}) {
   return (
     <button onClick={onClick} disabled={loading} className="btn btn-primary" style={{ width: fullWidth ? "100%" : "auto", padding: "15px 28px", borderRadius: "12px" }}>
       {loading ? <><span className="spinner" /> Входим...</> : children}
@@ -220,7 +247,11 @@ export function Divider({ label }: { label: string }) {
 }
 
 // ─── CHECKBOX ─────────────────────────────────────────────────────────────────
-export function Checkbox({ checked, onChange, label }: any) {
+export function Checkbox({ checked, onChange, label }: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label?: ReactNode;
+}) {
   return (
     <label className="checkbox-label">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
@@ -233,12 +264,18 @@ export function Checkbox({ checked, onChange, label }: any) {
 }
 
 // ─── EXTRA UI (Social Proof & Password Strength) ──────────────────────────────
+// Общий набор иконок ниш для avatar-рядов лендинга/входа/регистрации —
+// один и тот же ряд использует и SocialProof (тут), и герой лендинга.
+export const CATEGORY_ICONS = [Droplet, Comb, Dumbbell, Sparkle, Scissors];
+
 export function SocialProof() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center" }}>
       <div style={{ display: "flex" }}>
-        {["🧖", "💇", "🏋️", "💅", "✂️"].map((e, i) => (
-          <div key={i} style={{ width: "26px", height: "26px", borderRadius: "50%", background: `linear-gradient(135deg, rgba(252,174,145,0.8), rgba(249,160,139,0.8))`, border: "1.5px solid white", marginLeft: i > 0 ? "-6px" : "0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>{e}</div>
+        {CATEGORY_ICONS.map((IconComp, i) => (
+          <div key={i} style={{ width: "26px", height: "26px", borderRadius: "50%", background: `linear-gradient(135deg, rgba(252,174,145,0.8), rgba(249,160,139,0.8))`, border: "1.5px solid white", marginLeft: i > 0 ? "-6px" : "0", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
+            <IconComp width={12} height={12} style={{ color: "#fff" }} />
+          </div>
         ))}
       </div>
       <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0 }}><strong style={{ color: "var(--onyx)", fontWeight: 700 }}>2 400+</strong> бизнесов уже в системе</p>
@@ -274,7 +311,7 @@ export function Badge({ children }: { children: string }) {
   );
 }
 
-export function StatCard({ value, label, icon }: { value: string; label: string; icon: string }) {
+export function StatCard({ value, label, icon }: { value: string; label: string; icon: ReactNode }) {
   const [vis, setVis] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
@@ -293,7 +330,7 @@ export function StatCard({ value, label, icon }: { value: string; label: string;
   );
 }
 
-export function FeatureCard({ icon, title, desc, delay = 0 }: { icon: string; title: string; desc: string; delay?: number }) {
+export function FeatureCard({ icon, title, desc, delay = 0 }: { icon: ReactNode; title: string; desc: string; delay?: number }) {
   const [vis, setVis] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
@@ -312,7 +349,7 @@ export function FeatureCard({ icon, title, desc, delay = 0 }: { icon: string; ti
   );
 }
 
-export function TestimonialCard({ quote, name, role, avatar, delay = 0 }: { quote: string; name: string; role: string; avatar: string; delay?: number }) {
+export function TestimonialCard({ quote, name, role, avatar, delay = 0 }: { quote: string; name: string; role: string; avatar: ReactNode; delay?: number }) {
   const [vis, setVis] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
@@ -329,7 +366,7 @@ export function TestimonialCard({ quote, name, role, avatar, delay = 0 }: { quot
       </div>
       <p style={{ fontSize: "15px", lineHeight: "1.7", color: "var(--text2)", margin: "0 0 24px", fontStyle: "italic" }}>"{quote}"</p>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: `linear-gradient(135deg, var(--peach-light), var(--peach))`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>{avatar}</div>
+        <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: `linear-gradient(135deg, var(--peach-light), var(--peach))`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>{avatar}</div>
         <div>
           <div style={{ fontWeight: 700, fontSize: "14px", color: "var(--onyx)" }}>{name}</div>
           <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "2px" }}>{role}</div>
@@ -351,7 +388,7 @@ export function DashboardMockup() {
       </div>
       <div style={{ display:"flex", height:"380px" }}>
         <div style={{ width:"56px", background:"#F9F8F7", borderRight:`1px solid var(--border)`, display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"20px", gap:"18px" }}>
-          {["🏡","📅","👥","💬","📊","⚙️"].map((ico,i) => <div key={i} style={{ width:"34px",height:"34px",borderRadius:"9px", background: i===0 ? `linear-gradient(135deg, var(--peach-light), var(--peach))` : "transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"15px", cursor:"pointer" }}>{ico}</div>)}
+          {[Home, Calendar, Users, ChatBubble, ChartBar, Gear].map((IconComp,i) => <div key={i} style={{ width:"34px",height:"34px",borderRadius:"9px", background: i===0 ? `linear-gradient(135deg, var(--peach-light), var(--peach))` : "transparent", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color: i===0 ? "#fff" : "var(--muted)" }}><IconComp width={16} height={16} /></div>)}
         </div>
         {/* minWidth:0 — иначе flex-колонка не сжимается ниже min-content своих
             карточек и тянет весь герой лендинга шире экрана телефона. */}

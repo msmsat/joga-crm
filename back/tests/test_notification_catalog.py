@@ -2,6 +2,9 @@
 
 Запуск из back/:  python -m tests.test_notification_catalog
 """
+import pathlib
+import re
+
 from services import notifier
 from services.notification_catalog import CATALOG, events_for_role, is_locked
 
@@ -45,8 +48,31 @@ def test_every_spec_has_valid_shape():
             assert spec.default_channels, f"{event_id}: tier={spec.tier} без default_channels"
 
 
+def test_every_event_has_a_trigger():
+    """Событие без вызова notify() — мёртвая строка в матрице: владелец ставит
+    галку, а прислать нечего. Ищем event_id по роутерам и сервисам."""
+    root = pathlib.Path(__file__).resolve().parent.parent
+    found: set[str] = set()
+    for folder in ("routers", "services"):
+        for path in (root / folder).rglob("*.py"):
+            if path.name in ("notification_catalog.py", "notifier.py"):
+                continue  # сам каталог и шаблоны — не триггеры
+            found |= set(re.findall(r'"(c\d+|t\d+|a\d+|o\d+)"', path.read_text(encoding="utf-8")))
+    missing = sorted(set(CATALOG) - found)
+    assert not missing, f"события без врезки notify(): {missing}"
+
+
+def test_every_event_can_reach_someone():
+    """У каждого события есть хотя бы один канал по умолчанию, и это email:
+    Telegram может быть не подключён, почта есть всегда (см. правило в каталоге)."""
+    for event_id, spec in CATALOG.items():
+        assert "email" in spec.default_channels, f"{event_id}: нет гарантированного канала"
+
+
 if __name__ == "__main__":
     test_catalog_matches_templates()
+    test_every_event_has_a_trigger()
+    test_every_event_can_reach_someone()
     test_events_for_role_filters_by_role()
     test_events_for_role_unknown_role_is_empty()
     test_is_locked_true_only_for_critical()

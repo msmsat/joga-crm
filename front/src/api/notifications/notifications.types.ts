@@ -75,6 +75,26 @@ export interface WaPricing {
   source: 'meta' | 'default'
 }
 
+// Итог POST /settings/integrations/whatsapp/templates-sync: сколько шаблонов
+// заведено, сколько уже было, сколько Meta не приняла.
+export interface WaTemplatesSyncResult {
+  created: number
+  exists: number
+  failed: number
+}
+
+// Вердикт модерации Meta по шаблонам (details.templates у канала WhatsApp).
+// Каждый шаблон Meta одобряет отдельно, и отклонённый молча хоронит своё
+// событие — отсюда rejected_events: id событий, чтобы показать, какие именно
+// уведомления сейчас не доходят. null у канала — статусы ещё не читали.
+export interface WaTemplateSummary {
+  approved: number
+  pending: number
+  rejected: number
+  rejected_events: string[]
+  checked_at: string | null
+}
+
 export interface WaConnectPayload {
   token: string
   phone_number_id: string

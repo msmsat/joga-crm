@@ -23,6 +23,13 @@ services:
     environment:
       # Перебивает DATABASE_URL из env_file: в контейнере база не на localhost.
       DATABASE_URL: postgresql+asyncpg://velora:${POSTGRES_PASSWORD}@db:5432/velora
+    ports:
+      # Только для cloudflared: туннель api.jogaua.online смотрит сюда и отдаёт
+      # мини-приложение и вебхуки напрямую, МИНУЯ Caddy. Через Caddy их не увести:
+      # он режет префикс /api, а бот, Stripe и Meta уже знают голые пути
+      # (/s/{id}, /global/*, /checkout/webhook/stripe) — так это и работало до докера.
+      # 127.0.0.1 — из локальной сети порт не виден, наружу только через туннель.
+      - "127.0.0.1:8000:8000"
     volumes:
       # Именованные тома, а НЕ ./back/static — папка отслеживается git-ом, и
       # загруженные клиентами файлы попадали бы в рабочую копию: git status вечно
@@ -30,6 +37,11 @@ services:
       # Здесь они лежат вне дерева репозитория и переживают и пересборку, и git pull.
       - static_data:/app/static
       - uploads_data:/app/uploads
+      # Собранный miniapp/dist: в образ он не попадает (build-контекст — ./back, а
+      # main.py ищет его на уровень выше — /miniapp/dist). Монтируем с хоста, чтобы
+      # не тащить фронтовую сборку в питоновский образ. Папки нет → мини-ап отдаёт
+      # 404, но API живёт: main.py монтирует эти маршруты только если dist на месте.
+      - ./miniapp/dist:/miniapp/dist:ro
     depends_on:
       db:
         condition: service_healthy

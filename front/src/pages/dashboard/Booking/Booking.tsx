@@ -1,19 +1,24 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import './Booking.css'
 import { useBookingModals }   from './hooks/useBookingModals'
 import { useBookingSettings } from './hooks/useBookingSettings'
 import { useChannels }        from './hooks/useChannels'
 import { useGateways }        from '../Finances/hooks/useFinances'
+import { useToast }           from '../../../components/ui/Toast'
 import { BookingChannels }    from './components/sections/BookingChannels'
 import { BookingSettings }    from './components/sections/BookingSettings'
 import { TgModal }            from './components/modals/TgModal'
-import { InstaModal }         from './components/modals/InstaModal'
-import { WebModal }           from './components/modals/WebModal'
-import { WaModal }            from './components/modals/WaModal'
 import { StripeGateModal }    from './components/modals/StripeGateModal'
+
+const BOOKING_PATH = '/dashboard/booking'
+const FINANCES_PATH = '/dashboard/finances?tab=onlinePayments'
 
 export default function Booking() {
   const navigate = useNavigate()
+  const toast = useToast()
+  const { t } = useTranslation('booking')
   const settings = useBookingSettings()
 
   // Приём оплат — общий шлюз всех каналов. Статус живой, со стороны Stripe:
@@ -32,19 +37,39 @@ export default function Booking() {
         : 'disabled' // charges_enabled=true, is_active=false — выключен тумблером на Финансах
 
   const modals = useBookingModals(stripeReady)
-  const tgBot  = useChannels(stripeReady)
+  const tgBot  = useChannels()
+
+  // Анкета Stripe открывается на месте и возвращает СЮДА (return_path), а не в
+  // Финансы: владелец начал настройку на этой странице. Дозаполнить анкету —
+  // тоже сюда; включить обратно выключенный приём можно только тумблером в
+  // Финансах, поэтому там уводим.
+  const openStripe = () => {
+    if (gateState === 'loading') return
+    if (gateState === 'none' || gateState === 'incomplete') connectStripe(BOOKING_PATH)
+    else navigate(FINANCES_PATH)
+  }
+
+  // Возврат с формы Stripe (?stripe=return|refresh): статус уже перезапрошен
+  // монтированием useGateways — остаётся объяснить, что произошло.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const flag = params.get('stripe')
+    if (!flag) return
+    if (flag === 'refresh') toast.error(t('toasts.stripeLinkExpired'))
+    else toast.success(t('toasts.stripeReturned'))
+    params.delete('stripe')
+    const rest = params.toString()
+    window.history.replaceState({}, '', window.location.pathname + (rest ? `?${rest}` : ''))
+  }, [toast, t])
 
   return (
     <>
       <BookingChannels
-        tgStatus={tgBot.statusOf('telegram')}
-        instaStatus={tgBot.statusOf('instagram')}
-        webStatus={tgBot.statusOf('web')}
-        waStatus={tgBot.statusOf('whatsapp')}
-        onOpenTg={()    => modals.open('telegram')}
-        onOpenInsta={() => modals.open('instagram')}
-        onOpenWeb={()   => modals.open('web')}
-        onOpenWa={()    => modals.open('whatsapp')}
+        tgStatus={tgBot.connected ? 'connected' : null}
+        stripeStatus={stripeReady ? 'connected' : stripe?.account_id ? 'pending' : null}
+        miniappUrl={settings.settings?.miniapp_url ?? ''}
+        onOpenTg={() => modals.open('telegram')}
+        onOpenStripe={openStripe}
       />
 
       <BookingSettings {...settings} />
@@ -53,7 +78,7 @@ export default function Booking() {
         <StripeGateModal
           state={gateState}
           isConnecting={isConnecting}
-          onConnect={gateState === 'disabled' ? () => navigate('/dashboard/finances?tab=onlinePayments') : connectStripe}
+          onConnect={gateState === 'disabled' ? () => navigate(FINANCES_PATH) : () => connectStripe(BOOKING_PATH)}
           onClose={modals.close}
         />
       )}
@@ -68,9 +93,6 @@ export default function Booking() {
           onClose={modals.close}
         />
       )}
-      {modals.openChannel === 'instagram' && <InstaModal onClose={modals.close} />}
-      {modals.openChannel === 'web'       && <WebModal   onClose={modals.close} />}
-      {modals.openChannel === 'whatsapp'  && <WaModal    onClose={modals.close} />}
     </>
   )
 }

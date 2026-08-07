@@ -374,8 +374,12 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     }
   }, [isOpen]);
 
-  // Sync when staff changes
-  useEffect(() => {
+  // Sync when staff changes. Правка состояния прямо в рендере — документированный
+  // React-паттерн синхронизации с пропсами: форма готова к первому же кадру,
+  // без промежуточного рендера с данными прошлого сотрудника.
+  const [syncedTo, setSyncedTo] = useState<{ isOpen: boolean; staff: StaffMember | null }>({ isOpen: false, staff: null });
+  if (syncedTo.isOpen !== isOpen || syncedTo.staff !== staff) {
+    setSyncedTo({ isOpen, staff });
     if (isOpen && staff) {
       setForm({
         id:             staff.id,
@@ -398,7 +402,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
       setSaved(false);
       setActiveTab("profile");
     }
-  }, [isOpen, staff]);
+  }
 
   const set = useCallback(<K extends keyof typeof form>(k: K, v: typeof form[K]) => {
     setForm(d => ({ ...d, [k]: v }));
@@ -1148,22 +1152,22 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                     <div style={{ display: "flex", gap: "8px" }}>
                       {[
                         {
-                          id: "fixed", label: t("common:salary.fixed"), sub: t("staff:editModal.salary.cardFixedSub"),
+                          id: "fixed" as const, label: t("common:salary.fixed"), sub: t("staff:editModal.salary.cardFixedSub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
                         },
                         {
-                          id: "percent", label: t("common:salary.percent"), sub: t("staff:editModal.salary.cardPercentSub"),
+                          id: "percent" as const, label: t("common:salary.percent"), sub: t("staff:editModal.salary.cardPercentSub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>,
                         },
                         {
-                          id: "hourly", label: t("common:salary.hourly"), sub: t("staff:editModal.salary.cardHourlySub"),
+                          id: "hourly" as const, label: t("common:salary.hourly"), sub: t("staff:editModal.salary.cardHourlySub"),
                           icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
                         },
                       ].map(({ id, label, sub, icon }) => { // Деструктурируем свойства сразу здесь
                         const isOn = form.rate_type === id;
                         return (
                           <button key={id} type="button" className="ei-salary-type"
-                            onClick={() => set("rate_type", id as any)} // id передаем сюда
+                            onClick={() => set("rate_type", id)} // id передаем сюда
                             style={{
                               flex: 1, padding: "13px 10px",
                               background: isOn ? "rgba(252,174,145,0.1)" : "rgba(var(--ink),0.02)",

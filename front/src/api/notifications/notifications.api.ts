@@ -10,7 +10,7 @@ import type {
   NotifyChannelsStatus,
   ChannelStatus,
   WaPricing,
-  WaConnectPayload,
+  WaTemplatesSyncResult,
 } from './notifications.types'
 
 export const notificationsApi = {
@@ -52,14 +52,29 @@ export const notificationsApi = {
   verifyEmailCode: (code: string) =>
     client.post<ChannelStatus>('/settings/integrations/email/verify', { code }),
 
-  connectWhatsApp: (payload: WaConnectPayload) =>
-    client.post<ChannelStatus>('/settings/integrations/whatsapp', payload),
+  // WhatsApp подключается тем же Embedded Signup, что и на Velora AI (номер один
+  // на всю CRM, см. routers/ai/whatsapp.py). Ручной ввод token + phone_number_id
+  // остался только в Настройках → Интеграции — как запасной путь, если мастер
+  // Meta недоступен. back говорит бэку, куда вернуть браузер после мастера.
+  getWhatsappOauthUrl: () =>
+    client.get<{ url: string }>('/ai/whatsapp/oauth-url?back=notifications'),
 
   disconnectWhatsApp: () =>
     client.delete<ChannelStatus>('/settings/integrations/whatsapp'),
 
   getWaPricing: () =>
     client.get<WaPricing>('/settings/integrations/whatsapp/pricing'),
+
+  // Карту привязывают на стороне Meta, вебхука об этом нет — спрашиваем сами в
+  // момент, когда ответ нужен: при открытии модалки и при включении тумблера.
+  checkWaPayment: () =>
+    client.post<ChannelStatus>('/settings/integrations/whatsapp/payment-check', {}),
+
+  // Без одобренного шаблона Meta не даёт написать первым: свободный текст
+  // доставляется только внутри 24-часового окна диалога. Заводит шаблоны всех
+  // 38 событий на WABA студии — они уходят на модерацию, никому не пишут.
+  syncWaTemplates: () =>
+    client.post<WaTemplatesSyncResult>('/settings/integrations/whatsapp/templates-sync', {}),
 
   // Instagram подключается только по OAuth — тем же эндпоинтом, что и на Velora AI
   // (аккаунт один на обе поверхности, см. services/instagram_account.py). back

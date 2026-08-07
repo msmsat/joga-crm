@@ -3,18 +3,20 @@
  * @description Тупой и чистый хук. Работает с уже переведенными данными (ViewModel).
  */
 import { useState, useMemo } from 'react';
+import type { StaffViewModel } from '../types';
 
 // Владелец → администратор → тренер. Внутри роли порядок с бэкенда сохраняется.
 const ROLE_ORDER: Record<string, number> = { owner: 0, admin: 1, trainer: 2 };
 const roleRank = (role: string) => ROLE_ORDER[role] ?? 99;
 
-// Принимаем any[], так как сюда прилетает расширенный Employee из Staff.tsx
-export function useStaffFilters(initialStaff: any[]) {
+// Дженерик, а не StaffViewModel[]: возвращаем ровно тот тип, что пришёл, —
+// Staff.tsx докладывает в карточки свои поля, и они не должны теряться.
+export function useStaffFilters<T extends StaffViewModel>(initialStaff: T[]) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeGroup, setActiveGroup] = useState<string | 'ALL'>('ALL'); // Хранит сырой ключ (например, 'pilates')
 
   const filteredAndSortedStaff = useMemo(() => {
-    let result = initialStaff.filter(emp => {
+    const result = initialStaff.filter(emp => {
       // 1. Фильтр по табам (группам) - сравниваем сырые ключи!
       const matchesGroup = activeGroup === 'ALL' || emp._resolvedGroupKey === activeGroup;
 

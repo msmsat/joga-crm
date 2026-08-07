@@ -12,7 +12,12 @@ import { errorMessage } from "../../../../../api/errorMessage";
 import { Button, EmptyState, Input, useToast } from "../../../../../components/ui/index";
 import type { NotificationSettings } from "../../../../../api/notifications/notifications.types";
 
-const CHANNEL_KEYS = ["email", "telegram", "whatsapp"] as const;
+// Эта вкладка — только для персонала (владелец/админ/тренер), клиенты сюда не
+// заходят вообще (у них отдельное мини-приложение). Telegram/Instagram
+// персоналу структурно не доставляются (ROLE_CHANNELS на бэке: диалоговые
+// каналы, писать в которые может только тот, кто сам открыл диалог, — у
+// сотрудника такого пути нет), поэтому колонка тут не нужна ни одной роли.
+const CHANNEL_KEYS = ["email", "whatsapp"] as const;
 
 export default function NotificationsTab() {
   const { t } = useTranslation('settings');

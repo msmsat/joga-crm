@@ -3,7 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 
 import aiohttp
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,10 +22,19 @@ from schemas.settings.integrations import (
     WaConnect,
     WaPricing,
 )
+from services.assistant import get_or_create_ai_settings
 from services.instagram_account import FB_LOGIN_API, connect_instagram_account, disconnect_instagram_account
 from services.mailer import send_email
 from services.notifier import _studio_prefs
 from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
+from services.whatsapp import (
+    refresh_payment_status,
+    refresh_template_statuses,
+    sync_templates_for_studio,
+    sync_templates_on_connect,
+    template_summary,
+    wa_integration,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +124,17 @@ def _channel_status(integ: StudioIntegration | None, kind: str) -> ChannelStatus
         details = {
             "phone_number_id": config.get("phone_number_id"),
             "display_phone_number": config.get("display_phone_number"),
+            # Три состояния, а не два: True — условие выполнено, False — нет,
+            # None — ещё не проверяли или Meta не ответила. См. services/whatsapp.py.
+            "payment_connected": config.get("payment_connected"),
+            # Верификацию Business Portfolio проходит САМА студия: её WABA
+            # CLIENT_OWNED, приложение Velora к её бизнесу отношения не имеет.
+            # Без неё номер живёт в пониженном лимите — отсюда инструкция в UI.
+            "business_verified": config.get("business_verified"),
+            # Третье условие доставки и такая же трёхзначная логика: None —
+            # статусы ещё не читали. Каждый шаблон Meta модерирует отдельно, и
+            # отклонённый молча хоронит своё событие, если не показать это здесь.
+            "templates": template_summary(config),
         }
     return ChannelStatus(connected=True, details=details)
 
@@ -213,6 +233,7 @@ async def verify_email_code(
 @router.post("/integrations/whatsapp", response_model=ChannelStatus)
 async def connect_whatsapp(
     body: WaConnect,
+    background: BackgroundTasks,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -252,7 +273,32 @@ async def connect_whatsapp(
     integ.is_connected = True
     await db.commit()
     await db.refresh(integ)
+    # Сразу выясняем, привязана ли карта: без неё канал доставит только ответы
+    # в 24-часовом окне, и это надо показать студии в тот же момент, а не когда
+    # первое напоминание молча не уйдёт.
+    await refresh_payment_status(db, integ)
+    # По той же причине сразу заводим шаблоны — фоном, потому что это 76 запросов
+    # к Meta (services/whatsapp.py::sync_templates_on_connect).
+    if body.waba_id:
+        background.add_task(sync_templates_on_connect, ctx.studio_id)
     return _channel_status(integ, "wa_notify")
+
+
+async def _disconnect_whatsapp_number(db: AsyncSession, studio_id: int) -> None:
+    """Гасит номер вместе с тумблером WhatsApp-агента. Коммитит сам.
+
+    Своего подключения у агента нет — он живёт на этой же интеграции. Оставить
+    wa_enabled включённым значит, что при следующем подключении номера агент
+    молча начнёт отвечать клиентам, хотя владелец его не включал; у Telegram и
+    Instagram это гасят их общие сервисы.
+    """
+    ai = await get_or_create_ai_settings(studio_id, db)
+    ai.wa_enabled = False
+
+    integ = await _get_or_create_integration(db, studio_id, "wa_notify")
+    integ.is_connected = False
+    integ.config = None
+    await db.commit()
 
 
 @router.delete("/integrations/whatsapp", response_model=ChannelStatus)
@@ -260,11 +306,50 @@ async def disconnect_whatsapp(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    integ = await _get_or_create_integration(db, ctx.studio_id, "wa_notify")
-    integ.is_connected = False
-    integ.config = None
-    await db.commit()
+    await _disconnect_whatsapp_number(db, ctx.studio_id)
     return ChannelStatus()
+
+
+@router.post("/integrations/whatsapp/payment-check", response_model=ChannelStatus)
+async def check_whatsapp_payment(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Перепроверить готовность канала на стороне Meta и вернуть свежий статус.
+
+    Дёргается фронтом в двух точках: при открытии модалки WhatsApp и при
+    включении тумблера канала — и карту, и вердикт по шаблонам меняет Meta, о чём
+    нам никто не сообщает, так что дешевле спросить в момент, когда ответ нужен.
+    Шаблоны здесь же, а не отдельной ручкой: обе проверки нужны ровно в одних и
+    тех же двух точках, и второй раунд-трип из UI ничего бы не дал.
+    """
+    integ = await wa_integration(db, ctx.studio_id)
+    if integ is None or not integ.is_connected:
+        return ChannelStatus()
+    await refresh_payment_status(db, integ)
+    await refresh_template_statuses(db, integ)
+    return _channel_status(integ, "wa_notify")
+
+
+@router.post("/integrations/whatsapp/templates-sync")
+async def sync_whatsapp_templates(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Перезавести на WABA студии шаблоны всех 38 событий (по 2 языка).
+
+    При подключении номера это происходит само (sync_templates_on_connect) —
+    ручка осталась на случай, когда автосинхронизация не прошла: Meta лежала,
+    номер подключали до появления автозапуска, шаблон удалили руками. Никому
+    ничего не отправляет: шаблоны уходят на модерацию и работают после APPROVED.
+    """
+    integ = await wa_integration(db, ctx.studio_id)
+    if integ is None or not integ.is_connected:
+        raise HTTPException(status_code=409, detail="wa_not_connected")
+    if not (integ.config or {}).get("waba_id"):
+        # Ручное подключение без WABA ID: шаблоны заводить некуда.
+        raise HTTPException(status_code=409, detail="wa_waba_id_required")
+    return await sync_templates_for_studio(db, integ)
 
 
 @router.get("/integrations/whatsapp/pricing", response_model=WaPricing)
@@ -272,12 +357,7 @@ async def get_whatsapp_pricing(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    integ = (await db.execute(
-        select(StudioIntegration).where(
-            StudioIntegration.studio_id == ctx.studio_id,
-            StudioIntegration.integration_type == "wa_notify",
-        )
-    )).scalar_one_or_none()
+    integ = await wa_integration(db, ctx.studio_id)
     if integ is None or not integ.is_connected:
         return _DEFAULT_WA_PRICING
     config = integ.config or {}
@@ -357,13 +437,16 @@ async def disconnect_integration(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    # Telegram-бот и Instagram-аккаунт живут ещё и в настройках AI-агента (и бот —
-    # в Онлайн-записи). Гасить только эту строку — оставить там живой токен-сироту,
-    # поэтому оба идут через свой общий сервис.
+    # Telegram-бот, Instagram-аккаунт и WhatsApp-номер живут ещё и в настройках
+    # AI-агента (бот — и в Онлайн-записи). Гасить только эту строку — оставить там
+    # живой токен-сироту и включённый тумблер агента, поэтому все трое идут через
+    # свой общий путь отключения.
     if integration_type == "telegram":
         await disconnect_telegram_bot(db, ctx.studio_id)
     elif integration_type == "instagram":
         await disconnect_instagram_account(db, ctx.studio_id)
+    elif integration_type == "whatsapp":
+        await _disconnect_whatsapp_number(db, ctx.studio_id)
     else:
         integ = await _get_or_create_integration(db, ctx.studio_id, _INTEGRATION_TYPE_MAP[integration_type])
         integ.is_connected = False

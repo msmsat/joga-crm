@@ -14,25 +14,30 @@ const fmtDate = (iso: string, lang: string) =>
 // Ключ дизмисса на сегодня: закрыли — не показываем до конца дня, назавтра снова.
 const dismissKey = (iso: string) => `velora:sub-banner:${iso.slice(0, 10)}:${new Date().toISOString().slice(0, 10)}`;
 
+const isDismissed = (iso: string) => localStorage.getItem(dismissKey(iso)) === '1';
+
+// Сколько дней осталось до даты. Отдельной функцией: Date.now() нельзя звать
+// прямо в теле рендера — рендер обязан быть чистым.
+const daysUntil = (iso: string) => Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+
 export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null | undefined }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation('billing');
   const [hasCard, setHasCard] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  // Только факт клика по крестику: «закрыт на сегодня» лежит в localStorage и
+  // читается при рендере — дублировать его в state незачем.
+  const [closed, setClosed] = useState(false);
 
   const expiresAt = plan?.expires_at ?? null;
-  const daysLeft = expiresAt
-    ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86_400_000)
-    : Infinity;
+  const daysLeft = expiresAt ? daysUntil(expiresAt) : Infinity;
   const show = expiresAt !== null && daysLeft <= WARN_DAYS && daysLeft >= 0;
 
   useEffect(() => {
     if (!show) return;
-    setDismissed(localStorage.getItem(dismissKey(expiresAt!)) === '1');
     billingApi.getPaymentCards().then((c) => setHasCard(c.length > 0)).catch(() => setHasCard(false));
-  }, [show, expiresAt]);
+  }, [show]);
 
-  if (!plan || !show || dismissed) return null;
+  if (!plan || !show || closed || isDismissed(expiresAt!)) return null;
 
   const isTrial = plan.status === 'trial';
   // Спокойный info-баннер только если карта привязана И автопродление включено.
@@ -45,7 +50,7 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
     ? t('banner.trialEnds', { date })
     : t(willRenew ? 'banner.renews' : 'banner.expires', { plan: planLabel, date });
 
-  const close = () => { localStorage.setItem(dismissKey(expiresAt!), '1'); setDismissed(true); };
+  const close = () => { localStorage.setItem(dismissKey(expiresAt!), '1'); setClosed(true); };
 
   const accent = willRenew ? '#A3C9A8' : '#F9A08B';   // pistachio / peach
   const bg = willRenew ? 'rgba(163,201,168,0.12)' : 'rgba(249,160,139,0.12)';

@@ -323,7 +323,7 @@ export default function LoginPage() {
                   <PhoneField
                     label="Номер телефона"
                     value={identifier}
-                    onChange={(v: string) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                    onChange={(v) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
                     error={errors.identifier}
                   />
                 )

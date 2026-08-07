@@ -2,8 +2,10 @@
 
 Номер студии (token + phone_number_id) живёт в StudioIntegration("wa_notify") —
 один на Уведомления, Настройки → Интеграции и агента. Подключить его можно двумя
-путями: руками (POST /settings/integrations/whatsapp) или через Embedded Signup —
-кнопка на странице Velora AI, ниже её серверная половина.
+путями: руками (POST /settings/integrations/whatsapp, форма в Настройках →
+Интеграции) или через Embedded Signup — кнопка на страницах Velora AI и
+Уведомления, ниже её серверная половина. Куда вернуть браузер после мастера,
+говорит параметр `back` (белый список _RETURN_PAGES).
 
 Embedded Signup сделан редиректом, как Instagram OAuth (routers/ai/instagram.py),
 а не JS-библиотекой Meta: та выполняется в самой странице и требует от неё https,
@@ -23,7 +25,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import aiohttp
-from fastapi import APIRouter, HTTPException, Query, Request, Depends
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, Depends
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from jose import JWTError, jwt
 from sqlalchemy import select
@@ -33,6 +35,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings, StudioIntegration
 from ratelimit import limiter
+from services.whatsapp import refresh_payment_status, sync_templates_on_connect
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +59,12 @@ GRAPH = "https://graph.facebook.com/v23.0"
 _TIMEOUT_SECONDS = 10
 _STATE_TTL_MINUTES = 10
 _STATE_PURPOSE = "wa_oauth"
+
+# Подключение живёт на двух страницах (Velora AI и Уведомления) — возвращаем
+# браузер туда, откуда ушли. Белый список, а не свободный URL из запроса: иначе
+# callback становится открытым редиректом (тот же приём в routers/ai/instagram.py).
+_RETURN_PAGES = {"ai": "/dashboard/ai", "notifications": "/dashboard/notifications"}
+_DEFAULT_RETURN = "ai"
 
 
 def _valid_signature(raw: bytes, header: str | None) -> bool:
@@ -136,15 +145,20 @@ async def _graph(method: str, path: str, token: str = "", **kwargs) -> dict:
 
 
 @router.get("/whatsapp/oauth-url")
-async def get_whatsapp_oauth_url(ctx: StudioContext = Depends(require_role("owner"))):
-    """Адрес мастера Embedded Signup. Студия — в подписанном state, не в сессии:
-    callback приходит без Authorization-заголовка (как у Instagram)."""
+async def get_whatsapp_oauth_url(
+    back: str = Query(_DEFAULT_RETURN),
+    ctx: StudioContext = Depends(require_role("owner")),
+):
+    """Адрес мастера Embedded Signup. Студия и страница возврата — в подписанном
+    state, не в сессии: callback приходит без Authorization-заголовка (как у
+    Instagram)."""
     if not WA_APP_ID or not WA_CONFIG_ID or not WA_REDIRECT_URI:
         raise HTTPException(status_code=503, detail="wa_signup_not_configured")
     state = jwt.encode(
         {
             "studio_id": ctx.studio_id,
             "purpose": _STATE_PURPOSE,
+            "back": back if back in _RETURN_PAGES else _DEFAULT_RETURN,
             "exp": datetime.utcnow() + timedelta(minutes=_STATE_TTL_MINUTES),
         },
         SECRET_KEY, algorithm=ALGORITHM,
@@ -162,17 +176,18 @@ async def get_whatsapp_oauth_url(ctx: StudioContext = Depends(require_role("owne
     return {"url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
 
 
-def _decode_state(state: str | None) -> int | None:
-    """studio_id из подписанного state. Битый state — студии нет."""
+def _decode_state(state: str | None) -> tuple[int | None, str]:
+    """(studio_id, путь возврата). Битый state — студии нет, возврат по умолчанию."""
+    fallback = _RETURN_PAGES[_DEFAULT_RETURN]
     if not state:
-        return None
+        return None, fallback
     try:
         payload = jwt.decode(state, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
-        return None
+        return None, fallback
     if payload.get("purpose") != _STATE_PURPOSE:
-        return None
-    return payload.get("studio_id")
+        return None, fallback
+    return payload.get("studio_id"), _RETURN_PAGES.get(payload.get("back"), fallback)
 
 
 async def _waba_from_token(token: str) -> str:
@@ -192,16 +207,17 @@ async def _waba_from_token(token: str) -> str:
 @limiter.limit("20/minute")
 async def whatsapp_oauth_callback(
     request: Request,
+    background: BackgroundTasks,
     code: str | None = None,
     state: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Возврат из мастера: code -> бессрочный токен студии, WABA и номер из Graph,
     подписка на вебхук, регистрация номера, запись в ту же интеграцию wa_notify,
-    что и ручное подключение из Уведомлений."""
-    studio_id = _decode_state(state)
+    что и ручное подключение из Настроек → Интеграции."""
+    studio_id, back = _decode_state(state)
     if studio_id is None or not code:
-        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=error")
+        return RedirectResponse(f"{WEB_APP_URL}{back}?wa=error")
 
     try:
         exchanged = await _graph("GET", "oauth/access_token", params={
@@ -221,7 +237,7 @@ async def whatsapp_oauth_callback(
         display_phone_number = numbers[0].get("display_phone_number")
     except (aiohttp.ClientError, TimeoutError, RuntimeError, KeyError, ValueError) as exc:
         logger.error("wa callback: подключение не удалось, studio_id=%s: %s", studio_id, exc)
-        return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=error")
+        return RedirectResponse(f"{WEB_APP_URL}{back}?wa=error")
 
     # Подписка и регистрация — отдельными шагами: токен уже валиден, значит
     # подключение состоялось и исходящие уведомления заработают в любом случае.
@@ -257,8 +273,17 @@ async def whatsapp_oauth_callback(
     }
     integ.is_connected = True
     await db.commit()
+    # Мастер Meta платёжный метод не собирает — его добавляют отдельно в Business
+    # Manager. Спрашиваем сразу, чтобы студия увидела «оплата не добавлена» здесь
+    # же, а не когда первое напоминание молча не уйдёт (services/whatsapp.py).
+    await refresh_payment_status(db, integ)
+    # И сразу заводим шаблоны. Без них канал подключён, тумблер включается, статус
+    # зелёный — а не уходит ни одно уведомление: написать первым Meta даёт только
+    # по одобренному шаблону. Фоном, потому что это 76 запросов к Graph, а мастер
+    # ждёт редиректа (services/whatsapp.py::sync_templates_on_connect).
+    background.add_task(sync_templates_on_connect, studio_id)
     logger.info("wa callback: номер подключён, studio_id=%s", studio_id)
-    return RedirectResponse(f"{WEB_APP_URL}/dashboard/ai?wa=connected")
+    return RedirectResponse(f"{WEB_APP_URL}{back}?wa=connected")
 
 
 # --- Вебхук входящих сообщений -------------------------------------------------
@@ -337,4 +362,20 @@ if __name__ == "__main__":
     ]}]}
     assert _incoming_messages(event) == [("999", "79990000000", "Привет")]
     assert _incoming_messages({}) == []
+
+    # Возврат строго по белому списку: чужой back не должен делать из callback
+    # открытый редирект.
+    def _state(**claims) -> str:
+        return jwt.encode(
+            {"purpose": _STATE_PURPOSE, "exp": datetime.utcnow() + timedelta(minutes=5), **claims},
+            SECRET_KEY, algorithm=ALGORITHM,
+        )
+    assert _decode_state(_state(studio_id=1, back="notifications")) == (1, "/dashboard/notifications")
+    assert _decode_state(_state(studio_id=1, back="ai")) == (1, "/dashboard/ai")
+    assert _decode_state(_state(studio_id=1, back="https://evil.example")) == (1, "/dashboard/ai")
+    assert _decode_state(_state(studio_id=1)) == (1, "/dashboard/ai")
+    assert _decode_state(_state(studio_id=1, purpose="ig_oauth")) == (None, "/dashboard/ai")
+    assert _decode_state(None) == (None, "/dashboard/ai")
+    assert _decode_state("не-jwt") == (None, "/dashboard/ai")
+
     print("whatsapp webhook self-check ok")

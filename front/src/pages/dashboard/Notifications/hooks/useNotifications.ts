@@ -59,12 +59,21 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
       return;
     }
     setChannel(key, next);
+    // Включение WhatsApp бэкенд может отклонить (wa_payment_required): без карты
+    // на WABA Meta не доставит ни одного уведомления, поэтому тумблер не должен
+    // обещать доставку. Откат + тост здесь общие для всех каналов.
     updateSettingsMut.mutate({ [key]: next }, {
       onError: (e: unknown) => {
         setChannel(key, !next);
         toast.error(errorMessage(e, t));
       },
-      onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.notificationSettings }),
+      onSettled: () => {
+        qc.invalidateQueries({ queryKey: queryKeys.notificationSettings });
+        // Гейт по дороге перепроверил карту у Meta и записал результат —
+        // перечитываем статусы каналов, чтобы плашка «оплата не добавлена»
+        // в сайдбаре появилась вместе с отказом.
+        qc.invalidateQueries({ queryKey: queryKeys.notifyIntegrations });
+      },
     });
   };
 
@@ -103,12 +112,15 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
     setActiveRole(role);
   };
 
-  // Колонка в матрице = канал подключён И включён тумблером в сайдбаре.
-  // Берём тумблер из стора (а не global_enabled из /matrix): стор обновляется
-  // оптимистично, колонка появляется/исчезает сразу, без рефетча матрицы.
-  const allChannels = (matrixQ.data?.channels ?? []).filter(c => c.connected && channels[c.key as ChannelKey]);
-  // bulk-действие трогает ровно то, что пользователь видит и может нажать сам.
-  const connectedChannelKeys = allChannels.map(c => c.key as ChannelKey);
+  // Канал студии = подключён И включён тумблером в сайдбаре. Берём тумблер из
+  // стора (а не global_enabled из /matrix): стор обновляется оптимистично,
+  // колонка появляется/исчезает сразу, без рефетча матрицы. Список студийный,
+  // ролью пока не сужен — countActive считает бейджи для всех 4 вкладок сразу
+  // (RolesSelector), а не только текущей; r.channels[ch] сам вернёт undefined
+  // для канала, которого нет у роли строки r (бэк отдаёт только применимые
+  // ключи — ROLE_CHANNELS), так что лишние ключи здесь безопасны.
+  const studioChannels = (matrixQ.data?.channels ?? []).filter(c => c.connected && channels[c.key as ChannelKey]);
+  const connectedChannelKeys = studioChannels.map(c => c.key as ChannelKey);
 
   const countActive = (role: Role) =>
     (matrixQ.data?.events ?? []).filter(r => r.role === role).reduce((sum, r) => {
@@ -119,9 +131,20 @@ export function useNotifications(channelStatuses?: NotifyChannelsStatus, onNeeds
   const currentRole = ROLES.find(r => r.key === activeRole)!;
   const events = (matrixQ.data?.events ?? []).filter(r => r.role === activeRole);
 
-  // Активировать/деактивировать всё в текущей роли — по всем подключённым
-  // ячейкам, без исключений: bulk трогает ровно то, что видно в матрице.
-  const cells = events.flatMap(r => connectedChannelKeys.map(ch => ({ row: r, ch })));
+  // Каналы, применимые к ТЕКУЩЕЙ роли: персоналу telegram/instagram не
+  // доставить структурно (ROLE_CHANNELS на бэке — открывать клиентское
+  // мини-приложение тренеру/админу незачем), поэтому матрица не должна
+  // рисовать по ним кликабельную, но нерабочую колонку. Источник — сами
+  // строки: все строки одной роли делят один набор ключей channels (его
+  // строит _matrix_row по ROLE_CHANNELS[role]).
+  const roleChannelKeys = new Set(Object.keys(events[0]?.channels ?? {}));
+  const allChannels = studioChannels.filter(c => roleChannelKeys.has(c.key));
+  const roleConnectedChannelKeys = allChannels.map(c => c.key as ChannelKey);
+
+  // Активировать/деактивировать всё в текущей роли — по применимым для неё
+  // подключённым ячейкам: иначе «включить всё» пыталось бы включить Telegram
+  // тренеру и падало бы на всю пачку (границу теперь держит и бэк — 422).
+  const cells = events.flatMap(r => roleConnectedChannelKeys.map(ch => ({ row: r, ch })));
   const allOn = cells.length > 0 && cells.every(({ row, ch }) => row.channels[ch]);
 
   const toggleAllForRole = () => {

@@ -419,6 +419,26 @@ async def cancel_reservation(
         "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
     })
 
+    # a2/t2 «клиент отменил в последний момент» — их единственный живой путь.
+    # В CRM админ снять клиента позже чем за 2 часа не может (reservations.py их
+    # оттуда и убрал), а вот сам клиент отменяет по окну своей студии
+    # (cancellation_deadline_min): выставила 30 минут — поздние отмены реальны,
+    # оставила дефолтные 240 — эти два события просто не наступают.
+    hours_left = (lesson.start_time - datetime.now()).total_seconds() / 3600
+    client_name = f"{client.name} {client.last_name or ''}".strip()
+    if hours_left < 2 and lesson.teacher_id is not None:
+        await notify(db, client.studio_id, "trainer", "t2", {
+            "trainer_id": lesson.teacher_id,
+            "client_name": client_name,
+            "lesson_name": lesson.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
+    if hours_left < 1:
+        await notify(db, client.studio_id, "admin", "a2", {
+            "client_name": client_name,
+            "lesson_name": lesson.name,
+        })
+
     return MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
@@ -443,6 +463,17 @@ async def rate_reservation(
     reservation.rating = body.rating
     await db.commit()
     await db.refresh(reservation)
+
+    # t7 «Новый отзыв» — эпик N-9 оставил его без врезки, считая, что отзыв
+    # появится только со StudioReview во второй очереди. Оценка занятия из
+    # мини-приложения и есть отзыв о работе тренера, так что событие живёт здесь.
+    if lesson.teacher_id is not None:
+        await notify(db, client.studio_id, "trainer", "t7", {
+            "trainer_id": lesson.teacher_id,
+            "client_name": f"{client.name} {client.last_name or ''}".strip(),
+            "rating": body.rating,
+            "lesson_name": lesson.name,
+        })
 
     return MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,

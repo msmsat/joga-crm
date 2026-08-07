@@ -6,9 +6,11 @@ import { queryKeys } from '../../../../api/queryKeys'
 import { invalidateChannelGroup } from '../../../../api/channelGroup'
 import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
-import type { ChannelStatus } from '../types'
 
-export function useChannels(stripeReady?: boolean) {
+/** Telegram-бот студии — единственный канал, который настраивается на этой
+ *  странице. Instagram и WhatsApp подключаются в Уведомлениях (аккаунт студии
+ *  там один на всю CRM), запись клиента идёт через мини-приложение. */
+export function useChannels() {
   const qc = useQueryClient()
   const { t } = useTranslation()
   const toast = useToast()
@@ -18,14 +20,6 @@ export function useChannels(stripeReady?: boolean) {
     queryFn: () => bookingApi.getChannels(),
   })
   const channels = Object.fromEntries(rows.map(r => [r.channel_type, r])) as Record<string, BookingChannel>
-
-  const statusOf = (type: BookingChannelType): ChannelStatus => {
-    const ch = channels[type]
-    // Веб/Instagram/WhatsApp — ссылки на одно и то же мини-приложение, своего
-    // подключения у них нет: «подключён» для них = студия может принимать оплату.
-    if (type !== 'telegram') return stripeReady ? 'connected' : null
-    return ch?.is_active ? 'connected' : null
-  }
 
   const tg = channels['telegram']
   const token = (tg?.config?.token as string) ?? ''
@@ -61,5 +55,5 @@ export function useChannels(stripeReady?: boolean) {
     }
   }
 
-  return { connected, botName, token, connect, disconnect, statusOf, error }
+  return { connected, botName, token, connect, disconnect, error }
 }

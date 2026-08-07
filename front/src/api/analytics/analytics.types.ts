@@ -53,6 +53,7 @@ export interface ActivityLog {
   title: string
   actor_name: string
   entity_type: string | null
+  entity_id: number | null
   color: string
   created_at: string
 }

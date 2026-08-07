@@ -131,9 +131,18 @@ export default function Journal() {
     localStorage.setItem(JOURNAL_DATE_KEY, toDateStr(new Date(calYear, calMonth, selectedDay)));
   }, [calYear, calMonth, selectedDay]);
 
-  // При загрузке данных включаем все колонки/залы в фильтрах
-  useEffect(() => { setActiveTrainers(trainers.map(t => t.id)); }, [trainers]);
-  useEffect(() => { setActiveHalls(halls.map(h => h.name)); }, [halls]);
+  // При загрузке данных включаем все колонки/залы в фильтрах. Синхронизация прямо
+  // в рендере (документированный React-паттерн) — сетка сразу рисуется со всеми
+  // колонками, а не пустой на один кадр.
+  const [filtersSeededFor, setFiltersSeededFor] = useState<{ trainers: unknown; halls: unknown }>({ trainers: null, halls: null });
+  if (filtersSeededFor.trainers !== trainers) {
+    setFiltersSeededFor(s => ({ ...s, trainers }));
+    setActiveTrainers(trainers.map(t => t.id));
+  }
+  if (filtersSeededFor.halls !== halls) {
+    setFiltersSeededFor(s => ({ ...s, halls }));
+    setActiveHalls(halls.map(h => h.name));
+  }
 
   // Фоновая ошибка (данные в кэше уже есть — сетка на экране, refetch просто
   // не удался): не ломаем сетку, только тост. Первую загрузку ловит LoadError.
@@ -265,7 +274,7 @@ export default function Journal() {
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  }, [popupRef]);
 
   // ── Мини-календарь ──
   const changeMonth = (dir: number) => {
@@ -332,7 +341,7 @@ export default function Journal() {
         setPopupBooking(pb => (pb && pb.id === prev.id ? prev : pb));
         toast.error(errorMessage(e, t));
       });
-  }, [diffPayload, mutations, showToast, toast, history]);
+  }, [diffPayload, mutations, showToast, toast, history, t]);
 
   const { drag, wasDragging, initDrag } = useDragAndDrop({
     bookings,
@@ -350,12 +359,12 @@ export default function Journal() {
     if (!clean) return;
 
     // Разделяем ввод по точкам, слэшам, тире или пробелам
-    const parts = clean.split(/[\.\/\-\s]+/);
+    const parts = clean.split(/[./\-\s]+/);
     if (parts.length === 0) return;
 
-    let day = parseInt(parts[0], 10);
+    const day = parseInt(parts[0], 10);
     // Если месяц не ввели, берем текущий открытый месяц
-    let month = parts[1] ? parseInt(parts[1], 10) - 1 : calMonth;
+    const month = parts[1] ? parseInt(parts[1], 10) - 1 : calMonth;
     // Если год не ввели, берем текущий открытый год
     let year = parts[2] ? parseInt(parts[2], 10) : calYear;
 
@@ -464,7 +473,7 @@ export default function Journal() {
       },
       onExpire: () => runDeferredCancel(booking.id),
     });
-  }, [mutations, toast, runDeferredCancel]);
+  }, [mutations, toast, runDeferredCancel, t]);
 
   const deleteBooking = (id: number) => {
     const booking = bookings.find(b => b.id === id);

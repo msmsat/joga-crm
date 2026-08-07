@@ -36,14 +36,11 @@ export function StudioSection() {
       .catch(() => toast.error(t('common:toasts.copyFailed')));
   };
 
-  const [activeStudioId, setActiveStudioId] = useState<number | null>(null);
+  // Что выбрал пользователь; пока не выбрал ничего — открыт первый филиал.
+  // Считаем при рендере, а не эффектом: иначе первый кадр уходил бы пустым.
+  const [pickedStudioId, setPickedStudioId] = useState<number | null>(null);
   const [activeHallId, setActiveHallId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (studios.length > 0 && activeStudioId === null) {
-      setActiveStudioId(studios[0].id);
-    }
-  }, [studios, activeStudioId]);
+  const activeStudioId = pickedStudioId ?? studios[0]?.id ?? null;
 
   const { branch: activeStudio, isLoading: isBranchLoading, error: branchError, refetch: refetchBranch, createHall, updateHall, deleteHall } = useBranchDetail(activeStudioId);
   const activeHall = activeStudio?.halls.find(h => h.id === activeHallId) ?? null;
@@ -69,7 +66,7 @@ export function StudioSection() {
   }, [studios]);
 
   const handleSelectStudio = (id: number) => {
-    setActiveStudioId(id);
+    setPickedStudioId(id);
     setActiveHallId(null);
   };
 
@@ -80,7 +77,7 @@ export function StudioSection() {
     if (!activeStudio) return;
     try {
       await deleteBranch(activeStudio.id);
-      setActiveStudioId(null);
+      setPickedStudioId(null);
       toast.success(t('catalog:studios.toasts.deleted'));
     } catch (error) {
       toast.error(errorMessage(error, t));

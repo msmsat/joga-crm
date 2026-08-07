@@ -45,8 +45,9 @@ export function useGateways() {
 
   // Уводим владельца на форму Stripe. Не открываем в новой вкладке: Stripe вернёт
   // его на наш return_url, и вкладка-родитель осталась бы со старым статусом.
+  // returnPath — куда Stripe вернёт с анкеты; по умолчанию Финансы.
   const connectMut = useMutation({
-    mutationFn: () => financesApi.connectStripe(),
+    mutationFn: (returnPath?: string) => financesApi.connectStripe(returnPath),
     onSuccess: ({ url }) => { window.location.href = url; },
     onError: (err) => toast.error(errorMessage(err, t)),
   });
@@ -55,7 +56,7 @@ export function useGateways() {
     gateways: query.data ?? [],
     isLoading: query.isLoading,
     updateGateway: (type: GatewayType, payload: GatewayUpdate) => mutation.mutateAsync({ type, payload }),
-    connectStripe: () => connectMut.mutate(),
+    connectStripe: (returnPath?: string) => connectMut.mutate(returnPath),
     isConnecting: connectMut.isPending,
   };
 }

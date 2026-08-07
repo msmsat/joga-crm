@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Booking } from '../../types';
-import { formatIndexToTimeStr } from '../../utils';
+import { formatIndexToTimeStr, type BookingLayout } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
 // Порог, после которого нажатие считается попыткой перетащить, а не кликом.
@@ -13,7 +13,7 @@ const DRAG_SLOP_PX = 6;
 
 interface BookingCardProps {
   booking: Booking;
-  layout: any;
+  layout: BookingLayout;
   drag: DragState | null;
   canEdit: boolean;
   popupBooking: Booking | null;

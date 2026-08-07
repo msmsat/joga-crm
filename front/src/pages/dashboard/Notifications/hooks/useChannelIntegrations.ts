@@ -5,7 +5,7 @@ import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
 import { invalidateChannelGroup } from '../../../../api/channelGroup'
 import { useTranslation } from 'react-i18next'
-import type { WaConnectPayload } from '../../../../api/notifications/notifications.types'
+import type { NotifyChannelsStatus } from '../../../../api/notifications/notifications.types'
 
 export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsapp' | 'instagram' | 'email') => void) {
   const qc = useQueryClient()
@@ -67,15 +67,58 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onError,
   })
 
+  // WhatsApp — Embedded Signup, как Instagram: уходим в мастер Meta полным
+  // редиректом и возвращаемся сюда с ?wa=... Кэш здесь не трогаем — страница
+  // всё равно перезагрузится после возврата.
   const connectWhatsApp = useMutation({
-    mutationFn: (payload: WaConnectPayload) => notificationsApi.connectWhatsApp(payload),
-    onSuccess: () => { invalidate(); onConnected?.('whatsapp'); toast.success(t('common:actions.saved', 'Подключено')) },
+    mutationFn: () => notificationsApi.getWhatsappOauthUrl(),
+    onSuccess: ({ url }) => { window.location.href = url },
+    onError,
+  })
+
+  // Карту добавляют в Meta Business Manager, нам об этом никто не сообщает —
+  // перепроверяем по требованию (открытие модалки, включение тумблера).
+  // Тост только на ПЕРЕХОД «не было -> появилась»: проверка идёт при каждом
+  // открытии модалки, и поздравлять с оплатой каждый раз незачем.
+  const checkWaPayment = useMutation({
+    mutationFn: () => notificationsApi.checkWaPayment(),
+    onSuccess: (status) => {
+      const was = qc.getQueryData<NotifyChannelsStatus>(queryKeys.notifyIntegrations)
+        ?.whatsapp?.details?.payment_connected
+      qc.setQueryData<NotifyChannelsStatus>(queryKeys.notifyIntegrations, (old) =>
+        old ? { ...old, whatsapp: status } : old,
+      )
+      if (status.details?.payment_connected === true && was !== true) {
+        toast.success(t('notifications:wa.paymentFound', 'Оплата подключена'))
+      }
+    },
+    onError,
+  })
+
+  // Шаблоны заводятся сами при подключении номера (services/whatsapp.py::
+  // sync_templates_on_connect) — кнопка осталась как ремонтная: перезавести,
+  // если автосинхронизация не прошла. invalidate — ради свежего вердикта
+  // модерации в модалке, бэкенд перечитывает статусы в том же запросе.
+  const syncWaTemplates = useMutation({
+    mutationFn: () => notificationsApi.syncWaTemplates(),
+    onSuccess: (r) => {
+      invalidate();
+      if (r.failed > 0) {
+        toast.error(t('notifications:wa.templatesPartial', { failed: r.failed }))
+      } else {
+        toast.success(t('notifications:wa.templatesDone', { count: r.created + r.exists }))
+      }
+    },
     onError,
   })
 
   const disconnectWhatsApp = useMutation({
     mutationFn: () => notificationsApi.disconnectWhatsApp(),
-    onSuccess: () => { invalidateAfterDisconnect(); toast.success(t('common:actions.saved', 'Отключено')) },
+    onSuccess: () => {
+      invalidateAfterDisconnect()
+      invalidateChannelGroup(qc)
+      toast.success(t('common:actions.saved', 'Отключено'))
+    },
     onError,
   })
 
@@ -108,6 +151,8 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     verifyEmailCode,
     connectWhatsApp,
     disconnectWhatsApp,
+    checkWaPayment,
+    syncWaTemplates,
     connectInstagram,
     disconnectInstagram,
   }

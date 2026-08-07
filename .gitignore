@@ -109,3 +109,4 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+back/.env.bak-20260806-171723

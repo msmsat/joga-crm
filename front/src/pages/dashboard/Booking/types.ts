@@ -1,6 +1,9 @@
 import type React from 'react'
 
-export type ChannelStatus = 'connected' | null
+/** pending — подключение начато, но канал ещё не готов работать (анкета Stripe
+ *  не дозаполнена, приём выключен тумблером). Отдельно от null: действие
+ *  владельца тут «продолжить», а не «начать». */
+export type ChannelStatus = 'connected' | 'pending' | null
 
 export interface ChannelCardProps {
   icon: React.ReactNode

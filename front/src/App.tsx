@@ -36,15 +36,14 @@ import Catalog from './pages/dashboard/Catalog';
 
 // ─── 1. ЗАЩИТА КАБИНЕТА (Пускает только с токеном) ──────────────────────────
 const ProtectedRoute = ({ children, requireOnboarding = true }: { children: ReactNode, requireOnboarding?: boolean }) => {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<UserMe | null>(null);
   const token = getActiveToken();
+  // Без токена грузить нечего — стартуем сразу в «загрузка окончена», иначе
+  // на первый кадр без нужды мигал бы спиннер.
+  const [loading, setLoading] = useState(!!token);
+  const [user, setUser] = useState<UserMe | null>(null);
 
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!token) return;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
@@ -72,12 +71,15 @@ const ProtectedRoute = ({ children, requireOnboarding = true }: { children: Reac
 const OwnerRoute = ({ children }: { children: ReactNode }) => {
   const token = getActiveToken();
   if (!token) return <Navigate to="/login" replace />;
+  // Куда уводим, решаем до JSX: разметку внутри try/catch React ловить не умеет.
+  let redirectTo: string | null = null;
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    if (payload.role !== 'owner') return <Navigate to="/dashboard" replace />;
+    if (payload.role !== 'owner') redirectTo = '/dashboard';
   } catch {
-    return <Navigate to="/login" replace />;
+    redirectTo = '/login';
   }
+  if (redirectTo) return <Navigate to={redirectTo} replace />;
   return children;
 };
 

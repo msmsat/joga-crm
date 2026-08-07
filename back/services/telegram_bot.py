@@ -28,24 +28,42 @@ _WEBHOOK_TIMEOUT_SECONDS = 5
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
 
-async def _set_webhook(token: str) -> None:
+async def _set_webhook(token: str) -> bool:
     """Подписывает бота на апдейты /booking/telegram/webhook/{token} — оттуда
-    отвечает /start (routers/booking/telegram_webhook.py).
+    отвечает /start (routers/booking/telegram_webhook.py). True — подписка
+    реально встала.
 
-    Ошибку глушим: без вебхука просто не будет ответа на /start, а не сломанное
-    подключение — токен уже проверен verify_bot_token, отменять его из-за сети не за что.
+    Подключение из-за неудачи не отменяем: токен уже проверен verify_bot_token,
+    рвать его из-за сетевой ошибки не за что. Но и молчать нельзя — без вебхука
+    бот принимает /start и не отвечает НИЧЕГО, а в интерфейсе выглядит
+    подключённым. Поэтому здесь ERROR с конкретной причиной, а не warning.
     """
+    url = f"{BACKEND_URL}/booking/telegram/webhook/{token}"
+    # Самая частая причина — BACKEND_URL с localhost или http: Telegram
+    # принимает вебхук только по https и только на адрес, доступный из
+    # интернета. Проверяем до вызова, чтобы в логе была причина, а не «400».
+    if not BACKEND_URL.startswith("https://"):
+        logger.error(
+            "Telegram setWebhook пропущен: BACKEND_URL=%s — нужен публичный https-адрес "
+            "бэкенда. Пока он такой, бот НЕ будет отвечать на /start.", BACKEND_URL,
+        )
+        return False
     try:
         timeout = aiohttp.ClientTimeout(total=_WEBHOOK_TIMEOUT_SECONDS)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(
-                f"https://api.telegram.org/bot{token}/setWebhook",
-                json={"url": f"{BACKEND_URL}/booking/telegram/webhook/{token}"},
+                f"https://api.telegram.org/bot{token}/setWebhook", json={"url": url},
             ) as resp:
                 if resp.status >= 400:
-                    logger.warning("Telegram setWebhook: %s (%s)", resp.status, (await resp.text())[:200])
+                    logger.error(
+                        "Telegram setWebhook отклонён (%s) для %s: %s — бот НЕ будет "
+                        "отвечать на /start", resp.status, url, (await resp.text())[:200],
+                    )
+                    return False
     except (aiohttp.ClientError, TimeoutError) as exc:
-        logger.warning("Telegram setWebhook не удался: %s", exc)
+        logger.error("Telegram setWebhook не удался для %s: %s — бот НЕ будет отвечать на /start", url, exc)
+        return False
+    return True
 
 
 async def _delete_webhook(token: str) -> None:
@@ -108,8 +126,14 @@ async def _get_or_create_booking_channel(db: AsyncSession, studio_id: int) -> Bo
     return row
 
 
-async def connect_telegram_bot(db: AsyncSession, studio_id: int, token: str, username: str) -> None:
-    """Проставляет токен во все три таблицы. Коммитит сам."""
+async def connect_telegram_bot(db: AsyncSession, studio_id: int, token: str, username: str) -> bool:
+    """Проставляет токен во все три таблицы. Коммитит сам.
+
+    Возвращает True, если бот ещё и подписан на входящие апдейты. False —
+    токен сохранён и рассылка уведомлений работает, но на /start бот не
+    ответит (см. _set_webhook). Вызывающие роутеры пока результат не читают:
+    отдать его в UI можно, не трогая эту функцию.
+    """
     ai = await get_or_create_ai_settings(studio_id, db)
     ai.tg_token = token
     ai.tg_username = username
@@ -129,7 +153,7 @@ async def connect_telegram_bot(db: AsyncSession, studio_id: int, token: str, use
     await db.commit()
     # После коммита: подписка на вебхук не должна откатывать уже сохранённое
     # подключение, если Telegram недоступен (см. _set_webhook).
-    await _set_webhook(token)
+    return await _set_webhook(token)
 
 
 async def disconnect_telegram_bot(db: AsyncSession, studio_id: int) -> None:

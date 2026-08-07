@@ -99,6 +99,7 @@
     "loadFailed": "Failed to load",
     "retry": "Retry",
     "invalid_bot_token": "Telegram rejected this token — make sure the bot exists",
+    "wa_payment_required": "No payment method. Without a card on WhatsApp Business, Meta won't deliver a single notification — open the WhatsApp channel settings and add payment",
     "checkout": {
       "package_not_found": "Package not found",
       "package_inactive": "Package is no longer for sale",

@@ -168,6 +168,24 @@ def test_update_stripe_ignores_keys():
     assert channel.is_active is True  # тумблер — единственное, что здесь меняется
 
 
+def test_return_path_never_leaves_our_domain():
+    """Возврат из Stripe идёт на страницу, с которой ушли, но только на НАШУ:
+    чужой адрес в return_path сделал бы из ссылки Stripe открытый редирект."""
+    ret, ref = G._stripe_links("/dashboard/booking")
+    assert ret == f"{G.WEB_APP_URL}/dashboard/booking?stripe=return"
+    assert ref == f"{G.WEB_APP_URL}/dashboard/booking?stripe=refresh"
+
+    # Путь уже с query — маркер добавляется через &, а не вторым «?».
+    ret, _ = G._stripe_links("/dashboard/finances?tab=onlinePayments")
+    assert ret == f"{G.WEB_APP_URL}/dashboard/finances?tab=onlinePayments&stripe=return"
+
+    # Всё, что уводит с нашего домена (или просто мусор), молча падает в дефолт.
+    for bad in ["//evil.com", "/\\evil.com", "https://evil.com", "dashboard/booking", "", None, "/" + "x" * 300]:
+        ret, ref = G._stripe_links(bad)
+        assert ret.startswith(f"{G.WEB_APP_URL}{G._DEFAULT_RETURN_PATH}"), bad
+        assert ref.startswith(f"{G.WEB_APP_URL}{G._DEFAULT_RETURN_PATH}"), bad
+
+
 def test_connect_reuses_existing_account():
     """Повторный клик по «Подключить» не заводит второй аккаунт: иначе деньги
     придут на брошенный acct_, а не на тот, что настроила студия."""
@@ -206,6 +224,7 @@ if __name__ == "__main__":
     test_rejected_verification_is_not_reported_as_pending_review()
     test_stripe_unreachable_is_not_reported_as_connected()
     test_update_stripe_ignores_keys()
+    test_return_path_never_leaves_our_domain()
     test_connect_reuses_existing_account()
     test_connect_creates_account_once_when_absent()
     test_connect_without_platform_key_is_refused()

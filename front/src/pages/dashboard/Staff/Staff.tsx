@@ -99,10 +99,20 @@ export default function Staff() {
 
   // ── API hooks ─────────────────────────────────────────────────────────────
   const { rawStaff, isLoading: listLoading, refetch: refetchStaff, create, update, deleteStaff } = useStaffList();
-  const [activeStaffId, setActiveStaffId] = useState<number | null>(() => {
+  const [pickedStaffId, setPickedStaffId] = useState<number | null>(() => {
     const saved = localStorage.getItem('staff_active_id');
     return saved ? Number(saved) : null;
   });
+
+  // Автовыбор только среди принявших приглашение: иначе правая панель встала бы
+  // на человеке, профиля у которого ещё нет. Считаем при рендере, а не эффектом —
+  // панель не мигает пустотой на первом кадре.
+  const selectableStaff = rawStaff.filter(s => s.is_active);
+  const activeStaffId =
+    selectableStaff.length === 0 ? pickedStaffId
+    : pickedStaffId && selectableStaff.some(s => s.id === pickedStaffId) ? pickedStaffId
+    : (selectableStaff.find(s => s.role === 'owner') ?? selectableStaff[0]).id;
+
   const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson } = useStaffProfile(activeStaffId);
 
   // Создаем "Подготовленные данные для интерфейса" (ViewModel)
@@ -129,19 +139,8 @@ export default function Staff() {
     if (id != null && rawStaff.find(s => s.id === id)?.is_active === false) return;
     if (id != null) localStorage.setItem('staff_active_id', String(id));
     else localStorage.removeItem('staff_active_id');
-    setActiveStaffId(id);
+    setPickedStaffId(id);
   };
-
-  useEffect(() => {
-    // Автовыбор только среди принявших приглашение: иначе правая панель встала
-    // бы на человеке, профиля у которого ещё нет.
-    const selectable = rawStaff.filter(s => s.is_active);
-    if (selectable.length === 0) return;
-    if (activeStaffId && selectable.some(s => s.id === activeStaffId)) return;
-    const fallback = selectable.find(s => s.role === 'owner') ?? selectable[0];
-    setActiveStaffId(fallback.id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawStaff]);
 
   // ── Filters (search, groups) ──────────────────────────────────────────────
   const { staffList, searchQuery, setSearchQuery, activeGroup, setActiveGroup, availableGroups } =
@@ -170,21 +169,23 @@ export default function Staff() {
   // ── Schedule local state (initialized from profile) ───────────────────────
   const [schedules, setSchedules] = useState<SchedulesMap>({});
 
-  useEffect(() => {
-    if (profile && activeStaffId) {
-      setSchedules(prev => ({
-        ...prev,
-        [activeStaffId]: hoursToMatrix(profile.week_working_hours),
-      }));
-    }
-  }, [profile?.id]);
+  // Матрица часов — локально редактируемая, поэтому засеваем её из профиля один
+  // раз на сотрудника. Прямо в рендере: эффект давал лишний кадр со старой сеткой.
+  const [seededProfileId, setSeededProfileId] = useState<number | null>(null);
+  if (profile && activeStaffId && seededProfileId !== profile.id) {
+    setSeededProfileId(profile.id);
+    setSchedules(prev => ({
+      ...prev,
+      [activeStaffId]: hoursToMatrix(profile.week_working_hours),
+    }));
+  }
 
   // Fetch month data when switching to month view
   useEffect(() => {
     if (scheduleView === 'month' && activeStaffId) {
       fetchMonth();
     }
-  }, [scheduleView, activeStaffId]);
+  }, [scheduleView, activeStaffId, fetchMonth]);
 
   // ── Today's events from profile ───────────────────────────────────────────
   const activeUpcoming = profile?.today_schedule ?? [];
@@ -663,7 +664,7 @@ export default function Staff() {
               service_ids: data.serviceIds,
               schedule: scheduleToWorkingHours(data.schedule),
             });
-            if (result?.staff?.id) setActiveStaffId(result.staff.id);
+            if (result?.staff?.id) setPickedStaffId(result.staff.id);
             // Модалку не закрываем: она сама покажет последний шаг со ссылкой-приглашением
             // и закроется по «Готово» (AddEmployeeModal.handleClose → onClose).
             showToast(t('staff:toasts.inviteSent', { email: data.email }));

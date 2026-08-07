@@ -52,6 +52,12 @@ class _DB:
         return _R(self._seq.pop(0))
 
 
+def _expected_html(text):
+    """html из _render: экранированный текст, переносы строк как <br>."""
+    from html import escape
+    return "<p>{}</p>".format(escape(text, quote=False).replace("\n", "<br>"))
+
+
 def test_render_localizes_by_lang_and_currency():
     subject_en, text_en, html_en = N._render("c4", {"amount": 1500}, "en", "USD")
     assert "1 500 $" in text_en
@@ -60,7 +66,7 @@ def test_render_localizes_by_lang_and_currency():
     subject_ru, text_ru, html_ru = N._render("c4", {"amount": 1500}, "ru", "RUB")
     assert "1 500 ₽" in text_ru
     assert subject_ru == "Оплата получена"
-    assert html_ru == f"<p>{text_ru}</p>"
+    assert html_ru == _expected_html(text_ru)
 
 
 def test_render_unknown_event_returns_none():
@@ -112,7 +118,7 @@ def test_render_new_dead_events_t2_t5_a7_a9_o9_t7():
             res = N._render(event_id, ctx, lang, currency)
             assert res is not None, (event_id, lang)
             subject, text, html = res
-            assert subject and text and html == f"<p>{text}</p>"
+            assert subject and text and html == _expected_html(text)
         # пустой контекст — не должен падать (дефолты вида context.get(...) or "")
         assert N._render(event_id, {}, "ru", "RUB") is not None, f"{event_id}: пустой контекст ломает рендер"
 
@@ -125,7 +131,7 @@ def test_render_t9_trainer_lesson_cancelled():
     subject, text, html = res
     assert subject == "Занятие отменено"
     assert "Хатха" in text and "18:00" in text
-    assert html == f"<p>{text}</p>"
+    assert html == _expected_html(text)
 
     subject_en, text_en, _ = N._render("t9", {"lesson_name": "Hatha", "start_time": "18:00"}, "en", "USD")
     assert subject_en == "Class cancelled"
@@ -164,8 +170,14 @@ def test_notify_staff_fanout_hits_telegram_and_whatsapp():
 
     calls = []
 
-    async def fake_deliver(db_, channel, recipient, subject, text, html, *, studio_id):
+    async def fake_deliver(db_, channel, recipient, subject, text, html, *, studio_id,
+                           tg_text=None, wa_template=None):
         calls.append(channel)
+        # Telegram получает форматированную версию, остальные каналы — нет.
+        assert (tg_text is not None) == (channel == "telegram"), (channel, tg_text)
+        # WhatsApp — только шаблоном: свободный текст Meta доставит лишь внутри
+        # 24-часового окна, а уведомление приходит вне его.
+        assert (wa_template is not None) == (channel == "whatsapp"), (channel, wa_template)
         return True
 
     async def fake_resolve(db_, studio_id, role, event_id, recipient_user_id):
@@ -193,6 +205,33 @@ def test_render_c12_bonus_uses_raw_amount_and_description():
     assert subject == "Начислены бонусы"
     assert "500" in text and "Бонус за отзыв" in text
     assert "₽" not in text  # баллы — не валюта
+
+
+def test_tg_format_every_event_renders_valid_html():
+    # Telegram-версия сообщения: эмодзи + <b>заголовок</b> + тело. Проверяем ВСЕ
+    # события каталога в обоих языках — событие без эмодзи или с неэкранированным
+    # телом Telegram отвергнет с 400, и уведомление молча не дойдёт.
+    for event_id in sorted(N.KNOWN_EVENT_IDS):
+        for lang in ("ru", "en"):
+            subject, text, _ = N._render(event_id, {}, lang, "RUB")
+            tg = N.tg_format(event_id, subject, text)
+            assert tg.startswith(N.EVENT_EMOJI[event_id]), (event_id, tg)
+            assert f"<b>{subject}</b>" in tg, (event_id, tg)
+            assert tg.count("<") == 2 and tg.count(">") == 2, (event_id, tg)  # только <b></b>
+
+    # Имя клиента с HTML-символами не должно порождать лишних тегов.
+    tg = N.tg_format("t1", "Новая запись", 'Клиент <Витя> & "Ко" записался.')
+    assert "&lt;Витя&gt;" in tg and "&amp;" in tg, tg
+    assert tg.count("<") == 2 and tg.count(">") == 2, tg
+    assert '"Ко"' in tg, tg  # кавычки не превращаем в &quot; — Telegram их не разбирает
+
+
+def test_render_report_events_are_multiline():
+    # Сводки/отчёты — по факту на строку (в мессенджере одна длинная строка
+    # нечитаема); в html переносы становятся <br>, а не схлопываются.
+    subject, text, html = N._render("o1", {"revenue": 12000, "lessons": 5, "new_clients": 2}, "ru", "RUB")
+    assert text.count("\n") == 2, text
+    assert "<br>" in html, html
 
 
 def test_notify_payment_fires_c4_client_and_a4_admin():
@@ -241,6 +280,8 @@ def test_render():
     test_recipient_staff_includes_tg_id_and_phone()
     test_notify_staff_fanout_hits_telegram_and_whatsapp()
     test_render_c12_bonus_uses_raw_amount_and_description()
+    test_tg_format_every_event_renders_valid_html()
+    test_render_report_events_are_multiline()
     test_notify_payment_fires_c4_client_and_a4_admin()
     test_notify_payment_skips_zero_amount_and_missing_client()
 

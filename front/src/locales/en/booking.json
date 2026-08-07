@@ -3,10 +3,17 @@
     "sectionTitle": "Connection channels",
     "connected": "Connected",
     "disconnected": "Not connected",
+    "pending": "Setup needed",
+    "connectInNotifications": "Connect in Notifications",
+    "manage": "Manage in Notifications",
     "telegram": { "name": "Telegram bot", "desc": "Automatic booking via the bot" },
-    "instagram": { "name": "Instagram", "desc": "Link for bio and stories" },
-    "web": { "name": "Website", "desc": "Widget or standalone page" },
-    "whatsapp": { "name": "WhatsApp", "desc": "Booking via messenger" }
+    "stripe": { "name": "Payments", "desc": "Stripe: cards, Apple Pay, Google Pay" },
+    "miniapp": {
+      "name": "Client link",
+      "desc": "Booking mini app — for bio, stories and campaigns",
+      "copy": "Copy link",
+      "open": "Open mini app"
+    }
   },
   "loading": "Loading settings…",
   "sections": {
@@ -59,7 +66,9 @@
     "botConnected": "Bot connected",
     "botDisconnected": "Bot disconnected",
     "codeCopied": "Code copied!",
-    "linkCopied": "Link copied!"
+    "linkCopied": "Link copied!",
+    "stripeReturned": "Details sent to Stripe",
+    "stripeLinkExpired": "The Stripe link expired — please try again"
   },
   "stripeGate": {
     "kicker": "Required for online booking",
@@ -89,7 +98,7 @@
       "fee": "Velora takes no cut of your payments"
     },
     "later": "Later",
-    "note": "The Stripe form will open. When you are done, you return to Finances."
+    "note": "The Stripe form will open. When you are done, you return to this page."
   },
   "tg": {
     "title": "Telegram bot",
@@ -142,13 +151,8 @@
     "sampleIncoming": "Hi! I'd like to book a class.",
     "sampleOutgoing": "Welcome! ✨",
     "connect": "Connect WhatsApp Business",
-    "scanQr": "Scan the QR code",
-    "scanInstructionLine1": "WhatsApp Business → Settings →",
-    "scanInstructionLine2": "Linked devices",
-    "waiting": "Waiting for connection...",
     "connected": "Connected",
     "autoReplyActive": "Auto-reply active",
-    "instantLink": "Booking link is sent instantly",
-    "disconnect": "Disconnect"
+    "instantLink": "Booking link is sent instantly"
   }
 }

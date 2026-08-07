@@ -14,8 +14,20 @@ export const weekdayShort = (dayIdx: number, lang: string) =>
   new Date(2024, 0, 1 + dayIdx).toLocaleDateString(lang, { weekday: 'short' });
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
+// Геометрия карточки внутри колонки: CSS-строки left/width считаются в calc(),
+// поэтому это string, а не число.
+export interface BookingLayout {
+  left: string;
+  width: string;
+  zIndex: number;
+  isTracked: boolean;
+  isCascade: boolean;
+  totalTracks: number;
+  trackIdx: number;
+}
+
 export function getBookingLayouts(bookings: Booking[]) {
-  const layouts = new Map<number, any>();
+  const layouts = new Map<number, BookingLayout>();
   const RIGHT_SPACE = 28; // Отступ справа
 
   if (bookings.length === 0) return layouts;

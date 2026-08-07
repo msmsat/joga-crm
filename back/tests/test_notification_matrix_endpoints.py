@@ -56,6 +56,14 @@ async def _run():
         assert c3.channels == {"email": True, "telegram": True, "whatsapp": False, "instagram": False}, c3.channels
         print("OK: GET /matrix — без локов, каналы по дефолтам каталога")
 
+        # 1b) Персоналу telegram/instagram структурно недоступны (ROLE_CHANNELS) —
+        #     в строке трениера/админа/владельца этих ключей нет вообще, не
+        #     просто false: фронту нечего рисовать кликабельной галочкой.
+        t1 = by_id["t1"]
+        assert t1.channels == {"email": True, "whatsapp": True}, t1.channels
+        assert "telegram" not in t1.channels and "instagram" not in t1.channels, t1.channels
+        print("OK: GET /matrix — у персонала в строке только email/whatsapp")
+
         # 2) PATCH /events на critical проходит: замков в матрице больше нет,
         #    владелец гасит любую ячейку. Доставку это не отменяет — critical
         #    уходит по default_channels мимо тумблеров (notification_resolver).
@@ -195,6 +203,39 @@ async def _run():
             except HTTPException as e:
                 assert e.status_code == 422 and e.detail["code"] == "notifications.unknown_event", e.detail
         print("OK: PATCH /notifications/me on foreign-role event -> 422")
+
+        # 12) PATCH /events с telegram для роли персонала -> 422: границе доверия
+        #     не важно, что curl прислал — ROLE_CHANNELS общая для UI и API.
+        async with async_session_maker() as db:
+            try:
+                await upsert_event_toggle(
+                    body=EventToggle(role="trainer", event_id="t1", channel_key="telegram", is_enabled=True),
+                    ctx=owner, db=db,
+                )
+                raise AssertionError("ожидали 422 — telegram недоступен роли trainer")
+            except HTTPException as e:
+                assert e.status_code == 422 and e.detail["code"] == "notifications.channel_unavailable_for_role", e.detail
+        async with async_session_maker() as db:
+            rows = (await db.execute(
+                select(NotificationEventToggle).where(
+                    NotificationEventToggle.studio_id == studio_id, NotificationEventToggle.event_id == "t1",
+                )
+            )).scalars().all()
+        assert rows == [], "422 не должен был ничего записать"
+        print("OK: PATCH /events role/channel mismatch -> 422, ничего не пишет")
+
+        # 13) То же в личном слое: тренер не может включить себе telegram у t8,
+        #     даже если бы такой ключ ему прислали в PATCH.
+        async with async_session_maker() as db:
+            try:
+                await update_my_notification_pref(
+                    body=UserPrefUpdate(event_id="t8", channel_key="telegram", is_enabled=True),
+                    ctx=trainer_ctx, db=db,
+                )
+                raise AssertionError("ожидали 422 — telegram недоступен роли trainer")
+            except HTTPException as e:
+                assert e.status_code == 422 and e.detail["code"] == "notifications.channel_unavailable_for_role", e.detail
+        print("OK: PATCH /notifications/me role/channel mismatch -> 422")
 
         print("ALL PASS — EPIC 3 Задача 3: matrix/events/me endpoints")
     finally:

@@ -15,9 +15,10 @@ from sqlalchemy import delete
 
 from database import async_session_maker
 from dependencies import StudioContext
-from models import Studio, StudioIntegration
+from models import Studio, StudioAISettings, StudioIntegration
 from routers.settings.integrations import _channel_status, disconnect_integration, list_integrations
 from schemas.settings.integrations import IntegrationStatus
+from services.assistant import get_or_create_ai_settings
 
 
 async def _seed() -> int:
@@ -34,6 +35,14 @@ async def _seed() -> int:
             studio_id=sid, integration_type="ig_dm", is_connected=True,
             config={"token": "IGQWRabc123defGhIJKlmNoPQRsTUVw", "ig_user_id": "17841400000", "username": "velora_studio"},
         ))
+        db.add(StudioIntegration(
+            studio_id=sid, integration_type="wa_notify", is_connected=True,
+            config={"token": "EAAG-wa-token", "phone_number_id": "999", "display_phone_number": "+7 999 000-00-00"},
+        ))
+        await db.commit()
+        # Тумблер WhatsApp-агента включён — отключение номера обязано его погасить.
+        ai = await get_or_create_ai_settings(sid, db)
+        ai.wa_enabled = True
         await db.commit()
         return sid
 
@@ -41,6 +50,7 @@ async def _seed() -> int:
 async def _cleanup(sid: int) -> None:
     async with async_session_maker() as db:
         await db.execute(delete(StudioIntegration).where(StudioIntegration.studio_id == sid))
+        await db.execute(delete(StudioAISettings).where(StudioAISettings.studio_id == sid))
         await db.execute(delete(Studio).where(Studio.id == sid))
         await db.commit()
 
@@ -93,6 +103,15 @@ async def _run():
         async with async_session_maker() as db:
             items_after = await list_integrations(ctx=owner, db=db)
         assert items_after[0].connected is False
+
+        # DELETE whatsapp гасит и тумблер агента: у него нет своего подключения,
+        # иначе при повторном подключении номера он заговорит сам.
+        async with async_session_maker() as db:
+            wa_off = await disconnect_integration(integration_type="whatsapp", ctx=owner, db=db)
+        assert wa_off.connected is False
+        async with async_session_maker() as db:
+            ai = await get_or_create_ai_settings(sid, db)
+            assert ai.wa_enabled is False, "wa_enabled остался включённым после отключения номера"
 
         # Неизвестный тип -> 422 (валидация Literal на входе схемы/пути).
         try:

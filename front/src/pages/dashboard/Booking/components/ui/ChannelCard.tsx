@@ -14,6 +14,10 @@ export function ChannelCard({ icon, name, desc, status, color, onClick }: Channe
         <div className="channel-status connected">
           <span className="channel-status-dot"></span>{t('channels.connected')}
         </div>
+      ) : status === 'pending' ? (
+        <div className="channel-status pending">
+          <span className="channel-status-dot"></span>{t('channels.pending')}
+        </div>
       ) : (
         <div className="channel-status disconnected">{t('channels.disconnected')}</div>
       )}

@@ -2,6 +2,7 @@
 _is_birthday/_report_due и попадание start_time-offset в окно тика, без БД.
 Запуск из back/:  python -m tests.test_daily_notify
 """
+import pathlib
 from datetime import date, datetime, timedelta
 
 import services.daily_notify as D
@@ -64,6 +65,26 @@ def test_reminder_window_boundaries_fire_exactly_once():
     assert not (just_after_upper <= hi)
 
 
+def test_studio_selection_is_not_gated_by_matrix_rows():
+    """Регресс: ежедневный цикл обязан брать ВСЕ студии.
+
+    Раньше студии отбирались join'ом по NotificationEventToggle с
+    is_enabled=True, а строка там появляется только когда владелец правил
+    матрицу руками. Студия на дефолтах строк не имеет — и молча не получала
+    дни рождения, отчёты дня/недели и предупреждение об истечении тарифа
+    (на боевой базе под гейт не проходили 18 студий из 19).
+
+    Кому и куда слать, решает resolve_channels на каждое событие, а не этот
+    отбор, поэтому фильтровать студии здесь нечем и незачем.
+    """
+    source = pathlib.Path(D.__file__).read_text(encoding="utf-8")
+    selection = source.split("studio_ids = ")[1].split("\n")[0]
+    assert "NotificationEventToggle" not in selection, (
+        f"отбор студий снова завязан на матрицу: {selection}"
+    )
+    assert "select(Studio.id)" in selection, selection
+
+
 def test_run_daily_notify():
     test_is_birthday_matches_month_and_day()
     test_is_birthday_feb29_in_non_leap_year_falls_back_to_feb28()
@@ -71,6 +92,7 @@ def test_run_daily_notify():
     test_report_due_before_hour_is_false()
     test_report_due_after_hour_is_true_once_per_day()
     test_reminder_window_boundaries_fire_exactly_once()
+    test_studio_selection_is_not_gated_by_matrix_rows()
 
 
 if __name__ == "__main__":

@@ -47,7 +47,7 @@ export default function StepContact({ data, onChange }: Props) {
         <PhoneField
           label={t("onboarding:contact.phoneLabel")}
           value={data.phone}
-          onChange={(v: string) => onChange({ phone: v || "" })}
+          onChange={(v) => onChange({ phone: v || "" })}
         />
 
         <InputField

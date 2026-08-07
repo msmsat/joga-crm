@@ -71,6 +71,13 @@ export interface Employee {
   stats: StaffStats;
 }
 
+/** Employee + поля, переведённые заранее в Staff.tsx под текущий язык. */
+export type StaffViewModel = Employee & {
+  _resolvedGroupKey: string;
+  _translatedGroup: string;
+  _translatedRole: string;
+};
+
 export interface StaffProfileResponse extends Employee {
   is_active: boolean;
   halls: StaffHall[];

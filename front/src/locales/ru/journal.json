@@ -108,7 +108,9 @@
     "classes": "занятий",
     "classesToday": "занятий на сегодня",
     "newLessonPreview": "Новое занятие",
-    "cancelled": "Отменено"
+    "cancelled": "Отменено",
+    "noTrainers": "Нет тренеров",
+    "noHalls": "Нет залов"
   },
   "createService": "+ Создать услугу",
   "invalidDateFormat": "Неверный формат даты",

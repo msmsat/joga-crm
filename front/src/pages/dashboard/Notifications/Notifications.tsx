@@ -25,21 +25,22 @@ export default function Notifications() {
   const ci = useChannelIntegrations(enableChannel);
   const h = useNotifications(ci.channels, key => setOpenModal(MODAL_BY_CHANNEL[key]));
 
-  // Возврат с Instagram OAuth: бэк редиректит сюда с ?ig=connected|error, если
-  // подключение начали отсюда (routers/ai/instagram.py, _RETURN_PAGES).
+  // Возврат из мастера Meta: бэк редиректит сюда с ?ig=|?wa=connected|error,
+  // если подключение начали отсюда (routers/ai/*.py, _RETURN_PAGES).
   const toast = useToast();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   useEffect(() => {
-    const ig = searchParams.get('ig');
-    if (!ig) return;
-    if (ig === 'connected') {
+    // Instagram и WhatsApp возвращаются одинаково — как на Velora AI (AI.tsx).
+    const channel = searchParams.get('ig') ? 'instagram' : searchParams.get('wa') ? 'whatsapp' : null;
+    if (!channel) return;
+    if (searchParams.get(channel === 'instagram' ? 'ig' : 'wa') === 'connected') {
       invalidateChannelGroup(qc);
-      enableChannel('instagram');
+      enableChannel(channel);
       toast.success(t('chModal.connected'));
     } else {
-      toast.error(t('common:errors.unknown', 'Не удалось подключить Instagram'));
+      toast.error(t('common:errors.unknown', 'Не удалось подключить канал'));
     }
     // Затираем query, чтобы тост не повторялся на F5.
     navigate('/dashboard/notifications', { replace: true });
@@ -96,6 +97,8 @@ export default function Notifications() {
           status={ci.channels?.whatsapp}
           connectMut={ci.connectWhatsApp}
           disconnectMut={ci.disconnectWhatsApp}
+          checkPaymentMut={ci.checkWaPayment}
+          syncTemplatesMut={ci.syncWaTemplates}
           onClose={() => setOpenModal(null)}
         />
       )}

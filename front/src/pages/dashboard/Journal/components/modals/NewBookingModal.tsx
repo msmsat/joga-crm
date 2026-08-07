@@ -77,13 +77,15 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     }));
   };
 
-  // Синхронизация инпутов с текущим слотом
-  useEffect(() => {
-    if (newBookingSlot) {
-      setStartInput(formatIndexToTimeStr(newBookingSlot.timeStart));
-      setEndInput(formatIndexToTimeStr(newBookingSlot.timeEnd));
-    }
-  }, [newBookingSlot.timeStart, newBookingSlot.timeEnd]);
+  // Синхронизация инпутов с текущим слотом — прямо в рендере (документированный
+  // React-паттерн): эффект давал кадр со временем прошлого слота.
+  const slotKey = `${newBookingSlot.timeStart}|${newBookingSlot.timeEnd}`;
+  const [syncedSlot, setSyncedSlot] = useState<string | null>(null);
+  if (syncedSlot !== slotKey) {
+    setSyncedSlot(slotKey);
+    setStartInput(formatIndexToTimeStr(newBookingSlot.timeStart));
+    setEndInput(formatIndexToTimeStr(newBookingSlot.timeEnd));
+  }
 
   // Автоматический проскролл дропдаунов
   useEffect(() => {
@@ -110,7 +112,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
   // ФИКСАЦИЯ ВРЕМЕНИ
   const commitTime = (type: 'start' | 'end', val: string) => {
-    let idx = parseTimeToIndex(val);
+    const idx = parseTimeToIndex(val);
     
     if (type === 'start') {
       setNewBookingSlot(prev => prev ? { ...prev, timeStart: idx, timeEnd: Math.max(prev.timeEnd, idx + 0.25) } : null);

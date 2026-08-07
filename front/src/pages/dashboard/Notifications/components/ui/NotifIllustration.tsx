@@ -1,6 +1,18 @@
 import { Icon } from './NotificationIcons';
 import '../../Notifications.module.css';
 
+// Каждый чип якорится к своему углу — top/right или bottom/left, поэтому
+// все четыре координаты опциональны.
+type ChipPos = {
+  label: string;
+  color: string;
+  delay: string;
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+};
+
 export default function NotifIllustration() {
   return (
     <div style={{
@@ -49,15 +61,15 @@ export default function NotifIllustration() {
         <Icon.Bell />
       </div>
 
-      {[
+      {([
         { label: 'Telegram', top: '18px', right: '40px', color: '#4A80C4', delay: '0s' },
         { label: 'WhatsApp', bottom: '18px', right: '30px', color: '#5BAB72', delay: '0.4s' },
         { label: 'Email', top: '28px', left: '28px', color: '#F9A08B', delay: '0.8s' },
         { label: 'SMS', bottom: '28px', left: '40px', color: '#9B8EC4', delay: '1.2s' },
-      ].map(chip => (
+      ] as ChipPos[]).map(chip => (
         <div key={chip.label} style={{
           position: 'absolute',
-          top: chip.top, right: (chip as any).right, bottom: chip.bottom, left: (chip as any).left,
+          top: chip.top, right: chip.right, bottom: chip.bottom, left: chip.left,
           background: 'var(--bg-card)',
           border: `1px solid ${chip.color}30`,
           borderRadius: '20px',

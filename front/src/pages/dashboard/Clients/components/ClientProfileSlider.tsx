@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ClientData, EventRecord } from '../types';
@@ -396,13 +396,17 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const actions = useClientActions(client.id);
 
   // Панель не перемонтируется при смене клиента — сбрасываем локальный UI-стейт
-  // вручную вместо остатка предыдущей вкладки/дропдауна/черновика.
-  useEffect(() => {
+  // вручную вместо остатка предыдущей вкладки/дропдауна/черновика. Прямо в
+  // рендере, а не эффектом: иначе первый кадр нового клиента рисуется со вкладкой
+  // и черновиком предыдущего. Сброс только на смену id, не на правку полей client.
+  const [syncedClientId, setSyncedClientId] = useState(client.id);
+  if (syncedClientId !== client.id) {
+    setSyncedClientId(client.id);
     setActiveTab('info');
     setTagInput('');
     setRegValue(client.registration_date ?? '');
     setEditingReg(false);
-  }, [client.id]); // eslint-disable-line react-hooks/exhaustive-deps -- сброс только на смену клиента, не на каждое изменение полей client
+  }
 
   const apiEvents = useClientEvents(client.id, actions.eventFilter, activeTab === 'events');
 

@@ -8,9 +8,10 @@ from sqlalchemy.future import select
 from database import get_db
 from dependencies import require_role, get_studio_context, StudioContext
 from models import StudioNotificationSettings, NotificationEventToggle, UserNotificationPreference
-from services.notification_catalog import CATALOG, events_for_role
+from services.notification_catalog import CATALOG, ROLE_CHANNELS, events_for_role
 from services.notification_resolver import connected_channels, studio_channels
 from services.notifier import NOTIFY_CHANNELS
+from services.whatsapp import can_enable_channel as wa_can_enable_channel
 from schemas.settings.notifications import (
     NotificationSettingsRead,
     NotificationSettingsUpdate,
@@ -63,7 +64,14 @@ async def update_notification_settings(
 ):
     settings = await _get_or_create_settings(ctx.studio_id, db)
     # exclude_unset — трогаем только присланные поля; by_alias — колонки модели.
-    for field, value in body.model_dump(exclude_unset=True, by_alias=True).items():
+    data = body.model_dump(exclude_unset=True, by_alias=True)
+    # Включить WhatsApp без карты на WABA нельзя: Meta отклонит каждое
+    # уведомление (131042), а включённый тумблер обещал бы доставку, которой
+    # нет. Номер при этом остаётся подключённым — авто-ответчик отвечает на
+    # входящие в 24-часовом окне бесплатно, ему карта не нужна.
+    if data.get("whatsapp_notifications") is True and not await wa_can_enable_channel(db, ctx.studio_id):
+        raise HTTPException(status_code=409, detail="wa_payment_required")
+    for field, value in data.items():
         setattr(settings, field, value)
     await db.commit()
     await db.refresh(settings)
@@ -78,12 +86,17 @@ async def _matrix_row(db: AsyncSession, studio_id: int, event_id: str, spec) -> 
     Все уровни читаются одинаково, через studio_channels: галка показывает
     ровно то, что сохранено, иначе выключенная ячейка critical отскакивала бы
     обратно. Поля locked* остались в схеме, но всегда пустые — замков в матрице
-    нет; страховка от «выключили всё» живёт в resolve_channels (forced-фолбэк).
+    нет: снять можно любую галку, включая critical, вплоть до полной тишины.
+
+    channels строится только по ROLE_CHANNELS[spec.role] (для персонала —
+    email/whatsapp, без telegram/instagram): их всё равно не доставить этой
+    роли (resolve_channels), значит фронту незачем рисовать по ним кликабельную,
+    но нерабочую галочку.
     """
     eff = await studio_channels(db, studio_id, spec.role, event_id, spec.default_channels)
     return MatrixRow(
         event_id=event_id, role=spec.role, tier=spec.tier,
-        channels={ch: ch in eff for ch in NOTIFY_CHANNELS},
+        channels={ch: ch in eff for ch in ROLE_CHANNELS[spec.role]},
         locked=False, locked_channels=[], lock_reason=None,
     )
 
@@ -108,16 +121,24 @@ async def _validate_toggles(db: AsyncSession, studio_id: int, toggles: list[Even
     curl'ом — неизвестное событие или чужая роль по-прежнему 422.
 
     Запреты «critical отключить нельзя» и «нужен хотя бы один канал» сняты вместе
-    с замками в матрице: владелец волен выключить любую ячейку. Доставку это не
-    ломает — её гарантирует resolve_channels, а не тумблер: у critical каналы
-    берутся из default_channels мимо настроек, у operational пустой набор
-    превращается в forced-фолбэк (services/notification_resolver.py, §3).
+    с замками в матрице: владелец волен выключить любую ячейку, включая последнюю,
+    и тогда событие не уйдёт вообще — так и задумано (см. докстринг
+    services/notification_resolver.py). Гарантия доставки держится на дефолтах:
+    пока владелец ничего не трогал, email включён у всех 38 событий.
     """
     for t in toggles:
         spec = CATALOG.get(t.event_id)
         if spec is None or spec.role != t.role:
             raise HTTPException(status_code=422, detail={
                 "code": "notifications.unknown_event", "message": f"Неизвестное событие: {t.event_id}",
+            })
+        # Персоналу telegram/instagram не доставить структурно (ROLE_CHANNELS) —
+        # без этой проверки владелец мог бы выставить галку, которая тихо
+        # ничего не отправляет: resolve_channels её просто отфильтрует.
+        if t.channel_key not in ROLE_CHANNELS[t.role]:
+            raise HTTPException(status_code=422, detail={
+                "code": "notifications.channel_unavailable_for_role",
+                "message": f"Канал {t.channel_key} недоступен роли {t.role}",
             })
 
 
@@ -212,8 +233,11 @@ async def get_my_notification_prefs(
     for r in rows:
         overrides[r.event_id][r.channel_key] = r.is_enabled
 
+    # channels — только по ROLE_CHANNELS роли: у персонала telegram/instagram
+    # никогда не доставится (см. _matrix_row выше), личным настройкам незачем
+    # предлагать выключатель для канала, которого для этой роли не существует.
     events = [
-        UserPrefRow(event_id=eid, channels={ch: overrides[eid].get(ch, True) for ch in NOTIFY_CHANNELS})
+        UserPrefRow(event_id=eid, channels={ch: overrides[eid].get(ch, True) for ch in ROLE_CHANNELS[ctx.role]})
         for eid in optional_ids
     ]
     return UserPrefRead(events=events)
@@ -234,6 +258,11 @@ async def update_my_notification_pref(
         raise HTTPException(status_code=409, detail={
             "code": "notifications.not_personal",
             "message": "Личные настройки не могут менять обязательные уведомления",
+        })
+    if body.channel_key not in ROLE_CHANNELS[ctx.role]:
+        raise HTTPException(status_code=422, detail={
+            "code": "notifications.channel_unavailable_for_role",
+            "message": f"Канал {body.channel_key} недоступен роли {ctx.role}",
         })
 
     pref = (await db.execute(
@@ -259,4 +288,4 @@ async def update_my_notification_pref(
         )
     )).scalars().all()
     overrides = {r.channel_key: r.is_enabled for r in rows}
-    return UserPrefRow(event_id=body.event_id, channels={ch: overrides.get(ch, True) for ch in NOTIFY_CHANNELS})
+    return UserPrefRow(event_id=body.event_id, channels={ch: overrides.get(ch, True) for ch in ROLE_CHANNELS[ctx.role]})

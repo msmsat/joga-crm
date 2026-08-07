@@ -179,12 +179,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     );
   }, [clientsList, searchQuery]);
 
-  useEffect(() => {
+  // Текстовые поля времени — зеркало числовых индексов. Синхронизируем прямо в
+  // рендере (документированный React-паттерн): эффект давал кадр со старым текстом.
+  const editTimesKey = `${isEditingBooking}|${editForm.timeStart}|${editForm.timeEnd}`;
+  const [syncedEditTimes, setSyncedEditTimes] = useState<string | null>(null);
+  if (syncedEditTimes !== editTimesKey) {
+    setSyncedEditTimes(editTimesKey);
     if (isEditingBooking) {
       setEditStartInput(formatIndexToTimeStr(editForm.timeStart));
       setEditEndInput(formatIndexToTimeStr(editForm.timeEnd));
     }
-  }, [isEditingBooking, editForm.timeStart, editForm.timeEnd]);
+  }
 
   useEffect(() => {
     if (editActiveDropdown === 'start' && startScrollRef.current) {
@@ -355,7 +360,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                     onFocus={(e) => { e.target.select(); setEditActiveDropdown('start'); }}
                     onChange={e => setEditStartInput(e.target.value)}
                     onBlur={(e) => {
-                      let idx = parseTimeToIndex(e.target.value);
+                      const idx = parseTimeToIndex(e.target.value);
                       setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
                       setEditActiveDropdown(null);
                     }}
@@ -370,7 +375,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                         className={`kp-time-item ${formatIndexToTimeStr(editForm.timeStart) === t ? 'active-time-item' : ''}`}
                         onMouseDown={(e) => {
                           e.preventDefault(); 
-                          let idx = parseTimeToIndex(t);
+                          const idx = parseTimeToIndex(t);
                           setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
                           setEditActiveDropdown(null);
                         }}

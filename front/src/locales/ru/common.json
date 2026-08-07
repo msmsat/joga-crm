@@ -99,6 +99,7 @@
     "loadFailed": "Не удалось загрузить",
     "retry": "Повторить",
     "invalid_bot_token": "Telegram не принял этот токен — проверьте, что бот существует",
+    "wa_payment_required": "Оплата не подключена. Без карты на WhatsApp Business Meta не доставит ни одного уведомления — откройте настройки канала WhatsApp и добавьте оплату",
     "checkout": {
       "package_not_found": "Пакет не найден",
       "package_inactive": "Пакет снят с продажи",

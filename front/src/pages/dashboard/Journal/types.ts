@@ -13,6 +13,10 @@ export interface Trainer {
   initials: string;
 }
 
+// Колонка сетки журнала: тренер (режим «тренеры»), название зала (режим «залы»)
+// или дата (недельный вид) — что именно, решает viewMode/calendarView.
+export type JournalColumn = Trainer | string | Date;
+
 export interface Booking {
   id: number;
   trainer: number;

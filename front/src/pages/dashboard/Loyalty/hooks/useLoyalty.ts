@@ -84,7 +84,13 @@ export function useLoyalty() {
   const [mounted, setMounted] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setMounted(true); }, []);
+  // Флаг «первый кадр отрисован» — по нему полоски уровней разъезжаются с 0%.
+  // Через rAF, а не сразу: иначе React успевает слить обновление в тот же кадр
+  // и анимация не проигрывается.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const programs: Record<ConfigProgramKey, boolean> = {
     loyalty: configs.loyalty?.is_enabled ?? false,

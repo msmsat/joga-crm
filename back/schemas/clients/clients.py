@@ -3,13 +3,15 @@ from typing import List, Literal, Optional
 
 from pydantic import Field
 
-from schemas._base import BaseSchema
+from schemas._base import BaseSchema, OptPhone, Phone
 
 
 class ClientCreate(BaseSchema):
     name: str = Field(min_length=1)
     last_name: Optional[str] = None
-    phone: str = Field(min_length=1)
+    # E.164 обязателен: по этому номеру уходят платные шаблоны WhatsApp, и
+    # «8 999 …» без кода страны для Meta — другой номер (contact_format.to_e164).
+    phone: Phone
     email: str = Field(min_length=1)
     birth_date: Optional[date] = None
     city: str = Field(min_length=1)
@@ -24,7 +26,7 @@ class ClientCreate(BaseSchema):
 class ClientUpdate(BaseSchema):
     name: Optional[str] = None
     last_name: Optional[str] = None
-    phone: Optional[str] = None
+    phone: OptPhone = None
     email: Optional[str] = None
     birth_date: Optional[date] = None
     city: Optional[str] = None

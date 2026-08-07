@@ -31,6 +31,10 @@ class BookingSettingsRead(BaseSchema):
     widget_work_start: str
     widget_work_end: str
     slot_step_min: int
+    # Публичная ссылка на мини-приложение студии. Не колонка — считается из
+    # MINIAPP_URL и studio_id (routers/booking/settings.py:_read): адрес зависит
+    # от окружения, и фронту его собирать не по чему.
+    miniapp_url: str = ""
 
 
 class BookingSettingsUpdate(BaseSchema):

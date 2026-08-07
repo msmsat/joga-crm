@@ -19,8 +19,25 @@ GATEWAY_TYPES: tuple[GatewayType, ...] = ("stripe",)
 
 WEB_APP_URL = os.getenv("WEB_APP_URL", "http://localhost:5173").rstrip("/")
 # tab=onlinePayments — ключ вкладки, который читает Finances.tsx (initialFromUrl).
-_RETURN_URL = f"{WEB_APP_URL}/dashboard/finances?tab=onlinePayments&stripe=return"
-_REFRESH_URL = f"{WEB_APP_URL}/dashboard/finances?tab=onlinePayments&stripe=refresh"
+_DEFAULT_RETURN_PATH = "/dashboard/finances?tab=onlinePayments"
+
+
+def _stripe_links(return_path: str | None) -> tuple[str, str]:
+    """(return_url, refresh_url) — куда Stripe вернёт владельца с анкеты.
+
+    Страницу выбирает фронт: подключать Stripe можно и из Финансов, и из
+    Онлайн-записи, а возврат «не туда, откуда ушёл» выглядит как потеря места.
+
+    Путь приходит снаружи, поэтому берём только СВОЙ относительный путь: чужой
+    абсолютный адрес (`//evil`, `/\\evil`, `https://…`) превратил бы возврат из
+    Stripe в открытый редирект. Не наш путь → молча дефолт: ронять подключение
+    из-за кривой ссылки нечего, а возврат в Финансы всегда осмыслен.
+    """
+    path = return_path or ""
+    if not path.startswith("/") or path[1:2] in ("/", "\\") or len(path) > 200:
+        path = _DEFAULT_RETURN_PATH
+    sep = "&" if "?" in path else "?"
+    return f"{WEB_APP_URL}{path}{sep}stripe=return", f"{WEB_APP_URL}{path}{sep}stripe=refresh"
 
 # Домен, на котором крутится форма оплаты — его и регистрируем под кошельки.
 # localhost зарегистрировать нельзя (Apple требует публичный HTTPS), поэтому
@@ -85,12 +102,15 @@ async def list_gateways(
 async def connect_stripe(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
+    return_path: str | None = None,
 ):
     """Кнопка «Подключить Stripe» → ссылка на форму Stripe Connect.
 
     Аккаунт студии создаём один раз и переиспользуем: повторный клик (анкета
     брошена на середине, ссылка протухла) выдаёт новую ссылку на ТОТ ЖЕ acct_…,
     иначе у студии копятся пустые аккаунты, а деньги придут не на тот.
+
+    `return_path` — страница CRM, с которой нажали «Подключить» (см. `_stripe_links`).
     """
     if not stripe_connect.configured():
         raise HTTPException(status_code=503, detail={
@@ -127,8 +147,9 @@ async def connect_stripe(
     if _WALLET_DOMAIN_PUBLIC:
         await stripe_connect.register_payment_method_domain(channel.account_id, _WALLET_DOMAIN)
 
+    return_url, refresh_url = _stripe_links(return_path)
     try:
-        url = await stripe_connect.onboarding_url(channel.account_id, _RETURN_URL, _REFRESH_URL)
+        url = await stripe_connect.onboarding_url(channel.account_id, return_url, refresh_url)
     except Exception as exc:
         logger.exception("Stripe: не удалось создать ссылку онбординга для %s", channel.account_id)
         raise HTTPException(status_code=502, detail={

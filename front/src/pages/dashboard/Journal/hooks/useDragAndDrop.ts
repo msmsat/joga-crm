@@ -1,7 +1,7 @@
 // src/hooks/useDragAndDrop.ts
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Booking, Trainer } from '../types';
+import type { Booking, JournalColumn, Trainer } from '../types';
 import { toDateStr } from '../utils';
 
 export interface DragState {
@@ -23,7 +23,7 @@ export interface DragState {
 interface UseDragAndDropProps {
   bookings: Booking[];
   viewMode: 'trainers' | 'halls';
-  columns: any[]; 
+  columns: JournalColumn[];
   timeStep: number;
   showToast: (msg: string) => void;
   calendarView?: 'day' | 'week';
@@ -75,7 +75,7 @@ export function useDragAndDrop({
              const cardTopY = e.clientY - drag.offsetYInsideCard;
              const offsetFromSlotTop = cardTopY - rect.top;
              
-             let fraction = Math.round(offsetFromSlotTop / stepPx) * stepHours; 
+             const fraction = Math.round(offsetFromSlotTop / stepPx) * stepHours; 
              
              let newTimeStart = newTi + fraction;
              if (newTimeStart < 0) newTimeStart = 0; 
@@ -97,7 +97,7 @@ export function useDragAndDrop({
            setDrag(prev => prev ? { ...prev, deltaX, deltaY, previewStart, previewEnd, previewColumnIndex } : null);
          } 
          else if (drag.type === 'resize-bottom') {
-           let deltaHours = Math.round(deltaY / stepPx) * stepHours; 
+           const deltaHours = Math.round(deltaY / stepPx) * stepHours; 
            let newEnd = drag.originalEnd! + deltaHours;
            
            if (newEnd <= drag.previewStart! + stepHours) newEnd = drag.previewStart! + stepHours;
@@ -106,7 +106,7 @@ export function useDragAndDrop({
            setDrag(prev => prev ? { ...prev, deltaY, previewEnd: newEnd } : null);
          }
          else if (drag.type === 'resize-top') {
-           let deltaHours = Math.round(deltaY / stepPx) * stepHours; 
+           const deltaHours = Math.round(deltaY / stepPx) * stepHours; 
            let newStart = drag.originalStart! + deltaHours;
            
            if (newStart >= drag.previewEnd! - stepHours) newStart = drag.previewEnd! - stepHours;

@@ -37,7 +37,11 @@ export function useClientActions(clientId: number) {
 
   // Панель больше не перемонтируется при смене клиента (без миганий/скачков) —
   // закрываем открытые подпанели вручную вместо остатка со старого клиента.
-  useEffect(() => {
+  // Прямо в рендере, а не эффектом: иначе новый клиент на кадр показывается с
+  // открытыми панелями предыдущего.
+  const [syncedClientId, setSyncedClientId] = useState(clientId);
+  if (syncedClientId !== clientId) {
+    setSyncedClientId(clientId);
     setShowTagPanel(false);
     setEditingNoteId(null);
     setIsAddingNote(false);
@@ -48,7 +52,7 @@ export function useClientActions(clientId: number) {
     setEventFilter('all');
     setBookingDate(0);
     setBookingWindowStart(0);
-  }, [clientId]);
+  }
 
   const toggleFreeze = useCallback((frozen: boolean) => {
     mutations.freeze(clientId, !frozen).catch((e: Error) => toast.error(errorMessage(e, t)));
@@ -135,13 +139,21 @@ export function useClientActions(clientId: number) {
     setBookingWindowStart(prev => Math.max(0, prev + deltaDays));
   }, []);
 
+  // Открыли панель или сменили день — выбранное занятие сбрасываем сразу, ещё до
+  // ответа сервера, поэтому в рендере, а не в эффекте ниже.
+  const bookingDayKey = `${showBooking}|${bookingDate}`;
+  const [syncedBookingDay, setSyncedBookingDay] = useState<string | null>(null);
+  if (syncedBookingDay !== bookingDayKey) {
+    setSyncedBookingDay(bookingDayKey);
+    if (showBooking) setBookingLessonId(null);
+  }
+
   // Занятия на выбранный день панели записи (bookingDate — смещение от сегодня)
   useEffect(() => {
     if (!showBooking) return;
     const d = new Date();
     d.setDate(d.getDate() + bookingDate);
     const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    setBookingLessonId(null);
     scheduleApi.getLessons({ date_from: day, date_to: day })
       .then(setBookingLessons)
       .catch(() => setBookingLessons([]));

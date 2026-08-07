@@ -30,14 +30,18 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from models import (
-    Client, Lesson, NotificationEventToggle, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
+    Client, Lesson, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
     User, UserSession,
 )
 from services.notifier import notify
 
 logger = logging.getLogger(__name__)
 
-_SLEEP_SECONDS = 30 * 60
+# Период тика = точность напоминаний: окно (last_tick; this_tick] шириной в тик,
+# поэтому «за 30 минут до занятия» при 30-минутном тике уходило за 30–60 минут.
+# 5 минут дают приемлемый разброс и стоят дёшево: за тик это один запрос на
+# каждый из 4 офсетов плюс дневные проверки студий, отсечённые датой в state.
+_SLEEP_SECONDS = 5 * 60
 _STATE_TYPE = "notify_state"
 _REPORT_HOUR = 20
 _SESSION_RETENTION_DAYS = 30  # EPIC 5, задача 2: история завершённых сессий хранится 30 дней
@@ -56,8 +60,11 @@ _REMINDER_OFFSETS = (
     (timedelta(minutes=30), "t4", None),
 )
 
-# ponytail: рестарт бэка теряет одно окно напоминаний (last_tick только в памяти);
-# персистентный маркер — если станет больно.
+# ponytail: рестарт бэка теряет одно окно напоминаний (last_tick только в памяти).
+# Осознанно НЕ лечится расширением окна при старте: перекрывающиеся окна задвоят
+# напоминание, а в WhatsApp каждое — платное. Правильное лечение — дедуп по ключу
+# (studio, event, получатель, занятие) в outbox, эпик N-10. С тиком в 5 минут
+# потеря ограничена пятью минутами вместо получаса.
 _last_tick: datetime | None = None
 
 
@@ -326,12 +333,17 @@ async def run_daily_notify(session_maker: async_sessionmaker) -> None:
     _last_tick = this_tick
 
     async with session_maker() as db:
-        studio_ids = (await db.execute(
-            select(Studio.id)
-            .join(NotificationEventToggle, NotificationEventToggle.studio_id == Studio.id)
-            .where(NotificationEventToggle.is_enabled.is_(True))
-            .distinct()
-        )).scalars().all()
+        # ВСЕ студии, без отбора по матрице. Раньше здесь стоял join по
+        # NotificationEventToggle с is_enabled=True — и это молча выключало
+        # ежедневные события у большинства студий: строка в этой таблице
+        # появляется ТОЛЬКО когда владелец что-то менял руками (см.
+        # notification_resolver.studio_channels), а студия на дефолтах строк не
+        # имеет вовсе. На боевой базе под гейт не проходили 18 студий из 19 —
+        # у них не уходили дни рождения (c7/t8), отчёты дня и недели (a8/o1/o2)
+        # и предупреждение об истечении тарифа (o6).
+        # Отбор «кому слать» — не здесь: его делает resolve_channels на каждое
+        # событие, и выключенное владельцем событие всё равно не отправится.
+        studio_ids = (await db.execute(select(Studio.id))).scalars().all()
 
     for studio_id in studio_ids:
         async with session_maker() as db:

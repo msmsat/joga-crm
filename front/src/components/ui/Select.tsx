@@ -62,13 +62,14 @@ export function Select({ value, options, onChange, placeholder, disabled, openUp
     };
   }, [open]);
 
-  // При открытии подсветить текущий выбор.
-  useEffect(() => {
-    if (open) {
-      const i = options.findIndex(o => o.value === value);
-      setHighlight(i >= 0 ? i : 0);
-    }
-  }, [open, value, options]);
+  // При открытии подсветить текущий выбор. Правка состояния прямо в рендере —
+  // документированный способ синхронизации с пропсами: React отбрасывает
+  // незакоммиченный кадр и рисует сразу с нужной подсветкой, без лишнего эффекта.
+  const [prevSync, setPrevSync] = useState({ open, value });
+  if (prevSync.open !== open || prevSync.value !== value) {
+    setPrevSync({ open, value });
+    if (open) setHighlight(Math.max(0, options.findIndex(o => o.value === value)));
+  }
 
   const choose = (v: string) => { onChange(v); setOpen(false); };
 

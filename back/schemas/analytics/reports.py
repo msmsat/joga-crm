@@ -361,6 +361,7 @@ class ActivityLogRead(BaseSchema):
     title: str
     actor_name: str = "Система"
     entity_type: Optional[str] = None
+    entity_id: Optional[int] = None
     color: str = "#C8C8C8"
     created_at: datetime
 

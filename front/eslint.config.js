@@ -26,4 +26,25 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    // Файлы, где соседство компонента с не-компонентом — намеренное:
+    //   Icons/LoyaltyIcons — словарь-объект из компонентов (рулу его не опознать);
+    //   Toast/ModalShell/AIDrawerContext — провайдер и его хук, канонический
+    //     React-паттерн: разносить их по файлам пришлось бы ценой правки десятков
+    //     импортов ради эвристики HMR;
+    //   UI.tsx — легаси лендинга/авторизации, там же лежат константы онбординга.
+    // Цена ровно одна: правка этих файлов перезагружает страницу вместо
+    // горячей замены. На сборку и рантайм не влияет.
+    files: [
+      'src/components/Icons.tsx',
+      'src/components/UI.tsx',
+      'src/components/ui/Toast.tsx',
+      'src/components/ui/modal/ModalShell.tsx',
+      'src/contexts/AIDrawerContext.tsx',
+      'src/pages/dashboard/Loyalty/components/ui/LoyaltyIcons.tsx',
+    ],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

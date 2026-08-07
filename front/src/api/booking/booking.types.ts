@@ -28,4 +28,6 @@ export interface BookingSettings {
   widget_work_start: string
   widget_work_end: string
   slot_step_min: number
+  /** Публичная ссылка на мини-приложение студии — считается на бэке, только чтение. */
+  miniapp_url: string
 }

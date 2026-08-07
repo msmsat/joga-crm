@@ -16,22 +16,26 @@ notify() сам решает:
 notify не должен валить основной запрос: вся отправка в try/except с логом.
 Возвращает True, если хотя бы один канал реально доставил сообщение.
 
-send_telegram(chat_id, text, token=None) — прямая отправка по tg_id (CL-5.4,
-бонусы лояльности). Bot API не умеет писать по номеру телефона, только по
-chat_id, поэтому это не часть матрицы notify(), а точечный вызов из мест, где
-у клиента уже есть Client.tg_id. token — бот студии; не передан — fallback
-на общий env TG_BOT_TOKEN.
+send_telegram(chat_id, text, token=None, parse_mode=None) — прямая отправка по
+tg_id (CL-5.4, бонусы лояльности). Bot API не умеет писать по номеру телефона,
+только по chat_id, поэтому это не часть матрицы notify(), а точечный вызов из
+мест, где у клиента уже есть Client.tg_id. token — бот студии; не передан —
+fallback на общий env TG_BOT_TOKEN.
 
-deliver(db, channel, recipient, subject, text, html, *, studio_id) — диспетчер
-каналов для сценариев лояльности (V5-5, задача 6) и фан-аута notify(): email,
-telegram, whatsapp и instagram реально шлют по реквизитам студии из
-StudioIntegration (N-2). recipient — Recipient(id, email, tg_id, phone, ig_id);
-Client/User подходят под этот интерфейс напрямую. Нет токена канала или нужного
-поля у получателя (email/tg_id/phone/ig_id) → False.
+deliver(db, channel, recipient, subject, text, html, *, studio_id, tg_text=None)
+— диспетчер каналов для сценариев лояльности (V5-5, задача 6) и фан-аута
+notify(): email, telegram, whatsapp и instagram реально шлют по реквизитам
+студии из StudioIntegration (N-2). recipient — Recipient(id, email, tg_id,
+phone, ig_id); Client/User подходят под этот интерфейс напрямую. Нет токена
+канала или нужного поля у получателя (email/tg_id/phone/ig_id) → False.
+tg_text — готовая Telegram-версия сообщения (эмодзи + жирный заголовок,
+tg_format()); передана → шлём с parse_mode=HTML, нет → канал получает голый
+text как раньше (путь сценариев лояльности, где текст пишет владелец).
 """
+import asyncio
 import logging
 import os
-import re
+from html import escape
 from typing import Any, NamedTuple
 
 import aiohttp
@@ -40,6 +44,7 @@ from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from contact_format import to_e164
 from models import Client, Studio, StudioIntegration, StudioMember, User
 from services.mailer import send_email
 
@@ -62,6 +67,32 @@ KNOWN_EVENT_IDS = frozenset({
     "a1", "a2", "a3", "a4", "a6", "a7", "a8", "a9", "a10",
     "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9",
 })
+
+# Эмодзи заголовка Telegram-сообщения (tg_format). Только для мессенджера: в
+# интерфейсе эмодзи запрещены (CLAUDE.md §5), а в чате иконка — единственный
+# способ отличить уведомление от обычного сообщения бота на пролистывании.
+EVENT_EMOJI: dict[str, str] = {
+    "c1": "✅", "c2": "⏰", "c3": "❌", "c4": "💳", "c5": "⚠️", "c6": "🔕",
+    "c7": "🎉", "c8": "⭐", "c9": "↩️", "c11": "🔄", "c12": "🎁",
+    "t1": "📅", "t2": "❌", "t3": "⏰", "t4": "⏳", "t5": "🔄", "t6": "💰",
+    "t7": "⭐", "t8": "🎂", "t9": "❌",
+    "a1": "🌐", "a2": "⚠️", "a3": "👤", "a4": "💳", "a6": "⚠️", "a7": "🔀",
+    "a8": "📊", "a9": "🔐", "a10": "↩️",
+    "o1": "📊", "o2": "📈", "o3": "💎", "o4": "📉", "o5": "👥", "o6": "⏳",
+    "o7": "🔑", "o8": "🏆", "o9": "📤",
+}
+assert EVENT_EMOJI.keys() == KNOWN_EVENT_IDS, "notifier.EVENT_EMOJI разошёлся с KNOWN_EVENT_IDS"
+
+
+def tg_format(event_id: str, subject: str, text: str) -> str:
+    """Telegram-версия сообщения: эмодзи + жирный заголовок + тело через пустую
+    строку. Уходит с parse_mode=HTML, поэтому и заголовок, и тело экранируются:
+    в них подставлены имена клиентов, названия занятий и описания — символ `<`
+    или `&` там сломал бы разбор и Telegram вернул бы 400 вместо сообщения.
+    quote=False — Telegram понимает только &lt; &gt; &amp;, `&quot;` он показал
+    бы как есть, а кавычки в шаблонах есть (en: "Hatha")."""
+    body = escape(text, quote=False)
+    return f"{EVENT_EMOJI.get(event_id, '🔔')} <b>{escape(subject, quote=False)}</b>\n\n{body}"
 
 
 class Recipient(NamedTuple):
@@ -90,11 +121,15 @@ def _fmt_amount(amount: float | int | None, currency: str) -> str:
     return f"{amount or 0:,.0f} {sign}".replace(",", " ")
 
 
-async def send_telegram(chat_id: int, text: str, token: str | None = None) -> bool:
+async def send_telegram(
+    chat_id: int, text: str, token: str | None = None, parse_mode: str | None = None,
+) -> bool:
     """Возвращает True, только если сообщение реально ушло. Нет токена или
     Telegram упал — False, лог, вызывающий запрос не падает.
     token — токен бота студии (StudioIntegration); не передан — fallback на
     общий env TG_BOT_TOKEN (до подключения токена в N-2).
+    parse_mode="HTML" — для форматированных уведомлений (tg_format); None —
+    голый текст, как шлют сценарии лояльности.
     ponytail: новый Bot() на вызов, без переиспользуемой сессии — после MVP,
     если объём отправок вырастет."""
     token = token or os.getenv("TG_BOT_TOKEN")
@@ -102,7 +137,7 @@ async def send_telegram(chat_id: int, text: str, token: str | None = None) -> bo
         return False
     bot = Bot(token=token)
     try:
-        await bot.send_message(chat_id, text)
+        await bot.send_message(chat_id, text, parse_mode=parse_mode)
         return True
     except Exception:
         logger.exception("send_telegram failed: chat_id=%s", chat_id)
@@ -123,20 +158,55 @@ async def _integration_config(db: AsyncSession, studio_id: int, kind: str) -> di
     return config or {}
 
 
-async def _send_whatsapp(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
+async def _send_whatsapp(
+    cfg: dict, recipient: "Recipient | Client", text: str, template: dict | None = None,
+) -> bool:
     """Отправка через WhatsApp Cloud API (N-2, задача 4). Нет токена/номера
-    получателя → False. Свободный текст доставляется только в 24-часовом окне
-    диалога — на стороне Meta, здесь не проверяется (MVP)."""
+    получателя → False.
+
+    template задан → шлём `type: "template"`. Это единственный способ написать
+    первым: свободный текст Meta доставляет ТОЛЬКО внутри 24-часового окна
+    диалога, а уведомление по определению приходит вне его (ошибка 131047).
+    Свободный текст остаётся фолбэком для событий без шаблона.
+
+    Номер приводим к E.164 и на кривом отказываемся отправлять. Раньше здесь
+    просто выбрасывались не-цифры, и «8 999 123-45-67» уходил как 89991234567 —
+    для Meta это ДРУГОЙ номер: сообщение платное, а получателя нет. Записанные до
+    нормализации на входе строки лежат в БД до сих пор, поэтому проверка нужна
+    именно здесь, у самого списания денег.
+
+    ponytail: код страны проверяется только по форме E.164, не по списку реальных
+    кодов — локальные 10 цифр «9991234567» станут «+9991234567» и уедут в Meta.
+    Ошибиться ПОЛУЧАТЕЛЕМ так нельзя (несуществующий код = недоставлено, разговор
+    не открывается и деньги не списываются), поэтому живём с этим; настоящая
+    проверка страны — это libphonenumber, и она нужна не раньше, чем появится
+    страна студии в профиле.
+    """
     phone_number_id = cfg.get("phone_number_id")
     token = cfg.get("token")
     if not phone_number_id or not token or not recipient.phone:
         return False
-    to = re.sub(r"\D", "", recipient.phone)
-    payload = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text}}
+    try:
+        e164 = to_e164(recipient.phone)
+    except ValueError:
+        logger.warning("whatsapp: номер получателя %s не в формате E.164 — не отправляем", recipient.id)
+        return False
+    if not e164:
+        return False
+    to = e164.lstrip("+")
+    if template is not None:
+        payload = {"messaging_product": "whatsapp", "to": to, "type": "template", "template": template}
+    else:
+        payload = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text}}
     headers = {"Authorization": f"Bearer {token}"}
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{GRAPH}/{phone_number_id}/messages", json=payload, headers=headers) as resp:
-            return resp.status == 200
+            if resp.status != 200:
+                # Причина отказа («шаблон не одобрен», «вне окна», «нет оплаты»)
+                # написана только в теле. Без лога канал молчал бы незаметно.
+                logger.warning("whatsapp: Graph %s: %s", resp.status, (await resp.text())[:400])
+                return False
+            return True
 
 
 async def _send_instagram(cfg: dict, recipient: "Recipient | Client", text: str) -> bool:
@@ -161,42 +231,89 @@ async def _send_instagram(cfg: dict, recipient: "Recipient | Client", text: str)
             return resp.status == 200
 
 
+# Повтор ТОЛЬКО при неустановленном соединении (см. deliver ниже).
+_RETRY_BACKOFF_SECONDS = (0.5, 2.0)
+
+
 async def deliver(
     db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
-    *, studio_id: int,
+    *, studio_id: int, tg_text: str | None = None, wa_template: dict | None = None,
 ) -> bool:
     """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4; N-9,
     задача 2): email, telegram, whatsapp и instagram реально шлют по реквизитам
     студии. recipient — Recipient или любой объект с .id/.email/.tg_id/.phone/
-    .ig_id (Client, User). Возвращает True, только если сообщение реально ушло;
-    исключения не пробрасывает."""
-    try:
-        if channel == "email":
-            if not recipient.email:
+    .ig_id (Client, User). tg_text — форматированная версия для Telegram
+    (tg_format); не передана — в Telegram уходит тот же голый text.
+    Возвращает True, только если сообщение реально ушло; исключения не
+    пробрасывает.
+
+    Повторяет отправку ТОЛЬКО если соединение не установилось
+    (ClientConnectorError): сервер запроса не видел, поэтому повтор физически
+    не может задвоить сообщение. Таймауты и 5xx сюда сознательно НЕ включены —
+    там запрос мог дойти, и слепой повтор списал бы деньги за второе платное
+    сообщение WhatsApp. Полная защита от дублей — это дедуп по ключу в outbox
+    (эпик N-10), а не ретрай в этом месте.
+    """
+    for attempt in range(len(_RETRY_BACKOFF_SECONDS) + 1):
+        try:
+            return await _deliver_once(
+                db, channel, recipient, subject, text, html,
+                studio_id=studio_id, tg_text=tg_text, wa_template=wa_template,
+            )
+        except aiohttp.ClientConnectorError:
+            if attempt >= len(_RETRY_BACKOFF_SECONDS):
+                logger.exception(
+                    "deliver: не удалось соединиться после %s попыток, channel=%s recipient=%s",
+                    attempt + 1, channel, recipient.id,
+                )
                 return False
-            cfg = await _integration_config(db, studio_id, "email_sender")
-            sender = cfg.get("email") if cfg.get("verified") else None
-            await send_email(recipient.email, subject, html, sender=sender)
-            return True
-        if channel == "telegram":
-            if not recipient.tg_id:
-                return False
-            token = (await _integration_config(db, studio_id, "tg_notify")).get("token")
-            return await send_telegram(recipient.tg_id, text, token)
-        if channel == "whatsapp":
-            cfg = await _integration_config(db, studio_id, "wa_notify")
-            if not cfg:
-                return False
-            return await _send_whatsapp(cfg, recipient, text)
-        if channel == "instagram":
-            cfg = await _integration_config(db, studio_id, "ig_dm")
-            if not cfg:
-                return False
-            return await _send_instagram(cfg, recipient, text)
-        return False
-    except Exception:
-        logger.exception("deliver failed: channel=%s recipient=%s", channel, recipient.id)
-        return False
+            logger.warning(
+                "deliver: нет соединения, повтор %s/%s через %sс, channel=%s",
+                attempt + 1, len(_RETRY_BACKOFF_SECONDS), _RETRY_BACKOFF_SECONDS[attempt], channel,
+            )
+            await asyncio.sleep(_RETRY_BACKOFF_SECONDS[attempt])
+        except Exception:
+            logger.exception("deliver failed: channel=%s recipient=%s", channel, recipient.id)
+            return False
+    return False
+
+
+async def _deliver_once(
+    db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
+    *, studio_id: int, tg_text: str | None = None, wa_template: dict | None = None,
+) -> bool:
+    """Одна попытка отправки. Исключения НЕ глушит — их разбирает deliver()."""
+    if channel == "email":
+        if not recipient.email:
+            return False
+        cfg = await _integration_config(db, studio_id, "email_sender")
+        sender = cfg.get("email") if cfg.get("verified") else None
+        await send_email(recipient.email, subject, html, sender=sender)
+        return True
+    if channel == "telegram":
+        if not recipient.tg_id:
+            return False
+        token = (await _integration_config(db, studio_id, "tg_notify")).get("token")
+        return await send_telegram(
+            recipient.tg_id, tg_text or text, token, parse_mode="HTML" if tg_text else None,
+        )
+    if channel == "whatsapp":
+        cfg = await _integration_config(db, studio_id, "wa_notify")
+        if not cfg:
+            return False
+        # Локальный импорт по той же причине, что и whatsapp_templates в notify():
+        # цикл notifier <- whatsapp_templates <- services.whatsapp.
+        from services.whatsapp import template_approved
+
+        if not await template_approved(db, studio_id, cfg, wa_template):
+            return False  # Meta отклонила шаблон — отправка всё равно не дошла бы
+        return await _send_whatsapp(cfg, recipient, text, wa_template)
+    if channel == "instagram":
+        cfg = await _integration_config(db, studio_id, "ig_dm")
+        if not cfg:
+            return False
+        return await _send_instagram(cfg, recipient, text)
+    return False
 
 
 def _render(
@@ -273,16 +390,16 @@ def _render(
             "en": ("Class in an hour", f'"{lesson_en}"{tail_en} starts in an hour.'),
         },
         "t4": {
-            "ru": ("Занятие через 30 минут", f"«{lesson_ru}»{tail_ru} через 30 минут. Записаны: {names}."),
-            "en": ("Class in 30 minutes", f'"{lesson_en}"{tail_en} in 30 minutes. Attendees: {names}.'),
+            "ru": ("Занятие через 30 минут", f"«{lesson_ru}»{tail_ru} начнётся через 30 минут.\nЗаписаны: {names}"),
+            "en": ("Class in 30 minutes", f'"{lesson_en}"{tail_en} starts in 30 minutes.\nAttendees: {names}'),
         },
         "c11": {
             "ru": ("Занятие изменено", f"Занятие «{lesson_ru}» перенесено — новое время: {when}."),
             "en": ("Class rescheduled", f'"{lesson_en}" has been rescheduled — new time: {when}.'),
         },
         "t6": {
-            "ru": ("Выплачена зарплата", f"Выплачена зарплата {amount_str} за период {period_start} — {period_end}."),
-            "en": ("Salary paid", f"Salary of {amount_str} paid for the period {period_start} — {period_end}."),
+            "ru": ("Выплачена зарплата", f"Сумма: {amount_str}\nПериод: {period_start} — {period_end}"),
+            "en": ("Salary paid", f"Amount: {amount_str}\nPeriod: {period_start} — {period_end}"),
         },
         "c7": {
             "ru": ("С днём рождения!", f"{client_name}, поздравляем вас с днём рождения! Ждём вас на занятиях — будем рады видеть."),
@@ -317,8 +434,8 @@ def _render(
             "en": ("Subscription running low", f"{client_name} has {remaining} classes left on their subscription."),
         },
         "a8": {
-            "ru": ("Отчёт за день", f"Выручка: {revenue_str}, занятий: {lessons}, новых клиентов: {new_clients}."),
-            "en": ("Daily report", f"Revenue: {revenue_str}, classes: {lessons}, new clients: {new_clients}."),
+            "ru": ("Отчёт за день", f"Выручка: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
+            "en": ("Daily report", f"Revenue: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
         },
         "a10": {
             "ru": ("Оформлен возврат", f"Оформлен возврат {amount_str} клиенту {client_name}."),
@@ -333,20 +450,20 @@ def _render(
             "en": ("Refund issued", f"A refund of {amount_str} has been issued and is on its way."),
         },
         "o1": {
-            "ru": ("Ежедневная сводка", f"Выручка: {revenue_str}, занятий: {lessons}, новых клиентов: {new_clients}."),
-            "en": ("Daily summary", f"Revenue: {revenue_str}, classes: {lessons}, new clients: {new_clients}."),
+            "ru": ("Ежедневная сводка", f"Выручка: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
+            "en": ("Daily summary", f"Revenue: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
         },
         "o2": {
-            "ru": ("Еженедельный отчёт", f"За неделю: выручка {revenue_str}, занятий {lessons}, новых клиентов {new_clients}."),
-            "en": ("Weekly report", f"This week: revenue {revenue_str}, classes {lessons}, new clients {new_clients}."),
+            "ru": ("Еженедельный отчёт", f"Выручка за неделю: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
+            "en": ("Weekly report", f"Revenue this week: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
         },
         "o3": {
             "ru": ("Крупный платёж", f"Крупный платёж {amount_str} от клиента {client_name}."),
             "en": ("Large payment", f"Large payment of {amount_str} from {client_name}."),
         },
         "o4": {
-            "ru": ("Резкое падение выручки", f"Выручка за сегодня ({revenue_str}) заметно ниже среднего за неделю ({avg7_str})."),
-            "en": ("Revenue drop", f"Today's revenue ({revenue_str}) is notably below the weekly average ({avg7_str})."),
+            "ru": ("Резкое падение выручки", f"Сегодня: {revenue_str}\nСреднее за неделю: {avg7_str}"),
+            "en": ("Revenue drop", f"Today: {revenue_str}\nWeekly average: {avg7_str}"),
         },
         "o5": {
             "ru": ("Добавлен сотрудник", f"В команду добавлен новый сотрудник: {staff_name}."),
@@ -401,7 +518,9 @@ def _render(
     if by_lang is None:
         return None
     subject, text = by_lang.get(lang) or by_lang["ru"]
-    return subject, text, f"<p>{text}</p>"
+    # В теле есть переносы строк (сводки, отчёты) — в html они схлопнулись бы;
+    # escape по той же причине, что и в tg_format: в тексте подставлены имена.
+    return subject, text, "<p>{}</p>".format(escape(text, quote=False).replace("\n", "<br>"))
 
 
 # Стартовая проверка (EPIC 3, Задача 1): выполняется один раз при импорте модуля, вне
@@ -502,6 +621,12 @@ async def notify(
         if rendered is None:
             return False  # нет шаблона под событие
         subject, text, html = rendered
+        tg = tg_format(event_id, subject, text)  # эмодзи + жирный заголовок, HTML
+        # Локальный импорт по той же причине, что и resolve_channels выше: цикл
+        # notifier <- notification_catalog <- whatsapp_templates.
+        from services.whatsapp_templates import message_payload
+
+        wa_template = message_payload(event_id, context, lang, currency)
 
         recipients = await _recipient(db, studio_id, role, context)
         if not recipients:
@@ -516,9 +641,11 @@ async def notify(
             if "email" in channels and r.email:
                 sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id) or sent
             if "telegram" in channels and r.tg_id:
-                sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id) or sent
+                sent = await deliver(db, "telegram", r, subject, text, html, studio_id=studio_id, tg_text=tg) or sent
             if "whatsapp" in channels and r.phone:
-                sent = await deliver(db, "whatsapp", r, subject, text, html, studio_id=studio_id) or sent
+                sent = await deliver(
+                    db, "whatsapp", r, subject, text, html, studio_id=studio_id, wa_template=wa_template,
+                ) or sent
             if "instagram" in channels and r.ig_id:
                 sent = await deliver(db, "instagram", r, subject, text, html, studio_id=studio_id) or sent
         return sent

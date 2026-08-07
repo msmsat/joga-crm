@@ -72,7 +72,7 @@ async def _run():
         invite = await REFERRALS.get_invite_code(client_a.id, _ctx(sid), db)
 
         body = ClientCreate(
-            name="Referred", phone="1", email="b@test.local", city="Msk",
+            name="Referred", phone="+79990000101", email="b@test.local", city="Msk",
             invite_code=invite.invite_code,
         )
         created = await PROFILES.create_client(body, _ctx(sid), current_user, db)
@@ -144,7 +144,7 @@ async def _run():
         sid = s.id
 
         body = ClientCreate(
-            name="Solo", phone="2", email="solo@test.local", city="Msk",
+            name="Solo", phone="+79990000102", email="solo@test.local", city="Msk",
             invite_code="NOSUCHCODE",
         )
         created = await PROFILES.create_client(body, _ctx(sid), current_user, db)

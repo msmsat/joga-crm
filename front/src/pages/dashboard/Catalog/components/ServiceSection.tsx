@@ -20,20 +20,18 @@ export function ServiceSection() {
   const studioCurrency = useStudioCurrency();
   const currency = getCurrencySymbol(studioCurrency);
   const { services, isLoading, error: loadError, refetch, createService, updateService, deleteService } = useServiceList();
-  const [activeServiceId, setActiveServiceId] = useState<number>(0);
+  // Что выбрал пользователь; пока не выбрал (или выбранная услуга исчезла) —
+  // открыта первая. Считаем при рендере, а не эффектом: иначе первый кадр
+  // уходил бы пустым.
+  const [pickedServiceId, setPickedServiceId] = useState<number>(0);
 
   useEffect(() => {
     if (loadError) toast.error(errorMessage(loadError, t));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadError]);
 
-  useEffect(() => {
-    if (services.length > 0 && !services.some(s => s.id === activeServiceId)) {
-      setActiveServiceId(services[0].id);
-    }
-  }, [services, activeServiceId]);
-
-  const activeService = services.find(s => s.id === activeServiceId) ?? null;
+  const activeService = services.find(s => s.id === pickedServiceId) ?? services[0] ?? null;
+  const activeServiceId = activeService?.id ?? 0;
   const { slots: weekSlots } = useServiceWeek(activeService?.id ?? null);
 
   // null → нет модалки; { service: null } → создание; { service } → редактирование
@@ -83,7 +81,7 @@ export function ServiceSection() {
                 <div
                   key={svc.id}
                   className={`cat-item ${svc.id === activeServiceId ? 'active' : ''}`}
-                  onClick={() => setActiveServiceId(svc.id)}
+                  onClick={() => setPickedServiceId(svc.id)}
                 >
                   <div className="cat-item-dot" style={{ background: svc.color }} />
                   <div className="cat-item-info">

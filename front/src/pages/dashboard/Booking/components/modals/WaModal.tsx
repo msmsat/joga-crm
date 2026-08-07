@@ -1,21 +1,16 @@
-import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { IconWhatsApp } from '../ui/BookingIcons'
 
-type Step = 'default' | 'qr' | 'connected'
+interface Props { connected: boolean; phone: string; onClose(): void }
 
-interface Props { onClose(): void }
-
-export function WaModal({ onClose }: Props) {
+export function WaModal({ connected, phone, onClose }: Props) {
   const { t } = useTranslation('booking')
-  const [step, setStep] = useState<Step>('default')
-
-  useEffect(() => {
-    if (step !== 'qr') return
-    const id = setTimeout(() => setStep('connected'), 3000)
-    return () => clearTimeout(id)
-  }, [step])
+  // Номер у студии один на всю CRM (интеграция wa_notify) и подключается в
+  // Уведомлениях — здесь его можно только увидеть, поэтому обе кнопки ведут туда.
+  const navigate = useNavigate()
+  const goToNotifications = () => navigate('/dashboard/notifications')
 
   return createPortal(
     <div className="tg-modal-overlay open" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
@@ -34,7 +29,7 @@ export function WaModal({ onClose }: Props) {
           </button>
         </div>
 
-        {step === 'default' && (
+        {!connected && (
           <>
             <div className="modal-sub" style={{ marginBottom: '20px' }}>
               {t('wa.sub')}
@@ -79,7 +74,7 @@ export function WaModal({ onClose }: Props) {
             <button
               className="topbar-btn"
               style={{ width: '100%', justifyContent: 'center', marginTop: '20px', padding: '11px' }}
-              onClick={() => setStep('qr')}
+              onClick={goToNotifications}
             >
               <IconWhatsApp />
               {t('wa.connect')}
@@ -87,94 +82,7 @@ export function WaModal({ onClose }: Props) {
           </>
         )}
 
-        {step === 'qr' && (
-          <div className="wa-qr-view">
-            <div className="wa-qr-wrap">
-              {/* Decorative QR code SVG */}
-              <svg className="wa-qr-svg" width="160" height="160" viewBox="0 0 160 160" fill="none">
-                {/* Corner squares */}
-                <rect x="10" y="10" width="44" height="44" rx="6" fill="currentColor"/>
-                <rect x="16" y="16" width="32" height="32" rx="4" fill="var(--bg)"/>
-                <rect x="22" y="22" width="20" height="20" rx="2" fill="currentColor"/>
-
-                <rect x="106" y="10" width="44" height="44" rx="6" fill="currentColor"/>
-                <rect x="112" y="16" width="32" height="32" rx="4" fill="var(--bg)"/>
-                <rect x="118" y="22" width="20" height="20" rx="2" fill="currentColor"/>
-
-                <rect x="10" y="106" width="44" height="44" rx="6" fill="currentColor"/>
-                <rect x="16" y="112" width="32" height="32" rx="4" fill="var(--bg)"/>
-                <rect x="22" y="118" width="20" height="20" rx="2" fill="currentColor"/>
-
-                {/* Data dots pattern */}
-                {[
-                  [66,10],[72,10],[78,10],[84,10],[90,10],[96,10],
-                  [66,16],[78,16],[90,16],
-                  [66,22],[72,22],[84,22],[96,22],
-                  [66,28],[78,28],[84,28],[90,28],
-                  [66,34],[72,34],[78,34],[96,34],
-                  [66,40],[84,40],[90,40],[96,40],
-                  [66,46],[72,46],[78,46],[84,46],
-                  [10,66],[16,66],[22,66],[28,66],[34,66],[40,66],[46,66],
-                  [10,72],[28,72],[40,72],[46,72],
-                  [10,78],[16,78],[22,78],[34,78],[40,78],
-                  [10,84],[22,84],[28,84],[46,84],
-                  [10,90],[16,90],[28,90],[34,90],[40,90],[46,90],
-                  [10,96],[16,96],[22,96],[40,96],
-                  [10,102],[28,102],[34,102],[46,102],
-                  [66,66],[72,66],[84,66],[96,66],[102,66],[108,66],
-                  [66,72],[78,72],[84,72],[96,72],[108,72],
-                  [66,78],[72,78],[90,78],[96,78],[102,78],
-                  [66,84],[78,84],[84,84],[102,84],[108,84],
-                  [66,90],[72,90],[78,90],[84,90],[96,90],
-                  [66,96],[84,96],[90,96],[102,96],[108,96],
-                  [66,102],[72,102],[78,102],[90,102],[96,102],
-                  [66,108],[72,108],[84,108],[90,108],[102,108],
-                  [66,114],[78,114],[84,114],[96,114],[102,114],[108,114],
-                  [66,120],[72,120],[84,120],[96,120],
-                  [66,126],[78,126],[84,126],[90,126],[102,126],[108,126],
-                  [66,132],[72,132],[90,132],[96,132],[102,132],
-                  [66,138],[78,138],[84,138],[96,138],[102,138],[108,138],
-                  [66,144],[72,144],[78,144],[84,144],[90,144],
-                  [106,66],[112,66],[118,66],[124,66],[130,66],[136,66],[142,66],[148,66],
-                  [106,72],[112,72],[130,72],[136,72],[142,72],
-                  [106,78],[118,78],[124,78],[130,78],[148,78],
-                  [106,84],[112,84],[118,84],[136,84],[142,84],[148,84],
-                  [106,90],[124,90],[130,90],[136,90],
-                  [106,96],[112,96],[118,96],[130,96],[136,96],[148,96],
-                  [106,102],[112,102],[124,102],[136,102],[142,102],
-                  [106,108],[118,108],[124,108],[130,108],[136,108],[148,108],
-                ].map(([x, y], i) => (
-                  <rect key={i} x={x} y={y} width="4" height="4" rx="1" fill="currentColor"/>
-                ))}
-              </svg>
-              {/* Scanning line */}
-              <div className="wa-qr-scan-line"/>
-              {/* Corner brackets */}
-              <div className="wa-qr-corner wa-qr-corner-tl"/>
-              <div className="wa-qr-corner wa-qr-corner-tr"/>
-              <div className="wa-qr-corner wa-qr-corner-bl"/>
-              <div className="wa-qr-corner wa-qr-corner-br"/>
-            </div>
-
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>
-                {t('wa.scanQr')}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.5 }}>
-                {t('wa.scanInstructionLine1')}<br/>{t('wa.scanInstructionLine2')}
-              </div>
-            </div>
-
-            <div className="wa-qr-progress">
-              <div className="wa-qr-progress-bar"/>
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)', textAlign: 'center' }}>
-              {t('wa.waiting')}
-            </div>
-          </div>
-        )}
-
-        {step === 'connected' && (
+        {connected && (
           <div className="tg-connected-view">
             <div className="tg-check-circle" style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', boxShadow: '0 8px 24px rgba(37,211,102,0.35)' }}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -191,7 +99,7 @@ export function WaModal({ onClose }: Props) {
                 WhatsApp Business
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text3)' }}>
-                +7 (999) 123-45-67
+                {phone}
               </div>
             </div>
 
@@ -207,12 +115,12 @@ export function WaModal({ onClose }: Props) {
             </div>
 
             <button
-              onClick={() => setStep('default')}
+              onClick={goToNotifications}
               style={{ width: '100%', padding: '11px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s', marginTop: '8px' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#D88C9A'; (e.currentTarget as HTMLButtonElement).style.color = '#D88C9A' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#F9A08B'; (e.currentTarget as HTMLButtonElement).style.color = '#F9A08B' }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text2)' }}
             >
-              {t('wa.disconnect')}
+              {t('channels.manage')}
             </button>
           </div>
         )}

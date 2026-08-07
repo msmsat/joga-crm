@@ -62,6 +62,7 @@ class _Client:
         self.email = email
         self.tg_id = None
         self.phone = None
+        self.ig_id = None  # _recipient читает все четыре реквизита канала
 
 
 class _Reservation:

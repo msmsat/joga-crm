@@ -3,9 +3,21 @@ import { useNavigate } from "react-router-dom";
 import "../App.css"; // Обязательный импорт наших глобальных стилей
 import {
   Orbs, Logo, Badge, StatCard, FeatureCard,
-  TestimonialCard, DashboardMockup
+  TestimonialCard, DashboardMockup, CATEGORY_ICONS
 } from "../components/UI";
+import {
+  Building, Clipboard, Bolt, Dumbbell, Comb, Droplet,
+  Calendar, Users, ChartBar, ChatBubble, CardIcon, LinkIcon,
+} from "../components/Icons";
 import { getActiveToken } from '../utils/auth';
+import type { ReactNode } from "react";
+
+// Карточки-примеры ниш: каждая прижата к своему углу блока, поэтому все четыре
+// координаты опциональны.
+type LandingCardPos = {
+  w: string; h: string; icon: ReactNode; label: string;
+  top?: string; bottom?: string; left?: string; right?: string;
+};
 
 // ─── MAIN LANDING ─────────────────────────────────────────────────────────────
 export default function Landing() {
@@ -51,7 +63,7 @@ export default function Landing() {
             Войти
           </button>
           <button className="btn btn-primary btn-size-normal" onClick={() => navigate('/register')}>
-            Начать бесплатно
+            Начать<span className="lp-nav-cta-sub"> бесплатно</span>
           </button>
         </div>
       </nav>
@@ -134,16 +146,15 @@ export default function Landing() {
               transition: "opacity 0.6s ease 1.1s",
             }}>
               <div style={{ display: "flex" }}>
-                {["🧖","💇","🏋️","💅","✂️"].map((e,i)=>(
+                {CATEGORY_ICONS.map((IconComp,i)=>(
                   <div key={i} style={{
                     width:"32px",height:"32px",borderRadius:"50%",
                     background:`linear-gradient(135deg, rgba(252,174,145,0.8), rgba(249,160,139,0.8))`,
                     border:"2px solid white",
                     marginLeft: i > 0 ? "-8px" : "0",
                     display:"flex",alignItems:"center",justifyContent:"center",
-                    fontSize:"14px",
                     boxShadow:"0 2px 8px rgba(0,0,0,0.08)",
-                  }}>{e}</div>
+                  }}><IconComp width={14} height={14} style={{ color:"#fff" }} /></div>
                 ))}
               </div>
               <div>
@@ -183,9 +194,9 @@ export default function Landing() {
         position: "relative", zIndex: 1,
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: "16px" }}>
-          <StatCard value="2 400+" label="Активных бизнесов" icon="🏢" />
-          <StatCard value="14.2M" label="Записей обработано" icon="📋" />
-          <StatCard value="99.9%" label="Uptime за 2025" icon="⚡" />
+          <StatCard value="2 400+" label="Активных бизнесов" icon={<Building width={22} height={22} style={{ color: "var(--peach)" }} />} />
+          <StatCard value="14.2M" label="Записей обработано" icon={<Clipboard width={22} height={22} style={{ color: "var(--peach)" }} />} />
+          <StatCard value="99.9%" label="Uptime за 2025" icon={<Bolt width={22} height={22} style={{ color: "var(--peach)" }} />} />
           <StatCard value="4.9 / 5" label="Средний рейтинг" icon="★" />
         </div>
       </section>
@@ -240,15 +251,15 @@ export default function Landing() {
 
           {/* Visual side */}
           <div style={{ flex: "1", position: "relative", height: "280px" }}>
-            {[
-              { top:"0", left:"0", w:"48%", h:"140px", emoji:"🏋️", label:"Фитнес" },
-              { top:"0", right:"0", w:"48%", h:"140px", emoji:"💇", label:"Барбершоп" },
-              { bottom:"0", left:"26%", w:"48%", h:"120px", emoji:"🧖", label:"SPA & Пилатес" },
-            ].map((c,i)=>(
+            {([
+              { top:"0", left:"0", w:"48%", h:"140px", icon:<Dumbbell width={30} height={30} style={{ color:"var(--peach)" }} />, label:"Фитнес" },
+              { top:"0", right:"0", w:"48%", h:"140px", icon:<Comb width={30} height={30} style={{ color:"var(--peach)" }} />, label:"Барбершоп" },
+              { bottom:"0", left:"26%", w:"48%", h:"120px", icon:<Droplet width={30} height={30} style={{ color:"var(--peach)" }} />, label:"SPA & Пилатес" },
+            ] as LandingCardPos[]).map((c,i)=>(
               <div key={i} style={{
                 position:"absolute",
-                top: (c as any).top, bottom: (c as any).bottom,
-                left: (c as any).left, right: (c as any).right,
+                top: c.top, bottom: c.bottom,
+                left: c.left, right: c.right,
                 width: c.w, height: c.h,
                 background: "var(--bg-card)",
                 borderRadius:"16px",
@@ -258,7 +269,7 @@ export default function Landing() {
                 alignItems:"center", justifyContent:"center",
                 gap:"8px",
               }}>
-                <div style={{ fontSize:"32px" }}>{c.emoji}</div>
+                <div>{c.icon}</div>
                 <div style={{
                   fontSize:"13px", fontWeight:700, color:"var(--onyx)",
                 }}>{c.label}</div>
@@ -292,12 +303,12 @@ export default function Landing() {
           gap:"16px",
         }}>
           {[
-            { icon:"📅", title:"Умное расписание", desc:"Drag-and-drop запись, автоматические напоминания клиентам, синхронизация с Google Calendar.", delay:0 },
-            { icon:"👥", title:"CRM клиентов", desc:"Полная история визитов, предпочтения, теги, сегментация — всё что нужно чтобы знать клиента лучше него самого.", delay:80 },
-            { icon:"📊", title:"Аналитика в реальном времени", desc:"Конверсии, LTV, загруженность мастеров, выручка по услугам — живые дашборды без Excel.", delay:160 },
-            { icon:"💬", title:"Чаты и уведомления", desc:"Встроенный мессенджер с клиентами, push-уведомления мастерам, групповые чаты команды.", delay:240 },
-            { icon:"💳", title:"Платёжная система", desc:"Онлайн-оплата, депозиты, абонементы, разбивка по мастерам — всё внутри без сторонних касс.", delay:320 },
-            { icon:"🔗", title:"API и интеграции", desc:"Подключайте Instagram, WhatsApp, Telegram-бот, 1С и любые сервисы через готовые интеграции.", delay:400 },
+            { icon:<Calendar width={22} height={22} />, title:"Умное расписание", desc:"Drag-and-drop запись, автоматические напоминания клиентам, синхронизация с Google Calendar.", delay:0 },
+            { icon:<Users width={22} height={22} />, title:"CRM клиентов", desc:"Полная история визитов, предпочтения, теги, сегментация — всё что нужно чтобы знать клиента лучше него самого.", delay:80 },
+            { icon:<ChartBar width={22} height={22} />, title:"Аналитика в реальном времени", desc:"Конверсии, LTV, загруженность мастеров, выручка по услугам — живые дашборды без Excel.", delay:160 },
+            { icon:<ChatBubble width={22} height={22} />, title:"Чаты и уведомления", desc:"Встроенный мессенджер с клиентами, push-уведомления мастерам, групповые чаты команды.", delay:240 },
+            { icon:<CardIcon width={22} height={22} />, title:"Платёжная система", desc:"Онлайн-оплата, депозиты, абонементы, разбивка по мастерам — всё внутри без сторонних касс.", delay:320 },
+            { icon:<LinkIcon width={22} height={22} />, title:"API и интеграции", desc:"Подключайте Instagram, WhatsApp, Telegram-бот, 1С и любые сервисы через готовые интеграции.", delay:400 },
           ].map((f) => (
             <FeatureCard key={f.title} {...f} />
           ))}
@@ -325,17 +336,17 @@ export default function Landing() {
           <TestimonialCard
             quote="После Altegio мы думали, что найти что-то лучше нереально. Velora разнесла все ожидания — интерфейс как у Apple, функции как у Oracle."
             name="Мария Ковалёва" role="Владелец, студия пилатеса FORM"
-            avatar="🧘" delay={0}
+            avatar={<Dumbbell width={18} height={18} />} delay={0}
           />
           <TestimonialCard
             quote="Ребята из команды, серьёзно — ваши конкуренты должны бояться. Мы ведём 3 барбершопа, и наконец-то есть инструмент на уровне наших стандартов."
             name="Артём Назаров" role="CEO, Barbershop Brothers"
-            avatar="✂️" delay={120}
+            avatar={<Comb width={18} height={18} />} delay={120}
           />
           <TestimonialCard
             quote="Переехали с амоCRM за 2 дня. Клиенты сами записываются через бот, мастера не путаются, я сплю спокойно. Это не реклама, это честно."
             name="Елена Дорош" role="Директор, SPA-студия LUNA"
-            avatar="💆" delay={240}
+            avatar={<Droplet width={18} height={18} />} delay={240}
           />
         </div>
       </section>

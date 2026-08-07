@@ -15,7 +15,11 @@ export function useStaffList() {
     finally { setIsLoading(false) }
   }
 
-  useEffect(() => { refetch() }, [])
+  // Первая загрузка идёт мимо refetch(): isLoading и так true, а setIsLoading(true)
+  // прямо в эффекте — лишний синхронный рендер.
+  useEffect(() => {
+    staffApi.getList().then(setData).finally(() => setIsLoading(false))
+  }, [])
 
   // Приглашение принимают ВНЕ CRM — по ссылке из письма, и узнать об этом
   // приложению больше неоткуда. Пока в списке есть ожидающие, тихо перечитываем

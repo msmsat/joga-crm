@@ -1,6 +1,8 @@
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ChannelKey } from '../../types';
 import { CHANNELS } from '../../constants';
+import { waBusinessVerified, waPaymentConnected } from '../../utils';
 import NotifIllustration from '../ui/NotifIllustration';
 import ToggleSwitch from '../ui/ToggleSwitch';
 import type { NotifyChannelsStatus } from '../../../../../api/notifications/notifications.types';
@@ -60,14 +62,28 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
             const integrationConnected = isIntegrationConnected(channelStatuses, ch.key);
             const needsConnect = requiresIntegration && integrationConnected === false;
             const sub = requiresIntegration ? integrationSub(channelStatuses, ch.key, ch.sub) : ch.sub;
+            // Номер подключён, а карты на WABA нет: канал живой (авто-ответчик
+            // отвечает в 24-часовом окне), но напоминания Meta отклонит. Молча
+            // это оставлять нельзя — иначе владелец узнает о проблеме только по
+            // тому, что клиентам ничего не приходит.
+            const paymentMissing = ch.key === 'whatsapp'
+              && integrationConnected === true
+              && waPaymentConnected(channelStatuses?.whatsapp) === false;
+            // Верификация — отдельное условие запуска. Показываем только когда
+            // Meta прямо ответила «не пройдена», и не дублируем предупреждение
+            // об оплате: два жёлтых блока подряд читаются как шум.
+            const notVerified = ch.key === 'whatsapp'
+              && integrationConnected === true
+              && !paymentMissing
+              && waBusinessVerified(channelStatuses?.whatsapp) === false;
 
             const handleClick = () => {
               if (modalKey) onOpenModal(modalKey);
             };
 
             return (
+              <Fragment key={ch.key}>
               <div
-                key={ch.key}
                 role={requiresIntegration ? 'button' : undefined}
                 tabIndex={requiresIntegration ? 0 : undefined}
                 aria-label={requiresIntegration ? t('channels.openSettings', { channel: ch.label }) : undefined}
@@ -122,6 +138,29 @@ export default function ChannelsSidebar({ channels, toggleChannel, channelSaving
                   />
                 )}
               </div>
+
+              {(paymentMissing || notVerified) && (
+                <button
+                  type="button"
+                  onClick={() => onOpenModal('wa')}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+                    margin: '-2px 0 2px', padding: '8px 12px', borderRadius: '10px',
+                    background: 'rgba(232,166,58,0.09)', border: '1px solid rgba(232,166,58,0.28)',
+                    color: '#9A7420', fontSize: '11px', fontWeight: 700, lineHeight: 1.4,
+                    fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer',
+                  }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" /><circle cx="12" cy="17" r="0.6" fill="currentColor" />
+                  </svg>
+                  <span style={{ minWidth: 0 }}>
+                    {t(paymentMissing ? 'channels.waPaymentMissing' : 'channels.waNotVerified')}
+                  </span>
+                </button>
+              )}
+              </Fragment>
             );
           })}
         </div>

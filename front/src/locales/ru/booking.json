@@ -3,10 +3,17 @@
     "sectionTitle": "Каналы подключения",
     "connected": "Подключён",
     "disconnected": "Не подключено",
+    "pending": "Нужна настройка",
+    "connectInNotifications": "Подключить в разделе «Уведомления»",
+    "manage": "Управлять в «Уведомлениях»",
     "telegram": { "name": "Telegram-бот", "desc": "Автоматическая запись через бота" },
-    "instagram": { "name": "Instagram", "desc": "Ссылка для bio и сторис" },
-    "web": { "name": "Веб-сайт", "desc": "Виджет или отдельная страница" },
-    "whatsapp": { "name": "WhatsApp", "desc": "Запись через мессенджер" }
+    "stripe": { "name": "Приём оплат", "desc": "Stripe: карты, Apple Pay, Google Pay" },
+    "miniapp": {
+      "name": "Ссылка для клиентов",
+      "desc": "Мини-приложение записи — в bio, сторис и рассылку",
+      "copy": "Скопировать ссылку",
+      "open": "Открыть мини-приложение"
+    }
   },
   "loading": "Загрузка настроек…",
   "sections": {
@@ -59,7 +66,9 @@
     "botConnected": "Бот подключён",
     "botDisconnected": "Бот отключён",
     "codeCopied": "Код скопирован!",
-    "linkCopied": "Ссылка скопирована!"
+    "linkCopied": "Ссылка скопирована!",
+    "stripeReturned": "Данные отправлены в Stripe",
+    "stripeLinkExpired": "Ссылка Stripe устарела — попробуйте ещё раз"
   },
   "stripeGate": {
     "kicker": "Нужно для онлайн-записи",
@@ -89,7 +98,7 @@
       "fee": "Velora не берёт комиссию с платежей"
     },
     "later": "Позже",
-    "note": "Откроется форма Stripe. После заполнения вы вернётесь в раздел «Финансы»."
+    "note": "Откроется форма Stripe. После заполнения вы вернётесь на эту страницу."
   },
   "tg": {
     "title": "Telegram-бот",
@@ -142,13 +151,8 @@
     "sampleIncoming": "Здравствуйте! Хочу записаться.",
     "sampleOutgoing": "Приветствуем! ✨",
     "connect": "Подключить WhatsApp Business",
-    "scanQr": "Отсканируйте QR-код",
-    "scanInstructionLine1": "WhatsApp Business → Настройки →",
-    "scanInstructionLine2": "Связанные устройства",
-    "waiting": "Ожидание подключения...",
     "connected": "Подключён",
     "autoReplyActive": "Автоответ активен",
-    "instantLink": "Ссылка на запись отправляется мгновенно",
-    "disconnect": "Отключить"
+    "instantLink": "Ссылка на запись отправляется мгновенно"
   }
 }

@@ -20,11 +20,22 @@ from schemas.settings.booking import (
     BookingChannelRead, BookingChannelUpdate,
 )
 from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
+# Адрес мини-приложения один на проект — берём тот же, которым бот отвечает на
+# /start, а не второй getenv: разъехавшись, они дадут владельцу ссылку, ведущую
+# не туда, куда ведёт кнопка в Telegram.
+from .telegram_webhook import MINIAPP_URL
 
 router = APIRouter()
 
 _CHANNEL_TYPES = {"telegram", "instagram", "whatsapp", "web"}
 _TG_TOKEN_RE = re.compile(r"^\d{6,12}:[A-Za-z0-9_-]{30,50}$")
+
+
+def _read(row: StudioBookingSettings) -> BookingSettingsRead:
+    """Настройки + вычисляемая ссылка на мини-приложение (/s/{studio_id})."""
+    return BookingSettingsRead.model_validate(row).model_copy(
+        update={"miniapp_url": f"{MINIAPP_URL}/s/{row.studio_id}"}
+    )
 
 
 async def _telegram_channel(db: AsyncSession, studio_id: int) -> BookingChannelConfig:
@@ -50,7 +61,7 @@ async def get_booking_settings(
         db.add(row)
         await db.commit()
         await db.refresh(row)
-    return row
+    return _read(row)
 
 
 @router.patch("/settings", response_model=BookingSettingsRead)
@@ -69,7 +80,7 @@ async def update_booking_settings(
         setattr(row, field, value)
     await db.commit()
     await db.refresh(row)
-    return row
+    return _read(row)
 
 
 @router.get("/channels", response_model=List[BookingChannelRead])

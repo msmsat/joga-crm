@@ -5,6 +5,23 @@ export const IconTelegram = () => (
   </svg>
 )
 
+/** Приём оплат (Stripe). Та же карта, что в шлюзовой модалке — узнаётся как одно и то же. */
+export const IconPayments = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="5" width="20" height="14" rx="3"/>
+    <path d="M2 10h20"/>
+    <path d="M6 15h4"/>
+  </svg>
+)
+
+/** Ссылка на мини-приложение. */
+export const IconLink = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/>
+    <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>
+  </svg>
+)
+
 export const IconInstagram = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5"/>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookingCard } from './BookingCard';
-import type { Booking, Trainer } from '../../types';
+import type { Booking, JournalColumn, Trainer } from '../../types';
 import { TIMES } from '../../constants';
 import { getBookingLayouts, formatIndexToTimeStr, weekdayShort } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
@@ -11,7 +11,7 @@ interface GridProps {
   isTransitioning?: boolean; // Стейт для запуска анимации свайпа
   transitionReason?: 'date' | 'mode' | 'view' | null;
   calendarView: 'day' | 'week';
-  columns: any[];
+  columns: JournalColumn[];
   viewMode: 'trainers' | 'halls';
   filteredBookings: Booking[];
   hoveredSlot: string | null;
@@ -40,15 +40,32 @@ export const Grid: React.FC<GridProps> = ({
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
 }) => {
   const { t, i18n } = useTranslation('journal');
+
+  // Ни одного тренера/зала: от сетки оставался голый столбик часов без строк.
+  // null — колонка-заглушка: день рисуется как обычное, просто пустое расписание.
+  const cols: (JournalColumn | null)[] = columns.length ? columns : [null];
+
   return (
     <div
       className="j-grid"
-      style={{ gridTemplateColumns: `56px repeat(${columns.length}, minmax(var(--j-col-min, 170px), 1fr))` }}
+      style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))` }}
     >
       <div className="j-top-left-corner" />
 
       {/* Заголовки колонок */}
-      {columns.map((col, ci) => {
+      {cols.map((col, ci) => {
+        if (col === null) return (
+          <div
+            key={ci}
+            className="j-col-header"
+            style={{ height: 'var(--j-header-h, 94px)', padding: '0 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}
+          >
+            <div className="j-hdr-sub" style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>
+              {viewMode === 'trainers' ? t('grid.noTrainers') : t('grid.noHalls')}
+            </div>
+          </div>
+        );
+
         const isTrainerMode = viewMode === 'trainers';
         const trainer = isTrainerMode ? (col as Trainer) : null;
         const hallName = !isTrainerMode ? (col as string) : null;
@@ -57,8 +74,8 @@ export const Grid: React.FC<GridProps> = ({
             if (calendarView === 'week') {
                 const dateObj = col as Date;
                 const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                const bDate = (b as any).date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
-                
+                const bDate = b.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+
                 return bDate === dateStr;
             }
             return isTrainerMode ? b.trainer === (trainer!.id) : b.hall === hallName;
@@ -72,7 +89,7 @@ export const Grid: React.FC<GridProps> = ({
             key={ci}
             className="j-col-header"
             style={{
-              borderRight: ci < columns.length - 1 ? '1px solid var(--border)' : 'none',
+              borderRight: ci < cols.length - 1 ? '1px solid var(--border)' : 'none',
               overflow: 'hidden',
               height: 'var(--j-header-h, 94px)', // 🔥 ЖЕСТКАЯ ФИКСАЦИЯ ВЫСОТЫ: ряд одного размера; на компактных экранах сжимается при скролле
               padding: '0 18px', // Убрали вертикальный padding, чтобы flex-центрирование работало чисто
@@ -150,7 +167,7 @@ export const Grid: React.FC<GridProps> = ({
                 );
               })() : (
                   trainer ? (() => {
-                      const singleColumn = columns.length === 1;
+                      const singleColumn = cols.length === 1;
                       return (
                   <>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 12, width: '100%' }}>
@@ -190,7 +207,12 @@ export const Grid: React.FC<GridProps> = ({
       {TIMES.map((timeLabel, ti) => (
         <React.Fragment key={ti}>
           <div className="j-time-cell">{timeLabel}</div>
-          {columns.map((col, ci) => {
+          {cols.map((col, ci) => {
+            // Колонка-заглушка (тренеров/залов нет): только геометрия ряда.
+            // pointerEvents гасит и курсор-палец, и hover-рамку «создать занятие»:
+            // записывать занятие некому.
+            if (col === null) return <div key={ci} className="j-empty-slot" style={{ pointerEvents: 'none' }} />;
+
             const isTrainerMode = viewMode === 'trainers';
             const trainer = isTrainerMode ? (col as Trainer) : null;
             const hallName = !isTrainerMode ? (col as string) : null;
@@ -200,7 +222,7 @@ export const Grid: React.FC<GridProps> = ({
               if (calendarView === 'week') {
                 const dateObj = col as Date;
                 const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                const bDate = (b as any).date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+                const bDate = b.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
                 return bDate === dateStr;
               }
               return isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName;
@@ -221,7 +243,7 @@ export const Grid: React.FC<GridProps> = ({
                 }}
                 onMouseLeave={() => setHoveredSlot(null)}
                 style={{
-                  borderRight: ci < columns.length - 1 ? '1px solid var(--border2)' : 'none',
+                  borderRight: ci < cols.length - 1 ? '1px solid var(--border2)' : 'none',
                   borderRadius: '10px',
                   zIndex: 'auto',
                   overflow: isTransitioning ? 'hidden' : 'visible'
@@ -250,7 +272,7 @@ export const Grid: React.FC<GridProps> = ({
                     <div key={booking.id} style={{ pointerEvents: 'auto' }}>
                       <BookingCard
                         booking={booking}
-                        layout={layouts.get(booking.id)}
+                        layout={layouts.get(booking.id)!}
                         drag={drag}
                         canEdit={canEdit}
                         popupBooking={popupBooking}

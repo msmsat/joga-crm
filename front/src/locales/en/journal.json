@@ -104,7 +104,9 @@
     "classes": "classes",
     "classesToday": "classes today",
     "newLessonPreview": "New lesson",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "noTrainers": "No trainers",
+    "noHalls": "No halls"
   },
   "createService": "+ Create service",
   "invalidDateFormat": "Invalid date format",

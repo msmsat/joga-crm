@@ -18,7 +18,7 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioBookingSettings, StudioReferralConfig
 from routers.clients.loyalty import apply_deposit_change, apply_points_change
-from schemas._base import BaseSchema
+from schemas._base import BaseSchema, Phone
 from services.booking_access import find_eligible_subscription
 from services.contacts import normalize, normalized_column
 from services.notifier import notify
@@ -124,7 +124,9 @@ async def public_slots(
 class ReserveRequest(BaseSchema):
     lesson_id: int
     name: str
-    phone: str
+    # E.164, как и у ClientCreate: клиент заводится этим номером, и по нему потом
+    # уходят платные шаблоны WhatsApp — код страны обязан прийти с формы.
+    phone: Phone
 
 
 class ReserveResponse(BaseSchema):

@@ -421,7 +421,34 @@
 .channel-status.disconnected {
   background: var(--bg); color: var(--text2);
 }
+/* Подключение начато, но канал ещё не работает — персиковый «требует действия». */
+.channel-status.pending {
+  background: rgba(252,174,145,0.18); color: #C87A55;
+}
 .channel-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #5BAB72; }
+.channel-status.pending .channel-status-dot { background: currentColor; }
+
+/* Ссылка на мини-приложение — занимает место статуса в своей карточке. */
+.channel-link {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 5px 5px 10px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.channel-card:hover .channel-link { border-color: rgba(91,171,114,0.45); }
+.channel-link-url {
+  flex: 1; min-width: 0;
+  font-size: 10.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--text2); letter-spacing: -0.01em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.channel-link-btn {
+  width: 24px; height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 7px; background: transparent;
+  color: var(--text3); cursor: pointer; transition: all 0.15s;
+}
+.channel-link-btn:hover { background: rgba(91,171,114,0.12); color: #5BAB72; }
 
 /* ── SETTINGS EXTRAS ── */
 .settings-select {
@@ -795,74 +822,6 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ── WHATSAPP QR VIEW ── */
-.wa-qr-view {
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
-  animation: tgViewIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-
-.wa-qr-wrap {
-  position: relative;
-  width: 180px; height: 180px;
-  background: var(--bg);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid var(--border);
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.07);
-}
-
-.wa-qr-svg {
-  color: var(--text);
-  position: relative; z-index: 1;
-}
-
-.wa-qr-scan-line {
-  position: absolute;
-  left: 10px; right: 10px; height: 2px;
-  background: linear-gradient(90deg, transparent, #25D366, transparent);
-  border-radius: 2px;
-  animation: waQrScan 1.8s ease-in-out infinite;
-  z-index: 2;
-  box-shadow: 0 0 8px rgba(37,211,102,0.6);
-}
-
-/* Green corner brackets */
-.wa-qr-corner {
-  position: absolute;
-  width: 18px; height: 18px;
-  border-color: #25D366;
-  border-style: solid;
-  z-index: 3;
-}
-.wa-qr-corner-tl { top: 8px; left: 8px;  border-width: 3px 0 0 3px; border-radius: 3px 0 0 0; }
-.wa-qr-corner-tr { top: 8px; right: 8px; border-width: 3px 3px 0 0; border-radius: 0 3px 0 0; }
-.wa-qr-corner-bl { bottom: 8px; left: 8px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 3px; }
-.wa-qr-corner-br { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; border-radius: 0 0 3px 0; }
-
-.wa-qr-progress {
-  width: 100%; height: 3px;
-  background: var(--bg2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.wa-qr-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #25D366, #128C7E);
-  border-radius: 3px;
-  animation: waQrProgress 3s linear forwards;
-}
-
-@keyframes waQrScan {
-  0%   { top: 10px; }
-  50%  { top: calc(100% - 12px); }
-  100% { top: 10px; }
-}
-@keyframes waQrProgress {
-  from { width: 0%; }
-  to   { width: 100%; }
-}
-
 /* ── STRIPE GATE MODAL ─────────────────────────────────────────────────────────
    Шлюз каналов: без приёма оплат клиент дойдёт до оплаты и упрётся, поэтому
    карточка канала сначала открывает это. Каркас — общий .tg-modal (на телефоне
@@ -971,14 +930,17 @@
 .sg-note { margin-top: 4px; font-size: 11px; color: var(--text3); line-height: 1.5; }
 
 /* ── ТЕЛЕФОН ──────────────────────────────────────────────────────────────────
-   Страница — четыре канала и три карточки настроек подряд. На 320px каналы
-   шли по одному в ряд карточками в 150px высотой (600px только на выбор
-   канала), а над двумя карточками настроек стояли декоративные графики. */
+   Страница — каналы и три карточки настроек подряд. На 320px каналы шли по
+   одному в ряд карточками в 150px высотой (600px только на выбор канала), а
+   над двумя карточками настроек стояли декоративные графики. */
 @media (max-width: 767px) {
   /* Каналы: две плитки в ряд, от карточки остаётся иконка, название и статус.
      Описание («приём записей через Telegram-бота») повторяет название канала
      и разворачивало плитку вдвое. */
   .channels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  /* Карточка со ссылкой — во всю ширину: в половине ряда от адреса остаётся
+     многоточие, а копировать нечитаемое незачем. */
+  .channel-card-link { grid-column: 1 / -1; }
   .channel-card { padding: 10px 11px; border-radius: 12px; }
   .channel-card::after { display: none; }
   .channel-icon-wrap { width: 30px; height: 30px; border-radius: 9px; margin-bottom: 7px; }
