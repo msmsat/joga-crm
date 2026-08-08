@@ -6,7 +6,7 @@ import { queryKeys } from '../../../../api/queryKeys'
 import { useToast } from '../../../../components/ui/Toast'
 import { errorMessage } from '../../../../api/errorMessage'
 import {
-  advanceValue, windowValue, cancelValue, langValue, stepValue, colorIndex, WIDGET_COLORS,
+  advanceValue, windowValue, cancelValue, langValue, colorIndex, WIDGET_COLORS,
 } from '../mapping'
 
 export function useBookingSettings() {
@@ -42,6 +42,6 @@ export function useBookingSettings() {
 
   return { settings, error, patch, t,
     // Хелперы: ближайшее валидное value из списка опций для селектов.
-    advanceValue, windowValue, cancelValue, langValue, stepValue, colorIndex, WIDGET_COLORS,
+    advanceValue, windowValue, cancelValue, langValue, colorIndex, WIDGET_COLORS,
   }
 }

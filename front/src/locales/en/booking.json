@@ -30,8 +30,7 @@
       "window": { "label": "Booking opens", "sub": "How many days ahead" },
       "cancel": { "label": "Cancel without penalty", "sub": "Before class the client can cancel" },
       "repeat": { "label": "Repeat booking", "sub": "Allow a client to book twice" },
-      "workHours": { "label": "Widget working hours", "sub": "Hours when booking is available" },
-      "step": { "label": "Booking step", "sub": "Interval between time slots" }
+      "workHours": { "label": "Widget working hours", "sub": "Classes outside these hours cannot be booked online" }
     },
     "branding": {
       "title": "Widget branding",
@@ -49,18 +48,16 @@
         "reminder2h": "Reminder: in 2 hours",
         "reviewRequest": "Thanks for visiting! Rate the class"
       },
-      "sms": { "label": "SMS confirmation", "sub": "On successful booking" },
       "reminder24h": { "label": "24h reminder", "sub": "Morning before class" },
       "reminder2h": { "label": "2h reminder", "sub": "Shortly before class" },
-      "reviewRequest": { "label": "Review request", "sub": "1 hour after the visit" }
+      "reviewRequest": { "label": "Review request", "sub": "Once the visit is marked" }
     }
   },
   "options": {
     "advance": { "1h": "1 hour", "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
     "window": { "7d": "7 days", "14d": "14 days", "30d": "30 days", "60d": "60 days" },
     "cancel": { "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
-    "lang": { "ru": "Русский", "en": "English", "de": "Deutsch" },
-    "step": { "15": "15 min", "30": "30 min", "45": "45 min", "60": "60 min" }
+    "lang": { "uk": "Українська", "ru": "Русский", "en": "English", "cz": "Čeština" }
   },
   "toasts": {
     "botConnected": "Bot connected",

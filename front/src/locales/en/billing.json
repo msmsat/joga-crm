@@ -212,6 +212,12 @@
     "renewSuccess": "Renewal invoice created",
     "renewError": "Couldn't create the invoice. Please try again.",
     "renewNow": "Renew now with card •••• {{last4}}",
+    "details": {
+      "title": "Invoice details",
+      "subtitle": "Fill these in advance and checkout won't ask for them at payment time. The company ID is printed on every invoice.",
+      "save": "Save details",
+      "saved": "Details saved"
+    },
     "autopayTitle": "Autopayment settings",
     "autopaySuccess": "Setting saved",
     "autopayError": "Couldn't save the setting. Please try again.",
@@ -283,6 +289,8 @@
     "invoiceTitle": "Invoice {{number}}",
     "beneficiary": "Beneficiary",
     "ibanLabel": "IBAN",
+    "bicLabel": "BIC / SWIFT",
+    "openInvoice": "Open invoice",
     "referenceLabel": "Payment reference",
     "amountLabel": "Amount",
     "copy": "Copy",
@@ -298,6 +306,21 @@
     "payWithCard": "Pay by card",
     "back": "Back",
     "ibanError": "Couldn't create the invoice. Please try again.",
-    "cardError": "Couldn't proceed to payment. Please try again."
+    "cardError": "Couldn't proceed to payment. Please try again.",
+    "invoice": {
+      "title": "Invoice details",
+      "question": "We ask once — saved details are applied to every future invoice automatically.",
+      "need": "I need a company invoice",
+      "needHint": "We'll bill the company with its registration ID and VAT ID, if any",
+      "icoLabel": "Company ID (IČO)",
+      "vatLabel": "VAT ID (DIČ)",
+      "countryLabel": "Country",
+      "postalLabel": "Postal code",
+      "icoRequired": "A company invoice needs the registration ID",
+      "countryInvalid": "Two-letter country code, e.g. CZ",
+      "note": "These details are printed on the invoice. You can change them on the Payment method tab.",
+      "countryNote": "Bank transfer requires the country — the VAT rate is derived from it.",
+      "continue": "Continue"
+    }
   }
 }

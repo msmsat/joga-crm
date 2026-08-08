@@ -18,6 +18,16 @@ class Studio(Base):
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     address: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Реквизиты для Stripe Tax: страна определяет ставку VAT, vat_id включает reverse
+    # charge для юрлиц из другой страны ЕС. Свободного `address` для налога мало.
+    country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)   # ISO-3166-1 alpha-2
+    postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
+    # IČO — регистрационный номер юрлица, без него фактуру компании не выписать.
+    # Отдельно от vat_id: DIČ есть только у плательщика НДС, IČO — у любого юрлица,
+    # и типа налогового id под него у Stripe нет. Печатается на счёте через
+    # Customer.invoice_settings.custom_fields (services/stripe_billing.ensure_customer).
+    company_id: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)

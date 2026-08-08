@@ -28,7 +28,7 @@ from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
 )
 from routers.clients.subscriptions import attach_subscription
-from services import stripe_connect
+from services import platform_fee, stripe_connect
 from services.notifier import notify_payment
 
 from .router import _get_client_package, _quote, perform_pay, reject_dead_promo, resolve_account
@@ -121,7 +121,7 @@ async def create_session(
     # Счёт проверяем ДО ухода в Stripe: после списания эта же проверка упала бы
     # уже в вебхуке, когда деньги клиента забраны, а провести их некуда.
     await resolve_account(db, ctx.studio_id, body.account_id)
-    _client, package = await _get_client_package(
+    client, package = await _get_client_package(
         db, ctx.studio_id, body.client_id, body.product_id, body.product_type,
     )
     quote = await _quote(
@@ -143,13 +143,24 @@ async def create_session(
     studio = (await db.execute(select(Studio).where(Studio.id == ctx.studio_id))).scalar_one()
     currency = studio.currency or _FALLBACK_CURRENCY
 
+    # Комиссию считаем от суммы ПОСЛЕ скидок и бонусов (quote.total_price) — ровно
+    # от тех денег, которые реально спишутся с карты и сядут на счёт студии.
+    amount_minor = stripe_connect.to_minor_units(quote.total_price, currency)
+    # Касса CRM — тот же приём денег на аккаунт студии, что и мини-приложение,
+    # поэтому доля платформы удерживается и здесь: иначе студия на тарифе
+    # «процент» проводила бы продажи через кассу и не платила бы ничего.
+    fee_minor = await platform_fee.fee_for_studio(db, ctx.studio_id, amount_minor)
+
     try:
         session_id, client_secret = await stripe_connect.create_checkout_session(
             account_id=account_id,
-            amount_minor=stripe_connect.to_minor_units(quote.total_price, currency),
+            amount_minor=amount_minor,
             currency=currency,
             description=package.name,
             metadata={"studio_id": str(ctx.studio_id), "client_id": str(body.client_id)},
+            application_fee_minor=fee_minor,
+            # Квитанцию клиенту шлёт Stripe от лица студии; почты нет — без чека.
+            receipt_email=client.email,
         )
     except Exception as exc:
         logger.exception("Stripe: не удалось создать сессию оплаты для студии %s", ctx.studio_id)

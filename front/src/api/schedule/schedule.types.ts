@@ -50,7 +50,9 @@ export interface BookedClient {
   phone: string | null
   avatar_color: string | null
   spot_number: number | null
-  status: 'active' | 'attended'
+  // pending — клиент записался онлайн, а студия включила «Подтверждение
+  // тренером»: место держится, но бронь ждёт решения в Журнале.
+  status: 'active' | 'attended' | 'pending'
 }
 
 export interface LessonDetail extends Lesson {
@@ -79,7 +81,7 @@ export interface Reservation {
   client_id: number
   lesson_id: number
   spot_number: number | null
-  status: 'active' | 'cancelled' | 'attended'
+  status: 'active' | 'cancelled' | 'attended' | 'pending'
   booking_channel: string | null
   created_at: string
 }

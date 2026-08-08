@@ -16,10 +16,11 @@ from sqlalchemy.future import select
 from activity import log_activity
 from database import get_db
 from ratelimit import limiter
-from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioBookingSettings, StudioReferralConfig
+from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioReferralConfig
 from routers.clients.loyalty import apply_deposit_change, apply_points_change
 from schemas._base import BaseSchema, Phone
 from services.booking_access import find_eligible_subscription
+from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
 from services.notifier import notify
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
@@ -70,15 +71,13 @@ async def public_slots(
     on_date: Optional[date] = Query(None, alias="date"),
     db: AsyncSession = Depends(get_db),
 ):
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
-    )).scalar_one_or_none()
-    advance_min = settings.min_booking_advance_min if settings else 120
-    window_days = settings.booking_window_days if settings else 7
-
-    now = datetime.now()
-    lower = now + timedelta(minutes=advance_min)
-    upper = now + timedelta(days=window_days)
+    rules = await load_rules(db, studio_id)
+    # Виджет выключен — слотов нет вовсе: «Показывать виджет клиентам» значит
+    # именно это (в мини-приложении расписание остаётся видимым, там у клиента
+    # есть кабинет с уже купленным абонементом — здесь показывать нечего).
+    if not rules.booking_active:
+        return []
+    lower, upper = booking_window(rules)
 
     # date сужает окно до одного дня, но не даёт выйти за границы правил студии.
     if on_date is not None:
@@ -118,7 +117,13 @@ async def public_slots(
         stmt = stmt.where(Lesson.service_id == service_id)
 
     rows = (await db.execute(stmt)).mappings().all()
-    return [PublicSlot.model_validate(row) for row in rows]
+    # Часы работы виджета — фильтр по времени суток, в SQL их не выразить одним
+    # сравнением (интервал может идти через полночь), а список слотов короткий.
+    return [
+        PublicSlot.model_validate(row)
+        for row in rows
+        if within_widget_hours(rules, row["start_time"])
+    ]
 
 
 class ReserveRequest(BaseSchema):
@@ -146,14 +151,15 @@ async def public_reserve(
     """Публичная бронь без токена (задача 11): клиент оставляет имя и телефон.
 
     find-or-create Client по телефону; проверки мест/дублей — как в book_lesson.
-    Окно записи гейтится booking_active + min_booking_advance_min (как public_slots).
+    Окно записи гейтится теми же правилами студии, что и public_slots
+    (`assert_bookable`), иначе виджет предложил бы слот, который тут же откажет.
+
+    «Предоплата при записи» здесь НЕ применяется: форма отдаёт имя и телефон,
+    аккаунта и абонемента у человека ещё нет — гейт по абонементу закрыл бы
+    публичную запись новым клиентам совсем. Настройка работает в кабинете
+    клиента (мини-приложение), где абонемент есть что купить.
     """
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if settings is not None and not settings.booking_active:
-        raise HTTPException(status_code=400, detail="Онлайн-запись закрыта")
-    advance_min = settings.min_booking_advance_min if settings else 120
+    rules = await load_rules(db, studio_id)
 
     lesson = (await db.execute(
         select(Lesson).where(
@@ -164,8 +170,7 @@ async def public_reserve(
     )).scalar_one_or_none()
     if lesson is None:
         raise HTTPException(status_code=404, detail="Занятие не найдено")
-    if lesson.start_time < datetime.now() + timedelta(minutes=advance_min):
-        raise HTTPException(status_code=400, detail="Запись на это занятие закрыта")
+    assert_bookable(rules, lesson)
 
     # find-or-create по телефону в рамках студии; первый визит через онлайн → source=online.
     # Сравнение по цифрам: «+7 999 …» и «79999…» — тот же клиент, второй заводить нельзя
@@ -204,21 +209,22 @@ async def public_reserve(
     if booked >= lesson.total_spots:
         raise HTTPException(status_code=400, detail="Все места заняты")
 
-    duplicate = (await db.execute(
-        select(Reservation.id).where(
-            Reservation.client_id == client.id,
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status != "cancelled",
-        )
-    )).scalar_one_or_none()
-    if duplicate is not None:
-        raise HTTPException(status_code=400, detail="Вы уже записаны на это занятие")
+    if not rules.repeat_booking_allowed:
+        duplicate = (await db.execute(
+            select(Reservation.id).where(
+                Reservation.client_id == client.id,
+                Reservation.lesson_id == body.lesson_id,
+                Reservation.status != "cancelled",
+            ).limit(1)
+        )).scalar_one_or_none()
+        if duplicate is not None:
+            raise HTTPException(status_code=400, detail="Вы уже записаны на это занятие")
 
     reservation = Reservation(
         client_id=client.id,
         lesson_id=body.lesson_id,
         spot_number=booked + 1,
-        status="active",
+        status="pending" if rules.trainer_confirmation_required else "active",
         booking_channel="web",
     )
     db.add(reservation)
@@ -262,11 +268,14 @@ async def public_reserve(
     await db.commit()
     await db.refresh(reservation)
 
-    await notify(db, studio_id, "client", "c1", {
-        "client_id": client.id,
-        "lesson_name": lesson.name,
-        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
-    })
+    # «Запись подтверждена» — только за подтверждённой бронью: при включённом
+    # подтверждении тренером c1 уходит после одобрения в Журнале.
+    if reservation.status == "active":
+        await notify(db, studio_id, "client", "c1", {
+            "client_id": client.id,
+            "lesson_name": lesson.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
     await notify(db, studio_id, "admin", "a1", {
         "lesson_name": lesson.name,
         "client_name": client.name,

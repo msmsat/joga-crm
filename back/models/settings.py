@@ -130,7 +130,11 @@ class StudioBookingSettings(Base):
     widget_dark_mode: Mapped[bool] = mapped_column(Boolean, default=False)
     widget_language: Mapped[str] = mapped_column(String(5), default="ru")
 
-    sms_confirmation: Mapped[bool] = mapped_column(Boolean, default=True)
+    # sms_confirmation и slot_step_min удалены: SMS-канала в продукте нет
+    # (services/notifier.py шлёт только email/telegram/whatsapp/instagram), а шаг
+    # слотов нечему задавать — клиент записывается на реальное занятие Журнала,
+    # генерируемых слотов нигде нет. Настройка, которая ни на что не влияет,
+    # обещает владельцу поведение, которого не будет.
     reminder_24h: Mapped[bool] = mapped_column(Boolean, default=True)
     reminder_2h: Mapped[bool] = mapped_column(Boolean, default=True)
     review_request: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -138,7 +142,6 @@ class StudioBookingSettings(Base):
     miniapp_generated: Mapped[bool] = mapped_column(Boolean, default=False)
     widget_work_start: Mapped[str] = mapped_column(String(5), default="09:00")
     widget_work_end: Mapped[str] = mapped_column(String(5), default="21:00")
-    slot_step_min: Mapped[int] = mapped_column(Integer, default=60)
 
     studio: Mapped["Studio"] = relationship(back_populates="booking_settings")
 
@@ -169,6 +172,13 @@ class StudioBillingPlan(Base):
     status: Mapped[str] = mapped_column(String(20), default="active")
     expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     max_staff: Mapped[int] = mapped_column(Integer, default=5)
+
+    # Подписка живёт в Stripe, здесь только её идентификаторы. status/expires_at выше —
+    # ЗЕРКАЛО состояния подписки, их пишет вебхук; своей арифметики периодов больше нет.
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    stripe_subscription_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
 
     billing_mode: Mapped[str] = mapped_column(String(20), default="subscription")
     percent_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -217,6 +227,12 @@ class BillingInvoice(Base):
     paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     status: Mapped[str] = mapped_column(String(20), default="pending")
     pdf_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    # Зеркало счёта Stripe. stripe_invoice_id — ключ идемпотентности: ретрай вебхука
+    # находит существующую строку, а не заводит вторую.
+    stripe_invoice_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
+    hosted_invoice_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="billing_invoices")
     user: Mapped[Optional["User"]] = relationship(back_populates="billing_invoices")

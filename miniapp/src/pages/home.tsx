@@ -205,7 +205,12 @@ export default function Home({ user, catalog }: HomeProps) {
     <div className="relative">
       <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
 
-      <HomeGreeting greeting={getGreeting()} name={user?.name || t('home.guest_name')} />
+      <HomeGreeting
+        greeting={getGreeting()}
+        name={user?.name || t('home.guest_name')}
+        studioName={catalog?.studio.name}
+        logoUrl={catalog?.studio.logo_url}
+      />
 
       {isMultiStudio && (
         <>
@@ -325,7 +330,13 @@ export default function Home({ user, catalog }: HomeProps) {
         lesson={activeLesson}
       />
 
-      <SuccessModal isOpen={isSuccessOpen} onClose={closeSuccess} lesson={activeLesson} layer={3} />
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={closeSuccess}
+        lesson={activeLesson}
+        awaitingConfirmation={Boolean(catalog?.rules.confirmation_required)}
+        layer={3}
+      />
     </div>
   );
 }

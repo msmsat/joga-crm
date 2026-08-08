@@ -37,6 +37,7 @@ export interface StudioBrand {
   logo_url: string | null;
   accent_color: string;
   language: string;
+  dark_mode: boolean;
 }
 
 export interface EmailCodeResponse {

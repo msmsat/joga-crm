@@ -7,7 +7,6 @@ from pydantic import field_validator
 from schemas._base import BaseSchema
 
 _TIME_RE = re.compile(r"^\d{2}:\d{2}$")
-_VALID_SLOT_STEPS = {15, 30, 45, 60}
 
 
 class BookingSettingsRead(BaseSchema):
@@ -23,14 +22,12 @@ class BookingSettingsRead(BaseSchema):
     widget_logo_url: Optional[str]
     widget_dark_mode: bool
     widget_language: str
-    sms_confirmation: bool
     reminder_24h: bool
     reminder_2h: bool
     review_request: bool
     miniapp_generated: bool
     widget_work_start: str
     widget_work_end: str
-    slot_step_min: int
     # Публичная ссылка на мини-приложение студии. Не колонка — считается из
     # MINIAPP_URL и studio_id (routers/booking/settings.py:_read): адрес зависит
     # от окружения, и фронту его собирать не по чему.
@@ -50,27 +47,18 @@ class BookingSettingsUpdate(BaseSchema):
     widget_logo_url: Optional[str] = None
     widget_dark_mode: Optional[bool] = None
     widget_language: Optional[str] = None
-    sms_confirmation: Optional[bool] = None
     reminder_24h: Optional[bool] = None
     reminder_2h: Optional[bool] = None
     review_request: Optional[bool] = None
     miniapp_generated: Optional[bool] = None
     widget_work_start: Optional[str] = None
     widget_work_end: Optional[str] = None
-    slot_step_min: Optional[int] = None
 
     @field_validator("widget_work_start", "widget_work_end")
     @classmethod
     def validate_time(cls, value: Optional[str]) -> Optional[str]:
         if value is not None and not _TIME_RE.match(value):
             raise ValueError("Время должно быть в формате ЧЧ:ММ")
-        return value
-
-    @field_validator("slot_step_min")
-    @classmethod
-    def validate_slot_step(cls, value: Optional[int]) -> Optional[int]:
-        if value is not None and value not in _VALID_SLOT_STEPS:
-            raise ValueError("Шаг записи должен быть 15, 30, 45 или 60 минут")
         return value
 
 

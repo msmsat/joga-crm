@@ -24,11 +24,19 @@ export interface LessonResponse {
   badge: string;      // "open"
   taken_spots: number[];
   is_booked_by_user?: boolean;
+  /**
+   * Занятие проходит правила онлайн-записи студии (запись включена, окно дней,
+   * минимум времени до начала, часы работы виджета). false — карточка видна,
+   * но записаться нельзя: расписание студии клиент должен видеть целиком.
+   */
+  bookable: boolean;
 }
 
 // Схема для будущих занятий (наследует всё + добавляет номер коврика)
 export interface UpcomingLessonResponse extends LessonResponse {
   spot_number: number;
+  /** "pending" — бронь ждёт подтверждения студии, место уже держится. */
+  status: 'active' | 'pending';
 }
 
 // Схема для прошедших занятий (наследует всё + добавляет коврик и оценку)

@@ -5,6 +5,13 @@ export interface GeneralSettings {
   email: string | null
   website: string | null
   address: string | null
+  // Реквизиты фактуры и Stripe Tax: country задаёт ставку VAT, vat_id (DIČ) включает
+  // reverse charge, company_id (IČO) печатается на счёте. Заполняются в «Тариф и
+  // оплата» → «Способ оплаты» или спрашиваются перед первой оплатой.
+  country: string | null
+  postal_code: string | null
+  vat_id: string | null
+  company_id: string | null
   logo_url: string | null
   timezone: string | null
   language: string | null

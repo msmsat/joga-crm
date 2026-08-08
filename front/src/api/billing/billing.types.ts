@@ -15,6 +15,7 @@ export interface Plan {
 export interface PlansCatalog {
   plans: Plan[]
   period_discounts: Record<number, number>   // {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+  currency: string                           // валюта подписки (EUR), не валюта кассы студии
 }
 
 export interface BillingPlan {
@@ -54,7 +55,9 @@ export interface IbanCheckout {
   iban: string
   amount: number
   reference: string
-  beneficiary: string
+  beneficiary: string            // держателя счёта называет Stripe — счёт коллекторский
+  bic: string | null             // часть банков требует BIC вместе с IBAN
+  hosted_invoice_url: string | null   // фактура Stripe: печать, PDF, оплата картой
 }
 
 export interface BillingStats {
@@ -102,8 +105,4 @@ export interface CheckoutRequest {
 
 export interface CheckoutResponse {
   checkout_url: string
-}
-
-export interface RenewResponse {
-  invoice_id: number
 }

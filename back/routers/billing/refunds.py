@@ -38,21 +38,23 @@ async def refund_invoice(
     # Возвращаем только оплаченный. refunded/pending/failed → 409 (второй refund тоже сюда).
     if invoice.status != "paid":
         raise HTTPException(status_code=409, detail="Возврат возможен только для оплаченного счёта")
-    if not invoice.order_id:
+    if not invoice.stripe_invoice_id and not invoice.order_id:
         raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
 
-    # Возврат делается по платежу, а в счёте лежит id сессии — платёж достаём из неё.
-    # Продление по сохранённой карте пишет сразу pi_… , сессии у него нет.
+    # Возврат делается по платежу. У счетов подписки его достаём из Stripe
+    # (services/stripe_billing.refund_target_for_invoice — карта даёт payment_intent,
+    # IBAN/баланс даёт charge), у легаси-счетов разовой оплаты — по order_id
+    # (pi_… продление по карте, cs_… обычная Checkout Session).
     try:
-        if invoice.order_id.startswith("pi_"):
-            payment_intent = invoice.order_id
+        if invoice.stripe_invoice_id:
+            target = await stripe_billing.refund_target_for_invoice(invoice.stripe_invoice_id)
+        elif invoice.order_id:
+            target = await stripe_billing.refund_target_for_legacy_order(invoice.order_id)
         else:
-            session = await stripe_billing.fetch_session(invoice.order_id)
-            intent = getattr(session, "payment_intent", None)
-            payment_intent = intent if isinstance(intent, str) else getattr(intent, "id", None)
-        if not payment_intent:
-            raise RuntimeError("в сессии нет платежа")
-        await stripe_billing.refund(payment_intent)
+            target = None
+        if not target:
+            raise RuntimeError("у счёта нет платежа, пригодного для возврата")
+        await stripe_billing.refund(target)
     except Exception as exc:
         logger.exception("Возврат не удался, счёт %s", invoice.id)
         raise HTTPException(status_code=502, detail={

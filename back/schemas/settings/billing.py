@@ -21,6 +21,9 @@ class PlansCatalogRead(BaseSchema):
     """Каталог тарифов — единственный источник истины о ценах и лимитах."""
     plans: list[PlanRead]
     period_discounts: dict[int, float]   # {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+    # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
+    # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
+    currency: str                        # ISO-код, например EUR
 
 
 class BillingPlanRead(BaseSchema):
@@ -61,11 +64,14 @@ class IbanCheckoutRequest(BaseModel):
 
 class IbanCheckoutResponse(BaseModel):
     invoice_id: int
-    invoice_number: str      # "INV-2026-000123"
-    iban: str                # тестовый, детерминированный
-    amount: int               # копейки
-    reference: str            # назначение платежа = order_id
+    invoice_number: str      # номер счёта Stripe, например "ABCD1234-0001"
+    iban: str                # настоящий IBAN, выданный Stripe под эту студию
+    amount: int               # центы, с налогом — считает Stripe
+    reference: str            # назначение платежа; без него перевод ищется дольше
     beneficiary: str = "Velora CRM LLC"
+    # Добавлены к прежнему контракту как необязательные — текущий фронт их игнорирует.
+    bic: Optional[str] = None
+    hosted_invoice_url: Optional[str] = None
 
 
 class BillingStatsRead(BaseSchema):

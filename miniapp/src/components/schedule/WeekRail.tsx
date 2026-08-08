@@ -6,6 +6,12 @@ type Props = {
   /** Выбранный день */
   value: Date;
   onChange: (date: Date) => void;
+  /**
+   * Последний день, на который студия открыла запись (booking_window_days из
+   * настроек «Онлайн-запись»). Дальше лента не листается: расписания там нет,
+   * и пустой день читался бы как «занятий не будет», а не «ещё не открыли».
+   */
+  maxDate?: Date;
 };
 
 const DAY_MS = 86_400_000;
@@ -30,31 +36,42 @@ function weekStart(date: Date) {
  * день. Стрелки стоят вплотную к дням, а не в шапке, потому что рука листает
  * там же, где выбирает, — иначе взгляд и палец расходятся по экрану.
  */
-export default function WeekRail({ value, onChange }: Props) {
+export default function WeekRail({ value, onChange, maxDate }: Props) {
   const { i18n } = useTranslation();
 
   const start = weekStart(value);
   const today = midnight(new Date()).getTime();
   const selected = midnight(value).getTime();
+  const last = maxDate ? midnight(maxDate).getTime() : Infinity;
 
   const days = Array.from({ length: 7 }, (_, i) => new Date(start.getTime() + i * DAY_MS));
 
   const shiftWeek = (direction: number) => onChange(new Date(value.getTime() + direction * 7 * DAY_MS));
 
-  const arrow = (direction: number, points: string) => (
-    <motion.button
-      type="button"
-      onClick={() => shiftWeek(direction)}
-      whileTap={{ scale: 0.88 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 28 }}
-      aria-label={direction < 0 ? 'previous week' : 'next week'}
-      className="flex h-[66px] w-7 shrink-0 items-center justify-center rounded-[14px] bg-card shadow-soft"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-        <polyline points={points} />
-      </svg>
-    </motion.button>
-  );
+  // Вперёд листаем, пока в следующей неделе есть хоть один открытый день.
+  const nextWeekOpen = weekStart(new Date(value.getTime() + 7 * DAY_MS)).getTime() <= last;
+
+  const arrow = (direction: number, points: string) => {
+    const disabled = direction > 0 && !nextWeekOpen;
+    return (
+      <motion.button
+        type="button"
+        onClick={() => !disabled && shiftWeek(direction)}
+        disabled={disabled}
+        whileTap={disabled ? undefined : { scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+        aria-label={direction < 0 ? 'previous week' : 'next week'}
+        className={cn(
+          'flex h-[66px] w-7 shrink-0 items-center justify-center rounded-[14px] bg-card shadow-soft',
+          disabled && 'opacity-35',
+        )}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+          <polyline points={points} />
+        </svg>
+      </motion.button>
+    );
+  };
 
   return (
     <div>
@@ -76,19 +93,21 @@ export default function WeekRail({ value, onChange }: Props) {
           const isActive = time === selected;
           const isToday = time === today;
           const isPast = time < today;
+          const isBeyondWindow = time > last;
 
           return (
             <motion.button
               key={time}
               type="button"
-              onClick={() => onChange(day)}
-              whileTap={{ scale: 0.94 }}
+              onClick={() => !isBeyondWindow && onChange(day)}
+              disabled={isBeyondWindow}
+              whileTap={isBeyondWindow ? undefined : { scale: 0.94 }}
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
               aria-current={isActive ? 'date' : undefined}
               className={cn(
                 'relative flex h-[66px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[16px] transition-colors duration-200',
                 isActive ? 'bg-foreground' : 'bg-card shadow-soft',
-                isPast && !isActive && 'opacity-45',
+                ((isPast && !isActive) || isBeyondWindow) && 'opacity-45',
               )}
             >
               <span

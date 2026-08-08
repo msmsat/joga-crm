@@ -231,7 +231,12 @@ export default function MyLessons() {
                     key={`upcoming-${cls.id}`}
                     index={i}
                     title={translateName(cls.name)}
-                    statusLabel={t('mylessons.status.upcoming')}
+                    statusLabel={
+                      cls.status === 'pending'
+                        ? t('mylessons.awaiting_confirmation')
+                        : t('mylessons.status.upcoming')
+                    }
+                    statusTone={cls.status === 'pending' ? 'brand' : 'neutral'}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}

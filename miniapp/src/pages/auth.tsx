@@ -6,6 +6,7 @@ import {
   getStudioBrand, requestEmailCode, verifyEmailCode,
   type StudioBrand, type UserResponse,
 } from '../api/auth';
+import { applyBranding, applyDefaultLanguage } from '../lib/branding';
 
 /**
  * Вход в кабинет клиента вне Telegram — по коду на почту.
@@ -44,7 +45,15 @@ export default function Auth({
   useEffect(() => {
     // Витрина студии — единственное, что можно показать до входа. Провал не
     // блокирует форму: шапка останется нейтральной, войти всё равно можно.
-    getStudioBrand(studioId).then(setBrand).catch(() => {});
+    getStudioBrand(studioId)
+      .then((data) => {
+        setBrand(data);
+        // Фирменный цвет и тёмная тема — с первого экрана: логинится клиент
+        // уже в кабинет своей студии, а не в нейтральный персиковый Velora.
+        applyBranding(data.accent_color, data.dark_mode);
+        applyDefaultLanguage(data.language);
+      })
+      .catch(() => {});
   }, [studioId]);
 
   useEffect(() => {

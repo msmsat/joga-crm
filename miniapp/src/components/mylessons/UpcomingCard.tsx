@@ -4,6 +4,8 @@ import { Badge } from '../ui/Badge';
 type Props = {
   title: string;
   statusLabel: string;
+  /** Бронь ждёт подтверждения студии — плашка акцентная, а не нейтральная. */
+  statusTone?: 'neutral' | 'brand';
   /** «12 травня, 18:00 · Олена Соколова» */
   meta: string;
   matLabel: string;
@@ -20,6 +22,7 @@ type Props = {
 export default function UpcomingCard({
   title,
   statusLabel,
+  statusTone = 'neutral',
   meta,
   matLabel,
   countdown,
@@ -36,7 +39,7 @@ export default function UpcomingCard({
         <h3 className="min-w-0 flex-1 text-[17px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground">
           {title}
         </h3>
-        <Badge tone="neutral">{statusLabel}</Badge>
+        <Badge tone={statusTone}>{statusLabel}</Badge>
       </div>
 
       <div className="mt-2 text-[12.5px] font-medium text-muted-foreground">{meta}</div>

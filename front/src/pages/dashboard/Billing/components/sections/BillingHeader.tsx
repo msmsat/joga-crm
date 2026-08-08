@@ -4,11 +4,11 @@ import type { BillingStats } from '../../../../../api/billing/billing.types';
 import { CalendarIcon, CreditCardIcon, TrendingIcon, ZapIcon } from '../ui/BillingIcons';
 import AnimatedCounter from '../ui/AnimatedCounter';
 import { usePhone } from '../../../../../hooks/usePhone';
-import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { formatMoney } from '../../../../../lib/money';
 
 interface Props {
+  currency?: string;
   activeTab: BillingTab;
   setActiveTab: (tab: BillingTab) => void;
   animateCards: boolean;
@@ -19,12 +19,13 @@ interface Props {
 
 const TAB_IDS: BillingTab[] = ['plans', 'invoices', 'method'];
 
-export default function BillingHeader({ activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
+export default function BillingHeader({ currency, activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
   const { t, i18n } = useTranslation('billing');
   // «Тарифы и планы» + «История платежей» + «Способ оплаты» — 320px в трёх
   // кнопках, которые делят 298. На телефоне подписи короткие.
   const isPhone = usePhone();
-  const currency = useStudioCurrency();
+  // Валюта подписки приходит из каталога (см. useBillingCalculator) — суммы биллинга
+  // всегда в валюте Stripe-аккаунта, а не в валюте кассы студии.
   const currencySymbol = getCurrencySymbol(currency);
 
   // Суммы приходят в копейках (как и каталог) — делим на 100 один раз тут.

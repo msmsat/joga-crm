@@ -5,6 +5,10 @@ type Props = {
   greeting: string;
   /** Имя клиента */
   name: string;
+  /** Название студии — шапка кабинета принадлежит ей, а не Velora. */
+  studioName?: string;
+  /** Логотип виджета из настроек «Онлайн-запись». Нет — остаётся точка-марка. */
+  logoUrl?: string | null;
 };
 
 /**
@@ -13,14 +17,18 @@ type Props = {
  * здесь держится на одном приёме: разрыв масштабов между 10px меткой с широким
  * трекингом и 40px именем с плотным отрицательным.
  */
-export default function HomeGreeting({ greeting, name }: Props) {
+export default function HomeGreeting({ greeting, name, studioName, logoUrl }: Props) {
   return (
     <div className="pt-safe px-5">
       <div className="flex items-center justify-between pt-5">
-        <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-foreground">
-            Velora
+        <div className="flex min-w-0 items-center gap-2">
+          {logoUrl ? (
+            <img src={logoUrl} alt="" className="h-5 w-5 shrink-0 rounded-md object-cover" />
+          ) : (
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+          )}
+          <span className="truncate text-[11px] font-extrabold uppercase tracking-[0.28em] text-foreground">
+            {studioName || 'Velora'}
           </span>
         </div>
 

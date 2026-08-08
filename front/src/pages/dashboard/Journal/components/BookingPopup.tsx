@@ -136,6 +136,19 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const patchBooked = (fn: (list: BookedClient[]) => BookedClient[]) =>
     setBooked(b => b && { ...b, clients: fn(b.clients) });
 
+  // Бронь из онлайн-записи, которую студия ещё не одобрила («Подтверждение
+  // тренером» в Онлайн-записи). Отклонение — тот же крестик, что и снятие.
+  const confirmBooking = (c: BookedClient) => {
+    mutations.confirmReservation(c.reservation_id)
+      .then(() => {
+        patchBooked(list => list.map(x =>
+          x.reservation_id === c.reservation_id ? { ...x, status: 'active' as const } : x
+        ));
+        showToast(t('toasts.bookingConfirmed'));
+      })
+      .catch((e: unknown) => toast.error(errorMessage(e, t)));
+  };
+
   const markAttended = (c: BookedClient) => {
     if (c.status === 'attended') return;
     mutations.attendReservation(c.reservation_id)
@@ -520,21 +533,43 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       }}>
                         {[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase()}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700, color: 'var(--onyx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {c.name} {c.last_name ?? ''}
+                      <div style={{ flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {c.name} {c.last_name ?? ''}
+                        </div>
+                        {c.status === 'pending' && (
+                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            {t('bookingPopup.awaitingConfirmation')}
+                          </div>
+                        )}
                       </div>
-                      <button
-                        className="btn-icon"
-                        title={c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
-                        style={{ color: c.status === 'attended' ? '#86b08c' : 'var(--border)', cursor: c.status === 'attended' ? 'default' : 'pointer' }}
-                        onClick={(e) => { e.stopPropagation(); markAttended(c); }}
-                      >
-                        <Icons.Check />
-                      </button>
+                      {/* Заявка ждёт решения — сначала подтвердить, отмечать
+                          посещение неподтверждённой брони нечего. */}
+                      {c.status === 'pending' ? (
+                        canEdit && (
+                          <button
+                            className="btn-icon"
+                            title={t('bookingPopup.confirmBooking')}
+                            style={{ color: 'var(--peach)' }}
+                            onClick={(e) => { e.stopPropagation(); confirmBooking(c); }}
+                          >
+                            <Icons.Check />
+                          </button>
+                        )
+                      ) : (
+                        <button
+                          className="btn-icon"
+                          title={c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
+                          style={{ color: c.status === 'attended' ? '#86b08c' : 'var(--border)', cursor: c.status === 'attended' ? 'default' : 'pointer' }}
+                          onClick={(e) => { e.stopPropagation(); markAttended(c); }}
+                        >
+                          <Icons.Check />
+                        </button>
+                      )}
                       {canEdit && (
                         <button
                           className="btn-icon"
-                          title={t('bookingPopup.removeFromLesson')}
+                          title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
                           style={{ color: 'var(--muted)' }}
                           onClick={(e) => { e.stopPropagation(); removeClient(c); }}
                         >

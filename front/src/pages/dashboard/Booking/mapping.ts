@@ -23,17 +23,13 @@ export const CANCEL_OPTS = [
   { value: 1440, key: 'cancel.24h' },
 ] as const
 
+// Ровно те языки, что есть в мини-приложении (miniapp/src/i18n.ts). Немецкого
+// там нет — выбор «Deutsch» молча откатывался бы на язык по умолчанию.
 export const LANG_OPTS = [
+  { value: 'uk', key: 'lang.uk' },
   { value: 'ru', key: 'lang.ru' },
   { value: 'en', key: 'lang.en' },
-  { value: 'de', key: 'lang.de' },
-] as const
-
-export const STEP_OPTS = [
-  { value: 15, key: 'step.15' },
-  { value: 30, key: 'step.30' },
-  { value: 45, key: 'step.45' },
-  { value: 60, key: 'step.60' },
+  { value: 'cz', key: 'lang.cz' },
 ] as const
 
 // 00:00–24:00, шаг 30. Значение = подпись (формат сервера совпадает с UI).
@@ -55,7 +51,6 @@ const nearest = (nums: readonly number[], v: number) =>
 export const advanceValue = (min: number) => ADVANCE_OPTS[nearest(ADVANCE_OPTS.map(o => o.value), min)].value
 export const windowValue  = (days: number) => WINDOW_OPTS[nearest(WINDOW_OPTS.map(o => o.value), days)].value
 export const cancelValue  = (min: number) => CANCEL_OPTS[nearest(CANCEL_OPTS.map(o => o.value), min)].value
-export const stepValue    = (min: number) => STEP_OPTS[nearest(STEP_OPTS.map(o => o.value), min)].value
 export const langValue    = (code: string) => LANG_OPTS.find(o => o.value === code)?.value ?? LANG_OPTS[0].value
 
 export const colorIndex = (hex: string | null) => Math.max(0, WIDGET_COLORS.indexOf(hex ?? ''))

@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
 import type { BillingPlan, PaymentCard, AutopaySettings } from '../../../../../api/billing/billing.types';
 import { Button, Switch } from '../../../../../components/ui/index';
 import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
+import InvoiceDetailsForm from '../sections/InvoiceDetailsForm';
+import type { InvoiceDetails, InvoiceDetailErrors } from '../../hooks/useInvoiceDetails';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
 const AUTOPAY_FIELDS = [
@@ -16,13 +19,23 @@ interface Props {
   cards: PaymentCard[];
   loaded: boolean;
   plan: BillingPlan | null;
-  renew: () => void;
-  renewState: 'idle' | 'busy' | 'done';
   setAutopay: (field: keyof AutopaySettings, value: boolean) => void;
+  details: { value: InvoiceDetails; patch: (p: Partial<InvoiceDetails>) => void; dirty: boolean };
+  detailErrors: InvoiceDetailErrors;
+  saveDetails: () => void;
 }
 
-export default function PaymentMethodTab({ cards, loaded, plan, renew, renewState, setAutopay }: Props) {
+export default function PaymentMethodTab({
+  cards, loaded, plan, setAutopay, details, detailErrors, saveDetails,
+}: Props) {
   const { t } = useTranslation('billing');
+  // Тумблер «нужна фактура» тут значит «реквизиты компании заполнены»: заполненные
+  // показываем сразу открытыми, пустые — за выключенным тумблером, чтобы карточка
+  // не выглядела формой с обязательными полями у физлица.
+  // Производное состояние, а не useState(значение): реквизиты приезжают запросом
+  // ПОСЛЕ первого рендера, и начальное значение навсегда осталось бы false.
+  const [wantOverride, setWantOverride] = useState<boolean | null>(null);
+  const wantInvoice = wantOverride ?? !!details.value.company_id;
 
   // Карта, сохранённая у Stripe: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;
@@ -72,21 +85,8 @@ export default function PaymentMethodTab({ cards, loaded, plan, renew, renewStat
               </div>
             )}
 
-            {/* Автопродление доступно только по токену карты — для IBAN кнопки нет (§5) */}
-            {card?.method_type === 'card' && (
-              <Button
-                variant="primary"
-                fullWidth
-                loading={renewState === 'busy'}
-                disabled={renewState !== 'idle'}
-                onClick={renew}
-                style={renewState === 'done' ? { background: 'var(--pistachio)', boxShadow: 'none' } : undefined}
-              >
-                {renewState === 'done' ? t('method.renewDone')
-                  : renewState === 'busy' ? t('method.renewBusy')
-                  : t('method.renewNow', { last4: card.card_last4 })}
-              </Button>
-            )}
+            {/* Кнопки «Продлить» здесь больше нет: подписку продлевает Stripe сам,
+                а POST /billing/renew отвечает 410. */}
           </div>
 
           {/* Right column: защита + продление */}
@@ -110,6 +110,33 @@ export default function PaymentMethodTab({ cards, loaded, plan, renew, renewStat
                 {t('empty.noCard')} {t('method.noCardDetail')}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Реквизиты фактуры — заполняются ЗАРАНЕЕ, чтобы оплата не спрашивала их
+            в модалке. Та же форма, что и на шаге 'details' (общий компонент). */}
+        <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 2h7l3 3v13H5z" /><path d="M8 8h4M8 11h4M8 14h2" />
+            </svg>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.details.title')}</span>
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6, marginBottom: '18px' }}>
+            {t('method.details.subtitle')}
+          </div>
+          <InvoiceDetailsForm
+            value={details.value}
+            patch={details.patch}
+            wantInvoice={wantInvoice}
+            setWantInvoice={setWantOverride}
+            requireCountry={false}
+            errors={detailErrors}
+          />
+          <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="primary" disabled={!details.dirty} onClick={saveDetails}>
+              {t('method.details.save')}
+            </Button>
           </div>
         </div>
 

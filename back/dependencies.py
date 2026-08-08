@@ -188,9 +188,23 @@ async def require_active_subscription(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
 
-    expired = plan is None or (plan.expires_at is not None and plan.expires_at < datetime.utcnow())
-    # ponytail: авто-recurring при истёкшем триале (пункт 4) — после задачи 7 (renew ещё нет);
-    # апгрейд: если plan.auto_renewal и есть rectoken → инициировать recurring один раз с пометкой.
+    # Гейт смотрит и на дату, и на статус. Статус нужен из-за подписок: Stripe
+    # переводит брошенную неоплаченной в unpaid/canceled, а expires_at при этом
+    # остаётся от последнего оплаченного периода и один сам по себе врёт.
+    #
+    # past_due СОЗНАТЕЛЬНО пускает: перевод по IBAN идёт 1-2 дня, и всё это время
+    # подписка именно в нём. Отрубать студию за деньги в пути нельзя.
+    expired = (
+        plan is None
+        or plan.status == "expired"
+        # expires_at IS NULL = «срок неизвестен» → НЕ пускаем. Исходное условие
+        # (`expires_at is not None and ...`) читало пустую дату как «не истекло» и
+        # выдавало доступ. Сейчас недостижимо (онбординг всегда ставит триальную дату),
+        # но подписка, у которой дату не удалось зеркалить, не должна становиться
+        # бессрочной именно из-за того, что мы её не знаем.
+        or plan.expires_at is None
+        or plan.expires_at < datetime.utcnow()
+    )
     if expired:
         raise HTTPException(status_code=402, detail={
             "code": "subscription_expired",

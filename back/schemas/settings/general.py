@@ -1,6 +1,6 @@
 from typing import Literal, Optional
 
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, field_validator
 
 from schemas._base import BaseSchema
 
@@ -34,6 +34,10 @@ class GeneralRead(BaseSchema):
     email: Optional[str] = None
     website: Optional[str] = None
     address: Optional[str] = None
+    country: Optional[str] = None
+    postal_code: Optional[str] = None
+    vat_id: Optional[str] = None
+    company_id: Optional[str] = None
     logo_url: Optional[str] = None
     timezone: Optional[str] = None
     language: Optional[str] = None
@@ -62,12 +66,44 @@ class GeneralUpdate(BaseSchema):
     website: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=20)
     address: Optional[str] = Field(None, max_length=300)
+    # Реквизиты для Stripe Tax. Без country подписка по IBAN не создаётся: ставку
+    # VAT определяет страна плательщика, а свободного текста `address` для этого мало.
+    country: Optional[str] = Field(None, min_length=2, max_length=2)
+    postal_code: Optional[str] = Field(None, max_length=20)
+    vat_id: Optional[str] = Field(None, max_length=50)
+    # IČO — реквизит фактуры юрлицу. Отдельно от vat_id: DIČ есть только у
+    # плательщика НДС, а IČO — у любой зарегистрированной компании.
+    company_id: Optional[str] = Field(None, max_length=30)
     currency: Optional[Currency] = None
     language: Optional[Language] = None
     date_format: Optional[DateFormat] = None
     first_day_of_week: Optional[FirstDayOfWeek] = None
     timezone: Optional[Timezone] = None
     journal_time_step: Optional[JournalTimeStep] = None
+
+    @field_validator("country")
+    @classmethod
+    def _upper_country(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        # isascii обязателен: str.isalpha() юникодный и пропускает 'СЗ' кириллицей
+        # и '中国'. Для кода страны это мусор, который свалится уже внутри Stripe —
+        # режем на границе, где ошибка ещё читаема.
+        if not (v.isascii() and v.isalpha()):
+            raise ValueError("country должен быть кодом ISO-3166-1 alpha-2, например CZ")
+        return v.upper()
+
+    @field_validator("vat_id", "company_id")
+    @classmethod
+    def _strip_vat(cls, v: Optional[str]) -> Optional[str]:
+        # Пробелы внутри VAT ID Stripe не принимает, а люди их ставят. IČO нормализуем
+        # тем же валидатором: его печатают на фактуре, и «123 456 78» с «12345678»
+        # должны быть одним реквизитом, а не двумя.
+        # Пустая строка после очистки — это «реквизита нет», а не «реквизит пустой»:
+        # иначе PATCH {vat_id: ""} уедет в Stripe пустым tax id вместо пропуска поля.
+        if v is None:
+            return None
+        return v.replace(" ", "").upper() or None
 
 
 # Персональный внешний вид (User.theme/accent_color) — задача 5. Тот же роутер-

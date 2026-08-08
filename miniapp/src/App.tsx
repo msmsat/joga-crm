@@ -11,6 +11,7 @@ import { authTelegram, type UserResponse } from './api/auth';
 import { getStudioCatalog, type StudioCatalog } from './api/studio';
 import { useTelegram } from './hooks/useTelegram';
 import { readEntry } from './lib/entry';
+import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
 
@@ -38,7 +39,12 @@ export default function App() {
     // не меняются настолько часто, чтобы держать их за TanStack Query
     // (эпик прямо отказывается от неё, см. "Явно НЕ делаем").
     try {
-      setCatalog(await getStudioCatalog());
+      const data = await getStudioCatalog();
+      // Брендинг применяем здесь, а не в рендере: цвет и тема живут в токенах
+      // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
+      applyBranding(data.studio.accent_color, data.studio.dark_mode);
+      applyDefaultLanguage(data.studio.language);
+      setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
     }

@@ -54,10 +54,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Безлимит"
   },
   "payment": {
@@ -121,7 +129,8 @@
     "favourite": "Чаще всего вы выбираете {{name}}",
     "load_error": "Не удалось загрузить занятия",
     "no_lessons_period": "В этом периоде занятий нет",
-    "no_lessons_period_hint": "Полистайте стрелками — возможно, они были раньше"
+    "no_lessons_period_hint": "Полистайте стрелками — возможно, они были раньше",
+    "awaiting_confirmation": "Ожидает подтверждения"
   },
   "schedule": {
     "title": "Расписание",
@@ -152,7 +161,9 @@
       "thu": "Чт",
       "fri": "Пт",
       "sat": "Сб"
-    }
+    },
+    "booking_closed": "Онлайн-запись закрыта",
+    "booking_closed_hint": "Студия временно не принимает записи через приложение — позвоните администратору."
   },
   "bookingModal": {
     "training": "Тренировка",
@@ -167,7 +178,10 @@
     "processing": "Обработка...",
     "cancel_booking": "Отменить запись",
     "choose_spot": "Выберите место",
-    "pay": "Оплатить · {{price}}"
+    "pay": "Оплатить · {{price}}",
+    "not_bookable": "Онлайн-запись на это занятие недоступна",
+    "not_bookable_hint": "Записаться можно только в часы работы студии и в пределах открытого расписания.",
+    "awaiting_confirmation": "Заявка отправлена — ожидает подтверждения студии"
   },
   "directionModal": {
     "tag": "Направление",

@@ -54,10 +54,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Безліміт"
   },
   "payment": {
@@ -121,7 +129,8 @@
     "favourite": "Найчастіше ви обираєте {{name}}",
     "load_error": "Не вдалося завантажити заняття",
     "no_lessons_period": "У цьому періоді занять немає",
-    "no_lessons_period_hint": "Погортайте стрілками — можливо, вони були раніше"
+    "no_lessons_period_hint": "Погортайте стрілками — можливо, вони були раніше",
+    "awaiting_confirmation": "Очікує підтвердження"
   },
   "schedule": {
     "title": "Розклад",
@@ -152,7 +161,9 @@
       "thu": "Чт",
       "fri": "Пт",
       "sat": "Сб"
-    }
+    },
+    "booking_closed": "Онлайн-запис закрито",
+    "booking_closed_hint": "Студія тимчасово не приймає записи через застосунок — зателефонуйте адміністратору."
   },
   "bookingModal": {
     "training": "Тренування",
@@ -167,7 +178,10 @@
     "processing": "Обробляємо...",
     "cancel_booking": "Скасувати запис",
     "choose_spot": "Оберіть місце",
-    "pay": "Оплатити · {{price}}"
+    "pay": "Оплатити · {{price}}",
+    "not_bookable": "Онлайн-запис на це заняття недоступний",
+    "not_bookable_hint": "Запис можливий лише в години роботи студії та в межах відкритого розкладу.",
+    "awaiting_confirmation": "Заявку надіслано — очікує підтвердження студії"
   },
   "directionModal": {
     "tag": "Напрямок",
@@ -191,7 +205,7 @@
     "pay_in_studio": "Абонемент можна купити в студії"
   },
   "successModal": {
-    "title": "Ви записані", 
+    "title": "Ви записані",
     "subtitle": "Заняття {{name}} сьогодні о {{time}} заброньовано. До зустрічі на килимку.",
     "default_lesson": "Тренування",
     "button": "Чудово"
@@ -260,8 +274,8 @@
     "default_duration": "60 хв",
     "spots": "місця",
     "level_all": "Всі рівні",
-    "level_beginner": "Початківці"
-    ,"book_now": "Записатися",
+    "level_beginner": "Початківці",
+    "book_now": "Записатися",
     "flow_yoga": "Йога",
     "flow_pilates": "Пілатес",
     "flow_reformer_glow": "Reformer Glow",

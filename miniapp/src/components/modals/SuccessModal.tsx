@@ -7,6 +7,11 @@ interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   lesson: LessonResponse | null;
+  /**
+   * Студия включила «Подтверждение тренером»: место занято, но бронь ещё не
+   * подтверждена — обещать «до встречи на коврике» рано.
+   */
+  awaitingConfirmation?: boolean;
   /** Поверх брони, из которой он и появился. */
   layer?: number;
 }
@@ -18,7 +23,13 @@ interface SuccessModalProps {
  * другим за секунду. Это единственная «награда» в приложении, и она должна
  * ощущаться как выдох, а не как системный алерт «успешно».
  */
-export default function SuccessModal({ isOpen, onClose, lesson, layer = 0 }: SuccessModalProps) {
+export default function SuccessModal({
+  isOpen,
+  onClose,
+  lesson,
+  awaitingConfirmation = false,
+  layer = 0,
+}: SuccessModalProps) {
   const { t } = useTranslation();
 
   const petal = (d: string, delay: number, opacity: number) => (
@@ -88,6 +99,17 @@ export default function SuccessModal({ isOpen, onClose, lesson, layer = 0 }: Suc
             time: lesson?.time || '',
           })}
         </motion.p>
+
+        {awaitingConfirmation && (
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-4 rounded-[18px] bg-background px-4 py-3 text-[12.5px] font-bold leading-relaxed text-foreground"
+          >
+            {t('bookingModal.awaiting_confirmation')}
+          </motion.p>
+        )}
       </div>
     </Sheet>
   );

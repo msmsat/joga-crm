@@ -32,6 +32,16 @@ interface SheduleProps {
 export default function Shedule({ catalog }: SheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
+  const rules = catalog?.rules ?? null;
+
+  // Последний день открытого расписания — «Запись открыта на N дней» из
+  // настроек студии. Ленту недель дальше не листаем.
+  const maxDate = useMemo(() => {
+    if (!rules) return undefined;
+    const limit = new Date();
+    limit.setDate(limit.getDate() + rules.booking_window_days);
+    return limit;
+  }, [rules]);
 
   const [date, setDate] = useState(() => new Date());
   const [dayClasses, setDayClasses] = useState<LessonResponse[]>([]);
@@ -188,8 +198,22 @@ export default function Shedule({ catalog }: SheduleProps) {
       />
 
       <div className="pt-6">
-        <WeekRail value={date} onChange={setDate} />
+        <WeekRail value={date} onChange={setDate} maxDate={maxDate} />
       </div>
+
+      {/* Онлайн-запись выключена студией: расписание остаётся видимым (клиенту
+          надо знать, когда занятия), но записаться нельзя — и об этом честно
+          говорим один раз сверху, а не отказом на каждой карточке. */}
+      {rules && !rules.booking_active && (
+        <div className="mx-5 mt-5 rounded-[18px] bg-card px-4 py-3.5 shadow-soft">
+          <div className="text-[13px] font-extrabold tracking-[-0.015em] text-foreground">
+            {t('schedule.booking_closed')}
+          </div>
+          <div className="mt-1 text-[12px] font-medium leading-relaxed text-muted-foreground">
+            {t('schedule.booking_closed_hint')}
+          </div>
+        </div>
+      )}
 
       {/* Панель фильтров ростом в одну строку: на телефоне вертикаль дороже
           удобства, поэтому выбранное показано чипами, а сам выбор — в листе. */}
@@ -308,7 +332,13 @@ export default function Shedule({ catalog }: SheduleProps) {
         lesson={activeLesson}
       />
 
-      <SuccessModal isOpen={isSuccessOpen} onClose={closeSuccess} lesson={activeLesson} layer={1} />
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={closeSuccess}
+        lesson={activeLesson}
+        awaitingConfirmation={Boolean(rules?.confirmation_required)}
+        layer={1}
+      />
     </>
   );
 }

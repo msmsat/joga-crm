@@ -84,11 +84,11 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
     }
   };
 
-  const handleOpenReceipt = async (id: number) => {
+  const handleOpenReceipt = async (inv: Invoice) => {
     if (openingReceiptId !== null) return;
-    setOpeningReceiptId(id);
+    setOpeningReceiptId(inv.id);
     try {
-      await billingApi.openReceipt(id);
+      await billingApi.openReceipt(inv.id, inv.pdf_url);
     } catch {
       toast.error(t('invoices.receiptError'));
     } finally {
@@ -177,11 +177,11 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
                   />
                 </div>
                 <div>
-                  {/* Чек есть у любого оплаченного счёта — эндпоинт рендерит его сам,
-                      pdf_url заполняет только вебхук провайдера и его может не быть. */}
+                  {/* Чек есть у любого оплаченного счёта: есть pdf_url — открываем
+                      фактуру Stripe, нет — наш /receipt.pdf (billingApi.openReceipt). */}
                   {inv.status === 'paid' ? (
                     <button
-                      onClick={() => handleOpenReceipt(inv.id)}
+                      onClick={() => handleOpenReceipt(inv)}
                       disabled={openingReceiptId === inv.id}
                       style={{ padding: '5px 12px', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--muted)', fontSize: '11px', fontWeight: 600, cursor: openingReceiptId === inv.id ? 'default' : 'pointer', opacity: openingReceiptId === inv.id ? 0.6 : 1, fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                       <DownloadIcon />PDF

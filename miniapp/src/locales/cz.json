@@ -54,10 +54,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Neomezený počet lekcí"
   },
   "payment": {
@@ -121,7 +129,8 @@
     "favourite": "Nejčastěji si vybíráte {{name}}",
     "load_error": "Nepodařilo se načíst lekce",
     "no_lessons_period": "V tomto období nejsou žádné lekce",
-    "no_lessons_period_hint": "Posuňte se šipkami — mohly být dříve"
+    "no_lessons_period_hint": "Posuňte se šipkami — mohly být dříve",
+    "awaiting_confirmation": "Čeká na potvrzení"
   },
   "schedule": {
     "title": "Rozvrh",
@@ -152,7 +161,9 @@
       "thu": "Čt",
       "fri": "Pá",
       "sat": "So"
-    }
+    },
+    "booking_closed": "Online rezervace je uzavřena",
+    "booking_closed_hint": "Studio momentálně nepřijímá rezervace přes aplikaci — zavolejte na recepci."
   },
   "bookingModal": {
     "training": "Trénink",
@@ -167,7 +178,10 @@
     "processing": "Zpracovává se...",
     "cancel_booking": "Zrušit rezervaci",
     "choose_spot": "Vyberte si místo",
-    "pay": "Zaplatit · {{price}}"
+    "pay": "Zaplatit · {{price}}",
+    "not_bookable": "Tuto lekci nelze rezervovat online",
+    "not_bookable_hint": "Rezervovat lze jen v provozních hodinách studia a v rámci otevřeného rozvrhu.",
+    "awaiting_confirmation": "Žádost odeslána — čeká na potvrzení studia"
   },
   "directionModal": {
     "tag": "Zaměření",

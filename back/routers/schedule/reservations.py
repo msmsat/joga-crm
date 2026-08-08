@@ -9,6 +9,7 @@ from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from models import Client, Reservation
 from schemas.schedule.reservations import ReservationCreate, ReservationRead
 from services.booking_access import assert_can_book
+from services.booking_rules import load_rules
 from services.notifier import notify
 from services.subscription_charge import (
     activate_pending_after_visit, charge_reservation, notify_subscription_remaining,
@@ -132,7 +133,10 @@ async def cancel_reservation(
     # этого события a2/t2 «отмена <1ч/<2ч» больше не могут сработать отсюда —
     # блок удалён; если понадобятся, их надо врезать в другой путь отмены.
     # ponytail: фикс-окно 2ч; вынести в настройки студии — если попросят.
-    if lesson.start_time < datetime.now() + timedelta(hours=2):
+    # Неподтверждённая бронь (pending) из-под этого правила выведена: отклонить
+    # заявку студия обязана мочь в любой момент — иначе за два часа до занятия
+    # она превращается в бронь, которую нельзя ни подтвердить, ни снять.
+    if reservation.status != "pending" and lesson.start_time < datetime.now() + timedelta(hours=2):
         raise HTTPException(status_code=400, detail="Снять с занятия можно не позднее чем за 2 часа до начала")
 
     reservation.status = "cancelled"
@@ -148,6 +152,53 @@ async def cancel_reservation(
         "lesson_name": lesson.name,
         "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
     })
+    return ReservationRead.model_validate(reservation)
+
+
+@router.patch("/reservations/{reservation_id}/confirm", response_model=ReservationRead)
+async def confirm_reservation(
+    reservation_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Одобрить бронь, которая ждала подтверждения.
+
+    Заявки появляются, когда студия включила «Подтверждение тренером» на
+    странице «Онлайн-запись»: клиент записался из мини-приложения или веб-виджета,
+    место и занятие с абонемента уже списаны, но статус — `pending`. Одобрение
+    переводит бронь в `active` и шлёт клиенту c1 «Запись подтверждена», которое
+    при создании заявки намеренно не отправлялось.
+
+    Отклонение — обычное снятие с занятия (cancel): оно и место освобождает, и
+    занятие на абонемент возвращает.
+
+    Подтверждают владелец и администратор — те же роли, что записывают и
+    снимают (ТЗ 2.3). Повторный вызов идемпотентен.
+    """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Подтверждать записи могут владелец и администратор")
+
+    reservation = (await db.execute(
+        select(Reservation).where(Reservation.id == reservation_id)
+    )).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
+
+    if reservation.status == "cancelled":
+        raise HTTPException(status_code=409, detail="Запись отменена")
+
+    if reservation.status == "pending":
+        reservation.status = "active"
+        await db.commit()
+        await db.refresh(reservation)
+
+        await notify(db, ctx.studio_id, "client", "c1", {
+            "client_id": reservation.client_id,
+            "lesson_name": lesson.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
     return ReservationRead.model_validate(reservation)
 
 
@@ -189,6 +240,9 @@ async def attend_reservation(
         await db.commit()
         await db.refresh(reservation)
 
-        await notify(db, ctx.studio_id, "client", "c8",
-                     {"client_id": reservation.client_id, "lesson_name": lesson.name})
+        # «Запрос отзыва» — тумблер на странице «Онлайн-запись»: студия может
+        # не хотеть дёргать клиента после каждого визита.
+        if (await load_rules(db, ctx.studio_id)).review_request:
+            await notify(db, ctx.studio_id, "client", "c8",
+                         {"client_id": reservation.client_id, "lesson_name": lesson.name})
     return ReservationRead.model_validate(reservation)

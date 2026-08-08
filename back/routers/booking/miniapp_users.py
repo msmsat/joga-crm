@@ -22,7 +22,7 @@ from models import (
 )
 from routers.clients.referrals import _unique_invite_code
 from schemas._base import BaseSchema
-from services import stripe_connect
+from services import platform_fee, stripe_connect
 from services.notifier import _fmt_amount, _studio_prefs
 
 from .miniapp import get_current_client
@@ -259,10 +259,15 @@ async def create_checkout_session(
     studio = (await db.execute(select(Studio).where(Studio.id == client.studio_id))).scalar_one()
     currency = studio.currency or "RUB"
 
+    amount_minor = stripe_connect.to_minor_units(package.price, currency)
+    # Комиссия платформы на тарифах «процент»/«комбо» — считается от той же суммы
+    # в младших единицах, что уходит в Stripe (см. services/platform_fee.py).
+    fee_minor = await platform_fee.fee_for_studio(db, client.studio_id, amount_minor)
+
     try:
         session_id, url = await stripe_connect.create_hosted_checkout_session(
             account_id=stripe_channel.account_id,
-            amount_minor=stripe_connect.to_minor_units(package.price, currency),
+            amount_minor=amount_minor,
             currency=currency,
             description=package.name,
             metadata={
@@ -272,6 +277,10 @@ async def create_checkout_session(
             },
             success_url=f"{return_base}paysuccess",
             cancel_url=f"{return_base}paycancel",
+            application_fee_minor=fee_minor,
+            # Квитанцию клиенту отправит сам Stripe от лица студии. Почты у
+            # клиента может не быть (вход по Telegram) — тогда просто без чека.
+            receipt_email=client.email,
         )
     except Exception as exc:
         raise HTTPException(status_code=502, detail="Stripe отклонил запрос") from exc

@@ -6,7 +6,7 @@ import { authApi, type UserMe } from './api';
 import { AIDrawerProvider } from './contexts/AIDrawerContext';
 import { DarkClassGuard } from './contexts/ThemeContext';
 import { ToastProvider } from './components/ui/index';
-import Landing from "./pages/Landingpage";
+import Landing from "./pages/Landing";
 import LoginPage from './pages/Loginpage'; // Твоя страница логина
 import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';

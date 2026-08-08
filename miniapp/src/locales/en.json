@@ -54,10 +54,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Unlimited classes"
   },
   "payment": {
@@ -121,7 +129,8 @@
     "favourite": "You pick {{name}} most often",
     "load_error": "Couldn't load your classes",
     "no_lessons_period": "Nothing in this period",
-    "no_lessons_period_hint": "Use the arrows — they might be earlier"
+    "no_lessons_period_hint": "Use the arrows — they might be earlier",
+    "awaiting_confirmation": "Awaiting confirmation"
   },
   "schedule": {
     "title": "Schedule",
@@ -152,7 +161,9 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat"
-    }
+    },
+    "booking_closed": "Online booking is closed",
+    "booking_closed_hint": "The studio is not taking bookings through the app right now — please call the front desk."
   },
   "bookingModal": {
     "training": "Training",
@@ -167,7 +178,10 @@
     "processing": "Processing...",
     "cancel_booking": "Cancel booking",
     "choose_spot": "Choose a spot",
-    "pay": "Pay · {{price}}"
+    "pay": "Pay · {{price}}",
+    "not_bookable": "This class cannot be booked online",
+    "not_bookable_hint": "Booking is open only during studio hours and within the published schedule.",
+    "awaiting_confirmation": "Request sent — waiting for the studio to confirm"
   },
   "directionModal": {
     "tag": "Direction",
@@ -260,8 +274,8 @@
     "default_duration": "60 min",
     "spots": "spots",
     "level_all": "All levels",
-    "level_beginner": "Beginner"
-    ,"book_now": "Book now",
+    "level_beginner": "Beginner",
+    "book_now": "Book now",
     "flow_yoga": "Yoga",
     "flow_pilates": "Pilates",
     "flow_reformer_glow": "Reformer Glow",

@@ -18,6 +18,7 @@ export default function Billing() {
     // (см. блок «ТЕЛЕФОН» в Billing.module.css).
     <div className={styles.blPane} style={{ padding: '0 0 60px 0' }}>
       <BillingHeader
+        currency={h.currency}
         activeTab={h.activeTab}
         setActiveTab={h.setActiveTab}
         animateCards={h.animateCards}
@@ -73,9 +74,10 @@ export default function Billing() {
           cards={h.cards}
           loaded={h.cardsLoaded}
           plan={h.plan}
-          renew={h.renew}
-          renewState={h.renewState}
           setAutopay={h.setAutopay}
+          details={h.details}
+          detailErrors={h.detailErrors}
+          saveDetails={h.saveDetails}
         />
       )}
 
@@ -101,9 +103,15 @@ export default function Billing() {
           setBranch={h.setPayBranch}
           ibanData={h.ibanData}
           busy={h.payBusy}
-          onChooseIban={h.payWithIban}
+          onChoose={h.chooseMethod}
           onPayCard={h.payWithCard}
           onClose={h.closePayModal}
+          details={h.details}
+          wantInvoice={h.wantInvoice}
+          setWantInvoice={h.setWantInvoice}
+          detailErrors={h.detailErrors}
+          detailsForIban={h.detailsForIban}
+          onSubmitDetails={h.submitDetails}
         />
       )}
     </div>

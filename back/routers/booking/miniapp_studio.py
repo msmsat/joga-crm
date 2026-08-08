@@ -16,16 +16,15 @@ from database import get_db
 from ratelimit import limiter
 from models import (
     BookingChannelConfig, BranchWorkingHours, Client, OnlineChannel, Service, Studio,
-    StudioBookingSettings, StudioBranch, SubscriptionPackage,
+    StudioBranch, SubscriptionPackage,
 )
 from schemas._base import BaseSchema
+from services.booking_rules import load_rules
 from services.notifier import _fmt_amount
 
 from .miniapp import get_current_client
 
 router = APIRouter()
-
-DEFAULT_ACCENT_COLOR = "#FCAE91"
 
 
 class StudioInfo(BaseSchema):
@@ -35,6 +34,7 @@ class StudioInfo(BaseSchema):
     logo_url: Optional[str]
     accent_color: str
     language: str
+    dark_mode: bool
     # Для реферальной ссылки t.me/{bot_username}?startapp=... (профиль клиента).
     # None — Telegram ещё не подключён, тогда клиент никак сюда и не попал бы
     # (auth/telegram требует активный канал), но поле optional на случай, если
@@ -43,9 +43,18 @@ class StudioInfo(BaseSchema):
 
 
 class BookingRules(BaseSchema):
+    """Правила записи из настроек студии — мини-приложение рисует по ним UI
+    (какие дни листаются, что показывать вместо кнопки), но решает не оно:
+    те же правила проверяет бэкенд при create_reservation."""
+    booking_active: bool
     min_booking_advance_min: int
     booking_window_days: int
     cancellation_deadline_min: int
+    repeat_booking_allowed: bool
+    confirmation_required: bool
+    prepay_required: bool
+    widget_work_start: str
+    widget_work_end: str
 
 
 class BranchInfo(BaseSchema):
@@ -107,6 +116,7 @@ class StudioBrand(BaseSchema):
     logo_url: Optional[str]
     accent_color: str
     language: str
+    dark_mode: bool
 
 
 @router.get("/public/{studio_id}/brand", response_model=StudioBrand)
@@ -128,15 +138,16 @@ async def get_studio_brand(
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
 
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
-    )).scalar_one_or_none()
+    rules = await load_rules(db, studio_id)
 
     return StudioBrand(
         name=studio.name,
-        logo_url=studio.logo_url,
-        accent_color=(settings.widget_accent_color if settings else None) or DEFAULT_ACCENT_COLOR,
-        language=studio.language or "ru",
+        # Логотип виджета — отдельная картинка от логотипа CRM: студия ставит в
+        # кабинет клиента другой вариант знака. Не задан — берём общий.
+        logo_url=rules.widget_logo_url or studio.logo_url,
+        accent_color=rules.widget_accent_color,
+        language=rules.widget_language,
+        dark_mode=rules.widget_dark_mode,
     )
 
 
@@ -150,9 +161,7 @@ async def get_studio_catalog(
     studio_id = client.studio_id
 
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
-    )).scalar_one_or_none()
+    rules = await load_rules(db, studio_id)
 
     telegram_channel = (await db.execute(
         select(BookingChannelConfig).where(
@@ -204,15 +213,22 @@ async def get_studio_catalog(
             id=studio.id,
             name=studio.name,
             currency=currency,
-            logo_url=studio.logo_url,
-            accent_color=(settings.widget_accent_color if settings else None) or DEFAULT_ACCENT_COLOR,
-            language=studio.language or "ru",
+            logo_url=rules.widget_logo_url or studio.logo_url,
+            accent_color=rules.widget_accent_color,
+            language=rules.widget_language,
+            dark_mode=rules.widget_dark_mode,
             bot_username=bot_username,
         ),
         rules=BookingRules(
-            min_booking_advance_min=settings.min_booking_advance_min if settings else 120,
-            booking_window_days=settings.booking_window_days if settings else 7,
-            cancellation_deadline_min=settings.cancellation_deadline_min if settings else 240,
+            booking_active=rules.booking_active,
+            min_booking_advance_min=rules.min_booking_advance_min,
+            booking_window_days=rules.booking_window_days,
+            cancellation_deadline_min=rules.cancellation_deadline_min,
+            repeat_booking_allowed=rules.repeat_booking_allowed,
+            confirmation_required=rules.trainer_confirmation_required,
+            prepay_required=rules.prefill_on_booking,
+            widget_work_start=rules.widget_work_start,
+            widget_work_end=rules.widget_work_end,
         ),
         branches=[
             BranchInfo(

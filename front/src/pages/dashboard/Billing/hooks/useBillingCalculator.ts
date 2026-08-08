@@ -4,10 +4,14 @@ import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '..
 import type { ActivateModelRequest, IbanCheckout, AutopaySettings, PaymentCard, BillingStats } from '../../../../api/billing/billing.types';
 import { PLAN_COLORS } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
-import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { errorMessage } from '../../../../api/errorMessage';
 import { useToast } from '../../../../components/ui/index';
+import { useInvoiceDetails, validateInvoiceDetails, type InvoiceDetailErrors } from './useInvoiceDetails';
 
 type PlanInfo = { name: string; monthly: number; color: string };
+
+// Шаги модалки оплаты: выбор способа → (реквизиты фактуры, если их ещё нет) → оплата.
+export type PayBranch = 'choose' | 'details' | 'iban' | 'card';
 
 const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
 
@@ -15,7 +19,6 @@ const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
 const EMPTY_PRICES: Record<PlanType, number> = { start: 0, pro: 0, business: 0 };
 
 export function useBillingCalculator() {
-  const currency = useStudioCurrency();
   const { t } = useTranslation('billing');
   const toast = useToast();
   const [billingMode, setBillingMode] = useState<BillingMode>('subscription');
@@ -30,11 +33,21 @@ export function useBillingCalculator() {
   // в копейках, UI считает и рисует в рублях → делим на 100 один раз тут.
   const [prices, setPrices] = useState<Record<PlanType, number>>(EMPTY_PRICES);
   const [periodDiscounts, setPeriodDiscounts] = useState<Record<number, number>>({ 1: 0, 6: 0, 12: 0, 24: 0 });
+  // Валюта тарифов — из каталога (BILLING_CURRENCY Stripe-аккаунта), а не валюта кассы
+  // студии: списывают всегда евро, чем бы студия ни торговала у себя.
+  const [currency, setCurrency] = useState('EUR');
   // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
   const [showPayModal, setShowPayModal] = useState(false);
-  const [payBranch, setPayBranch] = useState<'choose' | 'iban' | 'card'>('choose');
+  const [payBranch, setPayBranch] = useState<PayBranch>('choose');
   const [ibanData, setIbanData] = useState<IbanCheckout | null>(null);
   const [payBusy, setPayBusy] = useState(false);
+  // Реквизиты фактуры (IČO/DIČ/страна). Спрашиваются ОДИН раз — на шаге 'details'
+  // перед первой оплатой; заполненные лежат в профиле студии и больше не всплывают.
+  const details = useInvoiceDetails();
+  const [wantInvoice, setWantInvoice] = useState(true);
+  const [detailErrors, setDetailErrors] = useState<InvoiceDetailErrors>({});
+  // Способ, выбранный до шага реквизитов: к нему возвращаемся после сохранения.
+  const [pendingMethod, setPendingMethod] = useState<'iban' | 'card'>('card');
   // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
@@ -48,7 +61,6 @@ export function useBillingCalculator() {
   const [invoicesLoaded, setInvoicesLoaded] = useState(false);
   const [cards, setCards] = useState<PaymentCard[]>([]);
   const [cardsLoaded, setCardsLoaded] = useState(false);
-  const [renewState, setRenewState] = useState<'idle' | 'busy' | 'done'>('idle');
   // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
   const [stats, setStats] = useState<BillingStats | null>(null);
 
@@ -108,13 +120,16 @@ export function useBillingCalculator() {
 
   const closePayModal = () => setShowPayModal(false);
 
-  // Ветка IBAN: тестовый инвойс+реквизиты вместо редиректа на оплату (эпик B2/B4).
+  // Ветка IBAN: настоящий счёт Stripe + реквизиты для перевода, фактура уезжает письмом.
+  // Ошибку показываем как её объяснил сервер (нет страны → 422 tax_details_required,
+  // доплачивать нечего → 409): общий тост «попробуйте ещё раз» не говорил владельцу,
+  // что именно надо сделать, и упирал его в тупик.
   const payWithIban = () => {
     if (payBusy) return;
     setPayBusy(true);
     billingApi.checkoutIban(selectedPlan, selectedPeriod)
       .then(data => { setIbanData(data); setPayBranch('iban'); })
-      .catch(() => toast.error(t('payModal.ibanError')))
+      .catch(err => toast.error(errorMessage(err, t)))
       .finally(() => setPayBusy(false));
   };
 
@@ -124,17 +139,61 @@ export function useBillingCalculator() {
     setPayBusy(true);
     billingApi.checkout(selectedPlan, selectedPeriod)
       .then(({ checkout_url }) => { window.location.href = checkout_url; })
-      .catch(() => { setPayBusy(false); toast.error(t('payModal.cardError')); }); // при ошибке снимаем блок, редиректа не было
+      .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); }); // при ошибке снимаем блок, редиректа не было
   };
 
-  // Продление по сохранённой карте (rectoken): статус подписки придёт вебхуком, а свежий
-  // (pending) счёт подтягиваем сразу через loadInvoices — не ждём фокус-рефетч.
-  const renew = () => {
-    if (renewState === 'busy') return;
-    setRenewState('busy');
-    billingApi.renew()
-      .then(() => { setRenewState('done'); loadInvoices(); toast.success(t('method.renewSuccess')); })
-      .catch(() => { setRenewState('idle'); toast.error(t('method.renewError')); });
+  // Выбор способа оплаты. Реквизиты фактуры спрашиваем ПЕРЕД оплатой и только если их
+  // ещё нет: IČO нужен для фактуры в обеих ветках, страна — обязательна для IBAN
+  // (без неё бэкенд отвечает 422, а хостед-страницы, где Stripe спросил бы адрес сам,
+  // в этой ветке нет).
+  const chooseMethod = (method: 'iban' | 'card') => {
+    if (payBusy) return;
+    // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
+    // проверки шаг реквизитов всплывал бы у студии, которая их давно заполнила.
+    const needsDetails = details.loaded
+      && (!details.saved.company_id || (method === 'iban' && !details.saved.country));
+    if (needsDetails) {
+      setPendingMethod(method);
+      setWantInvoice(true);
+      setDetailErrors({});
+      setPayBranch('details');
+      return;
+    }
+    if (method === 'iban') payWithIban();
+    else setPayBranch('card');
+  };
+
+  // Шаг реквизитов: валидируем, сохраняем в профиль студии и продолжаем к оплате.
+  // Сохранение обязательно ДО оплаты — Stripe Customer собирается из профиля студии
+  // (routers/billing/checkout._ensure_customer), реквизиты из состояния он не увидит.
+  const submitDetails = () => {
+    if (payBusy) return;
+    const errors = validateInvoiceDetails(
+      details.value, { wantInvoice, requireCountry: pendingMethod === 'iban' }, t,
+    );
+    setDetailErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setPayBusy(true);
+    details.save()
+      .then(() => {
+        setPayBusy(false);
+        if (pendingMethod === 'iban') payWithIban();
+        else setPayBranch('card');
+      })
+      .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); });
+  };
+
+  // Та же форма во вкладке «Способ оплаты» — заполнить реквизиты заранее, без оплаты.
+  const saveDetails = () => {
+    const errors = validateInvoiceDetails(
+      details.value, { wantInvoice: !!details.value.company_id, requireCountry: false }, t,
+    );
+    setDetailErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    details.save()
+      .then(() => toast.success(t('method.details.saved')))
+      .catch(err => toast.error(errorMessage(err, t)));
   };
 
   // Сверка статуса счёта с банком (вебхук мог не дойти). Оплаченный счёт активирует
@@ -165,6 +224,7 @@ export function useBillingCalculator() {
       }
       setPrices(mapped);
       setPeriodDiscounts(cat.period_discounts);
+      if (cat.currency) setCurrency(cat.currency);
     }).catch(() => { /* нули остаются — не роняем страницу */ });
   }, []);
 
@@ -200,9 +260,13 @@ export function useBillingCalculator() {
     currentMonthly, discountedPrice, totalToPay, savedTotal,
     startCheckout,
     activateModel, modelBusy,
-    showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy, payWithIban, payWithCard,
+    showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy,
+    chooseMethod, payWithCard,
+    details, wantInvoice, setWantInvoice, detailErrors, submitDetails, saveDetails,
+    // Ветка IBAN обязывает заполнить страну — форма помечает поле и меняет подсказку.
+    detailsForIban: pendingMethod === 'iban',
     paymentReturn, plan,
-    invoices, invoicesLoaded, cards, cardsLoaded, renew, renewState, setAutopay,
+    invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,
   };
 }
