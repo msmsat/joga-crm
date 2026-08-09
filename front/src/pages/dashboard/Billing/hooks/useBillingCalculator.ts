@@ -1,19 +1,31 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
 import type { ActivateModelRequest, IbanCheckout, AutopaySettings, PaymentCard, BillingStats } from '../../../../api/billing/billing.types';
-import { PLAN_COLORS } from '../constants';
+import { PLAN_COLORS, PLAN_STAFF_FALLBACK } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useToast } from '../../../../components/ui/index';
 import { useInvoiceDetails, validateInvoiceDetails, type InvoiceDetailErrors } from './useInvoiceDetails';
 
-type PlanInfo = { name: string; monthly: number; color: string };
+type PlanInfo = { name: string; monthly: number; color: string; staffLimit: number | null };
 
 // Шаги модалки оплаты: выбор способа → (реквизиты фактуры, если их ещё нет) → оплата.
 export type PayBranch = 'choose' | 'details' | 'iban' | 'card';
 
 const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
+
+// Режим тарифа в БД ↔ плитка в интерфейсе. Комбо на сервере зовётся "combo",
+// а плитка исторически называется 'fixed' — без этой пары UI и БД молча
+// расходятся, а цену подписки определяет именно БД (checkout._is_combo).
+const MODE_FROM_SERVER: Record<string, BillingMode> = {
+  subscription: 'subscription', percent: 'percent', combo: 'fixed',
+};
+
+// Деньги считаем в евро с копейками: скидка 30% от 39 € даёт 27,30, и Math.round
+// до целых занижал итог на вкладке оплаты (27 × 12 = 324 € вместо 327,60 €,
+// которые реально спишет Stripe по amount_for из routers/billing/plans.py).
+const round2 = (value: number) => Math.round(value * 100) / 100;
 
 // Нулевые цены на время загрузки каталога — карточки рисуются сразу, без скачка вёрстки.
 const EMPTY_PRICES: Record<PlanType, number> = { start: 0, pro: 0, business: 0 };
@@ -32,6 +44,7 @@ export function useBillingCalculator() {
   // Каталог с сервера — источник истины о ценах (правило 6 эпика). Цены приходят
   // в копейках, UI считает и рисует в рублях → делим на 100 один раз тут.
   const [prices, setPrices] = useState<Record<PlanType, number>>(EMPTY_PRICES);
+  const [staffLimits, setStaffLimits] = useState<Record<PlanType, number | null>>(PLAN_STAFF_FALLBACK);
   const [periodDiscounts, setPeriodDiscounts] = useState<Record<number, number>>({ 1: 0, 6: 0, 12: 0, 24: 0 });
   // Валюта тарифов — из каталога (BILLING_CURRENCY Stripe-аккаунта), а не валюта кассы
   // студии: списывают всегда евро, чем бы студия ни торговала у себя.
@@ -64,7 +77,28 @@ export function useBillingCalculator() {
   // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
   const [stats, setStats] = useState<BillingStats | null>(null);
 
-  const loadPlan = () => billingApi.getPlan().then(setPlan).catch(() => {});
+  // Рамка карточки следует за selectedPlan, который по умолчанию 'pro' — верно для
+  // студии без подписки (лучший вариант), но у студии с активным планом рамка должна
+  // сразу стоять на НЁМ, а не расходиться с бейджем «Текущий». Синхронизируем один раз
+  // при первой загрузке плана (planSyncedRef, не state — иначе setState синхронно
+  // внутри effect); дальше выбор карточки — за пользователем.
+  const planSyncedRef = useRef(false);
+  const modeSyncedRef = useRef(false);
+  const loadPlan = () => billingApi.getPlan().then(p => {
+    setPlan(p);
+    if (!planSyncedRef.current && p?.status === 'active' && p.plan_name in PLAN_COLORS) {
+      setSelectedPlan(p.plan_name as PlanType);
+      planSyncedRef.current = true;
+    }
+    // Плитку режима тоже ставим на то, что реально лежит в БД, и тоже один раз.
+    // Без этого студия на комбо открывала страницу с выбранной «Подпиской» и
+    // видела полную цену, тогда как Stripe списал бы половинную: сумму берёт
+    // сервер из billing_mode, а не из выбора во фронте.
+    if (!modeSyncedRef.current && p?.billing_mode && p.billing_mode in MODE_FROM_SERVER) {
+      setBillingMode(MODE_FROM_SERVER[p.billing_mode]);
+      modeSyncedRef.current = true;
+    }
+  }).catch(() => {});
   // /dashboard/billing показывает всю историю без своей пагинации — берём верхнюю
   // границу бэка (задача 3, ?limit=999999 → 422), не 12-строчный дефолт вкладки Настроек.
   const loadInvoices = () =>
@@ -101,21 +135,42 @@ export function useBillingCalculator() {
   }, []);
 
   // Переключение тарифной модели (эпик B3): без разового платежа, ответ сразу в стейт — без F5.
-  const activateModel = (body: ActivateModelRequest) => {
+  // `onDone` вызывается ТОЛЬКО на успехе: связка «активировать комбо → сразу оплатить»
+  // не должна открывать окно оплаты, если режим на сервере так и не переключился —
+  // иначе студия заплатила бы полную цену подписки, ожидая половинную.
+  const activateModel = (body: ActivateModelRequest, onDone?: () => void) => {
     if (modelBusy) return;
     setModelBusy(true);
     billingApi.activateModel(body)
-      .then(res => { setPlan(res); loadStats(); toast.success(t('mode.activateSuccess')); })
+      .then(res => {
+        setPlan(res); loadStats(); toast.success(t('mode.activateSuccess'));
+        onDone?.();
+      })
       .catch(() => toast.error(t('mode.activateError')))
       .finally(() => setModelBusy(false));
   };
 
-  // «Оплатить» больше не редиректит сразу (эпик B4) — открывает модалку выбора способа,
-  // сам платёж/показ IBAN происходит внутри неё.
-  const startCheckout = () => {
+  const openPayModal = () => {
     setPayBranch('choose');
     setIbanData(null);
     setShowPayModal(true);
+  };
+
+  // «Оплатить» больше не редиректит сразу (эпик B4) — открывает модалку выбора способа,
+  // сам платёж/показ IBAN происходит внутри неё.
+  //
+  // Перед этим выравниваем режим: сумму подписки считает сервер по billing_mode из БД
+  // (checkout._is_combo), а не по выбранной плитке. Студия на комбо, нажавшая «Оплатить»
+  // на вкладке подписки, иначе видела бы полную цену и получала половинный Price —
+  // и продолжала платить 1.5% с транзакций, думая, что перешла на чистый фикс.
+  // Обратный переход (комбо → подписка) новых обязательств не создаёт, поэтому
+  // согласия не требует; вход в комбо идёт только через модалку условий в PlansTab.
+  const startCheckout = () => {
+    if (billingMode === 'subscription' && plan && plan.billing_mode !== 'subscription') {
+      activateModel({ mode: 'subscription' }, openPayModal);
+      return;
+    }
+    openPayModal();
   };
 
   const closePayModal = () => setShowPayModal(false);
@@ -218,11 +273,13 @@ export function useBillingCalculator() {
   useEffect(() => {
     billingApi.getPlans().then(cat => {
       const mapped = { ...EMPTY_PRICES };
+      const limits = { ...PLAN_STAFF_FALLBACK };
       for (const p of cat.plans) {
         const id = p.id as PlanType;
-        if (id in mapped) mapped[id] = p.price / 100;
+        if (id in mapped) { mapped[id] = p.price / 100; limits[id] = p.limits.staff; }
       }
       setPrices(mapped);
+      setStaffLimits(limits);
       setPeriodDiscounts(cat.period_discounts);
       if (cat.currency) setCurrency(cat.currency);
     }).catch(() => { /* нули остаются — не роняем страницу */ });
@@ -232,21 +289,22 @@ export function useBillingCalculator() {
   // мультиязычный. Цены и id по-прежнему диктует сервер (CLAUDE.md §8).
   const plans = useMemo(
     () => Object.fromEntries(PLAN_IDS.map(id => [
-      id, { name: t(`planNames.${id}`), monthly: prices[id], color: PLAN_COLORS[id] },
+      id, { name: t(`planNames.${id}`), monthly: prices[id], color: PLAN_COLORS[id], staffLimit: staffLimits[id] },
     ])) as Record<PlanType, PlanInfo>,
-    [prices, t],
+    [prices, staffLimits, t],
   );
 
-  const getPrice = (plan: PlanType, period: number) => {
-    const base = plans[plan].monthly;
-    const disc = periodDiscounts[period] || 0;
-    return Math.round(base * (1 - disc));
-  };
+  const getPrice = (plan: PlanType, period: number) =>
+    round2(plans[plan].monthly * (1 - (periodDiscounts[period] || 0)));
 
-  const currentMonthly = plans[selectedPlan].monthly;
-  const discountedPrice = getPrice(selectedPlan, selectedPeriod);
-  const totalToPay = discountedPrice * selectedPeriod;
-  const savedTotal = currentMonthly * selectedPeriod - totalToPay;
+  // Комбо платит подпиской РОВНО половину (routers/billing/plans.COMBO_FIXED), и
+  // скидка периода режет её так же. Считаем от той же базы, что и сервер: иначе
+  // график платежей обещал бы полную цену там, где Stripe спишет половинную.
+  const comboHalf = billingMode === 'fixed' ? 0.5 : 1;
+  const currentMonthly = round2(plans[selectedPlan].monthly * comboHalf);
+  const discountedPrice = round2(getPrice(selectedPlan, selectedPeriod) * comboHalf);
+  const totalToPay = round2(discountedPrice * selectedPeriod);
+  const savedTotal = round2(currentMonthly * selectedPeriod - totalToPay);
 
   return {
     currency,

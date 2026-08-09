@@ -5,11 +5,13 @@ import Shedule from './pages/shedule';
 import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
 import BottomNav from './components/BottomNav';
+import DesktopNav from './components/DesktopNav';
 import AmbientBackdrop from './components/home/AmbientBackdrop';
 import Auth from './pages/auth';
 import { authTelegram, type UserResponse } from './api/auth';
 import { getStudioCatalog, type StudioCatalog } from './api/studio';
 import { useTelegram } from './hooks/useTelegram';
+import { useIsDesktop } from './hooks/useIsDesktop';
 import { readEntry } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
@@ -18,6 +20,7 @@ import './App.css';
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const { tg } = useTelegram();
+  const isDesktop = useIsDesktop();
 
   const [user, setUser] = useState<UserResponse | null>(null);
   const [catalog, setCatalog] = useState<StudioCatalog | null>(null);
@@ -146,7 +149,7 @@ export default function App() {
   // Единственное, что можно честно сказать — нужна ссылка студии.
   if (needsAuth) {
     return (
-      <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-8 text-center">
+      <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden px-8 text-center">
         <AmbientBackdrop tint="#F9A08B" />
 
         <motion.div
@@ -189,34 +192,68 @@ export default function App() {
   }
 
   const screens: Record<string, React.ReactNode> = {
-    home: <Home user={user} catalog={catalog} />,
+    home: <Home user={user} catalog={catalog} onNavigate={switchTab} />,
     sched: <Shedule catalog={catalog} />,
     my: <MyLessons />,
     prof: <Profile catalog={catalog} />,
   };
 
   // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME
+  //
+  // Каркас один, меню два. Держать в DOM оба и прятать лишнее медиазапросом
+  // нельзя: у активного пункта в каждом свой layoutId, и framer связал бы
+  // подсветку невидимого меню с видимым в один переезд через полэкрана.
+  //
+  // Свет студии живёт здесь, а не на страницах: внутри колонки контента он
+  // обрезался её шириной и читался прямоугольником тона посреди белого поля.
+  // На каркасе он заливает всё окно, включая меню, — это и есть освещение.
+  // Фона на этом узле быть не должно: подложка стоит на -z-10, а собственный
+  // фон родителя закрасил бы её (фон страницы приходит из body, index.css).
   return (
-    <div className="relative h-[100dvh] overflow-hidden bg-background">
-      {/* mode="wait" держит порядок: старый экран уходит, только потом
-          приходит новый. Одновременный кроссфейд на телефоне читается
-          как подтормаживание, а не как переход. */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-        >
-          {/* Отступ под плавающую капсулу навигации — задан один раз здесь,
-              иначе каждый экран обязан помнить про неё сам. */}
-          <div className="pb-32">{screens[activeTab]}</div>
-        </motion.div>
-      </AnimatePresence>
+    <div className="relative h-[100dvh] overflow-hidden">
+      <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
 
-      <BottomNav active={activeTab} onSelect={switchTab} />
+      {/* Рамка приложения. Без потолка ширины меню прилипало к левому краю
+          монитора, а колонка контента вставала по центру остатка — между ними
+          зияла полоса в треть экрана. Общий потолок и центрирование всей пары
+          держат эту полосу постоянной на любой диагонали. */}
+      <div className="mx-auto flex h-full w-full max-w-[1560px]">
+        {isDesktop && (
+          <DesktopNav
+            active={activeTab}
+            onSelect={switchTab}
+            studioName={catalog?.studio.name}
+            logoUrl={catalog?.studio.logo_url}
+            userName={user?.name}
+          />
+        )}
+
+        <div className="relative min-w-0 flex-1 overflow-hidden">
+          {/* mode="wait" держит порядок: старый экран уходит, только потом
+              приходит новый. Одновременный кроссфейд на телефоне читается
+              как подтормаживание, а не как переход. */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="scroll-main absolute inset-0 overflow-y-auto overflow-x-hidden"
+            >
+              {/* Колонка контента: на телефоне во всю ширину с отступом под
+                  плавающую капсулу (иначе каждый экран обязан помнить про неё
+                  сам), на десктопе — 1160px по центру. Шире строки текста
+                  расползаются, и экран читается как растянутый телефон. */}
+              <div className="mx-auto w-full pb-32 dt:max-w-[1160px] dt:px-10 dt:pb-24">
+                {screens[activeTab]}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {!isDesktop && <BottomNav active={activeTab} onSelect={switchTab} />}
+        </div>
+      </div>
     </div>
   );
 }

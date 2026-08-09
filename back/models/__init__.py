@@ -17,6 +17,8 @@ from .settings import (
     StudioBillingPlan,
     PaymentCard,
     BillingInvoice,
+    OfflineTransactionFee,
+    PlatformRevenueLedger,
     UserSession,
     StudioIntegration,
 )
@@ -86,6 +88,8 @@ __all__ = [
     "StudioBillingPlan",
     "PaymentCard",
     "BillingInvoice",
+    "OfflineTransactionFee",
+    "PlatformRevenueLedger",
     "UserSession",
     "StudioIntegration",
     "StaffWorkingHours",

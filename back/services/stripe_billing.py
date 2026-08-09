@@ -360,6 +360,101 @@ async def change_subscription_price(
     return await asyncio.to_thread(stripe.Subscription.modify, subscription_id, **params)
 
 
+async def create_setup_checkout(
+    customer_id: str, success_url: str, cancel_url: str,
+) -> tuple[str, str]:
+    """Страница привязки карты БЕЗ списания → (session_id, url).
+
+    `mode="setup"` — Stripe соберёт карту, пройдёт 3-D Secure и приложит метод
+    к Customer'у, не взяв ни копейки. Нужна тарифу «только процент»: подписки у
+    него нет, значит и счёта, оплатой которого карта привязалась бы попутно, —
+    тоже. Без этой страницы такая студия не смогла бы привязать карту вообще,
+    а гейт без карты её не пускает (dependencies.require_active_subscription).
+
+    Хостед-страница, а не Stripe.js в модалке: тем же способом оплачивается
+    подписка (create_subscription_checkout), фронту не нужен второй сценарий.
+    """
+    session = await asyncio.to_thread(
+        stripe.checkout.Session.create,
+        mode="setup",
+        customer=customer_id,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        # off_session: карту потом списываем без клиента у экрана (ежемесячный
+        # счёт за комиссию). Без этого банк может отклонить фоновое списание как
+        # неавторизованное — согласие на него даётся именно здесь.
+        payment_method_options={"card": {"setup_future_usage": "off_session"}},
+    )
+    return session.id, session.url
+
+
+async def fetch_setup_intent(setup_intent_id: str):
+    """SetupIntent с раскрытым способом оплаты — из него берём маску карты."""
+    return await asyncio.to_thread(
+        stripe.SetupIntent.retrieve, setup_intent_id, expand=["payment_method"],
+    )
+
+
+async def set_default_payment_method(customer_id: str, payment_method_id: str) -> None:
+    """Сделать карту дефолтной для счетов клиента.
+
+    Без этого выставленный счёт за комиссию не спишется автоматически: Stripe
+    берёт метод из `invoice_settings.default_payment_method`, а сам факт
+    привязки карты к Customer'у его туда не кладёт.
+    """
+    await asyncio.to_thread(
+        stripe.Customer.modify,
+        customer_id,
+        invoice_settings={"default_payment_method": payment_method_id},
+    )
+
+
+async def create_fee_invoice(
+    customer_id: str, amount: int, currency: str, description: str,
+    days_until_due: int, metadata: dict,
+):
+    """Счёт за офлайн-комиссии → ФИНАЛИЗИРОВАННЫЙ Invoice со сроком оплаты.
+
+    `send_invoice` + `days_until_due`, а НЕ автосписание: карту у студии мы не
+    просим. Stripe шлёт счёт письмом со ссылкой на оплату, студия платит сама.
+
+    Порядок обязателен: сначала черновик, потом позиция ЯВНО в него. InvoiceItem
+    без поля `invoice` становится ОТЛОЖЕННЫМ и приклеивается к первому же
+    следующему счёту клиента — например к очередному счёту подписки комбо-студии.
+    Тогда наш счёт ушёл бы пустым, а сумма за тариф выросла бы на комиссию.
+    `pending_invoice_items_behavior="exclude"` — та же защита в обратную сторону.
+
+    Финализируем сами: у финализированного счёта сразу есть номер, PDF и
+    hosted-ссылка — их надо показать студии и зеркалить в БД.
+    """
+    invoice = await asyncio.to_thread(
+        stripe.Invoice.create,
+        customer=customer_id,
+        currency=currency,
+        collection_method="send_invoice",
+        days_until_due=days_until_due,
+        auto_advance=True,
+        pending_invoice_items_behavior="exclude",
+        metadata=metadata,
+    )
+    await asyncio.to_thread(
+        stripe.InvoiceItem.create,
+        customer=customer_id,
+        invoice=invoice.id,
+        amount=amount,
+        currency=currency,
+        description=description,
+    )
+    finalized = await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice.id)
+    # Письмо со счётом — отдельным вызовом: финализация сама его не шлёт, а
+    # студия без карты узнаёт о долге только из письма и виджета.
+    try:
+        await asyncio.to_thread(stripe.Invoice.send_invoice, finalized.id)
+    except Exception:
+        logger.exception("Stripe billing: счёт %s не отправлен письмом", finalized.id)
+    return finalized
+
+
 async def open_or_new_invoice(customer_id: str, subscription_id: str):
     """Счёт, который студии реально надо оплатить прямо сейчас, или None.
 

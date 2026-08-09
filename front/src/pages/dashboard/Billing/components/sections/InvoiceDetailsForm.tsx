@@ -7,13 +7,17 @@ interface Props {
   patch: (p: Partial<InvoiceDetails>) => void;
   wantInvoice: boolean;
   setWantInvoice: (v: boolean) => void;
-  /** IBAN требует страну и без фактуры: по ней Stripe Tax считает ставку VAT. */
+  /** IBAN требует страну и индекс даже без фактуры: по ним Stripe Tax считает ставку VAT. */
   requireCountry: boolean;
+  /** Показывать ли страну и индекс вообще. На карточной ветке — нет: адрес
+   *  плательщика собирает сама страница Stripe (billing_address_collection),
+   *  и спрашивать его дважды значит просить лишнее перед оплатой. */
+  showAddress: boolean;
   errors: InvoiceDetailErrors;
 }
 
 export default function InvoiceDetailsForm({
-  value, patch, wantInvoice, setWantInvoice, requireCountry, errors,
+  value, patch, wantInvoice, setWantInvoice, requireCountry, showAddress, errors,
 }: Props) {
   const { t } = useTranslation('billing');
 
@@ -56,23 +60,26 @@ export default function InvoiceDetailsForm({
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        <Input
-          label={t('payModal.invoice.countryLabel')}
-          value={value.country}
-          onChange={v => patch({ country: v.toUpperCase().slice(0, 2) })}
-          placeholder="CZ"
-          error={errors.country}
-          monospace
-        />
-        <Input
-          label={t('payModal.invoice.postalLabel')}
-          value={value.postal_code}
-          onChange={v => patch({ postal_code: v })}
-          placeholder="11000"
-          monospace
-        />
-      </div>
+      {showAddress && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <Input
+            label={t('payModal.invoice.countryLabel')}
+            value={value.country}
+            onChange={v => patch({ country: v.toUpperCase().slice(0, 2) })}
+            placeholder="CZ"
+            error={errors.country}
+            monospace
+          />
+          <Input
+            label={t('payModal.invoice.postalLabel')}
+            value={value.postal_code}
+            onChange={v => patch({ postal_code: v })}
+            placeholder="11000"
+            error={errors.postal_code}
+            monospace
+          />
+        </div>
+      )}
 
       <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.6 }}>
         {requireCountry ? t('payModal.invoice.countryNote') : t('payModal.invoice.note')}

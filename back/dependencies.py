@@ -174,19 +174,48 @@ async def get_scoped_lesson(lesson_id: int, ctx: StudioContext, db: AsyncSession
     return lesson
 
 
+# Один и тот же отказ для CRM и мини-приложения: студия заблокирована за
+# неоплаченный счёт по комиссии. Фронт ловит код и показывает, куда платить.
+SUSPENDED_DETAIL = {
+    "code": "billing.suspended",
+    "message": "Доступ приостановлен: не оплачен счёт за комиссию с офлайн-продаж. "
+               "Оплатите его в разделе «Тариф и оплата».",
+}
+
+
 async def require_active_subscription(
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ) -> StudioContext:
-    """Глобальный гейт (задача 8b): пускает в разделы данных только с активной подпиской.
+    """Глобальный гейт (задача 8b): пускает в разделы данных только оплаченные студии.
 
-    Истина — БД (StudioBillingPlan), НЕ JWT. План отсутствует (до онбординга) или
-    истёк (expires_at < now) → 402 subscription_expired. Вешается router-level на
-    все разделы данных; НЕ на /auth, /billing, /public, вебхук — иначе не войти/не оплатить.
+    Истина — БД (StudioBillingPlan), НЕ JWT. Вешается router-level на все разделы
+    данных; НЕ на /auth, /billing, /public, вебхук — иначе не войти/не оплатить.
+
+    Три ветки:
+    1. Просроченный счёт за комиссию блокирует ЛЮБУЮ студию, включая ту, у
+       которой подписка оплачена: деньги клиентов она уже получила наличными.
+       Срок наступает не сразу — у студии есть неделя после выставления счёта
+       (offline_fee_billing.GRACE_DAYS), и всё это время доступ открыт.
+    2. Тариф «только процент» — подписки нет по определению, срок подписки не
+       смотрим вообще. Карта не нужна: студия платит по счёту сама.
+    3. Всё остальное (подписка и комбо) — по статусу и сроку, как раньше. У комбо
+       фиксированная часть платится подпиской, и не оплатив её тариф не работает.
     """
+    # Импорт локальный: services.platform_fee тянет routers.billing.plans, а тот
+    # через routers.billing.__init__ — этот самый модуль. На уровне файла вышел
+    # бы цикл (тот же приём, что в billing/webhook.py).
+    from services.platform_fee import studio_suspended
+
+    if await studio_suspended(db, ctx.studio_id):
+        raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
+
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
+
+    if plan is not None and plan.billing_mode == "percent":
+        return ctx
 
     # Гейт смотрит и на дату, и на статус. Статус нужен из-за подписок: Stripe
     # переводит брошенную неоплаченной в unpaid/canceled, а expires_at при этом

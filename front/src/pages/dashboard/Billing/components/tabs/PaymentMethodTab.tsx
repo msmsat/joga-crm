@@ -131,6 +131,9 @@ export default function PaymentMethodTab({
             wantInvoice={wantInvoice}
             setWantInvoice={setWantOverride}
             requireCountry={false}
+            // Здесь реквизиты заполняют ЗАРАНЕЕ, вне оплаты: адрес показываем всегда,
+            // чтобы студия могла закрыть его до того, как понадобится счёт по IBAN.
+            showAddress
             errors={detailErrors}
           />
           <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'flex-end' }}>

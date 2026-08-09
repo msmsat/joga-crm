@@ -45,6 +45,8 @@ from sqlalchemy.future import select
 
 from activity import log_activity
 from database import get_db
+from dependencies import SUSPENDED_DETAIL
+from services import platform_fee
 from ratelimit import limiter
 from models import BookingChannelConfig, Client, ReferralRecord
 from schemas._base import BaseSchema
@@ -295,6 +297,13 @@ async def get_current_client(
     )).scalar_one_or_none()
     if client is None:
         raise HTTPException(status_code=401, detail="Недействительный токен")
+
+    # Студия не оплатила счёт за комиссию — мини-приложение закрывается вместе с
+    # CRM. Иначе клиенты продолжали бы записываться и платить в студию, которой
+    # платформа уже отключила кабинет: записи копились бы там, где их некому
+    # обработать. 402, а не 401 — токен клиента исправен, дело в студии.
+    if await platform_fee.studio_suspended(db, client.studio_id):
+        raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
     return client
 
 

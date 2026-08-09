@@ -57,7 +57,9 @@ export default function DirectionsRail({ services, onSelect }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex gap-2.5 overflow-x-auto px-5 pb-1">
+    /* На десктопе лента перестаёт быть лентой: горизонтальная прокрутка мышью —
+       это спрятанный контент, а места хватает, чтобы разложить чипы рядами. */
+    <div className="flex gap-2.5 overflow-x-auto px-5 pb-1 dt:flex-wrap dt:gap-3 dt:overflow-visible">
       {services.map((service, i) => {
         const label = t(`lesson.name.${service.name}`, { defaultValue: service.name });
 
@@ -72,7 +74,7 @@ export default function DirectionsRail({ services, onSelect }: Props) {
               onClick={() => onSelect(service.name, label)}
               role="button"
               tabIndex={0}
-              className="flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-card pl-3.5 pr-4 shadow-soft"
+              className="flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-card pl-3.5 pr-4 shadow-soft ring-1 ring-inset ring-transparent transition-shadow duration-300 dt:h-[52px] dt:gap-2.5 dt:pl-4.5 dt:pr-5 dt:hover:shadow-lift dt:hover:ring-brand/30"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -81,11 +83,11 @@ export default function DirectionsRail({ services, onSelect }: Props) {
                 strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-[17px] w-[17px] shrink-0"
+                className="h-[17px] w-[17px] shrink-0 dt:h-[19px] dt:w-[19px]"
               >
                 {ICONS[service.name] ?? DEFAULT_ICON}
               </svg>
-              <span className="whitespace-nowrap text-[13px] font-bold tracking-[-0.01em] text-card-foreground">
+              <span className="whitespace-nowrap text-[13px] font-bold tracking-[-0.01em] text-card-foreground dt:text-[14px]">
                 {label}
               </span>
             </Press>

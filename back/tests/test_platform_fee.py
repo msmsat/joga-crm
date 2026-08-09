@@ -161,6 +161,86 @@ def test_crm_counter_withholds_the_same_fee():
     assert calls[0]["stripe_account"] == "acct_studio"
 
 
+# ------------------------------------------------------- леджер доходов (онлайн)
+
+class _LedgerDB:
+    """Отдаёт заявку на первый select, студию на второй. Считает commit'ы."""
+
+    def __init__(self, checkout, studio):
+        self._answers = [checkout, studio]
+        self.commits = 0
+
+    async def execute(self, _q):
+        value = self._answers.pop(0) if self._answers else None
+        return SimpleNamespace(
+            scalar_one_or_none=lambda: value, scalar_one=lambda: value, rowcount=0,
+        )
+
+    async def commit(self):
+        self.commits += 1
+
+    async def rollback(self):
+        pass
+
+
+def _run_apply_paid(application_fee, subscription_id=None):
+    """apply_paid с подменёнными проводкой и леджером → (доходы, заявка)."""
+    import routers.checkout.stripe_pay as S
+
+    booked = []
+
+    async def fake_perform_pay(*_a, **_kw):
+        # Настоящий perform_pay всегда отдаёт CheckoutPayResult, и apply_paid
+        # читает из него subscription_id — заглушка обязана держать тот же
+        # контракт, иначе тест зелёный на коде, который в бою падает.
+        return SimpleNamespace(subscription_id=subscription_id)
+
+    async def fake_record_revenue(_db, studio_id, source, amount, currency, external_id):
+        booked.append((studio_id, source, amount, currency, external_id))
+
+    checkout = SimpleNamespace(
+        session_id="cs_test_9", studio_id=7, user_id=3, account_id="acct_1",
+        payload={"client_id": 1, "product_id": 2, "product_type": "subscription",
+                 "payment_method": "cash"},
+        amount=1500, application_fee=application_fee, status="pending",
+    )
+    saved = (S.perform_pay, S.platform_fee.record_revenue)
+    S.perform_pay = fake_perform_pay
+    S.platform_fee.record_revenue = fake_record_revenue
+    try:
+        db = _LedgerDB(checkout, SimpleNamespace(id=7, currency="CZK"))
+        assert asyncio.run(S.apply_paid(db, "cs_test_9")) is True
+    finally:
+        S.perform_pay, S.platform_fee.record_revenue = saved
+    return booked, checkout
+
+
+def test_online_fee_is_booked_to_the_revenue_ledger():
+    """Удержанная Stripe доля попадает в леджер — иначе доход платформы виден
+    только в её дашборде и не сводится ни с одной студией."""
+    booked, _checkout = _run_apply_paid(4500)
+    assert booked == [(7, "connect_fee", 4500, "CZK", "cs:cs_test_9")]
+
+
+def test_subscription_studio_writes_nothing_to_the_ledger():
+    """Комиссии не было — строки дохода быть не должно."""
+    booked, _checkout = _run_apply_paid(0)
+    assert booked == []
+
+
+def test_sold_subscription_is_linked_to_the_checkout():
+    """Заявка запоминает проданный абонемент: по этой ссылке полный возврат его
+    гасит (_revert_sale). Без неё пришлось бы угадывать «последний похожий»."""
+    _booked, checkout = _run_apply_paid(0, subscription_id=55)
+    assert checkout.subscription_id == 55
+
+
+def test_single_visit_leaves_the_link_empty():
+    """Разовое посещение абонемента не создаёт — гасить возврату нечего."""
+    _booked, checkout = _run_apply_paid(0)
+    assert getattr(checkout, "subscription_id", None) is None
+
+
 if __name__ == "__main__":
     _saved = SC.stripe.checkout.Session.create
     try:
@@ -176,6 +256,8 @@ if __name__ == "__main__":
         test_receipt_email_is_passed_for_stripe_to_send_receipt()
         test_client_without_email_still_can_pay()
         test_crm_counter_withholds_the_same_fee()
+        test_online_fee_is_booked_to_the_revenue_ledger()
+        test_subscription_studio_writes_nothing_to_the_ledger()
     finally:
         SC.stripe.checkout.Session.create = _saved
     print("ALL PASS")

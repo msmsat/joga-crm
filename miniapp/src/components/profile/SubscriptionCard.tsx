@@ -45,23 +45,25 @@ export default function SubscriptionCard({
 
   return (
     <div className="px-5">
-      <div className={`overflow-hidden rounded-[24px] p-6 shadow-lift ${SURFACE}`}>
-        <div className={`text-[9.5px] font-extrabold uppercase tracking-[0.2em] opacity-55 ${ON_SURFACE}`}>
+      <div className={`overflow-hidden rounded-[24px] p-6 shadow-lift dt:rounded-[28px] dt:p-8 ${SURFACE}`}>
+        {/* На десктопе колонку уже подписала метка раздела (profile.tsx) —
+            два одинаковых заголовка подряд читались бы как ошибка вёрстки. */}
+        <div className={`text-[9.5px] font-extrabold uppercase tracking-[0.2em] opacity-55 dt:hidden ${ON_SURFACE}`}>
           {label}
         </div>
 
         {isLoading ? (
-          <div className={`mt-4 text-[14px] font-medium opacity-60 ${ON_SURFACE}`}>
+          <div className={`mt-4 text-[14px] font-medium opacity-60 dt:mt-0 ${ON_SURFACE}`}>
             {loadingLabel}
           </div>
         ) : hasSubscription ? (
           <>
-            <div className="mt-4 flex items-end justify-between gap-4">
+            <div className="mt-4 flex items-end justify-between gap-4 dt:mt-0">
               <div className="flex items-baseline gap-1.5">
-                <span className={`text-[46px] font-extrabold leading-none tabular-nums tracking-[-0.05em] ${ON_SURFACE}`}>
+                <span className={`text-[46px] font-extrabold leading-none tabular-nums tracking-[-0.05em] dt:text-[64px] ${ON_SURFACE}`}>
                   {left}
                 </span>
-                <span className={`text-[17px] font-bold tabular-nums opacity-50 ${ON_SURFACE}`}>
+                <span className={`text-[17px] font-bold tabular-nums opacity-50 dt:text-[20px] ${ON_SURFACE}`}>
                   / {total}
                 </span>
               </div>
@@ -82,7 +84,7 @@ export default function SubscriptionCard({
               {unitLabel}
             </div>
 
-            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/15">
+            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/15 dt:mt-7 dt:h-2">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${percent}%` }}
@@ -92,7 +94,7 @@ export default function SubscriptionCard({
             </div>
           </>
         ) : (
-          <Press onClick={onBuy} role="button" tabIndex={0} className="mt-4 cursor-pointer">
+          <Press onClick={onBuy} role="button" tabIndex={0} className="mt-4 cursor-pointer dt:mt-0">
             <div className={`text-[19px] font-extrabold tracking-[-0.02em] ${ON_SURFACE}`}>
               {emptyTitle}
             </div>

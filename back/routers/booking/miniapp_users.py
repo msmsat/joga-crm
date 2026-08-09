@@ -292,6 +292,7 @@ async def create_checkout_session(
         account_id=stripe_channel.account_id,
         payload={"client_id": client.id, "package_id": package.id},
         amount=package.price,
+        application_fee=fee_minor,
     ))
     await db.commit()
 

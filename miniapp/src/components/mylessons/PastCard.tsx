@@ -39,7 +39,7 @@ export default function PastCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.38, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-[22px] bg-card p-5 shadow-soft"
+      className="rounded-[22px] bg-card p-5 shadow-soft dt:rounded-[24px] dt:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <h3 className="min-w-0 flex-1 text-[17px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground">

@@ -90,7 +90,13 @@ def test_paid_sends_receipt():
 
     M.send_receipt = _fake_send_receipt
     try:
-        invoice = types.SimpleNamespace(status="pending", studio_id=1, paid_at=None)
+        # kind="subscription" — счёт за тариф (дефолт модели). У счёта за
+        # комиссию _activate выходит раньше, подписку не трогая.
+        # stripe_invoice_id=None — леджер доходов в этом тесте не проверяем.
+        invoice = types.SimpleNamespace(
+            status="pending", studio_id=1, paid_at=None,
+            kind="subscription", plan_name="pro", stripe_invoice_id=None,
+        )
         assert asyncio.run(apply_status(db, invoice, "paid")) is True
     finally:
         M.send_receipt = saved

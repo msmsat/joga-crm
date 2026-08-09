@@ -184,6 +184,17 @@ class StudioBillingPlan(Base):
     percent_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     fixed_base_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
+    # Согласие владельца на постоплату комиссии с офлайн-продаж — юридическое
+    # основание выставлять счёт и блокировать доступ за неоплату. Пишется ТОЛЬКО
+    # при явном подтверждении в модалке (POST /billing/model, accept_offline_terms).
+    # Ставка и версия текста фиксируются на момент согласия: сменим условия —
+    # старое согласие не должно молча распространиться на новые.
+    percent_terms_accepted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True,
+    )
+    percent_terms_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    percent_terms_version: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+
     auto_renewal: Mapped[bool] = mapped_column(Boolean, default=True)
     email_receipt_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     notify_before_days: Mapped[int] = mapped_column(Integer, default=3)
@@ -224,6 +235,16 @@ class BillingInvoice(Base):
     period_months: Mapped[int] = mapped_column(Integer, default=1)
     amount: Mapped[int] = mapped_column(Integer)
     payment_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    # subscription — счёт за тариф; offline_fee — счёт за комиссию с офлайн-продаж.
+    # Различать обязательно: оплата комиссии НЕ продлевает подписку, а её неоплата
+    # (в отличие от подписки) блокирует и CRM, и мини-приложение.
+    kind: Mapped[str] = mapped_column(String(20), default="subscription", index=True)
+    # Крайний срок оплаты. Прошёл, а счёт не оплачен → студия блокируется
+    # (services/platform_fee.studio_suspended). NULL у счетов за тариф: там срок
+    # ведёт Stripe своим dunning'ом, и блокировка идёт по статусу подписки.
+    due_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True, index=True,
+    )
     paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     status: Mapped[str] = mapped_column(String(20), default="pending")
     pdf_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
@@ -233,9 +254,78 @@ class BillingInvoice(Base):
         String(255), unique=True, index=True, nullable=True,
     )
     hosted_invoice_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    # Когда CRM отправила своё письмо о скором отключении (offline_fee, до due_at).
+    # NULL — ещё не отправлено. Stripe шлёт письмо по счёту сам, это — второе,
+    # из самой CRM (services/offline_fee_billing._send_reminders).
+    reminder_sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="billing_invoices")
     user: Mapped[Optional["User"]] = relationship(back_populates="billing_invoices")
+
+
+class OfflineTransactionFee(Base):
+    """Комиссия платформы с ОФЛАЙН-продажи (наличные, терминал, перевод, депозит).
+
+    Онлайн-платёж расщепляет сам Stripe (`application_fee_amount`) — деньги
+    делятся в момент оплаты. Офлайн-деньги проходят мимо платформы целиком,
+    поэтому её доля копится строкой здесь и выставляется студии ОДНИМ счётом
+    раз в месяц (services/offline_fee_billing.py). Карта не привязывается —
+    студия платит по счёту сама, в любой момент.
+
+    `invoice_id IS NULL` = ещё не выставлено; это и есть предикат агрегации и
+    сумма, которую показывает виджет «Тариф и оплата».
+
+    Ставка и валюта фиксируются на момент продажи: тариф студии могут поменять
+    задним числом, а уже начисленная комиссия меняться не должна.
+    """
+    __tablename__ = "offline_transaction_fees"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    client_id: Mapped[Optional[int]] = mapped_column(ForeignKey("clients.id", ondelete="SET NULL"), nullable=True)
+
+    # Обе суммы в МЛАДШИХ единицах `currency`, как их ждёт Stripe. Смешивать здесь
+    # целые кроны с галержами нельзя: счёт собирается суммированием этих строк.
+    sale_amount: Mapped[int] = mapped_column(Integer)
+    fee_amount: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(3))
+    percent_rate: Mapped[float] = mapped_column(Float)
+    payment_method: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+    invoice_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("billing_invoices.id", ondelete="SET NULL"), nullable=True, index=True,
+    )
+
+    studio: Mapped["Studio"] = relationship(back_populates="offline_fees")
+
+
+class PlatformRevenueLedger(Base):
+    """Доходы платформы одной строкой на поступление — и онлайн, и офлайн.
+
+    Задел под экран аналитики владельца платформы: сейчас удержанное видно
+    только в дашборде Stripe, а свести его с нашими студиями там нечем.
+
+    `external_id` уникален и служит ключом идемпотентности: ретрай вебхука
+    (Stripe шлёт событие повторно вплоть до трёх суток) не должен удваивать
+    выручку. Пишется ТОЛЬКО по факту денег — не при создании счёта.
+    """
+    __tablename__ = "platform_revenue_ledger"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # connect_fee — доля с онлайн-платежа клиента студии (Stripe Connect);
+    # subscription — оплаченный счёт за тариф.
+    # Офлайн-денег здесь нет и быть не может: на тарифе «процент» наличные просто
+    # запрещены (services/platform_fee.assert_online_payment_only), а не
+    # доначисляются счётом — взыскивать долги с студий мы отказались.
+    source: Mapped[str] = mapped_column(String(20), index=True)
+    amount: Mapped[int] = mapped_column(Integer)   # младшие единицы `currency`
+    currency: Mapped[str] = mapped_column(String(3))
+    external_id: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+
+    studio: Mapped["Studio"] = relationship(back_populates="revenue_entries")
 
 
 class UserSession(Base):

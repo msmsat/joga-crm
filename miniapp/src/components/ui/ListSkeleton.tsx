@@ -8,13 +8,24 @@
 export function ListSkeleton({
   rows = 3,
   flush = false,
+  wide = false,
 }: {
   rows?: number;
   /** Внутри листа отступы уже заданы снаружи — свои добавлять нельзя. */
   flush?: boolean;
+  /**
+   * Список, который на десктопе идёт в две колонки. Заглушка обязана повторять
+   * ту же сетку, иначе смысл скелета теряется: вёрстка всё равно прыгнет, когда
+   * одна колонка превратится в две.
+   */
+  wide?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-3 ${flush ? '' : 'px-5'}`}>
+    <div
+      className={`flex flex-col gap-3 ${flush ? '' : 'px-5'} ${
+        wide ? 'dt:grid dt:grid-cols-2 dt:gap-4' : ''
+      }`}
+    >
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}

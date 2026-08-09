@@ -100,6 +100,7 @@ export const queryKeys = {
   // Настройками (роадмап SETTINGS):
   appearance: ['settings', 'appearance'] as const,
   billingPlan: ['billing', 'plan'] as const,
+  billingOfflineFees: ['billing', 'offlineFees'] as const,
   billingPlans: ['billing', 'plans'] as const,
   billingCards: ['billing', 'cards'] as const,
   billingInvoices: (limit: number) => ['billing', 'invoices', limit] as const,

@@ -47,6 +47,22 @@ export interface ActivateModelRequest {
   mode: 'subscription' | 'percent' | 'combo'
   plan?: 'start' | 'pro' | 'business'
   period_months?: 1 | 6 | 12 | 24
+  /** Согласие на постоплату комиссии. Обязательно для percent/combo — иначе бэк даёт 422. */
+  accept_offline_terms?: boolean
+}
+
+/** Виджет «Комиссия с офлайн-продаж» в разделе «Тариф и оплата». */
+export interface OfflineFeeStatus {
+  accrued: number
+  accrued_currency: string
+  outstanding: number
+  currency: string
+  due_at: string | null
+  days_left: number | null
+  suspended: boolean
+  hosted_invoice_url: string | null
+  rate: number | null
+  grace_days: number
 }
 
 export interface IbanCheckout {

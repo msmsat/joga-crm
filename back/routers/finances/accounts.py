@@ -45,17 +45,45 @@ def _to_read(acc: Account, daily_change: int) -> AccountRead:
     )
 
 
-async def get_or_create_default_account(db: AsyncSession, studio_id: int) -> Account:
-    """Дефолтная касса студии. Создаёт «Основная касса», если счетов нет.
-    Не коммитит — вызывающий держит единую транзакцию.
-    # ponytail: default account = первый попавшийся/новый «Основная касса»; выбор типа счёта — когда касса/эквайринг/счёт станут раздельными
+# Тип счёта → имя счёта, который заводится, если у студии такого ещё нет.
+# Типы те же, что предлагает интерфейс Финансов (AccountsTab): cash / bank / online.
+_DEFAULT_ACCOUNT_NAMES = {"cash": "Основная касса", "online": "Онлайн-эквайринг"}
+
+
+async def get_or_create_default_account(
+    db: AsyncSession, studio_id: int, account_type: str = "cash",
+) -> Account:
+    """Дефолтный счёт студии нужного типа. Не коммитит — вызывающий держит транзакцию.
+
+    Раздельно по типу, потому что наличные и приём картой не должны сваливаться
+    в одну кучу: касса пересчитывается вручную, эквайринг приходит выплатой от
+    Stripe, и один общий баланс не сходится ни с тем, ни с другим.
+
+    Для "cash" остаётся запасной путь на ЛЮБОЙ первый счёт: у студий, заведённых
+    до разделения, единственный счёт может называться как угодно и иметь тип
+    bank — заводить им рядом вторую кассу и разносить туда часть наличных значит
+    задним числом разорвать их историю.
     """
     account = (await db.execute(
-        select(Account).where(Account.studio_id == studio_id).order_by(Account.id).limit(1)
+        select(Account)
+        .where(Account.studio_id == studio_id, Account.type == account_type)
+        .order_by(Account.id).limit(1)
     )).scalar_one_or_none()
     if account is not None:
         return account
-    account = Account(studio_id=studio_id, name="Основная касса", type="cash", balance=0, color=_DEFAULT_COLOR)
+
+    if account_type == "cash":
+        account = (await db.execute(
+            select(Account).where(Account.studio_id == studio_id).order_by(Account.id).limit(1)
+        )).scalar_one_or_none()
+        if account is not None:
+            return account
+
+    account = Account(
+        studio_id=studio_id,
+        name=_DEFAULT_ACCOUNT_NAMES.get(account_type, "Основная касса"),
+        type=account_type, balance=0, color=_DEFAULT_COLOR,
+    )
     db.add(account)
     await db.flush()
     return account

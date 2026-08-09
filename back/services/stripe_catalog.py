@@ -18,7 +18,7 @@ import os
 import stripe
 from dotenv import load_dotenv
 
-from routers.billing.plans import PLANS, PERIOD_DISCOUNTS, amount_for
+from routers.billing.plans import PLANS, PERIOD_DISCOUNTS, amount_for, combo_amount_for
 
 load_dotenv()
 
@@ -44,26 +44,36 @@ _INTERVALS: dict[int, tuple[str, int]] = {
 }
 
 
-def lookup_key(plan_id: str, period_months: int) -> str:
+def lookup_key(plan_id: str, period_months: int, combo: bool = False) -> str:
     """Стабильный ключ Price. Префикс velora_ — чтобы не столкнуться с ценами,
-    заведёнными в том же аккаунте под что-то другое."""
-    return f"velora_{plan_id}_{period_months}m"
+    заведёнными в том же аккаунте под что-то другое.
+
+    `combo` даёт ПАРАЛЛЕЛЬНЫЙ ключ (`velora_combo_pro_1m`) на половинную цену:
+    на тарифе «фикс + процент» студия платит подпиской половину, вторую половину
+    платформа добирает процентом с транзакций.
+    """
+    prefix = "velora_combo" if combo else "velora"
+    return f"{prefix}_{plan_id}_{period_months}m"
 
 
-def _product_id(plan_id: str) -> str:
-    """Product'у id задаём сами — тогда синхронизация идемпотентна без поиска."""
-    return f"velora_{plan_id}"
+def _product_id(plan_id: str, combo: bool = False) -> str:
+    """Product'у id задаём сами — тогда синхронизация идемпотентна без поиска.
+
+    У комбо СВОЙ Product, а не общий с подпиской: имя продукта Stripe печатает в
+    фактуре, и «Velora Pro» на половинную сумму бухгалтерия студии не сведёт.
+    """
+    return f"velora_combo_{plan_id}" if combo else f"velora_{plan_id}"
 
 
-async def _ensure_product(plan_id: str, name: str) -> str:
-    product_id = _product_id(plan_id)
+async def _ensure_product(plan_id: str, name: str, combo: bool = False) -> str:
+    product_id = _product_id(plan_id, combo)
     try:
         await asyncio.to_thread(stripe.Product.retrieve, product_id)
     except stripe.InvalidRequestError:
         await asyncio.to_thread(
             stripe.Product.create,
             id=product_id,
-            name=f"Velora {name}",
+            name=f"Velora {name} (фикс + %)" if combo else f"Velora {name}",
             tax_code=TAX_CODE,
         )
         logger.info("Stripe catalog: создан продукт %s", product_id)
@@ -78,9 +88,11 @@ async def _find_price(key: str):
     return found.data[0] if found.data else None
 
 
-async def _ensure_price(product_id: str, plan_id: str, period_months: int) -> str:
-    key = lookup_key(plan_id, period_months)
-    amount = amount_for(plan_id, period_months)
+async def _ensure_price(
+    product_id: str, plan_id: str, period_months: int, combo: bool = False,
+) -> str:
+    key = lookup_key(plan_id, period_months, combo)
+    amount = combo_amount_for(plan_id, period_months) if combo else amount_for(plan_id, period_months)
     interval, interval_count = _INTERVALS[period_months]
 
     existing = await _find_price(key)
@@ -118,24 +130,30 @@ async def _ensure_price(product_id: str, plan_id: str, period_months: int) -> st
 
 
 async def sync() -> dict[str, str]:
-    """Привести каталог Stripe в соответствие с plans.py. Идемпотентно."""
+    """Привести каталог Stripe в соответствие с plans.py. Идемпотентно.
+
+    Заливает ДВА набора: полные цены подписки и половинные цены комбо. Оба нужны
+    сразу — тариф студии переключается кнопкой в интерфейсе, и Price под новый
+    режим обязан существовать до того, как владелец нажмёт «Оплатить».
+    """
     out: dict[str, str] = {}
     for plan_id, plan in PLANS.items():
-        product_id = await _ensure_product(plan_id, plan["name"])
-        for period_months in PERIOD_DISCOUNTS:
-            out[lookup_key(plan_id, period_months)] = await _ensure_price(
-                product_id, plan_id, period_months,
-            )
+        for combo in (False, True):
+            product_id = await _ensure_product(plan_id, plan["name"], combo)
+            for period_months in PERIOD_DISCOUNTS:
+                out[lookup_key(plan_id, period_months, combo)] = await _ensure_price(
+                    product_id, plan_id, period_months, combo,
+                )
     return out
 
 
-async def price_id(plan_id: str, period_months: int) -> str:
-    """Price для пары тариф×период.
+async def price_id(plan_id: str, period_months: int, combo: bool = False) -> str:
+    """Price для пары тариф×период (или её комбо-половины).
 
     RuntimeError, а не тихий None: без Price подписку не создать, и молчаливый
     отказ превратится в 500 где-то ниже по стеку, где причина уже не видна.
     """
-    key = lookup_key(plan_id, period_months)
+    key = lookup_key(plan_id, period_months, combo)
     price = await _find_price(key)
     if price is None:
         raise RuntimeError(
@@ -155,6 +173,14 @@ if __name__ == "__main__":
         assert lookup_key("start", 12) == "velora_start_12m"
         assert lookup_key("business", 1) == "velora_business_1m"
         assert _product_id("pro") == "velora_pro"
+
+        # Комбо — ПАРАЛЛЕЛЬНЫЙ набор: ключи и продукты не должны совпадать с
+        # подписочными, иначе sync() перетрёт полную цену половинной.
+        assert lookup_key("business", 1, combo=True) == "velora_combo_business_1m"
+        assert _product_id("pro", combo=True) == "velora_combo_pro"
+        _keys = {lookup_key(p, m, c) for p in PLANS for m in PERIOD_DISCOUNTS for c in (False, True)}
+        assert len(_keys) == len(PLANS) * len(PERIOD_DISCOUNTS) * 2, "ключи столкнулись"
+        assert _product_id("pro") != _product_id("pro", combo=True)
         # Каждый период из каталога цен обязан иметь интервал Stripe, иначе
         # sync() упадёт по KeyError уже на боевом ключе.
         assert set(_INTERVALS) == set(PERIOD_DISCOUNTS), (set(_INTERVALS), set(PERIOD_DISCOUNTS))

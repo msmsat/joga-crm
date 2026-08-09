@@ -14,6 +14,13 @@ type Props = {
   onToggleLike: () => void;
   /** Фирменный цвет студии — общий на все филиалы, свой тон каждому взять неоткуда. */
   accentColor: string;
+  /**
+   * Приглушать неактивные карточки. На телефоне это фокус карусели: активна та,
+   * что под пальцем. На десктопе прокрутки может не быть вовсе (все филиалы
+   * влезли в ряд), и тогда приглушение читается как «недоступно», а не «не
+   * выбрано» — поэтому там его выключают.
+   */
+  dim?: boolean;
 };
 
 /**
@@ -28,7 +35,15 @@ type Props = {
  * плейсхолдера тёплый градиент её собственного оттенка и монограмма во всю
  * карточку.
  */
-export default function StudioCard({ studio, isActive, isLiked, onOpen, onToggleLike, accentColor }: Props) {
+export default function StudioCard({
+  studio,
+  isActive,
+  isLiked,
+  onOpen,
+  onToggleLike,
+  accentColor,
+  dim = true,
+}: Props) {
   const { t } = useTranslation();
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -36,9 +51,12 @@ export default function StudioCard({ studio, isActive, isLiked, onOpen, onToggle
   const state = studioState(studio.opens, studio.closes);
 
   return (
-    <div className="w-[62vw] max-w-[252px] shrink-0 snap-center">
+    <div className="w-[62vw] max-w-[252px] shrink-0 snap-center dt:w-[268px] dt:max-w-[268px]">
       <motion.div
-        animate={{ scale: isActive ? 1 : 0.955, opacity: isActive ? 1 : 0.7 }}
+        animate={{
+          scale: !dim || isActive ? 1 : 0.955,
+          opacity: !dim || isActive ? 1 : 0.7,
+        }}
         transition={{ type: 'spring', stiffness: 260, damping: 30 }}
       >
         <Press
@@ -46,10 +64,10 @@ export default function StudioCard({ studio, isActive, isLiked, onOpen, onToggle
           role="button"
           tabIndex={0}
           aria-label={`${studio.name}, ${studio.city}`}
-          className="cursor-pointer"
+          className="group cursor-pointer"
         >
           <div
-            className="relative aspect-[3/4] overflow-hidden rounded-[24px] shadow-lift"
+            className="relative aspect-[3/4] overflow-hidden rounded-[24px] shadow-lift transition-shadow duration-300 dt:group-hover:shadow-[0_28px_64px_-16px_rgba(26,26,26,0.30)]"
             style={
               showPhoto
                 ? undefined
@@ -64,7 +82,9 @@ export default function StudioCard({ studio, isActive, isLiked, onOpen, onToggle
                 alt=""
                 loading="lazy"
                 onError={() => setImageFailed(true)}
-                className="absolute inset-0 h-full w-full object-cover"
+                /* Наезд на фото при наведении: у мыши это единственный способ
+                   почувствовать, что карточка живая, до нажатия. */
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[600ms] ease-out dt:group-hover:scale-[1.06]"
               />
             ) : (
               /* Монограмма работает текстурой, а не буквой — обрезана краями

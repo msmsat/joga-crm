@@ -32,7 +32,7 @@ export default function PeriodBar({ mode, onModeChange, anchor, onShift }: Props
       whileTap={{ scale: 0.88 }}
       transition={{ type: 'spring', stiffness: 420, damping: 28 }}
       aria-label={direction < 0 ? 'previous period' : 'next period'}
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card shadow-soft"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card shadow-soft transition-shadow duration-300 dt:h-10 dt:w-10 dt:hover:shadow-lift"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
         <polyline points={points} />
@@ -45,7 +45,7 @@ export default function PeriodBar({ mode, onModeChange, anchor, onShift }: Props
       <div className="flex items-center gap-2">
         {arrow(-1, '15 18 9 12 15 6')}
 
-        <div className="flex-1 text-center text-[14px] font-extrabold capitalize tracking-[-0.02em] text-foreground">
+        <div className="flex-1 text-center text-[14px] font-extrabold capitalize tracking-[-0.02em] text-foreground dt:text-[15px]">
           {label}
         </div>
 

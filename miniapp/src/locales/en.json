@@ -18,9 +18,6 @@
     "closing_soon": "Closing soon",
     "closed": "Closed",
     "opening_soon": "Opening soon",
-    "map": "Map",
-    "map_title": "Studios on the map",
-    "map_sub": "Tap a pin to choose a studio",
     "choose_studio": "Choose a studio",
     "open_studio": "Choose {{name}}",
     "services": "Studio services",
@@ -247,7 +244,8 @@
     "home": "Home",
     "schedule": "Schedule",
     "my_lessons": "My Lessons",
-    "profile": "Profile"
+    "profile": "Profile",
+    "client_area": "Client area"
   },
   "home": {
     "greeting_morning": "Good morning",

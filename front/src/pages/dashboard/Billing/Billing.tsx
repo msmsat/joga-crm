@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { PlanType } from './types';
 import { useBillingCalculator } from './hooks/useBillingCalculator';
 import BillingHeader from './components/sections/BillingHeader';
+import OfflineFeeCard from './components/sections/OfflineFeeCard';
 import PlansTab from './components/tabs/PlansTab';
 import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
@@ -26,6 +27,8 @@ export default function Billing() {
         plans={h.plans}
         stats={h.stats}
       />
+
+      <OfflineFeeCard />
 
       {h.paymentReturn && (
         <div style={{ margin: '0 32px 20px', padding: '16px 20px', background: 'rgba(163,201,168,0.12)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>

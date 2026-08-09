@@ -23,14 +23,14 @@ type Props = {
  */
 export default function ReferralBanner({ title, subtitle, copiedLabel, isCopied, onClick }: Props) {
   return (
-    <div className="px-5 pt-3">
+    <div className="px-5 pt-3 dt:pt-0">
       <Press
         onClick={onClick}
         role="button"
         tabIndex={0}
-        className="flex cursor-pointer items-center gap-4 rounded-[22px] bg-card p-5 shadow-soft ring-1 ring-inset ring-brand/25"
+        className="flex cursor-pointer items-center gap-4 rounded-[22px] bg-card p-5 shadow-soft ring-1 ring-inset ring-brand/25 transition-shadow duration-300 dt:rounded-[24px] dt:gap-5 dt:p-6 dt:hover:shadow-lift"
       >
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10 dt:h-12 dt:w-12">
           {isCopied ? (
             <motion.svg
               initial={{ scale: 0.5, opacity: 0 }}
@@ -54,10 +54,10 @@ export default function ReferralBanner({ title, subtitle, copiedLabel, isCopied,
         </span>
 
         <div className="min-w-0 flex-1">
-          <div className="text-[14.5px] font-extrabold leading-tight tracking-[-0.01em] text-card-foreground">
+          <div className="text-[14.5px] font-extrabold leading-tight tracking-[-0.01em] text-card-foreground dt:text-[16px]">
             {title}
           </div>
-          <div className="mt-1 text-[12px] font-medium leading-snug text-muted-foreground">
+          <div className="mt-1 text-[12px] font-medium leading-snug text-muted-foreground dt:mt-1.5 dt:text-[13px]">
             {isCopied ? copiedLabel : subtitle}
           </div>
         </div>

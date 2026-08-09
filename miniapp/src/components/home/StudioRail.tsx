@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import StudioCard from './StudioCard';
+import { useIsDesktop } from '../../hooks/useIsDesktop';
 import type { Studio } from '../../api/studio';
 
 type Props = {
@@ -32,6 +33,7 @@ export default function StudioRail({
 }: Props) {
   const railRef = useRef<HTMLDivElement>(null);
   const frame = useRef(0);
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     const rail = railRef.current;
@@ -86,10 +88,12 @@ export default function StudioRail({
           }}
           onToggleLike={() => onToggleLike(studio.id)}
           accentColor={accentColor}
+          dim={!isDesktop}
         />
       ))}
-      {/* Хвост, чтобы последняя карточка доезжала до центра экрана */}
-      <div className="w-[12vw] shrink-0" aria-hidden="true" />
+      {/* Хвост, чтобы последняя карточка доезжала до центра экрана. На
+          десктопе центрировать нечего — ряд стоит от левого края. */}
+      <div className="w-[12vw] shrink-0 dt:hidden" aria-hidden="true" />
     </div>
   );
 }

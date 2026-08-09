@@ -62,7 +62,8 @@ export default function WeekRail({ value, onChange, maxDate }: Props) {
         transition={{ type: 'spring', stiffness: 420, damping: 28 }}
         aria-label={direction < 0 ? 'previous week' : 'next week'}
         className={cn(
-          'flex h-[66px] w-7 shrink-0 items-center justify-center rounded-[14px] bg-card shadow-soft',
+          'flex h-[66px] w-7 shrink-0 items-center justify-center rounded-[14px] bg-card shadow-soft transition-shadow duration-300 dt:h-[84px] dt:w-9 dt:rounded-[16px]',
+          !disabled && 'dt:hover:shadow-lift',
           disabled && 'opacity-35',
         )}
       >
@@ -77,7 +78,7 @@ export default function WeekRail({ value, onChange, maxDate }: Props) {
     <div>
       {/* Полная дата словами: в ленте видно только число, а «4» без месяца
           ничего не значит, когда неделя перелистнута. */}
-      <div className="px-5 pb-3 text-center text-[12px] font-bold capitalize tracking-[-0.01em] text-muted-foreground">
+      <div className="px-5 pb-3 text-center text-[12px] font-bold capitalize tracking-[-0.01em] text-muted-foreground dt:pb-4 dt:text-[13px]">
         {value.toLocaleDateString(i18n.language, {
           weekday: 'long',
           day: 'numeric',
@@ -85,7 +86,7 @@ export default function WeekRail({ value, onChange, maxDate }: Props) {
         })}
       </div>
 
-      <div className="flex items-center gap-1 px-3">
+      <div className="flex items-center gap-1 px-3 dt:gap-2 dt:px-5">
         {arrow(-1, '15 18 9 12 15 6')}
 
         {days.map((day) => {
@@ -105,14 +106,15 @@ export default function WeekRail({ value, onChange, maxDate }: Props) {
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
               aria-current={isActive ? 'date' : undefined}
               className={cn(
-                'relative flex h-[66px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[16px] transition-colors duration-200',
+                'relative flex h-[66px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[16px] transition-[background-color,box-shadow] duration-300 dt:h-[84px] dt:gap-2 dt:rounded-[18px]',
                 isActive ? 'bg-foreground' : 'bg-card shadow-soft',
+                !isActive && !isBeyondWindow && 'dt:hover:shadow-lift',
                 ((isPast && !isActive) || isBeyondWindow) && 'opacity-45',
               )}
             >
               <span
                 className={cn(
-                  'text-[9px] font-extrabold uppercase tracking-[0.06em]',
+                  'text-[9px] font-extrabold uppercase tracking-[0.06em] dt:text-[10px] dt:tracking-[0.14em]',
                   isActive ? 'text-background' : 'text-muted-foreground',
                 )}
               >
@@ -120,7 +122,7 @@ export default function WeekRail({ value, onChange, maxDate }: Props) {
               </span>
               <span
                 className={cn(
-                  'text-[17px] font-extrabold leading-none tabular-nums tracking-[-0.03em]',
+                  'text-[17px] font-extrabold leading-none tabular-nums tracking-[-0.03em] dt:text-[22px]',
                   isActive ? 'text-background' : 'text-foreground',
                 )}
               >

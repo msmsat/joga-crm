@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTelegram } from '../../hooks/useTelegram';
+import { useIsDesktop } from '../../hooks/useIsDesktop';
 
 type Props = {
   isOpen: boolean;
@@ -32,6 +33,12 @@ let openCount = 0;
  * рука сама тянется смахнуть. Пружина, а не кривая: лист должен слегка
  * притормозить в конце, как физический предмет.
  *
+ * На десктопе (≥760px) тот же лист становится центрированным диалогом: у мыши
+ * нет ни жеста смахивания, ни причины тянуться к нижнему краю экрана, а панель,
+ * прилипшая к низу окна 1440px, читается как телефон в рамке. Поэтому там —
+ * появление масштабом из центра, скруглены все четыре угла и никакого drag'а:
+ * тянуть окно вниз мышью бессмысленно.
+ *
  * Затемнение без backdrop-filter намеренно — блюр во весь экран роняет первый
  * кадр открытия на телефонах, и лист «залипает» перед выездом.
  */
@@ -47,6 +54,7 @@ export function Sheet({
   layer = 0,
 }: Props) {
   const { vibrateLight } = useTelegram();
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -70,7 +78,7 @@ export function Sheet({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-end justify-center"
+          className="fixed inset-0 flex items-end justify-center dt:items-center dt:p-8"
           style={{ zIndex: 200 + layer * 10 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -82,11 +90,19 @@ export function Sheet({
 
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%', transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }}
-            transition={{ type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }}
-            drag="y"
+            initial={isDesktop ? { opacity: 0, scale: 0.96, y: 10 } : { y: '100%' }}
+            animate={isDesktop ? { opacity: 1, scale: 1, y: 0 } : { y: 0 }}
+            exit={
+              isDesktop
+                ? { opacity: 0, scale: 0.97, transition: { duration: 0.16 } }
+                : { y: '100%', transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }
+            }
+            transition={
+              isDesktop
+                ? { type: 'spring', stiffness: 460, damping: 36 }
+                : { type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }
+            }
+            drag={isDesktop ? false : 'y'}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={(_, info) => {
@@ -96,9 +112,10 @@ export function Sheet({
               }
             }}
             className={[
-              'relative flex w-full max-w-[520px] flex-col overflow-hidden',
-              'rounded-t-[28px] bg-card shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
-              tall ? 'h-[92dvh]' : 'max-h-[88dvh]',
+              'relative flex w-full max-w-[520px] flex-col overflow-hidden bg-card',
+              'rounded-t-[28px] shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
+              'dt:max-w-[560px] dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
+              tall ? 'h-[92dvh] dt:h-[78dvh]' : 'max-h-[88dvh] dt:max-h-[82dvh]',
             ].join(' ')}
           >
             {/* Тёплое свечение под шапкой: лист не должен читаться белым листом
@@ -113,8 +130,10 @@ export function Sheet({
             />
 
             <div className="relative shrink-0 px-6 pt-3">
+              {/* Ручка смахивания — жест только пальцем: мышью тянуть нечего,
+                  а полоска без функции читается как мусор в макете. */}
               <div
-                className="mx-auto h-1 w-10 cursor-grab rounded-full bg-foreground/12"
+                className="mx-auto h-1 w-10 cursor-grab rounded-full bg-foreground/12 dt:hidden"
                 aria-hidden="true"
               />
 

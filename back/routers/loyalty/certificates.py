@@ -14,7 +14,8 @@ from sqlalchemy.future import select
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Account, GiftCertificate, Operation, StudioCertificateConfig
+from models import Account, GiftCertificate, Operation, Studio, StudioCertificateConfig
+from services import platform_fee, stripe_connect
 from services.notifier import notify_payment
 from schemas.loyalty import GiftCertificateCreate, GiftCertificateRead
 
@@ -96,6 +97,18 @@ async def create_certificate(
             client_id=body.client_id,
         ))
         account.balance += body.amount
+        # Продажа сертификата — приём офлайн-денег, и комиссия платформы берётся
+        # ЗДЕСЬ, как у пополнения депозита. При погашении её взять уже не с чего:
+        # сертификат гасит цену до нуля (checkout._quote), продажа идёт по
+        # total_price = 0, и без этого начисления сертификаты были бы способом
+        # провести любой оборот мимо процента.
+        studio = (await db.execute(select(Studio).where(Studio.id == ctx.studio_id))).scalar_one()
+        currency = studio.currency or "CZK"
+        await platform_fee.record_offline_fee(
+            db, ctx.studio_id,
+            stripe_connect.to_minor_units(body.amount, currency),
+            currency, client_id=body.client_id, payment_method="certificate",
+        )
 
     await db.commit()
     await db.refresh(cert)

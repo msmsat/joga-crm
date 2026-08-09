@@ -18,6 +18,7 @@ from dependencies import require_role, StudioContext
 from models import StudioBillingPlan, BillingInvoice, PaymentCard
 from schemas.common import Page
 from schemas.settings.billing import (
+    OfflineFeeStatus,
     PlansCatalogRead, PlanRead, PlanLimits,
     BillingPlanRead, InvoiceRead, PaymentCardRead, BillingStatsRead,
     ActivateModelRequest, AutopaySettingsUpdate,
@@ -25,7 +26,8 @@ from schemas.settings.billing import (
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
 )
-from services import stripe_billing
+from services import offline_fee_billing, platform_fee, stripe_billing
+from activity import log_activity
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import router as checkout_router
@@ -33,6 +35,23 @@ from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
 
 logger = logging.getLogger(__name__)
+
+_NOT_CONFIGURED = {
+    "code": "billing.stripe_not_configured",
+    "message": "Приём оплат не настроен на сервере",
+}
+
+# Условия постоплаты, которые владелец подтверждает в модалке. Версия хранится
+# вместе с согласием (StudioBillingPlan.percent_terms_version) — поменяли текст,
+# подняли версию, и старое согласие больше не покрывает новые правила.
+# `grace_days` обязан совпадать с offline_fee_billing.GRACE_DAYS: студия
+# соглашается на конкретный срок, и он же применяется при блокировке.
+OFFLINE_TERMS = {
+    "version": "2026-08-1",
+    "grace_days": offline_fee_billing.GRACE_DAYS,
+    "percent_rate": PERCENT_ONLY_RATE,
+    "combo_rate": COMBO_PERCENT_RATE,
+}
 router = APIRouter()
 router.include_router(checkout_router)
 router.include_router(webhook_router)
@@ -194,6 +213,17 @@ async def activate_model(
             "message": "Тариф выше текущего активируется только оплатой",
         })
 
+    # Юридическое основание постоплаты: на «проценте» и «комбо» платформа
+    # выставляет счёт за комиссию с наличных и блокирует доступ за неоплату —
+    # значит владелец обязан явно на это согласиться. Модалку подтверждения
+    # обойти прямым запросом нельзя: без флага 422.
+    if body.mode in ("percent", "combo") and not body.accept_offline_terms:
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.offline_terms_required",
+            "message": "Подтвердите условия постоплаты комиссии с офлайн-продаж",
+            "terms": OFFLINE_TERMS,
+        })
+
     row.billing_mode = body.mode
     if body.mode == "percent":
         row.percent_rate, row.fixed_base_amount = PERCENT_ONLY_RATE, None
@@ -206,9 +236,94 @@ async def activate_model(
         row.percent_rate = None
         row.fixed_base_amount = None
         row.plan_name = body.plan or row.plan_name
+
+    if body.mode in ("percent", "combo"):
+        # Фиксируем ЧТО именно приняли и когда: ставку и версию текста. Сменим
+        # условия — старое согласие не должно молча распространиться на новые.
+        row.percent_terms_accepted_at = datetime.utcnow()
+        row.percent_terms_rate = row.percent_rate
+        row.percent_terms_version = OFFLINE_TERMS["version"]
+        log_activity(
+            db, ctx.studio_id, "billing",
+            title=f"Приняты условия постоплаты комиссии {row.percent_rate}% (ред. {OFFLINE_TERMS['version']})",
+            actor_name=f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+            entity_type="billing_plan", entity_id=row.id,
+        )
     await db.commit()
     await db.refresh(row)
     return _to_plan_read(row)
+
+
+@router.get("/offline-fees", response_model=OfflineFeeStatus)
+async def get_offline_fee_status(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Виджет «Комиссия с офлайн-продаж»: сколько накопилось и сколько должны.
+
+    Гейта подписки на /billing нет — заблокированная студия обязана видеть свой
+    долг и иметь возможность его закрыть, иначе блокировка стала бы тупиком.
+    """
+    accrued, accrued_currency = await offline_fee_billing.accrued_total(db, ctx.studio_id)
+
+    unpaid = (await db.execute(
+        select(BillingInvoice)
+        .where(
+            BillingInvoice.studio_id == ctx.studio_id,
+            BillingInvoice.kind == "offline_fee",
+            BillingInvoice.status.notin_(("paid", "refunded")),
+        )
+        .order_by(BillingInvoice.due_at.asc().nulls_last())
+    )).scalars().all()
+
+    outstanding = sum(inv.amount for inv in unpaid)
+    earliest = next((inv for inv in unpaid if inv.due_at is not None), None)
+    days_left = None
+    if earliest is not None:
+        # Округляем ВВЕРХ по календарю: «остался 1 день» честнее, чем «0», пока
+        # срок ещё не наступил.
+        delta = earliest.due_at - datetime.utcnow()
+        days_left = -((-delta.total_seconds()) // 86400) if delta.total_seconds() > 0 else int(delta.total_seconds() // 86400)
+        days_left = int(days_left)
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+
+    return OfflineFeeStatus(
+        accrued=accrued,
+        accrued_currency=accrued_currency,
+        outstanding=outstanding,
+        currency=stripe_billing.CURRENCY.upper(),
+        due_at=earliest.due_at.isoformat() if earliest is not None else None,
+        days_left=days_left,
+        suspended=await platform_fee.studio_suspended(db, ctx.studio_id),
+        hosted_invoice_url=next((i.hosted_invoice_url for i in unpaid if i.hosted_invoice_url), None),
+        rate=plan.percent_rate if plan is not None else None,
+        grace_days=offline_fee_billing.GRACE_DAYS,
+    )
+
+
+@router.post("/offline-fees/pay", response_model=OfflineFeeStatus)
+async def pay_offline_fees(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """«Оплатить сейчас»: выставить счёт на всё накопленное, не дожидаясь месяца.
+
+    Уже выставленный неоплаченный счёт новым не дублируем — сначала пусть
+    закроют его (ссылка на оплату возвращается в том же ответе).
+    """
+    if not stripe_billing.configured():
+        raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
+    try:
+        await offline_fee_billing.bill_now(db, ctx.studio_id)
+    except Exception as exc:
+        logger.exception("Офлайн-комиссии: досрочный счёт студии %s не выставлен", ctx.studio_id)
+        raise HTTPException(status_code=502, detail={
+            "code": "billing.stripe_error", "message": "Stripe отклонил запрос",
+        }) from exc
+    return await get_offline_fee_status(ctx, db)
 
 
 @router.patch("/autopay", response_model=BillingPlanRead)

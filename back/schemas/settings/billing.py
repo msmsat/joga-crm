@@ -55,6 +55,23 @@ class ActivateModelRequest(BaseModel):
     mode: Literal["subscription", "percent", "combo"]
     plan: Optional[Literal["start", "pro", "business"]] = None
     period_months: Optional[Literal[1, 6, 12, 24]] = None
+    # Явное согласие на постоплату комиссии. Обязательно для mode="percent":
+    # без него бэк отвечает 422, и модалку подтверждения нельзя обойти запросом.
+    accept_offline_terms: bool = False
+
+
+class OfflineFeeStatus(BaseModel):
+    """Виджет «Комиссия с офлайн-продаж» в разделе «Тариф и оплата»."""
+    accrued: int            # начислено, но ещё не выставлено (младшие единицы)
+    accrued_currency: str
+    outstanding: int        # выставлено и не оплачено, в валюте биллинга
+    currency: str
+    due_at: Optional[str] = None        # крайний срок по самому раннему счёту
+    days_left: Optional[int] = None     # сколько дней осталось; <0 — просрочено
+    suspended: bool = False             # доступ уже заблокирован
+    hosted_invoice_url: Optional[str] = None
+    rate: Optional[float] = None
+    grace_days: int = 7
 
 
 class IbanCheckoutRequest(BaseModel):

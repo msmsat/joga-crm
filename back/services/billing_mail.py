@@ -65,6 +65,43 @@ _METHOD = {
     "en": {"card": "bank card", "iban": "bank transfer (IBAN)"},
 }
 
+# Предупреждение о скором отключении за неоплаченный счёт комиссии (offline_fee).
+# Раньше о нём напоминало только письмо Stripe по счёту — своего в CRM не было.
+_WARN_SUBJECT = {
+    "ru": "Velora — счёт за комиссию не оплачен, скоро отключение",
+    "en": "Velora — unpaid fee invoice, access will be suspended soon",
+}
+
+_WARN_BODY = {
+    "ru": (
+        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Счёт за комиссию не оплачен</h2>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Сумма: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Оплатить до: <b style='color:#1A1A1A'>{due}</b></p>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Если счёт не будет оплачен в срок, доступ к CRM и к мини-приложению для "
+        "ваших клиентов приостановится до погашения.</p>{link}"
+        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
+        "Оплатить можно в разделе «Тариф и оплата».</p>"
+    ),
+    "en": (
+        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Fee invoice unpaid</h2>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Amount: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Due by: <b style='color:#1A1A1A'>{due}</b></p>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "If it's not paid by then, access to the CRM and your client mini-app "
+        "will be suspended until it's settled.</p>{link}"
+        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
+        "Pay it any time from Billing → Plan.</p>"
+    ),
+}
+
+_WARN_LINK = {
+    "ru": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Оплатить счёт</a></p>",
+    "en": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Pay invoice</a></p>",
+}
+
 
 def fmt_amount(cents: int) -> str:
     """Сумма счёта в валюте БИЛЛИНГА (евро), а не в валюте кассы студии: тариф
@@ -128,6 +165,34 @@ async def send_receipt(db: AsyncSession, invoice: BillingInvoice) -> bool:
         return False
 
 
+async def send_block_warning(db: AsyncSession, invoice: BillingInvoice) -> bool:
+    """Предупреждение о скором отключении по неоплаченному счёту за комиссию.
+
+    В отличие от send_receipt НЕ смотрит на тумблер «Чек на email»: это не чек, а
+    предупреждение о блокировке, отключать его в обход тумблера для чеков нельзя.
+    Отправляется один раз на счёт — факт отправки фиксирует вызывающая сторона
+    (services/offline_fee_billing._send_reminders, поле reminder_sent_at).
+    """
+    try:
+        to = await _recipient(db, invoice.studio_id)
+        if not to:
+            logger.info("Billing mail: напоминание по счёту %s некому отправить", invoice.id)
+            return False
+
+        lang, _currency = await _studio_prefs(db, invoice.studio_id)
+        url = invoice.hosted_invoice_url or invoice.pdf_url
+        html = _WARN_BODY[lang].format(
+            amount=fmt_amount(invoice.amount),
+            due=invoice.due_at.strftime("%d.%m.%Y") if invoice.due_at else "—",
+            link=_WARN_LINK[lang].format(url=url) if url else "",
+        )
+        await send_email(to, _WARN_SUBJECT[lang], html)
+        return True
+    except Exception:
+        logger.exception("Billing mail: напоминание по счёту %s не отправлено", invoice.id)
+        return False
+
+
 if __name__ == "__main__":
     import asyncio
     import types
@@ -143,6 +208,12 @@ if __name__ == "__main__":
         assert _BODY[_lang].format(**_slots)
         assert "{url}" in _LINK[_lang]
         assert set(_METHOD[_lang]) == {"card", "iban"}
+
+    _warn_slots = dict(amount="39.00 €", due="16.08.2026", link="")
+    for _lang in ("ru", "en"):
+        assert _WARN_BODY[_lang].format(**_warn_slots)
+        assert "{url}" in _WARN_LINK[_lang]
+    assert set(_WARN_SUBJECT) == set(_WARN_BODY) == set(_WARN_LINK) == {"ru", "en"}
 
     # Выключенный тумблер молчит, и до отправки дело не доходит.
     _sent = []

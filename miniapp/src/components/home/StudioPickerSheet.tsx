@@ -11,23 +11,23 @@ type Props = {
   /** Какая студия подсвечена при открытии */
   activeId: number;
   onPick: (studio: Studio) => void;
-  title: string;
-  subtitle?: string;
 };
 
 /**
- * Выбор студии — списком филиалов.
+ * Выбор филиала — списком.
  *
- * Раньше здесь была схематичная карта с метками по выдуманным координатам
- * (`{x, y}` в процентах — источника для них нет и не будет без `lat`/`lng` у
- * филиала и поля ввода в Каталоге CRM, см. BACKLOG). Список честнее: тап по
- * строке сразу выбирает филиал, отдельного подтверждения не нужно.
+ * Карты в мини-приложении нет: сначала здесь была схема с метками по выдуманным
+ * координатам (`{x, y}` в процентах — источника для них нет и не будет, пока у
+ * филиала не появятся `lat`/`lng` и поле ввода в Каталоге CRM), потом остался
+ * список под вывеской «Карта». Вывеску сняли: лист открывается ровно в одном
+ * месте — когда клиент выбрал направление, а филиалов несколько, и вопрос там
+ * один, «в какой студии». Тап по строке сразу выбирает, подтверждения нет.
  */
-export default function StudioMapSheet({ isOpen, onClose, studios, activeId, onPick, title, subtitle }: Props) {
+export default function StudioPickerSheet({ isOpen, onClose, studios, activeId, onPick }: Props) {
   const { t } = useTranslation();
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} kicker={t('studio.map')} title={title} subtitle={subtitle}>
+    <Sheet isOpen={isOpen} onClose={onClose} title={t('studio.choose_studio')}>
       <div className="flex flex-col gap-2.5">
         {studios.map((studio, i) => {
           const state = studioState(studio.opens, studio.closes);

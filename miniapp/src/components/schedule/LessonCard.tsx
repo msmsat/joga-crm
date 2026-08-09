@@ -49,13 +49,13 @@ export default function LessonCard({
         onClick={onClick}
         role="button"
         tabIndex={0}
-        className="flex cursor-pointer gap-4 rounded-[22px] bg-card p-5 shadow-soft"
+        className="flex h-full cursor-pointer gap-4 rounded-[22px] bg-card p-5 shadow-soft transition-shadow duration-300 dt:gap-5 dt:rounded-[24px] dt:p-6 dt:hover:shadow-lift"
       >
         <div className="shrink-0">
-          <div className="text-[19px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground">
+          <div className="text-[19px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground dt:text-[24px]">
             {lesson.time}
           </div>
-          <div className="mt-1.5 text-[10.5px] font-bold text-muted-foreground">
+          <div className="mt-1.5 text-[10.5px] font-bold text-muted-foreground dt:mt-2 dt:text-[11.5px]">
             {lesson.duration_min} {t('common.minutes')}
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function LessonCard({
             </Badge>
           </div>
 
-          <div className="mt-2.5 truncate text-[16px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground">
+          <div className="mt-2.5 truncate text-[16px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground dt:mt-3 dt:text-[18px]">
             {title}
           </div>
 
@@ -84,7 +84,7 @@ export default function LessonCard({
                 {lesson.teacher}
               </span>
             </div>
-            <span className="shrink-0 text-[13.5px] font-extrabold tabular-nums tracking-[-0.02em] text-card-foreground">
+            <span className="shrink-0 text-[13.5px] font-extrabold tabular-nums tracking-[-0.02em] text-card-foreground dt:text-[15px]">
               {lesson.price_str}
             </span>
           </div>

@@ -14,7 +14,7 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Operation, Service,
-    SubscriptionPackage, User,
+    Studio, SubscriptionPackage, User,
 )
 from routers.clients.loyalty import accrue_points, apply_deposit_change, apply_points_change, expire_points, register_purchase
 from routers.clients.subscriptions import attach_subscription
@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.checkout import (
     CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult, CheckoutServiceOut,
 )
+from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import notify_payment
 from services.pricing import resolve_price
@@ -203,15 +204,26 @@ async def _get_client_package(
     return client, package
 
 
-async def resolve_account(db: AsyncSession, studio_id: int, account_id: int | None) -> Account:
+# Способ оплаты → тип счёта, на который по умолчанию ложится доход. Онлайн-деньги
+# приходят выплатой от Stripe, а не в кассу: смешивать их с наличными нельзя,
+# иначе ни один из двух остатков не сходится с реальностью.
+ACCOUNT_TYPE_FOR_METHOD = {"stripe": "online", "card": "online"}
+
+
+async def resolve_account(
+    db: AsyncSession, studio_id: int, account_id: int | None, *, default_type: str = "cash",
+) -> Account:
     """Счёт студии, на который ляжет доход (дефолтный, если кассир не выбрал).
 
     Вынесено из perform_pay, чтобы оплата картой проверяла счёт ДО списания:
     иначе битый account_id всплывал бы только в вебхуке — деньги у студии, а
     провести их некуда.
+
+    `default_type` работает ТОЛЬКО когда счёт не выбран явно: указанный кассиром
+    счёт всегда важнее умолчания.
     """
     if account_id is None:
-        return await get_or_create_default_account(db, studio_id)
+        return await get_or_create_default_account(db, studio_id, default_type)
 
     account = (await db.execute(
         select(Account).where(Account.id == account_id, Account.studio_id == studio_id)
@@ -288,7 +300,10 @@ async def perform_pay(
     """
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
-    account = await resolve_account(db, studio_id, body.account_id)
+    account = await resolve_account(
+        db, studio_id, body.account_id,
+        default_type=ACCOUNT_TYPE_FOR_METHOD.get(method, "cash"),
+    )
 
     # Пересчёт цены на сервере заново — не доверяем присланному с фронта итогу.
     quote = await _quote(
@@ -345,6 +360,21 @@ async def perform_pay(
             )
             db.add(op)
             account.balance += quote.total_price
+            # Разовое посещение не идёт через attach_subscription (абонемент не
+            # создаётся) — начисляем комиссию здесь, иначе разовые визиты за
+            # наличные проходили бы мимо счёта.
+            if method != platform_fee.ONLINE_METHOD:
+                studio = (await db.execute(
+                    select(Studio).where(Studio.id == studio_id)
+                )).scalar_one()
+                currency = studio.currency or "CZK"
+                await platform_fee.record_offline_fee(
+                    db, studio_id,
+                    stripe_connect.to_minor_units(quote.total_price, currency),
+                    currency,
+                    client_id=body.client_id,
+                    payment_method=method,
+                )
         payment = ClientPayment(
             client_id=body.client_id,
             amount=quote.total_price,

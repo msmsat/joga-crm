@@ -98,14 +98,20 @@ export default function Auth({
   const codeValid = code.trim().length === 6 && (!needsName || name.trim().length > 0);
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-background px-7 py-12">
+    /* На телефоне форма живёт прямо на фоне — карточка в карточке там лишний
+       кадр. На десктопе наоборот: одинокая колонка полей посреди 1440px
+       выглядит брошенной, поэтому вход собирается в карточку по центру. */
+    /* Своего фона у контейнера нет намеренно: подложка со светом студии стоит
+       на -z-10, и любая заливка родителя закрасила бы её целиком (фон страницы
+       приходит из body — index.css). */
+    <div className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden px-7 py-12 dt:items-center">
       <AmbientBackdrop tint={brand?.accent_color ?? '#F9A08B'} />
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative"
+        className="relative dt:w-full dt:max-w-[460px] dt:rounded-[28px] dt:bg-card dt:p-12 dt:shadow-lift"
       >
         {brand?.logo_url ? (
           <img
@@ -126,10 +132,10 @@ export default function Auth({
           </div>
         )}
 
-        <h1 className="text-[28px] font-extrabold leading-[1.06] tracking-[-0.03em] text-foreground">
+        <h1 className="text-[28px] font-extrabold leading-[1.06] tracking-[-0.03em] text-foreground dt:text-[32px]">
           {linkMode ? 'Прив’язати пошту' : brand?.name ?? 'Кабінет клієнта'}
         </h1>
-        <p className="mt-2.5 max-w-[20rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground">
+        <p className="mt-2.5 max-w-[20rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground dt:text-[14px]">
           {linkMode
             ? 'Підтвердьте пошту — і зможете заходити в цей самий кабінет із браузера, не лише з Telegram.'
             : step === 'email'

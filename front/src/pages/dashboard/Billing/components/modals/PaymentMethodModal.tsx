@@ -108,6 +108,10 @@ export default function PaymentMethodModal({
               wantInvoice={wantInvoice}
               setWantInvoice={setWantInvoice}
               requireCountry={detailsForIban}
+              // Карта уходит на страницу Stripe, а она собирает адрес и VAT сама
+              // (create_subscription_checkout: billing_address_collection="required").
+              // Спрашивать страну и индекс тут — лишний шаг перед оплатой.
+              showAddress={detailsForIban}
               errors={detailErrors}
             />
           </>

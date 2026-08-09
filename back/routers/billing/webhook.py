@@ -135,6 +135,52 @@ def _period_end(subscription) -> int | None:
     return getattr(subscription, "current_period_end", None)
 
 
+# Интервал Stripe → месяцев в нём. Обратное к stripe_catalog._INTERVALS; сверка
+# двух таблиц держится ассертом в self-check ниже.
+_MONTHS_PER_INTERVAL = {"month": 1, "year": 12}
+
+# Средний месяц (365.25/12 суток) — делитель фолбэка по датам периода позиции.
+_AVG_MONTH_SECONDS = 30.44 * 86400
+
+
+def _period_months(stripe_invoice) -> int | None:
+    """Сколько месяцев тарифа покрывает счёт. None — определить не удалось.
+
+    Нужно АВТОСЧЕТАМ ПРОДЛЕНИЯ: `period_months` в метаданные кладёт наш checkout,
+    и только первому счёту — последующие Stripe генерирует сам. Метаданные
+    подписки лежат при этом на верхнем уровне не во всех версиях API (с
+    2026-07-29 они переехали в `parent.subscription_details`), поэтому опираться
+    на них нельзя: на старой версии эндпоинта период пинился к 1, и 12-месячный
+    тариф выглядел в истории счетов и в чеке оплаченным на месяц.
+
+    Читаем ПОЗИЦИЮ счёта, а не подписку: `lines` есть в теле события на любой
+    версии API, тогда как поля самой подписки между версиями переезжали.
+    """
+    lines = getattr(stripe_invoice, "lines", None)
+    data = getattr(lines, "data", None) if lines is not None else None
+    if not data:
+        return None
+    line = data[0]
+
+    # Точный путь: интервал Price из нашего же каталога (stripe_catalog._INTERVALS).
+    recurring = getattr(getattr(line, "price", None), "recurring", None)
+    per_interval = _MONTHS_PER_INTERVAL.get(getattr(recurring, "interval", "") or "")
+    if per_interval:
+        return (getattr(recurring, "interval_count", 1) or 1) * per_interval
+
+    # ponytail: фолбэк — длина периода позиции, округлённая до месяцев. Неточен в
+    # принципе, но для наших четырёх периодов (1/6/12/24) однозначен с запасом:
+    # ближайший сосед отстоит на порядок дальше ошибки округления. Понадобятся
+    # экзотические интервалы (неделя, день) — считать по ним, а не по этой шкале.
+    period = getattr(line, "period", None)
+    start = getattr(period, "start", None) if period is not None else None
+    end = getattr(period, "end", None) if period is not None else None
+    # Сверка именно с None: `not start` отбрасывал бы и легальный timestamp 0.
+    if start is None or end is None or end <= start:
+        return None
+    return max(1, round((end - start) / _AVG_MONTH_SECONDS))
+
+
 async def mirror_invoice(
     db: AsyncSession, plan: StudioBillingPlan, stripe_invoice,
 ) -> BillingInvoice:
@@ -151,18 +197,23 @@ async def mirror_invoice(
     metadata = getattr(stripe_invoice, "metadata", None)
     if not getattr(metadata, "plan", None):
         # У автогенерируемых счетов цикла подписки метаданных на верхнем уровне НЕТ —
-        # Stripe кладёт их в parent.subscription_details.metadata, а не в invoice.metadata.
-        # Без этого фолбэка period_months навсегда пинится к 1 на каждом продлении.
+        # с API 2026-07-29 Stripe кладёт их в parent.subscription_details.metadata.
+        # На версиях СТАРШЕ этого поколения нет и `parent` — период тогда достаём
+        # из позиции счёта (_period_months), а не из метаданных вовсе.
         parent = getattr(stripe_invoice, "parent", None)
         details = getattr(parent, "subscription_details", None) if parent else None
         metadata = getattr(details, "metadata", None) or metadata
     plan_name = getattr(metadata, "plan", None) if metadata is not None else None
     period = getattr(metadata, "period_months", None) if metadata is not None else None
-
+    # Счёт за комиссию помечает себя сам (services/offline_fee_billing). Нужно и
+    # на случай, когда вебхук обогнал нашу запись строки: без маркера такой счёт
+    # при оплате поднял бы студии ступень тарифа за чужие деньги.
+    kind = (getattr(metadata, "kind", None) if metadata is not None else None) or "subscription"
     fields = dict(
         studio_id=plan.studio_id,
+        kind=kind,
         plan_name=plan_name or plan.plan_name,
-        period_months=int(period) if period else 1,
+        period_months=int(period) if period else (_period_months(stripe_invoice) or 1),
         amount=getattr(stripe_invoice, "amount_due", 0) or 0,
         payment_method="iban" if getattr(stripe_invoice, "collection_method", "") == "send_invoice" else "card",
         hosted_invoice_url=getattr(stripe_invoice, "hosted_invoice_url", None),
@@ -216,6 +267,8 @@ async def stripe_webhook(request: Request):
                 await _handle_invoice(db, event_type, obj)
             elif event_type == "charge.refunded":
                 await _handle_refund(db, obj)
+            elif event_type == "setup_intent.succeeded":
+                await _handle_setup_intent(db, obj)
         except Exception:
             # Всегда 200: 4xx/5xx заставит Stripe ретраить, а гонка двух параллельных
             # доставок одного события (unique на stripe_invoice_id/stripe_subscription_id)
@@ -293,6 +346,45 @@ async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
         await db.commit()
 
 
+async def _handle_setup_intent(db: AsyncSession, obj) -> None:
+    """Карта привязана без списания (POST /billing/payment-method/setup).
+
+    Для тарифа «только процент» это единственный способ появиться карте, а без
+    неё гейт студию не пускает и ежемесячный счёт за комиссию списать не с чего.
+    Делаем её ДЕФОЛТНОЙ у Customer'а — иначе Stripe не спишет по ней счёт сам.
+    """
+    customer_id = _customer_id(obj)
+    if not customer_id:
+        return
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.stripe_customer_id == customer_id)
+    )).scalar_one_or_none()
+    if plan is None:
+        logger.info("Stripe billing: привязка карты клиента %s не найдена по студии", customer_id)
+        return
+
+    method = getattr(obj, "payment_method", None)
+    method_id = method if isinstance(method, str) else getattr(method, "id", None)
+    if not method_id:
+        return
+
+    # Событие несёт только id метода — за маской карты идём отдельно.
+    try:
+        await stripe_billing.set_default_payment_method(customer_id, method_id)
+        intent = await stripe_billing.fetch_setup_intent(obj["id"])
+    except Exception:
+        logger.exception("Stripe billing: карта %s не привязана к клиенту %s", method_id, customer_id)
+        return
+
+    card = getattr(getattr(intent, "payment_method", None), "card", None)
+    if card is None:
+        return
+
+    await _save_card(db, plan, method_id, card)
+    await db.commit()
+
+
 async def _handle_refund(db: AsyncSession, obj) -> None:
     """Возврат. Полный — переводит счёт в refunded и отменяет подписку, частичный
     (или без сумм в событии) не трогает ни счёт, ни подписку.
@@ -355,8 +447,9 @@ async def apply_status(
     """
     if invoice.status == status:
         return False
-    # Оплаченный счёт назад в failed не роняем: событие о неудачной попытке может
-    # прийти уже ПОСЛЕ успешной оплаты другим способом.
+    # Оплаченный счёт назад в неоплаченный не роняем: событие о неудачной попытке
+    # может прийти уже ПОСЛЕ успешной оплаты другим способом. Для past_due это
+    # важнее вдвойне — иначе отставшее событие заблокировало бы рассчитавшуюся студию.
     if invoice.status == "paid" and status == "failed":
         return False
     # Возврат — конечное состояние. Без этой строки ручная сверка по возвращённому
@@ -368,6 +461,17 @@ async def apply_status(
         invoice.status = "paid"
         invoice.paid_at = datetime.utcnow()
         await _activate(db, invoice)
+        # Доход платформы — в леджер, в той же транзакции, что и отметка об оплате:
+        # разъехаться они не должны. Идемпотентность — по stripe_invoice_id.
+        if invoice.stripe_invoice_id:
+            from services.platform_fee import record_revenue
+
+            await record_revenue(
+                db, invoice.studio_id,
+                "offline_fee" if invoice.kind == "offline_fee" else "subscription",
+                invoice.amount, stripe_billing.CURRENCY,
+                f"in:{invoice.stripe_invoice_id}",
+            )
     elif status in ("failed", "refunded"):
         invoice.status = status
     else:
@@ -406,7 +510,14 @@ async def _activate(db: AsyncSession, invoice: BillingInvoice) -> None:
     `current_period_end` (_handle_subscription). Своей арифметики периодов больше нет.
     Карту (Stripe round-trip) сюда тоже не зовём — это сделает apply_status ПОСЛЕ
     commit, вне пишущей транзакции (см. её комментарий).
+    Счёт за комиссию подписку НЕ трогает: это оплата уже оказанной услуги, а не
+    покупка периода. Без этого выхода погашение долга поднимало бы статус
+    подписки в active — студия с истёкшим тарифом продлевала бы себе доступ,
+    заплатив собственную комиссию.
     """
+    if invoice.kind != "subscription":
+        return
+
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
     )).scalar_one_or_none()
@@ -448,6 +559,16 @@ async def _sync_card(
     # автопродление на второй/третий период идёт без похода через checkout.py, и
     # искать «последний счёт с user_id» там было бы либо мимо (пусто), либо мимо
     # цели (случайный чужой счёт).
+    await _save_card(db, plan, method.id, card)
+
+
+async def _save_card(db: AsyncSession, plan: StudioBillingPlan, method_id: str, card) -> None:
+    """Маска карты владельцу студии. Общее для оплаты подписки (_sync_card) и
+    привязки карты без списания (_handle_setup_intent) — гейт и ежемесячный счёт
+    за комиссию читают одну и ту же строку, и заводить её двумя способами нельзя.
+
+    Не коммитит: вызывающий решает, когда закрыть транзакцию.
+    """
     owner_id = (await db.execute(
         select(StudioMember.user_id).where(
             StudioMember.studio_id == plan.studio_id,
@@ -465,7 +586,7 @@ async def _sync_card(
         card_last4=getattr(card, "last4", "") or "----",
         card_brand=getattr(card, "brand", "card"),
         card_expiry=f"{getattr(card, 'exp_month', 0):02d}/{str(getattr(card, 'exp_year', 0))[-2:]}",
-        rectoken=method.id,
+        rectoken=method_id,
         stripe_customer_id=plan.stripe_customer_id,
         method_type="card",
     )
@@ -545,6 +666,44 @@ if __name__ == "__main__":
     assert _customer_id(types.SimpleNamespace(customer="cus_1")) == "cus_1"
     assert _customer_id(types.SimpleNamespace(customer=types.SimpleNamespace(id="cus_2"))) == "cus_2"
     assert _customer_id(types.SimpleNamespace(customer=None)) is None
+
+    # Период автосчёта продления. Метаданных с `period_months` у него нет ни на
+    # одной версии API, поэтому читается позиция счёта.
+    def _inv_line(interval=None, count=1, start=None, end=None):
+        price = types.SimpleNamespace(
+            recurring=types.SimpleNamespace(interval=interval, interval_count=count),
+        ) if interval else None
+        return types.SimpleNamespace(lines=types.SimpleNamespace(data=[
+            types.SimpleNamespace(price=price, period=types.SimpleNamespace(start=start, end=end)),
+        ]))
+
+    # Точный путь — интервал Price. Все четыре периода каталога.
+    assert _period_months(_inv_line("month", 1)) == 1
+    assert _period_months(_inv_line("month", 6)) == 6
+    assert _period_months(_inv_line("year", 1)) == 12
+    assert _period_months(_inv_line("year", 2)) == 24
+
+    # Обратная таблица обязана сходиться с каталогом: разъедутся — период поедет.
+    from services.stripe_catalog import _INTERVALS
+    for _months, (_interval, _count) in _INTERVALS.items():
+        assert _MONTHS_PER_INTERVAL[_interval] * _count == _months, (_interval, _count)
+
+    # Фолбэк по датам периода (Price недоступен): округление обязано попадать в
+    # тот же период, включая короткий февраль и високосный год.
+    _DAY = 86400
+    assert _period_months(_inv_line(start=0, end=28 * _DAY)) == 1
+    assert _period_months(_inv_line(start=0, end=31 * _DAY)) == 1
+    assert _period_months(_inv_line(start=0, end=181 * _DAY)) == 6
+    assert _period_months(_inv_line(start=0, end=184 * _DAY)) == 6
+    assert _period_months(_inv_line(start=0, end=365 * _DAY)) == 12
+    assert _period_months(_inv_line(start=0, end=366 * _DAY)) == 12
+    assert _period_months(_inv_line(start=0, end=730 * _DAY)) == 24
+
+    # Определить нечем — None, и вызывающая сторона подставит 1, а не упадёт.
+    assert _period_months(types.SimpleNamespace(lines=None)) is None
+    assert _period_months(types.SimpleNamespace(lines=types.SimpleNamespace(data=[]))) is None
+    # Разовая позиция счёта за комиссию: периода нет (start == end) — не месяц.
+    assert _period_months(_inv_line(start=100, end=100)) is None
 
     assert "/webhook/stripe" in [r.path for r in router.routes]
     print("billing webhook self-check ok")

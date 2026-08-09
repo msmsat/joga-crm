@@ -16,11 +16,12 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, DepositTransaction, LoyaltyPointTransaction, Operation,
-    ReferralRecord, StudioDiscountConfig, StudioLoyaltyConfig, StudioReferralConfig,
+    ReferralRecord, Studio, StudioDiscountConfig, StudioLoyaltyConfig, StudioReferralConfig,
 )
 from schemas.loyalty import (
     BonusCreate, DepositBalanceRead, DepositCreate, DepositTransactionRead, PointsBalanceRead, PointTransactionRead,
 )
+from services import platform_fee, stripe_connect
 from services.notifier import notify, notify_payment
 
 router = APIRouter()
@@ -268,6 +269,16 @@ async def apply_deposit(
             client_id=client_id,
         ))
         account.balance += body.amount
+        # Пополнение депозита наличными — приём офлайн-денег: комиссия платформы
+        # берётся ЗДЕСЬ, а не при покупке абонемента с депозита (та идёт по
+        # price=0 и второй раз начислять её нельзя).
+        studio = (await db.execute(select(Studio).where(Studio.id == ctx.studio_id))).scalar_one()
+        currency = studio.currency or "CZK"
+        await platform_fee.record_offline_fee(
+            db, ctx.studio_id,
+            stripe_connect.to_minor_units(body.amount, currency),
+            currency, client_id=client_id, payment_method="deposit_topup",
+        )
 
     await db.commit()
 

@@ -78,6 +78,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("POST", "/schedule/reservations"): ("*studio",),                  # тело: тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/cancel"): ("*studio",),  # тело: тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/attend"): ("*studio",),  # тренер отмечает приход на СВОЁМ
+    ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
 
     # ── Настройки: персональные вкладки доступны всем ролям (ТЗ 2.13)
     ("GET", "/settings/general"): ("*studio",),      # название/валюта студии — читают все, PATCH owner
@@ -103,6 +104,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/booking/public/{studio_id}/services"): ("*public",),
     ("GET", "/booking/public/{studio_id}/slots"): ("*public",),
     ("POST", "/booking/public/booking/{studio_id}/reserve"): ("*public",),
+    ("POST", "/booking/telegram/webhook/{token}"): ("*public",),  # апдейты бота, подписи нет — как и у Stripe
 }
 
 

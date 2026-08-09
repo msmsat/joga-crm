@@ -18,9 +18,6 @@
     "closing_soon": "Скоро закрытие",
     "closed": "Закрыто",
     "opening_soon": "Скоро открытие",
-    "map": "Карта",
-    "map_title": "Студии на карте",
-    "map_sub": "Коснитесь метки, чтобы выбрать студию",
     "choose_studio": "Выберите студию",
     "open_studio": "Выбрать {{name}}",
     "services": "Услуги студии",
@@ -247,7 +244,8 @@
     "home": "Главная",
     "schedule": "Расписание",
     "my_lessons": "Мои занятия",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "client_area": "Кабинет клиента"
   },
   "home": {
     "greeting_morning": "Доброе утро",

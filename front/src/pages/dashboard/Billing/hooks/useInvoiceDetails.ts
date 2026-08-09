@@ -39,6 +39,11 @@ export function validateInvoiceDetails(
   if ((opts.requireCountry || country) && !/^[A-Za-z]{2}$/.test(country)) {
     errors.country = t('payModal.invoice.countryInvalid');
   }
+  // Индекс обязателен там же, где страна (ветка IBAN): он печатается в адресе
+  // плательщика на фактуре, и счёт с половиной адреса бухгалтерия не примет.
+  if (opts.requireCountry && !value.postal_code.trim()) {
+    errors.postal_code = t('payModal.invoice.postalRequired');
+  }
   return errors;
 }
 

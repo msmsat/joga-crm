@@ -101,15 +101,30 @@ async def _ensure_customer(
     return customer_id
 
 
-def _metadata(ctx: StudioContext, plan_id: str, period_months: int) -> dict:
-    """Только для диагностики в дашборде Stripe. Границей доступа НЕ является —
-    вебхук привязывает событие к студии по stripe_subscription_id."""
+def _metadata(ctx: StudioContext, plan_id: str, period_months: int, mode: str = "subscription") -> dict:
+    """Метаданные подписки. `plan`/`period_months` читает вебхук (mirror_invoice →
+    _activate), поэтому они обязаны ехать при КАЖДОЙ смене Price, иначе продление
+    вернёт студию на прежнюю ступень тарифа.
+
+    `mode` — только диагностика в дашборде Stripe: ступень доступа от него не
+    зависит (у комбо те же лимиты, что у одноимённой подписки)."""
     return {
         "studio_id": str(ctx.studio_id),
         "user_id": str(ctx.user.id),
         "plan": plan_id,
         "period_months": str(period_months),
+        "billing_mode": mode,
     }
+
+
+def _is_combo(plan: StudioBillingPlan) -> bool:
+    """Тариф «фикс + процент» → подписка идёт по половинному Price.
+
+    Режим переключается отдельным запросом (`POST /billing/model`) ДО оплаты,
+    поэтому истина здесь — то, что уже лежит в БД, а не поле в теле checkout'а:
+    иначе фронт мог бы попросить половинную цену на обычной подписке.
+    """
+    return plan.billing_mode == "combo"
 
 
 def _trial_end(plan: StudioBillingPlan) -> int | None:
@@ -150,15 +165,17 @@ async def create_checkout(
     plan = await _get_or_create_plan(db, ctx.studio_id)
     customer_id = await _ensure_customer(db, ctx, plan, require_country=False)
 
+    combo = _is_combo(plan)
+    metadata = _metadata(ctx, body.plan, body.period_months, plan.billing_mode)
+
     try:
-        price_id = await stripe_catalog.price_id(body.plan, body.period_months)
+        price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _has_live_subscription(plan):
             # Сначала смена тарифа, потом метод оплаты: если change_subscription_price
             # упадёт, студия останется как была — а не безмолвно переключённой на
             # автосписание без применённого тарифа.
             subscription = await stripe_billing.change_subscription_price(
-                plan.stripe_subscription_id, price_id,
-                _metadata(ctx, body.plan, body.period_months),
+                plan.stripe_subscription_id, price_id, metadata,
             )
             # Метод оплаты мог быть переводом — вернуть подписку на автосписание,
             # иначе студия выбрала карту, а Stripe продолжит слать счета на перевод.
@@ -173,7 +190,7 @@ async def create_checkout(
         session_id, url = await stripe_billing.create_subscription_checkout(
             customer_id=customer_id,
             price_id=price_id,
-            metadata=_metadata(ctx, body.plan, body.period_months),
+            metadata=metadata,
             success_url=_RETURN_URL,
             cancel_url=f"{WEB_APP_URL}/dashboard/billing",
             trial_end=_trial_end(plan),
@@ -207,15 +224,17 @@ async def create_iban_checkout(
     plan = await _get_or_create_plan(db, ctx.studio_id)
     customer_id = await _ensure_customer(db, ctx, plan, require_country=True)
 
+    combo = _is_combo(plan)
+    metadata = _metadata(ctx, body.plan, body.period_months, plan.billing_mode)
+
     try:
-        price_id = await stripe_catalog.price_id(body.plan, body.period_months)
+        price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _has_live_subscription(plan):
             # Сначала смена тарифа, потом метод оплаты: если change_subscription_price
             # упадёт, студия останется как была — а не безмолвно переключённой на
             # перевод без применённого тарифа и без счёта.
             await stripe_billing.change_subscription_price(
-                plan.stripe_subscription_id, price_id,
-                _metadata(ctx, body.plan, body.period_months),
+                plan.stripe_subscription_id, price_id, metadata,
             )
             # Подписка могла быть на автосписании с карты — переводим её на счета,
             # иначе Stripe спишет с карты, и показанный IBAN окажется декорацией.
@@ -236,7 +255,7 @@ async def create_iban_checkout(
             subscription = await stripe_billing.create_iban_subscription(
                 customer_id=customer_id,
                 price_id=price_id,
-                metadata=_metadata(ctx, body.plan, body.period_months),
+                metadata=metadata,
                 trial_end=_trial_end(plan),
             )
             plan.stripe_subscription_id = subscription.id
@@ -298,12 +317,51 @@ async def create_iban_checkout(
     return response
 
 
+@router.post("/payment-method/setup", response_model=CheckoutResponse)
+async def setup_payment_method(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Привязать карту без списания — по желанию студии, не как условие доступа.
+
+    Гейт percent-студию пускает и БЕЗ карты (dependencies.require_active_subscription):
+    счёт за офлайн-комиссию выставляется на оплату вручную, а не списывается
+    (services/offline_fee_billing). Карта тут — удобство: с ней Stripe закроет
+    ежемесячный счёт сам. До этого эндпоинта она появлялась только как побочный
+    эффект оплаты подписки (webhook._sync_card), которой у «процента» нет.
+
+    Клиент Stripe заводится здесь же — он нужен и для будущего перехода на
+    подписку, и как владелец привязанного способа оплаты.
+    """
+    if not stripe_billing.configured():
+        raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
+
+    plan = await _get_or_create_plan(db, ctx.studio_id)
+    customer_id = await _ensure_customer(db, ctx, plan, require_country=False)
+
+    try:
+        _session_id, url = await stripe_billing.create_setup_checkout(
+            customer_id=customer_id,
+            success_url=f"{WEB_APP_URL}/dashboard/billing?card=added",
+            cancel_url=f"{WEB_APP_URL}/dashboard/billing",
+        )
+    except Exception as exc:
+        logger.exception("Stripe billing: страница привязки карты не создана")
+        raise HTTPException(status_code=502, detail=_STRIPE_ERROR) from exc
+
+    return CheckoutResponse(checkout_url=url)
+
+
 @router.post("/renew", deprecated=True)
-async def renew():
+async def renew(_ctx: StudioContext = Depends(require_role("owner"))):
     """Продление теперь делает Stripe само.
 
     410, а не удаление маршрута: текущий фронт ещё зовёт этот эндпоинт, и внятный
     код отказа читается лучше, чем 404 на «пропавшем» пути.
+
+    Гейт на owner оставлен, хотя тело ответа от роли не зависит: остальной
+    /billing — owner-only (require_active_subscription + require_role), и этот
+    маршрут не повод делать в разделе биллинга анонимную дыру.
     """
     raise HTTPException(status_code=410, detail={
         "code": "billing.renew_is_automatic",

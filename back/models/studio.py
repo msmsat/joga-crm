@@ -54,6 +54,8 @@ class Studio(Base):
     booking_channel_configs: Mapped[List["BookingChannelConfig"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     billing_plan: Mapped[Optional["StudioBillingPlan"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     billing_invoices: Mapped[List["BillingInvoice"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    offline_fees: Mapped[List["OfflineTransactionFee"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    revenue_entries: Mapped[List["PlatformRevenueLedger"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     integrations: Mapped[List["StudioIntegration"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
 
     # Finances

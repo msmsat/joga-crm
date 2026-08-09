@@ -147,6 +147,7 @@
       "cash": "Cash",
       "card": "Card",
       "cardStripe": "Card payments go through a Stripe page and land directly in the studio's account. Set it up in Finances → Online payments.",
+      "offlineLocked": "Cash payments are available on Combo and higher plans",
       "payByCard": "Pay by card",
       "confirmPay": "Confirm payment",
       "confirmPayCovered": "Confirm (already paid)",

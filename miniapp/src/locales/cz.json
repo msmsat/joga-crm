@@ -18,9 +18,6 @@
     "closing_soon": "Brzy zavíráme",
     "closed": "Zavřeno",
     "opening_soon": "Brzy otevíráme",
-    "map": "Mapa",
-    "map_title": "Studia na mapě",
-    "map_sub": "Klepnutím na značku vyberte studio",
     "choose_studio": "Vyberte studio",
     "open_studio": "Vybrat {{name}}",
     "services": "Služby studia",
@@ -247,7 +244,8 @@
     "home": "Domů",
     "schedule": "Rozvrh",
     "my_lessons": "Moje lekce",
-    "profile": "Profil"
+    "profile": "Profil",
+    "client_area": "Klientská zóna"
   },
   "home": {
     "greeting_morning": "Dobré ráno",

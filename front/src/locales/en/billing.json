@@ -48,26 +48,30 @@
     "trial": "Trial period",
     "trialUntil": "Trial period · until {{date}}",
     "expired": "Expired",
-    "percentRate": "{{rate}}% of online payments"
+    "percentRate": "{{rate}}% of sales"
   },
   "mode": {
     "title": "Payment model",
     "subscription": "Fixed subscription",
-    "percent": "% of online payments",
+    "percent": "% of sales",
     "combo": "Fixed + % combo",
-    "short": { "subscription": "Fixed", "percent": "Percent", "combo": "Combo" },
+    "short": {
+      "subscription": "Fixed",
+      "percent": "Percent",
+      "combo": "Combo"
+    },
     "descriptions": {
       "subscription": "Pay one amount per month. Predictable and cost-effective.",
-      "percent": "Pay only when you earn. From 2% to 8% of transactions.",
-      "combo": "Reduced subscription + a small % for active growth."
+      "percent": "No fixed fee: 3% of every sale, cash included.",
+      "combo": "Half the subscription + 1.5% of every sale, cash included."
     },
     "badges": {
       "popular": "Popular",
       "flexible": "Flexible"
     },
     "percentCard": {
-      "title": "The “3% of online payments” model",
-      "description": "Pay only when you earn. 3% of every successful online payment. No fixed subscription fee.",
+      "title": "The “3% of sales” model",
+      "description": "Pay only when you earn: 3% of every sale, no fixed subscription fee. Online payments are split instantly; cash and deposits accrue and arrive as one invoice each month.",
       "noFixed": "No fixed fee",
       "payForResult": "Pay for results",
       "oneClick": "1-click activation",
@@ -77,11 +81,14 @@
     "activateSuccess": "Payment model updated",
     "activateError": "Couldn't update the payment model",
     "confirmSwitchTitle": "Switch payment model?",
-    "confirmSwitchMessage": "Your current subscription is active. Switching models takes effect immediately — remaining paid time won't carry over."
+    "confirmSwitchMessage": "Your current subscription is active. Switching models takes effect immediately — remaining paid time won't carry over.",
+    "termsTitle": "Confirm plan terms",
+    "termsMessage": "On this plan the platform withholds {{rate}}% of every sale.\n\nFor online payments the fee is withheld automatically at the moment of payment. For cash, terminal and deposit top-ups it is NOT withheld immediately — it accrues, and you receive a separate invoice once a month.\n\nYou have {{days}} days to pay that invoice. If it is not paid in time, access to the CRM and to the client mini-app is suspended until it is settled.\n\nThe current amount due is shown in Billing; you can pay at any time, including early.",
+    "termsConfirm": "I accept the terms"
   },
   "combo": {
     "rateBadge": "{{rate}}%",
-    "summary": "Fixed {{fixed}}/mo. + {{rate}}% of online payments",
+    "summary": "Fixed {{fixed}}/mo. + {{rate}}% of sales (cash billed monthly)",
     "cta": "Activate the Combo plan",
     "ctaShort": "Activate combo"
   },
@@ -130,53 +137,33 @@
     "enterprise": "Enterprise",
     "perMonth": "/ mo.",
     "currentPlan": "Current plan",
-    "choosePlan": "Choose plan"
-  },
-  "features": {
-    "start": {
-      "staff": "Up to 3 staff members",
-      "clients": "Up to 100 clients",
-      "booking": "Online booking",
-      "calendar": "Basic calendar",
-      "analytics": "Analytics",
-      "api": "API access",
-      "loyalty": "Loyalty & CRM",
-      "whiteLabel": "White-label"
-    },
-    "pro": {
-      "staff": "Up to 20 staff members",
-      "clients": "Unlimited clients",
-      "analytics": "Full analytics",
-      "loyalty": "Loyalty & CRM",
-      "telegram": "Telegram notifications",
-      "support": "Priority support",
-      "api": "API access",
-      "whiteLabel": "White-label"
-    },
-    "business": {
-      "unlimited": "Unlimited everything",
-      "whiteLabel": "White-label",
-      "api": "API access",
-      "multiBranch": "Multi-branch",
-      "manager": "Dedicated manager",
-      "integrations": "Custom integrations",
-      "sla": "99.9% SLA",
-      "training": "Team training"
-    }
+    "choosePlan": "Choose plan",
+    "staffLimit": "Up to {{count}} staff",
+    "staffUnlimited": "Unlimited staff"
   },
   "paymentSchedule": {
     "title": "Payment schedule",
     "total": "Total due",
     "morePayments": "+ {{count}} more payments of {{amount}}",
     "processing": "Redirecting to payment…",
-    "payFor": "Pay for {{count}} mo."
+    "payFor": "Pay for {{count}} mo.",
+    "vatNote": "Excl. VAT — tax is added at checkout based on your country"
   },
   "trust": {
     "title": "Why 2,400+ businesses trust us",
     "reviews": [
-      { "text": "Switched from Altegio. The difference is like between a taxi and a private jet.", "author": "Maria K., FORM Pilates" },
-      { "text": "The best part is knowing exactly what I pay every month. No surprises.", "author": "Artem N., Barbershop Bros" },
-      { "text": "Support replied in 4 minutes. I've never seen that anywhere else.", "author": "Elena D., SPA LUNA" }
+      {
+        "text": "Switched from Altegio. The difference is like between a taxi and a private jet.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "The best part is knowing exactly what I pay every month. No surprises.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Support replied in 4 minutes. I've never seen that anywhere else.",
+        "author": "Elena D., SPA LUNA"
+      }
     ]
   },
   "upgrade": {
@@ -223,10 +210,22 @@
     "autopayError": "Couldn't save the setting. Please try again.",
     "autopay": {
       "cardOnly": "Available when paying by card",
-      "autoRenew":   { "label": "Automatic renewal",        "desc": "Charged without confirmation" },
-      "emailNotify": { "label": "Email notifications",      "desc": "Receipt emailed after every payment" },
-      "remind3d":    { "label": "Remind 3 days before",     "desc": "We'll remind you before the automatic charge" },
-      "sms":         { "label": "SMS alert",                "desc": "Text message sent on charge" }
+      "autoRenew": {
+        "label": "Automatic renewal",
+        "desc": "Charged without confirmation"
+      },
+      "emailNotify": {
+        "label": "Email notifications",
+        "desc": "Receipt emailed after every payment"
+      },
+      "remind3d": {
+        "label": "Remind 3 days before",
+        "desc": "We'll remind you before the automatic charge"
+      },
+      "sms": {
+        "label": "SMS alert",
+        "desc": "Text message sent on charge"
+      }
     }
   },
   "invoices": {
@@ -318,9 +317,18 @@
       "postalLabel": "Postal code",
       "icoRequired": "A company invoice needs the registration ID",
       "countryInvalid": "Two-letter country code, e.g. CZ",
+      "postalRequired": "The postal code is printed in the invoice address",
       "note": "These details are printed on the invoice. You can change them on the Payment method tab.",
-      "countryNote": "Bank transfer requires the country — the VAT rate is derived from it.",
+      "countryNote": "Bank transfer requires the country and postal code — the VAT rate is derived from the country and the address is printed on the invoice.",
       "continue": "Continue"
     }
+  },
+  "offlineFee": {
+    "title": "Offline sales fee",
+    "accruing": "Accrued from cash and deposits at {{rate}}%. Invoiced monthly, {{days}} days to pay.",
+    "due": "Invoice issued. Days left to pay: {{days}}.",
+    "suspended": "Payment overdue — CRM and mini-app access is suspended.",
+    "pay": "Pay",
+    "nothingToPay": "Nothing to pay"
   }
 }

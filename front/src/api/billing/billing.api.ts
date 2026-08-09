@@ -2,7 +2,7 @@ import { client, downloadFile, openFile } from '../client'
 import type {
   PlansCatalog, BillingPlan, Invoice, InvoicesPage, PaymentCard, BillingStats,
   CheckoutRequest, CheckoutResponse,
-  ActivateModelRequest, IbanCheckout, AutopaySettings,
+  ActivateModelRequest, IbanCheckout, AutopaySettings, OfflineFeeStatus,
 } from './billing.types'
 
 // date_from/date_to — YYYY-MM-DD, включительно; общий фильтр для списка (задача 3/6)
@@ -74,6 +74,13 @@ export const billingApi = {
   // Переключение тарифной модели (подписка / % / фикс+%) — без разового платежа.
   activateModel: (body: ActivateModelRequest) =>
     client.post<BillingPlan>('/billing/model', body),
+
+  getOfflineFees: () =>
+    client.get<OfflineFeeStatus>('/billing/offline-fees'),
+
+  // Досрочная оплата: выставляет счёт на всё накопленное и возвращает ссылку.
+  payOfflineFees: () =>
+    client.post<OfflineFeeStatus>('/billing/offline-fees/pay', {}),
 
   // IBAN-ветка: без редиректа на Stripe, возвращает тестовый IBAN + инвойс для модалки.
   checkoutIban: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>

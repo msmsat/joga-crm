@@ -27,6 +27,18 @@ COMBO_FIXED: dict[str, int] = {
 }
 
 
+def combo_amount_for(plan_id: str, period_months: int) -> int:
+    """Фиксированная часть тарифа «комбо» за период — ровно половина подписки.
+
+    Формула та же, что у `amount_for`, но от `COMBO_FIXED`: скидка за длинный
+    период на комбо действует так же, иначе годовая комбо-оплата выходила бы
+    дороже годовой подписки, поделённой пополам.
+    """
+    monthly = COMBO_FIXED[plan_id]
+    discount = PERIOD_DISCOUNTS[period_months]
+    return round(monthly * period_months * (1 - discount))
+
+
 def amount_for(plan_id: str, period_months: int) -> int:
     """Итоговая сумма к оплате в копейках: цена×месяцы со скидкой периода.
 
@@ -57,4 +69,12 @@ if __name__ == "__main__":
     # Комбо-фикс производный от цены подписки — не константа, которую забудут обновить.
     assert COMBO_FIXED["pro"] == 4950
     assert COMBO_FIXED["business"] == 11950
+
+    # Комбо стоит ровно половину подписки на каждом периоде — это и есть смысл
+    # тарифа (вторую половину платформа добирает процентом с транзакций).
+    for _pid in PLANS:
+        for _months in PERIOD_DISCOUNTS:
+            assert combo_amount_for(_pid, _months) * 2 == amount_for(_pid, _months), (_pid, _months)
+    assert combo_amount_for("business", 1) == 11950
+    assert combo_amount_for("pro", 12) == 41580
     print("plans self-check ok")
