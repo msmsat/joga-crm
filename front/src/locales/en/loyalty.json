@@ -306,7 +306,7 @@
     "emailNote": "The email goes only to clients with an email",
     "confirm": "Send",
     "toasts": {
-      "pointsDone": "Points granted · {{processed}} processed",
+      "pointsDone": "Points granted · {{processed}} processed, {{emails}} notified",
       "emailDone": "Campaign sent · {{emails}} emails of {{processed}}"
     }
   },

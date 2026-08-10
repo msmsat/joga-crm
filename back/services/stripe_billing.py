@@ -87,9 +87,46 @@ _IBAN_PAYMENT_SETTINGS = {
 }
 
 
-# Подпись IČO на фактуре. Своего типа налогового id под него у Stripe нет
-# (eu_vat — это DIČ), поэтому регистрационный номер печатается кастомным полем.
-ICO_FIELD_NAME = "IČO"
+# Налоговая категория Stripe Tax для SaaS и способ обложения. Живут ЗДЕСЬ, а не в
+# stripe_catalog, потому что нужны обоим: каталог заводит по ним Prices подписки, а
+# этот модуль — позиции разовых счетов (комиссия, продление). Один набор на оба, и
+# импортирует его каталог отсюда: обратное направление дало бы цикл
+# (stripe_catalog → routers.billing.plans → пакет routers.billing → сюда).
+#
+# `exclusive` — цена БЕЗ налога, налог сверху. Позиция счёта без этого признака
+# роняет automatic_tax целиком: «The price … does not have a tax behavior set».
+TAX_CODE = "txcd_10103001"
+TAX_BEHAVIOR = "exclusive"
+
+# Ставка НДС для ПОКАЗА в интерфейсе, %. Цены в plans.py заданы без налога
+# (TAX_BEHAVIOR = "exclusive"), и налог накидывается сверху.
+#
+# Это ориентир для подписи «включая НДС N%», а НЕ источник суммы: настоящую ставку
+# считает Stripe Tax по стране покупателя и его статусу плательщика — у студии из
+# другой страны ЕС с валидным VAT ID это будет вовсе 0 % (reverse charge). Считать
+# итог по этому числу нельзя ни в коем случае.
+VAT_RATE_DISPLAY = float(os.getenv("BILLING_VAT_RATE", "21"))
+
+# Подпись регистрационного номера компании на фактуре. Своего типа налогового id
+# под него у Stripe нет (eu_vat — это НОМЕР НДС, другой реквизит), поэтому он
+# печатается кастомным полем, и подпись выбираем мы.
+#
+# Название локальное: бухгалтер ищет на фактуре тот термин, который принят у него в
+# стране, и «Company reg. no.» чешскому глазу не говорит ничего. Здесь только те
+# страны, за термин которых можно ручаться; всё остальное получает нейтральный
+# международный вариант. Добавлять страну — только вместе с проверкой, как
+# регистрационный номер называется там на самом деле: неверный местный термин хуже
+# нейтрального.
+_COMPANY_ID_LABELS = {
+    "CZ": "IČO",
+    "SK": "IČO",
+}
+COMPANY_ID_LABEL_DEFAULT = "Company reg. no."
+
+
+def company_id_label(country: str | None) -> str:
+    """Как подписать регистрационный номер на фактуре студии из этой страны."""
+    return _COMPANY_ID_LABELS.get((country or "").upper(), COMPANY_ID_LABEL_DEFAULT)
 
 
 async def ensure_customer(
@@ -114,10 +151,11 @@ async def ensure_customer(
     деньги без назначения платежа, Stripe всё равно применит их к открытому счёту.
     Без него платёж повиснет на балансе, а счёт останется неоплаченным.
 
-    `company_id` (IČO) уезжает в `invoice_settings.custom_fields` — оттуда Stripe
-    печатает его на КАЖДОЙ фактуре клиента, включая автоматические счета продлений.
-    Пусто → поле снимается: реквизит, который студия удалила, не должен остаться
-    напечатанным на следующих фактурах.
+    `company_id` (регистрационный номер компании) уезжает в
+    `invoice_settings.custom_fields` — оттуда Stripe печатает его на КАЖДОЙ фактуре
+    клиента, включая автоматические счета продлений. Пусто → поле снимается:
+    реквизит, который студия удалила, не должен остаться напечатанным на следующих
+    фактурах. Подпись поля выбирается по стране студии (`company_id_label`).
     """
     address = {
         "country": country,
@@ -134,7 +172,8 @@ async def ensure_customer(
             "custom_fields": (
                 # 140 символов — предел значения у Stripe; длиннее он отвечает 400 и
                 # роняет всю оплату из-за косметики. Режем здесь.
-                [{"name": ICO_FIELD_NAME, "value": company_id[:140]}] if company_id else None
+                [{"name": company_id_label(country), "value": company_id[:140]}]
+                if company_id else None
             ),
         },
         # И на create, и на modify: Customer, заведённый до этой фичи (легаси-путь
@@ -462,6 +501,23 @@ async def change_subscription_price(
         params["metadata"] = metadata
     if billing_cycle_anchor is not None:
         params["billing_cycle_anchor"] = billing_cycle_anchor
+        # Немедленный переход у подписки НА ТРИАЛЕ: Stripe отвергает запрос, пока
+        # `trial_end` в будущем — «Trial end cannot be after billing_cycle_anchor».
+        # Начать цикл сегодня и одновременно не платить до конца триала нельзя.
+        #
+        # Триал у нас не только «пробный период»: его же ставит миграция уже
+        # оплативших (checkout._trial_end) — подписка не берёт денег до конца ранее
+        # оплаченного периода. То есть под это условие попадает КАЖДАЯ студия,
+        # оформившая подписку до конца триала, и обе ветки оплаты отвечали ей 502.
+        #
+        # Смысл кнопки «перейти сейчас» — начать платить сейчас, а остаток текущего
+        # периода сжечь (о чём фронт предупреждает отдельной модалкой). Закончить
+        # триал — ровно это и есть, поэтому условие снимаем, а не обходим.
+        #
+        # Статус берём у ТОЙ ЖЕ подписки, что уже прочитана выше: лишнего запроса
+        # не делаем, а угадывать «наверное, триал есть» на денежном пути нельзя.
+        if billing_cycle_anchor == "now" and getattr(subscription, "status", None) == "trialing":
+            params["trial_end"] = "now"
     return await asyncio.to_thread(stripe.Subscription.modify, subscription_id, **params)
 
 
@@ -529,14 +585,52 @@ async def set_default_payment_method(customer_id: str, payment_method_id: str) -
     )
 
 
+async def extend_subscription(subscription_id: str, price_id: str, trial_end: int):
+    """Сдвинуть оплаченный период подписки до `trial_end`. Денег НЕ берёт.
+
+    Продление уже оплаченного тарифа: студия купила ещё N месяцев, значит следующее
+    списание должно уехать на N месяцев вперёд, а остаток текущего периода —
+    остаться при ней. Именно поэтому здесь нет `billing_cycle_anchor`: он начинает
+    цикл заново и сжигает остаток, что для продления ровно противоположно смыслу.
+
+    Механизм — `trial_end` в будущем. У Stripe это единственный способ отодвинуть
+    следующее списание, не выставляя счёт: подписка переходит в `trialing` (наш
+    маппинг читает его как active, см. webhook.map_subscription_status), а
+    `current_period_end` позиции становится новой оплаченной датой — её и зеркалит
+    гейт. По наступлении Stripe спишет как обычно.
+
+    `price_id` едет вместе: студия могла продлить на другой период (была помесячно,
+    купила год), и будущие списания обязаны идти уже по нему.
+
+    Зовётся ТОЛЬКО из вебхука по оплаченному счёту: продлить до оплаты значит
+    раздать бесплатное время всем, кто счёт не оплатит.
+    """
+    return await asyncio.to_thread(
+        stripe.Subscription.modify,
+        subscription_id,
+        items=[{"id": (await asyncio.to_thread(
+            stripe.Subscription.retrieve, subscription_id,
+        ))["items"].data[0].id, "price": price_id}],
+        proration_behavior="none",
+        trial_end=trial_end,
+    )
+
+
 async def create_fee_invoice(
     customer_id: str, amount: int, currency: str, description: str,
-    days_until_due: int, metadata: dict,
+    days_until_due: int, metadata: dict, collection_method: str = "send_invoice",
 ):
-    """Счёт за офлайн-комиссии → ФИНАЛИЗИРОВАННЫЙ Invoice со сроком оплаты.
+    """Счёт на конкретную сумму → ФИНАЛИЗИРОВАННЫЙ Invoice. Офлайн-комиссия и
+    продление уже оплаченного тарифа.
 
-    `send_invoice` + `days_until_due`, а НЕ автосписание: карту у студии мы не
-    просим. Stripe шлёт счёт письмом со ссылкой на оплату, студия платит сама.
+    `collection_method` по умолчанию `send_invoice` — так выставляется комиссия:
+    карту у студии мы не просим, Stripe шлёт письмо со ссылкой, студия платит сама.
+    Продление картой передаёт `charge_automatically`: у такой студии карта уже
+    привязана, и списать по ней сразу честнее, чем отправить её платить по ссылке
+    за тариф, который она и так платит автосписанием.
+
+    `days_until_due` принимает ТОЛЬКО `send_invoice` — со вторым методом Stripe
+    отвечает 400 (та же пара, что в set_collection_method).
 
     Порядок обязателен: сначала черновик, потом позиция ЯВНО в него. InvoiceItem
     без поля `invoice` становится ОТЛОЖЕННЫМ и приклеивается к первому же
@@ -551,10 +645,15 @@ async def create_fee_invoice(
         stripe.Invoice.create,
         customer=customer_id,
         currency=currency,
-        collection_method="send_invoice",
-        days_until_due=days_until_due,
+        collection_method=collection_method,
+        **({"days_until_due": days_until_due} if collection_method == "send_invoice" else {}),
         auto_advance=True,
         pending_invoice_items_behavior="exclude",
+        # Налог считает Stripe Tax, как и у счетов за тариф. Раньше его тут не было
+        # вовсе: комиссия уходила студии без НДС, а подписка — с ним. Одна и та же
+        # платформа не может продавать одной студии часть услуг с налогом, а часть
+        # без; недобранный НДС при этом — обязательство Velora, а не студии.
+        automatic_tax={"enabled": True},
         metadata=metadata,
     )
     await asyncio.to_thread(
@@ -564,15 +663,85 @@ async def create_fee_invoice(
         amount=amount,
         currency=currency,
         description=description,
+        # ОБЯЗАТЕЛЬНО вместе с automatic_tax на счёте. Позиция, заданная голой
+        # суммой, порождает у Stripe одноразовый Price без признака обложения, и
+        # налоговый расчёт отваливается целиком: «The price … does not have a tax
+        # behavior set». Признак и категория — те же, что у Prices подписки
+        # (services/stripe_catalog берёт их отсюда), иначе комиссия облагалась бы
+        # иначе, чем тариф, у одного и того же продавца.
+        tax_behavior=TAX_BEHAVIOR,
+        tax_code=TAX_CODE,
     )
     finalized = await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice.id)
     # Письмо со счётом — отдельным вызовом: финализация сама его не шлёт, а
     # студия без карты узнаёт о долге только из письма и виджета.
-    try:
-        await asyncio.to_thread(stripe.Invoice.send_invoice, finalized.id)
-    except Exception:
-        logger.exception("Stripe billing: счёт %s не отправлен письмом", finalized.id)
+    #
+    # Только для send_invoice: на автосписании Stripe отвечает на этот вызов 400
+    # («можно отправлять только счета с collection_method=send_invoice»), и просить
+    # оплатить по ссылке счёт, который вот-вот спишется с карты, незачем.
+    if collection_method == "send_invoice":
+        try:
+            await asyncio.to_thread(stripe.Invoice.send_invoice, finalized.id)
+        except Exception:
+            logger.exception("Stripe billing: счёт %s не отправлен письмом", finalized.id)
     return finalized
+
+
+async def create_settled_invoice(
+    customer_id: str, amount: int, currency: str, description: str, metadata: dict,
+):
+    """Фактура за деньги, которые УЖЕ получены → финализированный и закрытый Invoice.
+
+    Нужна онлайн-комиссии. Свою долю с платежа клиента Stripe удерживает в момент
+    оплаты (`application_fee_amount`, services/stripe_connect.py) — деньги уже на
+    аккаунте Velora. Просить их вторично счётом нельзя, это было бы двойное
+    списание. Но документ обязан существовать: без него студия не спишет комиссию
+    в расход, а у платформы нет фактуры на собственный доход.
+
+    Отсюда `paid_out_of_band=True` — «оплачено мимо Stripe». Счёт получает номер,
+    PDF и статус Paid, но в цикл сбора платежа не попадает: письма «оплатите» не
+    уходят, dunning не запускается, доступ студии такой счёт не блокирует.
+
+    `auto_advance=False` обязателен вместе с этим: с автопродвижением Stripe погнал
+    бы счёт по обычному циклу взыскания — ровно то, чего здесь быть не должно.
+
+    Позиция кладётся ЯВНО в этот счёт (`invoice=`), как и в create_fee_invoice:
+    InvoiceItem без него становится отложенным и приклеится к следующему счёту
+    подписки, раздув сумму за тариф на величину комиссии.
+    """
+    invoice = await asyncio.to_thread(
+        stripe.Invoice.create,
+        customer=customer_id,
+        currency=currency,
+        collection_method="send_invoice",
+        days_until_due=DAYS_UNTIL_DUE,
+        auto_advance=False,
+        pending_invoice_items_behavior="exclude",
+        # Налог считает Stripe Tax — фактура за комиссию такой же документ, как
+        # счёт за тариф, и выпустить её без НДС нельзя.
+        automatic_tax={"enabled": True},
+        metadata=metadata,
+    )
+    await asyncio.to_thread(
+        stripe.InvoiceItem.create,
+        customer=customer_id,
+        invoice=invoice.id,
+        amount=amount,
+        currency=currency,
+        description=description,
+        # ОБЯЗАТЕЛЬНО вместе с automatic_tax на счёте. Позиция, заданная голой
+        # суммой, порождает у Stripe одноразовый Price без признака обложения, и
+        # налоговый расчёт отваливается целиком: «The price … does not have a tax
+        # behavior set». Признак и категория — те же, что у Prices подписки
+        # (services/stripe_catalog берёт их отсюда), иначе комиссия облагалась бы
+        # иначе, чем тариф, у одного и того же продавца.
+        tax_behavior=TAX_BEHAVIOR,
+        tax_code=TAX_CODE,
+    )
+    finalized = await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice.id)
+    return await asyncio.to_thread(
+        stripe.Invoice.pay, finalized.id, paid_out_of_band=True,
+    )
 
 
 async def open_or_new_invoice(customer_id: str, subscription_id: str):
@@ -813,13 +982,33 @@ if __name__ == "__main__":
         line1=None, vat_id=None, studio_id=1,
     )
     asyncio.run(ensure_customer(None, company_id="123 456 78", **_args))
+    # Подпись поля — по стране студии: чешский бухгалтер ищет на фактуре «IČO», а
+    # нейтральное «Company reg. no.» ему не говорит ничего (и наоборот).
     assert _created["invoice_settings"]["custom_fields"] == [
-        {"name": ICO_FIELD_NAME, "value": "123 456 78"}
+        {"name": "IČO", "value": "123 456 78"}
     ], _created["invoice_settings"]
     _created.clear()
     asyncio.run(ensure_customer(None, company_id=None, **_args))
     assert _created["invoice_settings"]["custom_fields"] is None
+
+    # Страна без своего термина получает международный, а не чужой местный.
+    _created.clear()
+    asyncio.run(ensure_customer(
+        None, company_id="HRB 12345", **{**_args, "country": "DE"},
+    ))
+    assert _created["invoice_settings"]["custom_fields"] == [
+        {"name": COMPANY_ID_LABEL_DEFAULT, "value": "HRB 12345"}
+    ], _created["invoice_settings"]
     stripe.Customer.create = _real_cus_create
+
+    # Подпись обязана влезать в лимит имени кастомного поля Stripe (40 символов):
+    # длиннее — 400 на создании клиента, то есть сорванная оплата из-за косметики.
+    for _label in (*_COMPANY_ID_LABELS.values(), COMPANY_ID_LABEL_DEFAULT):
+        assert 0 < len(_label) <= 40, _label
+
+    # Ставка НДС — только для подписи. Отрицательная или абсурдная означала бы, что
+    # в .env опечатка, а владелец увидит её как «итого с НДС».
+    assert 0 <= VAT_RATE_DISPLAY < 100, VAT_RATE_DISPLAY
 
     # Возврат берёт тот ключ, который заполнен: карта даёт payment_intent,
     # погашение с баланса (IBAN) — charge. Оба принимает Refund.create.

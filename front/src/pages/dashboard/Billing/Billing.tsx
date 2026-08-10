@@ -9,6 +9,7 @@ import PaymentMethodTab from './components/tabs/PaymentMethodTab';
 import UpgradeModal from './components/modals/UpgradeModal';
 import PaymentMethodModal from './components/modals/PaymentMethodModal';
 import styles from './Billing.module.css';
+import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
 
 export default function Billing() {
   const { t } = useTranslation('billing');
@@ -85,6 +86,14 @@ export default function Billing() {
         />
       )}
 
+      {/* Условия, по которым списываются деньги, должны быть доступны с той же
+          страницы, где их списывают, — а не только в письме о платеже. */}
+      <p style={{ margin: '24px 0 0', fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>
+        <a href={TERMS_URL} {...LEGAL_LINK_PROPS} style={{ color: 'var(--muted)' }}>{t('legal.terms')}</a>
+        {' · '}
+        <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} style={{ color: 'var(--muted)' }}>{t('legal.privacy')}</a>
+      </p>
+
       {h.showUpgradeModal && (
         <UpgradeModal
           currency={h.currency}
@@ -95,6 +104,7 @@ export default function Billing() {
           getPrice={h.getPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
+          vatRate={h.vatRate}
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
           scheduleUpgrade={h.scheduleUpgrade}

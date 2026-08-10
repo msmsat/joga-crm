@@ -62,7 +62,11 @@
     "busy": "Busy",
     "dayOff": "Day off",
     "syncHint": "Schedule syncs with the booking journal and class timetable.",
-    "workDaysInWeek": "{{count}} working days per week"
+    "workDaysInWeek": "{{count}} working days per week",
+    "markWork": "Working",
+    "markHint": "Click a day to apply the mark. Click again to clear it.",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "permissions": {
     "finance": "Finance",

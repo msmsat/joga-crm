@@ -11,8 +11,9 @@
 у зеркала есть страховка — `reconcile_subscriptions`, которую раз в час зовёт
 фоновый проход в services/offline_fee_billing.py.
 """
+import calendar
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import or_
@@ -21,7 +22,7 @@ from sqlalchemy.future import select
 
 from database import async_session_maker
 from models import StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember
-from services import stripe_billing
+from services import stripe_billing, stripe_catalog
 from .plans import PLANS
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,21 @@ _STATUS_MAP = {
 _INVOICE_STATUS = {
     "invoice.paid": "paid",
     "invoice.payment_failed": "failed",
+}
+
+# Вид счёта → источник дохода платформы в леджере. Раньше сюда уходила заглушка
+# «offline_fee или иначе subscription», и любой новый вид счёта молча записывался
+# бы выручкой за подписку.
+#
+# `online_fee` не входит СОЗНАТЕЛЬНО: эти деньги уже записаны строками
+# `connect_fee` в момент платежа клиента (Stripe удержал долю сам), а фактура на
+# них выпускается закрытой постфактум. Вторая запись удвоила бы выручку платформы
+# и завысила бы `_month_platform_revenue`, по которой считается минимальный
+# месячный платёж, — студия недополучила бы счёт, который ей положен.
+_REVENUE_SOURCE = {
+    "subscription": "subscription",
+    "offline_fee": "offline_fee",
+    "min_fee": "min_fee",
 }
 
 
@@ -214,16 +230,32 @@ async def mirror_invoice(
     # на случай, когда вебхук обогнал нашу запись строки: без маркера такой счёт
     # при оплате поднял бы студии ступень тарифа за чужие деньги.
     kind = (getattr(metadata, "kind", None) if metadata is not None else None) or "subscription"
+    # На сколько месяцев продлевает этот счёт (routers/billing/checkout._renewal_invoice).
+    # Пусто у всех остальных — они меняют тариф, а не добавляют срок.
+    renew_months = getattr(metadata, "renew_months", None) if metadata is not None else None
     fields = dict(
         studio_id=plan.studio_id,
         kind=kind,
         plan_name=plan_name or plan.plan_name,
         period_months=int(period) if period else (_period_months(stripe_invoice) or 1),
         amount=getattr(stripe_invoice, "amount_due", 0) or 0,
-        payment_method="iban" if getattr(stripe_invoice, "collection_method", "") == "send_invoice" else "card",
+        # Онлайн-комиссию не переводили ни картой, ни по IBAN: Stripe удержал её из
+        # платежа клиента, а фактура выпущена постфактум закрытой. Она технически
+        # send_invoice (см. create_settled_invoice), и без этой ветки счёт показывал
+        # бы студии способ оплаты «IBAN» по деньгам, которых она не переводила.
+        payment_method=(
+            "stripe" if kind == "online_fee"
+            else "iban" if getattr(stripe_invoice, "collection_method", "") == "send_invoice"
+            else "card"
+        ),
         hosted_invoice_url=getattr(stripe_invoice, "hosted_invoice_url", None),
         pdf_url=getattr(stripe_invoice, "invoice_pdf", None),
     )
+    if renew_months:
+        # Счёт продления: сколько месяцев куплено. Хранится в period_months —
+        # отдельного поля не заводим, смысл ровно тот же («за сколько заплачено»),
+        # и история счетов показывает его без единой правки.
+        fields["period_months"] = int(renew_months)
 
     if row is None:
         row = BillingInvoice(stripe_invoice_id=stripe_id, status="pending", **fields)
@@ -394,9 +426,28 @@ async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
 
     status = _INVOICE_STATUS.get(event_type)
     if status is not None:
-        await apply_status(db, invoice, status)
+        # Счёт продления несёт число месяцев в метаданных, а не в нашей строке:
+        # `period_months` есть у любого счёта за тариф, и по нему продление от
+        # обычной оплаты не отличить.
+        await apply_status(db, invoice, status, renew_months=_renew_months(obj))
     else:
         await db.commit()
+
+
+def _renew_months(stripe_invoice) -> int | None:
+    """На сколько месяцев продлевает счёт, или None.
+
+    Метаданные читаем ровно там же, где их ставит checkout._renewal_invoice — на
+    самом счёте. У автосчетов цикла этого поля нет и быть не должно: они и так
+    продлевают подписку сами, средствами Stripe.
+    """
+    metadata = getattr(stripe_invoice, "metadata", None)
+    value = getattr(metadata, "renew_months", None) if metadata is not None else None
+    try:
+        return int(value) if value else None
+    except (TypeError, ValueError):
+        logger.error("Stripe billing: renew_months=%r не число — продление пропущено", value)
+        return None
 
 
 async def _handle_setup_intent(db: AsyncSession, obj) -> None:
@@ -544,8 +595,71 @@ async def reconcile_subscriptions(db: AsyncSession) -> int:
     return fixed
 
 
+def _add_months(moment: datetime, months: int) -> datetime:
+    """Дата плюс N календарных месяцев. Без dateutil — его нет в requirements.
+
+    День схлопывается к последнему числу месяца, если такого в нём нет: 31 января
+    плюс месяц = 28 февраля, а не 3 марта. Иначе продление раз за разом
+    накапливало бы студии лишние сутки.
+    """
+    total = moment.month - 1 + months
+    year, month = moment.year + total // 12, total % 12 + 1
+    return moment.replace(
+        year=year, month=month, day=min(moment.day, calendar.monthrange(year, month)[1]),
+    )
+
+
+async def _extend_paid_period(db: AsyncSession, invoice: BillingInvoice, months: int) -> None:
+    """Продлить подписку на оплаченные месяцы. Зовётся ПОСЛЕ коммита оплаты.
+
+    Считаем от конца ТЕКУЩЕГО оплаченного периода, а не от сегодня: в этом весь
+    смысл продления — купленные месяцы прибавляются к остатку, а не заменяют его.
+
+    Сбой не откатывает оплату: счёт оплачен, и отдать Stripe 500 значит получить
+    ретрай уже применённого события. Расхождение подберёт `reconcile_subscriptions`
+    только если Stripe успел изменить подписку — поэтому кричим в лог.
+    """
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
+    )).scalar_one_or_none()
+    if plan is None or not plan.stripe_subscription_id:
+        logger.error(
+            "Продление: у студии %s нет живой подписки — счёт %s оплачен, срок не сдвинут",
+            invoice.studio_id, invoice.id,
+        )
+        return
+
+    try:
+        subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
+        current_end = _period_end(subscription)
+        if not current_end:
+            raise RuntimeError("у подписки не читается конец периода")
+        new_end = _add_months(datetime.utcfromtimestamp(current_end), months)
+        # Price будущих списаний — купленного периода: студия могла продлить
+        # помесячный тариф сразу на год, и дальше он должен идти годовым.
+        price_id = await stripe_catalog.price_id(
+            invoice.plan_name, months, plan.billing_mode == "combo",
+        )
+        await stripe_billing.extend_subscription(
+            plan.stripe_subscription_id, price_id,
+            int(new_end.replace(tzinfo=timezone.utc).timestamp()),
+        )
+    except Exception:
+        logger.exception(
+            "Продление: счёт %s студии %s ОПЛАЧЕН, но срок подписки не сдвинут — разбор вручную",
+            invoice.id, invoice.studio_id,
+        )
+        return
+
+    logger.info(
+        "Продление: студии %s добавлено %s мес., подписка оплачена до %s",
+        invoice.studio_id, months, new_end,
+    )
+
+
 async def apply_status(
-    db: AsyncSession, invoice: BillingInvoice, status: str, *, subscription=None,
+    db: AsyncSession, invoice: BillingInvoice, status: str, *,
+    subscription=None, renew_months: int | None = None,
 ) -> bool:
     """Переводит счёт в статус, подтверждённый Stripe. True — если что-то изменилось.
 
@@ -572,12 +686,12 @@ async def apply_status(
         await _activate(db, invoice)
         # Доход платформы — в леджер, в той же транзакции, что и отметка об оплате:
         # разъехаться они не должны. Идемпотентность — по stripe_invoice_id.
-        if invoice.stripe_invoice_id:
+        source = _REVENUE_SOURCE.get(invoice.kind)
+        if invoice.stripe_invoice_id and source is not None:
             from services.platform_fee import record_revenue
 
             await record_revenue(
-                db, invoice.studio_id,
-                "offline_fee" if invoice.kind == "offline_fee" else "subscription",
+                db, invoice.studio_id, source,
                 invoice.amount, stripe_billing.CURRENCY,
                 f"in:{invoice.stripe_invoice_id}",
             )
@@ -595,6 +709,11 @@ async def apply_status(
     # сети не требует), так что здесь остаётся только маска карты — не настолько
     # критичная, чтобы платить за неё блокировками строк.
     if status == "paid":
+        # Продление — до синхронизации карты: срок важнее косметики, и упавший
+        # запрос за маской карты не должен отменить сдвиг оплаченного периода.
+        if renew_months:
+            await _extend_paid_period(db, invoice, renew_months)
+
         plan = (await db.execute(
             select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
         )).scalar_one_or_none()
@@ -605,9 +724,13 @@ async def apply_status(
         # оплачен, и упавший SMTP не повод отдать Stripe 500 и получить ретрай уже
         # применённого события (send_receipt глотает свои ошибки сам).
         # Импорт локальный: модуль тянет notifier, а тот — половину моделей.
-        from services.billing_mail import send_receipt
+        from services.billing_mail import send_platform_income, send_receipt
 
         await send_receipt(db, invoice)
+        # Копия платформе. Отдельным вызовом, а не внутри send_receipt: тот молчит
+        # при выключенном владельцем тумблере «Чек на email», а отчётность
+        # платформы отключаться настройкой студии не должна.
+        await send_platform_income(db, invoice)
 
     return True
 

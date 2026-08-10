@@ -79,6 +79,10 @@ async def get_plans_catalog(
         period_discounts=PERIOD_DISCOUNTS,
         currency=stripe_billing.CURRENCY.upper(),
         min_monthly=MIN_MONTHLY_FEE,
+        # Цены в каталоге — БЕЗ налога. Ставку отдаём отдельным полем, чтобы фронт
+        # подписал итог на шаге оплаты («включая НДС N%») и не зашивал число у себя:
+        # настоящую сумму всё равно считает Stripe Tax по стране покупателя.
+        vat_rate=stripe_billing.VAT_RATE_DISPLAY,
     )
 
 
@@ -567,8 +571,10 @@ _EXPORT_HEADERS = {
     "en": ["Date", "Plan", "Period", "Amount, {cur}", "Method", "Status"],
 }
 _EXPORT_METHOD = {
-    "ru": {"card": "Карта", "iban": "IBAN"},
-    "en": {"card": "Card", "iban": "IBAN"},
+    # `stripe` — онлайн-комиссия: денег студия не переводила, их удержал Stripe из
+    # платежа клиента. Без своей подписи она уехала бы в CSV сырым ключом.
+    "ru": {"card": "Карта", "iban": "IBAN", "invoice": "Счёт", "stripe": "Удержано"},
+    "en": {"card": "Card", "iban": "IBAN", "invoice": "Invoice", "stripe": "Withheld"},
 }
 _EXPORT_STATUS = {
     "ru": {"paid": "Оплачено", "pending": "Ожидает", "failed": "Ошибка", "refunded": "Возврат"},

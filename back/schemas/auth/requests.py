@@ -37,6 +37,9 @@ class RegisterRequest(BaseSchema):
     email: NormEmail
     name: str
     password: str
+    # Галочка «принимаю Условия и Политику». Заводить аккаунт без неё нельзя —
+    # см. legal.record_consent и routers/auth/register.
+    accept_terms: bool = False
 
     @field_validator("password")
     @classmethod
@@ -46,6 +49,10 @@ class RegisterRequest(BaseSchema):
 
 class GoogleAuthRequest(BaseSchema):
     token: str
+    # Та же галочка. Ручка /google — и вход, и регистрация: у существующего
+    # аккаунта согласие уже есть, поэтому обязательным поле становится только
+    # тогда, когда по этому Google-аккаунту заводится НОВЫЙ пользователь.
+    accept_terms: bool = False
 
 
 class VerifyEmailRequest(BaseSchema):
@@ -95,6 +102,10 @@ class InviteAcceptRequest(BaseSchema):
     # Обязателен, только если телефона у аккаунта ещё нет (`needs_phone` из
     # GET /auth/invite): владелец заводит сотрудника по одному email.
     phone: OptPhone = None
+    # Галочка «принимаю Условия и Политику». Требуется только у нового аккаунта
+    # (`is_new_account`): у уже работающего в продукте согласие получено при его
+    # собственной регистрации.
+    accept_terms: bool = False
 
 
 class InviteDeclineRequest(BaseSchema):

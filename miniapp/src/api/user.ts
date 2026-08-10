@@ -28,8 +28,39 @@ export interface UserSubscription {
   is_frozen: boolean;
 }
 
+/** Чем клиент расплачивается. Совпадает с CheckoutCalcRequest на бэке. */
+export interface CheckoutOptions {
+  promo_code?: string | null;
+  use_bonuses?: boolean;
+  use_deposit?: boolean;
+  certificate_code?: string | null;
+}
+
+/** Разбор цены из POST /global/checkout/calculate — считает сервер, не мы. */
+export interface CheckoutCalc {
+  base_price: number;
+  base_price_str: string;
+  discount: number;
+  discount_str: string;
+  /** false — введённого промокода нет или он истёк; скидка не применена. */
+  promo_valid: boolean;
+  certificate_applied: number;
+  certificate_applied_str: string;
+  deposit_available: number;
+  deposit_applied: number;
+  deposit_applied_str: string;
+  bonuses_available: number;
+  bonuses_applied: number;
+  total_price: number;
+  total_price_str: string;
+  /** Всё покрыто бонусами/сертификатом — Stripe не открывается. */
+  fully_covered: boolean;
+}
+
 export interface CheckoutSessionResponse {
-  url: string;
+  /** null — платить было нечего, абонемент уже начислен (см. paid). */
+  url: string | null;
+  paid: boolean;
 }
 
 // Повторяет MiniappPayment
@@ -77,11 +108,27 @@ export const getUserSubscription = (): Promise<UserSubscription[]> =>
 // in_telegram вирішує, КУДИ Stripe поверне після оплати: у t.me чи на веб-адресу
 // міні-застосунку. З браузера повернення в Telegram викинуло б людину зі вкладки,
 // в якій вона платила. Сам URL будує сервер — див. _checkout_return_base.
-export const createCheckoutSession = (packageId: number): Promise<CheckoutSessionResponse> =>
+export const createCheckoutSession = (
+  packageId: number,
+  options: CheckoutOptions = {},
+): Promise<CheckoutSessionResponse> =>
   apiPost('/global/checkout/session', {
     package_id: packageId,
-    in_telegram: Boolean((window as { Telegram?: { WebApp?: unknown } }).Telegram?.WebApp),
+    ...options,
+    // WebApp-объект в window есть всегда (telegram-web-app.js сам создаёт
+    // заглушку и в обычном браузере) — реальный признак Telegram — непустой
+    // initData, он появляется только при запуске из самого Telegram.
+    in_telegram: Boolean((window as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData),
   });
+
+/** Предпросмотр цены: что даст промокод, сертификат, депозит и баллы.
+ * Ничего не списывает — дёргается на каждое изменение в форме оплаты.
+ * Ендпоінт: POST /global/checkout/calculate */
+export const calculateCheckout = (
+  packageId: number,
+  options: CheckoutOptions = {},
+): Promise<CheckoutCalc> =>
+  apiPost('/global/checkout/calculate', { package_id: packageId, ...options });
 
 // 4. Отримання історії оплат. Ендпоінт: GET /global/me/payments
 export const getUserPayments = (): Promise<PaymentResponse[]> => apiGet('/global/me/payments');

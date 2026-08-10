@@ -344,11 +344,15 @@ class PlatformRevenueLedger(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
-    # connect_fee — доля с онлайн-платежа клиента студии (Stripe Connect);
-    # subscription — оплаченный счёт за тариф.
-    # Офлайн-денег здесь нет и быть не может: на тарифе «процент» наличные просто
-    # запрещены (services/platform_fee.assert_online_payment_only), а не
-    # доначисляются счётом — взыскивать долги с студий мы отказались.
+    # Откуда пришли деньги. Полный список — routers/billing/webhook._REVENUE_SOURCE
+    # плюс connect_fee, который пишется мимо счетов:
+    #   connect_fee  — доля с онлайн-платежа клиента студии, удержана Stripe в
+    #                  момент оплаты (Connect, application_fee_amount);
+    #   subscription — оплаченный счёт за тариф;
+    #   offline_fee  — оплаченный счёт за комиссию с наличных;
+    #   min_fee      — оплаченный минимальный месячный платёж.
+    # Фактура за онлайн-комиссию (kind="online_fee") сюда НЕ пишется: эти деньги уже
+    # лежат строками connect_fee, и вторая запись удвоила бы выручку платформы.
     source: Mapped[str] = mapped_column(String(20), index=True)
     amount: Mapped[int] = mapped_column(Integer)   # младшие единицы `currency`
     currency: Mapped[str] = mapped_column(String(3))

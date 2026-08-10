@@ -2,7 +2,7 @@ from .base import Base, user_services
 from .studio import Studio
 from .studio_branch import StudioBranch, BranchWorkingHours
 from .studio_member import StudioMember
-from .user import User
+from .user import User, UserConsent
 from .client import Client, ClientEmailOtp, ClientSubscription, ClientPayment, ClientNote, StudioClientSegmentConfig
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceScheduleSlot
@@ -22,7 +22,7 @@ from .settings import (
     UserSession,
     StudioIntegration,
 )
-from .staff import StaffWorkingHours
+from .staff import StaffWorkingHours, StaffDayOverride
 from .finances import (
     Account,
     Operation,
@@ -67,6 +67,7 @@ __all__ = [
     "BranchWorkingHours",
     "StudioMember",
     "User",
+    "UserConsent",
     "Client",
     "ClientEmailOtp",
     "ClientSubscription",
@@ -93,6 +94,7 @@ __all__ = [
     "UserSession",
     "StudioIntegration",
     "StaffWorkingHours",
+    "StaffDayOverride",
     "Account",
     "Operation",
     "Counterparty",

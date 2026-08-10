@@ -111,11 +111,23 @@ class StaffWeekScheduleResponse(BaseSchema):
     working_hours: List[StaffWorkingHoursItem]
 
 
+class StaffDayOverrideItem(BaseSchema):
+    date: str          # "YYYY-MM-DD"
+    is_working: bool
+
+
+class StaffDayOverrideRequest(BaseSchema):
+    date: str
+    # None — снять отметку: день снова считается по недельному графику.
+    is_working: Optional[bool] = None
+
+
 class StaffMonthScheduleResponse(BaseSchema):
     staff_id: int
     year: int
     month: int
     lessons: List[StaffMonthLesson]
+    day_overrides: List[StaffDayOverrideItem] = []
 
 
 class StaffTodayScheduleResponse(BaseSchema):

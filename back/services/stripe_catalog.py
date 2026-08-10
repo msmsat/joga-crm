@@ -27,12 +27,10 @@ logger = logging.getLogger(__name__)
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 CURRENCY = os.getenv("BILLING_CURRENCY", "eur").lower()
 
-# Налоговая категория Stripe Tax для SaaS. Без неё automatic_tax не знает ставку.
-TAX_CODE = "txcd_10103001"
-
-# Налог накидывается сверху цены (B2B SaaS: в plans.py цены без НДС). Без явного
-# tax_behavior Stripe отказывается считать automatic_tax по такому Price.
-TAX_BEHAVIOR = "exclusive"
+# Налоговая категория и способ обложения живут в services/stripe_billing — там же
+# ими помечаются позиции разовых счетов (комиссия, продление). Держать вторую копию
+# здесь значит однажды обложить тариф иначе, чем комиссию, у одного продавца.
+from services.stripe_billing import TAX_BEHAVIOR, TAX_CODE  # noqa: E402
 
 # Период оплаты → интервал биллинга Stripe. Максимум интервала у Stripe — 3 года,
 # так что 24 месяца проходят как year×2.

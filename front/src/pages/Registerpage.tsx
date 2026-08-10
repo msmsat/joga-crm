@@ -8,10 +8,37 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
+import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
 type Step = 0 | 1 | 2 | 3 | 4;
+
+// ─── CONSENT ─────────────────────────────────────────────────────────────────
+
+/** Clickwrap-галочка: одно согласие покрывает Условия (вместе с приложением об
+ *  обработке данных) и Политику — у документов общая редакция.
+ *
+ *  Стоит на ОБОИХ путях регистрации: и на email-шаге, и перед кнопкой Google.
+ *  Мелкий текст «регистрируясь, вы принимаете» под Google был бы browsewrap —
+ *  доказательства согласия он не даёт, а через Google приходит половина людей. */
+function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: string; onChange: (v: boolean) => void }) {
+  return (
+    <div className="flex-col" style={{ gap: 4 }}>
+      <label className="custom-checkbox-wrapper">
+        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} style={{ display: "none" }} />
+        <div className="custom-checkbox-box" style={{ border: `1.5px solid ${checked ? "var(--peach)" : "rgba(var(--ink),0.2)"}`, background: checked ? "linear-gradient(135deg, var(--peach-light), var(--peach))" : "transparent", boxShadow: checked ? "0 2px 8px var(--peach-glow)" : "none" }}>
+          {checked && <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ animation: "checkPop 0.22s ease" }}><path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+        </div>
+        <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>
+          Я принимаю <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">Условия использования</a> и{" "}
+          <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">Политику конфиденциальности</a>
+        </span>
+      </label>
+      {error && <span style={{ fontSize: 12, color: "var(--rose)", fontWeight: 500, marginLeft: 28 }}>{error}</span>}
+    </div>
+  );
+}
 
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
@@ -38,9 +65,15 @@ export default function RegisterPage() {
   const clearErr = (key: string) => setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
 
   const handleGoogleSuccess = async (credential: string) => {
+    // Кнопка Google живёт в iframe — перехватить сам клик нельзя, поэтому
+    // непринятые документы ловим здесь, а кнопку до галочки гасим (см. разметку).
+    if (!agree) {
+      setErrors({ agree: "Необходимо согласие" });
+      return;
+    }
     setLoading(true);
     try {
-      const data = await authApi.google({ token: credential });
+      const data = await authApi.google({ token: credential, accept_terms: true });
       if (data.two_fa_required) {
         // Google-аккаунт привязан к существующему владельцу с 2FA — код уже
         // отправлен, дошагать до ввода кода умеет страница входа.
@@ -91,7 +124,7 @@ export default function RegisterPage() {
     setSubmitError("");
 
     try {
-      await authApi.register({ email, name: displayName, password });
+      await authApi.register({ email, name: displayName, password, accept_terms: agree });
       setStep(4);
     } catch (err: unknown) {
       setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
@@ -181,7 +214,11 @@ export default function RegisterPage() {
                   <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>Без карты. Без обязательств. Только результат.</p>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
+                <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
+
+                {/* Пока документы не приняты, кнопка Google не кликается: она в
+                    iframe, поэтому гасим её обёрткой, а не атрибутом disabled. */}
+                <div style={{ display: "flex", justifyContent: "center", width: "100%", opacity: agree ? 1 : 0.45, pointerEvents: agree ? "auto" : "none", transition: "opacity 0.2s" }}>
                   <GoogleLogin
                       /* См. Loginpage: 320px кнопки Google не влезают в
                          карточку на самом узком экране. */
@@ -208,9 +245,6 @@ export default function RegisterPage() {
                   {<IconEmail />} Зарегистрироваться по email
                 </button>
 
-                <p style={{ fontSize: 12, color: "rgba(102,102,102,0.55)", textAlign: "center", lineHeight: "1.6", margin: 0 }}>
-                  Регистрируясь, вы принимаете <a href="#" className="text-link">Условия использования</a> и <a href="#" className="text-link">Политику конфиденциальности</a>
-                </p>
               </div>
             ) : (
               /* ── STEPS 1–3 ── */
@@ -268,16 +302,7 @@ export default function RegisterPage() {
                 )}
 
                 {step === 3 && (
-                  <div className="flex-col" style={{ gap: 4 }}>
-                    <label className="custom-checkbox-wrapper">
-                      <input type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); clearErr("agree"); }} style={{ display: "none" }} />
-                      <div className="custom-checkbox-box" style={{ border: `1.5px solid ${agree ? "var(--peach)" : "rgba(var(--ink),0.2)"}`, background: agree ? "linear-gradient(135deg, var(--peach-light), var(--peach))" : "transparent", boxShadow: agree ? "0 2px 8px var(--peach-glow)" : "none" }}>
-                        {agree && <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ animation: "checkPop 0.22s ease" }}><path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                      </div>
-                      <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>Я принимаю <a href="#" className="text-link">Условия использования</a> и <a href="#" className="text-link">Политику конфиденциальности</a></span>
-                    </label>
-                    {errors.agree && <span style={{ fontSize: 12, color: "var(--rose)", fontWeight: 500, marginLeft: 28 }}>{errors.agree}</span>}
-                  </div>
+                  <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
                 )}
 
                 <div style={{ display: "flex", gap: 10 }}>
@@ -329,8 +354,8 @@ export default function RegisterPage() {
       <footer className="flex-between" style={{ borderTop: "1px solid var(--border)", padding: "16px 40px", position: "relative", zIndex: 1, flexWrap: "wrap", gap: 8 }}>
         <div style={{ fontSize: 12, color: "rgba(102,102,102,0.5)" }}>© 2026 Velora. Все права защищены.</div>
         <div style={{ display: "flex", gap: 20, fontSize: 12 }}>
-          {["Конфиденциальность", "Условия", "Поддержка"].map((l) => (
-            <a key={l} href="#" className="text-muted" style={{ textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>{l}</a>
+          {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
+            <a key={label} href={href} {...LEGAL_LINK_PROPS} className="text-muted" style={{ textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>{label}</a>
           ))}
         </div>
       </footer>

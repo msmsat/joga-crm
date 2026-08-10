@@ -196,7 +196,9 @@
     "success": "Předplatné \"{{name}}\" bylo úspěšně zaplaceno! Lekce byly připsány na váš zůstatek.",
     "activate_error": "Při aktivaci předplatného došlo k chybě.",
     "checking_payment": "Kontrolujeme stav platby — předplatné se zobrazí, jakmile banka platbu potvrdí",
-    "pay_in_studio": "Předplatné lze zakoupit ve studiu"
+    "pay_in_studio": "Předplatné lze zakoupit ve studiu",
+    "activated": "Předplatné aktivováno",
+    "certificate_ready": "Certifikát bude uplatněn při platbě"
   },
   "successModal": {
     "title": "Jste zapsáni",
@@ -237,7 +239,18 @@
     "processing_transaction": "Zpracování transakce...",
     "processing": "Zpracování...",
     "cancel": "Zrušit",
-    "expiry_placeholder": "MM/RR"
+    "expiry_placeholder": "MM/RR",
+    "certificate": "Certifikát",
+    "deposit": "Depozit",
+    "bonuses": "Body",
+    "promo_placeholder": "Promo kód",
+    "promo_invalid": "Promo kód není platný",
+    "certificate_placeholder": "Kód certifikátu",
+    "certificate_invalid": "Certifikát nenalezen nebo již použit",
+    "use_deposit": "Zaplatit z depozitu",
+    "use_bonuses": "Použít body ({{count}})",
+    "confirm_free": "Potvrdit",
+    "free_hint": "Platba kartou není potřeba — částka je plně pokryta"
   },
   "nav": {
     "home": "Domů",
@@ -307,6 +320,8 @@
     "no_history": "Zatím žádné body",
     "no_history_hint": "Objeví se po první platbě ve studiu",
     "disabled": "Studio zatím klub nespustilo",
-    "disabled_hint": "Jakmile věrnostní program poběží, body a úrovně se objeví tady."
+    "disabled_hint": "Jakmile věrnostní program poběží, body a úrovně se objeví tady.",
+    "certificate_use": "Použít certifikát",
+    "code_copy": "Kopírovat kód"
   }
 }

@@ -191,9 +191,13 @@ def _run_apply_paid(application_fee, subscription_id=None):
 
     async def fake_perform_pay(*_a, **_kw):
         # Настоящий perform_pay всегда отдаёт CheckoutPayResult, и apply_paid
-        # читает из него subscription_id — заглушка обязана держать тот же
+        # читает из него subscription_id и суммы списанных бонусов/депозита/
+        # сертификата (опись для возврата) — заглушка обязана держать тот же
         # контракт, иначе тест зелёный на коде, который в бою падает.
-        return SimpleNamespace(subscription_id=subscription_id)
+        return SimpleNamespace(
+            subscription_id=subscription_id, total_price=1500,
+            bonuses_applied=0, deposit_applied=0, certificate_applied=0,
+        )
 
     async def fake_record_revenue(_db, studio_id, source, amount, currency, external_id):
         booked.append((studio_id, source, amount, currency, external_id))

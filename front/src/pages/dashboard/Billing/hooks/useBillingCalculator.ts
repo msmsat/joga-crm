@@ -55,6 +55,11 @@ export function useBillingCalculator() {
   // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
   // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
   const [minMonthly, setMinMonthly] = useState(0);
+  // Ставка НДС для ПОДПИСИ итога на шаге оплаты, % — тоже из каталога, а не
+  // числом в коде: она зависит от страны платформы и меняется законом, а не
+  // релизом фронта. Считать по ней сумму к списанию нельзя — итог считает
+  // Stripe Tax по стране студии (у компании из ЕС с номером НДС это 0 %).
+  const [vatRate, setVatRate] = useState(21);
   // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
   const [showPayModal, setShowPayModal] = useState(false);
   const [payBranch, setPayBranch] = useState<PayBranch>('choose');
@@ -343,6 +348,7 @@ export function useBillingCalculator() {
       setPeriodDiscounts(cat.period_discounts);
       if (cat.currency) setCurrency(cat.currency);
       if (cat.min_monthly) setMinMonthly(cat.min_monthly / 100);
+      if (typeof cat.vat_rate === 'number') setVatRate(cat.vat_rate);
     }).catch(() => { /* нули остаются — не роняем страницу */ });
   }, []);
 
@@ -375,7 +381,7 @@ export function useBillingCalculator() {
     activeTab, setActiveTab,
     showUpgradeModal, setShowUpgradeModal,
     animateCards,
-    getPrice, periodDiscounts, plans, minMonthly,
+    getPrice, periodDiscounts, plans, minMonthly, vatRate,
     currentMonthly, discountedPrice, totalToPay, savedTotal,
     startCheckout, scheduleUpgrade,
     activateModel, modelBusy,

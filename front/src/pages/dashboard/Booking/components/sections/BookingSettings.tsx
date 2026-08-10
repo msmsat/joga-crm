@@ -3,6 +3,7 @@ import { CustomSelect } from '../ui/CustomSelect'
 import type { useBookingSettings } from '../../hooks/useBookingSettings'
 import { ADVANCE_OPTS, WINDOW_OPTS, CANCEL_OPTS, LANG_OPTS, TIME_OPTS } from '../../mapping'
 import { studioApi } from '../../../../../api/studio/studio.api'
+import { resolveImageUrl } from '../../../../../api/client'
 import { useToast } from '../../../../../components/ui/Toast'
 
 type Props = ReturnType<typeof useBookingSettings>
@@ -192,7 +193,7 @@ export function BookingSettings(s: Props) {
             {settings.widget_logo_url && (
               <>
                 <img
-                  src={settings.widget_logo_url}
+                  src={resolveImageUrl(settings.widget_logo_url)}
                   alt=""
                   style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover', border: '1px solid var(--border)' }}
                 />

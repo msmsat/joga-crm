@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogoMark } from "../../../components/Icons";
 import { getActiveToken } from "../../../utils/auth";
+import { LEGAL_DOC_LINKS, LEGAL_LINK_PROPS } from "../../../utils/legal";
 
 const LINKS = [
   { href: "#product", label: "Продукт" },
@@ -10,10 +11,12 @@ const LINKS = [
   { href: "#reviews", label: "Отзывы" },
 ];
 
-const FOOTER_COLUMNS: [string, string[]][] = [
-  ["Продукт", ["Возможности", "Модули", "Тарифы", "Онлайн-запись", "Velora AI"]],
-  ["Отрасли", ["Йога и пилатес", "Фитнес", "Барбершопы", "SPA и салоны", "Массаж"]],
-  ["Документы", ["Условия использования", "Политика конфиденциальности", "Обработка данных", "Поддержка"]],
+// href: null — пункт-заглушка, ведёт наверх страницы. Документы — настоящие
+// файлы на бэкенде, они обязаны быть публично доступны без регистрации.
+const FOOTER_COLUMNS: [string, { label: string; href: string | null }[]][] = [
+  ["Продукт", ["Возможности", "Модули", "Тарифы", "Онлайн-запись", "Velora AI"].map((label) => ({ label, href: null }))],
+  ["Отрасли", ["Йога и пилатес", "Фитнес", "Барбершопы", "SPA и салоны", "Массаж"].map((label) => ({ label, href: null }))],
+  ["Документы", LEGAL_DOC_LINKS],
 ];
 
 function Wordmark({ compact = false }: { compact?: boolean }) {
@@ -107,10 +110,14 @@ export function LandingFooter() {
               <div key={title}>
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#F9A08B]">{title}</p>
                 <ul className="mt-5 space-y-3">
-                  {items.map((it) => (
-                    <li key={it}>
-                      <a href="#top" className="text-[13px] text-white/45 transition-colors hover:text-white">
-                        {it}
+                  {items.map(({ label, href }) => (
+                    <li key={label}>
+                      <a
+                        href={href ?? "#top"}
+                        {...(href ? LEGAL_LINK_PROPS : {})}
+                        className="text-[13px] text-white/45 transition-colors hover:text-white"
+                      >
+                        {label}
                       </a>
                     </li>
                   ))}

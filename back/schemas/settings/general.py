@@ -71,8 +71,10 @@ class GeneralUpdate(BaseSchema):
     country: Optional[str] = Field(None, min_length=2, max_length=2)
     postal_code: Optional[str] = Field(None, max_length=20)
     vat_id: Optional[str] = Field(None, max_length=50)
-    # IČO — реквизит фактуры юрлицу. Отдельно от vat_id: DIČ есть только у
-    # плательщика НДС, а IČO — у любой зарегистрированной компании.
+    # Регистрационный номер компании — реквизит фактуры юрлицу. Отдельно от
+    # vat_id: номер НДС есть только у плательщика налога, регистрационный — у любой
+    # зарегистрированной компании. Как он называется, зависит от страны (IČO, HRB,
+    # KRS…) — подпись выбирает stripe_billing.company_id_label.
     company_id: Optional[str] = Field(None, max_length=30)
     currency: Optional[Currency] = None
     language: Optional[Language] = None
@@ -96,9 +98,9 @@ class GeneralUpdate(BaseSchema):
     @field_validator("vat_id", "company_id")
     @classmethod
     def _strip_vat(cls, v: Optional[str]) -> Optional[str]:
-        # Пробелы внутри VAT ID Stripe не принимает, а люди их ставят. IČO нормализуем
-        # тем же валидатором: его печатают на фактуре, и «123 456 78» с «12345678»
-        # должны быть одним реквизитом, а не двумя.
+        # Пробелы внутри номера НДС Stripe не принимает, а люди их ставят.
+        # Регистрационный номер нормализуем тем же валидатором: его печатают на
+        # фактуре, и «123 456 78» с «12345678» должны быть одним реквизитом, а не двумя.
         # Пустая строка после очистки — это «реквизита нет», а не «реквизит пустой»:
         # иначе PATCH {vat_id: ""} уедет в Stripe пустым tax id вместо пропуска поля.
         if v is None:

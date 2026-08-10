@@ -4,9 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PaymentModal from './PaymentModal';
 import { useTelegram } from '../../hooks/useTelegram';
-import { createCheckoutSession } from '../../api/user';
+import { useCheckoutCalc } from '../../hooks/useCheckoutCalc';
+import { createCheckoutSession, type CheckoutOptions } from '../../api/user';
 import { notify } from '../../lib/notify';
 import type { SubscriptionPackageInfo } from '../../api/studio';
+
+const NO_OPTIONS: CheckoutOptions = {
+  promo_code: '',
+  certificate_code: '',
+  use_bonuses: false,
+  use_deposit: false,
+};
 
 interface BuyModalProps {
   isOpen: boolean;
@@ -15,9 +23,19 @@ interface BuyModalProps {
   packages: SubscriptionPackageInfo[];
   /** Студия подключила приём онлайн-оплаты (Stripe Connect). */
   canPayOnline: boolean;
+  /** Пришли из Клуба «использовать сертификат» — код уже подставлен в оплату.
+   * Профиль пересоздаёт модалку по ключу, поэтому берётся начальным состоянием. */
+  initialCertificate?: string | null;
 }
 
-export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayOnline }: BuyModalProps) {
+export default function BuyModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  packages,
+  canPayOnline,
+  initialCertificate = null,
+}: BuyModalProps) {
   const { t } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
@@ -25,16 +43,32 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
   // внутрь карточки, и до неё было два тапа вместо одного.
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [options, setOptions] = useState<CheckoutOptions>(() => ({
+    ...NO_OPTIONS,
+    certificate_code: initialCertificate ?? '',
+  }));
 
   const selected = packages.find((plan) => plan.id === selectedId) ?? null;
   const nameOf = (plan: SubscriptionPackageInfo) =>
     t(`subscription.${plan.name}.name`, { defaultValue: plan.name });
 
+  // Расчёт запрашиваем только когда лист оплаты открыт: в списке пакетов
+  // рычагов ещё нет, и дёргать сервер на каждый выбор пакета незачем.
+  const { calc, isCalculating } = useCheckoutCalc(isPaymentOpen ? selectedId : null, options);
+
   const handleClose = () => {
     setSelectedId(null);
     setIsPaymentOpen(false);
+    setOptions(NO_OPTIONS);
     onClose();
   };
+
+  // Пришли из Клуба: сертификат уже в оплате, но пакет клиент ещё не выбрал.
+  // Показываем это прямо в списке — иначе код «пропадает» на один экран, и
+  // непонятно, применится ли он вообще.
+  const pendingCertificate = initialCertificate && options.certificate_code === initialCertificate
+    ? initialCertificate
+    : null;
 
   /**
    * Stripe открывается снаружи (`tg.openLink`, без Stripe.js на клиенте) —
@@ -58,7 +92,18 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
     if (!selected) return;
 
     try {
-      const { url } = await createCheckoutSession(selected.id);
+      const { url, paid } = await createCheckoutSession(selected.id, options);
+
+      // Сертификат/депозит/баллы покрыли всё — Stripe не нужен, абонемент уже
+      // начислен на сервере. Здесь мы ЗНАЕМ, что оплата прошла, поэтому
+      // говорим прямо, а не «проверяем оплату», как в случае с картой.
+      if (paid || !url) {
+        if (onSuccess) onSuccess();
+        notify(t('buyModal.activated'));
+        handleClose();
+        return;
+      }
+
       if (tg?.openLink) tg.openLink(url);
       else window.open(url, '_blank');
       setIsPaymentOpen(false);
@@ -89,6 +134,25 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
           )
         }
       >
+        {pendingCertificate && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-3 flex items-center gap-3 rounded-[16px] bg-brand/10 px-4 py-3 ring-1 ring-inset ring-brand/25"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span className="min-w-0 flex-1 text-[12.5px] font-semibold leading-snug text-foreground">
+              {t('buyModal.certificate_ready')}
+              <span className="ml-1 font-mono text-[11.5px] font-bold tracking-[0.06em] text-muted-foreground">
+                {pendingCertificate}
+              </span>
+            </span>
+          </motion.div>
+        )}
+
         <div className="flex flex-col gap-2.5">
           {packages.map((plan, i) => {
             const isSelected = selectedId === plan.id;
@@ -162,8 +226,10 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
         onClose={() => setIsPaymentOpen(false)}
         itemName={selected ? nameOf(selected) : ''}
         amountStr={selected ? selected.final_price_str : ''}
-        basePriceStr={selected?.discount_label ? selected.price_str : null}
-        discountLabel={selected?.discount_label ?? null}
+        calc={calc}
+        isCalculating={isCalculating}
+        options={options}
+        onOptionsChange={(patch) => setOptions((prev) => ({ ...prev, ...patch }))}
         onPay={startPayment}
       />
     </>

@@ -24,6 +24,7 @@ from schemas.loyalty import (
 )
 from services.loyalty_matching import SEGMENT_MATCHERS, match_segment
 from services.mailer import send_email
+from services.notifier import notify
 
 _RENEWAL_WINDOW_DAYS = 30
 
@@ -62,7 +63,7 @@ async def run_campaign(
 ):
     """Кампания по сегменту: начислить баллы и/или разослать письмо каждому
     клиенту сегмента. Клиентов без email письмо пропускает молча. Ответ —
-    сколько обработано и сколько писем ушло."""
+    сколько обработано и скольким клиентам сообщение реально ушло."""
     if key not in SEGMENT_MATCHERS:
         raise HTTPException(status_code=404, detail="Сегмент не найден")
     if body.action == "points" and not body.points:
@@ -82,6 +83,7 @@ async def run_campaign(
 
     processed = 0
     emails_sent = 0
+    granted: list[int] = []
     for m in matches:
         try:
             if body.action == "points":
@@ -89,6 +91,7 @@ async def run_campaign(
                     m.client_id, ctx.studio_id, int(body.points),
                     "Бонус по кампании сегмента", db,
                 )
+                granted.append(m.client_id)
             processed += 1
         except Exception:
             logger.exception("campaign points failed for client %s", m.client_id)
@@ -105,6 +108,19 @@ async def run_campaign(
                 logger.exception("campaign email failed for client %s", m.client_id)
 
     await db.commit()  # баллы копятся в транзакции, коммитим один раз
+
+    # Бонус, о котором клиент не узнал, — не бонус. Шлём то же событие c12, что
+    # и ручное начисление в карточке клиента (routers/clients/loyalty.py), —
+    # значит канал берётся из матрицы студии, а не только email. После commit:
+    # notify уходит наружу, откатить его нельзя.
+    # ponytail: последовательно, как и рассылка выше; очередь — когда сегменты вырастут до сотен
+    for cid in granted:
+        if await notify(db, ctx.studio_id, "client", "c12", {
+            "client_id": cid, "amount": int(body.points),
+            "description": "Бонус по кампании сегмента",
+        }):
+            emails_sent += 1
+
     return CampaignResult(processed=processed, emails_sent=emails_sent)
 
 

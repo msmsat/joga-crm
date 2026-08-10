@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './Staff.css';
 import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
-import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS } from './constants';
+import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS, DEFAULT_WEEK_HOURS } from './constants';
 import { useStaffList } from './hooks/useStaffList';
 import { useStaffProfile } from './hooks/useStaffProfile';
 import { useStaffFilters } from './hooks/useStaffFilters';
@@ -17,7 +17,7 @@ import { ApiError, resolveImageUrl } from '../../../api/client';
 import { staffApi } from '../../../api/staff';
 import { settingsApi } from '../../../api/settings/settings.api';
 import { getCurrencySymbol } from '../../../components/UI';
-import type { StaffListItem, StaffWorkingHoursItem, StaffProfile } from '../../../api/staff/staff.types';
+import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse } from '../../../api/staff/staff.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -66,6 +66,12 @@ function workingHoursToSchedule(
     };
   });
   return schedule;
+}
+
+// Личного графика в базе может не быть (сотрудника завели без него) — тогда и
+// недельная сетка, и календарь месяца показывают график по умолчанию, а не пустоту.
+function weekHoursOf(profile: StaffProfile): StaffWorkingHoursItem[] {
+  return profile.week_working_hours.length ? profile.week_working_hours : DEFAULT_WEEK_HOURS;
 }
 
 function hoursToMatrix(hours: StaffWorkingHoursItem[]): ScheduleMatrix {
@@ -176,16 +182,65 @@ export default function Staff() {
     setSeededProfileId(profile.id);
     setSchedules(prev => ({
       ...prev,
-      [activeStaffId]: hoursToMatrix(profile.week_working_hours),
+      [activeStaffId]: hoursToMatrix(weekHoursOf(profile)),
     }));
   }
 
-  // Fetch month data when switching to month view
+  // ── Month calendar: курсор месяца + отметки «работает / выходной» ─────────
+  const [monthCursor, setMonthCursor] = useState(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };  // month 1..12
+  });
+  const shiftMonth = (delta: number) => setMonthCursor(({ year, month }) => {
+    const d = new Date(year, month - 1 + delta, 1);
+    return { year: d.getFullYear(), month: d.getMonth() + 1 };
+  });
+
+  // Инструмент, которым красим дни: что выбрано сверху, то и ставится по клику.
+  const [markTool, setMarkTool] = useState<'work' | 'off'>('work');
+  // Ключ — "YYYY-MM-DD", значение — явная отметка владельца. Нет ключа = день
+  // считается по недельному графику (а если и там выходной — не работает).
+  const [dayMarks, setDayMarks] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     if (scheduleView === 'month' && activeStaffId) {
-      fetchMonth();
+      fetchMonth(monthCursor.year, monthCursor.month);
     }
-  }, [scheduleView, activeStaffId, fetchMonth]);
+  }, [scheduleView, activeStaffId, fetchMonth, monthCursor]);
+
+  // Засеваем отметки из ответа прямо в рендере (как матрицу часов выше): эффект
+  // давал бы лишний кадр с отметками предыдущего месяца.
+  const [seededMonth, setSeededMonth] = useState<StaffMonthScheduleResponse | null>(null);
+  if (monthData && monthData !== seededMonth) {
+    setSeededMonth(monthData);
+    setDayMarks(Object.fromEntries(monthData.day_overrides.map(o => [o.date, o.is_working])));
+  }
+
+  // 0=Пн … 6=Вс — как в week_working_hours.
+  const weekOpenByDow = useMemo(
+    () => new Map((profile ? weekHoursOf(profile) : []).map(wh => [wh.day_of_week, wh.is_open])),
+    [profile]
+  );
+
+  const toggleDayMark = async (dateStr: string) => {
+    if (!activeStaffId) return;
+    const want = markTool === 'work';
+    // Повторный клик тем же инструментом снимает отметку — иначе вернуть день
+    // к недельному графику было бы нечем.
+    const next = dayMarks[dateStr] === want ? null : want;
+    const prev = dayMarks;
+    setDayMarks(m => {
+      const copy = { ...m };
+      if (next === null) delete copy[dateStr]; else copy[dateStr] = next;
+      return copy;
+    });
+    try {
+      await staffApi.setDayOverride(activeStaffId, dateStr, next);
+    } catch (err) {
+      setDayMarks(prev);
+      toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+    }
+  };
 
   // ── Today's events from profile ───────────────────────────────────────────
   const activeUpcoming = profile?.today_schedule ?? [];
@@ -240,8 +295,9 @@ export default function Staff() {
   }, [i18n.language]);
 
   const monthLabel = useMemo(() => {
-    return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(new Date());
-  }, [i18n.language]);
+    return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' })
+      .format(new Date(monthCursor.year, monthCursor.month - 1, 1));
+  }, [i18n.language, monthCursor]);
 
   const showToast = toast.success;
 
@@ -489,7 +545,19 @@ export default function Staff() {
                           <button className={`day-tab ${scheduleView === 'week' ? 'active' : ''}`} onClick={() => setScheduleView('week')}>{t('staff:schedule.week')}</button>
                           <button className={`day-tab ${scheduleView === 'month' ? 'active' : ''}`} onClick={() => setScheduleView('month')}>{t('staff:schedule.month')}</button>
                         </div>
-                        <span className="week-label">{scheduleView === 'week' ? weekLabel : monthLabel}</span>
+                        {scheduleView === 'week' ? (
+                          <span className="week-label">{weekLabel}</span>
+                        ) : (
+                          <div className="month-nav">
+                            <button className="month-nav-btn" onClick={() => shiftMonth(-1)} aria-label={t('staff:schedule.prevMonth')}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                            </button>
+                            <span className="week-label month-nav-label">{monthLabel}</span>
+                            <button className="month-nav-btn" onClick={() => shiftMonth(1)} aria-label={t('staff:schedule.nextMonth')}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       {scheduleView === 'week' ? (
@@ -539,54 +607,65 @@ export default function Staff() {
                           )}
                         </>
                       ) : (
-                        <div style={{ padding: '8px 10px 10px' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
+                        <div className="mcal">
+                          {/* Инструменты сверху: выбираешь отметку, потом красишь дни */}
+                          <div className="mcal-tools">
+                            {(['work', 'off'] as const).map(tool => (
+                              <button
+                                key={tool}
+                                className={`mark-pick ${markTool === tool ? 'active' : ''}`}
+                                onClick={() => setMarkTool(tool)}
+                              >
+                                <span className={`mark-dot ${tool}`} />
+                                {t(tool === 'work' ? 'staff:schedule.markWork' : 'staff:schedule.dayOff')}
+                              </button>
+                            ))}
+                            <span className="mcal-hint">{t('staff:schedule.markHint')}</span>
+                          </div>
+
+                          <div className="mcal-head">
                             {DAYS_KEYS.map(dayKey => (
-                              <div key={dayKey} style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text3)', textAlign: 'center', padding: '3px 0' }}>
-                                {t(`common:days.short.${dayKey}`)}
-                              </div>
+                              <div key={dayKey}>{t(`common:days.short.${dayKey}`)}</div>
                             ))}
                           </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+
+                          <div className="mcal-grid">
                             {(() => {
-                              const cells: React.ReactNode[] = [];
+                              const { year, month } = monthCursor;                       // month 1..12
+                              const daysInMonth = new Date(year, month, 0).getDate();
+                              const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
                               const now = new Date();
-                              const year = now.getFullYear();
-                              const month = now.getMonth();
-                              const daysInMonth = new Date(year, month + 1, 0).getDate();
-                              const firstDow = (new Date(year, month, 1).getDay() + 6) % 7;
+                              const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                              const cells: React.ReactNode[] = [];
                               for (let i = 0; i < firstDow; i++) {
-                                cells.push(<div key={`e${i}`} style={{ height: '28px', borderRadius: '5px', background: 'rgba(var(--ink),0.02)' }} />);
+                                cells.push(<div key={`e${i}`} className="mcal-day empty" />);
                               }
                               for (let day = 1; day <= daysInMonth; day++) {
-                                const dayLessons = monthData?.lessons.filter(l => {
-                                  const d = new Date(l.start_time);
-                                  return d.getDate() === day;
-                                }).length ?? 0;
-                                const opacity = 0.06 + (dayLessons / 5) * 0.64;
+                                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                const dow = (new Date(year, month - 1, day).getDay() + 6) % 7;
+                                const marked = dayMarks[dateStr];
+                                // Нет отметки — берём недельный график; нет и там — не работает.
+                                const isWorking = marked ?? (weekOpenByDow.get(dow) ?? false);
                                 cells.push(
-                                  <div key={day} style={{
-                                    height: '28px', borderRadius: '5px', position: 'relative',
-                                    background: `rgba(252,174,145,${Math.min(opacity, 0.70).toFixed(2)})`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    cursor: 'default',
-                                  }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 600, color: dayLessons > 3 ? '#a05040' : 'var(--text3)' }}>{day}</span>
-                                  </div>
+                                  <button
+                                    key={day}
+                                    className={`mcal-day ${isWorking ? 'work' : 'off'}`
+                                      + (marked !== undefined ? ' marked' : '')
+                                      + (dateStr === todayStr ? ' today' : '')}
+                                    onClick={() => toggleDayMark(dateStr)}
+                                    title={t(isWorking ? 'staff:schedule.markWork' : 'staff:schedule.dayOff')}
+                                  >
+                                    {day}
+                                  </button>
                                 );
                               }
                               return cells;
                             })()}
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <div style={{ width: '24px', height: '8px', borderRadius: '3px', background: 'rgba(252,174,145,0.06)' }} />
-                              <span style={{ fontSize: '9px', color: 'var(--text3)' }}>{t('staff:schedule.free')}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <div style={{ width: '24px', height: '8px', borderRadius: '3px', background: 'rgba(252,174,145,0.70)' }} />
-                              <span style={{ fontSize: '9px', color: 'var(--text3)' }}>{t('staff:schedule.busy')}</span>
-                            </div>
+
+                          <div className="sch-legend" style={{ padding: '10px 0 0' }}>
+                            <div className="leg"><span className="mark-dot work" />{t('staff:schedule.markWork')}</div>
+                            <div className="leg"><span className="mark-dot off" />{t('staff:schedule.dayOff')}</div>
                           </div>
                         </div>
                       )}
@@ -737,7 +816,7 @@ export default function Staff() {
           rate_type: profile.rate_type ?? '',
           service_ids: profile.services.map(s => s.id),
           photo_url: profile.photo_url ?? undefined,
-          schedule: workingHoursToSchedule(profile.week_working_hours),
+          schedule: workingHoursToSchedule(weekHoursOf(profile)),
         } : null}
         onClose={() => setIsEditModalOpen(false)}
         onSave={async (updated) => {

@@ -1,8 +1,18 @@
-"""Счёт студии за комиссию с офлайн-продаж — постоплата без привязанной карты.
+"""Месячный биллинг платформы: комиссия с офлайн-продаж, минимальный платёж и
+фактура за онлайн-комиссию.
 
 Онлайн-платёж расщепляет сам Stripe в момент оплаты (`application_fee_amount`),
 а наличные, терминал и депозит проходят мимо платформы: её доля копится строками
 `OfflineTransactionFee` и выставляется одним счётом.
+
+Отсюда два принципиально разных вида документа, и путать их нельзя:
+
+* **счёт** (`offline_fee`, `min_fee`) — денег ещё нет. Просит оплату, имеет срок,
+  по его истечении блокирует студию;
+* **фактура** (`online_fee`) — деньги УЖЕ удержаны Stripe при платеже клиента.
+  Выпускается сразу закрытой (`paid_out_of_band`), оплату не просит и ничего не
+  блокирует. Без неё студия не могла списать комиссию в расход, а платформа не
+  имела документа на собственный доход.
 
 Схема оплаты — БЕЗ автосписания (`collection_method="send_invoice"`): карту у
 студии мы не спрашиваем. Stripe присылает счёт письмом со ссылкой на оплату;
@@ -331,32 +341,66 @@ async def _bill(
 
 def _describe(invoice: BillingInvoice, count: int) -> str:
     """Назначение платежа в фактуре Stripe. Студия видит эту строку в письме и в
-    выписке, поэтому «минимальный платёж» и «комиссия» должны различаться явно."""
+    выписке, поэтому виды постоплаты должны различаться явно."""
     if invoice.kind == "min_fee":
         return f"Velora: минимальный месячный платёж за {invoice.period}"
+    if invoice.kind == "online_fee":
+        # Формулировка обязана снять вопрос «почему счёт уже оплачен»: студия этих
+        # денег не переводила, их удержал Stripe в момент платежа клиента.
+        # Числа операций тут намеренно НЕТ: в досылке (_finish_pending) count
+        # считается по строкам OfflineTransactionFee, которых у онлайна не бывает,
+        # и в фактуру уехало бы «0 операц.».
+        return f"Velora: комиссия с онлайн-платежей за {invoice.period} (удержана при оплате)"
     return f"Velora: комиссия с офлайн-продаж, {count} операц."
 
 
 async def _issue_to_stripe(
     db: AsyncSession, invoice: BillingInvoice, customer_id: str, description: str,
 ) -> None:
-    """Выставить у Stripe уже зарезервированный локальный счёт."""
-    stripe_invoice = await stripe_billing.create_fee_invoice(
-        customer_id=customer_id,
-        amount=invoice.amount,
-        currency=stripe_billing.CURRENCY,
-        description=description,
-        days_until_due=GRACE_DAYS,
-        # `plan`/`period_months`/`kind` читает mirror_invoice в вебхуке — без них
-        # он затрёт наш маркер именем текущего тарифа студии.
-        metadata={
-            "studio_id": str(invoice.studio_id),
-            "plan": invoice.kind,
-            "period_months": "1",
-            "kind": invoice.kind,
-            "period": invoice.period or "",
-        },
-    )
+    """Выставить у Stripe уже зарезервированный локальный счёт.
+
+    Две ветки, потому что деньги ходят по-разному:
+
+    * `offline_fee` / `min_fee` — денег ещё нет, счёт их ПРОСИТ: письмо со ссылкой
+      на оплату, срок, а по его истечении блокировка студии;
+    * `online_fee` — деньги уже удержаны Stripe в момент платежа клиента, поэтому
+      документ выпускается сразу ЗАКРЫТЫМ и оплату не просит. Выставить его как
+      обычный счёт значило бы потребовать комиссию второй раз.
+    """
+    # `plan`/`period_months`/`kind` читает mirror_invoice в вебхуке — без них
+    # он затрёт наш маркер именем текущего тарифа студии.
+    metadata = {
+        "studio_id": str(invoice.studio_id),
+        "plan": invoice.kind,
+        "period_months": "1",
+        "kind": invoice.kind,
+        "period": invoice.period or "",
+    }
+    if invoice.kind == "online_fee":
+        stripe_invoice = await stripe_billing.create_settled_invoice(
+            customer_id=customer_id,
+            amount=invoice.amount,
+            currency=stripe_billing.CURRENCY,
+            description=description,
+            metadata=metadata,
+        )
+        # Локальную строку закрываем здесь же. Событие `invoice.paid` по этому
+        # счёту придёт следом, но apply_status на уже закрытом счёте выходит
+        # сразу (идемпотентность по статусу) — второй записи дохода не будет.
+        invoice.status = "paid"
+        invoice.paid_at = datetime.utcnow()
+        # Срок оплаты бессмыслен у оплаченного счёта, а непустой due_at в прошлом
+        # — это то, по чему platform_fee.suspension_reason блокирует студию.
+        invoice.due_at = None
+    else:
+        stripe_invoice = await stripe_billing.create_fee_invoice(
+            customer_id=customer_id,
+            amount=invoice.amount,
+            currency=stripe_billing.CURRENCY,
+            description=description,
+            days_until_due=GRACE_DAYS,
+            metadata=metadata,
+        )
     invoice.stripe_invoice_id = stripe_invoice.id
     invoice.hosted_invoice_url = getattr(stripe_invoice, "hosted_invoice_url", None)
     invoice.pdf_url = getattr(stripe_invoice, "invoice_pdf", None)
@@ -499,6 +543,110 @@ async def _bill_minimum(
     return invoice
 
 
+async def _bill_online_fees(
+    db: AsyncSession, studio_id: int, start: datetime, end: datetime,
+) -> BillingInvoice | None:
+    """Фактура за онлайн-комиссию закрытого месяца. None — выставлять нечего.
+
+    Деньги УЖЕ у платформы: Stripe удержал долю в момент платежа клиента
+    (`application_fee_amount`) и записал строку леджера `connect_fee`. Здесь не
+    взыскание, а ВЫПУСК ДОКУМЕНТА на уже полученное — счёт создаётся сразу
+    закрытым (services/stripe_billing.create_settled_invoice).
+
+    Без него дыра была с обеих сторон: студия на «проценте» платила комиссию и не
+    могла списать её в расход, а у платформы не было фактуры на собственный доход.
+    Офлайн-комиссии документ имели всегда, онлайновые — ни одного.
+
+    Источник сумм — леджер, а не начисления: офлайн копится строками
+    OfflineTransactionFee, а онлайн в них не попадает вовсе.
+
+    Повторно за тот же месяц выставить нельзя: `period` уникален в паре
+    (studio_id, kind) — uq_billing_invoice_period. Проверка ниже нужна, чтобы не
+    ходить в Stripe зря, а гарантию даёт индекс.
+    """
+    period = period_label(start)
+    existing = (await db.execute(
+        select(BillingInvoice.id).where(
+            BillingInvoice.studio_id == studio_id,
+            BillingInvoice.kind == "online_fee",
+            BillingInvoice.period == period,
+        )
+    )).first()
+    if existing is not None:
+        return None
+
+    rows = (await db.execute(
+        select(
+            PlatformRevenueLedger.currency,
+            func.sum(PlatformRevenueLedger.amount),
+            func.count(),
+        )
+        .where(
+            PlatformRevenueLedger.studio_id == studio_id,
+            PlatformRevenueLedger.source == "connect_fee",
+            PlatformRevenueLedger.occurred_at >= start,
+            PlatformRevenueLedger.occurred_at < end,
+        )
+        .group_by(PlatformRevenueLedger.currency)
+    )).all()
+    if not rows:
+        return None
+
+    await _refresh_fx()
+    total, count = 0, 0
+    for currency, amount, entries in rows:
+        converted = to_billing_currency(int(amount or 0), currency)
+        if converted is None:
+            # Молча недосчитать документ хуже, чем его отложить: студия получила бы
+            # фактуру на сумму меньше удержанной, и та не сошлась бы с выпиской.
+            logger.error(
+                "Онлайн-комиссия: нет курса %s→%s, фактура студии %s за %s не выставлена",
+                currency, stripe_billing.CURRENCY, studio_id, period,
+            )
+            return None
+        total += converted
+        count += int(entries or 0)
+
+    if total < MIN_INVOICE_AMOUNT:
+        return None
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
+    )).scalar_one_or_none()
+    customer_id = await _ensure_studio_customer(db, plan) if plan is not None else None
+    if customer_id is None:
+        logger.error(
+            "Онлайн-комиссия: у студии %s нет Stripe Customer — фактура на %s за %s не выставлена",
+            studio_id, total, period,
+        )
+        return None
+
+    invoice = BillingInvoice(
+        studio_id=studio_id,
+        plan_name="online_fee",
+        kind="online_fee",
+        period=period,
+        period_months=1,
+        amount=total,
+        # pending до похода в Stripe: закрытым его пометит _issue_to_stripe, когда
+        # документ реально выпущен. Упади вызов — счёт подберёт _finish_pending.
+        status="pending",
+        payment_method="stripe",
+        # due_at пуст намеренно: заполненный срок в прошлом — это ровно то, по чему
+        # platform_fee.suspension_reason блокирует студию, а тут платить нечего.
+        due_at=None,
+    )
+    db.add(invoice)
+    await db.commit()
+
+    await _issue_to_stripe(db, invoice, customer_id, _describe(invoice, count))
+    logger.info(
+        "Онлайн-комиссия: студии %s выпущена фактура на %s за %s (%s операц.)",
+        studio_id, total, period, count,
+    )
+    return invoice
+
+
 async def _finish_pending(db: AsyncSession) -> int:
     """Дослать в Stripe счета, зарезервированные локально, но не выставленные.
 
@@ -508,7 +656,7 @@ async def _finish_pending(db: AsyncSession) -> int:
     """
     pending = (await db.execute(
         select(BillingInvoice).where(
-            BillingInvoice.kind.in_(("offline_fee", "min_fee")),
+            BillingInvoice.kind.in_(("offline_fee", "min_fee", "online_fee")),
             BillingInvoice.stripe_invoice_id.is_(None),
             BillingInvoice.status == "pending",
         )
@@ -694,6 +842,38 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
             except Exception:
                 await db.rollback()
                 logger.exception("Минимальный платёж: счёт студии %s не выставлен", studio_id)
+
+    # Фактуры за онлайн-комиссию закрытого месяца. Отдельным проходом и по СВОЕМУ
+    # списку студий: онлайн-доля не попадает в OfflineTransactionFee вовсе, она
+    # лежит строками леджера — студия с одними онлайн-платежами в оба списка выше
+    # не входит, а документ ей нужен ровно так же.
+    async with session_maker() as db:
+        online_studio_ids = (await db.execute(
+            select(PlatformRevenueLedger.studio_id)
+            .where(
+                PlatformRevenueLedger.source == "connect_fee",
+                PlatformRevenueLedger.occurred_at >= closed_month,
+                PlatformRevenueLedger.occurred_at < cutoff,
+            )
+            .group_by(PlatformRevenueLedger.studio_id)
+        )).scalars().all()
+
+    for studio_id in online_studio_ids:
+        async with session_maker() as db:
+            try:
+                invoice = await _bill_online_fees(db, studio_id, closed_month, cutoff)
+            except Exception:
+                await db.rollback()
+                logger.exception("Онлайн-комиссия: фактура студии %s не выставлена", studio_id)
+                continue
+            if invoice is not None:
+                billed += 1
+                # Копия платформе — то самое «присылать и мне». Своим вызовом и
+                # после коммита: упавшая почта не повод откатывать выпущенный
+                # документ (send_platform_income глотает свои ошибки сам).
+                from services.billing_mail import send_platform_income
+
+                await send_platform_income(db, invoice)
     return billed
 
 

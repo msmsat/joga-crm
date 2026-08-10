@@ -18,6 +18,7 @@ from services.booking_access import can_book
 from services.members import full_name
 from services.notifier import notify
 from services.subscription_charge import refund_reservation
+from services.working_hours import assert_within_working_hours
 
 logger = logging.getLogger(__name__)
 
@@ -371,6 +372,11 @@ async def create_lesson(
     if body.hall_id is not None:
         await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
     service = await _service_in_studio(body.service_id, ctx.studio_id, db)
+    await assert_within_working_hours(
+        db, ctx.studio_id,
+        start_time=body.start_time, duration_min=body.duration_min,
+        teacher_id=body.teacher_id, hall_id=body.hall_id,
+    )
 
     lesson = Lesson(
         studio_id=ctx.studio_id,
@@ -461,6 +467,19 @@ async def update_lesson(
 
     if fields.get("hall_id") is not None:
         await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
+
+    # Занятие двигают (время/длительность) или меняют занятого им человека/зал —
+    # новая комбинация должна попадать в рабочие часы всех троих. Правку, которая
+    # занятие не двигает (мест, цена, причина отмены), не трогаем: часы могли
+    # поменять уже после создания, и тогда карточку нельзя было бы даже дописать.
+    if {"start_time", "duration_min", "teacher_id", "hall_id"} & fields.keys():
+        await assert_within_working_hours(
+            db, ctx.studio_id,
+            start_time=fields.get("start_time", lesson.start_time),
+            duration_min=fields.get("duration_min", lesson.duration_min),
+            teacher_id=fields.get("teacher_id", lesson.teacher_id),
+            hall_id=fields.get("hall_id", lesson.hall_id),
+        )
 
     reschedule_fields = {"start_time", "duration_min", "hall_id"}
     is_reschedule = reschedule_fields & fields.keys()

@@ -96,8 +96,13 @@ def test_paid_sends_receipt():
         # комиссию _activate выходит раньше, подписку не трогая.
         # stripe_invoice_id=None — леджер доходов в этом тесте не проверяем.
         invoice = types.SimpleNamespace(
-            status="pending", studio_id=1, paid_at=None,
+            id=1, status="pending", studio_id=1, paid_at=None,
             kind="subscription", plan_name="pro", stripe_invoice_id=None,
+            # amount/period/period_months читает уведомление платформе, которое
+            # apply_status шлёт следом за чеком. Неполная заглушка проверяла бы
+            # обработчик ошибки вместо самого пути.
+            amount=9900, period=None, period_months=1,
+            payment_method="card", pdf_url=None, hosted_invoice_url=None,
         )
         assert asyncio.run(apply_status(db, invoice, "paid")) is True
     finally:

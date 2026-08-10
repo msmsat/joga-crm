@@ -14,7 +14,7 @@ status=pending) и отдаём client_secret → форма Stripe рисует
 `FOR UPDATE`: второй пришедший видит status != pending и ничего не делает.
 """
 import logging
-from datetime import date, datetime
+from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import update
@@ -25,9 +25,8 @@ from activity import log_activity
 from database import async_session_maker, get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    ClientOffer, ClientSubscription, Operation, OnlineChannel, ReferralRecord,
-    StripeCheckout, Studio, StudioDiscountConfig, StudioLoyaltyConfig,
-    SubscriptionPackage, User,
+    ClientSubscription, GiftCertificate, Operation, OnlineChannel, StripeCheckout,
+    Studio, StudioDiscountConfig, StudioLoyaltyConfig, SubscriptionPackage, User,
 )
 from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
@@ -36,7 +35,7 @@ from routers.clients.subscriptions import attach_subscription
 from services import platform_fee, stripe_connect
 from services.notifier import notify_payment
 
-from .router import _get_client_package, _quote, perform_pay, reject_dead_promo, resolve_account
+from .router import _get_client_package, _quote, consume_quote, perform_pay, reject_dead_promo, resolve_account
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +194,25 @@ async def create_session(
     )
 
 
+# Опись списанного (баллы, депозит, сертификат) внутри payload заявки. Лежит
+# здесь, а не отдельной колонкой: три числа на заявку не стоят миграции, а
+# payload и так хранит всё, чем платили.
+CONSUMED_KEY = "consumed"
+
+
+def _record_consumption(checkout: StripeCheckout, consumed: dict) -> None:
+    """Запомнить, чем клиент расплатился помимо карты, чтобы возврат вернул это
+    назад (`_revert_sale`). Пересчитать при возврате нельзя: сертификат уже
+    погашен, а баллы списаны — расчёт дал бы нули.
+
+    payload переприсваивается целиком: правка вложенного словаря на месте не
+    помечает JSON-колонку изменённой, и SQLAlchemy молча не сохранит её.
+    """
+    if not any(consumed.values()):
+        return
+    checkout.payload = {**checkout.payload, CONSUMED_KEY: consumed}
+
+
 async def _apply_client_subscription_purchase(db: AsyncSession, checkout: StripeCheckout) -> int:
     """Клиент купил абонемент сам в мини-приложении (`checkout.user_id is
     None` — не кассир). Тот же контракт, что у `perform_pay`: один `commit` и
@@ -215,6 +233,24 @@ async def _apply_client_subscription_purchase(db: AsyncSession, checkout: Stripe
         # деньги списаны, проводить нечем. Ловит общая ветка _NOT_APPLIED.
         raise HTTPException(status_code=400, detail="Пакет абонемента снят с продажи")
 
+    # Пересчёт по тем же рычагам, что клиент выбрал при создании сессии
+    # (промокод, сертификат, депозит, баллы) — payload хранит ЗАПРОС, не итог.
+    # Ровно как у кассира: perform_pay тоже считает заново и не верит фронту.
+    quote = await _quote(
+        db, checkout.studio_id, client_id, package, "subscription",
+        checkout.payload.get("promo_code"), checkout.payload.get("use_bonuses", False),
+        checkout.payload.get("use_deposit", False), checkout.payload.get("certificate_code"),
+    )
+    # Сумма обязана сойтись со списанной. Разошлась — клиент потратил баллы или
+    # погасил сертификат в другом окне между созданием сессии и оплатой: провести
+    # «как получится» значит записать в Финансы не то, что забрали у клиента.
+    # 400 уводит заявку в общую ветку «списано, но не проведено» (_NOT_APPLIED).
+    if quote.total_price != checkout.amount:
+        raise HTTPException(
+            status_code=400,
+            detail="Сумма изменилась с момента оплаты — проведите продажу вручную",
+        )
+
     # attach_subscription с price > 0 обращается к account.id — без реального
     # счёта упадёт AttributeError. Клиент мини-приложения счёт не выбирает
     # (это понятие только у кассы), поэтому берём дефолтный счёт студии — та
@@ -230,21 +266,10 @@ async def _apply_client_subscription_purchase(db: AsyncSession, checkout: Stripe
     )
     await db.flush()
 
-    # Скидки гасим ЗДЕСЬ, а не при создании сессии: до этой строки деньги не
-    # списаны, и клиент, закрывший вкладку Stripe, не должен терять обещанное.
-    # Что именно гасить — зафиксировано в payload в момент расчёта цены, чтобы
-    # пересчёт по изменившемуся конфигу не гасил не ту скидку.
-    offer_id = checkout.payload.get("offer_id")
-    if offer_id is not None:
-        offer = await db.get(ClientOffer, offer_id)
-        if offer is not None:
-            offer.is_used = True
-            offer.used_at = datetime.utcnow()
-    referral_id = checkout.payload.get("referral_id")
-    if referral_id is not None:
-        referral = await db.get(ReferralRecord, referral_id)
-        if referral is not None:
-            referral.discount_used = True
+    # Сертификат, депозит, баллы и одноразовые скидки списываем ЗДЕСЬ, а не при
+    # создании сессии: до этой строки деньги не списаны, и клиент, закрывший
+    # вкладку Stripe, не должен лишиться ни баллов, ни сертификата.
+    _record_consumption(checkout, await consume_quote(db, checkout.studio_id, client_id, quote))
 
     log_activity(
         db, checkout.studio_id, "payment",
@@ -310,9 +335,17 @@ async def apply_paid(db: AsyncSession, session_id: str, *, account_id: str | Non
             # Отдельным commit'ом: perform_pay закрывает транзакцию сам и отдаёт
             # id уже после неё. Продажа к этому моменту проведена, и упади запись
             # ссылки — потеряется только автооткат возврата, а не деньги.
+            _record_consumption(checkout, {
+                "bonuses": result.bonuses_applied,
+                "deposit": result.deposit_applied,
+                "certificate_code": (
+                    checkout.payload.get("certificate_code")
+                    if result.certificate_applied > 0 else None
+                ),
+            })
             if result.subscription_id is not None:
                 checkout.subscription_id = result.subscription_id
-                await db.commit()
+            await db.commit()
     except HTTPException as exc:
         # Деньги у Stripe УЖЕ списаны, а бизнес-правило отвергло проведение:
         # сертификат погасили в другом окне, промокод кончился, пакет сняли с
@@ -559,6 +592,51 @@ async def _revert_loyalty(
     card.level_id = _level_for(card.total_spent, await _get_or_create_levels(studio_id, db))
 
 
+async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:
+    """Вернуть баллы, депозит и сертификат, которыми была оплачена возвращённая
+    покупка. Не коммитит. Идемпотентна: опись стирается после отката, поэтому
+    повторный возврат (спор поверх refund) не начислит второй раз.
+
+    Сертификат ищем по коду: он уникален глобально, и это единственная форма,
+    которая одинаково доступна и кассе, и мини-приложению.
+    """
+    from routers.clients.loyalty import apply_deposit_change, apply_points_change
+
+    consumed = (checkout.payload or {}).get(CONSUMED_KEY)
+    if not consumed:
+        return
+
+    client_id = checkout.payload.get("client_id")
+    if client_id is None:
+        return
+
+    if consumed.get("bonuses"):
+        await apply_points_change(
+            client_id, checkout.studio_id, consumed["bonuses"], "Возврат оплаты бонусами", db,
+        )
+    if consumed.get("deposit"):
+        await apply_deposit_change(
+            client_id, checkout.studio_id, consumed["deposit"], "Возврат оплаты депозитом", db,
+        )
+    code = consumed.get("certificate_code")
+    if code:
+        cert = (await db.execute(
+            select(GiftCertificate).where(
+                GiftCertificate.code == code,
+                GiftCertificate.studio_id == checkout.studio_id,
+            )
+        )).scalar_one_or_none()
+        # Истёкший за это время сертификат обратно в "active" не воскрешаем —
+        # это был бы подарок сверх возврата.
+        if cert is not None and cert.status == "used":
+            cert.status = "active"
+            cert.used_at = None
+
+    payload = {**checkout.payload}
+    payload.pop(CONSUMED_KEY, None)
+    checkout.payload = payload
+
+
 async def _revert_sale(db: AsyncSession, checkout: StripeCheckout) -> None:
     """Откатить проведённую продажу по полному возврату. Не коммитит.
 
@@ -578,6 +656,12 @@ async def _revert_sale(db: AsyncSession, checkout: StripeCheckout) -> None:
         # "cancelled" убирает его и из кошелька клиента, и из записи на занятия.
         if sub is not None and sub.status != "cancelled":
             sub.status = "cancelled"
+
+    # Баллы, депозит и сертификат — тоже деньги клиента. Карту банк вернул сам,
+    # а это вернуть обязаны мы: без такого отката клиент, купивший абонемент за
+    # сертификат + карту, после возврата остался бы и без абонемента, и без
+    # сертификата. Опись пишет _record_consumption в момент проведения.
+    await _restore_consumed(db, checkout)
 
     if checkout.amount <= 0:
         return

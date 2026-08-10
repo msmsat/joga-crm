@@ -38,11 +38,18 @@
     "sub": "The invitation has expired or was revoked. Ask the studio owner to send it again.",
     "cta": "Go to sign in"
   },
+  "consent": {
+    "text": "I accept the",
+    "terms": "Terms of Service",
+    "and": "and the",
+    "privacy": "Privacy Policy"
+  },
   "errors": {
     "noToken": "The link has no invitation code — open it from the email in full.",
     "network": "Connection error",
     "passwordRequired": "Enter your password",
-    "phoneRequired": "Enter your phone number with the country code"
+    "phoneRequired": "Enter your phone number with the country code",
+    "consentRequired": "Your consent is required"
   },
   "newAccountHint": "The password is not in the email — that is the point: a link alone is not enough to get in. If you were not given one, ask your manager.",
   "decline": {

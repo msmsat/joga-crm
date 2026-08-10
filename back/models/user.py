@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import List, Optional
-from sqlalchemy import Integer, BigInteger, String, Float, Boolean, Date, DateTime, ForeignKey, Index, text
+from sqlalchemy import Integer, BigInteger, String, Float, Boolean, Date, DateTime, ForeignKey, Index, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -94,3 +94,33 @@ class User(Base):
     linked_accounts: Mapped[List["User"]] = relationship(
         "User", foreign_keys="[User.primary_user_id]", back_populates="primary_account"
     )
+    consents: Mapped[List["UserConsent"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
+
+class UserConsent(Base):
+    """Доказательство clickwrap-согласия с Условиями и Политикой (EU SaaS).
+
+    Одна строка = одно нажатие галочки. Документы версионируются бандлом
+    (`legal.TERMS_VERSION`), поэтому строка одна на все документы, а не по
+    строке на каждый.
+
+    Таблица append-only: прошлые согласия не затираются и не обновляются.
+    Доказывать нужно согласие с той редакцией, что действовала на момент
+    сделки, а редакция со временем меняется — «последняя принятая версия»
+    полем в users стёрла бы историю ровно тогда, когда она понадобится.
+    """
+
+    __tablename__ = "user_consents"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    # Редакция документов, с которой человек согласился (legal.TERMS_VERSION).
+    version: Mapped[str] = mapped_column(String(20))
+    # register | google | invite — каким путём человек попал в продукт.
+    source: Mapped[str] = mapped_column(String(20))
+    # 45 символов — предельная длина текстового IPv6 с IPv4-хвостом.
+    ip: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+    user_agent: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
+    accepted_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="consents")

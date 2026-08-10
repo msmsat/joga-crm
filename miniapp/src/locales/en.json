@@ -196,7 +196,9 @@
     "success": "Subscription \"{{name}}\" successfully paid! Lessons have been credited to your balance.",
     "activate_error": "Subscription activation error.",
     "checking_payment": "Checking payment status — your subscription will appear here once the bank confirms it",
-    "pay_in_studio": "You can buy a subscription at the studio"
+    "pay_in_studio": "You can buy a subscription at the studio",
+    "activated": "Subscription activated",
+    "certificate_ready": "The certificate will be applied at checkout"
   },
   "successModal": {
     "title": "You are booked",
@@ -237,7 +239,18 @@
     "processing_transaction": "Processing transaction...",
     "processing": "Processing...",
     "cancel": "Cancel",
-    "expiry_placeholder": "MM/YY"
+    "expiry_placeholder": "MM/YY",
+    "certificate": "Certificate",
+    "deposit": "Deposit",
+    "bonuses": "Points",
+    "promo_placeholder": "Promo code",
+    "promo_invalid": "Promo code is not valid",
+    "certificate_placeholder": "Certificate code",
+    "certificate_invalid": "Certificate not found or already redeemed",
+    "use_deposit": "Pay from deposit",
+    "use_bonuses": "Spend points ({{count}})",
+    "confirm_free": "Confirm",
+    "free_hint": "No card payment needed — the amount is fully covered"
   },
   "nav": {
     "home": "Home",
@@ -307,6 +320,8 @@
     "no_history": "No points earned yet",
     "no_history_hint": "They'll appear after your first payment at the studio",
     "disabled": "The studio hasn't launched its club yet",
-    "disabled_hint": "Once the loyalty program is live, your points and level will show up here."
+    "disabled_hint": "Once the loyalty program is live, your points and level will show up here.",
+    "certificate_use": "Use certificate",
+    "code_copy": "Copy code"
   }
 }

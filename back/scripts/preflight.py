@@ -125,6 +125,19 @@ def check_smtp() -> None:
         _err("SMTP не настроен — чеки, фактуры и письма о скорой блокировке не отправятся")
 
 
+def check_platform_email() -> None:
+    """Адрес, на который платформа получает уведомления о собственном доходе.
+
+    Не блокер — деньги без него ходят как обычно, но поступления придётся
+    выискивать в дашборде Stripe и сводить со студиями руками.
+    """
+    if not os.getenv("PLATFORM_BILLING_EMAIL"):
+        _warn(
+            "PLATFORM_BILLING_EMAIL не задан — уведомления о поступлениях "
+            "(оплата тарифа, комиссия) никуда не отправляются"
+        )
+
+
 def check_secret_key() -> None:
     """Ключ подписи JWT. Дефолтный или короткий = подделываемые сессии."""
     key = os.getenv("SECRET_KEY", "")
@@ -132,6 +145,42 @@ def check_secret_key() -> None:
         _err("SECRET_KEY не задан")
     elif len(key) < 32 or key.lower() in ("secret", "changeme", "your-secret-key"):
         _err("SECRET_KEY слишком короткий или дефолтный — токены можно подделать")
+
+
+def check_legal_docs() -> None:
+    """Условия и Политика — сделка с клиентом, а не украшение.
+
+    Проверяем две вещи, которые молчат до спора: что документы вообще лежат на
+    месте (галочка при регистрации ссылается на них), и что в Условиях не
+    остались квадратные скобки-заглушки — договор с «[FULL NAME]» вместо
+    продавца не доказывает ничего.
+
+    Даты редакций сверяются с legal.TERMS_VERSION: разъехавшись, они делают
+    сохранённое согласие непроверяемым — в БД одна версия, в тексте другая.
+    """
+    import re
+    from pathlib import Path
+
+    import legal
+
+    static = Path(__file__).resolve().parent.parent / "static"
+    for name in ("terms.html", "privacy.html"):
+        path = static / name
+        if not path.exists():
+            _err(f"static/{name} отсутствует — ссылка из формы регистрации ведёт в 404")
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        # Сами заглушки в текст ошибки не тащим: в них бывают чешские диакритики
+        # (DIČ), а консоль Windows под cp1251 на них падает вместе со всем отчётом.
+        blanks = set(re.findall(r"\[[A-ZА-Я][^\]]{2,40}\]", text))
+        if blanks:
+            _err(f"static/{name}: осталось незаполненных мест в квадратных скобках — {len(blanks)}")
+        if legal.TERMS_VERSION not in text:
+            _err(
+                f"static/{name} не содержит редакцию {legal.TERMS_VERSION} — "
+                f"версия в тексте разошлась с legal.TERMS_VERSION, согласия станут непроверяемыми"
+            )
 
 
 async def check_stripe_catalog(sync: bool) -> None:
@@ -183,6 +232,8 @@ async def main(sync: bool) -> int:
     check_billing_currency()
     check_fx_cache()
     check_smtp()
+    check_platform_email()
+    check_legal_docs()
     await check_stripe_catalog(sync)
 
     for text in _WARNINGS:

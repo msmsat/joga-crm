@@ -7,10 +7,16 @@ export interface RegisterPayload {
   email: string
   name: string
   password: string
+  // Галочка «принимаю Условия и Политику». Без неё бэкенд отвечает 400
+  // consent_required и аккаунт не заводит — доказательство согласия обязательно.
+  accept_terms: boolean
 }
 
 export interface GoogleAuthPayload {
   token: string
+  // Ручка /auth/google — и вход, и регистрация. Существующему аккаунту поле не
+  // нужно, а на создание НОВОГО без него прилетит consent_required.
+  accept_terms?: boolean
 }
 
 export interface VerifyEmailPayload {
@@ -125,6 +131,9 @@ export interface AcceptInvitePayload {
   password: string
   // Только при needs_phone — иначе бэкенд поле игнорирует.
   phone?: string
+  // Только при is_new_account: приглашение — момент регистрации человека в
+  // продукте. У уже работающего в Velora согласие взято при его регистрации.
+  accept_terms?: boolean
 }
 
 // Отказ от приглашения: пароль не нужен — отказ ничего не открывает.

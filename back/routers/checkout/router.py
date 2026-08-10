@@ -142,6 +142,48 @@ async def _quote(
     )
 
 
+async def consume_quote(db: AsyncSession, studio_id: int, client_id: int, quote: PriceQuote) -> dict:
+    """Списать всё, чем клиент расплатился помимо денег: депозит, сертификат,
+    баллы, — и погасить одноразовые скидки (промокод, оффер, скидка новичка).
+
+    Зовётся ТОЛЬКО когда продажа состоялась: касса (perform_pay) — сразу,
+    оплата картой и покупка из мини-приложения — на вебхуке Stripe, после
+    подтверждённого списания. Брошенная на полпути оплата не должна съедать
+    ни баллы, ни сертификат.
+
+    Общая для кассы и мини-приложения намеренно: два экземпляра этого блока
+    разъехались бы так же, как разъехались две копии реферальной выплаты
+    (services/referral.py). Не коммитит — вызывающий в своей транзакции.
+
+    Возвращает опись списанного (`CONSUMED_KEY` в payload заявки Stripe) — по
+    ней возврат оплаты кладёт всё назад. Пересчитать её при возврате нельзя:
+    сертификат к тому моменту уже "used", а баллы списаны, и `_quote` дал бы
+    другие числа.
+    """
+    if quote.deposit_applied > 0:
+        await apply_deposit_change(
+            client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
+        )
+    if quote.certificate_applied > 0:
+        quote.certificate.status = "used"
+        quote.certificate.used_at = datetime.utcnow()
+    if quote.bonuses_applied > 0:
+        await apply_points_change(
+            client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
+        )
+    # Промокод, персональный оффер и скидка новичка — все одноразовые, гасятся
+    # вместе в той же транзакции, что и продажа (гонки «применили дважды» нет).
+    quote.resolved.mark_used()
+
+    return {
+        "bonuses": quote.bonuses_applied,
+        "deposit": quote.deposit_applied,
+        # Код, а не id: у кассы на руках тоже он (payload заявки), и одна форма
+        # описи работает для обоих путей. Код сертификата уникален глобально.
+        "certificate_code": quote.certificate.code if quote.certificate_applied > 0 else None,
+    }
+
+
 def reject_dead_promo(promo_code: str | None, quote: PriceQuote) -> None:
     """400, если кассир ввёл промокод, а он больше не действует.
 
@@ -391,21 +433,7 @@ async def perform_pay(
         await db.flush()
         entity_type, entity_id = ("operation", op.id) if op is not None else ("client_payment", payment.id)
 
-    if quote.deposit_applied > 0:
-        await apply_deposit_change(
-            body.client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
-        )
-    if quote.certificate_applied > 0:
-        quote.certificate.status = "used"
-        quote.certificate.used_at = datetime.utcnow()
-    if quote.bonuses_applied > 0:
-        await apply_points_change(
-            body.client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
-        )
-
-    # Промокод, персональный оффер и скидка новичка — все одноразовые, гасятся
-    # вместе в той же транзакции, что и продажа (гонки «применили дважды» нет).
-    resolved.mark_used()
+    await consume_quote(db, studio_id, body.client_id, quote)
 
     log_activity(
         db, studio_id, "payment",

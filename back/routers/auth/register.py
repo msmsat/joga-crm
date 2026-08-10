@@ -1,10 +1,11 @@
 import logging
 import random
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
+from legal import CONSENT_REQUIRED, record_consent
 from models import User
 from schemas import RegisterRequest, TokenResponse, VerifyEmailRequest
 from security import get_password_hash
@@ -28,7 +29,16 @@ async def _send_verification_code(email: str, code: str) -> None:
 
 
 @router.post("/register")
-async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(
+    request: RegisterRequest,
+    http_request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    # Согласие с Условиями и Политикой — обязательное условие создания аккаунта,
+    # и проверяется на сервере: галочка на фронте убирается правкой DOM.
+    if not request.accept_terms:
+        raise HTTPException(status_code=400, detail=CONSENT_REQUIRED)
+
     existing_user = (
         await db.execute(select(User).where(User.email == request.email))
     ).scalar_one_or_none()
@@ -45,6 +55,10 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
         existing_user.name = request.name
         existing_user.hashed_password = hashed_pwd
         existing_user.verification_code = verification_code
+        # Повторная регистрация на неподтверждённый аккаунт — то же принятие
+        # документов заново: пишем ещё одну строку, а не молчим (таблица
+        # append-only, см. models.UserConsent).
+        await record_consent(db, existing_user, http_request, "register")
         await db.commit()
 
         await _send_verification_code(existing_user.email, verification_code)
@@ -58,6 +72,10 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
         verification_code=verification_code,
     )
     db.add(new_user)
+    # flush, а не commit: id нужен для строки согласия, но аккаунт и его
+    # доказательство должны лечь одной транзакцией.
+    await db.flush()
+    await record_consent(db, new_user, http_request, "register")
     await db.commit()
 
     await _send_verification_code(new_user.email, verification_code)

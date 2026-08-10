@@ -22,6 +22,10 @@ import './App.css';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
+  // Код сертификата, с которым пришли из Клуба. Профиль забирает его, открывает
+  // покупку и сбрасывает — иначе тот же сертификат подставился бы и в следующий
+  // раз, когда клиент просто зашёл купить абонемент.
+  const [pendingCertificate, setPendingCertificate] = useState<string | null>(null);
   const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
 
@@ -133,6 +137,19 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
+  /**
+   * «Использовать сертификат» из Клуба: переносит клиента в покупку абонемента
+   * с уже подставленным кодом.
+   *
+   * Живёт в App, потому что Клуб и покупка — разные вкладки: переписывать код
+   * из одного раздела в другой руками клиент не должен, а сама форма оплаты
+   * принадлежит профилю (BuyModal), не Клубу.
+   */
+  const useCertificate = (code: string) => {
+    setPendingCertificate(code);
+    switchTab('prof');
+  };
+
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
   if (isLoading) {
     return (
@@ -216,8 +233,15 @@ export default function App() {
     home: <Home user={user} catalog={catalog} onNavigate={switchTab} />,
     sched: <Shedule catalog={catalog} />,
     my: <MyLessons />,
-    prof: <Profile catalog={catalog} onCatalogRefresh={loadCatalog} />,
-    club: <Club data={loyalty} />,
+    prof: (
+      <Profile
+        catalog={catalog}
+        onCatalogRefresh={loadCatalog}
+        pendingCertificate={pendingCertificate}
+        onPendingCertificateUsed={() => setPendingCertificate(null)}
+      />
+    ),
+    club: <Club data={loyalty} onUseCertificate={useCertificate} />,
   };
 
   const navItems = visibleNavItems(Boolean(loyalty?.enabled));

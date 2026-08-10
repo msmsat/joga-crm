@@ -1,4 +1,4 @@
-import { apiGet } from './client';
+import { apiGet, resolveImageUrl } from './client';
 
 // Повторяет back/routers/booking/miniapp_studio.py — StudioCatalog и вложенные схемы
 
@@ -84,5 +84,17 @@ export interface StudioCatalog {
   can_pay_online: boolean;
 }
 
-/** Один снимок статического контекста студии. Ендпоінт: GET /global/studio */
-export const getStudioCatalog = (): Promise<StudioCatalog> => apiGet('/global/studio');
+/**
+ * Один снимок статического контекста студии. Ендпоінт: GET /global/studio.
+ * logo_url/photo_url приходят с бэка относительным путём ("/static/...") —
+ * резолвим до абсолютного URL здесь же, один раз на весь каталог, чтобы ни
+ * один из потребителей (DesktopNav, HomeGreeting, StudioCard) не забыл это сделать.
+ */
+export const getStudioCatalog = async (): Promise<StudioCatalog> => {
+  const catalog = await apiGet<StudioCatalog>('/global/studio');
+  return {
+    ...catalog,
+    studio: { ...catalog.studio, logo_url: resolveImageUrl(catalog.studio.logo_url) ?? null },
+    branches: catalog.branches.map(b => ({ ...b, photo_url: resolveImageUrl(b.photo_url) ?? null })),
+  };
+};

@@ -25,7 +25,7 @@ from schemas.settings.billing import (
     IbanCheckoutRequest, IbanCheckoutResponse,
 )
 from services import stripe_billing, stripe_catalog
-from .plans import PLANS, PERIOD_DISCOUNTS
+from .plans import PLANS, PERIOD_DISCOUNTS, amount_for, combo_amount_for
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -148,6 +148,63 @@ def _has_live_subscription(plan: StudioBillingPlan) -> bool:
     return bool(plan.stripe_subscription_id) and plan.status in ("active", "past_due")
 
 
+def _is_renewal(plan: StudioBillingPlan, requested_plan: str) -> bool:
+    """Оплата ТОГО ЖЕ тарифа при живой подписке — это продление, а не смена.
+
+    Раньше такой платёж разбирался как смена тарифа, и обе ветки вели себя неверно:
+    «сейчас» начинало цикл заново и СЖИГАЛО остаток (студия платила и теряла уже
+    оплаченное), а «с начала периода» ставило в расписание переход на тот же самый
+    тариф — денег не брало вовсе, зато рисовало в интерфейсе «тариф сменится на
+    Pro» тому, кто уже на Pro.
+
+    Период при этом может отличаться: со «Старт помесячно» на «Старт на год» — это
+    всё равно продление, просто следующие списания пойдут годовыми.
+    """
+    return _has_live_subscription(plan) and requested_plan == plan.plan_name
+
+
+async def _renewal_invoice(
+    db: AsyncSession, ctx: StudioContext, plan: StudioBillingPlan, customer_id: str,
+    body_plan: str, period_months: int,
+):
+    """Счёт на продление уже оплаченного тарифа. Подписку НЕ трогает.
+
+    Период добавляет вебхук по ОПЛАЧЕННОМУ счёту (webhook._activate → продление),
+    и порядок здесь принципиален: сдвинуть дату сразу значило бы подарить месяцы
+    всем, кто счёт не оплатит. Тот же принцип, что у всей остальной оплаты тарифа —
+    ступень и срок поднимает только пришедшая оплата.
+
+    Сумму считаем по каталогу (`amount_for`/`combo_amount_for`), а не Price'ом
+    подписки: Price задаёт РЕКУРРЕНТНОЕ списание, а тут разовая покупка N месяцев.
+
+    Способ оплаты берём У САМОЙ ПОДПИСКИ, а не у нажатой кнопки. Кнопку владелец
+    выбирает в модалке, но платит он тем, чем платит: студии на автосписании счёт
+    закроется картой сразу, студии на переводе уедет счёт с реквизитами. Поставь мы
+    автосписание всем — студия без привязанной карты получила бы счёт, который
+    невозможно оплатить, и следом dunning от Stripe за собственное продление.
+    """
+    combo = _is_combo(plan)
+    amount = (combo_amount_for if combo else amount_for)(body_plan, period_months)
+    name = PLANS[body_plan]["name"]
+    subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
+    collection_method = getattr(subscription, "collection_method", None) or "send_invoice"
+    return await stripe_billing.create_fee_invoice(
+        customer_id=customer_id,
+        amount=amount,
+        currency=stripe_billing.CURRENCY,
+        description=f"Velora {name}: продление на {period_months} мес.",
+        days_until_due=stripe_billing.DAYS_UNTIL_DUE,
+        # Читает mirror_invoice: без kind="subscription" счёт не поднял бы тариф, а
+        # renew_months говорит вебхуку, на сколько двигать дату.
+        metadata={
+            **_metadata(ctx, body_plan, period_months, plan.billing_mode),
+            "kind": "subscription",
+            "renew_months": str(period_months),
+        },
+        collection_method=collection_method,
+    )
+
+
 @router.post("/checkout", response_model=CheckoutResponse)
 # Каждый вызов заводит объекты у Stripe (Customer, Checkout Session, прорация).
 # JWT сам по себе не потолок: угнанный токен владельца или зациклившийся ретрай
@@ -185,6 +242,25 @@ async def create_checkout(
 
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
+        if _is_renewal(plan, body.plan):
+            # Продление своего же тарифа: выставляем счёт, подписку не трогаем.
+            # charge_automatically — у карточной студии карта уже привязана, и
+            # Stripe спишет сразу; отправлять её платить по ссылке за тариф,
+            # который она и так платит автосписанием, незачем.
+            stripe_invoice = await _renewal_invoice(
+                db, ctx, plan, customer_id, body.plan, body.period_months,
+            )
+            from .webhook import mirror_invoice
+
+            await mirror_invoice(db, plan, stripe_invoice)
+            await db.commit()
+            # Ссылка на счёт, а не на Checkout Session: платить нужно именно его, а
+            # у автосписания страница ещё и покажет результат списания.
+            return CheckoutResponse(
+                checkout_url=getattr(stripe_invoice, "hosted_invoice_url", None)
+                or f"{WEB_APP_URL}/dashboard/billing",
+            )
+
         if _has_live_subscription(plan):
             if body.apply == "period_end":
                 # Метод оплаты НЕ трогаем: платить сейчас нечего, счёт новой фазы
@@ -278,7 +354,13 @@ async def create_iban_checkout(
 
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
-        if _has_live_subscription(plan):
+        if _is_renewal(plan, body.plan):
+            # Продление своего же тарифа переводом: тот же счёт, но с оплатой по
+            # реквизитам — их студия и увидит в ответе ниже.
+            stripe_invoice = await _renewal_invoice(
+                db, ctx, plan, customer_id, body.plan, body.period_months,
+            )
+        elif _has_live_subscription(plan):
             # Ранее запланированную смену снимаем: подписку под расписанием Stripe
             # менять отказывается, а владелец только что решил платить сейчас.
             await stripe_billing.release_schedule(plan.stripe_subscription_id)

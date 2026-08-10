@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
+import CheckoutBreakdown from './CheckoutBreakdown';
+import CheckoutOptions from './CheckoutOptions';
+import type { CheckoutCalc, CheckoutOptions as CheckoutOptionsValue } from '../../api/user';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   itemName: string;
+  /** Цена пакета — показывается, пока не пришёл расчёт с сервера. */
   amountStr: string;
-  /** Базовая цена до скидки — показывается зачёркнутой строкой «Скидка».
-   * null, когда скидки нет: чек не должен изобретать строку «−0». */
-  basePriceStr?: string | null;
-  discountLabel?: string | null;
+  /** Разбор цены с сервера; null — расчёт ещё идёт или не удался. */
+  calc: CheckoutCalc | null;
+  isCalculating: boolean;
+  options: CheckoutOptionsValue;
+  onOptionsChange: (patch: Partial<CheckoutOptionsValue>) => void;
   /** Создаёт сессию Stripe и открывает её (`tg.openLink`) — форму карты
    * рисует сама страница Stripe, не мы (PCI, как и в кассе CRM). */
   onPay: () => Promise<void>;
@@ -21,8 +26,10 @@ export default function PaymentModal({
   onClose,
   itemName,
   amountStr,
-  basePriceStr = null,
-  discountLabel = null,
+  calc,
+  isCalculating,
+  options,
+  onOptionsChange,
   onPay,
 }: PaymentModalProps) {
   const { t } = useTranslation();
@@ -37,6 +44,16 @@ export default function PaymentModal({
     }
   };
 
+  // Всё покрыто сертификатом/депозитом/баллами — Stripe не откроется, поэтому
+  // и кнопка не должна обещать оплату картой.
+  const fullyCovered = calc?.fully_covered ?? false;
+
+  const actionLabel = isProcessing
+    ? t('paymentModal.processing_transaction')
+    : fullyCovered
+      ? t('paymentModal.confirm_free')
+      : t('paymentModal.pay_card');
+
   return (
     <Sheet
       isOpen={isOpen}
@@ -45,58 +62,28 @@ export default function PaymentModal({
       kicker={t('paymentModal.tag')}
       title={t('paymentModal.title')}
       footer={
-        <SheetAction onClick={handlePay} disabled={isProcessing}>
-          {isProcessing ? t('paymentModal.processing_transaction') : t('paymentModal.pay_card')}
+        <SheetAction onClick={handlePay} disabled={isProcessing || isCalculating}>
+          {actionLabel}
         </SheetAction>
       }
     >
-      {/* Чек: линия отрыва пунктиром — единственная разделительная линия во всём
-          приложении, здесь она уместна как знак «это квитанция». */}
-      <div className="rounded-[20px] bg-background px-4 py-4">
-        <div className="flex items-start justify-between gap-4">
-          <span className="text-[12.5px] font-medium text-muted-foreground">
-            {t('paymentModal.service')}
-          </span>
-          <span className="text-right text-[13px] font-bold text-foreground">{itemName}</span>
-        </div>
+      <CheckoutBreakdown calc={calc} fallbackAmountStr={amountStr} itemName={itemName} />
 
-        {/* Скидку называем в чеке отдельной строкой: «стало дешевле» без
-            объяснения читается как ошибка в цене, а не как выполненное обещание. */}
-        {discountLabel && basePriceStr && (
-          <>
-            <div className="mt-3.5 flex items-start justify-between gap-4">
-              <span className="text-[12.5px] font-medium text-muted-foreground">
-                {t('paymentModal.base_price')}
-              </span>
-              <span className="text-right text-[13px] font-bold tabular-nums text-muted-foreground line-through">
-                {basePriceStr}
-              </span>
-            </div>
-            <div className="mt-2 flex items-start justify-between gap-4">
-              <span className="text-[12.5px] font-medium text-muted-foreground">
-                {t('paymentModal.discount')}
-              </span>
-              <span className="text-right text-[13px] font-extrabold tabular-nums text-brand">
-                {discountLabel}
-              </span>
-            </div>
-          </>
-        )}
-
-        <div className="my-3.5 border-t border-dashed border-foreground/12" />
-
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-[13px] font-bold text-foreground">
-            {t('paymentModal.amount_due')}
-          </span>
-          <span className="text-[21px] font-extrabold tabular-nums tracking-[-0.03em] text-foreground">
-            {amountStr}
-          </span>
-        </div>
-      </div>
+      <CheckoutOptions
+        calc={calc}
+        promoCode={options.promo_code ?? ''}
+        onPromoCode={(promo_code) => onOptionsChange({ promo_code })}
+        certificateCode={options.certificate_code ?? ''}
+        onCertificateCode={(certificate_code) => onOptionsChange({ certificate_code })}
+        useBonuses={options.use_bonuses ?? false}
+        onUseBonuses={(use_bonuses) => onOptionsChange({ use_bonuses })}
+        useDeposit={options.use_deposit ?? false}
+        onUseDeposit={(use_deposit) => onOptionsChange({ use_deposit })}
+        disabled={isProcessing}
+      />
 
       <p className="mt-5 text-center text-[12px] font-medium leading-relaxed text-muted-foreground">
-        {t('paymentModal.redirect_hint')}
+        {fullyCovered ? t('paymentModal.free_hint') : t('paymentModal.redirect_hint')}
       </p>
     </Sheet>
   );

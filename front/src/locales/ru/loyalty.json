@@ -306,7 +306,7 @@
     "emailNote": "Письмо уйдёт только клиентам с email",
     "confirm": "Отправить",
     "toasts": {
-      "pointsDone": "Баллы начислены · обработано {{processed}}",
+      "pointsDone": "Баллы начислены · обработано {{processed}}, уведомлено {{emails}}",
       "emailDone": "Рассылка отправлена · писем {{emails}} из {{processed}}"
     }
   },

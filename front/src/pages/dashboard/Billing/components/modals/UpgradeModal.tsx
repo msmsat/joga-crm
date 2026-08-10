@@ -23,11 +23,16 @@ interface Props {
   hasLiveSubscription: boolean;
   /** Конец оплаченного периода — дата, с которой начнётся новый тариф. */
   currentPeriodEnd?: string | null;
+  /** Ставка НДС для подписи, % — приходит каталогом с бэка (BILLING_VAT_RATE). */
+  vatRate: number;
 }
 
-export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, scheduleUpgrade, hasLiveSubscription, currentPeriodEnd }: Props) {
+export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, scheduleUpgrade, hasLiveSubscription, currentPeriodEnd, vatRate }: Props) {
   const { t } = useTranslation('billing');
   const plan = plans[selectedPlan];
+  // Ориентир для подписи, а не расчёт к оплате: итог считает Stripe Tax.
+  const vatAmount = Math.round(totalToPay * vatRate) / 100;
+  const totalWithVat = Math.round(totalToPay * (100 + vatRate)) / 100;
   // «Перейти сейчас» сжигает остаток оплаченного периода без возврата, поэтому
   // подтверждается отдельно. Спокойный путь (с начала периода) — основная кнопка.
   const [confirmNow, setConfirmNow] = useState(false);
@@ -58,10 +63,29 @@ export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, p
               </span>
             </div>
           )}
+          {/* Цены каталога — БЕЗ налога (tax_behavior=exclusive на стороне Stripe),
+              поэтому налог показываем отдельной строкой и только здесь, на шаге
+              оплаты. Сумма ориентировочная: настоящую ставку считает Stripe Tax по
+              стране студии и её статусу плательщика — у компании из другой страны ЕС
+              с валидным номером НДС это 0 % (reverse charge). Поэтому «≈» и подпись,
+              что итог будет на странице оплаты. */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
+              {t('upgrade.vatLabel', { rate: vatRate })}
+            </span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--muted)' }}>
+              ≈ {formatMoney(vatAmount, currency)}
+            </span>
+          </div>
           <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalLabel')}</span>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalWithVatLabel')}</span>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>
+              ≈ {formatMoney(totalWithVat, currency)}
+            </span>
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '8px' }}>
+            {t('upgrade.vatNote', { rate: vatRate })}
           </div>
         </div>
 

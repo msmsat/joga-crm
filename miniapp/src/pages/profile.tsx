@@ -27,9 +27,18 @@ interface ProfileProps {
    * новичка, персональный оффер) и после покупки скидка гаснет — снимок,
    * снятый на входе, показал бы её второй раз, а списалось бы полное. */
   onCatalogRefresh?: () => void;
+  /** Пришли из Клуба с сертификатом — открыть покупку с этим кодом. */
+  pendingCertificate?: string | null;
+  /** Код забран и подставлен: чтобы он не всплыл при следующей покупке. */
+  onPendingCertificateUsed?: () => void;
 }
 
-export default function Profile({ catalog, onCatalogRefresh }: ProfileProps) {
+export default function Profile({
+  catalog,
+  onCatalogRefresh,
+  pendingCertificate,
+  onPendingCertificateUsed,
+}: ProfileProps) {
   const { t, i18n } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
@@ -378,14 +387,21 @@ export default function Profile({ catalog, onCatalogRefresh }: ProfileProps) {
       />
       <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       <BuyModal
-        isOpen={isBuyOpen}
-        onClose={() => setIsBuyOpen(false)}
+        // Пересоздаём при смене сертификата: форма оплаты берёт код в начальное
+        // состояние, а чинить его эффектом — лишний каскад рендеров.
+        key={pendingCertificate ?? 'plain'}
+        isOpen={isBuyOpen || Boolean(pendingCertificate)}
+        onClose={() => {
+          setIsBuyOpen(false);
+          onPendingCertificateUsed?.();
+        }}
         onSuccess={() => {
           setRefreshTick((tick) => tick + 1);
           onCatalogRefresh?.();
         }}
         packages={catalog?.packages ?? []}
         canPayOnline={catalog?.can_pay_online ?? false}
+        initialCertificate={pendingCertificate ?? null}
       />
     </div>
   );

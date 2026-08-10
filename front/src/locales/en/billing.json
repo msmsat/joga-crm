@@ -1,4 +1,8 @@
 {
+  "legal": {
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
+  },
   "tabs": {
     "plans": "Plans & pricing",
     "invoices": "Payment history",
@@ -188,7 +192,10 @@
     "switchNowWarningNoDate": "The remainder of the current paid period WILL BE FORFEITED — it is not refunded and does not carry over. The new plan starts immediately and is invoiced in full right away.",
     "switchNowConfirm": "Yes, switch and forfeit",
     "scheduledToast": "Plan \"{{plan}}\" starts on {{date}}",
-    "scheduledBadge": "From {{date}} — plan \"{{plan}}\""
+    "scheduledBadge": "From {{date}} — plan \"{{plan}}\"",
+    "vatLabel": "VAT {{rate}}%",
+    "totalWithVatLabel": "Total incl. VAT",
+    "vatNote": "Prices exclude VAT. Tax of {{rate}}% is added on top; the exact amount is calculated on the payment page from your company details — EU companies with a VAT number get reverse charge."
   },
   "method": {
     "notLinked": "Not linked",
@@ -251,7 +258,11 @@
     "syncHint": "Check the status with the payment service",
     "syncChanged": "Status updated: {{status}}",
     "syncUnchanged": "The payment service confirmed the same status",
-    "syncError": "Couldn't check the status. Please try again."
+    "syncError": "Couldn't check the status. Please try again.",
+    "kindOfflineFee": "Offline sales commission",
+    "kindMinFee": "Minimum monthly fee",
+    "kindOnlineFee": "Online payments commission",
+    "methodWithheld": "Withheld by Stripe at payment"
   },
   "table": {
     "date": "Date",
@@ -321,17 +332,19 @@
       "title": "Invoice details",
       "question": "We ask once — saved details are applied to every future invoice automatically.",
       "need": "I need a company invoice",
-      "needHint": "We'll bill the company with its registration ID and VAT ID, if any",
-      "icoLabel": "Company ID (IČO)",
-      "vatLabel": "VAT ID (DIČ)",
+      "needHint": "We'll bill the company: registration number and VAT number, if any",
+      "icoLabel": "Company registration number",
+      "vatLabel": "VAT number",
       "countryLabel": "Country",
       "postalLabel": "Postal code",
-      "icoRequired": "A company invoice needs the registration ID",
+      "icoRequired": "A company invoice needs the registration number",
       "countryInvalid": "Two-letter country code, e.g. CZ",
       "postalRequired": "The postal code is printed in the invoice address",
       "note": "These details are printed on the invoice. You can change them on the Payment method tab.",
       "countryNote": "Bank transfer requires the country and postal code — the VAT rate is derived from the country and the address is printed on the invoice.",
-      "continue": "Continue"
+      "continue": "Continue",
+      "icoHint": "It may be called differently in your country: IČO, HRB, KRS, Company number",
+      "vatHint": "For EU companies: enables reverse charge on the invoice"
     }
   },
   "offlineFee": {

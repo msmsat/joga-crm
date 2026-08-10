@@ -143,6 +143,69 @@ def test_refund_target_prefers_payment_intent_then_charge():
     asyncio.run(_refund_target_prefers_payment_intent_then_charge())
 
 
+# ─── Немедленный переход у подписки на триале ───────────────────────────────────
+
+def _modify_params(status: str, **kwargs) -> dict:
+    """Что уедет в Subscription.modify при смене Price. Сеть застублена."""
+    class _Sub:
+        """Подписка Stripe читается и как объект (`.status`), и по ключу
+        (`["items"]`) — SimpleNamespace второе не умеет."""
+
+        id = "sub_1"
+
+        def __init__(self, status):
+            self.status = status
+
+        def __getitem__(self, _key):
+            return types.SimpleNamespace(data=[types.SimpleNamespace(id="si_1")])
+
+    sent = {}
+    saved = stripe.Subscription.retrieve, stripe.Subscription.modify
+    stripe.Subscription.retrieve = lambda sid, **kw: _Sub(status)
+    stripe.Subscription.modify = lambda sid, **kw: (
+        sent.update(kw), types.SimpleNamespace(id=sid)
+    )[1]
+    try:
+        asyncio.run(stripe_billing.change_subscription_price("sub_1", "price_1", {}, **kwargs))
+    finally:
+        stripe.Subscription.retrieve, stripe.Subscription.modify = saved
+    return sent
+
+
+def test_immediate_switch_ends_the_trial_first():
+    """Регрессия на живой 502 (10.08.2026): «Trial end cannot be after
+    billing_cycle_anchor».
+
+    Триал у нас не только пробный период — его же ставит миграция уже оплативших
+    (checkout._trial_end), чтобы подписка не брала денег до конца оплаченного
+    периода. Значит под условие попадала КАЖДАЯ студия, оформившая подписку до
+    конца триала, и обе ветки оплаты (карта с apply="now" и весь IBAN) отвечали ей
+    502 вместо смены тарифа.
+
+    «Перейти сейчас» означает «начать платить сейчас», поэтому триал заканчиваем,
+    а не обходим запрет.
+    """
+    sent = _modify_params("trialing", proration_behavior="none", billing_cycle_anchor="now")
+    assert sent["billing_cycle_anchor"] == "now"
+    assert sent["trial_end"] == "now", "триал не закрыт — Stripe отвергнет запрос"
+
+
+def test_switch_without_a_trial_does_not_touch_trial_end():
+    """У обычной подписки trial_end трогать нечего: лишний параметр в денежном
+    запросе — лишний повод для Stripe придраться."""
+    sent = _modify_params("active", proration_behavior="none", billing_cycle_anchor="now")
+    assert "trial_end" not in sent
+
+
+def test_scheduled_switch_never_ends_the_trial():
+    """Смена без якоря цикла (смена тарифной модели, отложенный переход) не должна
+    заканчивать триал: студия ничего не просила ускорять, а конец триала — это
+    начало списаний."""
+    sent = _modify_params("trialing", proration_behavior="none")
+    assert "trial_end" not in sent
+    assert "billing_cycle_anchor" not in sent
+
+
 # ─── Получатель перевода — тот, кого назвал Stripe ──────────────────────────────
 
 async def _funding_instructions_return_stripe_beneficiary():

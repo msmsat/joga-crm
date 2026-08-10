@@ -24,6 +24,15 @@ const STATUS_META: Record<string, { key: string; color: string; bg: string }> = 
 // paid/refunded — конечные, банк их уже не поменяет; остальные можно сверить.
 const FINAL_STATUSES = ['paid', 'refunded'];
 
+// Счета за комиссию приезжают с plan_name = видом счёта, а не тарифом, и в
+// каталоге `plans` их нет — без этой карты в истории висел бы сырой ключ
+// «offline_fee». Ключи те же, что kind на бэке (models/settings.py:BillingInvoice).
+const FEE_KIND_KEYS: Record<string, string> = {
+  offline_fee: 'invoices.kindOfflineFee',
+  min_fee: 'invoices.kindMinFee',
+  online_fee: 'invoices.kindOnlineFee',
+};
+
 interface StatusProps {
   status: string;
   busy: boolean;
@@ -157,11 +166,19 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
                 <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{fmtDate(inv.paid_at, t('empty.noData'))}</div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
-                    {plans[inv.plan_name as PlanType]?.name ?? inv.plan_name}
-                    <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {t('upgrade.periodValue', { count: inv.period_months })}</span>
+                    {FEE_KIND_KEYS[inv.plan_name]
+                      ? t(FEE_KIND_KEYS[inv.plan_name])
+                      : plans[inv.plan_name as PlanType]?.name ?? inv.plan_name}
+                    {/* Период у счетов за комиссию всегда «1 мес.» и смысла не несёт —
+                        показываем его только у счетов за тариф, где он и куплен. */}
+                    {!FEE_KIND_KEYS[inv.plan_name] && (
+                      <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {t('upgrade.periodValue', { count: inv.period_months })}</span>
+                    )}
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px' }}>
-                    {inv.payment_method === 'iban'
+                    {inv.payment_method === 'stripe'
+                      ? t('invoices.methodWithheld')
+                      : inv.payment_method === 'iban'
                       ? t('invoices.methodIban')
                       : inv.payment_method
                       ? t('invoices.methodCard')

@@ -43,6 +43,15 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   return response.json();
 }
 
+// Бэкенд отдаёт загруженные файлы (лого студии, фото филиала) как относительный
+// путь ("/static/..."). Без префикса браузер запросит его у origin мини-приложения,
+// а не у бэкенда — картинка "битая" (тот же фикс, что и в CRM front/api/client.ts).
+export function resolveImageUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (/^https?:\/\//.test(path)) return path;
+  return `${BASE_URL}${path}`;
+}
+
 export const apiGet = <T>(path: string): Promise<T> => apiFetch<T>(path);
 
 export const apiPost = <T>(path: string, body?: unknown): Promise<T> =>

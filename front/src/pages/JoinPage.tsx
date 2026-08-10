@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../App.css";
-import { Orbs, Logo, InputField, PhoneField, PrimaryBtn, ErrorAlert } from "../components/UI";
+import { Orbs, Logo, InputField, PhoneField, PrimaryBtn, ErrorAlert, Checkbox } from "../components/UI";
 import { authApi, ApiError } from "../api";
 import { resolveImageUrl } from "../api/client";
 import type { InviteInfo, UserMe } from "../api/auth/auth.types";
 import { getActiveToken, setActiveToken } from '../utils/auth';
+import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 
 // Уход на форму входа именно с ?switch=1: без него PublicRoute уводит на
 // дашборд, если в браузере уже открыт чей-то аккаунт — а по ссылке-приглашению
@@ -44,7 +45,10 @@ export default function JoinPage() {
   // Телефон спрашиваем только у тех, у кого его в аккаунте нет: владелец заводит
   // сотрудника по одному email, а номер знает сам сотрудник.
   const [phone, setPhone] = useState("");
-  const [fieldError, setFieldError] = useState<{ password?: string; phone?: string }>({});
+  // Документы принимает только тот, у кого аккаунта ещё не было: для него этот
+  // шаг и есть регистрация в продукте. У остальных согласие уже собрано.
+  const [agree, setAgree] = useState(false);
+  const [fieldError, setFieldError] = useState<{ password?: string; phone?: string; agree?: string }>({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   // Отказ — вторая половина согласия. Спрашиваем подтверждение: приглашение
@@ -81,10 +85,11 @@ export default function JoinPage() {
   // Пароль здесь вводят, а не придумывают, поэтому проверяем только «непусто» —
   // верность решает сервер, сверяя с хэшем.
   const validate = () => {
-    const errs: { password?: string; phone?: string } = {};
+    const errs: { password?: string; phone?: string; agree?: string } = {};
     if (!password) errs.password = t("join:errors.passwordRequired");
     // Формат добивает бэкенд (E.164): здесь достаточно «номер есть и он не огрызок».
     if (needsPhone && phone.replace(/\D/g, "").length < 8) errs.phone = t("join:errors.phoneRequired");
+    if (isNewAccount && !agree) errs.agree = t("join:errors.consentRequired");
     setFieldError(errs);
     return Object.keys(errs).length === 0;
   };
@@ -94,7 +99,11 @@ export default function JoinPage() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      const data = await authApi.acceptInvite({ token, password, phone: needsPhone ? phone : undefined });
+      const data = await authApi.acceptInvite({
+        token, password,
+        phone: needsPhone ? phone : undefined,
+        accept_terms: isNewAccount ? agree : undefined,
+      });
       if (data.two_fa_required) {
         // У аккаунта включена 2FA — код уже отправлен, добиваем вход обычной формой.
         navigate(LOGIN);
@@ -249,6 +258,29 @@ export default function JoinPage() {
                   )}
 
                 </div>
+
+                {/* Аккаунта в Velora ещё не было: принятие приглашения и есть
+                    регистрация человека в продукте, значит документы принимает
+                    он сам — владелец студии сделать это за него не может. */}
+                {isNewAccount && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <Checkbox
+                      checked={agree}
+                      onChange={(v) => { setAgree(v); setFieldError(e => ({ ...e, agree: undefined })); }}
+                      label={
+                        <span style={{ fontSize: "12.5px", lineHeight: 1.55 }}>
+                          {t("join:consent.text")}{" "}
+                          <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.terms")}</a>
+                          {" "}{t("join:consent.and")}{" "}
+                          <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.privacy")}</a>
+                        </span>
+                      }
+                    />
+                    {fieldError.agree && (
+                      <span style={{ fontSize: "12px", color: "#D88C9A", fontWeight: 500, marginLeft: "28px" }}>{fieldError.agree}</span>
+                    )}
+                  </div>
+                )}
 
                 {/* Человек ждёт письма с паролем — объясняем, почему его там нет */}
                 {isNewAccount && (

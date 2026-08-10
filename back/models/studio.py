@@ -22,11 +22,16 @@ class Studio(Base):
     # charge для юрлиц из другой страны ЕС. Свободного `address` для налога мало.
     country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)   # ISO-3166-1 alpha-2
     postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Номер плательщика НДС (VAT number, он же DIČ в CZ/SK, USt-IdNr в DE…).
     vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
-    # IČO — регистрационный номер юрлица, без него фактуру компании не выписать.
-    # Отдельно от vat_id: DIČ есть только у плательщика НДС, IČO — у любого юрлица,
-    # и типа налогового id под него у Stripe нет. Печатается на счёте через
-    # Customer.invoice_settings.custom_fields (services/stripe_billing.ensure_customer).
+    # Регистрационный номер компании (company registration number; IČO в CZ/SK,
+    # HRB в DE, KRS в PL…). Без него фактуру юрлицу не выписать.
+    #
+    # Отдельно от vat_id, потому что это РАЗНЫЕ реквизиты: номер НДС есть только у
+    # плательщика налога, регистрационный — у любой зарегистрированной компании.
+    # Своего типа налогового id под него у Stripe нет, поэтому печатается на счёте
+    # кастомным полем (services/stripe_billing.ensure_customer), а подпись поля
+    # выбирается по стране студии (stripe_billing.company_id_label).
     company_id: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 

@@ -15,6 +15,8 @@ import type { LoyaltyOverview } from '../api/loyalty';
 interface ClubProps {
   /** null — снимок ещё грузится в App вместе с каталогом студии. */
   data: LoyaltyOverview | null;
+  /** Открыть покупку абонемента с этим сертификатом (App переносит в профиль). */
+  onUseCertificate?: (code: string) => void;
 }
 
 /**
@@ -29,7 +31,7 @@ interface ClubProps {
  * Единственный блок без условия — карта: она есть у всех, кто вообще попал
  * в этот раздел (сам раздел прячется в навигации, если программа выключена).
  */
-export default function Club({ data }: ClubProps) {
+export default function Club({ data, onUseCertificate }: ClubProps) {
   const { t, i18n } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
@@ -126,8 +128,10 @@ export default function Club({ data }: ClubProps) {
         </>
       )}
 
-      {/* Сертификаты — только активные и только этого клиента. Код можно
-          скопировать: назвать его администратору проще, чем переписывать. */}
+      {/* Сертификаты — только активные и только этого клиента. Основное
+          действие — потратить: тап открывает покупку абонемента с этим кодом.
+          Копирование осталось отдельной кнопкой: код ещё называют
+          администратору в студии, и отнимать эту возможность незачем. */}
       {data.certificates.length > 0 && (
         <>
           <SectionLabel trailing={`${data.certificates.length}`}>
@@ -140,19 +144,24 @@ export default function Club({ data }: ClubProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                className="flex items-center gap-1 rounded-[18px] bg-card pr-2 shadow-soft transition-shadow duration-300 dt:hover:shadow-lift"
               >
                 <Press
-                  onClick={() => copy(cert.code, cert.code)}
+                  onClick={() => {
+                    vibrateLight();
+                    onUseCertificate?.(cert.code);
+                  }}
                   role="button"
                   tabIndex={0}
-                  className="flex cursor-pointer items-center gap-4 rounded-[18px] bg-card px-4 py-4 shadow-soft transition-shadow duration-300 dt:hover:shadow-lift"
+                  aria-label={t('club.certificate_use')}
+                  className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 rounded-[18px] px-4 py-4"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block text-[16px] font-extrabold tabular-nums tracking-[-0.025em] text-card-foreground">
                       {cert.amount_str}
                     </span>
                     <span className="mt-1 block truncate font-mono text-[11.5px] font-bold tracking-[0.08em] text-muted-foreground">
-                      {copiedCode === cert.code ? t('club.code_copied') : cert.code}
+                      {cert.code}
                     </span>
                   </span>
 
@@ -161,7 +170,29 @@ export default function Club({ data }: ClubProps) {
                       {t('club.valid_until', { date: formatDate(cert.expires_at) })}
                     </span>
                   )}
+
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Press>
+
+                <button
+                  type="button"
+                  onClick={() => copy(cert.code, cert.code)}
+                  aria-label={t('club.code_copy')}
+                  className="shrink-0 rounded-[14px] p-2.5 text-muted-foreground transition-colors dt:hover:text-brand"
+                >
+                  {copiedCode === cert.code ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+                    </svg>
+                  )}
+                </button>
               </motion.div>
             ))}
           </div>

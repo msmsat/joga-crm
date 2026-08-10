@@ -42,21 +42,34 @@ export default function InvoiceDetailsForm({
 
       {wantInvoice && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <Input
-            label={t('payModal.invoice.icoLabel')}
-            value={value.company_id}
-            onChange={v => patch({ company_id: v })}
-            placeholder="12345678"
-            error={errors.company_id}
-            monospace
-          />
-          <Input
-            label={t('payModal.invoice.vatLabel')}
-            value={value.vat_id}
-            onChange={v => patch({ vat_id: v })}
-            placeholder="CZ12345678"
-            monospace
-          />
+          <div>
+            <Input
+              label={t('payModal.invoice.icoLabel')}
+              value={value.company_id}
+              onChange={v => patch({ company_id: v })}
+              placeholder="12345678"
+              error={errors.company_id}
+              monospace
+            />
+            {/* Реквизит называется по-своему в каждой стране (IČO, HRB, KRS…) —
+                подпись поля нейтральная, а подсказка показывает местные имена,
+                иначе владелец не понимает, какой номер у него просят. */}
+            <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '5px' }}>
+              {t('payModal.invoice.icoHint')}
+            </div>
+          </div>
+          <div>
+            <Input
+              label={t('payModal.invoice.vatLabel')}
+              value={value.vat_id}
+              onChange={v => patch({ vat_id: v })}
+              placeholder="CZ12345678"
+              monospace
+            />
+            <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '5px' }}>
+              {t('payModal.invoice.vatHint')}
+            </div>
+          </div>
         </div>
       )}
 

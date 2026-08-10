@@ -44,10 +44,11 @@ async def _run():
     sid = await _seed()
     ctx = StudioContext(user=None, studio_id=sid, role="owner")
     try:
-        # points: обработано 3, писем 0, у каждого +200
+        # points: обработано 3, у каждого +200, и о бонусе уведомлены двое
+        # (c12 по матрице; A3 без email — некуда слать)
         async with async_session_maker() as db:
             r = await run_campaign("at_risk", CampaignCreate(action="points", points=200), ctx=ctx, db=db)
-        assert r.processed == 3 and r.emails_sent == 0, r
+        assert r.processed == 3 and r.emails_sent == 2, r
         async with async_session_maker() as db:
             bals = (await db.execute(select(ClientLoyaltyCard.points_balance).where(ClientLoyaltyCard.studio_id == sid))).scalars().all()
         assert sorted(bals) == [200, 200, 200], bals
