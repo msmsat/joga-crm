@@ -3,6 +3,8 @@ from typing import List, Optional
 from sqlalchemy import Integer, String, Float, Boolean, DateTime, Text, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from services.crypto import EncryptedStr, SECRET_COLUMN_LEN
+
 from .base import Base
 
 
@@ -17,7 +19,8 @@ class StudioAISettings(Base):
     system_prompt: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
 
     tg_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
-    tg_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # Токен бота — боевые учётные данные, в базе лежит зашифрованным (services/crypto).
+    tg_token: Mapped[Optional[str]] = mapped_column(EncryptedStr(SECRET_COLUMN_LEN), nullable=True)
     tg_username: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     tg_tone: Mapped[str] = mapped_column(String(20), default="friendly")
     tg_max_length: Mapped[int] = mapped_column(Integer, default=500)
@@ -25,7 +28,8 @@ class StudioAISettings(Base):
     tg_avg_rating: Mapped[float] = mapped_column(Float, default=0.0)
 
     ig_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
-    ig_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # Токен Instagram — то же самое: даёт чтение и отправку директа студии.
+    ig_token: Mapped[Optional[str]] = mapped_column(EncryptedStr(SECRET_COLUMN_LEN), nullable=True)
     ig_user_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     ig_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     ig_username: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

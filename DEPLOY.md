@@ -63,6 +63,7 @@ A-запись `crm` → IP сервера. Запуск:
 
 ```bash
 docker compose up -d --build
+docker compose exec api python -m scripts.preflight   # валюта, ключи Stripe, вебхуки, SMTP
 ```
 
 Первый билд 5–10 минут. Миграции накатываются сами при старте контейнера.
@@ -74,7 +75,20 @@ docker compose up -d --build
 ## Обновление кода
 
 ```bash
-git pull && docker compose up -d --build
+git pull && docker compose up -d --build && docker compose exec api python -m scripts.preflight
+```
+
+**`back/.env` в git нет — `git pull` его НЕ обновляет.** Пул принёс новые переменные
+или сменил значение в `.env.example` — правь `back/.env` на сервере руками. Preflight
+для того и стоит в команде: он ловит именно расхождение конфига с кодом (выход 1 = блокер).
+
+**Поправил `back/.env` — нужен `up -d --force-recreate api`, а НЕ `restart`.**
+`docker compose restart` перезапускает существующий контейнер с окружением, вшитым
+в него при создании; `env_file` он не перечитывает. Симптом обманчивый: `grep` в
+`.env` показывает новое значение, а приложение живёт со старым.
+
+```bash
+docker compose up -d --force-recreate api
 ```
 
 База, загруженные файлы и сертификаты не трогаются — они в именованных томах Docker, отдельно от кода. Простой 2–5 секунд.
@@ -83,7 +97,35 @@ git pull && docker compose up -d --build
 
 ## Бэкап базы
 
-Перед крупным обновлением:
+### Автоматический (ставится один раз)
+
+`backup.sh` в корне репозитория: дамп в `~/velora-backups`, ротация 14 дней. Сначала
+прогнать руками — cron не место для первой попытки:
+
+```bash
+chmod +x backup.sh
+./backup.sh                      # должно напечатать «бэкап ок: …»
+```
+
+Потом в cron, ежедневно в 03:00:
+
+```bash
+(crontab -l 2>/dev/null; echo "0 3 * * * $HOME/joga-crm/backup.sh >> $HOME/velora-backup.log 2>&1") | crontab -
+crontab -l                       # проверить, что строка одна
+```
+
+Скрипт защищён от тихих провалов: пустой дамп не подменяет вчерашний, ротация
+идёт только после успешной записи, падение `pg_dump` не маскируется кодом `gzip`.
+Раз в месяц стоит заглядывать в `~/velora-backup.log` и проверять восстановление —
+бэкап, который никто не разворачивал, бэкапом не является.
+
+Настройки через переменные окружения: `VELORA_BACKUP_DIR`, `VELORA_BACKUP_KEEP_DAYS`.
+
+**Копии лежат на том же диске, что и база.** Они переживают `down -v`, порчу тома и
+неудачную миграцию, но не отказ диска. Off-site — добавить `gcloud storage cp` в конец
+скрипта (в скрипте помечено комментарием).
+
+### Разовый, перед крупным обновлением
 
 ```bash
 docker compose exec -T db pg_dump -U velora velora | gzip > backup-$(date +%F).sql.gz
@@ -128,6 +170,12 @@ docker compose logs -f db
 - **502 на сайте** — не поднялся `api`, смотри его логи (обычно упавшая миграция или отсутствующий `SECRET_KEY`).
 - **Нет HTTPS** — `SITE_ADDRESS` не домен, либо A-запись ещё не разошлась, либо 80/443 закрыты фаерволом.
 - **Вход через Google не работает** — домен не добавлен в Authorized JavaScript origins в Google Cloud Console.
+- **Тарифы в чужой валюте (`Kč39` вместо `39 €`)** — в `back/.env` на сервере остался старый `BILLING_CURRENCY=czk`. Цены (39/99/239) приходят из кода, валюта — из env, поэтому расходятся молча. Это не косметика: Stripe заведёт Price на 39 Kč вместо 39 €, а оплата по IBAN отвалится (переводы в CZK Stripe не делает). Лечится `BILLING_CURRENCY=eur` + `up -d --force-recreate api`.
+- **Preflight ругается на `static/terms.html` / `privacy.html`** — том `static_data` наполняется из образа только при первом монтировании, на уже живом сервере новые файлы туда сами не попадут. Долить руками:
+  ```bash
+  docker compose cp back/static/terms.html   api:/app/static/terms.html
+  docker compose cp back/static/privacy.html api:/app/static/privacy.html
+  ```
 
 ---
 

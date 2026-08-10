@@ -9,7 +9,8 @@ from sqlalchemy.orm import selectinload
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
-    Hall, Lesson, Reservation, Service, StaffWorkingHours, Studio, StudioMember, User,
+    Hall, Lesson, Reservation, Service, StaffDayOverride, StaffWorkingHours,
+    Studio, StudioMember, User,
 )
 from schemas import (
     StaffCreate, StaffUpdate,
@@ -108,6 +109,36 @@ async def _replace_schedule(
             open_time=item.open_time,
             close_time=item.close_time,
         ))
+
+    await _resync_future_day_marks(user_id, studio_id, db)
+
+
+async def _resync_future_day_marks(user_id: int, studio_id: int, db: AsyncSession) -> None:
+    """Снимает будущие отметки дней — под новый график их проставят заново.
+
+    Убрали день из графика — он не должен остаться отмеченным рабочим (и наоборот:
+    добавленный день отметится при следующем открытии месяца, routers/staff/schedule.py).
+    Дни, куда уже записались клиенты, не трогаем: там сначала надо разобраться с
+    записями. Прошлое тоже не трогаем — оно не редактируется вовсе.
+    """
+    booked_days = (
+        select(func.date(Lesson.start_time))
+        .join(Reservation, Reservation.lesson_id == Lesson.id)
+        .where(
+            Lesson.teacher_id == user_id,
+            Lesson.studio_id == studio_id,
+            Lesson.status != "cancelled",
+            Reservation.status != "cancelled",
+        )
+    )
+    await db.execute(
+        delete(StaffDayOverride).where(
+            StaffDayOverride.user_id == user_id,
+            StaffDayOverride.studio_id == studio_id,
+            StaffDayOverride.day >= date.today(),
+            StaffDayOverride.day.not_in(booked_days),
+        )
+    )
 
 
 def _is_online(user: User) -> bool:

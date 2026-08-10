@@ -6,6 +6,12 @@ __pycache__/
 tests/
 uploads/
 static/
+# ...кроме юридических страниц: это не загрузки пользователей, а часть релиза —
+# ссылки на них стоят в форме регистрации (legal.py: BACKEND_URL/static/*.html).
+# Без них свежий сервер отдаёт 404 с формы регистрации: том static_data
+# наполняется из образа при ПЕРВОМ монтировании, и чего нет в образе — нет нигде.
+!static/terms.html
+!static/privacy.html
 # .env НЕ копируем в образ: database.py делает load_dotenv(override=True), и файл
 # внутри контейнера перебил бы DATABASE_URL, переданный из docker-compose.
 .env

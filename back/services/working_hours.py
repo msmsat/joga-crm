@@ -91,8 +91,7 @@ async def assert_within_working_hours(
         return
 
     # Отметка на конкретную дату сильнее недельного графика: «выходной» — отказ
-    # сразу, «работает» — день открыт целиком, и недельную строку (где этот день
-    # почти наверняка помечен нерабочим) уже не спрашиваем.
+    # сразу, «работает» — день открыт, даже если по неделе он нерабочий.
     override = (await db.execute(
         select(StaffDayOverride.is_working).where(
             StaffDayOverride.user_id == teacher_id,
@@ -100,15 +99,21 @@ async def assert_within_working_hours(
             StaffDayOverride.day == start_time.date(),
         )
     )).scalar_one_or_none()
-    if override is not None:
-        if not override:
-            raise HTTPException(status_code=400, detail="У сотрудника в этот день выходной")
-        return
+    if override is False:
+        raise HTTPException(status_code=400, detail="У сотрудника в этот день выходной")
 
-    _assert_window((await db.execute(
+    hours = (await db.execute(
         select(StaffWorkingHours).where(
             StaffWorkingHours.user_id == teacher_id,
             StaffWorkingHours.studio_id == studio_id,
             StaffWorkingHours.day_of_week == dow,
         )
-    )).scalar_one_or_none(), start_time, duration_min, _STAFF)
+    )).scalar_one_or_none()
+
+    # Отметка «работает» открывает день, но не сутки: часы берём из недельной
+    # строки. Отметки на рабочие дни проставляются автоматом (staff/schedule.py),
+    # так что «есть отметка» само по себе часы тренера не отменяет.
+    if override and hours is not None and not hours.is_open:
+        return
+
+    _assert_window(hours, start_time, duration_min, _STAFF)

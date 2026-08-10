@@ -86,7 +86,7 @@ def test_studio_closed_day_rejected():
 
 
 def test_studio_hours_exceeded_rejected():
-    _expect_400(_DB(_Hours(open_time="12:00", close_time="21:00")), "часы работы студии")
+    _expect_400(_DB(_Hours(open_time="12:00", close_time="21:00")), "рабочие часы студии")
 
 
 def test_no_studio_row_does_not_restrict():
@@ -111,7 +111,7 @@ def test_staff_weekly_day_off_rejected():
 
 def test_staff_hours_exceeded_rejected():
     _expect_400(_DB(None, None, _Hours(open_time="14:00", close_time="20:00")),
-                "часы работы сотрудника")
+                "рабочие часы сотрудника")
 
 
 def test_staff_date_override_day_off_rejected():
@@ -119,10 +119,17 @@ def test_staff_date_override_day_off_rejected():
     _expect_400(_DB(None, False), "выходной")
 
 
-def test_staff_date_override_working_skips_weekly_row():
-    """Отметка «работает» открывает день целиком — недельную строку (закрытую)
-    уже не спрашиваем: лишний execute уронил бы тест по IndexError."""
-    _run(_DB(None, True))
+def test_staff_date_override_opens_day_closed_in_week():
+    """Отметка «работает» открывает день, помеченный в неделе нерабочим."""
+    _run(_DB(None, True, _Hours(is_open=False)))
+
+
+def test_staff_date_override_working_still_respects_hours():
+    """Но открывает день, а не сутки: часы из недельной строки продолжают
+    действовать. Иначе автоматические отметки на каждый рабочий день
+    (routers/staff/schedule.py) сняли бы гейт часов тренера вовсе."""
+    _expect_400(_DB(None, True, _Hours(open_time="14:00", close_time="20:00")),
+                "рабочие часы сотрудника")
 
 
 def test_no_teacher_skips_staff_queries():
@@ -143,7 +150,8 @@ def test_working_hours_gate():
     test_staff_weekly_day_off_rejected()
     test_staff_hours_exceeded_rejected()
     test_staff_date_override_day_off_rejected()
-    test_staff_date_override_working_skips_weekly_row()
+    test_staff_date_override_opens_day_closed_in_week()
+    test_staff_date_override_working_still_respects_hours()
     test_no_teacher_skips_staff_queries()
 
 

@@ -186,6 +186,7 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
     new_start = datetime.now() + timedelta(hours=20)
     db = _DB([
         lesson,                      # get_scoped_lesson
+        None, None, None,            # гейт рабочих часов: студия / отметка даты / график тренера
         [7],                         # select client_id (reschedule notify, c11)
         [],                          # a7: _find_schedule_conflict → нет пересечений
         0,                           # финальный _booked_count для ответа
@@ -212,7 +213,7 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
 def test_reschedule_with_client_notified_false_when_channel_disabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([lesson, [7], [], 0])
+    db = _DB([lesson, None, None, None, [7], [], 0])  # None×3 — гейт рабочих часов
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
         return False  # ни один канал не доставил (например, все выключены)
@@ -234,7 +235,7 @@ def test_reschedule_without_clients_stays_false_no_notify_call():
     он не зависит от записанных клиентов)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([lesson, [], [], 0])
+    db = _DB([lesson, None, None, None, [], [], 0])  # None×3 — гейт рабочих часов
     calls = []
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):

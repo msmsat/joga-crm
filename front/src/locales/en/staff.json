@@ -64,9 +64,11 @@
     "syncHint": "Schedule syncs with the booking journal and class timetable.",
     "workDaysInWeek": "{{count}} working days per week",
     "markWork": "Working",
-    "markHint": "Click a day to apply the mark. Click again to clear it.",
+    "markHint": "Pick a mark above, then click a day",
     "prevMonth": "Previous month",
-    "nextMonth": "Next month"
+    "nextMonth": "Next month",
+    "dayHasBookings": "This day already has bookings — it can’t be a day off",
+    "pastDayLocked": "Past days can’t be changed"
   },
   "permissions": {
     "finance": "Finance",

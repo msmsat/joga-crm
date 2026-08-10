@@ -196,6 +196,13 @@ export default function Staff() {
     return { year: d.getFullYear(), month: d.getMonth() + 1 };
   });
 
+  // "YYYY-MM-DD" по локальной дате: ISO-строки сравниваются как строки, поэтому
+  // этого хватает и для «сегодня», и для проверки «дата в прошлом».
+  const todayStr = useMemo(() => {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  }, []);
+
   // Инструмент, которым красим дни: что выбрано сверху, то и ставится по клику.
   const [markTool, setMarkTool] = useState<'work' | 'off'>('work');
   // Ключ — "YYYY-MM-DD", значение — явная отметка владельца. Нет ключа = день
@@ -222,18 +229,39 @@ export default function Staff() {
     [profile]
   );
 
+  // Дни месяца, где уже есть живые записи клиентов. start_time приходит как
+  // naive ISO — первые 10 символов и есть локальная дата занятия.
+  const bookedDays = useMemo(
+    () => new Set(
+      (monthData?.lessons ?? [])
+        .filter(l => l.status !== 'cancelled' && l.booked_count > 0)
+        .map(l => l.start_time.slice(0, 10))
+    ),
+    [monthData]
+  );
+
   const toggleDayMark = async (dateStr: string) => {
     if (!activeStaffId) return;
-    const want = markTool === 'work';
-    // Повторный клик тем же инструментом снимает отметку — иначе вернуть день
-    // к недельному графику было бы нечем.
-    const next = dayMarks[dateStr] === want ? null : want;
+
+    // Прошлое не трогаем вовсе — ни рабочим, ни выходным (то же правило на бэке).
+    if (dateStr < todayStr) {
+      toast.error(t('staff:schedule.pastDayLocked'));
+      return;
+    }
+
+    // Отметка ставится, а не переключается: повторный клик по уже отмеченному дню
+    // ничего не меняет — иначе выбор владельца откатывался бы к недельному графику.
+    const next = markTool === 'work';
+    if (dayMarks[dateStr] === next) return;
+
+    // Клиенты уже записаны — нерабочим этот день сделать нельзя (то же на бэке).
+    if (!next && bookedDays.has(dateStr)) {
+      toast.error(t('staff:schedule.dayHasBookings'));
+      return;
+    }
+
     const prev = dayMarks;
-    setDayMarks(m => {
-      const copy = { ...m };
-      if (next === null) delete copy[dateStr]; else copy[dateStr] = next;
-      return copy;
-    });
+    setDayMarks(m => ({ ...m, [dateStr]: next }));
     try {
       await staffApi.setDayOverride(activeStaffId, dateStr, next);
     } catch (err) {
@@ -634,8 +662,6 @@ export default function Staff() {
                               const { year, month } = monthCursor;                       // month 1..12
                               const daysInMonth = new Date(year, month, 0).getDate();
                               const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
-                              const now = new Date();
-                              const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
                               const cells: React.ReactNode[] = [];
                               for (let i = 0; i < firstDow; i++) {
                                 cells.push(<div key={`e${i}`} className="mcal-day empty" />);
@@ -646,16 +672,24 @@ export default function Staff() {
                                 const marked = dayMarks[dateStr];
                                 // Нет отметки — берём недельный график; нет и там — не работает.
                                 const isWorking = marked ?? (weekOpenByDow.get(dow) ?? false);
+                                const booked = bookedDays.has(dateStr);
+                                const past = dateStr < todayStr;
                                 cells.push(
                                   <button
                                     key={day}
                                     className={`mcal-day ${isWorking ? 'work' : 'off'}`
                                       + (marked !== undefined ? ' marked' : '')
-                                      + (dateStr === todayStr ? ' today' : '')}
+                                      + (dateStr === todayStr ? ' today' : '')
+                                      + (past ? ' past' : '')}
                                     onClick={() => toggleDayMark(dateStr)}
-                                    title={t(isWorking ? 'staff:schedule.markWork' : 'staff:schedule.dayOff')}
+                                    title={past
+                                      ? t('staff:schedule.pastDayLocked')
+                                      : booked
+                                        ? t('staff:schedule.dayHasBookings')
+                                        : t(isWorking ? 'staff:schedule.markWork' : 'staff:schedule.dayOff')}
                                   >
                                     {day}
+                                    {booked && <span className="mcal-booked" />}
                                   </button>
                                 );
                               }
@@ -835,6 +869,9 @@ export default function Staff() {
               schedule: scheduleToWorkingHours(updated.schedule),
             });
             refetchProfile();
+            // График изменился — будущие отметки пересобраны на бэке, календарь
+            // месяца показывает старые, пока его не перечитаешь.
+            if (scheduleView === 'month') fetchMonth(monthCursor.year, monthCursor.month);
             setIsEditModalOpen(false);
             showToast(t('staff:toasts.changesSaved'));
           } catch (err) {

@@ -671,9 +671,11 @@
   cursor: default;
 }
 
+/* Число всегда контрастнее заливки: --onyx это белый в тёмной теме и оникс в
+   светлой. Прежний коричневый на бледном персике сливался с фоном. */
 .mcal-day.work {
   background: rgba(252, 174, 145, 0.45);
-  color: #8a4a38;
+  color: var(--onyx);
 }
 
 /* Отметки нет — число всё равно читается: --onyx это белый в тёмной теме
@@ -683,9 +685,15 @@
   color: var(--onyx);
 }
 
-.mcal-day:not(.empty):hover {
+.mcal-day:not(.empty):not(.past):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* Прошедшие дни не редактируются — видно, что они «застыли» */
+.mcal-day.past {
+  opacity: 0.45;
+  cursor: default;
 }
 
 /* Явная отметка владельца — в отличие от дня, унаследованного из недельного графика */
@@ -693,6 +701,21 @@
 .mcal-day.marked.off  { background: rgba(var(--ink), 0.1); }
 
 .mcal-day.today { border-color: var(--accent); }
+
+/* Точка = в этот день есть записи клиентов, выходным его не сделать */
+.mcal-day { position: relative; }
+
+.mcal-booked {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.65;
+}
 
 @media (max-height: 820px) {
   .mcal-day { height: 24px; }

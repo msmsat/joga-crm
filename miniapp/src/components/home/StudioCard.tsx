@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { Studio } from '../../api/studio';
 import { studioState, STATE_COLOR } from '../../lib/studio-status';
 import { Press } from '../ui/Press';
-import { cn } from '../../lib/utils';
 
 type Props = {
   studio: Studio;
@@ -137,39 +136,38 @@ export default function StudioCard({
               transition={{ duration: 0.25 }}
               className="pointer-events-none absolute inset-0 rounded-[24px] ring-2 ring-inset ring-brand"
             />
+
+            {/* Сердце внутри кадра, справа: пилюля тёмного стекла держит
+                контраст поверх фото любой яркости — как у бейджа состояния
+                слева. stopPropagation — иначе тап по сердцу открывал бы
+                карточку студии, лежащую под ним. */}
+            <motion.button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLike();
+              }}
+              whileTap={{ scale: 0.85 }}
+              animate={isLiked ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 18 }}
+              aria-label={t('studio.like')}
+              aria-pressed={isLiked}
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill={isLiked ? 'var(--v-brand)' : 'none'}
+                stroke={isLiked ? 'var(--v-brand)' : '#fff'}
+                strokeWidth="1.9"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+              </svg>
+            </motion.button>
           </div>
         </Press>
-
-        {/* Сердце — под фотографией, а не поверх: на снимке оно спорит с
-            названием. Рейтинга и отзывов здесь больше нет — источника для них
-            нет и не будет (см. STATUS.md), выдумывать цифры нельзя. */}
-        <div className="flex items-center justify-end gap-2 px-1.5 pt-3">
-          <motion.button
-            type="button"
-            onClick={onToggleLike}
-            whileTap={{ scale: 0.85 }}
-            animate={isLiked ? { scale: [1, 1.25, 1] } : { scale: 1 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 18 }}
-            aria-label={t('studio.like')}
-            aria-pressed={isLiked}
-            className={cn(
-              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors',
-              isLiked ? 'bg-brand/14' : 'bg-muted',
-            )}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill={isLiked ? 'var(--v-brand)' : 'none'}
-              stroke={isLiked ? 'var(--v-brand)' : 'var(--v-muted-foreground)'}
-              strokeWidth="1.9"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-            </svg>
-          </motion.button>
-        </div>
       </motion.div>
     </div>
   );
