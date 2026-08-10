@@ -14,7 +14,7 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Operation, Service,
-    SubscriptionPackage, User,
+    Studio, SubscriptionPackage, User,
 )
 from routers.clients.loyalty import accrue_points, apply_deposit_change, apply_points_change, expire_points, register_purchase
 from routers.clients.subscriptions import attach_subscription
@@ -23,6 +23,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.checkout import (
     CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult, CheckoutServiceOut,
 )
+from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import notify_payment
 from services.pricing import resolve_price
@@ -141,6 +142,48 @@ async def _quote(
     )
 
 
+async def consume_quote(db: AsyncSession, studio_id: int, client_id: int, quote: PriceQuote) -> dict:
+    """Списать всё, чем клиент расплатился помимо денег: депозит, сертификат,
+    баллы, — и погасить одноразовые скидки (промокод, оффер, скидка новичка).
+
+    Зовётся ТОЛЬКО когда продажа состоялась: касса (perform_pay) — сразу,
+    оплата картой и покупка из мини-приложения — на вебхуке Stripe, после
+    подтверждённого списания. Брошенная на полпути оплата не должна съедать
+    ни баллы, ни сертификат.
+
+    Общая для кассы и мини-приложения намеренно: два экземпляра этого блока
+    разъехались бы так же, как разъехались две копии реферальной выплаты
+    (services/referral.py). Не коммитит — вызывающий в своей транзакции.
+
+    Возвращает опись списанного (`CONSUMED_KEY` в payload заявки Stripe) — по
+    ней возврат оплаты кладёт всё назад. Пересчитать её при возврате нельзя:
+    сертификат к тому моменту уже "used", а баллы списаны, и `_quote` дал бы
+    другие числа.
+    """
+    if quote.deposit_applied > 0:
+        await apply_deposit_change(
+            client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
+        )
+    if quote.certificate_applied > 0:
+        quote.certificate.status = "used"
+        quote.certificate.used_at = datetime.utcnow()
+    if quote.bonuses_applied > 0:
+        await apply_points_change(
+            client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
+        )
+    # Промокод, персональный оффер и скидка новичка — все одноразовые, гасятся
+    # вместе в той же транзакции, что и продажа (гонки «применили дважды» нет).
+    quote.resolved.mark_used()
+
+    return {
+        "bonuses": quote.bonuses_applied,
+        "deposit": quote.deposit_applied,
+        # Код, а не id: у кассы на руках тоже он (payload заявки), и одна форма
+        # описи работает для обоих путей. Код сертификата уникален глобально.
+        "certificate_code": quote.certificate.code if quote.certificate_applied > 0 else None,
+    }
+
+
 def reject_dead_promo(promo_code: str | None, quote: PriceQuote) -> None:
     """400, если кассир ввёл промокод, а он больше не действует.
 
@@ -203,15 +246,26 @@ async def _get_client_package(
     return client, package
 
 
-async def resolve_account(db: AsyncSession, studio_id: int, account_id: int | None) -> Account:
+# Способ оплаты → тип счёта, на который по умолчанию ложится доход. Онлайн-деньги
+# приходят выплатой от Stripe, а не в кассу: смешивать их с наличными нельзя,
+# иначе ни один из двух остатков не сходится с реальностью.
+ACCOUNT_TYPE_FOR_METHOD = {"stripe": "online", "card": "online"}
+
+
+async def resolve_account(
+    db: AsyncSession, studio_id: int, account_id: int | None, *, default_type: str = "cash",
+) -> Account:
     """Счёт студии, на который ляжет доход (дефолтный, если кассир не выбрал).
 
     Вынесено из perform_pay, чтобы оплата картой проверяла счёт ДО списания:
     иначе битый account_id всплывал бы только в вебхуке — деньги у студии, а
     провести их некуда.
+
+    `default_type` работает ТОЛЬКО когда счёт не выбран явно: указанный кассиром
+    счёт всегда важнее умолчания.
     """
     if account_id is None:
-        return await get_or_create_default_account(db, studio_id)
+        return await get_or_create_default_account(db, studio_id, default_type)
 
     account = (await db.execute(
         select(Account).where(Account.id == account_id, Account.studio_id == studio_id)
@@ -288,7 +342,10 @@ async def perform_pay(
     """
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
-    account = await resolve_account(db, studio_id, body.account_id)
+    account = await resolve_account(
+        db, studio_id, body.account_id,
+        default_type=ACCOUNT_TYPE_FOR_METHOD.get(method, "cash"),
+    )
 
     # Пересчёт цены на сервере заново — не доверяем присланному с фронта итогу.
     quote = await _quote(
@@ -345,6 +402,21 @@ async def perform_pay(
             )
             db.add(op)
             account.balance += quote.total_price
+            # Разовое посещение не идёт через attach_subscription (абонемент не
+            # создаётся) — начисляем комиссию здесь, иначе разовые визиты за
+            # наличные проходили бы мимо счёта.
+            if method != platform_fee.ONLINE_METHOD:
+                studio = (await db.execute(
+                    select(Studio).where(Studio.id == studio_id)
+                )).scalar_one()
+                currency = studio.currency or "CZK"
+                await platform_fee.record_offline_fee(
+                    db, studio_id,
+                    stripe_connect.to_minor_units(quote.total_price, currency),
+                    currency,
+                    client_id=body.client_id,
+                    payment_method=method,
+                )
         payment = ClientPayment(
             client_id=body.client_id,
             amount=quote.total_price,
@@ -361,23 +433,7 @@ async def perform_pay(
         await db.flush()
         entity_type, entity_id = ("operation", op.id) if op is not None else ("client_payment", payment.id)
 
-    if quote.deposit_applied > 0:
-        await apply_deposit_change(
-            body.client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
-        )
-    if quote.certificate_applied > 0:
-        quote.certificate.status = "used"
-        quote.certificate.used_at = datetime.utcnow()
-    if quote.bonuses_applied > 0:
-        await apply_points_change(
-            body.client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
-        )
-
-    if resolved.promo is not None:
-        resolved.promo.used_count += 1
-    if resolved.offer is not None:
-        resolved.offer.is_used = True
-        resolved.offer.used_at = datetime.utcnow()
+    await consume_quote(db, studio_id, body.client_id, quote)
 
     log_activity(
         db, studio_id, "payment",

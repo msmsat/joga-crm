@@ -24,20 +24,20 @@ from sqlalchemy.future import select
 
 from database import get_db
 from ratelimit import limiter
-from models import Client, Hall, Lesson, Reservation, StudioBookingSettings
+from models import Client, Hall, Lesson, Reservation
 from schemas._base import BaseSchema
 from services.booking_access import find_eligible_subscription
+from services.booking_rules import (
+    BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
+)
 from services.notifier import _fmt_amount, _studio_prefs, notify
+from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining, refund_reservation
 
 from .miniapp import get_current_client
 
 router = APIRouter()
 
-# Те же дефолты, что в public.py / models/settings.py, когда у студии ещё нет
-# StudioBookingSettings.
-DEFAULT_MIN_BOOKING_ADVANCE_MIN = 120
-DEFAULT_CANCELLATION_DEADLINE_MIN = 240
 DEFAULT_HALL_COLOR = "#FCAE91"
 
 
@@ -58,10 +58,18 @@ class MiniappLesson(BaseSchema):
     badge: str
     taken_spots: list[int]
     is_booked_by_user: bool
+    # Занятие проходит все правила онлайн-записи студии (запись включена, окно
+    # дней, минимум времени до начала, часы работы виджета). False — карточка в
+    # расписании видна, но кнопка записи не работает: убирать занятие из списка
+    # нельзя, клиент должен видеть, что оно вообще есть.
+    bookable: bool
 
 
 class MiniappUpcomingLesson(MiniappLesson):
     spot_number: int
+    # "active" — бронь подтверждена, "pending" — студия включила подтверждение
+    # тренером и бронь ждёт решения (место при этом уже держится).
+    status: str
 
 
 class MiniappPastLesson(MiniappLesson):
@@ -83,12 +91,22 @@ def _badge(total_spots: int, taken: int) -> str:
     return "open"
 
 
+def _is_bookable(rules: BookingRules, lesson: Lesson) -> bool:
+    """Те же четыре правила, что проверяет assert_bookable при самой записи —
+    здесь без исключения, чтобы отдать флаг на карточку."""
+    if not rules.booking_active:
+        return False
+    lower, upper = booking_window(rules)
+    return lower <= lesson.start_time <= upper and within_widget_hours(rules, lesson.start_time)
+
+
 def _lesson_fields(
     lesson: Lesson,
     taken_spots: list[int],
     is_booked_by_user: bool,
     currency: str,
     hall_colors: dict[int, str],
+    rules: BookingRules,
 ) -> dict:
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
@@ -110,6 +128,7 @@ def _lesson_fields(
         badge=_badge(lesson.total_spots, len(taken_spots)),
         taken_spots=taken_spots,
         is_booked_by_user=is_booked_by_user,
+        bookable=_is_bookable(rules, lesson),
     )
 
 
@@ -164,6 +183,7 @@ async def lessons_by_date(
     taken_by_lesson, booked_by_client = await _reservations_map(db, [l.id for l in lessons])
     hall_colors = await _hall_colors(db, lessons)
     _, currency = await _studio_prefs(db, client.studio_id)
+    rules = await load_rules(db, client.studio_id)
 
     return [
         MiniappLesson(**_lesson_fields(
@@ -172,6 +192,7 @@ async def lessons_by_date(
             client.id in booked_by_client.get(lesson.id, set()),
             currency,
             hall_colors,
+            rules,
         ))
         for lesson in lessons
     ]
@@ -183,24 +204,27 @@ async def next_lesson(
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == client.studio_id)
-    )).scalar_one_or_none()
-    advance_min = settings.min_booking_advance_min if settings else DEFAULT_MIN_BOOKING_ADVANCE_MIN
-    earliest = datetime.now() + timedelta(minutes=advance_min)
+    rules = await load_rules(db, client.studio_id)
+    earliest, latest = booking_window(rules)
 
-    lesson = (await db.execute(
+    # Карточка «ближайшее занятие» на главной — это предложение записаться,
+    # поэтому она обязана жить внутри окна записи студии: занятие за пределами
+    # окна вело бы на кнопку, которую бэкенд тут же отклонит. Часы виджета
+    # фильтруются в Python — их проверка не SQL-выражение, а список короткий.
+    lessons = (await db.execute(
         select(Lesson)
         .where(
             Lesson.studio_id == client.studio_id,
             Lesson.status != "cancelled",
             Lesson.start_time >= earliest,
+            Lesson.start_time <= latest,
         )
         .order_by(Lesson.start_time)
-        .limit(1)
-    )).scalar_one_or_none()
+        .limit(50)
+    )).scalars().all()
+    lesson = next((l for l in lessons if within_widget_hours(rules, l.start_time)), None)
 
-    if lesson is None:
+    if lesson is None or not rules.booking_active:
         response.status_code = 204
         return None
 
@@ -214,6 +238,7 @@ async def next_lesson(
         client.id in booked_by_client.get(lesson.id, set()),
         currency,
         hall_colors,
+        rules,
     ))
 
 
@@ -234,6 +259,7 @@ async def my_lessons(
     taken_by_lesson, _ = await _reservations_map(db, list(lessons_by_id))
     hall_colors = await _hall_colors(db, list(lessons_by_id.values()))
     _, currency = await _studio_prefs(db, client.studio_id)
+    rules = await load_rules(db, client.studio_id)
 
     now = datetime.now()
     upcoming: list[MiniappUpcomingLesson] = []
@@ -246,11 +272,14 @@ async def my_lessons(
             True,  # это его собственная бронь
             currency,
             hall_colors,
+            rules,
         )
         if lesson.start_time < now:
             past.append(MiniappPastLesson(**fields, spot_number=reservation.spot_number, rating=reservation.rating))
         else:
-            upcoming.append(MiniappUpcomingLesson(**fields, spot_number=reservation.spot_number))
+            upcoming.append(MiniappUpcomingLesson(
+                **fields, spot_number=reservation.spot_number, status=reservation.status,
+            ))
 
     upcoming.sort(key=lambda lesson: lesson.start_time)
     past.sort(key=lambda lesson: lesson.start_time, reverse=True)
@@ -276,14 +305,19 @@ class MiniappReservation(BaseSchema):
 
 
 async def _own_active_reservation(db: AsyncSession, client: Client, lesson_id: int) -> Reservation:
-    """Своя активная бронь на занятие или 404 — общий поиск для cancel/rate."""
+    """Своя действующая бронь на занятие или 404 — общий поиск для cancel/rate.
+
+    `.first()`, а не `scalar_one_or_none()`: при включённой «Повторной записи»
+    броней на одно занятие у клиента может быть несколько, и отмена должна
+    снимать последнюю, а не падать MultipleResultsFound.
+    """
     reservation = (await db.execute(
         select(Reservation).where(
             Reservation.lesson_id == lesson_id,
             Reservation.client_id == client.id,
             Reservation.status != "cancelled",
-        )
-    )).scalar_one_or_none()
+        ).order_by(Reservation.id.desc())
+    )).scalars().first()
     if reservation is None:
         raise HTTPException(status_code=404, detail="Запись не найдена")
     return reservation
@@ -307,12 +341,20 @@ async def create_reservation(
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
-    """Бронь коврика. Образец — `public.py:136-285` и `reservations.py:21-104`,
+    """Бронь коврика по правилам студии со страницы «Онлайн-запись».
 
-    но без `assert_can_book`: клиент без подходящего абонемента должен получить
-    возможность записаться и оплатить (в студии или блоком 6), а не 403 — как
-    у публичной записи, а не как в Журнале. Абонемент подбирает
-    `find_eligible_subscription`, списывает `charge_reservation`, если он есть.
+    Окно записи (активность, минимум времени до начала, дни вперёд, часы
+    виджета) — `assert_bookable`, те же правила, по которым проставлен флаг
+    `bookable` в списке занятий. Дальше три настройки решают, чем запись
+    отличается от «просто занял место»:
+
+      * «Предоплата при записи» — нужен подходящий абонемент (`assert_can_book`,
+        тот же гейт, что в Журнале); без него клиент идёт покупать абонемент.
+        Выключена — записываем и без абонемента, оплата в студии;
+      * «Повторная запись» — разрешает второе место на том же занятии;
+      * «Подтверждение тренером» — бронь создаётся `pending`. Место она держит
+        сразу (иначе его займут, пока студия думает), занятие с абонемента тоже
+        списывается сразу и возвращается при отклонении — `refund_reservation`.
     """
     lesson = (await db.execute(
         select(Lesson).where(
@@ -324,12 +366,8 @@ async def create_reservation(
     if lesson is None:
         raise HTTPException(status_code=404, detail="Занятие не найдено")
 
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == client.studio_id)
-    )).scalar_one_or_none()
-    advance_min = settings.min_booking_advance_min if settings else DEFAULT_MIN_BOOKING_ADVANCE_MIN
-    if lesson.start_time < datetime.now() + timedelta(minutes=advance_min):
-        raise HTTPException(status_code=400, detail="Запись на это занятие закрыта")
+    rules = await load_rules(db, client.studio_id)
+    assert_bookable(rules, lesson)
 
     if not (1 <= body.spot_number <= lesson.total_spots):
         raise HTTPException(status_code=400, detail="Неверный номер места")
@@ -342,31 +380,49 @@ async def create_reservation(
     )).scalars().all()
     if len(active) >= lesson.total_spots:
         raise HTTPException(status_code=400, detail="Все места заняты")
-    if any(r.client_id == client.id for r in active):
+    if not rules.repeat_booking_allowed and any(r.client_id == client.id for r in active):
         raise HTTPException(status_code=409, detail="Вы уже записаны на это занятие")
     if any(r.spot_number == body.spot_number for r in active):
         # Именно эта строка — плановый текст ошибки, уже понятный мини-приложению
         # (см. блок 3 EPIC_MA_REAL_BACKEND, api/user.ts:156 показывает detail как есть).
         raise HTTPException(status_code=409, detail="Це місце вже зайняте")
 
+    sub = await find_eligible_subscription(db, client.id, lesson)
+    if rules.prefill_on_booking and sub is None:
+        # Текст свой, а не из assert_can_book (Журнал): там он обращён к
+        # администратору («у клиента нет абонемента»), а читать его будет сам
+        # клиент, и следующий его шаг — купить абонемент в этом же приложении.
+        raise HTTPException(
+            status_code=402,
+            detail="Для записи нужен действующий абонемент — оформите его в профиле",
+        )
+
     reservation = Reservation(
         client_id=client.id,
         lesson_id=body.lesson_id,
         spot_number=body.spot_number,
-        status="active",
+        status="pending" if rules.trainer_confirmation_required else "active",
         booking_channel="telegram",
     )
     db.add(reservation)
-    sub = await find_eligible_subscription(db, client.id, lesson)
     remaining = await charge_reservation(db, client.studio_id, reservation, sub)
+    # Тот же реферальный триггер, что и у публичного виджета (booking/public.py):
+    # друг, пришедший по ссылке из Telegram, записывается ИМЕННО здесь, и без
+    # этого вызова пригласивший не получал бонус вовсе — самый частый путь был
+    # единственным неподключённым.
+    await fire_referral(db, client.studio_id, client.id, "first_visit", referred_name=client.name)
     await db.commit()
     await db.refresh(reservation)
 
-    await notify(db, client.studio_id, "client", "c1", {
-        "client_id": client.id,
-        "lesson_name": lesson.name,
-        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
-    })
+    # c1 «Запись подтверждена» уходит только за подтверждённой бронью: пока
+    # студия не одобрила, подтверждать нечего. Клиент видит статус «ожидает» в
+    # мини-приложении, а c1 придёт после confirm в Журнале.
+    if reservation.status == "active":
+        await notify(db, client.studio_id, "client", "c1", {
+            "client_id": client.id,
+            "lesson_name": lesson.name,
+            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        })
     await notify(db, client.studio_id, "admin", "a1", {
         "lesson_name": lesson.name,
         "client_name": client.name,
@@ -397,10 +453,7 @@ async def cancel_reservation(
     reservation = await _own_active_reservation(db, client, lesson_id)
     lesson = await _studio_lesson(db, client, lesson_id)
 
-    settings = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == client.studio_id)
-    )).scalar_one_or_none()
-    deadline_min = settings.cancellation_deadline_min if settings else DEFAULT_CANCELLATION_DEADLINE_MIN
+    deadline_min = (await load_rules(db, client.studio_id)).cancellation_deadline_min
     if lesson.start_time < datetime.now() + timedelta(minutes=deadline_min):
         raise HTTPException(
             status_code=400,

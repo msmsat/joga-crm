@@ -28,6 +28,10 @@ class _Plan:
         self.notify_before_autocharge = True
         self.email_receipt_enabled = True
         self.sms_notification_enabled = False
+        # Запланированная смена тарифа: апгрейд по умолчанию начинается с конца
+        # оплаченного периода, и _to_plan_read отдаёт её фронту.
+        self.scheduled_plan = None
+        self.scheduled_at = None
 
 
 class _Card:

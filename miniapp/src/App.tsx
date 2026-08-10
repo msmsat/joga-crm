@@ -4,22 +4,36 @@ import Home from './pages/home';
 import Shedule from './pages/shedule';
 import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
+import Club from './pages/club';
 import BottomNav from './components/BottomNav';
+import DesktopNav from './components/DesktopNav';
 import AmbientBackdrop from './components/home/AmbientBackdrop';
 import Auth from './pages/auth';
 import { authTelegram, type UserResponse } from './api/auth';
 import { getStudioCatalog, type StudioCatalog } from './api/studio';
+import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
+import { useIsDesktop } from './hooks/useIsDesktop';
+import { visibleNavItems } from './components/navItems';
 import { readEntry } from './lib/entry';
+import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
+  // Код сертификата, с которым пришли из Клуба. Профиль забирает его, открывает
+  // покупку и сбрасывает — иначе тот же сертификат подставился бы и в следующий
+  // раз, когда клиент просто зашёл купить абонемент.
+  const [pendingCertificate, setPendingCertificate] = useState<string | null>(null);
   const { tg } = useTelegram();
+  const isDesktop = useIsDesktop();
 
   const [user, setUser] = useState<UserResponse | null>(null);
   const [catalog, setCatalog] = useState<StudioCatalog | null>(null);
+  // Лояльность грузится вместе с каталогом: от неё зависит не только сама
+  // страница «Клуб», но и есть ли этот пункт в меню вообще.
+  const [loyalty, setLoyalty] = useState<LoyaltyOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Студия известна, сессии нет → показываем вход по почте. Студия неизвестна
   // (голый адрес без `/s/<id>` и без deep-link) → показать нечего: в какой
@@ -32,16 +46,32 @@ export default function App() {
   );
   const [needsAuth, setNeedsAuth] = useState(false);
 
-  /** Каталог грузится один раз после входа — любым способом. */
+  /** Каталог грузится после входа — и перечитывается после покупки.
+   *
+   * Раньше это был снимок на весь сеанс, и для филиалов/услуг так и есть. Но
+   * цены пакетов теперь считаются под конкретного клиента (скидка новичка по
+   * реферальной ссылке, персональный оффер), а одноразовая скидка гаснет в
+   * момент оплаты — устаревший снимок обещал бы её второй раз. */
   const loadCatalog = async () => {
-    // Один снимок каталога студии на весь сеанс — филиалы/послуги/пакеты
-    // не меняются настолько часто, чтобы держать их за TanStack Query
-    // (эпик прямо отказывается от неё, см. "Явно НЕ делаем").
     try {
-      setCatalog(await getStudioCatalog());
+      const data = await getStudioCatalog();
+      // Брендинг применяем здесь, а не в рендере: цвет и тема живут в токенах
+      // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
+      applyBranding(data.studio.accent_color, data.studio.dark_mode);
+      applyDefaultLanguage(data.studio.language);
+      setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
     }
+
+    // Отдельным запросом и без await в общей цепочке: упавшая лояльность не
+    // должна мешать войти в кабинет — раздел просто не появится в меню.
+    try {
+      setLoyalty(await getLoyalty());
+    } catch (error) {
+      console.error('Не вдалося завантажити програму лояльності:', error);
+    }
+
     setIsLoading(false);
   };
 
@@ -49,6 +79,7 @@ export default function App() {
     if (tg) {
       tg.ready();
       tg.expand();
+      tg.disableVerticalSwipes?.();
     }
 
     const boot = async () => {
@@ -101,6 +132,22 @@ export default function App() {
   const switchTab = (tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
+    // Прокручивает страница целиком, а не своя область внутри окна, поэтому
+    // новый раздел иначе открывался бы на той же высоте, где бросили прошлый.
+    window.scrollTo({ top: 0 });
+  };
+
+  /**
+   * «Использовать сертификат» из Клуба: переносит клиента в покупку абонемента
+   * с уже подставленным кодом.
+   *
+   * Живёт в App, потому что Клуб и покупка — разные вкладки: переписывать код
+   * из одного раздела в другой руками клиент не должен, а сама форма оплаты
+   * принадлежит профилю (BuyModal), не Клубу.
+   */
+  const useCertificate = (code: string) => {
+    setPendingCertificate(code);
+    switchTab('prof');
   };
 
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
@@ -140,7 +187,7 @@ export default function App() {
   // Единственное, что можно честно сказать — нужна ссылка студии.
   if (needsAuth) {
     return (
-      <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-8 text-center">
+      <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden px-8 text-center">
         <AmbientBackdrop tint="#F9A08B" />
 
         <motion.div
@@ -183,34 +230,79 @@ export default function App() {
   }
 
   const screens: Record<string, React.ReactNode> = {
-    home: <Home user={user} catalog={catalog} />,
+    home: <Home user={user} catalog={catalog} onNavigate={switchTab} />,
     sched: <Shedule catalog={catalog} />,
     my: <MyLessons />,
-    prof: <Profile catalog={catalog} />,
+    prof: (
+      <Profile
+        catalog={catalog}
+        onCatalogRefresh={loadCatalog}
+        pendingCertificate={pendingCertificate}
+        onPendingCertificateUsed={() => setPendingCertificate(null)}
+      />
+    ),
+    club: <Club data={loyalty} onUseCertificate={useCertificate} />,
   };
 
-  // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME
-  return (
-    <div className="relative h-[100dvh] overflow-hidden bg-background">
-      {/* mode="wait" держит порядок: старый экран уходит, только потом
-          приходит новый. Одновременный кроссфейд на телефоне читается
-          как подтормаживание, а не как переход. */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-        >
-          {/* Отступ под плавающую капсулу навигации — задан один раз здесь,
-              иначе каждый экран обязан помнить про неё сам. */}
-          <div className="pb-32">{screens[activeTab]}</div>
-        </motion.div>
-      </AnimatePresence>
+  const navItems = visibleNavItems(Boolean(loyalty?.enabled));
 
-      <BottomNav active={activeTab} onSelect={switchTab} />
+  // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME
+  //
+  // Каркас один, меню два. Держать в DOM оба и прятать лишнее медиазапросом
+  // нельзя: у активного пункта в каждом свой layoutId, и framer связал бы
+  // подсветку невидимого меню с видимым в один переезд через полэкрана.
+  //
+  // Свет студии живёт здесь, а не на страницах: внутри колонки контента он
+  // обрезался её шириной и читался прямоугольником тона посреди белого поля.
+  // На каркасе он заливает всё окно, включая меню, — это и есть освещение.
+  // Фона на этом узле быть не должно: подложка стоит на -z-10, а собственный
+  // фон родителя закрасил бы её (фон страницы приходит из body, index.css).
+  //
+  // Прокрутка — обычная, документа: никаких `h-[100dvh] overflow-hidden` и
+  // области со своей полосой внутри окна. Меню держится на месте через
+  // sticky, а не потому, что контент прокручивается отдельно от него.
+  return (
+    <div className="relative">
+      <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
+
+      <div className="flex">
+        {isDesktop && (
+          <DesktopNav
+            active={activeTab}
+            onSelect={switchTab}
+            items={navItems}
+            studioName={catalog?.studio.name}
+            logoUrl={catalog?.studio.logo_url}
+            userName={user?.name}
+          />
+        )}
+
+        <div className="min-w-0 flex-1">
+          {/* mode="wait" держит порядок: старый экран уходит, только потом
+              приходит новый. Одновременный кроссфейд на телефоне читается
+              как подтормаживание, а не как переход. */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Одна колонка сверху вниз. На десктопе у неё есть потолок
+                  ширины и она стоит по центру: карточка в 1600px — это строка
+                  текста, прижатая к левому краю, с полем пустоты справа.
+                  Нижний отступ на телефоне — под плавающую капсулу меню,
+                  иначе про неё обязан помнить каждый экран. */}
+              <div className="mx-auto w-full pb-32 dt:max-w-[980px] dt:px-8 dt:pb-20">
+                {screens[activeTab]}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {!isDesktop && <BottomNav active={activeTab} onSelect={switchTab} items={navItems} />}
     </div>
   );
 }

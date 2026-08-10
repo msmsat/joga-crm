@@ -23,10 +23,10 @@ export function EmptyState({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       className={`flex flex-col items-center text-center ${
-        size === 'sm' ? 'px-6 py-8' : 'px-10 py-14'
+        size === 'sm' ? 'px-6 py-8' : 'px-10 py-14 dt:py-20'
       }`}
     >
-      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand/10">
+      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand/10 dt:h-20 dt:w-20">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -34,7 +34,7 @@ export function EmptyState({
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-7 w-7"
+          className="h-7 w-7 dt:h-9 dt:w-9"
         >
           {icon ?? (
             <>
@@ -47,11 +47,11 @@ export function EmptyState({
         </svg>
       </span>
 
-      <div className="mt-5 text-[16px] font-extrabold tracking-[-0.015em] text-foreground">
+      <div className="mt-5 text-[16px] font-extrabold tracking-[-0.015em] text-foreground dt:mt-6 dt:text-[19px]">
         {title}
       </div>
       {hint && (
-        <div className="mt-1.5 text-[12.5px] font-medium leading-relaxed text-muted-foreground">
+        <div className="mt-1.5 text-[12.5px] font-medium leading-relaxed text-muted-foreground dt:mt-2 dt:text-[13.5px]">
           {hint}
         </div>
       )}

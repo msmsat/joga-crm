@@ -18,6 +18,21 @@ class Studio(Base):
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     address: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Реквизиты для Stripe Tax: страна определяет ставку VAT, vat_id включает reverse
+    # charge для юрлиц из другой страны ЕС. Свободного `address` для налога мало.
+    country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)   # ISO-3166-1 alpha-2
+    postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Номер плательщика НДС (VAT number, он же DIČ в CZ/SK, USt-IdNr в DE…).
+    vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
+    # Регистрационный номер компании (company registration number; IČO в CZ/SK,
+    # HRB в DE, KRS в PL…). Без него фактуру юрлицу не выписать.
+    #
+    # Отдельно от vat_id, потому что это РАЗНЫЕ реквизиты: номер НДС есть только у
+    # плательщика налога, регистрационный — у любой зарегистрированной компании.
+    # Своего типа налогового id под него у Stripe нет, поэтому печатается на счёте
+    # кастомным полем (services/stripe_billing.ensure_customer), а подпись поля
+    # выбирается по стране студии (stripe_billing.company_id_label).
+    company_id: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
@@ -44,6 +59,8 @@ class Studio(Base):
     booking_channel_configs: Mapped[List["BookingChannelConfig"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     billing_plan: Mapped[Optional["StudioBillingPlan"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     billing_invoices: Mapped[List["BillingInvoice"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    offline_fees: Mapped[List["OfflineTransactionFee"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    revenue_entries: Mapped[List["PlatformRevenueLedger"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     integrations: Mapped[List["StudioIntegration"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
 
     # Finances

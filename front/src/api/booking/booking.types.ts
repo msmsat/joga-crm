@@ -20,14 +20,12 @@ export interface BookingSettings {
   widget_logo_url: string | null
   widget_dark_mode: boolean
   widget_language: string
-  sms_confirmation: boolean
   reminder_24h: boolean
   reminder_2h: boolean
   review_request: boolean
   miniapp_generated: boolean
   widget_work_start: string
   widget_work_end: string
-  slot_step_min: number
   /** Публичная ссылка на мини-приложение студии — считается на бэке, только чтение. */
   miniapp_url: string
 }

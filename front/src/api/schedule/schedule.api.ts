@@ -43,4 +43,9 @@ export const scheduleApi = {
 
   attendReservation: (id: number) =>
     client.patch<Reservation>(`/schedule/reservations/${id}/attend`, {}),
+
+  // Одобрить бронь, ждущую подтверждения (настройка «Подтверждение тренером»
+  // в Онлайн-записи). Отклонение — обычный cancelReservation.
+  confirmReservation: (id: number) =>
+    client.patch<Reservation>(`/schedule/reservations/${id}/confirm`, {}),
 }

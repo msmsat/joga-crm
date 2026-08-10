@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
+from legal import CONSENT_REQUIRED, record_consent
 from models import Studio, StudioMember, User
 from ratelimit import limiter
 from schemas import (
@@ -103,6 +104,13 @@ async def accept_invite(
         user.phone = data.phone
 
     if not user.is_verified:
+        # Аккаунта до приглашения не было: этот шаг и есть его регистрация в
+        # продукте, значит здесь же собирается согласие с документами. У уже
+        # работающего в Velora человека оно получено при его собственной
+        # регистрации, и спрашивать второй раз незачем.
+        if not data.accept_terms:
+            raise HTTPException(status_code=400, detail=CONSENT_REQUIRED)
+        await record_consent(db, user, request, "invite")
         user.is_verified = True
 
     # Собственно согласие. Повторный переход по той же ссылке безвреден: статус

@@ -4,8 +4,3 @@ export type { Invoice, BillingPlan };
 export type BillingMode = 'subscription' | 'percent' | 'fixed';
 export type PlanType = 'start' | 'pro' | 'business';
 export type BillingTab = 'plans' | 'invoices' | 'method';
-
-export interface Feature {
-  key: string;
-  on: boolean;
-}

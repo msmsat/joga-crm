@@ -1,52 +1,13 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import type { NavItem } from './navItems';
 import { cn } from '../lib/utils';
-
-type NavItem = { id: string; labelKey: string; icon: React.ReactNode };
-
-const ITEMS: NavItem[] = [
-  {
-    id: 'home',
-    labelKey: 'nav.home',
-    icon: (
-      <>
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </>
-    ),
-  },
-  {
-    id: 'sched',
-    labelKey: 'nav.schedule',
-    icon: (
-      <>
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </>
-    ),
-  },
-  {
-    id: 'my',
-    labelKey: 'nav.my_lessons',
-    icon: <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />,
-  },
-  {
-    id: 'prof',
-    labelKey: 'nav.profile',
-    icon: (
-      <>
-        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </>
-    ),
-  },
-];
 
 type Props = {
   active: string;
   onSelect: (tab: string) => void;
+  /** Разделы для этой студии — решает App (см. `visibleNavItems`). */
+  items: NavItem[];
 };
 
 /**
@@ -65,13 +26,17 @@ type Props = {
  *    перерисовывается каждый кадр прокрутки. «Лёгкость» здесь даёт светлая
  *    поверхность с мягкой тенью и волосяной обводкой, а не полупрозрачность.
  */
-export default function BottomNav({ active, onSelect }: Props) {
+export default function BottomNav({ active, onSelect, items }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className="pb-safe pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-4">
+    /* fixed, а не absolute: прокручивается сама страница, и привязанная к
+       документу капсула уехала бы вверх вместе с содержимым. */
+    /* Отступ снизу одним объявлением: `pb-safe` рядом с `pb-4` перебивал его
+       и капсула ложилась на самую кромку экрана. */
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))]">
       <nav className="pointer-events-auto flex items-stretch gap-1 rounded-full bg-card p-1.5 shadow-lift ring-1 ring-inset ring-border">
-        {ITEMS.map((item) => {
+        {items.map((item) => {
           const isActive = active === item.id;
           return (
             <motion.button

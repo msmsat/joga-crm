@@ -9,10 +9,13 @@ from sqlalchemy.orm import selectinload
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Hall, Lesson, Reservation, StaffWorkingHours, StudioMember, User
+from models import (
+    Hall, Lesson, Reservation, StaffDayOverride, StaffWorkingHours, StudioMember, User,
+)
 from schemas import (
     StaffWeekScheduleResponse, StaffMonthScheduleResponse,
     StaffTodayScheduleResponse, StaffCancelLessonResponse,
+    StaffDayOverrideItem, StaffDayOverrideRequest,
 )
 from services.subscription_charge import refund_reservation
 
@@ -99,10 +102,22 @@ async def get_month_schedule(
     )
     lessons = result.scalars().all()
 
+    overrides = (await db.execute(
+        select(StaffDayOverride).where(
+            StaffDayOverride.user_id == staff_id,
+            StaffDayOverride.studio_id == studio_id,
+            StaffDayOverride.day >= month_start.date(),
+            StaffDayOverride.day <= month_end.date(),
+        )
+    )).scalars().all()
+
     return {
         "staff_id": staff_id,
         "year": target_year,
         "month": target_month,
+        "day_overrides": [
+            {"date": o.day.isoformat(), "is_working": o.is_working} for o in overrides
+        ],
         "lessons": [
             {
                 "id": l.id,
@@ -118,6 +133,51 @@ async def get_month_schedule(
             for l in lessons
         ],
     }
+
+
+# ─── PUT /staff/{staff_id}/schedule/day ───────────────────────────────────────
+
+@router.put("/{staff_id}/schedule/day", response_model=StaffDayOverrideItem)
+async def set_day_override(
+    staff_id: int,
+    payload: StaffDayOverrideRequest,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Отметить дату как рабочую/выходную. `is_working=null` — снять отметку."""
+    studio_id = ctx.studio_id
+    await _assert_staff_in_studio(staff_id, studio_id, db)
+
+    try:
+        day = date.fromisoformat(payload.date)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Некорректная дата")
+
+    existing = (await db.execute(
+        select(StaffDayOverride).where(
+            StaffDayOverride.user_id == staff_id,
+            StaffDayOverride.studio_id == studio_id,
+            StaffDayOverride.day == day,
+        )
+    )).scalar_one_or_none()
+
+    if payload.is_working is None:
+        if existing:
+            await db.delete(existing)
+    elif existing:
+        existing.is_working = payload.is_working
+    else:
+        db.add(StaffDayOverride(
+            user_id=staff_id,
+            studio_id=studio_id,
+            day=day,
+            is_working=payload.is_working,
+        ))
+
+    await db.commit()
+
+    # is_working в ответе — то, что отметил владелец; null означает «по графику».
+    return {"date": day.isoformat(), "is_working": bool(payload.is_working)}
 
 
 # ─── GET /staff/{staff_id}/schedule/today ─────────────────────────────────────

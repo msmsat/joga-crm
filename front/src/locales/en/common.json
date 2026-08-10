@@ -110,6 +110,14 @@
       "card_unavailable": "Card payment is not available yet",
       "promo_expired": "Promo code is no longer valid"
     },
+    "billing": {
+      "tax_details_required": "Add the studio country in the invoice details — the invoice can't be issued without it",
+      "nothing_to_pay": "Nothing left to pay on the current subscription",
+      "stripe_not_configured": "Payments are not configured on the server",
+      "stripe_error": "The payment service rejected the request. Please try again",
+      "plan_not_paid": "A higher plan is activated by payment only",
+      "renew_is_automatic": "The subscription renews automatically"
+    },
     "loyalty": {
       "cert_not_found": "Certificate not found",
       "cert_used": "Certificate has already been redeemed or is invalid",

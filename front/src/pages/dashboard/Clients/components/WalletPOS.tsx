@@ -63,22 +63,26 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   });
   // Счетов нет → account_id не шлём, бэк сам создаст «Основная касса» (V5-6, 2.1).
   const cashAccount = accounts.find(a => a.type === 'cash') ?? accounts[0];
+  // Оплата картой на счёт кассы НЕ ложится: онлайн-деньги приходят выплатой от
+  // Stripe, а наличные пересчитываются в кассе — на одном счёте не сходится ни
+  // один из двух остатков. Счёт для карты выбирает бэк (resolve_account →
+  // default_type="online"), поэтому здесь его просто не шлём.
   // Итог 0 — весь товар погашен депозитом/сертификатом/бонусами, метод оплаты не нужен (V5-7, 1.3).
   const totalCovered = quote?.total_price === 0;
   // Промокод введён, но не действует: бэк такую оплату отвергает (и наличные, и
   // карту) — не даём кассиру дойти до формы оплаты ради ошибки.
   const promoBlocks = !!promoCode && !!quote && !quote.promo_valid;
-
-  const payload = {
-    client_id: clientId, product_id: productId, product_type: productType,
-    account_id: cashAccount?.id, promo_code: promoCode || undefined,
-    use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
-  };
-
   // Карта с ненулевым остатком уходит в Stripe студии; наличные и полностью
   // покрытая сумма проводятся здесь же. Метод шлём тот, что выбрал кассир —
   // бэк всё равно пересчитывает цену и решает сам (Zero Trust).
   const viaStripe = method === 'card' && !totalCovered;
+
+  const payload = {
+    client_id: clientId, product_id: productId, product_type: productType,
+    account_id: viaStripe ? undefined : cashAccount?.id,
+    promo_code: promoCode || undefined,
+    use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
+  };
 
   // Оплата задевает счета, кошелёк, историю и списки — один и тот же набор
   // независимо от того, наличными провели или картой.

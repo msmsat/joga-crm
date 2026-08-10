@@ -1,8 +1,8 @@
 import { client, downloadFile, openFile } from '../client'
 import type {
   PlansCatalog, BillingPlan, Invoice, InvoicesPage, PaymentCard, BillingStats,
-  CheckoutRequest, CheckoutResponse, RenewResponse,
-  ActivateModelRequest, IbanCheckout, AutopaySettings,
+  CheckoutRequest, CheckoutResponse,
+  ActivateModelRequest, IbanCheckout, AutopaySettings, OfflineFeeStatus,
 } from './billing.types'
 
 // date_from/date_to — YYYY-MM-DD, включительно; общий фильтр для списка (задача 3/6)
@@ -46,8 +46,14 @@ export const billingApi = {
   exportInvoicesCsv: (params?: Pick<InvoiceListParams, 'date_from' | 'date_to'>) =>
     downloadFile(`/billing/invoices/export.csv${invoiceQuery(params)}`),
 
-  openReceipt: (id: number) =>
-    openFile(`/billing/invoices/${id}/receipt.pdf`),
+  // Чек по счёту. Если Stripe уже выдал PDF фактуры — открываем ЕГО: это документ с
+  // номером, налогом, VAT ID и IČO, то есть то, что примет бухгалтерия. Наш
+  // /receipt.pdf — минимальная заглушка без кириллицы (routers/billing/router.py),
+  // она остаётся фолбэком для легаси-счетов без stripe_invoice_id.
+  openReceipt: (id: number, pdfUrl?: string | null) =>
+    pdfUrl
+      ? Promise.resolve(window.open(pdfUrl, '_blank', 'noopener')).then(() => undefined)
+      : openFile(`/billing/invoices/${id}/receipt.pdf`),
 
   // Сверка статуса счёта с платёжным сервисом, когда вебхук не дошёл: возвращает счёт как есть в БД.
   syncInvoice: (id: number) =>
@@ -57,12 +63,16 @@ export const billingApi = {
     client.get<PaymentCard[]>('/billing/cards'),
 
   // Оплата через ссылку Stripe: сумму считает сервер, редирект на checkout_url.
-  checkout: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
-    client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
+  // `apply` значим только при живой подписке: 'period_end' (по умолчанию) ставит
+  // новый тариф в расписание Stripe на конец оплаченного периода и НЕ требует
+  // оплаты сейчас; 'now' переводит немедленно, сжигая остаток текущего периода.
+  checkout: (
+    plan: CheckoutRequest['plan'],
+    period_months: CheckoutRequest['period_months'],
+    apply: CheckoutRequest['apply'] = 'now',
+  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, apply }),
 
-  // Продление по сохранённой карте (rectoken) — статус придёт в вебхук.
-  renew: () =>
-    client.post<RenewResponse>('/billing/renew', {}),
+  // Продления нет: подписку продлевает Stripe, POST /billing/renew отвечает 410.
 
   refundInvoice: (id: number) =>
     client.post<void>(`/billing/invoices/${id}/refund`, {}),
@@ -70,6 +80,13 @@ export const billingApi = {
   // Переключение тарифной модели (подписка / % / фикс+%) — без разового платежа.
   activateModel: (body: ActivateModelRequest) =>
     client.post<BillingPlan>('/billing/model', body),
+
+  getOfflineFees: () =>
+    client.get<OfflineFeeStatus>('/billing/offline-fees'),
+
+  // Досрочная оплата: выставляет счёт на всё накопленное и возвращает ссылку.
+  payOfflineFees: () =>
+    client.post<OfflineFeeStatus>('/billing/offline-fees/pay', {}),
 
   // IBAN-ветка: без редиректа на Stripe, возвращает тестовый IBAN + инвойс для модалки.
   checkoutIban: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>

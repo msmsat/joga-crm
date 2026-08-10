@@ -298,6 +298,17 @@ class ScenarioFire(Base):
 
 
 class ReferralRecord(Base):
+    """Запись несёт ДВА независимых обещания, и у каждого свой флаг:
+      - бонус пригласившему (`bonus_paid`) — выдаётся на триггере из конфига
+        студии (services/referral.fire_referral);
+      - скидка новичку (`discount_used`) — применяется в resolve_price один раз,
+        на первой же покупке.
+
+    Раньше скидка ключевалась на `status == 'pending'`, и это ломалось с обеих
+    сторон: при триггере 'registration' запись становилась 'completed' сразу и
+    новичок не получал свои проценты НИКОГДА, а при 'first_visit' — получал их
+    на КАЖДОЙ покупке до первого визита. Два флага вместо одного статуса.
+    """
     __tablename__ = "referral_records"
     __table_args__ = (CheckConstraint("status IN ('pending', 'completed', 'cancelled')", name="check_referral_status"),)
 
@@ -307,6 +318,7 @@ class ReferralRecord(Base):
     referred_client_id: Mapped[Optional[int]] = mapped_column(ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, unique=True)
     status: Mapped[str] = mapped_column(String(20), default="pending")
     bonus_paid: Mapped[bool] = mapped_column(Boolean, default=False)
+    discount_used: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
     studio: Mapped["Studio"] = relationship(back_populates="referral_records")

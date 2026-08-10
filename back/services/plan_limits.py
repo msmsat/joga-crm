@@ -41,7 +41,17 @@ async def check_plan_limit(db: AsyncSession, studio_id: int, entity: str) -> Non
     if plan is None:
         return  # до онбординга строки нет — доступ закрывает гейт 8b, не лимиты
 
-    if plan.expires_at is not None and plan.expires_at < datetime.utcnow():
+    # Тариф «только процент» подписки не имеет, и `expires_at` у него остаётся от
+    # давно истёкшего триала — навсегда в прошлом. Глобальный гейт это учитывает
+    # (dependencies.require_active_subscription: percent пускается БЕЗ проверки даты),
+    # а здесь проверка была безусловной — и платящая процентом студия получала 403
+    # «Подписка истекла» на КАЖДОЕ добавление клиента и сотрудника. Условие обязано
+    # совпадать с гейтом, иначе тариф нерабочий целиком.
+    if (
+        plan.billing_mode != "percent"
+        and plan.expires_at is not None
+        and plan.expires_at < datetime.utcnow()
+    ):
         raise HTTPException(status_code=403, detail={
             "code": "subscription_expired",
             "message": "Подписка истекла — продлите тариф, чтобы добавлять записи.",

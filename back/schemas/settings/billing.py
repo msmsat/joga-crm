@@ -21,6 +21,22 @@ class PlansCatalogRead(BaseSchema):
     """Каталог тарифов — единственный источник истины о ценах и лимитах."""
     plans: list[PlanRead]
     period_discounts: dict[int, float]   # {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+    # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
+    # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
+    currency: str                        # ISO-код, например EUR
+    # Минимальный месячный платёж тарифа «только процент» (младшие единицы).
+    # Отдаётся каталогом, а не хардкодится на фронте: сумма из него попадает в
+    # модалку согласия, и разъехаться с plans.MIN_MONTHLY_FEE она не должна —
+    # владелец подтверждает конкретную цифру.
+    min_monthly: int
+    # Ставка НДС для ПОДПИСИ итога на шаге оплаты, %. Цены выше — без налога
+    # (tax_behavior=exclusive), налог накидывается сверху.
+    #
+    # Ориентир, а не источник суммы: настоящую ставку считает Stripe Tax по стране
+    # покупателя и его статусу плательщика (у студии из другой страны ЕС с валидным
+    # номером НДС это вовсе 0 % — reverse charge). Считать итог по этому числу на
+    # фронте нельзя, им можно только подписать «включая НДС N%».
+    vat_rate: float = 21.0
 
 
 class BillingPlanRead(BaseSchema):
@@ -39,6 +55,10 @@ class BillingPlanRead(BaseSchema):
     sms_notification_enabled: bool = False
     can_upgrade: bool = False          # считает сервер (задача 2) — фронту не доверяем ветвистость
     next_plan: Optional[str] = None    # None, если апгрейда нет (% от оборота / максимальный тариф)
+    # Оплаченная, но ещё не наступившая смена тарифа: апгрейд по умолчанию начинается
+    # с конца текущего оплаченного периода, и владелец должен видеть, что его ждёт.
+    scheduled_plan: Optional[str] = None
+    scheduled_at: Optional[str] = None
 
 
 class AutopaySettingsUpdate(BaseModel):
@@ -52,6 +72,29 @@ class ActivateModelRequest(BaseModel):
     mode: Literal["subscription", "percent", "combo"]
     plan: Optional[Literal["start", "pro", "business"]] = None
     period_months: Optional[Literal[1, 6, 12, 24]] = None
+    # Явное согласие на постоплату комиссии. Обязательно для mode="percent":
+    # без него бэк отвечает 422, и модалку подтверждения нельзя обойти запросом.
+    accept_offline_terms: bool = False
+
+
+class OfflineFeeStatus(BaseModel):
+    """Виджет «Комиссия с офлайн-продаж» в разделе «Тариф и оплата»."""
+    accrued: int            # начислено, но ещё не выставлено (младшие единицы)
+    accrued_currency: str
+    outstanding: int        # выставлено и не оплачено, в валюте биллинга
+    currency: str
+    due_at: Optional[str] = None        # крайний срок по самому раннему счёту
+    days_left: Optional[int] = None     # сколько дней осталось; <0 — просрочено
+    suspended: bool = False             # доступ уже заблокирован
+    # Чем именно заблокирован: "offline_fee" — комиссия с наличных, "min_fee" —
+    # минимальный месячный платёж процентного тарифа. Тексты у них разные.
+    suspended_reason: Optional[str] = None
+    hosted_invoice_url: Optional[str] = None
+    rate: Optional[float] = None
+    grace_days: int = 7
+    # Минимальный месячный платёж (младшие единицы валюты биллинга). Заполнен
+    # только на тарифе «только процент» — остальным он не выставляется.
+    min_monthly: Optional[int] = None
 
 
 class IbanCheckoutRequest(BaseModel):
@@ -61,11 +104,14 @@ class IbanCheckoutRequest(BaseModel):
 
 class IbanCheckoutResponse(BaseModel):
     invoice_id: int
-    invoice_number: str      # "INV-2026-000123"
-    iban: str                # тестовый, детерминированный
-    amount: int               # копейки
-    reference: str            # назначение платежа = order_id
+    invoice_number: str      # номер счёта Stripe, например "ABCD1234-0001"
+    iban: str                # настоящий IBAN, выданный Stripe под эту студию
+    amount: int               # центы, с налогом — считает Stripe
+    reference: str            # назначение платежа; без него перевод ищется дольше
     beneficiary: str = "Velora CRM LLC"
+    # Добавлены к прежнему контракту как необязательные — текущий фронт их игнорирует.
+    bic: Optional[str] = None
+    hosted_invoice_url: Optional[str] = None
 
 
 class BillingStatsRead(BaseSchema):
@@ -101,10 +147,23 @@ class PaymentCardRead(BaseSchema):
 class CheckoutRequest(BaseModel):
     plan: Literal["start", "pro", "business"]
     period_months: Literal[1, 6, 12, 24]
+    # Когда новый тариф вступает в силу. Значимо только при ЖИВОЙ подписке —
+    # первая покупка начинается сразу в любом случае.
+    #
+    # period_end (по умолчанию) — с конца текущего оплаченного периода: студия
+    #   доигрывает то, за что уже заплатила, и ничего не теряет.
+    # now — сразу, остаток текущего периода СГОРАЕТ без возврата. Требует явного
+    #   подтверждения на фронте: это необратимая потеря денег.
+    apply: Literal["period_end", "now"] = "period_end"
 
 
 class CheckoutResponse(BaseModel):
     checkout_url: str
+    # Заполнены при отложенной смене тарифа: платить прямо сейчас не нужно,
+    # переход произойдёт сам. Фронт по ним показывает «тариф сменится с …»
+    # вместо того, чтобы вести владельца на страницу оплаты.
+    scheduled: bool = False
+    applies_at: Optional[str] = None
 
 
 class RenewResponse(BaseModel):

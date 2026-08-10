@@ -14,6 +14,11 @@ type Props = {
   trailing?: React.ReactNode;
   /** Персиковая обводка для продающей строки */
   accent?: boolean;
+  /**
+   * Строка раскрывает под собой список. Задано — значит это кнопка меню, и
+   * скринридер обязан сообщить, что список есть и открыт ли он сейчас.
+   */
+  expanded?: boolean;
 };
 
 /**
@@ -30,14 +35,17 @@ export default function SettingRow({
   checked,
   trailing,
   accent,
+  expanded,
 }: Props) {
   return (
     <Press
       onClick={onClick}
       role="button"
       tabIndex={0}
+      aria-haspopup={expanded === undefined ? undefined : 'menu'}
+      aria-expanded={expanded}
       className={cn(
-        'flex min-h-[60px] cursor-pointer items-center gap-3.5 rounded-[18px] bg-card px-4 shadow-soft',
+        'flex min-h-[60px] cursor-pointer items-center gap-3.5 rounded-[18px] bg-card px-4 shadow-soft transition-shadow duration-300 dt:min-h-[68px] dt:gap-4 dt:rounded-[20px] dt:px-5 dt:hover:shadow-lift',
         accent && 'ring-1 ring-inset ring-brand/30',
       )}
     >
@@ -60,7 +68,7 @@ export default function SettingRow({
         </svg>
       </span>
 
-      <span className="min-w-0 flex-1 truncate text-[14px] font-bold tracking-[-0.01em] text-card-foreground">
+      <span className="min-w-0 flex-1 truncate text-[14px] font-bold tracking-[-0.01em] text-card-foreground dt:text-[15px]">
         {label}
       </span>
 

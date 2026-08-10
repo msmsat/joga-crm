@@ -8,6 +8,14 @@ export function localeForCurrency(currency = 'RUB'): string {
 }
 
 // amount — в основной единице (уже /100). currency — код валюты студии (useStudioCurrency).
+// Копейки печатаем ТОЛЬКО когда они есть: половинная цена комбо (39/2 = 19.5)
+// иначе выводилась дефолтным форматом как «19,5», а с minimumFractionDigits: 2
+// целые тарифы превратились бы в «39,00». Дробное → две цифры, целое → без хвоста.
 export function formatMoney(amount: number, currency = 'RUB'): string {
-  return `${getCurrencySymbol(currency)}${amount.toLocaleString(localeForCurrency(currency))}`;
+  const digits = Number.isInteger(amount) ? 0 : 2;
+  const value = amount.toLocaleString(localeForCurrency(currency), {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+  return `${getCurrencySymbol(currency)}${value}`;
 }

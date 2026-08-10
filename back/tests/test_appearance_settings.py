@@ -42,7 +42,8 @@ async def _run():
 
         # Контракт сериализации: то, что реально уедет клиенту через response_model.
         body = AppearanceRead.model_validate(fresh).model_dump()
-        assert body == {"theme": None, "accent_color": None}, body
+        # language приехал вместе с мультиязычностью интерфейса — контракт ответа шире.
+        assert body == {"theme": None, "accent_color": None, "language": None}, body
 
         # PATCH темой — accent_color не тронут (exclude_unset).
         async with async_session_maker() as db:

@@ -7,32 +7,59 @@ import logging
 from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from ratelimit import limiter
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import StudioBillingPlan, BillingInvoice, PaymentCard
 from schemas.common import Page
 from schemas.settings.billing import (
+    OfflineFeeStatus,
     PlansCatalogRead, PlanRead, PlanLimits,
     BillingPlanRead, InvoiceRead, PaymentCardRead, BillingStatsRead,
     ActivateModelRequest, AutopaySettingsUpdate,
 )
 from .plans import (
-    PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED, amount_for,
+    PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED,
+    MIN_MONTHLY_FEE, amount_for,
 )
-from services import stripe_billing
+from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog
+from activity import log_activity
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
-from .checkout import router as checkout_router
-from .webhook import router as webhook_router, amount_matches, apply_status
+from .checkout import router as checkout_router, _metadata
+from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
 
 logger = logging.getLogger(__name__)
+
+_NOT_CONFIGURED = {
+    "code": "billing.stripe_not_configured",
+    "message": "Приём оплат не настроен на сервере",
+}
+
+# Условия постоплаты, которые владелец подтверждает в модалке. Версия хранится
+# вместе с согласием (StudioBillingPlan.percent_terms_version) — поменяли текст,
+# подняли версию, и старое согласие больше не покрывает новые правила.
+# `grace_days` обязан совпадать с offline_fee_billing.GRACE_DAYS: студия
+# соглашается на конкретный срок, и он же применяется при блокировке.
+# `min_monthly` — минимальный месячный платёж процентного тарифа. Это НОВОЕ
+# денежное обязательство, поэтому версия поднята: согласия, данные до его введения,
+# на него не распространяются, и владелец обязан подтвердить условия заново.
+OFFLINE_TERMS = {
+    "version": "2026-08-2",
+    "grace_days": offline_fee_billing.GRACE_DAYS,
+    "percent_rate": PERCENT_ONLY_RATE,
+    "combo_rate": COMBO_PERCENT_RATE,
+    # Только для mode="percent": у комбо фиксированная часть уже берётся подпиской.
+    "min_monthly": MIN_MONTHLY_FEE,
+    "currency": stripe_billing.CURRENCY.upper(),
+}
 router = APIRouter()
 router.include_router(checkout_router)
 router.include_router(webhook_router)
@@ -50,6 +77,12 @@ async def get_plans_catalog(
             for pid, p in PLANS.items()
         ],
         period_discounts=PERIOD_DISCOUNTS,
+        currency=stripe_billing.CURRENCY.upper(),
+        min_monthly=MIN_MONTHLY_FEE,
+        # Цены в каталоге — БЕЗ налога. Ставку отдаём отдельным полем, чтобы фронт
+        # подписал итог на шаге оплаты («включая НДС N%») и не зашивал число у себя:
+        # настоящую сумму всё равно считает Stripe Tax по стране покупателя.
+        vat_rate=stripe_billing.VAT_RATE_DISPLAY,
     )
 
 
@@ -67,6 +100,14 @@ def _upgrade_target(row: StudioBillingPlan) -> str | None:
         return None
     idx = plan_ids.index(row.plan_name)
     return plan_ids[idx + 1] if idx + 1 < len(plan_ids) else None
+
+
+def _tier(plan_name: str) -> int:
+    """Ступень тарифа для сравнения. free_trial даёт лимиты Pro (services/plan_limits),
+    поэтому и здесь считается его ступенью; неизвестный план (none) — ниже всех."""
+    plan_id = "pro" if plan_name == "free_trial" else plan_name
+    plan_ids = list(PLANS)
+    return plan_ids.index(plan_id) if plan_id in plan_ids else -1
 
 
 def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
@@ -87,6 +128,8 @@ def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
         sms_notification_enabled=row.sms_notification_enabled,
         can_upgrade=next_plan is not None,
         next_plan=next_plan,
+        scheduled_plan=row.scheduled_plan,
+        scheduled_at=row.scheduled_at.isoformat() if row.scheduled_at else None,
     )
 
 
@@ -139,13 +182,21 @@ async def get_billing_stats(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
 
-    # Следующее списание = то же, что спишет /renew: план из подписки, период — из последней оплаты.
+    # Следующее списание: срок и сумму знает Stripe, но для плашки хватает каталога —
+    # налог и прорейтинг в неё не входят, это ориентир, а не счёт.
     next_charge = 0
-    if plan and plan.status == "active":
+    if plan and plan.status in ("active", "past_due"):
         if plan.billing_mode == "combo":
             next_charge = plan.fixed_base_amount or 0
         elif plan.billing_mode == "subscription" and plan.plan_name in PLANS:
-            next_charge = amount_for(plan.plan_name, paid[-1].period_months if paid else 1)
+            # Период берём у последнего счёта ЗА ТАРИФ, а не у последнего вообще:
+            # счёт за комиссию всегда месячный (period_months=1), и студия,
+            # перешедшая с «процента» на подписку, видела бы в плашке месячную
+            # цену вместо годовой — ровно за тот период, который сама и оплатила.
+            months = next(
+                (inv.period_months for inv in reversed(paid) if inv.kind == "subscription"), 1,
+            )
+            next_charge = amount_for(plan.plan_name, months)
         # percent: фикса нет, списывать по расписанию нечего — остаётся 0
 
     return BillingStatsRead(
@@ -154,6 +205,64 @@ async def get_billing_stats(
         saved=saved,
         next_charge=next_charge,
         next_charge_at=plan.expires_at.isoformat() if plan and plan.expires_at else None,
+    )
+
+
+async def _reconcile_subscription(
+    row: StudioBillingPlan, body: ActivateModelRequest, ctx: StudioContext,
+) -> None:
+    """Привести подписку Stripe в соответствие с только что выбранным режимом.
+
+    Раньше смена режима меняла ТОЛЬКО нашу БД, а Stripe продолжал списывать по
+    прежнему Price — в обе стороны с потерей денег:
+
+    * → «только процент»: подписки на этом тарифе нет по определению, но карта
+      продолжала платить фикс каждый месяц. Студия платила и подписку, и 3% с
+      оборота — за тариф, с которого ушла. Модалка подтверждения на фронте при
+      этом обещает ей ровно обратное («теряете остаток оплаченного периода»);
+    * подписка ⇄ комбо: у комбо ПОЛОВИННЫЙ Price (plans.COMBO_FIXED). Без смены
+      Price комбо-студия платила полную цену, а ушедшая с комбо на чистый фикс
+      получала полный тариф за половину — недобор уже у платформы.
+
+    Переход происходит СРАЗУ и БЕЗ возврата денег за неиспользованный остаток
+    (`proration_behavior="none"`) — правило продукта, о котором модалка на фронте
+    предупреждает заранее. С прорацией Stripe вернул бы остаток кредитом на баланс
+    клиента, и следующий счёт пришёл бы уменьшенным.
+
+    Сбой Stripe поднимает 502, и режим в БД не меняется: рассинхрон опаснее отказа.
+    """
+    if not row.stripe_subscription_id or row.status not in ("active", "past_due"):
+        return
+
+    if body.mode == "percent":
+        await stripe_billing.cancel_subscription(row.stripe_subscription_id)
+        # Ссылку снимаем сразу, не дожидаясь customer.subscription.deleted: до его
+        # прихода повторный вызов пытался бы отменить уже отменённый объект и падал
+        # бы 502 на ровном месте. Статус подвинет само событие.
+        row.stripe_subscription_id = None
+        return
+
+    # Тариф и период берём у самой подписки, когда их не прислали: они уже записаны
+    # в её Price (lookup_key), и второй копии у себя мы не держим.
+    current = stripe_catalog.parse_lookup_key(
+        await stripe_billing.subscription_price_key(row.stripe_subscription_id)
+    )
+    plan_id = body.plan or (current[0] if current else row.plan_name)
+    period_months = body.period_months or (current[1] if current else 1)
+    if plan_id not in PLANS or period_months not in PERIOD_DISCOUNTS:
+        logger.error(
+            "Смена режима: тариф/период подписки %s не определить (%s, %s) — Price не меняем",
+            row.stripe_subscription_id, plan_id, period_months,
+        )
+        return
+
+    price_id = await stripe_catalog.price_id(plan_id, period_months, body.mode == "combo")
+    # Метаданные обязаны ехать вместе с новым Price: ступень тарифа на продлении
+    # поднимает webhook._activate по ним (см. change_subscription_price).
+    await stripe_billing.change_subscription_price(
+        row.stripe_subscription_id, price_id,
+        _metadata(ctx, plan_id, period_months, body.mode),
+        proration_behavior="none",
     )
 
 
@@ -167,9 +276,34 @@ async def activate_model(
     row = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
+    # Ступень «до» считаем ДО создания строки: иначе новый план сравнивался бы сам с
+    # собой и проверка ниже пропускала бы любой тариф.
+    current_plan = row.plan_name if row is not None else "pro"
     if row is None:
-        row = StudioBillingPlan(studio_id=ctx.studio_id, plan_name=body.plan or "pro")
+        row = StudioBillingPlan(studio_id=ctx.studio_id, plan_name=current_plan)
         db.add(row)
+
+    # Ступень тарифа поднимает ТОЛЬКО оплаченный счёт (webhook._activate). Без этой
+    # проверки владелец переключал бы себе plan_name на business одним запросом сюда —
+    # а его читает check_plan_limit (services/plan_limits.py), то есть лимиты
+    # сотрудников и клиентов снимались бы бесплатно, мимо Stripe.
+    if body.plan and _tier(body.plan) > _tier(current_plan):
+        raise HTTPException(status_code=402, detail={
+            "code": "billing.plan_not_paid",
+            "message": "Тариф выше текущего активируется только оплатой",
+        })
+
+    # Юридическое основание постоплаты: на «проценте» и «комбо» платформа
+    # выставляет счёт за комиссию с наличных и блокирует доступ за неоплату —
+    # значит владелец обязан явно на это согласиться. Модалку подтверждения
+    # обойти прямым запросом нельзя: без флага 422.
+    if body.mode in ("percent", "combo") and not body.accept_offline_terms:
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.offline_terms_required",
+            "message": "Подтвердите условия постоплаты комиссии с офлайн-продаж",
+            "terms": OFFLINE_TERMS,
+        })
+
     row.billing_mode = body.mode
     if body.mode == "percent":
         row.percent_rate, row.fixed_base_amount = PERCENT_ONLY_RATE, None
@@ -182,9 +316,119 @@ async def activate_model(
         row.percent_rate = None
         row.fixed_base_amount = None
         row.plan_name = body.plan or row.plan_name
+
+    if body.mode in ("percent", "combo"):
+        # Фиксируем ЧТО именно приняли и когда: ставку и версию текста. Сменим
+        # условия — старое согласие не должно молча распространиться на новые.
+        row.percent_terms_accepted_at = datetime.utcnow()
+        row.percent_terms_rate = row.percent_rate
+        row.percent_terms_version = OFFLINE_TERMS["version"]
+        log_activity(
+            db, ctx.studio_id, "billing",
+            title=f"Приняты условия постоплаты комиссии {row.percent_rate}% (ред. {OFFLINE_TERMS['version']})",
+            actor_name=f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+            entity_type="billing_plan", entity_id=row.id,
+        )
+
+    # Stripe правим ПОСЛЕДНИМ и до коммита: упадёт — get_db не коммитит, и режим в
+    # БД останется прежним. Обратный порядок оставлял бы БД и Stripe разошедшимися.
+    try:
+        await _reconcile_subscription(row, body, ctx)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Смена режима: подписка студии %s не перенастроена", ctx.studio_id)
+        raise HTTPException(status_code=502, detail={
+            "code": "billing.stripe_error",
+            "message": "Не удалось перенастроить подписку — режим не изменён, попробуйте ещё раз",
+        }) from exc
+
     await db.commit()
     await db.refresh(row)
     return _to_plan_read(row)
+
+
+@router.get("/offline-fees", response_model=OfflineFeeStatus)
+async def get_offline_fee_status(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Виджет «Комиссия с офлайн-продаж»: сколько накопилось и сколько должны.
+
+    Гейта подписки на /billing нет — заблокированная студия обязана видеть свой
+    долг и иметь возможность его закрыть, иначе блокировка стала бы тупиком.
+    """
+    accrued, accrued_currency = await offline_fee_billing.accrued_total(db, ctx.studio_id)
+
+    # Оба вида постоплаты: комиссия и минимальный месячный платёж. Показать только
+    # комиссию значило бы, что заблокированная за минимум студия видит долг 0 и не
+    # находит, что ей вообще оплачивать.
+    unpaid = (await db.execute(
+        select(BillingInvoice)
+        .where(
+            BillingInvoice.studio_id == ctx.studio_id,
+            BillingInvoice.kind.in_(platform_fee.SUSPENDING_KINDS),
+            BillingInvoice.status.notin_(("paid", "refunded")),
+        )
+        .order_by(BillingInvoice.due_at.asc().nulls_last())
+    )).scalars().all()
+
+    outstanding = sum(inv.amount for inv in unpaid)
+    earliest = next((inv for inv in unpaid if inv.due_at is not None), None)
+    days_left = None
+    if earliest is not None:
+        # Округляем ВВЕРХ по календарю: «остался 1 день» честнее, чем «0», пока
+        # срок ещё не наступил.
+        delta = earliest.due_at - datetime.utcnow()
+        days_left = -((-delta.total_seconds()) // 86400) if delta.total_seconds() > 0 else int(delta.total_seconds() // 86400)
+        days_left = int(days_left)
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+
+    reason = await platform_fee.suspension_reason(db, ctx.studio_id)
+    return OfflineFeeStatus(
+        accrued=accrued,
+        accrued_currency=accrued_currency,
+        outstanding=outstanding,
+        currency=stripe_billing.CURRENCY.upper(),
+        due_at=earliest.due_at.isoformat() if earliest is not None else None,
+        days_left=days_left,
+        suspended=reason is not None,
+        suspended_reason=reason,
+        hosted_invoice_url=next((i.hosted_invoice_url for i in unpaid if i.hosted_invoice_url), None),
+        rate=plan.percent_rate if plan is not None else None,
+        grace_days=offline_fee_billing.GRACE_DAYS,
+        # Минимум показываем только тем, к кому он применяется, — на комбо и
+        # подписке фикс уже берётся подпиской, и вторая цифра там только путает.
+        min_monthly=MIN_MONTHLY_FEE if plan is not None and plan.billing_mode == "percent" else None,
+    )
+
+
+@router.post("/offline-fees/pay", response_model=OfflineFeeStatus)
+# Каждый вызов выставляет счёт у Stripe и шлёт студии письмо с фактурой.
+@limiter.limit("10/minute")
+async def pay_offline_fees(
+    request: Request,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """«Оплатить сейчас»: выставить счёт на всё накопленное, не дожидаясь месяца.
+
+    Уже выставленный неоплаченный счёт новым не дублируем — сначала пусть
+    закроют его (ссылка на оплату возвращается в том же ответе).
+    """
+    if not stripe_billing.configured():
+        raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
+    try:
+        await offline_fee_billing.bill_now(db, ctx.studio_id)
+    except Exception as exc:
+        logger.exception("Офлайн-комиссии: досрочный счёт студии %s не выставлен", ctx.studio_id)
+        raise HTTPException(status_code=502, detail={
+            "code": "billing.stripe_error", "message": "Stripe отклонил запрос",
+        }) from exc
+    return await get_offline_fee_status(ctx, db)
 
 
 @router.patch("/autopay", response_model=BillingPlanRead)
@@ -272,16 +516,19 @@ async def get_invoices(
 
 
 @router.post("/invoices/{invoice_id}/sync", response_model=InvoiceRead)
+# Каждый вызов — запрос к Stripe. Ручная сверка нужна единицы раз, а не потоком.
+@limiter.limit("20/minute")
 async def sync_invoice(
+    request: Request,
     invoice_id: int,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     """Сверка статуса счёта со Stripe — когда вебхук не дошёл.
 
-    Истина о платеже по-прежнему у Stripe: тянем сессию по order_id и применяем
-    тем же переходом, что и вебхук (apply_status) — оплата так же активирует
-    подписку. Счёт без сессии (IBAN, оплату не начинали) остаётся как был.
+    Истина о платеже по-прежнему у Stripe: тянем счёт по stripe_invoice_id и
+    применяем тем же переходом, что и вебхук (apply_status). Счёт без счёта Stripe
+    (legacy, до перехода на подписки) остаётся как был.
     """
     inv = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
@@ -289,23 +536,29 @@ async def sync_invoice(
     ))).scalar_one_or_none()
     if inv is None:
         raise HTTPException(status_code=404, detail="Счёт не найден")
-    if not inv.order_id or not inv.order_id.startswith("cs_"):
+    if not inv.stripe_invoice_id:
         raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
 
     try:
-        session = await stripe_billing.fetch_session(inv.order_id)
+        stripe_invoice = await stripe_billing.fetch_invoice(inv.stripe_invoice_id)
     except Exception:
         logger.exception("Сверка статуса не удалась, счёт %s", inv.id)
         raise HTTPException(status_code=502, detail="Платёжный сервис недоступен")
 
-    # Сумму сверяем и на ручном пути: активация не должна зависеть от того,
-    # каким маршрутом до неё дошли.
-    if getattr(session, "payment_status", None) == "paid" and amount_matches(
-        inv, getattr(session, "amount_total", None), getattr(session, "currency", None),
-    ):
-        await apply_status(db, inv, "paid", session_id=inv.order_id)
-    elif getattr(session, "status", None) == "expired":
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+    if plan is not None:
+        # Ссылки на PDF и хостед-страницу могли появиться после финализации.
+        await mirror_invoice(db, plan, stripe_invoice)
+
+    status = getattr(stripe_invoice, "status", None)
+    if status == "paid":
+        await apply_status(db, inv, "paid")
+    elif status in ("uncollectible", "void"):
         await apply_status(db, inv, "failed")
+    else:
+        await db.commit()
 
     await db.refresh(inv)
     return _to_invoice_read(inv)
@@ -318,8 +571,10 @@ _EXPORT_HEADERS = {
     "en": ["Date", "Plan", "Period", "Amount, {cur}", "Method", "Status"],
 }
 _EXPORT_METHOD = {
-    "ru": {"card": "Карта", "iban": "IBAN"},
-    "en": {"card": "Card", "iban": "IBAN"},
+    # `stripe` — онлайн-комиссия: денег студия не переводила, их удержал Stripe из
+    # платежа клиента. Без своей подписи она уехала бы в CSV сырым ключом.
+    "ru": {"card": "Карта", "iban": "IBAN", "invoice": "Счёт", "stripe": "Удержано"},
+    "en": {"card": "Card", "iban": "IBAN", "invoice": "Invoice", "stripe": "Withheld"},
 }
 _EXPORT_STATUS = {
     "ru": {"paid": "Оплачено", "pending": "Ожидает", "failed": "Ошибка", "refunded": "Возврат"},
@@ -340,8 +595,10 @@ async def export_invoices_csv(
     date_from/date_to — опциональный фильтр по дате оплаты для страницы полной
     истории (задача 6); без них — вся история, как раньше.
     """
-    lang, currency = await _studio_prefs(db, ctx.studio_id)
-    sign = _CURRENCY_SIGNS.get(currency, currency)
+    lang, _studio_currency = await _studio_prefs(db, ctx.studio_id)
+    # Суммы счетов — в валюте биллинга (EUR), а не в валюте кассы студии.
+    # Подписывать евро кроной нельзя: колонка станет враньём.
+    sign = _CURRENCY_SIGNS.get(stripe_billing.CURRENCY.upper(), stripe_billing.CURRENCY.upper())
 
     filters = [BillingInvoice.studio_id == ctx.studio_id, *_invoice_date_filters(date_from, date_to)]
     rows = (await db.execute(
@@ -466,6 +723,13 @@ if __name__ == "__main__":
     assert _upgrade_target(_row(billing_mode="percent")) is None       # % от оборота — апгрейда нет
     assert _upgrade_target(_row(plan_name="business")) is None         # максимальный тариф
     assert _upgrade_target(_row(status="past_due")) is None            # неоплаченный не апгрейдим
+
+    # Ступени тарифа: их сравнивает activate_model, чтобы не отдать лимиты Business
+    # бесплатно. free_trial равен Pro (так же его читает services/plan_limits).
+    assert _tier("start") < _tier("pro") < _tier("business")
+    assert _tier("free_trial") == _tier("pro")
+    assert _tier("none") == -1 and _tier("") == -1
+    assert _tier("business") > _tier("none")   # без строки плана апгрейд невозможен
 
     # CSV-экранирование/BOM теперь проверяет services/exporter.py (задача 4) — не дублируем тут.
     print("billing router self-check ok")

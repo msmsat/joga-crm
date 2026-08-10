@@ -18,9 +18,6 @@
     "closing_soon": "Closing soon",
     "closed": "Closed",
     "opening_soon": "Opening soon",
-    "map": "Map",
-    "map_title": "Studios on the map",
-    "map_sub": "Tap a pin to choose a studio",
     "choose_studio": "Choose a studio",
     "open_studio": "Choose {{name}}",
     "services": "Studio services",
@@ -54,10 +51,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Unlimited classes"
   },
   "payment": {
@@ -84,13 +89,10 @@
     "buy_btn": "Buy Subscription",
     "notifications": "Notifications",
     "history": "Payment History",
-    "invite": "Invite a Friend",
     "support": "Studio Support",
     "reminders": "Class reminders",
     "about_studio": "About the Studio",
     "language": "Language",
-    "community": "Community",
-    "invite_hint": "Starting together is easier — send a friend your link",
     "subscription_group": "Membership",
     "notifications_group": "Notifications",
     "app_group": "App",
@@ -121,7 +123,8 @@
     "favourite": "You pick {{name}} most often",
     "load_error": "Couldn't load your classes",
     "no_lessons_period": "Nothing in this period",
-    "no_lessons_period_hint": "Use the arrows — they might be earlier"
+    "no_lessons_period_hint": "Use the arrows — they might be earlier",
+    "awaiting_confirmation": "Awaiting confirmation"
   },
   "schedule": {
     "title": "Schedule",
@@ -152,7 +155,9 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat"
-    }
+    },
+    "booking_closed": "Online booking is closed",
+    "booking_closed_hint": "The studio is not taking bookings through the app right now — please call the front desk."
   },
   "bookingModal": {
     "training": "Training",
@@ -167,7 +172,10 @@
     "processing": "Processing...",
     "cancel_booking": "Cancel booking",
     "choose_spot": "Choose a spot",
-    "pay": "Pay · {{price}}"
+    "pay": "Pay · {{price}}",
+    "not_bookable": "This class cannot be booked online",
+    "not_bookable_hint": "Booking is open only during studio hours and within the published schedule.",
+    "awaiting_confirmation": "Request sent — waiting for the studio to confirm"
   },
   "directionModal": {
     "tag": "Direction",
@@ -188,7 +196,9 @@
     "success": "Subscription \"{{name}}\" successfully paid! Lessons have been credited to your balance.",
     "activate_error": "Subscription activation error.",
     "checking_payment": "Checking payment status — your subscription will appear here once the bank confirms it",
-    "pay_in_studio": "You can buy a subscription at the studio"
+    "pay_in_studio": "You can buy a subscription at the studio",
+    "activated": "Subscription activated",
+    "certificate_ready": "The certificate will be applied at checkout"
   },
   "successModal": {
     "title": "You are booked",
@@ -209,13 +219,19 @@
   "supportModal": {
     "tag": "Help",
     "title": "Support",
-    "description": "You can write any message directly in this bot — our team will receive it and reply soon.",
-    "button": "Got it"
+    "sub": "Get in touch with {{studio}} whichever way suits you.",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "no_contacts": "No contacts yet",
+    "no_contacts_hint": "The studio hasn't added a phone or email yet. Ask at your next class."
   },
   "paymentModal": {
     "tag": "Secure payment",
     "title": "Checkout",
     "service": "Service",
+    "base_price": "Price",
+    "discount": "Discount",
     "amount_due": "Amount due",
     "pay_card": "Pay with card",
     "or_other": "or another way",
@@ -223,17 +239,26 @@
     "processing_transaction": "Processing transaction...",
     "processing": "Processing...",
     "cancel": "Cancel",
-    "expiry_placeholder": "MM/YY"
-  },
-  "languageModal": {
-    "tag": "Settings",
-    "sub": "Interface language"
+    "expiry_placeholder": "MM/YY",
+    "certificate": "Certificate",
+    "deposit": "Deposit",
+    "bonuses": "Points",
+    "promo_placeholder": "Promo code",
+    "promo_invalid": "Promo code is not valid",
+    "certificate_placeholder": "Certificate code",
+    "certificate_invalid": "Certificate not found or already redeemed",
+    "use_deposit": "Pay from deposit",
+    "use_bonuses": "Spend points ({{count}})",
+    "confirm_free": "Confirm",
+    "free_hint": "No card payment needed — the amount is fully covered"
   },
   "nav": {
     "home": "Home",
     "schedule": "Schedule",
     "my_lessons": "My Lessons",
-    "profile": "Profile"
+    "profile": "Profile",
+    "client_area": "Client area",
+    "club": "Club"
   },
   "home": {
     "greeting_morning": "Good morning",
@@ -245,9 +270,6 @@
     "directions": "Directions",
     "body_spirit_balance": "Body. Mind. Balance.",
     "studio_description": "Namaste yoga studio is a space for harmony and self-development in Odesa",
-    "referral_title": "Invite a friend",
-    "referral_subtitle": "Get 20% off your next subscription",
-    "referral_link_copied": "Link copied!",
     "today": "Today",
     "tomorrow": "Tomorrow",
     "studios": "Studios",
@@ -260,13 +282,46 @@
     "default_duration": "60 min",
     "spots": "spots",
     "level_all": "All levels",
-    "level_beginner": "Beginner"
-    ,"book_now": "Book now",
+    "level_beginner": "Beginner",
+    "book_now": "Book now",
     "flow_yoga": "Yoga",
     "flow_pilates": "Pilates",
     "flow_reformer_glow": "Reformer Glow",
     "flow_mfr": "MFR",
     "flow_healthy_back": "Healthy Back",
     "flow_breathing": "Breathwork"
+  },
+  "club": {
+    "title": "Club",
+    "points": "points",
+    "points_worth": "≈ {{value}}",
+    "spent": "Spent at the studio: {{amount}}",
+    "to_next": "{{amount}} more to reach {{level}}",
+    "level_top": "Top level reached",
+    "levels": "Levels",
+    "offers": "Personal discounts",
+    "certificates": "Certificates",
+    "valid_until": "valid until {{date}}",
+    "valid_forever": "no expiry",
+    "code_copied": "Code copied",
+    "deposit": "Deposit",
+    "deposit_history": "Deposit history",
+    "deposit_empty": "No deposit activity yet",
+    "deposit_load_error": "Couldn't load deposit history",
+    "referral": "Invite a friend",
+    "referral_bonus_points": "{{bonus}} points for you",
+    "referral_bonus_money": "{{bonus}} for you",
+    "referral_discount": "{{discount}}% off for your friend",
+    "referral_invited": "Invited",
+    "referral_completed": "Joined",
+    "referral_copy": "Copy link",
+    "referral_copied": "Link copied",
+    "history": "Points history",
+    "no_history": "No points earned yet",
+    "no_history_hint": "They'll appear after your first payment at the studio",
+    "disabled": "The studio hasn't launched its club yet",
+    "disabled_hint": "Once the loyalty program is live, your points and level will show up here.",
+    "certificate_use": "Use certificate",
+    "code_copy": "Copy code"
   }
 }

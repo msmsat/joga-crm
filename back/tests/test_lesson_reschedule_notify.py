@@ -153,7 +153,11 @@ def test_notify_sends_via_forced_fallback_channel():
 
     calls = []
 
-    async def fake_deliver(db_, channel, recipient, subject, text, html, *, studio_id):
+    # **_kw, а не перечисление именованных: notifier.deliver дополняется новыми
+    # keyword-only параметрами (event_id и context приехали в N-9), и фейк с жёсткой
+    # сигнатурой падал TypeError'ом — тест «отправка не молчит» ловил не то, что
+    # проверяет. Каналы здесь и так единственное, что важно.
+    async def fake_deliver(db_, channel, recipient, subject, text, html, **_kw):
         calls.append(channel)
         return True
 

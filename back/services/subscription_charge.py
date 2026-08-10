@@ -157,6 +157,9 @@ async def _try_auto_renew(
 
     await attach_subscription(db, studio_id, client_id, package, None, mark_paid=True, price=0)
     await apply_deposit_change(client_id, studio_id, -resolved.final_price, "Автопродление абонемента", db)
+    # Без этого одноразовый оффер/скидка новичка применялись бы на КАЖДОМ
+    # автопродлении: списание с депозита происходит без участия человека.
+    resolved.mark_used()
     await register_purchase(db, studio_id, client_id, resolved.final_price)
     log_activity(db, studio_id, "client", title=f"Абонемент автопродлён (депозит): {client.name} {client.last_name or ''}".strip(),
                  entity_type="client", entity_id=client_id)

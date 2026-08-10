@@ -9,6 +9,7 @@ import services.otp as otp
 from contact_format import normalize_email
 from database import get_db
 from dependencies import get_current_user, oauth2_scheme
+from legal import CONSENT_REQUIRED, record_consent
 from models import User, StudioMember, UserSession
 from schemas import Login2FARequest, LoginRequest, TokenResponse, GoogleAuthRequest
 from security import verify_password, get_password_hash
@@ -158,6 +159,12 @@ async def google_auth(request: GoogleAuthRequest, http_request: Request, db: Asy
     )).scalars().first()
 
     if not user:
+        # Регистрация, а не вход: без принятых документов аккаунт не заводим.
+        # Фронт на этот код показывает галочку и повторяет запрос с тем же
+        # Google-токеном (front/src/pages/Loginpage.tsx).
+        if not request.accept_terms:
+            raise HTTPException(status_code=400, detail=CONSENT_REQUIRED)
+
         user = User(
             email=email,
             name=google_name,
@@ -166,6 +173,8 @@ async def google_auth(request: GoogleAuthRequest, http_request: Request, db: Asy
             verification_code=None,
         )
         db.add(user)
+        await db.flush()
+        await record_consent(db, user, http_request, "google")
         await db.commit()
         await db.refresh(user)
 

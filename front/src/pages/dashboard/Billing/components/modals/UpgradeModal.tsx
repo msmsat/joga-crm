@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PlanType } from '../../types';
 import { formatMoney } from '../../../../../lib/money';
 import { InfoIcon } from '../ui/BillingIcons';
-import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from '../../../../../components/ui/index';
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, ConfirmModal } from '../../../../../components/ui/index';
 
 interface Props {
   currency?: string;
@@ -15,11 +16,27 @@ interface Props {
   totalToPay: number;
   onClose: () => void;
   startCheckout: () => void;
+  /** Апгрейд с начала следующего периода: платить сейчас не нужно. */
+  scheduleUpgrade: () => void;
+  /** Есть ли что «доигрывать» — живая оплаченная подписка. Без неё выбора нет:
+   *  первый тариф откладывать не с чего, он начинается сразу. */
+  hasLiveSubscription: boolean;
+  /** Конец оплаченного периода — дата, с которой начнётся новый тариф. */
+  currentPeriodEnd?: string | null;
+  /** Ставка НДС для подписи, % — приходит каталогом с бэка (BILLING_VAT_RATE). */
+  vatRate: number;
 }
 
-export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout }: Props) {
+export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, scheduleUpgrade, hasLiveSubscription, currentPeriodEnd, vatRate }: Props) {
   const { t } = useTranslation('billing');
   const plan = plans[selectedPlan];
+  // Ориентир для подписи, а не расчёт к оплате: итог считает Stripe Tax.
+  const vatAmount = Math.round(totalToPay * vatRate) / 100;
+  const totalWithVat = Math.round(totalToPay * (100 + vatRate)) / 100;
+  // «Перейти сейчас» сжигает остаток оплаченного периода без возврата, поэтому
+  // подтверждается отдельно. Спокойный путь (с начала периода) — основная кнопка.
+  const [confirmNow, setConfirmNow] = useState(false);
+  const periodEndLabel = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString() : '';
   const subtitle = t('upgrade.priceLine', { price: formatMoney(getPrice(selectedPlan, selectedPeriod), currency) })
     + (selectedPeriod > 1 ? t('upgrade.discountNote', { percent: periodDiscounts[selectedPeriod] * 100, period: selectedPeriod }) : '');
 
@@ -46,12 +63,41 @@ export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, p
               </span>
             </div>
           )}
+          {/* Цены каталога — БЕЗ налога (tax_behavior=exclusive на стороне Stripe),
+              поэтому налог показываем отдельной строкой и только здесь, на шаге
+              оплаты. Сумма ориентировочная: настоящую ставку считает Stripe Tax по
+              стране студии и её статусу плательщика — у компании из другой страны ЕС
+              с валидным номером НДС это 0 % (reverse charge). Поэтому «≈» и подпись,
+              что итог будет на странице оплаты. */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
+              {t('upgrade.vatLabel', { rate: vatRate })}
+            </span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--muted)' }}>
+              ≈ {formatMoney(vatAmount, currency)}
+            </span>
+          </div>
           <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalLabel')}</span>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalWithVatLabel')}</span>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>
+              ≈ {formatMoney(totalWithVat, currency)}
+            </span>
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '8px' }}>
+            {t('upgrade.vatNote', { rate: vatRate })}
           </div>
         </div>
+
+        {/* Когда есть оплаченный период — объясняем, что по умолчанию он доигрывает
+            целиком, а не сгорает. Без подписки выбора нет: тариф начинается сразу. */}
+        {hasLiveSubscription && (
+          <div style={{ padding: '12px 16px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.6' }}>
+            {periodEndLabel
+              ? t('upgrade.startsAtNote', { date: periodEndLabel })
+              : t('upgrade.startsAtNoteNoDate')}
+          </div>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <InfoIcon />
@@ -59,11 +105,35 @@ export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, p
         </div>
       </ModalBody>
       <ModalFooter>
-        <GhostButton>{t('common:cancel')}</GhostButton>
-        <PrimaryButton onClick={() => { onClose(); startCheckout(); }}>
-          {t('upgrade.confirmAndPay')}
-        </PrimaryButton>
+        {hasLiveSubscription ? (
+          <>
+            <GhostButton onClick={() => setConfirmNow(true)}>{t('upgrade.switchNow')}</GhostButton>
+            <PrimaryButton onClick={() => { onClose(); scheduleUpgrade(); }}>
+              {t('upgrade.confirmScheduled')}
+            </PrimaryButton>
+          </>
+        ) : (
+          <>
+            <GhostButton>{t('common:cancel')}</GhostButton>
+            <PrimaryButton onClick={() => { onClose(); startCheckout(); }}>
+              {t('upgrade.confirmAndPay')}
+            </PrimaryButton>
+          </>
+        )}
       </ModalFooter>
+
+      {confirmNow && (
+        <ConfirmModal
+          danger
+          title={t('upgrade.switchNowTitle')}
+          message={periodEndLabel
+            ? t('upgrade.switchNowWarning', { date: periodEndLabel })
+            : t('upgrade.switchNowWarningNoDate')}
+          confirmText={t('upgrade.switchNowConfirm')}
+          onConfirm={() => { setConfirmNow(false); onClose(); startCheckout(); }}
+          onClose={() => setConfirmNow(false)}
+        />
+      )}
     </ModalShell>
   );
 }

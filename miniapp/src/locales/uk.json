@@ -18,9 +18,6 @@
     "closing_soon": "Скоро зачиняється",
     "closed": "Зачинено",
     "opening_soon": "Скоро відчиняється",
-    "map": "Карта",
-    "map_title": "Студії на карті",
-    "map_sub": "Торкніться мітки, щоб обрати студію",
     "choose_studio": "Оберіть студію",
     "open_studio": "Обрати {{name}}",
     "services": "Послуги студії",
@@ -54,10 +51,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Безліміт"
   },
   "payment": {
@@ -84,13 +89,10 @@
     "buy_btn": "Купити абонемент",
     "notifications": "Сповіщення",
     "history": "Історія оплат",
-    "invite": "Запросити подругу",
     "support": "Підтримка студії",
     "reminders": "Нагадування перед заняттям",
     "about_studio": "Про студію",
     "language": "Мова",
-    "community": "Спільнота",
-    "invite_hint": "Разом починати легше — надішліть подрузі посилання",
     "subscription_group": "Абонемент",
     "notifications_group": "Сповіщення",
     "app_group": "Застосунок",
@@ -121,7 +123,8 @@
     "favourite": "Найчастіше ви обираєте {{name}}",
     "load_error": "Не вдалося завантажити заняття",
     "no_lessons_period": "У цьому періоді занять немає",
-    "no_lessons_period_hint": "Погортайте стрілками — можливо, вони були раніше"
+    "no_lessons_period_hint": "Погортайте стрілками — можливо, вони були раніше",
+    "awaiting_confirmation": "Очікує підтвердження"
   },
   "schedule": {
     "title": "Розклад",
@@ -152,7 +155,9 @@
       "thu": "Чт",
       "fri": "Пт",
       "sat": "Сб"
-    }
+    },
+    "booking_closed": "Онлайн-запис закрито",
+    "booking_closed_hint": "Студія тимчасово не приймає записи через застосунок — зателефонуйте адміністратору."
   },
   "bookingModal": {
     "training": "Тренування",
@@ -167,7 +172,10 @@
     "processing": "Обробляємо...",
     "cancel_booking": "Скасувати запис",
     "choose_spot": "Оберіть місце",
-    "pay": "Оплатити · {{price}}"
+    "pay": "Оплатити · {{price}}",
+    "not_bookable": "Онлайн-запис на це заняття недоступний",
+    "not_bookable_hint": "Запис можливий лише в години роботи студії та в межах відкритого розкладу.",
+    "awaiting_confirmation": "Заявку надіслано — очікує підтвердження студії"
   },
   "directionModal": {
     "tag": "Напрямок",
@@ -188,10 +196,12 @@
     "success": "Абонемент \"{{name}}\" успішно оплачено! Заняття зараховані на ваш баланс.",
     "activate_error": "Сталася помилка при активації абонемента.",
     "checking_payment": "Перевіряємо статус оплати — абонемент з'явиться тут, щойно банк підтвердить платіж",
-    "pay_in_studio": "Абонемент можна купити в студії"
+    "pay_in_studio": "Абонемент можна купити в студії",
+    "activated": "Абонемент оформлено",
+    "certificate_ready": "Сертифікат буде застосовано при оплаті"
   },
   "successModal": {
-    "title": "Ви записані", 
+    "title": "Ви записані",
     "subtitle": "Заняття {{name}} сьогодні о {{time}} заброньовано. До зустрічі на килимку.",
     "default_lesson": "Тренування",
     "button": "Чудово"
@@ -209,13 +219,19 @@
   "supportModal": {
     "tag": "Допомога",
     "title": "Підтримка",
-    "description": "Ви можете написати будь-яке повідомлення прямо в цьому боті — наша команда отримає його та відповість найближчим часом.",
-    "button": "Зрозуміло"
+    "sub": "Зв'яжіться зі студією {{studio}} зручним для вас способом.",
+    "phone": "Телефон",
+    "email": "Пошта",
+    "website": "Сайт",
+    "no_contacts": "Контактів поки немає",
+    "no_contacts_hint": "Студія ще не додала телефон чи пошту. Запитайте їх на найближчому занятті."
   },
   "paymentModal": {
     "tag": "Безпечна оплата",
     "title": "Оформлення замовлення",
     "service": "Послуга",
+    "base_price": "Вартість",
+    "discount": "Знижка",
     "amount_due": "До сплати",
     "pay_card": "Оплатити карткою",
     "or_other": "або іншим способом",
@@ -223,17 +239,26 @@
     "processing_transaction": "Обробка транзакції...",
     "processing": "Обробка...",
     "cancel": "Скасувати",
-    "expiry_placeholder": "ММ/РР"
-  },
-  "languageModal": {
-    "tag": "Налаштування",
-    "sub": "Мова інтерфейсу застосунку"
+    "expiry_placeholder": "ММ/РР",
+    "certificate": "Сертифікат",
+    "deposit": "Депозит",
+    "bonuses": "Бали",
+    "promo_placeholder": "Промокод",
+    "promo_invalid": "Промокод недійсний",
+    "certificate_placeholder": "Код сертифіката",
+    "certificate_invalid": "Сертифікат не знайдено або вже погашено",
+    "use_deposit": "Списати з депозиту",
+    "use_bonuses": "Списати бали ({{count}})",
+    "confirm_free": "Оформити",
+    "free_hint": "Оплата карткою не потрібна — суму покрито повністю"
   },
   "nav": {
     "home": "Головна",
     "schedule": "Розклад",
     "my_lessons": "Мої заняття",
-    "profile": "Профіль"
+    "profile": "Профіль",
+    "client_area": "Кабінет клієнта",
+    "club": "Клуб"
   },
   "home": {
     "greeting_morning": "Доброго ранку",
@@ -245,9 +270,6 @@
     "directions": "Напрямки",
     "body_spirit_balance": "Тіло. Дух. Баланс.",
     "studio_description": "Йога-студія Namaste — простір для гармонії та саморозвитку в Одесі",
-    "referral_title": "Запроси подругу",
-    "referral_subtitle": "Отримай знижку 20% на наступний абонемент",
-    "referral_link_copied": "Посилання скопійовано!",
     "today": "Сьогодні",
     "tomorrow": "Завтра",
     "studios": "Студії",
@@ -260,13 +282,46 @@
     "default_duration": "60 хв",
     "spots": "місця",
     "level_all": "Всі рівні",
-    "level_beginner": "Початківці"
-    ,"book_now": "Записатися",
+    "level_beginner": "Початківці",
+    "book_now": "Записатися",
     "flow_yoga": "Йога",
     "flow_pilates": "Пілатес",
     "flow_reformer_glow": "Reformer Glow",
     "flow_mfr": "МФР",
     "flow_healthy_back": "Здорова спина",
     "flow_breathing": "Дихальні практики"
+  },
+  "club": {
+    "title": "Клуб",
+    "points": "балів",
+    "points_worth": "≈ {{value}}",
+    "spent": "Витрачено в студії: {{amount}}",
+    "to_next": "Ще {{amount}} до «{{level}}»",
+    "level_top": "Найвищий рівень",
+    "levels": "Рівні",
+    "offers": "Персональні знижки",
+    "certificates": "Сертифікати",
+    "valid_until": "діє до {{date}}",
+    "valid_forever": "без обмеження часу",
+    "code_copied": "Код скопійовано",
+    "deposit": "Депозит",
+    "deposit_history": "Історія депозиту",
+    "deposit_empty": "Рухів по депозиту ще не було",
+    "deposit_load_error": "Не вдалося завантажити історію депозиту",
+    "referral": "Запросити друга",
+    "referral_bonus_points": "{{bonus}} балів вам",
+    "referral_bonus_money": "{{bonus}} вам",
+    "referral_discount": "{{discount}} % знижки другу",
+    "referral_invited": "Запрошено",
+    "referral_completed": "Прийшли",
+    "referral_copy": "Скопіювати посилання",
+    "referral_copied": "Посилання скопійовано",
+    "history": "Історія балів",
+    "no_history": "Балів ще не нараховували",
+    "no_history_hint": "Вони з’являться після першої оплати в студії",
+    "disabled": "Студія ще не запустила клуб",
+    "disabled_hint": "Щойно програма лояльності запрацює, бали й рівні з’являться тут.",
+    "certificate_use": "Використати сертифікат",
+    "code_copy": "Скопіювати код"
   }
 }

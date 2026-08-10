@@ -27,6 +27,7 @@ from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
 )
 from services.contacts import contact_taken, ensure_client_contacts_free
+from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 from schemas import (
     ActionMessageOut,
@@ -678,6 +679,10 @@ async def create_client(
                 referred_client_id=client.id,
                 status="pending",
             ))
+            # Триггер 'registration' — тот же, что в мини-приложении: клиент,
+            # заведённый администратором по коду друга, должен считаться так же.
+            await db.flush()
+            await fire_referral(db, studio_id, client.id, "registration", referred_name=client.name)
 
     if body.note:
         db.add(ClientNote(

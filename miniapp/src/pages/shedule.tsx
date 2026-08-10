@@ -32,6 +32,16 @@ interface SheduleProps {
 export default function Shedule({ catalog }: SheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
+  const rules = catalog?.rules ?? null;
+
+  // Последний день открытого расписания — «Запись открыта на N дней» из
+  // настроек студии. Ленту недель дальше не листаем.
+  const maxDate = useMemo(() => {
+    if (!rules) return undefined;
+    const limit = new Date();
+    limit.setDate(limit.getDate() + rules.booking_window_days);
+    return limit;
+  }, [rules]);
 
   const [date, setDate] = useState(() => new Date());
   const [dayClasses, setDayClasses] = useState<LessonResponse[]>([]);
@@ -187,13 +197,31 @@ export default function Shedule({ catalog }: SheduleProps) {
         }
       />
 
-      <div className="pt-6">
-        <WeekRail value={date} onChange={setDate} />
+      {/* Лента недели не тянется во всю колонку: семь клеток на 1160px стали бы
+          широкими прямоугольниками, а дата — это число, а не панель. Мера у
+          неё та же, что у уведомления ниже, — два разных обреза подряд читаются
+          как сбитая вёрстка. */}
+      <div className="pt-6 dt:pt-10">
+        <WeekRail value={date} onChange={setDate} maxDate={maxDate} />
       </div>
+
+      {/* Онлайн-запись выключена студией: расписание остаётся видимым (клиенту
+          надо знать, когда занятия), но записаться нельзя — и об этом честно
+          говорим один раз сверху, а не отказом на каждой карточке. */}
+      {rules && !rules.booking_active && (
+        <div className="mx-5 mt-5 rounded-[18px] bg-card px-4 py-3.5 shadow-soft dt:rounded-[20px] dt:px-5 dt:py-4">
+          <div className="text-[13px] font-extrabold tracking-[-0.015em] text-foreground">
+            {t('schedule.booking_closed')}
+          </div>
+          <div className="mt-1 text-[12px] font-medium leading-relaxed text-muted-foreground">
+            {t('schedule.booking_closed_hint')}
+          </div>
+        </div>
+      )}
 
       {/* Панель фильтров ростом в одну строку: на телефоне вертикаль дороже
           удобства, поэтому выбранное показано чипами, а сам выбор — в листе. */}
-      <div className="flex gap-2 overflow-x-auto px-5 pt-5">
+      <div className="flex gap-2 overflow-x-auto px-5 pt-5 dt:flex-wrap dt:gap-2.5 dt:overflow-visible dt:pt-8">
         <motion.button
           type="button"
           onClick={() => {
@@ -201,7 +229,7 @@ export default function Shedule({ catalog }: SheduleProps) {
             vibrateLight();
           }}
           whileTap={{ scale: 0.94 }}
-          className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full pl-3 pr-3.5 ${
+          className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full pl-3 pr-3.5 transition-shadow duration-300 dt:h-10 dt:pl-3.5 dt:pr-4 dt:hover:shadow-lift ${
             activeCount > 0 ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-card shadow-soft'
           }`}
         >
@@ -225,7 +253,7 @@ export default function Shedule({ catalog }: SheduleProps) {
         </motion.button>
 
         {isMultiStudio && (
-          <span className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3 pr-3.5 shadow-soft">
+          <span className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3 pr-3.5 shadow-soft dt:h-10 dt:pl-3.5 dt:pr-4">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
               <circle cx="12" cy="10" r="3" />
@@ -248,7 +276,7 @@ export default function Shedule({ catalog }: SheduleProps) {
               animate={{ opacity: 1, scale: 1 }}
               onClick={() => setFilters({ ...filters, [key]: null })}
               whileTap={{ scale: 0.94 }}
-              className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3.5 pr-2.5 shadow-soft"
+              className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3.5 pr-2.5 shadow-soft transition-shadow duration-300 dt:h-10 dt:pl-4 dt:pr-3 dt:hover:shadow-lift"
             >
               <span className="whitespace-nowrap text-[12px] font-bold text-foreground">
                 {key === 'service' ? t(`lesson.name.${value}`, { defaultValue: value }) : value}
@@ -261,9 +289,14 @@ export default function Shedule({ catalog }: SheduleProps) {
         })}
       </div>
 
-      <div className="flex flex-col gap-3 px-5 pt-5">
+      {/* Расписание дня — один столбец сверху вниз. Две колонки на десктопе
+          заставляли читать список зигзагом: время идёт по возрастанию, а глаз
+          обязан прыгать вправо и обратно, чтобы не потерять порядок. */}
+      <div className="flex flex-col gap-3 px-5 pt-5 dt:gap-4 dt:pt-10">
         {isLoading ? (
-          <ListSkeleton rows={4} flush />
+          <div>
+            <ListSkeleton rows={4} flush />
+          </div>
         ) : visible.length > 0 ? (
           visible.map((cl, i) => (
             <LessonCard
@@ -278,10 +311,12 @@ export default function Shedule({ catalog }: SheduleProps) {
             />
           ))
         ) : (
-          <EmptyState
-            title={activeCount > 0 ? t('schedule.no_matches') : t('schedule.no_classes')}
-            hint={activeCount > 0 ? t('schedule.no_matches_hint') : undefined}
-          />
+          <div>
+            <EmptyState
+              title={activeCount > 0 ? t('schedule.no_matches') : t('schedule.no_classes')}
+              hint={activeCount > 0 ? t('schedule.no_matches_hint') : undefined}
+            />
+          </div>
         )}
       </div>
 
@@ -308,7 +343,13 @@ export default function Shedule({ catalog }: SheduleProps) {
         lesson={activeLesson}
       />
 
-      <SuccessModal isOpen={isSuccessOpen} onClose={closeSuccess} lesson={activeLesson} layer={1} />
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={closeSuccess}
+        lesson={activeLesson}
+        awaitingConfirmation={Boolean(rules?.confirmation_required)}
+        layer={1}
+      />
     </>
   );
 }

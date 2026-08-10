@@ -15,7 +15,7 @@ from dependencies import require_role, StudioContext
 from activity import log_activity
 from models import (
     Account, Client, ClientPayment, ClientSubscription, Operation,
-    StudioSubscriptionProgramConfig, SubscriptionPackage,
+    Studio, StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
 from routers.clients._scope import client_scope
 from routers.clients.loyalty import accrue_points, register_purchase
@@ -24,6 +24,7 @@ from routers.loyalty.promocodes import find_valid_promo
 from schemas.clients.subscriptions import (
     ClientSubscriptionRead, ClientWallet, SubscriptionSaleCreate, SubscriptionTransferRequest,
 )
+from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import notify_payment
 from services.pricing import resolve_price
@@ -105,6 +106,25 @@ async def attach_subscription(
             )
             db.add(op)
             account.balance += price
+            # Комиссия платформы с офлайн-продажи — ЗДЕСЬ, а не в кассе: через эту
+            # функцию проходят ВСЕ продажи абонементов (касса, карточка клиента,
+            # создание клиента с абонементом, мини-приложение), и хук в одном
+            # вызывающем оставил бы остальные без начисления.
+            #
+            # "stripe" исключён: онлайн-оплату уже расщепил Stripe в момент
+            # платежа — счёт за неё был бы вторым списанием той же комиссии.
+            if payment_method != platform_fee.ONLINE_METHOD:
+                studio = (await db.execute(
+                    select(Studio).where(Studio.id == studio_id)
+                )).scalar_one()
+                currency = studio.currency or "CZK"
+                await platform_fee.record_offline_fee(
+                    db, studio_id,
+                    stripe_connect.to_minor_units(price, currency),
+                    currency,
+                    client_id=client_id,
+                    payment_method=payment_method or "cash",
+                )
         db.add(ClientPayment(
             client_id=client_id,
             amount=price,
@@ -216,11 +236,7 @@ async def sell_subscription(
         mark_paid=True, price=resolved.final_price, payment_method=body.payment_method,
     )
     # Помечаем использованными в той же транзакции — гонка на «применили дважды» исключена.
-    if resolved.promo is not None:
-        resolved.promo.used_count += 1
-    if resolved.offer is not None:
-        resolved.offer.is_used = True
-        resolved.offer.used_at = datetime.utcnow()
+    resolved.mark_used()
 
     await db.commit()
     await db.refresh(sub)

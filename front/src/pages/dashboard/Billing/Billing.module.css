@@ -237,18 +237,10 @@
   .blPane :global(.bl-combo-price) span:last-child { display: none; }
   .blPane :global(.bl-combo) button > span { font-size: 9.5px !important; padding: 2px 6px !important; }
 
-  /* ── Тарифы: список возможностей только у выбранного ─────────────────────
-     Восемь строк «есть/нет» на каждой из трёх карточек — три экрана подряд,
-     хотя сравнивают их по цене, а разбирают одну. Карточка тарифа кликабельна
-     и так (выбирает тариф), поэтому раскрытие ничего нового не требует. */
+  /* ── Тарифы: одна строка лимита сотрудников — плана хватает всегда ───────── */
   .blPane :global(.bl-plans) { gap: 8px !important; }
   .blPane :global(.bl-plan) { padding: 12px !important; border-radius: 14px !important; }
-  .blPane :global(.bl-plan-feats) { display: none !important; }
-  .blPane :global(.bl-plan.sel) :global(.bl-plan-feats) {
-    display: flex !important;
-    gap: 7px !important;
-    margin-bottom: 12px !important;
-  }
+  .blPane :global(.bl-plan-feats) { margin-bottom: 12px !important; }
   .blPane :global(.bl-plan-feats) span { font-size: 12px !important; }
   /* Плитка-кружок тарифа: цвет тарифа несёт и рамка карточки */
   .blPane :global(.bl-plan) > div:first-child { margin-bottom: 8px !important; }

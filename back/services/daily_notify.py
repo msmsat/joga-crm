@@ -33,6 +33,7 @@ from models import (
     Client, Lesson, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
     User, UserSession,
 )
+from services.booking_rules import BookingRules, load_rules
 from services.notifier import notify
 
 logger = logging.getLogger(__name__)
@@ -238,6 +239,15 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
     """Один блок на все студии сразу — уведомления про занятия не завязаны на
     студийный день, только на start_time. Окна (last_tick; this_tick] по
     каждому офсету не пересекаются — дублей при штатной работе цикла нет."""
+    # Настройки студии читаем один раз на тик, а не на каждое занятие: студий в
+    # окне мало, а занятий у одной студии может быть десяток.
+    rules_cache: dict[int, BookingRules] = {}
+
+    async def _rules(studio_id: int) -> BookingRules:
+        if studio_id not in rules_cache:
+            rules_cache[studio_id] = await load_rules(db, studio_id)
+        return rules_cache[studio_id]
+
     for offset, event_id, hours in _REMINDER_OFFSETS:
         lo = window_start + offset
         hi = window_end + offset
@@ -254,6 +264,13 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
             ctx_base = {"lesson_name": lesson.name, "start_time": lesson.start_time.strftime("%d.%m %H:%M")}
 
             if event_id == "c2":
+                # Напоминания клиенту включает страница «Онлайн-запись»: общий
+                # тумблер «Напоминание клиенту» плюс отдельные за 24 ч и за 2 ч.
+                # Тренерских t3/t4 это не касается — они про работу студии.
+                rules = await _rules(lesson.studio_id)
+                enabled = rules.reminder_24h if hours == 24 else rules.reminder_2h
+                if not (rules.client_reminder_enabled and enabled):
+                    continue
                 for r in reservations:
                     await notify(db, lesson.studio_id, "client", "c2",
                                  {**ctx_base, "client_id": r.client_id, "hours": hours})

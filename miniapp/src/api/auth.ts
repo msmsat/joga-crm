@@ -1,5 +1,5 @@
 // src/api/auth.ts
-import { apiGet, apiPost } from './client';
+import { apiGet, apiPost, resolveImageUrl } from './client';
 
 // Имя типа сохранено как UserResponse — home.tsx импортирует его нетронутым
 // (см. блок 1b брифа, deviation #2). Бэкенд (TelegramAuthUser) отдаёт ещё и
@@ -37,6 +37,7 @@ export interface StudioBrand {
   logo_url: string | null;
   accent_color: string;
   language: string;
+  dark_mode: boolean;
 }
 
 export interface EmailCodeResponse {
@@ -53,9 +54,15 @@ export interface VerifyEmailRequest {
   referral_code?: string;
 }
 
-/** Витрина студии для экрана входа — без токена, его на этом экране ещё нет. */
-export const getStudioBrand = (studioId: number): Promise<StudioBrand> =>
-  apiGet(`/global/public/${studioId}/brand`);
+/**
+ * Витрина студии для экрана входа — без токена, его на этом экране ещё нет.
+ * logo_url резолвим до абсолютного URL (см. resolveImageUrl) — тот же фикс,
+ * что и в getStudioCatalog.
+ */
+export const getStudioBrand = async (studioId: number): Promise<StudioBrand> => {
+  const brand = await apiGet<StudioBrand>(`/global/public/${studioId}/brand`);
+  return { ...brand, logo_url: resolveImageUrl(brand.logo_url) ?? null };
+};
 
 export const requestEmailCode = (studioId: number, email: string): Promise<EmailCodeResponse> =>
   apiPost('/global/auth/email/request', { studio_id: studioId, email });

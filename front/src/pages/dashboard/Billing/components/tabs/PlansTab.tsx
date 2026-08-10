@@ -3,12 +3,11 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingPlan } from '../../types';
 import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
-import { planFeatures } from '../../constants';
 import { formatMoney } from '../../../../../lib/money';
 import { usePhone } from '../../../../../hooks/usePhone';
 import { Button, ConfirmModal } from '../../../../../components/ui/index';
 import {
-  CheckIcon, XIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
+  CheckIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
   PercentIcon, ArrowRightIcon, HistoryIcon,
 } from '../ui/BillingIcons';
 import SavingsIllustration from '../ui/SavingsIllustration';
@@ -24,16 +23,18 @@ interface Props {
   setSelectedPeriod: Dispatch<SetStateAction<1 | 6 | 12 | 24>>;
   getPrice: (plan: PlanType, period: number) => number;
   periodDiscounts: Record<number, number>;
-  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
+  plans: Record<PlanType, { name: string; monthly: number; color: string; staffLimit: number | null }>;
   currentMonthly: number;
   discountedPrice: number;
   totalToPay: number;
   animateCards: boolean;
   setShowUpgradeModal: Dispatch<SetStateAction<boolean>>;
   startCheckout: () => void;
-  activateModel: (body: ActivateModelRequest) => void;
+  activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
   modelBusy: boolean;
   plan: BillingPlan | null;
+  /** Минимальный месячный платёж процентного тарифа, в валюте тарифов. */
+  minMonthly: number;
 }
 
 export default function PlansTab({
@@ -45,7 +46,7 @@ export default function PlansTab({
   currentMonthly, discountedPrice, totalToPay,
   animateCards, setShowUpgradeModal,
   startCheckout,
-  activateModel, modelBusy, plan,
+  activateModel, modelBusy, plan, minMonthly,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
@@ -57,9 +58,29 @@ export default function PlansTab({
   // Смена модели оплаты при активной подписке — необратимо теряет остаток оплаченного
   // периода, поэтому спрашиваем подтверждение (эпик B6, §2), а не бьём в API молча.
   const [pendingActivation, setPendingActivation] = useState<ActivateModelRequest | null>(null);
-  const requestActivate = (body: ActivateModelRequest) => {
-    if (plan?.status === 'active') setPendingActivation(body);
-    else activateModel(body);
+  // Модели с процентом требуют ОТДЕЛЬНОГО согласия: комиссия с наличных
+  // выставляется счётом постфактум, и за неоплату доступ блокируется. Бэк без
+  // accept_offline_terms отвечает 422 — модалку нельзя обойти, это не только UI.
+  const [pendingTerms, setPendingTerms] = useState<ActivateModelRequest | null>(null);
+  // «Активировать» и «Активировать и сразу оплатить» — один путь через модалку
+  // условий, отличаются только тем, открывать ли следом окно оплаты.
+  const [payAfterActivate, setPayAfterActivate] = useState(false);
+  const requestActivate = (body: ActivateModelRequest, thenPay = false) => {
+    setPayAfterActivate(thenPay);
+    if (body.mode === 'percent' || body.mode === 'combo') setPendingTerms(body);
+    else if (plan?.status === 'active') setPendingActivation(body);
+    else activateModel(body, thenPay ? startCheckout : undefined);
+  };
+
+  // Оплата фикс-части. На комбо сумму подписки определяет billing_mode в БД
+  // (checkout._is_combo), поэтому платить можно только после того, как режим там
+  // реально переключён — а переключение требует согласия с условиями постоплаты.
+  const payFixed = () => {
+    if (billingMode === 'fixed' && plan?.billing_mode !== 'combo') {
+      requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true);
+      return;
+    }
+    startCheckout();
   };
 
   // «Продолжить план» (аудит §1, эпик B6, §3): нативный плавный скролл к графику
@@ -80,6 +101,19 @@ export default function PlansTab({
 
   return (
     <div style={{ padding: '0 var(--card-pad)' }}>
+
+      {/* Оплаченный, но ещё не наступивший апгрейд. Держится на сервере
+          (StudioBillingPlan.scheduled_plan), поэтому переживает перезагрузку —
+          иначе владелец, закрывший вкладку, потерял бы всякий след того, что
+          тариф вообще сменится. */}
+      {plan?.scheduled_plan && plan.scheduled_at && (
+        <div style={{ padding: '12px 16px', marginBottom: '20px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12.5px', fontWeight: 600, color: 'var(--onyx)' }}>
+          {t('upgrade.scheduledBadge', {
+            date: new Date(plan.scheduled_at).toLocaleDateString(dateLocale),
+            plan: plans[plan.scheduled_plan as PlanType]?.name ?? plan.scheduled_plan,
+          })}
+        </div>
+      )}
 
       {/* ── BILLING MODE SELECTOR ── */}
       <div className="bl-card" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
@@ -153,9 +187,11 @@ export default function PlansTab({
           <div className="bl-combo" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
             {(['start', 'pro', 'business'] as const).map(planId => {
               const plan = plans[planId];
-              const comboBase = Math.round(plan.monthly / 2);
+              // Ровно половина подписки, БЕЗ округления до целых евро: 39/2 = 19,50,
+              // и Math.round показывал бы 20 € там, где Stripe спишет 19,50.
+              const comboBase = plan.monthly / 2;
               const comboDiscount = periodDiscounts[selectedPeriod] || 0;
-              const comboFixed = Math.round(comboBase * (1 - comboDiscount));
+              const comboFixed = getPrice(planId, selectedPeriod) / 2;
               const isSelected = selectedPlan === planId;
               return (
                 <button key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: isSelected ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'var(--bg-card)', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: isSelected ? '0 4px 20px rgba(252,174,145,0.15)' : 'var(--shadow)' }}>
@@ -181,18 +217,21 @@ export default function PlansTab({
 
           <div className="bl-card bl-combo-sum" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--onyx)' }}>
-              {t('combo.summary', {
-                fixed: formatMoney(Math.round((plans[selectedPlan].monthly / 2) * (1 - (periodDiscounts[selectedPeriod] || 0))), currency),
-                rate: 1.5,
-              })}
+              {/* discountedPrice уже комбо-половина со скидкой периода — считать её
+                  здесь второй формулой значит завести второй источник истины. */}
+              {t('combo.summary', { fixed: formatMoney(discountedPrice, currency), rate: 1.5 })}
             </span>
-            <Button
-              variant="primary"
-              loading={modelBusy}
-              onClick={() => requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
-            >
-              {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
-            </Button>
+            {/* Кнопка нужна только пока комбо НЕ активировано: дальше оплата идёт
+                через график платежей ниже, где видна итоговая сумма за период. */}
+            {plan?.billing_mode !== 'combo' && (
+              <Button
+                variant="primary"
+                loading={modelBusy}
+                onClick={() => requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
+              >
+                {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -202,7 +241,6 @@ export default function PlansTab({
         <div className="bl-plans" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
           {(['start', 'pro', 'business'] as const).map((planId, i) => {
             const plan = plans[planId];
-            const features = planFeatures[planId];
             const price = getPrice(planId, selectedPeriod);
             const isSelected = selectedPlan === planId;
             const isCurrent = currentPlanId === planId;
@@ -229,13 +267,11 @@ export default function PlansTab({
                   </div>
                 )}
                 <div style={{ height: '1px', background: 'var(--border)', margin: '16px 0' }} />
-                <div className="bl-plan-feats" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-                  {features.map((feat, fi) => (
-                    <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: feat.on ? 1 : 0.4 }}>
-                      {feat.on ? <CheckIcon size={16} color={plan.color === '#1A1A1A' ? 'var(--onyx)' : plan.color} /> : <XIcon size={16} />}
-                      <span style={{ fontSize: '13px', color: feat.on ? 'var(--onyx)' : 'var(--muted)', fontWeight: feat.on ? 500 : 400 }}>{t(feat.key)}</span>
-                    </div>
-                  ))}
+                <div className="bl-plan-feats" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                  <CheckIcon size={16} color={plan.color === '#1A1A1A' ? 'var(--onyx)' : plan.color} />
+                  <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
+                    {plan.staffLimit == null ? t('planCards.staffUnlimited') : t('planCards.staffLimit', { count: plan.staffLimit })}
+                  </span>
                 </div>
                 <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : planId === 'business' ? 'var(--bg)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   {isCurrent ? t('continuePlan') : t('planCards.choosePlan')}
@@ -247,8 +283,11 @@ export default function PlansTab({
         </div>
       )}
 
-      {/* ── SAVINGS + PAYMENT TIMELINE ── */}
-      {billingMode === 'subscription' && (
+      {/* ── SAVINGS + PAYMENT TIMELINE ──
+          Комбо тоже платит фикс подпиской, и без этого блока у него не было
+          кнопки оплаты вообще: заплатить можно было только переключившись на
+          вкладку подписки, где показывалась полная цена вместо половинной. */}
+      {billingMode !== 'percent' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
           <SavingsIllustration currency={currency} monthlyPrice={currentMonthly} period={selectedPeriod} discount={periodDiscounts[selectedPeriod]} />
 
@@ -282,7 +321,13 @@ export default function PlansTab({
               <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('paymentSchedule.total')}</span>
               <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
             </div>
-            <button onClick={startCheckout} style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            {/* Цены в каталоге без НДС (stripe_catalog.TAX_BEHAVIOR = "exclusive"),
+                налог Stripe Tax накидывает сверху на своей странице. Без этой строки
+                итог в счёте оказывался бы заметно больше показанного здесь. */}
+            <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--muted)', textAlign: 'right' }}>
+              {t('paymentSchedule.vatNote')}
+            </div>
+            <button onClick={payFixed} style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <ZapIcon /> {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
             </button>
           </div>
@@ -310,6 +355,28 @@ export default function PlansTab({
           </div>
         </div>
       </div>
+
+      {pendingTerms && (
+        <ConfirmModal
+          title={t('mode.termsTitle')}
+          // Минимум добавляем ТОЛЬКО для чистого процента: у комбо фиксированная
+          // часть уже берётся подпиской, и второе денежное обязательство там не
+          // возникает. Сумма приходит каталогом с сервера — цифра в согласии
+          // обязана совпадать с той, по которой реально выставят счёт.
+          message={t('mode.termsMessage', {
+            rate: pendingTerms.mode === 'percent' ? 3 : 1.5,
+            days: 7,
+          }) + (pendingTerms.mode === 'percent' && minMonthly
+            ? '\n\n' + t('mode.termsMinimum', { amount: minMonthly, currency })
+            : '')}
+          confirmText={t('mode.termsConfirm')}
+          onConfirm={() => activateModel(
+            { ...pendingTerms, accept_offline_terms: true },
+            payAfterActivate ? startCheckout : undefined,
+          )}
+          onClose={() => setPendingTerms(null)}
+        />
+      )}
 
       {pendingActivation && (
         <ConfirmModal

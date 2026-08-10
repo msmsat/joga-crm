@@ -128,6 +128,49 @@ def test_patch_requires_owner():
         assert e.status_code == 403
 
 
+def test_general_update_accepts_tax_details():
+    """Реквизиты для Stripe Tax принимаются и валидируются."""
+    body = GeneralUpdate(country="CZ", postal_code="11000", vat_id="CZ12345678")
+    assert body.country == "CZ"
+    assert body.postal_code == "11000"
+    assert body.vat_id == "CZ12345678"
+
+
+def test_general_update_normalizes_country_to_upper():
+    """Страна приходит как угодно, в Stripe уезжает в верхнем регистре ISO-3166."""
+    assert GeneralUpdate(country="cz").country == "CZ"
+
+
+def test_general_update_rejects_bad_country():
+    """Не-ISO страна отсекается схемой, а не падает в Stripe.
+
+    'Чехия' ловится длиной, а вот 'СЗ' кириллицей и '中国' — ровно два символа и
+    проходят str.isalpha(), потому что он юникодный. Без них тест зелёный даже с
+    удалённым телом валидатора.
+    """
+    for bad in ("Чехия", "СЗ", "中国", "C1", "1"):
+        try:
+            GeneralUpdate(country=bad)
+            raise AssertionError(f"ожидали ValidationError для {bad}")
+        except ValidationError:
+            pass
+
+
+def test_general_update_normalizes_vat_id():
+    """Пробелы в VAT ID Stripe не принимает, а люди их ставят."""
+    assert GeneralUpdate(vat_id="cz 123 456 78").vat_id == "CZ12345678"
+
+
+def test_general_update_empty_vat_id_becomes_none():
+    """Очистка поля — это «реквизита нет», а не «реквизит пустой».
+
+    Пустая строка уехала бы в Stripe пустым tax id вместо пропуска поля.
+    """
+    assert GeneralUpdate(vat_id="").vat_id is None
+    assert GeneralUpdate(vat_id="   ").vat_id is None
+    assert GeneralUpdate(vat_id=None).vat_id is None
+
+
 if __name__ == "__main__":
     test_general_settings_roundtrip()
     test_rejects_unknown_currency()
@@ -136,4 +179,9 @@ if __name__ == "__main__":
     test_rejects_malformed_email()
     test_rejects_too_short_name()
     test_patch_requires_owner()
+    test_general_update_accepts_tax_details()
+    test_general_update_normalizes_country_to_upper()
+    test_general_update_rejects_bad_country()
+    test_general_update_normalizes_vat_id()
+    test_general_update_empty_vat_id_becomes_none()
     print("ALL PASS")

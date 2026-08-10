@@ -147,11 +147,18 @@ export interface StaffWeekScheduleResponse {
   working_hours: StaffWorkingHoursItem[]
 }
 
+// Отметка «работает / выходной» на конкретную дату — поверх недельного графика.
+export interface StaffDayOverrideItem {
+  date: string         // "YYYY-MM-DD"
+  is_working: boolean
+}
+
 export interface StaffMonthScheduleResponse {
   staff_id: number
   year: number
   month: number
   lessons: StaffMonthLesson[]
+  day_overrides: StaffDayOverrideItem[]
 }
 
 export interface StaffTodayScheduleResponse {

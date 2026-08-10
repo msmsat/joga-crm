@@ -174,23 +174,83 @@ async def get_scoped_lesson(lesson_id: int, ctx: StudioContext, db: AsyncSession
     return lesson
 
 
+# Один и тот же отказ для CRM и мини-приложения: студия заблокирована за
+# неоплаченный счёт постоплаты. Фронт ловит код и показывает, куда платить.
+#
+# Причин две, и текст у них разный: за комиссию с наличных и за минимальный
+# месячный платёж процентного тарифа. Одинаковое сообщение отправляло бы владельца
+# искать долг по продажам там, где продаж как раз и не было.
+SUSPENDED_DETAIL = {
+    "code": "billing.suspended",
+    "message": "Доступ приостановлен: не оплачен счёт за комиссию с офлайн-продаж. "
+               "Оплатите его в разделе «Тариф и оплата».",
+}
+_MIN_FEE_DETAIL = {
+    "code": "billing.suspended",
+    "message": "Доступ приостановлен: не оплачен минимальный месячный платёж. "
+               "В прошлом месяце продаж через CRM не было, поэтому тариф "
+               "«процент от оборота» рассчитывается по минимальной ставке. "
+               "Оплатите счёт в разделе «Тариф и оплата».",
+}
+
+
+def suspended_detail(reason: str | None) -> dict:
+    """Текст отказа под конкретную причину блокировки (platform_fee.suspension_reason)."""
+    return _MIN_FEE_DETAIL if reason == "min_fee" else SUSPENDED_DETAIL
+
+
 async def require_active_subscription(
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ) -> StudioContext:
-    """Глобальный гейт (задача 8b): пускает в разделы данных только с активной подпиской.
+    """Глобальный гейт (задача 8b): пускает в разделы данных только оплаченные студии.
 
-    Истина — БД (StudioBillingPlan), НЕ JWT. План отсутствует (до онбординга) или
-    истёк (expires_at < now) → 402 subscription_expired. Вешается router-level на
-    все разделы данных; НЕ на /auth, /billing, /public, вебхук — иначе не войти/не оплатить.
+    Истина — БД (StudioBillingPlan), НЕ JWT. Вешается router-level на все разделы
+    данных; НЕ на /auth, /billing, /public, вебхук — иначе не войти/не оплатить.
+
+    Три ветки:
+    1. Просроченный счёт за комиссию блокирует ЛЮБУЮ студию, включая ту, у
+       которой подписка оплачена: деньги клиентов она уже получила наличными.
+       Срок наступает не сразу — у студии есть неделя после выставления счёта
+       (offline_fee_billing.GRACE_DAYS), и всё это время доступ открыт.
+    2. Тариф «только процент» — подписки нет по определению, срок подписки не
+       смотрим вообще. Карта не нужна: студия платит по счёту сама.
+    3. Всё остальное (подписка и комбо) — по статусу и сроку, как раньше. У комбо
+       фиксированная часть платится подпиской, и не оплатив её тариф не работает.
     """
+    # Импорт локальный: services.platform_fee тянет routers.billing.plans, а тот
+    # через routers.billing.__init__ — этот самый модуль. На уровне файла вышел
+    # бы цикл (тот же приём, что в billing/webhook.py).
+    from services.platform_fee import suspension_reason
+
+    reason = await suspension_reason(db, ctx.studio_id)
+    if reason is not None:
+        raise HTTPException(status_code=402, detail=suspended_detail(reason))
+
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
 
-    expired = plan is None or (plan.expires_at is not None and plan.expires_at < datetime.utcnow())
-    # ponytail: авто-recurring при истёкшем триале (пункт 4) — после задачи 7 (renew ещё нет);
-    # апгрейд: если plan.auto_renewal и есть rectoken → инициировать recurring один раз с пометкой.
+    if plan is not None and plan.billing_mode == "percent":
+        return ctx
+
+    # Гейт смотрит и на дату, и на статус. Статус нужен из-за подписок: Stripe
+    # переводит брошенную неоплаченной в unpaid/canceled, а expires_at при этом
+    # остаётся от последнего оплаченного периода и один сам по себе врёт.
+    #
+    # past_due СОЗНАТЕЛЬНО пускает: перевод по IBAN идёт 1-2 дня, и всё это время
+    # подписка именно в нём. Отрубать студию за деньги в пути нельзя.
+    expired = (
+        plan is None
+        or plan.status == "expired"
+        # expires_at IS NULL = «срок неизвестен» → НЕ пускаем. Исходное условие
+        # (`expires_at is not None and ...`) читало пустую дату как «не истекло» и
+        # выдавало доступ. Сейчас недостижимо (онбординг всегда ставит триальную дату),
+        # но подписка, у которой дату не удалось зеркалить, не должна становиться
+        # бессрочной именно из-за того, что мы её не знаем.
+        or plan.expires_at is None
+        or plan.expires_at < datetime.utcnow()
+    )
     if expired:
         raise HTTPException(status_code=402, detail={
             "code": "subscription_expired",

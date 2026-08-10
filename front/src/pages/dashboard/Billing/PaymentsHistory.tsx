@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { billingApi } from '../../../api/billing/billing.api';
 import { queryKeys } from '../../../api/queryKeys';
-import { useStudioCurrency } from '../../../hooks/useStudioCurrency';
+import { useBillingCurrency } from '../../../hooks/useBillingCurrency';
 import { formatMoney } from '../../../lib/money';
 import { Button, useToast } from '../../../components/ui/index';
 import { HistoryIcon, DownloadIcon } from './components/ui/BillingIcons';
@@ -33,7 +33,7 @@ export default function PaymentsHistory() {
   const { t } = useTranslation('billing');
   const navigate = useNavigate();
   const toast = useToast();
-  const currency = useStudioCurrency();
+  const currency = useBillingCurrency();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [isExporting, setIsExporting] = useState(false);

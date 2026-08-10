@@ -220,7 +220,22 @@ class StripeCheckout(Base):
     # pending — ждём Stripe; paid — деньги списаны и продажа проведена;
     # cancelled — сессия протухла/банк отказал, списания не было;
     # failed — деньги СПИСАНЫ, а провести не удалось (нужен разбор и возврат);
-    # refunded / disputed — оплата вернулась клиенту (возврат в дашборде Stripe
-    # или чарджбэк), продажа в CRM при этом НЕ откачена — см. _mark_reversed.
+    # refunded — полный возврат, продажа откачена автоматически (_revert_sale);
+    # disputed — чарджбэк оспаривается, деньги ещё не проиграны: продажу НЕ
+    # трогаем до исхода спора, только помечаем и кричим в ленту;
+    # chargeback — спор ПРОИГРАН (charge.dispute.closed, status=lost): деньги ушли
+    # клиенту, продажа откачена автоматически. Выигранный спор возвращает заявку
+    # обратно в paid, а не заводит ещё один статус.
     status: Mapped[str] = mapped_column(String(20), default="pending")
+    # Абонемент, проданный этой заявкой. Нужен, чтобы возврат мог его погасить,
+    # не угадывая «последний похожий»: клиент мог купить тот же пакет дважды —
+    # наличными и картой, — и погасить не тот значит отобрать оплаченное.
+    subscription_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("client_subscriptions.id", ondelete="SET NULL"), nullable=True,
+    )
+    # Доля платформы, запрошенная у Stripe при создании сессии (младшие единицы,
+    # 0 на тарифе-подписке). Храним, а не пересчитываем при проведении: тариф
+    # студии могли переключить между созданием сессии и оплатой, и в леджер
+    # уехала бы сумма, которую Stripe на самом деле не удерживал.
+    application_fee: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())

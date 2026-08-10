@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import HomeGreeting from '../components/home/HomeGreeting';
-import AmbientBackdrop from '../components/home/AmbientBackdrop';
 import StudioRail from '../components/home/StudioRail';
 import StudioSheet from '../components/home/StudioSheet';
-import StudioMapSheet from '../components/home/StudioMapSheet';
+import StudioPickerSheet from '../components/home/StudioPickerSheet';
 import NextLessonCard from '../components/home/NextLessonCard';
 import DirectionsRail from '../components/home/DirectionsRail';
-import ReferralBanner from '../components/home/ReferralBanner';
 import ServiceScheduleSheet from '../components/schedule/ServiceScheduleSheet';
 import { SectionLabel } from '../components/ui/SectionLabel';
-import { EmptyState } from '../components/ui/EmptyState';
+import { Press } from '../components/ui/Press';
 import BookingModal from '../components/modals/BookingModal';
 import SuccessModal from '../components/modals/SuccessModal';
 import { getLiked, toggleLiked } from '../lib/likes';
 import { type UserResponse } from '../api/auth';
 import { getNextLesson, type LessonResponse } from '../api/lessons';
-import { bookLesson, cancelLesson, getUserProfile } from '../api/user';
+import { bookLesson, cancelLesson } from '../api/user';
 import type { Studio, StudioCatalog } from '../api/studio';
 import { useTelegram } from '../hooks/useTelegram';
 import { spawnPetals } from '../lib/petals';
@@ -26,23 +23,22 @@ import { notify } from '../lib/notify';
 interface HomeProps {
   user: UserResponse | null;
   catalog: StudioCatalog | null;
+  /** Переход в другой раздел кабинета — пустая главная должна куда-то вести. */
+  onNavigate: (tab: string) => void;
 }
 
-export default function Home({ user, catalog }: HomeProps) {
+export default function Home({ user, catalog, onNavigate }: HomeProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
 
   const [activeStudioId, setActiveStudioId] = useState<number | null>(branches[0]?.id ?? null);
   const [liked, setLiked] = useState<number[]>(getLiked);
-  // Инвайт-код — только для реферальной ссылки ниже; профиль целиком грузит
-  // Profile-страница, дублировать его состояние здесь незачем.
-  const [inviteCode, setInviteCode] = useState<string | null>(null);
 
-  // Один лист выбора студии на два сценария: тап по студии и выбор студии для
-  // направления. Что делать после выбора, решает pendingService.
-  const [isMapOpen, setIsMapOpen] = useState(false);
-  const [openedStudio, setOpenedStudio] = useState<Studio | null>(null);
+  // Лист выбора филиала. Открывается только из направления: клиент уже выбрал,
+  // ЧТО, осталось решить где. Отдельного входа «посмотреть все студии» нет —
+  // для этого есть лента студий выше, тап по карточке открывает саму студию.
   const [pendingService, setPendingService] = useState<string | null>(null);
+  const [openedStudio, setOpenedStudio] = useState<Studio | null>(null);
   const [schedule, setSchedule] = useState<{ serviceId: string; studio: Studio | null } | null>(null);
   const [scheduleTick, setScheduleTick] = useState(0);
 
@@ -53,16 +49,9 @@ export default function Home({ user, catalog }: HomeProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
 
   const { tg, vibrateMedium, vibrateLight } = useTelegram();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    getUserProfile()
-      .then((profile) => setInviteCode(profile.invite_code))
-      .catch((err) => console.error('Не вдалося завантажити інвайт-код:', err));
-  }, []);
 
   const loadHeroLesson = () => {
     getNextLesson()
@@ -107,22 +96,17 @@ export default function Home({ user, catalog }: HomeProps) {
     vibrateMedium();
     if (isMultiStudio) {
       setPendingService(serviceId);
-      setIsMapOpen(true);
     } else {
       setSchedule({ serviceId, studio: null });
     }
   };
 
   const pickStudio = (studio: Studio) => {
-    setActiveStudioId(studio.id);
-    setIsMapOpen(false);
+    if (!pendingService) return;
 
-    if (pendingService) {
-      setSchedule({ serviceId: pendingService, studio });
-      setPendingService(null);
-    } else {
-      setOpenedStudio(studio);
-    }
+    setActiveStudioId(studio.id);
+    setSchedule({ serviceId: pendingService, studio });
+    setPendingService(null);
   };
 
   const closeSuccess = () => {
@@ -176,20 +160,6 @@ export default function Home({ user, catalog }: HomeProps) {
     }
   };
 
-  const handleCopyLink = () => {
-    const botUsername = catalog?.studio.bot_username;
-    if (!botUsername || !inviteCode) return;
-
-    navigator.clipboard
-      .writeText(`https://t.me/${botUsername}?startapp=s${catalog!.studio.id}_ref${inviteCode}`)
-      .then(() => {
-        setIsCopied(true);
-        if (tg) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => setIsCopied(false), 2000);
-      })
-      .catch((err) => console.error('Помилка копіювання: ', err));
-  };
-
   const isTomorrow = (() => {
     if (!heroLesson?.start_time) return false;
     const lessonDate = new Date(heroLesson.start_time);
@@ -203,35 +173,21 @@ export default function Home({ user, catalog }: HomeProps) {
 
   return (
     <div className="relative">
-      <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
-
-      <HomeGreeting greeting={getGreeting()} name={user?.name || t('home.guest_name')} />
+      {/* Один порядок блоков на всех ширинах: приветствие → студии →
+          ближайшее занятие → направления → приглашение. Раскладывать их по
+          колонкам на десктопе оказалось хуже: блок без данных («ближайшее
+          занятие» пустует регулярно) повисал в строке с именем клиента, а
+          глазу приходилось читать экран зигзагом вместо сверху вниз. */}
+      <HomeGreeting
+        greeting={getGreeting()}
+        name={user?.name || t('home.guest_name')}
+        studioName={catalog?.studio.name}
+        logoUrl={catalog?.studio.logo_url}
+      />
 
       {isMultiStudio && (
         <>
-          <SectionLabel
-            trailing={
-              <motion.button
-                type="button"
-                onClick={() => {
-                  setPendingService(null);
-                  setIsMapOpen(true);
-                  vibrateLight();
-                }}
-                whileTap={{ scale: 0.94 }}
-                className="flex items-center gap-1.5 rounded-full bg-card py-1.5 pl-2.5 pr-3 shadow-soft"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-                  <polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21" />
-                  <line x1="8" y1="3" x2="8" y2="18" />
-                  <line x1="16" y1="6" x2="16" y2="21" />
-                </svg>
-                <span className="text-[10.5px] font-extrabold tracking-[0.02em] text-brand">
-                  {t('studio.map')}
-                </span>
-              </motion.button>
-            }
-          >
+          <SectionLabel trailing={`${branches.length}`}>
             {t('home.studios', { defaultValue: 'Студії' })}
           </SectionLabel>
 
@@ -247,6 +203,10 @@ export default function Home({ user, catalog }: HomeProps) {
         </>
       )}
 
+      {/* Карточка занятия — строка «время · название · стрелка» с живым
+          отсчётом. Пустое состояние стоит на том же месте и ведёт в
+          расписание: главная без ближайшего занятия обязана предлагать
+          записаться, а не сообщать, что записей нет. */}
       {isHeroLoading ? null : heroLesson ? (
         <>
           <SectionLabel>
@@ -259,37 +219,51 @@ export default function Home({ user, catalog }: HomeProps) {
             dayLabel={isTomorrow ? t('home.tomorrow') : t('home.today')}
             title={t(`lesson.name.${heroLesson.name}`, { defaultValue: heroLesson.name })}
             meta={`${heroLesson.teacher} · ${heroLesson.duration_min} ${t('common.minutes')} · ${heroLesson.total_spots} ${t('home.spots')}`}
+            startTime={heroLesson.start_time}
             onClick={() => openModal(heroLesson)}
           />
         </>
       ) : (
-        <div className="px-5">
-          <EmptyState title={t('home.no_next_lesson')} size="sm" />
-        </div>
+        <>
+          <SectionLabel>{t('home.no_next_lesson')}</SectionLabel>
+          <div className="px-5">
+            <Press
+              onClick={() => onNavigate('sched')}
+              role="button"
+              tabIndex={0}
+              className="group flex cursor-pointer items-center gap-4 rounded-[22px] bg-card p-5 shadow-soft ring-1 ring-inset ring-brand/25 transition-shadow duration-300 dt:rounded-[26px] dt:p-7 dt:hover:shadow-lift"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10 dt:h-12 dt:w-12">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </span>
+
+              <span className="min-w-0 flex-1 text-[14.5px] font-extrabold leading-snug tracking-[-0.01em] text-card-foreground dt:text-[16px]">
+                {t('home.book_now')}
+              </span>
+
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 transition-transform duration-300 dt:group-hover:translate-x-1">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Press>
+          </div>
+        </>
       )}
 
       <SectionLabel>{t('home.directions')}</SectionLabel>
       <DirectionsRail services={catalog?.services ?? []} onSelect={openDirection} />
 
-      <ReferralBanner
-        title={t('home.referral_title')}
-        subtitle={t('home.referral_subtitle')}
-        copiedLabel={t('home.referral_link_copied')}
-        isCopied={isCopied}
-        onClick={handleCopyLink}
-      />
 
-      <StudioMapSheet
-        isOpen={isMapOpen}
-        onClose={() => {
-          setIsMapOpen(false);
-          setPendingService(null);
-        }}
+      <StudioPickerSheet
+        isOpen={pendingService !== null}
+        onClose={() => setPendingService(null)}
         studios={branches}
         activeId={activeStudioId ?? branches[0]?.id ?? 0}
         onPick={pickStudio}
-        title={pendingService ? t('studio.choose_studio') : t('studio.map_title')}
-        subtitle={t('studio.map_sub')}
       />
 
       <StudioSheet
@@ -325,7 +299,13 @@ export default function Home({ user, catalog }: HomeProps) {
         lesson={activeLesson}
       />
 
-      <SuccessModal isOpen={isSuccessOpen} onClose={closeSuccess} lesson={activeLesson} layer={3} />
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={closeSuccess}
+        lesson={activeLesson}
+        awaitingConfirmation={Boolean(catalog?.rules.confirmation_required)}
+        layer={3}
+      />
     </div>
   );
 }

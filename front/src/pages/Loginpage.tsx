@@ -7,6 +7,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { GoogleLogin } from '@react-oauth/google';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
+import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -36,14 +37,25 @@ export default function LoginPage() {
   // проверены на шаге "login", здесь только код из письма.
   const [twoFaCode, setTwoFaCode] = useState("");
 
+  // Google-вход оказался регистрацией: держим credential, пока человек не примет
+  // документы, и повторяем запрос с accept_terms.
+  const [pendingGoogle, setPendingGoogle] = useState<string | null>(null);
+  const [agree, setAgree] = useState(false);
+
   useEffect(() => {
     setTimeout(() => setMounted(true), 50);
   }, []);
 
-  const handleGoogleSuccess = async (credential: string) => {
+  // Google на странице ВХОДА заводит аккаунт, если его ещё нет, — то есть это
+  // ещё и регистрация. Существующего пользователя галочкой не мучаем: бэкенд
+  // просит согласие только когда создаёт нового, и тогда мы показываем блок и
+  // повторяем запрос тем же credential (он живёт около часа).
+  const handleGoogleSuccess = async (credential: string, acceptTerms = false) => {
     setLoading(true);
+    setSubmitError("");
     try {
-      const data = await authApi.google({ token: credential });
+      const data = await authApi.google({ token: credential, accept_terms: acceptTerms });
+      setPendingGoogle(null);
       if (data.two_fa_required) {
         setIdentifier(data.two_fa_identifier ?? "");
         setTwoFaCode("");
@@ -52,8 +64,12 @@ export default function LoginPage() {
         setActiveToken(data.access_token);
         navigate("/dashboard");
       }
-    } catch {
-      setSubmitError("Ошибка авторизации через Google");
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.code === "consent_required") {
+        setPendingGoogle(credential);
+      } else {
+        setSubmitError("Ошибка авторизации через Google");
+      }
     } finally {
       setLoading(false);
     }
@@ -283,9 +299,34 @@ export default function LoginPage() {
                       onError={() => {
                           setSubmitError("Google авторизация не удалась");
                       }}
-                      useOneTap 
+                      useOneTap
                   />
                 </div>
+
+                {/* Аккаунта под этим Google ещё нет — вход оказался регистрацией,
+                    и без принятых документов её завершать нельзя. */}
+                {pendingGoogle && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "14px 16px", background: "rgba(252,174,145,0.07)", border: "1.5px solid rgba(252,174,145,0.26)", borderRadius: "14px" }}>
+                    <p style={{ fontSize: "12.5px", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
+                      Аккаунта с этим адресом ещё нет — мы создадим новый. Для этого примите наши документы.
+                    </p>
+                    <Checkbox checked={agree} onChange={setAgree} label={
+                      <span style={{ fontSize: "12.5px" }}>
+                        Я принимаю <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">Условия использования</a> и{" "}
+                        <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">Политику конфиденциальности</a>
+                      </span>
+                    } />
+                    <PrimaryBtn
+                      onClick={() => handleGoogleSuccess(pendingGoogle, true)}
+                      loading={loading}
+                      disabled={!agree}
+                      fullWidth
+                    >
+                      Создать аккаунт
+                    </PrimaryBtn>
+                  </div>
+                )}
+
                 <Divider label="или войдите через" />
               </>
             )}
@@ -495,9 +536,9 @@ export default function LoginPage() {
           © 2026 Velora. Все права защищены.
         </div>
         <div style={{ display: "flex", gap: "20px", fontSize: "12px" }}>
-          {["Конфиденциальность", "Условия", "Поддержка"].map((l) => (
-            <a key={l} href="#" style={{ color: "rgba(102,102,102,0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
-              {l}
+          {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
+            <a key={label} href={href} {...LEGAL_LINK_PROPS} style={{ color: "rgba(102,102,102,0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
+              {label}
             </a>
           ))}
         </div>

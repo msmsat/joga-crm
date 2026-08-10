@@ -137,7 +137,7 @@ async def _run():
             raise AssertionError("ожидали 400")
         except HTTPException as e:
             assert e.status_code == 400
-            assert e.detail["code"] == "checkout.card_unavailable"  # CL-7.6: код ошибки для i18n
+            assert e.detail["code"] == "checkout.card_via_stripe"  # CL-7.6: код ошибки для i18n
 
         subs = (await db.execute(
             select(ClientSubscription).where(ClientSubscription.client_id == client.id)

@@ -7,6 +7,7 @@
 списание/эквайринг — забота кассы/мини-приложения (см. CLAUDE.md §2.16).
 """
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,7 +36,25 @@ class ResolvedPrice:
     offer_discount_applied: int = 0
     promo: Optional[StudioPromoCode] = None
     promo_discount_applied: int = 0
+    # Сама запись, а не только сумма: продавец обязан пометить `discount_used`
+    # при фиксации продажи, иначе скидка новичка применится и на следующей.
+    referral: Optional[ReferralRecord] = None
     referral_discount_applied: int = 0
+
+    def mark_used(self) -> None:
+        """Зафиксировать одноразовые скидки как потраченные.
+
+        Зовётся ТОЛЬКО когда продажа реально состоялась (для Stripe — на
+        вебхуке, не при создании сессии: брошенная корзина не должна сжигать
+        скидку). Не коммитит — вызывающий в своей транзакции.
+        """
+        if self.promo is not None:
+            self.promo.used_count += 1
+        if self.offer is not None:
+            self.offer.is_used = True
+            self.offer.used_at = datetime.utcnow()
+        if self.referral is not None:
+            self.referral.discount_used = True
 
 
 async def resolve_price(
@@ -79,10 +98,16 @@ async def resolve_price(
         select(StudioReferralConfig).where(StudioReferralConfig.studio_id == studio_id)
     )).scalar_one_or_none()
     if referral_cfg is not None and referral_cfg.is_enabled and referral_cfg.new_client_discount > 0:
+        # Ключ — `discount_used`, а НЕ status: бонус пригласившему и скидка
+        # новичку живут по разным расписаниям. На триггере 'registration' запись
+        # становится 'completed' в момент регистрации, и по статусу новичок не
+        # получил бы свою скидку никогда; на 'first_visit' — получал бы её на
+        # каждой покупке до первого визита. Отменённый реферал скидку не даёт.
         referral = (await db.execute(
             select(ReferralRecord).where(
                 ReferralRecord.referred_client_id == client_id,
-                ReferralRecord.status == "pending",
+                ReferralRecord.status != "cancelled",
+                ReferralRecord.discount_used.is_(False),
             )
         )).scalar_one_or_none()
         if referral is not None:
@@ -109,6 +134,7 @@ async def resolve_price(
             result.promo = obj
             result.promo_discount_applied = amount
         elif kind == "referral":
+            result.referral = obj
             result.referral_discount_applied = amount
 
     result.final_price = max(0, base_price - total_discount)

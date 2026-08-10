@@ -10,6 +10,7 @@ import type {
   StaffMutateResponse,
   StaffWeekScheduleResponse,
   StaffMonthScheduleResponse,
+  StaffDayOverrideItem,
   StaffTodayScheduleResponse,
   StaffCancelLessonResponse,
   StaffMessageResponse,
@@ -61,6 +62,10 @@ export const staffApi = {
       `/staff/${id}/schedule/month${qs ? `?${qs}` : ''}`
     )
   },
+
+  // is_working = null снимает отметку: день снова считается по недельному графику.
+  setDayOverride: (id: number, date: string, is_working: boolean | null) =>
+    client.put<StaffDayOverrideItem>(`/staff/${id}/schedule/day`, { date, is_working }),
 
   getTodaySchedule: (id: number) =>
     client.get<StaffTodayScheduleResponse>(`/staff/${id}/schedule/today`),

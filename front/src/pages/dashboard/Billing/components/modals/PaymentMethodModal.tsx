@@ -1,23 +1,29 @@
 import { useTranslation } from 'react-i18next';
-import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, useToast } from '../../../../../components/ui/index';
+import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, useToast } from '../../../../../components/ui/index';
 import type { IbanCheckout } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
 import { BankIcon, CreditCardIcon } from '../ui/BillingIcons';
+import InvoiceDetailsForm from '../sections/InvoiceDetailsForm';
+import type { InvoiceDetails, InvoiceDetailErrors } from '../../hooks/useInvoiceDetails';
+import type { PayBranch } from '../../hooks/useBillingCalculator';
 
 interface Props {
   currency?: string;
-  branch: 'choose' | 'iban' | 'card';
-  setBranch: (b: 'choose' | 'iban' | 'card') => void;
+  branch: PayBranch;
+  setBranch: (b: PayBranch) => void;
   ibanData: IbanCheckout | null;
   busy: boolean;
-  onChooseIban: () => void;
-  onPayCard: () => void;
+  /** Выбор способа: сам решает, спросить ли сначала реквизиты фактуры. */
+  onChoose: (method: 'iban' | 'card') => void;
   onClose: () => void;
+  details: { value: InvoiceDetails; patch: (p: Partial<InvoiceDetails>) => void };
+  wantInvoice: boolean;
+  setWantInvoice: (v: boolean) => void;
+  detailErrors: InvoiceDetailErrors;
+  /** Ветка перевода: дополнительно нужна страна. У карты — только IČO и DIČ. */
+  detailsForIban: boolean;
+  onSubmitDetails: () => void;
 }
-
-// Тестовый контур: настоящей интеграции Apple/Google Pay нет (Payment Request API) —
-// обе кнопки ведут на тот же Stripe checkout_url, что и «Оплатить картой» (аудит §4).
-const hasApplePay = typeof window !== 'undefined' && 'ApplePaySession' in window;
 
 function CopyRow({ label, value }: { label: string; value: string }) {
   const { t } = useTranslation('billing');
@@ -43,15 +49,22 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Модалка выбора способа оплаты (эпик B4): заменяет прямой редирект на оплату.
-// IBAN — тестовый инвойс+реквизиты показываются тут же; Карта — редирект на Stripe
-// (реквизиты вводятся там, PAN/CVV в наш фронт не попадают — PCI, §5).
-export default function PaymentMethodModal({ currency, branch, setBranch, ibanData, busy, onChooseIban, onPayCard, onClose }: Props) {
+// Модалка выбора способа оплаты (эпик B4).
+// Перевод — счёт и реквизиты показываются тут же. Карта — сразу редирект на страницу
+// Stripe: PAN/CVV в наш фронт не попадают вовсе (PCI), а адрес и индекс Stripe
+// собирает сам. Своего экрана с полями карты у нас нет — он был неактивной
+// заглушкой, ведущей туда же.
+// Шаг реквизитов общий для обеих веток: IČO/DIČ нужны для фактуры и живут в профиле
+// студии, Stripe печатает их из Customer'а.
+export default function PaymentMethodModal({
+  currency, branch, setBranch, ibanData, busy, onChoose, onClose,
+  details, wantInvoice, setWantInvoice, detailErrors, detailsForIban, onSubmitDetails,
+}: Props) {
   const { t } = useTranslation('billing');
 
   return (
     <ModalShell onClose={onClose}>
-      <ModalHeader title={t('payModal.title')} />
+      <ModalHeader title={branch === 'details' ? t('payModal.invoice.title') : t('payModal.title')} />
       <ModalBody>
         {branch === 'choose' && (
           <>
@@ -59,7 +72,7 @@ export default function PaymentMethodModal({ currency, branch, setBranch, ibanDa
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <button
                 type="button"
-                onClick={onChooseIban}
+                onClick={() => onChoose('iban')}
                 disabled={busy}
                 style={{ padding: '20px', borderRadius: '14px', border: '1.5px solid var(--border)', background: 'var(--bg-card)', cursor: busy ? 'wait' : 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '10px', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}
               >
@@ -69,14 +82,38 @@ export default function PaymentMethodModal({ currency, branch, setBranch, ibanDa
               </button>
               <button
                 type="button"
-                onClick={() => setBranch('card')}
-                style={{ padding: '20px', borderRadius: '14px', border: '1.5px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '10px', fontFamily: 'inherit' }}
+                onClick={() => onChoose('card')}
+                disabled={busy}
+                style={{ padding: '20px', borderRadius: '14px', border: '1.5px solid var(--border)', background: 'var(--bg-card)', cursor: busy ? 'wait' : 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '10px', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}
               >
                 <CreditCardIcon />
                 <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{t('payModal.card.label')}</div>
                 <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{t('payModal.card.desc')}</div>
               </button>
             </div>
+          </>
+        )}
+
+        {/* Шаг реквизитов: показывается только если IČO (или страна для IBAN) ещё не
+            заполнены — заполненные лежат в профиле студии и больше не спрашиваются. */}
+        {branch === 'details' && (
+          <>
+            <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
+              {t('payModal.invoice.question')}
+            </div>
+            <InvoiceDetailsForm
+              value={details.value}
+              patch={details.patch}
+              wantInvoice={wantInvoice}
+              setWantInvoice={setWantInvoice}
+              requireCountry={detailsForIban}
+              // Страну и индекс показываем ТОЛЬКО для перевода. На карточной ветке
+              // их собирает сама страница Stripe (billing_address_collection) и
+              // пишет обратно в Customer — спрашивать здесь значит просить дважды.
+              // IČO и DIČ остаются в обеих ветках: без них не выписать фактуру.
+              showAddress={detailsForIban}
+              errors={detailErrors}
+            />
           </>
         )}
 
@@ -88,6 +125,8 @@ export default function PaymentMethodModal({ currency, branch, setBranch, ibanDa
             <div>
               <CopyRow label={t('payModal.beneficiary')} value={ibanData.beneficiary} />
               <CopyRow label={t('payModal.ibanLabel')} value={ibanData.iban} />
+              {/* BIC требуют не все банки, но без него часть форм перевода не отправляется. */}
+              {ibanData.bic && <CopyRow label={t('payModal.bicLabel')} value={ibanData.bic} />}
               <CopyRow label={t('payModal.referenceLabel')} value={ibanData.reference} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}>
                 <span style={{ fontSize: '11px', color: 'var(--muted)' }}>{t('payModal.amountLabel')}</span>
@@ -97,59 +136,30 @@ export default function PaymentMethodModal({ currency, branch, setBranch, ibanDa
             <div style={{ padding: '12px 16px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.6' }}>
               {t('payModal.ibanNote')}
             </div>
-          </>
-        )}
-
-        {branch === 'card' && (
-          <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {hasApplePay && (
-                <button
-                  type="button"
-                  onClick={onPayCard}
-                  disabled={busy}
-                  style={{ padding: '14px', borderRadius: '12px', border: 'none', background: '#000', color: '#fff', fontSize: '14px', fontWeight: 700, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}
-                >
-                  {t('payModal.applePay')}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={onPayCard}
-                disabled={busy}
-                style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'var(--bg-card)', color: 'var(--onyx)', fontSize: '14px', fontWeight: 700, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}
+            {/* Фактура уже ушла на почту студии, но бухгалтерии часто нужна прямо сейчас. */}
+            {ibanData.hosted_invoice_url && (
+              <a
+                href={ibanData.hosted_invoice_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '13px', fontWeight: 700, color: 'var(--peach)', textDecoration: 'none' }}
               >
-                {t('payModal.googlePay')}
-              </button>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '11px', color: 'var(--muted)' }}>{t('payModal.or')}</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            </div>
-
-            {/* Превью-заглушка полей карты (§4/§5): недоступны для ввода — реквизиты
-                вводятся на защищённой странице Stripe, submit туда и уводит. */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Input label={t('payModal.cardNumber')} value="" onChange={() => {}} placeholder="•••• •••• •••• ••••" disabled monospace />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <Input label={t('payModal.expiry')} value="" onChange={() => {}} placeholder="••/••" disabled monospace />
-                <Input label={t('payModal.cvv')} value="" onChange={() => {}} placeholder="•••" disabled monospace />
-              </div>
-              <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: '1.5' }}>{t('payModal.cardFormNote')}</div>
-            </div>
+                {t('payModal.openInvoice')}
+              </a>
+            )}
           </>
         )}
+
       </ModalBody>
       <ModalFooter>
         {branch === 'choose' && <GhostButton>{t('common:cancel')}</GhostButton>}
-        {branch === 'iban' && <GhostButton onClick={() => setBranch('choose')}>{t('payModal.back')}</GhostButton>}
-        {branch === 'card' && (
+        {branch === 'details' && (
           <>
             <GhostButton onClick={() => setBranch('choose')}>{t('payModal.back')}</GhostButton>
-            <PrimaryButton onClick={onPayCard} loading={busy}>{t('payModal.payWithCard')}</PrimaryButton>
+            <PrimaryButton onClick={onSubmitDetails} loading={busy}>{t('payModal.invoice.continue')}</PrimaryButton>
           </>
         )}
+        {branch === 'iban' && <GhostButton onClick={() => setBranch('choose')}>{t('payModal.back')}</GhostButton>}
       </ModalFooter>
     </ModalShell>
   );

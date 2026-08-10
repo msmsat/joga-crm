@@ -283,13 +283,38 @@ def test_general_update_normalizes_country_to_upper():
 
 
 def test_general_update_rejects_bad_country():
-    """Не-ISO страна отсекается схемой, а не падает в Stripe."""
+    """Не-ISO страна отсекается схемой, а не падает в Stripe.
+
+    'Чехия' ловится длиной, а вот 'СЗ' кириллицей и '中国' — ровно два символа и
+    проходят str.isalpha(), потому что он юникодный. Без них тест зелёный даже с
+    удалённым телом валидатора.
+    """
     import pytest
     from pydantic import ValidationError
     from schemas.settings.general import GeneralUpdate
 
-    with pytest.raises(ValidationError):
-        GeneralUpdate(country="Чехия")
+    for bad in ("Чехия", "СЗ", "中国", "C1", "1"):
+        with pytest.raises(ValidationError):
+            GeneralUpdate(country=bad)
+
+
+def test_general_update_normalizes_vat_id():
+    """Пробелы в VAT ID Stripe не принимает, а люди их ставят."""
+    from schemas.settings.general import GeneralUpdate
+
+    assert GeneralUpdate(vat_id="cz 123 456 78").vat_id == "CZ12345678"
+
+
+def test_general_update_empty_vat_id_becomes_none():
+    """Очистка поля — это «реквизита нет», а не «реквизит пустой».
+
+    Пустая строка уехала бы в Stripe пустым tax id вместо пропуска поля.
+    """
+    from schemas.settings.general import GeneralUpdate
+
+    assert GeneralUpdate(vat_id="").vat_id is None
+    assert GeneralUpdate(vat_id="   ").vat_id is None
+    assert GeneralUpdate(vat_id=None).vat_id is None
 ```
 
 - [ ] **Шаг 2: Убедиться, что тесты падают**
@@ -325,9 +350,12 @@ from pydantic import field_validator
     @field_validator("country")
     @classmethod
     def _upper_country(cls, v: Optional[str]) -> Optional[str]:
+        # isascii обязателен: str.isalpha() юникодный и пропускает 'СЗ' кириллицей
+        # и '中国'. Для кода страны это мусор, который свалится уже внутри Stripe —
+        # режем на границе, где ошибка ещё читаема.
         if v is None:
             return None
-        if not v.isalpha():
+        if not (v.isascii() and v.isalpha()):
             raise ValueError("country должен быть кодом ISO-3166-1 alpha-2, например CZ")
         return v.upper()
 
@@ -335,7 +363,11 @@ from pydantic import field_validator
     @classmethod
     def _strip_vat(cls, v: Optional[str]) -> Optional[str]:
         # Пробелы внутри VAT ID Stripe не принимает, а люди их ставят.
-        return v.replace(" ", "").upper() if v else v
+        # Пустая строка после очистки — это «реквизита нет», а не «реквизит пустой»:
+        # иначе PATCH {vat_id: ""} уедет в Stripe пустым tax id вместо пропуска поля.
+        if v is None:
+            return None
+        return v.replace(" ", "").upper() or None
 ```
 
 - [ ] **Шаг 4: Убедиться, что роутер править не нужно**
@@ -477,11 +509,16 @@ async def _ensure_price(product_id: str, plan_id: str, period_months: int) -> st
     interval, interval_count = _INTERVALS[period_months]
 
     existing = await _find_price(key)
-    if existing is not None and (
+    # `recurring` отдельной переменной, а не existing.recurring.interval напрямую:
+    # у разового Price это поле None, и цепочка уронила бы весь sync() посреди цикла
+    # с AttributeError. Такой Price под нашим ключом — чужой мусор; проваливаемся
+    # ниже и забираем ключ себе новым recurring-Price через transfer_lookup_key.
+    recurring = getattr(existing, "recurring", None) if existing is not None else None
+    if recurring is not None and (
         existing.unit_amount == amount
         and existing.currency == CURRENCY
-        and existing.recurring.interval == interval
-        and existing.recurring.interval_count == interval_count
+        and recurring.interval == interval
+        and recurring.interval_count == interval_count
     ):
         return existing.id
 
@@ -584,7 +621,9 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 - Modify: `back/services/stripe_billing.py` (переписать тело, докстринг модуля и self-check)
 
 **Interfaces:**
-- Consumes: `services.stripe_catalog.TAX_CODE`.
+- Consumes: ничего из `stripe_catalog`. Tax code живёт на Product'е и проставляется в
+  `stripe_catalog._ensure_product`; подписке достаточно `automatic_tax={"enabled": True}`.
+  Импортировать сюда `TAX_CODE` не нужно — это был бы мёртвый импорт.
 - Produces:
   - `configured() -> bool` *(без изменений)*
   - `parse_webhook(payload: bytes, signature: str) -> dict | None` *(без изменений)*
@@ -601,7 +640,10 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
   - `async fetch_subscription(subscription_id: str)` → Subscription с раскрытым `default_payment_method`
   - `async fetch_invoice(stripe_invoice_id: str)` → Invoice
   - `async refund(payment_intent: str) -> None` *(без изменений)*
-- **Удаляются:** `create_checkout()`, `charge_saved_card()`, `fetch_session()`.
+- **НЕ удаляем здесь:** `create_checkout()`, `charge_saved_card()`, `fetch_session()` остаются
+  нетронутыми до Task 7. Их вызывающая сторона (`routers/billing/checkout.py`) чинится там же,
+  и удалять их раньше значит оставить приложение неимпортируемым на два коммита. Эта задача
+  только ДОБАВЛЯЕТ функции.
 
 - [ ] **Шаг 1: Обновить докстринг модуля**
 
@@ -626,13 +668,20 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 """
 ```
 
-Блоки `stripe.api_key`, `WEBHOOK_SECRET`, предупреждение про общий секрет, `CURRENCY`, `configured()`, `refund()` и `parse_webhook()` оставить как есть.
+Блоки `stripe.api_key`, `WEBHOOK_SECRET`, предупреждение про общий секрет, `configured()`, `refund()` и `parse_webhook()` оставить как есть.
 
-- [ ] **Шаг 2: Удалить функции разовых платежей**
+**`CURRENCY` — одна правка:** дефолт `czk` заменить на `eur`:
 
-Удалить из `back/services/stripe_billing.py` целиком: `create_checkout()`, `fetch_session()`, `charge_saved_card()`. Убрать ставший ненужным импорт, если он остался.
+```python
+CURRENCY = os.getenv("BILLING_CURRENCY", "eur").lower()
+```
 
-- [ ] **Шаг 3: Добавить функции подписок**
+Соседний модуль того же эпика (`services/stripe_catalog.py`) уже по умолчанию `eur`. Два
+модуля с разным фолбэком на одну и ту же переменную — это окружение без `BILLING_CURRENCY`,
+где Prices заведены в EUR, а инструкции для перевода запрашиваются в CZK: `eu_bank_transfer`
+CZK не поддерживает вообще, и вся IBAN-ветка отвечает 400.
+
+- [ ] **Шаг 2: Добавить функции подписок**
 
 После `configured()` вставить:
 
@@ -692,16 +741,18 @@ async def ensure_customer(
         email=email or None,
         address={k: v for k, v in address.items() if v},
         metadata={"studio_id": str(studio_id)},
+        # И на create, и на modify: Customer, заведённый до этой фичи (легаси-путь
+        # разовых оплат), иначе навсегда останется без автосверки. Такая студия
+        # переведёт деньги без назначения платежа — они зависнут на балансе, счёт
+        # останется open, Stripe открутит dunning и отменит подписку у того, кто
+        # УЖЕ заплатил. Customer.modify это поле принимает.
+        cash_balance={"settings": {"reconciliation_mode": "automatic"}},
     )
 
     if customer_id:
         await asyncio.to_thread(stripe.Customer.modify, customer_id, **fields)
     else:
-        customer = await asyncio.to_thread(
-            stripe.Customer.create,
-            cash_balance={"settings": {"reconciliation_mode": "automatic"}},
-            **fields,
-        )
+        customer = await asyncio.to_thread(stripe.Customer.create, **fields)
         customer_id = customer.id
 
     if vat_id:
@@ -719,9 +770,19 @@ async def _ensure_tax_id(customer_id: str, vat_id: str) -> None:
         existing = await asyncio.to_thread(stripe.Customer.list_tax_ids, customer_id, limit=100)
         if any(t.value == vat_id for t in existing.data):
             return
+        # СНАЧАЛА заводим новый, ПОТОМ снимаем устаревшие. Обратный порядок оставил бы
+        # клиента вообще без VAT ID, если create упадёт после успешного delete, — а это
+        # хуже исходного бага: там было два номера, тут reverse charge пропадает целиком.
         await asyncio.to_thread(
             stripe.Customer.create_tax_id, customer_id, type="eu_vat", value=vat_id,
         )
+        # Stripe дубли не схлопывает: без уборки у клиента висели бы два VAT ID, в PDF
+        # печатались бы оба (один — чужого юрлица), а Stripe Tax мог бы и дальше
+        # применять reverse charge по старому ещё валидному номеру. Недобор VAT в этом
+        # случае — на Velora, не на студии.
+        for stale in existing.data:
+            if stale.value != vat_id:
+                await asyncio.to_thread(stripe.Customer.delete_tax_id, customer_id, stale.id)
     except stripe.StripeError as exc:
         logger.warning("Stripe billing: VAT ID %s не принят (%s)", vat_id, exc)
 
@@ -794,6 +855,23 @@ async def create_iban_subscription(
         metadata=metadata,
         payment_settings=_IBAN_PAYMENT_SETTINGS,
         expand=["latest_invoice"],
+        # Subscription.create НЕ идемпотентен. Двойной клик по «Оплатить переводом»
+        # или ретрай после таймаута шлюза заводят студии ВТОРУЮ подписку — при том
+        # что вся модель исходит из «одна на студию». Уникальность в нашей БД тут не
+        # спасает: в сценарии таймаута вызов у Stripe уже прошёл, а запись до нас не
+        # доехала.
+        #
+        # 10-минутная корзина в ключе обязательна. Ключ Stripe живёт 24 часа, и БЕЗ
+        # корзины студия, отменившая подписку и осознанно оформившая её заново в тот же
+        # день, прислала бы те же параметры и получила КЭШ первого ответа: вызывающая
+        # сторона решит, что подписка создана, а объект на самом деле отменён.
+        # Повторы одного намерения попадают в одну корзину, осознанная переподписка
+        # позже — в новую.
+        #
+        # customer_id, а не metadata['studio_id']: customer_id — обязательный параметр
+        # и есть всегда, а metadata.get() молча выродился бы в строку "None", и две
+        # разные студии столкнулись бы на одном ключе.
+        idempotency_key=f"sub:{customer_id}:{price_id}:{int(time.time() // 600)}",
     )
     if trial_end is not None:
         params["trial_end"] = trial_end
@@ -878,24 +956,45 @@ async def open_or_new_invoice(customer_id: str, subscription_id: str):
     Порядок: есть открытый счёт — платим его; нет — выставляем новый по накопленным
     позициям; платить нечего — None, и вызывающая сторона отвечает 409.
     """
+    # subscription обязателен: без него вернётся ЛЮБОЙ открытый счёт клиента —
+    # просроченный цикл или разовый счёт легаси-пути — и студия увидит чужую сумму
+    # как «счёт за апгрейд».
     existing = await asyncio.to_thread(
-        stripe.Invoice.list, customer=customer_id, status="open", limit=1,
+        stripe.Invoice.list,
+        customer=customer_id, subscription=subscription_id, status="open", limit=1,
     )
     if existing.data:
         return existing.data[0]
 
+    # Способ оплаты берём у самой подписки: у карточной студии счёт за разницу
+    # должен списаться с карты, а не уехать письмом с 14-дневным сроком.
+    subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    method = getattr(subscription, "collection_method", "send_invoice")
+    params: dict = {
+        "customer": customer_id,
+        "subscription": subscription_id,
+        "collection_method": method,
+        "automatic_tax": {"enabled": True},
+        # КРИТИЧНО: по умолчанию Stripe ИСКЛЮЧАЕТ отложенные позиции из нового счёта
+        # (_invoice_create_params.py: «Defaults to exclude if the parameter is omitted»).
+        # Прорация за апгрейд лежит именно в них — без include счёт выйдет пустым,
+        # Stripe ответит «Nothing to invoice», и студия перейдёт на дорогой тариф,
+        # ничего не доплатив.
+        "pending_invoice_items_behavior": "include",
+    }
+    if method == "send_invoice":
+        params["days_until_due"] = DAYS_UNTIL_DUE
+
     try:
-        draft = await asyncio.to_thread(
-            stripe.Invoice.create,
-            customer=customer_id,
-            subscription=subscription_id,
-            collection_method="send_invoice",
-            days_until_due=DAYS_UNTIL_DUE,
-            automatic_tax={"enabled": True},
-        )
+        draft = await asyncio.to_thread(stripe.Invoice.create, **params)
     except stripe.InvalidRequestError as exc:
-        # «Nothing to invoice» — нормальный исход: тариф тот же, доплачивать нечего.
-        logger.info("Stripe billing: выставлять нечего по подписке %s (%s)", subscription_id, exc)
+        # Ловим ТОЛЬКО «нечего выставлять». InvalidRequestError — это generic 400:
+        # сюда же попадают customer_tax_location_invalid, мёртвая подписка и
+        # рассинхрон валют. Проглотить их в None значит показать студии «доплачивать
+        # нечего» там, где её на самом деле невозможно счётом обслужить.
+        if "nothing to invoice" not in str(exc).lower():
+            raise
+        logger.info("Stripe billing: выставлять нечего по подписке %s", subscription_id)
         return None
 
     return await asyncio.to_thread(stripe.Invoice.finalize_invoice, draft.id)
@@ -924,7 +1023,7 @@ async def fetch_invoice(stripe_invoice_id: str):
     return await asyncio.to_thread(stripe.Invoice.retrieve, stripe_invoice_id)
 ```
 
-- [ ] **Шаг 4: Обновить self-check**
+- [ ] **Шаг 3: Обновить self-check**
 
 Заменить блок `if __name__ == "__main__":` в `back/services/stripe_billing.py` на:
 
@@ -948,37 +1047,61 @@ if __name__ == "__main__":
     # Страна IBAN — двухбуквенный код, иначе Stripe отвергнет запрос инструкций.
     assert len(BANK_TRANSFER_COUNTRY) == 2 and BANK_TRANSFER_COUNTRY.isalpha()
 
-    # Функции разовых платежей удалены — их вызов должен падать здесь, а не в проде.
-    import services.stripe_billing as _self
-    for _gone in ("create_checkout", "charge_saved_card", "fetch_session"):
-        assert not hasattr(_self, _gone), f"{_gone} должна быть удалена"
+    # send_invoice обязан нести срок оплаты, charge_automatically — не должен:
+    # передать days_until_due вместе с ним значит получить 400 от Stripe.
+    import inspect
+    _src = inspect.getsource(set_collection_method)
+    assert "days_until_due" in _src and "charge_automatically" in _src
 
     print("stripe_billing self-check ok")
 ```
 
-- [ ] **Шаг 5: Прогнать self-check**
+- [ ] **Шаг 4: Прогнать self-check**
 
 Run: `cd back && python -m services.stripe_billing`
 Expected: `stripe_billing self-check ok`
 
-- [ ] **Шаг 6: Убедиться, что импорты нигде не сломались**
+- [ ] **Шаг 5: Убедиться, что приложение по-прежнему поднимается**
+
+Эта задача только добавляет функции — старые никуда не делись, и ломаться нечему.
 
 Run: `cd back && python -c "import main; print('imports ok')"`
-Expected: **ImportError** на `charge_saved_card` в `routers/billing/checkout.py` — это ожидаемо, чинится в Task 7. Записать сообщение и идти дальше.
+Expected: `imports ok`. Если здесь ImportError — значит удалили лишнее, вернуть.
 
-- [ ] **Шаг 7: Commit**
+- [ ] **Шаг 6: Commit**
 
 ```bash
 git add back/services/stripe_billing.py
-git commit -m "feat(billing): клиент Stripe Subscriptions вместо разовых платежей
+git commit -m "feat(billing): клиент Stripe Subscriptions
 
 Карта и IBAN — одна подписка с разными collection_method.
-Удалены create_checkout, charge_saved_card, fetch_session.
+Старые функции разовых платежей пока на месте: их снимает Task 7
+вместе с переписыванием вызывающей стороны.
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ```
 
 ---
+
+> **ИСПРАВЛЕНО ПОСЛЕ РЕВЬЮ (2026-08-08).** Первая редакция этой задачи содержала два
+> катастрофических дефекта, оба молчаливых:
+>
+> 1. **`current_period_end` НЕ существует у Subscription в `stripe==15.4.0`.** Проверено:
+>    в `venv/.../stripe/_subscription.py` ноль вхождений, поле живёт в
+>    `_subscription_item.py:67` (API `2026-07-29.dahlia`). Это то же поколение API, что
+>    перенесло `invoice.subscription` → `invoice.parent.subscription_details`, которое
+>    план как раз компенсирует в `_subscription_id`. Итог первой редакции: оба
+>    `getattr(..., "current_period_end", None)` возвращали `None`, `if period_end:`
+>    молча пропускался, а `_add_months` — единственный другой писатель `expires_at` —
+>    этой же задачей удалён. **`expires_at` не писало НИЧТО**, и каждая платящая студия
+>    получала 402 по истечении старого срока при живой оплаченной подписке.
+>    Читать период надо у позиции: `subscription.items.data[0].current_period_end`.
+> 2. **Гейт читает только `expires_at`, статус игнорирует** (`dependencies.py:191`).
+>    Поэтому `status = "expired"` на отмене/возврате ничего не отзывает: студия
+>    возвращает деньги и сохраняет тариф до конца периода. Task 8 учит гейт смотреть
+>    статус, но здесь надо ещё и прижимать `expires_at` к now при отмене.
+>
+> Ниже — исправленная редакция.
 
 ### Task 6: Вебхук на события подписок
 
@@ -1429,11 +1552,12 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `back/routers/billing/checkout.py` (переписать)
 - Modify: `back/schemas/settings/billing.py` (`IbanCheckoutResponse`)
+- Modify: `back/services/stripe_billing.py` (снять функции разовых платежей — их вызывающая сторона исчезает здесь же)
 
 **Interfaces:**
 - Consumes: `stripe_billing.*` (Task 5), `stripe_catalog.price_id` (Task 4), колонки из Task 2, реквизиты студии из Task 3.
 - Produces: `POST /billing/checkout` → `CheckoutResponse`; `POST /billing/checkout/iban` → `IbanCheckoutResponse`; `POST /billing/renew` → 410.
-- **Удаляются:** `fake_iban()`, старая логика `_new_invoice` с ручным `order_id`.
+- **Удаляются:** `fake_iban()`, старая логика `_new_invoice` с ручным `order_id`, а также `stripe_billing.create_checkout()`, `charge_saved_card()`, `fetch_session()`.
 
 - [ ] **Шаг 1: Расширить схему ответа IBAN**
 
@@ -1735,12 +1859,41 @@ async def renew():
 
 Проверить, что `RenewResponse` не импортируется в `checkout.py` (в новом коде его нет). Саму схему в `schemas/settings/billing.py` оставить — её импортирует фронтовый тип, а мёртвая схема безвредна.
 
-- [ ] **Шаг 4: Проверить, что приложение поднимается**
+- [ ] **Шаг 4: Удалить функции разовых платежей**
+
+Теперь, когда вызывающая сторона переписана, старый код можно снять. Удалить из `back/services/stripe_billing.py` целиком: `create_checkout()`, `fetch_session()`, `charge_saved_card()`.
+
+Порядок важен: удалять их до переписывания `checkout.py` (как было в исходной редакции плана) значит оставить приложение неимпортируемым на два коммита.
+
+Убедиться, что больше никто их не зовёт:
+
+```bash
+cd .. && grep -rn "create_checkout\|charge_saved_card\|fetch_session" back --include=*.py | grep -v "def create_checkout" | grep -v venv
+```
+Expected: только `routers/billing/checkout.py` со СВОИМ эндпоинтом `create_checkout` (это FastAPI-хендлер, не функция сервиса) — совпадений в `services/` и вызовов `stripe_billing.create_checkout(` быть не должно.
+
+- [ ] **Шаг 5: Добавить в self-check `stripe_billing` проверку, что функции удалены**
+
+В блок `if __name__ == "__main__":` файла `back/services/stripe_billing.py` перед `print(...)` добавить:
+
+```python
+    # Функции разовых платежей удалены вместе с их вызывающей стороной (Task 7).
+    # Ассерт держит их удалёнными: вернуть одну «на всякий случай» — значит
+    # вернуть второй путь оплаты мимо подписки.
+    import services.stripe_billing as _self
+    for _gone in ("create_checkout", "charge_saved_card", "fetch_session"):
+        assert not hasattr(_self, _gone), f"{_gone} должна быть удалена"
+```
+
+Run: `cd back && python -m services.stripe_billing`
+Expected: `stripe_billing self-check ok`
+
+- [ ] **Шаг 6: Проверить, что приложение поднимается**
 
 Run: `cd back && python -c "import main; print('imports ok')"`
 Expected: `imports ok`
 
-- [ ] **Шаг 5: Проверить маршруты**
+- [ ] **Шаг 7: Проверить маршруты**
 
 Run:
 ```bash
@@ -1754,10 +1907,10 @@ print('routes ok')
 ```
 Expected: `routes ok`
 
-- [ ] **Шаг 6: Commit**
+- [ ] **Шаг 8: Commit**
 
 ```bash
-git add back/routers/billing/checkout.py back/schemas/settings/billing.py
+git add back/routers/billing/checkout.py back/schemas/settings/billing.py back/services/stripe_billing.py
 git commit -m "feat(billing): настоящий IBAN от Stripe вместо fake_iban
 
 Подписка одна на студию: повторная оплата меняет её позицию, а не заводит вторую.
@@ -1778,19 +1931,29 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 - Consumes: `apply_status`, `mirror_invoice` (Task 6); `stripe_billing.fetch_invoice`, `stripe_billing.CURRENCY` (Task 5).
 - Produces: `POST /billing/invoices/{id}/sync` работает по подпискам; гейт учитывает статус подписки, а не только дату.
 
-- [ ] **Шаг 1: Починить импорт**
+- [ ] **Шаг 1: Починить импорт и убрать временный хелпер Task 6**
 
-В `back/routers/billing/router.py:32` заменить:
+Task 6 уже был вынужден тронуть этот файл: он удалил `amount_matches` из `webhook.py`, а
+`router.py` импортировал её на уровне модуля — без правки приложение перестало бы
+импортироваться. Task 6 снял импорт и завёл локальный `_session_amount_matches` как
+времянку для ещё живого разового Checkout Session.
+
+Сейчас эта времянка становится мусором: `sync_invoice` ниже переписывается на подписки и
+больше не работает с сессиями.
+
+1. Заменить строку импорта на:
 
 ```python
-from .webhook import router as webhook_router, amount_matches, apply_status
+from .webhook import router as webhook_router, apply_status, mirror_invoice
 ```
 
-на:
+2. **Удалить функцию `_session_amount_matches` целиком** — после шага 2 её никто не зовёт.
+   Проверить греп-ом, что вызовов не осталось:
 
-```python
-from .webhook import router as webhook_router, apply_status, mirror_invoice, find_plan_by_subscription
+```bash
+cd .. && grep -rn "_session_amount_matches" back --include=*.py | grep -v venv
 ```
+Expected: пусто.
 
 - [ ] **Шаг 2: Переписать `sync_invoice`**
 
@@ -1894,9 +2057,19 @@ expired = plan is None or (plan.expires_at is not None and plan.expires_at < dat
     expired = (
         plan is None
         or plan.status == "expired"
-        or (plan.expires_at is not None and plan.expires_at < datetime.utcnow())
+        # expires_at IS NULL = «срок неизвестен» → НЕ пускаем. Исходное условие
+        # (`expires_at is not None and ...`) читало пустую дату как «не истекло» и
+        # выдавало доступ. Сейчас недостижимо (онбординг всегда ставит триальную дату),
+        # но подписка, у которой дату не удалось зеркалить, не должна становиться
+        # бессрочной именно из-за того, что мы её не знаем.
+        or plan.expires_at is None
+        or plan.expires_at < datetime.utcnow()
     )
 ```
+
+**Проверить после правки, что триал не сломался:** у студии сразу после онбординга
+`expires_at` заполнен (`routers/auth/onboarding.py`), поэтому новое условие её пускает.
+Если найдётся путь, создающий `StudioBillingPlan` без даты, — это баг того пути, а не гейта.
 
 Комментарий-`ponytail` про авто-recurring выше (строки 192-193) удалить: `renew` больше нет, продлевает Stripe.
 

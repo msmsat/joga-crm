@@ -223,14 +223,17 @@ export function GoogleBtn({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function PrimaryBtn({ children, onClick, loading = false, fullWidth = false }: {
+export function PrimaryBtn({ children, onClick, loading = false, fullWidth = false, disabled = false }: {
   children: ReactNode;
   onClick?: () => void;
   loading?: boolean;
   fullWidth?: boolean;
+  // Действие недоступно, пока не выполнено условие (например, не принята оферта).
+  // Отличается от loading: там кнопка занята, здесь — просто нельзя.
+  disabled?: boolean;
 }) {
   return (
-    <button onClick={onClick} disabled={loading} className="btn btn-primary" style={{ width: fullWidth ? "100%" : "auto", padding: "15px 28px", borderRadius: "12px" }}>
+    <button onClick={onClick} disabled={loading || disabled} className="btn btn-primary" style={{ width: fullWidth ? "100%" : "auto", padding: "15px 28px", borderRadius: "12px", opacity: disabled && !loading ? 0.5 : undefined }}>
       {loading ? <><span className="spinner" /> Входим...</> : children}
     </button>
   );

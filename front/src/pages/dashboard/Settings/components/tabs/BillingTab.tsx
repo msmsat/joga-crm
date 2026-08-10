@@ -6,7 +6,7 @@ import SectionHeader from "../ui/SectionHeader";
 import StatusBadge from "../ui/StatusBadge";
 import { Button, EmptyState, Switch, useToast } from "../../../../../components/ui/index";
 import { billingApi } from "../../../../../api/billing/billing.api";
-import { useStudioCurrency } from "../../../../../hooks/useStudioCurrency";
+import { useBillingCurrency } from "../../../../../hooks/useBillingCurrency";
 import { formatMoney } from "../../../../../lib/money";
 import type { useBilling } from "../../hooks/useBilling";
 
@@ -27,11 +27,11 @@ function fmtDate(iso: string): string {
   return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
 }
 
-export default function BillingTab({ plan, invoices, cards, setAutopay, renew }: BillingTabProps) {
+export default function BillingTab({ plan, invoices, cards, setAutopay }: BillingTabProps) {
   const { t } = useTranslation('settings');
   const navigate = useNavigate();
   const toast = useToast();
-  const currency = useStudioCurrency();
+  const currency = useBillingCurrency();
   const [isExporting, setIsExporting] = useState(false);
 
   // Основная (или первая сохранённая) карта — read-only витрина, управление на /dashboard/billing.
@@ -113,8 +113,10 @@ export default function BillingTab({ plan, invoices, cards, setAutopay, renew }:
               {t('billing.upgrade', { plan: t(`billing.plans.${p.next_plan}`) })}
             </Button>
           )}
+          {/* Просроченная подписка оформляется заново в каталоге тарифов:
+              продлевать по кнопке нечего — Stripe продлевает сам. */}
           {!p.can_upgrade && p.status === "expired" && (
-            <Button variant="primary" loading={renew.isPending} onClick={() => renew.mutate()}>
+            <Button variant="primary" onClick={() => navigate('/dashboard/billing')}>
               {t('billing.renew')}
             </Button>
           )}

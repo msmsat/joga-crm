@@ -45,6 +45,9 @@ from sqlalchemy.future import select
 
 from activity import log_activity
 from database import get_db
+from dependencies import SUSPENDED_DETAIL
+from services import platform_fee
+from services.referral import fire_referral
 from ratelimit import limiter
 from models import BookingChannelConfig, Client, ReferralRecord
 from schemas._base import BaseSchema
@@ -120,10 +123,12 @@ class ClientAuthResponse(BaseSchema):
 
 async def _create_pending_referral(db: AsyncSession, studio_id: int, client: Client, code: str) -> None:
     """Реферальный код из ссылки-приглашения → pending-запись (блок 5,
-    EPIC_MA_REAL_BACKEND). Начисление бонуса рефереру этим не делаем — оно уже
-    срабатывает на первом визите/оплате отдельным механизмом
-    (routers/booking/public.py, routers/clients/loyalty.py), дублировать его
-    здесь эпик прямо запрещает.
+    EPIC_MA_REAL_BACKEND).
+
+    Бонус здесь НЕ начисляем сами — за это отвечает единая `fire_referral`, и
+    она платит, только если студия выбрала триггер 'registration'. При
+    'first_visit'/'first_payment' вызов молча ничего не сделает, а бонус выдаст
+    запись на занятие или оплата.
     """
     referrer = (await db.execute(
         select(Client).where(Client.invite_code == code)
@@ -136,6 +141,8 @@ async def _create_pending_referral(db: AsyncSession, studio_id: int, client: Cli
         referred_client_id=client.id,
         status="pending",
     ))
+    await db.flush()  # fire_referral ищет запись запросом — она должна быть в БД
+    await fire_referral(db, studio_id, client.id, "registration", referred_name=client.name)
     await db.commit()
 
 
@@ -295,6 +302,13 @@ async def get_current_client(
     )).scalar_one_or_none()
     if client is None:
         raise HTTPException(status_code=401, detail="Недействительный токен")
+
+    # Студия не оплатила счёт за комиссию — мини-приложение закрывается вместе с
+    # CRM. Иначе клиенты продолжали бы записываться и платить в студию, которой
+    # платформа уже отключила кабинет: записи копились бы там, где их некому
+    # обработать. 402, а не 401 — токен клиента исправен, дело в студии.
+    if await platform_fee.studio_suspended(db, client.studio_id):
+        raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
     return client
 
 

@@ -138,6 +138,13 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
   });
   const attendReservation = (reservationId: number) => attendMut.mutateAsync(reservationId);
 
+  // ── Подтвердить бронь: место уже занято при её создании, счётчик сетки не
+  // меняется — как и attend, только сам запрос.
+  const confirmMut = useMutation({
+    mutationFn: (reservationId: number) => scheduleApi.confirmReservation(reservationId),
+  });
+  const confirmReservation = (reservationId: number) => confirmMut.mutateAsync(reservationId);
+
   return {
     updateLesson,
     cancelLesson,
@@ -145,6 +152,7 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     addReservation,
     cancelReservation,
     attendReservation,
+    confirmReservation,
     patchLocalCancelled,
     commitDeferredCancel,
     rollback,

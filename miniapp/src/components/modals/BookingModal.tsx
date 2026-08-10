@@ -35,6 +35,10 @@ export default function BookingModal({
   const taken = lesson?.taken_spots?.length || 0;
   const left = total - taken;
   const isBooked = Boolean(lesson?.is_booked_by_user);
+  // Занятие видно в расписании, но правила студии его для онлайн-записи
+  // закрыли (часы работы виджета, окно записи, минимум времени до начала или
+  // выключенная онлайн-запись). Своя бронь при этом остаётся отменяемой.
+  const isClosed = lesson !== null && !lesson.bookable && !isBooked;
 
   const facts = [
     {
@@ -78,6 +82,10 @@ export default function BookingModal({
         isBooked ? (
           <SheetAction tone="danger" onClick={onCancel} disabled={isProcessing}>
             {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
+          </SheetAction>
+        ) : isClosed ? (
+          <SheetAction onClick={onClose} disabled>
+            {t('bookingModal.not_bookable')}
           </SheetAction>
         ) : (
           <SheetAction onClick={onPay} disabled={isProcessing || !selectedSpot}>
@@ -136,6 +144,17 @@ export default function BookingModal({
           <span className="text-[13px] font-bold text-foreground">
             {t('bookingModal.already_booked')}
           </span>
+        </div>
+      ) : isClosed ? (
+        // Сетку ковриков не показываем вовсе: выбирать место, которое всё равно
+        // не забронировать, — это кнопка «оплатить», ведущая в отказ.
+        <div className="mt-5 rounded-[18px] bg-background px-4 py-3.5">
+          <div className="text-[13px] font-extrabold tracking-[-0.015em] text-foreground">
+            {t('bookingModal.not_bookable')}
+          </div>
+          <div className="mt-1 text-[12px] font-medium leading-relaxed text-muted-foreground">
+            {t('bookingModal.not_bookable_hint')}
+          </div>
         </div>
       ) : (
         <div className="mt-6">

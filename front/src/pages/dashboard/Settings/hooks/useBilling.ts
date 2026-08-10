@@ -46,16 +46,8 @@ export function useBilling() {
     },
   });
 
-  // «Продлить» для просроченной подписки (edge case: status != active).
-  const renew = useMutation({
-    mutationFn: () => billingApi.renew(),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.billingPlan });
-      qc.invalidateQueries({ queryKey: queryKeys.billingInvoicesAll });
-      toast.success(t('billing.toast.renewed'));
-    },
-    onError: (err) => toast.error(errorMessage(err, t)),
-  });
+  // Продления по кнопке больше нет: подписку продлевает Stripe, а просроченная
+  // (unpaid/canceled) оформляется заново через каталог на /dashboard/billing.
 
-  return { plan, invoices, cards, setAutopay, renew };
+  return { plan, invoices, cards, setAutopay };
 }

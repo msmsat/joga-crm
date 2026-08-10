@@ -58,6 +58,8 @@ from schemas.settings import (
 from schemas.staff import (
     StaffCallResponse,
     StaffCancelLessonResponse,
+    StaffDayOverrideItem,
+    StaffDayOverrideRequest,
     StaffHall,
     StaffListItem,
     StaffListResponse,
@@ -139,6 +141,8 @@ __all__ = [
     "StaffListItem",
     "StaffListResponse",
     "StaffMessageResponse",
+    "StaffDayOverrideItem",
+    "StaffDayOverrideRequest",
     "StaffMonthLesson",
     "StaffMonthScheduleResponse",
     "StaffMutateResponse",

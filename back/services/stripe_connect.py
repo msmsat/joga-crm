@@ -2,8 +2,12 @@
 
 Схема — **direct charges на Standard-аккаунт**: платформа держит один секретный
 ключ (свой), а каждый запрос уходит с заголовком `Stripe-Account: acct_…`. Деньги
-садятся сразу на баланс студии, платформа их не касается и комиссию с транзакций
-не берёт (`application_fee_amount` не передаётся — Velora зарабатывает подпиской).
+садятся сразу на баланс студии.
+
+Комиссию платформа берёт только на тарифах «процент» и «комбо» — через
+`application_fee_amount` (Stripe сам переводит долю на аккаунт Velora). Сколько
+удержать, решает `services/platform_fee.py`; на тарифе-подписке это ноль, и поле
+не передаётся вообще — Velora зарабатывает подпиской.
 
 Секретные ключи студий мы не храним и не спрашиваем: в этом весь смысл Connect.
 
@@ -107,12 +111,33 @@ async def account_status(account_id: str) -> tuple[bool, bool, bool]:
     )
 
 
+def _payment_intent_data(application_fee_minor: int, receipt_email: str | None) -> dict | None:
+    """`payment_intent_data` сессии или None, если добавлять туда нечего.
+
+    `application_fee_amount` — доля платформы с direct charge на тарифах
+    «процент» и «комбо» (считает services/platform_fee.py). Ноль НЕ передаём:
+    на тарифе-подписке платформа с транзакций студии не берёт ничего, а
+    `application_fee_amount=0` — это лишний повод для Stripe придраться к запросу.
+
+    `receipt_email` — квитанцию клиенту шлёт сам Stripe от лица студии, своей
+    рассылки чеков за оплату занятий мы не держим.
+    """
+    data: dict = {}
+    if application_fee_minor > 0:
+        data["application_fee_amount"] = application_fee_minor
+    if receipt_email:
+        data["receipt_email"] = receipt_email
+    return data or None
+
+
 async def create_checkout_session(
     account_id: str,
     amount_minor: int,
     currency: str,
     description: str,
     metadata: dict,
+    application_fee_minor: int = 0,
+    receipt_email: str | None = None,
 ) -> tuple[str, str]:
     """Оплата на счёт студии → (session_id, client_secret).
 
@@ -126,6 +151,7 @@ async def create_checkout_session(
     `embedded_page` — новое имя бывшего `embedded`; старое значение API отвергает
     начиная с версии 2026-07-29 (её и шлёт stripe==15.4.0).
     """
+    intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,
         mode="payment",
@@ -141,6 +167,7 @@ async def create_checkout_session(
         }],
         metadata=metadata,
         stripe_account=account_id,
+        **({"payment_intent_data": intent_data} if intent_data else {}),
     )
     return session.id, session.client_secret
 
@@ -153,6 +180,8 @@ async def create_hosted_checkout_session(
     metadata: dict,
     success_url: str,
     cancel_url: str,
+    application_fee_minor: int = 0,
+    receipt_email: str | None = None,
 ) -> tuple[str, str]:
     """Оплата на счёт студии → (session_id, url) хостед-страницы Stripe.
 
@@ -161,6 +190,7 @@ async def create_hosted_checkout_session(
     Stripe снаружи (`tg.openLink`, без Stripe.js на клиенте) и возвращается по
     `success_url`/`cancel_url` — поэтому обычный hosted-режим, не embedded.
     """
+    intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,
         mode="payment",
@@ -176,6 +206,7 @@ async def create_hosted_checkout_session(
         success_url=success_url,
         cancel_url=cancel_url,
         stripe_account=account_id,
+        **({"payment_intent_data": intent_data} if intent_data else {}),
     )
     return session.id, session.url
 

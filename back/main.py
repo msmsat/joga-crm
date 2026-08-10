@@ -12,6 +12,7 @@ from ratelimit import limiter
 from database import async_session_maker
 from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
+from services.offline_fee_billing import start_offline_fee_billing_loop
 
 from routers.auth import router as auth_router
 from routers.studio import router as studio_router, onboarding_router as studio_onboarding_router
@@ -43,11 +44,14 @@ async def lifespan(app: FastAPI):
     task = start_scenario_loop(async_session_maker)
     # Ежедневные уведомления: дни рождения, отчёты дня/недели, тариф (N-4, задача 6).
     daily_notify_task = start_daily_notify_loop(async_session_maker)
+    # Ежемесячный счёт за комиссию с офлайн-продаж (тарифы «процент» и «комбо»).
+    offline_fee_task = start_offline_fee_billing_loop(async_session_maker)
     try:
         yield
     finally:
         task.cancel()
         daily_notify_task.cancel()
+        offline_fee_task.cancel()
 
 
 app = FastAPI(title="Velora CRM API", lifespan=lifespan)

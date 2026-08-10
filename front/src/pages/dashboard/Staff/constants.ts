@@ -8,6 +8,16 @@ export const ROLE_CARDS: Record<string, RoleCard[]> = ROLE_CARDS_JSON as Record<
 // Оставляем только системные ключи
 export const DAYS_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
+// График по умолчанию — тот же, что предлагает мастер добавления сотрудника:
+// Пн–Пт рабочие, выходные нет. Показывается, пока личного графика в базе нет,
+// чтобы и недельная сетка, и календарь месяца не стояли пустыми.
+export const DEFAULT_WEEK_HOURS = DAYS_KEYS.map((_, dow) => ({
+  day_of_week: dow,
+  is_open: dow < 5,
+  open_time: dow < 5 ? "09:00" : "10:00",
+  close_time: dow < 5 ? "18:00" : "16:00",
+}));
+
 export const TIME_OPTIONS = [
   "06:00","07:00","08:00","09:00","10:00","11:00","12:00",
   "13:00","14:00","15:00","16:00","17:00","18:00",

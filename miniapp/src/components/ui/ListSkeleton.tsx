@@ -14,7 +14,7 @@ export function ListSkeleton({
   flush?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-3 ${flush ? '' : 'px-5'}`}>
+    <div className={`flex flex-col gap-3 dt:gap-4 ${flush ? '' : 'px-5'}`}>
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}

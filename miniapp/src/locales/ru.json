@@ -18,9 +18,6 @@
     "closing_soon": "Скоро закрытие",
     "closed": "Закрыто",
     "opening_soon": "Скоро открытие",
-    "map": "Карта",
-    "map_title": "Студии на карте",
-    "map_sub": "Коснитесь метки, чтобы выбрать студию",
     "choose_studio": "Выберите студию",
     "open_studio": "Выбрать {{name}}",
     "services": "Услуги студии",
@@ -54,10 +51,18 @@
     }
   },
   "subscription": {
-    "light_flow": { "name": "Light Flow" },
-    "balance_pro": { "name": "Balance Pro" },
-    "zen_master": { "name": "Zen Master" },
-    "unlimited": { "name": "Unlimited" },
+    "light_flow": {
+      "name": "Light Flow"
+    },
+    "balance_pro": {
+      "name": "Balance Pro"
+    },
+    "zen_master": {
+      "name": "Zen Master"
+    },
+    "unlimited": {
+      "name": "Unlimited"
+    },
     "unlimited_desc": "Безлимит"
   },
   "payment": {
@@ -84,13 +89,10 @@
     "buy_btn": "Купить абонемент",
     "notifications": "Уведомления",
     "history": "История оплат",
-    "invite": "Пригласить подругу",
     "support": "Поддержка студии",
     "reminders": "Напоминания перед занятием",
     "about_studio": "О студии",
     "language": "Язык",
-    "community": "Сообщество",
-    "invite_hint": "Вместе начинать легче — отправьте подруге ссылку",
     "subscription_group": "Абонемент",
     "notifications_group": "Уведомления",
     "app_group": "Приложение",
@@ -121,7 +123,8 @@
     "favourite": "Чаще всего вы выбираете {{name}}",
     "load_error": "Не удалось загрузить занятия",
     "no_lessons_period": "В этом периоде занятий нет",
-    "no_lessons_period_hint": "Полистайте стрелками — возможно, они были раньше"
+    "no_lessons_period_hint": "Полистайте стрелками — возможно, они были раньше",
+    "awaiting_confirmation": "Ожидает подтверждения"
   },
   "schedule": {
     "title": "Расписание",
@@ -152,7 +155,9 @@
       "thu": "Чт",
       "fri": "Пт",
       "sat": "Сб"
-    }
+    },
+    "booking_closed": "Онлайн-запись закрыта",
+    "booking_closed_hint": "Студия временно не принимает записи через приложение — позвоните администратору."
   },
   "bookingModal": {
     "training": "Тренировка",
@@ -167,7 +172,10 @@
     "processing": "Обработка...",
     "cancel_booking": "Отменить запись",
     "choose_spot": "Выберите место",
-    "pay": "Оплатить · {{price}}"
+    "pay": "Оплатить · {{price}}",
+    "not_bookable": "Онлайн-запись на это занятие недоступна",
+    "not_bookable_hint": "Записаться можно только в часы работы студии и в пределах открытого расписания.",
+    "awaiting_confirmation": "Заявка отправлена — ожидает подтверждения студии"
   },
   "directionModal": {
     "tag": "Направление",
@@ -188,7 +196,9 @@
     "success": "Абонемент \"{{name}}\" успешно оплачен! Занятия зачислены на ваш баланс.",
     "activate_error": "Произошла ошибка при активации абонемента.",
     "checking_payment": "Проверяем статус оплаты — абонемент появится здесь, как только банк подтвердит платёж",
-    "pay_in_studio": "Абонемент можно купить в студии"
+    "pay_in_studio": "Абонемент можно купить в студии",
+    "activated": "Абонемент оформлен",
+    "certificate_ready": "Сертификат будет применён при оплате"
   },
   "successModal": {
     "title": "Вы записаны",
@@ -209,13 +219,19 @@
   "supportModal": {
     "tag": "Помощь",
     "title": "Поддержка",
-    "description": "Вы можете написать любое сообщение прямо в этом боте — наша команда получит его и ответит в ближайшее время.",
-    "button": "Понятно"
+    "sub": "Свяжитесь со студией {{studio}} удобным способом.",
+    "phone": "Телефон",
+    "email": "Почта",
+    "website": "Сайт",
+    "no_contacts": "Контактов пока нет",
+    "no_contacts_hint": "Студия ещё не добавила телефон или почту. Спросите их на ближайшем занятии."
   },
   "paymentModal": {
     "tag": "Безопасная оплата",
     "title": "Оформление заказа",
     "service": "Услуга",
+    "base_price": "Стоимость",
+    "discount": "Скидка",
     "amount_due": "К оплате",
     "pay_card": "Оплатить картой",
     "or_other": "или другим способом",
@@ -223,17 +239,26 @@
     "processing_transaction": "Обработка транзакции...",
     "processing": "Обработка...",
     "cancel": "Отменить",
-    "expiry_placeholder": "ММ/ГГ"
-  },
-  "languageModal": {
-    "tag": "Настройки",
-    "sub": "Язык интерфейса приложения"
+    "expiry_placeholder": "ММ/ГГ",
+    "certificate": "Сертификат",
+    "deposit": "Депозит",
+    "bonuses": "Баллы",
+    "promo_placeholder": "Промокод",
+    "promo_invalid": "Промокод недействителен",
+    "certificate_placeholder": "Код сертификата",
+    "certificate_invalid": "Сертификат не найден или уже погашен",
+    "use_deposit": "Списать с депозита",
+    "use_bonuses": "Списать баллы ({{count}})",
+    "confirm_free": "Оформить",
+    "free_hint": "Оплата картой не потребуется — сумма покрыта полностью"
   },
   "nav": {
     "home": "Главная",
     "schedule": "Расписание",
     "my_lessons": "Мои занятия",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "client_area": "Кабинет клиента",
+    "club": "Клуб"
   },
   "home": {
     "greeting_morning": "Доброе утро",
@@ -245,9 +270,6 @@
     "directions": "Направления",
     "body_spirit_balance": "Тело. Дух. Баланс.",
     "studio_description": "Йога-студия Namaste — пространство для гармонии и саморазвития",
-    "referral_title": "Пригласи подругу",
-    "referral_subtitle": "Получи скидку 20% на следующий абонемент",
-    "referral_link_copied": "Ссылка скопирована!",
     "today": "Сегодня",
     "tomorrow": "Завтра",
     "studios": "Студии",
@@ -268,5 +290,38 @@
     "flow_mfr": "МФР",
     "flow_healthy_back": "Здоровая спина",
     "flow_breathing": "Дыхательные практики"
+  },
+  "club": {
+    "title": "Клуб",
+    "points": "баллов",
+    "points_worth": "≈ {{value}}",
+    "spent": "Потрачено в студии: {{amount}}",
+    "to_next": "Ещё {{amount}} до «{{level}}»",
+    "level_top": "Высший уровень",
+    "levels": "Уровни",
+    "offers": "Персональные скидки",
+    "certificates": "Сертификаты",
+    "valid_until": "действует до {{date}}",
+    "valid_forever": "без ограничения по времени",
+    "code_copied": "Код скопирован",
+    "deposit": "Депозит",
+    "deposit_history": "История депозита",
+    "deposit_empty": "Движений по депозиту ещё не было",
+    "deposit_load_error": "Не удалось загрузить историю депозита",
+    "referral": "Пригласить друга",
+    "referral_bonus_points": "{{bonus}} баллов вам",
+    "referral_bonus_money": "{{bonus}} вам",
+    "referral_discount": "{{discount}} % скидки другу",
+    "referral_invited": "Приглашено",
+    "referral_completed": "Пришли",
+    "referral_copy": "Скопировать ссылку",
+    "referral_copied": "Ссылка скопирована",
+    "history": "История баллов",
+    "no_history": "Баллы ещё не начислялись",
+    "no_history_hint": "Они появятся после первой оплаты в студии",
+    "disabled": "Студия ещё не запустила клуб",
+    "disabled_hint": "Как только программа лояльности заработает, баллы и уровни появятся здесь.",
+    "certificate_use": "Использовать сертификат",
+    "code_copy": "Скопировать код"
   }
 }

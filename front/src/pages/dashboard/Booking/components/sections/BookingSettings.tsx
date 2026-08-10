@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
 import { CustomSelect } from '../ui/CustomSelect'
 import type { useBookingSettings } from '../../hooks/useBookingSettings'
-import { ADVANCE_OPTS, WINDOW_OPTS, CANCEL_OPTS, LANG_OPTS, STEP_OPTS, TIME_OPTS } from '../../mapping'
+import { ADVANCE_OPTS, WINDOW_OPTS, CANCEL_OPTS, LANG_OPTS, TIME_OPTS } from '../../mapping'
 import { studioApi } from '../../../../../api/studio/studio.api'
+import { resolveImageUrl } from '../../../../../api/client'
 import { useToast } from '../../../../../components/ui/Toast'
 
 type Props = ReturnType<typeof useBookingSettings>
@@ -19,7 +20,6 @@ export function BookingSettings(s: Props) {
   const windowOpts  = WINDOW_OPTS.map(o => ({ value: o.value, label: t(`options.${o.key}`) }))
   const cancelOpts  = CANCEL_OPTS.map(o => ({ value: o.value, label: t(`options.${o.key}`) }))
   const langOpts    = LANG_OPTS.map(o => ({ value: o.value, label: t(`options.${o.key}`) }))
-  const stepOpts    = STEP_OPTS.map(o => ({ value: o.value, label: t(`options.${o.key}`) }))
   const timeOpts    = TIME_OPTS.map(v => ({ value: v, label: v }))
 
   async function onLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -168,13 +168,6 @@ export function BookingSettings(s: Props) {
           </div>
         </div>
 
-        <div className="settings-row" style={{ position: 'relative' }}>
-          <div>
-            <div className="label">{t('sections.rules.step.label')}</div>
-            <div className="sub">{t('sections.rules.step.sub')}</div>
-          </div>
-          <CustomSelect options={stepOpts} value={s.stepValue(settings.slot_step_min)} onChange={v => patch('slot_step_min', v)} />
-        </div>
       </div>
 
       {/* Брендинг виджета */}
@@ -200,7 +193,7 @@ export function BookingSettings(s: Props) {
             {settings.widget_logo_url && (
               <>
                 <img
-                  src={settings.widget_logo_url}
+                  src={resolveImageUrl(settings.widget_logo_url)}
                   alt=""
                   style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover', border: '1px solid var(--border)' }}
                 />
@@ -264,14 +257,6 @@ export function BookingSettings(s: Props) {
             </svg>
             <span>{t('sections.notifications.preview.reviewRequest')}</span>
           </div>
-        </div>
-
-        <div className="settings-row">
-          <div>
-            <div className="label">{t('sections.notifications.sms.label')}</div>
-            <div className="sub">{t('sections.notifications.sms.sub')}</div>
-          </div>
-          <label className="toggle-switch"><input type="checkbox" checked={settings.sms_confirmation} onChange={e => patch('sms_confirmation', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
         <div className="settings-row">

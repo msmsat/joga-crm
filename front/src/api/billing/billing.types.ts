@@ -15,6 +15,13 @@ export interface Plan {
 export interface PlansCatalog {
   plans: Plan[]
   period_discounts: Record<number, number>   // {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+  currency: string                           // валюта подписки (EUR), не валюта кассы студии
+  // Минимальный месячный платёж тарифа «только процент», в копейках. Месяц, в
+  // котором платформа заработала на студии меньше этой суммы, добирается счётом.
+  min_monthly: number
+  // Ставка НДС для подписи итога на шаге оплаты, %. Цены выше — БЕЗ налога.
+  // Ориентир, а не расчёт: настоящую сумму считает Stripe Tax по стране студии.
+  vat_rate: number
 }
 
 export interface BillingPlan {
@@ -33,6 +40,10 @@ export interface BillingPlan {
   sms_notification_enabled: boolean
   can_upgrade: boolean       // считает сервер (эпик 4 задача 2) — фронт не дублирует ветвистость
   next_plan: string | null   // null, если апгрейда нет (% от оборота / максимальный тариф)
+  /** Оплаченная, но ещё не наступившая смена тарифа: апгрейд по умолчанию
+   *  начинается с конца текущего оплаченного периода. */
+  scheduled_plan?: string | null
+  scheduled_at?: string | null
 }
 
 export interface AutopaySettings {
@@ -46,6 +57,22 @@ export interface ActivateModelRequest {
   mode: 'subscription' | 'percent' | 'combo'
   plan?: 'start' | 'pro' | 'business'
   period_months?: 1 | 6 | 12 | 24
+  /** Согласие на постоплату комиссии. Обязательно для percent/combo — иначе бэк даёт 422. */
+  accept_offline_terms?: boolean
+}
+
+/** Виджет «Комиссия с офлайн-продаж» в разделе «Тариф и оплата». */
+export interface OfflineFeeStatus {
+  accrued: number
+  accrued_currency: string
+  outstanding: number
+  currency: string
+  due_at: string | null
+  days_left: number | null
+  suspended: boolean
+  hosted_invoice_url: string | null
+  rate: number | null
+  grace_days: number
 }
 
 export interface IbanCheckout {
@@ -54,7 +81,9 @@ export interface IbanCheckout {
   iban: string
   amount: number
   reference: string
-  beneficiary: string
+  beneficiary: string            // держателя счёта называет Stripe — счёт коллекторский
+  bic: string | null             // часть банков требует BIC вместе с IBAN
+  hosted_invoice_url: string | null   // фактура Stripe: печать, PDF, оплата картой
 }
 
 export interface BillingStats {
@@ -98,12 +127,16 @@ export interface PaymentCard {
 export interface CheckoutRequest {
   plan: 'start' | 'pro' | 'business'
   period_months: 1 | 6 | 12 | 24
+  /** Когда новый тариф вступает в силу. Значимо только при живой подписке:
+   *  'period_end' — с конца оплаченного периода, платить сейчас не нужно;
+   *  'now' — сразу, остаток текущего периода сгорает без возврата. */
+  apply?: 'period_end' | 'now'
 }
 
 export interface CheckoutResponse {
   checkout_url: string
-}
-
-export interface RenewResponse {
-  invoice_id: number
+  /** true — тариф поставлен в расписание, оплата сейчас не требуется. */
+  scheduled?: boolean
+  /** Момент вступления нового тарифа в силу (ISO), при scheduled. */
+  applies_at?: string | null
 }

@@ -153,37 +153,41 @@ export default function MyLessons() {
     <>
       <ScreenHeader title={t('mylessons.title')} />
 
-      <div className="pt-6">
-        <PeriodBar mode={mode} onModeChange={setMode} anchor={anchor} onShift={shiftPeriod} />
-      </div>
+      {/* Полоса управления периодом и сводка — друг под другом на всех
+          ширинах: один столбец сверху вниз читается без переучивания. */}
+      <>
+        <div className="pt-6 dt:pt-10">
+          <PeriodBar mode={mode} onModeChange={setMode} anchor={anchor} onShift={shiftPeriod} />
+        </div>
 
-      {/* Сводка периода: три числа в ряд — сколько прожито, сколько впереди и
-          сколько всего. Ради «всего» клиент и возвращается на этот экран. */}
-      <div className="grid grid-cols-3 gap-2 px-5 pt-4">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-[18px] bg-card px-3 py-3.5 text-center shadow-soft"
-          >
-            <div className="text-[22px] font-extrabold leading-none tabular-nums tracking-[-0.04em] text-foreground">
-              {stat.value}
-            </div>
-            <div className="mt-1.5 text-[9.5px] font-bold uppercase leading-tight tracking-[0.1em] text-muted-foreground">
-              {stat.label}
-            </div>
-          </motion.div>
-        ))}
-      </div>
+        {/* Сводка периода: три числа в ряд — сколько прожито, сколько впереди и
+            сколько всего. Ради «всего» клиент и возвращается на этот экран. */}
+        <div className="grid grid-cols-3 gap-2 px-5 pt-4 dt:gap-3">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-[18px] bg-card px-3 py-3.5 text-center shadow-soft dt:rounded-[20px] dt:px-4 dt:py-5"
+            >
+              <div className="text-[22px] font-extrabold leading-none tabular-nums tracking-[-0.04em] text-foreground dt:text-[30px]">
+                {stat.value}
+              </div>
+              <div className="mt-1.5 text-[9.5px] font-bold uppercase leading-tight tracking-[0.1em] text-muted-foreground dt:mt-2.5 dt:text-[10px] dt:tracking-[0.16em]">
+                {stat.label}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </>
 
       {favourite && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-5 mt-2 flex items-center gap-2.5 rounded-[18px] bg-brand/10 px-4 py-3"
+          className="mx-5 mt-2 flex items-center gap-2.5 rounded-[18px] bg-brand/10 px-4 py-3 dt:mt-5 dt:w-fit"
         >
           <svg viewBox="0 0 24 24" fill="var(--v-brand)" className="h-3.5 w-3.5 shrink-0">
             <path d="M12 21c-4-2.5-8-5.6-8-11a5 5 0 018-3.5A5 5 0 0120 10c0 5.4-4 8.5-8 11z" />
@@ -225,13 +229,18 @@ export default function MyLessons() {
               <SectionLabel trailing={`${periodUpcoming.length}`}>
                 {t('mylessons.status.upcoming')}
               </SectionLabel>
-              <div className="flex flex-col gap-3 px-5">
+              <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodUpcoming.map((cls, i) => (
                   <UpcomingCard
                     key={`upcoming-${cls.id}`}
                     index={i}
                     title={translateName(cls.name)}
-                    statusLabel={t('mylessons.status.upcoming')}
+                    statusLabel={
+                      cls.status === 'pending'
+                        ? t('mylessons.awaiting_confirmation')
+                        : t('mylessons.status.upcoming')
+                    }
+                    statusTone={cls.status === 'pending' ? 'brand' : 'neutral'}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
@@ -246,7 +255,7 @@ export default function MyLessons() {
               <SectionLabel trailing={`${periodPast.length}`}>
                 {t('mylessons.status.past')}
               </SectionLabel>
-              <div className="flex flex-col gap-3 px-5">
+              <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodPast.map((cls, i) => (
                   <PastCard
                     key={`past-${cls.id}`}

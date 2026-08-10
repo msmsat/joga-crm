@@ -25,13 +25,16 @@ _PAYLOAD = {"client_id": 1, "product_id": 2, "product_type": "subscription", "pa
 
 
 class _Checkout:
-    def __init__(self, status="pending", amount=1500):
+    def __init__(self, status="pending", amount=1500, application_fee=0):
         self.session_id = "cs_test_1"
         self.studio_id = 7
         self.user_id = 3
         self.account_id = "acct_123"
         self.payload = dict(_PAYLOAD)
         self.amount = amount
+        # Доля платформы, удержанная Stripe (тарифы «процент»/«комбо»). 0 —
+        # тариф-подписка: строка в леджер доходов не пишется вовсе.
+        self.application_fee = application_fee
         self.status = status
 
 
@@ -312,12 +315,126 @@ def test_webhook_cancels_expired_session():
 
 
 def test_webhook_rejects_bad_signature():
-    """Подделанное событие не должно ничего проводить."""
+    """Подделанное событие ничего не проводит — и получает 400, а не 200 «ignored».
+
+    Раньше здесь был 200. Настоящая причина несошедшейся подписи — разъехавшийся
+    секрет, и при 200 Stripe считает доставку удачной: ретраев нет, в дашборде
+    зелено. Цена именно на ЭТОМ эндпоинте максимальная: покупка абонемента в
+    мини-приложении проводится только вебхуком, страховки вида /checkout/confirm
+    (её зовёт касса CRM) у клиента нет — молча отброшенное событие значит «клиент
+    заплатил и не получил ничего».
+    """
     applied, db = [], _NullDB()
     body, _sig = _event("checkout.session.completed", "paid")
 
-    assert _webhook(body, "t=1,v1=deadbeef", applied, db) == {"status": "ignored"}
+    try:
+        _webhook(body, "t=1,v1=deadbeef", applied, db)
+        raise AssertionError("подделка прошла молча — Stripe не узнает о поломке секрета")
+    except HTTPException as exc:
+        assert exc.status_code == 400
     assert applied == []
+
+
+# ------------------------------------------------------- возврат откатывает продажу
+
+def test_full_refund_is_recognised():
+    """Вернули всю сумму — только это считается полным возвратом."""
+    assert S._is_full_refund(SimpleNamespace(amount=1500, amount_refunded=1500)) is True
+    assert S._is_full_refund(SimpleNamespace(amount=1500, amount_refunded=1600)) is True
+
+
+def test_partial_refund_is_not_full():
+    """Частичный возврат продажу не откатывает: абонемент мог быть наполовину отходен."""
+    assert S._is_full_refund(SimpleNamespace(amount=1500, amount_refunded=500)) is False
+    assert S._is_full_refund(SimpleNamespace(amount=1500, amount_refunded=0)) is False
+
+
+def test_event_without_amounts_is_not_full_refund():
+    """Событие без сумм не должно читаться как «вернули всё»: иначе 0 >= 0 молча
+    погасил бы абонемент клиенту, у которого деньги на месте."""
+    assert S._is_full_refund(SimpleNamespace(amount=0, amount_refunded=0)) is False
+    assert S._is_full_refund(SimpleNamespace()) is False
+
+
+class _RevertDB:
+    """Отдаёт абонемент на select, копит добавленные объекты."""
+
+    def __init__(self, sub):
+        self._sub = sub
+        self.added = []
+
+    async def execute(self, _q):
+        return _R(self._sub)
+
+    def add(self, obj):
+        self.added.append(obj)
+
+
+def _run_revert(sub, amount=1500):
+    account = SimpleNamespace(id=9, balance=10_000)
+    reverted_loyalty = []
+
+    async def _fake_resolve_account(_db, _studio_id, _account_id, *, default_type="cash"):
+        reverted_loyalty.append(("account", default_type))
+        return account
+
+    async def _fake_revert_loyalty(_db, studio_id, client_id, amount):
+        reverted_loyalty.append(("loyalty", studio_id, client_id, amount))
+
+    checkout = _Checkout(status="paid", amount=amount)
+    checkout.subscription_id = sub.id if sub is not None else None
+
+    saved = (S.resolve_account, S._revert_loyalty)
+    S.resolve_account, S._revert_loyalty = _fake_resolve_account, _fake_revert_loyalty
+    try:
+        db = _RevertDB(sub)
+        asyncio.run(S._revert_sale(db, checkout))
+    finally:
+        S.resolve_account, S._revert_loyalty = saved
+    return db, account, reverted_loyalty
+
+
+def test_refund_cancels_the_subscription():
+    """Проданный абонемент гасится: все выборки фильтруют status == "active",
+    поэтому он исчезает и из кошелька, и из записи на занятия."""
+    sub = SimpleNamespace(id=55, status="active")
+    _db, _account, _calls = _run_revert(sub)
+    assert sub.status == "cancelled"
+
+
+def test_refund_books_a_compensating_operation():
+    """Деньги снимаются со счёта расходной операцией, а не удалением доходной:
+    проведённую запись задним числом не стирают."""
+    sub = SimpleNamespace(id=55, status="active")
+    db, account, _calls = _run_revert(sub, amount=1500)
+
+    assert len(db.added) == 1
+    op = db.added[0]
+    assert (op.type, op.amount, op.category) == ("out", 1500, "Возвраты")
+    assert op.account_id == 9
+    assert account.balance == 10_000 - 1500
+
+
+def test_refund_takes_money_from_the_online_account():
+    """Возврат снимает деньги с того же счёта, куда легла онлайн-оплата, — не с кассы."""
+    sub = SimpleNamespace(id=55, status="active")
+    _db, _account, calls = _run_revert(sub)
+    assert ("account", "online") in calls
+
+
+def test_refund_reverts_loyalty():
+    """Баллы и сумма покупок откатываются на реально возвращённую сумму."""
+    sub = SimpleNamespace(id=55, status="active")
+    _db, _account, calls = _run_revert(sub, amount=1500)
+    assert ("loyalty", 7, 1, 1500) in calls
+
+
+def test_refund_of_a_single_visit_touches_no_subscription():
+    """Разовое посещение абонемента не создаёт — гасить нечего, деньги всё равно
+    возвращаются."""
+    db, account, _calls = _run_revert(None, amount=1500)
+    assert len(db.added) == 1
+    assert account.balance == 10_000 - 1500
 
 
 if __name__ == "__main__":
@@ -334,4 +451,12 @@ if __name__ == "__main__":
     test_webhook_skips_unpaid_session()
     test_webhook_cancels_expired_session()
     test_webhook_rejects_bad_signature()
+    test_full_refund_is_recognised()
+    test_partial_refund_is_not_full()
+    test_event_without_amounts_is_not_full_refund()
+    test_refund_cancels_the_subscription()
+    test_refund_books_a_compensating_operation()
+    test_refund_takes_money_from_the_online_account()
+    test_refund_reverts_loyalty()
+    test_refund_of_a_single_visit_touches_no_subscription()
     print("ALL PASS")

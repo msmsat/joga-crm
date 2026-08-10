@@ -130,7 +130,11 @@ class StudioBookingSettings(Base):
     widget_dark_mode: Mapped[bool] = mapped_column(Boolean, default=False)
     widget_language: Mapped[str] = mapped_column(String(5), default="ru")
 
-    sms_confirmation: Mapped[bool] = mapped_column(Boolean, default=True)
+    # sms_confirmation и slot_step_min удалены: SMS-канала в продукте нет
+    # (services/notifier.py шлёт только email/telegram/whatsapp/instagram), а шаг
+    # слотов нечему задавать — клиент записывается на реальное занятие Журнала,
+    # генерируемых слотов нигде нет. Настройка, которая ни на что не влияет,
+    # обещает владельцу поведение, которого не будет.
     reminder_24h: Mapped[bool] = mapped_column(Boolean, default=True)
     reminder_2h: Mapped[bool] = mapped_column(Boolean, default=True)
     review_request: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -138,7 +142,6 @@ class StudioBookingSettings(Base):
     miniapp_generated: Mapped[bool] = mapped_column(Boolean, default=False)
     widget_work_start: Mapped[str] = mapped_column(String(5), default="09:00")
     widget_work_end: Mapped[str] = mapped_column(String(5), default="21:00")
-    slot_step_min: Mapped[int] = mapped_column(Integer, default=60)
 
     studio: Mapped["Studio"] = relationship(back_populates="booking_settings")
 
@@ -170,9 +173,42 @@ class StudioBillingPlan(Base):
     expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     max_staff: Mapped[int] = mapped_column(Integer, default=5)
 
+    # Подписка живёт в Stripe, здесь только её идентификаторы. status/expires_at выше —
+    # ЗЕРКАЛО состояния подписки, их пишет вебхук; своей арифметики периодов больше нет.
+    # unique обязателен: по этому полю вебхук ищет студию через scalar_one_or_none()
+    # (webhook.find_plan_by_subscription — запасной путь линковки первой карточной
+    # оплаты, и _handle_setup_intent). Две строки с одним customer'ом дали бы
+    # MultipleResultsFound внутри хендлера, то есть потерянную оплату.
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
+    stripe_subscription_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
+
+    # Оплаченная, но ещё не вступившая в силу смена тарифа: по умолчанию апгрейд
+    # начинается с КОНЦА текущего оплаченного периода, чтобы студия не сжигала
+    # остаток, за который уже заплатила. Сам перенос ведёт Stripe (Subscription
+    # Schedule), здесь — только то, что показать владельцу на странице оплаты, не
+    # ходя за этим в Stripe на каждый рендер. Ступень доступа поднимает по-прежнему
+    # оплаченный счёт (webhook._activate), а не эти поля.
+    scheduled_plan: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    scheduled_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+
     billing_mode: Mapped[str] = mapped_column(String(20), default="subscription")
     percent_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     fixed_base_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    # Согласие владельца на постоплату комиссии с офлайн-продаж — юридическое
+    # основание выставлять счёт и блокировать доступ за неоплату. Пишется ТОЛЬКО
+    # при явном подтверждении в модалке (POST /billing/model, accept_offline_terms).
+    # Ставка и версия текста фиксируются на момент согласия: сменим условия —
+    # старое согласие не должно молча распространиться на новые.
+    percent_terms_accepted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True,
+    )
+    percent_terms_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    percent_terms_version: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
     auto_renewal: Mapped[bool] = mapped_column(Boolean, default=True)
     email_receipt_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -205,6 +241,15 @@ class PaymentCard(Base):
 
 class BillingInvoice(Base):
     __tablename__ = "billing_invoices"
+    # Расчётный месяц уникален в паре со студией и видом счёта: за один и тот же
+    # месяц ни комиссия, ни минимальный платёж не могут быть выставлены дважды.
+    # Пропущенный запуск воркера догоняется следующим тиком, и без этого ключа
+    # догоняющий проход выставил бы второй счёт за тот же период. У счетов за
+    # тариф period пуст, а NULL в Postgres друг другу не равны — они под
+    # ограничение не попадают.
+    __table_args__ = (
+        UniqueConstraint("studio_id", "kind", "period", name="uq_billing_invoice_period"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
@@ -214,12 +259,107 @@ class BillingInvoice(Base):
     period_months: Mapped[int] = mapped_column(Integer, default=1)
     amount: Mapped[int] = mapped_column(Integer)
     payment_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    # subscription — счёт за тариф; offline_fee — комиссия с офлайн-продаж;
+    # min_fee — минимальный месячный платёж процентного тарифа (месяц, в котором
+    # платформа заработала на студии меньше MIN_MONTHLY_FEE).
+    # Различать обязательно: оплата комиссии и минимума НЕ продлевает подписку, а их
+    # неоплата (в отличие от подписки) блокирует и CRM, и мини-приложение.
+    kind: Mapped[str] = mapped_column(String(20), default="subscription", index=True)
+    # Расчётный месяц счёта, "YYYY-MM". Заполнен у offline_fee и min_fee — по нему
+    # держится уникальность (см. __table_args__) и подписывается позиция в фактуре.
+    # NULL у счетов за тариф: там период задаётся подпиской, а не календарём.
+    period: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
+    # Крайний срок оплаты. Прошёл, а счёт не оплачен → студия блокируется
+    # (services/platform_fee.studio_suspended). NULL у счетов за тариф: там срок
+    # ведёт Stripe своим dunning'ом, и блокировка идёт по статусу подписки.
+    due_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True, index=True,
+    )
     paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     status: Mapped[str] = mapped_column(String(20), default="pending")
     pdf_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    # Зеркало счёта Stripe. stripe_invoice_id — ключ идемпотентности: ретрай вебхука
+    # находит существующую строку, а не заводит вторую.
+    stripe_invoice_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
+    hosted_invoice_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    # Когда CRM отправила своё письмо о скором отключении (offline_fee, до due_at).
+    # NULL — ещё не отправлено. Stripe шлёт письмо по счёту сам, это — второе,
+    # из самой CRM (services/offline_fee_billing._send_reminders).
+    reminder_sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="billing_invoices")
     user: Mapped[Optional["User"]] = relationship(back_populates="billing_invoices")
+
+
+class OfflineTransactionFee(Base):
+    """Комиссия платформы с ОФЛАЙН-продажи (наличные, терминал, перевод, депозит).
+
+    Онлайн-платёж расщепляет сам Stripe (`application_fee_amount`) — деньги
+    делятся в момент оплаты. Офлайн-деньги проходят мимо платформы целиком,
+    поэтому её доля копится строкой здесь и выставляется студии ОДНИМ счётом
+    раз в месяц (services/offline_fee_billing.py). Карта не привязывается —
+    студия платит по счёту сама, в любой момент.
+
+    `invoice_id IS NULL` = ещё не выставлено; это и есть предикат агрегации и
+    сумма, которую показывает виджет «Тариф и оплата».
+
+    Ставка и валюта фиксируются на момент продажи: тариф студии могут поменять
+    задним числом, а уже начисленная комиссия меняться не должна.
+    """
+    __tablename__ = "offline_transaction_fees"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    client_id: Mapped[Optional[int]] = mapped_column(ForeignKey("clients.id", ondelete="SET NULL"), nullable=True)
+
+    # Обе суммы в МЛАДШИХ единицах `currency`, как их ждёт Stripe. Смешивать здесь
+    # целые кроны с галержами нельзя: счёт собирается суммированием этих строк.
+    sale_amount: Mapped[int] = mapped_column(Integer)
+    fee_amount: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(3))
+    percent_rate: Mapped[float] = mapped_column(Float)
+    payment_method: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+    invoice_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("billing_invoices.id", ondelete="SET NULL"), nullable=True, index=True,
+    )
+
+    studio: Mapped["Studio"] = relationship(back_populates="offline_fees")
+
+
+class PlatformRevenueLedger(Base):
+    """Доходы платформы одной строкой на поступление — и онлайн, и офлайн.
+
+    Задел под экран аналитики владельца платформы: сейчас удержанное видно
+    только в дашборде Stripe, а свести его с нашими студиями там нечем.
+
+    `external_id` уникален и служит ключом идемпотентности: ретрай вебхука
+    (Stripe шлёт событие повторно вплоть до трёх суток) не должен удваивать
+    выручку. Пишется ТОЛЬКО по факту денег — не при создании счёта.
+    """
+    __tablename__ = "platform_revenue_ledger"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # Откуда пришли деньги. Полный список — routers/billing/webhook._REVENUE_SOURCE
+    # плюс connect_fee, который пишется мимо счетов:
+    #   connect_fee  — доля с онлайн-платежа клиента студии, удержана Stripe в
+    #                  момент оплаты (Connect, application_fee_amount);
+    #   subscription — оплаченный счёт за тариф;
+    #   offline_fee  — оплаченный счёт за комиссию с наличных;
+    #   min_fee      — оплаченный минимальный месячный платёж.
+    # Фактура за онлайн-комиссию (kind="online_fee") сюда НЕ пишется: эти деньги уже
+    # лежат строками connect_fee, и вторая запись удвоила бы выручку платформы.
+    source: Mapped[str] = mapped_column(String(20), index=True)
+    amount: Mapped[int] = mapped_column(Integer)   # младшие единицы `currency`
+    currency: Mapped[str] = mapped_column(String(3))
+    external_id: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+
+    studio: Mapped["Studio"] = relationship(back_populates="revenue_entries")
 
 
 class UserSession(Base):
