@@ -68,11 +68,21 @@ export function Sheet({
     window.addEventListener('keydown', onKey);
 
     return () => {
-      openCount -= 1;
-      if (openCount === 0) document.body.style.overflow = '';
       window.removeEventListener('keydown', onKey);
+      openCount -= 1;
+
+      // Прокрутку возвращаем не в тот же кадр, что isOpen стал false, а после
+      // того, как лист физически закончит уезжать. Раньше overflow снимался
+      // мгновенно — reflow от возврата скролла (плюс scrollbar-gutter) бил
+      // ровно по тем же кадрам, что transform-анимация закрытия, и лист
+      // заметно дёргался в момент ухода. Таймаут грубо совпадает с длительностью
+      // exit-анимации; если лист успели открыть заново, openCount к этому
+      // моменту уже не 0, и снятие не сработает.
+      setTimeout(() => {
+        if (openCount === 0) document.body.style.overflow = '';
+      }, isDesktop ? 180 : 240);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isDesktop]);
 
   return createPortal(
     <AnimatePresence>
@@ -183,8 +193,15 @@ export function Sheet({
               <div className={footer ? 'h-4' : 'h-6'} />
             </div>
 
+            {/* Отступ снизу — ОДНИМ объявлением: собственные 20px плюс
+                безопасная зона. Пара `pb-safe pb-5` здесь не работает — это два
+                padding-bottom на одном элементе, в собранном CSS `.pb-safe`
+                стоит ниже и молча съедал 20px, оставляя кнопки на кромке листа
+                (на ПК безопасная зона равна нулю). */}
             {footer && (
-              <div className="pb-safe relative shrink-0 px-6 pb-5 pt-3">{footer}</div>
+              <div className="relative shrink-0 px-6 pb-[calc(1.25rem_+_env(safe-area-inset-bottom,0px))] pt-5">
+                {footer}
+              </div>
             )}
             {!footer && <div className="pb-safe" />}
           </motion.div>

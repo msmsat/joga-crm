@@ -79,7 +79,7 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
         footer={
           canPayOnline ? (
             <SheetAction onClick={() => setIsPaymentOpen(true)} disabled={!selected}>
-              {selected ? t('buyModal.pay', { price: selected.price_str }) : t('buyModal.choose_plan')}
+              {selected ? t('buyModal.pay', { price: selected.final_price_str }) : t('buyModal.choose_plan')}
             </SheetAction>
           ) : (
             // Пустая кнопка, ведущая в ошибку (Stripe не подключён), хуже честного текста.
@@ -128,13 +128,28 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
                   <span className="block truncate text-[15px] font-extrabold tracking-[-0.02em] text-foreground">
                     {nameOf(plan)}
                   </span>
-                  <span className="mt-0.5 block text-[11.5px] font-medium text-muted-foreground">
+                  <span className="mt-0.5 flex items-center gap-1.5 text-[11.5px] font-medium text-muted-foreground">
                     {plan.class_count} {t('common.classes_count')}
+                    {/* Бейдж скидки рядом с количеством занятий, а не у цены:
+                        у цены уже стоит зачёркнутая база, два акцента в одной
+                        точке спорили бы друг с другом. */}
+                    {plan.discount_label && (
+                      <span className="rounded-full bg-brand/12 px-2 py-0.5 text-[10.5px] font-extrabold text-brand">
+                        {plan.discount_label}
+                      </span>
+                    )}
                   </span>
                 </span>
 
-                <span className="shrink-0 text-[15px] font-extrabold tabular-nums tracking-[-0.025em] text-foreground">
-                  {plan.price_str}
+                <span className="shrink-0 text-right">
+                  {plan.discount_label && (
+                    <span className="block text-[11.5px] font-bold tabular-nums text-muted-foreground line-through">
+                      {plan.price_str}
+                    </span>
+                  )}
+                  <span className="block text-[15px] font-extrabold tabular-nums tracking-[-0.025em] text-foreground">
+                    {plan.final_price_str}
+                  </span>
                 </span>
               </motion.button>
             );
@@ -146,7 +161,9 @@ export default function BuyModal({ isOpen, onClose, onSuccess, packages, canPayO
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
         itemName={selected ? nameOf(selected) : ''}
-        amountStr={selected ? selected.price_str : ''}
+        amountStr={selected ? selected.final_price_str : ''}
+        basePriceStr={selected?.discount_label ? selected.price_str : null}
+        discountLabel={selected?.discount_label ?? null}
         onPay={startPayment}
       />
     </>

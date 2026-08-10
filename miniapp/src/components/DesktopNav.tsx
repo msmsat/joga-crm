@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { NAV_ITEMS } from './navItems';
+import type { NavItem } from './navItems';
 import { cn } from '../lib/utils';
 
 type Props = {
   active: string;
   onSelect: (tab: string) => void;
+  /** Разделы для этой студии — решает App (см. `visibleNavItems`). */
+  items: NavItem[];
   /** Кабинет принадлежит студии, а не Velora — её марка стоит первой. */
   studioName?: string;
   logoUrl?: string | null;
@@ -25,12 +27,32 @@ type Props = {
  * хранить, объяснять иконкой и восстанавливать между сессиями, ради четырёх
  * пунктов.
  */
-export default function DesktopNav({ active, onSelect, studioName, logoUrl, userName }: Props) {
+export default function DesktopNav({ active, onSelect, items, studioName, logoUrl, userName }: Props) {
   const { t } = useTranslation();
 
   return (
-    <aside className="relative z-20 flex w-[272px] shrink-0 flex-col px-6 py-10">
-      <div className="flex min-w-0 items-center gap-3 px-3.5">
+    /* sticky вместо собственной области прокрутки: страница листается целиком,
+       а меню просто остаётся на экране. overflow-y на случай низкого окна —
+       иначе профиль внизу колонки становится недосягаем. */
+    <aside className="sticky top-0 z-20 flex h-screen w-[272px] shrink-0 flex-col overflow-y-auto px-6 py-10">
+      {/* Две марки, одна под другой: сверху продукт, снизу студия, чей это
+          кабинет. Знак Velora — те же четыре окошка, что в меню CRM: клиент и
+          владелец должны узнавать один продукт. */}
+      <div className="flex min-w-0 items-center gap-2.5 px-3.5">
+        <span className="shrink-0 text-brand">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="h-[18px] w-[18px]">
+            <rect width="9" height="9" rx="2.6" />
+            <rect x="11" width="9" height="9" rx="2.6" opacity="0.55" />
+            <rect y="11" width="9" height="9" rx="2.6" opacity="0.55" />
+            <rect x="11" y="11" width="9" height="9" rx="2.6" />
+          </svg>
+        </span>
+        <span className="truncate text-[13px] font-extrabold uppercase tracking-[0.24em] text-foreground">
+          Velora
+        </span>
+      </div>
+
+      <div className="mt-9 flex min-w-0 items-center gap-3 px-3.5">
         {logoUrl ? (
           <img src={logoUrl} alt="" className="h-10 w-10 shrink-0 rounded-[13px] object-cover shadow-soft" />
         ) : (
@@ -60,8 +82,8 @@ export default function DesktopNav({ active, onSelect, studioName, logoUrl, user
         </div>
       </div>
 
-      <nav className="mt-14 flex flex-col gap-1.5">
-        {NAV_ITEMS.map((item) => {
+      <nav className="mt-12 flex flex-col gap-1.5">
+        {items.map((item) => {
           const isActive = active === item.id;
 
           return (

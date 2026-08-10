@@ -331,14 +331,117 @@ async def funding_instructions(customer_id: str) -> tuple[str, str, str]:
     return account.iban, account.bic, getattr(account, "account_holder_name", "") or ""
 
 
+def _phase_items(phase) -> list[dict]:
+    """Позиции фазы расписания в виде, который принимает обратно `modify`.
+
+    Из ответа Stripe price приезжает объектом, а на запись нужен id — вернуть
+    объект как есть значит получить 400 посреди смены тарифа.
+    """
+    items = []
+    for item in (getattr(phase, "items", None) or []):
+        price = getattr(item, "price", None)
+        price_id = price if isinstance(price, str) else getattr(price, "id", None)
+        if price_id:
+            items.append({"price": price_id, "quantity": getattr(item, "quantity", 1) or 1})
+    return items
+
+
+async def _subscription_schedule_id(subscription_id: str) -> str | None:
+    """id расписания, которым уже управляется подписка, или None."""
+    subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    schedule = getattr(subscription, "schedule", None)
+    return schedule if isinstance(schedule, str) else getattr(schedule, "id", None)
+
+
+async def release_schedule(subscription_id: str) -> None:
+    """Снять расписание с подписки, если оно есть.
+
+    Обязательно перед немедленной сменой тарифа: подписку, которой управляет
+    расписание, `Subscription.modify` менять отказывается. Сценарий живой —
+    студия запланировала переход с начала периода, а потом нажала «перейти сейчас».
+    """
+    schedule_id = await _subscription_schedule_id(subscription_id)
+    if schedule_id:
+        await asyncio.to_thread(stripe.SubscriptionSchedule.release, schedule_id)
+
+
+async def schedule_price_change(
+    subscription_id: str, price_id: str, metadata: dict,
+) -> int | None:
+    """Новый Price с НАЧАЛА следующего периода. Возвращает момент вступления в силу.
+
+    Тариф, за который уже заплачено, доигрывает до конца — студия не теряет
+    оплаченный остаток. Немедленный переход это как раз и сжигает, поэтому он
+    отдельной кнопкой и с предупреждением (см. `change_subscription_price`
+    с `billing_cycle_anchor="now"`).
+
+    `metadata` уезжает на ФАЗУ: Stripe перенесёт её в метаданные подписки в момент
+    входа в фазу, оттуда её прочитает счёт (`parent.subscription_details.metadata`),
+    а из счёта — `webhook._activate`. Без этого продление вернуло бы студию на
+    прежнюю ступень тарифа.
+
+    Ступень доступа поднимается ТОЛЬКО оплатой счёта новой фазы. Пока период не
+    кончился, студия остаётся на прежнем тарифе — и это то, за что она заплатила.
+    """
+    schedule_id = await _subscription_schedule_id(subscription_id)
+    if schedule_id is None:
+        created = await asyncio.to_thread(
+            stripe.SubscriptionSchedule.create, from_subscription=subscription_id,
+        )
+        schedule_id, schedule = created.id, created
+    else:
+        schedule = await asyncio.to_thread(stripe.SubscriptionSchedule.retrieve, schedule_id)
+
+    phases = getattr(schedule, "phases", None) or []
+    if not phases:
+        raise RuntimeError(f"У расписания {schedule_id} нет фаз — сменить тариф нечем")
+
+    # Берём ТОЛЬКО текущую фазу и дописываем свою: у подписки с ранее
+    # запланированной сменой фаз уже две, и добавление третьей выстроило бы
+    # очередь тарифов вместо замены последнего решения владельца.
+    current = phases[0]
+    starts_at = getattr(current, "end_date", None)
+    await asyncio.to_thread(
+        stripe.SubscriptionSchedule.modify,
+        schedule_id,
+        phases=[
+            {
+                "items": _phase_items(current),
+                "start_date": getattr(current, "start_date", None),
+                "end_date": starts_at,
+            },
+            {"items": [{"price": price_id, "quantity": 1}], "iterations": 1, "metadata": metadata},
+        ],
+        # release: доиграв запланированную фазу, расписание отпускает подписку, и
+        # она продолжается сама на новом Price. Без этого (`cancel` по умолчанию у
+        # расписаний, созданных вручную) подписка бы просто закончилась.
+        end_behavior="release",
+    )
+    return starts_at
+
+
 async def change_subscription_price(
     subscription_id: str, price_id: str, metadata: dict | None = None,
+    *, proration_behavior: str = "create_prorations", billing_cycle_anchor: str | None = None,
 ):
     """Смена тарифа или периода на существующей подписке.
 
     Вторую подписку не заводим: у студии она одна. Stripe выставит пропорциональный
     счёт за разницу (`create_prorations`) — это и есть корректное поведение при
     апгрейде посреди оплаченного периода.
+
+    `proration_behavior="none"` — для смены ТАРИФНОЙ МОДЕЛИ (routers/billing/router.
+    _reconcile_subscription): переход происходит сразу и без возврата денег за
+    неиспользованный остаток периода. Прорация вернула бы студии остаток кредитом
+    на баланс — а правило продукта ровно обратное, и модалка подтверждения на фронте
+    предупреждает об этом заранее («необратимо теряете остаток оплаченного периода»).
+
+    `billing_cycle_anchor="now"` — немедленный переход на другой тариф («перейти
+    сейчас»): цикл начинается заново, Stripe сразу выставляет счёт на ПОЛНУЮ цену
+    нового тарифа, а остаток прежнего сгорает. Именно поэтому кнопка отдельная и с
+    предупреждением; спокойный путь — `schedule_price_change` с начала периода.
+    Без anchor'а и с `proration_behavior="none"` студия получила бы тариф выше
+    бесплатно до конца текущего периода.
 
     `metadata` обязана приехать вместе с новым Price. Ступень тарифа в нашей БД
     поднимает `webhook._activate` по `invoice.plan_name`, а тот берётся из метаданных
@@ -352,12 +455,29 @@ async def change_subscription_price(
     item_id = subscription["items"].data[0].id
     params: dict = {
         "items": [{"id": item_id, "price": price_id}],
-        "proration_behavior": "create_prorations",
+        "proration_behavior": proration_behavior,
         "expand": ["latest_invoice"],
     }
     if metadata is not None:
         params["metadata"] = metadata
+    if billing_cycle_anchor is not None:
+        params["billing_cycle_anchor"] = billing_cycle_anchor
     return await asyncio.to_thread(stripe.Subscription.modify, subscription_id, **params)
+
+
+async def subscription_price_key(subscription_id: str) -> str | None:
+    """`lookup_key` Price, по которому подписка идёт СЕЙЧАС, или None.
+
+    Тариф и период подписки уже записаны в её Price (services/stripe_catalog),
+    поэтому второй копии у себя мы не держим — читаем оттуда, когда надо перевести
+    подписку на парный Price другого режима оплаты.
+    """
+    subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    items = getattr(subscription, "items", None)
+    data = getattr(items, "data", None) if items is not None else None
+    if not data:
+        return None
+    return getattr(getattr(data[0], "price", None), "lookup_key", None)
 
 
 async def create_setup_checkout(

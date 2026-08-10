@@ -11,10 +11,11 @@ import logging
 import os
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from ratelimit import limiter
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import StudioBillingPlan
@@ -148,15 +149,29 @@ def _has_live_subscription(plan: StudioBillingPlan) -> bool:
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
+# Каждый вызов заводит объекты у Stripe (Customer, Checkout Session, прорация).
+# JWT сам по себе не потолок: угнанный токен владельца или зациклившийся ретрай
+# фронта иначе упирается только в лимиты Stripe. Порог с запасом к живому
+# сценарию — владелец жмёт «Оплатить» единицы раз, а не десятки.
+@limiter.limit("10/minute")
 async def create_checkout(
+    request: Request,
     body: CheckoutRequest,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     """Оплата картой: страница Stripe с подпиской.
 
-    Есть живая подписка → меняем её тариф/период с прорейтингом и возвращаем ссылку
-    на счёт-разницу. Нет → обычная страница оформления.
+    Живой подписки нет → обычная страница оформления, тариф начинается сразу.
+
+    Живая подписка есть — решает `body.apply`:
+
+    * `period_end` (по умолчанию) — новый тариф ставится в расписание и начинается
+      с конца текущего оплаченного периода. Платить сейчас не нужно: Stripe
+      выставит счёт сам к началу новой фазы. Ничего не сгорает.
+    * `now` — переход немедленный: цикл начинается заново, Stripe сразу выставляет
+      полную цену нового тарифа, а остаток прежнего СГОРАЕТ. Фронт обязан
+      подтвердить это отдельно — деньги теряются безвозвратно.
     """
     if not stripe_billing.configured():
         raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
@@ -171,17 +186,47 @@ async def create_checkout(
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _has_live_subscription(plan):
+            if body.apply == "period_end":
+                # Метод оплаты НЕ трогаем: платить сейчас нечего, счёт новой фазы
+                # придёт тем же способом, каким студия платит сегодня. Переключить
+                # её на автосписание за то, что она выбрала будущий тариф, — значит
+                # молча снять деньги с карты у студии, которая платит переводом.
+                starts_at = await stripe_billing.schedule_price_change(
+                    plan.stripe_subscription_id, price_id, metadata,
+                )
+                # plan_name НЕ трогаем: ступень доступа поднимет оплаченный счёт
+                # новой фазы (webhook._activate). Эти поля — только подпись в
+                # интерфейсе, чтобы владелец видел, что и когда его ждёт.
+                plan.scheduled_plan = body.plan
+                plan.scheduled_at = (
+                    datetime.utcfromtimestamp(starts_at) if starts_at else None
+                )
+                await db.commit()
+                return CheckoutResponse(
+                    checkout_url=f"{WEB_APP_URL}/dashboard/billing",
+                    scheduled=True,
+                    applies_at=plan.scheduled_at.isoformat() if plan.scheduled_at else None,
+                )
+
+            # Немедленный переход. Ранее запланированную смену снимаем: подписку под
+            # расписанием изменить нельзя, и владелец только что решил иначе.
+            await stripe_billing.release_schedule(plan.stripe_subscription_id)
             # Сначала смена тарифа, потом метод оплаты: если change_subscription_price
             # упадёт, студия останется как была — а не безмолвно переключённой на
             # автосписание без применённого тарифа.
             subscription = await stripe_billing.change_subscription_price(
                 plan.stripe_subscription_id, price_id, metadata,
+                # Остаток прежнего периода сгорает (о чём фронт предупредил), а счёт
+                # на полную цену нового тарифа выставляется сразу.
+                proration_behavior="none", billing_cycle_anchor="now",
             )
             # Метод оплаты мог быть переводом — вернуть подписку на автосписание,
             # иначе студия выбрала карту, а Stripe продолжит слать счета на перевод.
             await stripe_billing.set_collection_method(
                 plan.stripe_subscription_id, "charge_automatically",
             )
+            plan.scheduled_plan = None
+            plan.scheduled_at = None
             await db.commit()
             invoice = getattr(subscription, "latest_invoice", None)
             url = getattr(invoice, "hosted_invoice_url", None) if invoice else None
@@ -206,7 +251,11 @@ async def create_checkout(
 
 
 @router.post("/checkout/iban", response_model=IbanCheckoutResponse)
+# Дороже карточной ветки: помимо Customer'а создаётся подписка, финализируется
+# счёт и уходит письмо с фактурой. Спам этой ручкой — спам фактурами студии.
+@limiter.limit("10/minute")
 async def create_iban_checkout(
+    request: Request,
     body: IbanCheckoutRequest,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
@@ -230,12 +279,22 @@ async def create_iban_checkout(
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _has_live_subscription(plan):
+            # Ранее запланированную смену снимаем: подписку под расписанием Stripe
+            # менять отказывается, а владелец только что решил платить сейчас.
+            await stripe_billing.release_schedule(plan.stripe_subscription_id)
             # Сначала смена тарифа, потом метод оплаты: если change_subscription_price
             # упадёт, студия останется как была — а не безмолвно переключённой на
             # перевод без применённого тарифа и без счёта.
             await stripe_billing.change_subscription_price(
                 plan.stripe_subscription_id, price_id, metadata,
+                # Те же правила, что у карты: переход немедленный, остаток прежнего
+                # периода сгорает, счёт выставляется на полную цену нового тарифа.
+                # Разное поведение у двух способов оплаты сделало бы предупреждение
+                # в интерфейсе враньём для одного из них.
+                proration_behavior="none", billing_cycle_anchor="now",
             )
+            plan.scheduled_plan = None
+            plan.scheduled_at = None
             # Подписка могла быть на автосписании с карты — переводим её на счета,
             # иначе Stripe спишет с карты, и показанный IBAN окажется декорацией.
             await stripe_billing.set_collection_method(
@@ -318,7 +377,9 @@ async def create_iban_checkout(
 
 
 @router.post("/payment-method/setup", response_model=CheckoutResponse)
+@limiter.limit("10/minute")
 async def setup_payment_method(
+    request: Request,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):

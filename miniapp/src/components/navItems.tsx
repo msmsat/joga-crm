@@ -9,6 +9,9 @@ export type NavItem = {
  * Разделы кабинета. Один список на два меню: нижнюю капсулу телефона
  * (BottomNav) и боковое меню десктопа (DesktopNav) — расходиться им нельзя,
  * это буквально одна и та же навигация в двух раскладках.
+ *
+ * Список полный; какие пункты показать, решает App — «Клуб» появляется
+ * только у студий с включённой программой лояльности (см. `visibleNavItems`).
  */
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -41,6 +44,17 @@ export const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
+    id: 'club',
+    labelKey: 'nav.club',
+    icon: (
+      <>
+        <rect x="2" y="5" width="20" height="14" rx="3" />
+        <path d="M2 10h20" />
+        <circle cx="17" cy="14.5" r="1.6" />
+      </>
+    ),
+  },
+  {
     id: 'prof',
     labelKey: 'nav.profile',
     icon: (
@@ -51,3 +65,10 @@ export const NAV_ITEMS: NavItem[] = [
     ),
   },
 ];
+
+/**
+ * Пункты для текущей студии. «Клуб» скрыт, пока владелец не включил программу
+ * лояльности: вкладка, за которой всегда пусто, — худший вид пустого состояния.
+ */
+export const visibleNavItems = (hasLoyalty: boolean): NavItem[] =>
+  hasLoyalty ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== 'club');

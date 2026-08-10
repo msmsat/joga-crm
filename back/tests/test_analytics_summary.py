@@ -18,7 +18,7 @@ from sqlalchemy import delete, select
 
 from database import async_session_maker, engine
 from dependencies import StudioContext
-from models import Client, Lesson, Operation, Reservation, Studio, User
+from models import Client, Lesson, Operation, Reservation, Studio, StudioMember, User
 from routers.analytics.reports import period_summary, trainers_report
 
 
@@ -33,6 +33,18 @@ async def _seed() -> tuple[int, int, int]:
         free = User(email="summary-free-test@x.com", hashed_password="x", name="Free", last_name="Trainer")
         db.add_all([paid, free]); await db.flush()
         paid_tid, free_tid = paid.id, free.id
+
+        # Членство обязательно: отчёт по тренерам подписывает человека именем из
+        # StudioMember, а НЕ из users (решение 9 — в разных студиях он подписан
+        # по-разному). Без этих строк join к studio_members пуст, member_names
+        # ничего не находит, и обе строки отчёта подписываются str(user_id).
+        db.add_all([
+            StudioMember(user_id=paid_tid, studio_id=sid, role="trainer",
+                         status="active", name="Paid", last_name="Trainer"),
+            StudioMember(user_id=free_tid, studio_id=sid, role="trainer",
+                         status="active", name="Free", last_name="Trainer"),
+        ])
+        await db.flush()
 
         c1 = Client(studio_id=sid, name="C1")
         c2 = Client(studio_id=sid, name="C2")

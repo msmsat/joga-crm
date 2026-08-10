@@ -89,13 +89,10 @@
     "buy_btn": "Купити абонемент",
     "notifications": "Сповіщення",
     "history": "Історія оплат",
-    "invite": "Запросити подругу",
     "support": "Підтримка студії",
     "reminders": "Нагадування перед заняттям",
     "about_studio": "Про студію",
     "language": "Мова",
-    "community": "Спільнота",
-    "invite_hint": "Разом починати легше — надішліть подрузі посилання",
     "subscription_group": "Абонемент",
     "notifications_group": "Сповіщення",
     "app_group": "Застосунок",
@@ -220,13 +217,19 @@
   "supportModal": {
     "tag": "Допомога",
     "title": "Підтримка",
-    "description": "Ви можете написати будь-яке повідомлення прямо в цьому боті — наша команда отримає його та відповість найближчим часом.",
-    "button": "Зрозуміло"
+    "sub": "Зв'яжіться зі студією {{studio}} зручним для вас способом.",
+    "phone": "Телефон",
+    "email": "Пошта",
+    "website": "Сайт",
+    "no_contacts": "Контактів поки немає",
+    "no_contacts_hint": "Студія ще не додала телефон чи пошту. Запитайте їх на найближчому занятті."
   },
   "paymentModal": {
     "tag": "Безпечна оплата",
     "title": "Оформлення замовлення",
     "service": "Послуга",
+    "base_price": "Вартість",
+    "discount": "Знижка",
     "amount_due": "До сплати",
     "pay_card": "Оплатити карткою",
     "or_other": "або іншим способом",
@@ -236,16 +239,13 @@
     "cancel": "Скасувати",
     "expiry_placeholder": "ММ/РР"
   },
-  "languageModal": {
-    "tag": "Налаштування",
-    "sub": "Мова інтерфейсу застосунку"
-  },
   "nav": {
     "home": "Головна",
     "schedule": "Розклад",
     "my_lessons": "Мої заняття",
     "profile": "Профіль",
-    "client_area": "Кабінет клієнта"
+    "client_area": "Кабінет клієнта",
+    "club": "Клуб"
   },
   "home": {
     "greeting_morning": "Доброго ранку",
@@ -257,9 +257,6 @@
     "directions": "Напрямки",
     "body_spirit_balance": "Тіло. Дух. Баланс.",
     "studio_description": "Йога-студія Namaste — простір для гармонії та саморозвитку в Одесі",
-    "referral_title": "Запроси подругу",
-    "referral_subtitle": "Отримай знижку 20% на наступний абонемент",
-    "referral_link_copied": "Посилання скопійовано!",
     "today": "Сьогодні",
     "tomorrow": "Завтра",
     "studios": "Студії",
@@ -280,5 +277,36 @@
     "flow_mfr": "МФР",
     "flow_healthy_back": "Здорова спина",
     "flow_breathing": "Дихальні практики"
+  },
+  "club": {
+    "title": "Клуб",
+    "points": "балів",
+    "points_worth": "≈ {{value}}",
+    "spent": "Витрачено в студії: {{amount}}",
+    "to_next": "Ще {{amount}} до «{{level}}»",
+    "level_top": "Найвищий рівень",
+    "levels": "Рівні",
+    "offers": "Персональні знижки",
+    "certificates": "Сертифікати",
+    "valid_until": "діє до {{date}}",
+    "valid_forever": "без обмеження часу",
+    "code_copied": "Код скопійовано",
+    "deposit": "Депозит",
+    "deposit_history": "Історія депозиту",
+    "deposit_empty": "Рухів по депозиту ще не було",
+    "deposit_load_error": "Не вдалося завантажити історію депозиту",
+    "referral": "Запросити друга",
+    "referral_bonus_points": "{{bonus}} балів вам",
+    "referral_bonus_money": "{{bonus}} вам",
+    "referral_discount": "{{discount}} % знижки другу",
+    "referral_invited": "Запрошено",
+    "referral_completed": "Прийшли",
+    "referral_copy": "Скопіювати посилання",
+    "referral_copied": "Посилання скопійовано",
+    "history": "Історія балів",
+    "no_history": "Балів ще не нараховували",
+    "no_history_hint": "Вони з’являться після першої оплати в студії",
+    "disabled": "Студія ще не запустила клуб",
+    "disabled_hint": "Щойно програма лояльності запрацює, бали й рівні з’являться тут."
   }
 }

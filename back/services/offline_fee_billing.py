@@ -32,7 +32,9 @@ from sqlalchemy import func, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy.future import select
 
-from models import BillingInvoice, OfflineTransactionFee, StudioBillingPlan
+from models import (
+    BillingInvoice, OfflineTransactionFee, PlatformRevenueLedger, StudioBillingPlan, Studio,
+)
 from services import stripe_billing
 
 logger = logging.getLogger(__name__)
@@ -142,6 +144,18 @@ def month_start(now: datetime) -> datetime:
     return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
+def prev_month_start(month_begin: datetime) -> datetime:
+    """Начало месяца, предшествующего `month_begin`. Через день назад — чтобы не
+    городить арифметику с переходом через январь."""
+    return month_start(month_begin - timedelta(days=1))
+
+
+def period_label(month_begin: datetime) -> str:
+    """Расчётный месяц как "YYYY-MM" — им подписан счёт и по нему держится
+    уникальность (BillingInvoice.period)."""
+    return month_begin.strftime("%Y-%m")
+
+
 def to_billing_currency(amount: int, currency: str) -> int | None:
     """Сумма в валюте биллинга или None, если курс неизвестен.
 
@@ -183,10 +197,59 @@ async def accrued_total(db: AsyncSession, studio_id: int) -> tuple[int, str]:
     return int(total), currency.upper()
 
 
-async def _bill(db: AsyncSession, studio_id: int, cutoff: datetime | None) -> BillingInvoice | None:
+async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> str | None:
+    """Stripe Customer студии, заводя его при необходимости. None — не получилось.
+
+    Раньше отсутствие customer'а просто отменяло счёт. А заводится он только в
+    оплате тарифа (routers/billing/checkout._ensure_customer) — то есть студия,
+    которая сразу выбрала «процент» и ни разу не заходила в оплату, не имела его
+    вовсе, и выставить ей было нечего: ни комиссию, ни минимальный платёж. Тариф,
+    счёт по которому невозможно выставить, — это бесплатный тариф.
+    """
+    if plan.stripe_customer_id:
+        return plan.stripe_customer_id
+
+    studio = (await db.execute(
+        select(Studio).where(Studio.id == plan.studio_id)
+    )).scalar_one_or_none()
+    if studio is None:
+        return None
+
+    try:
+        customer_id = await stripe_billing.ensure_customer(
+            None,
+            name=studio.name,
+            email=studio.email,
+            country=studio.country,
+            postal_code=studio.postal_code,
+            city=None,
+            line1=studio.address,
+            vat_id=studio.vat_id,
+            company_id=studio.company_id,
+            studio_id=plan.studio_id,
+        )
+    except Exception:
+        logger.exception("Офлайн-комиссии: не удалось завести Stripe Customer студии %s", plan.studio_id)
+        return None
+
+    plan.stripe_customer_id = customer_id
+    # Коммитим сразу: ниже поход в Stripe, и потерять привязку значит завести
+    # студии ВТОРОГО клиента на следующем проходе.
+    await db.commit()
+    return customer_id
+
+
+async def _bill(
+    db: AsyncSession, studio_id: int, cutoff: datetime | None, period: str | None = None,
+) -> BillingInvoice | None:
     """Один счёт за все невыставленные начисления студии (до `cutoff`, если задан).
 
     `cutoff=None` — «выставить всё прямо сейчас», кнопка досрочной оплаты.
+
+    `period` («YYYY-MM») ставит только ЕЖЕМЕСЯЧНЫЙ проход: он делает второй счёт за
+    тот же месяц невозможным на уровне БД (uq_billing_invoice_period). Досрочная
+    оплата period не ставит намеренно — она законно добавляет ещё один счёт в
+    текущем месяце, и уникальность его бы запретила.
 
     Порядок операций денежный: СНАЧАЛА резервируем начисления локальным счётом и
     коммитим, и только потом идём в Stripe. Обратный порядок опасен — упади
@@ -235,7 +298,8 @@ async def _bill(db: AsyncSession, studio_id: int, cutoff: datetime | None) -> Bi
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
     )).scalar_one_or_none()
-    if plan is None or not plan.stripe_customer_id:
+    customer_id = await _ensure_studio_customer(db, plan) if plan is not None else None
+    if customer_id is None:
         logger.error(
             "Офлайн-комиссии: у студии %s нет Stripe Customer — счёт на %s не выставлен",
             studio_id, total,
@@ -246,6 +310,7 @@ async def _bill(db: AsyncSession, studio_id: int, cutoff: datetime | None) -> Bi
         studio_id=studio_id,
         plan_name="offline_fee",
         kind="offline_fee",
+        period=period,
         period_months=1,
         amount=total,
         status="pending",
@@ -260,29 +325,36 @@ async def _bill(db: AsyncSession, studio_id: int, cutoff: datetime | None) -> Bi
         fee.invoice_id = invoice.id
     await db.commit()
 
-    await _issue_to_stripe(db, invoice, plan.stripe_customer_id, len(billable))
+    await _issue_to_stripe(db, invoice, customer_id, _describe(invoice, len(billable)))
     return invoice
 
 
+def _describe(invoice: BillingInvoice, count: int) -> str:
+    """Назначение платежа в фактуре Stripe. Студия видит эту строку в письме и в
+    выписке, поэтому «минимальный платёж» и «комиссия» должны различаться явно."""
+    if invoice.kind == "min_fee":
+        return f"Velora: минимальный месячный платёж за {invoice.period}"
+    return f"Velora: комиссия с офлайн-продаж, {count} операц."
+
+
 async def _issue_to_stripe(
-    db: AsyncSession, invoice: BillingInvoice, customer_id: str, count: int,
+    db: AsyncSession, invoice: BillingInvoice, customer_id: str, description: str,
 ) -> None:
     """Выставить у Stripe уже зарезервированный локальный счёт."""
-    period = invoice.due_at.strftime("%Y-%m") if invoice.due_at else ""
     stripe_invoice = await stripe_billing.create_fee_invoice(
         customer_id=customer_id,
         amount=invoice.amount,
         currency=stripe_billing.CURRENCY,
-        description=f"Velora: комиссия с офлайн-продаж, {count} операц.",
+        description=description,
         days_until_due=GRACE_DAYS,
         # `plan`/`period_months`/`kind` читает mirror_invoice в вебхуке — без них
         # он затрёт наш маркер именем текущего тарифа студии.
         metadata={
             "studio_id": str(invoice.studio_id),
-            "plan": "offline_fee",
+            "plan": invoice.kind,
             "period_months": "1",
-            "kind": "offline_fee",
-            "period": period,
+            "kind": invoice.kind,
+            "period": invoice.period or "",
         },
     )
     invoice.stripe_invoice_id = stripe_invoice.id
@@ -296,6 +368,137 @@ async def _issue_to_stripe(
     )
 
 
+async def _month_platform_revenue(
+    db: AsyncSession, studio_id: int, start: datetime, end: datetime,
+) -> int:
+    """Сколько платформа заработала на студии за [start, end) — в валюте биллинга.
+
+    Два источника, потому что деньги приходят по-разному:
+
+    * онлайн — долю удержал сам Stripe в момент платежа (`application_fee_amount`),
+      и она уже лежит строкой в леджере (source="connect_fee");
+    * офлайн — доля НАЧИСЛЕНА строкой OfflineTransactionFee и будет выставлена
+      счётом. Считаем по дате начисления, а не по дате оплаты счёта: счёт за месяц
+      выставляется уже в следующем, и по оплате выручка закрытого месяца всегда
+      выглядела бы нулевой.
+
+    Строки леджера с source="offline_fee"/"min_fee" сюда НЕ берём — это те же
+    офлайн-деньги, уже посчитанные начислениями, и минимальный платёж прошлого
+    месяца, который не должен закрывать минимум следующего.
+    """
+    total = 0
+
+    online = (await db.execute(
+        select(PlatformRevenueLedger.currency, func.sum(PlatformRevenueLedger.amount))
+        .where(
+            PlatformRevenueLedger.studio_id == studio_id,
+            PlatformRevenueLedger.source == "connect_fee",
+            PlatformRevenueLedger.occurred_at >= start,
+            PlatformRevenueLedger.occurred_at < end,
+        )
+        .group_by(PlatformRevenueLedger.currency)
+    )).all()
+
+    offline = (await db.execute(
+        select(OfflineTransactionFee.currency, func.sum(OfflineTransactionFee.fee_amount))
+        .where(
+            OfflineTransactionFee.studio_id == studio_id,
+            OfflineTransactionFee.created_at >= start,
+            OfflineTransactionFee.created_at < end,
+        )
+        .group_by(OfflineTransactionFee.currency)
+    )).all()
+
+    for currency, amount in (*online, *offline):
+        converted = to_billing_currency(int(amount or 0), currency)
+        if converted is None:
+            # Курса нет — считаем выручку ЗАНИЖЕННОЙ, и студия рискует получить
+            # счёт на минимум там, где заработала достаточно. Поэтому громко.
+            logger.error(
+                "Минимальный платёж: нет курса %s→%s, выручка студии %s за %s посчитана неполно",
+                currency, stripe_billing.CURRENCY, studio_id, period_label(start),
+            )
+            continue
+        total += converted
+    return total
+
+
+async def _bill_minimum(
+    db: AsyncSession, studio_id: int, start: datetime, end: datetime,
+) -> BillingInvoice | None:
+    """Счёт на разницу до минимального месячного платежа. None — платить нечего.
+
+    Только для тарифа «только процент»: там платформа зарабатывает исключительно с
+    оборота, и месяц без продаж означал бы бесплатную CRM. У «комбо» фиксированная
+    часть уже берётся подпиской, у чистой подписки — тем более, поэтому им минимум
+    не выставляется.
+
+    Считаем РАЗНИЦУ, а не полную сумму: заработали 12 € — счёт на 27 €, заработали
+    больше минимума — счёта нет вовсе. Порог «строго ноль» обходился бы одной
+    продажей на 10 €.
+
+    Повторно за тот же месяц выставить нельзя: `period` уникален в паре
+    (studio_id, kind) — см. uq_billing_invoice_period. Проверка ниже нужна, чтобы
+    не ходить в Stripe зря, а гарантию даёт индекс.
+    """
+    # Импорт локальный: routers.billing.plans тянет за собой routers.billing.__init__,
+    # а тот — router.py, который импортирует ЭТОТ модуль. На уровне файла вышел бы
+    # цикл (тот же приём, что в dependencies.py и billing/webhook.py).
+    from routers.billing.plans import MIN_MONTHLY_FEE
+
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if plan is None or plan.billing_mode != "percent":
+        return None
+
+    period = period_label(start)
+    existing = (await db.execute(
+        select(BillingInvoice.id).where(
+            BillingInvoice.studio_id == studio_id,
+            BillingInvoice.kind == "min_fee",
+            BillingInvoice.period == period,
+        )
+    )).first()
+    if existing is not None:
+        return None
+
+    await _refresh_fx()
+    shortfall = MIN_MONTHLY_FEE - await _month_platform_revenue(db, studio_id, start, end)
+    if shortfall < MIN_INVOICE_AMOUNT:
+        return None
+
+    customer_id = await _ensure_studio_customer(db, plan)
+    if customer_id is None:
+        logger.error(
+            "Минимальный платёж: у студии %s нет Stripe Customer — счёт на %s за %s не выставлен",
+            studio_id, shortfall, period,
+        )
+        return None
+
+    invoice = BillingInvoice(
+        studio_id=studio_id,
+        plan_name="min_fee",
+        kind="min_fee",
+        period=period,
+        period_months=1,
+        amount=shortfall,
+        status="pending",
+        payment_method="invoice",
+        # Тот же grace, что у комиссии: студия соглашалась на один срок.
+        due_at=datetime.utcnow() + timedelta(days=GRACE_DAYS),
+    )
+    db.add(invoice)
+    await db.commit()
+
+    await _issue_to_stripe(db, invoice, customer_id, _describe(invoice, 0))
+    logger.info(
+        "Минимальный платёж: студии %s выставлен счёт на %s за %s",
+        studio_id, shortfall, period,
+    )
+    return invoice
+
+
 async def _finish_pending(db: AsyncSession) -> int:
     """Дослать в Stripe счета, зарезервированные локально, но не выставленные.
 
@@ -305,7 +508,7 @@ async def _finish_pending(db: AsyncSession) -> int:
     """
     pending = (await db.execute(
         select(BillingInvoice).where(
-            BillingInvoice.kind == "offline_fee",
+            BillingInvoice.kind.in_(("offline_fee", "min_fee")),
             BillingInvoice.stripe_invoice_id.is_(None),
             BillingInvoice.status == "pending",
         )
@@ -316,7 +519,10 @@ async def _finish_pending(db: AsyncSession) -> int:
         plan = (await db.execute(
             select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
         )).scalar_one_or_none()
-        if plan is None or not plan.stripe_customer_id:
+        if plan is None:
+            continue
+        customer_id = await _ensure_studio_customer(db, plan)
+        if customer_id is None:
             continue
         count = (await db.execute(
             select(func.count()).select_from(OfflineTransactionFee)
@@ -326,7 +532,7 @@ async def _finish_pending(db: AsyncSession) -> int:
             # Срок отсчитываем заново: студия не должна терять grace-период
             # из-за того, что у нас не получилось выставить счёт вовремя.
             invoice.due_at = datetime.utcnow() + timedelta(days=GRACE_DAYS)
-            await _issue_to_stripe(db, invoice, plan.stripe_customer_id, count)
+            await _issue_to_stripe(db, invoice, customer_id, _describe(invoice, count))
             done += 1
         except Exception:
             await db.rollback()
@@ -424,7 +630,27 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
             await db.rollback()
             logger.exception("Офлайн-комиссии: напоминания о блокировке не отправлены")
 
+    # Автосверка подписок со Stripe — в этом же проходе, а не отдельной петлёй: он
+    # уже ходит раз в час и уже взят под advisory-лок, то есть работает ровно в
+    # одном процессе кластера. Второй таск ради трёх запросов не нужен.
+    #
+    # Импорт локальный — routers.billing.webhook тянет routers.billing.plans, а тот
+    # через пакет — router.py, который импортирует ЭТОТ модуль (тот же цикл, что у
+    # _bill_minimum выше).
+    async with session_maker() as db:
+        try:
+            from routers.billing.webhook import reconcile_subscriptions
+
+            if await reconcile_subscriptions(db):
+                logger.warning("Автосверка: состояние подписок разъезжалось со Stripe — исправлено")
+        except Exception:
+            await db.rollback()
+            logger.exception("Автосверка подписок со Stripe не выполнена")
+
     cutoff = month_start(datetime.utcnow())
+    closed_month = prev_month_start(cutoff)
+    period = period_label(closed_month)
+
     async with session_maker() as db:
         studio_ids = (await db.execute(
             select(OfflineTransactionFee.studio_id)
@@ -441,11 +667,33 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
         # выставленные другим (Stripe-объект при откате транзакции не исчезнет).
         async with session_maker() as db:
             try:
-                if await _bill(db, studio_id, cutoff) is not None:
+                if await _bill(db, studio_id, cutoff, period) is not None:
                     billed += 1
             except Exception:
                 await db.rollback()
                 logger.exception("Офлайн-комиссии: счёт студии %s не выставлен", studio_id)
+
+    # Минимальный платёж — ОТДЕЛЬНЫМ проходом и по ВСЕМ percent-студиям, а не
+    # только по тем, у кого есть начисления: студия без единой продажи в список
+    # выше не попадает вовсе, а именно она и есть адресат минимума.
+    #
+    # Строго после счетов за комиссию: выручка закрытого месяца считается по
+    # начислениям, и порядок на неё не влияет, но так в логах пара «комиссия →
+    # добор до минимума» идёт по одной студии подряд.
+    async with session_maker() as db:
+        percent_studio_ids = (await db.execute(
+            select(StudioBillingPlan.studio_id)
+            .where(StudioBillingPlan.billing_mode == "percent")
+        )).scalars().all()
+
+    for studio_id in percent_studio_ids:
+        async with session_maker() as db:
+            try:
+                if await _bill_minimum(db, studio_id, closed_month, cutoff) is not None:
+                    billed += 1
+            except Exception:
+                await db.rollback()
+                logger.exception("Минимальный платёж: счёт студии %s не выставлен", studio_id)
     return billed
 
 

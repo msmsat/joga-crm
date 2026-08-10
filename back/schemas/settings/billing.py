@@ -24,6 +24,11 @@ class PlansCatalogRead(BaseSchema):
     # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
     # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
     currency: str                        # ISO-код, например EUR
+    # Минимальный месячный платёж тарифа «только процент» (младшие единицы).
+    # Отдаётся каталогом, а не хардкодится на фронте: сумма из него попадает в
+    # модалку согласия, и разъехаться с plans.MIN_MONTHLY_FEE она не должна —
+    # владелец подтверждает конкретную цифру.
+    min_monthly: int
 
 
 class BillingPlanRead(BaseSchema):
@@ -42,6 +47,10 @@ class BillingPlanRead(BaseSchema):
     sms_notification_enabled: bool = False
     can_upgrade: bool = False          # считает сервер (задача 2) — фронту не доверяем ветвистость
     next_plan: Optional[str] = None    # None, если апгрейда нет (% от оборота / максимальный тариф)
+    # Оплаченная, но ещё не наступившая смена тарифа: апгрейд по умолчанию начинается
+    # с конца текущего оплаченного периода, и владелец должен видеть, что его ждёт.
+    scheduled_plan: Optional[str] = None
+    scheduled_at: Optional[str] = None
 
 
 class AutopaySettingsUpdate(BaseModel):
@@ -69,9 +78,15 @@ class OfflineFeeStatus(BaseModel):
     due_at: Optional[str] = None        # крайний срок по самому раннему счёту
     days_left: Optional[int] = None     # сколько дней осталось; <0 — просрочено
     suspended: bool = False             # доступ уже заблокирован
+    # Чем именно заблокирован: "offline_fee" — комиссия с наличных, "min_fee" —
+    # минимальный месячный платёж процентного тарифа. Тексты у них разные.
+    suspended_reason: Optional[str] = None
     hosted_invoice_url: Optional[str] = None
     rate: Optional[float] = None
     grace_days: int = 7
+    # Минимальный месячный платёж (младшие единицы валюты биллинга). Заполнен
+    # только на тарифе «только процент» — остальным он не выставляется.
+    min_monthly: Optional[int] = None
 
 
 class IbanCheckoutRequest(BaseModel):
@@ -124,10 +139,23 @@ class PaymentCardRead(BaseSchema):
 class CheckoutRequest(BaseModel):
     plan: Literal["start", "pro", "business"]
     period_months: Literal[1, 6, 12, 24]
+    # Когда новый тариф вступает в силу. Значимо только при ЖИВОЙ подписке —
+    # первая покупка начинается сразу в любом случае.
+    #
+    # period_end (по умолчанию) — с конца текущего оплаченного периода: студия
+    #   доигрывает то, за что уже заплатила, и ничего не теряет.
+    # now — сразу, остаток текущего периода СГОРАЕТ без возврата. Требует явного
+    #   подтверждения на фронте: это необратимая потеря денег.
+    apply: Literal["period_end", "now"] = "period_end"
 
 
 class CheckoutResponse(BaseModel):
     checkout_url: str
+    # Заполнены при отложенной смене тарифа: платить прямо сейчас не нужно,
+    # переход произойдёт сам. Фронт по ним показывает «тариф сменится с …»
+    # вместо того, чтобы вести владельца на страницу оплаты.
+    scheduled: bool = False
+    applies_at: Optional[str] = None
 
 
 class RenewResponse(BaseModel):

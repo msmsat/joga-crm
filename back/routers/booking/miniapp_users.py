@@ -24,6 +24,7 @@ from routers.clients.referrals import _unique_invite_code
 from schemas._base import BaseSchema
 from services import platform_fee, stripe_connect
 from services.notifier import _fmt_amount, _studio_prefs
+from services.pricing import resolve_price
 
 from .miniapp import get_current_client
 
@@ -259,7 +260,26 @@ async def create_checkout_session(
     studio = (await db.execute(select(Studio).where(Studio.id == client.studio_id))).scalar_one()
     currency = studio.currency or "RUB"
 
-    amount_minor = stripe_connect.to_minor_units(package.price, currency)
+    # Та же цена, что видит касса CRM: студийная скидка, персональный оффер и
+    # скидка новичка по реферальной ссылке. Раньше здесь уходила package.price
+    # «в лоб» — клиент, пришедший по приглашению, платил полную сумму, хотя
+    # программа обещала ему скидку, а в кабинете она даже отображалась.
+    #
+    # Помечать скидки использованными ЗДЕСЬ нельзя: сессия Stripe ещё не
+    # оплачена. Это делает вебхук после реального списания (checkout/stripe_pay.
+    # _apply_client_subscription_purchase), иначе закрытая вкладка сжигала бы
+    # обещание навсегда.
+    resolved = await resolve_price(db, client.studio_id, client.id, package.price)
+    if resolved.final_price <= 0:
+        # Скидки покрыли пакет целиком. Проводить выдачу абонемента в обход
+        # оплаты этот эндпоинт не имеет права (он умеет только создавать сессию
+        # Stripe), а сессия на 0 всё равно была бы отклонена — говорим прямо.
+        raise HTTPException(
+            status_code=409,
+            detail="Скидка покрывает стоимость полностью — оформите абонемент в студии",
+        )
+
+    amount_minor = stripe_connect.to_minor_units(resolved.final_price, currency)
     # Комиссия платформы на тарифах «процент»/«комбо» — считается от той же суммы
     # в младших единицах, что уходит в Stripe (см. services/platform_fee.py).
     fee_minor = await platform_fee.fee_for_studio(db, client.studio_id, amount_minor)
@@ -290,8 +310,18 @@ async def create_checkout_session(
         user_id=None,
         session_id=session_id,
         account_id=stripe_channel.account_id,
-        payload={"client_id": client.id, "package_id": package.id},
-        amount=package.price,
+        # offer_id/referral_id — что именно погасить, когда оплата подтвердится.
+        # Пересчитывать resolve_price на вебхуке нельзя: между созданием сессии и
+        # оплатой скидка могла измениться, а списали со клиента уже ту сумму.
+        payload={
+            "client_id": client.id,
+            "package_id": package.id,
+            "offer_id": resolved.offer.id if resolved.offer else None,
+            "referral_id": resolved.referral.id if resolved.referral else None,
+        },
+        # Реально уплаченная сумма: по ней вебхук проводит продажу, а возврат —
+        # откатывает баллы (stripe_pay._revert_loyalty).
+        amount=resolved.final_price,
         application_fee=fee_minor,
     ))
     await db.commit()

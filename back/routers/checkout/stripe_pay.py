@@ -14,7 +14,7 @@ status=pending) и отдаём client_secret → форма Stripe рисует
 `FOR UPDATE`: второй пришедший видит status != pending и ничего не делает.
 """
 import logging
-from datetime import date
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import update
@@ -25,8 +25,9 @@ from activity import log_activity
 from database import async_session_maker, get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    ClientSubscription, Operation, OnlineChannel, StripeCheckout, Studio,
-    StudioDiscountConfig, StudioLoyaltyConfig, SubscriptionPackage, User,
+    ClientOffer, ClientSubscription, Operation, OnlineChannel, ReferralRecord,
+    StripeCheckout, Studio, StudioDiscountConfig, StudioLoyaltyConfig,
+    SubscriptionPackage, User,
 )
 from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
@@ -48,6 +49,9 @@ _DEAD_EVENTS = ("checkout.session.expired", "checkout.session.async_payment_fail
 # Деньги были и ушли обратно. Приходят как Charge, а не Session (см. _mark_reversed).
 _DISPUTE_EVENT = "charge.dispute.created"
 _REVERSED_EVENTS = ("charge.refunded", _DISPUTE_EVENT)
+# Исход спора. Объект события — Dispute (не Charge): у него свой `status`, и именно
+# он говорит, остались деньги у студии или ушли к клиенту.
+_DISPUTE_CLOSED_EVENT = "charge.dispute.closed"
 
 # Один и тот же ответ поднимают apply_paid и confirm — деньги у Stripe, продажи в
 # CRM нет. Фронт ловит код и показывает кассиру «не платите второй раз».
@@ -225,6 +229,23 @@ async def _apply_client_subscription_purchase(db: AsyncSession, checkout: Stripe
         payment_method="stripe",
     )
     await db.flush()
+
+    # Скидки гасим ЗДЕСЬ, а не при создании сессии: до этой строки деньги не
+    # списаны, и клиент, закрывший вкладку Stripe, не должен терять обещанное.
+    # Что именно гасить — зафиксировано в payload в момент расчёта цены, чтобы
+    # пересчёт по изменившемуся конфигу не гасил не ту скидку.
+    offer_id = checkout.payload.get("offer_id")
+    if offer_id is not None:
+        offer = await db.get(ClientOffer, offer_id)
+        if offer is not None:
+            offer.is_used = True
+            offer.used_at = datetime.utcnow()
+    referral_id = checkout.payload.get("referral_id")
+    if referral_id is not None:
+        referral = await db.get(ReferralRecord, referral_id)
+        if referral is not None:
+            referral.discount_used = True
+
     log_activity(
         db, checkout.studio_id, "payment",
         title=f"Абонемент «{package.name}» куплен в мини-приложении",
@@ -377,12 +398,19 @@ async def confirm(
 @webhook_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
     """Колбэк Stripe. На валидное событие ВСЕГДА 200 — 4xx/5xx заставит Stripe
-    ретраить, а обработка уже прошла (тот же принцип, что в вебхуке биллинга)."""
+    ретраить, а обработка уже прошла (тот же принцип, что в вебхуке биллинга).
+    Исключение — непроверяемая подпись: см. ниже."""
     event = stripe_connect.parse_webhook(
         await request.body(), request.headers.get("stripe-signature", ""),
     )
     if event is None:
-        return {"status": "ignored"}
+        # 400, а НЕ 200 — та же причина, что в вебхуке биллинга (routers/billing/
+        # webhook.py): не сошедшаяся подпись это почти всегда разъехавшийся
+        # секрет, и 200 превращает поломку в бесшумную. Здесь цена ещё выше:
+        # покупка абонемента в мини-приложении проводится ТОЛЬКО этим вебхуком —
+        # страховки вида /checkout/confirm (её зовёт касса CRM) у клиента нет.
+        # Молча отброшенное событие значит «клиент заплатил и не получил ничего».
+        raise HTTPException(status_code=400, detail="invalid signature")
 
     # data.object — Session у событий об оплате и Charge у событий о возврате.
     obj = event["data"]["object"]
@@ -415,8 +443,76 @@ async def stripe_webhook(request: Request):
             await db.commit()
     elif event["type"] in _REVERSED_EVENTS:
         await _mark_reversed(obj, event["type"], account_id)
+    elif event["type"] == _DISPUTE_CLOSED_EVENT:
+        await _close_dispute(obj, account_id)
 
     return {"status": "ok"}
+
+
+async def _checkout_for_payment(
+    payment_intent: str | None, account_id: str | None, event_type: str,
+) -> str | None:
+    """session_id заявки CRM по платежу, или None. Общее для возврата и спора:
+    в обоих событиях приходит платёж, а заявка живёт по session_id."""
+    if not payment_intent or not account_id:
+        logger.error("Stripe: %s без payment_intent/account — заявку не найти", event_type)
+        return None
+    try:
+        return await stripe_connect.session_id_for_payment_intent(payment_intent, account_id)
+    except Exception:
+        logger.exception("Stripe: не удалось найти сессию по %s", payment_intent)
+        return None
+
+
+async def _close_dispute(dispute, account_id: str | None) -> None:
+    """Спор закрыт: `charge.dispute.created` только пометил заявку, решает исход.
+
+    Раньше на это событие мы не подписывались вовсе, и заявка навсегда оставалась
+    в `disputed`: выигранный спор не возвращал продажу в норму (абонемент числился
+    живым, но заявка выглядела проблемной), а проигранный не откатывал её вообще —
+    деньги ушли клиенту, а абонемент оставался действующим.
+
+    * `won` — деньги остаются у студии, продажа как была: возвращаем заявку в `paid`.
+    * `lost` — деньги ушли: откатываем продажу тем же путём, что и полный возврат.
+    * промежуточные статусы (`warning_*`, `under_review`) не трогаем — спор ещё идёт.
+    """
+    status = getattr(dispute, "status", None)
+    if status not in ("won", "lost"):
+        logger.info("Stripe: спор в промежуточном статусе %s — заявку не трогаем", status)
+        return
+
+    intent = getattr(dispute, "payment_intent", None)
+    intent_id = intent if isinstance(intent, str) else getattr(intent, "id", None)
+    session_id = await _checkout_for_payment(intent_id, account_id, _DISPUTE_CLOSED_EVENT)
+    if session_id is None:
+        return
+
+    async with async_session_maker() as db:
+        checkout = (await db.execute(
+            select(StripeCheckout).where(
+                StripeCheckout.session_id == session_id,
+                StripeCheckout.status == "disputed",
+            )
+        )).scalar_one_or_none()
+        if checkout is None:
+            logger.info("Stripe: исход спора по заявке %s — она не в статусе disputed", session_id)
+            return
+
+        if status == "won":
+            checkout.status = "paid"
+            title = f"Чарджбэк на {checkout.amount} оспорен успешно — продажа в силе"
+        else:
+            checkout.status = "chargeback"
+            await _revert_sale(db, checkout)
+            title = f"Чарджбэк на {checkout.amount} проигран: абонемент погашен, деньги списаны со счёта"
+
+        log_activity(
+            db, checkout.studio_id, "payment", title=title,
+            entity_type="client", entity_id=checkout.payload.get("client_id"),
+        )
+        await db.commit()
+
+    logger.info("Stripe: спор по заявке %s закрыт со статусом %s", session_id, status)
 
 
 async def _revert_loyalty(
@@ -528,15 +624,7 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
     (`charge.dispute.closed`) — на него мы пока не подписаны, разбор ручной.
     """
     payment_intent = getattr(charge, "payment_intent", None)
-    if not payment_intent or not account_id:
-        logger.error("Stripe: %s без payment_intent/account — заявку не найти", event_type)
-        return
-
-    try:
-        session_id = await stripe_connect.session_id_for_payment_intent(payment_intent, account_id)
-    except Exception:
-        logger.exception("Stripe: не удалось найти сессию по %s", payment_intent)
-        return
+    session_id = await _checkout_for_payment(payment_intent, account_id, event_type)
     if session_id is None:
         logger.info("Stripe: %s по платежу %s вне кассы CRM", event_type, payment_intent)
         return

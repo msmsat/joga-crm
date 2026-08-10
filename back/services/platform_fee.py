@@ -107,26 +107,45 @@ async def record_offline_fee(
     return row
 
 
-async def studio_suspended(db: AsyncSession, studio_id: int) -> bool:
-    """Просрочен ли счёт за комиссию — то есть заблокирована ли студия.
+# Счета постоплаты: просроченный любой из них закрывает студию.
+# offline_fee — комиссия с наличных; min_fee — минимальный месячный платёж
+# процентного тарифа (месяц, в котором платформа заработала меньше минимума).
+SUSPENDING_KINDS = ("offline_fee", "min_fee")
 
-    Блокирует ТОЛЬКО просроченный счёт за офлайн-комиссию (`kind="offline_fee"`,
-    `due_at` в прошлом, не оплачен). До крайнего срока студия работает как
-    обычно: у неё есть весь grace-период, чтобы заплатить.
+
+async def suspension_reason(db: AsyncSession, studio_id: int) -> str | None:
+    """Вид просроченного счёта, из-за которого студия заблокирована, или None.
+
+    Не bool: причины две, и объяснения у них разные — «оплатите комиссию с
+    офлайн-продаж» и «оплатите минимальный месячный платёж». Показать не ту
+    значит отправить владельца искать долг, которого у него нет.
+
+    Блокирует только счёт, у которого ПРОШЁЛ срок: весь grace-период студия
+    работает как обычно.
+    """
+    return (await db.execute(
+        select(BillingInvoice.kind).where(
+            BillingInvoice.studio_id == studio_id,
+            BillingInvoice.kind.in_(SUSPENDING_KINDS),
+            BillingInvoice.status.notin_(("paid", "refunded")),
+            BillingInvoice.due_at.isnot(None),
+            BillingInvoice.due_at < datetime.utcnow(),
+        )
+        # Минимальный платёж вперёд: если просрочены оба, назвать надо тот, что
+        # блокирует «непонятнее» — комиссию владелец хотя бы связывает с продажами.
+        .order_by(BillingInvoice.kind.desc())
+        .limit(1)
+    )).scalar_one_or_none()
+
+
+async def studio_suspended(db: AsyncSession, studio_id: int) -> bool:
+    """Заблокирована ли студия за просроченный счёт постоплаты.
 
     Общая точка CRM (dependencies) и мини-приложения (booking/miniapp): доступ
     должен закрываться одинаково, иначе клиенты продолжали бы записываться в
     студию, которой платформа уже отключила кабинет.
     """
-    return (await db.execute(
-        select(BillingInvoice.id).where(
-            BillingInvoice.studio_id == studio_id,
-            BillingInvoice.kind == "offline_fee",
-            BillingInvoice.status.notin_(("paid", "refunded")),
-            BillingInvoice.due_at.isnot(None),
-            BillingInvoice.due_at < datetime.utcnow(),
-        ).limit(1)
-    )).first() is not None
+    return await suspension_reason(db, studio_id) is not None
 
 
 async def record_revenue(

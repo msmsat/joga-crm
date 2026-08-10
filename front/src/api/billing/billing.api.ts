@@ -63,8 +63,14 @@ export const billingApi = {
     client.get<PaymentCard[]>('/billing/cards'),
 
   // Оплата через ссылку Stripe: сумму считает сервер, редирект на checkout_url.
-  checkout: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
-    client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
+  // `apply` значим только при живой подписке: 'period_end' (по умолчанию) ставит
+  // новый тариф в расписание Stripe на конец оплаченного периода и НЕ требует
+  // оплаты сейчас; 'now' переводит немедленно, сжигая остаток текущего периода.
+  checkout: (
+    plan: CheckoutRequest['plan'],
+    period_months: CheckoutRequest['period_months'],
+    apply: CheckoutRequest['apply'] = 'now',
+  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, apply }),
 
   // Продления нет: подписку продлевает Stripe, POST /billing/renew отвечает 410.
 

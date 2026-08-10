@@ -46,12 +46,12 @@ export default function HomeGreeting({ greeting, name, studioName, logoUrl }: Pr
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-9 dt:pt-16"
+        className="pt-9 dt:pt-20"
       >
         <div className="text-[14px] font-medium text-muted-foreground dt:text-[15px]">
           {greeting},
         </div>
-        <h1 className="mt-1 text-[40px] font-extrabold leading-[0.98] tracking-[-0.035em] text-foreground dt:mt-2 dt:text-[64px] dt:tracking-[-0.045em]">
+        <h1 className="mt-1 text-[40px] font-extrabold leading-[0.98] tracking-[-0.035em] text-foreground dt:mt-2 dt:text-[52px] dt:tracking-[-0.045em]">
           {name}
         </h1>
 

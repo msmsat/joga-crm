@@ -31,6 +31,7 @@ from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
 )
 from services.notifier import _fmt_amount, _studio_prefs, notify
+from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining, refund_reservation
 
 from .miniapp import get_current_client
@@ -405,6 +406,11 @@ async def create_reservation(
     )
     db.add(reservation)
     remaining = await charge_reservation(db, client.studio_id, reservation, sub)
+    # Тот же реферальный триггер, что и у публичного виджета (booking/public.py):
+    # друг, пришедший по ссылке из Telegram, записывается ИМЕННО здесь, и без
+    # этого вызова пригласивший не получал бонус вовсе — самый частый путь был
+    # единственным неподключённым.
+    await fire_referral(db, client.studio_id, client.id, "first_visit", referred_name=client.name)
     await db.commit()
     await db.refresh(reservation)
 

@@ -172,7 +172,7 @@ async def _run():
             raise AssertionError("ожидали 400")
         except HTTPException as e:
             assert e.status_code == 400
-            assert e.detail["code"] == "checkout.card_unavailable"
+            assert e.detail["code"] == "checkout.card_via_stripe"
 
         await db.rollback()
 

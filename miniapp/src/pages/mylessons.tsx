@@ -153,10 +153,9 @@ export default function MyLessons() {
     <>
       <ScreenHeader title={t('mylessons.title')} />
 
-      {/* Полоса управления периодом. На десктопе переключатель и сводка стоят
-          в одной строке: это две части одного вопроса «какой период смотрим и
-          что в нём», и порознь они оставляли под собой пустые полосы. */}
-      <div className="dt:grid dt:grid-cols-[minmax(0,360px)_1fr] dt:items-center dt:gap-x-6">
+      {/* Полоса управления периодом и сводка — друг под другом на всех
+          ширинах: один столбец сверху вниз читается без переучивания. */}
+      <>
         <div className="pt-6 dt:pt-10">
           <PeriodBar mode={mode} onModeChange={setMode} anchor={anchor} onShift={shiftPeriod} />
         </div>
@@ -181,7 +180,7 @@ export default function MyLessons() {
             </motion.div>
           ))}
         </div>
-      </div>
+      </>
 
       {favourite && (
         <motion.div
@@ -201,7 +200,7 @@ export default function MyLessons() {
 
       {isLoading ? (
         <div className="pt-8">
-          <ListSkeleton rows={3} wide />
+          <ListSkeleton rows={3} />
         </div>
       ) : error ? (
         <EmptyState
@@ -230,7 +229,7 @@ export default function MyLessons() {
               <SectionLabel trailing={`${periodUpcoming.length}`}>
                 {t('mylessons.status.upcoming')}
               </SectionLabel>
-              <div className="flex flex-col gap-3 px-5 dt:grid dt:grid-cols-2 dt:gap-5">
+              <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodUpcoming.map((cls, i) => (
                   <UpcomingCard
                     key={`upcoming-${cls.id}`}
@@ -256,7 +255,7 @@ export default function MyLessons() {
               <SectionLabel trailing={`${periodPast.length}`}>
                 {t('mylessons.status.past')}
               </SectionLabel>
-              <div className="flex flex-col gap-3 px-5 dt:grid dt:grid-cols-2 dt:gap-5">
+              <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodPast.map((cls, i) => (
                   <PastCard
                     key={`past-${cls.id}`}

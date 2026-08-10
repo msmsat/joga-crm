@@ -19,6 +19,8 @@ import json
 import time
 import types
 
+from fastapi import HTTPException
+
 import routers.billing.webhook as W
 from routers.billing.webhook import apply_status, map_subscription_status
 from services import stripe_billing
@@ -156,15 +158,25 @@ def _run_webhook(signed, db):
         W.async_session_maker = saved_maker
 
 
-def test_bad_signature_changes_nothing():
-    """Подделанное событие не должно ничего обработать."""
+def test_bad_signature_changes_nothing_and_says_so_out_loud():
+    """Подделанное событие ничего не обрабатывает — и получает 400, а не 200.
+
+    Раньше здесь был 200 «ignored». Настоящая причина несошедшейся подписи — не
+    подделка, а РАЗЪЕХАВШИЙСЯ СЕКРЕТ (ротация ключа, перепутанные местами секреты
+    кассы и биллинга). При 200 Stripe считает доставку удачной: ретраев нет, в
+    дашборде зелено, и тариф молча перестаёт активироваться у всех студий сразу.
+    400 помечает доставку неудачной — Stripe ретраит трое суток и пишет письмо.
+    """
     payload = {
         "id": "evt_1", "object": "event", "type": "invoice.paid",
         "data": {"object": {"id": "in_1"}},
     }
     body, _sig = _signed(payload)
-    res = _run_webhook((body, "t=1,v1=deadbeef"), _DB())
-    assert res == {"status": "ignored"}
+    try:
+        _run_webhook((body, "t=1,v1=deadbeef"), _DB())
+        raise AssertionError("подделка прошла молча — Stripe не узнает о поломке секрета")
+    except HTTPException as exc:
+        assert exc.status_code == 400
 
 
 def test_event_from_connected_account_is_ignored():
@@ -187,6 +199,6 @@ if __name__ == "__main__":
     test_refunded_is_terminal()
     test_unknown_status_denies_access()
     test_paid_sends_receipt()
-    test_bad_signature_changes_nothing()
+    test_bad_signature_changes_nothing_and_says_so_out_loud()
     test_event_from_connected_account_is_ignored()
     print("ALL PASS — вебхук подписки зелёный на уровне логики")

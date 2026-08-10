@@ -89,13 +89,10 @@
     "buy_btn": "Koupit předplatné",
     "notifications": "Oznámení",
     "history": "Historie plateb",
-    "invite": "Pozvat kamarádku",
     "support": "Podpora studia",
     "reminders": "Připomenutí lekce",
     "about_studio": "O studiu",
     "language": "Jazyk",
-    "community": "Komunita",
-    "invite_hint": "Spolu se začíná lépe — pošlete kamarádce odkaz",
     "subscription_group": "Předplatné",
     "notifications_group": "Oznámení",
     "app_group": "Aplikace",
@@ -218,15 +215,21 @@
     "close": "Zavřít"
   },
   "supportModal": {
-    "tag": "Nápověda",
+    "tag": "Pomoc",
     "title": "Podpora",
-    "description": "Můžete napsat jakoukoli zprávu přímo do tohoto bota — náš tým ji obdrží a brzy odpoví.",
-    "button": "Rozumím"
+    "sub": "Spojte se se studiem {{studio}} způsobem, který vám vyhovuje.",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "website": "Web",
+    "no_contacts": "Zatím žádné kontakty",
+    "no_contacts_hint": "Studio zatím nepřidalo telefon ani e-mail. Zeptejte se na nejbližší lekci."
   },
   "paymentModal": {
     "tag": "Bezpečná platba",
     "title": "Pokladna",
     "service": "Služba",
+    "base_price": "Cena",
+    "discount": "Sleva",
     "amount_due": "K úhradě",
     "pay_card": "Zaplatit kartou",
     "or_other": "nebo jiným způsobem",
@@ -236,16 +239,13 @@
     "cancel": "Zrušit",
     "expiry_placeholder": "MM/RR"
   },
-  "languageModal": {
-    "tag": "Nastavení",
-    "sub": "Jazyk rozhraní aplikace"
-  },
   "nav": {
     "home": "Domů",
     "schedule": "Rozvrh",
     "my_lessons": "Moje lekce",
     "profile": "Profil",
-    "client_area": "Klientská zóna"
+    "client_area": "Klientská zóna",
+    "club": "Klub"
   },
   "home": {
     "greeting_morning": "Dobré ráno",
@@ -257,9 +257,6 @@
     "directions": "Zaměření",
     "body_spirit_balance": "Tělo. Mysl. Rovnováha.",
     "studio_description": "Jógové studio Namaste je prostor pro harmonii a seberozvoj",
-    "referral_title": "Pozvi kamarádku",
-    "referral_subtitle": "Získejte 20% slevu na další předplatné",
-    "referral_link_copied": "Odkaz zkopírován!",
     "today": "Dnes",
     "tomorrow": "Zítra",
     "studios": "Studia",
@@ -280,5 +277,36 @@
     "flow_mfr": "MFR",
     "flow_healthy_back": "Zdravá záda",
     "flow_breathing": "Dechové praxe"
+  },
+  "club": {
+    "title": "Klub",
+    "points": "bodů",
+    "points_worth": "≈ {{value}}",
+    "spent": "Utraceno ve studiu: {{amount}}",
+    "to_next": "Ještě {{amount}} do úrovně {{level}}",
+    "level_top": "Nejvyšší úroveň",
+    "levels": "Úrovně",
+    "offers": "Osobní slevy",
+    "certificates": "Certifikáty",
+    "valid_until": "platí do {{date}}",
+    "valid_forever": "bez omezení",
+    "code_copied": "Kód zkopírován",
+    "deposit": "Depozit",
+    "deposit_history": "Historie depozitu",
+    "deposit_empty": "Zatím žádné pohyby",
+    "deposit_load_error": "Nepodařilo se načíst historii depozitu",
+    "referral": "Pozvat kamarádku",
+    "referral_bonus_points": "{{bonus}} bodů pro vás",
+    "referral_bonus_money": "{{bonus}} pro vás",
+    "referral_discount": "{{discount}} % sleva pro kamarádku",
+    "referral_invited": "Pozváno",
+    "referral_completed": "Přišli",
+    "referral_copy": "Zkopírovat odkaz",
+    "referral_copied": "Odkaz zkopírován",
+    "history": "Historie bodů",
+    "no_history": "Zatím žádné body",
+    "no_history_hint": "Objeví se po první platbě ve studiu",
+    "disabled": "Studio zatím klub nespustilo",
+    "disabled_hint": "Jakmile věrnostní program poběží, body a úrovně se objeví tady."
   }
 }

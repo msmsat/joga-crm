@@ -64,11 +64,11 @@ export default function NextLessonCard({ time, dayLabel, title, meta, startTime,
         onClick={onClick}
         role="button"
         tabIndex={0}
-        className="group cursor-pointer rounded-[22px] bg-card p-5 shadow-lift transition-shadow duration-300 dt:rounded-[26px] dt:p-7 dt:hover:shadow-[0_28px_64px_-16px_rgba(26,26,26,0.20)]"
+        className="group cursor-pointer rounded-[22px] bg-card p-5 shadow-lift transition-shadow duration-300 dt:rounded-[26px] dt:p-7 dt:hover:shadow-hover"
       >
         <div className="flex items-center gap-4 dt:gap-6">
           <div className="shrink-0">
-            <div className="text-[23px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground dt:text-[32px]">
+            <div className="text-[23px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground dt:text-[28px]">
               {time}
             </div>
             <div className="mt-1.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-brand dt:mt-2 dt:text-[10px]">

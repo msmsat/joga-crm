@@ -56,6 +56,28 @@ def lookup_key(plan_id: str, period_months: int, combo: bool = False) -> str:
     return f"{prefix}_{plan_id}_{period_months}m"
 
 
+def parse_lookup_key(key: str | None) -> tuple[str, int, bool] | None:
+    """Обратное к `lookup_key`: `velora_combo_pro_12m` → ("pro", 12, True). None — не наш ключ.
+
+    Нужно, чтобы узнать тариф и период ЖИВОЙ подписки, не держа их второй копией у
+    себя: при смене тарифной модели (routers/billing/router.activate_model) подписку
+    надо перевести на парный Price того же тарифа и периода, а прислать их в теле
+    запроса фронт обязан не всегда.
+    """
+    if not key or not key.startswith("velora_"):
+        return None
+    combo = key.startswith("velora_combo_")
+    rest = key[len("velora_combo_"):] if combo else key[len("velora_"):]
+    plan_id, _, period = rest.rpartition("_")
+    if plan_id not in PLANS or not period.endswith("m"):
+        return None
+    try:
+        months = int(period[:-1])
+    except ValueError:
+        return None
+    return (plan_id, months, combo) if months in PERIOD_DISCOUNTS else None
+
+
 def _product_id(plan_id: str, combo: bool = False) -> str:
     """Product'у id задаём сами — тогда синхронизация идемпотентна без поиска.
 
@@ -148,18 +170,29 @@ async def sync() -> dict[str, str]:
 
 
 async def price_id(plan_id: str, period_months: int, combo: bool = False) -> str:
-    """Price для пары тариф×период (или её комбо-половины).
+    """Price для пары тариф×период (или её комбо-половины). Заводит недостающий.
 
-    RuntimeError, а не тихий None: без Price подписку не создать, и молчаливый
-    отказ превратится в 500 где-то ниже по стеку, где причина уже не видна.
+    Раньше здесь был RuntimeError с просьбой запустить `sync` руками. Это значило,
+    что переезд на БОЕВОЙ аккаунт Stripe ломал первую же оплату: Prices из тестового
+    режима не переносятся, каталог на живом аккаунте пуст, и про забытый ручной шаг
+    узнавала студия, а не мы.
+
+    Заводим на месте тем же кодом, что и `sync()`: цены живут в plans.py, операция
+    идемпотентна (`lookup_key` + `transfer_lookup_key`), а параллельные вызовы
+    сходятся на одном ключе. `sync()` остаётся — им удобно залить каталог заранее и
+    увидеть его целиком, но обязательным шагом он больше не является.
     """
+    if plan_id not in PLANS or period_months not in PERIOD_DISCOUNTS:
+        raise RuntimeError(f"Неизвестный тариф или период: {plan_id}/{period_months}")
+
     key = lookup_key(plan_id, period_months, combo)
     price = await _find_price(key)
-    if price is None:
-        raise RuntimeError(
-            f"Price {key} не заведён в Stripe. Запустите: python -m services.stripe_catalog sync"
-        )
-    return price.id
+    if price is not None:
+        return price.id
+
+    logger.warning("Stripe catalog: Price %s не найден — заводим на месте", key)
+    product_id = await _ensure_product(plan_id, PLANS[plan_id]["name"], combo)
+    return await _ensure_price(product_id, plan_id, period_months, combo)
 
 
 if __name__ == "__main__":
@@ -181,6 +214,22 @@ if __name__ == "__main__":
         _keys = {lookup_key(p, m, c) for p in PLANS for m in PERIOD_DISCOUNTS for c in (False, True)}
         assert len(_keys) == len(PLANS) * len(PERIOD_DISCOUNTS) * 2, "ключи столкнулись"
         assert _product_id("pro") != _product_id("pro", combo=True)
+
+        # parse_lookup_key обязан быть точным обратным к lookup_key на ВСЁМ каталоге:
+        # по нему activate_model выбирает Price для живой подписки, и ошибка здесь
+        # означает смену тарифа студии на чужой.
+        for _p in PLANS:
+            for _m in PERIOD_DISCOUNTS:
+                for _c in (False, True):
+                    assert parse_lookup_key(lookup_key(_p, _m, _c)) == (_p, _m, _c)
+        # Чужой мусор в ключе не должен читаться как наш тариф.
+        assert parse_lookup_key(None) is None
+        assert parse_lookup_key("") is None
+        assert parse_lookup_key("stripe_default_price") is None
+        assert parse_lookup_key("velora_unknown_1m") is None    # нет такого плана
+        assert parse_lookup_key("velora_pro_3m") is None        # нет такого периода
+        assert parse_lookup_key("velora_pro_xm") is None        # период не число
+        assert parse_lookup_key("velora_pro") is None           # без периода
         # Каждый период из каталога цен обязан иметь интервал Stripe, иначе
         # sync() упадёт по KeyError уже на боевом ключе.
         assert set(_INTERVALS) == set(PERIOD_DISCOUNTS), (set(_INTERVALS), set(PERIOD_DISCOUNTS))

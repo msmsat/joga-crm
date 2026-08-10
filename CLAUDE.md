@@ -188,7 +188,8 @@
 - FastAPI, SQLAlchemy + asyncpg (PostgreSQL), Alembic, Pydantic, JWT (python-jose).
 - *Run:* `cd back && venv\Scripts\activate && uvicorn main:app --reload`
 - *Migrations:* `alembic revision --autogenerate -m "msg"` -> `alembic upgrade head`
-- *Tests:* `pytest back/tests/test_x.py` (нужен `pip install -r back/requirements-dev.txt`; `back/conftest.py` кладёт корень в `sys.path`). **Только пофайлово:** тесты пишут в dev-БД, а тесты уведомлений отправляют реальные письма — прогон всей папки не безопасен до эпика N-10.
+- *Tests:* `cd back && pytest` — **прогон всей папки безопасен** (эпик N-10 закрыт). `conftest.py` глушит реальную отправку (SMTP/TG/WA) и кладёт корень в `sys.path`; под pytest пул БД отключается (`database.py`, NullPool), иначе соединение из закрытого event loop переезжало в следующий файл. Нужен `pip install -r back/requirements-dev.txt`. Тесты по-прежнему пишут в **dev-БД** — боевой `DATABASE_URL` при прогоне не подставлять.
+- *Preflight:* `cd back && python -m scripts.preflight` — проверка конфига перед боевым режимом (URL, режим ключей Stripe, раздельные секреты вебхуков, валюта, SMTP, каталог цен). Выход 1 = есть блокеры. `--sync` заодно заливает каталог цен.
 
 ---
 

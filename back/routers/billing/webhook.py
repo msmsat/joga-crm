@@ -4,13 +4,18 @@
 тариф не повод потерять оплату, которой его и продлевают.
 
 Порядок строгий: подпись → отбросить чужой аккаунт → найти подписку студии →
-зеркалировать. На валидное событие ВСЕГДА 200 — 4xx/5xx заставит Stripe ретраить,
-а обработка уже прошла (тот же принцип, что в вебхуке кассы).
+зеркалировать. Подпись не сошлась → 400 (иначе поломка секрета бесшумна);
+обработка упала → 500 под ретрай Stripe; всё остальное → 200.
+
+События теряются и мимо ретраев Stripe (эндпоинт лежал дольше трёх суток), поэтому
+у зеркала есть страховка — `reconcile_subscriptions`, которую раз в час зовёт
+фоновый проход в services/offline_fee_billing.py.
 """
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
+from sqlalchemy import or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -241,7 +246,16 @@ async def stripe_webhook(request: Request):
         await request.body(), request.headers.get("stripe-signature", ""),
     )
     if event is None:
-        return {"status": "ignored"}
+        # 400, а НЕ 200. Подпись не сходится почти всегда по одной причине —
+        # РАЗЪЕХАВШИЙСЯ СЕКРЕТ (ротация ключа в дашборде, чужой .env, перепутанные
+        # местами секреты кассы и биллинга). При 200 Stripe считает доставку
+        # удачной: ретраев нет, в дашборде зелено, в лог никто не смотрит — и
+        # тариф молча перестаёт активироваться У ВСЕХ, пока кто-нибудь не
+        # пожалуется. С 400 доставка помечается неудачной, Stripe ретраит трое
+        # суток и присылает письмо о падающем эндпоинте: о поломке узнаём мы, а
+        # не студия. Посторонний мусор из интернета до статистики Stripe не
+        # доходит вовсе — он ей не доставлялся.
+        raise HTTPException(status_code=400, detail="invalid signature")
 
     # Тариф платят ПЛАТФОРМЕ, и событий подключённых аккаунтов тут быть не может.
     # У них заполнено `account`, а объекты на своём аккаунте создаёт его владелец —
@@ -270,10 +284,22 @@ async def stripe_webhook(request: Request):
             elif event_type == "setup_intent.succeeded":
                 await _handle_setup_intent(db, obj)
         except Exception:
-            # Всегда 200: 4xx/5xx заставит Stripe ретраить, а гонка двух параллельных
-            # доставок одного события (unique на stripe_invoice_id/stripe_subscription_id)
-            # — штатный исход, который чинит следующий ретрай того же события.
-            logger.exception("Stripe billing: событие %s не обработано", event_type)
+            # 500, а НЕ 200. Stripe ретраит ТОЛЬКО non-2xx (трое суток с откатом), и
+            # проглоченная здесь ошибка означала, что ретрая не будет вовсе: событие
+            # терялось навсегда. По `invoice.paid` это «деньги взяли, подписку не
+            # активировали» — студия с оплаченным тарифом упирается в 402, а починить
+            # это может только ручная сверка, и та лишь если строка счёта успела
+            # появиться (упасть могла как раз она).
+            #
+            # Повтор безопасен: все хендлеры идемпотентны (уникальные
+            # stripe_invoice_id / stripe_subscription_id / external_id + сверка статуса
+            # в apply_status), поэтому гонка двух параллельных доставок чинится тем же
+            # ретраем, ради которого мы и отдаём 500.
+            logger.exception(
+                "Stripe billing: событие %s не обработано — отдаём 500 под ретрай Stripe",
+                event_type,
+            )
+            raise
 
     return {"status": "ok"}
 
@@ -296,24 +322,51 @@ async def _handle_subscription(db: AsyncSession, event_type: str, obj) -> None:
         # подписку и вернёт 502.
         plan.stripe_subscription_id = None
     else:
-        plan.status = map_subscription_status(getattr(obj, "status", ""))
-        if plan.status == "expired":
-            plan.expires_at = datetime.utcnow()
-        elif plan.status in ("active", "past_due"):
-            period_end = _period_end(obj)
-            if period_end:
-                plan.expires_at = datetime.utcfromtimestamp(period_end)
-            else:
-                logger.error(
-                    "Stripe billing: не удалось прочитать конец периода подписки %s — "
-                    "expires_at не обновлён, студия рискует получить 402 при живой оплате",
-                    obj["id"],
-                )
-        # `pending` (incomplete): Stripe проставляет период ЕЩЁ ДО того, как деньги
-        # прошли — SCA не пройден, карта не списана. Двигать expires_at здесь значит
-        # выдать оплаченный период неоплатившему: гейт (dependencies.py) смотрит на дату.
+        # Порядок доставки Stripe НЕ гарантирует: отставшее событие несёт устаревшее
+        # состояние, и зеркалить его как есть значит откатить подписку назад —
+        # например вернуть past_due с прошлым, уже истёкшим current_period_end. Гейт
+        # (dependencies.py) смотрит на дату, так что платящая студия получала бы 402.
+        #
+        # Поэтому источником берём не тело события, а текущее состояние подписки у
+        # Stripe: оно одно и то же, в каком бы порядке события ни пришли. Сбой запроса
+        # — откат на тело события (не хуже прежнего поведения), а не потеря обновления.
+        try:
+            obj = await stripe_billing.fetch_subscription(obj["id"])
+        except Exception:
+            logger.warning(
+                "Stripe billing: подписку %s не удалось перечитать, зеркалим тело события",
+                obj["id"], exc_info=True,
+            )
+
+        _mirror_subscription_state(plan, obj)
 
     await db.commit()
+
+
+def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
+    """Состояние подписки у Stripe → строка студии. Ничего не коммитит.
+
+    Общая точка вебхука (_handle_subscription) и автосверки
+    (reconcile_subscriptions): правило «когда двигать expires_at» обязано быть
+    ОДНИМ. Разъехавшись, сверка выдала бы оплаченный период тому, кому вебхук его
+    сознательно не выдал, — и наоборот.
+    """
+    plan.status = map_subscription_status(getattr(subscription, "status", ""))
+    if plan.status == "expired":
+        plan.expires_at = datetime.utcnow()
+    elif plan.status in ("active", "past_due"):
+        period_end = _period_end(subscription)
+        if period_end:
+            plan.expires_at = datetime.utcfromtimestamp(period_end)
+        else:
+            logger.error(
+                "Stripe billing: не удалось прочитать конец периода подписки %s — "
+                "expires_at не обновлён, студия рискует получить 402 при живой оплате",
+                getattr(subscription, "id", "?"),
+            )
+    # `pending` (incomplete): Stripe проставляет период ЕЩЁ ДО того, как деньги
+    # прошли — SCA не пройден, карта не списана. Двигать expires_at здесь значит
+    # выдать оплаченный период неоплатившему: гейт (dependencies.py) смотрит на дату.
 
 
 async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
@@ -435,6 +488,62 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
             logger.exception("Stripe billing: не удалось отменить подписку %s", plan.stripe_subscription_id)
 
 
+async def reconcile_subscriptions(db: AsyncSession) -> int:
+    """Перечитать у Stripe подписки, которые выглядят истёкшими. Вернуть число исправленных.
+
+    Страховка на случай, когда события не доехали ВООБЩЕ. Ретраи Stripe живут трое
+    суток; эндпоинт, лежавший дольше (или проверявший подпись разъехавшимся
+    секретом), теряет их навсегда. Тогда у платящей студии деньги списаны, а
+    `expires_at` остался от прошлого периода — гейт (dependencies.py) смотрит на
+    дату и отдаёт 402. Сама студия починить это не может: ручная сверка идёт по
+    счёту (POST /invoices/{id}/sync), а счёта продления, который не зеркалился, в
+    её списке нет вовсе.
+
+    Берём только тех, у кого есть ссылка на подписку и срок уже вышел (или выйдет
+    в ближайшие сутки): остальные и так в порядке, ходить за ними в Stripe незачем.
+    Статус `expired` из выборки исключён — там подписка мертва и по нашим данным, и
+    у Stripe, а вернуть её к жизни может только новая оплата через checkout.
+
+    Истина — состояние подписки у Stripe, тем же зеркалом, что и в вебхуке
+    (_mirror_subscription_state). Сбой по одной студии не должен ронять остальные.
+    """
+    horizon = datetime.utcnow() + timedelta(days=1)
+    plans = (await db.execute(
+        select(StudioBillingPlan).where(
+            StudioBillingPlan.stripe_subscription_id.isnot(None),
+            StudioBillingPlan.status.in_(("active", "past_due", "pending")),
+            or_(
+                StudioBillingPlan.expires_at.is_(None),
+                StudioBillingPlan.expires_at < horizon,
+            ),
+        )
+    )).scalars().all()
+
+    fixed = 0
+    for plan in plans:
+        before = (plan.status, plan.expires_at)
+        try:
+            subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
+        except Exception:
+            logger.exception(
+                "Автосверка: подписку %s студии %s перечитать не удалось",
+                plan.stripe_subscription_id, plan.studio_id,
+            )
+            continue
+        _mirror_subscription_state(plan, subscription)
+        if (plan.status, plan.expires_at) != before:
+            fixed += 1
+            logger.warning(
+                "Автосверка: студия %s разъехалась со Stripe — было %s до %s, стало %s до %s. "
+                "Событие подписки до нас не доехало, проверьте доставку вебхука",
+                plan.studio_id, before[0], before[1], plan.status, plan.expires_at,
+            )
+
+    if fixed:
+        await db.commit()
+    return fixed
+
+
 async def apply_status(
     db: AsyncSession, invoice: BillingInvoice, status: str, *, subscription=None,
 ) -> bool:
@@ -529,6 +638,12 @@ async def _activate(db: AsyncSession, invoice: BillingInvoice) -> None:
         plan.plan_name = invoice.plan_name
         limits = PLANS[invoice.plan_name]["limits"]
         plan.max_staff = limits["staff"] or 9999  # None (business) = безлимит
+        # Отложенный апгрейд наступил — снимаем подпись «тариф сменится с …».
+        # Сверяем с именем оплаченного счёта: посторонний счёт не должен гасить
+        # ещё не наступившую смену.
+        if plan.scheduled_plan == invoice.plan_name:
+            plan.scheduled_plan = None
+            plan.scheduled_at = None
 
 
 async def _sync_card(

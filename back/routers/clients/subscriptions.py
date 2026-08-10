@@ -236,11 +236,7 @@ async def sell_subscription(
         mark_paid=True, price=resolved.final_price, payment_method=body.payment_method,
     )
     # Помечаем использованными в той же транзакции — гонка на «применили дважды» исключена.
-    if resolved.promo is not None:
-        resolved.promo.used_count += 1
-    if resolved.offer is not None:
-        resolved.offer.is_used = True
-        resolved.offer.used_at = datetime.utcnow()
+    resolved.mark_used()
 
     await db.commit()
     await db.refresh(sub)

@@ -84,7 +84,7 @@ export default function FilterSheet({
           <button
             type="button"
             onClick={() => onChange({ studioId: studios[0]?.id ?? value.studioId, service: null, teacher: null })}
-            className="shrink-0 rounded-[18px] bg-muted px-5 text-[14px] font-extrabold text-foreground"
+            className="flex shrink-0 items-center justify-center rounded-[18px] bg-muted px-5 py-4 text-[14px] font-extrabold text-foreground"
           >
             {t('schedule.reset')}
           </button>

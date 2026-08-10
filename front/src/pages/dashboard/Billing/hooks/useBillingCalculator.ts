@@ -11,7 +11,9 @@ import { useInvoiceDetails, validateInvoiceDetails, type InvoiceDetailErrors } f
 type PlanInfo = { name: string; monthly: number; color: string; staffLimit: number | null };
 
 // Шаги модалки оплаты: выбор способа → (реквизиты фактуры, если их ещё нет) → оплата.
-export type PayBranch = 'choose' | 'details' | 'iban' | 'card';
+// 'card' больше нет: выбор карты сразу уводит на страницу Stripe, промежуточного
+// экрана с неактивными полями карты не осталось (§ chooseMethod).
+export type PayBranch = 'choose' | 'details' | 'iban';
 
 const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
 
@@ -49,18 +51,25 @@ export function useBillingCalculator() {
   // Валюта тарифов — из каталога (BILLING_CURRENCY Stripe-аккаунта), а не валюта кассы
   // студии: списывают всегда евро, чем бы студия ни торговала у себя.
   const [currency, setCurrency] = useState('EUR');
+  // Минимальный месячный платёж процентного тарифа — из каталога, не константой:
+  // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
+  // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
+  const [minMonthly, setMinMonthly] = useState(0);
   // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
   const [showPayModal, setShowPayModal] = useState(false);
   const [payBranch, setPayBranch] = useState<PayBranch>('choose');
   const [ibanData, setIbanData] = useState<IbanCheckout | null>(null);
   const [payBusy, setPayBusy] = useState(false);
+  // Какой способ ждёт шага реквизитов. Карте нужен только IČO/DIČ для фактуры —
+  // адрес и индекс собирает сама страница Stripe; переводу нужна ещё и страна,
+  // потому что хостед-страницы, где Stripe спросил бы её сам, в этой ветке нет.
+  const [pendingMethod, setPendingMethod] = useState<'iban' | 'card'>('card');
   // Реквизиты фактуры (IČO/DIČ/страна). Спрашиваются ОДИН раз — на шаге 'details'
   // перед первой оплатой; заполненные лежат в профиле студии и больше не всплывают.
   const details = useInvoiceDetails();
   const [wantInvoice, setWantInvoice] = useState(true);
   const [detailErrors, setDetailErrors] = useState<InvoiceDetailErrors>({});
   // Способ, выбранный до шага реквизитов: к нему возвращаемся после сохранения.
-  const [pendingMethod, setPendingMethod] = useState<'iban' | 'card'>('card');
   // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
@@ -153,8 +162,20 @@ export function useBillingCalculator() {
   const openPayModal = () => {
     setPayBranch('choose');
     setIbanData(null);
+    // Страховка от залипшего флага: открытие всегда начинается с рабочего состояния.
+    setPayBusy(false);
     setShowPayModal(true);
   };
+
+  // Возврат кнопкой «Назад» из Stripe отдаёт страницу из bfcache — со ВСЕМ прежним
+  // состоянием React, включая payBusy=true, поднятый перед редиректом. Обычный
+  // маунт-эффект тут не срабатывает: компонент не перемонтируется. Без этого
+  // страница выглядела вечно грузящейся, и оплатить заново было нельзя.
+  useEffect(() => {
+    const wake = (event: PageTransitionEvent) => { if (event.persisted) setPayBusy(false); };
+    window.addEventListener('pageshow', wake);
+    return () => window.removeEventListener('pageshow', wake);
+  }, []);
 
   // «Оплатить» больше не редиректит сразу (эпик B4) — открывает модалку выбора способа,
   // сам платёж/показ IBAN происходит внутри неё.
@@ -173,7 +194,14 @@ export function useBillingCalculator() {
     openPayModal();
   };
 
-  const closePayModal = () => setShowPayModal(false);
+  // Закрытие и «Назад» обязаны снимать блокировку. Оплата картой уводит на Stripe
+  // и НЕ снимает payBusy сама — редиректу это ни к чему. Но если владелец успел
+  // закрыть модалку до ухода (или вернулся из Stripe), флаг оставался поднятым, и
+  // следующее «Купить» открывало модалку, где всё уже заблокировано «загрузкой».
+  const closePayModal = () => {
+    setShowPayModal(false);
+    setPayBusy(false);
+  };
 
   // Ветка IBAN: настоящий счёт Stripe + реквизиты для перевода, фактура уезжает письмом.
   // Ошибку показываем как её объяснил сервер (нет страны → 422 tax_details_required,
@@ -192,9 +220,34 @@ export function useBillingCalculator() {
   const payWithCard = () => {
     if (payBusy) return;
     setPayBusy(true);
-    billingApi.checkout(selectedPlan, selectedPeriod)
+    // 'now': эту ветку открывает только «перейти сейчас» — отложенный переход
+    // платежа не требует вовсе и уходит через scheduleUpgrade.
+    billingApi.checkout(selectedPlan, selectedPeriod, 'now')
       .then(({ checkout_url }) => { window.location.href = checkout_url; })
       .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); }); // при ошибке снимаем блок, редиректа не было
+  };
+
+  // Апгрейд с начала следующего периода: тариф ставится в расписание Stripe, платить
+  // сейчас не нужно, оплаченный остаток текущего периода доигрывает целиком. Модалки
+  // оплаты здесь нет намеренно — платить не за что.
+  const scheduleUpgrade = () => {
+    if (payBusy) return;
+    setPayBusy(true);
+    billingApi.checkout(selectedPlan, selectedPeriod, 'period_end')
+      .then(res => {
+        // Живой подписки нет — сервер вернул обычную ссылку оплаты: первый тариф
+        // откладывать не с чего, начинаем сразу.
+        if (!res.scheduled) { window.location.href = res.checkout_url; return; }
+        // Имя тарифа берём из i18n по id, а не из `plans`: тот объявлен ниже по
+        // файлу через useMemo, и ссылка на него отсюда ломает мемоизацию.
+        toast.success(t('upgrade.scheduledToast', {
+          plan: t(`planNames.${selectedPlan}`),
+          date: res.applies_at ? new Date(res.applies_at).toLocaleDateString() : '',
+        }));
+        billingApi.getPlan().then(setPlan).catch(() => { /* подпись обновится при перезагрузке */ });
+      })
+      .catch(err => toast.error(errorMessage(err, t)))
+      .finally(() => setPayBusy(false));
   };
 
   // Выбор способа оплаты. Реквизиты фактуры спрашиваем ПЕРЕД оплатой и только если их
@@ -203,10 +256,17 @@ export function useBillingCalculator() {
   // в этой ветке нет).
   const chooseMethod = (method: 'iban' | 'card') => {
     if (payBusy) return;
+    // IČO/DIČ спрашиваем в обеих ветках: без них фактуру не выписать, а Stripe
+    // печатает их из Customer'а, куда они попадают только из нашего профиля студии.
+    // Страну и индекс — ТОЛЬКО для перевода: на карточной ветке их собирает сама
+    // страница Stripe (billing_address_collection="required") и пишет обратно в
+    // Customer, так что спрашивать их своей формой значит просить дважды.
+    //
     // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
-    // проверки шаг реквизитов всплывал бы у студии, которая их давно заполнила.
-    const needsDetails = details.loaded
-      && (!details.saved.company_id || (method === 'iban' && !details.saved.country));
+    // проверки шаг всплывал бы у студии, которая реквизиты давно заполнила.
+    const needsDetails = details.loaded && (
+      !details.saved.company_id || (method === 'iban' && !details.saved.country)
+    );
     if (needsDetails) {
       setPendingMethod(method);
       setWantInvoice(true);
@@ -215,7 +275,7 @@ export function useBillingCalculator() {
       return;
     }
     if (method === 'iban') payWithIban();
-    else setPayBranch('card');
+    else payWithCard();
   };
 
   // Шаг реквизитов: валидируем, сохраняем в профиль студии и продолжаем к оплате.
@@ -234,7 +294,7 @@ export function useBillingCalculator() {
       .then(() => {
         setPayBusy(false);
         if (pendingMethod === 'iban') payWithIban();
-        else setPayBranch('card');
+        else payWithCard();
       })
       .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); });
   };
@@ -282,6 +342,7 @@ export function useBillingCalculator() {
       setStaffLimits(limits);
       setPeriodDiscounts(cat.period_discounts);
       if (cat.currency) setCurrency(cat.currency);
+      if (cat.min_monthly) setMinMonthly(cat.min_monthly / 100);
     }).catch(() => { /* нули остаются — не роняем страницу */ });
   }, []);
 
@@ -314,15 +375,16 @@ export function useBillingCalculator() {
     activeTab, setActiveTab,
     showUpgradeModal, setShowUpgradeModal,
     animateCards,
-    getPrice, periodDiscounts, plans,
+    getPrice, periodDiscounts, plans, minMonthly,
     currentMonthly, discountedPrice, totalToPay, savedTotal,
-    startCheckout,
+    startCheckout, scheduleUpgrade,
     activateModel, modelBusy,
     showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy,
+    // Ветка перевода дополнительно требует страну — форма показывает поле и
+    // меняет подсказку; на карточной ветке остаются только IČO и DIČ.
+    detailsForIban: pendingMethod === 'iban',
     chooseMethod, payWithCard,
     details, wantInvoice, setWantInvoice, detailErrors, submitDetails, saveDetails,
-    // Ветка IBAN обязывает заполнить страну — форма помечает поле и меняет подсказку.
-    detailsForIban: pendingMethod === 'iban',
     paymentReturn, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,

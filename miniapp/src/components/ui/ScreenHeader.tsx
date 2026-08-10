@@ -28,7 +28,7 @@ export function ScreenHeader({
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className="pt-safe px-5"
     >
-      <div className="flex min-h-[34px] items-center justify-between gap-3 pt-8 dt:pt-14">
+      <div className="flex min-h-[34px] items-center justify-between gap-3 pt-8 dt:pt-20">
         {kicker ? (
           <div className="flex min-w-0 items-center gap-2">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
@@ -42,7 +42,7 @@ export function ScreenHeader({
         {action}
       </div>
 
-      <h1 className="mt-3.5 text-[36px] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground dt:mt-5 dt:text-[54px]">
+      <h1 className="mt-3.5 text-[36px] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground dt:mt-5 dt:text-[44px]">
         {title}
       </h1>
     </motion.div>

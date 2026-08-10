@@ -28,12 +28,13 @@ from schemas.settings.billing import ActivateModelRequest
 from services.stripe_catalog import lookup_key, _product_id
 
 
-def _db(value, *, first=None):
-    """Фейк сессии: select отдаёт `value`; `.first()` — отдельно (для studio_suspended)."""
+def _db(value, *, first=None, scalar=None):
+    """Фейк сессии: select отдаёт `value`; `.first()`/`.scalar_one_or_none()` для
+    запроса причины блокировки задаются отдельно (`first`/`scalar`)."""
     class _DB:
         async def execute(self, _q):
             return SimpleNamespace(
-                scalar_one_or_none=lambda: value,
+                scalar_one_or_none=lambda: scalar if scalar is not None else value,
                 scalar_one=lambda: value,
                 first=lambda: first,
             )
@@ -155,7 +156,12 @@ def test_rate_is_frozen_at_sale_time():
 # --------------------------------------------------- 3. срок и блокировка
 
 def _suspended(has_overdue_row):
-    return asyncio.run(PF.studio_suspended(_db(None, first=(1,) if has_overdue_row else None), 7))
+    # Причин блокировки теперь две (комиссия и минимальный месячный платёж), и
+    # suspension_reason отдаёт ВИД просроченного счёта — из него гейт выбирает текст.
+    # studio_suspended остался булевой обёрткой, её и проверяем.
+    return asyncio.run(PF.studio_suspended(
+        _db(None, scalar=("offline_fee" if has_overdue_row else None)), 7,
+    ))
 
 
 def test_overdue_invoice_suspends():
@@ -173,8 +179,10 @@ def test_suspension_query_only_counts_unpaid_overdue_fee_invoices():
     платящую студию."""
     import inspect
 
-    src = inspect.getsource(PF.studio_suspended)
-    assert 'kind == "offline_fee"' in src
+    src = inspect.getsource(PF.suspension_reason)
+    # Оба вида постоплаты: комиссия с наличных и минимальный месячный платёж.
+    assert "kind.in_(SUSPENDING_KINDS)" in src
+    assert set(PF.SUSPENDING_KINDS) == {"offline_fee", "min_fee"}
     assert 'notin_(("paid", "refunded"))' in src
     assert "due_at.isnot(None)" in src
     assert "due_at < datetime.utcnow()" in src
@@ -199,19 +207,21 @@ def test_reissued_invoice_restarts_the_clock():
 # --------------------------------------------------------------- 4. гейты
 
 def _run_gate(*, plan, suspended):
-    saved = PF.studio_suspended
+    # Гейт спрашивает ВИД просроченного счёта, а не булево: текст отказа за
+    # комиссию и за минимальный платёж разный.
+    saved = PF.suspension_reason
 
     async def fake(_db, _sid):
-        return suspended
+        return "offline_fee" if suspended else None
 
-    PF.studio_suspended = fake
+    PF.suspension_reason = fake
     try:
         asyncio.run(D.require_active_subscription(SimpleNamespace(studio_id=7), _db(plan)))
         return None
     except HTTPException as exc:
         return exc.detail["code"]
     finally:
-        PF.studio_suspended = saved
+        PF.suspension_reason = saved
 
 
 def test_percent_studio_works_without_card_and_without_subscription():
@@ -308,6 +318,76 @@ def test_combo_catalog_keys_never_collide():
     assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) * 2
     assert lookup_key("business", 1, True) == "velora_combo_business_1m"
     assert _product_id("business", True) != _product_id("business")
+
+
+# ------------------------- 5. долг нельзя вернуть себе самому
+
+def _invoice(kind="subscription", status="paid", age_days=0):
+    return SimpleNamespace(
+        id=1, studio_id=7, kind=kind, status=status,
+        paid_at=datetime.utcnow() - timedelta(days=age_days),
+        stripe_invoice_id="in_1", order_id=None,
+    )
+
+
+def _run_refund(invoice):
+    """Гварды POST /billing/invoices/{id}/refund. None — возврат разрешён.
+    Stripe застублен: до него доходят только счета, которые гварды пропустили."""
+    import routers.billing.refunds as R
+    import services.stripe_billing as SB
+
+    saved = SB.refund_target_for_invoice, SB.refund
+
+    async def _target(_invoice_id):
+        return {"payment_intent": "pi_1"}
+
+    async def _refund(_target):
+        return None
+
+    SB.refund_target_for_invoice, SB.refund = _target, _refund
+    try:
+        asyncio.run(R.refund_invoice(1, SimpleNamespace(studio_id=7), _db(invoice)))
+        return None
+    except HTTPException as exc:
+        return exc.detail["code"] if isinstance(exc.detail, dict) else exc.detail
+    finally:
+        SB.refund_target_for_invoice, SB.refund = saved
+
+
+def test_owner_cannot_refund_the_commission_invoice():
+    """Дыра предрелизного аудита: гварда по `kind` не было вовсе.
+
+    Владелец на «проценте» оплачивал счёт за комиссию и тут же возвращал деньги
+    кнопкой. Дальше всё складывалось само: `suspension_reason` не считает
+    refunded-счёт блокирующим, а начисления (OfflineTransactionFee) уже помечены
+    выставленными и во второй счёт не попадут. Итог — деньги вернулись, долг
+    исчез, блокировка снята НАВСЕГДА. Бесплатная CRM в один запрос.
+    """
+    assert _run_refund(_invoice(kind="offline_fee")) == "billing.refund_not_allowed"
+
+
+def test_owner_cannot_refund_the_minimum_monthly_invoice():
+    """Тот же путь через минимальный месячный платёж — он тоже блокирующий."""
+    assert _run_refund(_invoice(kind="min_fee")) == "billing.refund_not_allowed"
+
+
+def test_stale_subscription_invoice_is_out_of_the_self_service_window():
+    """Срока давности не было тоже: оплаченный на 24 месяца тариф можно было
+    отработать двадцать месяцев и вернуть целиком."""
+    from routers.billing.refunds import REFUND_WINDOW_DAYS
+
+    assert _run_refund(_invoice(age_days=REFUND_WINDOW_DAYS + 1)) == "billing.refund_window_passed"
+
+
+def test_fresh_subscription_invoice_is_still_refundable():
+    """Законный возврат обязан продолжать работать — иначе фикс превращается в
+    «возврата нет вообще»."""
+    assert _run_refund(_invoice(age_days=1)) is None
+
+
+def test_unpaid_invoice_is_still_rejected_first():
+    """Порядок гвардов: неоплаченный счёт отсекается раньше, чем вид и срок."""
+    assert _run_refund(_invoice(status="pending")) == "Возврат возможен только для оплаченного счёта"
 
 
 if __name__ == "__main__":

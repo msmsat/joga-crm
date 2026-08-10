@@ -59,6 +59,7 @@ export default function Billing() {
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
           plan={h.plan}
+          minMonthly={h.minMonthly}
         />
       )}
 
@@ -96,6 +97,12 @@ export default function Billing() {
           totalToPay={h.totalToPay}
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
+          scheduleUpgrade={h.scheduleUpgrade}
+          // Выбор «сейчас / с начала периода» имеет смысл только когда есть
+          // оплаченный остаток, который можно потерять. Признак тот же, что у
+          // сервера (_has_live_subscription): статус подписки, а не наличие строки.
+          hasLiveSubscription={h.plan?.status === 'active' || h.plan?.status === 'past_due'}
+          currentPeriodEnd={h.plan?.expires_at}
         />
       )}
 
@@ -107,7 +114,6 @@ export default function Billing() {
           ibanData={h.ibanData}
           busy={h.payBusy}
           onChoose={h.chooseMethod}
-          onPayCard={h.payWithCard}
           onClose={h.closePayModal}
           details={h.details}
           wantInvoice={h.wantInvoice}

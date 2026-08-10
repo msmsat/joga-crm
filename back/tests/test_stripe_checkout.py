@@ -315,11 +315,23 @@ def test_webhook_cancels_expired_session():
 
 
 def test_webhook_rejects_bad_signature():
-    """Подделанное событие не должно ничего проводить."""
+    """Подделанное событие ничего не проводит — и получает 400, а не 200 «ignored».
+
+    Раньше здесь был 200. Настоящая причина несошедшейся подписи — разъехавшийся
+    секрет, и при 200 Stripe считает доставку удачной: ретраев нет, в дашборде
+    зелено. Цена именно на ЭТОМ эндпоинте максимальная: покупка абонемента в
+    мини-приложении проводится только вебхуком, страховки вида /checkout/confirm
+    (её зовёт касса CRM) у клиента нет — молча отброшенное событие значит «клиент
+    заплатил и не получил ничего».
+    """
     applied, db = [], _NullDB()
     body, _sig = _event("checkout.session.completed", "paid")
 
-    assert _webhook(body, "t=1,v1=deadbeef", applied, db) == {"status": "ignored"}
+    try:
+        _webhook(body, "t=1,v1=deadbeef", applied, db)
+        raise AssertionError("подделка прошла молча — Stripe не узнает о поломке секрета")
+    except HTTPException as exc:
+        assert exc.status_code == 400
     assert applied == []
 
 

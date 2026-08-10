@@ -175,12 +175,28 @@ async def get_scoped_lesson(lesson_id: int, ctx: StudioContext, db: AsyncSession
 
 
 # Один и тот же отказ для CRM и мини-приложения: студия заблокирована за
-# неоплаченный счёт по комиссии. Фронт ловит код и показывает, куда платить.
+# неоплаченный счёт постоплаты. Фронт ловит код и показывает, куда платить.
+#
+# Причин две, и текст у них разный: за комиссию с наличных и за минимальный
+# месячный платёж процентного тарифа. Одинаковое сообщение отправляло бы владельца
+# искать долг по продажам там, где продаж как раз и не было.
 SUSPENDED_DETAIL = {
     "code": "billing.suspended",
     "message": "Доступ приостановлен: не оплачен счёт за комиссию с офлайн-продаж. "
                "Оплатите его в разделе «Тариф и оплата».",
 }
+_MIN_FEE_DETAIL = {
+    "code": "billing.suspended",
+    "message": "Доступ приостановлен: не оплачен минимальный месячный платёж. "
+               "В прошлом месяце продаж через CRM не было, поэтому тариф "
+               "«процент от оборота» рассчитывается по минимальной ставке. "
+               "Оплатите счёт в разделе «Тариф и оплата».",
+}
+
+
+def suspended_detail(reason: str | None) -> dict:
+    """Текст отказа под конкретную причину блокировки (platform_fee.suspension_reason)."""
+    return _MIN_FEE_DETAIL if reason == "min_fee" else SUSPENDED_DETAIL
 
 
 async def require_active_subscription(
@@ -205,10 +221,11 @@ async def require_active_subscription(
     # Импорт локальный: services.platform_fee тянет routers.billing.plans, а тот
     # через routers.billing.__init__ — этот самый модуль. На уровне файла вышел
     # бы цикл (тот же приём, что в billing/webhook.py).
-    from services.platform_fee import studio_suspended
+    from services.platform_fee import suspension_reason
 
-    if await studio_suspended(db, ctx.studio_id):
-        raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
+    reason = await suspension_reason(db, ctx.studio_id)
+    if reason is not None:
+        raise HTTPException(status_code=402, detail=suspended_detail(reason))
 
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)

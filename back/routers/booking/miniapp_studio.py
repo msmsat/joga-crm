@@ -21,6 +21,7 @@ from models import (
 from schemas._base import BaseSchema
 from services.booking_rules import load_rules
 from services.notifier import _fmt_amount
+from services.pricing import resolve_price
 
 from .miniapp import get_current_client
 
@@ -35,11 +36,17 @@ class StudioInfo(BaseSchema):
     accent_color: str
     language: str
     dark_mode: bool
-    # Для реферальной ссылки t.me/{bot_username}?startapp=... (профиль клиента).
     # None — Telegram ещё не подключён, тогда клиент никак сюда и не попал бы
     # (auth/telegram требует активный канал), но поле optional на случай, если
     # канал отключили уже после выдачи токена.
     bot_username: Optional[str]
+    # Контакты студии из Настроек → Общие: по ним клиент связывается со студией
+    # в разделе «Підтримка». Все Optional — студия могла ничего не заполнить,
+    # и тогда мини-приложение честно говорит, что контактов нет, вместо того
+    # чтобы показывать пустые строки или выдуманный адрес.
+    phone: Optional[str]
+    email: Optional[str]
+    website: Optional[str]
 
 
 class BookingRules(BaseSchema):
@@ -83,6 +90,14 @@ class PackageInfo(BaseSchema):
     price: int
     price_str: str
     duration_days: int
+    # Цена со скидками этого клиента (студийная / персональный оффер / скидка
+    # новичка по реферальной ссылке) — ровно та сумма, что уйдёт в Stripe.
+    # Без неё клиент видел бы в списке одну цену, а списалась бы другая.
+    # Скидки нет — final_price == price и discount_label == None: мини-приложение
+    # рисует обычную строку, а не «−0 %».
+    final_price: int
+    final_price_str: str
+    discount_label: Optional[str]
 
 
 class StudioCatalog(BaseSchema):
@@ -92,6 +107,17 @@ class StudioCatalog(BaseSchema):
     services: list[ServiceInfo]
     packages: list[PackageInfo]
     can_pay_online: bool
+
+
+def _discount_label(base_price: int, final_price: int) -> Optional[str]:
+    """«−15 %» для бейджа над ценой. Процент, а не сумма: он одинаково читается
+    в любой валюте, а сама экономия и так видна зачёркнутой ценой рядом.
+
+    Скидки нет — None, чтобы мини-приложение не рисовало пустой бейдж.
+    """
+    if base_price <= 0 or final_price >= base_price:
+        return None
+    return f"−{round((base_price - final_price) * 100 / base_price)} %"
 
 
 def _branch_hours_today(hours: list[BranchWorkingHours]) -> tuple[str, str]:
@@ -208,6 +234,15 @@ async def get_studio_catalog(
     currency = studio.currency or "RUB"
     branch_hours = {branch.id: _branch_hours_today(hours_by_branch.get(branch.id, [])) for branch in branches}
 
+    # Цена со скидками — по каждому пакету, потому что часть скидок зависит от
+    # суммы (min_purchase_amount у студийной, фиксированный оффер в деньгах).
+    # ponytail: N × resolve_price при N ~ 3-6 пакетах; если каталог разрастётся —
+    # тянуть конфиги один раз и считать скидку в памяти.
+    resolved_prices = {
+        package.id: await resolve_price(db, studio_id, client.id, package.price)
+        for package in packages
+    }
+
     return StudioCatalog(
         studio=StudioInfo(
             id=studio.id,
@@ -218,6 +253,9 @@ async def get_studio_catalog(
             language=rules.widget_language,
             dark_mode=rules.widget_dark_mode,
             bot_username=bot_username,
+            phone=studio.phone,
+            email=studio.email,
+            website=studio.website,
         ),
         rules=BookingRules(
             booking_active=rules.booking_active,
@@ -261,6 +299,9 @@ async def get_studio_catalog(
                 price=package.price,
                 price_str=_fmt_amount(package.price, currency),
                 duration_days=package.duration_days,
+                final_price=resolved_prices[package.id].final_price,
+                final_price_str=_fmt_amount(resolved_prices[package.id].final_price, currency),
+                discount_label=_discount_label(package.price, resolved_prices[package.id].final_price),
             )
             for package in packages
         ],

@@ -5,6 +5,7 @@ POST инициирует возврат в Stripe; сам откат (счёт�
 Здесь только гварды доступа/состояния и вызов Stripe.
 """
 import logging
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +18,21 @@ from services import stripe_billing
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+# Самообслуживаемый возврат — ТОЛЬКО за тариф. Комиссия с офлайн-продаж
+# (`offline_fee`) и минимальный месячный платёж (`min_fee`) — это оплата уже
+# оказанной услуги, и вернуть их себе кнопкой значило бы стереть долг:
+# `platform_fee.suspension_reason` не считает refunded-счёт блокирующим, а
+# начисления (OfflineTransactionFee) уже помечены выставленными и во второй счёт
+# не попадут. Владелец на тарифе «процент» оплачивал бы счёт, тут же возвращал
+# деньги — и снимал с себя блокировку навсегда, ничего не заплатив.
+REFUNDABLE_KIND = "subscription"
+
+# Окно самообслуживаемого возврата. Без него оплаченный на 24 месяца тариф можно
+# отработать двадцать месяцев и вернуть целиком: гварда по возрасту счёта не было
+# вообще. 14 дней — то же окно, что даёт закон ЕС на отказ от цифровой услуги;
+# позже возврат делает поддержка руками, решением человека.
+REFUND_WINDOW_DAYS = 14
 
 
 @router.post("/invoices/{invoice_id}/refund")
@@ -38,6 +54,16 @@ async def refund_invoice(
     # Возвращаем только оплаченный. refunded/pending/failed → 409 (второй refund тоже сюда).
     if invoice.status != "paid":
         raise HTTPException(status_code=409, detail="Возврат возможен только для оплаченного счёта")
+    if invoice.kind != REFUNDABLE_KIND:
+        raise HTTPException(status_code=409, detail={
+            "code": "billing.refund_not_allowed",
+            "message": "Возврат комиссии и минимального платежа — только через поддержку",
+        })
+    if invoice.paid_at is not None and invoice.paid_at < datetime.utcnow() - timedelta(days=REFUND_WINDOW_DAYS):
+        raise HTTPException(status_code=409, detail={
+            "code": "billing.refund_window_passed",
+            "message": f"Вернуть оплату можно в течение {REFUND_WINDOW_DAYS} дней — напишите в поддержку",
+        })
     if not invoice.stripe_invoice_id and not invoice.order_id:
         raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
 

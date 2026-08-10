@@ -30,6 +30,11 @@ class _R:
     def scalar_one_or_none(self):
         return self._v
 
+    # Выпуск сертификата читает студию через scalar_one() (нужна валюта для
+    # комиссии платформы) — без этого метода фейк падал AttributeError.
+    def scalar_one(self):
+        return self._v
+
 
 class _DB:
     """execute() отдаёт значения из seq по порядку вызовов; commit/refresh — no-op."""
@@ -61,10 +66,28 @@ class _Cert:
         self.used_at = None
 
 
+class _Studio:
+    currency = "CZK"
+
+
+class _BillingPlan:
+    """Тариф студии. Читает platform_fee.record_offline_fee при выпуске сертификата."""
+    def __init__(self, billing_mode="subscription", percent_rate=None):
+        self.billing_mode = billing_mode
+        self.percent_rate = percent_rate
+
+
+def _fee_count(db):
+    return sum(1 for a in db.added if a.__class__.__name__ == "OfflineTransactionFee")
+
+
 def test_issue_with_account_creates_operation():
     account = _Account(id=1, balance=1000)
-    # execute() вызывается: cfg lookup (expires_at не задан) -> account lookup -> _unique_code
-    db = _DB([None, account, None])
+    # Порядок запросов: cfg (expires_at не задан) → счёт → _unique_code → студия
+    # (валюта для комиссии) → тариф студии. Последние два приехали вместе с
+    # начислением комиссии платформы за продажу сертификата — без них фейк
+    # обрывался на pop из пустого списка.
+    db = _DB([None, account, None, _Studio(), _BillingPlan()])
     body = C.GiftCertificateCreate(amount=2500, cert_type="gift", account_id=1)
     cert = asyncio.run(C.create_certificate(body, _Ctx(), db))
 
@@ -75,6 +98,36 @@ def test_issue_with_account_creates_operation():
     assert op.category == "Сертификаты"
     assert op.type == "in"
     assert cert.amount == 2500
+
+
+def test_issue_on_percent_tariff_accrues_platform_fee():
+    """Продажа сертификата — приём офлайн-денег, и комиссия берётся ЗДЕСЬ.
+
+    При погашении её взять уже не с чего: сертификат гасит цену до нуля, продажа
+    идёт по total_price = 0. Без этого начисления сертификаты были бы способом
+    провести любой оборот мимо процента — поэтому путь закрыт тестом, а не только
+    комментарием в коде.
+    """
+    db = _DB([None, _Account(id=1, balance=0), None, _Studio(), _BillingPlan("percent", 3.0)])
+    body = C.GiftCertificateCreate(amount=2500, cert_type="gift", account_id=1)
+    asyncio.run(C.create_certificate(body, _Ctx(), db))
+
+    assert _fee_count(db) == 1
+    fee = next(a for a in db.added if a.__class__.__name__ == "OfflineTransactionFee")
+    # 2500 крон → 250000 галержей, 3% = 7500. Комиссия считается в МЛАДШИХ
+    # единицах: посчитай её от крон — уедет в 100 раз.
+    assert fee.sale_amount == 250000
+    assert fee.fee_amount == 7500
+    assert fee.payment_method == "certificate"
+
+
+def test_issue_on_subscription_tariff_accrues_nothing():
+    """На тарифе-подписке платформа с оборота студии не берёт ничего."""
+    db = _DB([None, _Account(id=1, balance=0), None, _Studio(), _BillingPlan("subscription")])
+    body = C.GiftCertificateCreate(amount=2500, cert_type="gift", account_id=1)
+    asyncio.run(C.create_certificate(body, _Ctx(), db))
+
+    assert _fee_count(db) == 0
 
 
 def test_issue_without_account_skips_operation():

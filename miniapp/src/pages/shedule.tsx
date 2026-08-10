@@ -201,7 +201,7 @@ export default function Shedule({ catalog }: SheduleProps) {
           широкими прямоугольниками, а дата — это число, а не панель. Мера у
           неё та же, что у уведомления ниже, — два разных обреза подряд читаются
           как сбитая вёрстка. */}
-      <div className="pt-6 dt:max-w-[860px] dt:pt-10">
+      <div className="pt-6 dt:pt-10">
         <WeekRail value={date} onChange={setDate} maxDate={maxDate} />
       </div>
 
@@ -209,7 +209,7 @@ export default function Shedule({ catalog }: SheduleProps) {
           надо знать, когда занятия), но записаться нельзя — и об этом честно
           говорим один раз сверху, а не отказом на каждой карточке. */}
       {rules && !rules.booking_active && (
-        <div className="mx-5 mt-5 rounded-[18px] bg-card px-4 py-3.5 shadow-soft dt:max-w-[860px] dt:rounded-[20px] dt:px-5 dt:py-4">
+        <div className="mx-5 mt-5 rounded-[18px] bg-card px-4 py-3.5 shadow-soft dt:rounded-[20px] dt:px-5 dt:py-4">
           <div className="text-[13px] font-extrabold tracking-[-0.015em] text-foreground">
             {t('schedule.booking_closed')}
           </div>
@@ -289,13 +289,13 @@ export default function Shedule({ catalog }: SheduleProps) {
         })}
       </div>
 
-      {/* Расписание дня — единственный длинный список в приложении. На десктопе
-          он идёт в две колонки: одна карточка на 1120px — это строка высотой
-          в 120px с текстом, прижатым к левому краю. */}
-      <div className="flex flex-col gap-3 px-5 pt-5 dt:grid dt:grid-cols-2 dt:gap-5 dt:pt-10">
+      {/* Расписание дня — один столбец сверху вниз. Две колонки на десктопе
+          заставляли читать список зигзагом: время идёт по возрастанию, а глаз
+          обязан прыгать вправо и обратно, чтобы не потерять порядок. */}
+      <div className="flex flex-col gap-3 px-5 pt-5 dt:gap-4 dt:pt-10">
         {isLoading ? (
-          <div className="dt:col-span-2">
-            <ListSkeleton rows={4} flush wide />
+          <div>
+            <ListSkeleton rows={4} flush />
           </div>
         ) : visible.length > 0 ? (
           visible.map((cl, i) => (
@@ -311,7 +311,7 @@ export default function Shedule({ catalog }: SheduleProps) {
             />
           ))
         ) : (
-          <div className="dt:col-span-2">
+          <div>
             <EmptyState
               title={activeCount > 0 ? t('schedule.no_matches') : t('schedule.no_classes')}
               hint={activeCount > 0 ? t('schedule.no_matches_hint') : undefined}

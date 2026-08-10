@@ -33,6 +33,8 @@ interface Props {
   activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
   modelBusy: boolean;
   plan: BillingPlan | null;
+  /** Минимальный месячный платёж процентного тарифа, в валюте тарифов. */
+  minMonthly: number;
 }
 
 export default function PlansTab({
@@ -44,7 +46,7 @@ export default function PlansTab({
   currentMonthly, discountedPrice, totalToPay,
   animateCards, setShowUpgradeModal,
   startCheckout,
-  activateModel, modelBusy, plan,
+  activateModel, modelBusy, plan, minMonthly,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
@@ -99,6 +101,19 @@ export default function PlansTab({
 
   return (
     <div style={{ padding: '0 var(--card-pad)' }}>
+
+      {/* Оплаченный, но ещё не наступивший апгрейд. Держится на сервере
+          (StudioBillingPlan.scheduled_plan), поэтому переживает перезагрузку —
+          иначе владелец, закрывший вкладку, потерял бы всякий след того, что
+          тариф вообще сменится. */}
+      {plan?.scheduled_plan && plan.scheduled_at && (
+        <div style={{ padding: '12px 16px', marginBottom: '20px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12.5px', fontWeight: 600, color: 'var(--onyx)' }}>
+          {t('upgrade.scheduledBadge', {
+            date: new Date(plan.scheduled_at).toLocaleDateString(dateLocale),
+            plan: plans[plan.scheduled_plan as PlanType]?.name ?? plan.scheduled_plan,
+          })}
+        </div>
+      )}
 
       {/* ── BILLING MODE SELECTOR ── */}
       <div className="bl-card" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
@@ -344,10 +359,16 @@ export default function PlansTab({
       {pendingTerms && (
         <ConfirmModal
           title={t('mode.termsTitle')}
+          // Минимум добавляем ТОЛЬКО для чистого процента: у комбо фиксированная
+          // часть уже берётся подпиской, и второе денежное обязательство там не
+          // возникает. Сумма приходит каталогом с сервера — цифра в согласии
+          // обязана совпадать с той, по которой реально выставят счёт.
           message={t('mode.termsMessage', {
             rate: pendingTerms.mode === 'percent' ? 3 : 1.5,
             days: 7,
-          })}
+          }) + (pendingTerms.mode === 'percent' && minMonthly
+            ? '\n\n' + t('mode.termsMinimum', { amount: minMonthly, currency })
+            : '')}
           confirmText={t('mode.termsConfirm')}
           onConfirm={() => activateModel(
             { ...pendingTerms, accept_offline_terms: true },

@@ -27,23 +27,36 @@
      оникс — 8.3:1. Одинаков в обеих темах, потому что сам персик не меняется. */
   --v-brand-foreground: #1A1A1A;
 
-  --v-background: #FDFCFB;
+  /* Жемчуг взят глубже канонического #FDFCFB намеренно. Белая карточка на нём
+     отличалась от фона на 2 значения из 255 — на светлом мониторе поверхности
+     сливались в одно поле, и «карточка» переставала читаться как предмет.
+     Тот же токен работает утопленной строкой ВНУТРИ белых листов (bg-background
+     в модалках), так что углубление чинит и их. */
+  --v-background: #F4F2EF;
   --v-foreground: #1A1A1A;
   --v-card: #FFFFFF;
   --v-card-foreground: #1A1A1A;
 
-  --v-muted: #F4F2F0;
+  /* Ступень ниже фона: чипы, плашки и выключенные тумблеры обязаны читаться и
+     на белой карточке, и на жемчужном поле. Прежний #F4F2F0 с новым фоном
+     совпал бы почти в ноль. */
+  --v-muted: #E9E5DF;
   --v-muted-foreground: #666666;
-  --v-border: rgba(26, 26, 26, 0.08);
+  --v-border: rgba(26, 26, 26, 0.10);
 
   --v-success: #A3C9A8;   /* фисташка */
   --v-danger: #D88C9A;    /* пыльная роза */
 
   /* Soft UI Evolution: тени мягче флэта, чётче нейморфизма.
-     Разделительных линий в макете нет — глубину держат только они. */
-  --v-shadow-soft: 0 8px 24px -4px rgba(26, 26, 26, 0.05);
-  --v-shadow-lift: 0 16px 40px -8px rgba(26, 26, 26, 0.10);
-  --v-shadow-brand: 0 12px 28px -8px rgba(249, 160, 139, 0.50);
+     Первый слой — волосяной кант в 4.5%: он даёт краю поверхности чёткость,
+     которой рассеянная тень не даёт в принципе. Разделительных линий в макете
+     по-прежнему нет — это кант самой карточки, а не линия между блоками. */
+  --v-shadow-soft: 0 0 0 1px rgba(26, 26, 26, 0.045), 0 6px 18px -6px rgba(26, 26, 26, 0.10);
+  --v-shadow-lift: 0 0 0 1px rgba(26, 26, 26, 0.05), 0 18px 40px -12px rgba(26, 26, 26, 0.16);
+  --v-shadow-brand: 0 10px 26px -8px rgba(249, 160, 139, 0.55);
+  /* Наведение мышью: тот же кант, тень глубже. Отдельным токеном, а не длинным
+     произвольным значением в разметке, — иначе кант на hover пропадал бы. */
+  --v-shadow-hover: 0 0 0 1px rgba(26, 26, 26, 0.06), 0 28px 60px -16px rgba(26, 26, 26, 0.22);
 }
 
 .dark {
@@ -65,10 +78,12 @@
   --v-success: #A3C9A8;
   --v-danger: #D88C9A;
 
-  /* На графите чёрная тень не читается — глубину даёт затемнение сильнее. */
-  --v-shadow-soft: 0 8px 24px -4px rgba(0, 0, 0, 0.40);
-  --v-shadow-lift: 0 16px 40px -8px rgba(0, 0, 0, 0.55);
+  /* На графите чёрная тень не читается — глубину даёт затемнение сильнее,
+     а кант, наоборот, светлый: тёмный на тёмном не виден. */
+  --v-shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 24px -4px rgba(0, 0, 0, 0.40);
+  --v-shadow-lift: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 16px 40px -8px rgba(0, 0, 0, 0.55);
   --v-shadow-brand: 0 12px 28px -8px rgba(249, 160, 139, 0.30);
+  --v-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 28px 60px -16px rgba(0, 0, 0, 0.65);
 }
 
 /* Проброс в утилиты Tailwind: bg-brand, text-muted-foreground, shadow-lift, … */
@@ -99,6 +114,7 @@
   --shadow-soft: var(--v-shadow-soft);
   --shadow-lift: var(--v-shadow-lift);
   --shadow-brand: var(--v-shadow-brand);
+  --shadow-hover: var(--v-shadow-hover);
 }
 
 /* Ширина, с которой кабинет перестаёт быть телефонным: боковое меню вместо
@@ -144,7 +160,13 @@
 }
 
 @layer utilities {
-  /* Под индикатор жестов iPhone. viewport-fit=cover должен стоять в index.html. */
+  /* Под индикатор жестов iPhone. viewport-fit=cover должен стоять в index.html.
+     ⚠️ ТОЛЬКО на элементе без собственного padding с той же стороны. Пара вроде
+     `pt-safe pt-10` или `pb-safe pb-5` — это два padding с одним именем на одном
+     элементе: побеждает тот, что ниже в собранном CSS, и это всегда безопасная
+     зона, то есть НОЛЬ на десктопе. Отступ схлопывается молча, без ошибки.
+     Нужны оба — пиши одно объявление: `pb-[calc(1.25rem_+_env(safe-area-inset-bottom,0px))]`.
+     На этих граблях уже стояли шапка профиля, футер листов и нижнее меню. */
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -153,33 +175,37 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
-  /* Главная прокрутка приложения. На телефоне полосы скрыты глобально (правило
-     в base), но на десктопе у мыши без них нет ориентира — сколько ещё внизу,
-     непонятно. Возвращаем полосу ТОЛЬКО здесь: ленты студий, направлений и
-     фильтров прокручиваются вбок и с полосой выглядели бы как таблица. */
+  /* Прокрутка на десктопе — обычная, страницы целиком: своя область прокрутки
+     внутри окна означала бы вторую полосу и отказ от колеса там, где курсор
+     вышел за её границы. Полосу возвращаем ТОЛЬКО документу: ленты студий,
+     направлений и фильтров прокручиваются вбок и с полосой выглядели бы как
+     таблица, поэтому глобальное правило в base их по-прежнему прячет. */
   @media (min-width: 760px) {
-    .scroll-main {
+    html {
       scrollbar-width: thin;
       scrollbar-color: color-mix(in srgb, var(--v-foreground) 16%, transparent) transparent;
+      /* Место под полосу держится всегда: открытый лист блокирует прокрутку
+         body, и без этого страница дёргалась бы вбок на ширину полосы. */
+      scrollbar-gutter: stable;
     }
 
-    .scroll-main::-webkit-scrollbar {
+    html::-webkit-scrollbar {
       display: block;
       width: 10px;
     }
 
-    .scroll-main::-webkit-scrollbar-track {
+    html::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    .scroll-main::-webkit-scrollbar-thumb {
+    html::-webkit-scrollbar-thumb {
       background: color-mix(in srgb, var(--v-foreground) 16%, transparent);
       background-clip: content-box;
       border: 3px solid transparent;
       border-radius: 999px;
     }
 
-    .scroll-main::-webkit-scrollbar-thumb:hover {
+    html::-webkit-scrollbar-thumb:hover {
       background: color-mix(in srgb, var(--v-foreground) 28%, transparent);
       background-clip: content-box;
     }

@@ -16,6 +16,9 @@ export interface PlansCatalog {
   plans: Plan[]
   period_discounts: Record<number, number>   // {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
   currency: string                           // валюта подписки (EUR), не валюта кассы студии
+  // Минимальный месячный платёж тарифа «только процент», в копейках. Месяц, в
+  // котором платформа заработала на студии меньше этой суммы, добирается счётом.
+  min_monthly: number
 }
 
 export interface BillingPlan {
@@ -34,6 +37,10 @@ export interface BillingPlan {
   sms_notification_enabled: boolean
   can_upgrade: boolean       // считает сервер (эпик 4 задача 2) — фронт не дублирует ветвистость
   next_plan: string | null   // null, если апгрейда нет (% от оборота / максимальный тариф)
+  /** Оплаченная, но ещё не наступившая смена тарифа: апгрейд по умолчанию
+   *  начинается с конца текущего оплаченного периода. */
+  scheduled_plan?: string | null
+  scheduled_at?: string | null
 }
 
 export interface AutopaySettings {
@@ -117,8 +124,16 @@ export interface PaymentCard {
 export interface CheckoutRequest {
   plan: 'start' | 'pro' | 'business'
   period_months: 1 | 6 | 12 | 24
+  /** Когда новый тариф вступает в силу. Значимо только при живой подписке:
+   *  'period_end' — с конца оплаченного периода, платить сейчас не нужно;
+   *  'now' — сразу, остаток текущего периода сгорает без возврата. */
+  apply?: 'period_end' | 'now'
 }
 
 export interface CheckoutResponse {
   checkout_url: string
+  /** true — тариф поставлен в расписание, оплата сейчас не требуется. */
+  scheduled?: boolean
+  /** Момент вступления нового тарифа в силу (ISO), при scheduled. */
+  applies_at?: string | null
 }

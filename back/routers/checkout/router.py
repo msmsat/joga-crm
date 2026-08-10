@@ -403,11 +403,9 @@ async def perform_pay(
             body.client_id, studio_id, -quote.bonuses_applied, "Оплата бонусами", db,
         )
 
-    if resolved.promo is not None:
-        resolved.promo.used_count += 1
-    if resolved.offer is not None:
-        resolved.offer.is_used = True
-        resolved.offer.used_at = datetime.utcnow()
+    # Промокод, персональный оффер и скидка новичка — все одноразовые, гасятся
+    # вместе в той же транзакции, что и продажа (гонки «применили дважды» нет).
+    resolved.mark_used()
 
     log_activity(
         db, studio_id, "payment",

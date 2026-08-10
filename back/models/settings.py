@@ -175,10 +175,25 @@ class StudioBillingPlan(Base):
 
     # Подписка живёт в Stripe, здесь только её идентификаторы. status/expires_at выше —
     # ЗЕРКАЛО состояния подписки, их пишет вебхук; своей арифметики периодов больше нет.
-    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # unique обязателен: по этому полю вебхук ищет студию через scalar_one_or_none()
+    # (webhook.find_plan_by_subscription — запасной путь линковки первой карточной
+    # оплаты, и _handle_setup_intent). Две строки с одним customer'ом дали бы
+    # MultipleResultsFound внутри хендлера, то есть потерянную оплату.
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True,
+    )
     stripe_subscription_id: Mapped[Optional[str]] = mapped_column(
         String(255), unique=True, index=True, nullable=True,
     )
+
+    # Оплаченная, но ещё не вступившая в силу смена тарифа: по умолчанию апгрейд
+    # начинается с КОНЦА текущего оплаченного периода, чтобы студия не сжигала
+    # остаток, за который уже заплатила. Сам перенос ведёт Stripe (Subscription
+    # Schedule), здесь — только то, что показать владельцу на странице оплаты, не
+    # ходя за этим в Stripe на каждый рендер. Ступень доступа поднимает по-прежнему
+    # оплаченный счёт (webhook._activate), а не эти поля.
+    scheduled_plan: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    scheduled_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 
     billing_mode: Mapped[str] = mapped_column(String(20), default="subscription")
     percent_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -226,6 +241,15 @@ class PaymentCard(Base):
 
 class BillingInvoice(Base):
     __tablename__ = "billing_invoices"
+    # Расчётный месяц уникален в паре со студией и видом счёта: за один и тот же
+    # месяц ни комиссия, ни минимальный платёж не могут быть выставлены дважды.
+    # Пропущенный запуск воркера догоняется следующим тиком, и без этого ключа
+    # догоняющий проход выставил бы второй счёт за тот же период. У счетов за
+    # тариф period пуст, а NULL в Postgres друг другу не равны — они под
+    # ограничение не попадают.
+    __table_args__ = (
+        UniqueConstraint("studio_id", "kind", "period", name="uq_billing_invoice_period"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
@@ -235,10 +259,16 @@ class BillingInvoice(Base):
     period_months: Mapped[int] = mapped_column(Integer, default=1)
     amount: Mapped[int] = mapped_column(Integer)
     payment_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    # subscription — счёт за тариф; offline_fee — счёт за комиссию с офлайн-продаж.
-    # Различать обязательно: оплата комиссии НЕ продлевает подписку, а её неоплата
-    # (в отличие от подписки) блокирует и CRM, и мини-приложение.
+    # subscription — счёт за тариф; offline_fee — комиссия с офлайн-продаж;
+    # min_fee — минимальный месячный платёж процентного тарифа (месяц, в котором
+    # платформа заработала на студии меньше MIN_MONTHLY_FEE).
+    # Различать обязательно: оплата комиссии и минимума НЕ продлевает подписку, а их
+    # неоплата (в отличие от подписки) блокирует и CRM, и мини-приложение.
     kind: Mapped[str] = mapped_column(String(20), default="subscription", index=True)
+    # Расчётный месяц счёта, "YYYY-MM". Заполнен у offline_fee и min_fee — по нему
+    # держится уникальность (см. __table_args__) и подписывается позиция в фактуре.
+    # NULL у счетов за тариф: там период задаётся подпиской, а не календарём.
+    period: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
     # Крайний срок оплаты. Прошёл, а счёт не оплачен → студия блокируется
     # (services/platform_fee.studio_suspended). NULL у счетов за тариф: там срок
     # ведёт Stripe своим dunning'ом, и блокировка идёт по статусу подписки.

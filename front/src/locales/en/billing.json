@@ -84,7 +84,8 @@
     "confirmSwitchMessage": "Your current subscription is active. Switching models takes effect immediately — remaining paid time won't carry over.",
     "termsTitle": "Confirm plan terms",
     "termsMessage": "On this plan the platform withholds {{rate}}% of every sale.\n\nFor online payments the fee is withheld automatically at the moment of payment. For cash, terminal and deposit top-ups it is NOT withheld immediately — it accrues, and you receive a separate invoice once a month.\n\nYou have {{days}} days to pay that invoice. If it is not paid in time, access to the CRM and to the client mini-app is suspended until it is settled.\n\nThe current amount due is shown in Billing; you can pay at any time, including early.",
-    "termsConfirm": "I accept the terms"
+    "termsConfirm": "I accept the terms",
+    "termsMinimum": "Minimum monthly charge is {{amount}} {{currency}}. If over a calendar month the platform earned less than that from your studio (for example, there were no sales through the CRM at all), you are invoiced for the difference. Earn more than the minimum and there is no invoice. An unpaid minimum charge suspends access the same way an unpaid commission invoice does."
   },
   "combo": {
     "rateBadge": "{{rate}}%",
@@ -177,7 +178,17 @@
     "discountLabel": "Discount",
     "totalLabel": "Total",
     "confirmAndPay": "Confirm and pay",
-    "trustNote": "Secured by PCI DSS · 7-day refund"
+    "trustNote": "Secured by PCI DSS · 7-day refund",
+    "startsAtNote": "The new plan starts on {{date}}, when the current paid period ends. No payment now — the invoice arrives at the start of the new period.",
+    "startsAtNoteNoDate": "The new plan starts when the current paid period ends. No payment is required now.",
+    "confirmScheduled": "From the next period",
+    "switchNow": "Switch now",
+    "switchNowTitle": "Switch to the new plan right now?",
+    "switchNowWarning": "The remainder of the current period (until {{date}}) WILL BE FORFEITED — it is not refunded and does not carry over. The new plan starts immediately and is invoiced in full right away.\n\nIf you are not in a hurry, choose \"From the next period\" and you lose nothing.",
+    "switchNowWarningNoDate": "The remainder of the current paid period WILL BE FORFEITED — it is not refunded and does not carry over. The new plan starts immediately and is invoiced in full right away.",
+    "switchNowConfirm": "Yes, switch and forfeit",
+    "scheduledToast": "Plan \"{{plan}}\" starts on {{date}}",
+    "scheduledBadge": "From {{date}} — plan \"{{plan}}\""
   },
   "method": {
     "notLinked": "Not linked",

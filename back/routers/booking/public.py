@@ -16,13 +16,13 @@ from sqlalchemy.future import select
 from activity import log_activity
 from database import get_db
 from ratelimit import limiter
-from models import Client, Service, Lesson, ReferralRecord, Reservation, StudioReferralConfig
-from routers.clients.loyalty import apply_deposit_change, apply_points_change
+from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
 from services.booking_access import find_eligible_subscription
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
 from services.notifier import notify
+from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 
 router = APIRouter()
@@ -243,27 +243,7 @@ async def public_reserve(
     # Реферальный триггер first_visit: у нового клиента pending-реферал ещё не мог
     # существовать, поэтому проверяем только для существующего клиента.
     if not is_new_client:
-        referral = (await db.execute(
-            select(ReferralRecord).where(
-                ReferralRecord.referred_client_id == client.id,
-                ReferralRecord.status == "pending",
-            )
-        )).scalar_one_or_none()
-        if referral is not None and referral.referrer_client_id is not None:
-            referral.status = "completed"
-            # Бонус рефереру (V5-3, задача 4): bonus_type решает, баллами или на
-            # депозит — раньше bonus_paid никогда не выставлялся в True, реального
-            # начисления не было (аудит п.3, опция «На депозит» была пустышкой).
-            cfg = (await db.execute(
-                select(StudioReferralConfig).where(StudioReferralConfig.studio_id == studio_id)
-            )).scalar_one_or_none()
-            if cfg is not None and cfg.is_enabled and cfg.trigger_condition == "first_visit" and cfg.referrer_bonus > 0:
-                description = f"Реферальный бонус за приглашение {client.name}"
-                if cfg.bonus_type == "deposit":
-                    await apply_deposit_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
-                elif cfg.bonus_type == "points":
-                    await apply_points_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
-                referral.bonus_paid = True
+        await fire_referral(db, studio_id, client.id, "first_visit", referred_name=client.name)
 
     await db.commit()
     await db.refresh(reservation)

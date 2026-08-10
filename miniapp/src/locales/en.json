@@ -89,13 +89,10 @@
     "buy_btn": "Buy Subscription",
     "notifications": "Notifications",
     "history": "Payment History",
-    "invite": "Invite a Friend",
     "support": "Studio Support",
     "reminders": "Class reminders",
     "about_studio": "About the Studio",
     "language": "Language",
-    "community": "Community",
-    "invite_hint": "Starting together is easier — send a friend your link",
     "subscription_group": "Membership",
     "notifications_group": "Notifications",
     "app_group": "App",
@@ -220,13 +217,19 @@
   "supportModal": {
     "tag": "Help",
     "title": "Support",
-    "description": "You can write any message directly in this bot — our team will receive it and reply soon.",
-    "button": "Got it"
+    "sub": "Get in touch with {{studio}} whichever way suits you.",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "no_contacts": "No contacts yet",
+    "no_contacts_hint": "The studio hasn't added a phone or email yet. Ask at your next class."
   },
   "paymentModal": {
     "tag": "Secure payment",
     "title": "Checkout",
     "service": "Service",
+    "base_price": "Price",
+    "discount": "Discount",
     "amount_due": "Amount due",
     "pay_card": "Pay with card",
     "or_other": "or another way",
@@ -236,16 +239,13 @@
     "cancel": "Cancel",
     "expiry_placeholder": "MM/YY"
   },
-  "languageModal": {
-    "tag": "Settings",
-    "sub": "Interface language"
-  },
   "nav": {
     "home": "Home",
     "schedule": "Schedule",
     "my_lessons": "My Lessons",
     "profile": "Profile",
-    "client_area": "Client area"
+    "client_area": "Client area",
+    "club": "Club"
   },
   "home": {
     "greeting_morning": "Good morning",
@@ -257,9 +257,6 @@
     "directions": "Directions",
     "body_spirit_balance": "Body. Mind. Balance.",
     "studio_description": "Namaste yoga studio is a space for harmony and self-development in Odesa",
-    "referral_title": "Invite a friend",
-    "referral_subtitle": "Get 20% off your next subscription",
-    "referral_link_copied": "Link copied!",
     "today": "Today",
     "tomorrow": "Tomorrow",
     "studios": "Studios",
@@ -280,5 +277,36 @@
     "flow_mfr": "MFR",
     "flow_healthy_back": "Healthy Back",
     "flow_breathing": "Breathwork"
+  },
+  "club": {
+    "title": "Club",
+    "points": "points",
+    "points_worth": "≈ {{value}}",
+    "spent": "Spent at the studio: {{amount}}",
+    "to_next": "{{amount}} more to reach {{level}}",
+    "level_top": "Top level reached",
+    "levels": "Levels",
+    "offers": "Personal discounts",
+    "certificates": "Certificates",
+    "valid_until": "valid until {{date}}",
+    "valid_forever": "no expiry",
+    "code_copied": "Code copied",
+    "deposit": "Deposit",
+    "deposit_history": "Deposit history",
+    "deposit_empty": "No deposit activity yet",
+    "deposit_load_error": "Couldn't load deposit history",
+    "referral": "Invite a friend",
+    "referral_bonus_points": "{{bonus}} points for you",
+    "referral_bonus_money": "{{bonus}} for you",
+    "referral_discount": "{{discount}}% off for your friend",
+    "referral_invited": "Invited",
+    "referral_completed": "Joined",
+    "referral_copy": "Copy link",
+    "referral_copied": "Link copied",
+    "history": "Points history",
+    "no_history": "No points earned yet",
+    "no_history_hint": "They'll appear after your first payment at the studio",
+    "disabled": "The studio hasn't launched its club yet",
+    "disabled_hint": "Once the loyalty program is live, your points and level will show up here."
   }
 }

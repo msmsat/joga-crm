@@ -16,13 +16,14 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, DepositTransaction, LoyaltyPointTransaction, Operation,
-    ReferralRecord, Studio, StudioDiscountConfig, StudioLoyaltyConfig, StudioReferralConfig,
+    Studio, StudioDiscountConfig, StudioLoyaltyConfig,
 )
 from schemas.loyalty import (
     BonusCreate, DepositBalanceRead, DepositCreate, DepositTransactionRead, PointsBalanceRead, PointTransactionRead,
 )
 from services import platform_fee, stripe_connect
 from services.notifier import notify, notify_payment
+from services.referral import fire_referral
 
 router = APIRouter()
 
@@ -136,36 +137,10 @@ async def register_purchase(db: AsyncSession, studio_id: int, client_id: int, am
         if cashback > 0:
             await apply_points_change(client_id, studio_id, cashback, "Кэшбек", db)
 
-    await _fire_referral_on_first_payment(db, studio_id, client_id)
-
-
-async def _fire_referral_on_first_payment(db: AsyncSession, studio_id: int, client_id: int) -> None:
-    """Триггер 'После первой оплаты' (StudioReferralConfig.trigger_condition ==
-    'first_payment') — второй режим наряду с 'first_visit' (booking/public.py).
-    bonus_paid гарантирует однократность так же, как у first_visit."""
-    referral = (await db.execute(
-        select(ReferralRecord).where(
-            ReferralRecord.referred_client_id == client_id,
-            ReferralRecord.status == "pending",
-            ReferralRecord.bonus_paid == False,  # noqa: E712
-        )
-    )).scalar_one_or_none()
-    if referral is None or referral.referrer_client_id is None:
-        return
-
-    cfg = (await db.execute(
-        select(StudioReferralConfig).where(StudioReferralConfig.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if cfg is None or not cfg.is_enabled or cfg.trigger_condition != "first_payment" or cfg.referrer_bonus <= 0:
-        return
-
-    description = "Реферальный бонус за приглашение"
-    if cfg.bonus_type == "points":
-        await apply_points_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
-    else:
-        await apply_deposit_change(referral.referrer_client_id, studio_id, cfg.referrer_bonus, description, db)
-    referral.status = "completed"
-    referral.bonus_paid = True
+    # Триггер 'После первой оплаты'. Через register_purchase проходят ВСЕ оплаты
+    # — касса, карточка клиента, автосписание и Stripe мини-приложения
+    # (attach_subscription), — поэтому канал платежа роли не играет.
+    await fire_referral(db, studio_id, client_id, "first_payment")
 
 
 async def apply_deposit_change(

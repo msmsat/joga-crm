@@ -26,9 +26,9 @@ type Props = {
 /**
  * Карточка студии в ленте выбора.
  *
- * Фотография вертикальная: студия — это место, а место снимают в рост, а не
- * квадратом. Заодно в один экран помещается и снимок, и всё, ради чего клиент
- * выбирает — статус, рейтинг, адрес.
+ * Кадр квадратный: интерьер зала — это ширина, а не рост, и в вертикальной
+ * рамке от него оставалась полоса. Снимок приходит из карточки филиала в CRM
+ * (Каталог → Филиалы, поле фото) — фронт его только показывает.
  *
  * Два состояния — с фото и без — намеренно одинаковы по композиции. Студия без
  * фотографии не должна выглядеть как ошибка загрузки, поэтому вместо серого
@@ -67,7 +67,7 @@ export default function StudioCard({
           className="group cursor-pointer"
         >
           <div
-            className="relative aspect-[3/4] overflow-hidden rounded-[24px] shadow-lift transition-shadow duration-300 dt:group-hover:shadow-[0_28px_64px_-16px_rgba(26,26,26,0.30)]"
+            className="relative aspect-square overflow-hidden rounded-[24px] shadow-lift transition-shadow duration-300 dt:group-hover:shadow-hover"
             style={
               showPhoto
                 ? undefined

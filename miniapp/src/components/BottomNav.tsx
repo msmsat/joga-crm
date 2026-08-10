@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { NAV_ITEMS } from './navItems';
+import type { NavItem } from './navItems';
 import { cn } from '../lib/utils';
 
 type Props = {
   active: string;
   onSelect: (tab: string) => void;
+  /** Разделы для этой студии — решает App (см. `visibleNavItems`). */
+  items: NavItem[];
 };
 
 /**
@@ -24,13 +26,17 @@ type Props = {
  *    перерисовывается каждый кадр прокрутки. «Лёгкость» здесь даёт светлая
  *    поверхность с мягкой тенью и волосяной обводкой, а не полупрозрачность.
  */
-export default function BottomNav({ active, onSelect }: Props) {
+export default function BottomNav({ active, onSelect, items }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className="pb-safe pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-4">
+    /* fixed, а не absolute: прокручивается сама страница, и привязанная к
+       документу капсула уехала бы вверх вместе с содержимым. */
+    /* Отступ снизу одним объявлением: `pb-safe` рядом с `pb-4` перебивал его
+       и капсула ложилась на самую кромку экрана. */
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))]">
       <nav className="pointer-events-auto flex items-stretch gap-1 rounded-full bg-card p-1.5 shadow-lift ring-1 ring-inset ring-border">
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const isActive = active === item.id;
           return (
             <motion.button

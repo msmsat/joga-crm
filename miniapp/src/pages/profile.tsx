@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import SupportModal from '../components/modals/SupportModal';
 import HistoryModal from '../components/modals/HistoryModal';
 import BuyModal from '../components/modals/BuyModal';
-import LanguageModal from '../components/modals/LanguageModal';
+import LanguagePopover from '../components/profile/LanguagePopover';
 import Auth from './auth';
 import SubscriptionCard from '../components/profile/SubscriptionCard';
 import SettingRow from '../components/profile/SettingRow';
@@ -23,9 +23,13 @@ import type { StudioCatalog } from '../api/studio';
 
 interface ProfileProps {
   catalog: StudioCatalog | null;
+  /** Перечитать каталог. Цены в нём считаются под конкретного клиента (скидка
+   * новичка, персональный оффер) и после покупки скидка гаснет — снимок,
+   * снятый на входе, показал бы её второй раз, а списалось бы полное. */
+  onCatalogRefresh?: () => void;
 }
 
-export default function Profile({ catalog }: ProfileProps) {
+export default function Profile({ catalog, onCatalogRefresh }: ProfileProps) {
   const { t, i18n } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
@@ -39,12 +43,10 @@ export default function Profile({ catalog }: ProfileProps) {
 
   const [notifs, setNotifs] = useState(true);
   const [reminders, setReminders] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
 
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isLinkEmailOpen, setIsLinkEmailOpen] = useState(false);
 
   useEffect(() => {
@@ -105,24 +107,16 @@ export default function Profile({ catalog }: ProfileProps) {
     }
   };
 
-  const handleCopyLink = () => {
-    const botUsername = catalog?.studio.bot_username;
-    if (!botUsername || !profile?.invite_code) return;
+  // Сайт студии — из её же настроек (Настройки → Общие). Не заполнен — строки
+  // «Про студію» в списке нет вовсе: вести человека в никуда хуже, чем не
+  // предлагать ничего.
+  const website = catalog?.studio.website ?? null;
 
-    navigator.clipboard
-      .writeText(`https://t.me/${botUsername}?startapp=s${catalog!.studio.id}_ref${profile.invite_code}`)
-      .then(() => {
-        setIsCopied(true);
-        if (tg) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => setIsCopied(false), 2000);
-      })
-      .catch((err) => console.error('Помилка копіювання: ', err));
-  };
-
-  const openInstagram = () => {
-    const url = 'https://www.instagram.com/sadovskiy_matvii_/';
+  const openWebsite = () => {
+    if (!website) return;
+    const url = /^https?:\/\//i.test(website) ? website : `https://${website}`;
     if (tg && tg.openLink) tg.openLink(url);
-    else window.open(url, '_blank');
+    else window.open(url, '_blank', 'noopener,noreferrer');
     vibrateLight();
   };
 
@@ -177,60 +171,58 @@ export default function Profile({ catalog }: ProfileProps) {
       {/* Шапка профиля: аватар в двойном кольце — это единственный портрет во
           всём приложении, и он должен читаться как оправа, а не как иконка.
           На десктопе портрет и имя встают в строку: колонка по центру на
-          широком экране читается как визитка, а не как шапка раздела. */}
+          широком экране читается как визитка, а не как шапка раздела.
+
+          Отступ сверху живёт на отдельном узле: `pt-safe` и `pt-10` — это оба
+          padding-top, и на одном элементе один молча перебивал другой. На
+          десктопе безопасная зона равна нулю — портрет упирался в край окна. */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-safe flex flex-col items-center px-5 pt-10 text-center dt:flex-row dt:items-center dt:gap-7 dt:pt-16 dt:text-left"
+        className="pt-safe px-5"
       >
-        <div className="relative flex h-[92px] w-[92px] shrink-0 items-center justify-center dt:h-[112px] dt:w-[112px]">
-          <motion.span
-            animate={{ scale: [1, 1.06, 1], opacity: [0.35, 0.15, 0.35] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-0 rounded-full bg-brand/30"
-          />
-          <span className="absolute inset-[7px] rounded-full ring-1 ring-brand/40" />
-          <span className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-brand text-[26px] font-extrabold text-brand-foreground shadow-brand dt:h-[86px] dt:w-[86px] dt:text-[32px]">
-            {avatarLetter}
-          </span>
-        </div>
+        <div className="flex flex-col items-center pt-10 text-center dt:flex-row dt:items-center dt:gap-7 dt:pt-20 dt:text-left">
+          <div className="relative flex h-[92px] w-[92px] shrink-0 items-center justify-center dt:h-[104px] dt:w-[104px]">
+            <motion.span
+              animate={{ scale: [1, 1.06, 1], opacity: [0.35, 0.15, 0.35] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full bg-brand/30"
+            />
+            <span className="absolute inset-[7px] rounded-full ring-1 ring-brand/40" />
+            <span className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-brand text-[26px] font-extrabold text-brand-foreground shadow-brand dt:h-[80px] dt:w-[80px] dt:text-[30px]">
+              {avatarLetter}
+            </span>
+          </div>
 
-        <div className="min-w-0 max-w-full">
-          <h1 className="mt-5 max-w-full truncate text-[28px] font-extrabold leading-tight tracking-[-0.035em] text-foreground dt:mt-0 dt:text-[44px] dt:tracking-[-0.04em]">
-            {isLoadingProfile ? t('profile.loading') : profile?.name || t('profile.guest')}
-          </h1>
-          <p className="mt-1.5 text-[12.5px] font-medium text-muted-foreground dt:mt-2.5 dt:text-[14px]">
-            {isLoadingProfile
-              ? t('profile.searching_data')
-              : t('profile.in_studio_since', {
-                  date: profile?.registration_date
-                    ? new Date(profile.registration_date).toLocaleDateString(i18n.language, {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })
-                    : t('profile.recently'),
-                })}
-          </p>
+          <div className="min-w-0 max-w-full">
+            <h1 className="mt-5 max-w-full truncate text-[28px] font-extrabold leading-tight tracking-[-0.035em] text-foreground dt:mt-0 dt:text-[38px] dt:tracking-[-0.04em]">
+              {isLoadingProfile ? t('profile.loading') : profile?.name || t('profile.guest')}
+            </h1>
+            <p className="mt-1.5 text-[12.5px] font-medium text-muted-foreground dt:mt-2.5 dt:text-[14px]">
+              {isLoadingProfile
+                ? t('profile.searching_data')
+                : t('profile.in_studio_since', {
+                    date: profile?.registration_date
+                      ? new Date(profile.registration_date).toLocaleDateString(i18n.language, {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : t('profile.recently'),
+                  })}
+            </p>
+          </div>
         </div>
       </motion.div>
 
-      {/* Две колонки на десктопе: слева то, что у клиента есть (абонемент,
-          очередь, приглашение), справа — настройки. Шапка стоит НАД сеткой:
-          внутри колонки портрет оказывался вровень с первой строкой настроек,
-          и экран читался как два несвязанных списка. Обе колонки начинаются
-          меткой раздела, поэтому их верх выровнен. */}
-      <div className="dt:grid dt:grid-cols-2 dt:items-start dt:gap-x-6">
+      {/* Один столбец на всех ширинах: абонемент → очередь → приглашение →
+          настройки. Две колонки на десктопе экран не улучшали — половина
+          блоков появляется не всегда, и правая сторона регулярно оставалась
+          пустой напротив заполненной левой. */}
+      <>
         <div>
-          {/* На телефоне абонемент подписан внутри самой карточки, метка была
-              бы вторым заголовком подряд. На десктопе она держит верх колонки
-              на одной высоте с соседней. */}
-          <div className="hidden dt:block">
-            <SectionLabel>{t('profile.current_sub')}</SectionLabel>
-          </div>
-
-          <div className="pt-8 dt:pt-0">
+          <div className="pt-8">
             <SubscriptionCard
               label={t('profile.current_sub')}
               name={
@@ -288,63 +280,6 @@ export default function Profile({ catalog }: ProfileProps) {
             </>
           )}
 
-          {/* Спільнота: приглашение — не строка настроек, а отдельная карточка с
-              собственной иллюстрацией. Это единственное место, где клиент делает
-              что-то не для себя, и оно должно выглядеть как приглашение, а не пункт
-              списка. */}
-          <SectionLabel>{t('profile.community')}</SectionLabel>
-          <div className="px-5">
-            <motion.button
-              type="button"
-              onClick={handleCopyLink}
-              whileTap={{ scale: 0.985 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-              className="relative flex w-full items-center gap-4 overflow-hidden rounded-[22px] bg-card p-5 text-left shadow-soft transition-shadow duration-200 dt:hover:shadow-lift"
-            >
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-brand/10"
-              />
-
-              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand/12">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-                </svg>
-              </span>
-
-              <span className="relative min-w-0 flex-1">
-                <span className="block text-[15px] font-extrabold tracking-[-0.02em] text-card-foreground">
-                  {t('profile.invite')}
-                </span>
-                <span className="mt-1 block text-[11.5px] font-medium leading-relaxed text-muted-foreground">
-                  {isCopied ? t('home.referral_link_copied') : t('profile.invite_hint')}
-                </span>
-              </span>
-
-              {isCopied ? (
-                <motion.svg
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--v-success)"
-                  strokeWidth="2.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="relative h-5 w-5 shrink-0"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </motion.svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="relative h-4 w-4 shrink-0">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              )}
-            </motion.button>
-          </div>
         </div>
 
         <div>
@@ -418,42 +353,40 @@ export default function Profile({ catalog }: ProfileProps) {
               onClick={open(setIsSupportOpen)}
               icon={<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}
             />
-            <SettingRow
-              label={t('profile.about_studio')}
-              onClick={openInstagram}
-              icon={
-                <>
-                  <rect x="2" y="2" width="20" height="20" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="1" />
-                </>
-              }
-            />
-            <SettingRow
-              label={t('profile.language', 'Мова')}
-              onClick={open(setIsLanguageOpen)}
-              icon={
-                <>
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </>
-              }
-            />
+            {website && (
+              <SettingRow
+                label={t('profile.about_studio')}
+                onClick={openWebsite}
+                icon={
+                  <>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </>
+                }
+              />
+            )}
+            <LanguagePopover />
           </div>
         </div>
-      </div>
+      </>
 
-      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      <SupportModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+        studio={catalog?.studio ?? null}
+      />
       <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       <BuyModal
         isOpen={isBuyOpen}
         onClose={() => setIsBuyOpen(false)}
-        onSuccess={() => setRefreshTick((tick) => tick + 1)}
+        onSuccess={() => {
+          setRefreshTick((tick) => tick + 1);
+          onCatalogRefresh?.();
+        }}
         packages={catalog?.packages ?? []}
         canPayOnline={catalog?.can_pay_online ?? false}
       />
-      <LanguageModal isOpen={isLanguageOpen} onClose={() => setIsLanguageOpen(false)} />
     </div>
   );
 }

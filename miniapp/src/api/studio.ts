@@ -11,6 +11,10 @@ export interface StudioInfo {
   language: string;
   dark_mode: boolean;
   bot_username: string | null;
+  /** Контакты студии из Настроек → Общие. null — студия их не заполнила. */
+  phone: string | null;
+  email: string | null;
+  website: string | null;
 }
 
 /**
@@ -60,9 +64,15 @@ export interface SubscriptionPackageInfo {
   id: number;
   name: string;
   class_count: number;
+  /** Базовая цена пакета, без скидок этого клиента. */
   price: number;
   price_str: string;
   duration_days: number;
+  /** Цена со скидками клиента — ровно та сумма, что уйдёт в Stripe. */
+  final_price: number;
+  final_price_str: string;
+  /** «−15 %» или null, если скидки нет. Собран на сервере. */
+  discount_label: string | null;
 }
 
 export interface StudioCatalog {

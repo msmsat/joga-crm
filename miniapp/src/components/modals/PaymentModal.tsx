@@ -7,12 +7,24 @@ interface PaymentModalProps {
   onClose: () => void;
   itemName: string;
   amountStr: string;
+  /** Базовая цена до скидки — показывается зачёркнутой строкой «Скидка».
+   * null, когда скидки нет: чек не должен изобретать строку «−0». */
+  basePriceStr?: string | null;
+  discountLabel?: string | null;
   /** Создаёт сессию Stripe и открывает её (`tg.openLink`) — форму карты
    * рисует сама страница Stripe, не мы (PCI, как и в кассе CRM). */
   onPay: () => Promise<void>;
 }
 
-export default function PaymentModal({ isOpen, onClose, itemName, amountStr, onPay }: PaymentModalProps) {
+export default function PaymentModal({
+  isOpen,
+  onClose,
+  itemName,
+  amountStr,
+  basePriceStr = null,
+  discountLabel = null,
+  onPay,
+}: PaymentModalProps) {
   const { t } = useTranslation();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -47,6 +59,29 @@ export default function PaymentModal({ isOpen, onClose, itemName, amountStr, onP
           </span>
           <span className="text-right text-[13px] font-bold text-foreground">{itemName}</span>
         </div>
+
+        {/* Скидку называем в чеке отдельной строкой: «стало дешевле» без
+            объяснения читается как ошибка в цене, а не как выполненное обещание. */}
+        {discountLabel && basePriceStr && (
+          <>
+            <div className="mt-3.5 flex items-start justify-between gap-4">
+              <span className="text-[12.5px] font-medium text-muted-foreground">
+                {t('paymentModal.base_price')}
+              </span>
+              <span className="text-right text-[13px] font-bold tabular-nums text-muted-foreground line-through">
+                {basePriceStr}
+              </span>
+            </div>
+            <div className="mt-2 flex items-start justify-between gap-4">
+              <span className="text-[12.5px] font-medium text-muted-foreground">
+                {t('paymentModal.discount')}
+              </span>
+              <span className="text-right text-[13px] font-extrabold tabular-nums text-brand">
+                {discountLabel}
+              </span>
+            </div>
+          </>
+        )}
 
         <div className="my-3.5 border-t border-dashed border-foreground/12" />
 
