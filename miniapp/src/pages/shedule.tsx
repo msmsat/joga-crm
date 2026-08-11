@@ -3,13 +3,14 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import BookingModal from '../components/modals/BookingModal';
 import SuccessModal from '../components/modals/SuccessModal';
+import CoffeeModal from '../components/modals/CoffeeModal';
 import WeekRail from '../components/schedule/WeekRail';
 import LessonCard from '../components/schedule/LessonCard';
 import FilterSheet, { type Filters } from '../components/schedule/FilterSheet';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
-import { getLessonsByDate, type LessonResponse } from '../api/lessons';
+import { getLessonsByDate, type CoffeeState, type LessonResponse } from '../api/lessons';
 import { useTelegram } from '../hooks/useTelegram';
 import { bookLesson, cancelLesson } from '../api/user';
 import { spawnPetals } from '../lib/petals';
@@ -60,6 +61,11 @@ export default function Shedule({ catalog }: SheduleProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  // Кофе спрашиваем последней панелью — после того, как человек закрыл успех.
+  // Состояние берём из ответа на бронь, а не из карточки занятия: там снимок
+  // сделан ДО записи, и счётчик успевал устареть.
+  const [isCoffeeOpen, setIsCoffeeOpen] = useState(false);
+  const [coffee, setCoffee] = useState<CoffeeState | null>(null);
 
   const { tg, vibrateMedium, vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
@@ -119,9 +125,16 @@ export default function Shedule({ catalog }: SheduleProps) {
 
   const closeModal = () => setIsModalOpen(false);
 
+  // Запись приложение больше не закрывает: человек остаётся в расписании и
+  // уходит сам, когда захочет. Раньше здесь стоял tg.close(), и он же был
+  // источником зависания — вне Telegram метод ничего не делает, а ветка
+  // `else setIsSuccessOpen(false)` не выполнялась никогда, потому что скрипт
+  // telegram-web-app.js создаёт window.Telegram.WebApp и в обычном браузере.
+  // Лист успеха оставался висеть и перекрывал всё приложение оверлеем.
   const closeSuccess = () => {
-    if (tg) tg.close();
-    else setIsSuccessOpen(false);
+    setIsSuccessOpen(false);
+    // Кофе — только если студия его включила: иначе цепочка кончается успехом.
+    if (coffee?.enabled) setIsCoffeeOpen(true);
   };
 
   const pay = async () => {
@@ -130,8 +143,9 @@ export default function Shedule({ catalog }: SheduleProps) {
     setIsProcessing(true);
 
     try {
-      await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
+      const reservation = await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
 
+      setCoffee(reservation.coffee);
       setRefreshTick((tick) => tick + 1);
       setIsProcessing(false);
       closeModal();
@@ -348,6 +362,15 @@ export default function Shedule({ catalog }: SheduleProps) {
         onClose={closeSuccess}
         lesson={activeLesson}
         awaitingConfirmation={Boolean(rules?.confirmation_required)}
+        layer={1}
+      />
+
+      <CoffeeModal
+        isOpen={isCoffeeOpen}
+        onClose={() => setIsCoffeeOpen(false)}
+        lessonId={activeLesson?.id ?? null}
+        coffee={coffee}
+        onJoined={() => setRefreshTick((tick) => tick + 1)}
         layer={1}
       />
     </>

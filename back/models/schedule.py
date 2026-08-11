@@ -77,6 +77,11 @@ class Reservation(Base):
     )
     cancelled_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     cancellation_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # «Кофе после занятия»: клиент согласился остаться на 15 минут с группой.
+    # Отдельной таблицы участников нет намеренно — согласие имеет смысл только
+    # вместе с бронью, и отмена записи (status != 'active') убирает человека из
+    # списка сама, без второго кода отмены.
+    coffee: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="reservations")
     lesson: Mapped["Lesson"] = relationship(back_populates="reservations")

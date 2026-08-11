@@ -1,12 +1,45 @@
 import re
 from datetime import datetime
 from typing import Optional
+from urllib.parse import urlparse
 
 from pydantic import field_validator
 
 from schemas._base import BaseSchema
 
 _TIME_RE = re.compile(r"^\d{2}:\d{2}$")
+
+# Больше трёх мест владелец всё равно не выберет осмысленно, а список из десяти
+# кофеен превращает подсказку в справочник.
+_MAX_COFFEE_SPOTS = 3
+
+
+class CoffeeSpotInput(BaseSchema):
+    name: str
+    address: str = ""
+    url: Optional[str] = None
+
+    @field_validator("url")
+    @classmethod
+    def validate_url(cls, value: Optional[str]) -> Optional[str]:
+        """Только http(s). Пишет это поле владелец студии, а рендерит его
+        `<a href>` в мини-приложении КЛИЕНТА — то есть `javascript:` здесь
+        означает чужой скрипт в webview клиента вместе с его сессией. Граница
+        доверия ровно тут: дальше ссылка уходит в JSON и в чужой браузер.
+
+        Ввод без схемы («maps.example/kofein») — обычное поведение владельца, а не
+        атака: дописываем https, а не отвечаем 422. Схему смотрим ДО этого, иначе
+        `javascript:` превратился бы в тихо битую ссылку вместо честной ошибки.
+        """
+        value = (value or "").strip()
+        if not value:
+            return None
+        scheme = urlparse(value).scheme
+        if not scheme:
+            value, scheme = f"https://{value}", "https"
+        if scheme not in ("http", "https"):
+            raise ValueError("Ссылка на место должна начинаться с http:// или https://")
+        return value
 
 
 class BookingSettingsRead(BaseSchema):
@@ -28,10 +61,24 @@ class BookingSettingsRead(BaseSchema):
     miniapp_generated: bool
     widget_work_start: str
     widget_work_end: str
+    coffee_enabled: bool = True
+    coffee_spots: list[CoffeeSpotInput] = []
     # Публичная ссылка на мини-приложение студии. Не колонка — считается из
     # MINIAPP_URL и studio_id (routers/booking/settings.py:_read): адрес зависит
     # от окружения, и фронту его собирать не по чему.
     miniapp_url: str = ""
+
+    @field_validator("coffee_spots", mode="before")
+    @classmethod
+    def spots_from_db(cls, value: Optional[list]) -> list:
+        """Колонка nullable: у студии, не заводившей мест, там NULL, а наружу
+        всегда список.
+
+        Именно `mode="before"`, а не подмена в роутере: `model_copy(update=...)`
+        отрабатывает ПОСЛЕ валидации, поэтому NULL ронял её раньше — GET
+        /booking/settings отдавал 500 всем студиям без мест.
+        """
+        return value or []
 
 
 class BookingSettingsUpdate(BaseSchema):
@@ -53,6 +100,8 @@ class BookingSettingsUpdate(BaseSchema):
     miniapp_generated: Optional[bool] = None
     widget_work_start: Optional[str] = None
     widget_work_end: Optional[str] = None
+    coffee_enabled: Optional[bool] = None
+    coffee_spots: Optional[list[CoffeeSpotInput]] = None
 
     @field_validator("widget_work_start", "widget_work_end")
     @classmethod
@@ -60,6 +109,18 @@ class BookingSettingsUpdate(BaseSchema):
         if value is not None and not _TIME_RE.match(value):
             raise ValueError("Время должно быть в формате ЧЧ:ММ")
         return value
+
+    @field_validator("coffee_spots")
+    @classmethod
+    def validate_spots(cls, value: Optional[list]) -> Optional[list]:
+        if value is None:
+            return None
+        # Место без названия показать нечем — пустые строки владелец оставляет,
+        # когда добавил поле и передумал; отбрасываем их, а не сохраняем пустоту.
+        spots = [spot for spot in value if spot.name.strip()]
+        if len(spots) > _MAX_COFFEE_SPOTS:
+            raise ValueError(f"Не больше {_MAX_COFFEE_SPOTS} мест")
+        return spots
 
 
 class BookingChannelRead(BaseSchema):

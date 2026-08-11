@@ -11,9 +11,10 @@ import { SectionLabel } from '../components/ui/SectionLabel';
 import { Press } from '../components/ui/Press';
 import BookingModal from '../components/modals/BookingModal';
 import SuccessModal from '../components/modals/SuccessModal';
+import CoffeeModal from '../components/modals/CoffeeModal';
 import { getLiked, toggleLiked } from '../lib/likes';
 import { type UserResponse } from '../api/auth';
-import { getNextLesson, type LessonResponse } from '../api/lessons';
+import { getNextLesson, type CoffeeState, type LessonResponse } from '../api/lessons';
 import { bookLesson, cancelLesson } from '../api/user';
 import type { Studio, StudioCatalog } from '../api/studio';
 import { useTelegram } from '../hooks/useTelegram';
@@ -49,6 +50,11 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  // Кофе спрашиваем последней панелью — после того, как человек закрыл успех.
+  // Состояние берём из ответа на бронь, а не из карточки занятия: там снимок
+  // сделан ДО записи, и счётчик успевал устареть.
+  const [isCoffeeOpen, setIsCoffeeOpen] = useState(false);
+  const [coffee, setCoffee] = useState<CoffeeState | null>(null);
 
   const { tg, vibrateMedium, vibrateLight } = useTelegram();
   const { t } = useTranslation();
@@ -109,9 +115,16 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
     setPendingService(null);
   };
 
+  // Запись приложение больше не закрывает: человек остаётся на главной и уходит
+  // сам, когда захочет. Раньше здесь стоял tg.close(), и он же был источником
+  // зависания — вне Telegram метод ничего не делает, а ветка
+  // `else setIsSuccessOpen(false)` не выполнялась никогда, потому что скрипт
+  // telegram-web-app.js создаёт window.Telegram.WebApp и в обычном браузере.
+  // Лист успеха оставался висеть и перекрывал всё приложение оверлеем.
   const closeSuccess = () => {
-    if (tg) tg.close();
-    else setIsSuccessOpen(false);
+    setIsSuccessOpen(false);
+    // Кофе — только если студия его включила: иначе цепочка кончается успехом.
+    if (coffee?.enabled) setIsCoffeeOpen(true);
   };
 
   const pay = async () => {
@@ -120,8 +133,9 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
     setIsProcessing(true);
 
     try {
-      await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
+      const reservation = await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
 
+      setCoffee(reservation.coffee);
       loadHeroLesson();
       setScheduleTick((tick) => tick + 1);
 
@@ -304,6 +318,15 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
         onClose={closeSuccess}
         lesson={activeLesson}
         awaitingConfirmation={Boolean(catalog?.rules.confirmation_required)}
+        layer={3}
+      />
+
+      <CoffeeModal
+        isOpen={isCoffeeOpen}
+        onClose={() => setIsCoffeeOpen(false)}
+        lessonId={activeLesson?.id ?? null}
+        coffee={coffee}
+        onJoined={() => setScheduleTick((tick) => tick + 1)}
         layer={3}
       />
     </div>

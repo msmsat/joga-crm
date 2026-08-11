@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import UpcomingCard from '../components/mylessons/UpcomingCard';
+import CoffeeStrip from '../components/mylessons/CoffeeStrip';
 import PastCard from '../components/mylessons/PastCard';
 import PeriodBar, { type PeriodMode } from '../components/mylessons/PeriodBar';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
@@ -244,6 +245,19 @@ export default function MyLessons() {
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
+                    footer={
+                      <CoffeeStrip
+                        lessonId={cls.id}
+                        coffee={cls.coffee}
+                        onChange={(state) =>
+                          setUpcoming((list) =>
+                            list.map((item) =>
+                              item.id === cls.id ? { ...item, coffee: state } : item,
+                            ),
+                          )
+                        }
+                      />
+                    }
                   />
                 ))}
               </div>

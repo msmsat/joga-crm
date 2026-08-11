@@ -9,6 +9,7 @@ import { useGateways }        from '../Finances/hooks/useFinances'
 import { useToast }           from '../../../components/ui/Toast'
 import { BookingChannels }    from './components/sections/BookingChannels'
 import { BookingSettings }    from './components/sections/BookingSettings'
+import { CoffeeSettings }     from './components/sections/CoffeeSettings'
 import { TgModal }            from './components/modals/TgModal'
 import { StripeGateModal }    from './components/modals/StripeGateModal'
 
@@ -73,6 +74,16 @@ export default function Booking() {
       />
 
       <BookingSettings {...settings} />
+
+      {/* Только с загруженными настройками: CoffeeSettings засевает черновик
+          мест из useState, а он читает пропсы лишь на первом рендере — смонтировав
+          секцию раньше ответа, мы бы навсегда показали пустой список вместо
+          сохранённых мест. */}
+      {settings.settings && (
+        <div style={{ marginTop: '24px' }}>
+          <CoffeeSettings {...settings} />
+        </div>
+      )}
 
       {modals.gated && (
         <StripeGateModal

@@ -61,6 +61,14 @@ _REMINDER_OFFSETS = (
     (timedelta(minutes=30), "t4", None),
 )
 
+# «Кофе после занятия» (c13) считается от КОНЦА занятия, поэтому живёт отдельно от
+# _REMINDER_OFFSETS. Пауза после конца — пока группа одевается и выходит.
+_COFFEE_DELAY = timedelta(minutes=5)
+# Насколько глубоко в прошлое отбирать занятия, чтобы поймать их конец: с запасом
+# перекрывает самое длинное мыслимое занятие. Фильтр по точному моменту — в Python.
+_COFFEE_LOOKBACK = timedelta(hours=12)
+_COFFEE_MIN_GROUP = 2
+
 # ponytail: рестарт бэка теряет одно окно напоминаний (last_tick только в памяти).
 # Осознанно НЕ лечится расширением окна при старте: перекрывающиеся окна задвоят
 # напоминание, а в WhatsApp каждое — платное. Правильное лечение — дедуп по ключу
@@ -296,6 +304,67 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
                              {**ctx_base, "to_email": teacher.email, "names": names})
 
 
+async def _run_coffee(db: AsyncSession, window_start: datetime, window_end: datetime) -> None:
+    """«Вы собирались на кофе» — тем, кто согласился, сразу после занятия.
+
+    Единственное напоминание, которое считается не от начала занятия, а от конца:
+    момент отправки — `start_time + duration_min + _COFFEE_DELAY`. Длительность у
+    каждого занятия своя, поэтому фиксированным офсетом в `_REMINDER_OFFSETS` его
+    не выразить — отбираем занятия с запасом и досчитываем в Python.
+
+    Вопросов «пойдёшь ли?» до занятия здесь нет намеренно: спрашивает только
+    мини-приложение при записи, а пуш в спину превращает затею в спам.
+    """
+    lessons = (await db.execute(
+        select(Lesson).where(
+            Lesson.start_time > window_start - _COFFEE_LOOKBACK,
+            Lesson.start_time <= window_end,
+            Lesson.status != "cancelled",
+        )
+    )).scalars().all()
+
+    rules_cache: dict[int, BookingRules] = {}
+
+    for lesson in lessons:
+        fire_at = lesson.start_time + timedelta(minutes=lesson.duration_min) + _COFFEE_DELAY
+        if not (window_start < fire_at <= window_end):
+            continue
+
+        if lesson.studio_id not in rules_cache:
+            rules_cache[lesson.studio_id] = await load_rules(db, lesson.studio_id)
+        rules = rules_cache[lesson.studio_id]
+        if not rules.coffee_enabled:
+            continue
+
+        # status != cancelled, а не == active: к этому моменту администратор уже
+        # мог отметить пришедших, и «attended» не должен вычёркивать человека.
+        rows = (await db.execute(
+            select(Reservation.client_id, Client.name)
+            .join(Client, Client.id == Reservation.client_id)
+            .where(
+                Reservation.lesson_id == lesson.id,
+                Reservation.status != "cancelled",
+                Reservation.coffee.is_(True),
+            )
+        )).all()
+        if len(rows) < _COFFEE_MIN_GROUP:
+            continue
+
+        spots = "; ".join(
+            " — ".join(part for part in (spot.get("name"), spot.get("address")) if part)
+            for spot in rules.coffee_spots
+        )
+        for client_id, _ in rows:
+            others = ", ".join(name for cid, name in rows if cid != client_id)
+            await notify(db, lesson.studio_id, "client", "c13", {
+                "client_id": client_id,
+                "lesson_name": lesson.name,
+                "count": len(rows),
+                "names": others,
+                "spots": spots,
+            })
+
+
 async def _cleanup_expired_sessions(db: AsyncSession) -> None:
     """Отзыв сессий не удаляет строку (история входов) — старьё чистим сами."""
     cutoff = datetime.now() - timedelta(days=_SESSION_RETENTION_DAYS)
@@ -347,6 +416,13 @@ async def run_daily_notify(session_maker: async_sessionmaker) -> None:
             except Exception:
                 await db.rollback()
                 logger.exception("daily_notify: reminders run failed")
+        # Своя сессия: падение кофе-блока не должно уносить напоминания о занятиях.
+        async with session_maker() as db:
+            try:
+                await _run_coffee(db, _last_tick, this_tick)
+            except Exception:
+                await db.rollback()
+                logger.exception("daily_notify: coffee run failed")
     _last_tick = this_tick
 
     async with session_maker() as db:

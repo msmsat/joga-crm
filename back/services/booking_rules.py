@@ -41,6 +41,10 @@ class BookingRules:
     widget_logo_url: str | None = None
     widget_dark_mode: bool = False
     widget_language: str = "ru"
+    # «Кофе после занятия» (см. models/settings.py). Читают мини-приложение и
+    # рассыльщик — поэтому живут здесь, рядом с остальными правилами записи.
+    coffee_enabled: bool = True
+    coffee_spots: tuple = ()
 
 
 _FIELDS = tuple(BookingRules.__dataclass_fields__)
@@ -57,6 +61,10 @@ async def load_rules(db: AsyncSession, studio_id: int) -> BookingRules:
     values = {f: getattr(row, f) for f in _FIELDS}
     if not values["widget_accent_color"]:
         values["widget_accent_color"] = BookingRules.widget_accent_color
+    # coffee_spots в БД nullable: у студии, которая мест не заводила, там NULL.
+    # Наружу отдаём пустой кортеж — вызывающий код всегда итерируется, а не
+    # проверяет каждый раз на None.
+    values["coffee_spots"] = tuple(values["coffee_spots"] or ())
     return BookingRules(**values)
 
 

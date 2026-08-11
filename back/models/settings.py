@@ -143,6 +143,17 @@ class StudioBookingSettings(Base):
     widget_work_start: Mapped[str] = mapped_column(String(5), default="09:00")
     widget_work_end: Mapped[str] = mapped_column(String(5), default="21:00")
 
+    # «Кофе после занятия» — социальная механика мини-приложения. Включена по
+    # умолчанию (решение владельца продукта, 11.08.2026): смысл механики в том,
+    # чтобы люди знакомились, а выключенная по умолчанию она бы просто не
+    # завелась — владелец не ищет тумблер, о котором не знает.
+    coffee_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+    # До 3 мест рядом со студией: [{"name": ..., "address": ..., "url": ...}].
+    # Владелец выбирает их сам — внешнего справочника мест в продукте нет.
+    # ponytail: список общий на студию, у многофилиальной разъедется —
+    # апгрейд-путь: перенести в StudioBranch, где уже лежат адрес и часы.
+    coffee_spots: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
     studio: Mapped["Studio"] = relationship(back_populates="booking_settings")
 
 

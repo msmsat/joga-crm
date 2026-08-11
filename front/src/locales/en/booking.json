@@ -51,6 +51,21 @@
       "reminder24h": { "label": "24h reminder", "sub": "Morning before class" },
       "reminder2h": { "label": "2h reminder", "sub": "Shortly before class" },
       "reviewRequest": { "label": "Review request", "sub": "Once the visit is marked" }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Coffee after class",
+        "sub": "After booking, the client is invited to stay 15 minutes with the group. Two or more agree — they get a reminder after class"
+      },
+      "spots": {
+        "label": "Where to invite them",
+        "sub": "Up to three places near the studio. Shown only once two or more have joined",
+        "namePlaceholder": "Name",
+        "addressPlaceholder": "Address",
+        "urlPlaceholder": "Map link",
+        "add": "Add place",
+        "remove": "Remove place"
+      }
     }
   },
   "options": {

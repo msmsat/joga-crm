@@ -59,3 +59,6 @@ export const apiPost = <T>(path: string, body?: unknown): Promise<T> =>
 
 export const apiPatch = <T>(path: string, body?: unknown): Promise<T> =>
   apiFetch<T>(path, { method: 'PATCH', body });
+
+export const apiDelete = <T>(path: string): Promise<T> =>
+  apiFetch<T>(path, { method: 'DELETE' });

@@ -40,6 +40,38 @@ router = APIRouter()
 
 DEFAULT_HALL_COLOR = "#FCAE91"
 
+# Сколько человек должно согласиться, чтобы затея состоялась: одной идти не с кем,
+# поэтому до порога не показываем места и не шлём напоминание после занятия.
+COFFEE_MIN_GROUP = 2
+
+
+class CoffeeParticipant(BaseSchema):
+    """Участница кофе глазами другой участницы: имя и цвет аватара, больше ничего.
+
+    Ни фамилии, ни телефона, ни client_id — это единственное место в продукте, где
+    один клиент видит другого, и наружу уходит ровно то, что нужно узнать человека
+    за столиком.
+    """
+    name: str
+    avatar_color: Optional[str] = None
+
+
+class CoffeeSpot(BaseSchema):
+    name: str
+    address: str = ""
+    url: Optional[str] = None
+
+
+class CoffeeState(BaseSchema):
+    """Состояние «кофе после занятия» для конкретного клиента и занятия."""
+    enabled: bool = False
+    count: int = 0
+    joined: bool = False
+    # Непусто только при joined=True — см. _coffee_map.
+    participants: list[CoffeeParticipant] = []
+    # Непусто только при count >= COFFEE_MIN_GROUP: одной идти некуда.
+    spots: list[CoffeeSpot] = []
+
 
 class MiniappLesson(BaseSchema):
     id: int
@@ -63,6 +95,7 @@ class MiniappLesson(BaseSchema):
     # расписании видна, но кнопка записи не работает: убирать занятие из списка
     # нельзя, клиент должен видеть, что оно вообще есть.
     bookable: bool
+    coffee: CoffeeState = CoffeeState()
 
 
 class MiniappUpcomingLesson(MiniappLesson):
@@ -107,6 +140,7 @@ def _lesson_fields(
     currency: str,
     hall_colors: dict[int, str],
     rules: BookingRules,
+    coffee: Optional[dict] = None,
 ) -> dict:
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
@@ -129,6 +163,9 @@ def _lesson_fields(
         taken_spots=taken_spots,
         is_booked_by_user=is_booked_by_user,
         bookable=_is_bookable(rules, lesson),
+        # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
+        # ровно то, что нужно студии с выключенной механикой.
+        coffee=coffee or {},
     )
 
 
@@ -148,6 +185,71 @@ async def _reservations_map(
         taken.setdefault(lesson_id, []).append(spot_number)
         booked_clients.setdefault(lesson_id, set()).add(client_id)
     return taken, booked_clients
+
+
+async def _coffee_map(
+    db: AsyncSession,
+    lesson_ids: list[int],
+    client_id: int,
+    rules: BookingRules,
+    booked_lesson_ids: Optional[set[int]] = None,
+) -> dict[int, dict]:
+    """Состояние «кофе» по всем занятиям сразу — один запрос, не N+1.
+
+    Здесь же, в единственном месте, режется видимость, и режется дважды:
+
+    1. По брони: цифры и имена — только по занятиям, на которые сам записан
+       (`booked_lesson_ids`; None — все переданные, так зовёт `/lessons/my`).
+       Участвовать всё равно может только записавшийся, а сколько человек
+       собирается пить кофе на чужом занятии — не дело смотрящего расписание.
+    2. По взаимности: имена уходят только тому, кто сам согласился.
+
+    Оба гейта обязаны жить на сервере — спрятать список в интерфейсе
+    недостаточно, он всё равно уехал бы клиенту в JSON.
+
+    Выключенная механика не стоит ничего: ни запроса, ни джойна к клиентам.
+    """
+    if not rules.coffee_enabled or not lesson_ids:
+        return {}
+
+    rows = (await db.execute(
+        select(Reservation.lesson_id, Reservation.client_id, Client.name, Client.avatar_color)
+        .join(Client, Client.id == Reservation.client_id)
+        .where(
+            Reservation.lesson_id.in_(lesson_ids),
+            Reservation.status != "cancelled",
+            Reservation.coffee.is_(True),
+        )
+    )).all()
+
+    by_lesson: dict[int, list[tuple[int, str, Optional[str]]]] = {}
+    for lesson_id, cid, name, avatar_color in rows:
+        by_lesson.setdefault(lesson_id, []).append((cid, name, avatar_color))
+
+    spots = [dict(spot) for spot in rules.coffee_spots]
+
+    state: dict[int, dict] = {}
+    for lesson_id in lesson_ids:
+        # Не записан — механика показывается включённой, но пустой: карточка в
+        # расписании про кофе ничего не рассказывает, пока не забронируешь место.
+        if booked_lesson_ids is not None and lesson_id not in booked_lesson_ids:
+            state[lesson_id] = dict(enabled=True, count=0, joined=False, participants=[], spots=[])
+            continue
+
+        people = by_lesson.get(lesson_id, [])
+        joined = any(cid == client_id for cid, _, _ in people)
+        state[lesson_id] = dict(
+            enabled=True,
+            count=len(people),
+            joined=joined,
+            participants=[
+                dict(name=name, avatar_color=avatar_color)
+                for cid, name, avatar_color in people
+                if cid != client_id
+            ] if joined else [],
+            spots=spots if len(people) >= COFFEE_MIN_GROUP else [],
+        )
+    return state
 
 
 async def _hall_colors(db: AsyncSession, lessons: list[Lesson]) -> dict[int, str]:
@@ -184,6 +286,10 @@ async def lessons_by_date(
     hall_colors = await _hall_colors(db, lessons)
     _, currency = await _studio_prefs(db, client.studio_id)
     rules = await load_rules(db, client.studio_id)
+    coffee = await _coffee_map(
+        db, [l.id for l in lessons], client.id, rules,
+        {lid for lid, clients in booked_by_client.items() if client.id in clients},
+    )
 
     return [
         MiniappLesson(**_lesson_fields(
@@ -193,6 +299,7 @@ async def lessons_by_date(
             currency,
             hall_colors,
             rules,
+            coffee.get(lesson.id),
         ))
         for lesson in lessons
     ]
@@ -231,6 +338,10 @@ async def next_lesson(
     taken_by_lesson, booked_by_client = await _reservations_map(db, [lesson.id])
     hall_colors = await _hall_colors(db, [lesson])
     _, currency = await _studio_prefs(db, client.studio_id)
+    coffee = await _coffee_map(
+        db, [lesson.id], client.id, rules,
+        {lesson.id} if client.id in booked_by_client.get(lesson.id, set()) else set(),
+    )
 
     return MiniappLesson(**_lesson_fields(
         lesson,
@@ -239,6 +350,7 @@ async def next_lesson(
         currency,
         hall_colors,
         rules,
+        coffee.get(lesson.id),
     ))
 
 
@@ -260,6 +372,7 @@ async def my_lessons(
     hall_colors = await _hall_colors(db, list(lessons_by_id.values()))
     _, currency = await _studio_prefs(db, client.studio_id)
     rules = await load_rules(db, client.studio_id)
+    coffee = await _coffee_map(db, list(lessons_by_id), client.id, rules)
 
     now = datetime.now()
     upcoming: list[MiniappUpcomingLesson] = []
@@ -273,6 +386,7 @@ async def my_lessons(
             currency,
             hall_colors,
             rules,
+            coffee.get(lesson.id),
         )
         if lesson.start_time < now:
             past.append(MiniappPastLesson(**fields, spot_number=reservation.spot_number, rating=reservation.rating))
@@ -302,6 +416,10 @@ class MiniappReservation(BaseSchema):
     spot_number: int
     status: str
     rating: Optional[int]
+    # Состояние «кофе» на момент ответа — им открывается панель приглашения
+    # сразу после записи. Без этого она показывала бы счётчик из списка занятий,
+    # снятый ДО брони: там клиент ещё не участник, и цифра успевала устареть.
+    coffee: CoffeeState = CoffeeState()
 
 
 async def _own_active_reservation(db: AsyncSession, client: Client, lesson_id: int) -> Reservation:
@@ -439,6 +557,9 @@ async def create_reservation(
     return MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
+        # Панель приглашения на кофе открывается сразу после этого ответа —
+        # отдаём ей актуальную картину, а не ту, что была в списке до брони.
+        coffee=await _coffee_state(db, client, lesson.id, rules),
     )
 
 
@@ -532,3 +653,54 @@ async def rate_reservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
     )
+
+
+async def _set_coffee(db: AsyncSession, client: Client, lesson_id: int, value: bool) -> CoffeeState:
+    """Согласиться на кофе или передумать — общее тело обеих ручек.
+
+    Участвовать может только тот, у кого есть действующая бронь: `_own_active_reservation`
+    отдаёт 404 на чужое и на отменённое занятие. Обе ручки идемпотентны — повторный
+    тап по «Я за» не должен быть ошибкой.
+    """
+    rules = await load_rules(db, client.studio_id)
+    if not rules.coffee_enabled:
+        raise HTTPException(status_code=403, detail="Кофе после занятия выключен студией")
+
+    reservation = await _own_active_reservation(db, client, lesson_id)
+    await _studio_lesson(db, client, lesson_id)
+
+    if reservation.coffee != value:
+        reservation.coffee = value
+        await db.commit()
+
+    return await _coffee_state(db, client, lesson_id, rules)
+
+
+async def _coffee_state(
+    db: AsyncSession, client: Client, lesson_id: int, rules: BookingRules,
+) -> CoffeeState:
+    """Состояние одного занятия для того, кто на нём уже забронирован."""
+    state = await _coffee_map(db, [lesson_id], client.id, rules, {lesson_id})
+    return CoffeeState(**state[lesson_id]) if state else CoffeeState()
+
+
+@router.post("/reservations/{lesson_id}/coffee", response_model=CoffeeState)
+@limiter.limit("20/minute")
+async def join_coffee(
+    request: Request,
+    lesson_id: int,
+    client: Client = Depends(get_current_client),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _set_coffee(db, client, lesson_id, True)
+
+
+@router.delete("/reservations/{lesson_id}/coffee", response_model=CoffeeState)
+@limiter.limit("20/minute")
+async def leave_coffee(
+    request: Request,
+    lesson_id: int,
+    client: Client = Depends(get_current_client),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _set_coffee(db, client, lesson_id, False)

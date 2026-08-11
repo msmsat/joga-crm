@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '../ui/Badge';
 
@@ -11,6 +12,8 @@ type Props = {
   matLabel: string;
   countdown: string;
   index: number;
+  /** Полоска «кофе после занятия» — рендерится страницей, карточка её не знает. */
+  footer?: ReactNode;
 };
 
 /**
@@ -27,6 +30,7 @@ export default function UpcomingCard({
   matLabel,
   countdown,
   index,
+  footer,
 }: Props) {
   return (
     <motion.div
@@ -61,6 +65,8 @@ export default function UpcomingCard({
           {countdown}
         </span>
       </div>
+
+      {footer}
     </motion.div>
   );
 }

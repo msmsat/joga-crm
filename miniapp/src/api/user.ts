@@ -1,4 +1,6 @@
 import { apiGet, apiPatch, apiPost } from './client';
+import { isInTelegram } from '../hooks/useTelegram';
+import type { CoffeeState } from './lessons';
 
 // ==========================================
 // 📝 ИНТЕРФЕЙСЫ
@@ -90,6 +92,8 @@ export interface ReservationResponse {
   spot_number: number;
   status: string;
   rating: number | null;
+  /** Стан «кави» одразу після броні — ним відкривається панель запрошення. */
+  coffee: CoffeeState;
 }
 
 
@@ -115,10 +119,7 @@ export const createCheckoutSession = (
   apiPost('/global/checkout/session', {
     package_id: packageId,
     ...options,
-    // WebApp-объект в window есть всегда (telegram-web-app.js сам создаёт
-    // заглушку и в обычном браузере) — реальный признак Telegram — непустой
-    // initData, он появляется только при запуске из самого Telegram.
-    in_telegram: Boolean((window as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData),
+    in_telegram: isInTelegram,
   });
 
 /** Предпросмотр цены: что даст промокод, сертификат, депозит и баллы.

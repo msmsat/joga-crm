@@ -206,6 +206,21 @@
     "default_lesson": "Training",
     "button": "Great"
   },
+  "coffeeModal": {
+    "title": "Stay for 15 minutes?",
+    "subtitle": "The girls are going for coffee after class. No commitment — just sit down and chat.",
+    "already_going": "Already in: {{n}}",
+    "join": "I'm in",
+    "decline": "Not today"
+  },
+  "coffee": {
+    "invite": "Coffee after class?",
+    "going": "Coffee: {{n}}",
+    "join": "I'm in",
+    "leave": "Can't make it",
+    "you_first": "You're first — waiting for others",
+    "where": "Where to go"
+  },
   "historyModal": {
     "tag": "Finances",
     "title": "Payment History",

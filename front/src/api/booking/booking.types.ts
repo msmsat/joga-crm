@@ -26,6 +26,15 @@ export interface BookingSettings {
   miniapp_generated: boolean
   widget_work_start: string
   widget_work_end: string
+  /** «Кофе после занятия» в мини-приложении: спрашивать ли и куда звать. */
+  coffee_enabled: boolean
+  coffee_spots: CoffeeSpot[]
   /** Публичная ссылка на мини-приложение студии — считается на бэке, только чтение. */
   miniapp_url: string
+}
+
+export interface CoffeeSpot {
+  name: string
+  address: string
+  url: string | null
 }

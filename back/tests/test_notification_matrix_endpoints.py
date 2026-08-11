@@ -20,6 +20,7 @@ from routers.settings.notifications import (
     update_my_notification_pref,
 )
 from schemas.settings.notifications import EventToggle, EventToggleBulkUpdate, UserPrefUpdate
+from services.notification_catalog import CATALOG
 
 
 async def _seed() -> tuple[int, int]:
@@ -50,7 +51,10 @@ async def _run():
         async with async_session_maker() as db:
             matrix = await get_notification_matrix(ctx=owner, db=db)
         by_id = {row.event_id: row for row in matrix.events}
-        assert len(matrix.events) == 38, len(matrix.events)  # весь каталог, не только тронутые
+        # Весь каталог, не только тронутые студией строки. Сверяемся с самим
+        # каталогом, а не с числом: захардкоженные 38 ломались на каждом новом
+        # событии, хотя проверяемое свойство — «отдаём всё» — не менялось.
+        assert len(matrix.events) == len(CATALOG), (len(matrix.events), len(CATALOG))
         assert all(r.locked is False and r.locked_channels == [] for r in matrix.events)
         c3 = by_id["c3"]
         assert c3.channels == {"email": True, "telegram": True, "whatsapp": False}, c3.channels

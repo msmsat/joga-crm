@@ -183,6 +183,122 @@ def check_legal_docs() -> None:
             )
 
 
+async def check_stripe_account() -> None:
+    """Живой аккаунт платформы. Ключ есть — это ещё не значит, что деньги ходят.
+
+    Аккаунт, не прошедший активацию (не заполнены данные компании, не привязан
+    банковский счёт), отдаёт `charges_enabled=false`, и Stripe отклоняет КАЖДЫЙ
+    платёж — и тариф, и кассу студий. Из кода это не видно: ключ валидный, запросы
+    уходят, а первая же оплата возвращает ошибку клиенту.
+
+    Заодно проверяем Connect: без включённого в дашборде Connect создание аккаунта
+    студии (`Account.create`) падает, то есть кнопка «Подключить Stripe» ломается.
+    """
+    import stripe
+    from services import stripe_connect  # выставляет stripe.api_key
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        account = await asyncio.to_thread(stripe.Account.retrieve)
+    except Exception as exc:
+        _err(f"Stripe не принял ключ платформы: {exc}")
+        return
+
+    if not account.details_submitted:
+        _err("аккаунт платформы Stripe не активирован (details_submitted=false) — заполните данные компании в дашборде")
+    if not account.charges_enabled:
+        _err("аккаунт платформы Stripe не принимает платежи (charges_enabled=false) — оплата тарифа и касса студий вернут ошибку")
+
+    try:
+        await asyncio.to_thread(stripe.Account.list, limit=1)
+    except Exception as exc:
+        _err(f"Stripe Connect недоступен ({exc}) — студия не сможет подключить приём оплат")
+
+
+async def check_stripe_tax() -> None:
+    """Stripe Tax. Настройки у test и live РАЗНЫЕ — включённый в тесте ничего не значит.
+
+    Все счета платформы уходят с `automatic_tax={"enabled": True}`
+    (services/stripe_billing.py). Пока Tax не активирован, Stripe отвечает на них
+    400, то есть не работает ни оплата тарифа, ни счёт за комиссию — целиком.
+    """
+    import stripe
+    from services import stripe_connect
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        settings = await asyncio.to_thread(stripe.tax.Settings.retrieve)
+    except Exception as exc:
+        _err(f"Stripe Tax недоступен ({exc}) — счета с automatic_tax не выставятся")
+        return
+
+    if settings.status != "active":
+        _err(
+            f"Stripe Tax в статусе {settings.status} — счета за тариф и комиссию не выставятся. "
+            f"Заполните Tax → Settings (адрес продавца, налоговая категория) и зарегистрируйте "
+            f"страны, в которых собираете НДС"
+        )
+
+
+async def check_db_stripe_links() -> None:
+    """Идентификаторы Stripe в БД обязаны существовать под ТЕКУЩИМ ключом.
+
+    Объекты test-режима в live не переносятся, а их id по виду не отличить:
+    `cus_…` и `acct_…` в обоих режимах выглядят одинаково. Значит переключение
+    ключей молча оставляет в БД ссылки в никуда — студия с тестовой подпиской
+    получает 502 на странице тарифа, а её касса шлёт деньги на несуществующий
+    аккаунт. Единственный надёжный способ узнать — спросить Stripe про каждый id.
+
+    Не-блокер по построению нельзя: молчание здесь и есть та ошибка, ради которой
+    существует этот скрипт.
+    """
+    import stripe
+    from sqlalchemy import text
+
+    from services import stripe_connect
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        from database import engine
+
+        async with engine.connect() as conn:
+            rows = (await conn.execute(text(
+                "SELECT stripe_customer_id AS id FROM studio_billing_plans WHERE stripe_customer_id IS NOT NULL "
+                "UNION "
+                "SELECT account_id FROM online_channels WHERE channel_type = 'stripe' AND account_id IS NOT NULL "
+                "LIMIT 100"
+            ))).scalars().all()
+    except Exception as exc:
+        _warn(f"не удалось прочитать ссылки на Stripe из БД ({exc}) — проверьте вручную")
+        return
+
+    stale = []
+    for object_id in rows:
+        retrieve = stripe.Account.retrieve if object_id.startswith("acct_") else stripe.Customer.retrieve
+        try:
+            await asyncio.to_thread(retrieve, object_id)
+        except stripe.InvalidRequestError:
+            stale.append(object_id)
+        except Exception as exc:
+            _warn(f"Stripe не ответил про {object_id} ({exc})")
+            return
+
+    if stale:
+        _err(
+            f"в БД {len(stale)} из {len(rows)} ссылок на Stripe не существуют под текущим ключом "
+            f"(например {stale[0]}) — это объекты другого режима. Очистите их: "
+            f"UPDATE studio_billing_plans SET stripe_customer_id=NULL, stripe_subscription_id=NULL; "
+            f"UPDATE online_channels SET account_id=NULL WHERE channel_type='stripe'; "
+            f"DELETE FROM payment_cards;"
+        )
+
+
 async def check_stripe_catalog(sync: bool) -> None:
     """Каталог цен на ЖИВОМ аккаунте.
 
@@ -234,7 +350,10 @@ async def main(sync: bool) -> int:
     check_smtp()
     check_platform_email()
     check_legal_docs()
+    await check_stripe_account()
+    await check_stripe_tax()
     await check_stripe_catalog(sync)
+    await check_db_stripe_links()
 
     for text in _WARNINGS:
         print(f"  [!] {text}")

@@ -79,6 +79,13 @@ class _FakeStripe:
     async def onboarding_url(self, account_id, _return_url, _refresh_url):
         return f"https://connect.stripe.com/setup/{account_id}"
 
+    async def register_payment_method_domain(self, _account_id, _domain):
+        """Вызывается из connect_stripe только при публичном WEB_APP_URL
+        (`_WALLET_DOMAIN_PUBLIC`), то есть исход теста зависел от локального .env:
+        с localhost — зелено, с боевым доменом — AttributeError. Заглушка обязана
+        покрывать обе ветки, иначе тест проверяет конфигурацию машины."""
+        self.registered_domains = getattr(self, "registered_domains", []) + [_domain]
+
 
 def _with_stripe(fake, fn):
     saved = G.stripe_connect

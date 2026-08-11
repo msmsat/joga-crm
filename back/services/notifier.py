@@ -72,7 +72,7 @@ LARGE_PAYMENT = 10_000
 # сверяется с services.notification_catalog.CATALOG (EPIC 3, Задача 1). Новый event_id
 # в TEMPLATES → сразу добавить и сюда, иначе _render упадёт на assert.
 KNOWN_EVENT_IDS = frozenset({
-    "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c11", "c12",
+    "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c11", "c12", "c13",
     "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9",
     "a1", "a2", "a3", "a4", "a6", "a7", "a8", "a9", "a10",
     "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9",
@@ -83,7 +83,7 @@ KNOWN_EVENT_IDS = frozenset({
 # способ отличить уведомление от обычного сообщения бота на пролистывании.
 EVENT_EMOJI: dict[str, str] = {
     "c1": "✅", "c2": "⏰", "c3": "❌", "c4": "💳", "c5": "⚠️", "c6": "🔕",
-    "c7": "🎉", "c8": "⭐", "c9": "↩️", "c11": "🔄", "c12": "🎁",
+    "c7": "🎉", "c8": "⭐", "c9": "↩️", "c11": "🔄", "c12": "🎁", "c13": "☕",
     "t1": "📅", "t2": "❌", "t3": "⏰", "t4": "⏳", "t5": "🔄", "t6": "💰",
     "t7": "⭐", "t8": "🎂", "t9": "❌",
     "a1": "🌐", "a2": "⚠️", "a3": "👤", "a4": "💳", "a6": "⚠️", "a7": "🔀",
@@ -375,6 +375,13 @@ def _render(
     amount_raw = context.get("amount")  # сырое число (баллы), не денежный формат
     description = context.get("description") or ""
 
+    # «Кофе после занятия» (c13). Места — необязательная часть: студия могла их
+    # не заводить, и «Рядом:» с пустотой после двоеточия читалось бы как сбой.
+    people_count = context.get("count")
+    spots = context.get("spots") or ""
+    spots_ru = f"\nРядом: {spots}" if spots else ""
+    spots_en = f"\nNearby: {spots}" if spots else ""
+
     TEMPLATES: dict[str, dict[str, tuple[str, str]]] = {
         "c1": {
             "ru": ("Запись подтверждена", f"Вы записаны на «{lesson_ru}»{tail_ru}. Ждём вас!"),
@@ -399,6 +406,10 @@ def _render(
         "c2": {
             "ru": ("Напоминание о занятии", f"Напоминаем: «{lesson_ru}»{tail_ru} через {hours} ч."),
             "en": ("Class reminder", f'Reminder: "{lesson_en}"{tail_en} in {hours}h.'),
+        },
+        "c13": {
+            "ru": ("Кофе после занятия", f"Вы собирались на кофе — вас {people_count}: {names}.{spots_ru}"),
+            "en": ("Coffee after class", f"You planned coffee together — {people_count} of you: {names}.{spots_en}"),
         },
         "t1": {
             "ru": ("Новая запись", f"Клиент {client_name} записался на «{lesson_ru}»{tail_ru}."),

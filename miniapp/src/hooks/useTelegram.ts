@@ -26,12 +26,28 @@ interface TelegramWebApp {
 // Вытягиваем глобальный объект Telegram (один раз на весь проект)
 const tg = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
 
+/**
+ * Мы действительно внутри Telegram, а не просто на странице с его скриптом.
+ *
+ * `telegram-web-app.js` подключён в index.html безусловно и создаёт
+ * `window.Telegram.WebApp` в ЛЮБОМ браузере — значит `tg` истинен всегда, и
+ * `if (tg)` не отличает Telegram от вкладки Chrome. Настоящий признак —
+ * непустой initData: его проставляет только сам клиент Telegram при запуске.
+ *
+ * Отличие не косметическое: вне Telegram `tg.close()` молча ничего не делает.
+ * Код вида `if (tg) tg.close(); else закрытьМодалку()` в браузере попадал в
+ * первую ветку, окно не закрывалось никогда, и его оверлей `fixed inset-0`
+ * блокировал всё приложение.
+ */
+export const isInTelegram = Boolean(tg?.initData);
+
 export function useTelegram() {
   // Вытаскиваем юзера, если мы внутри Telegram
   const user = tg?.initDataUnsafe?.user;
 
   return {
     tg,               // Сам оригинальный объект (на всякий случай)
+    isInTelegram,     // Признак «запущены из Telegram» — см. константу выше
     user,             // Полные данные юзера (имя, юзернейм и т.д.)
 
     // Заодно вынесем сюда полезные функции, чтобы не писать длинные проверки в компонентах

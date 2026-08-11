@@ -206,6 +206,21 @@
     "default_lesson": "Trénink",
     "button": "Skvělé"
   },
+  "coffeeModal": {
+    "title": "Zůstanete na 15 minut?",
+    "subtitle": "Po lekci jdou holky na kávu. Bez závazků — jen si sednout a popovídat.",
+    "already_going": "Už s námi: {{n}}",
+    "join": "Jdu do toho",
+    "decline": "Dnes ne"
+  },
+  "coffee": {
+    "invite": "Káva po lekci?",
+    "going": "Na kávu: {{n}}",
+    "join": "Jdu do toho",
+    "leave": "Nepůjdu",
+    "you_first": "Jste první — čekáme na ostatní",
+    "where": "Kam zajít"
+  },
   "historyModal": {
     "tag": "Finance",
     "title": "Historie plateb",

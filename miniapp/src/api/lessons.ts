@@ -1,10 +1,36 @@
-import { apiGet } from './client';
+import { apiDelete, apiGet, apiPost } from './client';
 
 // ==========================================
 // 1. ТИПЫ (ИНТЕРФЕЙСЫ)
 // ==========================================
 
 // Повторяет MiniappLesson из back/routers/booking/miniapp_lessons.py
+/** Учасниця кави: тільки ім'я та колір аватара — більше сервер не віддає. */
+export interface CoffeeParticipant {
+  name: string;
+  avatar_color: string | null;
+}
+
+export interface CoffeeSpot {
+  name: string;
+  address: string;
+  url: string | null;
+}
+
+/**
+ * «Кава після заняття» для цього заняття й цього клієнта.
+ *
+ * Взаємність ріже сервер: `participants` непорожній ЛИШЕ коли `joined = true`.
+ * Не погодилась — бачиш саму цифру. `spots` приходять від двох учасниць.
+ */
+export interface CoffeeState {
+  enabled: boolean;
+  count: number;
+  joined: boolean;
+  participants: CoffeeParticipant[];
+  spots: CoffeeSpot[];
+}
+
 export interface LessonResponse {
   id: number;
   name: string;
@@ -30,6 +56,7 @@ export interface LessonResponse {
    * но записаться нельзя: расписание студии клиент должен видеть целиком.
    */
   bookable: boolean;
+  coffee: CoffeeState;
 }
 
 // Схема для будущих занятий (наследует всё + добавляет номер коврика)
@@ -76,3 +103,14 @@ export const getLessonsByDate = (targetDate: string): Promise<LessonResponse[]> 
  * Ендпоінт: GET /global/lessons/my
  */
 export const getMyLessons = (): Promise<MyLessonsResponse> => apiGet('/global/lessons/my');
+
+/**
+ * Погодитись на каву після заняття або передумати.
+ * Обидві ручки повертають оновлений стан і не є помилкою при повторному виклику.
+ * Ендпоінти: POST/DELETE /global/reservations/{lesson_id}/coffee
+ */
+export const joinCoffee = (lessonId: number): Promise<CoffeeState> =>
+  apiPost(`/global/reservations/${lessonId}/coffee`, {});
+
+export const leaveCoffee = (lessonId: number): Promise<CoffeeState> =>
+  apiDelete(`/global/reservations/${lessonId}/coffee`);
