@@ -104,8 +104,6 @@ export default function Billing() {
           getPrice={h.getPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
-          vatRate={h.vatRate}
-          country={h.details.saved.country}
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
           scheduleUpgrade={h.scheduleUpgrade}

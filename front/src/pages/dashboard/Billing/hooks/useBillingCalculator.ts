@@ -55,11 +55,6 @@ export function useBillingCalculator() {
   // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
   // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
   const [minMonthly, setMinMonthly] = useState(0);
-  // Ставка НДС для ПОДПИСИ итога на шаге оплаты, % — тоже из каталога, а не
-  // числом в коде: она зависит от страны платформы и меняется законом, а не
-  // релизом фронта. Считать по ней сумму к списанию нельзя — итог считает
-  // Stripe Tax по стране студии (у компании из ЕС с номером НДС это 0 %).
-  const [vatRate, setVatRate] = useState(21);
   // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
   const [showPayModal, setShowPayModal] = useState(false);
   const [payBranch, setPayBranch] = useState<PayBranch>('choose');
@@ -256,23 +251,16 @@ export function useBillingCalculator() {
   };
 
   // Выбор способа оплаты. Реквизиты фактуры спрашиваем ПЕРЕД оплатой и только если их
-  // ещё нет: IČO нужен для фактуры, страна — для НДС (бэкенд без неё отвечает 422).
+  // ещё нет: IČO нужен для фактуры, страна — для налога (бэкенд без неё отвечает 422,
+  // а Stripe Tax без страны не знает ставки и показывает цену без НДС). Заполненные
+  // лежат в профиле студии и больше не всплывают — поправить их можно на вкладке
+  // «Способ оплаты».
+  //
+  // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
+  // проверки шаг всплывал бы у студии, которая реквизиты давно заполнила.
   const chooseMethod = (method: 'iban' | 'card') => {
-    if (payBusy) return;
-    // IČO/DIČ спрашиваем в обеих ветках: без них фактуру не выписать, а Stripe
-    // печатает их из Customer'а, куда они попадают только из нашего профиля студии.
-    //
-    // Страну и индекс — тоже в обеих. Раньше карточная ветка их не спрашивала: адрес
-    // собирает сама страница Stripe. Но собирает она его ПОСЛЕ показа суммы, и до
-    // ввода Stripe Tax не знает ставки (automatic_tax=requires_location_inputs) —
-    // владелец видел «39.00» вместо 47.19 и уходил, решив, что счёт без НДС.
-    //
-    // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
-    // проверки шаг всплывал бы у студии, которая реквизиты давно заполнила.
-    const needsDetails = details.loaded && (
-      !details.saved.company_id || !details.saved.country
-    );
-    if (needsDetails) {
+    if (payBusy || !details.loaded) return;
+    if (!details.saved.company_id || !details.saved.country) {
       setPendingMethod(method);
       setWantInvoice(true);
       setDetailErrors({});
@@ -348,7 +336,8 @@ export function useBillingCalculator() {
       setPeriodDiscounts(cat.period_discounts);
       if (cat.currency) setCurrency(cat.currency);
       if (cat.min_monthly) setMinMonthly(cat.min_monthly / 100);
-      if (typeof cat.vat_rate === 'number') setVatRate(cat.vat_rate);
+      // cat.vat_rate намеренно не используем: интерфейс нигде не показывает сумму с
+      // налогом — ставку знает только Stripe Tax по стране и статусу плательщика.
     }).catch(() => { /* нули остаются — не роняем страницу */ });
   }, []);
 
@@ -381,11 +370,15 @@ export function useBillingCalculator() {
     activeTab, setActiveTab,
     showUpgradeModal, setShowUpgradeModal,
     animateCards,
-    getPrice, periodDiscounts, plans, minMonthly, vatRate,
+    getPrice, periodDiscounts, plans, minMonthly,
     currentMonthly, discountedPrice, totalToPay, savedTotal,
     startCheckout, scheduleUpgrade,
     activateModel, modelBusy,
-    showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy,
+    showPayModal, closePayModal, payBranch, setPayBranch, ibanData,
+    // Пока реквизиты студии едут, кнопки способов оплаты держим занятыми: шаг
+    // реквизитов подставляет в форму сохранённое, и открытый до загрузки он показал
+    // бы пустые поля — сохранение затёрло бы уже заполненные реквизиты пустотой.
+    payBusy: payBusy || !details.loaded,
     chooseMethod, payWithCard,
     details, wantInvoice, setWantInvoice, detailErrors, submitDetails, saveDetails,
     paymentReturn, plan,

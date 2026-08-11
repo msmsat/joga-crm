@@ -23,25 +23,11 @@ interface Props {
   hasLiveSubscription: boolean;
   /** Конец оплаченного периода — дата, с которой начнётся новый тариф. */
   currentPeriodEnd?: string | null;
-  /** Ставка НДС для подписи, % — приходит каталогом с бэка (BILLING_VAT_RATE). */
-  vatRate: number;
-  /** Сохранённая страна студии. Пусто — ставку показывать не из чего: её задаёт
-   *  страна плательщика, и до её ввода любое число здесь было бы выдумкой. */
-  country: string;
 }
 
-export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, scheduleUpgrade, hasLiveSubscription, currentPeriodEnd, vatRate, country }: Props) {
+export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice, savedTotal, totalToPay, onClose, startCheckout, scheduleUpgrade, hasLiveSubscription, currentPeriodEnd }: Props) {
   const { t } = useTranslation('billing');
   const plan = plans[selectedPlan];
-  // Налог показываем ТОЛЬКО когда известна страна: ставку определяет она, и до её
-  // ввода «≈ 47.19» было бы обещанием, которого никто не давал — у студии из другой
-  // страны ЕС с номером НДС это вовсе 0 % (reverse charge). Пока страны нет, в итоге
-  // стоит цена каталога с честной подписью «без НДС»; страна спрашивается на шаге
-  // реквизитов перед оплатой, и тогда строка налога появляется.
-  const showVat = country.trim().length > 0;
-  // Ориентир для подписи, а не расчёт к оплате: итог считает Stripe Tax.
-  const vatAmount = Math.round(totalToPay * vatRate) / 100;
-  const totalWithVat = Math.round(totalToPay * (100 + vatRate)) / 100;
   // «Перейти сейчас» сжигает остаток оплаченного периода без возврата, поэтому
   // подтверждается отдельно. Спокойный путь (с начала периода) — основная кнопка.
   const [confirmNow, setConfirmNow] = useState(false);
@@ -72,33 +58,21 @@ export default function UpgradeModal({ currency, selectedPlan, selectedPeriod, p
               </span>
             </div>
           )}
-          {/* Цены каталога — БЕЗ налога (tax_behavior=exclusive на стороне Stripe),
-              поэтому налог идёт отдельной строкой и только здесь, на шаге оплаты.
-              Сумма ориентировочная: настоящую ставку считает Stripe Tax по стране
-              студии и её статусу плательщика — у компании из другой страны ЕС с
-              валидным номером НДС это 0 % (reverse charge). Поэтому «≈» и подпись,
-              что итог будет на странице оплаты. */}
-          {showVat && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-              <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
-                {t('upgrade.vatLabel', { rate: vatRate })}
-              </span>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--muted)' }}>
-                ≈ {formatMoney(vatAmount, currency)}
-              </span>
-            </div>
-          )}
+          {/* Итог — цена каталога БЕЗ налога, ровно то же число, что на плитке тарифа
+              и в графике платежей (PlansTab). Своей строки НДС здесь нет намеренно:
+              ставку задаёт страна плательщика и его статус, считает её Stripe Tax уже
+              на странице оплаты, а у компании из другой страны ЕС с номером НДС это
+              вовсе 0 % (reverse charge). Любое посчитанное здесь «≈ 47.19» было бы
+              обещанием суммы, которой мы не знаем. */}
           <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>
-              {showVat ? t('upgrade.totalWithVatLabel') : t('upgrade.totalNetLabel')}
-            </span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{t('upgrade.totalNetLabel')}</span>
             <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>
-              {showVat ? `≈ ${formatMoney(totalWithVat, currency)}` : formatMoney(totalToPay, currency)}
+              {formatMoney(totalToPay, currency)}
             </span>
           </div>
           <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '8px' }}>
-            {showVat ? t('upgrade.vatNote', { rate: vatRate }) : t('upgrade.vatUnknownNote')}
+            {t('upgrade.vatNote')}
           </div>
         </div>
 

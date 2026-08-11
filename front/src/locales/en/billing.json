@@ -193,11 +193,8 @@
     "switchNowConfirm": "Yes, switch and forfeit",
     "scheduledToast": "Plan \"{{plan}}\" starts on {{date}}",
     "scheduledBadge": "From {{date}} — plan \"{{plan}}\"",
-    "vatLabel": "VAT {{rate}}%",
-    "totalWithVatLabel": "Total incl. VAT",
     "totalNetLabel": "Total excl. VAT",
-    "vatUnknownNote": "Prices exclude VAT. The rate depends on your country, so it is added after you fill in the company details on the next step — the exact amount is shown before payment.",
-    "vatNote": "Prices exclude VAT. Tax of {{rate}}% is added on top; the exact amount is calculated on the payment page from your company details — EU companies with a VAT number get reverse charge."
+    "vatNote": "Excl. VAT — tax is added at checkout based on your company details; EU companies with a VAT number get reverse charge."
   },
   "method": {
     "notLinked": "Not linked",
