@@ -71,6 +71,13 @@ export const requestEmailCode = (studioId: number, email: string): Promise<Email
  * Сверка кода. Без сессии — вход/регистрация; с живой сессией apiPost сам
  * подставит Bearer, и бэкенд вместо входа привяжет почту к текущей карточке
  * (этим телеграмный клиент открывает себе вход из браузера).
+ *
+ * `anon` эту привязку отключает: вход ВТОРЫМ аккаунтом идёт с устройства, где
+ * сессия уже есть, и с заголовком он вместо входа переписал бы почту тому, кто
+ * сейчас в кабинете.
  */
-export const verifyEmailCode = (data: VerifyEmailRequest): Promise<AuthTelegramResponse> =>
-  apiPost('/global/auth/email/verify', data);
+export const verifyEmailCode = (
+  data: VerifyEmailRequest,
+  anon = false,
+): Promise<AuthTelegramResponse> =>
+  apiPost('/global/auth/email/verify', data, anon);

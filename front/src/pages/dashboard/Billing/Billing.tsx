@@ -105,6 +105,7 @@ export default function Billing() {
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
           vatRate={h.vatRate}
+          country={h.details.saved.country}
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
           scheduleUpgrade={h.scheduleUpgrade}
@@ -129,7 +130,6 @@ export default function Billing() {
           wantInvoice={h.wantInvoice}
           setWantInvoice={h.setWantInvoice}
           detailErrors={h.detailErrors}
-          detailsForIban={h.detailsForIban}
           onSubmitDetails={h.submitDetails}
         />
       )}

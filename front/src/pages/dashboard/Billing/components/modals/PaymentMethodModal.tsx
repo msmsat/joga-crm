@@ -20,8 +20,6 @@ interface Props {
   wantInvoice: boolean;
   setWantInvoice: (v: boolean) => void;
   detailErrors: InvoiceDetailErrors;
-  /** Ветка перевода: дополнительно нужна страна. У карты — только IČO и DIČ. */
-  detailsForIban: boolean;
   onSubmitDetails: () => void;
 }
 
@@ -58,7 +56,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 // студии, Stripe печатает их из Customer'а.
 export default function PaymentMethodModal({
   currency, branch, setBranch, ibanData, busy, onChoose, onClose,
-  details, wantInvoice, setWantInvoice, detailErrors, detailsForIban, onSubmitDetails,
+  details, wantInvoice, setWantInvoice, detailErrors, onSubmitDetails,
 }: Props) {
   const { t } = useTranslation('billing');
 
@@ -94,8 +92,8 @@ export default function PaymentMethodModal({
           </>
         )}
 
-        {/* Шаг реквизитов: показывается только если IČO (или страна для IBAN) ещё не
-            заполнены — заполненные лежат в профиле студии и больше не спрашиваются. */}
+        {/* Шаг реквизитов: показывается только если IČO или страна ещё не заполнены —
+            заполненные лежат в профиле студии и больше не спрашиваются. */}
         {branch === 'details' && (
           <>
             <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
@@ -106,12 +104,12 @@ export default function PaymentMethodModal({
               patch={details.patch}
               wantInvoice={wantInvoice}
               setWantInvoice={setWantInvoice}
-              requireCountry={detailsForIban}
-              // Страну и индекс показываем ТОЛЬКО для перевода. На карточной ветке
-              // их собирает сама страница Stripe (billing_address_collection) и
-              // пишет обратно в Customer — спрашивать здесь значит просить дважды.
-              // IČO и DIČ остаются в обеих ветках: без них не выписать фактуру.
-              showAddress={detailsForIban}
+              requireCountry
+              // Страна и индекс — в обеих ветках. Карточная их когда-то не спрашивала
+              // (адрес собирает страница Stripe), но собирает она его ПОСЛЕ показа
+              // суммы: до ввода Stripe Tax не знает ставки и печатает цену без НДС.
+              // Сумма к оплате должна быть верной сразу, поэтому спрашиваем до.
+              showAddress
               errors={detailErrors}
             />
           </>

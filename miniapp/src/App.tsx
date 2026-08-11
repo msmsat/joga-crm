@@ -45,6 +45,10 @@ export default function App() {
     [tg],
   );
   const [needsAuth, setNeedsAuth] = useState(false);
+  // Вход ещё одним аккаунтом из меню (AccountMenu). Отдельное состояние, а не
+  // `needsAuth`: текущая сессия жива и обязана вернуться на место, если человек
+  // передумал на полпути.
+  const [isAddingAccount, setIsAddingAccount] = useState(false);
 
   /** Каталог грузится после входа — и перечитывается после покупки.
    *
@@ -166,6 +170,24 @@ export default function App() {
     );
   }
 
+  // Вход вторым аккаунтом. `anonymous` обязателен: под живой сессией бэкенд
+  // вместо входа привязал бы введённую почту текущей карточке (см. api/auth.ts).
+  // После входа — перезагрузка: весь кабинет (расписание, абонемент, лояльность)
+  // загружен под прежний токен, и чинить это по кускам дороже, чем начать заново.
+  if (isAddingAccount && entry.studioId) {
+    return (
+      <Auth
+        studioId={entry.studioId}
+        anonymous
+        onCancel={() => setIsAddingAccount(false)}
+        onDone={(authedUser, token) => {
+          saveSession({ token, name: authedUser.name });
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
   // Студию знаем — значит вход возможен и вне Telegram: по коду на почту.
   if (needsAuth && entry.studioId) {
     return (
@@ -274,6 +296,7 @@ export default function App() {
             studioName={catalog?.studio.name}
             logoUrl={catalog?.studio.logo_url}
             userName={user?.name}
+            onAddAccount={() => setIsAddingAccount(true)}
           />
         )}
 

@@ -10,6 +10,9 @@ type Props = {
   coffee: CoffeeState;
   /** Сервер вернул новое состояние — страница обновляет своё занятие. */
   onChange: (state: CoffeeState) => void;
+  /** Без отчёркивания сверху: в листе занятия полоска стоит своей панелью, и
+   *  линия там читалась бы разделителем внутри блока, а не его границей. */
+  flush?: boolean;
 };
 
 /**
@@ -22,7 +25,7 @@ type Props = {
  * `participants` приходит пустым, и полоска честно показывает одну цифру.
  * Согласился — появляются имена, а с двух человек и места от студии.
  */
-export default function CoffeeStrip({ lessonId, coffee, onChange }: Props) {
+export default function CoffeeStrip({ lessonId, coffee, onChange, flush = false }: Props) {
   const { t } = useTranslation();
   const { vibrateLight, vibrateSuccess } = useTelegram();
   const [isSending, setIsSending] = useState(false);
@@ -62,7 +65,7 @@ export default function CoffeeStrip({ lessonId, coffee, onChange }: Props) {
   );
 
   return (
-    <div className="mt-3 border-t border-foreground/6 pt-3">
+    <div className={flush ? '' : 'mt-3 border-t border-foreground/6 pt-3'}>
       <div className="flex items-center gap-2">
         <Press
           onClick={() => {

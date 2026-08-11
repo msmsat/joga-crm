@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from './navItems';
+import AccountMenu from './AccountMenu';
 import { cn } from '../lib/utils';
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
   studioName?: string;
   logoUrl?: string | null;
   userName?: string;
+  /** Вход ещё одним аккаунтом — экран входа поднимает App. */
+  onAddAccount: () => void;
 };
 
 /**
@@ -27,7 +30,15 @@ type Props = {
  * хранить, объяснять иконкой и восстанавливать между сессиями, ради четырёх
  * пунктов.
  */
-export default function DesktopNav({ active, onSelect, items, studioName, logoUrl, userName }: Props) {
+export default function DesktopNav({
+  active,
+  onSelect,
+  items,
+  studioName,
+  logoUrl,
+  userName,
+  onAddAccount,
+}: Props) {
   const { t } = useTranslation();
 
   return (
@@ -149,30 +160,10 @@ export default function DesktopNav({ active, onSelect, items, studioName, logoUr
       </nav>
 
       {/* Клиент внизу колонки: на телефоне его инициал стоит в шапке главной,
-          на десктопе шапка от неё скрыта — иначе имя дублируется дважды. */}
-      <button
-        type="button"
-        onClick={() => onSelect('prof')}
-        className="group mt-auto flex min-w-0 items-center gap-3 rounded-[18px] bg-card px-3.5 py-3.5 text-left shadow-soft transition-shadow duration-200 hover:shadow-lift"
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-[13px] font-extrabold text-brand-foreground">
-          {(userName || 'A').charAt(0).toUpperCase()}
-        </span>
-        <span className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-[-0.01em] text-card-foreground">
-          {userName || t('profile.guest')}
-        </span>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--v-muted-foreground)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </button>
+          на десктопе шапка от неё скрыта — иначе имя дублируется дважды.
+          В профиль карточка не ведёт: он и так стоит пунктом меню выше, а
+          здесь у неё своя работа — аккаунты устройства (см. AccountMenu). */}
+      <AccountMenu userName={userName} onAddAccount={onAddAccount} />
     </aside>
   );
 }

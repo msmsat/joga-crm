@@ -113,6 +113,9 @@
     "your_rating": "Tvoje hodnocení",
     "counting_time": "Odpočítávání času...",
     "mat_label": "Podložka č.{{spot}}",
+    "spot": "Vaše místo",
+    "until_start": "Do začátku",
+    "duration": "Trvání",
     "save_review_error": "Při ukládání hodnocení došlo k chybě.",
     "no_lessons": "Zatím jste nenavštívili žádné lekce",
     "period_month": "Měsíc",
@@ -274,6 +277,12 @@
     "profile": "Profil",
     "client_area": "Klientská zóna",
     "club": "Klub"
+  },
+  "account": {
+    "title": "Účet",
+    "saved": "Uložené účty",
+    "add": "Přihlásit se k jinému účtu",
+    "logout": "Odhlásit se"
   },
   "home": {
     "greeting_morning": "Dobré ráno",

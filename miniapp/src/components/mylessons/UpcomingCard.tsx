@@ -14,6 +14,8 @@ type Props = {
   index: number;
   /** Полоска «кофе после занятия» — рендерится страницей, карточка её не знает. */
   footer?: ReactNode;
+  /** Открыть карточку занятия. */
+  onOpen: () => void;
 };
 
 /**
@@ -21,6 +23,10 @@ type Props = {
  *
  * Обратный отсчёт вынесен в персиковую плашку внизу карточки — это единственная
  * величина, которая меняется сама и ради которой клиент открывает экран.
+ *
+ * Вся карточка открывает лист занятия (отмена, кофе, детали), а свой интерактив
+ * подвала — кофе — до неё не доходит: клик там гасится, иначе каждое «я за»
+ * тянуло бы за собой модалку.
  */
 export default function UpcomingCard({
   title,
@@ -31,13 +37,20 @@ export default function UpcomingCard({
   countdown,
   index,
   footer,
+  onOpen,
 }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.38, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-[22px] bg-card p-5 shadow-soft dt:rounded-[24px] dt:p-6"
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onOpen();
+      }}
+      className="cursor-pointer rounded-[22px] bg-card p-5 shadow-soft transition-shadow duration-200 hover:shadow-lift dt:rounded-[24px] dt:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <h3 className="min-w-0 flex-1 text-[17px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground">
@@ -66,7 +79,7 @@ export default function UpcomingCard({
         </span>
       </div>
 
-      {footer}
+      {footer && <div onClick={(e) => e.stopPropagation()}>{footer}</div>}
     </motion.div>
   );
 }

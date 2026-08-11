@@ -22,6 +22,11 @@ class Studio(Base):
     # charge для юрлиц из другой страны ЕС. Свободного `address` для налога мало.
     country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)   # ISO-3166-1 alpha-2
     postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Город отдельным полем, хотя улица лежит в свободном `address`: Stripe печатает
+    # адрес плательщика по частям (line1 / city / postal_code / country), и без city
+    # на фактуре выходит «улица, индекс, страна» — адрес без города бухгалтерия
+    # заворачивает.
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     # Номер плательщика НДС (VAT number, он же DIČ в CZ/SK, USt-IdNr в DE…).
     vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
     # Регистрационный номер компании (company registration number; IČO в CZ/SK,

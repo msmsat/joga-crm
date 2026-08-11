@@ -20,17 +20,26 @@ import { applyBranding, applyDefaultLanguage } from '../lib/branding';
  * Тот же экран работает режимом привязки (`linkMode`): под живой сессией
  * бэкенд не логинит, а записывает подтверждённую почту текущему клиенту —
  * так телеграмная карточка получает вход из браузера, а не двойника.
+ *
+ * И он же — вход вторым аккаунтом из меню (`anonymous`): сессия на устройстве
+ * жива, поэтому сверку кода шлём без Bearer, иначе сработала бы та самая
+ * привязка. `onCancel` тут обязателен по смыслу — человек передумал, и текущий
+ * кабинет должен вернуться на место.
  */
 export default function Auth({
   studioId,
   referralCode,
   linkMode = false,
+  anonymous = false,
   onDone,
+  onCancel,
 }: {
   studioId: number;
   referralCode?: string;
   linkMode?: boolean;
+  anonymous?: boolean;
   onDone: (user: UserResponse, token: string) => void;
+  onCancel?: () => void;
 }) {
   const [brand, setBrand] = useState<StudioBrand | null>(null);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -80,13 +89,16 @@ export default function Auth({
     setBusy(true);
     setError(null);
     try {
-      const { token, user } = await verifyEmailCode({
-        studio_id: studioId,
-        email: email.trim(),
-        code: code.trim(),
-        name: needsName ? name.trim() : undefined,
-        referral_code: referralCode,
-      });
+      const { token, user } = await verifyEmailCode(
+        {
+          studio_id: studioId,
+          email: email.trim(),
+          code: code.trim(),
+          name: needsName ? name.trim() : undefined,
+          referral_code: referralCode,
+        },
+        anonymous,
+      );
       onDone(user, token);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Невірний код');
@@ -96,6 +108,14 @@ export default function Auth({
 
   const emailValid = /^\S+@\S+\.\S+$/.test(email.trim());
   const codeValid = code.trim().length === 6 && (!needsName || name.trim().length > 0);
+
+  const hint = linkMode
+    ? 'Підтвердьте пошту — і зможете заходити в цей самий кабінет із браузера, не лише з Telegram.'
+    : step === 'code'
+      ? `Код надіслано на ${email.trim()}`
+      : anonymous
+        ? 'Введіть пошту іншого акаунта — надішлемо код. Поточний вхід залишиться на цьому пристрої.'
+        : 'Введіть пошту — надішлемо код для входу. Пароль не потрібен.';
 
   return (
     /* На телефоне форма живёт прямо на фоне — карточка в карточке там лишний
@@ -133,14 +153,10 @@ export default function Auth({
         )}
 
         <h1 className="text-[28px] font-extrabold leading-[1.06] tracking-[-0.03em] text-foreground dt:text-[32px]">
-          {linkMode ? 'Прив’язати пошту' : brand?.name ?? 'Кабінет клієнта'}
+          {linkMode ? 'Прив’язати пошту' : anonymous ? 'Інший акаунт' : brand?.name ?? 'Кабінет клієнта'}
         </h1>
         <p className="mt-2.5 max-w-[20rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground dt:text-[14px]">
-          {linkMode
-            ? 'Підтвердьте пошту — і зможете заходити в цей самий кабінет із браузера, не лише з Telegram.'
-            : step === 'email'
-              ? 'Введіть пошту — надішлемо код для входу. Пароль не потрібен.'
-              : `Код надіслано на ${email.trim()}`}
+          {hint}
         </p>
 
         <div className="mt-7 space-y-3">
@@ -209,6 +225,15 @@ export default function Auth({
               className="w-full py-2 text-[12.5px] font-semibold text-muted-foreground"
             >
               Змінити пошту
+            </button>
+          )}
+
+          {onCancel && (
+            <button
+              onClick={onCancel}
+              className="w-full py-2 text-[12.5px] font-semibold text-muted-foreground"
+            >
+              Скасувати
             </button>
           )}
         </div>

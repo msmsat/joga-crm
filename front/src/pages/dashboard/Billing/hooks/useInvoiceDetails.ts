@@ -16,6 +16,11 @@ export interface InvoiceDetails {
   vat_id: string       // DIČ — только у плательщика НДС, включает reverse charge
   country: string      // ISO-3166-1 alpha-2; без него Stripe Tax не посчитает ставку
   postal_code: string
+  // Улица и город — адрес плательщика на фактуре. Stripe печатает его по частям
+  // (line1 / city / postal / country), и часть бухгалтерий заворачивает счёт без них.
+  // На ставку налога не влияют, поэтому необязательны.
+  address: string
+  city: string
 }
 
 export type InvoiceDetailErrors = Partial<Record<keyof InvoiceDetails, string>>;
@@ -61,6 +66,8 @@ export function useInvoiceDetails() {
     vat_id: data?.vat_id ?? '',
     country: data?.country ?? '',
     postal_code: data?.postal_code ?? '',
+    address: data?.address ?? '',
+    city: data?.city ?? '',
   }), [data]);
 
   // Черновик отдельно от saved: без него рефетч по фокусу окна затирал бы набранное
@@ -77,6 +84,8 @@ export function useInvoiceDetails() {
     if (value.company_id.trim() !== saved.company_id) body.company_id = value.company_id.trim() || null;
     if (value.vat_id.trim() !== saved.vat_id) body.vat_id = value.vat_id.trim() || null;
     if (value.postal_code.trim() !== saved.postal_code) body.postal_code = value.postal_code.trim() || null;
+    if (value.address.trim() !== saved.address) body.address = value.address.trim() || null;
+    if (value.city.trim() !== saved.city) body.city = value.city.trim() || null;
     const country = value.country.trim().toUpperCase();
     if (country !== saved.country) body.country = country || null;
 

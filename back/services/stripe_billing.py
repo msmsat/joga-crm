@@ -185,8 +185,23 @@ async def ensure_customer(
     )
 
     if customer_id:
-        await asyncio.to_thread(stripe.Customer.modify, customer_id, **fields)
-    else:
+        try:
+            await asyncio.to_thread(stripe.Customer.modify, customer_id, **fields)
+        except stripe.InvalidRequestError as exc:
+            # `resource_missing` — сохранённого customer'а под ТЕКУЩИМ ключом нет.
+            # Живой сценарий: студия завелась на test-ключе, проект переключили на
+            # live (id вида `cus_…` в обоих режимах одинаковы, см. preflight
+            # check_db_stripe_links). Второй — клиента удалили в дашборде Stripe.
+            #
+            # Терять на этом оплату нельзя: заводим нового и возвращаем его id —
+            # вызывающий пишет его в plan.stripe_customer_id. Ссылку в никуда
+            # чинить всё равно больше нечем, а 500 посреди оплаты — тупик, из
+            # которого владелец сам не выберется.
+            if exc.code != "resource_missing":
+                raise
+            customer_id = None
+
+    if not customer_id:
         customer = await asyncio.to_thread(stripe.Customer.create, **fields)
         customer_id = customer.id
 
@@ -383,6 +398,27 @@ def _phase_items(phase) -> list[dict]:
         if price_id:
             items.append({"price": price_id, "quantity": getattr(item, "quantity", 1) or 1})
     return items
+
+
+async def subscription_exists(subscription_id: str) -> bool:
+    """Существует ли подписка под ТЕКУЩИМ ключом Stripe.
+
+    Та же беда, что у `ensure_customer`: `sub_…` в test и live выглядят одинаково, а
+    объекты между режимами не переносятся. Ссылка в никуда роняет любую попытку
+    сменить тариф — Stripe отвечает `No such subscription`, а студия видит «платёжный
+    сервис отклонил запрос» и упирается в тупик.
+
+    Отдельная проверка, а не try/except по месту: id читают три ветки оформления
+    (продление, отложенная смена, немедленная), и ловить `resource_missing` в каждой
+    значит трижды описывать один и тот же откат.
+    """
+    try:
+        await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    except stripe.InvalidRequestError as exc:
+        if exc.code != "resource_missing":
+            raise
+        return False
+    return True
 
 
 async def _subscription_schedule_id(subscription_id: str) -> str | None:

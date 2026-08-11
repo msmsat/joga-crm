@@ -5,23 +5,38 @@ import UpcomingCard from '../components/mylessons/UpcomingCard';
 import CoffeeStrip from '../components/mylessons/CoffeeStrip';
 import PastCard from '../components/mylessons/PastCard';
 import PeriodBar, { type PeriodMode } from '../components/mylessons/PeriodBar';
+import MyLessonModal from '../components/modals/MyLessonModal';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
-import { getMyLessons, type UpcomingLessonResponse, type PastLessonResponse } from '../api/lessons';
-import { rateLesson } from '../api/user';
+import {
+  getMyLessons,
+  type CoffeeState,
+  type UpcomingLessonResponse,
+  type PastLessonResponse,
+} from '../api/lessons';
+import { cancelLesson, rateLesson } from '../api/user';
 import { useTelegram } from '../hooks/useTelegram';
 import { notify } from '../lib/notify';
 
+type MyLesson = UpcomingLessonResponse | PastLessonResponse;
+
 export default function MyLessons() {
   const { t, i18n } = useTranslation();
-  const { vibrateLight } = useTelegram();
+  const { tg, vibrateLight, vibrateMedium } = useTelegram();
 
   const [upcoming, setUpcoming] = useState<UpcomingLessonResponse[]>([]);
   const [past, setPast] = useState<PastLessonResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Открытое занятие. Держим объектом, а не id: после отмены оно исчезает из
+  // списков, и лист домигивал бы пустой шапкой, пока уезжает.
+  const [activeLesson, setActiveLesson] = useState<MyLesson | null>(null);
+  const [isPastLesson, setIsPastLesson] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [mode, setMode] = useState<PeriodMode>('month');
   const [anchor, setAnchor] = useState(() => new Date());
@@ -117,6 +132,46 @@ export default function MyLessons() {
     else next.setFullYear(next.getFullYear() + direction);
     setAnchor(next);
     vibrateLight();
+  };
+
+  const openLesson = (lesson: MyLesson, past: boolean) => {
+    setActiveLesson(lesson);
+    setIsPastLesson(past);
+    setIsModalOpen(true);
+    vibrateMedium();
+  };
+
+  /** Ответ сервера про кофе — сразу в оба места, где он виден: карточка списка
+   *  и открытый лист. Иначе одно из них показывало бы состояние до нажатия. */
+  const applyCoffee = (lessonId: number, state: CoffeeState) => {
+    setUpcoming((list) =>
+      list.map((item) => (item.id === lessonId ? { ...item, coffee: state } : item)),
+    );
+    setActiveLesson((current) =>
+      current && current.id === lessonId ? { ...current, coffee: state } : current,
+    );
+  };
+
+  /** Отмена записи. Занятие просто убираем из списка: отменённых броней
+   *  /lessons/my не отдаёт, так что перезапрос вернул бы ровно это же. */
+  const cancelBooking = async () => {
+    if (!activeLesson) return;
+
+    setIsProcessing(true);
+    try {
+      await cancelLesson(activeLesson.id);
+      setUpcoming((list) => list.filter((item) => item.id !== activeLesson.id));
+      setIsModalOpen(false);
+      notify(t('schedule.cancel_success'));
+      if (tg) tg.HapticFeedback.notificationOccurred('success');
+    } catch (err) {
+      // Правила отмены (за сколько часов ещё можно) живут на сервере — его
+      // текстом и объясняем отказ, вместо своей догадки.
+      notify(err instanceof Error ? err.message : t('schedule.cancel_error'));
+      if (tg) tg.HapticFeedback.notificationOccurred('error');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const rateClass = async (classId: number, rating: number) => {
@@ -245,17 +300,12 @@ export default function MyLessons() {
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
+                    onOpen={() => openLesson(cls, false)}
                     footer={
                       <CoffeeStrip
                         lessonId={cls.id}
                         coffee={cls.coffee}
-                        onChange={(state) =>
-                          setUpcoming((list) =>
-                            list.map((item) =>
-                              item.id === cls.id ? { ...item, coffee: state } : item,
-                            ),
-                          )
-                        }
+                        onChange={(state) => applyCoffee(cls.id, state)}
                       />
                     }
                   />
@@ -282,6 +332,7 @@ export default function MyLessons() {
                     rating={ratings[cls.id] || 0}
                     bouncing={bouncing}
                     onRate={(star) => rateClass(cls.id, star)}
+                    onOpen={() => openLesson(cls, true)}
                   />
                 ))}
               </div>
@@ -289,6 +340,24 @@ export default function MyLessons() {
           )}
         </>
       )}
+
+      <MyLessonModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        lesson={activeLesson}
+        isPast={isPastLesson}
+        title={translateName(activeLesson?.name)}
+        dateLabel={activeLesson ? formatDate(activeLesson.start_time) : ''}
+        countdown={activeLesson ? countdowns[activeLesson.id] : undefined}
+        rating={activeLesson ? ratings[activeLesson.id] || 0 : 0}
+        bouncing={bouncing}
+        onRate={activeLesson ? (star) => rateClass(activeLesson.id, star) : undefined}
+        isProcessing={isProcessing}
+        onCancel={cancelBooking}
+        onCoffeeChange={
+          activeLesson ? (state) => applyCoffee(activeLesson.id, state) : undefined
+        }
+      />
     </>
   );
 }

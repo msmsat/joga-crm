@@ -35,6 +35,7 @@ class GeneralRead(BaseSchema):
     website: Optional[str] = None
     address: Optional[str] = None
     country: Optional[str] = None
+    city: Optional[str] = None
     postal_code: Optional[str] = None
     vat_id: Optional[str] = None
     company_id: Optional[str] = None
@@ -69,6 +70,9 @@ class GeneralUpdate(BaseSchema):
     # Реквизиты для Stripe Tax. Без country подписка по IBAN не создаётся: ставку
     # VAT определяет страна плательщика, а свободного текста `address` для этого мало.
     country: Optional[str] = Field(None, min_length=2, max_length=2)
+    # Город — часть адреса плательщика на фактуре: Stripe печатает его отдельной
+    # строкой, из свободного `address` он туда не попадёт.
+    city: Optional[str] = Field(None, max_length=100)
     postal_code: Optional[str] = Field(None, max_length=20)
     vat_id: Optional[str] = Field(None, max_length=50)
     # Регистрационный номер компании — реквизит фактуры юрлицу. Отдельно от

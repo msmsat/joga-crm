@@ -256,21 +256,21 @@ export function useBillingCalculator() {
   };
 
   // Выбор способа оплаты. Реквизиты фактуры спрашиваем ПЕРЕД оплатой и только если их
-  // ещё нет: IČO нужен для фактуры в обеих ветках, страна — обязательна для IBAN
-  // (без неё бэкенд отвечает 422, а хостед-страницы, где Stripe спросил бы адрес сам,
-  // в этой ветке нет).
+  // ещё нет: IČO нужен для фактуры, страна — для НДС (бэкенд без неё отвечает 422).
   const chooseMethod = (method: 'iban' | 'card') => {
     if (payBusy) return;
     // IČO/DIČ спрашиваем в обеих ветках: без них фактуру не выписать, а Stripe
     // печатает их из Customer'а, куда они попадают только из нашего профиля студии.
-    // Страну и индекс — ТОЛЬКО для перевода: на карточной ветке их собирает сама
-    // страница Stripe (billing_address_collection="required") и пишет обратно в
-    // Customer, так что спрашивать их своей формой значит просить дважды.
+    //
+    // Страну и индекс — тоже в обеих. Раньше карточная ветка их не спрашивала: адрес
+    // собирает сама страница Stripe. Но собирает она его ПОСЛЕ показа суммы, и до
+    // ввода Stripe Tax не знает ставки (automatic_tax=requires_location_inputs) —
+    // владелец видел «39.00» вместо 47.19 и уходил, решив, что счёт без НДС.
     //
     // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
     // проверки шаг всплывал бы у студии, которая реквизиты давно заполнила.
     const needsDetails = details.loaded && (
-      !details.saved.company_id || (method === 'iban' && !details.saved.country)
+      !details.saved.company_id || !details.saved.country
     );
     if (needsDetails) {
       setPendingMethod(method);
@@ -289,7 +289,7 @@ export function useBillingCalculator() {
   const submitDetails = () => {
     if (payBusy) return;
     const errors = validateInvoiceDetails(
-      details.value, { wantInvoice, requireCountry: pendingMethod === 'iban' }, t,
+      details.value, { wantInvoice, requireCountry: true }, t,
     );
     setDetailErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -386,9 +386,6 @@ export function useBillingCalculator() {
     startCheckout, scheduleUpgrade,
     activateModel, modelBusy,
     showPayModal, closePayModal, payBranch, setPayBranch, ibanData, payBusy,
-    // Ветка перевода дополнительно требует страну — форма показывает поле и
-    // меняет подсказку; на карточной ветке остаются только IČO и DIČ.
-    detailsForIban: pendingMethod === 'iban',
     chooseMethod, payWithCard,
     details, wantInvoice, setWantInvoice, detailErrors, submitDetails, saveDetails,
     paymentReturn, plan,

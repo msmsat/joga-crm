@@ -7,17 +7,21 @@
 import { BASE_URL } from './config';
 import { getSession, clearSession } from '../lib/session';
 
-type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown };
+// `anon` — запрос заведомо без Bearer. Нужен ровно там, где живая сессия меняет
+// смысл ручки: /auth/email/verify с токеном не логинит, а привязывает почту к
+// текущей карточке (back/routers/booking/miniapp_email_auth.py), поэтому вход
+// вторым аккаунтом с того же устройства обязан идти анонимно.
+type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown; anon?: boolean };
 
 async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
-  const { body, headers, ...rest } = options;
+  const { body, headers, anon, ...rest } = options;
   const session = getSession();
 
   const response = await fetch(`${BASE_URL}${path}`, {
     ...rest,
     headers: {
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...(session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
+      ...(!anon && session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -54,8 +58,8 @@ export function resolveImageUrl(path: string | null | undefined): string | undef
 
 export const apiGet = <T>(path: string): Promise<T> => apiFetch<T>(path);
 
-export const apiPost = <T>(path: string, body?: unknown): Promise<T> =>
-  apiFetch<T>(path, { method: 'POST', body });
+export const apiPost = <T>(path: string, body?: unknown, anon = false): Promise<T> =>
+  apiFetch<T>(path, { method: 'POST', body, anon });
 
 export const apiPatch = <T>(path: string, body?: unknown): Promise<T> =>
   apiFetch<T>(path, { method: 'PATCH', body });

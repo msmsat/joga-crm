@@ -9,6 +9,9 @@ export interface GeneralSettings {
   // reverse charge, company_id (IČO) печатается на счёте. Заполняются в «Тариф и
   // оплата» → «Способ оплаты» или спрашиваются перед первой оплатой.
   country: string | null
+  // Город отдельно от свободного address (улица): Stripe печатает адрес плательщика
+  // по частям, и без city на фактуре выходит адрес без города.
+  city: string | null
   postal_code: string | null
   vat_id: string | null
   company_id: string | null

@@ -113,6 +113,9 @@
     "your_rating": "Your rating",
     "counting_time": "Counting time...",
     "mat_label": "Mat #{spot}",
+    "spot": "Your spot",
+    "until_start": "Until start",
+    "duration": "Duration",
     "save_review_error": "Failed to save review. Please try again.",
     "no_lessons": "You haven't attended lessons yet",
     "period_month": "Month",
@@ -274,6 +277,12 @@
     "profile": "Profile",
     "client_area": "Client area",
     "club": "Club"
+  },
+  "account": {
+    "title": "Account",
+    "saved": "Saved accounts",
+    "add": "Sign in to another account",
+    "logout": "Log out"
   },
   "home": {
     "greeting_morning": "Good morning",

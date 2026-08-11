@@ -67,8 +67,15 @@ async def _ensure_customer(
 ) -> str:
     """Stripe Customer студии с актуальными реквизитами.
 
-    `require_country` — для IBAN-ветки: хостед-страницы, где Stripe соберёт адрес
-    сам, там нет, а без страны Stripe Tax не посчитает ставку.
+    `require_country` — везде, где выставляется СЧЁТ. Без страны Stripe Tax не
+    знает ставку: у IBAN-ветки нет хостед-страницы и счёт вообще не выставится, а
+    карточная отдаёт Checkout со статусом `requires_location_inputs` — страница
+    показывает голые 39.00 без НДС, и итог доезжает до 47.19 только после того,
+    как плательщик сам введёт адрес. Сумма к оплате обязана быть верной с первого
+    экрана, поэтому страну спрашиваем до, а не после.
+
+    Исключение — привязка карты (`create_setup_checkout`): там ничего не
+    списывается и налога нет, реквизиты требовать не за что.
     """
     studio = (await db.execute(
         select(Studio).where(Studio.id == ctx.studio_id)
@@ -86,7 +93,7 @@ async def _ensure_customer(
         email=studio.email or ctx.user.email,
         country=studio.country,
         postal_code=studio.postal_code,
-        city=None,
+        city=studio.city,
         line1=studio.address,
         vat_id=studio.vat_id,
         company_id=studio.company_id,
@@ -146,6 +153,34 @@ def _trial_end(plan: StudioBillingPlan) -> int | None:
 def _has_live_subscription(plan: StudioBillingPlan) -> bool:
     """Подписка есть и она не мертва — тогда меняем её, а не заводим вторую."""
     return bool(plan.stripe_subscription_id) and plan.status in ("active", "past_due")
+
+
+async def _forget_dead_subscription(db: AsyncSession, plan: StudioBillingPlan) -> None:
+    """Снять ссылку на подписку, которой под текущим ключом Stripe нет.
+
+    Зовётся ДО всех веток оформления, а не внутри них: и `_has_live_subscription`, и
+    `_is_renewal`, и `_trial_end` читают одно поле `plan.stripe_subscription_id` —
+    обнулив его в одном месте, мы разом переводим все три на путь «подписки нет,
+    оформляем заново». Иначе `resource_missing` пришлось бы ловить в каждой ветке.
+
+    `status` не трогаем: доступ к CRM висит на нём и на `expires_at`, и закрывать
+    студии продукт из-за пропавшего объекта Stripe мы не вправе. Уже оплаченный
+    остаток тоже не теряется — `_trial_end` отдаст новой подписке бесплатный старт
+    до `expires_at`.
+    """
+    if not plan.stripe_subscription_id:
+        return
+    if await stripe_billing.subscription_exists(plan.stripe_subscription_id):
+        return
+
+    logger.warning(
+        "Stripe billing: подписка %s не найдена под текущим ключом — оформляем заново",
+        plan.stripe_subscription_id,
+    )
+    plan.stripe_subscription_id = None
+    # Коммит сразу, по той же причине, что и в `_ensure_customer`: дальше по
+    # обработчику есть выходы через исключение, а get_db на них не коммитит.
+    await db.commit()
 
 
 def _is_renewal(plan: StudioBillingPlan, requested_plan: str) -> bool:
@@ -235,7 +270,8 @@ async def create_checkout(
     _validate(body.plan, body.period_months)
 
     plan = await _get_or_create_plan(db, ctx.studio_id)
-    customer_id = await _ensure_customer(db, ctx, plan, require_country=False)
+    customer_id = await _ensure_customer(db, ctx, plan, require_country=True)
+    await _forget_dead_subscription(db, plan)
 
     combo = _is_combo(plan)
     metadata = _metadata(ctx, body.plan, body.period_months, plan.billing_mode)
@@ -348,6 +384,7 @@ async def create_iban_checkout(
 
     plan = await _get_or_create_plan(db, ctx.studio_id)
     customer_id = await _ensure_customer(db, ctx, plan, require_country=True)
+    await _forget_dead_subscription(db, plan)
 
     combo = _is_combo(plan)
     metadata = _metadata(ctx, body.plan, body.period_months, plan.billing_mode)

@@ -195,6 +195,8 @@
     "scheduledBadge": "From {{date}} — plan \"{{plan}}\"",
     "vatLabel": "VAT {{rate}}%",
     "totalWithVatLabel": "Total incl. VAT",
+    "totalNetLabel": "Total excl. VAT",
+    "vatUnknownNote": "Prices exclude VAT. The rate depends on your country, so it is added after you fill in the company details on the next step — the exact amount is shown before payment.",
     "vatNote": "Prices exclude VAT. Tax of {{rate}}% is added on top; the exact amount is calculated on the payment page from your company details — EU companies with a VAT number get reverse charge."
   },
   "method": {
@@ -337,11 +339,15 @@
       "vatLabel": "VAT number",
       "countryLabel": "Country",
       "postalLabel": "Postal code",
+      "streetLabel": "Street and number",
+      "streetPlaceholder": "Olgy Havlove 2930/35",
+      "cityLabel": "City",
+      "cityPlaceholder": "Prague",
       "icoRequired": "A company invoice needs the registration number",
       "countryInvalid": "Two-letter country code, e.g. CZ",
       "postalRequired": "The postal code is printed in the invoice address",
       "note": "These details are printed on the invoice. You can change them on the Payment method tab.",
-      "countryNote": "Bank transfer requires the country and postal code — the VAT rate is derived from the country and the address is printed on the invoice.",
+      "countryNote": "The country and postal code set the VAT rate — without them Stripe cannot calculate it and shows the price without VAT. The address is printed on the invoice.",
       "continue": "Continue",
       "icoHint": "It may be called differently in your country: IČO, HRB, KRS, Company number",
       "vatHint": "For EU companies: enables reverse charge on the invoice"

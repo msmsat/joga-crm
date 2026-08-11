@@ -91,6 +91,21 @@ export default function InvoiceDetailsForm({
             error={errors.postal_code}
             monospace
           />
+          {/* Улица и город — необязательные: ставку налога задаёт страна, а адрес
+              нужен бухгалтерии получателя. Часть компаний счёт без них не принимает,
+              поэтому поля есть, но оплату не блокируют. */}
+          <Input
+            label={t('payModal.invoice.streetLabel')}
+            value={value.address}
+            onChange={v => patch({ address: v })}
+            placeholder={t('payModal.invoice.streetPlaceholder')}
+          />
+          <Input
+            label={t('payModal.invoice.cityLabel')}
+            value={value.city}
+            onChange={v => patch({ city: v })}
+            placeholder={t('payModal.invoice.cityPlaceholder')}
+          />
         </div>
       )}
 
