@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -32,7 +32,7 @@ from services import offline_fee_billing, platform_fee, stripe_billing, stripe_c
 from activity import log_activity
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
-from .checkout import router as checkout_router, _metadata
+from .checkout import router as checkout_router, _metadata, _has_live_subscription
 from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
 
@@ -130,6 +130,8 @@ def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
         next_plan=next_plan,
         scheduled_plan=row.scheduled_plan,
         scheduled_at=row.scheduled_at.isoformat() if row.scheduled_at else None,
+        # Ровно та же функция, по которой ветвится оформление — не копия правила.
+        has_live_subscription=_has_live_subscription(row),
     )
 
 
@@ -148,6 +150,24 @@ async def get_current_plan(
             expires_at=None, max_staff=0, auto_renewal=False,
         )
     return _to_plan_read(row)
+
+
+def _period_saving(plan_name: str, period_months: int) -> int:
+    """Сколько скидка за длинный период сберегла на этом счёте, копейки.
+
+    ОБЕ стороны берутся из каталога, и это принципиально. Раньше уплаченное
+    сравнивалось с каталожной ценой напрямую, а `BillingInvoice.amount` зеркалит
+    `amount_due` — сумму С НАЛОГОМ. На месячном тарифе разность (39 € против 39 € +
+    НДС) уходила в минус, её обрезал `max(0, …)`, и владелец видел «сэкономлено 0»
+    там, где скидки и правда нет, но по неверной причине; на годовом экономия
+    выходила заниженной ровно на ставку НДС покупателя.
+
+    Незнакомый тариф или период (легаси-счёт, счёт за комиссию) — 0, а не исключение:
+    плашка не должна падать из-за строки истории.
+    """
+    if plan_name not in PLANS or period_months not in PERIOD_DISCOUNTS:
+        return 0
+    return amount_for(plan_name, 1) * period_months - amount_for(plan_name, period_months)
 
 
 def _months_between(start: datetime, end: datetime) -> int:
@@ -171,11 +191,7 @@ async def get_billing_stats(
     )).scalars().all()
 
     total_spent = sum(inv.amount for inv in paid)
-    # Экономия: во сколько тот же период обошёлся бы помесячно минус фактически оплаченное.
-    saved = sum(
-        max(0, PLANS[inv.plan_name]["price"] * inv.period_months - inv.amount)
-        for inv in paid if inv.plan_name in PLANS
-    )
+    saved = sum(_period_saving(inv.plan_name, inv.period_months) for inv in paid if inv.kind == "subscription")
     months = _months_between(paid[0].paid_at, datetime.utcnow()) if paid else 0
 
     plan = (await db.execute(
@@ -437,14 +453,30 @@ async def update_autopay(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Тумблеры вкладки «Способ оплаты» (частичный апдейт). Автосписание — только по карте (аудит §4)."""
+    """Тумблеры вкладки «Способ оплаты» (частичный апдейт).
+
+    `auto_renewal` — не настройка уведомлений, а ОТМЕНА ПОДПИСКИ, и уезжает в Stripe
+    как `cancel_at_period_end`. Ровно это обещают Условия (§7): «You may cancel at any
+    time from the Billing page. Cancellation takes effect at the end of the current
+    paid period». Пока флаг жил только в нашей БД, тумблер был враньём: владелец
+    выключал автопродление, получал зелёный тост — и очередное списание. Оспоренный
+    платёж в такой ситуации выигрывает плательщик, и он прав.
+
+    Обратное включение снимает отмену: Stripe принимает `cancel_at_period_end=False`,
+    пока период не кончился, — поэтому передумавшему не нужно оформлять подписку заново.
+
+    Карту требуем только при отсутствии живой подписки. У живой способ оплаты уже
+    выбран, и продление студии на IBAN идёт счётом, а не списанием: старая проверка
+    «только при оплате картой» заперла бы её в выключенном автопродлении навсегда.
+    """
     row = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
     if row is None:
         raise HTTPException(status_code=400, detail="Нет активной подписки")
 
-    if body.auto_renewal:
+    live = _has_live_subscription(row)
+    if body.auto_renewal and not live:
         card = (await db.execute(select(PaymentCard).where(
             PaymentCard.user_id == ctx.user.id, PaymentCard.method_type == "card"
         ))).scalar_one_or_none()
@@ -455,6 +487,21 @@ async def update_autopay(
         value = getattr(body, field)
         if value is not None:
             setattr(row, field, value)
+
+    # Stripe правим ДО коммита и последним — как в activate_model: упадёт, и get_db
+    # не закоммитит, то есть тумблер останется в прежнем положении. Обратный порядок
+    # оставил бы БД и Stripe разошедшимися, а это как раз то, что чинит эта правка.
+    if body.auto_renewal is not None and live:
+        try:
+            await stripe_billing.set_cancel_at_period_end(
+                row.stripe_subscription_id, not body.auto_renewal,
+            )
+        except Exception as exc:
+            logger.exception("Автопродление: подписка студии %s не перенастроена", ctx.studio_id)
+            raise HTTPException(status_code=502, detail={
+                "code": "billing.stripe_error",
+                "message": "Не удалось изменить автопродление — попробуйте ещё раз",
+            }) from exc
 
     await db.commit()
     await db.refresh(row)
@@ -625,65 +672,27 @@ async def export_invoices_csv(
     )
 
 
-def _pdf_escape(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-
-
-def _render_receipt_pdf(inv: BillingInvoice) -> bytes:
-    """Минимальный PDF-чек без внешних либ (reportlab не в requirements — не тащим).
-
-    ponytail: base-14 Helvetica не несёт кириллицы без embed-шрифта (тяжёлый PDF-движок,
-    именно то, что эпик просит не тащить) — лейблы латиницей. Апгрейд: локализовать
-    при появлении полноценного PDF-рендера с кастомным шрифтом.
-    """
-    lines = [
-        f"Receipt #{inv.id}",
-        f"Plan: {inv.plan_name}",
-        f"Amount: {inv.amount / 100:.2f}",
-        f"Payment method: {inv.payment_method or '-'}",
-        f"Paid at: {inv.paid_at.strftime('%Y-%m-%d %H:%M') if inv.paid_at else '-'}",
-        f"Status: {inv.status}",
-    ]
-    ops = ["BT", "/F1 14 Tf", "50 760 Td", "18 TL"]
-    for i, line in enumerate(lines):
-        if i > 0:
-            ops.append("T*")
-        ops.append(f"({_pdf_escape(line)}) Tj")
-    ops.append("ET")
-    stream_bytes = "\n".join(ops).encode("latin-1", errors="replace")
-
-    objects = [
-        b"<< /Type /Catalog /Pages 2 0 R >>",
-        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-        b"<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> "
-        b"/MediaBox [0 0 612 792] /Contents 5 0 R >>",
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-        f"<< /Length {len(stream_bytes)} >>\nstream\n".encode("latin-1") + stream_bytes + b"\nendstream",
-    ]
-
-    out = bytearray(b"%PDF-1.4\n")
-    offsets = []
-    for i, body in enumerate(objects, start=1):
-        offsets.append(len(out))
-        out += f"{i} 0 obj\n".encode("latin-1") + body + b"\nendobj\n"
-
-    xref_offset = len(out)
-    n = len(objects) + 1
-    out += f"xref\n0 {n}\n".encode("latin-1")
-    out += b"0000000000 65535 f \n"
-    for off in offsets:
-        out += f"{off:010d} 00000 n \n".encode("latin-1")
-    out += f"trailer\n<< /Size {n} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF".encode("latin-1")
-    return bytes(out)
-
-
 @router.get("/invoices/{invoice_id}/receipt.pdf")
 async def get_receipt(
     invoice_id: int,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Чек по оплаченному счёту своей студии. 404 — чужой/несуществующий/не-paid (не палим состояние)."""
+    """Фактура по оплаченному счёту своей студии — редирект на документ Stripe.
+
+    Раньше здесь рисовался собственный PDF: «Amount: 39.00» без валюты, без НДС, без
+    продавца, без номера — латиницей, потому что base-14 Helvetica не несёт кириллицы.
+    Выглядел он как документ, но им не был, и всплывал ровно там, где фактуры Stripe
+    ещё нет: студия принимала эрзац за налоговый документ и клала его в учёт.
+
+    Налоговый документ в этой схеме РОВНО ОДИН — фактура Stripe: у неё есть номер из
+    сквозной нумерации, НДС, реквизиты обеих сторон и IČO студии. Второй, слабее,
+    только путает, поэтому мы его больше не выпускаем, а ведём к настоящему.
+
+    Фактуры ещё нет (легаси-счёт разовой оплаты, усечённое событие) — 409 с внятной
+    причиной, а не выдуманный PDF. 404 остаётся на чужой/несуществующий/неоплаченный:
+    состояние чужой студии не палим.
+    """
     inv = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
         BillingInvoice.studio_id == ctx.studio_id,
@@ -691,10 +700,15 @@ async def get_receipt(
     if inv is None or inv.status != "paid":
         raise HTTPException(status_code=404, detail="Чек доступен только для оплаченных счетов")
 
-    return StreamingResponse(
-        iter([_render_receipt_pdf(inv)]), media_type="application/pdf",
-        headers={"Content-Disposition": f'inline; filename="receipt-{inv.id}.pdf"'},
-    )
+    url = inv.pdf_url or inv.hosted_invoice_url
+    if not url:
+        raise HTTPException(status_code=409, detail={
+            "code": "billing.invoice_not_ready",
+            "message": "Фактура ещё формируется — обновите страницу через минуту",
+        })
+    # 307, а не 302: метод и тело сохраняются, а кэш промежуточных прокси не
+    # приклеивает ссылку навсегда — ссылки Stripe на PDF ограничены по времени.
+    return RedirectResponse(url, status_code=307)
 
 
 @router.get("/cards", response_model=list[PaymentCardRead])
@@ -730,6 +744,16 @@ if __name__ == "__main__":
     assert _tier("free_trial") == _tier("pro")
     assert _tier("none") == -1 and _tier("") == -1
     assert _tier("business") > _tier("none")   # без строки плана апгрейд невозможен
+
+    # Экономия за период считается по каталогу с ОБЕИХ сторон и не зависит от НДС,
+    # который Stripe накинул сверху (из-за него прежняя формула показывала ноль).
+    assert _period_saving("pro", 1) == 0                       # помесячно скидки нет
+    assert _period_saving("pro", 12) == 9900 * 12 - 83160      # 30% за год
+    assert _period_saving("start", 6) == 3900 * 6 - 18720      # 20% за полгода
+    assert _period_saving("business", 24) > _period_saving("business", 12)
+    # Счёт за комиссию и легаси-строки не роняют плашку и ничего не «экономят».
+    assert _period_saving("offline_fee", 1) == 0
+    assert _period_saving("pro", 3) == 0
 
     # CSV-экранирование/BOM теперь проверяет services/exporter.py (задача 4) — не дублируем тут.
     print("billing router self-check ok")

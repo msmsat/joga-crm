@@ -107,10 +107,12 @@ export default function Billing() {
           onClose={() => h.setShowUpgradeModal(false)}
           startCheckout={h.startCheckout}
           scheduleUpgrade={h.scheduleUpgrade}
-          // Выбор «сейчас / с начала периода» имеет смысл только когда есть
-          // оплаченный остаток, который можно потерять. Признак тот же, что у
-          // сервера (_has_live_subscription): статус подписки, а не наличие строки.
-          hasLiveSubscription={h.plan?.status === 'active' || h.plan?.status === 'past_due'}
+          // Выбор «сейчас / с начала периода» имеет смысл только когда есть живая
+          // подписка Stripe, которой можно двигать фазы. Признак считает сервер той же
+          // функцией, по которой сам и ветвится (_has_live_subscription) — выведенный
+          // здесь из `status` он с сервером расходился, и владельца уносило на оплату
+          // мимо выбора способа.
+          hasLiveSubscription={h.plan?.has_live_subscription ?? false}
           currentPeriodEnd={h.plan?.expires_at}
         />
       )}

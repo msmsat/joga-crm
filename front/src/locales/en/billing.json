@@ -229,7 +229,8 @@
       "cardOnly": "Available when paying by card",
       "autoRenew": {
         "label": "Automatic renewal",
-        "desc": "Charged without confirmation"
+        "desc": "Turn off to cancel at the end of the paid period",
+        "until": "Subscription won't renew — access until {{date}}"
       },
       "emailNotify": {
         "label": "Email notifications",

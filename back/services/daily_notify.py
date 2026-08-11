@@ -194,8 +194,22 @@ async def _run_billing_check(db: AsyncSession, studio_id: int, today: date) -> N
     if plan is None or plan.expires_at is None:
         return
     days_left = (plan.expires_at.date() - today).days
-    if 0 <= days_left <= plan.notify_before_days:
-        await notify(db, studio_id, "owner", "o6", {"days_left": days_left})
+    if not (0 <= days_left <= plan.notify_before_days):
+        return
+
+    # Тумблер «Уведомить за N дней перед автоматическим списанием». Он управляет
+    # ИМЕННО этим письмом: когда автопродление включено и подписка живая, конец
+    # периода и есть момент списания — другого «перед списанием» не существует.
+    # Пока тумблер никем не читался, обещание «напомним перед автоматическим
+    # списанием» ничем не подкреплялось.
+    #
+    # Выключенное автопродление письмо НЕ гасит: там уже не списание, а истечение
+    # доступа, и предупредить о нём надо независимо от настроек автосписания.
+    autocharge = bool(plan.stripe_subscription_id) and plan.auto_renewal
+    if autocharge and not plan.notify_before_autocharge:
+        return
+
+    await notify(db, studio_id, "owner", "o6", {"days_left": days_left})
 
 
 def _studio_tz(value: str | None) -> timezone:

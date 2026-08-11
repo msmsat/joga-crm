@@ -43,6 +43,30 @@ _STRIPE_ERROR = {
     "code": "billing.stripe_error",
     "message": "Stripe отклонил запрос",
 }
+# Банковский перевод у Stripe — это способ оплаты `customer_balance`, и он включается
+# галкой в дашборде (Settings → Payments → Payment methods → Bank transfers). Пока он
+# выключен, Subscription.create с ним отвечает «payment method type is invalid», а
+# студия видела общий текст «попробуйте ещё раз» — совет заведомо бесполезный, потому
+# что повтор ничего не меняет, а починить это может только владелец аккаунта.
+_BANK_TRANSFER_OFF = {
+    "code": "billing.bank_transfer_disabled",
+    "message": (
+        "Оплата банковским переводом не подключена на стороне платёжного сервиса. "
+        "Заплатите картой или напишите нам — мы включим перевод."
+    ),
+}
+
+
+def _is_bank_transfer_disabled(exc: Exception) -> bool:
+    """Отказ Stripe именно из-за выключенного `customer_balance`.
+
+    Разбор по тексту — намеренно: отдельного кода ошибки под «способ оплаты не
+    активирован» у Stripe нет, а `param` в этом ответе не приходит. Проверяем и тип
+    ошибки, и упоминание способа, чтобы под этот текст не попало что-то постороннее.
+    """
+    import stripe
+
+    return isinstance(exc, stripe.InvalidRequestError) and "customer_balance" in str(exc)
 
 
 def _validate(plan: str, period_months: int) -> None:
@@ -453,6 +477,10 @@ async def create_iban_checkout(
         raise
     except Exception as exc:
         logger.exception("Stripe billing: подписка по IBAN не создана")
+        if _is_bank_transfer_disabled(exc):
+            # 503, а не 502: сервис не «отклонил запрос», а не настроен — и повтор,
+            # который предлагает общий текст, здесь не поможет никогда.
+            raise HTTPException(status_code=503, detail=_BANK_TRANSFER_OFF) from exc
         raise HTTPException(status_code=502, detail=_STRIPE_ERROR) from exc
 
     if stripe_invoice is None:

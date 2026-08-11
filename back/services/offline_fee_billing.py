@@ -369,12 +369,21 @@ async def _issue_to_stripe(
     """
     # `plan`/`period_months`/`kind` читает mirror_invoice в вебхуке — без них
     # он затрёт наш маркер именем текущего тарифа студии.
+    #
+    # `invoice_id` — ссылка на ЭТУ строку. По ней вебхук находит её вместо того,
+    # чтобы завести вторую (webhook._adopt_local_invoice): событие по счёту может
+    # прилететь раньше, чем мы успеем записать stripe_invoice_id, и тогда наш
+    # commit падал на уникальном индексе, а `_finish_pending` выпускал студии
+    # второй документ за тот же месяц. Для `online_fee` это не гипотеза —
+    # `create_settled_invoice` сама закрывает счёт, и `invoice.paid` вылетает
+    # ровно между вызовом и коммитом.
     metadata = {
         "studio_id": str(invoice.studio_id),
         "plan": invoice.kind,
         "period_months": "1",
         "kind": invoice.kind,
         "period": invoice.period or "",
+        "invoice_id": str(invoice.id),
     }
     if invoice.kind == "online_fee":
         stripe_invoice = await stripe_billing.create_settled_invoice(

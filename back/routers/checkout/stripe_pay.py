@@ -536,7 +536,11 @@ async def _close_dispute(dispute, account_id: str | None) -> None:
             title = f"Чарджбэк на {checkout.amount} оспорен успешно — продажа в силе"
         else:
             checkout.status = "chargeback"
-            await _revert_sale(db, checkout)
+            charge = getattr(dispute, "charge", None)
+            await _revert_sale(
+                db, checkout,
+                charge if isinstance(charge, str) else getattr(charge, "id", None),
+            )
             title = f"Чарджбэк на {checkout.amount} проигран: абонемент погашен, деньги списаны со счёта"
 
         log_activity(
@@ -637,17 +641,64 @@ async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:
     checkout.payload = payload
 
 
-async def _revert_sale(db: AsyncSession, checkout: StripeCheckout) -> None:
+async def _reverse_platform_fee(
+    db: AsyncSession, checkout: StripeCheckout, charge_id: str | None,
+) -> None:
+    """Снять из леджера долю платформы, которую Stripe вернул вместе с платежом.
+
+    Без этого фактура за онлайн-комиссию (services/offline_fee_billing.
+    _bill_online_fees) выставлялась бы на комиссию с платежа, которого больше нет —
+    документ на несуществующий доход, — а `_month_platform_revenue` завышала бы
+    выручку студии, и счёт на добор до минимума выходил бы меньше положенного.
+
+    Сумму берём у Stripe (`refunded_application_fee`), а не равной удержанной:
+    вернулась комиссия или осталась у платформы — решает студия галкой в своём
+    дашборде, и половину случаев мы бы угадали неверно.
+
+    Ошибку глушим: возврат уже проведён, и упавший запрос к Stripe не повод
+    откатывать погашенный абонемент. Расхождение видно в логе.
+    """
+    if checkout.application_fee <= 0 or not charge_id:
+        return
+    try:
+        refunded = await stripe_connect.refunded_application_fee(charge_id, checkout.account_id)
+    except Exception:
+        logger.exception(
+            "Леджер: не удалось узнать судьбу комиссии по заявке %s — строка не снята",
+            checkout.session_id,
+        )
+        return
+    if refunded <= 0:
+        return
+
+    studio = (await db.execute(
+        select(Studio).where(Studio.id == checkout.studio_id)
+    )).scalar_one()
+    await platform_fee.record_revenue(
+        db, checkout.studio_id, "connect_fee",
+        -refunded, studio.currency or _FALLBACK_CURRENCY,
+        # Свой external_id: исходная строка (`cs:…`) остаётся на месте, а повтор
+        # события (возврат, потом спор поверх него) не снимет комиссию дважды.
+        f"rev:cs:{checkout.session_id}",
+    )
+
+
+async def _revert_sale(
+    db: AsyncSession, checkout: StripeCheckout, charge_id: str | None = None,
+) -> None:
     """Откатить проведённую продажу по полному возврату. Не коммитит.
 
-    Гасит абонемент, снимает деньги со счёта компенсирующей операцией и
-    откатывает лояльность. Без этого CRM молча расходилась с банком: деньги у
-    клиента вернулись, а абонемент числился действующим и выручка стояла как была.
+    Гасит абонемент, снимает деньги со счёта компенсирующей операцией, откатывает
+    лояльность и снимает долю платформы из леджера. Без этого CRM молча расходилась
+    с банком: деньги у клиента вернулись, а абонемент числился действующим и выручка
+    стояла как была.
 
     Операцию именно ДОБАВЛЯЕМ расходом, а не удаляем доходную: проведённую
     запись в Финансах задним числом не стирают — иначе отчёты за закрытый период
     начинают меняться сами по себе.
     """
+    await _reverse_platform_fee(db, checkout, charge_id)
+
     if checkout.subscription_id is not None:
         sub = (await db.execute(
             select(ClientSubscription).where(ClientSubscription.id == checkout.subscription_id)
@@ -730,7 +781,7 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
         checkout.status = status
         reverted = status == "refunded" and _is_full_refund(charge)
         if reverted:
-            await _revert_sale(db, checkout)
+            await _revert_sale(db, checkout, charge["id"])
         log_activity(
             db, checkout.studio_id, "payment",
             title=(

@@ -234,7 +234,9 @@ def _run_dispute(status, checkout):
     async def fake_session_id(_pi, _acct):
         return "cs_1"
 
-    async def fake_revert(_db, ch):
+    # charge_id — третьим аргументом: по нему _revert_sale спрашивает у Stripe,
+    # вернулась ли удержанная доля платформы (_reverse_platform_fee).
+    async def fake_revert(_db, ch, _charge_id=None):
         reverted.append(ch)
 
     saved = (SP.async_session_maker, SP.stripe_connect.session_id_for_payment_intent,

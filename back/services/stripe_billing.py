@@ -251,6 +251,31 @@ async def _ensure_tax_id(customer_id: str, vat_id: str) -> None:
         logger.warning("Stripe billing: VAT ID %s не принят (%s)", vat_id, exc)
 
 
+async def delete_tax_id(customer_id: str, tax_id: str) -> None:
+    """Снять налоговый номер с клиента. Идемпотентно: уже снятый — не ошибка.
+
+    Вторая половина защиты, описанной в `_ensure_tax_id`: пока фиктивный номер
+    висит у Customer'а, Stripe Tax продолжает применять по нему reverse charge, и
+    следующий счёт снова уйдёт без НДС. Зовётся из обработчика
+    `customer.tax_id.updated` (routers/billing/webhook._handle_tax_id).
+
+    Ошибку, в отличие от `_ensure_tax_id`, НЕ глотаем. Там сбой означал «оплата
+    пройдёт с налогом» — потеря для студии, но не для казны; здесь наоборот:
+    проглоченный сбой оставляет номер живым, и недобор НДС по нему ложится на
+    платформу. Вызывающий отдаёт Stripe 500 и получает ретрай.
+    """
+    try:
+        await asyncio.to_thread(stripe.Customer.delete_tax_id, customer_id, tax_id)
+    except stripe.InvalidRequestError as exc:
+        # Ретрай вебхука по уже обработанному событию (или номер сняли руками в
+        # дашборде) — цель достигнута, падать не за что.
+        if exc.code != "resource_missing":
+            raise
+        logger.info(
+            "Stripe billing: налоговый номер %s у клиента %s уже снят", tax_id, customer_id,
+        )
+
+
 async def create_subscription_checkout(
     customer_id: str,
     price_id: str,
@@ -878,9 +903,36 @@ async def email_invoice(stripe_invoice_id: str) -> None:
 
 
 async def cancel_subscription(subscription_id: str) -> None:
-    """Отмена подписки. Итог придёт событием customer.subscription.deleted —
-    статус в нашей БД двигает вебхук, а не эта функция."""
+    """НЕМЕДЛЕННАЯ отмена подписки. Итог придёт событием customer.subscription.deleted —
+    статус в нашей БД двигает вебхук, а не эта функция.
+
+    Для отмены ПО ЖЕЛАНИЮ ВЛАДЕЛЬЦА это не тот вызов: он обрывает доступ в ту же
+    секунду и сжигает уже оплаченный остаток. Там нужен `set_cancel_at_period_end`.
+    Здесь остаётся два случая, где обрыв и есть цель: уход на тариф «только процент»
+    (подписки на нём нет по определению) и возврат денег за неё.
+    """
     await asyncio.to_thread(stripe.Subscription.cancel, subscription_id)
+
+
+async def set_cancel_at_period_end(subscription_id: str, cancel: bool):
+    """Автопродление: False = «доиграть оплаченный период и закончиться».
+
+    Ровно то, что обещают Условия (§7): «cancellation takes effect at the end of the
+    current paid period; access continues until then». Деньги за начатый период не
+    возвращаются, доступ до его конца остаётся — гейт смотрит на `expires_at`, а его
+    Stripe при такой отмене не двигает.
+
+    Обратное включение отменяет отмену: пока период не кончился, Stripe принимает
+    `cancel_at_period_end=False`, и подписка продолжается как ни в чём не бывало.
+    Поэтому один тумблер закрывает оба направления, и отдельной «переподписки» не нужно.
+
+    Статус в нашей БД здесь не трогаем: на этот вызов Stripe сам пришлёт
+    `customer.subscription.updated`, и зеркало (webhook._mirror_subscription_state)
+    запишет и флаг, и срок — как со всем остальным состоянием подписки.
+    """
+    return await asyncio.to_thread(
+        stripe.Subscription.modify, subscription_id, cancel_at_period_end=cancel,
+    )
 
 
 async def fetch_subscription(subscription_id: str):

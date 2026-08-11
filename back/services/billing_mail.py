@@ -295,6 +295,60 @@ async def send_block_warning(db: AsyncSession, invoice: BillingInvoice) -> bool:
         return False
 
 
+# Снятый номер НДС: сверка с VIES не подтвердила его существование
+# (routers/billing/webhook._handle_tax_id). Письмо обязательное, а не сервисное —
+# со следующего счёта сумма вырастет на ставку НДС, и узнать об этом владелец
+# должен до списания, а не из фактуры.
+_VAT_SUBJECT = {
+    "ru": "Velora — номер НДС не прошёл проверку",
+    "en": "Velora — your VAT number failed validation",
+}
+
+_VAT_BODY = {
+    "ru": (
+        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Номер НДС не подтверждён</h2>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Номер <b style='color:#1A1A1A'>{vat}</b> не найден в европейской базе "
+        "плательщиков НДС (VIES) и удалён из реквизитов вашей студии.</p>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Следующие счета будут выставлены с учётом НДС. Если номер указан верно и "
+        "действителен, впишите его заново в разделе «Настройки» → «Общие» — "
+        "проверка запустится снова.</p>"
+    ),
+    "en": (
+        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>VAT number not confirmed</h2>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Number <b style='color:#1A1A1A'>{vat}</b> was not found in the EU VAT "
+        "database (VIES) and has been removed from your studio details.</p>"
+        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "Upcoming invoices will include VAT. If the number is correct and active, "
+        "enter it again in Settings → General to run the check once more.</p>"
+    ),
+}
+
+
+async def send_vat_rejected(db: AsyncSession, studio_id: int, vat_id: str | None) -> bool:
+    """Уведомить студию, что её номер НДС снят после неудачной сверки с VIES.
+
+    Тумблер «Чек на email» здесь НЕ смотрим — как и в send_block_warning: это не
+    чек, а предупреждение о том, что счета подорожают на ставку налога, и отключать
+    его настройкой для чеков нельзя.
+    """
+    try:
+        to = await _recipient(db, studio_id)
+        if not to:
+            logger.info("Billing mail: о снятом VAT ID студии %s некому сообщить", studio_id)
+            return False
+
+        lang, _currency = await _studio_prefs(db, studio_id)
+        html = _VAT_BODY[lang].format(vat=vat_id or "—") + _LEGAL_FOOTER[lang]
+        await send_email(to, _VAT_SUBJECT[lang], html)
+        return True
+    except Exception:
+        logger.exception("Billing mail: письмо о снятом VAT ID студии %s не отправлено", studio_id)
+        return False
+
+
 if __name__ == "__main__":
     import asyncio
     import types
@@ -316,6 +370,10 @@ if __name__ == "__main__":
         assert _WARN_BODY[_lang].format(**_warn_slots)
         assert "{url}" in _WARN_LINK[_lang]
     assert set(_WARN_SUBJECT) == set(_WARN_BODY) == set(_WARN_LINK) == {"ru", "en"}
+
+    for _lang in ("ru", "en"):
+        assert _VAT_BODY[_lang].format(vat="DE000000000")
+    assert set(_VAT_SUBJECT) == set(_VAT_BODY) == {"ru", "en"}
 
     # Выключенный тумблер молчит, и до отправки дело не доходит.
     _sent = []

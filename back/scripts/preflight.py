@@ -217,6 +217,57 @@ async def check_stripe_account() -> None:
         _err(f"Stripe Connect недоступен ({exc}) — студия не сможет подключить приём оплат")
 
 
+async def check_stripe_payment_methods() -> None:
+    """Способы оплаты, включённые на аккаунте платформы.
+
+    Оплата тарифа идёт двумя ветками, и каждой нужен СВОЙ способ: карта — `card`,
+    банковский перевод — `customer_balance` (routers/billing/checkout.py). Выключенный
+    в дашборде способ из кода не виден никак: ключ валидный, каталог отвечает, а
+    Subscription.create падает «payment method type is invalid» уже под владельцем,
+    который дошёл до оплаты. Проверяется здесь по той же причине, что и Stripe Tax:
+    настройки у test и live разные, и включённый в тесте перевод ничего не значит.
+    """
+    import stripe
+    from services import stripe_connect
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        configs = await asyncio.to_thread(stripe.PaymentMethodConfiguration.list, limit=20)
+    except Exception as exc:
+        _warn(f"не удалось прочитать способы оплаты Stripe ({exc}) — проверьте их в дашборде вручную")
+        return
+
+    default = next((c for c in configs.data if c.is_default), None) or (
+        configs.data[0] if configs.data else None
+    )
+    if default is None:
+        _err("на аккаунте Stripe нет ни одной конфигурации способов оплаты — платить будет нечем")
+        return
+
+    # Два признака, и оба обязательны. `available` — дал ли Stripe доступ к способу
+    # вообще; `display_preference` — включён ли он нами. Проверять один
+    # `display_preference` мало: его можно поставить `on` и по API, и в дашборде даже
+    # там, где доступа нет, — конфигурация примет, `available` останется false, а
+    # оплата продолжит падать. Именно так выглядит незапрошенный bank transfer.
+    for method, branch in (("card", "оплата картой"), ("customer_balance", "оплата банковским переводом")):
+        option = getattr(default, method, None)
+        value = getattr(getattr(option, "display_preference", None), "value", None)
+        available = getattr(option, "available", None)
+        if available is False:
+            _err(
+                f"способ оплаты {method} недоступен аккаунту Stripe (available=false) — {branch} вернёт "
+                f"ошибку. Это не галка: доступ надо ЗАПРОСИТЬ в Settings → Payments → Payment methods "
+                f"(для bank transfers — отдельно под каждую валюту) и дождаться одобрения"
+            )
+        elif value != "on":
+            _err(
+                f"способ оплаты {method} выключен на аккаунте Stripe ({value or 'нет в конфигурации'}) — "
+                f"{branch} вернёт ошибку. Включите в Settings → Payments → Payment methods"
+            )
+
+
 async def check_stripe_tax() -> None:
     """Stripe Tax. Настройки у test и live РАЗНЫЕ — включённый в тесте ничего не значит.
 
@@ -241,6 +292,85 @@ async def check_stripe_tax() -> None:
             f"Stripe Tax в статусе {settings.status} — счета за тариф и комиссию не выставятся. "
             f"Заполните Tax → Settings (адрес продавца, налоговая категория) и зарегистрируйте "
             f"страны, в которых собираете НДС"
+        )
+
+
+async def check_invoice_tax_id() -> None:
+    """Свой налоговый номер на выпускаемых фактурах.
+
+    Реквизиты ПОКУПАТЕЛЯ на фактуру уезжают (ensure_customer кладёт регистрационный
+    номер в custom_fields, VAT ID — налоговым id клиента). Свой DIČ Stripe печатает
+    только из `settings.invoices.default_account_tax_ids`, и по умолчанию поле пустое.
+
+    Без него документ формально не фактура: §29 чешского закона о НДС требует DIČ
+    поставщика, и студия не поставит по такому документу налог к вычету. Молчит это
+    до первой проверки — из кода не видно вообще, поэтому проверяем здесь.
+    """
+    import stripe
+    from services import stripe_connect
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        account = await asyncio.to_thread(stripe.Account.retrieve)
+    except Exception:
+        return  # про недоступный аккаунт уже сказал check_stripe_account
+
+    invoices = getattr(getattr(account, "settings", None), "invoices", None)
+    if not (getattr(invoices, "default_account_tax_ids", None) or []):
+        _err(
+            "на фактурах не печатается ВАШ налоговый номер (default_account_tax_ids пуст) — "
+            "документ без DIČ поставщика не даёт студии права на вычет НДС. "
+            "Дашборд Stripe → Settings → Invoices → Account tax IDs"
+        )
+
+
+async def check_tax_registrations() -> None:
+    """Страны, в которых Stripe Tax реально начисляет налог.
+
+    Без единой регистрации Stripe Tax не начисляет ничего: счета уходят с нулевым
+    НДС, и это не reverse charge, а необложенная продажа — недобор ложится на
+    платформу. Это блокер.
+
+    Одна регистрация (страна продавца) — рабочая конфигурация, и покупателю из другой
+    страны ЕС при ней уходит ДОМАШНЯЯ ставка продавца, а не ноль. Проверено вызовами
+    `tax.Calculation` на боевом ключе при единственной регистрации CZ: PL, DE и SK без
+    номера НДС дали 21 % `standard_rated`; ноль был только там, где номер НДС указан
+    (`reverse_charge`) и вне ЕС (`not_collecting`).
+
+    Предупреждаем не про ноль, а про порог: домашняя ставка правомерна, пока продажи
+    не-плательщикам НДС по ЕС не превысили 10 000 € в год. После порога нужен OSS, и
+    ставка обязана стать местной для каждой страны. Отследить порог по этим данным
+    нельзя — сумма продаж живёт в Stripe (он же и мониторит), поэтому это вопрос к
+    бухгалтеру, а не проверка.
+    """
+    import stripe
+    from services import stripe_connect
+
+    if not stripe_connect.configured():
+        return
+
+    try:
+        registrations = await asyncio.to_thread(stripe.tax.Registration.list, status="active", limit=100)
+        account = await asyncio.to_thread(stripe.Account.retrieve)
+    except Exception as exc:
+        _warn(f"не удалось прочитать налоговые регистрации Stripe Tax ({exc}) — проверьте в дашборде")
+        return
+
+    countries = {getattr(r, "country", None) for r in registrations.data} - {None}
+    if not countries:
+        _err(
+            "в Stripe Tax нет ни одной активной налоговой регистрации — все счета уйдут "
+            "с нулевым НДС. Tax → Registrations"
+        )
+    elif countries <= {getattr(account, "country", None)}:
+        home = ", ".join(sorted(countries))
+        _warn(
+            f"Stripe Tax зарегистрирован только в {home} — покупателю из другой страны ЕС без "
+            f"номера НДС уходит ДОМАШНЯЯ ставка {home}, а не 0 %. Это правомерно, пока продажи "
+            f"не-плательщикам НДС по ЕС не превысили 10 000 € в год; после порога нужен OSS и "
+            f"местная ставка каждой страны. Вопрос к бухгалтеру, порог отслеживает Stripe"
         )
 
 
@@ -350,6 +480,15 @@ async def check_stripe_catalog(sync: bool) -> None:
 
 
 async def main(sync: bool) -> int:
+    # Консоль Windows по умолчанию cp1251, а тексты проверок русские и со стрелками:
+    # без этого весь скрипт валится UnicodeEncodeError на первом же `→`, то есть
+    # ровно тогда, когда ему есть что сказать. `errors="replace"` — чтобы падение
+    # печати никогда не было важнее самой проверки.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", errors="replace")
+
     print("Velora: проверка конфигурации перед боевым режимом\n")
     check_secret_key()
     check_urls()
@@ -361,7 +500,10 @@ async def main(sync: bool) -> int:
     check_platform_email()
     check_legal_docs()
     await check_stripe_account()
+    await check_stripe_payment_methods()
     await check_stripe_tax()
+    await check_tax_registrations()
+    await check_invoice_tax_id()
     await check_stripe_catalog(sync)
     await check_db_stripe_links()
 
@@ -377,7 +519,10 @@ async def main(sync: bool) -> int:
     print(
         "\nОстаётся то, что живёт в дашборде Stripe и из кода не проверяется:\n"
         "  * /billing/webhook/stripe  — события customer.subscription.*, invoice.*,\n"
-        "    charge.refunded, setup_intent.succeeded. «Events on connected accounts» ВЫКЛ.\n"
+        "    charge.refunded, setup_intent.succeeded, customer.tax_id.updated.\n"
+        "    Последнее — сверка VAT ID с VIES: без подписки на него фиктивный номер\n"
+        "    НДС так и продолжит обнулять налог за счёт платформы.\n"
+        "    «Events on connected accounts» ВЫКЛ.\n"
         "  * /checkout/webhook/stripe — checkout.session.completed/expired/\n"
         "    async_payment_succeeded/async_payment_failed, charge.refunded,\n"
         "    charge.dispute.created, charge.dispute.closed.\n"

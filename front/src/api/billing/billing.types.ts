@@ -44,6 +44,12 @@ export interface BillingPlan {
    *  начинается с конца текущего оплаченного периода. */
   scheduled_plan?: string | null
   scheduled_at?: string | null
+  /** Есть ли живая подписка Stripe — считает сервер (checkout._has_live_subscription).
+   *  Выводить это из одного `status` нельзя: у студии, оплатившей по старой схеме или
+   *  потерявшей подписку при смене ключа Stripe, статус активен, а подписки нет —
+   *  интерфейс предлагал отложенный переход, а сервер отвечал обычной ссылкой оплаты
+   *  и уносил владельца на Stripe мимо выбора способа оплаты. */
+  has_live_subscription: boolean
 }
 
 export interface AutopaySettings {

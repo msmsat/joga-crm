@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import async_session_maker
-from models import StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember
+from models import Studio, StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember
 from services import stripe_billing, stripe_catalog
 from .plans import PLANS
 
@@ -202,6 +202,47 @@ def _period_months(stripe_invoice) -> int | None:
     return max(1, round((end - start) / _AVG_MONTH_SECONDS))
 
 
+async def _adopt_local_invoice(
+    db: AsyncSession, plan: StudioBillingPlan, stripe_id: str, metadata,
+) -> BillingInvoice | None:
+    """Наша строка счёта, которой Stripe-счёт ещё не приписан, или None.
+
+    Счета постоплаты (комиссия, минимум, фактура за онлайн) заводятся строкой в БД
+    ДО похода в Stripe, и её id уезжает в метаданные при выпуске
+    (services/offline_fee_billing._issue_to_stripe).
+
+    Без этого захода событие, обогнавшее наш `commit`, заводило ВТОРУЮ строку с тем же
+    `stripe_invoice_id`, наше присваивание падало на уникальном индексе, счёт оставался
+    без ссылки — и `_finish_pending` следующим часом выпускал студии второй документ за
+    тот же месяц. Окно крошечное, но у фактуры за онлайн-комиссию оно гарантированно
+    попадает в цель: `create_settled_invoice` закрывает счёт сам (`Invoice.pay`), и
+    `invoice.paid` вылетает ровно в этот момент.
+
+    Ищем строго по паре (id, студия) и только среди НЕПРИПИСАННЫХ: чужой или уже
+    связанный счёт метаданными не перехватывается.
+    """
+    local_id = getattr(metadata, "invoice_id", None) if metadata is not None else None
+    if not local_id:
+        return None
+    try:
+        local_id = int(local_id)
+    except (TypeError, ValueError):
+        logger.error("Stripe billing: invoice_id=%r в метаданных не число", local_id)
+        return None
+
+    row = (await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id == local_id,
+            BillingInvoice.studio_id == plan.studio_id,
+            BillingInvoice.stripe_invoice_id.is_(None),
+        )
+    )).scalar_one_or_none()
+    if row is not None:
+        row.stripe_invoice_id = stripe_id
+        logger.info("Stripe billing: счёт %s привязан к строке %s по метаданным", stripe_id, local_id)
+    return row
+
+
 async def mirror_invoice(
     db: AsyncSession, plan: StudioBillingPlan, stripe_invoice,
 ) -> BillingInvoice:
@@ -216,6 +257,8 @@ async def mirror_invoice(
     )).scalar_one_or_none()
 
     metadata = getattr(stripe_invoice, "metadata", None)
+    if row is None:
+        row = await _adopt_local_invoice(db, plan, stripe_id, metadata)
     if not getattr(metadata, "plan", None):
         # У автогенерируемых счетов цикла подписки метаданных на верхнем уровне НЕТ —
         # с API 2026-07-29 Stripe кладёт их в parent.subscription_details.metadata.
@@ -315,6 +358,8 @@ async def stripe_webhook(request: Request):
                 await _handle_refund(db, obj)
             elif event_type == "setup_intent.succeeded":
                 await _handle_setup_intent(db, obj)
+            elif event_type == "customer.tax_id.updated":
+                await _handle_tax_id(db, obj)
         except Exception:
             # 500, а НЕ 200. Stripe ретраит ТОЛЬКО non-2xx (трое суток с откатом), и
             # проглоченная здесь ошибка означала, что ретрая не будет вовсе: событие
@@ -384,6 +429,11 @@ def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
     сознательно не выдал, — и наоборот.
     """
     plan.status = map_subscription_status(getattr(subscription, "status", ""))
+    # Автопродление — тоже состояние подписки у Stripe, а не наша настройка: владелец
+    # мог выключить его кнопкой в CRM (router.update_autopay), а мог отменить подписку
+    # прямо в письме Stripe или в его портале. Зеркалим, чтобы «Автоматическое
+    # продление» в интерфейсе показывало то, что произойдёт на самом деле.
+    plan.auto_renewal = not getattr(subscription, "cancel_at_period_end", False)
     if plan.status == "expired":
         plan.expires_at = datetime.utcnow()
     elif plan.status in ("active", "past_due"):
@@ -489,6 +539,81 @@ async def _handle_setup_intent(db: AsyncSession, obj) -> None:
     await db.commit()
 
 
+# Статус сверки налогового номера с VIES, по которому номер снимается. РОВНО ОДИН:
+# `verified` — номер настоящий; `pending` — сверка ещё идёт (а в test-режиме Stripe
+# висит так всегда); `unavailable` — проверить не удалось (VIES лежал, тип номера
+# без сверки). Снять номер по этим трём значит начать брать НДС с честной студии
+# из-за чужого сбоя — при том, что деньги платформа при этом не теряет.
+_VAT_REJECTED = "unverified"
+
+
+def _same_vat(left: str | None, right: str | None) -> bool:
+    """Один и тот же номер НДС? Нормализация та же, что у формы настроек
+    (schemas/settings/general._strip_vat): пробелы и регистр значения не имеют."""
+    return bool(left) and (left or "").replace(" ", "").upper() == (right or "").replace(" ", "").upper()
+
+
+async def _handle_tax_id(db: AsyncSession, obj) -> None:
+    """Пришла сверка VAT ID с VIES. `unverified` → номер снимаем и у Stripe, и у себя.
+
+    Зачем: Stripe Tax применяет reverse charge (0 % НДС для юрлица из другой страны
+    ЕС) по ФОРМАТУ номера, не дожидаясь сверки — `DE000000000` обнуляет налог ровно
+    так же, как настоящий номер (проверено вызовами tax.Calculation на боевом ключе,
+    см. stripe_billing._ensure_tax_id). Сверка приезжает этим событием уже ПОСЛЕ
+    оплаты. Если номер выдуманный, права продавать без НДС у нас не было, и 21 %
+    налоговая снимет с ПЛАТФОРМЫ, а не со студии: деньги за тариф те же, а НДС из
+    них вычтут. Отсюда правило — убрать номер до того, как по нему выпишется
+    следующий счёт.
+
+    Порядок строгий: СНАЧАЛА Stripe, где считается налог, потом наша БД. Обратный
+    оставлял бы при упавшем запросе пустой vat_id у нас и живой номер у Stripe —
+    reverse charge продолжал бы действовать, а снять его было бы уже некому:
+    следующее событие по этому номеру не придёт.
+    """
+    status = getattr(getattr(obj, "verification", None), "status", None)
+    if status != _VAT_REJECTED:
+        return
+
+    customer_id = _customer_id(obj)
+    if not customer_id:
+        return
+
+    value = getattr(obj, "value", None)
+    # Падение сюда — 500 и ретрай Stripe (см. stripe_webhook): лучше повторить
+    # попытку, чем оставить фиктивный номер обнулять налог дальше.
+    await stripe_billing.delete_tax_id(customer_id, obj["id"])
+    logger.warning(
+        "Stripe billing: VAT ID %s клиента %s не прошёл сверку с VIES и снят у Stripe",
+        value, customer_id,
+    )
+
+    studio = (await db.execute(
+        select(Studio)
+        .join(StudioBillingPlan, StudioBillingPlan.studio_id == Studio.id)
+        .where(StudioBillingPlan.stripe_customer_id == customer_id)
+    )).scalar_one_or_none()
+    if studio is None:
+        logger.info("Stripe billing: клиент %s не привязан к студии", customer_id)
+        return
+
+    # Номер мог смениться, пока шла сверка: владелец увидел ошибку и вписал верный.
+    # Стирать в этом случае нечего — отставшее событие по старому номеру снесло бы
+    # студии свежий, возможно валидный, реквизит. Заодно это глушит повторное письмо
+    # на ретрае: во второй раз поле уже пустое.
+    if not _same_vat(studio.vat_id, value):
+        return
+
+    studio.vat_id = None
+    await db.commit()
+
+    # Письмо — после коммита и своих ошибок наружу не пускает (как send_receipt):
+    # номер уже снят, и упавший SMTP не повод получить ретрай применённого события.
+    # Импорт локальный: модуль тянет notifier, а тот — половину моделей.
+    from services.billing_mail import send_vat_rejected
+
+    await send_vat_rejected(db, studio.id, value)
+
+
 async def _handle_refund(db: AsyncSession, obj) -> None:
     """Возврат. Полный — переводит счёт в refunded и отменяет подписку, частичный
     (или без сумм в событии) не трогает ни счёт, ни подписку.
@@ -572,7 +697,11 @@ async def reconcile_subscriptions(db: AsyncSession) -> int:
 
     fixed = 0
     for plan in plans:
-        before = (plan.status, plan.expires_at)
+        # auto_renewal здесь наравне со статусом и сроком: он тоже зеркало (владелец
+        # мог отменить подписку в портале Stripe, а не в CRM), и без него изменение
+        # одного лишь флага не попадало бы в `fixed` — коммита бы не случилось, и
+        # перечитанное состояние молча выбрасывалось.
+        before = (plan.status, plan.expires_at, plan.auto_renewal)
         try:
             subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
         except Exception:
@@ -582,7 +711,7 @@ async def reconcile_subscriptions(db: AsyncSession) -> int:
             )
             continue
         _mirror_subscription_state(plan, subscription)
-        if (plan.status, plan.expires_at) != before:
+        if (plan.status, plan.expires_at, plan.auto_renewal) != before:
             fixed += 1
             logger.warning(
                 "Автосверка: студия %s разъехалась со Stripe — было %s до %s, стало %s до %s. "
@@ -697,6 +826,19 @@ async def apply_status(
             )
     elif status in ("failed", "refunded"):
         invoice.status = status
+        # Возврат снимает и записанный по счёту доход платформы — компенсирующей
+        # строкой, а не удалением исходной: леджер не переписывается задним числом
+        # (тот же принцип, что у Операций в кассе), а суммирование через func.sum
+        # само учтёт минус. Идемпотентность — на своём external_id.
+        source = _REVENUE_SOURCE.get(invoice.kind) if status == "refunded" else None
+        if source is not None and invoice.stripe_invoice_id:
+            from services.platform_fee import record_revenue
+
+            await record_revenue(
+                db, invoice.studio_id, source,
+                -invoice.amount, stripe_billing.CURRENCY,
+                f"rev:in:{invoice.stripe_invoice_id}",
+            )
     else:
         return False
 
@@ -863,7 +1005,13 @@ if __name__ == "__main__":
 
     # apply_status: ветки без похода в БД — повтор конечного статуса, откат paid, мусор.
     _fake_db = types.SimpleNamespace(commit=lambda: asyncio.sleep(0))
-    _inv = lambda status: types.SimpleNamespace(status=status)  # noqa: E731
+    # kind/stripe_invoice_id — то, по чему ветвится снятие дохода из леджера при
+    # возврате. Пустая ссылка на счёт Stripe значит «снимать нечего», и ни одна
+    # ветка ниже до записи в БД не доходит (у _fake_db нет execute — если дойдёт,
+    # self-check упадёт, и это ровно та защита, которая тут нужна).
+    _inv = lambda status: types.SimpleNamespace(  # noqa: E731
+        status=status, kind="subscription", stripe_invoice_id=None, amount=3900, studio_id=1,
+    )
 
     assert asyncio.run(apply_status(_fake_db, _inv("paid"), "paid")) is False
     assert asyncio.run(apply_status(_fake_db, _inv("refunded"), "refunded")) is False
@@ -942,6 +1090,17 @@ if __name__ == "__main__":
     assert _period_months(types.SimpleNamespace(lines=types.SimpleNamespace(data=[]))) is None
     # Разовая позиция счёта за комиссию: периода нет (start == end) — не месяц.
     assert _period_months(_inv_line(start=100, end=100)) is None
+
+    # Сверка номеров НДС нечувствительна к пробелам и регистру — форма настроек
+    # нормализует их ровно так же (schemas/settings/general._strip_vat), и «CZ 123»
+    # из письма Stripe обязано узнаваться в «cz123» из нашей БД.
+    assert _same_vat("CZ12345678", "cz 123 456 78")
+    assert not _same_vat("CZ12345678", "DE811907980")
+    # Пусто — это «стирать нечего», а не «тот же номер»: иначе событие по чужому
+    # номеру слало бы письмо студии, у которой VAT ID и так не заполнен.
+    assert not _same_vat(None, None)
+    assert not _same_vat(None, "CZ12345678")
+    assert not _same_vat("", "CZ12345678")
 
     assert "/webhook/stripe" in [r.path for r in router.routes]
     print("billing webhook self-check ok")

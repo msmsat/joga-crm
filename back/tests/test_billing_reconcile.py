@@ -313,6 +313,9 @@ class _SubPlan:
         self.status = status
         self.expires_at = expires_at
         self.stripe_subscription_id = sub_id
+        # Автопродление тоже зеркало (владелец мог отменить подписку в портале
+        # Stripe, а не в CRM) — сверка читает и пишет его наравне со статусом.
+        self.auto_renewal = True
 
 
 def _reconcile_db(plans):

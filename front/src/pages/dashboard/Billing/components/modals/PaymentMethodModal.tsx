@@ -121,7 +121,10 @@ export default function PaymentMethodModal({
               {t('payModal.invoiceTitle', { number: ibanData.invoice_number })}
             </div>
             <div>
-              <CopyRow label={t('payModal.beneficiary')} value={ibanData.beneficiary} />
+              {/* Получателя называет Stripe (счёт коллекторский). Не назвал — строку
+                  не показываем вовсе: выдуманное имя в платёжном поручении ломает
+                  проверку получателя в банке плательщика и отбивает перевод. */}
+              {ibanData.beneficiary && <CopyRow label={t('payModal.beneficiary')} value={ibanData.beneficiary} />}
               <CopyRow label={t('payModal.ibanLabel')} value={ibanData.iban} />
               {/* BIC требуют не все банки, но без него часть форм перевода не отправляется. */}
               {ibanData.bic && <CopyRow label={t('payModal.bicLabel')} value={ibanData.bic} />}

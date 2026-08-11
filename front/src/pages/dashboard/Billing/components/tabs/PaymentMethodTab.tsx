@@ -28,7 +28,8 @@ interface Props {
 export default function PaymentMethodTab({
   cards, loaded, plan, setAutopay, details, detailErrors, saveDetails,
 }: Props) {
-  const { t } = useTranslation('billing');
+  const { t, i18n } = useTranslation('billing');
+  const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
   // Тумблер «нужна фактура» тут значит «реквизиты компании заполнены»: заполненные
   // показываем сразу открытыми, пустые — за выключенным тумблером, чтобы карточка
   // не выглядела формой с обязательными полями у физлица.
@@ -151,12 +152,26 @@ export default function PaymentMethodTab({
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
             {AUTOPAY_FIELDS.map(({ key, field }) => {
-              const disabled = !canAutopay || !plan;
+              // Автопродление — это отмена подписки (бэк уводит его в
+              // cancel_at_period_end), и запирать её за наличием карты нельзя:
+              // студия на IBAN платит по счёту, карты у неё нет никогда, а Условия
+              // обещают отмену «в любой момент со страницы оплаты». Остальные
+              // тумблеры про автосписание и остаются на прежнем правиле.
+              const cancelSwitch = field === 'auto_renewal';
+              const disabled = !plan || (!canAutopay && !(cancelSwitch && plan.has_live_subscription));
+              const off = cancelSwitch && plan && !plan.auto_renewal;
               return (
                 <div key={key} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--onyx)', marginBottom: '2px' }}>{t(`method.autopay.${key}.label`)}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{!canAutopay ? t('method.autopay.cardOnly') : t(`method.autopay.${key}.desc`)}</div>
+                    <div style={{ fontSize: '11px', color: disabled || !off ? 'var(--muted)' : 'var(--rose)' }}>
+                      {/* Выключенное автопродление = подписка не продлится. Владелец
+                          обязан видеть дату, до которой доступ остаётся, — иначе
+                          «выключено» читается как «отключили прямо сейчас». */}
+                      {off && plan?.expires_at
+                        ? t('method.autopay.autoRenew.until', { date: new Date(plan.expires_at).toLocaleDateString(dateLocale) })
+                        : disabled && !cancelSwitch ? t('method.autopay.cardOnly') : t(`method.autopay.${key}.desc`)}
+                    </div>
                   </div>
                   <Switch checked={!!plan?.[field]} onChange={v => setAutopay(field, v)} disabled={disabled} />
                 </div>

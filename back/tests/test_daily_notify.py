@@ -85,7 +85,74 @@ def test_studio_selection_is_not_gated_by_matrix_rows():
     assert "select(Studio.id)" in selection, selection
 
 
+def _billing_check(plan, days_left=2):
+    """Прогон _run_billing_check с фейковой сессией. Возвращает список отправок."""
+    import asyncio
+    from datetime import date as _date
+    from types import SimpleNamespace
+
+    sent = []
+
+    class _R:
+        def scalar_one_or_none(self): return plan
+
+    class _DB:
+        async def execute(self, _q): return _R()
+
+    async def fake_notify(_db, studio_id, role, event_id, ctx):
+        sent.append((role, event_id, ctx))
+
+    saved = D.notify
+    D.notify = fake_notify
+    try:
+        today = _date(2026, 8, 11)
+        plan.expires_at = datetime.combine(today, datetime.min.time()) + timedelta(days=days_left)
+        asyncio.run(D._run_billing_check(_DB(), 1, today))
+    finally:
+        D.notify = saved
+    return sent
+
+
+def _plan(**kw):
+    from types import SimpleNamespace
+    return SimpleNamespace(**{
+        "expires_at": None, "notify_before_days": 3,
+        "notify_before_autocharge": True, "auto_renewal": True,
+        "stripe_subscription_id": "sub_1", **kw,
+    })
+
+
+def test_autocharge_reminder_respects_its_toggle():
+    """«Уведомить перед автоматическим списанием» выключено → письма нет.
+
+    Тумблер годами ничего не читал: обещание «напомним перед списанием» не было
+    подкреплено ничем. Конец оплаченного периода на живой подписке И ЕСТЬ момент
+    списания — другого «перед списанием» не существует.
+    """
+    assert _billing_check(_plan()) , "включённый тумблер обязан слать напоминание"
+    assert _billing_check(_plan(notify_before_autocharge=False)) == []
+
+
+def test_expiry_warning_ignores_the_autocharge_toggle():
+    """Автопродления нет — письмо про истечение доступа уходит независимо от тумблера.
+
+    Там уже не списание, а конец доступа, и промолчать о нём нельзя: настройка
+    касается автосписания, которого в этом случае не будет.
+    """
+    assert _billing_check(_plan(auto_renewal=False, notify_before_autocharge=False))
+    assert _billing_check(_plan(stripe_subscription_id=None, notify_before_autocharge=False))
+
+
+def test_no_reminder_outside_the_window():
+    """За пределами notify_before_days молчим — и до, и после срока."""
+    assert _billing_check(_plan(), days_left=10) == []
+    assert _billing_check(_plan(), days_left=-1) == []
+
+
 def test_run_daily_notify():
+    test_autocharge_reminder_respects_its_toggle()
+    test_expiry_warning_ignores_the_autocharge_toggle()
+    test_no_reminder_outside_the_window()
     test_is_birthday_matches_month_and_day()
     test_is_birthday_feb29_in_non_leap_year_falls_back_to_feb28()
     test_is_birthday_feb29_in_leap_year_matches_feb29()

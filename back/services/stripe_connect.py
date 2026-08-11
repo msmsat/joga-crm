@@ -224,6 +224,30 @@ async def session_id_for_payment_intent(payment_intent: str, account_id: str) ->
     return sessions.data[0].id if sessions.data else None
 
 
+async def refunded_application_fee(charge_id: str, account_id: str) -> int:
+    """Сколько из удержанной доли платформы реально вернулось студии. 0 — ничего.
+
+    Спрашиваем, а не считаем. Возврат платежа комиссию платформы НЕ возвращает
+    автоматически: по умолчанию Stripe оставляет её нам, и снять доход из леджера
+    в этом случае значило бы занизить собственную выручку и недосчитать фактуру.
+    Обратная ошибка не лучше: если студия при возврате поставила галку «вернуть
+    комиссию», оставленная строка леджера — документ на деньги, которых нет.
+    Возвращает студия из СВОЕГО дашборда, то есть решение принимаем не мы.
+
+    Два разных запроса не по недосмотру: сам charge живёт на аккаунте студии
+    (direct charge), а `ApplicationFee` — на аккаунте платформы, это её доход.
+    """
+    charge = await asyncio.to_thread(
+        stripe.Charge.retrieve, charge_id, stripe_account=account_id,
+    )
+    fee = getattr(charge, "application_fee", None)
+    fee_id = fee if isinstance(fee, str) else getattr(fee, "id", None)
+    if not fee_id:
+        return 0
+    application_fee = await asyncio.to_thread(stripe.ApplicationFee.retrieve, fee_id)
+    return int(getattr(application_fee, "amount_refunded", 0) or 0)
+
+
 async def session_paid(session_id: str, account_id: str) -> bool:
     """Оплачена ли сессия — спрашиваем Stripe, фронту на слово не верим."""
     session = await asyncio.to_thread(

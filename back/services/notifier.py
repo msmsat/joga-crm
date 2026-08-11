@@ -563,8 +563,17 @@ def _user_recipient(user: User) -> Recipient:
     return Recipient(user.id, user.email, user.tg_id, user.phone)
 
 
+# События-близнецы: у владельца есть СВОЯ версия того же письма — a8 «Отчёт за
+# день» и o1 «Ежедневная сводка» отличаются только заголовком, цифры в теле те же.
+# Для них fallback «нет администраторов → шлём владельцу» превращал пару в два
+# одинаковых письма в 21:00 (у студии без отдельного админа — а это норма).
+# Админов нет → admin-версию просто не шлём: владельца накрывает его собственная.
+_NO_OWNER_FALLBACK = frozenset({"a8"})
+
+
 async def _recipient(
     db: AsyncSession, studio_id: int, role: str, context: dict[str, Any],
+    event_id: str | None = None,
 ) -> list[Recipient]:
     """Приводит "кому" к списку Recipient — одинаково для клиента и сотрудника
     (N-9, задача 2). Сотрудник получает свой tg_id/phone наравне с клиентом,
@@ -579,7 +588,8 @@ async def _recipient(
         занятия, напр. t1) → только тренер этого занятия, не вся команда;
       - role == "trainer"/"admin" без trainer_id → все сотрудники студии с
         этой ролью; "admin" без админов — fallback на владельца (в маленькой
-        студии администратора может не быть);
+        студии администратора может не быть), кроме событий из
+        _NO_OWNER_FALLBACK, у которых владельцу и так уходит своя версия;
       - role == "owner" → владелец студии."""
     client_id = context.get("client_id")
     if role == "client":
@@ -619,6 +629,8 @@ async def _recipient(
         )).scalars().all()
         if users:
             return [_user_recipient(u) for u in users]
+        if event_id in _NO_OWNER_FALLBACK:
+            return []
         # fallback: маленькая студия без отдельного администратора
 
     owner = (await db.execute(
@@ -658,7 +670,7 @@ async def notify(
 
         wa_template = message_payload(event_id, context, lang, currency)
 
-        recipients = await _recipient(db, studio_id, role, context)
+        recipients = await _recipient(db, studio_id, role, context, event_id)
         if not recipients:
             return False  # некому слать ни на один канал
 

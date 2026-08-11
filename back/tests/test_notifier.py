@@ -151,6 +151,16 @@ def test_recipient_staff_includes_tg_id_and_phone():
     assert r.phone == "+79990000000"
 
 
+def test_recipient_a8_does_not_fall_back_to_owner():
+    # В студии без отдельного администратора владелец получал в 21:00 два
+    # одинаковых письма: a8 «Отчёт за день» (по фолбэку) и o1 «Ежедневная сводка».
+    assert asyncio.run(N._recipient(_DB([[]]), 1, "admin", {}, "a8")) == []
+    # Остальным admin-событиям фолбэк на владельца нужен как раньше.
+    owner = _FakeUser(id=9, email="owner@studio.ru", tg_id=None, phone=None)
+    got = asyncio.run(N._recipient(_DB([[], owner]), 1, "admin", {}, "a3"))
+    assert [r.email for r in got] == ["owner@studio.ru"]
+
+
 def test_notify_staff_fanout_hits_telegram_and_whatsapp():
     # Ключевой регресс-тест эпика N-9: раньше notify() слал сотруднику ТОЛЬКО
     # email (гейт `if client is not None` перед tg/wa). Теперь при включённых
@@ -279,6 +289,7 @@ def test_render():
     test_render_t9_trainer_lesson_cancelled()
     test_render_new_dead_events_t2_t5_a7_a9_o9_t7()
     test_recipient_staff_includes_tg_id_and_phone()
+    test_recipient_a8_does_not_fall_back_to_owner()
     test_notify_staff_fanout_hits_telegram_and_whatsapp()
     test_render_c12_bonus_uses_raw_amount_and_description()
     test_tg_format_every_event_renders_valid_html()

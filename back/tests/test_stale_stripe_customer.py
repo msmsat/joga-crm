@@ -159,6 +159,41 @@ def test_subscription_check_does_not_swallow_other_errors():
         stripe.Subscription.retrieve = saved
 
 
+def _plan_row(subscription_id):
+    return SimpleNamespace(
+        plan_name="start", billing_cycle="monthly", status="active",
+        expires_at=None, max_staff=5, auto_renewal=True, billing_mode="subscription",
+        percent_rate=None, fixed_base_amount=None, notify_before_days=3,
+        notify_before_autocharge=True, email_receipt_enabled=True,
+        sms_notification_enabled=False, scheduled_plan=None, scheduled_at=None,
+        stripe_subscription_id=subscription_id,
+    )
+
+
+def test_plan_response_reports_whether_the_subscription_is_live():
+    """Интерфейс ветвится по ответу сервера, а не по одному `status`.
+
+    Пока признак выводился из статуса, студия без подписки (оплата по старой схеме
+    или потерянная ссылка при смене ключа) видела выбор «сейчас / с начала периода»,
+    а сервер отвечал ей обычной ссылкой оплаты — и владельца уносило на страницу
+    Stripe мимо выбора способа оплаты.
+    """
+    from routers.billing.router import _to_plan_read
+
+    assert _to_plan_read(_plan_row("sub_live")).has_live_subscription is True
+    # Статус тот же active — расходится только наличие подписки.
+    assert _to_plan_read(_plan_row(None)).has_live_subscription is False
+
+
+def test_plan_response_uses_the_checkout_predicate_itself():
+    """Не копия правила: второе такое же условие разъехалось бы с первым."""
+    import inspect
+
+    from routers.billing.router import _to_plan_read
+
+    assert "_has_live_subscription(row)" in inspect.getsource(_to_plan_read)
+
+
 def test_both_charging_endpoints_check_the_link():
     import inspect
 

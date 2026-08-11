@@ -351,6 +351,46 @@ def test_bank_transfer_closes_invoice_end_to_end():
     asyncio.run(_bank_transfer_closes_invoice_end_to_end())
 
 
+# ------------------------- выключенный в дашборде банковский перевод
+
+def test_disabled_bank_transfer_is_told_apart_from_a_generic_refusal():
+    """Способ оплаты `customer_balance` включается галкой в дашборде Stripe, и пока
+    он выключен, Subscription.create отвечает «payment method type is invalid».
+
+    Под общим текстом «Stripe отклонил запрос, попробуйте ещё раз» это был тупик:
+    повтор не меняет ничего, а починить может только владелец аккаунта. Отделяем,
+    чтобы отдать 503 с внятной причиной."""
+    from routers.billing.checkout import _is_bank_transfer_disabled
+
+    disabled = stripe.InvalidRequestError(
+        "The payment method type `customer_balance` is invalid. Please ensure the "
+        "provided type is activated in your dashboard",
+        param=None,
+    )
+    assert _is_bank_transfer_disabled(disabled) is True
+
+    # Посторонние отказы Stripe обязаны остаться 502: выдать их за ненастроенный
+    # перевод значит послать владельца крутить не ту галку.
+    for other in (
+        stripe.InvalidRequestError("No such subscription: 'sub_1'", param="id"),
+        stripe.CardError("Your card was declined", param=None, code="card_declined"),
+        RuntimeError("customer_balance"),  # текст совпал, тип — нет
+    ):
+        assert _is_bank_transfer_disabled(other) is False, type(other).__name__
+
+
+def test_disabled_bank_transfer_answers_503_with_its_own_code():
+    """Фронт показывает текст сервера — общий код увёл бы студию в «попробуйте ещё раз»."""
+    import inspect
+
+    from routers.billing.checkout import _BANK_TRANSFER_OFF, create_iban_checkout
+
+    src = inspect.getsource(create_iban_checkout)
+    assert "_is_bank_transfer_disabled(exc)" in src
+    assert "status_code=503, detail=_BANK_TRANSFER_OFF" in src
+    assert _BANK_TRANSFER_OFF["code"] == "billing.bank_transfer_disabled"
+
+
 if __name__ == "__main__":
     test_every_plan_period_has_lookup_key()
     test_intervals_cover_all_periods()
