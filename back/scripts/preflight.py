@@ -283,10 +283,20 @@ async def check_db_stripe_links() -> None:
         retrieve = stripe.Account.retrieve if object_id.startswith("acct_") else stripe.Customer.retrieve
         try:
             await asyncio.to_thread(retrieve, object_id)
-        except stripe.InvalidRequestError:
+        # Два РАЗНЫХ класса на один смысл «этого объекта под текущим ключом нет».
+        # Customer отвечает InvalidRequestError («No such customer»), а вот
+        # подключённый аккаунт — PermissionError («key does not have access to
+        # account … or that account does not exist»): чужой acct_ Stripe не
+        # подтверждает даже фактом отсутствия. Это НЕ сбой связи, а ровно тот
+        # ответ, ради которого проверка написана, — ловить только первый класс
+        # значило бы объявить тестовый acct_ «Stripe не ответил» и замолчать
+        # блокер предупреждением.
+        except (stripe.InvalidRequestError, stripe.PermissionError):
             stale.append(object_id)
         except Exception as exc:
-            _warn(f"Stripe не ответил про {object_id} ({exc})")
+            # Сеть, протухший ключ, лимит — про остальные id ответа уже не будет,
+            # и «протухших не найдено» здесь означало бы ложное «всё чисто».
+            _warn(f"Stripe не ответил про {object_id} ({exc}) — проверка ссылок оборвана")
             return
 
     if stale:
