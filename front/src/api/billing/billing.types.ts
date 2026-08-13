@@ -81,17 +81,6 @@ export interface OfflineFeeStatus {
   grace_days: number
 }
 
-export interface IbanCheckout {
-  invoice_id: number
-  invoice_number: string
-  iban: string
-  amount: number
-  reference: string
-  beneficiary: string            // держателя счёта называет Stripe — счёт коллекторский
-  bic: string | null             // часть банков требует BIC вместе с IBAN
-  hosted_invoice_url: string | null   // фактура Stripe: печать, PDF, оплата картой
-}
-
 export interface BillingStats {
   total_spent: number          // копейки
   months_with_us: number
@@ -133,16 +122,27 @@ export interface PaymentCard {
 export interface CheckoutRequest {
   plan: 'start' | 'pro' | 'business'
   period_months: 1 | 6 | 12 | 24
-  /** Когда новый тариф вступает в силу. Значимо только при живой подписке:
-   *  'period_end' — с конца оплаченного периода, платить сейчас не нужно;
-   *  'now' — сразу, остаток текущего периода сгорает без возврата. */
-  apply?: 'period_end' | 'now'
+  // Поля `apply` нет: переход всегда немедленный, с зачётом остатка текущего
+  // периода. Отложенный переход «с начала следующего периода» убран.
 }
 
 export interface CheckoutResponse {
-  checkout_url: string
-  /** true — тариф поставлен в расписание, оплата сейчас не требуется. */
-  scheduled?: boolean
-  /** Момент вступления нового тарифа в силу (ISO), при scheduled. */
-  applies_at?: string | null
+  /** null — платить нечего: переход уже применён, вести владельца некуда. */
+  checkout_url: string | null
+}
+
+/** Расчёт для модалки оплаты: что спишется, что зачтётся, что сгорит.
+ *  Суммы в копейках и БЕЗ налога — его считает Stripe Tax на своей странице. */
+export interface CheckoutPreview {
+  /** new — подписки нет; renewal — тот же тариф, месяцы прибавляются к сроку;
+   *  switch — смена тарифа с зачётом неиспользованного остатка. */
+  kind: 'new' | 'renewal' | 'switch'
+  current_plan: string | null
+  gross: number     // полная цена выбранного тарифа за период
+  credit: number    // зачёт остатка текущего тарифа
+  total: number     // к оплате сейчас = max(0, gross − credit)
+  burned: number    // сколько остатка сгорит (переход на тариф дешевле)
+  currency: string
+  /** true — Stripe не ответил, зачёт в расчёт не попал: показана полная цена. */
+  estimated: boolean
 }

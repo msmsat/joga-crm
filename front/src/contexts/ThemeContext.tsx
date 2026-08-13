@@ -37,16 +37,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data } = useQuery({
     queryKey: queryKeys.appearance,
     queryFn: () => settingsApi.getAppearance(),
-    // Пока первый запрос в пути, берём тему этого аккаунта с прошлого раза,
-    // чтобы не мигать светлым при theme === 'dark' в БД.
-    initialData: () => {
-      const cached = readThemeSeed();
-      // language здесь null, а не «затравка»: язык из кэша подставлять нельзя —
-      // DashboardLayout принял бы его за личный выбор и перебил язык студии.
-      return cached ? { theme: cached, accent_color: null, language: null } : undefined;
-    },
   });
-  const theme = data?.theme ?? "light";
+  // Ответа ещё нет (первый запрос) или его отобрали (queryClient.clear() при
+  // смене студии/аккаунта) — берём тему этого аккаунта с прошлого раза. Читать
+  // «данных нет» как light нельзя: после clear() подписанный наблюдатель
+  // остаётся с пустыми данными и сам не перезапрашивает, и кабинет белел
+  // насовсем. Затравку кладём в fallback, а не в initialData: тем ключом
+  // делятся Настройки и DashboardLayout, и подсовывать им полу-ответ незачем.
+  const theme = data?.theme ?? readThemeSeed() ?? "light";
 
   // Layout-эффект, а не обычный: при входе кабинет открывается без перезагрузки
   // страницы, и класс должен встать ДО первого кадра — иначе видна вспышка
@@ -57,9 +55,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applyDarkClass(dark);
     // Затравку пишем и с серверного ответа, а не только по клику в AppearanceTab:
     // иначе на новом устройстве первый заход мигнёт светлым (её читает инлайн-
-    // скрипт в index.html ещё до старта React).
-    saveThemeSeed(theme);
-  }, [theme]);
+    // скрипт в index.html ещё до старта React). ТОЛЬКО с ответа сервера: раньше
+    // сюда попадал и угаданный дефолт "light", затирая в localStorage реальную
+    // тёмную — и следующая загрузка начиналась белым экраном.
+    if (data?.theme) saveThemeSeed(data.theme);
+  }, [theme, data?.theme]);
 
   // auto → слушаем смену системной темы на лету.
   useEffect(() => {

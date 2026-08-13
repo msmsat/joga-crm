@@ -2,10 +2,8 @@
 периода.
 
 fake_iban() (тестовый детерминированный IBAN) удалена в Task 7 вместе с ручным
-переводом счёта в paid — IBAN теперь настоящий, выданный Stripe
-(funding_instructions в services/stripe_billing.py), а закрывает счёт сам Stripe
-по входящему переводу. Сквозная проверка этой ветки — в
-tests/test_billing_subscription.py::test_bank_transfer_closes_invoice_end_to_end.
+переводом счёта в paid, а сама оплата переводом — в переделке 13.08.2026: способ
+оплаты остался один, карта. Комбо-фикс от этого не зависит — считается по каталогу.
 
 Запуск из back/:  python -m tests.test_billing_activation
 """

@@ -1,19 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
-import type { ActivateModelRequest, IbanCheckout, AutopaySettings, PaymentCard, BillingStats } from '../../../../api/billing/billing.types';
+import type { ActivateModelRequest, AutopaySettings, PaymentCard, BillingStats, CheckoutPreview } from '../../../../api/billing/billing.types';
 import { PLAN_COLORS, PLAN_STAFF_FALLBACK } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useToast } from '../../../../components/ui/index';
-import { useInvoiceDetails, validateInvoiceDetails, type InvoiceDetailErrors } from './useInvoiceDetails';
 
 type PlanInfo = { name: string; monthly: number; color: string; staffLimit: number | null };
-
-// Шаги модалки оплаты: выбор способа → (реквизиты фактуры, если их ещё нет) → оплата.
-// 'card' больше нет: выбор карты сразу уводит на страницу Stripe, промежуточного
-// экрана с неактивными полями карты не осталось (§ chooseMethod).
-export type PayBranch = 'choose' | 'details' | 'iban';
 
 const PLAN_IDS = Object.keys(PLAN_COLORS) as PlanType[];
 
@@ -40,7 +34,7 @@ export function useBillingCalculator() {
   const [selectedPeriod, setSelectedPeriod] = useState<1 | 6 | 12 | 24>(1);
   const [modelBusy, setModelBusy] = useState(false);
   const [activeTab, setActiveTab] = useState<BillingTab>('plans');
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPayModal, setShowPayModal] = useState(false);
   const [animateCards, setAnimateCards] = useState(false);
 
   // Каталог с сервера — источник истины о ценах (правило 6 эпика). Цены приходят
@@ -55,21 +49,16 @@ export function useBillingCalculator() {
   // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
   // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
   const [minMonthly, setMinMonthly] = useState(0);
-  // Модалка выбора способа оплаты (эпик B4) — заменяет прямой редирект на оплату.
-  const [showPayModal, setShowPayModal] = useState(false);
-  const [payBranch, setPayBranch] = useState<PayBranch>('choose');
-  const [ibanData, setIbanData] = useState<IbanCheckout | null>(null);
   const [payBusy, setPayBusy] = useState(false);
-  // Какой способ ждёт шага реквизитов. Карте нужен только IČO/DIČ для фактуры —
-  // адрес и индекс собирает сама страница Stripe; переводу нужна ещё и страна,
-  // потому что хостед-страницы, где Stripe спросил бы её сам, в этой ветке нет.
-  const [pendingMethod, setPendingMethod] = useState<'iban' | 'card'>('card');
-  // Реквизиты фактуры (IČO/DIČ/страна). Спрашиваются ОДИН раз — на шаге 'details'
-  // перед первой оплатой; заполненные лежат в профиле студии и больше не всплывают.
-  const details = useInvoiceDetails();
-  const [wantInvoice, setWantInvoice] = useState(true);
-  const [detailErrors, setDetailErrors] = useState<InvoiceDetailErrors>({});
-  // Способ, выбранный до шага реквизитов: к нему возвращаемся после сохранения.
+  // Расчёт перехода: зачёт остатка, итог к оплате, что сгорит. Считает сервер тем
+  // же вызовом Stripe, которым потом выставит счёт (GET /billing/checkout/preview),
+  // поэтому своей арифметики остатка здесь нет и быть не должно.
+  //
+  // Хранится ВМЕСТЕ с ключом «для чего посчитан». Так «идёт загрузка» становится
+  // производным (ключ расчёта ≠ текущий выбор), а не вторым состоянием, которое
+  // пришлось бы поднимать синхронно внутри эффекта. Побочно это закрывает и гонку:
+  // ответ на устаревший запрос не совпадёт ключом и не подменит показанные цифры.
+  const [preview, setPreview] = useState<{ key: string; data: CheckoutPreview | null } | null>(null);
   // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
@@ -160,8 +149,6 @@ export function useBillingCalculator() {
   };
 
   const openPayModal = () => {
-    setPayBranch('choose');
-    setIbanData(null);
     // Страховка от залипшего флага: открытие всегда начинается с рабочего состояния.
     setPayBusy(false);
     setShowPayModal(true);
@@ -177,8 +164,7 @@ export function useBillingCalculator() {
     return () => window.removeEventListener('pageshow', wake);
   }, []);
 
-  // «Оплатить» больше не редиректит сразу (эпик B4) — открывает модалку выбора способа,
-  // сам платёж/показ IBAN происходит внутри неё.
+  // «Оплатить» открывает модалку расчёта — единственный экран перед Stripe.
   //
   // Перед этим выравниваем режим: сумму подписки считает сервер по billing_mode из БД
   // (checkout._is_combo), а не по выбранной плитке. Студия на комбо, нажавшая «Оплатить»
@@ -194,114 +180,65 @@ export function useBillingCalculator() {
     openPayModal();
   };
 
-  // Закрытие и «Назад» обязаны снимать блокировку. Оплата картой уводит на Stripe
-  // и НЕ снимает payBusy сама — редиректу это ни к чему. Но если владелец успел
-  // закрыть модалку до ухода (или вернулся из Stripe), флаг оставался поднятым, и
-  // следующее «Купить» открывало модалку, где всё уже заблокировано «загрузкой».
   const closePayModal = () => {
     setShowPayModal(false);
     setPayBusy(false);
+    // Следующее открытие не должно и на кадр показать цифры прошлого: подписка
+    // могла измениться, а сумма — это то, что спишут.
+    setPreview(null);
   };
 
-  // Ветка IBAN: настоящий счёт Stripe + реквизиты для перевода, фактура уезжает письмом.
-  // Ошибку показываем как её объяснил сервер (нет страны → 422 tax_details_required,
-  // доплачивать нечего → 409): общий тост «попробуйте ещё раз» не говорил владельцу,
-  // что именно надо сделать, и упирал его в тупик.
-  const payWithIban = () => {
-    if (payBusy) return;
-    setPayBusy(true);
-    billingApi.checkoutIban(selectedPlan, selectedPeriod)
-      .then(data => { setIbanData(data); setPayBranch('iban'); })
-      .catch(err => toast.error(errorMessage(err, t)))
-      .finally(() => setPayBusy(false));
-  };
+  // Для какого выбора нужен расчёт прямо сейчас. billing_mode в ключе не случайно:
+  // у комбо цена половинная, и переключение режима обязано пересчитать расчёт, а
+  // не оставить цифры от подписки.
+  const previewKey = `${selectedPlan}:${selectedPeriod}:${plan?.billing_mode ?? ''}`;
+  const previewBusy = showPayModal && preview?.key !== previewKey;
 
-  // Ветка карты: сервер считает сумму и отдаёт ссылку Stripe, уходим на неё (правило 6).
+  // Расчёт тянем, пока модалка открыта. Зависимость — ключ, а не момент открытия:
+  // модалку открывает кнопка, которая тариф же и выставляет, а setState асинхронен,
+  // поэтому запрос в openPayModal ушёл бы за ПРЕДЫДУЩИМ выбором.
+  useEffect(() => {
+    if (!showPayModal) return;
+    billingApi.previewCheckout(selectedPlan, selectedPeriod)
+      .then(data => setPreview({ key: previewKey, data }))
+      // Даже провал запоминаем под ключом: иначе модалка навсегда осталась бы в
+      // состоянии «считаем», а кнопка оплаты — заблокированной.
+      .catch(() => setPreview({ key: previewKey, data: null }));
+    // Тариф и период уже зашиты в previewKey — лишних прогонов они не добавляют.
+  }, [showPayModal, previewKey, selectedPlan, selectedPeriod]);
+
+  // Единственный путь оплаты: сервер считает сумму и отдаёт ссылку Stripe (правило 6).
+  // Смена тарифа при этом уже применена на сервере — ссылка ведёт на выставленный
+  // счёт; у первой покупки это страница Stripe Checkout.
   const payWithCard = () => {
     if (payBusy) return;
     setPayBusy(true);
-    // 'now': эту ветку открывает только «перейти сейчас» — отложенный переход
-    // платежа не требует вовсе и уходит через scheduleUpgrade.
-    billingApi.checkout(selectedPlan, selectedPeriod, 'now')
-      .then(({ checkout_url }) => { window.location.href = checkout_url; })
+    billingApi.checkout(selectedPlan, selectedPeriod)
+      .then(({ checkout_url }) => {
+        if (checkout_url) { window.location.href = checkout_url; return; }
+        // Платить нечего (переход на тариф дешевле зачёлся остатком целиком):
+        // счёта, куда вести, нет. Раньше сервер подставлял сюда адрес самой
+        // страницы тарифа, и владелец получал бессмысленную перезагрузку — а с
+        // боевым WEB_APP_URL его вообще уносило на другой домен.
+        closePayModal();
+        loadPlan(); loadInvoices(); loadStats();
+        toast.success(t('payModal.switched'));
+      })
       .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); }); // при ошибке снимаем блок, редиректа не было
   };
 
-  // Апгрейд с начала следующего периода: тариф ставится в расписание Stripe, платить
-  // сейчас не нужно, оплаченный остаток текущего периода доигрывает целиком. Модалки
-  // оплаты здесь нет намеренно — платить не за что.
-  const scheduleUpgrade = () => {
-    if (payBusy) return;
-    setPayBusy(true);
-    billingApi.checkout(selectedPlan, selectedPeriod, 'period_end')
-      .then(res => {
-        // Живой подписки нет — сервер вернул обычную ссылку оплаты: первый тариф
-        // откладывать не с чего, начинаем сразу.
-        if (!res.scheduled) { window.location.href = res.checkout_url; return; }
-        // Имя тарифа берём из i18n по id, а не из `plans`: тот объявлен ниже по
-        // файлу через useMemo, и ссылка на него отсюда ломает мемоизацию.
-        toast.success(t('upgrade.scheduledToast', {
-          plan: t(`planNames.${selectedPlan}`),
-          date: res.applies_at ? new Date(res.applies_at).toLocaleDateString() : '',
-        }));
-        billingApi.getPlan().then(setPlan).catch(() => { /* подпись обновится при перезагрузке */ });
-      })
-      .catch(err => toast.error(errorMessage(err, t)))
-      .finally(() => setPayBusy(false));
-  };
-
-  // Выбор способа оплаты. Реквизиты фактуры спрашиваем ПЕРЕД оплатой и только если их
-  // ещё нет: IČO нужен для фактуры, страна — для налога (бэкенд без неё отвечает 422,
-  // а Stripe Tax без страны не знает ставки и показывает цену без НДС). Заполненные
-  // лежат в профиле студии и больше не всплывают — поправить их можно на вкладке
-  // «Способ оплаты».
-  //
-  // details.loaded обязателен: пока профиль студии едет, saved пустой, и без этой
-  // проверки шаг всплывал бы у студии, которая реквизиты давно заполнила.
-  const chooseMethod = (method: 'iban' | 'card') => {
-    if (payBusy || !details.loaded) return;
-    if (!details.saved.company_id || !details.saved.country) {
-      setPendingMethod(method);
-      setWantInvoice(true);
-      setDetailErrors({});
-      setPayBranch('details');
-      return;
-    }
-    if (method === 'iban') payWithIban();
-    else payWithCard();
-  };
-
-  // Шаг реквизитов: валидируем, сохраняем в профиль студии и продолжаем к оплате.
-  // Сохранение обязательно ДО оплаты — Stripe Customer собирается из профиля студии
-  // (routers/billing/checkout._ensure_customer), реквизиты из состояния он не увидит.
-  const submitDetails = () => {
-    if (payBusy) return;
-    const errors = validateInvoiceDetails(
-      details.value, { wantInvoice, requireCountry: true }, t,
-    );
-    setDetailErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-
-    setPayBusy(true);
-    details.save()
-      .then(() => {
-        setPayBusy(false);
-        if (pendingMethod === 'iban') payWithIban();
-        else payWithCard();
-      })
-      .catch(err => { setPayBusy(false); toast.error(errorMessage(err, t)); });
-  };
-
-  // Та же форма во вкладке «Способ оплаты» — заполнить реквизиты заранее, без оплаты.
-  const saveDetails = () => {
-    const errors = validateInvoiceDetails(
-      details.value, { wantInvoice: !!details.value.company_id, requireCountry: false }, t,
-    );
-    setDetailErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-    details.save()
-      .then(() => toast.success(t('method.details.saved')))
-      .catch(err => toast.error(errorMessage(err, t)));
+  // Портал Stripe: реквизиты плательщика и VAT ID. Открывается в ЭТОЙ вкладке, а не
+  // в новой: возврат оттуда идёт по return_url обратно на страницу тарифа, и вторая
+  // вкладка оставила бы владельца с двумя копиями биллинга в разных состояниях.
+  const [portalBusy, setPortalBusy] = useState(false);
+  const openPortal = () => {
+    if (portalBusy) return;
+    setPortalBusy(true);
+    billingApi.openPortal()
+      // Портал всегда отдаёт ссылку; проверка — чтобы общий тип ответа
+      // (у смены тарифа ссылки может не быть) не превращался в переход в никуда.
+      .then(({ checkout_url }) => { if (checkout_url) window.location.href = checkout_url; })
+      .catch(err => { setPortalBusy(false); toast.error(errorMessage(err, t)); });
   };
 
   // Сверка статуса счёта с банком (вебхук мог не дойти). Оплаченный счёт активирует
@@ -368,19 +305,15 @@ export function useBillingCalculator() {
     selectedPlan, setSelectedPlan,
     selectedPeriod, setSelectedPeriod,
     activeTab, setActiveTab,
-    showUpgradeModal, setShowUpgradeModal,
+    showPayModal, setShowPayModal,
     animateCards,
     getPrice, periodDiscounts, plans, minMonthly,
     currentMonthly, discountedPrice, totalToPay, savedTotal,
-    startCheckout, scheduleUpgrade,
+    startCheckout, closePayModal,
     activateModel, modelBusy,
-    showPayModal, closePayModal, payBranch, setPayBranch, ibanData,
-    // Пока реквизиты студии едут, кнопки способов оплаты держим занятыми: шаг
-    // реквизитов подставляет в форму сохранённое, и открытый до загрузки он показал
-    // бы пустые поля — сохранение затёрло бы уже заполненные реквизиты пустотой.
-    payBusy: payBusy || !details.loaded,
-    chooseMethod, payWithCard,
-    details, wantInvoice, setWantInvoice, detailErrors, submitDetails, saveDetails,
+    payBusy, payWithCard,
+    openPortal, portalBusy,
+    preview: preview?.key === previewKey ? preview.data : null, previewBusy,
     paymentReturn, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,

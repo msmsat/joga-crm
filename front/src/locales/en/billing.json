@@ -85,11 +85,12 @@
     "activateSuccess": "Payment model updated",
     "activateError": "Couldn't update the payment model",
     "confirmSwitchTitle": "Switch payment model?",
-    "confirmSwitchMessage": "Your current subscription is active. Switching models takes effect immediately — remaining paid time won't carry over.",
+    "confirmSwitchMessage": "Your subscription is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Confirm plan terms",
     "termsMessage": "On this plan the platform withholds {{rate}}% of every sale.\n\nFor online payments the fee is withheld automatically at the moment of payment. For cash, terminal and deposit top-ups it is NOT withheld immediately — it accrues, and you receive a separate invoice once a month.\n\nYou have {{days}} days to pay that invoice. If it is not paid in time, access to the CRM and to the client mini-app is suspended until it is settled.\n\nThe current amount due is shown in Billing; you can pay at any time, including early.",
     "termsConfirm": "I accept the terms",
-    "termsMinimum": "Minimum monthly charge is {{amount}} {{currency}}. If over a calendar month the platform earned less than that from your studio (for example, there were no sales through the CRM at all), you are invoiced for the difference. Earn more than the minimum and there is no invoice. An unpaid minimum charge suspends access the same way an unpaid commission invoice does."
+    "termsMinimum": "Minimum monthly charge is {{amount}} {{currency}}. If over a calendar month the platform earned less than that from your studio (for example, there were no sales through the CRM at all), you are invoiced for the difference. Earn more than the minimum and there is no invoice. An unpaid minimum charge suspends access the same way an unpaid commission invoice does.",
+    "termsBurn": "WARNING: you have a paid period left. Switching the billing model FORFEITS it entirely — the unused days are not refunded and do not carry over."
   },
   "combo": {
     "rateBadge": "{{rate}}%",
@@ -172,7 +173,6 @@
     ]
   },
   "upgrade": {
-    "title": "Upgrade to {{plan}}",
     "priceLine": "Price {{price}}/mo.",
     "discountNote": " {{percent}}% off when paying for {{period}} mo.",
     "planLabel": "Plan",
@@ -180,20 +180,7 @@
     "periodValue_one": "{{count}} month",
     "periodValue_other": "{{count}} months",
     "discountLabel": "Discount",
-    "totalLabel": "Total",
-    "confirmAndPay": "Confirm and pay",
-    "trustNote": "Secured by PCI DSS · 7-day refund",
-    "startsAtNote": "The new plan starts on {{date}}, when the current paid period ends. No payment now — the invoice arrives at the start of the new period.",
-    "startsAtNoteNoDate": "The new plan starts when the current paid period ends. No payment is required now.",
-    "confirmScheduled": "From the next period",
-    "switchNow": "Switch now",
-    "switchNowTitle": "Switch to the new plan right now?",
-    "switchNowWarning": "The remainder of the current period (until {{date}}) WILL BE FORFEITED — it is not refunded and does not carry over. The new plan starts immediately and is invoiced in full right away.\n\nIf you are not in a hurry, choose \"From the next period\" and you lose nothing.",
-    "switchNowWarningNoDate": "The remainder of the current paid period WILL BE FORFEITED — it is not refunded and does not carry over. The new plan starts immediately and is invoiced in full right away.",
-    "switchNowConfirm": "Yes, switch and forfeit",
-    "scheduledToast": "Plan \"{{plan}}\" starts on {{date}}",
     "scheduledBadge": "From {{date}} — plan \"{{plan}}\"",
-    "totalNetLabel": "Total excl. VAT",
     "vatNote": "Excl. VAT — tax is added at checkout based on your company details; EU companies with a VAT number get reverse charge."
   },
   "method": {
@@ -201,8 +188,6 @@
     "badgeTitle": "Payment method secured",
     "tokenSub": "Provider token · expires {{expiry}}",
     "tokenNote": "Your real card data is stored by the payment provider (PCI DSS L1). We only keep a one-time token for renewals.",
-    "ibanBadgeLabel": "Billed by invoice (IBAN)",
-    "ibanBadgeNote": "Invoice renewals are manual — create a new invoice from the Plans tab.",
     "securityTitle": "Data protection standards",
     "security": {
       "pciDss": "PCI DSS Level 1 encryption",
@@ -216,12 +201,6 @@
     "renewSuccess": "Renewal invoice created",
     "renewError": "Couldn't create the invoice. Please try again.",
     "renewNow": "Renew now with card •••• {{last4}}",
-    "details": {
-      "title": "Invoice details",
-      "subtitle": "Fill these in advance and checkout won't ask for them at payment time. The company ID is printed on every invoice.",
-      "save": "Save details",
-      "saved": "Details saved"
-    },
     "autopayTitle": "Autopayment settings",
     "autopaySuccess": "Setting saved",
     "autopayError": "Couldn't save the setting. Please try again.",
@@ -244,6 +223,11 @@
         "label": "SMS alert",
         "desc": "Text message sent on charge"
       }
+    },
+    "portal": {
+      "title": "Billing details and VAT",
+      "subtitle": "Your company name, address and VAT number live at Stripe, not with us. The same page updates your card and holds every invoice. With a valid VAT number, companies outside Czechia are invoiced without VAT (reverse charge).",
+      "cta": "Open at Stripe"
     }
   },
   "invoices": {
@@ -297,59 +281,19 @@
   "pay": "Pay",
   "continuePlan": "Continue plan",
   "payModal": {
-    "title": "Payment method",
-    "chooseTitle": "How would you like to pay?",
-    "iban": {
-      "label": "IBAN",
-      "desc": "Invoice / bank transfer"
-    },
-    "card": {
-      "label": "Card",
-      "desc": "Apple Pay · Google Pay"
-    },
-    "invoiceTitle": "Invoice {{number}}",
-    "beneficiary": "Beneficiary",
-    "ibanLabel": "IBAN",
-    "bicLabel": "BIC / SWIFT",
-    "openInvoice": "Open invoice",
-    "referenceLabel": "Payment reference",
-    "amountLabel": "Amount",
-    "copy": "Copy",
-    "copied": "Copied",
-    "ibanNote": "Invoice created — pay using these details, the status will update once funds arrive.",
-    "or": "or",
-    "applePay": "Apple Pay",
-    "googlePay": "Google Pay",
-    "cardNumber": "Card number",
-    "expiry": "MM/YY",
-    "cvv": "CVV",
-    "cardFormNote": "Card details are entered on the provider's secure page — nothing here is sent to us.",
-    "payWithCard": "Pay by card",
-    "back": "Back",
-    "ibanError": "Couldn't create the invoice. Please try again.",
-    "cardError": "Couldn't proceed to payment. Please try again.",
-    "invoice": {
-      "title": "Invoice details",
-      "question": "We ask once — saved details are applied to every future invoice automatically.",
-      "need": "I need a company invoice",
-      "needHint": "We'll bill the company: registration number and VAT number, if any",
-      "icoLabel": "Company registration number",
-      "vatLabel": "VAT number",
-      "countryLabel": "Country",
-      "postalLabel": "Postal code",
-      "streetLabel": "Street and number",
-      "streetPlaceholder": "Olgy Havlove 2930/35",
-      "cityLabel": "City",
-      "cityPlaceholder": "Prague",
-      "icoRequired": "A company invoice needs the registration number",
-      "countryInvalid": "Two-letter country code, e.g. CZ",
-      "postalRequired": "The postal code is printed in the invoice address",
-      "note": "These details are printed on the invoice. You can change them on the Payment method tab.",
-      "countryNote": "The country and postal code set the VAT rate — without them Stripe cannot calculate it and shows the price without VAT. The address is printed on the invoice.",
-      "continue": "Continue",
-      "icoHint": "It may be called differently in your country: IČO, HRB, KRS, Company number",
-      "vatHint": "For EU companies: enables reverse charge on the invoice"
-    }
+    "titleNew": "Start the {{plan}} plan",
+    "titleSwitch": "Switch to {{plan}}",
+    "titleRenew": "Renew {{plan}}",
+    "grossLabel": "Plan price",
+    "creditLabel": "Your {{plan}} plan — unused time",
+    "totalLabel": "Your plan will cost",
+    "burnWarning": "The unused part of your current plan is worth more than the plan you picked: {{amount}} WILL BE FORFEITED — it is not refunded and does not carry over. Nothing to pay now.",
+    "switched": "Plan changed: nothing to pay — the switch was covered by what is left of the current period.",
+    "renewNote": "This renews the same plan: the months you buy are added to your current paid period. Nothing is forfeited.",
+    "estimatedNote": "We couldn't calculate the credit for your unused time right now — the amount at checkout may be lower than shown.",
+    "cardNote": "Card payment on Stripe's secure page · 7-day refund",
+    "businessHint": "Buying as a business?",
+    "businessLink": "Add your VAT ID before paying"
   },
   "offlineFee": {
     "title": "Offline sales fee",

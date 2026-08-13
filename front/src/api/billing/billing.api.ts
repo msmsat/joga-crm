@@ -1,8 +1,8 @@
 import { client, downloadFile, openFile } from '../client'
 import type {
   PlansCatalog, BillingPlan, Invoice, InvoicesPage, PaymentCard, BillingStats,
-  CheckoutRequest, CheckoutResponse,
-  ActivateModelRequest, IbanCheckout, AutopaySettings, OfflineFeeStatus,
+  CheckoutRequest, CheckoutResponse, CheckoutPreview,
+  ActivateModelRequest, AutopaySettings, OfflineFeeStatus,
 } from './billing.types'
 
 // date_from/date_to — YYYY-MM-DD, включительно; общий фильтр для списка (задача 3/6)
@@ -63,14 +63,26 @@ export const billingApi = {
     client.get<PaymentCard[]>('/billing/cards'),
 
   // Оплата через ссылку Stripe: сумму считает сервер, редирект на checkout_url.
-  // `apply` значим только при живой подписке: 'period_end' (по умолчанию) ставит
-  // новый тариф в расписание Stripe на конец оплаченного периода и НЕ требует
-  // оплаты сейчас; 'now' переводит немедленно, сжигая остаток текущего периода.
+  // Переход всегда немедленный, с зачётом остатка текущего периода — выбора
+  // «когда применить» больше нет.
   checkout: (
     plan: CheckoutRequest['plan'],
     period_months: CheckoutRequest['period_months'],
-    apply: CheckoutRequest['apply'] = 'now',
-  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, apply }),
+  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
+
+  // Клиентский портал Stripe: единственное место, где студия может ввести VAT ID
+  // после первой покупки (у страницы счёта и у смены тарифа таких полей нет).
+  openPortal: () =>
+    client.post<CheckoutResponse>('/billing/portal', {}),
+
+  // Расчёт для модалки оплаты ДО платежа: зачёт остатка, итог, что сгорит.
+  // Считает Stripe тем же вызовом, которым потом и выставит счёт.
+  previewCheckout: (
+    plan: CheckoutRequest['plan'],
+    period_months: CheckoutRequest['period_months'],
+  ) => client.get<CheckoutPreview>(
+    `/billing/checkout/preview?plan=${plan}&period_months=${period_months}`,
+  ),
 
   // Продления нет: подписку продлевает Stripe, POST /billing/renew отвечает 410.
 
@@ -87,10 +99,6 @@ export const billingApi = {
   // Досрочная оплата: выставляет счёт на всё накопленное и возвращает ссылку.
   payOfflineFees: () =>
     client.post<OfflineFeeStatus>('/billing/offline-fees/pay', {}),
-
-  // IBAN-ветка: без редиректа на Stripe, возвращает тестовый IBAN + инвойс для модалки.
-  checkoutIban: (plan: CheckoutRequest['plan'], period_months: CheckoutRequest['period_months']) =>
-    client.post<IbanCheckout>('/billing/checkout/iban', { plan, period_months }),
 
   updateAutopay: (patch: Partial<AutopaySettings>) =>
     client.patch<BillingPlan>('/billing/autopay', patch),

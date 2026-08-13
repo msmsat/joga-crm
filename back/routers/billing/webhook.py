@@ -547,28 +547,22 @@ async def _handle_setup_intent(db: AsyncSession, obj) -> None:
 _VAT_REJECTED = "unverified"
 
 
-def _same_vat(left: str | None, right: str | None) -> bool:
-    """Один и тот же номер НДС? Нормализация та же, что у формы настроек
-    (schemas/settings/general._strip_vat): пробелы и регистр значения не имеют."""
-    return bool(left) and (left or "").replace(" ", "").upper() == (right or "").replace(" ", "").upper()
-
-
 async def _handle_tax_id(db: AsyncSession, obj) -> None:
-    """Пришла сверка VAT ID с VIES. `unverified` → номер снимаем и у Stripe, и у себя.
+    """Пришла сверка VAT ID с VIES. `unverified` → номер снимаем у Stripe.
 
     Зачем: Stripe Tax применяет reverse charge (0 % НДС для юрлица из другой страны
     ЕС) по ФОРМАТУ номера, не дожидаясь сверки — `DE000000000` обнуляет налог ровно
     так же, как настоящий номер (проверено вызовами tax.Calculation на боевом ключе,
-    см. stripe_billing._ensure_tax_id). Сверка приезжает этим событием уже ПОСЛЕ
+    см. stripe_billing.delete_tax_id). Сверка приезжает этим событием уже ПОСЛЕ
     оплаты. Если номер выдуманный, права продавать без НДС у нас не было, и 21 %
     налоговая снимет с ПЛАТФОРМЫ, а не со студии: деньги за тариф те же, а НДС из
     них вычтут. Отсюда правило — убрать номер до того, как по нему выпишется
     следующий счёт.
 
-    Порядок строгий: СНАЧАЛА Stripe, где считается налог, потом наша БД. Обратный
-    оставлял бы при упавшем запросе пустой vat_id у нас и живой номер у Stripe —
-    reverse charge продолжал бы действовать, а снять его было бы уже некому:
-    следующее событие по этому номеру не придёт.
+    Своей копии номера у нас больше нет (его вводят на странице Checkout, и там же
+    он живёт), поэтому стирать в БД нечего. Признак «событие уже обработано» —
+    ответ самого Stripe: `delete_tax_id` вернёт False, если номера уже не было, и
+    ретрай не разошлёт студии второе письмо.
     """
     status = getattr(getattr(obj, "verification", None), "status", None)
     if status != _VAT_REJECTED:
@@ -581,7 +575,8 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
     value = getattr(obj, "value", None)
     # Падение сюда — 500 и ретрай Stripe (см. stripe_webhook): лучше повторить
     # попытку, чем оставить фиктивный номер обнулять налог дальше.
-    await stripe_billing.delete_tax_id(customer_id, obj["id"])
+    if not await stripe_billing.delete_tax_id(customer_id, obj["id"]):
+        return
     logger.warning(
         "Stripe billing: VAT ID %s клиента %s не прошёл сверку с VIES и снят у Stripe",
         value, customer_id,
@@ -596,18 +591,8 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
         logger.info("Stripe billing: клиент %s не привязан к студии", customer_id)
         return
 
-    # Номер мог смениться, пока шла сверка: владелец увидел ошибку и вписал верный.
-    # Стирать в этом случае нечего — отставшее событие по старому номеру снесло бы
-    # студии свежий, возможно валидный, реквизит. Заодно это глушит повторное письмо
-    # на ретрае: во второй раз поле уже пустое.
-    if not _same_vat(studio.vat_id, value):
-        return
-
-    studio.vat_id = None
-    await db.commit()
-
-    # Письмо — после коммита и своих ошибок наружу не пускает (как send_receipt):
-    # номер уже снят, и упавший SMTP не повод получить ретрай применённого события.
+    # Письмо своих ошибок наружу не пускает (как send_receipt): номер уже снят, и
+    # упавший SMTP не повод получить ретрай применённого события.
     # Импорт локальный: модуль тянет notifier, а тот — половину моделей.
     from services.billing_mail import send_vat_rejected
 
@@ -1090,17 +1075,6 @@ if __name__ == "__main__":
     assert _period_months(types.SimpleNamespace(lines=types.SimpleNamespace(data=[]))) is None
     # Разовая позиция счёта за комиссию: периода нет (start == end) — не месяц.
     assert _period_months(_inv_line(start=100, end=100)) is None
-
-    # Сверка номеров НДС нечувствительна к пробелам и регистру — форма настроек
-    # нормализует их ровно так же (schemas/settings/general._strip_vat), и «CZ 123»
-    # из письма Stripe обязано узнаваться в «cz123» из нашей БД.
-    assert _same_vat("CZ12345678", "cz 123 456 78")
-    assert not _same_vat("CZ12345678", "DE811907980")
-    # Пусто — это «стирать нечего», а не «тот же номер»: иначе событие по чужому
-    # номеру слало бы письмо студии, у которой VAT ID и так не заполнен.
-    assert not _same_vat(None, None)
-    assert not _same_vat(None, "CZ12345678")
-    assert not _same_vat("", "CZ12345678")
 
     assert "/webhook/stripe" in [r.path for r in router.routes]
     print("billing webhook self-check ok")

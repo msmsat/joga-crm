@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
 import type { BillingPlan, PaymentCard, AutopaySettings } from '../../../../../api/billing/billing.types';
 import { Button, Switch } from '../../../../../components/ui/index';
 import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
-import InvoiceDetailsForm from '../sections/InvoiceDetailsForm';
-import type { InvoiceDetails, InvoiceDetailErrors } from '../../hooks/useInvoiceDetails';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
 const AUTOPAY_FIELDS = [
@@ -20,23 +17,22 @@ interface Props {
   loaded: boolean;
   plan: BillingPlan | null;
   setAutopay: (field: keyof AutopaySettings, value: boolean) => void;
-  details: { value: InvoiceDetails; patch: (p: Partial<InvoiceDetails>) => void; dirty: boolean };
-  detailErrors: InvoiceDetailErrors;
-  saveDetails: () => void;
+  /** Портал Stripe: там и только там вводится VAT ID после первой покупки. */
+  openPortal: () => void;
+  portalBusy: boolean;
 }
 
+// Своей формы реквизитов тут больше нет: страна, индекс, адрес, VAT ID и название
+// компании собирает Stripe и хранит у себя — мы их не спрашиваем и не храним
+// (services/stripe_billing.create_subscription_checkout). Вместо формы — кнопка в
+// клиентский портал Stripe: поля VAT есть только у Checkout, а он открывается лишь
+// на первой покупке, и без портала компания, купившая тариф как физлицо, не смогла
+// бы добавить номер уже никогда.
 export default function PaymentMethodTab({
-  cards, loaded, plan, setAutopay, details, detailErrors, saveDetails,
+  cards, loaded, plan, setAutopay, openPortal, portalBusy,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
-  // Тумблер «нужна фактура» тут значит «реквизиты компании заполнены»: заполненные
-  // показываем сразу открытыми, пустые — за выключенным тумблером, чтобы карточка
-  // не выглядела формой с обязательными полями у физлица.
-  // Производное состояние, а не useState(значение): реквизиты приезжают запросом
-  // ПОСЛЕ первого рендера, и начальное значение навсегда осталось бы false.
-  const [wantOverride, setWantOverride] = useState<boolean | null>(null);
-  const wantInvoice = wantOverride ?? !!details.value.company_id;
 
   // Карта, сохранённая у Stripe: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;
@@ -114,34 +110,22 @@ export default function PaymentMethodTab({
           </div>
         </div>
 
-        {/* Реквизиты фактуры — заполняются ЗАРАНЕЕ, чтобы оплата не спрашивала их
-            в модалке. Та же форма, что и на шаге 'details' (общий компонент). */}
-        <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 2h7l3 3v13H5z" /><path d="M8 8h4M8 11h4M8 14h2" />
-            </svg>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.details.title')}</span>
+        {/* Реквизиты плательщика — на стороне Stripe. */}
+        <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+          <div style={{ minWidth: 0, flex: '1 1 320px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 2h7l3 3v13H5z" /><path d="M8 8h4M8 11h4M8 14h2" />
+              </svg>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.portal.title')}</span>
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
+              {t('method.portal.subtitle')}
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6, marginBottom: '18px' }}>
-            {t('method.details.subtitle')}
-          </div>
-          <InvoiceDetailsForm
-            value={details.value}
-            patch={details.patch}
-            wantInvoice={wantInvoice}
-            setWantInvoice={setWantOverride}
-            requireCountry={false}
-            // Здесь реквизиты заполняют ЗАРАНЕЕ, вне оплаты: адрес показываем всегда,
-            // чтобы студия могла закрыть его до того, как понадобится счёт по IBAN.
-            showAddress
-            errors={detailErrors}
-          />
-          <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="primary" disabled={!details.dirty} onClick={saveDetails}>
-              {t('method.details.save')}
-            </Button>
-          </div>
+          <Button variant="primary" loading={portalBusy} onClick={openPortal}>
+            {t('method.portal.cta')}
+          </Button>
         </div>
 
         {/* Autopayment settings */}

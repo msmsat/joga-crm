@@ -6,14 +6,18 @@ Stripe Tax применяет reverse charge (0 % НДС) по ФОРМАТУ н
 прошла — права продавать без НДС у нас не было. Деньги за тариф те же, а 21 %
 налоговая вычтет из выручки ПЛАТФОРМЫ.
 
+Своей копии номера у нас больше нет — его вводят на странице Checkout, и живёт он
+там же. Значит стирать в БД нечего, а «событие уже обработано» определяется ответом
+самого Stripe: повторное удаление отвечает `resource_missing`.
+
 Инварианты обработчика (routers/billing/webhook._handle_tax_id):
-  1. `unverified` → номер снят у Stripe И в нашей БД, владельцу ушло письмо.
+  1. `unverified` → номер снят у Stripe, владельцу ушло письмо.
   2. `pending` / `verified` / `unavailable` → не трогаем ничего. Первый — сверка
      ещё идёт (в test-режиме навсегда), третий — VIES не ответил; снимать по ним
      значит брать НДС с честной студии из-за чужого сбоя.
-  3. Сначала Stripe, потом БД. Упавший запрос к Stripe → 500 и ретрай, а не
-     пустое поле у нас при живом reverse charge у Stripe.
-  4. Номер, изменившийся пока шла сверка, отставшее событие не стирает.
+  3. Упавший запрос к Stripe → 500 и ретрай, а не проглоченная ошибка при живом
+     reverse charge.
+  4. Ретрай по уже снятому номеру не шлёт владельцу второе письмо.
 
 Сеть и БД не трогаем: Stripe и отправка письма подменены заглушками.
 
@@ -107,7 +111,9 @@ def _run(payload: dict, db: _DB, *, delete=None):
     async def _delete(customer_id, tax_id):
         deleted.append((customer_id, tax_id))
         if delete is not None:
-            delete()
+            # None от заглушки = «номера уже не было», как у настоящей delete_tax_id.
+            return delete()
+        return True
 
     async def _mail(_db, studio_id, vat_id):
         mailed.append((studio_id, vat_id))
@@ -125,33 +131,24 @@ def _run(payload: dict, db: _DB, *, delete=None):
         SB.WEBHOOK_SECRET, W.async_session_maker, SB.delete_tax_id, M.send_vat_rejected = saved
 
 
-# ─── 1. unverified: номер стирается везде ──────────────────────────────────────
+# ─── 1. unverified: номер снимается у Stripe ───────────────────────────────────
 
-def test_unverified_vat_is_wiped_from_stripe_and_from_our_db():
-    studio = SimpleNamespace(id=7, vat_id="DE000000000")
+def test_unverified_vat_is_wiped_from_stripe():
+    studio = SimpleNamespace(id=7)
     res, deleted, mailed = _run(_event("unverified"), _DB(studio))
 
     assert res == {"status": "ok"}
     assert deleted == [("cus_1", "txi_1")], "номер остался у Stripe — reverse charge продолжит действовать"
-    assert studio.vat_id is None, "фиктивный номер остался в БД и уедет в Stripe при следующей оплате"
     assert mailed == [(7, "DE000000000")], "владелец не предупреждён, что счета вырастут на ставку НДС"
 
 
-def test_wipe_is_committed():
-    """Без коммита поле откатится вместе с сессией, и событие больше не придёт."""
-    db = _DB(SimpleNamespace(id=7, vat_id="DE000000000"))
+def test_nothing_is_written_to_our_db():
+    """Своей копии номера нет — писать и коммитить нечего. Появится копия — появится
+    и рассинхрон: у Stripe номер снят, у нас висит, и в счета уедет наш."""
+    db = _DB(SimpleNamespace(id=7))
     _run(_event("unverified"), db)
 
-    assert db.commits == 1
-
-
-def test_vat_matching_ignores_spaces_and_case():
-    """Владелец вписывает «de 000 000 000», Stripe присылает «DE000000000».
-    Буквальное сравнение оставило бы фиктивный номер в БД."""
-    studio = SimpleNamespace(id=7, vat_id="de 000 000 000")
-    _run(_event("unverified", value="DE000000000"), _DB(studio))
-
-    assert studio.vat_id is None
+    assert db.commits == 0
 
 
 # ─── 2. остальные статусы не трогают ничего ────────────────────────────────────
@@ -160,12 +157,10 @@ def test_vat_matching_ignores_spaces_and_case():
 def test_other_verification_states_change_nothing(status):
     """`pending` висит вечно в test-режиме, `unavailable` — это лежащий VIES.
     Снять номер по ним значит начать брать НДС с честной студии за чужой сбой."""
-    studio = SimpleNamespace(id=7, vat_id="CZ12345678")
-    res, deleted, mailed = _run(_event(status, value="CZ12345678"), _DB(studio))
+    res, deleted, mailed = _run(_event(status, value="CZ12345678"), _DB(SimpleNamespace(id=7)))
 
     assert res == {"status": "ok"}
     assert deleted == [] and mailed == []
-    assert studio.vat_id == "CZ12345678"
 
 
 # ─── 3. сбой Stripe → ретрай, а не тихая потеря ────────────────────────────────
@@ -181,7 +176,7 @@ def test_stripe_failure_is_retried_not_swallowed():
     with pytest.raises(stripe.APIConnectionError):
         _run(_event("unverified"), db, delete=boom)
 
-    assert db.commits == 0, "БД очищена при живом номере у Stripe — снять его больше некому"
+    assert db.commits == 0
 
 
 def test_delete_tolerates_an_already_removed_number():
@@ -194,7 +189,9 @@ def test_delete_tolerates_an_already_removed_number():
     saved = stripe.Customer.delete_tax_id
     stripe.Customer.delete_tax_id = gone
     try:
-        assert asyncio.run(SB.delete_tax_id("cus_1", "txi_1")) is None
+        # False, а не None: по нему обработчик понимает «событие уже обработано»
+        # и не шлёт владельцу второе письмо.
+        assert asyncio.run(SB.delete_tax_id("cus_1", "txi_1")) is False
     finally:
         stripe.Customer.delete_tax_id = saved
 
@@ -212,17 +209,18 @@ def test_delete_does_not_swallow_other_stripe_errors():
         stripe.Customer.delete_tax_id = saved
 
 
-# ─── 4. номер, изменённый во время сверки ──────────────────────────────────────
+# ─── 4. повторная доставка события ─────────────────────────────────────────────
 
-def test_late_event_does_not_wipe_the_replacement_number():
-    """Владелец уже вписал верный номер, пока VIES отвечал по старому. Снять у
-    Stripe отвергнутый — надо (он там ещё висит), стереть новый у себя — нельзя."""
-    studio = SimpleNamespace(id=7, vat_id="DE811907980")
-    _res, deleted, mailed = _run(_event("unverified", value="DE000000000"), _DB(studio))
+def test_retry_of_a_handled_event_does_not_mail_twice():
+    """Stripe ретраит доставку трое суток. Номер уже снят, delete_tax_id отвечает
+    False — второе письмо «ваш VAT отклонён» владельцу не нужно."""
+    studio = SimpleNamespace(id=7)
+    _res, deleted, mailed = _run(
+        _event("unverified"), _DB(studio), delete=lambda: False,
+    )
 
     assert deleted == [("cus_1", "txi_1")]
-    assert studio.vat_id == "DE811907980"
-    assert mailed == [], "письмо о снятом номере ушло бы про уже исправленный реквизит"
+    assert mailed == []
 
 
 def test_unknown_customer_is_not_a_failure():

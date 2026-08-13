@@ -6,8 +6,7 @@ import OfflineFeeCard from './components/sections/OfflineFeeCard';
 import PlansTab from './components/tabs/PlansTab';
 import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
-import UpgradeModal from './components/modals/UpgradeModal';
-import PaymentMethodModal from './components/modals/PaymentMethodModal';
+import PayModal from './components/modals/PayModal';
 import styles from './Billing.module.css';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
 
@@ -55,7 +54,6 @@ export default function Billing() {
           discountedPrice={h.discountedPrice}
           totalToPay={h.totalToPay}
           animateCards={h.animateCards}
-          setShowUpgradeModal={h.setShowUpgradeModal}
           startCheckout={h.startCheckout}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
@@ -80,9 +78,8 @@ export default function Billing() {
           loaded={h.cardsLoaded}
           plan={h.plan}
           setAutopay={h.setAutopay}
-          details={h.details}
-          detailErrors={h.detailErrors}
-          saveDetails={h.saveDetails}
+          openPortal={h.openPortal}
+          portalBusy={h.portalBusy}
         />
       )}
 
@@ -94,8 +91,8 @@ export default function Billing() {
         <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} style={{ color: 'var(--muted)' }}>{t('legal.privacy')}</a>
       </p>
 
-      {h.showUpgradeModal && (
-        <UpgradeModal
+      {h.showPayModal && (
+        <PayModal
           currency={h.currency}
           selectedPlan={h.selectedPlan}
           selectedPeriod={h.selectedPeriod}
@@ -104,33 +101,12 @@ export default function Billing() {
           getPrice={h.getPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
-          onClose={() => h.setShowUpgradeModal(false)}
-          startCheckout={h.startCheckout}
-          scheduleUpgrade={h.scheduleUpgrade}
-          // Выбор «сейчас / с начала периода» имеет смысл только когда есть живая
-          // подписка Stripe, которой можно двигать фазы. Признак считает сервер той же
-          // функцией, по которой сам и ветвится (_has_live_subscription) — выведенный
-          // здесь из `status` он с сервером расходился, и владельца уносило на оплату
-          // мимо выбора способа.
-          hasLiveSubscription={h.plan?.has_live_subscription ?? false}
-          currentPeriodEnd={h.plan?.expires_at}
-        />
-      )}
-
-      {h.showPayModal && (
-        <PaymentMethodModal
-          currency={h.currency}
-          branch={h.payBranch}
-          setBranch={h.setPayBranch}
-          ibanData={h.ibanData}
-          busy={h.payBusy}
-          onChoose={h.chooseMethod}
+          preview={h.preview}
+          previewBusy={h.previewBusy}
+          payBusy={h.payBusy}
           onClose={h.closePayModal}
-          details={h.details}
-          wantInvoice={h.wantInvoice}
-          setWantInvoice={h.setWantInvoice}
-          detailErrors={h.detailErrors}
-          onSubmitDetails={h.submitDetails}
+          onPay={h.payWithCard}
+          onPortal={h.openPortal}
         />
       )}
     </div>

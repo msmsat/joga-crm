@@ -43,28 +43,33 @@ def _plan(plan_name="pro", status="active", sub="sub_1", mode="subscription"):
 
 
 def test_same_plan_on_a_live_subscription_is_a_renewal():
-    assert CO._is_renewal(_plan("pro"), "pro") is True
+    assert CO._is_renewal(_plan("pro"), "pro", "pro") is True
 
 
 def test_another_plan_is_a_change_not_a_renewal():
     """Апгрейд и даунгрейд обязаны идти прежним путём — со сменой Price."""
-    assert CO._is_renewal(_plan("pro"), "business") is False
-    assert CO._is_renewal(_plan("pro"), "start") is False
+    assert CO._is_renewal(_plan("pro"), "business", "pro") is False
+    assert CO._is_renewal(_plan("pro"), "start", "pro") is False
 
 
 def test_without_a_live_subscription_there_is_nothing_to_extend():
     """Первая покупка и мёртвая подписка — обычное оформление, а не продление:
     продлевать нечего, и счёт без подписки ничего бы не сдвинул."""
-    assert CO._is_renewal(_plan("pro", status="expired"), "pro") is False
-    assert CO._is_renewal(_plan("pro", sub=None), "pro") is False
+    assert CO._is_renewal(_plan("pro", status="expired"), "pro", "pro") is False
+    assert CO._is_renewal(_plan("pro", sub=None), "pro", "pro") is False
 
 
-def test_renewal_is_decided_by_the_server_not_by_the_client():
-    """Признак считается из строки плана в нашей БД. Приди он полем в теле запроса,
-    фронт мог бы попросить «продление» на чужой тариф и получить его по цене
-    своего."""
+def test_renewal_is_decided_by_the_live_subscription_not_by_our_mirror():
+    """Тариф берётся у САМОЙ подписки Stripe, а не из нашей строки: зеркало
+    поднимает вебхук, и пока он в пути (или уходит на другой стенд), покупка
+    своего же тарифа разбиралась как смена — с перезапуском цикла и полной ценой
+    вместо продления. Клиент на это не влияет по-прежнему: поля в теле нет."""
+    assert "current_plan" in inspect.signature(CO._is_renewal).parameters
     src = inspect.getsource(CO._is_renewal)
-    assert "plan.plan_name" in src
+    assert "requested_plan == current_plan" in src
+    assert "plan.plan_name" not in src, "решение снова принимается по зеркалу"
+    # Источник current_plan — lookup_key живой подписки.
+    assert "subscription_price_key" in inspect.getsource(CO._live_plan_name)
 
 
 # ------------------------------------------- 2. срок двигает только оплата

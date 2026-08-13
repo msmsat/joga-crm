@@ -1,26 +1,23 @@
 """Единственное место в проекте, которое «думает» (эпик AI-1, задача 3).
 
-generate_reply() говорит по OpenAI-совместимому протоколу: пустой LLM_BASE_URL —
-честная локализованная заглушка; заданный — реальный запрос к любому
-OpenAI-совместимому серверу (Ollama и т.п.). Подключение модели = две
-переменные в .env, код роутера не меняется.
+generate_reply() решает, чем ответить: провайдер не настроен — честная
+локализованная заглушка, настроен — запрос через services/llm.py (эпик AI-5,
+задача 1), где живут уровни моделей, учёт стоимости и обработка ошибок.
 """
 import logging
-import os
 import random
 from datetime import datetime, timedelta
 from typing import Sequence
 
 import aiohttp
-from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import AIChatMessage, Studio, StudioAISettings
+from services import llm
 
 logger = logging.getLogger(__name__)
 
-_LLM_TIMEOUT_SECONDS = 60
 _IG_REFRESH_TIMEOUT_SECONDS = 10
 _IG_REFRESH_THRESHOLD = timedelta(days=10)
 
@@ -116,20 +113,10 @@ async def generate_reply(
         *[{"role": m.role, "content": m.text} for m in history],
     ]
 
-    base_url = os.getenv("LLM_BASE_URL")
-    if not base_url:
+    # Провайдер не настроен — честная заглушка, а не ошибка: на этом стоит
+    # локальная разработка без ключа и существующие тесты (эпик AI-5, задача 1, п. 6).
+    if not llm.is_configured():
         return _fallback_reply(settings.language, studio_language)
 
-    try:
-        timeout = aiohttp.ClientTimeout(total=_LLM_TIMEOUT_SECONDS)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(
-                f"{base_url}/v1/chat/completions",
-                json={"model": os.getenv("LLM_MODEL", settings.model), "messages": messages},
-            ) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
-                return data["choices"][0]["message"]["content"]
-    except (aiohttp.ClientError, TimeoutError, KeyError, IndexError):
-        logger.exception("generate_reply: LLM request failed")
-        raise HTTPException(status_code=503, detail="assistant_unavailable")
+    reply = await llm.chat(messages, tier=llm.TIER_FAST)
+    return reply.text or _fallback_reply(settings.language, studio_language)

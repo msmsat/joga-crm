@@ -7,7 +7,7 @@ import { queryKeys } from '../api/queryKeys'
 import { resolveImageUrl } from '../api/client'
 import { errorMessage } from '../api/errorMessage'
 import { Button, Card, useToast } from '../components/ui/index'
-import { setActiveToken } from '../utils/auth';
+import { saveThemeSeed, setActiveToken } from '../utils/auth';
 
 // Инициалы студии для карточки без лого — первые буквы первых двух слов названия.
 function initials(name: string): string {
@@ -28,11 +28,19 @@ export default function SelectCrm() {
   const select = useMutation({
     mutationFn: (studioId: number) => authApi.selectStudio(studioId),
     onSuccess: (data) => {
+      // Затравку темы пишем ДО смены токена (setActiveToken сбрасывает кэш):
+      // её читает инлайн-скрипт в index.html, и кабинет открывается сразу в
+      // нужном цвете, не дожидаясь бандла и запроса настроек.
+      const theme = qc.getQueryData<{ theme?: string | null }>(queryKeys.appearance)?.theme
+      if (theme) saveThemeSeed(theme)
       if (data.access_token) setActiveToken(data.access_token)
-      // Кэш Query набит данными предыдущей студии (клиенты, занятия, финансы) — без
-      // сброса пользователь после переключения увидит чужие данные до первого рефетча.
-      qc.clear()
-      navigate('/dashboard')
+      // Полная перезагрузка, а не navigate: смена студии меняет ВСЕ данные, а
+      // queryClient.clear() при живых подписчиках (тема, шапка, профиль в меню)
+      // оставляет их с пустыми данными и БЕЗ повторного запроса — наблюдатель
+      // остаётся привязан к удалённому query. Кабинет из-за этого белел (тема
+      // читалась как «данных нет» → light) и висел так до F5. Заодно тема встаёт
+      // до первого кадра — её ставит инлайн-скрипт в index.html.
+      window.location.href = '/dashboard'
     },
     onError: (err) => toast.error(errorMessage(err, t)),
   })

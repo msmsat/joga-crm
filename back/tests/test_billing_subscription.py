@@ -1,25 +1,28 @@
-"""Подписки Stripe: каталог цен, маппинг статусов и сквозная IBAN-ветка.
+"""Подписки Stripe: каталог цен, маппинг статусов, смена Price.
 
-Сетевые тесты помечены @pytest.mark.stripe и требуют sk_test_… в окружении —
-без ключа они пропускаются, чтобы обычный прогон не зависел от сети.
+Оплата переводом убрана целиком — вместе с ней ушли тесты реквизитов IBAN и
+сквозной сетевой прогон входящего перевода. Способ оплаты один: карта.
 
 Async-тесты гоняются через asyncio.run() внутри обычных def test_*, а не через
 @pytest.mark.asyncio: в проекте не установлен pytest-asyncio (requirements-dev.txt
 несёт только pytest) — тот же паттерн, что и в остальных back/tests/*.
 
 Запуск из back/:  python -m tests.test_billing_subscription
-Сетевой тест:     cd .. && pytest back/tests/test_billing_subscription.py -v -k end_to_end
 """
 import asyncio
 import os
 import types
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import stripe
 
+from routers.billing.checkout import _MIN_TRIAL
 from routers.billing.plans import PLANS, PERIOD_DISCOUNTS, amount_for
 from routers.billing.webhook import map_subscription_status, _subscription_id
 from services import stripe_billing, stripe_catalog
+
+_MIN_TRIAL_SEC = int(_MIN_TRIAL.total_seconds())
 
 
 def test_every_plan_period_has_lookup_key():
@@ -179,8 +182,7 @@ def test_immediate_switch_ends_the_trial_first():
     Триал у нас не только пробный период — его же ставит миграция уже оплативших
     (checkout._trial_end), чтобы подписка не брала денег до конца оплаченного
     периода. Значит под условие попадала КАЖДАЯ студия, оформившая подписку до
-    конца триала, и обе ветки оплаты (карта с apply="now" и весь IBAN) отвечали ей
-    502 вместо смены тарифа.
+    конца триала, и любая смена тарифа отвечала ей 502.
 
     «Перейти сейчас» означает «начать платить сейчас», поэтому триал заканчиваем,
     а не обходим запрет.
@@ -204,38 +206,6 @@ def test_scheduled_switch_never_ends_the_trial():
     sent = _modify_params("trialing", proration_behavior="none")
     assert "trial_end" not in sent
     assert "billing_cycle_anchor" not in sent
-
-
-# ─── Получатель перевода — тот, кого назвал Stripe ──────────────────────────────
-
-async def _funding_instructions_return_stripe_beneficiary():
-    """Имя получателя берётся из ответа Stripe, а не подписывается «Velora».
-
-    Счёт коллекторский, его держателем значится Stripe. Чужое имя в поле получателя —
-    несовпадение при проверке получателя (Verification of Payee) в банке плательщика:
-    предупреждение или отбитый перевод. Заодно проверяем, что среди адресов
-    выбирается именно iban, а не первый попавшийся. Сеть застублена."""
-    account = types.SimpleNamespace(
-        iban="DE89370400440532013000", bic="DEUTDEFF",
-        account_holder_name="Stripe Payments Europe, Limited",
-    )
-    instructions = types.SimpleNamespace(bank_transfer=types.SimpleNamespace(financial_addresses=[
-        types.SimpleNamespace(type="sort_code", sort_code=object()),   # чужой формат идёт первым
-        types.SimpleNamespace(type="iban", iban=account),
-    ]))
-
-    saved = stripe.Customer.create_funding_instructions
-    stripe.Customer.create_funding_instructions = lambda *a, **kw: instructions
-    try:
-        assert await stripe_billing.funding_instructions("cus_1") == (
-            "DE89370400440532013000", "DEUTDEFF", "Stripe Payments Europe, Limited",
-        )
-    finally:
-        stripe.Customer.create_funding_instructions = saved
-
-
-def test_funding_instructions_return_stripe_beneficiary():
-    asyncio.run(_funding_instructions_return_stripe_beneficiary())
 
 
 def test_ensure_finalized_touches_only_drafts():
@@ -266,129 +236,82 @@ def test_ensure_finalized_touches_only_drafts():
         stripe.Invoice.finalize_invoice = saved
 
 
-# ─── Сквозной сетевой тест: перевод по IBAN закрывает счёт сам ──────────────────
+def test_trial_end_holds_still_inside_the_idempotency_window():
+    """Ключ Checkout Session живёт 10-минутным окном, значит и ТЕЛО запроса обязано
+    быть постоянным всё окно. Ветка «остаток короче 48 часов» считает trial_end от
+    now и без округления меняется каждую секунду: второй клик по «Оплатить» уходит
+    другим телом под тем же ключом, Stripe отвечает IdempotencyError, а владелец
+    видит «платёжный сервис отклонил запрос» (живая жалоба 13.08.2026)."""
+    from routers.billing import checkout
 
-requires_stripe = pytest.mark.skipif(
-    not os.getenv("STRIPE_SECRET_KEY", "").startswith("sk_test_"),
-    reason="нужен тестовый ключ Stripe (sk_test_…)",
-)
+    grid = stripe_billing.IDEMPOTENCY_WINDOW
+    # Момент подобран так, чтобы now + _MIN_TRIAL упал в САМОЕ НАЧАЛО ячейки сетки:
+    # иначе «через 5 минут» случайно перевалило бы за границу и тест ловил бы удачу.
+    cell_start = 2_900_000 * grid + 1
+    # Наивный UTC — ровно то, что отдаёт datetime.utcnow() в самом _trial_end.
+    first = datetime.fromtimestamp(cell_start - _MIN_TRIAL_SEC, timezone.utc).replace(tzinfo=None)
+
+    class _Clock(datetime):
+        now_value = first
+
+        @classmethod
+        def utcnow(cls):
+            return cls.now_value
+
+    saved = checkout.datetime
+    checkout.datetime = _Clock
+    try:
+        # Остаток короче 48 часов — та самая ветка с округлением вверх.
+        plan = types.SimpleNamespace(
+            stripe_subscription_id=None, expires_at=first + timedelta(hours=1),
+        )
+        same_window = []
+        for shift in (0, 300):
+            _Clock.now_value = first + timedelta(seconds=shift)
+            same_window.append(checkout._trial_end(plan))
+        assert same_window[0] == same_window[1], "два клика в одном окне дали разный trial_end"
+        assert same_window[0] % grid == 0, "trial_end не лёг на сетку окна"
+        # Округление строго ВВЕРХ: 48 часов у Stripe — жёсткий минимум, и значение
+        # ниже него вернуло бы отказ, ради которого в _MIN_TRIAL взят запас в час.
+        for shift in (0, 300):
+            floor = (first + timedelta(seconds=shift)).replace(tzinfo=timezone.utc).timestamp()
+            assert same_window[0] >= floor + _MIN_TRIAL_SEC
+
+        # Следующее окно — новый ключ, и значение обязано сдвинуться вместе с ним,
+        # иначе триал застрял бы в прошлом.
+        _Clock.now_value = first + timedelta(seconds=grid)
+        assert checkout._trial_end(plan) > same_window[0]
+    finally:
+        checkout.datetime = saved
 
 
-async def _bank_transfer_closes_invoice_end_to_end():
-    """Входящий перевод закрывает счёт без ручного вмешательства.
-
-    Проверяем именно то, чего не умела фейковая ветка: Stripe сам сверяет деньги
-    с открытым счётом и переводит его в paid.
-    """
-    # 1. Customer с автосверкой и реквизитами для налога.
-    customer_id = await stripe_billing.ensure_customer(
-        None,
-        name="Velora e2e test",
-        email="sadomat31@gmail.com",
-        country="CZ",
-        postal_code="11000",
-        city="Praha",
-        line1="Testovaci 1",
-        vat_id=None,
-        studio_id=999_999,
+def test_portal_configuration_recognises_its_own():
+    """metadata у stripe 15 — StripeObject, а не dict: `.get` на нём падает
+    AttributeError. Портал из-за этого не открывался вовсе (502 на /billing/portal),
+    а на боевом ключе такая «незамеченная» конфигурация плодилась бы заново."""
+    tagged = stripe.billing_portal.Configuration.construct_from(
+        {"id": "bpc_ours", "metadata": {"velora": stripe_billing._PORTAL_TAG}}, "sk_test",
     )
-
-    # 2. IBAN, который увидела бы студия. Настоящий, выданный Stripe.
-    iban, bic, beneficiary = await stripe_billing.funding_instructions(customer_id)
-    assert iban.startswith("DE"), iban
-    assert bic
-    # Получателя показываем того, кого назвал Stripe: чужое имя в этом поле ломает
-    # проверку получателя (Verification of Payee) в банке плательщика.
-    assert beneficiary
-
-    # 3. Подписка с оплатой переводом.
-    price_id = await stripe_catalog.price_id("start", 1)
-    subscription = await stripe_billing.create_iban_subscription(
-        customer_id=customer_id,
-        price_id=price_id,
-        metadata={"studio_id": "999999", "plan": "start", "period_months": "1"},
+    foreign = stripe.billing_portal.Configuration.construct_from(
+        {"id": "bpc_foreign", "metadata": {}}, "sk_test",
     )
-    invoice = subscription.latest_invoice
-    assert invoice is not None
-    assert invoice.status in ("draft", "open")
-
-    # Счёт должен быть финализирован, иначе платить нечего — и у черновика нет номера,
-    # который студия ставит назначением платежа. Тем же вызовом, что и checkout.
-    invoice = await stripe_billing.ensure_finalized(invoice)
-    assert invoice.status == "open"
-    assert invoice.number, "у финализированного счёта обязан быть номер"
-    amount_due = invoice.amount_due
-
-    # 4. Имитируем входящий банковский перевод ровно на сумму счёта.
-    # `stripe.test_helpers.Customer.fund_cash_balance` (старый ресурсный API) в
-    # stripe-python 15.4.0 удалён — тестовые хелперы переехали на StripeClient
-    # (services API); ниже актуальный вызов того же эндпоинта
-    # (POST /v1/test_helpers/customers/{customer}/fund_cash_balance).
-    client = stripe.StripeClient(stripe.api_key)
-    await asyncio.to_thread(
-        client.v1.test_helpers.customers.fund_cash_balance,
-        customer_id, params={"amount": amount_due, "currency": stripe_billing.CURRENCY},
+    created = []
+    saved_list = stripe.billing_portal.Configuration.list
+    saved_create = stripe.billing_portal.Configuration.create
+    stripe.billing_portal.Configuration.list = lambda **kw: types.SimpleNamespace(
+        data=[foreign, tagged]
     )
-
-    # 5. Stripe сверяет асинхронно — ждём, пока счёт закроется.
-    for _ in range(20):
-        refreshed = await stripe_billing.fetch_invoice(invoice.id)
-        if refreshed.status == "paid":
-            break
-        await asyncio.sleep(1)
-    else:
-        pytest.fail(f"счёт {invoice.id} не закрылся переводом за 20 с")
-
-    assert refreshed.status == "paid"
-    assert refreshed.amount_remaining == 0
-
-    # Уборка: тестовые подписки не должны копиться в аккаунте.
-    await stripe_billing.cancel_subscription(subscription.id)
-
-
-@requires_stripe
-def test_bank_transfer_closes_invoice_end_to_end():
-    asyncio.run(_bank_transfer_closes_invoice_end_to_end())
-
-
-# ------------------------- выключенный в дашборде банковский перевод
-
-def test_disabled_bank_transfer_is_told_apart_from_a_generic_refusal():
-    """Способ оплаты `customer_balance` включается галкой в дашборде Stripe, и пока
-    он выключен, Subscription.create отвечает «payment method type is invalid».
-
-    Под общим текстом «Stripe отклонил запрос, попробуйте ещё раз» это был тупик:
-    повтор не меняет ничего, а починить может только владелец аккаунта. Отделяем,
-    чтобы отдать 503 с внятной причиной."""
-    from routers.billing.checkout import _is_bank_transfer_disabled
-
-    disabled = stripe.InvalidRequestError(
-        "The payment method type `customer_balance` is invalid. Please ensure the "
-        "provided type is activated in your dashboard",
-        param=None,
+    stripe.billing_portal.Configuration.create = lambda **kw: created.append(kw) or (
+        types.SimpleNamespace(id="bpc_new")
     )
-    assert _is_bank_transfer_disabled(disabled) is True
-
-    # Посторонние отказы Stripe обязаны остаться 502: выдать их за ненастроенный
-    # перевод значит послать владельца крутить не ту галку.
-    for other in (
-        stripe.InvalidRequestError("No such subscription: 'sub_1'", param="id"),
-        stripe.CardError("Your card was declined", param=None, code="card_declined"),
-        RuntimeError("customer_balance"),  # текст совпал, тип — нет
-    ):
-        assert _is_bank_transfer_disabled(other) is False, type(other).__name__
-
-
-def test_disabled_bank_transfer_answers_503_with_its_own_code():
-    """Фронт показывает текст сервера — общий код увёл бы студию в «попробуйте ещё раз»."""
-    import inspect
-
-    from routers.billing.checkout import _BANK_TRANSFER_OFF, create_iban_checkout
-
-    src = inspect.getsource(create_iban_checkout)
-    assert "_is_bank_transfer_disabled(exc)" in src
-    assert "status_code=503, detail=_BANK_TRANSFER_OFF" in src
-    assert _BANK_TRANSFER_OFF["code"] == "billing.bank_transfer_disabled"
+    stripe_billing._PORTAL_CONFIG_ID = None
+    try:
+        assert asyncio.run(stripe_billing._portal_configuration()) == "bpc_ours"
+        assert created == [], "свою конфигурацию не узнали и завели дубль"
+    finally:
+        stripe.billing_portal.Configuration.list = saved_list
+        stripe.billing_portal.Configuration.create = saved_create
+        stripe_billing._PORTAL_CONFIG_ID = None
 
 
 if __name__ == "__main__":
@@ -401,8 +324,7 @@ if __name__ == "__main__":
     test_subscription_id_extracted_from_all_shapes()
     test_ensure_price_survives_one_time_price_under_lookup_key()
     test_refund_target_prefers_payment_intent_then_charge()
-    test_funding_instructions_return_stripe_beneficiary()
     test_ensure_finalized_touches_only_drafts()
-    if os.getenv("STRIPE_SECRET_KEY", "").startswith("sk_test_"):
-        test_bank_transfer_closes_invoice_end_to_end()
+    test_trial_end_holds_still_inside_the_idempotency_window()
+    test_portal_configuration_recognises_its_own()
     print("ALL PASS — подписки Stripe зелёные")

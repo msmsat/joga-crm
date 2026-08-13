@@ -28,7 +28,7 @@ interface Props {
   discountedPrice: number;
   totalToPay: number;
   animateCards: boolean;
-  setShowUpgradeModal: Dispatch<SetStateAction<boolean>>;
+  /** Открывает модалку оплаты — единственный экран перед страницей Stripe. */
   startCheckout: () => void;
   activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
   modelBusy: boolean;
@@ -44,7 +44,7 @@ export default function PlansTab({
   selectedPeriod, setSelectedPeriod,
   getPrice, periodDiscounts, plans,
   currentMonthly, discountedPrice, totalToPay,
-  animateCards, setShowUpgradeModal,
+  animateCards,
   startCheckout,
   activateModel, modelBusy, plan, minMonthly,
 }: Props) {
@@ -273,7 +273,10 @@ export default function PlansTab({
                     {plan.staffLimit == null ? t('planCards.staffUnlimited') : t('planCards.staffLimit', { count: plan.staffLimit })}
                   </span>
                 </div>
-                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else setShowUpgradeModal(true); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : planId === 'business' ? 'var(--bg)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                {/* startCheckout, а не прямое открытие модалки: он сначала выравнивает
+                    тарифную модель на сервере (комбо → подписка), а иначе расчёт
+                    показал бы половинную цену комбо для выбранной подписки. */}
+                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else startCheckout(); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : planId === 'business' ? 'var(--bg)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   {isCurrent ? t('continuePlan') : t('planCards.choosePlan')}
                   <ArrowRightIcon />
                 </button>
@@ -363,11 +366,17 @@ export default function PlansTab({
           // часть уже берётся подпиской, и второе денежное обязательство там не
           // возникает. Сумма приходит каталогом с сервера — цифра в согласии
           // обязана совпадать с той, по которой реально выставят счёт.
+          // Оплаченный период при смене модели сгорает целиком (бэк переводит
+          // подписку с proration_behavior="none", а «процент» отменяет её вовсе).
+          // Предупреждение живёт ЗДЕСЬ, а не в модалке оплаты: до неё этот путь
+          // не доходит — деньги теряются на самом переключении режима.
           message={t('mode.termsMessage', {
             rate: pendingTerms.mode === 'percent' ? 3 : 1.5,
             days: 7,
           }) + (pendingTerms.mode === 'percent' && minMonthly
             ? '\n\n' + t('mode.termsMinimum', { amount: minMonthly, currency })
+            : '') + (plan?.has_live_subscription
+            ? '\n\n' + t('mode.termsBurn')
             : '')}
           confirmText={t('mode.termsConfirm')}
           onConfirm={() => activateModel(

@@ -1,5 +1,4 @@
-import { useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../../../../api';
 import { queryKeys } from '../../../../api/queryKeys';
@@ -7,11 +6,11 @@ import { errorMessage } from '../../../../api/errorMessage';
 // Импорт напрямую из Toast, не из ui/index: index экспортирует Sidebar, а тот
 // тянет UserMenu → этот хук — через бочку получался цикл импортов.
 import { useToast } from '../../../../components/ui/Toast';
-import { setActiveToken } from '../../../../utils/auth';
+import { saveThemeSeed, setActiveToken } from '../../../../utils/auth';
 
 export function useAccounts() {
-  const navigate = useNavigate();
   const { t } = useTranslation("profile");
+  const qc = useQueryClient();
   const toast = useToast();
 
   const { data: studios = [], isLoading, isError, refetch } = useQuery({
@@ -22,9 +21,20 @@ export function useAccounts() {
   const select = useMutation({
     mutationFn: (studioId: number) => authApi.selectStudio(studioId),
     onSuccess: (data) => {
-      // Кэш прошлой студии чистит сам setActiveToken — иначе увидим чужие данные.
+      // Тема аккаунта известна прямо сейчас — кладём её в затравку ДО смены
+      // токена (setActiveToken сбросит кэш) и до перезагрузки. Затравку читает
+      // инлайн-скрипт в index.html: новая студия открывается сразу в нужном
+      // цвете, а не белеет, пока грузится бандл и летит запрос настроек.
+      const theme = qc.getQueryData<{ theme?: string | null }>(queryKeys.appearance)?.theme;
+      if (theme) saveThemeSeed(theme);
       if (data.access_token) setActiveToken(data.access_token);
-      navigate('/dashboard');
+      // Полная перезагрузка, а не navigate: смена студии меняет ВСЕ данные, а
+      // queryClient.clear() внутри setActiveToken при живых подписчиках (тема,
+      // язык, шапка) оставляет их с пустыми данными и БЕЗ повторного запроса —
+      // наблюдатель остаётся привязан к удалённому query. Именно из-за этого
+      // кабинет после переключения белел (тема читалась как «данных нет» →
+      // light) и висел так до F5. См. тот же приём в SelectCrm.
+      window.location.href = '/dashboard';
     },
     onError: (err) => toast.error(errorMessage(err, t)),
   });

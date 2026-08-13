@@ -4,6 +4,7 @@
 Оплата/вебхуки/возвраты — отдельные задачи эпика 5; здесь только read + каталог.
 """
 import logging
+import time
 from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
@@ -32,7 +33,9 @@ from services import offline_fee_billing, platform_fee, stripe_billing, stripe_c
 from activity import log_activity
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
-from .checkout import router as checkout_router, _metadata, _has_live_subscription
+from .checkout import (
+    router as checkout_router, _metadata, _has_live_subscription, _live_plan_name,
+)
 from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
 
@@ -135,6 +138,54 @@ def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
     )
 
 
+# Когда по студии последний раз сверяли тариф с подпиской Stripe (unix-время).
+# Сверка ходит в сеть, а `/billing/plan` дёргает не только страница тарифа, но и
+# каркас кабинета на КАЖДОЙ странице (пейволл) — без этого дросселя один заход
+# стоил бы четырёх запросов в Stripe. Память процесса, а не БД: это кэш, потеря
+# которого при рестарте ничего не ломает, максимум лишняя сверка.
+_PLAN_CHECKED_AT: dict[int, float] = {}
+_PLAN_CHECK_EVERY = 300.0
+
+
+async def _reconcile_plan_name(db: AsyncSession, row: StudioBillingPlan) -> None:
+    """Ступень тарифа в БД ← Price живой подписки Stripe.
+
+    `plan_name` у нас — зеркало, которое поднимает вебхук по оплаченному счёту.
+    Не дошло событие (сеть, разъехавшийся секрет, события уходят на другой стенд) —
+    и зеркало врёт СТРАНИЦЕ ТАРИФА: владелец видит «Business» и цены Business, хотя
+    Stripe уже месяц списывает Pro. Своими глазами 13.08.2026.
+
+    Истина о подписке — её Price: по нему Stripe берёт деньги. Расхождение чиним
+    молча и сразу, чтобы страница не требовала от владельца понимать разницу между
+    «нашей записью» и «подпиской».
+
+    `expires_at` и `status` НЕ трогаем, хотя подписка рядом. Срок у нас законно
+    уходит ВПЕРЁД её `current_period_end`: продление — это отдельный счёт, который
+    двигает дату через `_extend_paid_period`, а цикл подписки о нём не знает.
+    Подтянуть дату «как в Stripe» значило бы отобрать уже оплаченные месяцы.
+    """
+    if not _has_live_subscription(row):
+        return
+    now = time.time()
+    if now - _PLAN_CHECKED_AT.get(row.studio_id, 0.0) < _PLAN_CHECK_EVERY:
+        return
+    _PLAN_CHECKED_AT[row.studio_id] = now
+
+    live = await _live_plan_name(row)
+    if live == row.plan_name or live not in PLANS:
+        return
+
+    logger.warning(
+        "Stripe billing: тариф студии %s разошёлся с подпиской (%s у нас, %s в Stripe) — "
+        "выравниваем по Stripe",
+        row.studio_id, row.plan_name, live,
+    )
+    row.plan_name = live
+    # Лимиты идут за ступенью — иначе студия платит Pro, а нанимает как Business.
+    row.max_staff = PLANS[live]["limits"]["staff"] or 9999
+    await db.commit()
+
+
 @router.get("/plan", response_model=BillingPlanRead)
 async def get_current_plan(
     ctx: StudioContext = Depends(require_role("owner")),
@@ -149,6 +200,10 @@ async def get_current_plan(
             plan_name="none", billing_cycle="monthly", status="none",
             expires_at=None, max_staff=0, auto_renewal=False,
         )
+    # Вся страница тарифа (карточка, «текущий» в списке, баннер, предвыбор в
+    # калькуляторе) читает ступень отсюда — выравниваем в одном месте, а не в
+    # шести компонентах.
+    await _reconcile_plan_name(db, row)
     return _to_plan_read(row)
 
 

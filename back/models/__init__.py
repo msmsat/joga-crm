@@ -35,7 +35,7 @@ from .finances import (
     OnlineChannelMetric,
     StripeCheckout,
 )
-from .ai import StudioAISettings, AIChatSession, AIChatMessage
+from .ai import StudioAISettings, AIChatSession, AIChatMessage, AIUsage
 from .loyalty import (
     StudioLoyaltyConfig,
     LoyaltyLevel,
@@ -108,6 +108,7 @@ __all__ = [
     "StudioAISettings",
     "AIChatSession",
     "AIChatMessage",
+    "AIUsage",
     "StudioLoyaltyConfig",
     "LoyaltyLevel",
     "ClientLoyaltyCard",

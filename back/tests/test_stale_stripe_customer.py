@@ -34,8 +34,7 @@ def _run(modify, create):
     stripe.Customer.create = create
     try:
         return asyncio.run(SB.ensure_customer(
-            "cus_gone", name="S", email=None, country="CZ", postal_code=None,
-            city=None, line1=None, vat_id=None, studio_id=1,
+            "cus_gone", name="S", email=None, studio_id=1,
         ))
     finally:
         stripe.Customer.modify, stripe.Customer.create = saved
@@ -55,15 +54,16 @@ def test_missing_customer_is_recreated():
         return SimpleNamespace(id="cus_new")
 
     assert _run(_missing, create) == "cus_new"
-    # Реквизиты доезжают до нового клиента, а не теряются вместе со старым:
-    # без страны Stripe Tax не посчитает ставку и счёт уйдёт без НДС.
-    assert created["address"]["country"] == "CZ"
+    # Привязка к студии доезжает до нового клиента: по ней вебхук находит, чей
+    # платёж пришёл. Адреса тут нет намеренно — его собирает страница Checkout и
+    # пишет в Customer сама, а наш он бы затирал на каждой следующей оплате.
     assert created["metadata"]["studio_id"] == "1"
+    assert "address" not in created
 
 
 def test_other_stripe_errors_are_not_swallowed():
-    """Дубль клиента на каждой сетевой ошибке — это россыпь персональных IBAN,
-    по которым переводы уходят мимо открытых счетов."""
+    """Дубль клиента на каждой сетевой ошибке — это россыпь плательщиков с пустой
+    историей счетов и без реквизитов, введённых на странице Stripe."""
     def boom(*_a, **_kw):
         raise stripe.InvalidRequestError("nope", param="id", code="parameter_invalid_empty")
 
@@ -122,7 +122,9 @@ def test_dead_subscription_link_is_dropped_before_the_branches():
     assert plan.stripe_subscription_id is None
     assert db.commits == 1, "снятая ссылка не закоммичена — падение повторится"
     assert CO._has_live_subscription(plan) is False
-    assert CO._is_renewal(plan, "start") is False
+    # Тариф подписки нарочно совпадает с запрошенным: даже так продлевать нечего —
+    # ссылки на подписку больше нет.
+    assert CO._is_renewal(plan, "start", "start") is False
     # Доступ к CRM висит на status/expires_at — закрывать студии продукт из-за
     # пропавшего объекта Stripe мы не вправе.
     assert plan.status == "active"
@@ -194,13 +196,14 @@ def test_plan_response_uses_the_checkout_predicate_itself():
     assert "_has_live_subscription(row)" in inspect.getsource(_to_plan_read)
 
 
-def test_both_charging_endpoints_check_the_link():
+def test_the_charging_endpoint_checks_the_link():
+    """Оплата осталась одна (карта) — но проверка мёртвой подписки обязана быть в
+    ней: без неё смена тарифа падает «No such subscription» и упирается в тупик."""
     import inspect
 
-    from routers.billing.checkout import create_checkout, create_iban_checkout
+    from routers.billing.checkout import create_checkout
 
-    for func in (create_checkout, create_iban_checkout):
-        assert "_forget_dead_subscription" in inspect.getsource(func), func.__name__
+    assert "_forget_dead_subscription" in inspect.getsource(create_checkout)
 
 
 if __name__ == "__main__":

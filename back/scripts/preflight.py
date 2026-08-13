@@ -94,16 +94,12 @@ def check_webhook_secrets() -> None:
 
 
 def check_billing_currency() -> None:
-    """Валюта тарифа. Ошибка здесь уводит суммы в 100 раз или ломает переводы."""
-    from services.stripe_billing import CURRENCY, BANK_TRANSFER_COUNTRY
+    """Валюта тарифа. Ошибка здесь уводит суммы в 100 раз."""
+    from services.stripe_billing import CURRENCY
     from services.stripe_connect import _ZERO_DECIMAL
 
     if CURRENCY.upper() in _ZERO_DECIMAL:
         _err(f"BILLING_CURRENCY={CURRENCY} без младших единиц — цены в plans.py заданы в центах, суммы уедут в 100 раз")
-    if CURRENCY not in ("eur", "gbp", "usd", "jpy", "mxn", "idr"):
-        _err(f"BILLING_CURRENCY={CURRENCY} не поддерживает банковские переводы Stripe — оплата по IBAN работать не будет")
-    if len(BANK_TRANSFER_COUNTRY) != 2 or not BANK_TRANSFER_COUNTRY.isalpha():
-        _err(f"BILLING_BANK_TRANSFER_COUNTRY={BANK_TRANSFER_COUNTRY} — нужен двухбуквенный код страны")
 
 
 def check_fx_cache() -> None:
@@ -220,12 +216,11 @@ async def check_stripe_account() -> None:
 async def check_stripe_payment_methods() -> None:
     """Способы оплаты, включённые на аккаунте платформы.
 
-    Оплата тарифа идёт двумя ветками, и каждой нужен СВОЙ способ: карта — `card`,
-    банковский перевод — `customer_balance` (routers/billing/checkout.py). Выключенный
-    в дашборде способ из кода не виден никак: ключ валидный, каталог отвечает, а
-    Subscription.create падает «payment method type is invalid» уже под владельцем,
-    который дошёл до оплаты. Проверяется здесь по той же причине, что и Stripe Tax:
-    настройки у test и live разные, и включённый в тесте перевод ничего не значит.
+    Тариф оплачивается ТОЛЬКО картой (`card`). Выключенный в дашборде способ из кода
+    не виден никак: ключ валидный, каталог отвечает, а Checkout Session падает
+    «payment method type is invalid» уже под владельцем, который дошёл до оплаты.
+    Проверяется здесь по той же причине, что и Stripe Tax: настройки у test и live
+    разные, и включённая в тесте карта ничего не значит.
     """
     import stripe
     from services import stripe_connect
@@ -250,8 +245,8 @@ async def check_stripe_payment_methods() -> None:
     # вообще; `display_preference` — включён ли он нами. Проверять один
     # `display_preference` мало: его можно поставить `on` и по API, и в дашборде даже
     # там, где доступа нет, — конфигурация примет, `available` останется false, а
-    # оплата продолжит падать. Именно так выглядит незапрошенный bank transfer.
-    for method, branch in (("card", "оплата картой"), ("customer_balance", "оплата банковским переводом")):
+    # оплата продолжит падать.
+    for method, branch in (("card", "оплата картой"),):
         option = getattr(default, method, None)
         value = getattr(getattr(option, "display_preference", None), "value", None)
         available = getattr(option, "available", None)
@@ -259,7 +254,7 @@ async def check_stripe_payment_methods() -> None:
             _err(
                 f"способ оплаты {method} недоступен аккаунту Stripe (available=false) — {branch} вернёт "
                 f"ошибку. Это не галка: доступ надо ЗАПРОСИТЬ в Settings → Payments → Payment methods "
-                f"(для bank transfers — отдельно под каждую валюту) и дождаться одобрения"
+                f"и дождаться одобрения"
             )
         elif value != "on":
             _err(
@@ -293,6 +288,57 @@ async def check_stripe_tax() -> None:
             f"Заполните Tax → Settings (адрес продавца, налоговая категория) и зарегистрируйте "
             f"страны, в которых собираете НДС"
         )
+        return
+
+    # Активный Tax без регистраций считает всем 0 % — то есть выглядит рабочим, а
+    # НДС не собирается вовсе. Домашняя регистрация обязана быть: без неё чешские
+    # продажи (и B2C по ЕС через OSS) уходят без налога, а доплачивать его потом
+    # придётся из своей выручки.
+    home = os.getenv("BILLING_HOME_COUNTRY", "CZ").upper()
+    try:
+        registrations = await asyncio.to_thread(
+            stripe.tax.Registration.list, status="active", limit=100,
+        )
+    except Exception as exc:
+        _warn(f"не удалось прочитать налоговые регистрации Stripe ({exc}) — проверьте Tax → Registrations вручную")
+        return
+
+    countries = {getattr(r, "country", None) for r in registrations.data}
+    if home not in countries:
+        _err(
+            f"в Stripe Tax нет активной регистрации {home} — счета уйдут с НДС 0 %, "
+            f"а налог налоговая всё равно спросит. Заведите её в Tax → Registrations"
+        )
+
+    # Режим места поставки решает, какую ставку получит ФИЗЛИЦО из другой страны ЕС:
+    # `small_seller` — нашу домашнюю (законно, пока трансграничные продажи физлицам
+    # ниже 10 000 €/год), `standard`/OSS — ставку его страны. Выбор сознательный
+    # (13.08.2026: остаёмся на small_seller), поэтому это НАПОМИНАНИЕ о пороге, а не
+    # требование включить OSS: перешагнём 10 000 € — обязаны перейти на ставки
+    # страны покупателя, и до тех пор недобор чужого НДС ложится на платформу.
+    # Список, а не множество: объекты Stripe нехешируемы.
+    schemes = [
+        getattr(getattr(getattr(r, "country_options", None), (r.country or "").lower(), None),
+                "standard", None)
+        for r in registrations.data if getattr(r, "country", None) == home
+    ]
+    if any(getattr(s, "place_of_supply_scheme", None) == "small_seller" for s in schemes if s):
+        _warn(
+            f"регистрация {home} в режиме small_seller: физлицам по всему ЕС уходит "
+            f"ДОМАШНЯЯ ставка НДС, а не ставка их страны. Это законно только пока "
+            f"трансграничные продажи физлицам ниже 10 000 €/год — следите за порогом "
+            f"в Tax → Monitoring, после него нужен режим One Stop Shop"
+        )
+
+    # Порогов (Tax → Monitoring) в API нет — только в дашборде. Напоминаем, потому
+    # что до регистрации в США/Британии Stripe выставляет тамошним физлицам счета
+    # без налога, и узнать о превышении лимита можно только оттуда.
+    _warn(
+        "включите оповещения Tax → Monitoring (thresholds) в дашборде Stripe: пороги "
+        "регистрации в США, Британии и других странах API не отдаёт, а до регистрации "
+        f"их резидентам счета уходят без местного налога. Сейчас активны: "
+        f"{', '.join(sorted(c for c in countries if c)) or '—'}"
+    )
 
 
 async def check_invoice_tax_id() -> None:

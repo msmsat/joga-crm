@@ -215,6 +215,11 @@ async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> 
     которая сразу выбрала «процент» и ни разу не заходила в оплату, не имела его
     вовсе, и выставить ей было нечего: ни комиссию, ни минимальный платёж. Тариф,
     счёт по которому невозможно выставить, — это бесплатный тариф.
+
+    Адрес студии передаётся ТОЛЬКО здесь и только при СОЗДАНИИ клиента. Этот счёт
+    выставляем мы сами, хостед-страницы у него нет, а без местоположения Stripe Tax
+    отвечает `customer_tax_location_invalid`. Затереть введённое плательщиком у
+    Stripe эти поля не могут: ветка отрабатывает лишь тогда, когда клиента ещё нет.
     """
     if plan.stripe_customer_id:
         return plan.stripe_customer_id
@@ -232,10 +237,7 @@ async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> 
             email=studio.email,
             country=studio.country,
             postal_code=studio.postal_code,
-            city=None,
             line1=studio.address,
-            vat_id=studio.vat_id,
-            company_id=studio.company_id,
             studio_id=plan.studio_id,
         )
     except Exception:
