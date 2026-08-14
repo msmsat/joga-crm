@@ -27,11 +27,14 @@ from database import get_db
 from dependencies import require_role, StudioContext
 from models import StudioBillingPlan
 from models.studio import Studio
+from models.user import User
 from schemas.settings.billing import (
-    CheckoutRequest, CheckoutResponse, CheckoutPreviewRead,
+    CheckoutRequest, CheckoutResponse, CheckoutPreviewRead, BillingProfileRead,
 )
 from services import stripe_billing, stripe_catalog
-from .plans import PLANS, PERIOD_DISCOUNTS, amount_for, combo_amount_for
+from .plans import (
+    PLANS, PERIOD_DISCOUNTS, COMBO_PERCENT_RATE, amount_for, combo_amount_for, tier,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -68,30 +71,79 @@ async def _get_or_create_plan(db: AsyncSession, studio_id: int) -> StudioBilling
     return row
 
 
+# Обязательные поля реквизитов. Список ОДИН на весь продукт: и «показывать ли
+# форму перед оплатой» (фронт читает `filled`), и «слать ли адрес в Stripe»
+# считаются по нему. Вторая строка адреса и VAT сюда не входят: у физлица номера
+# НДС нет вовсе, и требовать его значило бы закрыть оплату всем, кроме компаний.
+_PROFILE_REQUIRED = ("country", "line1", "postal_code", "city")
+
+
+def billing_profile(user: User) -> BillingProfileRead:
+    """Реквизиты плательщика с аккаунта + признак «заполнено».
+
+    Живёт здесь, а не в router.py: главный потребитель — оформление оплаты ниже,
+    а эндпоинты /billing/profile его только отдают наружу.
+    """
+    profile = BillingProfileRead(
+        country=user.billing_country,
+        line1=user.billing_line1,
+        line2=user.billing_line2,
+        postal_code=user.billing_postal_code,
+        city=user.billing_city,
+        vat_id=user.billing_vat_id,
+    )
+    profile.filled = all(getattr(profile, field) for field in _PROFILE_REQUIRED)
+    return profile
+
+
 async def _ensure_customer(
     db: AsyncSession, ctx: StudioContext, plan: StudioBillingPlan,
 ) -> str:
-    """Stripe Customer студии. Только имя и почта — реквизиты собирает Stripe.
+    """Stripe Customer студии + реквизиты плательщика с его АККАУНТА.
 
-    Ни страну, ни индекс, ни адрес, ни VAT ID мы отсюда НЕ шлём и у себя не
-    спрашиваем. Их собирает страница Checkout (`billing_address_collection` +
-    `tax_id_collection`) и пишет обратно в Customer, а ставку налога, reverse charge
-    и сверку номера с VIES делает по ним Stripe Tax.
+    Раньше адрес и VAT ID спрашивала только страница Checkout, а сюда не
+    передавались вовсе — иначе каждая следующая оплата затирала бы введённое у
+    Stripe. Теперь их собирает наша форма (модалка перед оплатой, правка во вкладке
+    «Способ оплаты»), она и стала источником истины: заполненный профиль уезжает в
+    Customer, Stripe Tax считает по нему ставку, а Checkout больше не переспрашивает
+    страну и индекс. Профиль пустой (форму обошли старой вкладкой) — шлём как
+    прежде только имя и почту, и реквизиты соберёт сама страница Checkout.
 
-    Прислать сюда страну из профиля студии значит на каждой следующей оплате
-    затирать то, что плательщик ввёл у Stripe, — и ломать расчёт налога у студии,
-    чей платёжный адрес отличается от адреса зала.
+    VAT ID отправляется отдельным вызовом: у `Customer.modify` поля налогового
+    номера нет, он живёт своим объектом. Сверку с VIES Stripe делает уже после
+    оплаты, и не прошедший её номер снимается вебхуком И у Stripe, И у нас
+    (webhook._handle_tax_id) — иначе следующее оформление заливало бы обратно ровно
+    тот номер, который только что отклонили.
     """
     studio = (await db.execute(
         select(Studio).where(Studio.id == ctx.studio_id)
     )).scalar_one()
+    profile = billing_profile(ctx.user)
 
     customer_id = await stripe_billing.ensure_customer(
         plan.stripe_customer_id,
         name=studio.name,
         email=studio.email or ctx.user.email,
         studio_id=ctx.studio_id,
+        **(dict(
+            country=profile.country,
+            postal_code=profile.postal_code,
+            city=profile.city,
+            line1=profile.line1,
+            line2=profile.line2,
+        ) if profile.filled else {}),
     )
+    if profile.filled and profile.vat_id:
+        # Не роняем оплату: номер — не обязательное поле, а Stripe отбивает
+        # неизвестный ему формат 400-й ошибкой. Без номера счёт выпишется с НДС,
+        # что чинится порталом; сорванная оплата не чинится ничем.
+        try:
+            await stripe_billing.set_tax_id(customer_id, profile.vat_id)
+        except Exception:
+            logger.warning(
+                "Stripe billing: VAT ID %s клиента %s не принят",
+                profile.vat_id, customer_id, exc_info=True,
+            )
     plan.stripe_customer_id = customer_id
     # Коммит СРАЗУ, а не вместе с ответом: дальше по обработчику есть выходы через
     # исключение (502 от Stripe), а get_db на исключении ничего не коммитит.
@@ -117,14 +169,22 @@ def _metadata(ctx: StudioContext, plan_id: str, period_months: int, mode: str = 
     }
 
 
-def _is_combo(plan: StudioBillingPlan) -> bool:
+def _is_combo(plan: StudioBillingPlan, requested: bool | None = None) -> bool:
     """Тариф «фикс + процент» → подписка идёт по половинному Price.
 
-    Режим переключается отдельным запросом (`POST /billing/model`) ДО оплаты,
-    поэтому истина здесь — то, что уже лежит в БД, а не поле в теле checkout'а:
-    иначе фронт мог бы попросить половинную цену на обычной подписке.
+    `requested` — что владелец выбрал ПРЯМО СЕЙЧАС (плитка модели в интерфейсе).
+    Он главнее строки в БД, и это не дыра: `billing_mode` там поднимает ОПЛАТА
+    (webhook._apply_paid_mode), а до неё поле описывает прошлое, а не покупку.
+    Раньше комбо включалось отдельным запросом ДО оплаты — ровно так его и
+    получали бесплатно (жалоба 14.08.2026).
+
+    Половинную цену это не раздаёт. Комбо не скидка: вместе с ним включается
+    обязательство платить процент с оборота, а на него `create_checkout` требует
+    записанного согласия — без него 422, как и у `POST /billing/model`.
+
+    `None` — режим не прислали (продление, легаси-клиент): берём то, что в БД.
     """
-    return plan.billing_mode == "combo"
+    return plan.billing_mode == "combo" if requested is None else requested
 
 
 # Минимальный триал у Stripe — 48 часов. На более близкую дату Checkout Session
@@ -206,33 +266,51 @@ async def _forget_dead_subscription(db: AsyncSession, plan: StudioBillingPlan) -
 
 
 async def _live_plan_name(plan: StudioBillingPlan) -> str:
-    """Тариф, который РЕАЛЬНО стоит в подписке Stripe. Не ответил — наше зеркало.
+    """Тариф, который у студии ДЕЙСТВИТЕЛЬНО есть сейчас. Не ответил — наше зеркало.
 
-    Истина о подписке живёт у Stripe (её Price), а `plan_name` в нашей БД — лишь
-    зеркало, которое поднимает вебхук по оплаченному счёту. Пока событие в пути
-    (или уходит на другой стенд), зеркало отстаёт — и решение «продление или
-    смена», принятое по нему, оборачивается деньгами: продление своего же тарифа
-    разбиралось как СМЕНА, Stripe перезапускал цикл и брал полную цену нового
-    периода, зачитывать при этом было нечего. Ровно это владелец и увидел
-    13.08.2026 — 99,07 € за Pro, уже стоявший в подписке.
+    Считается по двум источникам, потому что каждый по отдельности врёт:
 
-    Тот же приём, что в router._reconcile_subscription: тариф и период читаем из
-    lookup_key самой подписки, второй копии у себя не держим.
+    * Price подписки Stripe отстаёт НАЗАД никогда, но убегает ВПЕРЁД: его двигает
+      `change_subscription_price` в момент нажатия «Оплатить», а счёт-прорация
+      висит `open`, пока не оплачен;
+    * `plan_name` в нашей БД, наоборот, убегает вперёд никогда, но отстаёт: его
+      поднимает вебхук по оплаченному счёту, а событие бывает в пути (или уходит
+      на другой стенд) — 13.08.2026 из-за этого продление своего же Pro разобрали
+      как смену тарифа и взяли полную цену, 99,07 €.
+
+    Поэтому: ступень НИЖЕ нашей — верим Stripe сразу (там мы не дарим тариф, а
+    перестаём отдавать лишнее). Ступень ВЫШЕ — только если за ней стоит оплаченный
+    счёт (`subscription_settled`). Иначе неоплаченный Price выдавал бы себя за
+    текущий тариф, и страница расходилась сама с собой: карточка тарифа (наше
+    зеркало) показывала Pro, а модалка оплаты считала студию уже сидящей на
+    Business — «продление» вместо перехода, без зачёта остатка. Живая жалоба
+    14.08.2026, тот же корень, что у router._reconcile_plan_name.
     """
     if not plan.stripe_subscription_id:
         return plan.plan_name
     try:
         key = await stripe_billing.subscription_price_key(plan.stripe_subscription_id)
+        parsed = stripe_catalog.parse_lookup_key(key)
+        live = parsed[0] if parsed else plan.plan_name
+        if tier(live) > tier(plan.plan_name) and not await stripe_billing.subscription_settled(
+            plan.stripe_subscription_id
+        ):
+            logger.warning(
+                "Stripe billing: подписка студии %s стоит на %s, но счёт за неё не оплачен — "
+                "текущим тарифом считаем %s",
+                plan.studio_id, live, plan.plan_name,
+            )
+            return plan.plan_name
+        return live
     except Exception:
         # Сеть/Stripe прилегли: падать некуда — дальше по обработчику есть и
-        # превью, и оформление. Зеркало хуже истины, но лучше отказа.
+        # превью, и оформление. Зеркало хуже истины, но лучше отказа. Оно же
+        # безопаснее по деньгам: ступень у него не выше оплаченной.
         logger.exception(
             "Stripe billing: тариф подписки %s не прочитан — берём зеркало",
             plan.stripe_subscription_id,
         )
         return plan.plan_name
-    parsed = stripe_catalog.parse_lookup_key(key)
-    return parsed[0] if parsed else plan.plan_name
 
 
 def _is_renewal(plan: StudioBillingPlan, requested_plan: str, current_plan: str) -> bool:
@@ -254,7 +332,7 @@ def _is_renewal(plan: StudioBillingPlan, requested_plan: str, current_plan: str)
 
 async def _renewal_invoice(
     db: AsyncSession, ctx: StudioContext, plan: StudioBillingPlan, customer_id: str,
-    body_plan: str, period_months: int,
+    body_plan: str, period_months: int, combo: bool,
 ):
     """Счёт на продление уже оплаченного тарифа. Подписку НЕ трогает.
 
@@ -272,7 +350,6 @@ async def _renewal_invoice(
     которой у них нет. Поставь мы автосписание всем — такая студия получила бы счёт,
     который невозможно оплатить, и следом dunning от Stripe за своё же продление.
     """
-    combo = _is_combo(plan)
     amount = (combo_amount_for if combo else amount_for)(body_plan, period_months)
     name = PLANS[body_plan]["name"]
     subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
@@ -286,7 +363,7 @@ async def _renewal_invoice(
         # Читает mirror_invoice: без kind="subscription" счёт не поднял бы тариф, а
         # renew_months говорит вебхуку, на сколько двигать дату.
         metadata={
-            **_metadata(ctx, body_plan, period_months, plan.billing_mode),
+            **_metadata(ctx, body_plan, period_months, "combo" if combo else "subscription"),
             "kind": "subscription",
             "renew_months": str(period_months),
         },
@@ -379,18 +456,32 @@ async def create_checkout(
     _validate(body.plan, body.period_months)
 
     plan = await _get_or_create_plan(db, ctx.studio_id)
+    combo = _is_combo(plan, body.combo)
+    # Комбо несёт ОБЯЗАТЕЛЬСТВО платить процент с оборота, и оформить его без
+    # подтверждённых условий нельзя — ровно как в `POST /billing/model`. Согласие
+    # записано в строке плана (`percent_terms_rate`), а не выводится из флага в
+    # теле: иначе модалку условий можно было бы обойти прямым запросом сюда.
+    if combo and plan.percent_terms_rate != COMBO_PERCENT_RATE:
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.offline_terms_required",
+            "message": "Подтвердите условия постоплаты комиссии с офлайн-продаж",
+        })
+
     customer_id = await _ensure_customer(db, ctx, plan)
     await _forget_dead_subscription(db, plan)
 
-    combo = _is_combo(plan)
-    metadata = _metadata(ctx, body.plan, body.period_months, plan.billing_mode)
+    metadata = _metadata(ctx, body.plan, body.period_months, "combo" if combo else "subscription")
 
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
-        if _is_renewal(plan, body.plan, await _live_plan_name(plan)):
-            # Продление своего же тарифа: выставляем счёт, подписку не трогаем.
+        if _is_renewal(plan, body.plan, await _live_plan_name(plan)) and combo == (
+            plan.billing_mode == "combo"
+        ):
+            # Продление своего же тарифа В ТОЙ ЖЕ МОДЕЛИ: выставляем счёт, подписку
+            # не трогаем. Смена модели на том же тарифе продлением НЕ является —
+            # у комбо другой Price, и его надо именно переставить (_switch_now).
             stripe_invoice = await _renewal_invoice(
-                db, ctx, plan, customer_id, body.plan, body.period_months,
+                db, ctx, plan, customer_id, body.plan, body.period_months, combo,
             )
             from .webhook import mirror_invoice
 
@@ -442,6 +533,10 @@ async def preview_checkout(
     request: Request,
     plan: str = Query(...),
     period_months: int = Query(...),
+    # Модель, выбранную ПРЯМО СЕЙЧАС, а не ту, что записана в БД: расчёт должен
+    # показывать цену того, что владелец покупает. Согласия здесь не требуем —
+    # превью только считает, деньги берёт `create_checkout`, он и гейтит.
+    combo: bool = Query(False),
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -461,13 +556,25 @@ async def preview_checkout(
     """
     _validate(plan, period_months)
     row = await _get_or_create_plan(db, ctx.studio_id)
-    combo = _is_combo(row)
+    combo = _is_combo(row, combo)
     gross = (combo_amount_for if combo else amount_for)(plan, period_months)
     currency = stripe_billing.CURRENCY.upper()
 
     if not stripe_billing.configured() or not _has_live_subscription(row):
+        # Подписки нет — но оплаченный остаток (триал, прежний период) может быть, и
+        # тогда списывать начнут не сегодня: `_trial_end` даёт новой подписке
+        # бесплатный старт до его конца. Считаем ТЕМ ЖЕ вызовом, что и оформление,
+        # иначе модалка однажды пообещает дату, отличную от настоящей.
+        starts_at = _trial_end(row)
+        free_at = datetime.utcfromtimestamp(starts_at) if starts_at else None
         return CheckoutPreviewRead(
             kind="new", gross=gross, credit=0, total=gross, burned=0, currency=currency,
+            free_until=free_at.isoformat() if free_at else None,
+            # Вверх по календарю: пока дата не наступила, «остался 1 день» честнее нуля.
+            free_days=(
+                -((-(free_at - datetime.utcnow()).total_seconds()) // 86400)
+                if free_at else 0
+            ),
         )
 
     # Тариф ЖИВОЙ подписки, а не наше зеркало: и решение «продление или смена», и
@@ -476,7 +583,10 @@ async def preview_checkout(
     # полную цену Pro (жалоба 13.08.2026).
     current_name = await _live_plan_name(row)
 
-    if _is_renewal(row, plan, current_name):
+    # Тот же тариф, но ДРУГАЯ модель — это смена, а не продление: у комбо свой
+    # Price. Условие обязано совпадать с create_checkout, иначе модалка обещает
+    # продление, а списывается переход.
+    if _is_renewal(row, plan, current_name) and combo == (row.billing_mode == "combo"):
         # Продление: зачитывать нечего и сжигать нечего — купленные месяцы
         # прибавляются к оплаченному сроку.
         return CheckoutPreviewRead(

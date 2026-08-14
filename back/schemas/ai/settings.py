@@ -38,6 +38,12 @@ class AISettingsRead(BaseSchema):
     # Не колонка StudioAISettings, а срез StudioIntegration("wa_notify"): номер
     # подключён в Уведомлениях/Настройках, здесь он только гейт тумблера.
     wa_phone_number: Optional[str] = None
+    # Активен ли канал онлайн-записи Telegram. Тоже не колонка, а срез
+    # BookingChannelConfig: апдейты бота приходят на вебхук Онлайн-записи, и он
+    # ищет студию только среди АКТИВНЫХ каналов. Выключили канал, оставив
+    # тумблер агента — агент замолкает молча, и в интерфейсе это надо объяснить
+    # (эпик AI-5, задача 12, п. 9).
+    tg_channel_active: bool = False
 
 
 class AISettingsUpdate(BaseSchema):
@@ -62,3 +68,10 @@ class AISettingsUpdate(BaseSchema):
 
 class TelegramTokenIn(BaseSchema):
     token: str = Field(..., pattern=r"^\d+:[\w-]{30,}$")
+
+
+class AIQuotaRead(BaseSchema):
+    """Остаток месячной квоты ИИ (эпик AI-5, задача 3). Денежный потолок сюда
+    не попадает — это себестоимость платформы, а не обещание студии."""
+    used: int
+    limit: int

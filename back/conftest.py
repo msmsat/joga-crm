@@ -44,6 +44,17 @@ for _key in (
 ):
     os.environ[_key] = ""
 
+# LLM (эпик AI-5): боевой ключ затирается заведомо нерабочим адресом, а не
+# пустой строкой. Пустая означала бы «провайдер не настроен» — ассистент ушёл бы
+# в заглушку, и агентный цикл в тестах не выполнялся бы ни разу. Нерабочий
+# адрес держит ветку «настроен», но физически никуда не ведёт; реальные вызовы
+# всё равно невозможны — сам транспорт подменён в pytest_configure ниже.
+os.environ["LLM_BASE_URL"] = "http://llm.invalid"
+os.environ["LLM_API_KEY"] = "test-key-not-real"
+os.environ["LLM_MODEL_FAST"] = "google/gemini-3-flash"
+os.environ["LLM_MODEL_MAIN"] = "anthropic/claude-sonnet-5"
+os.environ["LLM_MODEL_SMART"] = "anthropic/claude-opus-5"
+
 
 def pytest_configure(config):
     """Второй рубеж: глушим сам транспорт SMTP.
@@ -59,3 +70,33 @@ def pytest_configure(config):
         return {}, "тест: письмо не отправлено"
 
     aiosmtplib.send = _swallow
+
+    _stub_llm()
+
+
+def _stub_llm():
+    """Третий рубеж — модель (эпик AI-5, задача 14, п. 1).
+
+    Без него 460+ тестов ушли бы в настоящий API платёжным ключом: счёт, упёртый
+    рейт-лимит — и всё это МОЛЧА, потому что тесты при этом позеленеют. Цена
+    ошибки та же, что у письма реальному человеку.
+
+    Подменяются ОБЕ функции. Забытая chat_stream не выглядит как дыра ровно до
+    того дня, когда появится тест на стрим: он позеленеет, сходив в боевой API.
+    Тест, которому нужен свой сценарий ответа, подменяет services.llm.chat сам.
+    """
+    from services import llm
+
+    def _usage():
+        return llm.LLMUsage(model="google/gemini-3-flash", prompt_tokens=10,
+                            cached_tokens=0, completion_tokens=5, cost_micro=20)
+
+    async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):
+        return llm.LLMReply(text="Тестовый ответ ассистента.", tool_calls=[], usage=_usage())
+
+    async def _chat_stream(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):
+        yield "token", "Тестовый ответ ассистента."
+        yield "usage", _usage()
+
+    llm.chat = _chat
+    llm.chat_stream = _chat_stream

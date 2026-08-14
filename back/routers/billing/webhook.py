@@ -16,14 +16,14 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, HTTPException, Request
-from sqlalchemy import or_
+from sqlalchemy import or_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import async_session_maker
-from models import Studio, StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember
+from models import Studio, StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember, User
 from services import stripe_billing, stripe_catalog
-from .plans import PLANS
+from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -243,6 +243,65 @@ async def _adopt_local_invoice(
     return row
 
 
+async def _supersede_unpaid(db: AsyncSession, fresh: BillingInvoice) -> None:
+    """Новый счёт за тариф закрывает прежние НЕОПЛАЧЕННЫЕ счета за тариф.
+
+    Правило: у студии в любой момент висит РОВНО ОДИН счёт за тариф. Неудавшийся
+    переход (закрыли вкладку, карта отклонила, ушли со страницы Stripe) оставлял
+    открытый счёт-прорацию, следующая попытка добавляла второй — и Stripe дожимал
+    оба, списывая за один и тот же тариф дважды. Новый счёт всегда покрывает ту же
+    сумму целиком, поэтому старому оставаться незачем.
+
+    ОПЛАЧЕННЫЕ, возвращённые и уже закрытые не трогаем: история счетов и фактуры —
+    документы отчётности, задним числом они не переписываются. Отбор по
+    `status == "pending"` это и обеспечивает.
+
+    Счета за КОМИССИЮ (offline_fee / min_monthly / online_fee) под правило не
+    попадают СОЗНАТЕЛЬНО, и это не недоделка: каждый из них закрывает СВОИ
+    начисления (`OfflineTransactionFee.invoice_id`), которые в новый счёт уже не
+    переедут. Погасить прежний значило бы стереть долг студии перед платформой, а
+    не убрать дубль. Дублей там нет и без этого — `offline_fee_billing.bill_now`
+    второй счёт при открытом первом не выставляет.
+
+    Stripe отвечает отказом → счёт остаётся как был, и обработка не срывается:
+    оплата нового важнее уборки старого. Такой счёт закроет ручная сверка.
+    """
+    if fresh.kind != "subscription":
+        return
+    stale = (await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.studio_id == fresh.studio_id,
+            BillingInvoice.kind == "subscription",
+            BillingInvoice.status == "pending",
+            BillingInvoice.id != fresh.id,
+        )
+    )).scalars().all()
+
+    for old in stale:
+        if old.stripe_invoice_id:
+            try:
+                if not await stripe_billing.void_invoice(old.stripe_invoice_id):
+                    # Гасить не наше дело: он уже оплачен (тогда статус — работа для
+                    # сверки, а не наша выдумка) либо это счёт очередного цикла,
+                    # который Stripe выставил за уже идущий период.
+                    logger.warning(
+                        "Счёт %s студии %s оставлен открытым: гасить его не наше дело",
+                        old.stripe_invoice_id, old.studio_id,
+                    )
+                    continue
+            except Exception:
+                logger.exception(
+                    "Счёт %s студии %s не погашен — остаётся открытым",
+                    old.stripe_invoice_id, old.studio_id,
+                )
+                continue
+        old.status = "failed"
+        logger.info(
+            "Счёт %s студии %s закрыт: выставлен новый счёт за тариф (%s)",
+            old.id, old.studio_id, fresh.id,
+        )
+
+
 async def mirror_invoice(
     db: AsyncSession, plan: StudioBillingPlan, stripe_invoice,
 ) -> BillingInvoice:
@@ -304,6 +363,13 @@ async def mirror_invoice(
         row = BillingInvoice(stripe_invoice_id=stripe_id, status="pending", **fields)
         db.add(row)
         await db.flush()
+        # Именно здесь, а не у каждой кнопки: через mirror_invoice проходят ВСЕ
+        # счета — и смена тарифа, и продление, и то, что завёл сам Stripe. Правило
+        # «один счёт за тариф» должно держаться независимо от того, откуда счёт
+        # пришёл. Ветка создания, а не обновления: событие по УЖЕ известному счёту
+        # (ретрай, финализация, оплата) новым счётом не является и гасить ничего
+        # не должно.
+        await _supersede_unpaid(db, row)
     else:
         for key, value in fields.items():
             # Ссылки на PDF Stripe заполняет при финализации, а не в каждом событии;
@@ -559,10 +625,13 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
     них вычтут. Отсюда правило — убрать номер до того, как по нему выпишется
     следующий счёт.
 
-    Своей копии номера у нас больше нет (его вводят на странице Checkout, и там же
-    он живёт), поэтому стирать в БД нечего. Признак «событие уже обработано» —
-    ответ самого Stripe: `delete_tax_id` вернёт False, если номера уже не было, и
-    ретрай не разошлёт студии второе письмо.
+    Своя копия номера теперь есть — на аккаунте владельца (форма реквизитов), и её
+    надо стереть той же рукой: иначе следующее оформление зальёт в Stripe обратно
+    ровно тот номер, который мы только что сняли, и вся защита сведётся к отсрочке
+    на одну оплату (checkout._ensure_customer).
+
+    Признак «событие уже обработано» — ответ самого Stripe: `delete_tax_id` вернёт
+    False, если номера уже не было, и ретрай не разошлёт студии второе письмо.
     """
     status = getattr(getattr(obj, "verification", None), "status", None)
     if status != _VAT_REJECTED:
@@ -590,6 +659,24 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
     if studio is None:
         logger.info("Stripe billing: клиент %s не привязан к студии", customer_id)
         return
+
+    # Стираем номер и у себя — по аккаунту владельца студии, потому что платит и
+    # заполняет реквизиты только он. Сверка идёт по значению: владелец мог уже
+    # вписать в форму другой номер, пока событие ехало, и затирать его нельзя.
+    await db.execute(
+        update(User)
+        .where(
+            User.id.in_(
+                select(StudioMember.user_id).where(
+                    StudioMember.studio_id == studio.id,
+                    StudioMember.role == "owner",
+                )
+            ),
+            User.billing_vat_id == value,
+        )
+        .values(billing_vat_id=None)
+    )
+    await db.commit()
 
     # Письмо своих ошибок наружу не пускает (как send_receipt): номер уже снят, и
     # упавший SMTP не повод получить ретрай применённого события.
@@ -845,7 +932,12 @@ async def apply_status(
             select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
         )).scalar_one_or_none()
         if plan and plan.stripe_subscription_id:
-            await _sync_card(db, plan, subscription)
+            # Режим — из ТОЙ ЖЕ подписки, которую прочитал _sync_card: два запроса
+            # за одним объектом на денежном пути ни к чему, а брать состояние из
+            # двух моментов времени тем более.
+            subscription = await _sync_card(db, plan, subscription)
+            if subscription is not None:
+                _apply_paid_mode(plan, subscription)
             await db.commit()
         # Чек владельцу — тоже после коммита и тоже не роняет обработку: тариф уже
         # оплачен, и упавший SMTP не повод отдать Stripe 500 и получить ретрай уже
@@ -905,18 +997,21 @@ async def _sync_card(
     `subscription` — передаётся, если вызывающая сторона его уже получила (раскрытым,
     с `default_payment_method`); иначе фетчим сами. Сбой запроса не роняет активацию —
     тариф уже оплачен, карта — только удобство для кнопки «Продлить».
+
+    Возвращает подписку, которой пользовалась: её же читает `_apply_paid_mode`, и
+    второй раз ходить за тем же объектом на денежном пути незачем.
     """
     if subscription is None:
         try:
             subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
         except Exception:
             logger.exception("Stripe billing: не удалось прочитать подписку %s", plan.stripe_subscription_id)
-            return
+            return None
 
     method = getattr(subscription, "default_payment_method", None)
     card = getattr(method, "card", None) if method else None
     if card is None:
-        return
+        return subscription
 
     # Карту привязываем к владельцу студии — единственному, кому доступны эндпоинты
     # биллинга (require_role("owner") в routers/billing/router.py). Счета студии
@@ -925,6 +1020,38 @@ async def _sync_card(
     # искать «последний счёт с user_id» там было бы либо мимо (пусто), либо мимо
     # цели (случайный чужой счёт).
     await _save_card(db, plan, method.id, card)
+    return subscription
+
+
+def _apply_paid_mode(plan: StudioBillingPlan, subscription) -> None:
+    """Тарифная модель — тоже по ОПЛАТЕ, а не по нажатию кнопки.
+
+    ЖАЛОБА 14.08.2026: «нажал в комбо соглашаюсь, и меня перевело, хотя я не
+    оплатил». `POST /billing/model` включал комбо сразу и переводил подписку на
+    ПОЛОВИННЫЙ Price — студия с оплаченным периодом одним нажатием начинала
+    платить вдвое меньше, не заплатив ничего. Теперь этот запрос выставляет счёт
+    (router.activate_model → checkout._switch_now), а режим включается здесь,
+    когда счёт оплачен, — ровно как ступень тарифа в `_activate`.
+
+    Хранить «какой режим купили» отдельным полем не нужно: у комбо СВОЙ Price
+    (`velora_combo_*`), то есть режим уже записан в подписке, за которую заплатили.
+    Читаем оттуда — второй копии, которая однажды разъедется, не заводим.
+
+    «Процент» сюда не попадает по определению: подписки у него нет, а значит нет и
+    Price. Он и включается сразу, и дарить там нечего — фикс не уменьшается, а
+    появляется обязательство платить комиссию с оборота и минимум.
+    """
+    parsed = stripe_catalog.parse_lookup_key(stripe_billing.price_key_of(subscription))
+    if parsed is None:
+        return
+    plan_id, months, combo = parsed
+    plan.billing_mode = "combo" if combo else "subscription"
+    # Та же формула, что в router.activate_model: половина подписки со скидкой
+    # периода. Ставка и сумма обязаны совпадать с тем, по чему выставляют счета.
+    plan.percent_rate = COMBO_PERCENT_RATE if combo else None
+    plan.fixed_base_amount = (
+        round(COMBO_FIXED[plan_id] * (1 - PERIOD_DISCOUNTS[months])) if combo else None
+    )
 
 
 async def _save_card(db: AsyncSession, plan: StudioBillingPlan, method_id: str, card) -> None:

@@ -2,20 +2,34 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogoMark } from "../../../components/Icons";
 import { getActiveToken } from "../../../utils/auth";
-import { LEGAL_DOC_LINKS, LEGAL_LINK_PROPS } from "../../../utils/legal";
+import { LEGAL_DOC_LINKS, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 
 const LINKS = [
   { href: "#product", label: "Продукт" },
   { href: "#modules", label: "Модули" },
   { href: "#pricing", label: "Тарифы" },
-  { href: "#reviews", label: "Отзывы" },
+  { href: "#faq", label: "Вопросы" },
 ];
 
-// href: null — пункт-заглушка, ведёт наверх страницы. Документы — настоящие
-// файлы на бэкенде, они обязаны быть публично доступны без регистрации.
-const FOOTER_COLUMNS: [string, { label: string; href: string | null }[]][] = [
-  ["Продукт", ["Возможности", "Модули", "Тарифы", "Онлайн-запись", "Velora AI"].map((label) => ({ label, href: null }))],
-  ["Отрасли", ["Йога и пилатес", "Фитнес", "Барбершопы", "SPA и салоны", "Массаж"].map((label) => ({ label, href: null }))],
+// Каждая ссылка ведёт в свой раздел страницы, а не наверх: якоря глав живут в
+// самих секциях (#product, #booking, #ai, …), у каждой есть scroll-mt под
+// плавающую шапку. Пунктов-заглушек в подвале быть не должно — колонка
+// «Отрасли» из пяти таких и ушла. Документы — настоящие файлы на бэкенде,
+// они обязаны открываться без регистрации.
+const FOOTER_COLUMNS: [string, { label: string; href: string }[]][] = [
+  ["Продукт", [
+    { label: "Возможности", href: "#product" },
+    { label: "Модули", href: "#modules" },
+    { label: "Онлайн-запись", href: "#booking" },
+    { label: "Velora AI", href: "#ai" },
+    { label: "Тарифы", href: "#pricing" },
+  ]],
+  ["Компания", [
+    { label: "Чем отличаемся", href: "#difference" },
+    { label: "О нас", href: "#about" },
+    { label: "Вопросы и ответы", href: "#faq" },
+    { label: "Поддержка", href: SUPPORT_WHATSAPP_URL },
+  ]],
   ["Документы", LEGAL_DOC_LINKS],
 ];
 
@@ -44,10 +58,14 @@ export function LandingNav() {
   }, []);
 
   return (
+    // Фон непрозрачный, БЕЗ backdrop-blur. Блюр на липком элементе заставляет
+    // браузер перечитывать и заново размывать всё, что под ним, на каждом кадре
+    // прокрутки — на телефоне именно это роняло страницу до рывков. Та же
+    // причина, по которой блюра нет у оверлеев кита (App.css, «ТЕЛЕФОН»).
     <nav
-      className={`fixed left-1/2 top-3 z-50 flex w-[calc(100%-24px)] max-w-[1200px] -translate-x-1/2 items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-300 sm:top-4 sm:px-5 sm:py-3 ${
+      className={`fixed left-1/2 top-3 z-50 flex w-[calc(100%-24px)] max-w-[1200px] -translate-x-1/2 items-center justify-between rounded-2xl px-4 py-2.5 transition-colors duration-300 sm:top-4 sm:px-5 sm:py-3 ${
         scrolled
-          ? "border border-white/10 bg-[#101010]/85 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.6)] backdrop-blur-xl"
+          ? "border border-white/10 bg-[#141414] shadow-[0_16px_48px_-12px_rgba(0,0,0,0.6)]"
           : "border border-transparent bg-transparent"
       }`}
     >
@@ -89,20 +107,20 @@ export function LandingFooter() {
           <div>
             <Wordmark />
             <p className="mt-5 max-w-[280px] text-[13px] leading-[1.7] text-white/40">
-              Премиальная CRM для студий, барбершопов и салонов. Записи, клиенты,
+              Премиальная CRM для студий йоги и пилатеса. Записи, клиенты,
               деньги и AI — в одном пространстве.
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {["Telegram", "WhatsApp", "Instagram"].map((s) => (
-                <a
-                  key={s}
-                  href="#top"
-                  className="rounded-lg border border-white/10 px-3 py-1.5 text-[12px] font-medium text-white/50 transition-colors hover:border-[#F9A08B] hover:text-[#F9A08B]"
-                >
-                  {s}
-                </a>
-              ))}
-            </div>
+            {/* Здесь были кнопки Telegram / WhatsApp / Instagram, ведущие на
+                #top: аккаунтов за ними нет. Остался один канал, за которым
+                действительно кто-то отвечает — номер показан прямо в ссылке,
+                чтобы его можно было забрать, не открывая WhatsApp. */}
+            <a
+              href={SUPPORT_WHATSAPP_URL}
+              {...LEGAL_LINK_PROPS}
+              className="mt-6 inline-flex rounded-lg border border-white/10 px-3 py-1.5 text-[12px] font-medium text-white/50 transition-colors hover:border-[#F9A08B] hover:text-[#F9A08B]"
+            >
+              WhatsApp&nbsp;{SUPPORT_WHATSAPP}
+            </a>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-3">
@@ -113,8 +131,8 @@ export function LandingFooter() {
                   {items.map(({ label, href }) => (
                     <li key={label}>
                       <a
-                        href={href ?? "#top"}
-                        {...(href ? LEGAL_LINK_PROPS : {})}
+                        href={href}
+                        {...(href.startsWith("#") ? {} : LEGAL_LINK_PROPS)}
                         className="text-[13px] text-white/45 transition-colors hover:text-white"
                       >
                         {label}
@@ -127,12 +145,10 @@ export function LandingFooter() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-8 text-[12px] text-white/30">
-          <span>© 2026 Velora. Все права защищены.</span>
-          <span className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#A3C9A8]" />
-            Все системы в норме
-          </span>
+        {/* Индикатор «Все системы в норме» убран: статус-страницы, которая бы
+            его подтверждала, у нас нет — это была картинка, а не показание. */}
+        <div className="mt-14 border-t border-white/10 pt-8 text-[12px] text-white/30">
+          © 2026 Velora. Все права защищены.
         </div>
       </div>
 

@@ -52,7 +52,10 @@
     "trial": "Trial period",
     "trialUntil": "Trial period · until {{date}}",
     "expired": "Expired",
-    "percentRate": "{{rate}}% of sales"
+    "percentRate": "{{rate}}% of sales",
+    "modePercent": "Percentage plan",
+    "modeFixed": "Fixed",
+    "modeCombo": "Combo"
   },
   "mode": {
     "title": "Payment model",
@@ -84,13 +87,15 @@
     },
     "activateSuccess": "Payment model updated",
     "activateError": "Couldn't update the payment model",
+    "alreadyActive": "This payment model is already active — below you can renew or change the plan",
     "confirmSwitchTitle": "Switch payment model?",
     "confirmSwitchMessage": "Your subscription is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Confirm plan terms",
     "termsMessage": "On this plan the platform withholds {{rate}}% of every sale.\n\nFor online payments the fee is withheld automatically at the moment of payment. For cash, terminal and deposit top-ups it is NOT withheld immediately — it accrues, and you receive a separate invoice once a month.\n\nYou have {{days}} days to pay that invoice. If it is not paid in time, access to the CRM and to the client mini-app is suspended until it is settled.\n\nThe current amount due is shown in Billing; you can pay at any time, including early.",
     "termsConfirm": "I accept the terms",
     "termsMinimum": "Minimum monthly charge is {{amount}} {{currency}}. If over a calendar month the platform earned less than that from your studio (for example, there were no sales through the CRM at all), you are invoiced for the difference. Earn more than the minimum and there is no invoice. An unpaid minimum charge suspends access the same way an unpaid commission invoice does.",
-    "termsBurn": "WARNING: you have a paid period left. Switching the billing model FORFEITS it entirely — the unused days are not refunded and do not carry over."
+    "termsBurn": "WARNING: you have a paid period left. Switching the billing model FORFEITS it entirely — the unused days are not refunded and do not carry over.",
+    "termsCombo": "The switch is a purchase: right after you confirm, you will see the breakdown — how much of your current period is credited and what is left to pay. The fixed + % model turns on AFTER payment; until then your plan stays as it is and nothing is charged."
   },
   "combo": {
     "rateBadge": "{{rate}}%",
@@ -226,7 +231,7 @@
     },
     "portal": {
       "title": "Billing details and VAT",
-      "subtitle": "Your company name, address and VAT number live at Stripe, not with us. The same page updates your card and holds every invoice. With a valid VAT number, companies outside Czechia are invoiced without VAT (reverse charge).",
+      "subtitle": "Invoices, the linked card and charge history live in the Stripe customer portal.",
       "cta": "Open at Stripe"
     }
   },
@@ -292,8 +297,7 @@
     "renewNote": "This renews the same plan: the months you buy are added to your current paid period. Nothing is forfeited.",
     "estimatedNote": "We couldn't calculate the credit for your unused time right now — the amount at checkout may be lower than shown.",
     "cardNote": "Card payment on Stripe's secure page · 7-day refund",
-    "businessHint": "Buying as a business?",
-    "businessLink": "Add your VAT ID before paying"
+    "freeUntil": "Nothing is charged until {{date}}: you still have {{count}} day(s) of your already paid period. Billing starts on that date."
   },
   "offlineFee": {
     "title": "Offline sales fee",
@@ -302,5 +306,59 @@
     "suspended": "Payment overdue — CRM and mini-app access is suspended.",
     "pay": "Pay",
     "nothingToPay": "Nothing to pay"
+  },
+  "trial": {
+    "title": "Offer for new studios",
+    "subtitle": "Your studio has just been created",
+    "headline": "{{days}} days free",
+    "noCard": "No card required — nothing to pay now",
+    "perks": {
+      "allModules": "Full access to every module: journal, clients, finances, notifications and Velora AI",
+      "noCommitment": "No commitment: if it does not fit, simply do not renew",
+      "keepData": "Everything you set up during the trial stays yours"
+    },
+    "activate": "Activate",
+    "decline": "Decline",
+    "cardHint": "You have not activated this studio’s free period yet. It stays available until you buy a plan."
+  },
+  "profile": {
+    "title": "Billing details",
+    "editTitle": "Edit billing details",
+    "subtitle": "Your address goes on the invoice and sets the tax rate. It's stored on your account — we won't ask again in another studio.",
+    "subtitlePay": "Fill this in once and payment goes straight through next time. Your address goes on the invoice and sets the tax rate.",
+    "cardTitle": "Billing details",
+    "cardSubtitle": "Stored on your account and used across all your studios. This is how they appear on the invoice.",
+    "cardEmpty": "Not filled in yet — we'll ask before your first payment. You can add them now.",
+    "add": "Add billing details",
+    "edit": "Edit",
+    "save": "Save",
+    "saveAndPay": "Save and continue to payment",
+    "cancel": "Cancel",
+    "saved": "Billing details saved",
+    "vatNone": "Not provided",
+    "fields": {
+      "country": "Country or region",
+      "countryPlaceholder": "Select a country",
+      "address": "Address",
+      "line1": "Address line 1",
+      "line1Placeholder": "Street and number",
+      "line2": "Address line 2 — optional",
+      "line2Placeholder": "Apt., suite, unit number, etc.",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "110 00",
+      "city": "City",
+      "cityPlaceholder": "Prague",
+      "vat": "VAT number — optional",
+      "vatPlaceholder": "CZ12345678",
+      "vatHint": "Businesses only. With a valid VAT number a company in another EU country is invoiced without tax (reverse charge). Individuals don't have one — leave it empty."
+    },
+    "errors": {
+      "required": "This field is required"
+    },
+    "preview": {
+      "invoice": "Invoice",
+      "billTo": "Bill to",
+      "note": "This is how your details appear on every invoice. You can change them any time in Plan & billing → Payment method."
+    }
   }
 }

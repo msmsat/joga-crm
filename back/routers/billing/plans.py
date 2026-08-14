@@ -5,15 +5,26 @@
 используются задачей 8 (check_plan_limit); None = безлимит (Business).
 """
 
-# id -> {name, price (центы EUR/мес), limits {staff, clients}}; None = безлимит.
+# id -> {name, price (центы EUR/мес), limits {staff, clients, ai_requests, ai_cost_micro}}.
+# None = безлимит, но только там, где безлимит безопасен: у сотрудников и клиентов
+# он ничего не стоит платформе, у ИИ — стоит деньгами провайдера, поэтому Business
+# получает число (эпик AI-5, решения 6 и 9).
+#   ai_requests   — обращений к ИИ в месяц (витрина, PlanLimits);
+#   ai_cost_micro — потолок себестоимости в микро-$, 12 % MRR. ВНУТРЕННИЙ:
+#                   в PlanLimits не выносится — студии он ничего не говорит.
 PLANS: dict[str, dict] = {
-    "start":    {"name": "Старт",    "price":  3900, "limits": {"staff": 3,    "clients": 100}},
-    "pro":      {"name": "Pro",      "price":  9900, "limits": {"staff": 15,   "clients": 1000}},
-    "business": {"name": "Business", "price": 23900, "limits": {"staff": None, "clients": None}},
+    "start":    {"name": "Старт",    "price":  3900, "limits": {"staff": 3,    "clients": 100,  "ai_requests": 300,  "ai_cost_micro":  5_000_000}},
+    "pro":      {"name": "Pro",      "price":  9900, "limits": {"staff": 15,   "clients": 1000, "ai_requests": 1500, "ai_cost_micro": 13_000_000}},
+    "business": {"name": "Business", "price": 23900, "limits": {"staff": None, "clients": None, "ai_requests": 5000, "ai_cost_micro": 31_000_000}},
 }
 
 # Скидка за период оплаты: 6 мес −20%, 12 мес −30%, 24 мес −40%.
 PERIOD_DISCOUNTS: dict[int, float] = {1: 0.0, 6: 0.20, 12: 0.30, 24: 0.40}
+
+# Длина пробного периода. Живёт здесь, а не в онбординге: выдаёт триал теперь
+# биллинг (POST /billing/trial), по явному согласию владельца, — а условия
+# тарифов у нас все в одном файле.
+TRIAL_DAYS = 14
 
 
 # Модель «%»: единственный тариф (аудит §3). Модель «комбо»: 1.5% + фикс ÷2.
@@ -39,6 +50,20 @@ COMBO_FIXED: dict[str, int] = {
     "pro":      PLANS["pro"]["price"]      // 2,
     "business": PLANS["business"]["price"] // 2,
 }
+
+
+def tier(plan_name: str) -> int:
+    """Ступень тарифа для сравнения. free_trial даёт лимиты Pro (services/plan_limits),
+    поэтому и здесь считается его ступенью; неизвестный план (none) — ниже всех.
+
+    Живёт в каталоге, а не в роутере: по ней сверяются ОБА места, где ступень из
+    нашей БД встречается со ступенью подписки Stripe (router.activate_model и
+    checkout._live_plan_name). Вторая копия правила «free_trial равен Pro» однажды
+    разъехалась бы с первой.
+    """
+    plan_id = "pro" if plan_name == "free_trial" else plan_name
+    plan_ids = list(PLANS)
+    return plan_ids.index(plan_id) if plan_id in plan_ids else -1
 
 
 def combo_amount_for(plan_id: str, period_months: int) -> int:
@@ -91,6 +116,14 @@ if __name__ == "__main__":
             assert combo_amount_for(_pid, _months) * 2 == amount_for(_pid, _months), (_pid, _months)
     assert combo_amount_for("business", 1) == 11950
     assert combo_amount_for("pro", 12) == 41580
+
+    # Ступени тарифа: их сравнивают activate_model (чтобы не отдать лимиты Business
+    # бесплатно) и _live_plan_name (чтобы не принять неоплаченный Price за текущий
+    # тариф). free_trial равен Pro — так же его читает services/plan_limits.
+    assert tier("start") < tier("pro") < tier("business")
+    assert tier("free_trial") == tier("pro")
+    assert tier("none") == -1 and tier("") == -1
+    assert tier("business") > tier("none")   # без строки плана апгрейд невозможен
 
     # Минимум процентного тарифа — ровно месяц «Старта», 39.00 €.
     assert MIN_MONTHLY_FEE == 3900

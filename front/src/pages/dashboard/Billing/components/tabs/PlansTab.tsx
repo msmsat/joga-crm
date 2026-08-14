@@ -5,7 +5,7 @@ import type { BillingMode, PlanType, BillingPlan } from '../../types';
 import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
 import { usePhone } from '../../../../../hooks/usePhone';
-import { Button, ConfirmModal } from '../../../../../components/ui/index';
+import { Button, ConfirmModal, useToast } from '../../../../../components/ui/index';
 import {
   CheckIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
   PercentIcon, ArrowRightIcon, HistoryIcon,
@@ -49,6 +49,7 @@ export default function PlansTab({
   activateModel, modelBusy, plan, minMonthly,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
+  const toast = useToast();
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
   const reviews = t('trust.reviews', { returnObjects: true }) as { text: string; author: string }[];
   // Бейдж «Текущий» — тариф активной подписки студии, а не захардкоженный Pro.
@@ -66,6 +67,16 @@ export default function PlansTab({
   // условий, отличаются только тем, открывать ли следом окно оплаты.
   const [payAfterActivate, setPayAfterActivate] = useState(false);
   const requestActivate = (body: ActivateModelRequest, thenPay = false) => {
+    // Модель УЖЕ работает — менять нечего. Раньше запрос уходил на сервер, тот
+    // честно отвечал 200, и владелец получал «Модель оплаты обновлена» на кнопку,
+    // которая ничего не обновила. Здесь же отсекаем и модалку условий: заново
+    // соглашаться на постоплату, оставаясь на том же проценте, не за что.
+    // `body.plan == null` обязателен: у комбо в теле едут тариф и период, и они
+    // МЕНЯЮТ фикс-часть (fixed_base_amount) — такой запрос не пустой.
+    if (body.mode === plan?.billing_mode && body.plan == null) {
+      toast.info(t('mode.alreadyActive'));
+      return;
+    }
     setPayAfterActivate(thenPay);
     if (body.mode === 'percent' || body.mode === 'combo') setPendingTerms(body);
     else if (plan?.status === 'active') setPendingActivation(body);
@@ -227,7 +238,11 @@ export default function PlansTab({
               <Button
                 variant="primary"
                 loading={modelBusy}
-                onClick={() => requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod })}
+                // Согласие → сразу модалка расчёта: комбо покупается, а не
+                // включается кнопкой, и владелец обязан увидеть сумму до списания.
+                onClick={() => requestActivate(
+                  { mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true,
+                )}
               >
                 {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
               </Button>
@@ -366,18 +381,21 @@ export default function PlansTab({
           // часть уже берётся подпиской, и второе денежное обязательство там не
           // возникает. Сумма приходит каталогом с сервера — цифра в согласии
           // обязана совпадать с той, по которой реально выставят счёт.
-          // Оплаченный период при смене модели сгорает целиком (бэк переводит
-          // подписку с proration_behavior="none", а «процент» отменяет её вовсе).
-          // Предупреждение живёт ЗДЕСЬ, а не в модалке оплаты: до неё этот путь
-          // не доходит — деньги теряются на самом переключении режима.
+          // Что происходит с уже оплаченным периодом — зависит от модели, и одним
+          // текстом это не покрыть:
+          //   percent — подписка отменяется, остаток сгорает целиком;
+          //   combo   — это ПОКУПКА: бэк выставляет счёт, остаток зачитывается в
+          //             него, а режим включается только по его оплате.
+          // Предупреждение живёт ЗДЕСЬ, а не в модалке оплаты: до неё этот путь не
+          // доходит — всё решается на самом подтверждении условий.
           message={t('mode.termsMessage', {
             rate: pendingTerms.mode === 'percent' ? 3 : 1.5,
             days: 7,
           }) + (pendingTerms.mode === 'percent' && minMonthly
             ? '\n\n' + t('mode.termsMinimum', { amount: minMonthly, currency })
-            : '') + (plan?.has_live_subscription
-            ? '\n\n' + t('mode.termsBurn')
-            : '')}
+            : '') + (!plan?.has_live_subscription
+            ? ''
+            : '\n\n' + t(pendingTerms.mode === 'combo' ? 'mode.termsCombo' : 'mode.termsBurn'))}
           confirmText={t('mode.termsConfirm')}
           onConfirm={() => activateModel(
             { ...pendingTerms, accept_offline_terms: true },

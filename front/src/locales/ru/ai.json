@@ -60,7 +60,32 @@
   },
   "actions": {
     "newChat": "Новый чат",
-    "deleteChat": "Удалить чат"
+    "deleteChat": "Удалить чат",
+    "confirmTitle": "Подтвердите действие",
+    "confirm": "Подтвердить",
+    "cancel": "Отмена",
+    "cancelled": "Действие отменено.",
+    "done": "Выполнено {{date}}",
+    "args": {
+      "lesson_id": "Занятие",
+      "client_id": "Клиент",
+      "reservation_id": "Запись",
+      "service_id": "Услуга",
+      "teacher_id": "Тренер",
+      "hall_id": "Зал",
+      "start_time": "Начало",
+      "duration_min": "Длительность, мин",
+      "total_spots": "Мест",
+      "price": "Цена",
+      "name": "Имя",
+      "last_name": "Фамилия",
+      "phone": "Телефон",
+      "email": "Email",
+      "city": "Город",
+      "birth_date": "Дата рождения",
+      "source": "Источник",
+      "frozen": "Заморозить"
+    }
   },
   "settings": {
     "title": "Настройки AI",
@@ -145,15 +170,40 @@
     "offHoursLabel": "Автоответ только вне рабочих часов",
     "promptHint": "Этот текст определяет личность агента — как он общается, что знает, каких тем избегает.",
     "promptPlaceholder": "Ты — вежливый ассистент студии...",
-    "promptCount": "{{count}} / 2000 символов"
+    "promptCount": "{{count}} / 2000 символов",
+    "tgChannelInactive": "Канал Telegram выключен в Онлайн-записи — бот не получает сообщения, и агент молчит."
   },
   "errors": {
     "tg_token_required": "Сначала подключите Telegram-бота — токен ещё не сохранён.",
     "ig_not_connected": "Instagram ещё не подключён.",
     "wa_not_connected": "Номер WhatsApp ещё не подключён — подключите его в Уведомлениях.",
-    "assistant_unavailable": "Ассистент временно недоступен — попробуйте позже."
+    "assistant_unavailable": "Ассистент временно недоступен — попробуйте позже.",
+    "quota_exceeded": "Лимит обращений к ИИ на этом тарифе исчерпан. Он обновится в начале месяца — или перейдите на тариф выше."
   },
   "toasts": {
     "settingsSaved": "Настройки сохранены"
+  },
+  "toolStatus": {
+    "get_schedule": "Смотрю расписание…",
+    "get_lesson": "Открываю занятие…",
+    "find_clients": "Ищу клиентов…",
+    "get_client": "Смотрю карточку клиента…",
+    "get_client_events": "Читаю историю клиента…",
+    "get_stats": "Считаю показатели…",
+    "get_finance_summary": "Смотрю финансы…",
+    "get_staff": "Смотрю сотрудников…",
+    "get_services": "Смотрю услуги…",
+    "get_rooms": "Смотрю залы…",
+    "get_loyalty_summary": "Смотрю лояльность…",
+    "get_today_agenda": "Смотрю сегодняшний день…",
+    "how_to": "Ищу в справке…",
+    "navigate": "Открываю раздел…",
+    "default": "Работаю…"
+  },
+  "quota": {
+    "label": "Запросов к ИИ",
+    "value": "{{used}} из {{limit}}",
+    "low": "Запас почти исчерпан.",
+    "upgrade": "Перейти на тариф выше"
   }
 }

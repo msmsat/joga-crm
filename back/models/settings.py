@@ -221,6 +221,17 @@ class StudioBillingPlan(Base):
     percent_terms_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     percent_terms_version: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
+    # Когда студия включила пробный период. Отдельное поле, а НЕ вывод из
+    # status/plan_name, и это принципиально: status — зеркало подписки Stripe,
+    # и он уходит в pending/expired ещё до всякой оплаты (незавершённый 3-D
+    # Secure, брошенное оформление — webhook.map_subscription_status). Пока
+    # «триал был» читался из статуса, акция сгорала у того, кто просто открыл
+    # страницу оплаты и передумал. NULL = не брали; выдаётся один раз и только
+    # до первой оплаты (routers/billing/router.activate_trial).
+    trial_started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True,
+    )
+
     auto_renewal: Mapped[bool] = mapped_column(Boolean, default=True)
     email_receipt_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     notify_before_days: Mapped[int] = mapped_column(Integer, default=3)

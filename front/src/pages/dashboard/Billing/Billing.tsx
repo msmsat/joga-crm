@@ -3,10 +3,12 @@ import type { PlanType } from './types';
 import { useBillingCalculator } from './hooks/useBillingCalculator';
 import BillingHeader from './components/sections/BillingHeader';
 import OfflineFeeCard from './components/sections/OfflineFeeCard';
+import TrialOfferCard from './components/sections/TrialOfferCard';
 import PlansTab from './components/tabs/PlansTab';
 import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
 import PayModal from './components/modals/PayModal';
+import BillingProfileModal from './components/modals/BillingProfileModal';
 import styles from './Billing.module.css';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
 
@@ -27,6 +29,10 @@ export default function Billing() {
         plans={h.plans}
         stats={h.stats}
       />
+
+      {/* Выше вкладок и цен: студия без подписки пришла сюда с пейволла, и
+          первое, что она должна увидеть, — что бесплатные дни ещё доступны. */}
+      <TrialOfferCard plan={h.plan} />
 
       <OfflineFeeCard />
 
@@ -80,6 +86,9 @@ export default function Billing() {
           setAutopay={h.setAutopay}
           openPortal={h.openPortal}
           portalBusy={h.portalBusy}
+          profile={h.profile}
+          profileSaving={h.profileSaving}
+          saveProfile={h.saveProfile}
         />
       )}
 
@@ -106,7 +115,21 @@ export default function Billing() {
           payBusy={h.payBusy}
           onClose={h.closePayModal}
           onPay={h.payWithCard}
-          onPortal={h.openPortal}
+          profile={h.profile}
+          onEditProfile={h.editProfileFromPay}
+        />
+      )}
+
+      {/* Реквизиты плательщика перед первой оплатой. Показывается вместо модалки
+          расчёта, когда адреса на аккаунте ещё нет; после сохранения сама ведёт
+          к расчёту (saveProfileAndPay). */}
+      {h.showProfileGate && (
+        <BillingProfileModal
+          profile={h.profile}
+          saving={h.profileSaving}
+          beforePayment
+          onClose={h.closeProfileGate}
+          onSave={h.saveProfileAndPay}
         />
       )}
     </div>

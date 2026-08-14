@@ -190,6 +190,61 @@ export async function openFile(path: string): Promise<void> {
   window.open(URL.createObjectURL(blob), '_blank', 'noopener')
 }
 
+// SSE-поток ассистента (эпик AI-5, задача 9): client.post отдаёт разобранный
+// JSON, а здесь нужен ReadableStream — плюс тот же Bearer-токен из localStorage,
+// который getToken() наружу не отдаёт намеренно. Разбор строк event:/data: —
+// здесь же, вызывающий код получает готовые события.
+export async function streamRequest(
+  path: string,
+  body: unknown,
+  onEvent: (event: string, data: unknown) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  const token = getToken()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'POST', headers, body: JSON.stringify(body), signal,
+  })
+  if (!res.ok) {
+    const data: unknown = await res.json().catch(() => null)
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Ошибка запроса', detailCode(data))
+  }
+  // Не SSE — сервер ответил чем-то другим (прокси, страница ошибки). Вызывающий
+  // код уходит на обычный /messages: стрим это улучшение, а не единственный путь.
+  if (!res.headers.get('Content-Type')?.includes('text/event-stream') || !res.body) {
+    throw new ApiError(res.status, 'stream_unavailable', 'stream_unavailable')
+  }
+
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    // События разделены пустой строкой; последний кусок может быть неполным —
+    // оставляем его в буфере до следующего чтения.
+    const blocks = buffer.split('\n\n')
+    buffer = blocks.pop() ?? ''
+    for (const block of blocks) {
+      let event = 'message'
+      const dataLines: string[] = []
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event:')) event = line.slice(6).trim()
+        else if (line.startsWith('data:')) dataLines.push(line.slice(5).trim())
+      }
+      if (!dataLines.length) continue
+      try {
+        onEvent(event, JSON.parse(dataLines.join('\n')))
+      } catch {
+        // Битый кусок не должен рвать весь ответ — пропускаем событие.
+      }
+    }
+  }
+}
+
 // Флаш при закрытии вкладки/обновлении страницы (EPIC N-8, задача 5):
 // keepalive переживает выгрузку документа — обычный fetch/XHR браузер обрывает.
 // navigator.sendBeacon тоже переживает, но не поддерживает свои заголовки —

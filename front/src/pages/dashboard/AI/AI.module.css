@@ -1089,3 +1089,71 @@
   gap: 10px;
   min-height: 0;
 }
+
+/* ─── Остаток квоты ИИ (эпик AI-5, задача 11) ────────────────────────────────
+   Между списком чатов и мини-настройками: лимит общий на студию, видят все
+   роли, но ссылку на тариф — только владелец. */
+.quotaBlock {
+  border-top: 1px solid var(--border, rgba(var(--ink),0.08));
+  padding: 12px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
+.quotaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #8A8783;
+}
+
+.quotaValue { font-weight: 700; color: var(--text-main, #1A1A1A); }
+
+.quotaBar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(var(--ink), 0.07);
+  overflow: hidden;
+}
+
+.quotaFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #FCAE91, #F9A08B);
+  transition: width 0.35s ease;
+}
+
+/* Осталось меньше 10 % — тот же пыльно-розовый, что у ошибок в ките. */
+.quotaLow .quotaFill { background: #D88C9A; }
+.quotaLow .quotaValue { color: #D88C9A; }
+
+.quotaHint {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8A8783;
+}
+
+.quotaLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #F9A08B;
+  font-weight: 700;
+  cursor: pointer;
+}
+.quotaLink:hover { text-decoration: underline; }
+
+/* Канал включён, но не работает (эпик AI-5): пыльно-розовый, как у ошибок кита. */
+.agentWarning {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #D88C9A;
+}

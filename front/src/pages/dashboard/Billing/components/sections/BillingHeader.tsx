@@ -19,6 +19,16 @@ interface Props {
 
 const TAB_IDS: BillingTab[] = ['plans', 'invoices', 'method'];
 
+// Тарифная модель из БД → короткая подпись рядом с названием тарифа.
+//
+// `percent` тут нет СОЗНАТЕЛЬНО: на чистом проценте ступень тарифа никакой роли не
+// играет — фикса нет, платит студия долей с оборота, и «Pro» рядом с «%» только
+// сбивал бы с толку. Там название тарифа целиком заменяется на header.modePercent
+// (см. planLabel ниже), поэтому второй подписи не нужно.
+const MODE_LABELS: Record<string, string> = {
+  subscription: 'header.modeFixed', combo: 'header.modeCombo',
+};
+
 export default function BillingHeader({ currency, activeTab, setActiveTab, animateCards, plan, plans, stats }: Props) {
   const { t, i18n } = useTranslation('billing');
   // «Тарифы и планы» + «История платежей» + «Способ оплаты» — 320px в трёх
@@ -50,11 +60,20 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
     : until
     ? t(active.status === 'trial' ? 'header.trialUntil' : 'header.activeUntil', { date: until })
     : t(active.status === 'trial' ? 'header.trial' : 'header.active');
+  // Крупная строка шапки. На проценте это САМА МОДЕЛЬ, а не ступень тарифа: платит
+  // студия долей с оборота, ступень ей ничего не стоит и ни на что не влияет.
+  // На фиксе и комбо ступень как раз и есть то, за что платят, — её и показываем.
   // free_trial выдаётся на онбординге и в каталоге тарифов его нет — своя подпись.
   const planLabel = !active
     ? t('header.noPlanName')
+    : active.billing_mode === 'percent'
+    ? t('header.modePercent')
     : plans[active.plan_name as PlanType]?.name
       ?? (active.plan_name === 'free_trial' ? t('header.trialPlanName') : active.plan_name);
+  // Вторая половина крупной строки: по какой модели берут деньги. Без неё шапка
+  // отвечала только на «какой тариф», а «фикс это или комбо» оставалось в плитках
+  // ниже — где подсветка показывает ВЫБОР, а не то, что работает сейчас.
+  const modeKey = active?.billing_mode ? MODE_LABELS[active.billing_mode] : null;
   // Комбо платит уменьшенный фикс, «%» — ничего фиксированного, подписка — цену тарифа из каталога.
   const monthly = active?.billing_mode === 'combo'
     ? (active.fixed_base_amount ?? 0) / 100
@@ -78,10 +97,16 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
 
           <div className="bl-now" style={{ padding: '16px 24px', background: 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.06) 100%)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '16px', textAlign: 'right' }}>
             <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>{t('header.currentPlan')}</div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--onyx)' }}>
-              {planLabel}
+            {/* Тариф и модель — одним кеглем: это ответ на один вопрос «что у меня
+                сейчас», и дробить его на заголовок и мелкую подпись значит прятать
+                половину ответа. Модель персиковая — читается как вторая величина,
+                не сливаясь с названием тарифа. Перенос разрешён: «Business Комбо»
+                в узкой карточке на планшете иначе выдавливает её за край. */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'baseline', gap: '8px', fontSize: '20px', fontWeight: 800, color: 'var(--onyx)', lineHeight: 1.2 }}>
+              <span>{planLabel}</span>
+              {modeKey && <span style={{ color: 'var(--peach)' }}>{t(modeKey)}</span>}
             </div>
-            <div style={{ fontSize: '12px', color: live ? 'var(--pistachio)' : 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: live ? 'var(--pistachio)' : 'var(--muted)', fontWeight: 600, marginTop: '4px' }}>
               {statusLabel}
             </div>
             {active && (

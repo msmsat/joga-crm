@@ -171,13 +171,20 @@ def _plan_row(**kw):
     return SimpleNamespace(**{
         "studio_id": 1, "plan_name": "start", "status": "active",
         "billing_mode": "subscription", "stripe_subscription_id": "sub_1",
-        "stripe_customer_id": "cus_1", **kw,
+        "stripe_customer_id": "cus_1",
+        # Читает _trial_end: превью без подписки называет дату, до которой ещё
+        # действует уже оплаченный остаток.
+        "expires_at": None, **kw,
     })
 
 
-def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key=None):
+def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key=None,
+                  settled=False, want="pro", combo=False):
     """`live_key` — lookup_key Price, по которому подписка идёт в Stripe СЕЙЧАС.
-    По умолчанию совпадает с тарифом в нашей строке (зеркало не отстало)."""
+    По умолчанию совпадает с тарифом в нашей строке (зеркало не отстало).
+    `settled` — оплачен ли последний счёт подписки; спрашивается только когда Price
+    выше нашей ступени. `want` — тариф, который владелец выбрал в модалке.
+    `combo` — выбрана ли модель «фикс + процент» прямо сейчас."""
     from routers.billing import checkout as checkout_mod
 
     async def fake_price_id(*_a, **_kw):
@@ -191,17 +198,22 @@ def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key
     async def fake_price_key(*_a, **_kw):
         return live_key or f"velora_{plan_row.plan_name}_1m"
 
+    async def fake_settled(*_a, **_kw):
+        return settled
+
     monkeypatch.setattr(checkout_mod.stripe_catalog, "price_id", fake_price_id)
     monkeypatch.setattr(checkout_mod.stripe_billing, "preview_price_change", fake_preview)
     monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_price_key", fake_price_key)
+    monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_settled", fake_settled)
     monkeypatch.setattr(checkout_mod.stripe_billing, "configured", lambda: True)
 
     ctx = SimpleNamespace(studio_id=1, user=SimpleNamespace(id=1, email="u@e.com"))
     # Лимитер slowapi обёрнут поверх функции и читает request.client — реального
     # запроса тут нет, поэтому зовём распакованную функцию.
     fn = getattr(checkout_mod.preview_checkout, "__wrapped__", checkout_mod.preview_checkout)
+    # combo передаём явно: у распакованной функции дефолт — объект Query, а не bool.
     return asyncio.run(fn(
-        request=None, plan="pro", period_months=1, ctx=ctx, db=_DB(plan_row),
+        request=None, plan=want, period_months=1, combo=combo, ctx=ctx, db=_DB(plan_row),
     ))
 
 
@@ -244,12 +256,69 @@ def test_preview_follows_the_live_subscription_not_our_mirror(monkeypatch):
     assert (res.credit, res.burned) == (0, 0)
 
 
+def test_preview_ignores_a_price_nobody_has_paid_for(monkeypatch):
+    """ЖАЛОБА 14.08.2026. Неудавшийся переход оставляет подписку уже НА BUSINESS с
+    неоплаченным счётом-прорацией. Страница после этого противоречила сама себе:
+    карточка тарифа (наше зеркало) показывала Pro, а модалка оплаты Business
+    считала студию уже сидящей на нём — «продление» вместо перехода, и зачёт
+    остатка не показывался вовсе.
+
+    Текущий тариф = тот, за который заплачено. Неоплаченный Price им не является."""
+    res = _call_preview(
+        # В БД pro (оплачен), в Stripe подписка уже на business — счёт за неё висит.
+        _plan_row(plan_name="pro"), monkeypatch, want="business",
+        gross_credit=(23900, 4300), live_key="velora_business_1m", settled=False,
+    )
+    assert res.kind == "switch", "неоплаченный Price выдан за текущий тариф"
+    assert res.current_plan == "pro"
+    assert res.credit == 4300, "зачёт остатка оплаченного тарифа не показан"
+
+
+def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
+    """Обратная сторона: счёт за переход ОПЛАЧЕН, а вебхук не дошёл. Тариф у студии
+    уже новый, и покупка его же — продление (13.08.2026). Проверка на оплату не
+    должна возвращать эту дыру."""
+    res = _call_preview(
+        _plan_row(plan_name="pro"), monkeypatch, want="business",
+        gross_credit=(0, 0), live_key="velora_business_1m", settled=True,
+    )
+    assert res.kind == "renewal", "оплаченный переход снова разобран как смена тарифа"
+    assert res.current_plan == "business"
+
+
 def test_preview_without_a_subscription_is_the_plain_catalog_price(monkeypatch):
     res = _call_preview(
         _plan_row(stripe_subscription_id=None, status="none"), monkeypatch, gross_credit=(0, 0),
     )
     assert res.kind == "new"
     assert res.total == res.gross > 0 and res.credit == 0
+
+
+def test_preview_names_the_date_billing_actually_starts(monkeypatch):
+    """Оплаченный остаток (триал, прежний период) не сгорает: подписка стартует
+    бесплатно до его конца (_trial_end). Без этой строки модалка показывала сумму
+    так, будто спишут её сегодня, и владелец видел вторую оплату за уже
+    оплаченный месяц."""
+    from datetime import datetime, timedelta
+
+    res = _call_preview(
+        _plan_row(
+            stripe_subscription_id=None, status="active",
+            expires_at=datetime.utcnow() + timedelta(days=30),
+        ),
+        monkeypatch, gross_credit=(0, 0),
+    )
+    assert res.kind == "new"
+    assert res.free_until is not None
+    assert res.free_days == 30, "число дней разошлось с датой первого списания"
+
+
+def test_preview_without_a_paid_leftover_promises_nothing_free(monkeypatch):
+    """Обещать бесплатные дни там, где их нет, — прямая ложь о сумме."""
+    res = _call_preview(
+        _plan_row(stripe_subscription_id=None, status="none"), monkeypatch, gross_credit=(0, 0),
+    )
+    assert res.free_until is None and res.free_days == 0
 
 
 def test_preview_survives_a_stripe_outage(monkeypatch):
@@ -267,7 +336,7 @@ def test_combo_preview_uses_the_half_price(monkeypatch):
 
     combo = _call_preview(
         _plan_row(billing_mode="combo", stripe_subscription_id=None, status="none"),
-        monkeypatch, gross_credit=(0, 0),
+        monkeypatch, gross_credit=(0, 0), combo=True,
     )
     assert combo.gross == combo_amount_for("pro", 1)
     assert combo.gross * 2 == amount_for("pro", 1)
@@ -441,6 +510,104 @@ def test_switch_paid_by_the_leftover_applies_the_plan_at_once(monkeypatch):
     assert applied == ["paid"]
 
 
+# ------------------------------------- 8. один счёт за тариф на студию за раз
+
+class _Invoices:
+    """Стаб сессии: на любой запрос отдаёт заранее заданный список счетов."""
+
+    def __init__(self, rows):
+        self._rows = rows
+
+    async def execute(self, _q):
+        return SimpleNamespace(scalars=lambda: SimpleNamespace(all=lambda: self._rows))
+
+
+def _bill(id, kind="subscription", status="pending", stripe_id=None):
+    return SimpleNamespace(
+        id=id, studio_id=1, kind=kind, status=status,
+        stripe_invoice_id=stripe_id or f"in_{id}",
+    )
+
+
+def _supersede(monkeypatch, fresh, stale, voided=True, boom=False):
+    """Прогон _supersede_unpaid → список счетов, которые погасили в Stripe."""
+    from routers.billing import webhook as webhook_mod
+
+    closed = []
+
+    async def fake_void(stripe_id):
+        if boom:
+            raise RuntimeError("Stripe прилёг")
+        closed.append(stripe_id)
+        return voided
+
+    monkeypatch.setattr(webhook_mod.stripe_billing, "void_invoice", fake_void)
+    asyncio.run(webhook_mod._supersede_unpaid(_Invoices(stale), fresh))
+    return closed
+
+
+def test_a_new_tariff_invoice_closes_the_previous_unpaid_one(monkeypatch):
+    """Неудавшийся переход (закрыли вкладку, карта отклонила) оставлял открытый
+    счёт-прорацию, следующая попытка добавляла второй — и Stripe дожимал ОБА,
+    списывая за один тариф дважды. Правило: один счёт за тариф на студию."""
+    old = _bill(1)
+    closed = _supersede(monkeypatch, _bill(2), [old])
+    assert closed == ["in_1"], "прежний счёт остался открытым в Stripe"
+    assert old.status == "failed", "прежний счёт остался в списке к оплате"
+
+
+def test_fee_invoices_are_not_touched(monkeypatch):
+    """Счёт за комиссию закрывает СВОИ начисления (OfflineTransactionFee.invoice_id),
+    и в новый счёт они не переедут. Погасить его значит стереть долг студии перед
+    платформой, а не убрать дубль."""
+    fee = _bill(1, kind="offline_fee")
+    assert _supersede(monkeypatch, _bill(2, kind="offline_fee"), [fee]) == []
+    assert fee.status == "pending"
+
+
+def test_a_bill_stripe_refuses_to_close_stays_as_it_was(monkeypatch):
+    """Stripe видит счёт иначе (уже оплачен) — в своей строке этого не выдумываем:
+    отметить его провалившимся значило бы спрятать оплату из истории."""
+    old = _bill(1)
+    _supersede(monkeypatch, _bill(2), [old], voided=False)
+    assert old.status == "pending"
+
+    other = _bill(1)
+    _supersede(monkeypatch, _bill(2), [other], boom=True)
+    assert other.status == "pending", "Stripe не ответил, а счёт уже закрыт у нас"
+
+
+def _void(monkeypatch, status, billing_reason="subscription_update"):
+    """Прогон void_invoice со стаб-SDK → (результат, что дёрнули у Stripe)."""
+    calls = []
+    invoice = SimpleNamespace(status=status, billing_reason=billing_reason)
+    monkeypatch.setattr(stripe_billing.stripe.Invoice, "retrieve", lambda *_a, **_k: invoice)
+    monkeypatch.setattr(
+        stripe_billing.stripe.Invoice, "void_invoice", lambda i, **_k: calls.append(("void", i)),
+    )
+    monkeypatch.setattr(
+        stripe_billing.stripe.Invoice, "delete", lambda i, **_k: calls.append(("delete", i)),
+    )
+    return asyncio.run(stripe_billing.void_invoice("in_1")), calls
+
+
+def test_a_finalized_bill_is_voided_and_a_draft_is_deleted(monkeypatch):
+    """У финализированного счёта есть номер из сквозной нумерации — удалить его
+    значит оставить дыру в отчётности. Черновику номер ещё не выдан."""
+    assert _void(monkeypatch, "open") == (True, [("void", "in_1")])
+    assert _void(monkeypatch, "draft") == (True, [("delete", "in_1")])
+    assert _void(monkeypatch, "paid") == (False, []), "оплаченный счёт погашен"
+
+
+def test_the_cycle_invoice_is_never_closed(monkeypatch):
+    """Счёт очередного цикла Stripe выставляет сам за УЖЕ ИДУЩИЙ период и тут же
+    пытается списать. Погасить его посреди попытки — уронить подписку в past_due;
+    погасить залежавшийся — подарить студии месяц, которым она пользовалась."""
+    assert _void(monkeypatch, "open", billing_reason="subscription_cycle") == (False, [])
+    # Прорация за переход и счёт продления рождаются нажатием кнопки — их гасим.
+    assert _void(monkeypatch, "open", billing_reason="manual")[0] is True
+
+
 def test_switch_ignores_a_paid_invoice_of_another_plan(monkeypatch):
     """`latest_invoice` бывает и прошлым, уже оплаченным счётом. Применить его
     значит вернуть студию на прежний тариф её же старым платежом."""
@@ -463,7 +630,8 @@ class _CommitLog:
         self.commits += 1
 
 
-def _reconcile(monkeypatch, mirror_plan, live_key, expires="2027-01-26", checked_at=None):
+def _reconcile(monkeypatch, mirror_plan, live_key, expires="2027-01-26", checked_at=None,
+               settled=False):
     """Прогон сверки тарифа с подпиской → (строка плана, число коммитов)."""
     from importlib import import_module
 
@@ -476,7 +644,11 @@ def _reconcile(monkeypatch, mirror_plan, live_key, expires="2027-01-26", checked
     async def fake_price_key(*_a, **_kw):
         return live_key
 
+    async def fake_settled(*_a, **_kw):
+        return settled
+
     monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_price_key", fake_price_key)
+    monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_settled", fake_settled)
     monkeypatch.setattr(router_mod, "_PLAN_CHECKED_AT", dict(checked_at or {}))
 
     row = _plan_row(plan_name=mirror_plan, max_staff=999, expires_at=expires)
@@ -493,6 +665,25 @@ def test_plan_page_follows_the_live_subscription(monkeypatch):
     assert row.plan_name == "pro"
     assert row.max_staff == 15, "лимиты остались от прежней ступени"
     assert commits == 1, "выравнивание не сохранено"
+
+
+def test_plan_page_never_raises_the_tier_for_free(monkeypatch):
+    """ИНЦИДЕНТ 14.08.2026. `change_subscription_price` переводит подписку на новый
+    Price СРАЗУ, а счёт-прорация в этот момент ещё `open`. Сверка «по Price
+    подписки» выдала студии Business за неоплаченные 169,41 €. Вверх ступень
+    двигает только оплаченный счёт (webhook._activate) — и никто больше."""
+    row, commits = _reconcile(monkeypatch, mirror_plan="pro", live_key="velora_business_1m")
+    assert row.plan_name == "pro", "тариф выдан за неоплаченный счёт"
+    assert row.max_staff == 999, "лимиты подняты за неоплаченный счёт"
+    assert commits == 0
+
+
+def test_plan_page_does_not_upgrade_a_trial(monkeypatch):
+    """У пробного периода цены в каталоге нет, сравнивать не с чем — а любой
+    переход с него был бы повышением. Молча уходим и ждём оплату."""
+    row, commits = _reconcile(monkeypatch, mirror_plan="free_trial", live_key="velora_business_1m")
+    assert row.plan_name == "free_trial"
+    assert commits == 0
 
 
 def test_plan_reconcile_never_touches_the_paid_period(monkeypatch):

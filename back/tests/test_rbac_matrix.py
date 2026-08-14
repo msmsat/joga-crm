@@ -35,7 +35,12 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("DELETE", "/ai/sessions/{session_id}"): ("*studio",),
     ("GET", "/ai/sessions/{session_id}/messages"): ("*studio",),
     ("POST", "/ai/sessions/{session_id}/messages"): ("*studio",),
+    ("POST", "/ai/sessions/{session_id}/stream"): ("*studio",),
     ("GET", "/ai/settings"): ("*studio",),          # читают все, PATCH — owner
+    ("GET", "/ai/quota"): ("*studio",),             # остаток квоты ИИ: лимит общий на студию
+    # Исполнение предложенного действия: роль сверяется по инструменту внутри
+    # (decode_action_token), а не гвардом — у разных инструментов она разная.
+    ("POST", "/ai/actions/execute"): ("*studio",),
     ("GET", "/ai/instagram/callback"): ("*public",),
     ("GET", "/ai/instagram/webhook"): ("*public",),
     ("POST", "/ai/instagram/webhook"): ("*public",),
@@ -97,6 +102,12 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
 
     # ── Логотип грузится в мастере онбординга, когда студии ещё нет.
     ("POST", "/studio/upload-logo"): ("*user",),
+
+    # ── Реквизиты плательщика принадлежат АККАУНТУ, а не студии: у второй студии
+    # того же владельца адрес тот же, и гейт по роли в текущей студии заставил бы
+    # вводить их заново — ровно то, ради чего они и вынесены на аккаунт.
+    ("GET", "/billing/profile"): ("*user",),
+    ("PUT", "/billing/profile"): ("*user",),
 
     # ── Вебхуки платёжек и публичная запись клиента
     ("POST", "/billing/webhook/stripe"): ("*public",),

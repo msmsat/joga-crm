@@ -11,23 +11,25 @@ from types import SimpleNamespace
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse, StreamingResponse
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from ratelimit import limiter
 from database import get_db
-from dependencies import require_role, StudioContext
-from models import StudioBillingPlan, BillingInvoice, PaymentCard
+from dependencies import get_current_user, require_role, StudioContext
+from models import StudioBillingPlan, BillingInvoice, PaymentCard, User
 from schemas.common import Page
 from schemas.settings.billing import (
     OfflineFeeStatus,
     PlansCatalogRead, PlanRead, PlanLimits,
     BillingPlanRead, InvoiceRead, PaymentCardRead, BillingStatsRead,
     ActivateModelRequest, AutopaySettingsUpdate,
+    BillingProfileRead, BillingProfileUpdate,
 )
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED,
-    MIN_MONTHLY_FEE, amount_for,
+    MIN_MONTHLY_FEE, TRIAL_DAYS, amount_for, tier,
 )
 from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog
 from activity import log_activity
@@ -35,6 +37,7 @@ from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import (
     router as checkout_router, _metadata, _has_live_subscription, _live_plan_name,
+    billing_profile,
 )
 from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
@@ -105,17 +108,52 @@ def _upgrade_target(row: StudioBillingPlan) -> str | None:
     return plan_ids[idx + 1] if idx + 1 < len(plan_ids) else None
 
 
-def _tier(plan_name: str) -> int:
-    """Ступень тарифа для сравнения. free_trial даёт лимиты Pro (services/plan_limits),
-    поэтому и здесь считается его ступенью; неизвестный план (none) — ниже всех."""
-    plan_id = "pro" if plan_name == "free_trial" else plan_name
-    plan_ids = list(PLANS)
-    return plan_ids.index(plan_id) if plan_id in plan_ids else -1
+async def _studio_has_paid(db: AsyncSession, studio_id: int) -> bool:
+    """Была ли у студии хоть одна ПРОШЕДШАЯ оплата.
+
+    Именно оплаченный счёт, а не статус подписки: `status` — зеркало Stripe, и
+    он бывает `pending`/`expired` у студии, которая ничего не платила (бросила
+    3-D Secure, закрыла страницу оформления). Вид счёта не важен: комиссия с
+    офлайн-продаж и минимальный платёж — такие же деньги, как подписка.
+
+    `refunded` считается оплатой наравне с `paid`: деньги приходили, и то, что
+    их вернули, не делает студию снова новой. Иначе «оплатить → вернуть →
+    забрать бесплатные две недели» становится рабочей схемой.
+    """
+    paid = (await db.execute(
+        select(BillingInvoice.id).where(
+            BillingInvoice.studio_id == studio_id,
+            BillingInvoice.status.in_(("paid", "refunded")),
+        ).limit(1)
+    )).scalar_one_or_none()
+    return paid is not None
 
 
-def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
+async def _trial_available(db: AsyncSession, row: StudioBillingPlan | None) -> bool:
+    """Можно ли включить пробный период — ЕДИНОЕ правило для всех.
+
+    По нему и решает `activate_trial`, и рисуется кнопка: флаг уезжает на фронт
+    в `BillingPlanRead.trial_available`, чтобы интерфейс не считал доступность
+    сам и не разошёлся с сервером.
+
+    Два условия, оба обязательны:
+      1. Триал ещё не брали (`trial_started_at IS NULL`);
+      2. У студии не было ни одной оплаты — после первой акция закрыта навсегда.
+    Живая подписка Stripe закрывает её тоже: деньги за неё уже идут, даже если
+    счёт до нас ещё не доехал.
+    """
+    if row is not None and (row.trial_started_at is not None or _has_live_subscription(row)):
+        return False
+    studio_id = row.studio_id if row is not None else None
+    if studio_id is None:
+        return True
+    return not await _studio_has_paid(db, studio_id)
+
+
+def _to_plan_read(row: StudioBillingPlan, trial_available: bool = False) -> BillingPlanRead:
     next_plan = _upgrade_target(row)
     return BillingPlanRead(
+        trial_available=trial_available,
         plan_name=row.plan_name,
         billing_cycle=row.billing_cycle,
         status=row.status,
@@ -138,6 +176,13 @@ def _to_plan_read(row: StudioBillingPlan) -> BillingPlanRead:
     )
 
 
+async def _plan_response(db: AsyncSession, row: StudioBillingPlan) -> BillingPlanRead:
+    """`_to_plan_read` + доступность триала. Отдельной обёрткой, потому что за
+    доступностью надо в базу, а `_to_plan_read` синхронный и зовётся из мест,
+    где строку уже держат в руках."""
+    return _to_plan_read(row, trial_available=await _trial_available(db, row))
+
+
 # Когда по студии последний раз сверяли тариф с подпиской Stripe (unix-время).
 # Сверка ходит в сеть, а `/billing/plan` дёргает не только страница тарифа, но и
 # каркас кабинета на КАЖДОЙ странице (пейволл) — без этого дросселя один заход
@@ -148,16 +193,22 @@ _PLAN_CHECK_EVERY = 300.0
 
 
 async def _reconcile_plan_name(db: AsyncSession, row: StudioBillingPlan) -> None:
-    """Ступень тарифа в БД ← Price живой подписки Stripe.
+    """Ступень тарифа в БД ← Price живой подписки Stripe. ТОЛЬКО ВНИЗ.
 
     `plan_name` у нас — зеркало, которое поднимает вебхук по оплаченному счёту.
     Не дошло событие (сеть, разъехавшийся секрет, события уходят на другой стенд) —
     и зеркало врёт СТРАНИЦЕ ТАРИФА: владелец видит «Business» и цены Business, хотя
     Stripe уже месяц списывает Pro. Своими глазами 13.08.2026.
 
-    Истина о подписке — её Price: по нему Stripe берёт деньги. Расхождение чиним
-    молча и сразу, чтобы страница не требовала от владельца понимать разницу между
-    «нашей записью» и «подпиской».
+    ПОВЫШАТЬ ступень сверка не имеет права, и это не осторожность, а разбор живого
+    инцидента 14.08.2026. `change_subscription_price` переводит подписку на новый
+    Price СРАЗУ, а счёт-прорация в этот момент ещё не оплачен (`open`). Сверка «по
+    Price подписки» увидела business и выдала тариф за неоплаченный счёт: студия
+    получила Business, не заплатив 169,41 €. Ступень вверх двигает ТОЛЬКО оплата —
+    webhook._activate по счёту в статусе paid (он же ручная сверка счёта).
+
+    Вниз — безопасно и нужно: там мы не дарим, а перестаём отдавать лишнее. Именно
+    этот случай и был исходной жалобой (в БД business, в Stripe давно pro).
 
     `expires_at` и `status` НЕ трогаем, хотя подписка рядом. Срок у нас законно
     уходит ВПЕРЁД её `current_period_end`: продление — это отдельный счёт, который
@@ -173,6 +224,18 @@ async def _reconcile_plan_name(db: AsyncSession, row: StudioBillingPlan) -> None
 
     live = await _live_plan_name(row)
     if live == row.plan_name or live not in PLANS:
+        return
+
+    # Цену берём из каталога — того же, по которому выставляются счета. Тариф,
+    # которого в каталоге нет (free_trial, легаси-имя), сравнивать не с чем:
+    # любой переход с него был бы повышением, поэтому просто уходим.
+    mirrored = PLANS.get(row.plan_name)
+    if mirrored is None or PLANS[live]["price"] > mirrored["price"]:
+        logger.info(
+            "Stripe billing: подписка студии %s стоит на %s, у нас %s — ступень вверх "
+            "не поднимаем, ждём оплаченный счёт",
+            row.studio_id, live, row.plan_name,
+        )
         return
 
     logger.warning(
@@ -196,15 +259,86 @@ async def get_current_plan(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
     if row is None:
+        # Строки нет — студия точно ничего не платила, акция открыта.
         return BillingPlanRead(
             plan_name="none", billing_cycle="monthly", status="none",
-            expires_at=None, max_staff=0, auto_renewal=False,
+            expires_at=None, max_staff=0, auto_renewal=False, trial_available=True,
         )
     # Вся страница тарифа (карточка, «текущий» в списке, баннер, предвыбор в
     # калькуляторе) читает ступень отсюда — выравниваем в одном месте, а не в
     # шести компонентах.
     await _reconcile_plan_name(db, row)
-    return _to_plan_read(row)
+    return await _plan_response(db, row)
+
+
+@router.post("/trial", response_model=BillingPlanRead)
+async def activate_trial(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Активация пробного периода по явному согласию владельца.
+
+    До этого триал начислял онбординг молча, и окно «активируйте 14 дней»
+    было бы витриной: обе кнопки в нём не меняли бы ничего. Теперь новая
+    студия приходит вообще без строки в StudioBillingPlan (status=none),
+    отсюда она и появляется — из окна с акцией или с самой страницы тарифа,
+    куда владельца привёл пейволл, если он окно закрыл.
+
+    Окно открыто ДО ПЕРВОЙ ОПЛАТЫ и закрывается ею навсегда — правило целиком
+    в `_trial_available`, второй копии условия здесь нет. Один раз: `trial_started_at`
+    ставится при выдаче, и повторный вызов упирается в него, иначе бесплатный
+    период перезапускали бы бесконечно, дожидаясь конца предыдущего.
+
+    Проверять статус плана вместо этой отметки было ошибкой: `status` — зеркало
+    подписки Stripe, и он уходит в `pending`/`expired` ещё до денег (брошенный
+    3-D Secure, закрытая страница оформления). Акция сгорала у того, кто просто
+    заглянул в оплату и передумал. Заглушку `status="none"` от
+    `checkout._get_or_create_plan` не отвергаем, а дописываем на месте.
+    """
+    row = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
+    )).scalar_one_or_none()
+    if not await _trial_available(db, row):
+        raise HTTPException(status_code=409, detail={
+            "code": "trial_already_used",
+            "message": "Пробный период для этой студии больше недоступен.",
+        })
+
+    now = datetime.utcnow()
+    expires_at = now + timedelta(days=TRIAL_DAYS)
+    # Лимиты триала — как у Pro (services/plan_limits читает free_trial так же).
+    max_staff = PLANS["pro"]["limits"]["staff"]
+    if row is None:
+        row = StudioBillingPlan(
+            studio_id=ctx.studio_id, plan_name="free_trial", status="trial",
+            expires_at=expires_at, max_staff=max_staff, trial_started_at=now,
+        )
+        db.add(row)
+    else:
+        row.plan_name, row.status = "free_trial", "trial"
+        row.expires_at, row.max_staff = expires_at, max_staff
+        row.trial_started_at = now
+    log_activity(
+        db, ctx.studio_id, "billing",
+        title=f"Активирован пробный период на {TRIAL_DAYS} дней",
+        actor_name=f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
+        entity_type="billing_plan",
+    )
+    try:
+        await db.commit()
+    except IntegrityError:
+        # studio_id в StudioBillingPlan уникален. Две вкладки, нажавшие
+        # «Активировать» одновременно, проходят проверку выше обе — вторую
+        # ловит база, и это тот же самый «уже активирован», а не 500.
+        await db.rollback()
+        raise HTTPException(status_code=409, detail={
+            "code": "trial_already_used",
+            "message": "Пробный период для этой студии больше недоступен.",
+        })
+    await db.refresh(row)
+    # trial_available здесь заведомо False — только что выданный триал повторно
+    # не выдаётся; считаем его тем же правилом, а не константой.
+    return await _plan_response(db, row)
 
 
 def _period_saving(plan_name: str, period_months: int) -> int:
@@ -358,7 +492,7 @@ async def activate_model(
     # проверки владелец переключал бы себе plan_name на business одним запросом сюда —
     # а его читает check_plan_limit (services/plan_limits.py), то есть лимиты
     # сотрудников и клиентов снимались бы бесплатно, мимо Stripe.
-    if body.plan and _tier(body.plan) > _tier(current_plan):
+    if body.plan and tier(body.plan) > tier(current_plan):
         raise HTTPException(status_code=402, detail={
             "code": "billing.plan_not_paid",
             "message": "Тариф выше текущего активируется только оплатой",
@@ -375,28 +509,49 @@ async def activate_model(
             "terms": OFFLINE_TERMS,
         })
 
-    row.billing_mode = body.mode
-    if body.mode == "percent":
-        row.percent_rate, row.fixed_base_amount = PERCENT_ONLY_RATE, None
-    elif body.mode == "combo":
-        disc = PERIOD_DISCOUNTS[body.period_months or 1]
-        row.percent_rate = COMBO_PERCENT_RATE
-        row.fixed_base_amount = round(COMBO_FIXED[body.plan or "pro"] * (1 - disc))
-        row.plan_name = body.plan or row.plan_name
-    else:
-        row.percent_rate = None
-        row.fixed_base_amount = None
-        row.plan_name = body.plan or row.plan_name
+    # Комбо — ПОКУПКА, а не настройка, и здесь она НЕ происходит НИКОГДА. Прежний
+    # код включал режим прямо тут: нажал «соглашаюсь» — и подписка переехала на
+    # половинный Price, а надпись в шапке сменилась на «Комбо», хотя не заплачено
+    # ничего (жалоба 14.08.2026). Этот запрос теперь только записывает согласие на
+    # постоплату; сама покупка идёт обычным путём оплаты (`POST /billing/checkout`
+    # с `combo=true`) — с расчётом в модалке и чеком, — а режим поднимает ОПЛАТА
+    # (webhook._apply_paid_mode), ровно как ступень тарифа поднимает `_activate`.
+    #
+    # Цену при оформлении это не ломает: `checkout._is_combo` берёт выбор из тела
+    # запроса, а не из этого поля. «Процент» же применяется сразу — подписки у него
+    # нет, фикс не уменьшается, а появляется обязательство платить комиссию и минимум.
+    combo_purchase = body.mode == "combo"
+
+    if not combo_purchase:
+        row.billing_mode = body.mode
+        if body.mode == "percent":
+            row.percent_rate, row.fixed_base_amount = PERCENT_ONLY_RATE, None
+        elif body.mode == "combo":
+            disc = PERIOD_DISCOUNTS[body.period_months or 1]
+            row.percent_rate = COMBO_PERCENT_RATE
+            row.fixed_base_amount = round(COMBO_FIXED[body.plan or "pro"] * (1 - disc))
+            row.plan_name = body.plan or row.plan_name
+        else:
+            row.percent_rate = None
+            row.fixed_base_amount = None
+            row.plan_name = body.plan or row.plan_name
 
     if body.mode in ("percent", "combo"):
         # Фиксируем ЧТО именно приняли и когда: ставку и версию текста. Сменим
         # условия — старое согласие не должно молча распространиться на новые.
+        #
+        # Ставку берём у ПОДТВЕРЖДАЕМОЙ модели, а не из `row.percent_rate`: у
+        # комбо-покупки это поле здесь не заполняется вовсе (его поднимет оплата),
+        # и согласие записалось бы с пустой ставкой — а по ней `create_checkout`
+        # как раз и проверяет, что условия комбо приняты. Оформление отвечало бы
+        # 422 навсегда, сразу после успешного подтверждения.
+        accepted_rate = PERCENT_ONLY_RATE if body.mode == "percent" else COMBO_PERCENT_RATE
         row.percent_terms_accepted_at = datetime.utcnow()
-        row.percent_terms_rate = row.percent_rate
+        row.percent_terms_rate = accepted_rate
         row.percent_terms_version = OFFLINE_TERMS["version"]
         log_activity(
             db, ctx.studio_id, "billing",
-            title=f"Приняты условия постоплаты комиссии {row.percent_rate}% (ред. {OFFLINE_TERMS['version']})",
+            title=f"Приняты условия постоплаты комиссии {accepted_rate}% (ред. {OFFLINE_TERMS['version']})",
             actor_name=f"{ctx.user.name} {ctx.user.last_name or ''}".strip(),
             entity_type="billing_plan", entity_id=row.id,
         )
@@ -404,7 +559,10 @@ async def activate_model(
     # Stripe правим ПОСЛЕДНИМ и до коммита: упадёт — get_db не коммитит, и режим в
     # БД останется прежним. Обратный порядок оставлял бы БД и Stripe разошедшимися.
     try:
-        await _reconcile_subscription(row, body, ctx)
+        # Комбо-покупка подписку не трогает: её переставит оплата. Всё остальное —
+        # настройка, и Stripe обязан узнать о ней сразу.
+        if not combo_purchase:
+            await _reconcile_subscription(row, body, ctx)
     except HTTPException:
         raise
     except Exception as exc:
@@ -416,7 +574,7 @@ async def activate_model(
 
     await db.commit()
     await db.refresh(row)
-    return _to_plan_read(row)
+    return await _plan_response(db, row)
 
 
 @router.get("/offline-fees", response_model=OfflineFeeStatus)
@@ -560,7 +718,7 @@ async def update_autopay(
 
     await db.commit()
     await db.refresh(row)
-    return _to_plan_read(row)
+    return await _plan_response(db, row)
 
 
 def _to_invoice_read(inv: BillingInvoice) -> InvoiceRead:
@@ -778,6 +936,41 @@ async def get_payment_cards(
     return rows
 
 
+@router.get("/profile", response_model=BillingProfileRead)
+async def get_billing_profile(user: User = Depends(get_current_user)):
+    """Реквизиты плательщика. Гейт — АККАУНТ, а не студия.
+
+    `get_current_user`, а не `require_role("owner")`: адрес принадлежит человеку и
+    переезжает с ним в любую его студию. Привяжи мы его к роли в текущей студии —
+    владелец второй студии увидел бы пустую форму и заполнял её заново, ровно то,
+    ради чего реквизиты и вынесены на аккаунт.
+    """
+    return billing_profile(user)
+
+
+@router.put("/profile", response_model=BillingProfileRead)
+async def save_billing_profile(
+    body: BillingProfileUpdate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Сохранить/поправить реквизиты. Один и тот же эндпоинт для формы перед первой
+    оплатой и для кнопки «Редактировать» во вкладке «Способ оплаты» — форма там одна.
+
+    В Stripe отсюда НЕ пишем: у аккаунта без студии клиента Stripe ещё нет, а у
+    аккаунта с двумя студиями их два. Синхронизацию делает оформление оплаты
+    (checkout._ensure_customer) — там известно, какой именно студии платят.
+    """
+    user.billing_country = body.country
+    user.billing_line1 = body.line1
+    user.billing_line2 = body.line2
+    user.billing_postal_code = body.postal_code
+    user.billing_city = body.city
+    user.billing_vat_id = body.vat_id
+    await db.commit()
+    return billing_profile(user)
+
+
 if __name__ == "__main__":
     # Плашка «месяцев с нами»: неполный месяц не засчитывается, переход года считается.
     assert _months_between(datetime(2026, 1, 15), datetime(2026, 7, 14)) == 5
@@ -793,12 +986,8 @@ if __name__ == "__main__":
     assert _upgrade_target(_row(plan_name="business")) is None         # максимальный тариф
     assert _upgrade_target(_row(status="past_due")) is None            # неоплаченный не апгрейдим
 
-    # Ступени тарифа: их сравнивает activate_model, чтобы не отдать лимиты Business
-    # бесплатно. free_trial равен Pro (так же его читает services/plan_limits).
-    assert _tier("start") < _tier("pro") < _tier("business")
-    assert _tier("free_trial") == _tier("pro")
-    assert _tier("none") == -1 and _tier("") == -1
-    assert _tier("business") > _tier("none")   # без строки плана апгрейд невозможен
+    # Ступени тарифа переехали в plans.tier — их сравнивает не только activate_model,
+    # но и checkout._live_plan_name; самопроверка живёт там же, рядом с каталогом.
 
     # Экономия за период считается по каталогу с ОБЕИХ сторон и не зависит от НДС,
     # который Stripe накинул сверху (из-за него прежняя формула показывала ноль).

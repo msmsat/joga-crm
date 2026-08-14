@@ -212,9 +212,14 @@ def test_ensure_finalized_touches_only_drafts():
     """Черновик финализируется, открытый счёт — не трогаем: повторная финализация
     вернула бы 400 и уронила бы всю оплату переводом. Сеть застублена."""
     calls = []
+    modified = {}
     saved = stripe.Invoice.finalize_invoice
+    saved_modify = stripe.Invoice.modify
     stripe.Invoice.finalize_invoice = lambda iid: (
         calls.append(iid), types.SimpleNamespace(id=iid, status="open")
+    )[1]
+    stripe.Invoice.modify = lambda iid, **kw: (
+        modified.update({iid: kw}), types.SimpleNamespace(id=iid)
     )[1]
     # StripeObject индексируется, а не только читается атрибутами — ensure_finalized
     # берёт id через obj["id"], поэтому фейк тоже должен поддерживать индексацию.
@@ -228,12 +233,21 @@ def test_ensure_finalized_touches_only_drafts():
         finalized = asyncio.run(stripe_billing.ensure_finalized(_Draft()))
         assert finalized.status == "open"
         assert calls == ["in_draft"]
+        # Прорацию заводит сам Stripe, и способы оплаты она наследует у подписки —
+        # у легаси-подписок это ОДИН банковский перевод. Расширяем, пока черновик:
+        # после финализации список уже не поменять, и владелец открыл бы страницу,
+        # где нечем платить картой (жалоба 13.08.2026).
+        methods = modified["in_draft"]["payment_settings"]["payment_method_types"]
+        assert "card" in methods, "карты (а с ними Apple/Google Pay) на странице не будет"
+        assert "customer_balance" in methods, "перевод потерян"
 
         already_open = types.SimpleNamespace(status="open", id="in_open")
         assert asyncio.run(stripe_billing.ensure_finalized(already_open)) is already_open
         assert calls == ["in_draft"], "открытый счёт финализировали повторно"
+        assert "in_open" not in modified, "открытый счёт правили после финализации"
     finally:
         stripe.Invoice.finalize_invoice = saved
+        stripe.Invoice.modify = saved_modify
 
 
 def test_trial_end_holds_still_inside_the_idempotency_window():

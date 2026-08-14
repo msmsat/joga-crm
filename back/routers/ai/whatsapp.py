@@ -35,6 +35,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings, StudioIntegration
 from ratelimit import limiter
+from services.client_agent import CHANNEL_WHATSAPP, schedule_reply
 from services.whatsapp import refresh_payment_status, sync_templates_on_connect
 
 logger = logging.getLogger(__name__)
@@ -303,8 +304,12 @@ async def verify_whatsapp_webhook(
 
 
 @webhook_router.post("/whatsapp/webhook")
-async def whatsapp_webhook(request: Request, db: AsyncSession = Depends(get_db)):
-    """Входящее сообщение WhatsApp -> ответ авто-ответчика.
+async def whatsapp_webhook(
+    request: Request,
+    background: BackgroundTasks = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Входящее сообщение WhatsApp -> ответ ассистента студии.
 
     На валидное тело ВСЕГДА 200: любой 4xx/5xx заставит Meta ретраить и задвоит
     ответы клиенту (та же логика, что в вебхуке Instagram).
@@ -328,15 +333,14 @@ async def whatsapp_webhook(request: Request, db: AsyncSession = Depends(get_db))
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.wa_enabled:
             continue
-        try:
-            await _send_wa_message(token, phone_number_id, sender, "Hello")
-        except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
-            logger.error("whatsapp webhook: не удалось ответить, studio_id=%s: %s", studio_id, exc)
-            continue
-        settings.wa_handled_count += 1
-        logger.info("whatsapp webhook: ответ отправлен, studio_id=%s, входящее=%r", studio_id, text[:50])
+        # Отвечаем В ФОНЕ, но сразу, без отложенной очереди: свободный текст Meta
+        # принимает только в пределах 24 часов от последнего сообщения клиента
+        # (_send_wa_message поднимает RuntimeError с текстом Graph за окном).
+        # Своего хранилища у WA нет — номер и токен приходят из wa_notify, поэтому
+        # уезжают в задачу одной строкой.
+        schedule_reply(background, studio_id, CHANNEL_WHATSAPP, sender, text, f"{phone_number_id}|{token}")
+        logger.info("whatsapp webhook: принято, studio_id=%s, входящее=%r", studio_id, text[:50])
 
-    await db.commit()
     return {"ok": True}
 
 

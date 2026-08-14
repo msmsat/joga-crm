@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
@@ -9,6 +11,8 @@ import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
 import AgentConfigCard from './AgentConfigCard';
 import CustomSelect from './CustomSelect';
 import { getStudioRole } from '../../../../utils/auth';
+import { aiApi } from '../../../../api/ai/ai.api';
+import { queryKeys } from '../../../../api/queryKeys';
 import styles from '../AI.module.css';
 
 interface LeftPanelProps {
@@ -20,6 +24,7 @@ interface LeftPanelProps {
   aiSettings: AIUISettings;
   telegramEnabled: boolean;
   telegramConnected: boolean;
+  telegramChannelActive: boolean;
   instagramEnabled: boolean;
   instagramConnected: boolean;
   whatsappEnabled: boolean;
@@ -57,6 +62,7 @@ export default function LeftPanel({
   aiSettings,
   telegramEnabled,
   telegramConnected,
+  telegramChannelActive,
   instagramEnabled,
   instagramConnected,
   whatsappEnabled,
@@ -77,6 +83,18 @@ export default function LeftPanel({
   // (PATCH /ai/settings и ручки каналов на бэке owner-only). Админу и тренеру
   // остаётся чат и своя история: они этими настройками пользуются, а не правят.
   const isOwner = getStudioRole() === 'owner';
+  const navigate = useNavigate();
+  // Остаток обращений к ИИ за месяц. Лимит без индикатора выглядит как поломка:
+  // владелец получает 429 и не понимает, почему ассистент вдруг отказал.
+  const quota = useQuery({
+    queryKey: queryKeys.aiQuota,
+    queryFn: () => aiApi.getQuota(),
+    staleTime: 5 * 60_000,
+  });
+  const used = quota.data?.used ?? 0;
+  const limit = quota.data?.limit ?? 0;
+  const filled = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 100;
+  const low = limit > 0 && limit - used <= limit * 0.1;
 
   return (
     <div className={styles.leftPanel}>
@@ -139,6 +157,29 @@ export default function LeftPanel({
         )}
       </div>
 
+      {quota.isSuccess && (
+        <div className={`${styles.quotaBlock} ${low ? styles.quotaLow : ''}`}>
+          <div className={styles.quotaRow}>
+            <span>{t('quota.label')}</span>
+            <span className={styles.quotaValue}>{t('quota.value', { used, limit })}</span>
+          </div>
+          <div className={styles.quotaBar}>
+            <div className={styles.quotaFill} style={{ width: `${filled}%` }} />
+          </div>
+          {low && (
+            <div className={styles.quotaHint}>
+              {t('quota.low')}{' '}
+              {/* Тариф — зона владельца: остальным ролям только текст, без ссылки. */}
+              {isOwner && (
+                <button className={styles.quotaLink} onClick={() => navigate('/dashboard/billing')}>
+                  {t('quota.upgrade')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {isOwner && <div className={styles.miniSettings}>
         <div className={styles.miniSettingsHeader}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -170,6 +211,7 @@ export default function LeftPanel({
         <AgentConfigCard
           telegramEnabled={telegramEnabled}
           telegramConnected={telegramConnected}
+          telegramChannelActive={telegramChannelActive}
           instagramEnabled={instagramEnabled}
           instagramConnected={instagramConnected}
           whatsappEnabled={whatsappEnabled}

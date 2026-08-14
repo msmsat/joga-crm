@@ -1,14 +1,16 @@
-"""Реквизиты плательщика спрашивает ТОЛЬКО Stripe. Своей формы у нас больше нет.
+"""Откуда Stripe узнаёт местоположение плательщика.
 
-Цены тарифов заданы БЕЗ налога (`TAX_BEHAVIOR = "exclusive"`), а ставку, reverse
-charge и сверку номера с VIES считает Stripe Tax по тому, что плательщик ввёл на
-странице Checkout. Отсюда правило, которое и держат эти тесты: страна, индекс,
-адрес, VAT ID и название компании не спрашиваются нашей формой, не хранятся у нас
-и не уезжают в Stripe из профиля студии.
+Цены тарифов заданы БЕЗ налога (`TAX_BEHAVIOR = "exclusive"`), а ставку и reverse
+charge считает Stripe Tax по адресу в Customer. Адрес туда попадает из двух мест,
+и эти тесты держат границу между ними:
 
-Единственное исключение — счёт, который выставляем МЫ САМИ (комиссия с офлайн-
-продаж): хостед-страницы у него нет, и без местоположения Stripe Tax отвечает
-`customer_tax_location_invalid`. Там адрес передаётся только при СОЗДАНИИ клиента.
+* НАША форма реквизитов — она источник истины. Адрес и VAT ID лежат на АККАУНТЕ
+  плательщика (models/user.py) и уезжают в Customer при оформлении. Профиль пустой
+  (форму обошли старой вкладкой) — не шлём ничего, и реквизиты соберёт Checkout,
+  как было раньше;
+* счёт, который выставляем МЫ САМИ (комиссия с офлайн-продаж): хостед-страницы у
+  него нет, и без местоположения Stripe Tax отвечает `customer_tax_location_invalid`.
+  Там адрес студии передаётся только при СОЗДАНИИ клиента.
 
 Сеть и БД не трогаем.
 
@@ -63,7 +65,7 @@ def test_vat_is_never_mandatory():
     assert "if_supported" not in _checkout_body()
 
 
-# --------------------------- 2. свои реквизиты в Stripe из профиля НЕ уезжают
+# ------------- 2. в Stripe уезжают реквизиты АККАУНТА, а не профиль студии
 
 class _R:
     def __init__(self, v):
@@ -84,10 +86,24 @@ class _DB:
         pass
 
 
-def test_paying_never_overwrites_what_the_payer_entered_at_stripe(monkeypatch):
-    """Прислать в Stripe страну из профиля студии значит на КАЖДОЙ следующей оплате
-    затирать платёжный адрес, введённый на Checkout, — и ломать расчёт налога у
-    студии, чей платёжный адрес отличается от адреса зала."""
+_STUDIO = SimpleNamespace(
+    id=1, name="S", email="s@e.com", country="CZ", postal_code="11000",
+    address="Olgy Havlove 2930/35", city="Praha", vat_id="CZ12345678",
+    company_id="12345678",
+)
+
+
+def _user(**billing) -> SimpleNamespace:
+    """Аккаунт плательщика. Без kwargs — реквизиты не заполнены."""
+    fields = dict(
+        billing_country=None, billing_line1=None, billing_line2=None,
+        billing_postal_code=None, billing_city=None, billing_vat_id=None,
+    )
+    fields.update(billing)
+    return SimpleNamespace(email="u@e.com", **fields)
+
+
+def _run_ensure(monkeypatch, user) -> dict:
     from routers.billing import checkout as checkout_mod
 
     sent = {}
@@ -97,17 +113,97 @@ def test_paying_never_overwrites_what_the_payer_entered_at_stripe(monkeypatch):
         return "cus_x"
 
     monkeypatch.setattr(checkout_mod.stripe_billing, "ensure_customer", fake_ensure)
-
-    studio = SimpleNamespace(
-        id=1, name="S", email="s@e.com", country="CZ", postal_code="11000",
-        address="Olgy Havlove 2930/35", city="Praha", vat_id="CZ12345678",
-        company_id="12345678",
-    )
-    ctx = SimpleNamespace(studio_id=1, user=SimpleNamespace(email="u@e.com"))
+    ctx = SimpleNamespace(studio_id=1, user=user)
     plan = SimpleNamespace(stripe_customer_id=None)
-    asyncio.run(checkout_mod._ensure_customer(_DB(studio), ctx, plan))
+    asyncio.run(checkout_mod._ensure_customer(_DB(_STUDIO), ctx, plan))
+    return sent
 
+
+def test_an_empty_profile_sends_nothing_and_lets_checkout_ask(monkeypatch):
+    """Профиль пустой — шлём только имя и почту. Подставить сюда адрес СТУДИИ было
+    бы ошибкой: платёжный адрес владельца отличается от адреса зала, а прислать
+    вместо него адрес зала значит посчитать налог не по тому месту."""
+    assert _run_ensure(monkeypatch, _user()) == {
+        "name": "S", "email": "s@e.com", "studio_id": 1,
+    }
+
+
+def test_a_filled_profile_is_what_stripe_gets(monkeypatch):
+    """Реквизиты вводит наша форма — она и источник истины. Не отправить их значит
+    заставить Checkout спросить страну и индекс ещё раз, то есть сделать форму
+    бессмысленной."""
+    sent = _run_ensure(monkeypatch, _user(
+        billing_country="DE", billing_line1="Kantstr. 5", billing_line2="Apt 3",
+        billing_postal_code="10623", billing_city="Berlin",
+    ))
+    assert sent == {
+        "name": "S", "email": "s@e.com", "studio_id": 1,
+        "country": "DE", "postal_code": "10623", "city": "Berlin",
+        "line1": "Kantstr. 5", "line2": "Apt 3",
+    }
+    # Адрес студии в запрос не попал ни одним полем.
+    assert "Praha" not in str(sent) and "CZ" not in str(sent)
+
+
+def test_a_half_filled_profile_is_not_sent_at_all(monkeypatch):
+    """Частичный адрес хуже отсутствующего: Stripe примет его как полный, впишет в
+    фактуру город без улицы и посчитает налог по нему, а Checkout больше ничего не
+    переспросит. Пока обязательное не заполнено, реквизиты собирает Stripe."""
+    sent = _run_ensure(monkeypatch, _user(billing_country="DE", billing_city="Berlin"))
     assert sent == {"name": "S", "email": "s@e.com", "studio_id": 1}
+
+
+def test_a_vat_number_goes_up_as_its_own_object(monkeypatch):
+    """У `Customer.modify` поля налогового номера нет — он живёт отдельным объектом.
+    Не отправить его значит выписать компании счёт с НДС там, где действует reverse
+    charge, то есть взять с неё лишний 21 %."""
+    from routers.billing import checkout as checkout_mod
+
+    async def fake_ensure(customer_id, **kwargs):
+        return "cus_x"
+
+    seen = []
+
+    async def fake_set_tax_id(customer_id, value):
+        seen.append((customer_id, value))
+
+    monkeypatch.setattr(checkout_mod.stripe_billing, "ensure_customer", fake_ensure)
+    monkeypatch.setattr(checkout_mod.stripe_billing, "set_tax_id", fake_set_tax_id)
+
+    user = _user(
+        billing_country="DE", billing_line1="Kantstr. 5", billing_postal_code="10623",
+        billing_city="Berlin", billing_vat_id="DE811907980",
+    )
+    ctx = SimpleNamespace(studio_id=1, user=user)
+    asyncio.run(checkout_mod._ensure_customer(
+        _DB(_STUDIO), ctx, SimpleNamespace(stripe_customer_id=None),
+    ))
+    assert seen == [("cus_x", "DE811907980")]
+
+
+def test_a_rejected_vat_number_never_breaks_the_payment(monkeypatch):
+    """Номер необязателен, а Stripe отбивает незнакомый формат 400-й. Уронить на
+    этом оплату значит поменять счёт с НДС (чинится порталом) на несостоявшийся
+    платёж (не чинится ничем)."""
+    from routers.billing import checkout as checkout_mod
+
+    async def fake_ensure(customer_id, **kwargs):
+        return "cus_x"
+
+    async def boom(customer_id, value):
+        raise RuntimeError("invalid tax id")
+
+    monkeypatch.setattr(checkout_mod.stripe_billing, "ensure_customer", fake_ensure)
+    monkeypatch.setattr(checkout_mod.stripe_billing, "set_tax_id", boom)
+
+    user = _user(
+        billing_country="DE", billing_line1="Kantstr. 5", billing_postal_code="10623",
+        billing_city="Berlin", billing_vat_id="XX000",
+    )
+    ctx = SimpleNamespace(studio_id=1, user=user)
+    plan = SimpleNamespace(stripe_customer_id=None)
+    asyncio.run(checkout_mod._ensure_customer(_DB(_STUDIO), ctx, plan))
+    assert plan.stripe_customer_id == "cus_x"
 
 
 def test_paying_no_longer_gates_on_a_filled_in_country():

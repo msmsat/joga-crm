@@ -44,6 +44,9 @@ class _Plan:
         # Живая подписка Stripe. По ней ветвится и гейт карты, и вызов Stripe:
         # у живой подписки способ оплаты уже выбран, и требовать карту незачем.
         self.stripe_subscription_id = subscription_id
+        # Брали ли пробный период — по нему _to_plan_read считает trial_available.
+        self.trial_started_at = None
+        self.studio_id = 7
 
 
 class _Card:
@@ -161,7 +164,9 @@ def test_autopay_blocked_without_card_when_no_subscription():
 def test_autopay_saved_with_card():
     """Без подписки, но с картой → сохраняется; непереданные поля не трогаются."""
     plan = _Plan(subscription_id=None)
-    db = _DB([plan, _Card("card")])
+    # Третий ответ — поиск оплаченного счёта: без живой подписки ответ читает
+    # его, чтобы посчитать trial_available (router._trial_available).
+    db = _DB([plan, _Card("card"), None])
     body = AutopaySettingsUpdate(auto_renewal=True, notify_before_autocharge=False)
     with _Stripe() as stripe_calls:
         res = asyncio.run(update_autopay(body, _ctx(), db))

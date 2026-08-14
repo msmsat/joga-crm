@@ -8,12 +8,16 @@
 рассылка счетов на его стороне; наша БД только зеркалит состояние из вебхука.
 Своей арифметики периодов в проекте больше нет.
 
-Способ оплаты ОДИН — карта: Checkout Session mode=subscription, charge_automatically.
-Банковский перевод (customer_balance/eu_bank_transfer) убран целиком — своей
-хостед-страницы у него нет, а значит нет и места, где Stripe спросил бы адрес и
-номер НДС; ради него мы держали собственную форму реквизитов, которой здесь больше
-не место. Легаси-подписки на `send_invoice` продолжают жить: счёт продления
-выставляется тем способом, каким студия платит сегодня (checkout._renewal_invoice).
+ПЕРВАЯ покупка идёт только картой: Checkout Session mode=subscription,
+charge_automatically. Своей формы банковских реквизитов у нас нет и не будет —
+именно ради этого перевод убран с первой покупки: там негде спросить адрес и номер
+НДС, а Checkout спрашивает их сам.
+
+Дальше, на УЖЕ заведённом Customer (адрес и VAT у него есть), счёт открывается
+хостед-страницей Stripe, и она принимает и карту — вместе с Apple Pay и Google Pay,
+— и банковский перевод: список задаёт `invoice_payment_settings()` на каждом нашем
+счёте. Легаси-подписки на `send_invoice` продолжают жить: способ доставки счёта
+берётся у подписки (checkout._renewal_invoice), а способы ОПЛАТЫ — уже наши.
 
 Реквизиты плательщика (страна, индекс, адрес, VAT ID, название компании) СВОЕЙ
 формой не спрашиваются и у нас не хранятся: их собирает страница Checkout
@@ -106,6 +110,45 @@ TAX_BEHAVIOR = "exclusive"
 # итог по этому числу нельзя ни в коем случае.
 VAT_RATE_DISPLAY = float(os.getenv("BILLING_VAT_RATE", "21"))
 
+# Чем можно оплатить НАШ счёт на хостед-странице Stripe.
+#
+# Задаём ЯВНО на каждом счёте, а не полагаемся на настройки подписки: у студий,
+# заведённых по прежней схеме, в `payment_settings` лежит один `customer_balance`,
+# и счёт наследовал его — владелец открывал страницу, где нет ничего, кроме
+# банковского перевода (жалоба 13.08.2026). Явный список у счёта перекрывает
+# подписку, и чинить каждую легаси-подписку руками не нужно.
+#
+# `card` тянет за собой Apple Pay и Google Pay: на хостед-странице Stripe рисует
+# их сам, когда устройство и браузер покупателя их поддерживают. Отдельного
+# способа оплаты у кошельков нет — это те же карточные платежи.
+INVOICE_PAYMENT_METHODS = ["card", "customer_balance"]
+
+# Страна банковских реквизитов для перевода. Stripe умеет выдавать их только для
+# BE, DE, ES, FR, IE, NL — чешского IBAN он не отдаст, поэтому чешская студия
+# видит на странице счёта НЕМЕЦКИЙ IBAN. Это нормальный SEPA-перевод и никак не
+# связано ни со ставкой НДС (её Stripe Tax считает по стране плательщика), ни с
+# тем, где зарегистрирована платформа.
+BANK_TRANSFER_COUNTRY = os.getenv("BILLING_BANK_TRANSFER_COUNTRY", "DE")
+
+INVOICE_PAYMENT_OPTIONS = {
+    "customer_balance": {
+        "funding_type": "bank_transfer",
+        "bank_transfer": {
+            "type": "eu_bank_transfer",
+            "eu_bank_transfer": {"country": BANK_TRANSFER_COUNTRY},
+        },
+    },
+}
+
+
+def invoice_payment_settings() -> dict:
+    """`payment_settings` для наших счетов: карта (с кошельками) + перевод."""
+    return {
+        "payment_method_types": list(INVOICE_PAYMENT_METHODS),
+        "payment_method_options": INVOICE_PAYMENT_OPTIONS,
+    }
+
+
 async def ensure_customer(
     customer_id: str | None,
     *,
@@ -116,29 +159,30 @@ async def ensure_customer(
     postal_code: str | None = None,
     city: str | None = None,
     line1: str | None = None,
+    line2: str | None = None,
 ) -> str:
     """Stripe Customer студии — создаёт или обновляет. Идемпотентно.
 
     Customer заводится на СТУДИЮ, а не на пользователя: у владельца может быть
-    несколько студий, а адрес и счета у них разные.
+    несколько студий, а счета и подписка у них разные.
 
-    Адрес и налоговый номер СЮДА НЕ ПЕРЕДАЮТСЯ из оплаты тарифа, и это принципиально:
-    их собирает страница Checkout и пишет обратно в Customer
-    (`customer_update={"address": "auto"}`). Прислать сюда страну из профиля студии
-    значит на каждой следующей оплате затирать то, что плательщик ввёл у Stripe, —
-    и ломать расчёт налога у студии, чей платёжный адрес отличается от адреса зала.
+    Адрес НЕОБЯЗАТЕЛЕН и передаётся из двух разных мест:
 
-    Адресные поля остались необязательными ради счетов, которые выставляем МЫ САМИ
-    (комиссия с офлайн-продаж, минимальный платёж — services/offline_fee_billing):
-    у них хостед-страницы нет, а без местоположения Stripe Tax отвечает
-    `customer_tax_location_invalid`. Там они передаются только при СОЗДАНИИ клиента,
-    то есть ничего затереть не могут.
+    * оформление тарифа (routers/billing/checkout._ensure_customer) шлёт реквизиты
+      с АККАУНТА плательщика — их собирает наша форма, и она источник истины;
+    * счета, которые выставляем мы сами (комиссия с офлайн-продаж, минимальный
+      платёж — services/offline_fee_billing), шлют адрес студии только при СОЗДАНИИ
+      клиента: без местоположения Stripe Tax отвечает `customer_tax_location_invalid`.
+
+    Налоговый номер сюда НЕ передаётся — у Customer это отдельный объект, см.
+    `set_tax_id`.
     """
     address = {
         "country": country,
         "postal_code": postal_code,
         "city": city,
         "line1": line1,
+        "line2": line2,
     }
     address = {k: v for k, v in address.items() if v}
     fields = dict(
@@ -173,6 +217,44 @@ async def ensure_customer(
         customer_id = customer.id
 
     return customer_id
+
+
+# Тип налогового номера у Stripe задаётся явно, вывести его из самого номера
+# нельзя. Продукт продаётся из ЕС, поэтому дефолт — `eu_vat`; соседи, которые
+# встречаются в ЕС-биллинге чаще прочих, перечислены отдельно.
+# ponytail: остальные страны сюда не вписываем — их номер Stripe отобьёт, мы
+# поймаем ошибку и выставим счёт с НДС. Появится такая студия — добавить строку.
+_VAT_TYPES = {"GB": "gb_vat", "CH": "ch_vat", "NO": "no_vat"}
+
+
+async def set_tax_id(customer_id: str, value: str) -> None:
+    """Проставить клиенту налоговый номер, сняв все прежние. Идемпотентно.
+
+    Прежние снимаются не для чистоты: номера у Customer живут списком, и Stripe Tax
+    применяет reverse charge по ЛЮБОМУ подходящему из них. Оставленный старый номер
+    продолжал бы обнулять НДС после того, как плательщик вписал в форму новый, —
+    то есть правка реквизитов у нас ничего бы не меняла.
+
+    Уже стоящий тот же номер не трогаем — иначе каждая оплата сбрасывала бы его
+    статус сверки с VIES обратно в `pending` и обнуляла налог заново по номеру,
+    который однажды уже отклонили.
+
+    Ошибку НЕ глушим — её ловит вызывающий (checkout._ensure_customer): номер
+    необязателен, и срывать из-за него оплату нельзя.
+    """
+    existing = await asyncio.to_thread(stripe.Customer.list_tax_ids, customer_id, limit=100)
+    if any(row.value == value for row in existing.data):
+        return
+
+    for row in existing.data:
+        await asyncio.to_thread(stripe.Customer.delete_tax_id, customer_id, row.id)
+
+    await asyncio.to_thread(
+        stripe.Customer.create_tax_id,
+        customer_id,
+        type=_VAT_TYPES.get(value[:2], "eu_vat"),
+        value=value,
+    )
 
 
 async def delete_tax_id(customer_id: str, tax_id: str) -> bool:
@@ -467,6 +549,20 @@ async def change_subscription_price(
     return await asyncio.to_thread(stripe.Subscription.modify, subscription_id, **params)
 
 
+def price_key_of(subscription) -> str | None:
+    """`lookup_key` действующего Price у УЖЕ полученной подписки, или None.
+
+    Отдельно от `subscription_price_key`, потому что вызывающая сторона часто
+    держит подписку в руках (вебхук, сверка карты) — второй запрос к Stripe ради
+    поля, которое уже лежит в объекте, стоил бы задержки на денежном пути.
+    """
+    items = getattr(subscription, "items", None)
+    data = getattr(items, "data", None) if items is not None else None
+    if not data:
+        return None
+    return getattr(getattr(data[0], "price", None), "lookup_key", None)
+
+
 async def subscription_price_key(subscription_id: str) -> str | None:
     """`lookup_key` Price, по которому подписка идёт СЕЙЧАС, или None.
 
@@ -474,12 +570,28 @@ async def subscription_price_key(subscription_id: str) -> str | None:
     поэтому второй копии у себя мы не держим — читаем оттуда, когда надо перевести
     подписку на парный Price другого режима оплаты.
     """
-    subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
-    items = getattr(subscription, "items", None)
-    data = getattr(items, "data", None) if items is not None else None
-    if not data:
-        return None
-    return getattr(getattr(data[0], "price", None), "lookup_key", None)
+    return price_key_of(
+        await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    )
+
+
+async def subscription_settled(subscription_id: str) -> bool:
+    """Стоит ли за ТЕКУЩИМ Price подписки оплаченный счёт.
+
+    `change_subscription_price` переводит подписку на новый Price НЕМЕДЛЕННО, а
+    счёт-прорация в этот момент ещё `open`. То есть сам по себе Price доказывает
+    только то, что владелец НАЖАЛ кнопку, — не то, что тариф у студии есть.
+    Пока этот счёт не оплачен, читать по Price «текущий тариф клиента» нельзя.
+
+    Отдельным запросом, а не полем `subscription_price_key`: спрашивается он лишь
+    тогда, когда Price оказался ВЫШЕ оплаченной у нас ступени, то есть в редком
+    подозрительном случае. Обычная сверка тарифа лишнего похода в Stripe не платит.
+    """
+    subscription = await asyncio.to_thread(
+        stripe.Subscription.retrieve, subscription_id, expand=["latest_invoice"],
+    )
+    invoice = getattr(subscription, "latest_invoice", None)
+    return getattr(invoice, "status", None) == "paid"
 
 
 async def create_setup_checkout(
@@ -675,6 +787,10 @@ async def create_fee_invoice(
         # платформа не может продавать одной студии часть услуг с налогом, а часть
         # без; недобранный НДС при этом — обязательство Velora, а не студии.
         automatic_tax={"enabled": True},
+        # Карта (а с ней Apple Pay и Google Pay) и банковский перевод — оба сразу.
+        # Без явного списка счёт наследует способы у подписки, а у заведённых по
+        # прежней схеме там один перевод, и страница открывалась без карты.
+        payment_settings=invoice_payment_settings(),
         metadata=metadata,
     )
     await asyncio.to_thread(
@@ -819,6 +935,39 @@ async def open_or_new_invoice(customer_id: str, subscription_id: str):
     return await asyncio.to_thread(stripe.Invoice.finalize_invoice, draft.id)
 
 
+async def void_invoice(stripe_invoice_id: str) -> bool:
+    """Закрыть неоплаченный счёт, чтобы Stripe перестал его собирать. True — закрыт.
+
+    Черновик УДАЛЯЕТСЯ (`delete`), финализированный — ГАСИТСЯ (`void_invoice`):
+    у финализированного уже есть номер из сквозной нумерации, и удалить его нельзя,
+    иначе в нумерации появится дыра, а это документ отчётности.
+
+    Оплаченный, возвращённый и уже погашенный не трогаем вовсе — на такой запрос
+    Stripe отвечает 400, и False здесь означает «этот счёт закрывать не наше дело».
+
+    Счёт ОЧЕРЕДНОГО ЦИКЛА подписки (`billing_reason="subscription_cycle"`) — тоже
+    не наше дело, и по двум причинам сразу. Его выставляет сам Stripe за уже
+    идущий период и тут же пытается списать: погасить его посреди попытки значит
+    уронить подписку в `past_due` на ровном месте. А если он неоплачен давно
+    (карта отклонила месяц назад), то это ДОЛГ за период, которым студия уже
+    пользовалась, — гасить его при покупке нового тарифа значило бы подарить
+    месяц. Всё остальное (`subscription_update` — прорация за переход, `manual` —
+    счёт продления) рождается нажатием кнопки и дублируется именно так.
+    """
+    invoice = await asyncio.to_thread(stripe.Invoice.retrieve, stripe_invoice_id)
+    if getattr(invoice, "billing_reason", None) == "subscription_cycle":
+        return False
+    status = getattr(invoice, "status", None)
+    if status == "draft":
+        await asyncio.to_thread(stripe.Invoice.delete, stripe_invoice_id)
+    elif status == "open":
+        await asyncio.to_thread(stripe.Invoice.void_invoice, stripe_invoice_id)
+    else:
+        return False
+    logger.info("Stripe billing: счёт %s закрыт (был %s)", stripe_invoice_id, status)
+    return True
+
+
 async def ensure_finalized(stripe_invoice):
     """Черновик → финализированный счёт. Уже финализированный отдаём как есть.
 
@@ -829,10 +978,25 @@ async def ensure_finalized(stripe_invoice):
 
     Первый счёт подписки Stripe финализирует не всегда сразу — отсюда проверка, а не
     безусловный вызов: повторная финализация открытого счёта вернула бы 400.
+
+    Заодно единственное место, где можно поправить способы оплаты у счёта, который
+    завёл САМ Stripe (прорация при смене тарифа): он наследует их у подписки, а у
+    заведённых по прежней схеме там один банковский перевод. После финализации
+    список уже не поменять, поэтому — здесь, пока черновик.
     """
     if getattr(stripe_invoice, "status", None) != "draft":
         return stripe_invoice
-    return await asyncio.to_thread(stripe.Invoice.finalize_invoice, stripe_invoice["id"])
+    invoice_id = stripe_invoice["id"]
+    try:
+        await asyncio.to_thread(
+            stripe.Invoice.modify, invoice_id, payment_settings=invoice_payment_settings(),
+        )
+    except Exception:
+        # Не повод срывать оплату: счёт останется с теми способами, что унаследовал.
+        logger.exception(
+            "Stripe billing: способы оплаты счёта %s не расширены", invoice_id,
+        )
+    return await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice_id)
 
 
 async def email_invoice(stripe_invoice_id: str) -> None:

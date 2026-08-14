@@ -1,8 +1,10 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AIChatMessage } from '../types';
+import type { AIActionProposal } from '../../../../api/ai/ai.types';
 import MessageBubble from './MessageBubble';
 import ThinkingIndicator from './ThinkingIndicator';
+import { ActionCard } from '../../../../components/ui/index';
 import NeuralNetSVG from './animations/NeuralNetSVG';
 import styles from '../AI.module.css';
 
@@ -13,11 +15,22 @@ interface ChatPanelProps {
   onRetryMessages: () => void;
   isThinking: boolean;
   onSend: (text: string) => void;
+  // Предложенное ассистентом изменяющее действие (эпик AI-5, задача 10).
+  actionProposal?: AIActionProposal | null;
+  onConfirmAction?: () => void;
+  onCancelAction?: () => void;
+  actionPending?: boolean;
+  // Имя инструмента, который ассистент дёргает прямо сейчас — переводится здесь,
+  // сервер шлёт машинное имя (эпик AI-4 выкорчевал русские строки из JSX).
+  toolStatus?: string | null;
 }
 
 const SUGGESTION_KEYS = ['revenue', 'sms', 'promo', 'retention'] as const;
 
-export default function ChatPanel({ messages, messagesLoading, messagesError, onRetryMessages, isThinking, onSend }: ChatPanelProps) {
+export default function ChatPanel({
+  messages, messagesLoading, messagesError, onRetryMessages, isThinking, onSend,
+  actionProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+}: ChatPanelProps) {
   const { t } = useTranslation('ai');
   const [input, setInput] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
@@ -37,7 +50,10 @@ export default function ChatPanel({ messages, messagesLoading, messagesError, on
     setPrevIsThinking(isThinking);
     if (prevIsThinking && !isThinking) {
       const last = messages[messages.length - 1];
-      if (last?.role === 'assistant') setAnimateId(last.id);
+      // id < 0 — черновик стрима: он уже напечатался по мере генерации,
+      // второй раз проигрывать печать не надо. Анимация остаётся фолбэку
+      // POST /messages, где текст приходит целиком.
+      if (last?.role === 'assistant' && last.id >= 0) setAnimateId(last.id);
     }
   }
 
@@ -115,7 +131,16 @@ export default function ChatPanel({ messages, messagesLoading, messagesError, on
                 onAnimateDone={() => setAnimateId(null)}
               />
             ))}
-            {isThinking && <ThinkingIndicator />}
+            {actionProposal && (
+              <ActionCard
+                description={actionProposal.description}
+                args={actionProposal.args}
+                loading={actionPending}
+                onConfirm={() => onConfirmAction?.()}
+                onCancel={() => onCancelAction?.()}
+              />
+            )}
+            {isThinking && <ThinkingIndicator label={toolStatus ? t(`toolStatus.${toolStatus}`, { defaultValue: t('toolStatus.default') }) : undefined} />}
             <div ref={bottomRef} />
           </div>
         )}

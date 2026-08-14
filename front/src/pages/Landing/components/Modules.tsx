@@ -17,7 +17,7 @@ const MODULES: [Icon, string, string][] = [
   [Building, "Каталог", "Филиалы, залы с цветом и вместимостью, услуги студии"],
   [LinkIcon, "Онлайн-запись", "Виджет, Telegram, WhatsApp, Instagram и правила записи"],
   [CardIcon, "Финансы", "Счета, операции, контрагенты, документы, цели, зарплаты"],
-  [Bell, "Уведомления", "6 каналов и матрица «событие × канал» по получателям"],
+  [Bell, "Уведомления", "Telegram, Email, WhatsApp и матрица «событие × канал»"],
   [Sparkle, "Лояльность", "Карты, скидки, сертификаты, абонементы, рефералы"],
   [ChatBubble, "Velora AI", "Ассистент по бизнесу и агенты для клиентов"],
   [ChartBar, "Отчёты", "По продажам, тренерам, услугам — с экспортом"],
@@ -25,10 +25,12 @@ const MODULES: [Icon, string, string][] = [
   [List, "Мультистудийность", "Несколько студий в одном аккаунте, переключение"],
   [Check, "Роли и доступы", "Владелец, администратор, тренер — и в UI, и на сервере"],
   [Gear, "Настройки", "Часы работы, тема, команда, безопасность, сессии"],
-  [Clipboard, "Данные", "Экспорт, резервные копии, удаление по запросу"],
+  [Clipboard, "Данные", "Экспорт CSV, удаление по запросу"],
 ];
 
-const INTEGRATIONS = ["WhatsApp", "Telegram", "Instagram", "Google Calendar", "1С", "ЮKassa"];
+// Только то, у чего есть рабочий роутер. 1С и ЮKassa из списка убраны:
+// в кабинете это плашка «в разработке», интеграций как таковых нет.
+const INTEGRATIONS = ["Telegram", "WhatsApp", "Instagram", "Google Calendar", "Stripe"];
 
 export function Modules() {
   return (
@@ -69,7 +71,7 @@ export function Modules() {
                 <span key={n} className="text-[14px] font-semibold text-white/55">{n}</span>
               ))}
             </div>
-            <span className="text-[13px] text-white/30">и API-доступ на тарифе Business</span>
+            <span className="text-[13px] text-white/30">подключаются в настройках студии</span>
           </div>
         </Reveal>
       </div>

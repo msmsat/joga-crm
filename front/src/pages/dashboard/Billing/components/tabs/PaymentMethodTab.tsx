@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
-import type { BillingPlan, PaymentCard, AutopaySettings } from '../../../../../api/billing/billing.types';
+import type {
+  BillingPlan, PaymentCard, AutopaySettings, BillingProfile, BillingProfileInput,
+} from '../../../../../api/billing/billing.types';
 import { Button, Switch } from '../../../../../components/ui/index';
 import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
+import BillingProfileCard from '../sections/BillingProfileCard';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
 const AUTOPAY_FIELDS = [
@@ -17,19 +20,24 @@ interface Props {
   loaded: boolean;
   plan: BillingPlan | null;
   setAutopay: (field: keyof AutopaySettings, value: boolean) => void;
-  /** Портал Stripe: там и только там вводится VAT ID после первой покупки. */
+  /** Портал Stripe: фактуры и способ оплаты. Реквизиты теперь наши, см. profile. */
   openPortal: () => void;
   portalBusy: boolean;
+  /** Реквизиты плательщика с аккаунта — общие для всех студий владельца. */
+  profile: BillingProfile | null;
+  profileSaving: boolean;
+  saveProfile: (body: BillingProfileInput) => Promise<unknown>;
 }
 
-// Своей формы реквизитов тут больше нет: страна, индекс, адрес, VAT ID и название
-// компании собирает Stripe и хранит у себя — мы их не спрашиваем и не храним
-// (services/stripe_billing.create_subscription_checkout). Вместо формы — кнопка в
-// клиентский портал Stripe: поля VAT есть только у Checkout, а он открывается лишь
-// на первой покупке, и без портала компания, купившая тариф как физлицо, не смогла
-// бы добавить номер уже никогда.
+// Реквизиты плательщика собирает НАША форма (BillingProfileCard) и хранит на
+// АККАУНТЕ: у второй студии того же владельца адрес тот же, а поля VAT у Stripe
+// есть только на странице Checkout — то есть на ПЕРВОЙ покупке, и компания,
+// купившая тариф как физлицо, не смогла бы добавить номер уже никогда. Отсюда
+// они уезжают в Stripe Customer при оформлении (checkout._ensure_customer).
+// Кнопка в портал Stripe осталась, но уже для фактур и способа оплаты.
 export default function PaymentMethodTab({
   cards, loaded, plan, setAutopay, openPortal, portalBusy,
+  profile, profileSaving, saveProfile,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
@@ -110,20 +118,17 @@ export default function PaymentMethodTab({
           </div>
         </div>
 
-        {/* Реквизиты плательщика — на стороне Stripe. */}
-        <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
-          <div style={{ minWidth: 0, flex: '1 1 320px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 2h7l3 3v13H5z" /><path d="M8 8h4M8 11h4M8 14h2" />
-              </svg>
-              <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.portal.title')}</span>
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
-              {t('method.portal.subtitle')}
-            </div>
+        {/* Реквизиты плательщика — НАШИ, с аккаунта: адрес и VAT вводятся в форме
+            перед первой оплатой и правятся здесь же. */}
+        <BillingProfileCard profile={profile} saving={profileSaving} save={saveProfile} />
+
+        {/* Портал Stripe остаётся, но уже как второстепенная ссылка: там живут
+            фактуры и способ оплаты, а не реквизиты. */}
+        <div style={{ marginTop: '12px', padding: '18px 22px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ minWidth: 0, flex: '1 1 320px', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
+            {t('method.portal.subtitle')}
           </div>
-          <Button variant="primary" loading={portalBusy} onClick={openPortal}>
+          <Button variant="ghost" loading={portalBusy} onClick={openPortal}>
             {t('method.portal.cta')}
           </Button>
         </div>

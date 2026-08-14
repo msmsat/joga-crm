@@ -1,18 +1,31 @@
-from fastapi import APIRouter, Depends, HTTPException
+import asyncio
+import json
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
+from database import async_session_maker, get_db
 from dependencies import StudioContext, get_studio_context
-from models import AIChatMessage, AIChatSession, Studio
+from models import AIChatMessage, AIChatSession, Studio, User
+from ratelimit import limiter
 from schemas.ai import (
+    ActionExecuteIn,
+    ActionExecuteOut,
     ChatMessageCreate,
     ChatMessageRead,
     ChatSessionCreate,
     ChatSessionRead,
     SendMessageResponse,
 )
-from services.assistant import generate_reply, get_or_create_ai_settings
+from services.ai_quota import ai_quota_status, check_ai_quota
+from services.ai_tools import call_tool, decode_action_token, describe_action
+from services.assistant import agent_events, get_or_create_ai_settings, run_agent
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -110,17 +123,29 @@ async def list_messages(
 
 
 @router.post("/sessions/{session_id}/messages", response_model=SendMessageResponse)
+@limiter.limit("20/minute")
 async def send_message(
     session_id: int,
     body: ChatMessageCreate,
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    # Параметр требует slowapi (он ищет его по имени). ПОСЛЕДНИМ и с дефолтом:
+    # первым он сдвинул бы позиционные аргументы прямых вызовов из тестов
+    # (test_ai_chat.py зовёт send_message(session_id, body, ...) как функцию),
+    # а FastAPI подставляет Request по типу, не по позиции. Сами тесты идут
+    # мимо декоратора через send_message.__wrapped__ — приём уже есть в
+    # test_consent.py:77.
+    request: Request = None,
 ):
     session = await _get_session_or_404(session_id, ctx, db)
 
     text = body.text.strip()
     if not text:
         raise HTTPException(status_code=422, detail="Сообщение не может быть пустым")
+
+    # Квота — ДО обращения к модели: исчерпанный запас не должен стоить платформе
+    # ни одного вызова провайдера.
+    await check_ai_quota(db, ctx.studio_id)
 
     # Одна транзакция на пару сообщений: user-сообщение только flush (не commit),
     # чтобы при падении generate_reply откатилось целиком — без вопроса-сироты.
@@ -140,17 +165,17 @@ async def send_message(
         select(Studio).where(Studio.id == ctx.studio_id)
     )).scalar_one()
 
-    reply = await generate_reply(
-        settings=settings,
-        studio_name=studio.name,
+    result = await run_agent(
+        ctx, db, settings, history,
+        session_id=session.id,
         studio_language=studio.language,
-        history=history,
+        current_page=body.current_page,
     )
 
-    assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=reply)
+    assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=result.text)
     db.add(assistant_message)
 
-    session.preview = reply[:500]
+    session.preview = result.text[:500]
     if session.title == _DEFAULT_TITLE:
         session.title = text[:40]
 
@@ -158,4 +183,172 @@ async def send_message(
     await db.refresh(user_message)
     await db.refresh(assistant_message)
 
-    return SendMessageResponse(user=user_message, assistant=assistant_message)
+    return SendMessageResponse(
+        user=user_message,
+        assistant=assistant_message,
+        action_proposal=result.action_proposal,
+    )
+
+
+def _sse(event: str, data: object) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False, default=str)}\n\n"
+
+
+async def _agent_stream(session_id: int, text: str, current_page: str | None, user_id: int, studio_id: int, role: str):
+    """Тело SSE-потока.
+
+    Своя сессия БД обязательна: тело StreamingResponse выполняется ПОСЛЕ того,
+    как обработчик вернул управление, а Depends(get_db) к этому моменту сессию
+    уже закрыл. Все существующие StreamingResponse в проекте отдают готовые
+    байты именно поэтому — у SSE так не выйдет, инструменты зовутся по ходу.
+    # ponytail: соединение занято на всё время стрима (5-15 с) — при росте
+    # одновременных чатов поднимать pool_size или отпускать сессию между
+    # вызовами модели.
+    """
+    async with async_session_maker() as db:
+        # Пользователя перегружаем своей сессией: объект из закрытой сессии
+        # запроса в генераторе уже мёртв.
+        user = (await db.execute(select(User).where(User.id == user_id))).scalar_one()
+        ctx = StudioContext(user=user, studio_id=studio_id, role=role)
+        session = await _get_session_or_404(session_id, ctx, db)
+
+        user_message = AIChatMessage(session_id=session.id, role="user", text=text)
+        db.add(user_message)
+        await db.flush()
+
+        history = list(reversed((await db.execute(
+            select(AIChatMessage)
+            .where(AIChatMessage.session_id == session.id)
+            .order_by(AIChatMessage.created_at.desc())
+            .limit(_HISTORY_LIMIT)
+        )).scalars().all()))
+
+        settings = await get_or_create_ai_settings(ctx.studio_id, db)
+        studio = (await db.execute(select(Studio).where(Studio.id == ctx.studio_id))).scalar_one()
+
+        result = None
+        try:
+            async for kind, data in agent_events(
+                ctx, db, settings, history,
+                session_id=session.id, studio_language=studio.language,
+                current_page=current_page, stream=True,
+            ):
+                if kind == "result":
+                    result = data
+                else:
+                    yield _sse(kind, data)
+        except HTTPException as exc:
+            # Провайдер настроен, но не отвечает — фронт уже знает этот код.
+            yield _sse("error", {"code": exc.detail if isinstance(exc.detail, str) else "assistant_unavailable"})
+            return
+        except asyncio.CancelledError:
+            # Вкладку закрыли на середине. Строки за уже завершённые итерации
+            # записаны своей сессией и коммитом (services/ai_usage) — теряется
+            # максимум незавершённый вызов, чей usage провайдер ещё не прислал.
+            logger.warning("ai stream cancelled: studio=%s session=%s", studio_id, session_id)
+            raise
+
+        # Сообщения пишем ПО ЗАВЕРШЕНИИ потока целиком: частичный ответ в
+        # истории хуже отсутствующего.
+        assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=result.text)
+        db.add(assistant_message)
+        session.preview = result.text[:500]
+        if session.title == _DEFAULT_TITLE:
+            session.title = text[:40]
+        await db.commit()
+        await db.refresh(user_message)
+        await db.refresh(assistant_message)
+
+        if result.action_proposal:
+            yield _sse("action_proposal", result.action_proposal)
+        used, limit = await ai_quota_status(db, ctx.studio_id)
+        yield _sse("quota", {"used": used, "limit": limit})
+        yield _sse("done", {"user_id": user_message.id, "assistant_id": assistant_message.id})
+
+
+@router.post("/sessions/{session_id}/stream")
+@limiter.limit("20/minute")
+async def stream_message(
+    request: Request,
+    session_id: int,
+    body: ChatMessageCreate,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Ответ ассистента по мере генерации (эпик AI-5, задача 8).
+
+    POST /messages остаётся как есть — на нём держатся фолбэк фронта и тесты.
+    """
+    await _get_session_or_404(session_id, ctx, db)
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(status_code=422, detail="Сообщение не может быть пустым")
+    # Квота и доступ — до старта потока: внутри генератора HTTP-статус уже не
+    # поменять, там остаётся только событие error.
+    await check_ai_quota(db, ctx.studio_id)
+
+    return StreamingResponse(
+        _agent_stream(session_id, text, body.current_page, ctx.user.id, ctx.studio_id, ctx.role),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            # Без этого nginx буферизует поток, и стрима не будет вовсе.
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.post("/actions/execute", response_model=ActionExecuteOut)
+@limiter.limit("10/minute")
+async def execute_action(
+    request: Request,
+    body: ActionExecuteIn,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Исполнить предложенное ассистентом изменяющее действие (эпик AI-5, задача 6).
+
+    Отдельный запрос — не только вопрос безопасности: проксируемые функции
+    роутеров делают db.commit() внутри себя, и вызывать их из середины агентного
+    цикла (где висит незакоммиченное пользовательское сообщение) значит
+    коммитить чужую транзакцию наполовину.
+    """
+    payload = decode_action_token(body.token, ctx)
+    args = payload.get("args") or {}
+    session = await _get_session_or_404(payload["session_id"], ctx, db)
+
+    # Однократность проверяем ДО исполнения: иначе повторный клик успел бы
+    # завести вторую запись клиента, а 409 пришёл бы уже после этого.
+    if (await db.execute(
+        select(AIChatMessage.id).where(AIChatMessage.action_jti == payload["jti"])
+    )).scalar_one_or_none() is not None:
+        raise HTTPException(status_code=409, detail="action_already_executed")
+
+    result = await call_tool(payload["tool"], args, ctx, db)
+    if "error" in result:
+        # Занятие переполнено, клиент удалён — это ответ человеку, а не 500:
+        # пользователь должен понять, почему не получилось.
+        raise HTTPException(status_code=400, detail={
+            "code": "action_failed",
+            "message": result["error"],
+        })
+
+    message = AIChatMessage(
+        session_id=session.id,
+        role="assistant",
+        text=f"Готово: {describe_action(payload['tool'], args)}",
+        action_jti=payload["jti"],
+    )
+    db.add(message)
+    session.preview = message.text[:500]
+    try:
+        await db.commit()
+    except IntegrityError:
+        # Уникальный индекс на action_jti закрывает гонку двойного клика: два
+        # запроса, прошедшие проверку выше одновременно, разойдутся здесь.
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="action_already_executed")
+
+    await db.refresh(message)
+    logger.info("ai action executed: tool=%s studio=%s", payload["tool"], ctx.studio_id)
+    return ActionExecuteOut(result=result, message=message)

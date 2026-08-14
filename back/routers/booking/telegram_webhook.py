@@ -10,12 +10,13 @@ import os
 from html import escape
 
 import aiohttp
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import BookingChannelConfig, Studio
+from services.client_agent import CHANNEL_TELEGRAM, schedule_reply
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -108,8 +109,18 @@ async def _studio_by_token(db: AsyncSession, token: str) -> int | None:
 
 
 @router.post("/telegram/webhook/{token}")
-async def telegram_webhook(token: str, request: Request, db: AsyncSession = Depends(get_db)):
-    """/start -> приветствие с кнопкой мини-приложения. Остальные апдейты молча отбрасываем.
+async def telegram_webhook(
+    token: str,
+    request: Request,
+    background: BackgroundTasks = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """/start -> приветствие с кнопкой мини-приложения, остальной текст -> ассистент студии.
+
+    Ветка ассистента живёт ЗДЕСЬ, а не в routers/ai/, потому что у бота может
+    быть ровно один webhook-URL: повторный setWebhook молча отобрал бы апдейты у
+    онбординга, и мини-приложение перестало бы открываться — регрессия без единой
+    ошибки в логах (эпик AI-5, задача 12, п. 7).
 
     Всегда 200: Telegram ретраит недоставленные апдейты, и любой 4xx/5xx задвоил
     бы приветствие тем же паттерном, что и вебхук WhatsApp/Instagram.
@@ -121,11 +132,25 @@ async def telegram_webhook(token: str, request: Request, db: AsyncSession = Depe
 
     message = update.get("message") or {}
     chat_id = (message.get("chat") or {}).get("id")
-    if chat_id is None or not _is_start(message.get("text") or ""):
+    text = message.get("text") or ""
+    if chat_id is None or not text:
         return {"ok": True}
 
     studio_id = await _studio_by_token(db, token)
     if studio_id is None:
+        # Канал онлайн-записи выключили, оставив тумблер агента включённым —
+        # апдейты перестают находить студию, и агент замолкает без единой строки
+        # в логе. Отсюда WARNING с хвостом токена: иначе это неотличимо от
+        # «бота никто не подключал».
+        logger.warning("telegram webhook: студия не найдена, канал записи выключен? token=…%s", token[-6:])
+        return {"ok": True}
+
+    if not _is_start(text):
+        # Не /start — это разговор с ассистентом студии. Тумблер агента и квоту
+        # проверяет сама фоновая задача: до неё доходит только текст и отправитель.
+        sender_id = (message.get("from") or {}).get("id")
+        if sender_id is not None:
+            schedule_reply(background, studio_id, CHANNEL_TELEGRAM, str(sender_id), text, token)
         return {"ok": True}
 
     studio_name = (await db.execute(select(Studio.name).where(Studio.id == studio_id))).scalar_one_or_none()

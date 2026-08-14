@@ -20,19 +20,19 @@ export function Reveal({ children, delay = 0, y = 28, className }: {
 }
 
 /**
- * Бесконечная лента ниш. Две одинаковые копии подряд, сдвиг ровно на -50%,
+ * Бесконечная лента. Две одинаковые копии подряд, сдвиг ровно на -50%,
  * поэтому шов не виден. Промежуток живёт в padding самого элемента, а не в
  * `gap` контейнера: gap добавил бы лишний зазор только между копиями и лента
  * дёргалась бы на стыке.
+ *
+ * Сам сдвиг — CSS-анимация (`.lp-marquee`), не framer-motion: то же движение,
+ * но в компоновщике, а не в главном потоке. На телефоне это разница между
+ * рывками и ровной прокруткой.
  */
 export function Marquee({ items }: { items: string[] }) {
   return (
     <div className="overflow-hidden bg-[#F9A08B] py-4">
-      <motion.div
-        className="flex w-max"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 34, ease: "linear", repeat: Infinity }}
-      >
+      <div className="lp-marquee flex w-max">
         {[...items, ...items].map((label, i) => (
           <span
             key={i}
@@ -44,7 +44,7 @@ export function Marquee({ items }: { items: string[] }) {
             </svg>
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }

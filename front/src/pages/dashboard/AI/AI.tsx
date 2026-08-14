@@ -22,9 +22,10 @@ export default function AIPage() {
     sessions, sessionsLoading, sessionsError, refetchSessions,
     activeSessionId, messages, messagesLoading, messagesError, refetchMessages, isThinking,
     sendMessage, newChat, loadSession, deleteSession, messagesEndRef,
+    toolStatus, actionProposal, confirmAction, cancelAction, actionPending,
   } = useDrawerChat();
   const {
-    agentConfig, aiSettings, isSaving, isLoaded, tgConnected, isVerifyingTelegram,
+    agentConfig, aiSettings, isSaving, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
     igConnected, isConnectingInstagram, waConnected,
     toggleChannel, updateAISettings, saveChannelFields, verifyTelegram, disconnectTelegram,
     connectInstagram, disconnectInstagram, connectWhatsapp, isConnectingWhatsapp,
@@ -111,6 +112,11 @@ export default function AIPage() {
           onUpdateSettings={updateAISettings}
           activeAgents={activeAgents}
           onOpenAgentSetup={() => isLoaded && setAgentModalOpen(true)}
+          toolStatus={toolStatus}
+          actionProposal={actionProposal}
+          onConfirmAction={confirmAction}
+          onCancelAction={cancelAction}
+          actionPending={actionPending}
         />
         {agentModalOpen && createPortal(agentModal, document.body)}
       </div>
@@ -128,6 +134,7 @@ export default function AIPage() {
         aiSettings={aiSettings}
         telegramEnabled={agentConfig.telegram.enabled}
         telegramConnected={tgConnected}
+        telegramChannelActive={tgChannelActive}
         instagramEnabled={agentConfig.instagram.enabled}
         instagramConnected={igConnected}
         whatsappEnabled={agentConfig.whatsapp.enabled}
@@ -149,6 +156,11 @@ export default function AIPage() {
         onRetryMessages={() => void refetchMessages()}
         isThinking={isThinking}
         onSend={sendMessage}
+        toolStatus={toolStatus}
+        actionProposal={actionProposal}
+        onConfirmAction={confirmAction}
+        onCancelAction={cancelAction}
+        actionPending={actionPending}
       />
 
       {agentModalOpen && createPortal(agentModal, document.body)}

@@ -1,0 +1,64 @@
+/* Непрерывная графика лендинга — на CSS, а не на framer-motion.
+   JS-анимация переписывает inline-стиль каждый кадр в главном потоке: на
+   телефоне бесконечные вращения + лента + параллакс держали поток занятым, и
+   вся страница шла рывками («6 fps»). CSS-трансформы уезжают в компоновщик.
+
+   Декоративные вращения и парение SVG на телефоне выключены совсем: трансформ
+   внутри SVG не композитится, каждый кадр перерисовывает всю иллюстрацию —
+   на слабом GPU это стоит дороже, чем весь остальной экран. Лента остаётся:
+   она и есть та самая анимация, ради которой всё затевалось. */
+
+@keyframes lp-marquee { to { transform: translate3d(-50%, 0, 0); } }
+@keyframes lp-spin    { to { transform: rotate(360deg); } }
+@keyframes lp-float-a { 50% { transform: translateY(-9px); } }
+@keyframes lp-float-b { 50% { transform: translateY(8px); } }
+
+.lp-marquee {
+  animation: lp-marquee 34s linear infinite;
+  will-change: transform;
+}
+
+/* Сетка-подложка чёрных секций: два линейных градиента вместо SVG-паттерна с
+   маской. Тот растрировался в шести секциях сразу и стоил дороже всего, что
+   на нём нарисовано. */
+.lp-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(62% 62% at 50% 38%, #000, transparent);
+          mask-image: radial-gradient(62% 62% at 50% 38%, #000, transparent);
+}
+
+/* Персиковое свечение: радиальный градиент вместо filter: blur() на круге.
+   Блюр в 100–130px — полноэкранная текстура, которую мобильный GPU
+   перерисовывает при каждой прокрутке; градиент растрируется один раз.
+   Прозрачный конец задан тем же цветом с alpha 0, иначе Safari уводит
+   середину градиента в серый. */
+.lp-glow {
+  pointer-events: none;
+  background-image: radial-gradient(closest-side, rgba(249, 160, 139, 0.2), rgba(249, 160, 139, 0));
+}
+
+@media (min-width: 768px) {
+  .lp-spin-slow,
+  .lp-orbit { transform-box: view-box; animation-name: lp-spin; animation-timing-function: linear; animation-iteration-count: infinite; }
+  .lp-spin-slow { transform-origin: 230px 205px; animation-duration: 90s; }
+  .lp-orbit     { transform-origin: 210px 210px; animation-duration: 140s; }
+
+  .lp-float-a { animation: lp-float-a 6s ease-in-out 1.2s infinite; }
+  .lp-float-b { animation: lp-float-b 7s ease-in-out 1.6s infinite; }
+}
+
+/* MotionConfig reducedMotion="user" глушит только framer-motion — то, что
+   уехало в CSS, надо выключить здесь же. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-marquee,
+  .lp-spin-slow,
+  .lp-orbit,
+  .lp-float-a,
+  .lp-float-b { animation: none; }
+}

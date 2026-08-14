@@ -11,7 +11,15 @@ from sqlalchemy import delete, select
 
 from database import async_session_maker
 from dependencies import StudioContext
-from models import AIChatMessage, AIChatSession, StudioAISettings, Studio, User
+from models import (
+    AIChatMessage,
+    AIChatSession,
+    AIUsage,
+    Studio,
+    StudioAISettings,
+    StudioBillingPlan,
+    User,
+)
 from routers.ai.chat import (
     create_session,
     delete_session,
@@ -28,6 +36,11 @@ async def _seed() -> tuple[int, int, int]:
         db.add(s)
         await db.flush()
         sid = s.id
+
+        # Тариф нужен с эпика AI-5: студия без строки StudioBillingPlan не
+        # получает ИИ вовсе (services/ai_quota._limits_for) — «нет тарифа =
+        # безлимитный ИИ» было бы дырой в деньгах платформы.
+        db.add(StudioBillingPlan(studio_id=sid, plan_name="pro"))
 
         u1 = User(email="ai-owner@test.local", hashed_password="x", name="Owner")
         u2 = User(email="ai-other@test.local", hashed_password="x", name="Other")
@@ -48,6 +61,8 @@ async def _cleanup(sid: int) -> None:
             await db.execute(delete(AIChatMessage).where(AIChatMessage.session_id.in_(session_ids)))
         await db.execute(delete(AIChatSession).where(AIChatSession.studio_id == sid))
         await db.execute(delete(StudioAISettings).where(StudioAISettings.studio_id == sid))
+        await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+        await db.execute(delete(StudioBillingPlan).where(StudioBillingPlan.studio_id == sid))
         await db.execute(delete(User).where(User.email.in_(["ai-owner@test.local", "ai-other@test.local"])))
         await db.execute(delete(Studio).where(Studio.id == sid))
         await db.commit()
@@ -69,14 +84,14 @@ async def _run():
         async with async_session_maker() as db:
             user1 = (await db.execute(select(User).where(User.id == uid1))).scalar_one()
             ctx1 = StudioContext(user=user1, studio_id=sid, role="owner")
-            r1 = await send_message(session_id, ChatMessageCreate(text="Привет!"), ctx=ctx1, db=db)
+            r1 = await send_message.__wrapped__(session_id, ChatMessageCreate(text="Привет!"), ctx=ctx1, db=db)
             assert r1.user.role == "user" and r1.user.text == "Привет!"
             assert r1.assistant.role == "assistant" and r1.assistant.text
 
         async with async_session_maker() as db:
             user1 = (await db.execute(select(User).where(User.id == uid1))).scalar_one()
             ctx1 = StudioContext(user=user1, studio_id=sid, role="owner")
-            r2 = await send_message(session_id, ChatMessageCreate(text="Как дела?"), ctx=ctx1, db=db)
+            r2 = await send_message.__wrapped__(session_id, ChatMessageCreate(text="Как дела?"), ctx=ctx1, db=db)
             assert r2.assistant.text
 
         async with async_session_maker() as db:
@@ -97,7 +112,7 @@ async def _run():
 
             # пустой текст после .strip() -> 422, а не 500
             try:
-                await send_message(session_id, ChatMessageCreate(text="   "), ctx=ctx1, db=db)
+                await send_message.__wrapped__(session_id, ChatMessageCreate(text="   "), ctx=ctx1, db=db)
                 assert False, "expected 422 for whitespace-only text"
             except HTTPException as e:
                 assert e.status_code == 422

@@ -27,6 +27,8 @@ export { Navbar } from './Navbar';
 export { ErrorBoundary } from './ErrorBoundary';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
+export { ActionCard } from './ActionCard';
+export type { ActionCardProps } from './ActionCard';
 
 // Диалоги: ModalShell — каркас, части собираются как конструктор.
 // Dialog — синоним ModalShell для новых страниц.

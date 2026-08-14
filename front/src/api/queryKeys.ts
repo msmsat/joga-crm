@@ -97,6 +97,7 @@ export const queryKeys = {
   aiSessions: ['ai', 'sessions'] as const,
   aiMessages: (sessionId: number) => ['ai', 'messages', sessionId] as const,
   aiSettings: ['ai', 'settings'] as const,
+  aiQuota: ['ai', 'quota'] as const,   // остаток обращений к ИИ за месяц (эпик AI-5)
   // Настройками (роадмап SETTINGS):
   appearance: ['settings', 'appearance'] as const,
   billingPlan: ['billing', 'plan'] as const,

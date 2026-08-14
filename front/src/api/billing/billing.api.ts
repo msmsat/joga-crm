@@ -3,6 +3,7 @@ import type {
   PlansCatalog, BillingPlan, Invoice, InvoicesPage, PaymentCard, BillingStats,
   CheckoutRequest, CheckoutResponse, CheckoutPreview,
   ActivateModelRequest, AutopaySettings, OfflineFeeStatus,
+  BillingProfile, BillingProfileInput,
 } from './billing.types'
 
 // date_from/date_to — YYYY-MM-DD, включительно; общий фильтр для списка (задача 3/6)
@@ -30,6 +31,12 @@ export const billingApi = {
 
   getPlan: () =>
     client.get<BillingPlan>('/billing/plan'),
+
+  // Пробный период. Создание студии его больше не начисляет — владелец включает
+  // его сам, из окна с акцией на входе в кабинет или с самой страницы тарифа,
+  // если окно он закрыл. Второй раз сервер отвечает 409 trial_already_used.
+  activateTrial: () =>
+    client.post<BillingPlan>('/billing/trial', {}),
 
   // Пагинация (задача 3) + фильтр по дате оплаты (задача 6): по умолчанию 12
   // (как отдаёт бэк), offset — для догрузки.
@@ -62,13 +69,25 @@ export const billingApi = {
   getPaymentCards: () =>
     client.get<PaymentCard[]>('/billing/cards'),
 
+  // Реквизиты плательщика — аккаунта, не студии: гейт на бэке по пользователю,
+  // поэтому при переключении студии форма второй раз не спрашивается.
+  getBillingProfile: () =>
+    client.get<BillingProfile>('/billing/profile'),
+
+  saveBillingProfile: (body: BillingProfileInput) =>
+    client.put<BillingProfile>('/billing/profile', body),
+
   // Оплата через ссылку Stripe: сумму считает сервер, редирект на checkout_url.
   // Переход всегда немедленный, с зачётом остатка текущего периода — выбора
   // «когда применить» больше нет.
+  // `combo` — покупается модель «фикс + процент». Раньше её включал отдельный
+  // запрос ДО оплаты, то есть она доставалась нажатием кнопки; теперь режим
+  // поднимает оплата, и сказать «беру комбо» можно только здесь.
   checkout: (
     plan: CheckoutRequest['plan'],
     period_months: CheckoutRequest['period_months'],
-  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months }),
+    combo = false,
+  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, combo }),
 
   // Клиентский портал Stripe: единственное место, где студия может ввести VAT ID
   // после первой покупки (у страницы счёта и у смены тарифа таких полей нет).
@@ -80,8 +99,9 @@ export const billingApi = {
   previewCheckout: (
     plan: CheckoutRequest['plan'],
     period_months: CheckoutRequest['period_months'],
+    combo = false,
   ) => client.get<CheckoutPreview>(
-    `/billing/checkout/preview?plan=${plan}&period_months=${period_months}`,
+    `/billing/checkout/preview?plan=${plan}&period_months=${period_months}&combo=${combo}`,
   ),
 
   // Продления нет: подписку продлевает Stripe, POST /billing/renew отвечает 410.

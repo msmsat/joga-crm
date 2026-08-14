@@ -1,13 +1,14 @@
-import { useRef } from "react";
 import type { ComponentType } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { DashboardMockup } from "../../../components/UI";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
 import { JournalScreen, BookingScreen, FinanceScreen, NotifyScreen, AiScreen } from "./Screens";
 
-const BLOCKS: { title: string; lead: string; points: string[]; Visual: ComponentType }[] = [
+// id — якорь блока: на него ведут ссылки подвала («Онлайн-запись», «Velora AI»),
+// чтобы они попадали в свой разбор, а не наверх страницы.
+const BLOCKS: { id: string; title: string; lead: string; points: string[]; Visual: ComponentType }[] = [
   {
+    id: "journal",
     title: "Ваш журнал записи",
     lead: "Сетка дня, где тренеры — колонки, а часы — строки. Всё, что делает администратор, делается здесь.",
     points: [
@@ -18,6 +19,7 @@ const BLOCKS: { title: string; lead: string; points: string[]; Visual: Component
     Visual: JournalScreen,
   },
   {
+    id: "booking",
     title: "Ваша онлайн-запись",
     lead: "Четыре канала, через которые клиент записывается сам — круглосуточно и без администратора.",
     points: [
@@ -28,6 +30,7 @@ const BLOCKS: { title: string; lead: string; points: string[]; Visual: Component
     Visual: BookingScreen,
   },
   {
+    id: "finance",
     title: "Ваши финансы",
     lead: "Счета, операции, зарплаты и документы — в одном месте, без выгрузок в таблицы.",
     points: [
@@ -38,16 +41,21 @@ const BLOCKS: { title: string; lead: string; points: string[]; Visual: Component
     Visual: FinanceScreen,
   },
   {
+    id: "notify",
     title: "Ваши уведомления",
-    lead: "Шесть каналов доставки и матрица, где вы сами решаете, что и куда уходит.",
+    // Живых каналов ровно три: Telegram, Email, WhatsApp (services/notify.py).
+    // Instagram/SMS/Push остались колонками в БД и в рассылке не участвуют —
+    // на витрине их быть не должно.
+    lead: "Три канала доставки и матрица, где вы сами решаете, что и куда уходит.",
     points: [
-      "Telegram, Instagram, WhatsApp, Email, SMS и Push",
+      "Telegram, Email и WhatsApp — каждый подключается своим ключом студии",
       "Свой набор событий для клиента, тренера, администратора и владельца",
       "Напоминания за 24 часа и за 2 часа, «осталось 1–2 занятия», день рождения, запрос отзыва",
     ],
     Visual: NotifyScreen,
   },
   {
+    id: "ai",
     title: "Ваш AI-слой",
     lead: "Ассистент знает контекст вашего бизнеса и доступен с любой страницы — а агенты отвечают клиентам сами.",
     points: [
@@ -59,12 +67,12 @@ const BLOCKS: { title: string; lead: string; points: string[]; Visual: Component
   },
 ];
 
-function Block({ index, title, lead, points, Visual, flip }: {
-  index: number; title: string; lead: string; points: string[];
+function Block({ id, index, title, lead, points, Visual, flip }: {
+  id: string; index: number; title: string; lead: string; points: string[];
   Visual: ComponentType; flip: boolean;
 }) {
   return (
-    <div className="grid items-center gap-10 border-t border-[#101010]/10 py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
+    <div id={id} className="grid scroll-mt-24 items-center gap-10 border-t border-[#101010]/10 py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
       <Reveal className={flip ? "lg:order-2" : ""}>
         <span className="text-[13px] font-black tabular-nums tracking-[0.1em] text-[#F9A08B]">
           {String(index).padStart(2, "0")}
@@ -91,11 +99,6 @@ function Block({ index, title, lead, points, Visual, flip }: {
 }
 
 export function Showcase() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  // Мокап едет чуть медленнее страницы — лёгкий параллакс, без укачивания.
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
-
   return (
     <section id="product" className="scroll-mt-24 bg-[#FDFCFB] py-24 lg:py-32">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
@@ -107,20 +110,23 @@ export function Showcase() {
           lead="Записи, клиенты, деньги, коммуникация и AI — в одном интерфейсе. Ни одного лишнего модуля: каждый экран решает реальную задачу владельца."
         />
 
-        <div ref={ref} className="relative mt-16">
-          <div className="pointer-events-none absolute -inset-8 rounded-full bg-[#F9A08B]/20 blur-[100px]" />
-          <motion.div style={{ y }} className="relative mx-auto max-w-[900px]">
+        {/* Параллакса на скролле здесь больше нет: он считал трансформ мокапа
+            в главном потоке на каждом кадре прокрутки — ровно поверх самого
+            тяжёлого элемента страницы. Ради 50 пикселей сдвига не стоило. */}
+        <div className="relative mt-16">
+          <div className="lp-glow absolute -inset-8" />
+          <div className="relative mx-auto max-w-[900px]">
             <Reveal y={40}>
               <div className="rotate-[-1deg] transition-transform duration-500 hover:rotate-0">
                 <DashboardMockup />
               </div>
             </Reveal>
-          </motion.div>
+          </div>
         </div>
 
         <div className="mt-14">
           {BLOCKS.map((b, i) => (
-            <Block key={b.title} index={i + 1} flip={i % 2 === 1} {...b} />
+            <Block key={b.id} index={i + 1} flip={i % 2 === 1} {...b} />
           ))}
         </div>
       </div>

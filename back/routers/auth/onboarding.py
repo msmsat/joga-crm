@@ -1,21 +1,16 @@
-from datetime import datetime, timedelta
-
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
-from models import Client, User, Studio, StudioWorkingHours, StudioMember, StudioBillingPlan
-from routers.billing.plans import PLANS
+from models import Client, User, Studio, StudioWorkingHours, StudioMember
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
 router = APIRouter()
-
-TRIAL_DAYS = 14  # бесплатный период после онбординга (задача 8b)
 
 
 def _validate_onboarding_request(data: OnboardingRequest) -> None:
@@ -32,11 +27,18 @@ def _validate_onboarding_request(data: OnboardingRequest) -> None:
 
 
 async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: AsyncSession) -> Studio:
-    """Studio + рабочие часы + владелец в StudioMember + пробный период —
-    общее для /onboarding (первая студия) и /studios (доп. студия, EPIC 7
-    задача 3). Проверка формата — на вызывающем (_validate_onboarding_request),
-    проверка глобальной уникальности телефона и флаг is_onboarded — тоже (нужны
-    только при самом первом онбординге)."""
+    """Studio + рабочие часы + владелец в StudioMember — общее для /onboarding
+    (первая студия) и /studios (доп. студия, EPIC 7 задача 3). Проверка формата —
+    на вызывающем (_validate_onboarding_request), проверка глобальной
+    уникальности телефона и флаг is_onboarded — тоже (нужны только при самом
+    первом онбординге).
+
+    Подписку здесь НЕ создаём. Пробный период выдаётся по явному согласию
+    владельца — POST /billing/trial из окна с акцией; до этого строки в
+    StudioBillingPlan нет, GET /billing/plan отдаёт status=none, и пейволл
+    (_sub_gate) сам приводит на «Тариф и оплата», где то же предложение
+    доступно кнопкой. Раньше триал начислялся молча прямо здесь, и
+    «активировать» человеку было нечего."""
     new_studio = Studio(
         name=data.studioName.strip(),
         description=data.description,
@@ -78,18 +80,6 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
         name=user.name,
         last_name=user.last_name,
         photo_url=user.photo_url,
-    ))
-
-    # Бесплатный триал на 14 дней с лимитами Pro (задача 8b). До онбординга строки
-    # нет вовсе → GET /billing/plan отдаёт none; здесь она появляется впервые.
-    # Для доп. студии (/studios) это тоже верно — новая студия = новая подписка,
-    # без строки в StudioBillingPlan пейволл (_sub_gate) сам приведёт на оплату.
-    db.add(StudioBillingPlan(
-        studio_id=new_studio.id,
-        plan_name="free_trial",
-        status="trial",
-        expires_at=datetime.utcnow() + timedelta(days=TRIAL_DAYS),
-        max_staff=PLANS["pro"]["limits"]["staff"],
     ))
 
     return new_studio

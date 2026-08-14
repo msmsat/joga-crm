@@ -7,6 +7,7 @@ import { useAIDrawer } from '../contexts/AIDrawerContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import AIDrawer from '../components/AIDrawer';
 import PlanLimitModal from '../components/PlanLimitModal';
+import TrialOfferModal from '../components/TrialOfferModal';
 import PhoneGate from '../components/PhoneGate';
 import { useMe } from '../hooks/useMe';
 import { getUserRoleFromToken } from '../utils/auth';
@@ -91,8 +92,20 @@ export default function DashboardLayout() {
   }, [role, paymentReturn]);
   const subActive = plan ? ACTIVE_STATUSES.includes(plan.status) : undefined;
 
+  // Окно с акцией. Доступность считает сервер (trial_available): акция открыта
+  // до первой оплаты и закрывается ею навсегда — своей проверки по статусу тут
+  // быть не должно, иначе кнопка и эндпоинт разойдутся. Отказ держим в useState,
+  // а не в storage: в пределах сессии окно больше не всплывает, а после
+  // перезахода акция напомнит о себе снова — сгореть она не может, та же кнопка
+  // лежит на «Тарифе и оплате».
+  const [trialDeclined, setTrialDeclined] = useState(false);
+  const offerTrial = !!plan?.trial_available && !trialDeclined;
+
+  // Пока окно открыто, пейволл молчит: иначе владелец читал бы предложение
+  // поверх страницы оплаты, на которую его уже уволокло, — а согласие как раз
+  // и означает, что оплата не нужна.
   const paywalled =
-    subActive === false && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
+    subActive === false && !offerTrial && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
 
   // PhoneGate (ниже) блокирует экран целиком и закрыть его нельзя — но сам Outlet
   // (Дашборд с графиками, живой лентой на 60с-поллинге и т.д.) всё равно монтировался
@@ -145,6 +158,7 @@ export default function DashboardLayout() {
 
       <AIDrawer />
       <PlanLimitModal />
+      {offerTrial && <TrialOfferModal onDecline={() => setTrialDeclined(true)} />}
       {/* Аккаунт = email + телефон: если номера нет (Google-вход, старые
           владельцы), спрашиваем один раз здесь — на входе в кабинет. */}
       <PhoneGate />

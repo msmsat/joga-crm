@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
+import { usePhone } from "../../../hooks/usePhone";
 import { EASE } from "./tokens";
 
 /* Свои line-art иллюстрации: только inline SVG, без внешних ассетов и
@@ -31,38 +32,27 @@ const pop: Variants = {
 };
 
 /**
- * Сетка-подложка для чёрных секций. id внутри defs повторяются, если
- * компонент отрисован дважды — это безошибочно: определения идентичны,
- * браузер берёт первое и рисует то же самое.
+ * Сетка-подложка для чёрных секций — два CSS-градиента под радиальной маской
+ * (`.lp-grid` в landing.css). Был SVG с `<pattern>` и `<mask>`: шесть секций
+ * страницы растрировали его во всю свою высоту, и это была самая дорогая
+ * графика на странице при том, что рисует она четыре линии.
  */
 export function GridBg({ className = "" }: { className?: string }) {
-  return (
-    <svg aria-hidden className={`pointer-events-none absolute inset-0 h-full w-full ${className}`}>
-      <defs>
-        <pattern id="lpGrid" width="72" height="72" patternUnits="userSpaceOnUse">
-          <path d="M72 0H0v72" fill="none" stroke="rgba(255,255,255,0.045)" strokeWidth="1" />
-        </pattern>
-        <radialGradient id="lpGridFade" cx="50%" cy="38%" r="62%">
-          <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-        </radialGradient>
-        <mask id="lpGridMask">
-          <rect width="100%" height="100%" fill="url(#lpGridFade)" />
-        </mask>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#lpGrid)" mask="url(#lpGridMask)" />
-    </svg>
-  );
+  return <div aria-hidden className={`lp-grid ${className}`} />;
 }
 
 /** Герой: контурная «панель расписания» с парящими карточками записи. */
 export function HeroArt() {
   const bars = [40, 64, 48, 92, 56, 74, 44];
+  // На телефоне рисуем сразу готовую иллюстрацию: вход — это сорок узлов SVG,
+  // каждый со своей пружиной, и все они считаются в главном потоке. Ровно в тот
+  // момент, когда человек начинает листать первый экран.
+  const isPhone = usePhone();
 
   return (
     <motion.svg
       viewBox="0 0 460 440"
-      initial="hidden"
+      initial={isPhone ? "show" : "hidden"}
       animate="show"
       className="h-auto w-full overflow-visible"
       aria-hidden
@@ -75,14 +65,12 @@ export function HeroArt() {
       </defs>
       <ellipse cx="230" cy="205" rx="215" ry="200" fill="url(#lpHeroGlow)" />
 
-      {/* медленное персиковое кольцо вокруг композиции */}
-      <motion.circle
+      {/* медленное персиковое кольцо вокруг композиции (CSS, только с планшета) */}
+      <circle
+        className="lp-spin-slow"
         cx="230" cy="205" r="198"
         fill="none" stroke="#F9A08B" strokeOpacity="0.22"
         strokeWidth="1" strokeDasharray="2 12"
-        style={{ transformOrigin: "230px 205px" }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 90, ease: "linear", repeat: Infinity }}
       />
 
       {/* корпус панели */}
@@ -135,32 +123,29 @@ export function HeroArt() {
           fill={i === 3 ? "#F9A08B" : "rgba(255,255,255,0.14)"} />
       ))}
 
-      {/* парящая карточка «новая запись» */}
-      <motion.g
-        variants={pop} custom={22}
-        animate={{ y: [0, -9, 0] }}
-        transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, delay: 1.2 }}
-      >
-        <rect x="300" y="24" width="146" height="70" rx="16" fill="#161616" stroke="#F9A08B" strokeOpacity="0.45" strokeWidth="1.5" />
-        <circle cx="326" cy="59" r="13" fill="#F9A08B" />
-        <path d="M321 59.5 324.5 63 331 55.5" fill="none" stroke="#101010" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <rect x="348" y="48" width="76" height="8" rx="4" fill="rgba(255,255,255,0.28)" />
-        <rect x="348" y="63" width="50" height="6" rx="3" fill="rgba(255,255,255,0.14)" />
-      </motion.g>
+      {/* Парящие карточки. Внешний <g> качает их средствами CSS, внутренний —
+          выщёлкивает при появлении. Разные элементы намеренно: CSS-анимация
+          перебивает inline-стиль, и на одном узле она стёрла бы вход. */}
+      <g className="lp-float-a">
+        <motion.g variants={pop} custom={22}>
+          <rect x="300" y="24" width="146" height="70" rx="16" fill="#161616" stroke="#F9A08B" strokeOpacity="0.45" strokeWidth="1.5" />
+          <circle cx="326" cy="59" r="13" fill="#F9A08B" />
+          <path d="M321 59.5 324.5 63 331 55.5" fill="none" stroke="#101010" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <rect x="348" y="48" width="76" height="8" rx="4" fill="rgba(255,255,255,0.28)" />
+          <rect x="348" y="63" width="50" height="6" rx="3" fill="rgba(255,255,255,0.14)" />
+        </motion.g>
+      </g>
 
-      {/* парящая карточка клиента */}
-      <motion.g
-        variants={pop} custom={24}
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 7, ease: "easeInOut", repeat: Infinity, delay: 1.6 }}
-      >
-        <rect x="10" y="298" width="158" height="68" rx="16" fill="#161616" stroke={LINE} strokeWidth="1.5" />
-        <circle cx="36" cy="332" r="14" fill="none" stroke="#F9A08B" strokeWidth="1.5" />
-        <circle cx="36" cy="328" r="4.5" fill="none" stroke="#F9A08B" strokeWidth="1.5" />
-        <path d="M28 340a9 9 0 0 1 16 0" fill="none" stroke="#F9A08B" strokeWidth="1.5" strokeLinecap="round" />
-        <rect x="60" y="322" width="86" height="8" rx="4" fill="rgba(255,255,255,0.26)" />
-        <rect x="60" y="337" width="58" height="6" rx="3" fill="rgba(255,255,255,0.13)" />
-      </motion.g>
+      <g className="lp-float-b">
+        <motion.g variants={pop} custom={24}>
+          <rect x="10" y="298" width="158" height="68" rx="16" fill="#161616" stroke={LINE} strokeWidth="1.5" />
+          <circle cx="36" cy="332" r="14" fill="none" stroke="#F9A08B" strokeWidth="1.5" />
+          <circle cx="36" cy="328" r="4.5" fill="none" stroke="#F9A08B" strokeWidth="1.5" />
+          <path d="M28 340a9 9 0 0 1 16 0" fill="none" stroke="#F9A08B" strokeWidth="1.5" strokeLinecap="round" />
+          <rect x="60" y="322" width="86" height="8" rx="4" fill="rgba(255,255,255,0.26)" />
+          <rect x="60" y="337" width="58" height="6" rx="3" fill="rgba(255,255,255,0.13)" />
+        </motion.g>
+      </g>
     </motion.svg>
   );
 }
@@ -176,11 +161,12 @@ export function OrbitArt() {
     { r: 186, a: -70, accent: false },
     { r: 186, a: 110, accent: false },
   ];
+  const isPhone = usePhone();
 
   return (
     <motion.svg
       viewBox="0 0 420 420"
-      initial="hidden"
+      initial={isPhone ? "show" : "hidden"}
       whileInView="show"
       viewport={{ once: true, margin: "-80px" }}
       className="h-auto w-full overflow-visible"
@@ -212,12 +198,8 @@ export function OrbitArt() {
         <rect x="213" y="213" width="15" height="15" rx="4.5" fill="#F9A08B" />
       </motion.g>
 
-      {/* узлы-клиенты на орбитах */}
-      <motion.g
-        animate={{ rotate: 360 }}
-        style={{ transformOrigin: "210px 210px" }}
-        transition={{ duration: 140, ease: "linear", repeat: Infinity }}
-      >
+      {/* узлы-клиенты на орбитах (вращение — CSS, только с планшета) */}
+      <g className="lp-orbit">
         {nodes.map((n, i) => {
           const rad = (n.a * Math.PI) / 180;
           const cx = 210 + n.r * Math.cos(rad);
@@ -231,7 +213,7 @@ export function OrbitArt() {
             </motion.g>
           );
         })}
-      </motion.g>
+      </g>
     </motion.svg>
   );
 }

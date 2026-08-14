@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { LEGAL_LINK_PROPS, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 import { Reveal } from "./primitives";
 import { GHOST_ON_DARK } from "./tokens";
 import { GridBg } from "./Illustrations";
@@ -9,7 +10,7 @@ export function Cta() {
   return (
     <section className="relative overflow-hidden bg-[#101010] py-28 lg:py-36">
       <GridBg />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[min(760px,120%)] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#F9A08B]/20 blur-[130px]" />
+      <div className="lp-glow absolute left-1/2 top-0 h-[420px] w-[min(760px,120%)] -translate-x-1/2 -translate-y-1/3" />
 
       <Reveal className="relative mx-auto max-w-[860px] px-6 text-center lg:px-12">
         <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-[#F9A08B]">Начните сегодня</p>
@@ -24,7 +25,9 @@ export function Cta() {
           <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
             Зарегистрироваться бесплатно
           </button>
-          <a href="#top" className={GHOST_ON_DARK}>Поговорить с командой</a>
+          <a href={SUPPORT_WHATSAPP_URL} {...LEGAL_LINK_PROPS} className={GHOST_ON_DARK}>
+            Написать в WhatsApp
+          </a>
         </div>
       </Reveal>
     </section>

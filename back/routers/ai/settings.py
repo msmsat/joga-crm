@@ -1,15 +1,41 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
+from models import BookingChannelConfig
 from dependencies import StudioContext, get_studio_context, require_role
-from schemas.ai import AISettingsRead, AISettingsUpdate
+from schemas.ai import AIQuotaRead, AISettingsRead, AISettingsUpdate
+from services.ai_quota import ai_quota_status
 from services.assistant import get_or_create_ai_settings
 from services.notifier import _integration_config
 
 router = APIRouter()
+
+
+@router.get("/quota", response_model=AIQuotaRead)
+async def get_ai_quota(
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Остаток обращений к ИИ за месяц. Видят все роли: лимит общий на студию,
+    и тренеру полезно понимать, почему ассистент отказал (require_role не нужен)."""
+    used, limit = await ai_quota_status(db, ctx.studio_id)
+    return AIQuotaRead(used=used, limit=limit)
+
+
+async def _tg_channel_active(db: AsyncSession, studio_id: int) -> bool:
+    """Активен ли канал записи Telegram: от него зависит, дойдут ли апдейты бота
+    до ветки агента (_studio_by_token ищет среди is_active == True)."""
+    return bool((await db.execute(
+        select(BookingChannelConfig.id).where(
+            BookingChannelConfig.studio_id == studio_id,
+            BookingChannelConfig.channel_type == "telegram",
+            BookingChannelConfig.is_active == True,  # noqa: E712
+        )
+    )).scalar_one_or_none())
 
 
 async def _wa_phone_number(db: AsyncSession, studio_id: int) -> str | None:
@@ -29,7 +55,10 @@ async def get_ai_settings(
     await db.refresh(settings)
 
     data = AISettingsRead.model_validate(settings).model_copy(
-        update={"wa_phone_number": await _wa_phone_number(db, ctx.studio_id)}
+        update={
+            "wa_phone_number": await _wa_phone_number(db, ctx.studio_id),
+            "tg_channel_active": await _tg_channel_active(db, ctx.studio_id),
+        }
     )
     if ctx.role != "owner":
         data = data.model_copy(update={"tg_token": None, "ig_token": None})
@@ -95,4 +124,7 @@ async def update_ai_settings(
 
     await db.commit()
     await db.refresh(settings)
-    return AISettingsRead.model_validate(settings).model_copy(update={"wa_phone_number": wa_phone})
+    return AISettingsRead.model_validate(settings).model_copy(update={
+        "wa_phone_number": wa_phone,
+        "tg_channel_active": await _tg_channel_active(db, ctx.studio_id),
+    })

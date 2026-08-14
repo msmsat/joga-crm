@@ -21,6 +21,10 @@ class ChatSessionRead(BaseSchema):
 
 class ChatMessageCreate(BaseSchema):
     text: str = Field(..., min_length=1, max_length=4000)
+    # Маршрут, на котором сейчас пользователь (/dashboard/clients) — на этом
+    # держится «объясни, что на этой странице». Необязателен: прямые вызовы из
+    # тестов и старые клиенты его не шлют.
+    current_page: Optional[str] = Field(None, max_length=200)
 
 
 class ChatMessageRead(BaseSchema):
@@ -29,8 +33,30 @@ class ChatMessageRead(BaseSchema):
     role: str
     text: str
     created_at: datetime
+    # Заполнено — это сообщение об уже исполненном действии (задача 6). Фронт
+    # рисует его неактивной карточкой с датой: история должна честно показывать,
+    # что и когда подтвердили.
+    action_jti: Optional[str] = None
 
 
 class SendMessageResponse(BaseSchema):
     user: ChatMessageRead
     assistant: ChatMessageRead
+    # Предложенное изменяющее действие (задача 6): {tool, args, description, token}.
+    # None — обычный ответ. Данные меняются только после /ai/actions/execute.
+    action_proposal: Optional[dict] = None
+
+
+class ActionExecuteIn(BaseSchema):
+    """Тело POST /ai/actions/execute — ТОЛЬКО подписанный токен предложения.
+
+    Принимать tool и args отдельно нельзя: эндпоинт превратился бы в
+    универсальный RPC поверх всей CRM мимо валидации роутеров — фронт мог бы
+    прислать любой инструмент с любыми аргументами.
+    """
+    token: str
+
+
+class ActionExecuteOut(BaseSchema):
+    result: dict
+    message: ChatMessageRead

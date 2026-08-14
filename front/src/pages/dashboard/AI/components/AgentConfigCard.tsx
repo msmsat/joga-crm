@@ -7,6 +7,7 @@ import styles from '../AI.module.css';
 interface AgentConfigCardProps {
   telegramEnabled: boolean;
   telegramConnected: boolean;
+  telegramChannelActive: boolean;
   instagramEnabled: boolean;
   instagramConnected: boolean;
   whatsappEnabled: boolean;
@@ -27,6 +28,7 @@ function ChannelRow({
   connected,
   onToggle,
   disabledReason,
+  warning,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -34,6 +36,9 @@ function ChannelRow({
   connected: boolean;
   onToggle: () => void;
   disabledReason: string;
+  // Канал включён, но работать не будет — и без подписи это выглядит как
+  // молчание без причины (эпик AI-5, задача 12, п. 9).
+  warning?: string | null;
 }) {
   const { t } = useTranslation('ai');
   const on = enabled && connected;
@@ -56,6 +61,7 @@ function ChannelRow({
           {on && <PulseRingSVG active size={9} />}
           {!connected ? t('agents.stateOffline') : on ? t('agents.stateOn') : t('agents.statusDisabled')}
         </span>
+        {on && warning && <span className={styles.agentWarning}>{warning}</span>}
       </span>
       <div className={styles.agentSpacer} />
       {connected ? toggle : <Tooltip label={disabledReason}>{toggle}</Tooltip>}
@@ -112,6 +118,7 @@ function AgentInfoBody() {
 export default function AgentConfigCard({
   telegramEnabled,
   telegramConnected,
+  telegramChannelActive,
   instagramEnabled,
   instagramConnected,
   whatsappEnabled,
@@ -156,6 +163,7 @@ export default function AgentConfigCard({
         onToggle={onToggleTelegram}
         connected={telegramConnected}
         disabledReason={t('telegram.gateTooltip')}
+        warning={telegramChannelActive ? null : t('agents.tgChannelInactive')}
       />
 
       <ChannelRow

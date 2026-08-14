@@ -22,6 +22,11 @@ export default function AIDrawer() {
     sendMessage,
     newChat,
     loadSession,
+    toolStatus,
+    actionProposal,
+    confirmAction,
+    cancelAction,
+    actionPending,
   } = useDrawerChat();
   const { t } = useTranslation('ai');
   const toast = useToast();
@@ -65,6 +70,11 @@ export default function AIDrawer() {
             isThinking={isThinking}
             messagesEndRef={messagesEndRef}
             onSend={sendMessage}
+            toolStatus={toolStatus}
+            actionProposal={actionProposal}
+            onConfirmAction={confirmAction}
+            onCancelAction={cancelAction}
+            actionPending={actionPending}
           />
         </div>
 

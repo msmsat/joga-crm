@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AIChatMessage } from '../types';
 import { formatMessageTime } from '../../../../lib/datetime';
+import { ActionCard } from '../../../../components/ui/index';
 import styles from '../AI.module.css';
 
 interface MessageBubbleProps {
@@ -33,6 +34,28 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Стрим (эпик AI-5): текст черновика дописывается по мере генерации. Пока
+  // печатаем сами — показываем накопленное, в остальное время просто проп,
+  // иначе пузырь застыл бы на том, с чем смонтировался.
+  const shown = animate ? displayText : message.text;
+
+  // Уже исполненное действие: неактивная карточка с датой вместо пузыря —
+  // история честно показывает, что и когда подтвердили (эпик AI-5, задача 10).
+  if (message.action_jti) {
+    return (
+      <div className={styles.messagePair}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <ActionCard
+            description={message.text}
+            doneAt={formatMessageTime(message.created_at)}
+            onConfirm={() => {}}
+            onCancel={() => {}}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (isAI) {
     if (!message.text) return null;
     return (
@@ -45,7 +68,7 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className={styles.aiLabel}>Velora AI</div>
           <div className={styles.aiBubble}>
-            <span>{displayText}</span>
+            <span>{shown}</span>
             {typing && <span className={styles.caret} />}
           </div>
           <div className={styles.msgTime}>{formatMessageTime(message.created_at)}</div>

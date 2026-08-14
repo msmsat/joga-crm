@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
-import type { ActivateModelRequest, AutopaySettings, PaymentCard, BillingStats, CheckoutPreview } from '../../../../api/billing/billing.types';
+import type {
+  ActivateModelRequest, AutopaySettings, PaymentCard, BillingStats, CheckoutPreview,
+  BillingProfile, BillingProfileInput,
+} from '../../../../api/billing/billing.types';
 import { PLAN_COLORS, PLAN_STAFF_FALLBACK } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
@@ -72,6 +75,14 @@ export function useBillingCalculator() {
   const [invoicesLoaded, setInvoicesLoaded] = useState(false);
   const [cards, setCards] = useState<PaymentCard[]>([]);
   const [cardsLoaded, setCardsLoaded] = useState(false);
+  // Реквизиты плательщика — АККАУНТА, а не студии: переключение студии их не
+  // сбрасывает, и форма второй раз не показывается (GET /billing/profile).
+  const [profile, setProfile] = useState<BillingProfile | null>(null);
+  const [profileSaving, setProfileSaving] = useState(false);
+  // Форма-гейт перед оплатой. Открывается только когда реквизитов НЕТ, и после
+  // сохранения сама ведёт в модалку расчёта — иначе владелец, заполнив адрес,
+  // остался бы на странице и жал «Оплатить» второй раз.
+  const [showProfileGate, setShowProfileGate] = useState(false);
   // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
   const [stats, setStats] = useState<BillingStats | null>(null);
 
@@ -104,6 +115,11 @@ export function useBillingCalculator() {
   const loadCards = () =>
     billingApi.getPaymentCards().then(setCards).catch(() => {}).finally(() => setCardsLoaded(true));
   const loadStats = () => billingApi.getStats().then(setStats).catch(() => {});
+  // Возвращает свежий профиль: по нему решает «Оплатить», а ждать setState нельзя.
+  const loadProfile = () =>
+    billingApi.getBillingProfile()
+      .then(p => { setProfile(p); return p; })
+      .catch(() => null);
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateCards(true), 100);
@@ -113,7 +129,7 @@ export function useBillingCalculator() {
   // Первая загрузка. Возврат с оплаты (?payment=return) истину о платеже узнаёт из вебхука,
   // а не рисует подписку локально — поэтому тоже просто перезапрашивает все три источника.
   useEffect(() => {
-    loadPlan(); loadInvoices(); loadCards(); loadStats();
+    loadPlan(); loadInvoices(); loadCards(); loadStats(); loadProfile();
     if (paymentReturn) {
       // Убираем ?payment=return из URL, чтобы обновление страницы не показало баннер снова.
       window.history.replaceState(null, '', window.location.pathname);
@@ -141,7 +157,14 @@ export function useBillingCalculator() {
     setModelBusy(true);
     billingApi.activateModel(body)
       .then(res => {
-        setPlan(res); loadStats(); toast.success(t('mode.activateSuccess'));
+        setPlan(res); loadStats(); loadInvoices();
+        // Комбо на живой подписке здесь ничего не меняет: записано только согласие,
+        // а сама покупка идёт следом обычным путём — модалка расчёта (onDone) и
+        // оплата. Тост «Модель оплаты обновлена» тут соврал бы (в БД она прежняя)
+        // и лёг бы поверх открывающейся модалки.
+        if (body.mode !== 'combo' || res.billing_mode === 'combo') {
+          toast.success(t('mode.activateSuccess'));
+        }
         onDone?.();
       })
       .catch(() => toast.error(t('mode.activateError')))
@@ -164,20 +187,46 @@ export function useBillingCalculator() {
     return () => window.removeEventListener('pageshow', wake);
   }, []);
 
+  // Выбранная СЕЙЧАС модель едет в расчёт и в оплату явным полем. Раньше сумму
+  // определял billing_mode в БД, а его переключал отдельный запрос ДО оплаты —
+  // из-за этого комбо и доставалось нажатием кнопки, без счёта и без расчёта
+  // (жалоба 14.08.2026). Теперь режим поднимает оплата, и выбор живёт здесь.
+  // Плитка 'fixed' — это и есть комбо (см. MODE_FROM_SERVER выше).
+  const comboRequested = billingMode === 'fixed';
+
   // «Оплатить» открывает модалку расчёта — единственный экран перед Stripe.
+  // Выравнивать режим на сервере больше не нужно: и превью, и оплата получают
+  // выбор параметром, а в БД он попадёт по факту оплаты.
   //
-  // Перед этим выравниваем режим: сумму подписки считает сервер по billing_mode из БД
-  // (checkout._is_combo), а не по выбранной плитке. Студия на комбо, нажавшая «Оплатить»
-  // на вкладке подписки, иначе видела бы полную цену и получала половинный Price —
-  // и продолжала платить 1.5% с транзакций, думая, что перешла на чистый фикс.
-  // Обратный переход (комбо → подписка) новых обязательств не создаёт, поэтому
-  // согласия не требует; вход в комбо идёт только через модалку условий в PlansTab.
+  // Перед ним — гейт реквизитов: без страны и адреса Stripe Tax не знает ставку,
+  // а фактура юрлица без адреса не документ. Профиль перечитываем вместо того,
+  // чтобы верить состоянию: на медленной сети клик приходит раньше первой
+  // загрузки, и владелец с уже заполненным адресом получил бы форму заново.
   const startCheckout = () => {
-    if (billingMode === 'subscription' && plan && plan.billing_mode !== 'subscription') {
-      activateModel({ mode: 'subscription' }, openPayModal);
-      return;
-    }
-    openPayModal();
+    if (profile?.filled) { openPayModal(); return; }
+    loadProfile().then(fresh => (fresh?.filled ? openPayModal() : setShowProfileGate(true)));
+  };
+
+  // Сохранение реквизитов. Один путь для гейта перед оплатой и для правки во
+  // вкладке «Способ оплаты» — форма там одна и та же.
+  const saveProfile = (body: BillingProfileInput) => {
+    if (profileSaving) return Promise.reject(new Error('busy'));
+    setProfileSaving(true);
+    return billingApi.saveBillingProfile(body)
+      .then(fresh => {
+        setProfile(fresh);
+        toast.success(t('profile.saved'));
+        return fresh;
+      })
+      .catch(err => { toast.error(errorMessage(err, t)); throw err; })
+      .finally(() => setProfileSaving(false));
+  };
+
+  // Гейт: сохранили → сразу к расчёту, чтобы «Оплатить» не жать второй раз.
+  const saveProfileAndPay = (body: BillingProfileInput) => {
+    saveProfile(body)
+      .then(() => { setShowProfileGate(false); openPayModal(); })
+      .catch(() => { /* тост уже показан, форма остаётся открытой с введённым */ });
   };
 
   const closePayModal = () => {
@@ -188,10 +237,10 @@ export function useBillingCalculator() {
     setPreview(null);
   };
 
-  // Для какого выбора нужен расчёт прямо сейчас. billing_mode в ключе не случайно:
-  // у комбо цена половинная, и переключение режима обязано пересчитать расчёт, а
+  // Для какого выбора нужен расчёт прямо сейчас. Модель в ключе не случайно: у
+  // комбо цена половинная, и переключение плитки обязано пересчитать расчёт, а
   // не оставить цифры от подписки.
-  const previewKey = `${selectedPlan}:${selectedPeriod}:${plan?.billing_mode ?? ''}`;
+  const previewKey = `${selectedPlan}:${selectedPeriod}:${comboRequested}`;
   const previewBusy = showPayModal && preview?.key !== previewKey;
 
   // Расчёт тянем, пока модалка открыта. Зависимость — ключ, а не момент открытия:
@@ -199,13 +248,13 @@ export function useBillingCalculator() {
   // поэтому запрос в openPayModal ушёл бы за ПРЕДЫДУЩИМ выбором.
   useEffect(() => {
     if (!showPayModal) return;
-    billingApi.previewCheckout(selectedPlan, selectedPeriod)
+    billingApi.previewCheckout(selectedPlan, selectedPeriod, comboRequested)
       .then(data => setPreview({ key: previewKey, data }))
       // Даже провал запоминаем под ключом: иначе модалка навсегда осталась бы в
       // состоянии «считаем», а кнопка оплаты — заблокированной.
       .catch(() => setPreview({ key: previewKey, data: null }));
-    // Тариф и период уже зашиты в previewKey — лишних прогонов они не добавляют.
-  }, [showPayModal, previewKey, selectedPlan, selectedPeriod]);
+    // Тариф, период и модель уже зашиты в previewKey — лишних прогонов не добавляют.
+  }, [showPayModal, previewKey, selectedPlan, selectedPeriod, comboRequested]);
 
   // Единственный путь оплаты: сервер считает сумму и отдаёт ссылку Stripe (правило 6).
   // Смена тарифа при этом уже применена на сервере — ссылка ведёт на выставленный
@@ -213,7 +262,7 @@ export function useBillingCalculator() {
   const payWithCard = () => {
     if (payBusy) return;
     setPayBusy(true);
-    billingApi.checkout(selectedPlan, selectedPeriod)
+    billingApi.checkout(selectedPlan, selectedPeriod, comboRequested)
       .then(({ checkout_url }) => {
         if (checkout_url) { window.location.href = checkout_url; return; }
         // Платить нечего (переход на тариф дешевле зачёлся остатком целиком):
@@ -317,5 +366,10 @@ export function useBillingCalculator() {
     paymentReturn, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,
+    profile, profileSaving, saveProfile, saveProfileAndPay,
+    showProfileGate, closeProfileGate: () => setShowProfileGate(false),
+    // Правка реквизитов из модалки расчёта: закрываем расчёт, открываем форму —
+    // после сохранения saveProfileAndPay вернёт владельца обратно к расчёту.
+    editProfileFromPay: () => { closePayModal(); setShowProfileGate(true); },
   };
 }

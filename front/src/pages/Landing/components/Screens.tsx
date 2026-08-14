@@ -116,29 +116,33 @@ export function FinanceScreen() {
   );
 }
 
-/** Уведомления: матрица «событие × канал». */
+/** Уведомления: матрица «событие × канал». Колонок три — по числу живых
+    каналов рассылки (Telegram, Email, WhatsApp), а не шесть, как рисовалось
+    раньше: Instagram, SMS и Push в отправке не участвуют. */
 export function NotifyScreen() {
   const on = [
-    [1, 1, 0, 1, 0, 1],
-    [1, 0, 1, 1, 1, 0],
-    [0, 1, 1, 1, 0, 1],
-    [1, 1, 0, 0, 1, 1],
+    [1, 1, 0],
+    [1, 0, 1],
+    [0, 1, 1],
+    [1, 1, 0],
   ];
+  const colX = (c: number) => 236 + c * 44;
+
   return (
     <Screen title="Событие × канал">
-      {[0, 1, 2, 3, 4, 5].map((c) => (
-        <circle key={c} cx={152 + c * 40} cy="10" r="9" fill={SOFT} stroke={LINE} />
+      {[0, 1, 2].map((c) => (
+        <circle key={c} cx={colX(c) + 14} cy="10" r="9" fill={SOFT} stroke={LINE} />
       ))}
       {on.map((row, r) => (
         <g key={r}>
-          <rect x="0" y={44 + r * 42} width={124 - (r % 2) * 22} height="8" rx="4" fill={MUTE} opacity="0.7" />
+          <rect x="0" y={44 + r * 42} width={190 - (r % 2) * 34} height="8" rx="4" fill={MUTE} opacity="0.7" />
           <line x1="0" y1={64 + r * 42} x2="360" y2={64 + r * 42} stroke={LINE} />
           {row.map((v, c) => (
             <g key={c}>
-              <rect x={138 + c * 40} y={34 + r * 42} width="28" height="28" rx="9"
+              <rect x={colX(c)} y={34 + r * 42} width="28" height="28" rx="9"
                 fill={v ? PEACH : "#fff"} stroke={v ? PEACH : LINE} />
               {v === 1 && (
-                <path d={`m${146 + c * 40} ${48 + r * 42} 4 4 7-8`} fill="none" stroke="#fff"
+                <path d={`m${colX(c) + 8} ${48 + r * 42} 4 4 7-8`} fill="none" stroke="#fff"
                   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               )}
             </g>

@@ -128,7 +128,8 @@
       "last_channel": "At least one delivery channel is required",
       "unknown_event": "Unknown event",
       "not_personal": "Personal settings can't change required notifications"
-    }
+    },
+    "trial_already_used": "The free trial is no longer available for this studio."
   },
   "units": {
     "min": "min",

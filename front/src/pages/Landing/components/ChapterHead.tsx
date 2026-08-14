@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./primitives";
 
-export const CHAPTERS = 7;
+// Глав шесть: «что говорят» ушла вместе с выдуманными отзывами.
+export const CHAPTERS = 6;
 
 /**
  * Шапка главы: `\ метка` слева, номер главы справа, волосяная линия, заголовок.

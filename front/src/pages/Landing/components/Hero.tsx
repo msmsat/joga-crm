@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { CATEGORY_ICONS } from "../../../components/UI";
 import { EASE, GHOST_ON_DARK } from "./tokens";
 import { GridBg, HeroArt } from "./Illustrations";
 
@@ -12,7 +11,7 @@ export function Hero() {
   return (
     <section id="top" className="relative flex items-center overflow-hidden bg-[#101010] pb-20 pt-28 lg:min-h-screen lg:pb-24 lg:pt-32">
       <GridBg />
-      <div className="pointer-events-none absolute -right-40 -top-40 h-[560px] w-[560px] rounded-full bg-[#F9A08B]/10 blur-[120px]" />
+      <div className="lp-glow absolute -right-40 -top-40 h-[560px] w-[560px]" />
 
       <div className="relative mx-auto grid w-full max-w-[1200px] items-center gap-14 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-12">
         <div>
@@ -64,7 +63,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.6, ease: EASE }}
             className="mt-7 max-w-[520px] text-[16px] leading-[1.75] text-white/55 lg:text-[17px]"
           >
-            Премиальная B2B CRM для студий, барбершопов и салонов. Записи, клиенты,
+            Премиальная B2B CRM для студий йоги и пилатеса. Записи, клиенты,
             команда и деньги — в одном пространстве. Без лишних кликов, без боли.
           </motion.p>
 
@@ -77,35 +76,29 @@ export function Hero() {
             <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
               Попробовать 14 дней бесплатно
             </button>
-            <a href="#showcase" className={GHOST_ON_DARK}>
+            <a href="#product" className={GHOST_ON_DARK}>
               Смотреть демо →
             </a>
           </motion.div>
 
+          {/* Здесь стоял счётчик «2 400+ бизнесов» и рейтинг 4.9 — цифр, которых
+              у продукта пока нет. Вместо выдуманной социальной пруфы — условия
+              триала, они настоящие (TRIAL_DAYS в routers/auth/onboarding.py). */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.95 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"
           >
-            <div className="flex">
-              {CATEGORY_ICONS.map((Icon, i) => (
-                <span
-                  key={i}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#101010] bg-gradient-to-br from-[#FCAE91] to-[#F9A08B]"
-                  style={{ marginLeft: i > 0 ? "-9px" : 0 }}
-                >
-                  <Icon width={14} height={14} style={{ color: "#101010" }} />
-                </span>
-              ))}
-            </div>
-            <p className="text-[13px] text-white/45">
-              <span className="font-bold text-white">2 400+</span> бизнесов уже используют
-            </p>
-            <span className="flex items-center gap-1.5 rounded-full border border-[#F9A08B]/30 bg-[#F9A08B]/10 px-2.5 py-1">
-              <span className="text-[11px] text-[#F9A08B]">★</span>
-              <span className="text-[12px] font-bold text-white">4.9</span>
-            </span>
+            {["14 дней бесплатно", "Без банковской карты", "Отмена в один клик"].map((t) => (
+              <span key={t} className="flex items-center gap-2 text-[13px] text-white/45">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
+                  <circle cx="7" cy="7" r="6.25" stroke="#F9A08B" strokeWidth="1.2" />
+                  <path d="m4.4 7.2 1.9 1.9L9.8 5.6" stroke="#F9A08B" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {t}
+              </span>
+            ))}
           </motion.div>
         </div>
 

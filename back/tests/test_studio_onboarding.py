@@ -128,8 +128,10 @@ def test_create_studio_with_defaults_does_not_touch_is_onboarded_or_commit():
 
     member = next(x for x in db.added if type(x).__name__ == "StudioMember")
     assert member.user_id == user.id and member.role == "owner"
-    plan = next(x for x in db.added if type(x).__name__ == "StudioBillingPlan")
-    assert plan.plan_name == "free_trial" and plan.status == "trial"
+    # Подписки создание студии больше НЕ выдаёт: пробный период активирует
+    # владелец сам, из окна с акцией (POST /billing/trial). Пока строки нет,
+    # GET /billing/plan отдаёт status=none и работает пейволл.
+    assert not [x for x in db.added if type(x).__name__ == "StudioBillingPlan"]
 
 
 # ─── POST /auth/studios ────────────────────────────────────────────────────

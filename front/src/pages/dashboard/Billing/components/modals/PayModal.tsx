@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { PlanType } from '../../types';
-import type { CheckoutPreview } from '../../../../../api/billing/billing.types';
+import type { CheckoutPreview, BillingProfile } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
 import { InfoIcon } from '../ui/BillingIcons';
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, PrimaryButton } from '../../../../../components/ui/index';
@@ -22,8 +22,10 @@ interface Props {
   onClose: () => void;
   /** Единственное действие модалки: уводит на страницу Stripe. */
   onPay: () => void;
-  /** Портал Stripe с реквизитами. Ссылкой, не кнопкой: кнопка внизу одна. */
-  onPortal: () => void;
+  /** Реквизиты, которыми выпишется фактура. Заполнены всегда: без них сюда не пускает гейт. */
+  profile: BillingProfile | null;
+  /** Правка реквизитов прямо отсюда. Ссылкой, не кнопкой: кнопка внизу одна. */
+  onEditProfile: () => void;
 }
 
 const Row = ({ label, value, muted, accent }: {
@@ -39,8 +41,9 @@ const Row = ({ label, value, muted, accent }: {
 
 /**
  * Единственный экран между «Оплатить» и страницей Stripe. Выбора способа оплаты
- * тут нет — платят картой, и кнопка уводит прямо на Stripe. Формы реквизитов тоже
- * нет: адрес, индекс, VAT ID и название компании собирает сама страница Checkout.
+ * тут нет — платят картой, и кнопка уводит прямо на Stripe. Реквизиты плательщика
+ * собраны раньше (гейт перед этой модалкой) и показаны здесь строкой: увидеть
+ * чужой адрес надо ДО списания, потому что выпущенный счёт уже не пересчитать.
  *
  * Показывает ровно то, что спишется, и берёт цифры у сервера (`preview`), а не
  * считает сам: зачёт остатка вычисляет Stripe тем же вызовом, которым потом
@@ -48,11 +51,22 @@ const Row = ({ label, value, muted, accent }: {
  */
 export default function PayModal({
   currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice,
-  savedTotal, totalToPay, preview, previewBusy, payBusy, onClose, onPay, onPortal,
+  savedTotal, totalToPay, preview, previewBusy, payBusy, onClose, onPay,
+  profile, onEditProfile,
 }: Props) {
-  const { t } = useTranslation('billing');
+  const { t, i18n } = useTranslation('billing');
   const plan = plans[selectedPlan];
   const money = (cents: number) => formatMoney(cents / 100, currency);
+
+  // Бесплатный старт: до этой даты подписка не списывает — там ещё лежит уже
+  // оплаченный остаток. Число дней считает сервер (теми же часами, которыми
+  // выбрана дата), здесь только форматирование.
+  const freeDays = preview?.free_days || 0;
+  const freeUntil = preview?.free_until
+    ? new Date(preview.free_until).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      })
+    : null;
 
   const kind = preview?.kind ?? 'new';
   // Пока расчёт едет, показываем каталожную цену — она верна для первой покупки и
@@ -129,6 +143,16 @@ export default function PayModal({
           </div>
         )}
 
+        {/* Уже оплаченный остаток (триал или прежний период) не сгорает: подписка
+            стартует бесплатно до его конца и только потом начинает списывать.
+            Без этой строки сумма читалась как «спишут сегодня», и владелец видел
+            в ней вторую оплату за месяц, который уже оплатил. */}
+        {freeDays > 0 && freeUntil && (
+          <div style={{ padding: '12px 16px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12px', color: 'var(--onyx)', lineHeight: '1.6' }}>
+            {t('payModal.freeUntil', { count: freeDays, date: freeUntil })}
+          </div>
+        )}
+
         {kind === 'renewal' && (
           <div style={{ padding: '12px 16px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.6' }}>
             {t('payModal.renewNote')}
@@ -143,20 +167,27 @@ export default function PayModal({
           </div>
         )}
 
-        {/* Номер НДС спрашивает только Checkout, то есть ПЕРВАЯ покупка. Дальше
-            платёж уходит счётом, и добавить номер после выпуска счёта уже поздно:
-            финализированный счёт Stripe не пересчитывает. Отсюда ссылка именно
-            здесь — до нажатия «Оплатить», а не кнопкой внизу: внизу кнопка одна. */}
-        <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.6, textAlign: 'center' }}>
-          {t('payModal.businessHint')}{' '}
-          <button
-            type="button"
-            onClick={onPortal}
-            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--peach)', fontWeight: 700, cursor: 'pointer' }}
-          >
-            {t('payModal.businessLink')}
-          </button>
-        </div>
+        {/* Реквизиты, которыми выпишется фактура. Показываем ЗДЕСЬ, до нажатия
+            «Оплатить»: финализированный счёт Stripe не пересчитывает, и заметить
+            чужой адрес или отсутствующий VAT надо ДО списания. Сюда модалка
+            доезжает только с заполненным профилем (гейт в useBillingCalculator),
+            поэтому запасного «введите реквизиты» тут нет. */}
+        {profile?.filled && (
+          <div style={{ padding: '12px 16px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ minWidth: 0, fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.6 }}>
+              <span style={{ fontWeight: 700, color: 'var(--onyx)' }}>{t('profile.preview.billTo')}: </span>
+              {[profile.line1, profile.postal_code, profile.city, profile.country].filter(Boolean).join(', ')}
+              {profile.vat_id ? ` · VAT ${profile.vat_id}` : ''}
+            </div>
+            <button
+              type="button"
+              onClick={onEditProfile}
+              style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '11.5px', color: 'var(--peach)', fontWeight: 700, cursor: 'pointer' }}
+            >
+              {t('profile.edit')}
+            </button>
+          </div>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <InfoIcon />

@@ -3,6 +3,7 @@
 export interface PlanLimits {
   staff: number | null   // null = безлимит (business)
   clients: number | null
+  ai_requests: number | null   // обращений к ИИ в месяц; у Business это число, а не безлимит
 }
 
 export interface Plan {
@@ -50,7 +51,19 @@ export interface BillingPlan {
    *  интерфейс предлагал отложенный переход, а сервер отвечал обычной ссылкой оплаты
    *  и уносил владельца на Stripe мимо выбора способа оплаты. */
   has_live_subscription: boolean
+  /** Открыта ли ещё акция «14 дней бесплатно». Считает сервер тем же правилом,
+   *  по которому пускает POST /billing/trial (router._trial_available). Своей
+   *  проверки у фронта быть не должно: выводить её из `status` уже было ошибкой —
+   *  Stripe уводит статус в pending/expired ещё до всякой оплаты, и кнопка
+   *  пропадала у того, кто просто открыл оформление и передумал. */
+  trial_available: boolean
 }
+
+/** Длина пробного периода в днях — только для текста «14 дней бесплатно».
+ *  Источник истины — back/routers/billing/plans.py:TRIAL_DAYS, срок ставит
+ *  сервер; здесь копия, чтобы не тянуть каталог тарифов ради одного числа в
+ *  окне. Меняете там — поменяйте и тут (та же цифра стоит на лендинге). */
+export const TRIAL_DAYS = 14
 
 export interface AutopaySettings {
   auto_renewal: boolean
@@ -109,6 +122,30 @@ export interface InvoicesPage {
   limit: number
 }
 
+/** Реквизиты плательщика. Лежат на АККАУНТЕ, а не на студии: у второй студии
+ *  того же владельца адрес тот же, и спрашивать его заново незачем. */
+export interface BillingProfile {
+  country: string | null       // ISO 3166-1 alpha-2
+  line1: string | null
+  line2: string | null
+  postal_code: string | null
+  city: string | null
+  vat_id: string | null
+  /** Заполнено ли обязательное — считает сервер (checkout._PROFILE_REQUIRED).
+   *  Дублировать список обязательных полей на фронте нельзя: он разъедется. */
+  filled: boolean
+}
+
+/** Тело формы: обязательно всё, кроме второй строки адреса и номера НДС. */
+export interface BillingProfileInput {
+  country: string
+  line1: string
+  line2?: string | null
+  postal_code: string
+  city: string
+  vat_id?: string | null
+}
+
 export interface PaymentCard {
   id: number
   card_last4: string
@@ -124,6 +161,9 @@ export interface CheckoutRequest {
   period_months: 1 | 6 | 12 | 24
   // Поля `apply` нет: переход всегда немедленный, с зачётом остатка текущего
   // периода. Отложенный переход «с начала следующего периода» убран.
+  /** Покупается модель «фикс + процент» (половинный фикс + % с оборота).
+   *  Режим поднимает ОПЛАТА, поэтому до неё выбор живёт только в этом поле. */
+  combo?: boolean
 }
 
 export interface CheckoutResponse {
@@ -145,4 +185,9 @@ export interface CheckoutPreview {
   currency: string
   /** true — Stripe не ответил, зачёт в расчёт не попал: показана полная цена. */
   estimated: boolean
+  /** До какой даты подписка не берёт денег (ISO): уже оплаченный остаток триала
+   *  или прежнего периода. null — списывают сразу. */
+  free_until: string | null
+  /** Сколько дней до первого списания — считает сервер, теми же часами. */
+  free_days: number
 }

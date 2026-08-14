@@ -95,15 +95,18 @@ def _db(plan, *, existing=None):
     return _DB()
 
 
+_MONTH = datetime(2026, 7, 1)
+_NEXT = datetime(2026, 8, 1)
+
+
 class _Plan:
-    def __init__(self, billing_mode, customer="cus_1"):
+    def __init__(self, billing_mode, customer="cus_1", since=_MONTH - timedelta(days=1)):
         self.studio_id = 7
         self.billing_mode = billing_mode
         self.stripe_customer_id = customer
-
-
-_MONTH = datetime(2026, 7, 1)
-_NEXT = datetime(2026, 8, 1)
+        # Когда студия согласилась на постоплату, то есть с какого момента она на
+        # проценте. По умолчанию — до начала расчётного месяца: месяц её.
+        self.percent_terms_accepted_at = since
 
 
 def _run_min(plan, existing=None):
@@ -121,6 +124,34 @@ def test_subscription_studio_is_never_billed_the_minimum():
 
 def test_studio_without_a_plan_row_is_skipped():
     assert _run_min(None) is None
+
+
+def test_a_month_spent_on_another_model_is_not_billed():
+    """ЖАЛОБА 14.08.2026: «за что 39 €, я просто нажал кнопку». Проход берёт всех,
+    кто на проценте В МОМЕНТ ПРОХОДА, и выставляет счёт за ЗАКРЫТЫЙ месяц — студия,
+    перешедшая 14 августа, получала минимум за ИЮЛЬ, который целиком провела на
+    подписке и уже оплатила."""
+    assert _run_min(_Plan("percent", since=datetime(2026, 8, 14))) is None
+    # Неполный первый месяц тоже не добираем: переход 20 июля → июль не наш.
+    assert _run_min(_Plan("percent", since=datetime(2026, 7, 20))) is None
+    # Согласия нет вовсе (легаси-строка) — брать не за что.
+    assert _run_min(_Plan("percent", since=None)) is None
+
+
+def test_a_full_month_on_percent_is_still_billed(monkeypatch):
+    """Обратная сторона: студия на проценте с июня обязана получить счёт за июль,
+    иначе тариф снова становится бесплатной CRM. Дальше по функции идёт Stripe —
+    ловим её маркером на входе в него: важно, что проверка согласия пропустила."""
+    async def no_fx():
+        pass
+
+    async def marker(*_a, **_kw):
+        raise RuntimeError("дошли до Stripe")
+
+    monkeypatch.setattr(OFB, "_refresh_fx", no_fx)
+    monkeypatch.setattr(OFB, "_ensure_studio_customer", marker)
+    with pytest.raises(RuntimeError, match="дошли до Stripe"):
+        _run_min(_Plan("percent", since=datetime(2026, 6, 15)))
 
 
 def test_same_month_is_never_billed_twice():

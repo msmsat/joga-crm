@@ -60,7 +60,32 @@
   },
   "actions": {
     "newChat": "New chat",
-    "deleteChat": "Delete chat"
+    "deleteChat": "Delete chat",
+    "confirmTitle": "Confirm the action",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "cancelled": "Action cancelled.",
+    "done": "Done {{date}}",
+    "args": {
+      "lesson_id": "Class",
+      "client_id": "Client",
+      "reservation_id": "Booking",
+      "service_id": "Service",
+      "teacher_id": "Trainer",
+      "hall_id": "Room",
+      "start_time": "Starts",
+      "duration_min": "Duration, min",
+      "total_spots": "Spots",
+      "price": "Price",
+      "name": "First name",
+      "last_name": "Last name",
+      "phone": "Phone",
+      "email": "Email",
+      "city": "City",
+      "birth_date": "Date of birth",
+      "source": "Source",
+      "frozen": "Freeze"
+    }
   },
   "settings": {
     "title": "AI settings",
@@ -145,15 +170,40 @@
     "offHoursLabel": "Auto-reply only outside working hours",
     "promptHint": "This text defines the agent's personality — how it communicates, what it knows, which topics it avoids.",
     "promptPlaceholder": "You are a polite studio assistant...",
-    "promptCount": "{{count}} / 2000 characters"
+    "promptCount": "{{count}} / 2000 characters",
+    "tgChannelInactive": "The Telegram channel is off in Online booking — the bot receives no messages, so the agent stays silent."
   },
   "errors": {
     "tg_token_required": "Connect a Telegram bot first — no token has been saved yet.",
     "ig_not_connected": "Instagram isn't connected yet.",
     "wa_not_connected": "The WhatsApp number isn't connected yet — connect it in Notifications.",
-    "assistant_unavailable": "The assistant is temporarily unavailable — please try again later."
+    "assistant_unavailable": "The assistant is temporarily unavailable — please try again later.",
+    "quota_exceeded": "You have used all AI requests on this plan. The limit resets at the start of the month — or upgrade your plan."
   },
   "toasts": {
     "settingsSaved": "Settings saved"
+  },
+  "toolStatus": {
+    "get_schedule": "Checking the schedule…",
+    "get_lesson": "Opening the class…",
+    "find_clients": "Searching clients…",
+    "get_client": "Opening the client card…",
+    "get_client_events": "Reading the client history…",
+    "get_stats": "Crunching the numbers…",
+    "get_finance_summary": "Checking finances…",
+    "get_staff": "Checking the team…",
+    "get_services": "Checking services…",
+    "get_rooms": "Checking rooms…",
+    "get_loyalty_summary": "Checking loyalty…",
+    "get_today_agenda": "Checking today…",
+    "how_to": "Looking it up…",
+    "navigate": "Opening the section…",
+    "default": "Working…"
+  },
+  "quota": {
+    "label": "AI requests",
+    "value": "{{used}} of {{limit}}",
+    "low": "You are close to the monthly limit.",
+    "upgrade": "Upgrade the plan"
   }
 }

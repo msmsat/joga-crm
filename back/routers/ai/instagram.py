@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import aiohttp
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from jose import JWTError, jwt
 from sqlalchemy import select
@@ -26,6 +26,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings
 from ratelimit import limiter
+from services.client_agent import CHANNEL_INSTAGRAM, schedule_reply
 from services.instagram_account import connect_instagram_account, disconnect_instagram_account
 
 logger = logging.getLogger(__name__)
@@ -252,13 +253,16 @@ async def verify_instagram_webhook(
 
 
 @webhook_router.post("/instagram/webhook")
-async def instagram_webhook(request: Request, db: AsyncSession = Depends(get_db)):
-    """Входящее сообщение директа -> ответ авто-ответчика.
+async def instagram_webhook(
+    request: Request,
+    background: BackgroundTasks = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Входящее сообщение директа -> ответ ассистента студии.
 
     На валидное тело ВСЕГДА 200 (как у вебхуков Stripe): любой 4xx/5xx заставит Meta
-    ретраить и задвоит ответы клиенту.
-    # ponytail: ответ отправляется прямо в обработчике (у Meta ~5 c на ответ вебхука);
-    # при заметном потоке сообщений — в фоновую очередь.
+    ретраить и задвоит ответы клиенту. По той же причине генерация ответа уходит
+    в фон: у Meta ~5 секунд на ответ вебхука, а агентный цикл идёт дольше.
     """
     raw = await request.body()
     if not _valid_signature(raw, request.headers.get("x-hub-signature-256")):
@@ -275,15 +279,12 @@ async def instagram_webhook(request: Request, db: AsyncSession = Depends(get_db)
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.ig_enabled or not settings.ig_token:
             continue
-        try:
-            await _send_ig_message(settings.ig_token, sender_igsid, "Hello")
-        except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
-            logger.error("instagram webhook: не удалось ответить, studio_id=%s: %s", settings.studio_id, exc)
-            continue
-        settings.ig_handled_count += 1
-        logger.info("instagram webhook: ответ отправлен, studio_id=%s, входящее=%r", settings.studio_id, text[:50])
+        # Ответ, счётчик обработанных и учёт расхода — в фоновой задаче со своей
+        # сессией БД (services/client_agent). Текст входящего в лог не уходит
+        # целиком: там переписка клиента чужого бизнеса.
+        schedule_reply(background, settings.studio_id, CHANNEL_INSTAGRAM, sender_igsid, text)
+        logger.info("instagram webhook: принято, studio_id=%s, входящее=%r", settings.studio_id, text[:50])
 
-    await db.commit()
     return {"ok": True}
 
 

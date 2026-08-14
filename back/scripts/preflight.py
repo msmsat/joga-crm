@@ -121,6 +121,63 @@ def check_smtp() -> None:
         _err("SMTP не настроен — чеки, фактуры и письма о скорой блокировке не отправятся")
 
 
+def check_ai() -> None:
+    """Velora AI (эпик AI-5): ключ провайдера, слаги моделей, карта интерфейса.
+
+    Без ключа ассистент не сломается — он уйдёт в честную заглушку. Но в боевом
+    режиме заглушка вместо ассистента это невыполненное обещание тарифа, поэтому
+    здесь отсутствие ключа — блокер, как и остальные боевые проверки.
+    """
+    from services.ai_tools import UI_MAP
+    from services.llm import _ALLOWED_VENDORS, _PRICES, _ENV_BY_TIER
+
+    if not os.getenv("LLM_API_KEY"):
+        _err("LLM_API_KEY не задан — Velora AI отвечает заглушкой вместо модели")
+    if not os.getenv("LLM_BASE_URL"):
+        _err("LLM_BASE_URL не задан — запросы к модели идти некуда")
+
+    for tier, env_name in _ENV_BY_TIER.items():
+        slug = os.getenv(env_name, "")
+        if not slug:
+            _err(f"{env_name} не задан — уровню {tier} нечем отвечать")
+            continue
+        # Решение 7: ПДн клиентов студии не уезжают в юрисдикции без адекватности GDPR.
+        if not slug.startswith(_ALLOWED_VENDORS):
+            _err(f"{env_name}={slug}: вендор вне разрешённых {_ALLOWED_VENDORS} — через ассистента идут ПДн клиентов")
+        elif slug not in _PRICES:
+            # Не блокер: модель ответит. Но стоимость посчитается по самой
+            # дорогой ставке, и отчёт по деньгам станет художественной литературой.
+            _warn(f"{env_name}={slug} отсутствует в _PRICES (services/llm.py) — расход считается по ставке Opus")
+
+    if len(UI_MAP.strip()) < 1000:
+        _err("services/ai_uimap.md пуст или потерян — ассистент начнёт выдумывать кнопки")
+
+
+async def check_ai_credits() -> None:
+    """Остаток кредитов у провайдера. Пустой счёт выключает ИИ у всех студий
+    разом, и узнать об этом лучше здесь, чем из тикета."""
+    key, base = os.getenv("LLM_API_KEY"), os.getenv("LLM_BASE_URL")
+    if not key or not base:
+        return
+    try:
+        import aiohttp
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(
+                f"{base.rstrip('/')}/v1/credits",
+                headers={"Authorization": f"Bearer {key}"},
+            ) as resp:
+                if resp.status >= 400:
+                    _warn(f"остаток кредитов провайдера не проверить (HTTP {resp.status})")
+                    return
+                data = (await resp.json()).get("data") or {}
+        left = float(data.get("total_credits", 0)) - float(data.get("total_usage", 0))
+        if left < 20:
+            _warn(f"на счёте провайдера ${left:.2f} — при нуле ИИ выключается у всех студий сразу")
+    except Exception as exc:  # noqa: BLE001 — мягкая проверка, падать из-за неё нельзя
+        _warn(f"остаток кредитов провайдера не проверить: {type(exc).__name__}")
+
+
 def check_platform_email() -> None:
     """Адрес, на который платформа получает уведомления о собственном доходе.
 
@@ -545,6 +602,8 @@ async def main(sync: bool) -> int:
     check_smtp()
     check_platform_email()
     check_legal_docs()
+    check_ai()
+    await check_ai_credits()
     await check_stripe_account()
     await check_stripe_payment_methods()
     await check_stripe_tax()

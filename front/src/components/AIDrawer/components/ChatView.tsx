@@ -7,15 +7,27 @@ import EmptyStateSVG from './EmptyStateSVG';
 import ThinkingStateSVG from './ThinkingStateSVG';
 import InputBar from './InputBar';
 import { SUGGESTION_PILL_KEYS } from '../constants';
+import { ActionCard } from '../../ui/index';
+import type { AIActionProposal } from '../../../api/ai/ai.types';
 
 interface ChatViewProps {
   messages: AIChatMessage[];
   isThinking: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   onSend: (text: string) => void;
+  // Карточка подтверждения — тот же компонент кита, что на странице AI
+  // (эпик AI-5, задача 10): две копии разошлись бы в поведении.
+  actionProposal?: AIActionProposal | null;
+  onConfirmAction?: () => void;
+  onCancelAction?: () => void;
+  actionPending?: boolean;
+  toolStatus?: string | null;
 }
 
-export default function ChatView({ messages, isThinking, messagesEndRef, onSend }: ChatViewProps) {
+export default function ChatView({
+  messages, isThinking, messagesEndRef, onSend,
+  actionProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+}: ChatViewProps) {
   const { t } = useTranslation('ai');
   const isEmpty = messages.length === 0;
 
@@ -27,7 +39,10 @@ export default function ChatView({ messages, isThinking, messagesEndRef, onSend 
     setPrevIsThinking(isThinking);
     if (prevIsThinking && !isThinking) {
       const last = messages[messages.length - 1];
-      if (last?.role === 'assistant') setAnimateId(last.id);
+      // id < 0 — черновик стрима: он уже напечатался по мере генерации,
+      // второй раз проигрывать печать не надо. Анимация остаётся фолбэку
+      // POST /messages, где текст приходит целиком.
+      if (last?.role === 'assistant' && last.id >= 0) setAnimateId(last.id);
     }
   }
 
@@ -56,11 +71,24 @@ export default function ChatView({ messages, isThinking, messagesEndRef, onSend 
               onAnimateDone={() => setAnimateId(null)}
             />
           ))}
+          {actionProposal && (
+            <ActionCard
+              description={actionProposal.description}
+              args={actionProposal.args}
+              loading={actionPending}
+              onConfirm={() => onConfirmAction?.()}
+              onCancel={() => onCancelAction?.()}
+            />
+          )}
           {isThinking && (
             <div className={styles.thinkingRow}>
               <div className={styles.thinkingBubble}>
                 <ThinkingStateSVG />
-                <span className={styles.thinkingLabel}>{t('chat.thinking')}</span>
+                <span className={styles.thinkingLabel}>
+                  {toolStatus
+                    ? t(`toolStatus.${toolStatus}`, { defaultValue: t('toolStatus.default') })
+                    : t('chat.thinking')}
+                </span>
                 <div className={styles.thinkingDots}>
                   <i className={styles.thinkDot} style={{ animationDelay: '0s' }} />
                   <i className={styles.thinkDot} style={{ animationDelay: '0.15s' }} />

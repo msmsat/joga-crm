@@ -268,6 +268,143 @@ def test_switch_back_to_subscription_restores_the_full_price():
     assert price == "price_pro_12_sub"
 
 
+# --------------------------------- 3a. комбо включает ОПЛАТА, а не кнопка
+
+def _sub(lookup_key):
+    """Подписка Stripe в минимальном виде: только Price её единственной позиции."""
+    return SimpleNamespace(items=SimpleNamespace(data=[
+        SimpleNamespace(price=SimpleNamespace(lookup_key=lookup_key)),
+    ]))
+
+
+def _paid(lookup_key, **kw):
+    plan = _row(**{
+        "billing_mode": "subscription", "percent_rate": None, "fixed_base_amount": None, **kw
+    })
+    WH._apply_paid_mode(plan, _sub(lookup_key))
+    return plan
+
+
+def test_paid_combo_price_turns_the_combo_mode_on():
+    """Комбо включается оплатой, и режим читается из Price, за который заплатили:
+    у комбо он свой (velora_combo_*), второй копии хранить незачем."""
+    plan = _paid("velora_combo_pro_12m")
+    assert plan.billing_mode == "combo"
+    assert plan.percent_rate == 1.5
+    # Половина Pro (4950) со скидкой 30% за год — та же формула, что в activate_model.
+    assert plan.fixed_base_amount == round(4950 * 0.7)
+
+
+def test_paid_plain_price_turns_the_combo_mode_off():
+    """Обратная сторона: оплаченный обычный Price снимает и ставку, и фикс-базу —
+    иначе студия, ушедшая с комбо, продолжала бы числиться должной 1.5% с оборота."""
+    plan = _paid("velora_pro_12m", billing_mode="combo", percent_rate=1.5, fixed_base_amount=3465)
+    assert plan.billing_mode == "subscription"
+    assert plan.percent_rate is None and plan.fixed_base_amount is None
+
+
+def test_an_unreadable_price_leaves_the_mode_alone():
+    """Чужой или пустой lookup_key — не повод переписать режим наугад: ошибка здесь
+    меняет то, сколько со студии списывают."""
+    for key in (None, "price_legacy_42", "velora_unknown_1m"):
+        plan = _paid(key, billing_mode="combo", percent_rate=1.5, fixed_base_amount=3465)
+        assert (plan.billing_mode, plan.percent_rate) == ("combo", 1.5), key
+
+
+def _plan_row(**kw):
+    """Строка плана, достаточная для _to_plan_read в конце activate_model."""
+    return SimpleNamespace(**{
+        "id": 1, "studio_id": 7, "plan_name": "pro", "billing_cycle": "monthly",
+        "status": "active", "expires_at": None, "max_staff": 15, "auto_renewal": True,
+        "billing_mode": "subscription", "percent_rate": None, "fixed_base_amount": None,
+        "notify_before_days": 3, "notify_before_autocharge": True,
+        "email_receipt_enabled": True, "sms_notification_enabled": False,
+        "scheduled_plan": None, "scheduled_at": None,
+        "stripe_subscription_id": "sub_1", "stripe_customer_id": "cus_1",
+        "percent_terms_accepted_at": None, "percent_terms_rate": None,
+        "percent_terms_version": None,
+        # Брали ли пробный период — по нему ответ считает trial_available
+        # (router._trial_available), а без живой подписки лезет ещё и за
+        # оплаченным счётом; стаб-БД ниже отдаёт на это None.
+        "trial_started_at": None, **kw
+    })
+
+
+def _activate(body, row, monkeypatch):
+    """Прогон POST /billing/model со стаб-БД → тронули ли подписку в Stripe."""
+    reconciled = []
+
+    async def fake_reconcile(*_a, **_kw):
+        reconciled.append(True)
+
+    monkeypatch.setattr(BR, "_reconcile_subscription", fake_reconcile)
+    monkeypatch.setattr(BR, "log_activity", lambda *a, **kw: None)
+
+    class _DB:
+        async def execute(self, _q):
+            return SimpleNamespace(scalar_one_or_none=lambda: row)
+
+        async def commit(self):
+            pass
+
+        async def refresh(self, _row):
+            pass
+
+        def add(self, _row):
+            pass
+
+    asyncio.run(BR.activate_model(body, _CTX, _DB()))
+    return reconciled
+
+
+_COMBO = dict(mode="combo", plan="pro", period_months=12, accept_offline_terms=True)
+
+
+def test_combo_on_a_live_subscription_changes_nothing_until_paid(monkeypatch):
+    """ЖАЛОБА 14.08.2026: «нажал в комбо соглашаюсь, и меня перевело, хотя я не
+    оплатил». У комбо ПОЛОВИННЫЙ Price — студия с оплаченным периодом одним
+    нажатием начинала платить вдвое меньше, не заплатив ничего. Этот запрос теперь
+    только записывает согласие; покупка идёт обычным путём оплаты, с расчётом."""
+    row = _plan_row()
+    reconciled = _activate(ActivateModelRequest(**_COMBO), row, monkeypatch)
+
+    assert row.billing_mode == "subscription", "комбо включено до оплаты"
+    assert row.fixed_base_amount is None, "половинный фикс выдан за нажатие кнопки"
+    assert reconciled == [], "подписку перевели на половинный Price до оплаты"
+
+
+def test_consent_is_still_recorded_even_though_the_mode_waits(monkeypatch):
+    """Согласие на постоплату — про обязательство, а не про включение. Без записи
+    оформление комбо упрётся в 422: `create_checkout` требует именно её."""
+    row = _plan_row()
+    _activate(ActivateModelRequest(**_COMBO), row, monkeypatch)
+    assert row.percent_terms_accepted_at is not None
+    assert row.percent_terms_rate == 1.5, "оплата комбо не пройдёт гейт согласия"
+    assert row.percent_terms_version == BR.OFFLINE_TERMS["version"]
+
+
+def test_combo_without_a_live_subscription_waits_for_payment_too(monkeypatch):
+    """И тут тоже: «нажал согласен — и надпись в шапке сменилась на Комбо, хотя я
+    не платил». Цену оформления это не ломает — `checkout._is_combo` берёт выбор
+    из тела запроса, а не из этого поля."""
+    row = _plan_row(stripe_subscription_id=None, status="none")
+    _activate(ActivateModelRequest(**_COMBO), row, monkeypatch)
+
+    assert row.billing_mode == "subscription"
+    assert row.fixed_base_amount is None
+
+
+def test_percent_still_switches_at_once(monkeypatch):
+    """У «процента» подписки нет вовсе: фикс не уменьшается, а появляется
+    обязательство платить комиссию и минимум. Отложить его нечем и незачем."""
+    row = _plan_row()
+    reconciled = _activate(
+        ActivateModelRequest(mode="percent", accept_offline_terms=True), row, monkeypatch,
+    )
+    assert row.billing_mode == "percent"
+    assert reconciled == [True], "подписку не отменили — карта продолжит платить фикс"
+
+
 def test_switch_happens_at_once_without_refunding_the_remainder():
     """Правило продукта: переход вступает в силу сразу, остаток оплаченного периода
     НЕ возвращается. `create_prorations` вернул бы его кредитом на баланс клиента, и

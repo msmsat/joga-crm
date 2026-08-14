@@ -1,7 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import styles from '../AI.module.css';
 
-export default function ThinkingIndicator() {
+interface ThinkingIndicatorProps {
+  // «Смотрю расписание…» вместо общего «Думаю»: пока ассистент дёргает
+  // инструмент, человеку полезно видеть, что именно происходит (эпик AI-5).
+  label?: string;
+}
+
+export default function ThinkingIndicator({ label }: ThinkingIndicatorProps) {
   const { t } = useTranslation('ai');
   return (
     <div className={styles.thinkingPillWrap}>
@@ -11,7 +17,7 @@ export default function ThinkingIndicator() {
             <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z" />
           </svg>
         </div>
-        <span className={styles.thinkingPillText}>{t('chat.thinking')}</span>
+        <span className={styles.thinkingPillText}>{label ?? t('chat.thinking')}</span>
         <div className={styles.thinkingDots}>
           <span className={styles.thinkDot} style={{ animationDelay: '0s' }} />
           <span className={styles.thinkDot} style={{ animationDelay: '0.18s' }} />
