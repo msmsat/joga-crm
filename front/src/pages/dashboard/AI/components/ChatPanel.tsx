@@ -57,9 +57,19 @@ export default function ChatPanel({
     }
   }
 
+  // Пока идёт стрим, ответ дописывается по токену — «Думаю» уступает место
+  // самому пузырю, иначе оно висело бы под текстом до конца генерации.
+  const last = messages[messages.length - 1];
+  const streaming = last?.role === 'assistant' && !!last.text;
+
+  // Плавный скролл — только когда появился новый пузырь. На токенах браузер
+  // перезапускал бы smooth-анимацию десятки раз в секунду, и лента дёргалась.
+  const countRef = useRef(messages.length);
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isThinking]);
+    const grew = messages.length !== countRef.current;
+    countRef.current = messages.length;
+    bottomRef.current?.scrollIntoView({ behavior: grew ? 'smooth' : 'auto', block: 'end' });
+  }, [messages.length, last?.text, isThinking]);
 
   const handleSend = () => {
     const text = input.trim();
@@ -123,9 +133,14 @@ export default function ChatPanel({
           </div>
         ) : (
           <div className={styles.messagesList}>
-            {messages.map(msg => (
+            {/* Ключ — позиция, а не id: лента только дописывается снизу и никогда
+                не переупорядочивается, зато id у пузыря меняется, когда сервер
+                сохранил сообщение (черновик -1 → настоящий). По id React в этот
+                момент размонтировал бы пузырь и заново проиграл появление —
+                ответ мигал бы в момент, когда его начали читать. */}
+            {messages.map((msg, i) => (
               <MessageBubble
-                key={msg.id}
+                key={i}
                 message={msg}
                 animate={msg.id === animateId}
                 onAnimateDone={() => setAnimateId(null)}
@@ -140,7 +155,9 @@ export default function ChatPanel({
                 onCancel={() => onCancelAction?.()}
               />
             )}
-            {isThinking && <ThinkingIndicator label={toolStatus ? t(`toolStatus.${toolStatus}`, { defaultValue: t('toolStatus.default') }) : undefined} />}
+            {isThinking && !streaming && (
+              <ThinkingIndicator label={toolStatus ? t(`toolStatus.${toolStatus}`, { defaultValue: t('toolStatus.default') }) : undefined} />
+            )}
             <div ref={bottomRef} />
           </div>
         )}

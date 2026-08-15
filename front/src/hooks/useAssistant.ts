@@ -44,8 +44,13 @@ interface SendMessageCtx {
 }
 
 // Черновик ответа, который дописывается на каждом событии token. Живёт только
-// до события done — дальше в ленте лежит сохранённое сервером сообщение.
+// до события done — на нём черновику проставляется настоящий id из БД, прямо
+// в кэше, тем же объектом.
 const DRAFT_ID = -1;
+// Ключ ленты, пока сессия ещё не создана: messagesQuery читает aiMessages(-1),
+// когда activeSessionId == null. Сюда кладём пузырь пользователя, чтобы он
+// появился по клику, а не после рейса за созданием сессии.
+const NO_SESSION_KEY = -1;
 
 export function useAssistant() {
   const qc = useQueryClient();
@@ -82,6 +87,10 @@ export function useAssistant() {
     queryFn: () => aiApi.getMessages(activeSessionId as number),
     enabled: activeSessionId != null,
     placeholderData: [],
+    // Свежий локальный кэш не перезапрашиваем: иначе GET, стартовавший на
+    // переключении ключа, дочитывался посреди стрима и на секунду затирал
+    // черновик ответом «сообщений ещё нет».
+    staleTime: 30_000,
   });
 
   const sendMut = useMutation({
@@ -119,28 +128,28 @@ export function useAssistant() {
     },
   });
 
-  // Стрим. Оптимистичное user-сообщение и черновик ответа кладём прямо в кэш
-  // TanStack Query — тот же приём, что у мутации выше, поэтому все три
-  // поверхности ИИ показывают их одновременно.
-  const streamMessage = useCallback(async (sessionId: number, text: string) => {
+  // Стрим. Черновик ответа кладём прямо в кэш TanStack Query — тот же приём,
+  // что у мутации выше, поэтому все три поверхности ИИ показывают его
+  // одновременно. Пузырь пользователя уже лежит там (его кладёт sendMessage).
+  const streamMessage = useCallback(async (sessionId: number, text: string, userMsgId: number) => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
     const key = queryKeys.aiMessages(sessionId);
     await qc.cancelQueries({ queryKey: key });
-    const snapshot = qc.getQueryData<AIChatMessage[]>(key) ?? [];
-    const now = new Date().toISOString();
-    qc.setQueryData<AIChatMessage[]>(key, [
-      ...snapshot,
-      { id: -Date.now(), session_id: sessionId, role: 'user', text, created_at: now },
-      { id: DRAFT_ID, session_id: sessionId, role: 'assistant', text: '', created_at: now },
+    // Прошлый черновик выкидываем: после упавшего стрима он остаётся в ленте
+    // пустым, а два DRAFT_ID подряд получили бы один и тот же текст.
+    qc.setQueryData<AIChatMessage[]>(key, (prev) => [
+      ...(prev ?? []).filter((m) => m.id !== DRAFT_ID),
+      { id: DRAFT_ID, session_id: sessionId, role: 'assistant', text: '', created_at: new Date().toISOString() },
     ]);
-    setIsThinking(true);
     setToolStatus(null);
     setProposal(null);
 
     let draft = '';
+    // done принёс настоящие id — перечитывать историю не нужно.
+    let saved = false;
     try {
       await aiApi.streamMessage(sessionId, text, (event, data) => {
         if (event === 'token') {
@@ -159,6 +168,18 @@ export function useAssistant() {
           navigate(String(data));
         } else if (event === 'quota') {
           qc.setQueryData(queryKeys.aiQuota, data);
+        } else if (event === 'done') {
+          // Настоящие id из БД проставляем ТЕМ ЖЕ объектам в кэше. Раньше здесь
+          // был рефетч всей ленты: у пузырей менялся key, React размонтировал
+          // их и заново проигрывал появление — ровно в тот момент, когда ответ
+          // начинали читать. Это и выглядело как перезагрузка страницы.
+          const { user_id, assistant_id } = data as { user_id: number; assistant_id: number };
+          saved = true;
+          qc.setQueryData<AIChatMessage[]>(key, (prev) =>
+            (prev ?? []).map((m) =>
+              m.id === userMsgId ? { ...m, id: user_id }
+                : m.id === DRAFT_ID ? { ...m, id: assistant_id } : m),
+          );
         } else if (event === 'error') {
           const code = (data as { code?: string }).code ?? 'assistant_unavailable';
           const quota = code === 'ai_quota_exceeded' || code === 'ai_cost_cap';
@@ -171,9 +192,9 @@ export function useAssistant() {
       setToolStatus(null);
     }
 
-    // Черновик заменяем сохранёнными сервером сообщениями, а не оставляем как есть:
-    // после F5 в истории должно лежать ровно то же самое.
-    await qc.invalidateQueries({ queryKey: key });
+    // done не дошёл (прокси обрезал хвост) — только тогда перечитываем историю:
+    // черновик с id -1 иначе столкнулся бы со следующим ответом.
+    if (!saved) await qc.invalidateQueries({ queryKey: key });
     qc.invalidateQueries({ queryKey: queryKeys.aiSessions });   // изменился preview
   }, [navigate, pathname, qc]);
 
@@ -182,15 +203,29 @@ export function useAssistant() {
     if (!trimmed || trimmed.length > MAX_MESSAGE_LENGTH || sendingRef.current) return;
 
     sendingRef.current = true;
+    // Пузырь пользователя и «думаю» — в тот же кадр, что и клик. Создание сессии
+    // это ещё один рейс к серверу, и первое сообщение раньше висело в пустоте
+    // всё это время.
+    const pendingId = -Date.now();
+    const seed = (sid: number) =>
+      qc.setQueryData<AIChatMessage[]>(queryKeys.aiMessages(sid), (prev) => [
+        ...(prev ?? []).filter((m) => m.id !== pendingId),
+        { id: pendingId, session_id: sid, role: 'user' as const, text: trimmed, created_at: new Date().toISOString() },
+      ]);
+    setIsThinking(true);
     try {
       let sessionId = activeSessionId;
       if (sessionId == null) {
+        seed(NO_SESSION_KEY);
         const session = await aiApi.createSession();
         sessionId = session.id;
-        setActiveSessionId(sessionId);
+        seed(sessionId);                // сначала данные в новый ключ...
+        setActiveSessionId(sessionId);  // ...потом переключение: иначе кадр с пустым чатом
+      } else {
+        seed(sessionId);
       }
       try {
-        await streamMessage(sessionId, trimmed);
+        await streamMessage(sessionId, trimmed, pendingId);
       } catch (err) {
         // Пользователь ушёл со страницы или сменил чат — это не ошибка.
         if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -212,14 +247,18 @@ export function useAssistant() {
       toast.error(assistantErrorMessage(err, t));
     } finally {
       sendingRef.current = false;
+      setIsThinking(false);   // на случай, если упало создание сессии — до стрима
     }
   }, [activeSessionId, qc, sendMut, streamMessage, t, toast]);
 
   const newChat = useCallback(() => {
     abortRef.current?.abort();
     setProposal(null);
+    // Чистим ленту «сессии нет»: иначе новый чат открылся бы с пузырём прошлого
+    // сообщения — он остаётся в кэше под ключом -1.
+    qc.setQueryData(queryKeys.aiMessages(NO_SESSION_KEY), []);
     setActiveSessionId(null);
-  }, [setActiveSessionId]);
+  }, [qc]);
 
   const loadSession = useCallback((sessionId: number) => {
     abortRef.current?.abort();
@@ -269,6 +308,7 @@ export function useAssistant() {
     mutationFn: (sessionId: number) => aiApi.deleteSession(sessionId),
     onSuccess: (_data, sessionId) => {
       qc.invalidateQueries({ queryKey: queryKeys.aiSessions });
+      qc.setQueryData(queryKeys.aiMessages(NO_SESSION_KEY), []);   // см. newChat
       setActiveSessionId((current) => (current === sessionId ? null : current));
     },
     onError: (err) => toast.error(errorMessage(err, t)),

@@ -25,7 +25,7 @@ from security import get_password_hash
 _SENT: list[tuple[str, str, str]] = []
 
 
-async def _fake_send_email(to, subject, html, sender=None):
+async def _fake_send_email(to, subject, html, sender=None, brand=None):
     _SENT.append((to, subject, html))
 
 

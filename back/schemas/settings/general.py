@@ -67,18 +67,20 @@ class GeneralUpdate(BaseSchema):
     website: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=20)
     address: Optional[str] = Field(None, max_length=300)
-    # Реквизиты для Stripe Tax. Без country подписка по IBAN не создаётся: ставку
-    # VAT определяет страна плательщика, а свободного текста `address` для этого мало.
+    # Адрес по частям — запасной источник местоположения для Stripe Tax, когда
+    # счёт студии выставляем мы сами (комиссия, минимальный платёж): ставку VAT
+    # определяет страна, а свободного текста `address` для этого мало. Основной
+    # источник — профиль плательщика на аккаунте владельца, см. models/studio.py.
     country: Optional[str] = Field(None, min_length=2, max_length=2)
     # Город — часть адреса плательщика на фактуре: Stripe печатает его отдельной
     # строкой, из свободного `address` он туда не попадёт.
     city: Optional[str] = Field(None, max_length=100)
     postal_code: Optional[str] = Field(None, max_length=20)
+    # Номер НДС и регистрационный номер компании (DIČ/IČO, USt-IdNr/HRB…) —
+    # справочные поля карточки студии, в налоговый путь они не идут: сверить их
+    # здесь нечем, а reverse charge включает только номер, прошедший VIES. Такой
+    # номер вводится в реквизитах плательщика (PUT /billing/profile).
     vat_id: Optional[str] = Field(None, max_length=50)
-    # Регистрационный номер компании — реквизит фактуры юрлицу. Отдельно от
-    # vat_id: номер НДС есть только у плательщика налога, регистрационный — у любой
-    # зарегистрированной компании. Как он называется, зависит от страны (IČO, HRB,
-    # KRS…) — подпись выбирает stripe_billing.company_id_label.
     company_id: Optional[str] = Field(None, max_length=30)
     currency: Optional[Currency] = None
     language: Optional[Language] = None

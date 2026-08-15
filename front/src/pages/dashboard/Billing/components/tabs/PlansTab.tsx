@@ -17,10 +17,12 @@ interface Props {
   currency?: string;
   billingMode: BillingMode;
   setBillingMode: Dispatch<SetStateAction<BillingMode>>;
+  // Сеттеры пишут в выбор ТЕКУЩЕЙ модели (useBillingCalculator), поэтому обычные
+  // колбэки, а не Dispatch: updater-форма тут смысла не имеет.
   selectedPlan: PlanType;
-  setSelectedPlan: Dispatch<SetStateAction<PlanType>>;
+  setSelectedPlan: (plan: PlanType) => void;
   selectedPeriod: 1 | 6 | 12 | 24;
-  setSelectedPeriod: Dispatch<SetStateAction<1 | 6 | 12 | 24>>;
+  setSelectedPeriod: (period: 1 | 6 | 12 | 24) => void;
   getPrice: (plan: PlanType, period: number) => number;
   periodDiscounts: Record<number, number>;
   plans: Record<PlanType, { name: string; monthly: number; color: string; staffLimit: number | null }>;
@@ -35,6 +37,10 @@ interface Props {
   plan: BillingPlan | null;
   /** Минимальный месячный платёж процентного тарифа, в валюте тарифов. */
   minMonthly: number;
+  /** Условия постоплаты с сервера: ставки и срок оплаты счёта. Модалка согласия
+   *  обязана называть ИМЕННО их — литералы в разметке разъезжались бы с plans.py
+   *  молча, и владелец подтверждал бы не то, что к нему применят. */
+  terms: { percent_rate: number; combo_rate: number; grace_days: number };
 }
 
 export default function PlansTab({
@@ -46,15 +52,23 @@ export default function PlansTab({
   currentMonthly, discountedPrice, totalToPay,
   animateCards,
   startCheckout,
-  activateModel, modelBusy, plan, minMonthly,
+  activateModel, modelBusy, plan, minMonthly, terms,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const toast = useToast();
   const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
+  // Ставка приходит числом (1.5), а по-русски пишется «1,5». i18next подставил бы
+  // её через String() и оставил точку в обоих языках.
+  const rate = (value: number) => value.toLocaleString(dateLocale);
   const reviews = t('trust.reviews', { returnObjects: true }) as { text: string; author: string }[];
   // Бейдж «Текущий» — тариф активной подписки студии, а не захардкоженный Pro.
   // Считаем до карточек: внутри .map имя `plan` перекрыто записью каталога.
-  const currentPlanId = plan?.status === 'active' ? plan.plan_name : null;
+  // Только для ОПЛАЧЕННОЙ модели: комбо «Старт» и подписка «Старт» — разные
+  // покупки по разной цене, и помечать вторую текущей из-за первой нельзя.
+  const currentPlanId =
+    plan?.status === 'active' && plan.billing_mode === (billingMode === 'fixed' ? 'combo' : billingMode)
+      ? plan.plan_name
+      : null;
 
   // Смена модели оплаты при активной подписке — необратимо теряет остаток оплаченного
   // периода, поэтому спрашиваем подтверждение (эпик B6, §2), а не бьём в API молча.
@@ -106,8 +120,10 @@ export default function PlansTab({
   const isPhone = usePhone();
   const MODES = [
     { id: 'subscription' as const, icon: <CreditCardIcon />, title: t(isPhone ? 'mode.short.subscription' : 'mode.subscription'), desc: t('mode.descriptions.subscription'), badge: t('mode.badges.popular') },
-    { id: 'percent'      as const, icon: <PercentIcon />,    title: t(isPhone ? 'mode.short.percent'      : 'mode.percent'),      desc: t('mode.descriptions.percent'),      badge: null },
-    { id: 'fixed'        as const, icon: <ZapIcon />,        title: t(isPhone ? 'mode.short.combo'        : 'mode.combo'),        desc: t('mode.descriptions.combo'),        badge: t('mode.badges.flexible') },
+    // Ставку в подписи плитки берём с сервера по той же причине, что и в модалке
+    // согласия: «3%» литералом переживает любую правку каталога.
+    { id: 'percent'      as const, icon: <PercentIcon />,    title: t(isPhone ? 'mode.short.percent'      : 'mode.percent'),      desc: t('mode.descriptions.percent', { rate: rate(terms.percent_rate) }), badge: null },
+    { id: 'fixed'        as const, icon: <ZapIcon />,        title: t(isPhone ? 'mode.short.combo'        : 'mode.combo'),        desc: t('mode.descriptions.combo', { rate: rate(terms.combo_rate) }),     badge: t('mode.badges.flexible') },
   ];
 
   return (
@@ -207,7 +223,10 @@ export default function PlansTab({
               return (
                 <button key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: isSelected ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'var(--bg-card)', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: isSelected ? '0 4px 20px rgba(252,174,145,0.15)' : 'var(--shadow)' }}>
                   {isSelected && <div style={{ position: 'absolute', top: '14px', right: '14px' }}><CheckIcon size={16} /></div>}
-                  <div className="bl-combo-name" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px' }}>{plan.name}</div>
+                  <div className="bl-combo-name" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    {plan.name}
+                    {currentPlanId === planId && <span style={{ padding: '3px 10px', background: 'rgba(252,174,145,0.15)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--peach)' }}>{t('planCards.current')}</span>}
+                  </div>
                   <div className="bl-combo-price" style={{ marginBottom: '4px' }}>
                     <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>{formatMoney(comboFixed, currency)}</span>
                     <span style={{ fontSize: '12px', color: 'var(--muted)', marginLeft: '4px' }}>{t('planCards.perMonth')}</span>
@@ -389,8 +408,12 @@ export default function PlansTab({
           // Предупреждение живёт ЗДЕСЬ, а не в модалке оплаты: до неё этот путь не
           // доходит — всё решается на самом подтверждении условий.
           message={t('mode.termsMessage', {
-            rate: pendingTerms.mode === 'percent' ? 3 : 1.5,
-            days: 7,
+            // Ставка и срок — с сервера (GET /billing/plans), теми же числами, по
+            // которым начисляется комиссия и наступает блокировка. Здесь стояли
+            // литералы 3 / 1.5 / 7, и правка plans.PERCENT_ONLY_RATE или
+            // offline_fee_billing.GRACE_DAYS оставляла согласие обещать прежнее.
+            rate: rate(pendingTerms.mode === 'percent' ? terms.percent_rate : terms.combo_rate),
+            days: terms.grace_days,
           }) + (pendingTerms.mode === 'percent' && minMonthly
             ? '\n\n' + t('mode.termsMinimum', { amount: minMonthly, currency })
             : '') + (!plan?.has_live_subscription

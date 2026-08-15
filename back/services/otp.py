@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import User
 from security import get_password_hash, verify_password
+from services.email_layout import code_block
 from services.mailer import send_email
 
 CODE_TTL = timedelta(minutes=10)
@@ -34,7 +35,14 @@ async def issue(db: AsyncSession, user: User, action: str) -> None:
     user.otp_attempts = 0
     await db.commit()
     subject = _SUBJECTS.get(action, "Код подтверждения Velora")
-    await send_email(user.email, subject, f"<p>Ваш код подтверждения: <b>{code}</b></p>")
+    minutes = int(CODE_TTL.total_seconds() // 60)
+    await send_email(
+        user.email, subject,
+        "<p>Введите этот код в приложении, чтобы подтвердить действие.</p>"
+        + code_block(code)
+        + f"<p>Код действует {minutes} минут. Если это были не вы — просто "
+        "проигнорируйте письмо, ничего не произойдёт.</p>",
+    )
 
 
 async def verify(db: AsyncSession, user: User, action: str, code: str) -> bool:

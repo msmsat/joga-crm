@@ -34,7 +34,7 @@ export default function Billing() {
           первое, что она должна увидеть, — что бесплатные дни ещё доступны. */}
       <TrialOfferCard plan={h.plan} />
 
-      <OfflineFeeCard />
+      <OfflineFeeCard plan={h.plan} />
 
       {h.paymentReturn && (
         <div style={{ margin: '0 32px 20px', padding: '16px 20px', background: 'rgba(163,201,168,0.12)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -65,6 +65,7 @@ export default function Billing() {
           modelBusy={h.modelBusy}
           plan={h.plan}
           minMonthly={h.minMonthly}
+          terms={h.terms}
         />
       )}
 
@@ -107,7 +108,7 @@ export default function Billing() {
           selectedPeriod={h.selectedPeriod}
           periodDiscounts={h.periodDiscounts}
           plans={h.plans}
-          getPrice={h.getPrice}
+          monthlyPrice={h.discountedPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}
           preview={h.preview}

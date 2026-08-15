@@ -199,7 +199,16 @@ def _row(**kw):
     })
 
 
-_CTX = SimpleNamespace(studio_id=7, user=SimpleNamespace(id=1, name="O", last_name=""))
+# Реквизиты плательщика у владельца заполнены: без них постоплата не включается
+# вовсе (счёт за комиссию выставляем мы сами, и Stripe Tax роняет его без страны).
+# Отдельная проверка отказа — test_percent_needs_billing_details_first ниже.
+_USER = SimpleNamespace(
+    id=1, name="O", last_name="", email="o@studio.cz",
+    billing_country="CZ", billing_line1="Radlická 1", billing_line2=None,
+    billing_postal_code="15000", billing_city="Praha",
+    billing_vat_id=None, billing_vat_verified=False,
+)
+_CTX = SimpleNamespace(studio_id=7, user=_USER)
 
 
 def _reconcile(row, body, *, price_key="velora_pro_12m"):
@@ -281,7 +290,9 @@ def _paid(lookup_key, **kw):
     plan = _row(**{
         "billing_mode": "subscription", "percent_rate": None, "fixed_base_amount": None, **kw
     })
-    WH._apply_paid_mode(plan, _sub(lookup_key))
+    # kind="subscription": модель переставляет только оплата подписки — счета за
+    # комиссию проверяются отдельно (test_percent_billing).
+    WH._apply_paid_mode(plan, _sub(lookup_key), "subscription")
     return plan
 
 
@@ -330,7 +341,7 @@ def _plan_row(**kw):
     })
 
 
-def _activate(body, row, monkeypatch):
+def _activate(body, row, monkeypatch, ctx=_CTX):
     """Прогон POST /billing/model со стаб-БД → тронули ли подписку в Stripe."""
     reconciled = []
 
@@ -353,7 +364,7 @@ def _activate(body, row, monkeypatch):
         def add(self, _row):
             pass
 
-    asyncio.run(BR.activate_model(body, _CTX, _DB()))
+    asyncio.run(BR.activate_model(body, ctx, _DB()))
     return reconciled
 
 
@@ -403,6 +414,33 @@ def test_percent_still_switches_at_once(monkeypatch):
     )
     assert row.billing_mode == "percent"
     assert reconciled == [True], "подписку не отменили — карта продолжит платить фикс"
+
+
+def test_percent_needs_billing_details_first(monkeypatch):
+    """Постоплата без реквизитов плательщика не включается.
+
+    Счёт за комиссию и минимальный платёж выставляем МЫ, с automatic_tax, а клиент
+    Stripe без страны роняет такой счёт целиком (`customer_tax_location_invalid`).
+    Онбординг адрес не спрашивает — значит percent-студия оказывалась одновременно
+    неоплачиваемой и (после введения срока) блокируемой за счёт, который до неё так
+    и не доехал. Гейт стоит на сервере, а не только в форме: тот же принцип, что у
+    `accept_offline_terms`.
+    """
+    blank = SimpleNamespace(
+        id=1, name="O", last_name="", email="o@studio.cz",
+        billing_country=None, billing_line1=None, billing_line2=None,
+        billing_postal_code=None, billing_city=None,
+        billing_vat_id=None, billing_vat_verified=False,
+    )
+    row = _plan_row()
+    with pytest.raises(HTTPException) as exc:
+        _activate(
+            ActivateModelRequest(mode="percent", accept_offline_terms=True), row, monkeypatch,
+            ctx=SimpleNamespace(studio_id=7, user=blank),
+        )
+    assert exc.value.status_code == 422
+    assert exc.value.detail["code"] == "billing.billing_profile_required"
+    assert row.billing_mode != "percent", "режим включился в обход гейта реквизитов"
 
 
 def test_switch_happens_at_once_without_refunding_the_remainder():

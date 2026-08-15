@@ -881,32 +881,82 @@
 }
 
 /* ─── THINKING INDICATOR ─────────────────────────────────────────────────────── */
-.thinkingPillWrap {
+/* Раскладка повторяет .messagePair: орб стоит там же, где будет аватар, карточка
+   — там же, где пузырь. Первый токен подменяет одно другим без прыжка. */
+.thinkingRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: thinkFadeIn 0.28s ease both;
+}
+
+.thinkingBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.thinkingOrb {
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
-  max-width: 740px;
-  margin: 0 auto;
-  width: 100%;
-  padding-left: 42px;
-  animation: thinkFadeIn 0.25s ease;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.thinkingPill {
+.orbRingSlow,
+.orbRingFast,
+.orbCore {
+  transform-origin: 13px 13px;
+}
+.orbRingSlow { animation: orbSpin 5s linear infinite; }
+.orbRingFast { animation: orbSpin 2.4s linear infinite reverse; }
+.orbCore { animation: orbBreathe 1.9s ease-in-out infinite; }
+
+@keyframes orbSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbBreathe {
+  0%, 100% { transform: scale(0.82); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.thinkingCard {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px 8px 10px;
-  border-radius: 20px;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 4px 14px 14px 14px;
   background: var(--bg-card);
-  border: 1px solid rgba(249,160,139,0.2);
-  box-shadow: 0 2px 12px rgba(26,26,26,0.06);
+  border: 1px solid rgba(var(--ink),0.05);
+  border-left: 2px solid rgba(249,160,139,0.4);
+  box-shadow: 0 2px 12px rgba(26,26,26,0.05);
 }
 
-.thinkingPillText {
-  font-size: 12.5px;
+/* Персиковый блик едет по строке слева направо — статус читается как живой
+   процесс, а не как застывшая подпись. */
+.thinkingShimmer {
+  font-size: 13.5px;
   font-weight: 600;
-  color: var(--text3);
   font-family: var(--font, 'Manrope', sans-serif);
+  background: linear-gradient(100deg, var(--text3) 24%, #F9A08B 44%, #FCAE91 50%, var(--text3) 70%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: thinkShimmer 2.6s linear infinite, thinkLabelIn 0.32s ease both;
+}
+
+@keyframes thinkShimmer {
+  from { background-position: 190% 0; }
+  to { background-position: -70% 0; }
+}
+
+@keyframes thinkLabelIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .thinkingDots {

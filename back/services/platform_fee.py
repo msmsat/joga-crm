@@ -68,6 +68,63 @@ async def fee_for_studio(db: AsyncSession, studio_id: int, amount_minor: int) ->
 # платежа, и второй раз начислять её счётом нельзя.
 ONLINE_METHOD = "stripe"
 
+# Метод возвратного начисления. Не совпадает ни с одним способом оплаты —
+# по нему компенсирующие строки видно в разборе, и они не путаются с продажами.
+REFUND_METHOD = "refund"
+
+
+async def reverse_offline_fee(
+    db: AsyncSession,
+    studio_id: int,
+    refund_amount_minor: int,
+    currency: str,
+    *,
+    client_id: int | None = None,
+) -> OfflineTransactionFee | None:
+    """Снять комиссию с возвращённой офлайн-продажи. None — снимать нечего.
+
+    Зовётся, когда владелец проводит в Финансах расход категории «Возвраты»
+    (routers/finances/operations). Наличные Stripe не расщепляет, поэтому его
+    события сюда ничего не приносят — про возврат из кассы знает только CRM, и
+    без этого вызова студия получала счёт за продажу, которой уже нет.
+
+    КОМПЕНСИРУЮЩЕЙ строкой с отрицательной суммой, а не правкой исходной: та
+    могла уже уехать в выставленный счёт (`invoice_id` проставлен), и менять её
+    значило бы переписывать выставленный документ. Минус уменьшает ближайший
+    следующий счёт — ровно как компенсирующая запись в леджере доходов
+    (`record_revenue`), и по той же причине: проведённое задним числом не стирают.
+
+    Ставку берём АКТУАЛЬНУЮ (`fee_amount`), а не ту, по которой начисляли: искать
+    исходную продажу не по чему — расходная операция ссылается на клиента и сумму,
+    но не на конкретную продажу. Совпадает она в подавляющем большинстве случаев
+    (тариф меняют редко), а расхождение — копейки в пользу той стороны, которая
+    ошиблась не по своей вине.
+
+    НЕ коммитит: зовётся внутри транзакции операции, чтобы возврат и снятие
+    комиссии появлялись атомарно.
+    """
+    plan = (await db.execute(
+        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if plan is None:
+        return None
+
+    fee = fee_amount(plan.billing_mode, plan.percent_rate, refund_amount_minor)
+    if fee <= 0:
+        return None
+
+    row = OfflineTransactionFee(
+        studio_id=studio_id,
+        client_id=client_id,
+        sale_amount=-refund_amount_minor,
+        fee_amount=-fee,
+        currency=currency.lower(),
+        percent_rate=plan.percent_rate or _CATALOG_RATES[plan.billing_mode],
+        payment_method=REFUND_METHOD,
+    )
+    db.add(row)
+    return row
+
 
 async def record_offline_fee(
     db: AsyncSession,

@@ -23,6 +23,7 @@ from schemas.settings.integrations import (
     WaPricing,
 )
 from services.assistant import get_or_create_ai_settings
+from services.email_layout import code_block
 from services.instagram_account import FB_LOGIN_API, connect_instagram_account, disconnect_instagram_account
 from services.mailer import send_email
 from services.notifier import _studio_prefs
@@ -204,9 +205,14 @@ async def request_email_code(
 
     lang, _ = await _studio_prefs(db, ctx.studio_id)
     subject = "Код подтверждения" if lang == "ru" else "Verification code"
-    text = f"Ваш код подтверждения: {code}" if lang == "ru" else f"Your verification code: {code}"
+    intro = (
+        "<p>Введите этот код в разделе «Настройки» → «Интеграции», чтобы "
+        "письма клиентам уходили с этого адреса.</p>" if lang == "ru" else
+        "<p>Enter this code in Settings → Integrations to send client emails "
+        "from this address.</p>"
+    )
     try:
-        await send_email(body.email, subject, f"<p>{text}</p>")
+        await send_email(body.email, subject, intro + code_block(code))
     except Exception:
         logger.exception("request_email_code: send_email failed for studio=%s", ctx.studio_id)
 

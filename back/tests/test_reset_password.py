@@ -45,7 +45,9 @@ def _issue(user, action=RESET_ACTION) -> str:
     finally:
         otp.send_email = original
 
-    code = "".join(ch for ch in sent["html"] if ch.isdigit())
+    # Код лежит в <b> внутри письма: вокруг него теперь вёрстка со своими
+    # числами (размеры, отступы), и «все цифры письма» кодом больше не являются.
+    code = sent["html"].split("<b>")[1].split("</b>")[0]
     assert len(code) == 6, f"код должен быть 6-значным, получено: {code!r}"
     return code
 

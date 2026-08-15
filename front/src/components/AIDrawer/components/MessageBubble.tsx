@@ -34,10 +34,13 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Стрим (эпик AI-5): текст черновика дописывается по мере генерации. Пока
-  // печатаем сами — показываем накопленное, в остальное время просто проп,
-  // иначе пузырь застыл бы на том, с чем смонтировался.
-  const shown = animate ? displayText : message.text;
+  // Стрим (эпик AI-5): см. AI/MessageBubble.tsx — свой счётчик показываем,
+  // только пока сами печатаем, иначе накопленный ответ подменился бы пустым
+  // displayText в момент, когда родитель включит animate.
+  const shown = typing ? displayText : message.text;
+  // Отрицательный id у ответа — черновик стрима: каретка гаснет, когда сервер
+  // сохранил сообщение.
+  const streaming = !isUser && message.id < 0;
 
   // Уже исполненное действие — неактивной карточкой, тем же компонентом кита,
   // что и на странице AI (эпик AI-5, задача 10).
@@ -54,11 +57,15 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
     );
   }
 
+  // Пустой черновик (ответ ещё не начался) — не пузырь-призрак: место под ответ
+  // занимает индикатор «Думаю», как на странице AI.
+  if (!isUser && !message.text) return null;
+
   return (
     <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.aiRow}`}>
       <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.aiBubble}`}>
         {shown}
-        {typing && <span className={styles.caret} />}
+        {(typing || streaming) && <span className={styles.caret} />}
       </div>
       <span className={styles.msgTime}>{formatMessageTime(message.created_at)}</span>
     </div>

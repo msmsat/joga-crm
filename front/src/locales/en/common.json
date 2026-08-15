@@ -116,7 +116,10 @@
       "stripe_not_configured": "Payments are not configured on the server",
       "stripe_error": "The payment service rejected the request. Please try again",
       "plan_not_paid": "A higher plan is activated by payment only",
-      "renew_is_automatic": "The subscription renews automatically"
+      "renew_is_automatic": "The subscription renews automatically",
+      "vat_invalid": "VIES doesn't recognise this VAT number — check it or save without one",
+      "vat_unavailable": "The VIES registry isn't responding right now — try again later or save without a number",
+      "vat_country_mismatch": "The VAT number must start with the selected country's code"
     },
     "loyalty": {
       "cert_not_found": "Certificate not found",

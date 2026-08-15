@@ -21,11 +21,24 @@ class _Client:
         self.phone = phone
 
 
+class _DB:
+    """Минимальная сессия: email-ветка спрашивает у неё имя студии — оно уходит
+    в шапку письма, потому что клиенту пишет студия, а не Velora."""
+
+    class _Row:
+        @staticmethod
+        def scalar_one_or_none():
+            return "Студия Лотос"
+
+    async def execute(self, *_args, **_kwargs):
+        return self._Row()
+
+
 async def _run():
     calls = []
 
-    async def fake_send_email(to, subject, html, sender=None):
-        calls.append(("email", to, subject, html, sender))
+    async def fake_send_email(to, subject, html, sender=None, brand=None):
+        calls.append(("email", to, subject, html, sender, brand))
 
     async def fake_send_telegram(chat_id, text, token=None, parse_mode=None):
         calls.append(("telegram", chat_id, text, parse_mode))
@@ -49,13 +62,13 @@ async def _run():
     O.claim, O.finish = fake_claim, fake_finish
     try:
         # email: есть адрес — шлёт html, возвращает True
-        ok = await N.deliver(None, "email", _Client(email="a@x.com"), "Тема", "текст", "<p>текст</p>", studio_id=1)
+        ok = await N.deliver(_DB(), "email", _Client(email="a@x.com"), "Тема", "текст", "<p>текст</p>", studio_id=1)
         assert ok is True
-        assert calls[-1] == ("email", "a@x.com", "Тема", "<p>текст</p>", None)
+        assert calls[-1] == ("email", "a@x.com", "Тема", "<p>текст</p>", None, "Студия Лотос")
 
         # email: нет адреса — не пытается слать, False
         calls.clear()
-        ok = await N.deliver(None, "email", _Client(email=None), "Тема", "текст", "<p>текст</p>", studio_id=1)
+        ok = await N.deliver(_DB(), "email", _Client(email=None), "Тема", "текст", "<p>текст</p>", studio_id=1)
         assert ok is False and calls == []
 
         # telegram: есть tg_id — шлёт text (не html), возвращает True.

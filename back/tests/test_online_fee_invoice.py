@@ -139,8 +139,10 @@ def test_online_fee_invoice_carries_no_due_date():
     """Вторая половина той же защиты: блокировка ищет счёт с `due_at` в прошлом.
     Непустой срок у оплаченного документа закрыл бы студию ни за что."""
     assert "due_at=None" in inspect.getsource(OFB._bill_online_fees)
-    # Досылка (_finish_pending) проставляет срок всем счетам подряд — ветка
-    # online_fee обязана снять его обратно.
+    # Срок проставляет выдача (_issue_to_stripe) — и делает это ТОЛЬКО в ветке
+    # счетов, которые просят денег. Ветка online_fee обязана оставить его пустым:
+    # деньги по ней уже удержаны, просить их второй раз и тем более блокировать
+    # за неуплату нечего.
     assert "invoice.due_at = None" in inspect.getsource(OFB._issue_to_stripe)
 
 

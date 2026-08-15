@@ -15,6 +15,7 @@ from jose import JWTError, jwt
 
 from models import Studio, User
 from security import ALGORITHM, SECRET_KEY, create_access_token
+from services.email_layout import FONT, INK, button
 from services.mailer import send_email
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,6 @@ def decode_invite(token: str) -> tuple[str, int]:
 _STRINGS = {
     "ru": {
         "subject": "{studio} приглашает вас в команду",
-        "preheader": "Ваш доступ в CRM студии {studio}",
         "hello": "Здравствуйте, {name}!",
         "lead_new": "Вас приглашают в команду студии <b>{studio}</b> как <b>{role}</b>. "
                     "Чтобы принять приглашение, нажмите кнопку ниже и введите пароль, который вам передал руководитель. "
@@ -68,7 +68,6 @@ _STRINGS = {
     },
     "en": {
         "subject": "{studio} invites you to the team",
-        "preheader": "Your access to {studio} CRM",
         "hello": "Hi {name}!",
         "lead_new": "You are invited to join <b>{studio}</b> as <b>{role}</b>. "
                     "To accept, click the button below and enter the password your manager gave you. "
@@ -92,47 +91,24 @@ _ROLE_NAMES = {
 
 
 def _render(s: dict, *, name: str, studio: str, role: str, url: str, is_new_account: bool) -> str:
+    """Тело приглашения. Шапку, подвал и саму «карточку» письма ставит общая
+    оболочка (services/email_layout.wrap) — здесь только то, что отличает это
+    письмо от остальных: карточка «студия и роль» и кнопка приглашения."""
     lead = (s["lead_new"] if is_new_account else s["lead_existing"]).format(studio=studio, role=role)
     cta = s["cta_new"] if is_new_account else s["cta_existing"]
-    # Вёрстка письма — таблицами и инлайновыми стилями: Gmail и Outlook вырезают
-    # <style> и не понимают flex/grid, а внешние картинки режут по умолчанию,
-    # поэтому логотип — текстом, акцент — фоном ячейки.
     return f"""\
-<div style="display:none;max-height:0;overflow:hidden;opacity:0">{s["preheader"].format(studio=studio)}</div>
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FDFCFB;padding:40px 16px;font-family:'Manrope','Segoe UI',Arial,sans-serif">
-  <tr><td align="center">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 8px 24px -4px rgba(26,26,26,0.06)">
-      <tr><td style="height:4px;background:linear-gradient(90deg,#FCAE91,#F9A08B)"></td></tr>
-      <tr><td style="padding:36px 40px 8px">
-        <div style="font-size:19px;font-weight:800;color:#1A1A1A;letter-spacing:-0.4px">Velora</div>
-      </td></tr>
-      <tr><td style="padding:16px 40px 0">
-        <h1 style="margin:0 0 10px;font-size:24px;line-height:1.25;font-weight:800;color:#1A1A1A;letter-spacing:-0.6px">{s["hello"].format(name=name)}</h1>
-        <p style="margin:0;font-size:15px;line-height:1.65;color:#666666">{lead}</p>
-      </td></tr>
-      <tr><td style="padding:24px 40px 0">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#FDFCFB;border:1px solid rgba(26,26,26,0.06);border-radius:14px">
-          <tr>
-            <td style="padding:16px 20px;font-size:12px;color:#999999">{s["studio_label"]}<div style="margin-top:3px;font-size:15px;font-weight:700;color:#1A1A1A">{studio}</div></td>
-            <td style="padding:16px 20px;font-size:12px;color:#999999">{s["role_label"]}<div style="margin-top:3px;font-size:15px;font-weight:700;color:#1A1A1A">{role}</div></td>
-          </tr>
-        </table>
-      </td></tr>
-      <tr><td style="padding:28px 40px 0" align="center">
-        <table cellpadding="0" cellspacing="0"><tr>
-          <td align="center" style="background:#F9A08B;border-radius:12px">
-            <a href="{url}" style="display:inline-block;padding:15px 34px;font-size:15px;font-weight:700;color:#FFFFFF;text-decoration:none">{cta}</a>
-          </td>
-        </tr></table>
-      </td></tr>
-      <tr><td style="padding:26px 40px 36px">
-        <p style="margin:0 0 8px;font-size:12px;line-height:1.6;color:#999999">{s["expires"].format(days=INVITE_TTL_DAYS)}</p>
-        <p style="margin:0 0 18px;font-size:11px;line-height:1.5;color:#BBBBBB;word-break:break-all">{url}</p>
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#BBBBBB;border-top:1px solid #F0EDE8;padding-top:16px">{s["ignore"]}</p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>"""
+<h1 style="margin:0 0 10px;font:800 24px/1.25 {FONT};letter-spacing:-0.6px;color:{INK}">{s["hello"].format(name=name)}</h1>
+<p style="margin:0;font:400 15px/1.65 {FONT};color:#666666">{lead}</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;background:#FDFCFB;border:1px solid rgba(26,26,26,0.06);border-radius:14px">
+  <tr>
+    <td style="padding:16px 20px;font-size:12px;color:#999999">{s["studio_label"]}<div style="margin-top:3px;font-size:15px;font-weight:700;color:{INK}">{studio}</div></td>
+    <td style="padding:16px 20px;font-size:12px;color:#999999">{s["role_label"]}<div style="margin-top:3px;font-size:15px;font-weight:700;color:{INK}">{role}</div></td>
+  </tr>
+</table>
+{button(cta, url)}
+<p style="margin:22px 0 8px;font:400 12px/1.6 {FONT};color:#999999">{s["expires"].format(days=INVITE_TTL_DAYS)}</p>
+<p style="margin:0 0 18px;font:400 11px/1.5 {FONT};color:#BBBBBB;word-break:break-all">{url}</p>
+<p style="margin:0;font:400 12px/1.6 {FONT};color:#BBBBBB">{s["ignore"]}</p>"""
 
 
 async def send_invite(user: User, studio: Studio, role: str, *, name: str) -> str:

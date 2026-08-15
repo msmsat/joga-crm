@@ -756,7 +756,8 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
     Чарджбэк (`charge.dispute.created`) продажу НЕ трогает: спор ещё не проигран,
     и погасить абонемент клиенту, который выиграет спор в пользу студии, значит
     отобрать оплаченное. Итог спора приходит отдельным событием
-    (`charge.dispute.closed`) — на него мы пока не подписаны, разбор ручной.
+    (`charge.dispute.closed`) и разбирается автоматически — см. `_close_dispute`:
+    выигранный возвращает заявку в `paid`, проигранный откатывает продажу.
     """
     payment_intent = getattr(charge, "payment_intent", None)
     session_id = await _checkout_for_payment(payment_intent, account_id, event_type)

@@ -56,7 +56,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from contact_format import to_e164
 from models import Client, Studio, StudioIntegration, StudioMember, User
-from services import outbox
+from services import email_layout, outbox
 from services.mailer import send_email
 
 load_dotenv()
@@ -312,7 +312,13 @@ async def _deliver_once(
             return False
         cfg = await _integration_config(db, studio_id, "email_sender")
         sender = cfg.get("email") if cfg.get("verified") else None
-        await send_email(recipient.email, subject, html, sender=sender)
+        # Имя в шапке письма — студии, а не Velora: клиент записывался к ней.
+        # Отдельный select по первичному ключу рядом с походом на SMTP не стоит
+        # ничего, зато не заставляет всех вызывающих таскать имя студии с собой.
+        brand = (await db.execute(
+            select(Studio.name).where(Studio.id == studio_id)
+        )).scalar_one_or_none()
+        await send_email(recipient.email, subject, html, sender=sender, brand=brand)
         return True
     if channel == "telegram":
         if not recipient.tg_id:
@@ -468,8 +474,8 @@ def _render(
             "en": ("Daily report", f"Revenue: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
         },
         "a10": {
-            "ru": ("Оформлен возврат", f"Оформлен возврат {amount_str} клиенту {client_name}."),
-            "en": ("Refund issued", f"Refund of {amount_str} issued to {client_name}."),
+            "ru": ("Оформлен возврат", f"Клиенту {client_name} возвращено {amount_str}."),
+            "en": ("Refund issued", f"{client_name} received {amount_str} back."),
         },
         "c8": {
             "ru": ("Как прошло занятие?", f"Как вам «{lesson_ru}»? Будем рады отзыву — это поможет нам стать лучше."),
@@ -488,8 +494,8 @@ def _render(
             "en": ("Weekly report", f"Revenue this week: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
         },
         "o3": {
-            "ru": ("Крупный платёж", f"Крупный платёж {amount_str} от клиента {client_name}."),
-            "en": ("Large payment", f"Large payment of {amount_str} from {client_name}."),
+            "ru": ("Крупный платёж", f"Клиент {client_name} оплатил {amount_str} — заметно выше обычного."),
+            "en": ("Large payment", f"{client_name} paid {amount_str} — noticeably above the usual."),
         },
         "o4": {
             "ru": ("Резкое падение выручки", f"Сегодня: {revenue_str}\nСреднее за неделю: {avg7_str}"),
@@ -500,12 +506,12 @@ def _render(
             "en": ("Staff member added", f"A new staff member has been added: {staff_name}."),
         },
         "o6": {
-            "ru": ("Тариф истекает", f"Тариф истекает через {days_left} дн. Продлите подписку, чтобы не потерять доступ."),
+            "ru": ("Тариф истекает", f"До конца оплаченного периода {days_left} дн. Продлите подписку, чтобы не потерять доступ."),
             "en": ("Plan expiring soon", f"Your plan expires in {days_left} days. Renew to keep access."),
         },
         "o7": {
-            "ru": ("Изменены права доступа", f"Изменены права доступа сотрудника {staff_name}: новая роль — {role_ru}."),
-            "en": ("Access role changed", f"{staff_name}'s access role has been changed to {role_en}."),
+            "ru": ("Изменены права доступа", f"Сотрудник {staff_name} теперь {role_ru}."),
+            "en": ("Access role changed", f"{staff_name} is now {role_en}."),
         },
         "o8": {
             "ru": ("Финансовая цель достигнута", f"Цель «{goal_name}» достигнута!"),
@@ -528,8 +534,8 @@ def _render(
             "en": ("New device login", f"{staff_name}'s account was accessed from a new device: {device}, {city}."),
         },
         "o9": {
-            "ru": ("Экспорт данных", f"Экспорт данных ({kind}) выполнил {staff_name}."),
-            "en": ("Data export", f"Data export ({kind}) performed by {staff_name}."),
+            "ru": ("Экспорт данных", f"Тип выгрузки: {kind}. Инициатор — {staff_name}."),
+            "en": ("Data export", f"Export type: {kind}. Initiated by {staff_name}."),
         },
         "c12": {
             "ru": ("Начислены бонусы", f"Вам начислено баллов: {amount_raw}. {description}".strip()),
@@ -537,8 +543,8 @@ def _render(
         },
         # t7 — задел (N-9 границы): эндпоинта создания отзыва ещё нет, врезки тоже.
         "t7": {
-            "ru": ("Новый отзыв", f"Новый отзыв от {client_name}: {rating}★ о занятии «{lesson_ru}»."),
-            "en": ("New review", f'New review from {client_name}: {rating}★ for "{lesson_en}".'),
+            "ru": ("Новый отзыв", f"Клиент {client_name} оценил занятие «{lesson_ru}» на {rating}★."),
+            "en": ("New review", f'{client_name} rated "{lesson_en}" {rating}★.'),
         },
     }
 
@@ -568,12 +574,18 @@ def _user_recipient(user: User) -> Recipient:
 # Для них fallback «нет администраторов → шлём владельцу» превращал пару в два
 # одинаковых письма в 21:00 (у студии без отдельного админа — а это норма).
 # Админов нет → admin-версию просто не шлём: владельца накрывает его собственная.
+#
+# Пара a4 «Оплата получена» ↔ o3 «Крупный платёж» — тот же случай, но условный:
+# o3 уходит только на суммах от LARGE_PAYMENT, и списком по event_id это не
+# выражается — на обычном платеже владелец без администратора обязан получить a4.
+# Такие пары гасит вызывающий через notify(..., owner_fallback=False)
+# (см. routers/finances/operations.py).
 _NO_OWNER_FALLBACK = frozenset({"a8"})
 
 
 async def _recipient(
     db: AsyncSession, studio_id: int, role: str, context: dict[str, Any],
-    event_id: str | None = None,
+    event_id: str | None = None, owner_fallback: bool = True,
 ) -> list[Recipient]:
     """Приводит "кому" к списку Recipient — одинаково для клиента и сотрудника
     (N-9, задача 2). Сотрудник получает свой tg_id/phone наравне с клиентом,
@@ -629,7 +641,7 @@ async def _recipient(
         )).scalars().all()
         if users:
             return [_user_recipient(u) for u in users]
-        if event_id in _NO_OWNER_FALLBACK:
+        if event_id in _NO_OWNER_FALLBACK or not owner_fallback:
             return []
         # fallback: маленькая студия без отдельного администратора
 
@@ -647,13 +659,19 @@ async def notify(
     role: str,
     event_id: str,
     context: dict[str, Any] | None = None,
+    owner_fallback: bool = True,
 ) -> bool:
     """Единая точка отправки: сама решает кому (To — клиент или владелец/адресат
     из context["to_email"]), от кого (From — студия), что (Message — _render на
     языке/валюте студии) и куда (Network — по включённым каналам и матрице).
     Возвращает True, если хотя бы один канал реально доставил сообщение; любой
     ранний выход (все каналы выключены, нет шаблона, некому слать, ошибка) —
-    False. Вызывающий код использует это для честного clients_notified (задача 3)."""
+    False. Вызывающий код использует это для честного clients_notified (задача 3).
+
+    owner_fallback=False снимает подстановку владельца вместо отсутствующего
+    администратора для ЭТОГО вызова — когда вызывающий тут же шлёт владельцу
+    собственную версию того же факта и без этого владелец получил бы два письма
+    об одном событии (см. _NO_OWNER_FALLBACK)."""
     context = context or {}
     try:
         from services.notification_resolver import resolve_channels  # локальный импорт — иначе цикл notifier<->resolver
@@ -663,6 +681,10 @@ async def notify(
         if rendered is None:
             return False  # нет шаблона под событие
         subject, text, html = rendered
+        # Кнопка «открыть раздел» — только в письме: у него есть место под неё, а
+        # в Telegram/WhatsApp уходит text, и туда ссылка не попадает (шаблоны WA
+        # утверждены Meta в утверждённом виде, самодеятельность их ломает).
+        html += email_layout.cta(event_id, studio_id, lang)
         tg = tg_format(event_id, subject, text)  # эмодзи + жирный заголовок, HTML
         # Локальный импорт по той же причине, что и resolve_channels выше: цикл
         # notifier <- notification_catalog <- whatsapp_templates.
@@ -670,7 +692,7 @@ async def notify(
 
         wa_template = message_payload(event_id, context, lang, currency)
 
-        recipients = await _recipient(db, studio_id, role, context, event_id)
+        recipients = await _recipient(db, studio_id, role, context, event_id, owner_fallback)
         if not recipients:
             return False  # некому слать ни на один канал
 

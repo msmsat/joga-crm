@@ -40,6 +40,7 @@ from ratelimit import limiter
 from schemas._base import BaseSchema, NormEmail
 from security import create_access_token, get_password_hash, verify_password
 from services.contacts import contact_taken, normalize, normalized_column
+from services.email_layout import code_block
 from services.mailer import send_email
 
 from .miniapp import (
@@ -141,8 +142,11 @@ async def request_email_code(
     await send_email(
         body.email,
         f"Код входа — {studio.name}",
-        f"<p>Ваш код для входа: <b>{code}</b></p>"
-        f"<p>Код действует {int(CODE_TTL.total_seconds() // 60)} минут.</p>",
+        "<p>Введите этот код, чтобы войти в свой кабинет.</p>"
+        + code_block(code)
+        + f"<p>Код действует {int(CODE_TTL.total_seconds() // 60)} минут. "
+        "Если вход запрашивали не вы — письмо можно удалить.</p>",
+        brand=studio.name,
     )
     return EmailCodeResponse(expires_in=int(CODE_TTL.total_seconds()), is_new=is_new)
 

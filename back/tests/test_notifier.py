@@ -161,6 +161,20 @@ def test_recipient_a8_does_not_fall_back_to_owner():
     assert [r.email for r in got] == ["owner@studio.ru"]
 
 
+def test_recipient_owner_fallback_can_be_switched_off_per_call():
+    # Пара a4 «Оплата получена» ↔ o3 «Крупный платёж»: списком по event_id её не
+    # погасить (o3 уходит только на крупных суммах), поэтому фолбэк снимает сам
+    # вызывающий. Без этого владелец студии без администратора получал два письма
+    # об одном платеже — см. routers/finances/operations.py.
+    owner = _FakeUser(id=9, email="owner@studio.ru", tg_id=None, phone=None)
+    assert asyncio.run(
+        N._recipient(_DB([[]]), 1, "admin", {}, "a4", False)
+    ) == []
+    # Обычный платёж (o3 не уходит) — владелец по-прежнему узнаёт о нём из a4.
+    got = asyncio.run(N._recipient(_DB([[], owner]), 1, "admin", {}, "a4", True))
+    assert [r.email for r in got] == ["owner@studio.ru"]
+
+
 def test_notify_staff_fanout_hits_telegram_and_whatsapp():
     # Ключевой регресс-тест эпика N-9: раньше notify() слал сотруднику ТОЛЬКО
     # email (гейт `if client is not None` перед tg/wa). Теперь при включённых
@@ -237,6 +251,33 @@ def test_tg_format_every_event_renders_valid_html():
     assert '"Ко"' in tg, tg  # кавычки не превращаем в &quot; — Telegram их не разбирает
 
 
+def test_every_event_email_is_assembled_exactly_once():
+    """Письмо-близнец tg_format-теста: собираем письмо по КАЖДОМУ событию каталога
+    в обоих языках и проверяем, что ничего не задвоилось.
+
+    Раз оболочка (email_layout.wrap) ставит заголовок, подвал и кнопку сама,
+    первое же событие, обзаведшееся собственным <h1> или вторым разделом в карте
+    ссылок, дало бы клиенту письмо с двумя заголовками или двумя кнопками — молча,
+    потому что отправку это не ломает."""
+    from services import email_layout as L
+    from services.mailer import build_message
+
+    for event_id in sorted(N.KNOWN_EVENT_IDS):
+        for lang in ("ru", "en"):
+            subject, _text, html = N._render(event_id, {}, lang, "RUB")
+            cta = L.cta(event_id, 42, lang)
+            assert cta, f"{event_id}: письму некуда вести — событие без раздела"
+            message = build_message("k@x.com", subject, html + cta, None, "Студия Лотос")
+            rich = list(message.iter_parts())[1].get_content()
+            where = (event_id, lang)
+            assert rich.count("<h1") == 1, where
+            assert rich.count('border-radius:12px"><a href') == 1, where
+            # Условия и Политика — документы платформы, в письме студии клиенту
+            # их быть не должно (шапка письма — имя студии).
+            assert "static/terms.html" not in rich, where
+            assert rich.count("Студия Лотос") == 1, where
+
+
 def test_render_report_events_are_multiline():
     # Сводки/отчёты — по факту на строку (в мессенджере одна длинная строка
     # нечитаема); в html переносы становятся <br>, а не схлопываются.
@@ -290,9 +331,11 @@ def test_render():
     test_render_new_dead_events_t2_t5_a7_a9_o9_t7()
     test_recipient_staff_includes_tg_id_and_phone()
     test_recipient_a8_does_not_fall_back_to_owner()
+    test_recipient_owner_fallback_can_be_switched_off_per_call()
     test_notify_staff_fanout_hits_telegram_and_whatsapp()
     test_render_c12_bonus_uses_raw_amount_and_description()
     test_tg_format_every_event_renders_valid_html()
+    test_every_event_email_is_assembled_exactly_once()
     test_render_report_events_are_multiline()
     test_notify_payment_fires_c4_client_and_a4_admin()
     test_notify_payment_skips_zero_amount_and_missing_client()

@@ -34,10 +34,14 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Стрим (эпик AI-5): текст черновика дописывается по мере генерации. Пока
-  // печатаем сами — показываем накопленное, в остальное время просто проп,
-  // иначе пузырь застыл бы на том, с чем смонтировался.
-  const shown = animate ? displayText : message.text;
+  // Стрим (эпик AI-5): текст черновика дописывается по мере генерации. Свой
+  // счётчик показываем, только пока сами печатаем; смотреть на animate нельзя —
+  // проп включается уже после монтирования, и накопленный ответ подменился бы
+  // пустым displayText.
+  const shown = typing ? displayText : message.text;
+  // Отрицательный id у ответа — черновик стрима: каретка мигает ровно пока
+  // текст дописывается и гаснет, когда сервер сохранил сообщение.
+  const streaming = isAI && message.id < 0;
 
   // Уже исполненное действие: неактивная карточка с датой вместо пузыря —
   // история честно показывает, что и когда подтвердили (эпик AI-5, задача 10).
@@ -69,7 +73,7 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
           <div className={styles.aiLabel}>Velora AI</div>
           <div className={styles.aiBubble}>
             <span>{shown}</span>
-            {typing && <span className={styles.caret} />}
+            {(typing || streaming) && <span className={styles.caret} />}
           </div>
           <div className={styles.msgTime}>{formatMessageTime(message.created_at)}</div>
         </div>

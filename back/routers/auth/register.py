@@ -9,6 +9,7 @@ from legal import CONSENT_REQUIRED, record_consent
 from models import User
 from schemas import RegisterRequest, TokenResponse, VerifyEmailRequest
 from security import get_password_hash
+from services.email_layout import code_block
 from services.mailer import send_email
 from ._helpers import _build_token_for_user
 
@@ -22,7 +23,11 @@ async def _send_verification_code(email: str, code: str) -> None:
         await send_email(
             email,
             "Код подтверждения Velora",
-            f"<p>Ваш код подтверждения: <b>{code}</b></p>",
+            "<p>Добро пожаловать в Velora. Введите этот код на странице "
+            "регистрации, чтобы подтвердить почту.</p>"
+            + code_block(code)
+            + "<p>Код одноразовый. Если регистрацию начинали не вы — письмо "
+            "можно просто удалить.</p>",
         )
     except Exception:
         logger.exception("Не удалось отправить код подтверждения на %s", email)

@@ -48,14 +48,20 @@ _ENV_BY_TIER = {
 _FALLBACK_TIER = {TIER_FAST: TIER_MAIN, TIER_MAIN: TIER_SMART, TIER_SMART: TIER_MAIN}
 
 # model -> (вход, чтение кэша, ЗАПИСЬ кэша, выход) в микро-$ за 1M токенов.
-# Сверено на openrouter.ai/models 2026-08-13 (задача 0, п. 7-8). Провайдеры
-# меняют цены — при следующей сверке обновить и дату.
+#
+# СВЕРЕНО ЖИВЫМ ЗАПРОСОМ к /v1/models 2026-08-14, не переписано из документа:
+# в эпике стояли `google/gemini-3-flash` (такой модели в каталоге нет вовсе) и
+# ставки Sonnet 5 $3/$15 (по факту $2/$10). На неверных ставках весь учёт денег
+# в ai_usage — фикция, поэтому при смене модели цены сверять заново тем же
+# запросом, а не по памяти. Ожидается пересмотр цен Anthropic 01.09.2026.
+#
 # Запись кэша дороже обычного входа (у Anthropic +25 %): первый вызов диалога
 # платит за весь префикс по повышенной ставке и окупается только со второго.
 _PRICES: dict[str, tuple[int, int, int, int]] = {
-    "google/gemini-3-flash":      (500_000,    50_000,   625_000,  3_000_000),
-    "anthropic/claude-sonnet-5":  (3_000_000, 300_000, 3_750_000, 15_000_000),
-    "anthropic/claude-opus-5":    (5_000_000, 500_000, 6_250_000, 25_000_000),
+    "google/gemini-2.5-flash":      (300_000,   30_000,    83_333,  2_500_000),
+    "google/gemini-2.5-flash-lite": (100_000,   10_000,    83_333,    400_000),
+    "anthropic/claude-sonnet-5":  (2_000_000,  200_000, 2_500_000, 10_000_000),
+    "anthropic/claude-opus-5":    (5_000_000,  500_000, 6_250_000, 25_000_000),
 }
 # Решение 7: ПДн клиентов студии не уезжают в юрисдикции без адекватности GDPR.
 _ALLOWED_VENDORS = ("google/", "anthropic/", "openai/")
@@ -345,13 +351,14 @@ async def chat_stream(
 if __name__ == "__main__":
     # Самопроверка без сети: деньги считаются целыми числами, кэш дешевле
     # свежего входа, неизвестная модель падает на дорогую ставку, а не на ноль.
-    flash, opus = "google/gemini-3-flash", "anthropic/claude-opus-5"
+    flash, opus = "google/gemini-2.5-flash", "anthropic/claude-opus-5"
     plain = {"prompt_tokens": 1000, "completion_tokens": 100}
     cached = {**plain, "prompt_tokens_details": {"cached_tokens": 800}}
     written = {**plain, "prompt_tokens_details": {"cache_creation_tokens": 1000}}
 
-    assert _cost_micro(flash, plain) == 800, _cost_micro(flash, plain)
-    assert _cost_micro(flash, cached) == 440, _cost_micro(flash, cached)
+    # Точное число ловит опечатку в _PRICES: 1000 входных по $0.30/1M плюс
+    # 100 выходных по $2.50/1M = 550 микро-долларов.
+    assert _cost_micro(flash, plain) == 550, _cost_micro(flash, plain)
     assert _cost_micro(flash, cached) < _cost_micro(flash, plain)   # кэш дешевле
     assert _cost_micro(opus, written) > _cost_micro(opus, plain)    # запись кэша дороже входа
     assert _cost_micro("who/knows-1", plain) == _cost_micro(opus, plain)  # неизвестная — по опусу

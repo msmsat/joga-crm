@@ -1,22 +1,21 @@
 """Смена тарифа: зачёт остатка, сгорание излишка, отсутствие выбора «когда».
 
-Правило продукта (переделка 13.08.2026): переход ВСЕГДА немедленный.
-Неиспользованный остаток текущего периода зачитывается в новый счёт, доплачивается
-разница. Если остаток БОЛЬШЕ новой цены (переход на тариф дешевле) — доплачивать
-нечего, а излишек СГОРАЕТ. Покупка того же тарифа — продление: ничего не
-зачитывается и ничего не сгорает, месяцы прибавляются к сроку.
+Правило продукта (MVP): переход ВСЕГДА немедленный и БЕЗ зачёта. Новый период
+платится целиком, а неиспользованный остаток прежнего тарифа СГОРАЕТ. Покупка
+ТОГО ЖЕ тарифа переходом не является — это продление, и там месяцы прибавляются
+к сроку, ничего не теряя.
 
 Инварианты, которые тут защищаются:
   1. Выбора «сейчас / с начала периода» больше нет — ни в теле запроса, ни в коде.
      Вернуть его значит вернуть два поведения у одной кнопки.
-  2. Переход идёт с create_prorations + billing_cycle_anchor="now". Без прораций
-     студия платила бы полную цену дважды; без якоря — получила бы тариф выше
-     бесплатно до конца периода.
-  3. После перехода кредит на балансе сжигается: иначе «к оплате 0» в модалке
-     превращается в бесплатные месяцы дальше.
+  2. Переход идёт с proration_behavior="none" + billing_cycle_anchor="now". Без
+     якоря студия получила бы тариф выше бесплатно до конца оплаченного периода;
+     с прорациями вернулся бы зачёт, которого продукт больше не обещает.
+  3. После перехода кредит на балансе сжигается: у студий, успевших перейти по
+     прежней схеме, он молча оплатил бы следующие счета.
   4. Перед переходом снимается ранее выставленное расписание (легаси-студии).
-  5. Превью считает те же цифры, что показывает модалка, и НЕ уходит в минус.
-  6. Превью не врёт про продление: там нет ни зачёта, ни сгорания.
+  5. Сумма в превью — каталожная цена периода, одна и та же во всех трёх исходах.
+  6. Превью не врёт про продление: сгорание грозит только смене тарифа.
 
 Сеть и БД не трогаем: Stripe и слой БД застублены.
 
@@ -60,21 +59,39 @@ def test_deferred_switch_machinery_is_gone():
 
 # --------------------------------------- 2-4. что именно делает переход сейчас
 
-def test_switch_credits_the_remainder_and_restarts_the_cycle():
+def test_switch_burns_the_remainder_and_restarts_the_cycle():
+    """Остаток прежнего тарифа сгорает: период начинается заново и платится целиком.
+
+    Якорь без прораций — обязательная пара. Вернётся `create_prorations` — вернётся
+    зачёт, которого модалка больше не обещает; пропадёт якорь — студия получит
+    тариф выше бесплатно до конца уже оплаченного периода.
+    """
     from routers.billing.checkout import _switch_now
 
     src = inspect.getsource(_switch_now)
-    assert 'proration_behavior="create_prorations"' in src
+    assert 'proration_behavior="none"' in src
     assert 'billing_cycle_anchor="now"' in src
 
 
-def test_switch_burns_the_leftover_credit():
-    """Переход на тариф дешевле: Stripe кладёт разницу кредитом на баланс и гасит им
-    следующие счета. Продукт обещает обратное — остаток сгорает, и модалка об этом
-    предупредила ДО оплаты."""
+def test_switch_still_burns_a_legacy_credit_balance():
+    """У студий, успевших перейти по схеме с прорацией, кредит мог остаться на
+    балансе — и молча оплатил бы следующие счета."""
     from routers.billing.checkout import _switch_now
 
     assert "drop_credit_balance" in inspect.getsource(_switch_now)
+
+
+def test_no_credit_machinery_survived_anywhere():
+    """Зачёт убран целиком, а не «отключён флагом». Полуживой второй путь расчёта
+    суммы — это ровно тот случай, когда модалка и счёт однажды разъезжаются."""
+    for gone in ("preview_price_change", "split_preview", "add_credit_balance",
+                 "subscription_prepaid_trial"):
+        assert not hasattr(stripe_billing, gone), gone
+
+    from schemas.settings.billing import CheckoutPreviewRead
+
+    for gone in ("credit", "burned", "estimated"):
+        assert gone not in CheckoutPreviewRead.model_fields, gone
 
 
 def test_switch_releases_a_pending_schedule_first():
@@ -126,20 +143,6 @@ def test_only_credit_balance_is_burned_never_a_debt(monkeypatch):
 
 # ------------------------------------------------------ 5-6. что показывает превью
 
-def _preview(*amounts):
-    return SimpleNamespace(
-        lines=SimpleNamespace(data=[SimpleNamespace(amount=a) for a in amounts]),
-    )
-
-
-def test_preview_splits_lines_into_price_and_credit():
-    """Плюсовые позиции — новый тариф, минусовые — остаток прежнего. Из этой пары
-    модалка рисует строки «Стоимость тарифа» и «Ваш тариф — остаток»."""
-    assert stripe_billing.split_preview(_preview(9900, -1950)) == (9900, 1950)
-    assert stripe_billing.split_preview(_preview()) == (0, 0)
-    assert stripe_billing.split_preview(SimpleNamespace(lines=None)) == (0, 0)
-
-
 class _Row:
     def __init__(self, v):
         self._v = v
@@ -178,22 +181,20 @@ def _plan_row(**kw):
     })
 
 
-def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key=None,
+def _call_preview(plan_row, monkeypatch, live_key=None,
                   settled=False, want="pro", combo=False):
     """`live_key` — lookup_key Price, по которому подписка идёт в Stripe СЕЙЧАС.
     По умолчанию совпадает с тарифом в нашей строке (зеркало не отстало).
     `settled` — оплачен ли последний счёт подписки; спрашивается только когда Price
     выше нашей ступени. `want` — тариф, который владелец выбрал в модалке.
-    `combo` — выбрана ли модель «фикс + процент» прямо сейчас."""
+    `combo` — выбрана ли модель «фикс + процент» прямо сейчас.
+
+    Превью-счёт Stripe тут не стабится, потому что его больше нет: зачёта не
+    осталось, и сумму целиком диктует каталог."""
     from routers.billing import checkout as checkout_mod
 
     async def fake_price_id(*_a, **_kw):
         return "price_new"
-
-    async def fake_preview(*_a, **_kw):
-        if boom:
-            raise RuntimeError("Stripe прилёг")
-        return gross_credit
 
     async def fake_price_key(*_a, **_kw):
         return live_key or f"velora_{plan_row.plan_name}_1m"
@@ -202,7 +203,6 @@ def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key
         return settled
 
     monkeypatch.setattr(checkout_mod.stripe_catalog, "price_id", fake_price_id)
-    monkeypatch.setattr(checkout_mod.stripe_billing, "preview_price_change", fake_preview)
     monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_price_key", fake_price_key)
     monkeypatch.setattr(checkout_mod.stripe_billing, "subscription_settled", fake_settled)
     monkeypatch.setattr(checkout_mod.stripe_billing, "configured", lambda: True)
@@ -217,27 +217,31 @@ def _call_preview(plan_row, monkeypatch, gross_credit=None, boom=False, live_key
     ))
 
 
-def test_preview_of_an_upgrade_shows_credit_and_the_difference(monkeypatch):
-    res = _call_preview(_plan_row(), monkeypatch, gross_credit=(9900, 1950))
+def test_preview_of_a_switch_is_the_full_catalog_price(monkeypatch):
+    """Смена тарифа платится целиком: зачёта нет, скидывать нечего."""
+    from routers.billing.plans import amount_for
+
+    res = _call_preview(_plan_row(), monkeypatch)
     assert res.kind == "switch"
     assert res.current_plan == "start"
-    assert (res.gross, res.credit, res.total, res.burned) == (9900, 1950, 7950, 0)
+    assert res.gross == res.total == amount_for("pro", 1)
 
 
-def test_preview_of_a_downgrade_never_shows_a_negative_total(monkeypatch):
-    """Зачёт больше цены: платить нечего, а излишек сгорает — ровно то, о чём
-    предупреждает модалка. Отрицательный «итог» читался бы как долг платформы."""
-    res = _call_preview(_plan_row(plan_name="business"), monkeypatch, gross_credit=(3900, 8200))
-    assert res.total == 0
-    assert res.burned == 4300
+def test_switching_down_costs_full_price_too(monkeypatch):
+    """Переход на тариф ДЕШЕВЛЕ тоже платится с нуля: остаток дорогого сгорает, а
+    не гасит новый счёт. Показать здесь ноль значит пообещать бесплатный месяц."""
+    from routers.billing.plans import amount_for
+
+    res = _call_preview(_plan_row(plan_name="business"), monkeypatch, want="start")
+    assert res.kind == "switch"
+    assert res.total == amount_for("start", 1) > 0
 
 
-def test_preview_of_a_renewal_neither_credits_nor_burns(monkeypatch):
+def test_preview_of_a_renewal_is_a_renewal(monkeypatch):
     """Тот же тариф — продление: месяцы прибавляются к сроку, терять нечего.
-    Показать здесь зачёт значит пообещать скидку, которой не будет."""
-    res = _call_preview(_plan_row(plan_name="pro"), monkeypatch, gross_credit=(0, 0))
+    Разобрать его как смену значит сжечь студии оплаченный остаток за продление."""
+    res = _call_preview(_plan_row(plan_name="pro"), monkeypatch)
     assert res.kind == "renewal"
-    assert (res.credit, res.burned) == (0, 0)
     assert res.total == res.gross > 0
 
 
@@ -249,29 +253,27 @@ def test_preview_follows_the_live_subscription_not_our_mirror(monkeypatch):
     res = _call_preview(
         # В БД business, в Stripe подписка уже на pro — покупаем pro.
         _plan_row(plan_name="business"), monkeypatch,
-        gross_credit=(9907, 0), live_key="velora_pro_1m",
+        live_key="velora_pro_1m",
     )
     assert res.kind == "renewal", "продление своего тарифа разобрано как смена"
     assert res.current_plan == "pro", "подпись показывает тариф из отставшего зеркала"
-    assert (res.credit, res.burned) == (0, 0)
 
 
 def test_preview_ignores_a_price_nobody_has_paid_for(monkeypatch):
     """ЖАЛОБА 14.08.2026. Неудавшийся переход оставляет подписку уже НА BUSINESS с
     неоплаченным счётом-прорацией. Страница после этого противоречила сама себе:
     карточка тарифа (наше зеркало) показывала Pro, а модалка оплаты Business
-    считала студию уже сидящей на нём — «продление» вместо перехода, и зачёт
-    остатка не показывался вовсе.
+    считала студию уже сидящей на нём — «продление» вместо перехода. Разница
+    принципиальная: продление остаток сохраняет, а переход его сжигает.
 
     Текущий тариф = тот, за который заплачено. Неоплаченный Price им не является."""
     res = _call_preview(
         # В БД pro (оплачен), в Stripe подписка уже на business — счёт за неё висит.
         _plan_row(plan_name="pro"), monkeypatch, want="business",
-        gross_credit=(23900, 4300), live_key="velora_business_1m", settled=False,
+        live_key="velora_business_1m", settled=False,
     )
     assert res.kind == "switch", "неоплаченный Price выдан за текущий тариф"
     assert res.current_plan == "pro"
-    assert res.credit == 4300, "зачёт остатка оплаченного тарифа не показан"
 
 
 def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
@@ -280,7 +282,7 @@ def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
     должна возвращать эту дыру."""
     res = _call_preview(
         _plan_row(plan_name="pro"), monkeypatch, want="business",
-        gross_credit=(0, 0), live_key="velora_business_1m", settled=True,
+        live_key="velora_business_1m", settled=True,
     )
     assert res.kind == "renewal", "оплаченный переход снова разобран как смена тарифа"
     assert res.current_plan == "business"
@@ -288,10 +290,10 @@ def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
 
 def test_preview_without_a_subscription_is_the_plain_catalog_price(monkeypatch):
     res = _call_preview(
-        _plan_row(stripe_subscription_id=None, status="none"), monkeypatch, gross_credit=(0, 0),
+        _plan_row(stripe_subscription_id=None, status="none"), monkeypatch,
     )
     assert res.kind == "new"
-    assert res.total == res.gross > 0 and res.credit == 0
+    assert res.total == res.gross > 0
 
 
 def test_preview_names_the_date_billing_actually_starts(monkeypatch):
@@ -306,7 +308,7 @@ def test_preview_names_the_date_billing_actually_starts(monkeypatch):
             stripe_subscription_id=None, status="active",
             expires_at=datetime.utcnow() + timedelta(days=30),
         ),
-        monkeypatch, gross_credit=(0, 0),
+        monkeypatch,
     )
     assert res.kind == "new"
     assert res.free_until is not None
@@ -316,17 +318,9 @@ def test_preview_names_the_date_billing_actually_starts(monkeypatch):
 def test_preview_without_a_paid_leftover_promises_nothing_free(monkeypatch):
     """Обещать бесплатные дни там, где их нет, — прямая ложь о сумме."""
     res = _call_preview(
-        _plan_row(stripe_subscription_id=None, status="none"), monkeypatch, gross_credit=(0, 0),
+        _plan_row(stripe_subscription_id=None, status="none"), monkeypatch,
     )
     assert res.free_until is None and res.free_days == 0
-
-
-def test_preview_survives_a_stripe_outage(monkeypatch):
-    """Превью — подпись под кнопкой, а не платёж. Уронить его в 502 значит запереть
-    оплату целиком; показываем полную цену и честно помечаем её оценочной."""
-    res = _call_preview(_plan_row(), monkeypatch, boom=True)
-    assert res.estimated is True
-    assert res.credit == 0 and res.total == res.gross > 0
 
 
 def test_combo_preview_uses_the_half_price(monkeypatch):
@@ -336,7 +330,7 @@ def test_combo_preview_uses_the_half_price(monkeypatch):
 
     combo = _call_preview(
         _plan_row(billing_mode="combo", stripe_subscription_id=None, status="none"),
-        monkeypatch, gross_credit=(0, 0), combo=True,
+        monkeypatch, combo=True,
     )
     assert combo.gross == combo_amount_for("pro", 1)
     assert combo.gross * 2 == amount_for("pro", 1)
@@ -386,49 +380,6 @@ def test_no_trial_without_something_already_paid_for():
     assert _trial_end(_plan_row(expires_at=now + timedelta(days=10))) is None
 
 
-class _SubStub:
-    """Подписка Stripe: статус атрибутом, позиции — через индексацию, как у SDK."""
-
-    def __init__(self, status):
-        self.status = status
-
-    def __getitem__(self, key):
-        assert key == "items"
-        return SimpleNamespace(data=[SimpleNamespace(id="si_1")])
-
-
-def test_preview_ends_a_trial_exactly_like_the_real_switch(monkeypatch):
-    """У подписки на триале Stripe отвергает якорь цикла («Trial end cannot be after
-    billing_cycle_anchor»). Триал у нас ставит и миграция уже оплативших
-    (checkout._trial_end) — то есть без этой пары превью падало бы ровно у тех, кому
-    есть что зачитывать, и модалка показала бы полную цену как оценочную."""
-    sent = {}
-    monkeypatch.setattr(
-        stripe_billing.stripe.Invoice, "create_preview",
-        lambda **kw: (sent.update(kw), _preview(9900, -1950))[1],
-    )
-
-    monkeypatch.setattr(
-        stripe_billing.stripe.Subscription, "retrieve",
-        lambda sid, **kw: _SubStub("trialing"),
-    )
-    assert asyncio.run(stripe_billing.preview_price_change("sub_1", "price_new")) == (9900, 1950)
-    assert sent["subscription_details"]["trial_end"] == "now"
-
-    sent.clear()
-    monkeypatch.setattr(
-        stripe_billing.stripe.Subscription, "retrieve",
-        lambda sid, **kw: _SubStub("active"),
-    )
-    asyncio.run(stripe_billing.preview_price_change("sub_1", "price_new"))
-    assert "trial_end" not in sent["subscription_details"], (
-        "лишний параметр в денежном запросе — лишний повод для Stripe придраться"
-    )
-    # Позиция подписки обязана уехать с новым Price, иначе превью посчитает
-    # текущий тариф и покажет «доплатить 0» на любом апгрейде.
-    assert sent["subscription_details"]["items"] == [{"id": "si_1", "price": "price_new"}]
-
-
 # ------------------------------------------- 7. счёт перехода доводится до конца
 
 class _Inv:
@@ -441,12 +392,17 @@ class _Inv:
         return getattr(self, key)
 
 
-def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None):
+def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None, sent=None):
     """Прогон _switch_now со стаб-Stripe и стаб-БД.
 
     `mirrored_plan` — тариф в строке, которую вернуло зеркало счёта: у прошлого,
     уже оплаченного счёта он ЧУЖОЙ, и применять такой счёт нельзя.
+
+    `sent` — словарь, куда складываются аргументы Subscription.modify: ими
+    задаётся, сгорит остаток или зачтётся, и проверять их надо по факту вызова,
+    а не по исходнику.
     """
+    passed = sent if sent is not None else {}
     from routers.billing import checkout as checkout_mod
     from routers.billing import webhook as webhook_mod
 
@@ -455,7 +411,8 @@ def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None):
     async def noop(*_a, **_kw):
         return None
 
-    async def fake_change(*_a, **_kw):
+    async def fake_change(*_a, **kw):
+        passed.update(kw)
         return SimpleNamespace(latest_invoice=invoice)
 
     finalized = []
@@ -466,8 +423,14 @@ def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None):
         finalized.append(inv["id"])
         return _Inv(inv.id, "open", "https://stripe/inv")
 
+    burned = []
+
+    async def fake_drop(*_a, **_kw):
+        burned.append(True)
+        return 0
+
     monkeypatch.setattr(stripe_billing, "release_schedule", noop)
-    monkeypatch.setattr(stripe_billing, "drop_credit_balance", noop)
+    monkeypatch.setattr(stripe_billing, "drop_credit_balance", fake_drop)
     monkeypatch.setattr(stripe_billing, "change_subscription_price", fake_change)
     monkeypatch.setattr(stripe_billing, "ensure_finalized", fake_finalize)
 
@@ -487,25 +450,45 @@ def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None):
     url = asyncio.run(checkout_mod._switch_now(
         SimpleNamespace(commit=noop), _plan_row(), "cus_1", "price_new", metadata,
     ))
-    return url, finalized, applied
+    return url, finalized, applied, burned
 
 
-def test_switch_finalizes_the_proration_draft(monkeypatch):
-    """Прорацию Stripe отдаёт ЧЕРНОВИКОМ: ни номера, ни ссылки на оплату. Без
+def test_switch_asks_stripe_to_burn_not_to_credit(monkeypatch):
+    """Главный денежный аргумент перехода — по факту вызова, а не по исходнику.
+
+    `create_prorations` вернул бы зачёт, которого модалка больше не обещает;
+    потерянный якорь отдал бы новый тариф бесплатно до конца оплаченного периода.
+    """
+    sent = {}
+    _run_switch(monkeypatch, _Inv("in_draft", "draft"), sent=sent)
+    assert sent["proration_behavior"] == "none"
+    assert sent["billing_cycle_anchor"] == "now"
+
+
+def test_switch_burns_a_legacy_balance_on_both_exits(monkeypatch):
+    """Кредит гасится и когда счёт выставлен, и когда его не появилось вовсе:
+    иначе остаток с прежней схемы молча оплатил бы следующие месяцы."""
+    for invoice in (_Inv("in_draft", "draft"), None):
+        *_rest, burned = _run_switch(monkeypatch, invoice)
+        assert burned == [True], invoice
+
+
+def test_switch_finalizes_the_invoice_draft(monkeypatch):
+    """Счёт Stripe отдаёт ЧЕРНОВИКОМ: ни номера, ни ссылки на оплату. Без
     финализации владелец получал пустой ответ вместо счёта, доплата висела
     невидимым черновиком, а тариф не менялся никогда — подписка в Stripe уже на
     новом тарифе, в нашей БД прежний (живая жалоба 13.08.2026)."""
-    url, finalized, applied = _run_switch(monkeypatch, _Inv("in_draft", "draft"))
+    url, finalized, applied, _burned = _run_switch(monkeypatch, _Inv("in_draft", "draft"))
     assert finalized == ["in_draft"], "черновик остался черновиком"
     assert url == "https://stripe/inv", "ссылки на оплату так и не появилось"
     assert applied == [], "неоплаченный счёт не имеет права поднимать тариф"
 
 
-def test_switch_paid_by_the_leftover_applies_the_plan_at_once(monkeypatch):
-    """Переход на тариф дешевле зачитывается остатком целиком — такой счёт Stripe
-    закрывает сам. Ждать вебхук ради уже случившегося незачем: иначе владелец
-    видит прежний тариф и жмёт «оплатить» снова."""
-    url, _finalized, applied = _run_switch(monkeypatch, _Inv("in_paid", "paid"))
+def test_switch_paid_on_the_spot_applies_the_plan_at_once(monkeypatch):
+    """Счёт перехода Stripe иногда закрывает сразу — привязанной картой. Ждать
+    вебхук ради уже случившегося незачем: иначе владелец видит прежний тариф и
+    жмёт «оплатить» снова."""
+    url, _finalized, applied, _burned = _run_switch(monkeypatch, _Inv("in_paid", "paid"))
     assert url is None, "платить нечего — вести владельца некуда"
     assert applied == ["paid"]
 
@@ -611,7 +594,7 @@ def test_the_cycle_invoice_is_never_closed(monkeypatch):
 def test_switch_ignores_a_paid_invoice_of_another_plan(monkeypatch):
     """`latest_invoice` бывает и прошлым, уже оплаченным счётом. Применить его
     значит вернуть студию на прежний тариф её же старым платежом."""
-    _url, _finalized, applied = _run_switch(
+    _url, _finalized, applied, _burned = _run_switch(
         monkeypatch, _Inv("in_old", "paid"),
         metadata={"plan": "pro"}, mirrored_plan="business",
     )

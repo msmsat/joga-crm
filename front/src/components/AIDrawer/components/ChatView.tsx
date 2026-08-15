@@ -30,6 +30,8 @@ export default function ChatView({
 }: ChatViewProps) {
   const { t } = useTranslation('ai');
   const isEmpty = messages.length === 0;
+  const lastMsg = messages[messages.length - 1];
+  const streaming = lastMsg?.role === 'assistant' && !!lastMsg.text;
 
   // Печатаем только ответ, только что пришедший с сервера — см. AI/ChatPanel.tsx
   // (тот же паттерн: setState во время рендера на изменение isThinking).
@@ -63,9 +65,11 @@ export default function ChatView({
         </div>
       ) : (
         <div className={styles.messagesArea}>
-          {messages.map(msg => (
+          {/* Ключ — позиция: см. AI/ChatPanel.tsx (id меняется при сохранении
+              черновика, по нему пузырь мигал бы перемонтированием). */}
+          {messages.map((msg, i) => (
             <MessageBubble
-              key={msg.id}
+              key={i}
               message={msg}
               animate={msg.id === animateId}
               onAnimateDone={() => setAnimateId(null)}
@@ -80,7 +84,9 @@ export default function ChatView({
               onCancel={() => onCancelAction?.()}
             />
           )}
-          {isThinking && (
+          {/* Пока ответ печатается, «Думаю» уступает место самому пузырю —
+              иначе оно висело бы под текстом до конца генерации. */}
+          {isThinking && !streaming && (
             <div className={styles.thinkingRow}>
               <div className={styles.thinkingBubble}>
                 <ThinkingStateSVG />

@@ -352,6 +352,38 @@ class OfflineTransactionFee(Base):
     studio: Mapped["Studio"] = relationship(back_populates="offline_fees")
 
 
+class FxRate(Base):
+    """Последний известный курс валюты к валюте биллинга. Одна строка на валюту.
+
+    Курс нужен, когда студия торгует не в валюте биллинга: комиссия начисляется в
+    деньгах студии (кронах), а счёт Stripe обязан быть в валюте её Customer'а
+    (евро). Берётся с ЕЦБ раз в сутки (services/offline_fee_billing._refresh_fx).
+
+    Почему в БД, а не файлом: провайдер курса лежит, а деньги считать надо всегда.
+    Кэш в памяти умирает с процессом, файл во временном каталоге контейнера — с
+    перезапуском, и после него студия, торгующая в кронах, не попадала бы в счёт
+    вовсе, пока ЕЦБ не ответит. В БД последний удачный курс переживает и то, и
+    другое: работает провайдер — обновляем строку, не работает — берём её же.
+
+    `base` хранится вместе с курсом: смена BILLING_CURRENCY делает прежние
+    множители бессмысленными, и применить их значило бы выставить счета с
+    коэффициентом от другой валюты.
+    """
+    __tablename__ = "fx_rates"
+    __table_args__ = (
+        UniqueConstraint("base", "code", name="uq_fx_rate_base_code"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    base: Mapped[str] = mapped_column(String(3), index=True)   # валюта биллинга, lower
+    code: Mapped[str] = mapped_column(String(3), index=True)   # валюта студии, lower
+    # Множитель code → base: сумма_в_base = сумма_в_code × rate.
+    rate: Mapped[float] = mapped_column(Float)
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(),
+    )
+
+
 class PlatformRevenueLedger(Base):
     """Доходы платформы одной строкой на поступление — и онлайн, и офлайн.
 

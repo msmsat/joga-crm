@@ -4,11 +4,15 @@ import {
   ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input,
 } from '../../../../../components/ui/index';
 import { Select } from '../../../../../components/ui/Select';
-import { useCountryName, useCountryOptions, useProfileDraft } from '../../hooks/useProfileDraft';
+import { useCountryName, useCountryOptions, useProfileDraft, vatErrorOf, vatPrefix } from '../../hooks/useProfileDraft';
 import type { ProfileDraft } from '../../hooks/useProfileDraft';
 
 /** Сетка полей реквизитов. Одна и та же в модалке и во вкладке «Способ оплаты». */
-export function BillingProfileFields({ draft }: { draft: ProfileDraft }) {
+export function BillingProfileFields(
+  // `profile` — СОХРАНЁННЫЕ реквизиты, а не черновик формы: подпись про
+  // неподтверждённый номер говорит о том, что уже лежит на сервере.
+  { draft, profile }: { draft: ProfileDraft; profile?: BillingProfile | null },
+) {
   const { t } = useTranslation('billing');
   const countries = useCountryOptions();
   const { values, set, errors, showErrors } = draft;
@@ -23,11 +27,15 @@ export function BillingProfileFields({ draft }: { draft: ProfileDraft }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div>
         <label style={labelStyle}>{t('profile.fields.country')}</label>
+        {/* searchable — список полный (250 стран), листать его бессмысленно. */}
         <Select
           value={values.country}
           options={countries}
           onChange={set('country')}
           placeholder={t('profile.fields.countryPlaceholder')}
+          searchable
+          searchPlaceholder={t('profile.fields.countrySearch')}
+          emptyText={t('profile.fields.countryNotFound')}
         />
         {err('country') && (
           <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '6px' }}>
@@ -70,18 +78,45 @@ export function BillingProfileFields({ draft }: { draft: ProfileDraft }) {
         />
       </div>
 
-      <div>
-        <Input
-          label={t('profile.fields.vat')}
-          value={values.vat_id}
-          onChange={v => set('vat_id')(v.toUpperCase())}
-          placeholder={t('profile.fields.vatPlaceholder')}
-          monospace
-        />
-        <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.55, marginTop: '7px' }}>
-          {t('profile.fields.vatHint')}
+      {/* Номер НДС — только у стран ЕС. Снаружи сверить его нечем, а на налог он
+          не влияет: там решает страна плательщика. Поэтому не показываем поле, а
+          объясняем почему — молча исчезнувшее поле читается как баг. */}
+      {draft.vatAsked ? (
+        <div>
+          {/* Отказ VIES показываем ЗДЕСЬ, а не только тостом: сообщение называет
+              конкретное поле и предлагает выход («сохраните без номера»), а тост
+              уезжает раньше, чем человек успевает вернуться к форме. */}
+          <Input
+            label={t('profile.fields.vat')}
+            value={values.vat_id}
+            onChange={v => set('vat_id')(v.toUpperCase())}
+            placeholder={t('profile.fields.vatPlaceholder', { prefix: vatPrefix(values.country) })}
+            error={draft.vatError || undefined}
+            monospace
+          />
+          {/* Номер сохранён, но реестр ЕС в момент ввода молчал: в Stripe он не
+              уезжает, и счёт придёт с полным НДС. Сказать об этом обязаны здесь —
+              иначе налог в счёте выглядит ошибкой платформы. Сверка повторяется
+              сама (recheck_vat_numbers), поэтому просим не вводить заново. */}
+          {!draft.vatError && profile?.vat_id && profile.vat_verified === false && (
+            <div style={{ marginTop: '7px', padding: '10px 14px', background: 'rgba(252,174,145,0.1)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '10px', fontSize: '11.5px', color: 'var(--onyx)', lineHeight: 1.55 }}>
+              {t('profile.fields.vatPending')}
+            </div>
+          )}
+          {!draft.vatError && !(profile?.vat_id && profile.vat_verified === false) && (
+            <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.55, marginTop: '7px' }}>
+              {t('profile.fields.vatHint')}
+            </div>
+          )}
         </div>
-      </div>
+      ) : values.country ? (
+        <div style={{
+          padding: '12px 16px', background: 'var(--bg)', border: '1px solid var(--border)',
+          borderRadius: '12px', fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.6,
+        }}>
+          {t('profile.fields.vatOutsideEu')}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -170,7 +205,8 @@ interface Props {
   /** Ушёл ли пользователь сюда с кнопки «Оплатить» — тогда кнопка ведёт к оплате. */
   beforePayment?: boolean;
   onClose: () => void;
-  onSave: (body: BillingProfileInput) => void;
+  /** Промис, а не void: отказ по номеру НДС надо поймать и показать под полем. */
+  onSave: (body: BillingProfileInput) => Promise<unknown>;
 }
 
 /**
@@ -190,7 +226,9 @@ export default function BillingProfileModal({
 
   const submit = () => {
     if (saving || !draft.validate()) return;
-    onSave(draft.payload());
+    // Тост про ошибку уже показал хук — здесь ловим только отказ по номеру НДС,
+    // чтобы подписать им поле; форма остаётся открытой с введённым.
+    onSave(draft.payload()).catch(err => draft.setVatError(vatErrorOf(err, t)));
   };
 
   return (
@@ -200,7 +238,7 @@ export default function BillingProfileModal({
         subtitle={t(beforePayment ? 'profile.subtitlePay' : 'profile.subtitle')}
       />
       <ModalBody>
-        <BillingProfileFields draft={draft} />
+        <BillingProfileFields draft={draft} profile={profile} />
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t('profile.cancel')}</GhostButton>

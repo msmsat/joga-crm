@@ -9,6 +9,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
+from html import escape
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -17,11 +18,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Client, ClientSubscription
+from models import Client, ClientSubscription, Studio
 from routers.clients.loyalty import apply_points_change
 from schemas.loyalty import (
     CampaignCreate, CampaignResult, RetentionMonth, RetentionRead, SegmentClientPreview, SegmentRead,
 )
+from services.email_layout import MINIAPP_URL, button
 from services.loyalty_matching import SEGMENT_MATCHERS, match_segment
 from services.mailer import send_email
 from services.notifier import notify
@@ -81,6 +83,13 @@ async def run_campaign(
         select(Client.id, Client.email).where(Client.id.in_(ids), Client.studio_id == ctx.studio_id)
     )).all())
 
+    # Письмо кампании приходит клиенту ОТ СТУДИИ: её имя в шапке и кнопка в её
+    # кабинет — иначе рассылка выглядит письмом от незнакомой CRM.
+    studio_name = (await db.execute(
+        select(Studio.name).where(Studio.id == ctx.studio_id)
+    )).scalar_one_or_none() or "Velora"
+    open_app = button("Открыть приложение", f"{MINIAPP_URL}/s/{ctx.studio_id}")
+
     processed = 0
     emails_sent = 0
     granted: list[int] = []
@@ -102,7 +111,10 @@ async def run_campaign(
             if not to:
                 continue  # нет email — пропускаем молча
             try:
-                await send_email(to, "Сообщение от студии", f"<p>{body.message}</p>")
+                await send_email(
+                    to, f"Сообщение от {studio_name}",
+                    f"<p>{escape(body.message)}</p>" + open_app, brand=studio_name,
+                )
                 emails_sent += 1
             except Exception:
                 logger.exception("campaign email failed for client %s", m.client_id)

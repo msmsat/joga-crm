@@ -31,7 +31,7 @@ from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED,
     MIN_MONTHLY_FEE, TRIAL_DAYS, amount_for, tier,
 )
-from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog
+from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
 from activity import log_activity
 from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
@@ -57,8 +57,14 @@ _NOT_CONFIGURED = {
 # `min_monthly` — минимальный месячный платёж процентного тарифа. Это НОВОЕ
 # денежное обязательство, поэтому версия поднята: согласия, данные до его введения,
 # на него не распространяются, и владелец обязан подтвердить условия заново.
+#
+# Редакция 2026-08-3: сами условия переехали в Условия использования (static/
+# terms.html, §5.1) и теперь версионируются вместе с ними. До этого текст жил
+# только в переводах фронта и правился без подъёма версии — доказать, с чем именно
+# согласилась студия, было нечем. Совпадение цифр в документе с этим словарём
+# сторожит preflight (check_legal_docs).
 OFFLINE_TERMS = {
-    "version": "2026-08-2",
+    "version": "2026-08-3",
     "grace_days": offline_fee_billing.GRACE_DAYS,
     "percent_rate": PERCENT_ONLY_RATE,
     "combo_rate": COMBO_PERCENT_RATE,
@@ -85,6 +91,12 @@ async def get_plans_catalog(
         period_discounts=PERIOD_DISCOUNTS,
         currency=stripe_billing.CURRENCY.upper(),
         min_monthly=MIN_MONTHLY_FEE,
+        # Те же три числа, что уезжают в `terms` при 422, — но доступные ДО запроса:
+        # модалку согласия фронт рисует раньше, чем что-либо отправит, и брать их
+        # там было неоткуда, кроме литералов в разметке.
+        percent_rate=OFFLINE_TERMS["percent_rate"],
+        combo_rate=OFFLINE_TERMS["combo_rate"],
+        grace_days=OFFLINE_TERMS["grace_days"],
         # Цены в каталоге — БЕЗ налога. Ставку отдаём отдельным полем, чтобы фронт
         # подписал итог на шаге оплаты («включая НДС N%») и не зашивал число у себя:
         # настоящую сумму всё равно считает Stripe Tax по стране покупателя.
@@ -484,6 +496,9 @@ async def activate_model(
     # Ступень «до» считаем ДО создания строки: иначе новый план сравнивался бы сам с
     # собой и проверка ниже пропускала бы любой тариф.
     current_plan = row.plan_name if row is not None else "pro"
+    # Режим «до» — по той же причине: ниже он перезаписывается телом запроса, а
+    # отметка о согласии обязана знать, ВХОДИТ студия в режим или уже в нём сидит.
+    previous_mode = row.billing_mode if row is not None else None
     if row is None:
         row = StudioBillingPlan(studio_id=ctx.studio_id, plan_name=current_plan)
         db.add(row)
@@ -507,6 +522,22 @@ async def activate_model(
             "code": "billing.offline_terms_required",
             "message": "Подтвердите условия постоплаты комиссии с офлайн-продаж",
             "terms": OFFLINE_TERMS,
+        })
+
+    # Реквизиты плательщика — условие ВКЛЮЧЕНИЯ постоплаты, а не только оплаты
+    # картой. Счёт за комиссию и минимальный платёж выставляем МЫ сами, с
+    # automatic_tax; клиент Stripe без страны роняет такой счёт целиком
+    # (`customer_tax_location_invalid`), и percent-студия молча оставалась бы
+    # неоплачиваемой — а с ноября 2026 ещё и заблокированной за невыданный счёт.
+    # Онбординг адрес не спрашивает (только свободную строку), поэтому единственное
+    # место, где он гарантированно есть, — профиль владельца; из него же его берёт
+    # offline_fee_billing._ensure_studio_customer.
+    #
+    # Гейт на сервере, а не только в форме: тот же принцип, что у accept_offline_terms.
+    if body.mode in ("percent", "combo") and not billing_profile(ctx.user).filled:
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.billing_profile_required",
+            "message": "Заполните реквизиты плательщика — по ним выставляется счёт за комиссию",
         })
 
     # Комбо — ПОКУПКА, а не настройка, и здесь она НЕ происходит НИКОГДА. Прежний
@@ -546,9 +577,20 @@ async def activate_model(
         # как раз и проверяет, что условия комбо приняты. Оформление отвечало бы
         # 422 навсегда, сразу после успешного подтверждения.
         accepted_rate = PERCENT_ONLY_RATE if body.mode == "percent" else COMBO_PERCENT_RATE
-        row.percent_terms_accepted_at = datetime.utcnow()
         row.percent_terms_rate = accepted_rate
         row.percent_terms_version = OFFLINE_TERMS["version"]
+        # Отметку ВРЕМЕНИ двигает только ВХОД в режим, а не любое подтверждение.
+        # По ней `_bill_minimum` решает, прожила ли студия расчётный месяц на
+        # проценте: месяц, в котором она на него перешла, минимумом не облагается.
+        # Пока отметка обновлялась на каждый вызов, повторное нажатие «процент»
+        # раз в месяц (запрос проходит: режим тот же, флаг согласия стоит) сдвигало
+        # её в текущий месяц — и 39 € не выставлялись НИКОГДА.
+        #
+        # Смена редакции условий отметку тоже не двигает намеренно: иначе правка
+        # текста дарила бы всем percent-студиям бесплатный месяц. Что именно принято
+        # и в какой редакции, видно из полей выше и из ленты событий.
+        if previous_mode != body.mode or row.percent_terms_accepted_at is None:
+            row.percent_terms_accepted_at = datetime.utcnow()
         log_activity(
             db, ctx.studio_id, "billing",
             title=f"Приняты условия постоплаты комиссии {accepted_rate}% (ред. {OFFLINE_TERMS['version']})",
@@ -936,6 +978,43 @@ async def get_payment_cards(
     return rows
 
 
+def _vat_for_country(vat_id: str | None, country: str) -> str | None:
+    """Номер, который вообще допустимо хранить для этой страны.
+
+    Снаружи ЕС — никакой: там номер не спрашивается (форма его и не показывает),
+    сверить его нечем, а на налог он не влияет. Пришёл всё равно — молча роняем,
+    а не отказываем: это не ошибка ввода, а поле, которого для этой страны нет.
+
+    Внутри ЕС префикс номера ОБЯЗАН совпадать со страной. Без этой проверки
+    остаётся дыра: VIES доказывает, что номер существует, а не что он принадлежит
+    плательщику, — и любой мог бы вписать реальный чужой немецкий номер, пройти
+    сверку и получить reverse charge. Совпадение со страной закрывает хотя бы
+    «плательщик из одной страны платит по номеру другой».
+    """
+    if not vat_id:
+        return None
+    if country not in vies.EU_VAT_COUNTRIES:
+        return None
+    prefix = vies.vat_prefix(country)
+    if not vat_id.startswith(prefix):
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.vat_country_mismatch",
+            "message": f"Номер НДС выбранной страны начинается с {prefix}",
+        })
+    return vat_id
+
+
+def _needs_vies_check(new_vat: str | None, stored_vat: str | None) -> bool:
+    """Идти ли в VIES за этим номером прямо сейчас.
+
+    Сюда доезжает только европейский номер (см. `_vat_for_country`), поэтому
+    условий два: номер есть и номер ИЗМЕНИЛСЯ. Перепроверять неизменившийся
+    нельзя — правка адреса в день, когда реестр лежит, упиралась бы в 422 из-за
+    номера, который мы сами уже проверили.
+    """
+    return bool(new_vat) and new_vat != stored_vat
+
+
 @router.get("/profile", response_model=BillingProfileRead)
 async def get_billing_profile(user: User = Depends(get_current_user)):
     """Реквизиты плательщика. Гейт — АККАУНТ, а не студия.
@@ -957,16 +1036,54 @@ async def save_billing_profile(
     """Сохранить/поправить реквизиты. Один и тот же эндпоинт для формы перед первой
     оплатой и для кнопки «Редактировать» во вкладке «Способ оплаты» — форма там одна.
 
+    Номер НДС проходит здесь два рубежа, и это единственное место, где он попадает
+    в продукт:
+
+    1. ФОРМАТ. Не похож на номер этой страны — 422, в реестр не ходим вовсе.
+    2. РЕЕСТР (VIES). «Такого нет» — 422. «Не отвечает» — номер СОХРАНЯЕМ, но
+       помечаем неподтверждённым (`billing_vat_verified=False`).
+
+    Третьего исхода «отказать из-за молчащего реестра» больше нет намеренно: узел
+    отдельной страны ЕС лежит регулярно, и терять из-за этого покупателя нельзя.
+    Цена компромисса известна и берётся на себя платформой в правильную сторону —
+    неподтверждённый номер В STRIPE НЕ УЕЗЖАЕТ (checkout._ensure_customer), значит
+    плательщику выставляется ПОЛНЫЙ НДС вместо reverse charge. Ошибиться в сторону
+    переплаты налога можно (её возвращает поддержка), в сторону недобора — нет:
+    его снимут с платформы. Сверку повторяет фоновый проход
+    (webhook.recheck_vat_numbers), и по её успеху номер начинает работать сам.
+
     В Stripe отсюда НЕ пишем: у аккаунта без студии клиента Stripe ещё нет, а у
     аккаунта с двумя студиями их два. Синхронизацию делает оформление оплаты
     (checkout._ensure_customer) — там известно, какой именно студии платят.
     """
+    # Страна решает, есть ли поле НДС вообще: вне ЕС номер не хранится.
+    vat_id = _vat_for_country(body.vat_id, body.country)
+    verified = user.billing_vat_verified
+
+    if _needs_vies_check(vat_id, user.billing_vat_id):
+        if not vies.format_ok(body.country, vat_id):
+            raise HTTPException(status_code=422, detail={
+                "code": "billing.vat_bad_format",
+                "message": "Номер НДС не похож на номер выбранной страны — проверьте его",
+            })
+        valid = await vies.verify(vat_id)
+        if valid is False:
+            raise HTTPException(status_code=422, detail={
+                "code": "billing.vat_invalid",
+                "message": "VIES не знает такого номера НДС — проверьте его или сохраните без номера",
+            })
+        # None (реестр молчит) → verified=False: номер сохранён, но не работает.
+        verified = valid is True
+
     user.billing_country = body.country
     user.billing_line1 = body.line1
     user.billing_line2 = body.line2
     user.billing_postal_code = body.postal_code
     user.billing_city = body.city
-    user.billing_vat_id = body.vat_id
+    user.billing_vat_id = vat_id
+    # Номер убрали — подтверждение вместе с ним: иначе следующий, вписанный на
+    # день молчащего реестра, унаследовал бы галку от прежнего и уехал в Stripe.
+    user.billing_vat_verified = bool(vat_id) and verified
     await db.commit()
     return billing_profile(user)
 

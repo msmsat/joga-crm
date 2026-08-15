@@ -102,19 +102,6 @@ def check_billing_currency() -> None:
         _err(f"BILLING_CURRENCY={CURRENCY} без младших единиц — цены в plans.py заданы в центах, суммы уедут в 100 раз")
 
 
-def check_fx_cache() -> None:
-    """Кэш курсов ЕЦБ. В контейнере с эфемерной ФС переживает только том."""
-    import tempfile
-
-    path = os.getenv("FX_CACHE_PATH")
-    if not path:
-        _warn(
-            f"FX_CACHE_PATH не задан — курсы валют кэшируются во временный каталог "
-            f"({tempfile.gettempdir()}). В контейнере кэш умрёт с перезапуском; "
-            f"если студии торгуют не в валюте биллинга, укажите путь на постоянный том"
-        )
-
-
 def check_smtp() -> None:
     """Почта: без неё не уедут ни фактуры, ни предупреждения о блокировке."""
     if not (os.getenv("SMTP_HOST") and os.getenv("SMTP_USER") and os.getenv("SMTP_PASS")):
@@ -234,6 +221,31 @@ def check_legal_docs() -> None:
                 f"static/{name} не содержит редакцию {legal.TERMS_VERSION} — "
                 f"версия в тексте разошлась с legal.TERMS_VERSION, согласия станут непроверяемыми"
             )
+
+    # Цифры постоплаты в Условиях (§5.1) обязаны совпадать с теми, по которым
+    # реально выставляются счета. Разъехавшись, они делают документ неверным ровно
+    # там, где он единственное доказательство: владелец подтверждает ставку и срок,
+    # а применяются другие. Каталог правится в plans.py одной строкой — а документ
+    # при этом молчит, поэтому сверяем здесь.
+    from routers.billing.plans import MIN_MONTHLY_FEE, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE
+    from services.offline_fee_billing import GRACE_DAYS
+
+    terms = (static / "terms.html")
+    if terms.exists():
+        text = terms.read_text(encoding="utf-8")
+        # `%g` убирает хвост у целых (3.0 → «3»), а полуторапроцентная ставка
+        # остаётся «1.5» — ровно так они и написаны в документе.
+        for value, what in (
+            (f"{PERCENT_ONLY_RATE:g}", "ставка тарифа «процент»"),
+            (f"{COMBO_PERCENT_RATE:g}", "ставка тарифа «фикс + процент»"),
+            (f"{MIN_MONTHLY_FEE // 100}", "минимальный месячный платёж"),
+            (str(GRACE_DAYS), "срок оплаты счёта"),
+        ):
+            if value not in text:
+                _err(
+                    f"static/terms.html §5.1 не называет {what} ({value}) — документ "
+                    f"разошёлся с каталогом, поднимите редакцию и поправьте текст"
+                )
 
 
 async def check_stripe_account() -> None:
@@ -396,6 +408,47 @@ async def check_stripe_tax() -> None:
         f"их резидентам счета уходят без местного налога. Сейчас активны: "
         f"{', '.join(sorted(c for c in countries if c)) or '—'}"
     )
+
+
+async def check_vies() -> None:
+    """Доступен ли реестр VIES с ЭТОЙ машины.
+
+    Номер НДС сверяется в момент ввода, и непроверенный не сохраняется
+    (routers/billing.save_billing_profile). Значит недоступный реестр — это не
+    деградация, а закрытая дверь: ни одна компания из ЕС не сможет добавить свой
+    номер, и все они получат счета с НДС там, где действует reverse charge.
+
+    Из кода это не видно и молчит до первой жалобы: типовые причины — закрытый
+    исходящий трафик контейнера и неполное хранилище сертификатов (цепочка
+    ec.europa.eu проверяется не везде, из-за чего в services/vies и стоит certifi).
+
+    Проверяем ПУЛОМ заведомо действительных номеров разных стран, с условием ИЛИ:
+    ответил хоть один — сеть, TLS и шлюз VIES в порядке, проверка пройдена.
+
+    Одной пробы мало: каждая страна ЕС держит свой узел сама, и падение отдельного
+    реестра — рутина. Прежняя проверка ходила ЗА ОДНИМ немецким номером и в день
+    техработ у Германии объявляла блокер «VIES недоступен с этой машины», закрывая
+    выход в прод при полностью исправной сети.
+
+    Ответ «такого номера нет» на заведомо действительный тоже считается сбоем: он
+    означает, что отвечает не реестр, а что-то другое (прокси, портал-заглушка).
+    """
+    from services import vies
+
+    alive, down = await vies.health()
+    if not alive:
+        _err(
+            f"реестр VIES недоступен с этой машины — не ответил ни один узел из пула "
+            f"({', '.join(down)}). Компании из ЕС не смогут подтвердить номер НДС и "
+            f"получат счета с налогом вместо reverse charge. Проверьте исходящий "
+            f"доступ к ec.europa.eu и сертификаты; подробности в логе services.vies"
+        )
+    elif down:
+        _warn(
+            f"VIES отвечает ({', '.join(alive)}), но узлы {', '.join(down)} сейчас молчат — "
+            f"номера этих стран временно не подтвердить. Это на стороне самих реестров и "
+            f"проходит само; такому плательщику пока выставляется полный НДС"
+        )
 
 
 async def check_invoice_tax_id() -> None:
@@ -598,7 +651,6 @@ async def main(sync: bool) -> int:
     check_stripe_keys()
     check_webhook_secrets()
     check_billing_currency()
-    check_fx_cache()
     check_smtp()
     check_platform_email()
     check_legal_docs()
@@ -609,6 +661,7 @@ async def main(sync: bool) -> int:
     await check_stripe_tax()
     await check_tax_registrations()
     await check_invoice_tax_id()
+    await check_vies()
     await check_stripe_catalog(sync)
     await check_db_stripe_links()
 

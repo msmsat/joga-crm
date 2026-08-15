@@ -189,7 +189,7 @@
 - *Run:* `cd back && venv\Scripts\activate && uvicorn main:app --reload`
 - *Migrations:* `alembic revision --autogenerate -m "msg"` -> `alembic upgrade head`
 - *Tests:* `cd back && pytest` — **прогон всей папки безопасен** (эпик N-10 закрыт). `conftest.py` глушит реальную отправку (SMTP/TG/WA) **и вызовы модели** (`services.llm.chat` и `chat_stream` — иначе прогон уходит в боевой API платёжным ключом, причём молча: тесты при этом зеленеют), кладёт корень в `sys.path`; под pytest пул БД отключается (`database.py`, NullPool), иначе соединение из закрытого event loop переезжало в следующий файл. Нужен `pip install -r back/requirements-dev.txt`. Тесты по-прежнему пишут в **dev-БД** — боевой `DATABASE_URL` при прогоне не подставлять.
-- *Preflight:* `cd back && python -m scripts.preflight` — проверка конфига перед боевым режимом (URL, режим ключей Stripe, раздельные секреты вебхуков, валюта, SMTP, каталог цен, ключ и модели Velora AI). Выход 1 = есть блокеры. `--sync` заодно заливает каталог цен.
+- *Preflight:* `cd back && python -m scripts.preflight` — проверка конфига перед боевым режимом (URL, режим ключей Stripe, раздельные секреты вебхуков, валюта, SMTP, каталог цен, ключ и модели Velora AI, доступность реестра VIES — без него компании из ЕС не сохранят номер НДС). Выход 1 = есть блокеры. `--sync` заодно заливает каталог цен.
 
 ---
 
@@ -215,7 +215,7 @@
 | `Button` | `components/ui/index` | 4 варианта: `primary` (персиковый градиент), `dark` (оникс), `ghost`, `danger`; `loading`, `icon`, `size` |
 | `Card` | `components/ui/index` | Карточка-поверхность: radius 16, мягкая тень, `hover` для кликабельных |
 | `Input` | `components/ui/index` | Поле с label, glow-фокусом персиковым и состоянием `error` |
-| `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита |
+| `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита; `searchable` + `searchPlaceholder`/`emptyText` — поле поиска над списком для длинных перечней (страны) |
 | `Switch` | `components/ui/index` | Тумблер вкл/выкл: капсула, персиковая заливка при `checked`, `disabled` |
 | `Segmented` | `components/ui/modal` | Переключатель 2–3 значений: белая «таблетка» едет под активным сегментом (замена дропдауна на коротких списках) |
 | `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: затемняющий оверлей (**без backdrop-filter — блюр во весь вьюпорт был причиной лагов открытия, не возвращать**), вход/выход по opacity, Esc |

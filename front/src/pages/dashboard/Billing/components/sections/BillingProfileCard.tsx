@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { BillingProfile, BillingProfileInput } from '../../../../../api/billing/billing.types';
 import { Button } from '../../../../../components/ui/index';
 import { BillingProfileFields } from '../modals/BillingProfileModal';
-import { useCountryName, useProfileDraft } from '../../hooks/useProfileDraft';
+import { isEuVatCountry, useCountryName, useProfileDraft, vatErrorOf } from '../../hooks/useProfileDraft';
 
 const CARD_STYLE: React.CSSProperties = {
   padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -55,7 +55,11 @@ function Editor({ profile, saving, onSave, onCancel }: {
 
   const submit = () => {
     if (saving || !draft.validate()) return;
-    onSave(draft.payload()).then(onCancel).catch(() => { /* тост показал хук */ });
+    onSave(draft.payload())
+      .then(onCancel)
+      // Тост про ошибку показал хук; здесь — только отказ VIES подписью под
+      // полем НДС, и форма остаётся открытой с введённым.
+      .catch(err => draft.setVatError(vatErrorOf(err, t)));
   };
 
   return (
@@ -63,7 +67,7 @@ function Editor({ profile, saving, onSave, onCancel }: {
       {/* Та же сетка полей, что и в модалке перед оплатой: правила обязательности
           и валидация живут в одном месте (useProfileDraft). */}
       <div style={{ maxWidth: '560px' }}>
-        <BillingProfileFields draft={draft} />
+        <BillingProfileFields draft={draft} profile={profile} />
       </div>
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         <Button variant="primary" loading={saving} onClick={submit}>{t('profile.save')}</Button>
@@ -124,11 +128,15 @@ export default function BillingProfileCard({ profile, saving, save }: Props) {
           }}>
             <Row label={t('profile.fields.country')} value={countryName} />
             <Row label={t('profile.fields.address')} value={address} />
-            <Row
-              label={t('profile.fields.vat')}
-              value={profile.vat_id || t('profile.vatNone')}
-              mono={!!profile.vat_id}
-            />
+            {/* Вне ЕС номера НДС у плательщика нет как поля — строка «Не указан»
+                там обещала бы, что его можно заполнить. */}
+            {isEuVatCountry(profile.country) && (
+              <Row
+                label={t('profile.fields.vat')}
+                value={profile.vat_id || t('profile.vatNone')}
+                mono={!!profile.vat_id}
+              />
+            )}
           </div>
           <div>
             <Button variant="ghost" onClick={() => setEditing(true)}>{t('profile.edit')}</Button>

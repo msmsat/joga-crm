@@ -17,6 +17,7 @@ import asyncio
 from types import SimpleNamespace
 
 import pytest
+from fastapi import HTTPException
 
 from routers.billing.checkout import billing_profile
 from schemas.settings.billing import BillingProfileUpdate
@@ -26,6 +27,7 @@ def _user(**billing) -> SimpleNamespace:
     fields = dict(
         billing_country=None, billing_line1=None, billing_line2=None,
         billing_postal_code=None, billing_city=None, billing_vat_id=None,
+        billing_vat_verified=False,
     )
     fields.update(billing)
     return SimpleNamespace(**fields)
@@ -142,16 +144,135 @@ def test_a_changed_number_replaces_the_old_one(monkeypatch):
     assert [r.value for r in fake.rows] == ["DE811907980"]
 
 
-def test_the_type_follows_the_number_not_the_default(monkeypatch):
-    """Британский номер, отправленный как `eu_vat`, Stripe отобьёт — Британия из
-    ЕС вышла, и её номера живут отдельным типом."""
+def test_the_type_is_always_eu_vat(monkeypatch):
+    """Номер спрашивается только у стран ЕС и только с их префиксом, поэтому
+    другого типа сюда не доедет. Карта «префикс → тип» тут была и удалена вместе
+    с приёмом британских и швейцарских номеров: сверить их нечем."""
     from services import stripe_billing
 
     fake = _FakeTaxIds([])
     _patch(monkeypatch, fake)
 
-    asyncio.run(stripe_billing.set_tax_id("cus_1", "GB123456789"))
-    assert fake.created == [("gb_vat", "GB123456789")]
+    asyncio.run(stripe_billing.set_tax_id("cus_1", "CZ12345678"))
+    assert fake.created == [("eu_vat", "CZ12345678")]
+
+
+# ─── 4. сверка номера с VIES ──────────────────────────────────────────────────
+
+def test_the_vat_field_exists_only_inside_the_eu():
+    """Снаружи ЕС сверить номер нечем (VIES — реестр ЕС), а на налог он не влияет:
+    продажа за пределы ЕС вне области европейского НДС, там решает страна. Принять
+    такой номер значило бы завести непроверяемую строку и напечатать её на
+    фискальном документе."""
+    from services import vies
+
+    assert {"CZ", "DE", "GR"} <= vies.EU_VAT_COUNTRIES
+    assert not {"GB", "CH", "NO", "US"} & vies.EU_VAT_COUNTRIES
+
+
+def test_northern_ireland_is_not_in_the_list():
+    """Её «европейскость» по НДС касается ТОВАРОВ, а продаём мы услуги — по ним
+    XI это Великобритания, то есть заграница."""
+    from services import vies
+
+    assert "XI" not in vies.EU_VAT_COUNTRIES
+
+
+def test_greek_numbers_start_with_el_not_gr():
+    """Единственная страна ЕС, у которой префикс номера НДС не совпадает с кодом
+    страны. Ждать от грека номер на `GR` значит не принять ни одного."""
+    from services import vies
+
+    assert vies.vat_prefix("GR") == "EL"
+    assert vies.vat_prefix("CZ") == "CZ"
+
+
+# Ответы сняты с живого сервиса (`python -m services.vies`), не из доков.
+def test_a_valid_number_is_accepted():
+    from services import vies
+
+    assert vies.verdict({"isValid": True, "userError": "VALID"}) is True
+
+
+def test_a_number_the_registry_denies_is_rejected():
+    from services import vies
+
+    assert vies.verdict({"isValid": False, "userError": "INVALID"}) is False
+
+
+@pytest.mark.parametrize("code", [
+    "MS_UNAVAILABLE", "SERVICE_UNAVAILABLE", "TIMEOUT",
+    "MS_MAX_CONCURRENT_REQ", "GLOBAL_MAX_CONCURRENT_REQ",
+])
+def test_a_broken_registry_is_not_a_bad_number(code):
+    """Сбой реестра приходит с HTTP 200 и `isValid: false` — теми же полями, что и
+    настоящий отказ. Читать один `isValid` значит объявлять недействительным любой
+    номер, который сегодня некому проверить, а реестр отдельной страны лежит
+    регулярно."""
+    from services import vies
+
+    assert vies.verdict({"isValid": False, "userError": code}) is None
+
+
+# ─── 5. номер и страна ────────────────────────────────────────────────────────
+
+def test_a_number_from_outside_the_eu_is_dropped_not_refused():
+    """Для такой страны поля НДС нет вовсе, и форма его не показывает. Пришёл всё
+    равно (старая вкладка, прямой запрос) — роняем молча: это не ошибка ввода."""
+    from routers.billing.router import _vat_for_country
+
+    assert _vat_for_country("GB123456789", "GB") is None
+    assert _vat_for_country("CHE116273543", "CH") is None
+
+
+def test_the_number_must_belong_to_the_selected_country():
+    """Дыра, которую это закрывает: VIES доказывает, что номер СУЩЕСТВУЕТ, а не
+    что он принадлежит плательщику. Без сверки со страной любой мог бы вписать
+    реальный чужой немецкий номер, пройти VIES и получить reverse charge."""
+    from routers.billing.router import _vat_for_country
+
+    with pytest.raises(HTTPException) as exc:
+        _vat_for_country("DE811907980", "FR")
+    assert exc.value.detail["code"] == "billing.vat_country_mismatch"
+
+
+def test_a_matching_number_passes():
+    from routers.billing.router import _vat_for_country
+
+    assert _vat_for_country("CZ12345678", "CZ") == "CZ12345678"
+    # Грек вписывает EL — и это правильный номер для страны GR.
+    assert _vat_for_country("EL123456789", "GR") == "EL123456789"
+
+
+def test_an_empty_number_is_fine_anywhere():
+    """Пустое поле — это «я физлицо»: ни проверять, ни запрещать нечего."""
+    from routers.billing.router import _vat_for_country
+
+    assert _vat_for_country(None, "CZ") is None
+    assert _vat_for_country(None, "US") is None
+
+
+# ─── 6. когда сверка вообще запускается ───────────────────────────────────────
+
+def test_an_unchanged_number_is_not_rechecked():
+    """Иначе правка адреса в день, когда реестр лежит, упиралась бы в отказ из-за
+    номера, который мы сами уже проверили."""
+    from routers.billing.router import _needs_vies_check
+
+    assert _needs_vies_check("CZ12345678", "CZ12345678") is False
+
+
+def test_a_new_number_is_checked():
+    from routers.billing.router import _needs_vies_check
+
+    assert _needs_vies_check("CZ12345678", None) is True
+    assert _needs_vies_check("CZ12345678", "DE811907980") is True
+
+
+def test_clearing_the_number_needs_no_check():
+    from routers.billing.router import _needs_vies_check
+
+    assert _needs_vies_check(None, "CZ12345678") is False
 
 
 if __name__ == "__main__":

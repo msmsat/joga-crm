@@ -12,10 +12,11 @@ from sqlalchemy.future import select
 from activity import log_activity
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Account, Client, Counterparty, Operation
+from models import Account, Client, Counterparty, Operation, Studio
 from routers.clients.loyalty import accrue_points, register_purchase
 from schemas.common import Page
 from schemas.finances.operations import CategoryStat, MethodStat, OperationCreate, OperationRead, OperationUpdate
+from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import LARGE_PAYMENT, notify
 
@@ -277,6 +278,47 @@ async def create_operation(
     if body.type == "in" and body.client_id is not None:
         await accrue_points(db, ctx.studio_id, body.client_id, body.amount)
         await register_purchase(db, ctx.studio_id, body.client_id, body.amount)
+
+    # Комиссия платформы с денег, проведённых РУКАМИ. Обе стороны — здесь, потому
+    # что для CRM это единственное место, где владелец объявляет движение денег,
+    # не проходящее ни через кассу, ни через Stripe.
+    #
+    # Доход (`in`) начисляет долю. Без этого ручная операция была обходом
+    # процентного тарифа в один клик: те же деньги за то же занятие, проведённые
+    # не кассой, а Финансами, комиссией не облагались вовсе — при том, что продажа
+    # абонемента, разовое, сертификат и депозит её платят.
+    #
+    # Расход категории «Возвраты» — снимает её обратно: наличные Stripe не
+    # расщепляет, про их возврат знает только CRM, и без этого студия получала счёт
+    # за продажу, которой больше нет.
+    #
+    # `stripe` исключён в обе стороны: онлайн-оплату расщепляет сам Stripe в момент
+    # платежа, а её возврат откатывает его же вебхук (checkout/stripe_pay.
+    # _revert_sale) — второе начисление и второе снятие были бы двойными.
+    fee_kind = (
+        "in" if body.type == "in"
+        else "out" if body.category == "Возвраты"
+        else None
+    )
+    if fee_kind is not None and body.method != platform_fee.ONLINE_METHOD:
+        studio = (await db.execute(
+            select(Studio).where(Studio.id == ctx.studio_id)
+        )).scalar_one()
+        currency = studio.currency or "CZK"
+        amount_minor = stripe_connect.to_minor_units(body.amount, currency)
+        if fee_kind == "in":
+            await platform_fee.record_offline_fee(
+                db, ctx.studio_id, amount_minor, currency,
+                client_id=body.client_id,
+                # Своя пометка метода: в разборе видно, что доход завели руками, а
+                # не продажей через кассу. `method` владельца — свободное поле и
+                # пустым приходит чаще всего.
+                payment_method=body.method or "manual",
+            )
+        else:
+            await platform_fee.reverse_offline_fee(
+                db, ctx.studio_id, amount_minor, currency, client_id=body.client_id,
+            )
     await db.flush()  # нужен op.id для ленты
     sign = "+" if body.type == "in" else "−"
     log_activity(
@@ -298,11 +340,16 @@ async def create_operation(
 
     if body.type == "in" and body.client_id is not None:
         # Успешная оплата клиента → квитанция (c4) и уведомление админу (a4).
+        large = body.amount >= LARGE_PAYMENT
         await notify(db, ctx.studio_id, "client", "c4",
                      {"client_id": body.client_id, "amount": body.amount})
+        # На крупной сумме владельцу уходит своя версия (o3), поэтому admin-версию
+        # ему не подставляем: в студии без администратора он получал два письма об
+        # одном платеже — «Оплата получена» и «Крупный платёж» с той же суммой.
         await notify(db, ctx.studio_id, "admin", "a4",
-                     {"amount": body.amount, "client_name": client_name})
-        if body.amount >= LARGE_PAYMENT:
+                     {"amount": body.amount, "client_name": client_name},
+                     owner_fallback=not large)
+        if large:
             await notify(db, ctx.studio_id, "owner", "o3",
                          {"amount": body.amount, "client_name": client_name})
 

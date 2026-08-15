@@ -616,14 +616,18 @@ _VAT_REJECTED = "unverified"
 async def _handle_tax_id(db: AsyncSession, obj) -> None:
     """Пришла сверка VAT ID с VIES. `unverified` → номер снимаем у Stripe.
 
-    Зачем: Stripe Tax применяет reverse charge (0 % НДС для юрлица из другой страны
-    ЕС) по ФОРМАТУ номера, не дожидаясь сверки — `DE000000000` обнуляет налог ровно
-    так же, как настоящий номер (проверено вызовами tax.Calculation на боевом ключе,
-    см. stripe_billing.delete_tax_id). Сверка приезжает этим событием уже ПОСЛЕ
-    оплаты. Если номер выдуманный, права продавать без НДС у нас не было, и 21 %
-    налоговая снимет с ПЛАТФОРМЫ, а не со студии: деньги за тариф те же, а НДС из
-    них вычтут. Отсюда правило — убрать номер до того, как по нему выпишется
-    следующий счёт.
+    ВТОРАЯ линия, а не первая. Выдуманный номер отсекается раньше — своей сверкой
+    с VIES в момент ввода (services/vies), и до Stripe он не доезжает. Здесь
+    ловится другое: номер, действительный на день ввода и аннулированный позже, —
+    а такой приходит только этим событием.
+
+    Почему вообще нельзя ждать сверки Stripe: Stripe Tax применяет reverse charge
+    (0 % НДС для юрлица из другой страны ЕС) по ФОРМАТУ номера, не дожидаясь её —
+    `DE000000000` обнуляет налог ровно так же, как настоящий номер (проверено
+    вызовами tax.Calculation на боевом ключе, см. stripe_billing.delete_tax_id).
+    Само событие приезжает уже ПОСЛЕ оплаты. Если права продавать без НДС не было,
+    21 % налоговая снимет с ПЛАТФОРМЫ, а не со студии: деньги за тариф те же, а НДС
+    из них вычтут. Отсюда правило — убрать номер до следующего счёта.
 
     Своя копия номера теперь есть — на аккаунте владельца (форма реквизитов), и её
     надо стереть той же рукой: иначе следующее оформление зальёт в Stripe обратно
@@ -687,8 +691,18 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
 
 
 async def _handle_refund(db: AsyncSession, obj) -> None:
-    """Возврат. Полный — переводит счёт в refunded и отменяет подписку, частичный
-    (или без сумм в событии) не трогает ни счёт, ни подписку.
+    """Возврат. Полный — переводит счёт в refunded, частичный (или без сумм в
+    событии) не трогает ни счёт, ни подписку.
+
+    Подписку отменяет только возврат счёта ЗА ТАРИФ. Комиссию с офлайн-продаж и
+    минимальный месячный платёж самообслуживание возвращать не даёт вовсе
+    (`refunds.REFUNDABLE_KIND`) — их возвращает поддержка руками из дашборда
+    Stripe, и это штатный путь. Без проверки вида такой возврат прилетал сюда
+    ровно тем же `charge.refunded` и ОТМЕНЯЛ СТУДИИ ТАРИФ: она оставалась без
+    доступа за то, что ей вернули переплаченную комиссию.
+
+    Сам счёт в refunded переводится при любом виде — это правда о деньгах, и она
+    же снимает блокировку (`platform_fee.suspension_reason` refunded не считает).
 
     Отмену делает Stripe по нашему запросу, а статус в БД подвинет пришедшее следом
     `customer.subscription.deleted` — сами его тут не проставляем, чтобы переход был
@@ -725,6 +739,13 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
         return
 
     await apply_status(db, invoice, "refunded")
+
+    if invoice.kind != "subscription":
+        logger.info(
+            "Stripe billing: возвращён счёт %s вида %s — подписку студии %s не трогаем",
+            invoice.id, invoice.kind, invoice.studio_id,
+        )
+        return
 
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
@@ -794,6 +815,49 @@ async def reconcile_subscriptions(db: AsyncSession) -> int:
     if fixed:
         await db.commit()
     return fixed
+
+
+async def recheck_vat_numbers(db: AsyncSession) -> int:
+    """Досверить номера НДС, принятые при молчащем реестре. Вернуть число подтверждённых.
+
+    Форма реквизитов не отказывает, когда узел страны в ЕС лежит: номер с верным
+    форматом сохраняется неподтверждённым, и до сверки плательщику выставляется
+    ПОЛНЫЙ НДС (routers/billing.save_billing_profile). Без этого прохода он остался
+    бы таким навсегда — компания переплачивала бы налог до тех пор, пока не
+    догадается открыть форму и нажать «Сохранить» ещё раз.
+
+    Только False → True. Обратный переход тут не делается сознательно: снятие уже
+    работающего номера — это `_handle_tax_id` по событию Stripe, и второй источник
+    того же решения однажды разъехался бы с первым.
+
+    Сбой по одному номеру не должен ронять остальные: реестр отвечает по странам
+    вразнобой, ради чего весь этот проход и существует.
+    """
+    from services import vies
+
+    users = (await db.execute(
+        select(User).where(
+            User.billing_vat_id.isnot(None),
+            User.billing_vat_verified.is_(False),
+        )
+    )).scalars().all()
+
+    confirmed = 0
+    for user in users:
+        try:
+            if await vies.verify(user.billing_vat_id) is True:
+                user.billing_vat_verified = True
+                confirmed += 1
+                logger.info(
+                    "VIES: номер %s аккаунта %s подтверждён — со следующего счёта reverse charge",
+                    user.billing_vat_id, user.id,
+                )
+        except Exception:
+            logger.exception("VIES: досверка номера аккаунта %s не удалась", user.id)
+
+    if confirmed:
+        await db.commit()
+    return confirmed
 
 
 def _add_months(moment: datetime, months: int) -> datetime:
@@ -937,7 +1001,7 @@ async def apply_status(
             # двух моментов времени тем более.
             subscription = await _sync_card(db, plan, subscription)
             if subscription is not None:
-                _apply_paid_mode(plan, subscription)
+                _apply_paid_mode(plan, subscription, invoice.kind)
             await db.commit()
         # Чек владельцу — тоже после коммита и тоже не роняет обработку: тариф уже
         # оплачен, и упавший SMTP не повод отдать Stripe 500 и получить ретрай уже
@@ -1023,8 +1087,16 @@ async def _sync_card(
     return subscription
 
 
-def _apply_paid_mode(plan: StudioBillingPlan, subscription) -> None:
+def _apply_paid_mode(plan: StudioBillingPlan, subscription, invoice_kind: str) -> None:
     """Тарифная модель — тоже по ОПЛАТЕ, а не по нажатию кнопки.
+
+    Модель переставляет ТОЛЬКО оплата ПОДПИСКИ — тот же гейт, что у ступени тарифа
+    в `_activate`, и живёт он здесь, а не в вызывающем: правило одно, а звать
+    функцию будут ещё. Без него оплата собственного счёта за комиссию
+    (`offline_fee`) или минимального платежа (`min_fee`) читала Price висящей
+    подписки и переводила студию обратно на `subscription` с `percent_rate=None` —
+    процент выключался, начисления прекращались, а раздел комиссии исчезал со
+    страницы. За то, что студия закрыла свой же долг.
 
     ЖАЛОБА 14.08.2026: «нажал в комбо соглашаюсь, и меня перевело, хотя я не
     оплатил». `POST /billing/model` включал комбо сразу и переводил подписку на
@@ -1041,6 +1113,8 @@ def _apply_paid_mode(plan: StudioBillingPlan, subscription) -> None:
     Price. Он и включается сразу, и дарить там нечего — фикс не уменьшается, а
     появляется обязательство платить комиссию с оборота и минимум.
     """
+    if invoice_kind != "subscription":
+        return
     parsed = stripe_catalog.parse_lookup_key(stripe_billing.price_key_of(subscription))
     if parsed is None:
         return

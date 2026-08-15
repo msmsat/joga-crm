@@ -15,13 +15,16 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry } from './lib/entry';
+import { readEntry, readTab } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  // Ссылка из письма студии ведёт в конкретный раздел (`?tab=my`), а не «в
+  // приложение вообще»: клиент открыл письмо про запись — он должен увидеть
+  // запись. Читаем один раз при первом рендере: дальше вкладками управляет меню.
+  const [activeTab, setActiveTab] = useState(() => readTab() ?? 'home');
   // Код сертификата, с которым пришли из Клуба. Профиль забирает его, открывает
   // покупку и сбрасывает — иначе тот же сертификат подставился бы и в следующий
   // раз, когда клиент просто зашёл купить абонемент.

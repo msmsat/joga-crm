@@ -18,8 +18,13 @@ class Studio(Base):
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     address: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
-    # Реквизиты для Stripe Tax: страна определяет ставку VAT, vat_id включает reverse
-    # charge для юрлиц из другой страны ЕС. Свободного `address` для налога мало.
+    # Адрес студии по частям — ЗАПАСНОЙ источник местоположения для Stripe Tax:
+    # свободного `address` налогу мало, без страны Customer роняет счёт с
+    # automatic_tax целиком. Основной источник — профиль плательщика на АККАУНТЕ
+    # владельца (User.billing_*): его собирает форма перед оплатой и требует
+    # включение постоплаты, а онбординг эти поля не спрашивает вовсе, так что у
+    # большинства студий они пустые. Порядок задан в
+    # services/offline_fee_billing._ensure_studio_customer.
     country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)   # ISO-3166-1 alpha-2
     postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     # Город отдельным полем, хотя улица лежит в свободном `address`: Stripe печатает
@@ -27,16 +32,16 @@ class Studio(Base):
     # на фактуре выходит «улица, индекс, страна» — адрес без города бухгалтерия
     # заворачивает.
     city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    # Номер плательщика НДС (VAT number, он же DIČ в CZ/SK, USt-IdNr в DE…).
-    vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
-    # Регистрационный номер компании (company registration number; IČO в CZ/SK,
-    # HRB в DE, KRS в PL…). Без него фактуру юрлицу не выписать.
+    # Номер плательщика НДС и регистрационный номер компании (DIČ и IČO в CZ/SK,
+    # USt-IdNr и HRB в DE…) — СПРАВОЧНЫЕ поля карточки студии.
     #
-    # Отдельно от vat_id, потому что это РАЗНЫЕ реквизиты: номер НДС есть только у
-    # плательщика налога, регистрационный — у любой зарегистрированной компании.
-    # Своего типа налогового id под него у Stripe нет, поэтому печатается на счёте
-    # кастомным полем (services/stripe_billing.ensure_customer), а подпись поля
-    # выбирается по стране студии (stripe_billing.company_id_label).
+    # В налоговом пути они НЕ участвуют, и это осознанно. Reverse charge включает
+    # только номер, прошедший сверку с реестром ЕС, а сверять здесь нечем: форма
+    # настроек принимает любую строку. Единственный проверяемый номер живёт на
+    # аккаунте владельца (User.billing_vat_id + billing_vat_verified, сверка в
+    # services/vies), и в Stripe уезжает только он. Отправлять отсюда значило бы
+    # обнулять НДС по неподтверждённому номеру, а недобор снимают с ПЛАТФОРМЫ.
+    vat_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # например CZ12345678
     company_id: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 

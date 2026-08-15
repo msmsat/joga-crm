@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, BillingTab, BillingPlan, Invoice } from '../types';
 import type {
@@ -8,6 +9,7 @@ import type {
 import { PLAN_COLORS, PLAN_STAFF_FALLBACK } from '../constants';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
+import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/index';
 
 type PlanInfo = { name: string; monthly: number; color: string; staffLimit: number | null };
@@ -29,12 +31,26 @@ const round2 = (value: number) => Math.round(value * 100) / 100;
 // Нулевые цены на время загрузки каталога — карточки рисуются сразу, без скачка вёрстки.
 const EMPTY_PRICES: Record<PlanType, number> = { start: 0, pro: 0, business: 0 };
 
+// Выбор тарифа и периода — СВОЙ у каждой модели оплаты. Подписка и комбо это
+// разные продукты: у комбо свой Price в Stripe и половинная цена, поэтому «Старт»,
+// выбранный в комбо, ничего не говорит о выборе в подписке. Одно состояние на обе
+// плитки молча переносило выбор между ними (жалоба 14.08.2026).
+type Choice = { plan: PlanType; period: 1 | 6 | 12 | 24 };
+const DEFAULT_CHOICE: Choice = { plan: 'pro', period: 1 };
+
 export function useBillingCalculator() {
   const { t } = useTranslation('billing');
   const toast = useToast();
+  const qc = useQueryClient();
   const [billingMode, setBillingMode] = useState<BillingMode>('subscription');
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('pro');
-  const [selectedPeriod, setSelectedPeriod] = useState<1 | 6 | 12 | 24>(1);
+  const [choice, setChoice] = useState<Record<BillingMode, Choice>>({
+    subscription: DEFAULT_CHOICE, percent: DEFAULT_CHOICE, fixed: DEFAULT_CHOICE,
+  });
+  const { plan: selectedPlan, period: selectedPeriod } = choice[billingMode];
+  const setSelectedPlan = (plan: PlanType) =>
+    setChoice(c => ({ ...c, [billingMode]: { ...c[billingMode], plan } }));
+  const setSelectedPeriod = (period: 1 | 6 | 12 | 24) =>
+    setChoice(c => ({ ...c, [billingMode]: { ...c[billingMode], period } }));
   const [modelBusy, setModelBusy] = useState(false);
   const [activeTab, setActiveTab] = useState<BillingTab>('plans');
   const [showPayModal, setShowPayModal] = useState(false);
@@ -52,6 +68,11 @@ export function useBillingCalculator() {
   // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
   // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
   const [minMonthly, setMinMonthly] = useState(0);
+  // Условия постоплаты с сервера. Дефолты — текущие значения каталога: каталог
+  // может не успеть загрузиться к моменту, когда владелец жмёт плитку модели, а
+  // модалка согласия без цифр бессмысленна. Сервер всё равно главнее — он же
+  // и отвергнет активацию без accept_offline_terms.
+  const [terms, setTerms] = useState({ percent_rate: 3, combo_rate: 1.5, grace_days: 7 });
   const [payBusy, setPayBusy] = useState(false);
   // Расчёт перехода: зачёт остатка, итог к оплате, что сгорит. Считает сервер тем
   // же вызовом Stripe, которым потом выставит счёт (GET /billing/checkout/preview),
@@ -79,10 +100,13 @@ export function useBillingCalculator() {
   // сбрасывает, и форма второй раз не показывается (GET /billing/profile).
   const [profile, setProfile] = useState<BillingProfile | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
-  // Форма-гейт перед оплатой. Открывается только когда реквизитов НЕТ, и после
-  // сохранения сама ведёт в модалку расчёта — иначе владелец, заполнив адрес,
-  // остался бы на странице и жал «Оплатить» второй раз.
+  // Форма-гейт реквизитов. Открывается только когда их НЕТ, и после сохранения
+  // сама доводит начатое до конца — иначе владелец, заполнив адрес, остался бы на
+  // странице и жал ту же кнопку второй раз.
   const [showProfileGate, setShowProfileGate] = useState(false);
+  // Что доделать после сохранения реквизитов: открыть расчёт (оплата) или включить
+  // модель (постоплата). Гейт один на оба входа — см. `requireProfile`.
+  const afterProfile = useRef<(() => void) | null>(null);
   // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
   const [stats, setStats] = useState<BillingStats | null>(null);
 
@@ -95,16 +119,19 @@ export function useBillingCalculator() {
   const modeSyncedRef = useRef(false);
   const loadPlan = () => billingApi.getPlan().then(p => {
     setPlan(p);
-    if (!planSyncedRef.current && p?.status === 'active' && p.plan_name in PLAN_COLORS) {
-      setSelectedPlan(p.plan_name as PlanType);
+    // Оплаченная модель. Подставлять тариф надо ИМЕННО в неё, а не в открытую
+    // сейчас плитку: комбо «Старт» не делает «Старт» выбранным и в подписке.
+    const paidMode = p?.billing_mode ? MODE_FROM_SERVER[p.billing_mode] : undefined;
+    if (!planSyncedRef.current && paidMode && p.status === 'active' && p.plan_name in PLAN_COLORS) {
+      setChoice(c => ({ ...c, [paidMode]: { ...c[paidMode], plan: p.plan_name as PlanType } }));
       planSyncedRef.current = true;
     }
     // Плитку режима тоже ставим на то, что реально лежит в БД, и тоже один раз.
     // Без этого студия на комбо открывала страницу с выбранной «Подпиской» и
     // видела полную цену, тогда как Stripe списал бы половинную: сумму берёт
     // сервер из billing_mode, а не из выбора во фронте.
-    if (!modeSyncedRef.current && p?.billing_mode && p.billing_mode in MODE_FROM_SERVER) {
-      setBillingMode(MODE_FROM_SERVER[p.billing_mode]);
+    if (!modeSyncedRef.current && paidMode) {
+      setBillingMode(paidMode);
       modeSyncedRef.current = true;
     }
   }).catch(() => {});
@@ -139,7 +166,9 @@ export function useBillingCalculator() {
   // ponytail: фокус-рефетч, а не polling (React Query не вводим, §3.2) — добавить
   // setInterval, если понадобится live-обновление при постоянно открытой вкладке.
   useEffect(() => {
-    const onFocus = () => { loadPlan(); loadInvoices(); loadCards(); loadStats(); };
+    // Профиль здесь же: реквизиты общие на аккаунт, и заполнить их могли во
+    // второй вкладке — иначе эта продолжила бы показывать гейт перед оплатой.
+    const onFocus = () => { loadPlan(); loadInvoices(); loadCards(); loadStats(); loadProfile(); };
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onFocus);
     return () => {
@@ -153,11 +182,28 @@ export function useBillingCalculator() {
   // не должна открывать окно оплаты, если режим на сервере так и не переключился —
   // иначе студия заплатила бы полную цену подписки, ожидая половинную.
   const activateModel = (body: ActivateModelRequest, onDone?: () => void) => {
+    // Постоплата требует реквизитов ДО включения, а не перед первой оплатой: счёт
+    // за комиссию выставляем мы сами, и клиент Stripe без страны роняет его целиком
+    // (`customer_tax_location_invalid`). Сервер отвечает на такой запрос 422
+    // billing.billing_profile_required — здесь тот же гейт, но человеческий: форма
+    // вместо отказа. Подписка сюда не попадает: у неё реквизиты спросит оплата.
+    if (body.mode === 'percent' || body.mode === 'combo') {
+      requireProfile(() => doActivateModel(body, onDone));
+      return;
+    }
+    doActivateModel(body, onDone);
+  };
+
+  const doActivateModel = (body: ActivateModelRequest, onDone?: () => void) => {
     if (modelBusy) return;
     setModelBusy(true);
     billingApi.activateModel(body)
       .then(res => {
         setPlan(res); loadStats(); loadInvoices();
+        // Виджет комиссии живёт на своём кэше react-query (staleTime 30 c) и сам
+        // о смене модели не узнаёт: включив процент, владелец видел прежние
+        // цифры — ставку null и «по ставке 0%» — пока кэш не протухнет.
+        qc.invalidateQueries({ queryKey: queryKeys.billingOfflineFees });
         // Комбо на живой подписке здесь ничего не меняет: записано только согласие,
         // а сама покупка идёт следом обычным путём — модалка расчёта (onDone) и
         // оплата. Тост «Модель оплаты обновлена» тут соврал бы (в БД она прежняя)
@@ -202,10 +248,25 @@ export function useBillingCalculator() {
   // а фактура юрлица без адреса не документ. Профиль перечитываем вместо того,
   // чтобы верить состоянию: на медленной сети клик приходит раньше первой
   // загрузки, и владелец с уже заполненным адресом получил бы форму заново.
-  const startCheckout = () => {
-    if (profile?.filled) { openPayModal(); return; }
-    loadProfile().then(fresh => (fresh?.filled ? openPayModal() : setShowProfileGate(true)));
+  // Гейт реквизитов. Один на два входа — оплату и включение постоплаты, — потому
+  // что причина одна: без страны и адреса Stripe Tax не знает ставку, а фактура
+  // юрлица без адреса не документ. Профиль перечитываем вместо того, чтобы верить
+  // состоянию: на медленной сети клик приходит раньше первой загрузки, и владелец
+  // с уже заполненным адресом получил бы форму заново.
+  //
+  // Продолжение храним в ref, а не в state: между сохранением формы и вызовом
+  // здесь нет ни одного рендера, а лишний setState просто добавил бы кадр, в
+  // котором продолжение уже забыто.
+  const requireProfile = (next: () => void) => {
+    if (profile?.filled) { next(); return; }
+    loadProfile().then(fresh => {
+      if (fresh?.filled) { next(); return; }
+      afterProfile.current = next;
+      setShowProfileGate(true);
+    });
   };
+
+  const startCheckout = () => requireProfile(openPayModal);
 
   // Сохранение реквизитов. Один путь для гейта перед оплатой и для правки во
   // вкладке «Способ оплаты» — форма там одна и та же.
@@ -222,12 +283,20 @@ export function useBillingCalculator() {
       .finally(() => setProfileSaving(false));
   };
 
-  // Гейт: сохранили → сразу к расчёту, чтобы «Оплатить» не жать второй раз.
-  const saveProfileAndPay = (body: BillingProfileInput) => {
-    saveProfile(body)
-      .then(() => { setShowProfileGate(false); openPayModal(); })
-      .catch(() => { /* тост уже показан, форма остаётся открытой с введённым */ });
-  };
+  // Гейт: сохранили → сразу продолжаем прерванное действие, чтобы кнопку не жать
+  // второй раз. Продолжение положил `requireProfile`; его нет только если форму
+  // открыли из вкладки «Способ оплаты» правкой реквизитов — тогда идём к расчёту,
+  // как было.
+  // Ошибку НЕ глотаем и промис возвращаем: отказ VIES по номеру НДС ловит сама
+  // форма и подписывает им поле — тост про это уже уехал бы к моменту, когда
+  // человек вернётся к вводу.
+  const saveProfileAndPay = (body: BillingProfileInput) =>
+    saveProfile(body).then(() => {
+      setShowProfileGate(false);
+      const next = afterProfile.current ?? openPayModal;
+      afterProfile.current = null;
+      next();
+    });
 
   const closePayModal = () => {
     setShowPayModal(false);
@@ -322,6 +391,13 @@ export function useBillingCalculator() {
       setPeriodDiscounts(cat.period_discounts);
       if (cat.currency) setCurrency(cat.currency);
       if (cat.min_monthly) setMinMonthly(cat.min_monthly / 100);
+      if (cat.percent_rate) {
+        setTerms({
+          percent_rate: cat.percent_rate,
+          combo_rate: cat.combo_rate,
+          grace_days: cat.grace_days,
+        });
+      }
       // cat.vat_rate намеренно не используем: интерфейс нигде не показывает сумму с
       // налогом — ставку знает только Stripe Tax по стране и статусу плательщика.
     }).catch(() => { /* нули остаются — не роняем страницу */ });
@@ -356,7 +432,7 @@ export function useBillingCalculator() {
     activeTab, setActiveTab,
     showPayModal, setShowPayModal,
     animateCards,
-    getPrice, periodDiscounts, plans, minMonthly,
+    getPrice, periodDiscounts, plans, minMonthly, terms,
     currentMonthly, discountedPrice, totalToPay, savedTotal,
     startCheckout, closePayModal,
     activateModel, modelBusy,
@@ -367,7 +443,10 @@ export function useBillingCalculator() {
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,
     profile, profileSaving, saveProfile, saveProfileAndPay,
-    showProfileGate, closeProfileGate: () => setShowProfileGate(false),
+    showProfileGate,
+    // Закрыли форму — забываем и прерванное действие: молча включить постоплату
+    // позже, когда владелец нажмёт «Оплатить» совсем по другому поводу, нельзя.
+    closeProfileGate: () => { afterProfile.current = null; setShowProfileGate(false); },
     // Правка реквизитов из модалки расчёта: закрываем расчёт, открываем форму —
     // после сохранения saveProfileAndPay вернёт владельца обратно к расчёту.
     editProfileFromPay: () => { closePayModal(); setShowProfileGate(true); },

@@ -21,6 +21,7 @@ from schemas.settings.security import (
     ConfirmNameRequest, DeleteAccountResult, ExportArchiveRequest, SessionRead, TwoFaStatus, TwoFaUpdate,
     WipeDataResult,
 )
+from services.email_layout import button
 from services.exporter import csv_stream
 from services.mailer import send_email
 from services.sessions import hash_token, revoke_sessions
@@ -159,10 +160,10 @@ async def _build_and_send_archive(studio_id: int, owner_email: str, include: lis
 
             await send_email(
                 owner_email, "Ваш архив данных Velora готов",
-                f"<p>Архив данных вашей студии сформирован.</p>"
-                f"<p>Зайдите в Velora — Настройки → Безопасность, чтобы скачать его: "
-                f"<a href=\"{WEB_APP_URL}/dashboard/settings\">{WEB_APP_URL}/dashboard/settings</a></p>"
-                f"<p>Ссылка на скачивание в приложении действительна 7 дней.</p>",
+                "<p>Архив данных вашей студии сформирован. Скачать его можно в "
+                "разделе «Настройки» → «Безопасность».</p>"
+                + button("Открыть настройки", f"{WEB_APP_URL}/dashboard/settings")
+                + "<p>Ссылка на скачивание в приложении действительна 7 дней.</p>",
             )
         except Exception:
             logger.exception("export-archive: сборка не удалась (studio_id=%s)", studio_id)

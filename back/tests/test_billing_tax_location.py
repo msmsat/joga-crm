@@ -5,9 +5,10 @@ charge считает Stripe Tax по адресу в Customer. Адрес ту�
 и эти тесты держат границу между ними:
 
 * НАША форма реквизитов — она источник истины. Адрес и VAT ID лежат на АККАУНТЕ
-  плательщика (models/user.py) и уезжают в Customer при оформлении. Профиль пустой
-  (форму обошли старой вкладкой) — не шлём ничего, и реквизиты соберёт Checkout,
-  как было раньше;
+  плательщика (models/user.py) и уезжают в Customer при оформлении, поэтому
+  страница Stripe показывает их готовыми, а номер НДС не спрашивает вовсе.
+  Профиль пустой (форму обошли старой вкладкой) — не шлём ничего, и минимум для
+  налога соберёт Checkout, как было раньше;
 * счёт, который выставляем МЫ САМИ (комиссия с офлайн-продаж): хостед-страницы у
   него нет, и без местоположения Stripe Tax отвечает `customer_tax_location_invalid`.
   Там адрес студии передаётся только при СОЗДАНИИ клиента.
@@ -25,15 +26,19 @@ import pytest
 
 # ------------------------------------- 1. реквизиты собирает страница Stripe
 
-def test_checkout_page_collects_tax_id_and_writes_it_back():
-    """Снять со страницы Checkout сбор VAT ID значит лишить бизнес reverse charge:
-    другого места, где номер вообще можно ввести, в продукте нет."""
+def test_the_checkout_page_never_asks_for_a_vat_number():
+    """Поле VAT на странице Stripe — обход нашей сверки с VIES. Stripe Tax обнуляет
+    налог по ФОРМАТУ номера, а собственную сверку присылает вебхуком уже после
+    оплаты: вписанный там правдоподобный мусор давал бы счёт без НДС, а недобор 21 %
+    сняли бы с платформы. Номер вводится только у нас и только пройдя реестр ЕС."""
     from services.stripe_billing import create_subscription_checkout
 
+    assert "tax_id_collection" not in _checkout_body(), (
+        "VAT снова спрашивают у Stripe — это дыра мимо сверки с VIES"
+    )
+    # Адрес обязан уехать обратно в Customer: при включённом automatic_tax и
+    # существующем клиенте Stripe требует customer_update[address] явно.
     src = inspect.getsource(create_subscription_checkout)
-    assert 'tax_id_collection={"enabled": True}' in src
-    # Собранное обязано уехать обратно в Customer — иначе следующий счёт снова без
-    # адреса, и Stripe Tax не посчитает ставку.
     assert '"address": "auto"' in src
     assert '"name": "auto"' in src
 
@@ -58,11 +63,12 @@ def test_individuals_are_not_asked_for_a_street():
     )
 
 
-def test_vat_is_never_mandatory():
-    """`required="if_supported"` обязал бы КАЖДОГО плательщика из страны с
-    поддержкой tax id ввести номер, которого у физлица нет, — то есть закрыл бы
-    оплату всем, кроме компаний."""
-    assert "if_supported" not in _checkout_body()
+def test_the_payer_only_has_to_enter_a_card():
+    """Реквизиты на страницу Stripe ПРИХОДЯТ из Customer'а, а не собираются заново.
+    Заставить вводить их второй раз значит сделать нашу форму бессмысленной."""
+    body = _checkout_body()
+    assert "if_supported" not in body          # обязательного VAT нет и подавно
+    assert "customer=customer_id" in body      # адрес и имя приезжают с клиентом
 
 
 # ------------- 2. в Stripe уезжают реквизиты АККАУНТА, а не профиль студии
@@ -98,6 +104,7 @@ def _user(**billing) -> SimpleNamespace:
     fields = dict(
         billing_country=None, billing_line1=None, billing_line2=None,
         billing_postal_code=None, billing_city=None, billing_vat_id=None,
+        billing_vat_verified=False,
     )
     fields.update(billing)
     return SimpleNamespace(email="u@e.com", **fields)
@@ -172,7 +179,7 @@ def test_a_vat_number_goes_up_as_its_own_object(monkeypatch):
 
     user = _user(
         billing_country="DE", billing_line1="Kantstr. 5", billing_postal_code="10623",
-        billing_city="Berlin", billing_vat_id="DE811907980",
+        billing_city="Berlin", billing_vat_id="DE811907980", billing_vat_verified=True,
     )
     ctx = SimpleNamespace(studio_id=1, user=user)
     asyncio.run(checkout_mod._ensure_customer(
@@ -198,7 +205,7 @@ def test_a_rejected_vat_number_never_breaks_the_payment(monkeypatch):
 
     user = _user(
         billing_country="DE", billing_line1="Kantstr. 5", billing_postal_code="10623",
-        billing_city="Berlin", billing_vat_id="XX000",
+        billing_city="Berlin", billing_vat_id="XX000", billing_vat_verified=True,
     )
     ctx = SimpleNamespace(studio_id=1, user=user)
     plan = SimpleNamespace(stripe_customer_id=None)
@@ -225,15 +232,35 @@ def test_self_issued_invoices_still_seed_the_location_once():
     from services.offline_fee_billing import _ensure_studio_customer
 
     src = inspect.getsource(_ensure_studio_customer)
+    # Источник реквизитов — профиль ВЛАДЕЛЬЦА: адрес студии собирает онбординг, а он
+    # спрашивает только свободную строку, и country там пуст у всех. Поля студии
+    # остались запасным вариантом для тех, кто заполнил их в настройках.
+    assert "owner.billing_country" in src
     assert "country=studio.country" in src
     # ...но только при СОЗДАНИИ: ветка отрабатывает лишь когда клиента ещё нет,
     # поэтому затереть введённое у Stripe она не может.
     assert "if plan.stripe_customer_id:" in src
-    # VAT ID и регистрационный номер отсюда уехать не должны — их у нас нет.
-    assert "vat_id" not in src and "company_id" not in src
 
 
-# --------------------- 4. портал Stripe — где VAT вводят ПОСЛЕ первой покупки
+def test_self_issued_invoices_send_only_a_verified_vat_number():
+    """Номер НДС уезжает по тем же правилам, что и в оплате тарифа: только
+    прошедший VIES.
+
+    Обе стороны важны. Без номера счёт за комиссию компании из другой страны ЕС
+    уходит с полным чешским НДС вместо reverse charge — переплата, которую студии
+    потом возвращать через поддержку. С НЕПОДТВЕРЖДЁННЫМ номером всё наоборот:
+    Stripe Tax обнуляет налог по одному только формату, и недобор снимут с
+    платформы. `Studio.vat_id` не годится ни там, ни там — его никто не сверяет.
+    """
+    from services.offline_fee_billing import _ensure_studio_customer
+
+    src = inspect.getsource(_ensure_studio_customer)
+    assert "owner.billing_vat_verified" in src, "непроверенный номер уедет в Stripe"
+    assert "studio.vat_id" not in src, "несверяемый номер студии снова в денежном пути"
+    assert "company_id" not in src
+
+
+# --------------------- 4. портал Stripe — фактуры и карта, но НЕ реквизиты
 
 def _reset_portal_cache():
     from services import stripe_billing
@@ -241,11 +268,11 @@ def _reset_portal_cache():
     stripe_billing._PORTAL_CONFIG_ID = None
 
 
-def test_portal_lets_the_customer_enter_a_tax_id(monkeypatch):
-    """Ради этого портал и заведён. У дефолтной конфигурации Stripe `tax_id` в
-    allowed_updates ВЫКЛЮЧЕН, поэтому конфигурацию создаём свою: иначе компания,
-    купившая тариф как физлицо, не смогла бы добавить номер уже никогда — поля VAT
-    есть только у Checkout, а он открывается лишь на первой покупке."""
+def test_the_portal_cannot_touch_the_billing_details(monkeypatch):
+    """Портал остался ради фактур и карты. Правку реквизитов ему не отдаём:
+    `tax_id` там — обход сверки с VIES в два клика, а `address` выглядел бы
+    применившимся и молча пропадал, потому что источник истины у адреса наш и
+    следующее оформление перезапишет Customer нашей копией."""
     from services import stripe_billing
 
     _reset_portal_cache()
@@ -266,11 +293,11 @@ def test_portal_lets_the_customer_enter_a_tax_id(monkeypatch):
     url = asyncio.run(stripe_billing.create_portal_session("cus_1", "https://app/back"))
     assert url == "https://billing.stripe.com/x"
     updates = created["features"]["customer_update"]
-    assert updates["enabled"] is True
-    assert "tax_id" in updates["allowed_updates"], "ради VAT портал и заведён"
-    # Адрес рядом обязателен: ставку Stripe Tax считает по нему, и номер НДС без
-    # страны бесполезен.
-    assert "address" in updates["allowed_updates"]
+    assert "tax_id" not in updates["allowed_updates"], "VAT можно ввести мимо VIES"
+    assert "address" not in updates["allowed_updates"]
+    # Ради чего портал теперь и живёт.
+    assert created["features"]["invoice_history"]["enabled"] is True
+    assert created["features"]["payment_method_update"]["enabled"] is True
     # Отмену подписки порталу не отдаём — она живёт тумблером автопродления, и
     # второй путь с другими правилами развёл бы БД и Stripe.
     assert "subscription_cancel" not in created["features"]

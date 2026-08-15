@@ -11,7 +11,9 @@ interface Props {
   selectedPeriod: number;
   periodDiscounts: Record<number, number>;
   plans: Record<PlanType, { name: string; monthly: number; color: string }>;
-  getPrice: (plan: PlanType, period: number) => number;
+  /** Цена за месяц ВЫБРАННОЙ модели со скидкой периода: у комбо она половинная,
+   *  и считать её тут по каталогу подписки значило бы противоречить итогу ниже. */
+  monthlyPrice: number;
   savedTotal: number;
   /** Локальный итог по каталогу — показывается, пока не приехал расчёт сервера. */
   totalToPay: number;
@@ -50,7 +52,7 @@ const Row = ({ label, value, muted, accent }: {
  * выставит счёт. Своя формула однажды разошлась бы с реально списанным.
  */
 export default function PayModal({
-  currency, selectedPlan, selectedPeriod, periodDiscounts, plans, getPrice,
+  currency, selectedPlan, selectedPeriod, periodDiscounts, plans, monthlyPrice,
   savedTotal, totalToPay, preview, previewBusy, payBusy, onClose, onPay,
   profile, onEditProfile,
 }: Props) {
@@ -69,14 +71,11 @@ export default function PayModal({
     : null;
 
   const kind = preview?.kind ?? 'new';
-  // Пока расчёт едет, показываем каталожную цену — она верна для первой покупки и
-  // для продления, а при смене тарифа только завышена (зачёт её уменьшит).
-  const gross = preview ? preview.gross : Math.round(totalToPay * 100);
-  const credit = preview?.credit ?? 0;
+  // Пока расчёт едет, показываем каталожную цену. Зачёта нет ни в одной ветке
+  // (остаток при смене тарифа сгорает), поэтому она же и окажется итоговой.
   const total = preview ? preview.total : Math.round(totalToPay * 100);
-  const burned = preview?.burned ?? 0;
-  // Имя тарифа, остаток которого зачитывается. Незнакомый id (легаси-план) выводим
-  // как есть — строка зачёта важнее красивого названия.
+  // Имя тарифа, который студия теряет, переходя на другой. Незнакомый id
+  // (легаси-план) выводим как есть — предупреждение важнее красивого названия.
   const currentName = preview?.current_plan
     ? plans[preview.current_plan as PlanType]?.name ?? preview.current_plan
     : '';
@@ -87,7 +86,7 @@ export default function PayModal({
     ? t('payModal.titleSwitch', { plan: plan.name })
     : t('payModal.titleNew', { plan: plan.name });
 
-  const subtitle = t('upgrade.priceLine', { price: formatMoney(getPrice(selectedPlan, selectedPeriod), currency) })
+  const subtitle = t('upgrade.priceLine', { price: formatMoney(monthlyPrice, currency) })
     + (selectedPeriod > 1 ? t('upgrade.discountNote', { percent: periodDiscounts[selectedPeriod] * 100, period: selectedPeriod }) : '');
 
   return (
@@ -107,21 +106,6 @@ export default function PayModal({
 
           <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
 
-          {/* Строка зачёта появляется только при смене тарифа. «Ваш тариф» — это
-              неиспользованный остаток текущего периода, который Stripe считает по
-              секундам и вычитает из нового счёта. */}
-          {credit > 0 && (
-            <>
-              <Row label={t('payModal.grossLabel')} value={money(gross)} />
-              <Row
-                label={t('payModal.creditLabel', { plan: currentName })}
-                value={`−${money(credit)}`}
-                accent="var(--pistachio)"
-              />
-              <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }} />
-            </>
-          )}
-
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'baseline' }}>
             <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>
               {t('payModal.totalLabel')}
@@ -135,11 +119,12 @@ export default function PayModal({
           </div>
         </div>
 
-        {/* Остаток больше стоимости нового тарифа: доплачивать нечего, но разница
-            НЕ переносится. Предупреждаем до оплаты — после неё возврата нет. */}
-        {burned > 0 && (
+        {/* Смена тарифа сжигает остаток текущего периода целиком: новый период
+            платится с нуля, зачёта нет. Предупреждаем ДО оплаты — после неё
+            возврата нет. Продления это не касается, там месяцы прибавляются. */}
+        {kind === 'switch' && (
           <div style={{ padding: '12px 16px', background: 'rgba(216,140,154,0.1)', border: '1px solid rgba(216,140,154,0.3)', borderRadius: '12px', fontSize: '12px', color: 'var(--onyx)', lineHeight: '1.6' }}>
-            {t('payModal.burnWarning', { amount: money(burned) })}
+            {t('payModal.burnWarning', { plan: currentName })}
           </div>
         )}
 
@@ -156,14 +141,6 @@ export default function PayModal({
         {kind === 'renewal' && (
           <div style={{ padding: '12px 16px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.6' }}>
             {t('payModal.renewNote')}
-          </div>
-        )}
-
-        {/* Зачёт не посчитался (Stripe не ответил) — честно говорим, что сумма
-            предварительная, вместо того чтобы выдать полную цену за точную. */}
-        {preview?.estimated && (
-          <div style={{ fontSize: '11.5px', color: 'var(--muted)', lineHeight: 1.6 }}>
-            {t('payModal.estimatedNote')}
           </div>
         )}
 

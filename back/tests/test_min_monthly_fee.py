@@ -142,8 +142,8 @@ def test_a_full_month_on_percent_is_still_billed(monkeypatch):
     """Обратная сторона: студия на проценте с июня обязана получить счёт за июль,
     иначе тариф снова становится бесплатной CRM. Дальше по функции идёт Stripe —
     ловим её маркером на входе в него: важно, что проверка согласия пропустила."""
-    async def no_fx():
-        pass
+    async def no_fx(_db):
+        """Курс теперь читается из БД, поэтому стаб принимает сессию."""
 
     async def marker(*_a, **_kw):
         raise RuntimeError("дошли до Stripe")
@@ -210,6 +210,39 @@ def test_consent_version_was_raised_with_the_new_obligation():
     assert OFFLINE_TERMS["min_monthly"] == MIN_MONTHLY_FEE
     # Срок в согласии и срок блокировки — одно и то же число.
     assert OFFLINE_TERMS["grace_days"] == OFB.GRACE_DAYS
+
+
+def test_reaccepting_the_terms_does_not_move_the_anchor():
+    """Отметку `percent_terms_accepted_at` двигает только ВХОД в режим.
+
+    По ней `_bill_minimum` решает, прожила ли студия расчётный месяц на проценте
+    (`since >= start` → месяц не наш). Пока отметка обновлялась на КАЖДОЕ
+    подтверждение условий, повторное нажатие «процент» раз в месяц — запрос
+    проходит, режим тот же, флаг согласия стоит — сдвигало её в текущий месяц, и
+    минимум не выставлялся НИКОГДА.
+    """
+    from routers.billing.router import activate_model
+
+    src = inspect.getsource(activate_model)
+    stamp = "row.percent_terms_accepted_at = datetime.utcnow()"
+    assert stamp in src
+    guard = src.index("if previous_mode != body.mode or row.percent_terms_accepted_at is None:")
+    assert guard < src.index(stamp), "отметка ставится в обход проверки входа в режим"
+    # Режим «до» обязан читаться ДО того, как тело запроса его перезапишет.
+    assert src.index("previous_mode = row.billing_mode") < src.index("row.billing_mode = body.mode")
+
+
+def test_percent_requires_billing_details_up_front():
+    """Счёт за комиссию и минимум выставляем МЫ, с automatic_tax. Клиент Stripe без
+    страны роняет такой счёт целиком (`customer_tax_location_invalid`), а онбординг
+    адрес не спрашивает — значит реквизиты нужны в момент ВКЛЮЧЕНИЯ постоплаты,
+    иначе тариф оказывается неоплачиваемым, а с ноября 2026 ещё и блокирующим.
+    """
+    from routers.billing.router import activate_model
+
+    src = inspect.getsource(activate_model)
+    assert "billing.billing_profile_required" in src
+    assert "billing_profile(ctx.user).filled" in src
 
 
 def test_catalog_exposes_the_minimum_to_the_frontend():

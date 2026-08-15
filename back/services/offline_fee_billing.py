@@ -31,19 +31,18 @@
 самовосстанавливается — пропущенный запуск догоняется следующим тиком.
 """
 import asyncio
-import json
 import logging
-import os
-import tempfile
 from datetime import datetime, timedelta
 
 import aiohttp
 from sqlalchemy import func, text
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy.future import select
 
 from models import (
-    BillingInvoice, OfflineTransactionFee, PlatformRevenueLedger, StudioBillingPlan, Studio,
+    BillingInvoice, FxRate, OfflineTransactionFee, PlatformRevenueLedger,
+    StudioBillingPlan, Studio, StudioMember, User,
 )
 from services import stripe_billing
 
@@ -72,62 +71,77 @@ REMINDER_DAYS = 2
 # валюте продажи, а счёт Stripe обязан быть в валюте Customer'а (сменить её у
 # клиента с историей нельзя). currency(lower) -> множитель в валюту биллинга.
 #
-# Раньше курс был статичной строкой в .env (BILLING_FX), правилась руками и
-# неизбежно расходилась с реальным. Теперь тянется с ECB (frankfurter.dev), раз
-# в сутки, кэш живёт в памяти процесса — см. _refresh_fx.
+# ХРАНИЛИЩЕ — БД (models.FxRate), кэш в памяти поверх неё. Курс тянется с ЕЦБ
+# (frankfurter.dev) раз в сутки, и каждый УДАЧНЫЙ поход переписывает строки.
+# Провайдер молчит — работаем на последнем записанном, сколько бы ни пришлось.
+#
+# Почему не файл (как было): кэш в памяти умирает с процессом, а файл во
+# временном каталоге контейнера — с перезапуском. После перезапуска в день, когда
+# ЕЦБ недоступен, курса не оставалось вовсе, и комиссии студий, торгующих не в
+# валюте биллинга, не попадали в счёт до следующего успешного похода. В БД
+# последний курс переживает и то, и другое.
 _FX: dict[str, float] = {}
 _fx_fetched_at: datetime | None = None
 _FX_URL = "https://api.frankfurter.dev/v1/latest"
 _FX_TTL = timedelta(hours=24)
 
-# Последний УДАЧНО полученный курс на диске: кэш в памяти умирает вместе с
-# процессом, и холодный старт при недоступном провайдере остался бы вообще без
-# курса — все начисления в чужой валюте отложились бы до следующего тика.
-#
-# ponytail: файл, а не таблица. Это кэш, а не бизнес-данные: потеря стоит одного
-# похода к провайдеру. В контейнере с эфемерной ФС задайте FX_CACHE_PATH на
-# примонтированный том; понадобится общий кэш на несколько инстансов — тогда БД.
-_FX_CACHE_PATH = os.getenv("FX_CACHE_PATH") or os.path.join(tempfile.gettempdir(), "velora_fx.json")
 
+async def _load_fx(db: AsyncSession) -> None:
+    """Поднять последний записанный курс из БД в память. Сбой — «курса нет».
 
-def _load_fx_cache() -> None:
-    """Поднять сохранённый курс с диска. Молча, любой сбой = «кэша нет»."""
+    Берём строки только своей базовой валюты: сменили BILLING_CURRENCY — прежние
+    множители посчитаны от других денег, и применить их значит выставить счета с
+    коэффициентом от прошлой валюты.
+    """
     try:
-        with open(_FX_CACHE_PATH, encoding="utf-8") as fh:
-            data = json.load(fh)
-    except (OSError, ValueError):
+        rows = (await db.execute(
+            select(FxRate.code, FxRate.rate).where(FxRate.base == stripe_billing.CURRENCY)
+        )).all()
+    except Exception:
+        logger.exception("Офлайн-комиссии: курс не прочитан из БД")
         return
-    # Курсы сохранены ОТНОСИТЕЛЬНО валюты биллинга. Сменили BILLING_CURRENCY —
-    # старый файл говорит о других деньгах, и применить его значит выставить
-    # счета с множителем от прошлой валюты.
-    if data.get("base") != stripe_billing.CURRENCY:
-        return
-    rates = data.get("rates")
-    if isinstance(rates, dict):
-        _FX.update({str(code).lower(): float(rate) for code, rate in rates.items() if rate})
-        logger.info("Офлайн-комиссии: курс поднят из кэша %s (%s валют)", _FX_CACHE_PATH, len(_FX))
+    if rows:
+        _FX.update({code: float(rate) for code, rate in rows})
+        logger.info("Офлайн-комиссии: курс поднят из БД (%s валют)", len(_FX))
 
 
-def _save_fx_cache() -> None:
-    """Сохранить свежий курс. Сбой записи не повод ронять биллинг."""
+async def _save_fx(db: AsyncSession) -> None:
+    """Записать свежий курс в БД. UPSERT по паре (base, code) — одна строка на
+    валюту, а не история: нужен только ПОСЛЕДНИЙ известный.
+
+    Сбой записи не роняет биллинг: в памяти курс уже есть, счёт выставится, а
+    следующий тик попробует записать снова.
+    """
+    if not _FX:
+        return
+    now = datetime.utcnow()
     try:
-        with open(_FX_CACHE_PATH, "w", encoding="utf-8") as fh:
-            json.dump({"base": stripe_billing.CURRENCY, "rates": _FX}, fh)
-    except OSError:
-        logger.exception("Офлайн-комиссии: курс не сохранён в %s", _FX_CACHE_PATH)
+        for code, rate in _FX.items():
+            await db.execute(
+                pg_insert(FxRate)
+                .values(base=stripe_billing.CURRENCY, code=code, rate=rate, fetched_at=now)
+                .on_conflict_do_update(
+                    constraint="uq_fx_rate_base_code",
+                    set_={"rate": rate, "fetched_at": now},
+                )
+            )
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        logger.exception("Офлайн-комиссии: курс не сохранён в БД")
 
 
-async def _refresh_fx() -> None:
-    """Обновить курсы у ECB, если кэш старше суток. Молчит и не роняет биллинг.
+async def _refresh_fx(db: AsyncSession) -> None:
+    """Обновить курсы у ЕЦБ, если кэш старше суток. Молчит и не роняет биллинг.
 
-    Сбой запроса НЕ чистит кэш: вчерашний курс безопаснее полного отказа считать —
-    иначе to_billing_currency вернула бы None на все офлайн-начисления, пока
-    провайдер недоступен, и они зависли бы неучтёнными до следующего тика.
-    Пустой кэш (холодный старт) поднимаем с диска — там лежит последний удачный.
+    Сбой запроса НЕ чистит ни память, ни БД: вчерашний курс безопаснее полного
+    отказа считать — иначе to_billing_currency вернула бы None на все офлайн-
+    начисления, пока провайдер недоступен, и они зависли бы неучтёнными.
+    Пустая память (холодный старт) поднимается из БД — там последний удачный.
     """
     global _fx_fetched_at
     if not _FX:
-        _load_fx_cache()
+        await _load_fx(db)
     if _fx_fetched_at is not None and datetime.utcnow() - _fx_fetched_at < _FX_TTL:
         return
     try:
@@ -140,9 +154,12 @@ async def _refresh_fx() -> None:
         rates = data.get("rates") or {}
         _FX.update({code.lower(): 1 / rate for code, rate in rates.items() if rate})
         _fx_fetched_at = datetime.utcnow()
-        _save_fx_cache()
+        await _save_fx(db)
     except Exception:
-        logger.exception("Офлайн-комиссии: курс валют с %s не получен, используется прошлый кэш", _FX_URL)
+        logger.exception(
+            "Офлайн-комиссии: курс валют с %s не получен, используется последний записанный",
+            _FX_URL,
+        )
 
 # Ниже этой суммы (в младших единицах валюты биллинга) счёт не выставляем: Stripe
 # отвергает платёж меньше минимального, а банковская комиссия съест остаток. Долг
@@ -216,10 +233,25 @@ async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> 
     вовсе, и выставить ей было нечего: ни комиссию, ни минимальный платёж. Тариф,
     счёт по которому невозможно выставить, — это бесплатный тариф.
 
-    Адрес студии передаётся ТОЛЬКО здесь и только при СОЗДАНИИ клиента. Этот счёт
+    Реквизиты передаются ТОЛЬКО здесь и только при СОЗДАНИИ клиента. Этот счёт
     выставляем мы сами, хостед-страницы у него нет, а без местоположения Stripe Tax
     отвечает `customer_tax_location_invalid`. Затереть введённое плательщиком у
     Stripe эти поля не могут: ветка отрабатывает лишь тогда, когда клиента ещё нет.
+
+    Источник реквизитов — ПРОФИЛЬ ВЛАДЕЛЬЦА (`User.billing_*`), тот же, что у оплаты
+    тарифа (routers/billing/checkout._ensure_customer), и лишь при пустом профиле
+    берутся поля студии. Причина не в аккуратности: адрес студии собирает онбординг,
+    а он спрашивает только свободную строку — `country`, `city` и `postal_code` там
+    остаются пустыми. Клиент без страны роняет ЛЮБОЙ счёт с automatic_tax, то есть
+    percent-студия, ни разу не заходившая в оплату тарифа, не получала бы ни счёта за
+    комиссию, ни минимального платежа вообще. Профиль владельца, наоборот, обязателен
+    для включения процента (routers/billing/router.activate_model) и содержит все
+    четыре поля.
+
+    Номер НДС уезжает по тем же правилам, что и в оплате тарифа: только
+    ПОДТВЕРЖДЁННЫЙ через VIES. Без него счёт за комиссию компании из другой страны ЕС
+    уходил с полным чешским НДС вместо reverse charge — переплата, которую студии
+    потом возвращать через поддержку.
     """
     if plan.stripe_customer_id:
         return plan.stripe_customer_id
@@ -230,19 +262,60 @@ async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> 
     if studio is None:
         return None
 
+    owner = (await db.execute(
+        select(User)
+        .join(StudioMember, StudioMember.user_id == User.id)
+        .where(
+            StudioMember.studio_id == plan.studio_id,
+            StudioMember.role == "owner",
+            StudioMember.status == "active",
+        )
+    )).scalars().first()
+
+    # Профиль берётся целиком или не берётся вовсе: половина адреса — это тот же
+    # `customer_tax_location_invalid`, только выглядящий как заполненные реквизиты.
+    address = {}
+    if owner is not None and all((
+        owner.billing_country, owner.billing_line1,
+        owner.billing_postal_code, owner.billing_city,
+    )):
+        address = dict(
+            country=owner.billing_country,
+            postal_code=owner.billing_postal_code,
+            city=owner.billing_city,
+            line1=owner.billing_line1,
+            line2=owner.billing_line2,
+        )
+    elif studio.country:
+        address = dict(
+            country=studio.country,
+            postal_code=studio.postal_code,
+            city=studio.city,
+            line1=studio.address,
+        )
+
     try:
         customer_id = await stripe_billing.ensure_customer(
             None,
             name=studio.name,
-            email=studio.email,
-            country=studio.country,
-            postal_code=studio.postal_code,
-            line1=studio.address,
+            email=studio.email or (owner.email if owner is not None else None),
             studio_id=plan.studio_id,
+            **address,
         )
     except Exception:
         logger.exception("Офлайн-комиссии: не удалось завести Stripe Customer студии %s", plan.studio_id)
         return None
+
+    if address and owner is not None and owner.billing_vat_id and owner.billing_vat_verified:
+        # Не роняем счёт: номер необязателен, а Stripe отбивает неизвестный формат
+        # 400-й. Без него студия переплатит НДС, с упавшим счётом не заплатит ничего.
+        try:
+            await stripe_billing.set_tax_id(customer_id, owner.billing_vat_id)
+        except Exception:
+            logger.warning(
+                "Офлайн-комиссии: VAT ID %s студии %s не принят Stripe",
+                owner.billing_vat_id, plan.studio_id, exc_info=True,
+            )
 
     plan.stripe_customer_id = customer_id
     # Коммитим сразу: ниже поход в Stripe, и потерять привязку значит завести
@@ -288,7 +361,7 @@ async def _bill(
     # with_for_update() выше). Обращений мало (раз в сутки на кэш, раз в месяц
     # на студию), поэтому не выносим отдельным шагом до select — не тот объём,
     # где это стало бы заметно.
-    await _refresh_fx()
+    await _refresh_fx(db)
 
     total = 0
     billable: list[OfflineTransactionFee] = []
@@ -327,9 +400,16 @@ async def _bill(
         amount=total,
         status="pending",
         payment_method="invoice",
-        # Срок ставим МЫ и в БД: блокировка не должна зависеть от того, дошло ли
-        # событие Stripe и как он посчитал свой due date.
-        due_at=datetime.utcnow() + timedelta(days=GRACE_DAYS),
+        # Срок НЕ ставим здесь. Он ставится только тогда, когда счёт реально выдан
+        # (_issue_to_stripe), и вот почему: эта строка коммитится ДО похода в Stripe,
+        # а поход падает — например `customer_tax_location_invalid` у студии без
+        # страны в реквизитах. Со сроком, проставленным заранее, через GRACE_DAYS
+        # студию блокировал бы счёт, которого она никогда не получала: письма нет,
+        # hosted_invoice_url пуст, а кнопка «Оплатить сейчас» бессильна — начисления
+        # уже зарезервированы этой строкой, и bill_now не находит ничего нового.
+        # Пустой due_at для suspension_reason означает «не блокирует», то есть
+        # неудачная выдача теперь стоит платформе отсрочки, а не студии — доступа.
+        due_at=None,
     )
     db.add(invoice)
     await db.flush()
@@ -412,6 +492,16 @@ async def _issue_to_stripe(
             days_until_due=GRACE_DAYS,
             metadata=metadata,
         )
+        # Срок — ТОЛЬКО здесь, и только после того, как счёт реально выдан. Строка
+        # создаётся с пустым due_at (см. `_bill`), а `suspension_reason` блокирует
+        # исключительно по непустому сроку в прошлом: пока Stripe счёт не принял,
+        # блокировать не за что. Ставим МЫ и в БД, а не читаем из ответа Stripe:
+        # блокировка не должна зависеть от того, как он посчитал свой due date.
+        #
+        # Отсчёт от текущего момента заодно перезапускает часы на каждой удачной
+        # досылке (_finish_pending): студия не теряет grace-период из-за того, что
+        # выдать счёт вовремя не получилось у нас.
+        invoice.due_at = datetime.utcnow() + timedelta(days=GRACE_DAYS)
     invoice.stripe_invoice_id = stripe_invoice.id
     invoice.hosted_invoice_url = getattr(stripe_invoice, "hosted_invoice_url", None)
     invoice.pdf_url = getattr(stripe_invoice, "invoice_pdf", None)
@@ -538,7 +628,7 @@ async def _bill_minimum(
     if existing is not None:
         return None
 
-    await _refresh_fx()
+    await _refresh_fx(db)
     shortfall = MIN_MONTHLY_FEE - await _month_platform_revenue(db, studio_id, start, end)
     if shortfall < MIN_INVOICE_AMOUNT:
         return None
@@ -560,8 +650,9 @@ async def _bill_minimum(
         amount=shortfall,
         status="pending",
         payment_method="invoice",
-        # Тот же grace, что у комиссии: студия соглашалась на один срок.
-        due_at=datetime.utcnow() + timedelta(days=GRACE_DAYS),
+        # Срок ставит выдача (_issue_to_stripe), как и у счёта за комиссию: тот же
+        # grace, та же причина не проставлять его заранее (см. `_bill`).
+        due_at=None,
     )
     db.add(invoice)
     await db.commit()
@@ -623,7 +714,7 @@ async def _bill_online_fees(
     if not rows:
         return None
 
-    await _refresh_fx()
+    await _refresh_fx(db)
     total, count = 0, 0
     for currency, amount, entries in rows:
         converted = to_billing_currency(int(amount or 0), currency)
@@ -708,9 +799,11 @@ async def _finish_pending(db: AsyncSession) -> int:
             .where(OfflineTransactionFee.invoice_id == invoice.id)
         )).scalar() or 0
         try:
-            # Срок отсчитываем заново: студия не должна терять grace-период
-            # из-за того, что у нас не получилось выставить счёт вовремя.
-            invoice.due_at = datetime.utcnow() + timedelta(days=GRACE_DAYS)
+            # Срок ставит сама выдача и отсчитывает его заново от этого момента
+            # (_issue_to_stripe): студия не должна терять grace-период из-за того,
+            # что у нас не получилось выставить счёт вовремя. Здесь его трогать
+            # нельзя — упавшая выдача оставила бы срок на строке, которую студия
+            # так и не увидела.
             await _issue_to_stripe(db, invoice, customer_id, _describe(invoice, count))
             done += 1
         except Exception:
@@ -826,6 +919,19 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
             await db.rollback()
             logger.exception("Автосверка подписок со Stripe не выполнена")
 
+    # Досверка номеров НДС, принятых при молчащем реестре ЕС, — сюда же и по той же
+    # причине: раз в час, в одном процессе, под тем же локом. До неё плательщик
+    # платит полный НДС вместо reverse charge, так что тянуть с ней нельзя.
+    async with session_maker() as db:
+        try:
+            from routers.billing.webhook import recheck_vat_numbers
+
+            if await recheck_vat_numbers(db):
+                logger.info("VIES: неподтверждённые номера НДС досверены")
+        except Exception:
+            await db.rollback()
+            logger.exception("VIES: досверка номеров НДС не выполнена")
+
     cutoff = month_start(datetime.utcnow())
     closed_month = prev_month_start(cutoff)
     period = period_label(closed_month)
@@ -928,6 +1034,8 @@ def start_offline_fee_billing_loop(session_maker: async_sessionmaker) -> asyncio
 
 
 if __name__ == "__main__":
+    from types import SimpleNamespace
+
     # Граница месяца: биллим прошлое, текущий месяц продолжает копиться.
     assert month_start(datetime(2026, 8, 8, 14, 30, 5)) == datetime(2026, 8, 1)
     assert month_start(datetime(2026, 1, 1, 0, 0, 0)) == datetime(2026, 1, 1)
@@ -954,44 +1062,52 @@ if __name__ == "__main__":
     # Ключ лока обязан влезать в bigint Postgres и быть константой.
     assert 0 < _LOCK_KEY < 2 ** 63
 
-    # Кэш курса переживает перезапуск процесса: сохранили — очистили память —
-    # подняли с диска. Именно это и просили: последний реальный курс остаётся
-    # в ходу, пока провайдер недоступен.
-    import shutil
-    _saved_path = _FX_CACHE_PATH
-    _tmp_dir = tempfile.mkdtemp()
-    _FX_CACHE_PATH = os.path.join(_tmp_dir, "fx.json")
-    try:
-        _FX.clear()
-        _FX["czk"] = 0.04
-        _save_fx_cache()
-        _FX.clear()
-        assert to_billing_currency(4500, "czk") is None, "память не очистилась"
-        _load_fx_cache()
-        assert _FX["czk"] == 0.04
-        assert to_billing_currency(4500, "czk") == 180
+    # Курс переживает перезапуск процесса: память пуста — поднимаем из БД.
+    # Именно это и просили: последний записанный курс остаётся в ходу, пока
+    # провайдер недоступен, сколько бы это ни длилось.
+    class _FxDB:
+        """Сессия-заглушка: отдаёт одну строку курса и считает коммиты."""
 
-        # Сменили валюту биллинга — старый файл говорит о других деньгах и
-        # применяться не должен, иначе счёт уедет с множителем от прошлой валюты.
-        _FX.clear()
-        _real_currency = stripe_billing.CURRENCY
-        stripe_billing.CURRENCY = "usd"
-        _load_fx_cache()
-        assert not _FX, "кэш чужой базовой валюты применён"
-        stripe_billing.CURRENCY = _real_currency
+        def __init__(self, rows):
+            self.rows, self.commits = rows, 0
 
-        # Битый и отсутствующий файл — просто «кэша нет», без исключения.
-        with open(_FX_CACHE_PATH, "w", encoding="utf-8") as _fh:
-            _fh.write("{не json")
-        _load_fx_cache()
-        assert not _FX
-        _FX_CACHE_PATH = os.path.join(_tmp_dir, "missing.json")
-        _load_fx_cache()
-        assert not _FX
-    finally:
-        _FX_CACHE_PATH = _saved_path
-        _FX.clear()
-        _FX.update(_saved_fx)
-        shutil.rmtree(_tmp_dir, ignore_errors=True)
+        async def execute(self, _q):
+            return SimpleNamespace(all=lambda: self.rows)
+
+        async def commit(self):
+            self.commits += 1
+
+        async def rollback(self):
+            pass
+
+    _FX.clear()
+    asyncio.run(_load_fx(_FxDB([("czk", 0.04)])))
+    assert _FX["czk"] == 0.04, "курс не поднялся из БД"
+    assert to_billing_currency(4500, "czk") == 180
+
+    # Пустая таблица — это «курса нет», а не ноль: считать по нему значило бы
+    # молча недобрать комиссию (см. to_billing_currency).
+    _FX.clear()
+    asyncio.run(_load_fx(_FxDB([])))
+    assert to_billing_currency(4500, "czk") is None
+
+    # Сбой чтения БД не роняет проход: курса просто нет, счёт отложится.
+    class _BrokenDB:
+        async def execute(self, _q):
+            raise RuntimeError("БД прилегла")
+
+    _FX.clear()
+    asyncio.run(_load_fx(_BrokenDB()))
+    assert not _FX
+
+    # Запись идёт UPSERT'ом по каждой валюте и одним коммитом на проход.
+    _FX.clear()
+    _FX.update({"czk": 0.04, "pln": 0.23})
+    _writer = _FxDB([])
+    asyncio.run(_save_fx(_writer))
+    assert _writer.commits == 1
+
+    _FX.clear()
+    _FX.update(_saved_fx)
 
     print("offline_fee_billing self-check ok")

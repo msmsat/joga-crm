@@ -18,6 +18,15 @@ export type Entry = {
   inTelegram: boolean;
 };
 
+/** Вкладки кабинета (NAV_ITEMS). Чужое значение из адреса игнорируем — иначе
+ *  опечатка в ссылке открывала бы пустой экран вместо главной. */
+const TABS = ['home', 'sched', 'my', 'club', 'prof'];
+
+export function readTab(): string | undefined {
+  const tab = new URLSearchParams(window.location.search).get('tab');
+  return tab && TABS.includes(tab) ? tab : undefined;
+}
+
 function parseStartParam(startParam: string | undefined) {
   if (!startParam) return { studioId: null, referralCode: undefined };
   const studio = /^s(\d+)/.exec(startParam);

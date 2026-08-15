@@ -38,6 +38,10 @@ def _db(value, *, first=None, scalar=None):
                 scalar_one=lambda: value,
                 first=lambda: first,
             )
+
+        def add(self, _row):
+            """Начисления только ЛОЖАТСЯ в сессию — коммитит вызывающий."""
+
     return _DB()
 
 
@@ -192,16 +196,37 @@ def test_invoice_gets_a_week_to_be_paid():
     """Срок ставим мы и в БД — блокировка не должна зависеть от события Stripe."""
     import inspect
 
-    src = inspect.getsource(OFB._bill)
-    assert "timedelta(days=GRACE_DAYS)" in src
+    src = inspect.getsource(OFB._issue_to_stripe)
+    assert "invoice.due_at = datetime.utcnow() + timedelta(days=GRACE_DAYS)" in src
+
+
+def test_clock_starts_only_when_the_invoice_is_actually_issued():
+    """Главная защита от блокировки за невыданный счёт.
+
+    Локальная строка коммитится ДО похода в Stripe, и поход падает — у студии без
+    страны в реквизитах Stripe Tax отвечает `customer_tax_location_invalid`. Со
+    сроком, проставленным при создании строки, через неделю студию блокировал бы
+    счёт, которого она не получала и не может оплатить: письма нет, ссылки нет, а
+    начисления уже зарезервированы этой строкой.
+    """
+    import inspect
+
+    for fn in (OFB._bill, OFB._bill_minimum, OFB._bill_online_fees):
+        assert "due_at=None" in inspect.getsource(fn), fn.__name__
+        assert "timedelta(days=GRACE_DAYS)" not in inspect.getsource(fn), fn.__name__
 
 
 def test_reissued_invoice_restarts_the_clock():
-    """Не смогли выставить счёт вовремя — студия не должна терять grace-период."""
+    """Не смогли выставить счёт вовремя — студия не должна терять grace-период.
+
+    Срок отсчитывается от МОМЕНТА ВЫДАЧИ, а выдачу повторяет `_finish_pending`, —
+    значит удачная досылка сама начинает неделю заново. Отдельной правки срока в
+    досылке быть не должно: она проставила бы его и на упавшей попытке.
+    """
     import inspect
 
-    src = inspect.getsource(OFB._finish_pending)
-    assert "invoice.due_at = datetime.utcnow() + timedelta(days=GRACE_DAYS)" in src
+    assert "utcnow() + timedelta(days=GRACE_DAYS)" in inspect.getsource(OFB._issue_to_stripe)
+    assert "invoice.due_at" not in inspect.getsource(OFB._finish_pending)
 
 
 # --------------------------------------------------------------- 4. гейты
@@ -301,7 +326,9 @@ def test_fees_are_reserved_before_going_to_stripe():
 
     src = inspect.getsource(OFB._bill)
     reserve = src.index("fee.invoice_id = invoice.id")
-    stripe_call = src.index("_issue_to_stripe")
+    # Именно ВЫЗОВ, а не любое упоминание: имя функции встречается и в комментариях
+    # выше по телу, и тогда тест ловил бы порядок слов в прозе, а не порядок операций.
+    stripe_call = src.index("await _issue_to_stripe")
     assert reserve < stripe_call, "счёт уходит в Stripe раньше, чем зарезервированы начисления"
 
 
@@ -388,6 +415,248 @@ def test_fresh_subscription_invoice_is_still_refundable():
 def test_unpaid_invoice_is_still_rejected_first():
     """Порядок гвардов: неоплаченный счёт отсекается раньше, чем вид и срок."""
     assert _run_refund(_invoice(status="pending")) == "Возврат возможен только для оплаченного счёта"
+
+
+# ------------------------------------- 6. оплата долга не меняет тарифную модель
+
+def _mode_after_paying(kind: str):
+    """Что станет с моделью студии, когда счёт вида `kind` придёт оплаченным.
+
+    Подписка у студии висит на обычном (не комбо) Price — то есть Stripe готов
+    рассказать про неё «модель = subscription» кому угодно, кто спросит.
+    """
+    from routers.billing.webhook import _apply_paid_mode
+
+    plan = SimpleNamespace(billing_mode="percent", percent_rate=3.0, fixed_base_amount=None)
+    subscription = SimpleNamespace(
+        items=SimpleNamespace(data=[SimpleNamespace(
+            price=SimpleNamespace(lookup_key=lookup_key("pro", 1)),
+        )]),
+    )
+    _apply_paid_mode(plan, subscription, kind)
+    return plan.billing_mode, plan.percent_rate
+
+
+def test_paying_the_commission_invoice_does_not_switch_the_model_off_percent():
+    """Студия закрыла свой же долг — и осталась на том тарифе, за который платит.
+
+    Раньше режим переставлялся по ЛЮБОМУ оплаченному счёту: `offline_fee` читал
+    Price висящей подписки, ставил billing_mode=subscription и обнулял ставку.
+    Начисления прекращались, а раздел «Комиссия с офлайн-продаж» исчезал.
+    """
+    assert _mode_after_paying("offline_fee") == ("percent", 3.0)
+    assert _mode_after_paying("min_fee") == ("percent", 3.0)
+    assert _mode_after_paying("online_fee") == ("percent", 3.0)
+
+
+def test_paying_the_subscription_still_applies_the_bought_model():
+    """Гейт не должен заодно сломать то, ради чего функция существует."""
+    assert _mode_after_paying("subscription") == ("subscription", None)
+
+
+# ------------------------- 7. возврат комиссии не отменяет тариф студии
+
+def _refund_cancels_subscription(kind: str) -> bool:
+    """Отменит ли `_handle_refund` подписку студии при полном возврате счёта `kind`."""
+    import routers.billing.webhook as WH
+
+    invoice = SimpleNamespace(id=7, studio_id=1, kind=kind, status="paid", stripe_invoice_id="in_1")
+    plan = SimpleNamespace(studio_id=1, stripe_subscription_id="sub_1")
+    cancelled = []
+
+    class _SeqDB:
+        """Обработчик спрашивает БД дважды: сперва счёт, потом строку тарифа.
+        Общий `_db` отдаёт один и тот же объект на оба, и до второго запроса
+        проверка вида счёта в норме просто не доходит."""
+
+        def __init__(self):
+            self._rows = [invoice, plan]
+
+        async def execute(self, _q):
+            row = self._rows.pop(0) if self._rows else None
+            return SimpleNamespace(scalar_one_or_none=lambda: row)
+
+    async def fake_apply(_db, _inv, _status, **_kw):
+        return True
+
+    async def fake_cancel(sub_id):
+        cancelled.append(sub_id)
+
+    saved_apply, saved_cancel = WH.apply_status, WH.stripe_billing.cancel_subscription
+    WH.apply_status = fake_apply
+    WH.stripe_billing.cancel_subscription = fake_cancel
+    try:
+        # Полный возврат: amount == amount_refunded, иначе ветка вовсе не та.
+        charge = SimpleNamespace(
+            payment_intent="pi_1", invoice="in_1", amount=3900, amount_refunded=3900,
+        )
+        asyncio.run(WH._handle_refund(_SeqDB(), charge))
+    finally:
+        WH.apply_status, WH.stripe_billing.cancel_subscription = saved_apply, saved_cancel
+    return bool(cancelled)
+
+
+def test_refunded_commission_does_not_cancel_the_tariff():
+    """Комиссию и минимальный платёж самообслуживание не возвращает вовсе — их
+    возвращает поддержка руками из дашборда Stripe, и это штатный путь.
+
+    Прилетает такой возврат тем же `charge.refunded`, что и возврат за тариф. Без
+    проверки вида счёта студия за возвращённую ей переплату получала ОТМЕНУ
+    ПОДПИСКИ: доступ закрывался в наказание за нашу же ошибку в счёте.
+    """
+    assert _refund_cancels_subscription("offline_fee") is False
+    assert _refund_cancels_subscription("min_fee") is False
+    assert _refund_cancels_subscription("online_fee") is False
+
+
+def test_refunded_subscription_still_cancels_it():
+    """Гейт не должен заодно сломать то, ради чего обработчик существует: вернули
+    деньги за тариф — тариф заканчивается."""
+    assert _refund_cancels_subscription("subscription") is True
+
+
+# --------------- 8. возврат наличной продажи снимает начисленную комиссию
+
+def _reverse(mode, amount_minor, rate=None):
+    """Компенсирующее начисление по возврату: (сумма продажи, сумма комиссии)."""
+    plan = SimpleNamespace(studio_id=1, billing_mode=mode, percent_rate=rate)
+    row = asyncio.run(PF.reverse_offline_fee(_db(plan), 1, amount_minor, "CZK"))
+    return None if row is None else (row.sale_amount, row.fee_amount)
+
+
+def test_cash_refund_takes_the_commission_back():
+    """Продали за 5000 наличными (3% = 150), вернули клиенту — комиссии больше нет.
+
+    Наличные Stripe не расщепляет, про их возврат знает только CRM. Без этого
+    студия получала счёт за продажу, которой уже не существует.
+    """
+    assert _reverse("percent", 500000) == (-500000, -15000)
+    # Комбо берёт половинную ставку — и снимает ровно её же.
+    assert _reverse("combo", 500000) == (-500000, -7500)
+
+
+def test_subscription_studio_has_nothing_to_reverse():
+    """На фиксированной подписке платформа с транзакций не берёт ничего, значит и
+    снимать нечего: минусовая строка там завела бы студии долг платформы перед ней."""
+    assert _reverse("subscription", 500000) is None
+    assert _reverse(None, 500000) is None
+
+
+def test_reversal_is_a_compensating_row_not_an_edit():
+    """Исходное начисление могло уже уехать в выставленный счёт. Минус уменьшает
+    БЛИЖАЙШИЙ следующий, а выставленный документ задним числом не переписывается."""
+    assert PF.reverse_offline_fee.__doc__ and "КОМПЕНСИРУЮЩЕЙ" in PF.reverse_offline_fee.__doc__
+    sale, fee = _reverse("percent", 500000)
+    assert sale < 0 and fee < 0, "снятие обязано быть отрицательным, иначе оно добавит долг"
+
+
+def test_card_refunds_do_not_double_reverse():
+    """Возврат по карте откатывает вебхук Stripe (_revert_sale) — там своя ветка со
+    снятием доли из леджера. Второе снятие здесь было бы двойным."""
+    import inspect
+    from routers.finances import operations
+
+    src_op = inspect.getsource(operations.create_operation)
+    assert 'body.category == "Возвраты"' in src_op
+    assert "platform_fee.ONLINE_METHOD" in src_op, "онлайн-возвраты не исключены"
+
+
+def test_manual_income_is_charged_like_any_other_sale():
+    """Доход, заведённый руками в Финансах, — те же деньги студии, что и продажа
+    через кассу, и облагается так же.
+
+    Пока начисления здесь не было, процентный тариф обходился в один клик: провести
+    оплату занятия не кассой, а операцией «доход» — и комиссии нет, при том что
+    абонемент, разовое, сертификат и депозит её платят.
+    """
+    import inspect
+    from routers.finances import operations
+
+    src_op = inspect.getsource(operations.create_operation)
+    assert "platform_fee.record_offline_fee" in src_op, "ручной доход снова мимо комиссии"
+    # Обе стороны обязаны жить в одной ветке и исключать онлайн одинаково: разъехавшись,
+    # они дадут либо двойное начисление, либо двойное снятие.
+    assert "platform_fee.reverse_offline_fee" in src_op
+    assert src_op.count("platform_fee.ONLINE_METHOD") == 1
+
+
+# ------------------------- 9. VIES: реестр молчит — не отказываем, но и не врём
+
+def test_vat_format_is_checked_before_the_registry():
+    """Опечатку отсекаем ДО сети: поход в реестр за заведомо кривым номером —
+    лишние 10 секунд ожидания в форме и лишняя нагрузка на чужой сервис."""
+    from services import vies
+
+    assert vies.format_ok("DE", "DE811907980")
+    assert not vies.format_ok("DE", "DE8119079")
+    assert not vies.format_ok("NL", "NL004495445X01")
+
+
+def test_unverified_number_never_reaches_stripe():
+    """ГЛАВНЫЙ инвариант сценария: номер, который никто не сверял, в Stripe не
+    уезжает. Уехал бы — Stripe Tax обнулил бы НДС по формату, а недобор налога
+    сняли бы с ПЛАТФОРМЫ. Поэтому такому плательщику идёт полный НДС."""
+    import inspect
+    from routers.billing import checkout
+
+    src_ensure = inspect.getsource(checkout._ensure_customer)
+    assert "profile.vat_verified" in src_ensure, "неподтверждённый номер уезжает в Stripe"
+
+
+def test_silent_registry_does_not_reject_the_payer():
+    """Узел отдельной страны ЕС лежит регулярно. Отказывать из-за этого нельзя:
+    номер сохраняется неподтверждённым, а не теряется вместе с покупателем."""
+    import inspect
+    from routers.billing.router import save_billing_profile
+
+    src_save = inspect.getsource(save_billing_profile)
+    assert "vat_bad_format" in src_save and "vat_invalid" in src_save
+    assert "vat_unavailable" not in src_save, "отказ по молчащему реестру вернулся"
+    assert "verified = valid is True" in src_save
+
+
+def test_health_pool_is_several_countries():
+    """Одна проба означала бы «прод закрыт в день техработ у чужой страны»."""
+    from services import vies
+
+    assert len(vies.HEALTH_PROBES) >= 3
+    assert set(vies.HEALTH_PROBES) <= vies.EU_VAT_COUNTRIES
+
+
+def test_unverified_numbers_get_rechecked_in_the_background():
+    """Без досверки компания переплачивала бы НДС до тех пор, пока не догадается
+    открыть форму и нажать «Сохранить» ещё раз."""
+    import inspect
+    from routers.billing import webhook as WH
+    import services.offline_fee_billing as OFB
+
+    assert "billing_vat_verified" in inspect.getsource(WH.recheck_vat_numbers)
+    assert "recheck_vat_numbers" in inspect.getsource(OFB._run_billing_pass)
+
+
+# ------------------------------ 10. курс валют переживает падение провайдера
+
+def test_rate_lives_in_the_db_not_in_a_temp_file():
+    """Файл во временном каталоге контейнера стирается при перезапуске: после него
+    в день, когда ЕЦБ недоступен, курса не оставалось вовсе — и комиссии студий,
+    торгующих не в валюте биллинга, не попадали в счёт."""
+    import services.offline_fee_billing as OFB
+
+    assert hasattr(OFB, "_load_fx") and hasattr(OFB, "_save_fx")
+    assert not hasattr(OFB, "_FX_CACHE_PATH"), "файловый кэш вернулся"
+
+
+def test_missing_rate_still_defers_instead_of_charging_zero():
+    """Курса нет вообще (первый запуск, пустая таблица) — счёт откладывается.
+    Посчитать по нулю значило бы молча подарить студии комиссию."""
+    import services.offline_fee_billing as OFB
+
+    saved = dict(OFB._FX)
+    OFB._FX.clear()
+    try:
+        assert OFB.to_billing_currency(4500, "czk") is None
+    finally:
+        OFB._FX.update(saved)
 
 
 if __name__ == "__main__":

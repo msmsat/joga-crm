@@ -18,10 +18,10 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-import legal
 from models import BillingInvoice, StudioBillingPlan, StudioMember, User
 from models.studio import Studio
 from services import stripe_billing
+from services.email_layout import WEB_APP_URL, button, link
 from services.mailer import send_email
 from services.notifier import _CURRENCY_SIGNS, _studio_prefs
 
@@ -38,35 +38,39 @@ _SUBJECT = {
     "en": "Velora — subscription payment receipt",
 }
 
+_BILLING_PAGE = f"{WEB_APP_URL}/dashboard/billing"
+
 # {plan}/{period}/{amount}/{method}/{link} подставляются ниже. Отдельный блок ссылки:
 # у счёта может не быть ни PDF, ни хостед-страницы (событие пришло усечённым), и
 # висящая пустая кнопка «Скачать фактуру» хуже её отсутствия.
 _BODY = {
     "ru": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Оплата получена</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Оплата получена</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Тариф: <b style='color:#1A1A1A'>{plan}</b><br>"
         "Период: {period} мес.<br>"
         "Сумма: <b style='color:#1A1A1A'>{amount}</b><br>"
         "Способ оплаты: {method}</p>{link}"
-        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
-        "Отключить чеки можно в разделе «Тариф и оплата» → «Способ оплаты».</p>"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Счета и карта — в разделе " + link("Тариф и оплата", _BILLING_PAGE) +
+        "; там же отключаются чеки на почту.</p>"
     ),
     "en": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Payment received</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Payment received</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Plan: <b style='color:#1A1A1A'>{plan}</b><br>"
         "Period: {period} months<br>"
         "Amount: <b style='color:#1A1A1A'>{amount}</b><br>"
         "Payment method: {method}</p>{link}"
-        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
-        "You can turn receipts off in Billing → Payment method.</p>"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Invoices and your card live in " + link("Billing", _BILLING_PAGE) +
+        " — receipts can be turned off there too.</p>"
     ),
 }
 
 _LINK = {
-    "ru": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Открыть фактуру</a></p>",
-    "en": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>View invoice</a></p>",
+    "ru": button("Открыть фактуру", "{url}"),
+    "en": button("View invoice", "{url}"),
 }
 
 _METHOD = {
@@ -74,21 +78,10 @@ _METHOD = {
     "en": {"card": "bank card", "iban": "bank transfer (IBAN)"},
 }
 
-# Подвал денежных писем со ссылками на документы. Отдельный договор под подписку
-# не подписывается — сделка заключена галочкой при регистрации, и условия, по
-# которым списаны деньги, должны быть в шаге от письма о списании.
-_LEGAL_FOOTER = {
-    "ru": (
-        "<p style='font:400 11px/1.6 Arial,sans-serif;color:#AAA'>"
-        f"<a href='{legal.TERMS_URL}' style='color:#AAA'>Условия использования</a> · "
-        f"<a href='{legal.PRIVACY_URL}' style='color:#AAA'>Политика конфиденциальности</a></p>"
-    ),
-    "en": (
-        "<p style='font:400 11px/1.6 Arial,sans-serif;color:#AAA'>"
-        f"<a href='{legal.TERMS_URL}' style='color:#AAA'>Terms of Service</a> · "
-        f"<a href='{legal.PRIVACY_URL}' style='color:#AAA'>Privacy Policy</a></p>"
-    ),
-}
+# Подвал денежных писем со ссылками на Условия и Политику ставит общая оболочка
+# писем (services/email_layout.wrap): условия, по которым списаны деньги, должны
+# быть в шаге от письма о списании — но это верно для всех писем платформы, а не
+# только для денежных, поэтому свой подвал здесь больше не собирается.
 
 # Предупреждение о скором отключении за неоплаченный счёт комиссии (offline_fee).
 # Раньше о нём напоминало только письмо Stripe по счёту — своего в CRM не было.
@@ -99,32 +92,32 @@ _WARN_SUBJECT = {
 
 _WARN_BODY = {
     "ru": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Счёт за комиссию не оплачен</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Счёт за комиссию не оплачен</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Сумма: <b style='color:#1A1A1A'>{amount}</b><br>"
         "Оплатить до: <b style='color:#1A1A1A'>{due}</b></p>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
         "Если счёт не будет оплачен в срок, доступ к CRM и к мини-приложению для "
         "ваших клиентов приостановится до погашения.</p>{link}"
-        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
-        "Оплатить можно в разделе «Тариф и оплата».</p>"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Оплатить можно и в разделе " + link("Тариф и оплата", _BILLING_PAGE) + ".</p>"
     ),
     "en": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Fee invoice unpaid</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Fee invoice unpaid</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Amount: <b style='color:#1A1A1A'>{amount}</b><br>"
         "Due by: <b style='color:#1A1A1A'>{due}</b></p>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
         "If it's not paid by then, access to the CRM and your client mini-app "
         "will be suspended until it's settled.</p>{link}"
-        "<p style='font:400 12px/1.6 Arial,sans-serif;color:#999'>"
-        "Pay it any time from Billing → Plan.</p>"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "You can also pay it from " + link("Billing", _BILLING_PAGE) + ".</p>"
     ),
 }
 
 _WARN_LINK = {
-    "ru": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Оплатить счёт</a></p>",
-    "en": "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Pay invoice</a></p>",
+    "ru": button("Оплатить счёт", "{url}"),
+    "en": button("Pay invoice", "{url}"),
 }
 
 
@@ -182,7 +175,7 @@ async def send_receipt(db: AsyncSession, invoice: BillingInvoice) -> bool:
             amount=fmt_amount(invoice.amount),
             method=_METHOD[lang].get(invoice.payment_method or "", invoice.payment_method or "—"),
             link=_LINK[lang].format(url=url) if url else "",
-        ) + _LEGAL_FOOTER[lang]
+        )
         await send_email(to, _SUBJECT[lang], html)
         return True
     except Exception:
@@ -213,9 +206,7 @@ _INCOME_BODY = (
     "Счёт Stripe: {stripe_id}</p>{link}"
 )
 
-_INCOME_LINK = (
-    "<p><a href='{url}' style='font:600 14px Arial,sans-serif;color:#F9A08B'>Открыть фактуру</a></p>"
-)
+_INCOME_LINK = button("Открыть фактуру", "{url}")
 
 
 async def send_platform_income(db: AsyncSession, invoice: BillingInvoice) -> bool:
@@ -284,7 +275,7 @@ async def send_block_warning(db: AsyncSession, invoice: BillingInvoice) -> bool:
             amount=fmt_amount(invoice.amount),
             due=invoice.due_at.strftime("%d.%m.%Y") if invoice.due_at else "—",
             link=_WARN_LINK[lang].format(url=url) if url else "",
-        ) + _LEGAL_FOOTER[lang]
+        )
         await send_email(to, _WARN_SUBJECT[lang], html)
         return True
     except Exception:
@@ -306,23 +297,24 @@ _VAT_SUBJECT = {
 
 _VAT_BODY = {
     "ru": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>Номер НДС не подтверждён</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Номер НДС не подтверждён</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Номер <b style='color:#1A1A1A'>{vat}</b> не найден в европейской базе "
         "плательщиков НДС (VIES) и удалён из реквизитов вашей студии.</p>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
         "Следующие счета будут выставлены с учётом НДС. Если номер указан верно и "
-        "действителен, впишите его заново в разделе «Настройки» → «Общие» — "
-        "проверка запустится снова.</p>"
+        "действителен, впишите его заново — проверка запустится снова.</p>"
+        + button("Открыть настройки", f"{WEB_APP_URL}/dashboard/settings")
     ),
     "en": (
-        "<h2 style='font:600 20px/1.3 Arial,sans-serif;color:#1A1A1A'>VAT number not confirmed</h2>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>VAT number not confirmed</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
         "Number <b style='color:#1A1A1A'>{vat}</b> was not found in the EU VAT "
         "database (VIES) and has been removed from your studio details.</p>"
-        "<p style='font:400 14px/1.7 Arial,sans-serif;color:#666'>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
         "Upcoming invoices will include VAT. If the number is correct and active, "
-        "enter it again in Settings → General to run the check once more.</p>"
+        "enter it again to run the check once more.</p>"
+        + button("Open settings", f"{WEB_APP_URL}/dashboard/settings")
     ),
 }
 
@@ -341,7 +333,7 @@ async def send_vat_rejected(db: AsyncSession, studio_id: int, vat_id: str | None
             return False
 
         lang, _currency = await _studio_prefs(db, studio_id)
-        html = _VAT_BODY[lang].format(vat=vat_id or "—") + _LEGAL_FOOTER[lang]
+        html = _VAT_BODY[lang].format(vat=vat_id or "—")
         await send_email(to, _VAT_SUBJECT[lang], html)
         return True
     except Exception:

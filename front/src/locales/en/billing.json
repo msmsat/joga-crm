@@ -69,8 +69,8 @@
     },
     "descriptions": {
       "subscription": "Pay one amount per month. Predictable and cost-effective.",
-      "percent": "No fixed fee: 3% of every sale, cash included.",
-      "combo": "Half the subscription + 1.5% of every sale, cash included."
+      "percent": "No fixed fee: {{rate}}% of every sale, cash included.",
+      "combo": "Half the subscription + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Popular",
@@ -95,7 +95,7 @@
     "termsConfirm": "I accept the terms",
     "termsMinimum": "Minimum monthly charge is {{amount}} {{currency}}. If over a calendar month the platform earned less than that from your studio (for example, there were no sales through the CRM at all), you are invoiced for the difference. Earn more than the minimum and there is no invoice. An unpaid minimum charge suspends access the same way an unpaid commission invoice does.",
     "termsBurn": "WARNING: you have a paid period left. Switching the billing model FORFEITS it entirely — the unused days are not refunded and do not carry over.",
-    "termsCombo": "The switch is a purchase: right after you confirm, you will see the breakdown — how much of your current period is credited and what is left to pay. The fixed + % model turns on AFTER payment; until then your plan stays as it is and nothing is charged."
+    "termsCombo": "The switch is a PURCHASE: right after you confirm, you will see the amount due. The remainder of your current paid period is forfeited — it is not refunded and does not carry over. The fixed + % model turns on ONLY after payment; until then your plan stays as it is and nothing is charged."
   },
   "combo": {
     "rateBadge": "{{rate}}%",
@@ -233,7 +233,9 @@
       "title": "Billing details and VAT",
       "subtitle": "Invoices, the linked card and charge history live in the Stripe customer portal.",
       "cta": "Open at Stripe"
-    }
+    },
+    "ibanBadgeLabel": "Bank transfer (SEPA)",
+    "ibanBadgeNote": "Invoices arrive by email with a payment link — nothing is charged to a card automatically. You can also pay early from the invoice page."
   },
   "invoices": {
     "title": "Payment history",
@@ -289,13 +291,10 @@
     "titleNew": "Start the {{plan}} plan",
     "titleSwitch": "Switch to {{plan}}",
     "titleRenew": "Renew {{plan}}",
-    "grossLabel": "Plan price",
-    "creditLabel": "Your {{plan}} plan — unused time",
     "totalLabel": "Your plan will cost",
-    "burnWarning": "The unused part of your current plan is worth more than the plan you picked: {{amount}} WILL BE FORFEITED — it is not refunded and does not carry over. Nothing to pay now.",
+    "burnWarning": "Switching to a different plan restarts the period: the remainder of your {{plan}} plan IS FORFEITED — it is not refunded and does not carry over. Renewing the same plan keeps it.",
     "switched": "Plan changed: nothing to pay — the switch was covered by what is left of the current period.",
     "renewNote": "This renews the same plan: the months you buy are added to your current paid period. Nothing is forfeited.",
-    "estimatedNote": "We couldn't calculate the credit for your unused time right now — the amount at checkout may be lower than shown.",
     "cardNote": "Card payment on Stripe's secure page · 7-day refund",
     "freeUntil": "Nothing is charged until {{date}}: you still have {{count}} day(s) of your already paid period. Billing starts on that date."
   },
@@ -305,7 +304,11 @@
     "due": "Invoice issued. Days left to pay: {{days}}.",
     "suspended": "Payment overdue — CRM and mini-app access is suspended.",
     "pay": "Pay",
-    "nothingToPay": "Nothing to pay"
+    "suspendedMin": "Minimum monthly fee overdue — CRM and mini-app access is suspended.",
+    "alsoAccruing": "Plus accruing this month: {{amount}} — goes into the next invoice.",
+    "minimum": "Minimum monthly fee is {{amount}}. Earn less in a month and you top up the difference; earn more and there is no invoice.",
+    "pendingBill": "Accrued under the previous model, awaiting an invoice.",
+    "notBilledYet": "No invoice issued yet: the accrued amount is below the minimum invoice size, or it is still being prepared. Nothing is lost — it goes into the next invoice."
   },
   "trial": {
     "title": "Offer for new studios",
@@ -349,8 +352,12 @@
       "city": "City",
       "cityPlaceholder": "Prague",
       "vat": "VAT number — optional",
-      "vatPlaceholder": "CZ12345678",
-      "vatHint": "Businesses only. With a valid VAT number a company in another EU country is invoiced without tax (reverse charge). Individuals don't have one — leave it empty."
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Businesses only. The number is checked against the EU registry (VIES) the moment you save — we don't accept unverified ones. With a valid number a company in another EU country is invoiced without tax (reverse charge). Individuals don't have one — leave it empty.",
+      "countrySearch": "Start typing a name",
+      "countryNotFound": "No country found",
+      "vatOutsideEu": "We don't ask for a VAT number: outside the EU the tax is set by the payer's country, not their number, so it makes no difference to the invoice.",
+      "vatPending": "Your number is saved, but the EU registry was unavailable at the time, so it is not confirmed yet and your next invoice will include full VAT. No need to re-enter it: we keep re-checking, and once the registry responds the tax stops being charged. For an invoice already paid, support will refund the tax."
     },
     "errors": {
       "required": "This field is required"
