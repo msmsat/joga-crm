@@ -194,7 +194,9 @@ async def _run():
             # ── Тёзки в команде: «поменяй Ване зарплату», а Вань двое ─────────
             # Поиск сотрудника идёт ИМЕНЕМ (id человек не знает), и сервер сам
             # фиксирует неоднозначность — модель бы взяла первого попавшегося.
-            found = await get_staff(as_owner, db, FindStaffArgs(query="иван"))
+            # Именно «ваня»: человек говорит уменьшительным, а в команде оба
+            # записаны «Иван» — точного вхождения нет, ищет мягкий проход.
+            found = await get_staff(as_owner, db, FindStaffArgs(query="ваня"))
             assert found["count"] == 2, found
             assert {o["id"] for o in found["ambiguous"]["options"]} == {
                 ids["vanya_a_id"], ids["vanya_b_id"]}, found

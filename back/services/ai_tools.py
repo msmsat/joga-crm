@@ -929,16 +929,26 @@ def _full_name(row: dict) -> str:
     return " ".join(str(p) for p in (row.get("name"), row.get("last_name")) if p).strip()
 
 
-def _name_hit(row: dict, query: str) -> bool:
+def _name_hit(row: dict, query: str, *, stem: bool = False) -> bool:
     """Совпадение записи с именем, которое назвал человек.
 
     Все слова запроса должны найтись в «имя фамилия» — «Иван Петров» и «петров
-    иван» ищут одно и то же, а «Ваня» находит обоих Вань. Морфологии здесь нет
-    и не нужно: промах в обе стороны стоит одного уточняющего вопроса, а
-    выдуманный id стоил бы действия не с тем человеком.
+    иван» ищут одно и то же. stem режет слова запроса до трёх букв: человек
+    говорит «Ваня», а в команде он записан «Иван». Полной морфологии и словаря
+    уменьшительных здесь нет и не будет — лишний кандидат стоит одного
+    уточняющего вопроса, которым эта задача и заканчивается.
     """
     full = _full_name(row).lower()
-    return all(word in full for word in query.lower().split())
+    words = [w[:3] if stem else w for w in query.lower().split()]
+    return bool(words) and all(word in full for word in words)
+
+
+def _by_name(rows: list[dict], query: str) -> list[dict]:
+    """Сначала точное вхождение, и только если никого — по трёхбуквенной основе.
+    Порядок важен: «Иван Петров» не должен тянуть за собой всех Иванов студии
+    лишь потому, что мягкий поиск нашёл бы больше."""
+    hits = [row for row in rows if _name_hit(row, query)]
+    return hits or [row for row in rows if _name_hit(row, query, stem=True)]
 
 
 def _client_option(row: dict) -> dict:
@@ -1003,7 +1013,8 @@ async def find_clients(ctx: StudioContext, db: AsyncSession, args: FindClientsAr
     Ищи ТЕМ, что назвал человек, целиком: назвал «Анна Петрова» — так и ищи,
     поиск понимает имя с фамилией в любом порядке. Урезав запрос до «Анна», ты
     сам создашь неоднозначность там, где её не было, и переспросишь на пустом
-    месте.
+    месте. Пусто по уменьшительному имени — повтори полной формой («Ваня» ->
+    «Иван»), а не спрашивай человека.
     Под запрос и правда подошло несколько человек — не выбирай сам, спроси,
     какой из них: сервер покажет список, но твой ответ должен быть вопросом."""
     page = await _r_list_clients(
@@ -1101,12 +1112,14 @@ async def get_staff(ctx: StudioContext, db: AsyncSession, args: FindStaffArgs) -
     Кириллом») — передай это имя в query и возьми id из выдачи. Ищи ровно тем,
     что назвал человек: назвал «Иван Петров» — так и ищи, поиск понимает имя с
     фамилией в любом порядке. Пустой query — вся команда.
+    Никого не нашлось по уменьшительному имени — повтори поиск полной формой
+    («Ваня» -> «Иван», «Дима» -> «Дмитрий»), а не спрашивай человека.
     Под имя подошло несколько тёзок — не выбирай сам и не бери первого: сервер
     покажет список и спросит, о ком речь."""
     rows = (await _staff_page(ctx, db)).get("items") or []
     query = args.query.strip()
     if query:
-        rows = [row for row in rows if _name_hit(row, query)]
+        rows = _by_name(rows, query)
     result = _items({"items": rows, "total": len(rows)})
     if query:
         result["matched_by"] = "name"
@@ -2841,8 +2854,17 @@ if __name__ == "__main__":
 
     # Поиск по имени: все слова запроса в «имя фамилия», порядок не важен.
     vanya = {"id": 4, "name": "Иван", "last_name": "Петров"}
+    others = [vanya, {"id": 6, "name": "Иван", "last_name": "Сидоров"},
+              {"id": 7, "name": "Мария", "last_name": "Ким"}]
     assert _name_hit(vanya, "иван") and _name_hit(vanya, "петров иван")
     assert not _name_hit(vanya, "иван сидоров")
+    assert not _name_hit(vanya, "")
+    # «Ваня» точным вхождением не находится — за это отвечает мягкий проход.
+    assert not _name_hit(vanya, "ваня") and _name_hit(vanya, "ваня", stem=True)
+    assert [r["id"] for r in _by_name(others, "ваня")] == [4, 6]
+    # Точное совпадение мягкий проход не запускает: Иван Петров один.
+    assert [r["id"] for r in _by_name(others, "иван петров")] == [4]
+    assert _by_name(others, "кирилл") == []
     assert _staff_option({**vanya, "department": "пилатес", "role": "trainer"})["label"] == (
         "Иван Петров, пилатес, тренер")
 
