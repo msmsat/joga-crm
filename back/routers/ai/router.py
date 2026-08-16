@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from dependencies import require_active_subscription
 from .agents import router as agents_router
 from .chat import router as chat_router
+from .facts import router as facts_router
 from .instagram import (
     callback_router as instagram_callback_router,
     router as instagram_router,
@@ -23,6 +24,7 @@ router = APIRouter()
 # routers/booking/router.py): гейт на конкретных подроутерах, не на префиксе целиком.
 _gate = [Depends(require_active_subscription)]
 router.include_router(chat_router, dependencies=_gate)
+router.include_router(facts_router, dependencies=_gate)
 router.include_router(settings_router, dependencies=_gate)
 router.include_router(agents_router, dependencies=_gate)
 router.include_router(instagram_router, dependencies=_gate)

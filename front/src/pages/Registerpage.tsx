@@ -106,7 +106,7 @@ export default function RegisterPage() {
     }
     if (s === 4) {
       if (!code) errs.code = "Введите код подтверждения";
-      else if (code.length !== 4) errs.code = "Код должен состоять из 4 цифр";
+      else if (code.length !== 6) errs.code = "Код должен состоять из 6 цифр";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                   {step === 4 && (
                     <div className="flex-col gap-8">
                       <InputField
-                        label="Код из письма" type="text" placeholder="1234" maxLength={4}
+                        label="Код из письма" type="text" placeholder="123456" maxLength={6}
                         value={code} 
                         onChange={(v: string) => { 
                           // Разрешаем вводить только цифры

@@ -79,8 +79,38 @@ class AIChatMessage(Base):
     # колонкой с unique-индексом, а не служебным сообщением: в этой таблице живут
     # только роли user/assistant, а БД сама закрывает гонку двойного клика.
     action_jti: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, unique=True)
+    # Оценка ответа человеком: 1 или -1, NULL — не оценивал (эпик AI-6, задача 18).
+    # Колонкой, а не отдельной таблицей: оценка принадлежит сообщению один к
+    # одному, и служебных строк в ленте она не создаёт — проверка порядка ролей
+    # ["user","assistant",…] обязана продолжать проходить.
+    rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     session: Mapped["AIChatSession"] = relationship(back_populates="messages")
+
+
+class AIStudioFact(Base):
+    """Что ассистент помнит о студии между диалогами (эпик AI-6, задача 16).
+
+    Короткий список фактов, которые человек попросил запомнить: «по воскресеньям
+    не работаем», «Марина — это Мария Ивановна». Не векторная база и не сжатие
+    прошлых диалогов: то, что нельзя прочитать глазами и стереть одной кнопкой,
+    в CRM с персональными данными заводить нельзя — владелец обязан видеть весь
+    список целиком.
+
+    По той же причине ПДн клиентов сюда не кладутся (запрет стоит в описании
+    инструмента): телефоны и даты рождения в этой таблице означали бы срок
+    хранения, экспорт и удаление по требованию — ровно то, чего AIUsage избегал.
+    """
+    __tablename__ = "ai_studio_facts"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # Потолок в 200 символов — не экономия места, а форма: факт длиннее уже не
+    # факт, а инструкция, для которой есть системный промпт студии.
+    text: Mapped[str] = mapped_column(String(200))
+    author_user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
 
 class AIUsage(Base):
@@ -110,6 +140,15 @@ class AIUsage(Base):
     # Кто спрашивал в мессенджере — для антиспама задачи 13 (tg_id/IGSID/телефон).
     # Только для surface != "crm"; в CRM отправитель — это user_id.
     sender_ref: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+
+    # Метрики цикла (эпик AI-6, задача 18). Текста промптов тут по-прежнему нет
+    # и не появится — только имена инструментов и счётчики: по ним видно, на
+    # каких вопросах цикл упирается в потолок итераций, то есть где ассистент
+    # «тупит», в цифрах, а не в личном сообщении владельца.
+    # Все три nullable: миграция накатывается на базу, где строки уже есть.
+    tools: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    iterations: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    escalated: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
 
     # Оба запроса квоты (задача 3) и антиспама (задача 13) — это «строки одной
     # студии за период». Двух раздельных индексов по studio_id и created_at для

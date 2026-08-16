@@ -25,9 +25,10 @@ from routers.ai.chat import (
     delete_session,
     list_messages,
     list_sessions,
+    rate_message,
     send_message,
 )
-from schemas.ai import ChatMessageCreate, ChatSessionCreate
+from schemas.ai import ChatMessageCreate, ChatSessionCreate, MessageRatingIn
 
 
 async def _seed() -> tuple[int, int, int]:
@@ -109,6 +110,25 @@ async def _run():
             assert sessions[0].preview == r2.assistant.text[:500]
             # первое сообщение переписало плейсхолдерный заголовок
             assert sessions[0].title == "Привет!"
+
+            # ── Оценка ответа (эпик AI-6, задача 18) ────────────────────────
+            answer = msgs[1]
+            assert answer.rating is None, "оценка по умолчанию пустая"
+            rated = await rate_message(answer.id, MessageRatingIn(rating=-1), ctx=ctx1, db=db)
+            assert rated.rating == -1
+            # Повторный клик по той же кнопке снимает оценку.
+            assert (await rate_message(answer.id, MessageRatingIn(rating=None),
+                                       ctx=ctx1, db=db)).rating is None
+            # Оценка не добавляет строк в ленту: проверка последовательности
+            # ролей обязана продолжать проходить (запрет 5 эпика).
+            after = await list_messages(session_id, ctx=ctx1, db=db)
+            assert [m.role for m in after] == ["user", "assistant", "user", "assistant"]
+            # Свой вопрос оценивать нечего, чужой диалог не найдётся.
+            try:
+                await rate_message(msgs[0].id, MessageRatingIn(rating=1), ctx=ctx1, db=db)
+                assert False, "оценили собственный вопрос"
+            except HTTPException as e:
+                assert e.status_code == 400
 
             # пустой текст после .strip() -> 422, а не 500
             try:

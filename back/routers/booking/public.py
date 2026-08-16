@@ -21,7 +21,7 @@ from schemas._base import BaseSchema, Phone
 from services.booking_access import find_eligible_subscription
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
-from services.notifier import notify
+from services.notifier import lesson_context, notify
 from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining
 
@@ -250,23 +250,24 @@ async def public_reserve(
 
     # «Запись подтверждена» — только за подтверждённой бронью: при включённом
     # подтверждении тренером c1 уходит после одобрения в Журнале.
+    lesson_ctx = await lesson_context(db, lesson)
     if reservation.status == "active":
         await notify(db, studio_id, "client", "c1", {
-            "client_id": client.id,
-            "lesson_name": lesson.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            **lesson_ctx, "client_id": client.id,
         })
     await notify(db, studio_id, "admin", "a1", {
-        "lesson_name": lesson.name,
+        **lesson_ctx,
         "client_name": client.name,
+        # См. reservations.py: гасит a1 владельцу, который сам ведёт занятие и
+        # получит t1 (notifier._recipient).
+        "trainer_id": lesson.teacher_id,
     })
     # Тренеру этого занятия (t1) — только если у занятия задан teacher_id.
     if lesson.teacher_id is not None:
         await notify(db, studio_id, "trainer", "t1", {
+            **lesson_ctx,
             "trainer_id": lesson.teacher_id,
-            "lesson_name": lesson.name,
             "client_name": client.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
     await notify_subscription_remaining(db, studio_id, client.id, remaining)
     return ReserveResponse(

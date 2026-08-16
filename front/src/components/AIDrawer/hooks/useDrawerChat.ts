@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { useAssistant } from '../../../hooks/useAssistant';
+import { useAssistant, type AISurface } from '../../../hooks/useAssistant';
 
 // Тонкая обёртка над useAssistant (эпик AI-1, задача 7): дровер добавляет
 // только свой UI-скролл, вся история/отправка/сессии — из общего хука.
-export function useDrawerChat() {
-  const assistant = useAssistant();
+// surface прокидывается наружу: страница AI собрана из тех же компонентов,
+// но открытый чат у неё свой.
+export function useDrawerChat(surface: AISurface = 'drawer') {
+  const assistant = useAssistant(surface);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Плавно — только на новом пузыре. Во время стрима текст дописывается по

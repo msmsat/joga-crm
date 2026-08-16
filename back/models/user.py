@@ -47,15 +47,20 @@ class User(Base):
     avg_rating: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    # ЛЕГАСИ, больше не пишется и не читается. Здесь лежал код подтверждения почты
+    # открытым текстом, без срока и без счётчика попыток; регистрация переведена на
+    # общий OTP (`otp_*` ниже) вслед за восстановлением пароля. Колонку оставляем до
+    # отдельной миграции — удалять её вместе с правкой денежного и входного пути
+    # значит смешивать в одном релизе поведение и схему.
     verification_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     is_onboarded: Mapped[bool] = mapped_column(Boolean, default=False)
     last_online_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
     two_fa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    # OTP с TTL и скоупом действия (EPIC 5, задача 3) — для действий внутри
-    # аккаунта (смена пароля, danger zone, 2FA). User.verification_code
-    # (регистрация/восстановление пароля) остаётся отдельно, не трогаем.
+    # OTP с TTL и скоупом действия (EPIC 5, задача 3). Теперь ЕДИНСТВЕННЫЙ механизм
+    # одноразовых кодов в продукте: смена пароля, danger zone, 2FA, восстановление
+    # пароля и подтверждение почты при регистрации.
     otp_code_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     otp_action: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     otp_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)

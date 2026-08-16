@@ -16,6 +16,8 @@ import type { Program } from './types';
 import styles from './Loyalty.module.css';
 import { loyaltyApi } from '../../../api/loyalty/loyalty.api';
 import { queryKeys } from '../../../api/queryKeys';
+import { useAiIntent } from '../../../hooks/useAiIntent';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Loyalty() {
   const { t } = useTranslation('loyalty');
@@ -30,6 +32,16 @@ export default function Loyalty() {
   const { data: stats } = useQuery({
     queryKey: queryKeys.loyaltyStats,
     queryFn: () => loyaltyApi.getStats(),
+  });
+
+  // Ассистент: /dashboard/loyalty?tab=certificates&ai=loyalty.program — какую
+  // программу открыть, приходит в tab: ключ программы строковый, а entity_id
+  // числовой (эпик AI-6, задача 9).
+  const [aiParams] = useSearchParams();
+  useAiIntent('loyalty.program', () => {
+    const key = aiParams.get('tab');
+    const meta = PROGRAM_METADATA.find(m => m.key === key);
+    if (meta) openDrawer(meta.key, t(meta.titleKey));
   });
 
   const promocodesActive = (stats?.program_counters.promocodes ?? 0) > 0;

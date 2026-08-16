@@ -150,6 +150,9 @@ export default function ChatPanel({
               <ActionCard
                 description={actionProposal.description}
                 args={actionProposal.args}
+                entities={actionProposal.entities}
+                effect={actionProposal.effect}
+                danger={actionProposal.danger}
                 loading={actionPending}
                 onConfirm={() => onConfirmAction?.()}
                 onCancel={() => onCancelAction?.()}

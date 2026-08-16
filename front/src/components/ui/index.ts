@@ -29,6 +29,15 @@ export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { ActionCard } from './ActionCard';
 export type { ActionCardProps } from './ActionCard';
+export { AIMessage } from './AIMessage';
+export type { AIMessageProps } from './AIMessage';
+export { AIChart } from './AIChart';
+export type { AIChartProps } from './AIChart';
+export { AIRating } from './AIRating';
+export type { AIRatingProps } from './AIRating';
+export { parseChartSpec } from './aiChartSpec';
+export { stableMarkdown } from './stableMarkdown';
+export type { AIChartSpec, AIChartPoint } from './aiChartSpec';
 
 // Диалоги: ModalShell — каркас, части собираются как конструктор.
 // Dialog — синоним ModalShell для новых страниц.

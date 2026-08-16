@@ -20,6 +20,7 @@ from models import (
     AIChatMessage,
     AIChatSession,
     AIUsage,
+    Client,
     Lesson,
     Reservation,
     Studio,
@@ -28,7 +29,7 @@ from models import (
     StudioMember,
     User,
 )
-from services import assistant, llm
+from services import ai_tools, assistant, llm
 from services.assistant import run_agent
 
 _OWNER_EMAIL = "ai-agent-owner@test.local"
@@ -102,10 +103,17 @@ async def _seed() -> dict:
             Lesson(studio_id=sid, name="Йога", teacher_name="Ольга", teacher_id=owner.id,
                    start_time=start + timedelta(hours=2), price=0, level="", equipment=""),
         ])
+        # Клиент нужен настоящий: с задачи 14 сборка предложения разрешает id в
+        # имена, и выдуманный client_id даёт текст «не нашёл», а не карточку.
+        client = Client(studio_id=sid, name="Анна", last_name="Петрова",
+                        phone="+420777000333", city="Прага")
         session = AIChatSession(studio_id=sid, user_id=owner.id, title="Новый чат")
-        db.add(session)
+        db.add_all([client, session])
         await db.commit()
-        return {"sid": sid, "owner_id": owner.id, "trainer_id": trainer.id, "session_id": session.id}
+        return {
+            "sid": sid, "owner_id": owner.id, "trainer_id": trainer.id,
+            "client_id": client.id, "session_id": session.id,
+        }
 
 
 async def _cleanup(sid: int) -> None:
@@ -120,6 +128,7 @@ async def _cleanup(sid: int) -> None:
         if lesson_ids:
             await db.execute(delete(Reservation).where(Reservation.lesson_id.in_(lesson_ids)))
         await db.execute(delete(Lesson).where(Lesson.studio_id == sid))
+        await db.execute(delete(Client).where(Client.studio_id == sid))
         await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
         await db.execute(delete(StudioAISettings).where(StudioAISettings.studio_id == sid))
         await db.execute(delete(StudioMember).where(StudioMember.studio_id == sid))
@@ -168,7 +177,8 @@ async def _run():
             ctx = await _ctx(db, ids["owner_id"], sid, "owner")
             result = await run_agent(
                 ctx, db, await _settings(db, sid), [], session_id=ids["session_id"],
-                current_page="/dashboard/journal",
+                current_page="/dashboard/journal?tab=day",
+                viewport="phone",
             )
         assert result.text == "Завтра два занятия."
         assert result.action_proposal is None
@@ -177,10 +187,23 @@ async def _run():
 
         # Промпт собран в правильном порядке и несёт всё обязательное.
         first = script.calls[0]["messages"]
-        assert first[0]["content"].startswith("# Карта интерфейса"), "карта интерфейса — первым слотом"
+        # Первым слотом — ИНДЕКС карты, а не карта целиком (эпик AI-6, решение 4):
+        # карта v2 весит ~13K токенов, и запись такого префикса в кэш стоила бы
+        # дороже месячного потолка тарифа.
+        assert first[0]["content"] == ai_tools.UI_INDEX, "индекс карты — первым слотом"
+        assert "/dashboard/staff" in first[0]["content"]
+        assert len(first[0]["content"]) < len(ai_tools.UI_MAP)
         assert "Velora AI" in first[1]["content"]
         assert _STUDIO_PROMPT in first[2]["content"], "промпт студии потерян — тихая регрессия AI-2"
         assert "EUR" in first[2]["content"] and "/dashboard/journal" in first[2]["content"]
+        # Контекст страницы и устройства (эпик AI-6, задача 7): секция карты для
+        # текущей страницы уезжает в слот [2] сразу, без вызова ui_section, а
+        # телефону нельзя рассказывать про левую колонку.
+        assert "## Журнал" in first[2]["content"], "секции текущей страницы нет в контексте"
+        assert "<!--" not in first[2]["content"], "служебный комментарий карты уехал в промпт"
+        assert "ТЕЛЕФОН" in first[2]["content"], "устройство не попало в контекст"
+        # Ширина окна не кэшируется вместе с префиксом: слот [2] свой у каждого.
+        assert script.calls[0]["cache_prefix_len"] == 2
         assert script.calls[0]["cache_prefix_len"] == 2
         assert script.calls[0]["tier"] == llm.TIER_FAST
 
@@ -206,7 +229,8 @@ async def _run():
         # ── Изменяющий инструмент: предложение, а не исполнение.
         async with async_session_maker() as db:
             lesson_id = (await db.execute(select(Lesson.id).where(Lesson.studio_id == sid))).scalars().first()
-        _ScriptedLLM(_calls(("book_client", {"lesson_id": lesson_id, "client_id": 1}))).install()
+        _ScriptedLLM(_calls(
+            ("book_client", {"lesson_id": lesson_id, "client_id": ids["client_id"]}))).install()
         async with async_session_maker() as db:
             ctx = await _ctx(db, ids["owner_id"], sid, "owner")
             result = await run_agent(
@@ -215,6 +239,28 @@ async def _run():
         assert result.action_proposal is not None
         assert result.action_proposal["tool"] == "book_client" and result.action_proposal["token"]
         assert result.text
+        # Карточка называет людей, а не номера (эпик AI-6, задача 14).
+        assert result.action_proposal["entities"]["client_id"] == "Анна Петрова"
+        assert "Пилатес" in result.action_proposal["entities"]["lesson_id"]
+        assert "client_id" not in result.action_proposal["description"]
+
+        # Тот же вызов после неоднозначного поиска — вопрос вместо карточки.
+        _ScriptedLLM(
+            _calls(("find_clients", {"query": "Анна"})),
+            _calls(("book_client", {"lesson_id": lesson_id, "client_id": ids["client_id"]})),
+        ).install()
+        async with async_session_maker() as db:
+            # Вторая Анна — чтобы поиск вернул больше одной записи.
+            db.add(Client(studio_id=sid, name="Анна", last_name="Сидорова",
+                          phone="+420777000444", city="Прага"))
+            await db.commit()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            asked = await run_agent(
+                ctx, db, await _settings(db, sid), [], session_id=ids["session_id"],
+            )
+        assert asked.action_proposal is None, "карточка при двух Аннах — выбор за модель"
+        assert "Анна Петрова" in asked.text and "Анна Сидорова" in asked.text, asked.text
         async with async_session_maker() as db:
             booked = (await db.execute(
                 select(func.count()).select_from(Reservation).where(Reservation.lesson_id == lesson_id)
@@ -240,6 +286,19 @@ async def _run():
             result = await run_agent(ctx, db, await _settings(db, sid), [], session_id=ids["session_id"])
         assert result.text.strip()
         assert len(script5.calls) == assistant._MAX_ITERATIONS
+
+        # ── Метрики цикла (эпик AI-6, задача 18): по ним и видно, что вопрос
+        # упёрся в потолок итераций. Текста промптов в ai_usage по-прежнему нет.
+        async with async_session_maker() as db:
+            rows = (await db.execute(
+                select(AIUsage.tools, AIUsage.iterations, AIUsage.escalated)
+                .where(AIUsage.studio_id == sid)
+                .order_by(AIUsage.id.desc()).limit(1)
+            )).all()
+            tools_used, iterations, escalated = rows[0]
+            assert iterations == assistant._MAX_ITERATIONS, iterations
+            assert "get_schedule" in (tools_used or ""), tools_used
+            assert escalated is True, escalated
     finally:
         llm.chat = real_chat
         await _cleanup(sid)
@@ -303,11 +362,13 @@ async def _run_stream():
         # usage посчитан за обе итерации, квоту жжёт одна.
         assert await _usage_rows(sid) == (2, 1)
 
-        # Инструмент навигации даёт своё событие — без него задача 10 обрабатывала
-        # бы событие, которого сервер не шлёт.
+        # Инструмент открытия экрана даёт своё событие — без него фронт
+        # обрабатывал бы событие, которого сервер не шлёт (эпик AI-6, задача 8).
         _StreamingLLM(
-            {"tool_calls": [{"id": "c0", "name": "navigate", "arguments": {"page": "/dashboard/reports"}}]},
-            {"chunks": ["Открыл отчёты."]},
+            {"tool_calls": [{"id": "c0", "name": "open_ui", "arguments": {
+                "page": "/dashboard/staff", "intent": "staff.create",
+            }}]},
+            {"chunks": ["Открываю мастер добавления сотрудника."]},
         ).install()
         events = []
         async with async_session_maker() as db:
@@ -317,7 +378,25 @@ async def _run_stream():
                 session_id=ids["session_id"], stream=True,
             ):
                 events.append((kind, data))
-        assert ("navigate", "/dashboard/reports") in events, events
+        assert ("ui_action", {
+            "page": "/dashboard/staff", "tab": None,
+            "intent": "staff.create", "entity_id": None,
+        }) in events, events
+
+        # Тренеру владельческий раздел не открывается: отказ текстом, а не адрес.
+        _StreamingLLM(
+            {"tool_calls": [{"id": "c0", "name": "open_ui", "arguments": {"page": "/dashboard/finances"}}]},
+            {"chunks": ["Финансы доступны только владельцу."]},
+        ).install()
+        events = []
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["trainer_id"], sid, "trainer")
+            async for kind, data in assistant.agent_events(
+                ctx, db, await _settings(db, sid), [],
+                session_id=ids["session_id"], stream=True,
+            ):
+                events.append((kind, data))
+        assert not [e for e in events if e[0] == "ui_action"], events
     finally:
         llm.chat_stream = real_stream
         await _cleanup(sid)
@@ -456,8 +535,10 @@ async def _run_create_client_respects_plan_limit():
             assert "error" in result and "лимит" in result["error"].lower(), result
 
         async with async_session_maker() as db:
+            # Считаем именно этого клиента: в студии уже есть посевная Анна.
             count = (await db.execute(
-                select(func.count()).select_from(Client).where(Client.studio_id == sid)
+                select(func.count()).select_from(Client).where(
+                    Client.studio_id == sid, Client.email == "ai-agent-limit@test.local")
             )).scalar()
         assert count == 0, "клиент создан в обход лимита тарифа"
     finally:

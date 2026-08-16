@@ -19,9 +19,12 @@ Gmail и Outlook вырезают `<style>` и не понимают flex/grid, 
 
 Self-check:  python -m services.email_layout
 """
+import json
 import os
 import re
-from html import unescape
+from datetime import datetime, timedelta
+from html import escape, unescape
+from urllib.parse import quote
 
 from dotenv import load_dotenv
 
@@ -58,6 +61,19 @@ def button(label: str, url: str) -> str:
     )
 
 
+def greeting(name: str | None, lang: str = "ru") -> str | None:
+    """«Матвей, здравствуйте!» — только если имя есть и это имя, а не заглушка.
+
+    Обращение «, здравствуйте!» без имени выдаёт машину вернее, чем его
+    отсутствие. Берём первое слово: в поле имени часто лежит «Матвей Садовский»,
+    а по фамилии в письме не обращаются.
+    """
+    first = (name or "").strip().split(" ")[0]
+    if not first or "@" in first:  # почта вместо имени — у клиента без карточки
+        return None
+    return f"{first}, здравствуйте!" if lang == "ru" else f"Hi {first}!"
+
+
 def link(label: str, url: str) -> str:
     """Ссылка внутри текста — для второстепенного перехода рядом с кнопкой."""
     return f'<a href="{url}" style="color:{ACCENT};font-weight:700;text-decoration:none">{label}</a>'
@@ -72,6 +88,148 @@ def code_block(code: str) -> str:
         f'<div style="font:800 32px {FONT};letter-spacing:8px;color:{INK}"><b>{code}</b></div>'
         f'</td></tr></table>'
     )
+
+
+def facts(rows: list[tuple[str, str]]) -> str:
+    """«Детали» — карточка «поле → значение»: занятие, время, тренер, зал, сумма.
+
+    Одна строка текста отвечает «что случилось», но не «какое именно занятие, во
+    сколько и с кем» — а именно это человек ищет в письме глазами. Пустые
+    значения вызывающий не передаёт: строка «Тренер: —» хуже её отсутствия.
+    """
+    if not rows:
+        return ""
+    cells = "".join(
+        f'<tr><td style="padding:11px 20px;font:400 13px {FONT};color:{MUTED};white-space:nowrap'
+        f'{";border-top:1px solid #F0EDE8" if i else ""}">{escape(str(k))}</td>'
+        f'<td align="right" style="padding:11px 20px;font:700 14px {FONT};color:{INK}'
+        f'{";border-top:1px solid #F0EDE8" if i else ""}">{escape(str(v))}</td></tr>'
+        for i, (k, v) in enumerate(rows)
+    )
+    return (
+        f'<table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0;background:{PAPER};'
+        f'border:1px solid rgba(26,26,26,0.06);border-radius:14px">{cells}</table>'
+    )
+
+
+def maps_url(address: str) -> str:
+    """Ссылка на карту по адресу. Google Maps, а не «наша» страница: маршрут
+    строит телефон, и лишний переход между ними — потерянный клиент у двери."""
+    return f"https://www.google.com/maps/search/?api=1&query={quote(address)}"
+
+
+def studio_card(
+    name: str, address: str | None = None, phone: str | None = None,
+    email: str | None = None, lang: str = "ru",
+) -> str:
+    """Подпись студии: адрес с картой, телефон и почта — кликабельные.
+
+    Это письмо ОТ студии, и на нём должно быть видно, от кого именно и как с ней
+    связаться, не возвращаясь в поиск. `tel:`/`mailto:` — чтобы с телефона
+    звонок был одним касанием, а не выделением номера.
+    """
+    line = " · ".join(filter(None, [
+        f'<a href="tel:{phone.replace(" ", "")}" style="color:{BODY};text-decoration:none">{escape(phone)}</a>'
+        if phone else "",
+        f'<a href="mailto:{email}" style="color:{BODY};text-decoration:none">{escape(email)}</a>'
+        if email else "",
+    ]))
+    route = (
+        f'<div style="margin-top:10px">{link("Посмотреть на карте" if lang == "ru" else "View on the map", maps_url(address))}</div>'
+        if address else ""
+    )
+    return (
+        f'<table width="100%" cellpadding="0" cellspacing="0" style="margin:26px 0 0">'
+        f'<tr><td style="padding-top:20px;border-top:1px solid #F0EDE8">'
+        f'<div style="font:700 15px {FONT};color:{INK}">{escape(name)}</div>'
+        + (f'<div style="margin-top:4px;font:400 13px/1.6 {FONT};color:{BODY}">{escape(address)}</div>' if address else "")
+        + (f'<div style="margin-top:4px;font:400 13px/1.6 {FONT};color:{BODY}">{line}</div>' if line else "")
+        + route +
+        f'</td></tr></table>'
+    )
+
+
+# ─── КАЛЕНДАРЬ ────────────────────────────────────────────────────────────────
+
+def _ics_escape(value: str) -> str:
+    """RFC 5545: запятая, точка с запятой и перенос строки — управляющие."""
+    return value.replace("\\", "\\\\").replace(";", r"\;").replace(",", r"\,").replace("\n", r"\n")
+
+
+def calendar_ics(
+    *, uid: str, summary: str, start: datetime, minutes: int = 60,
+    location: str = "", description: str = "", tz: str | None = None,
+    cancelled: bool = False,
+) -> bytes:
+    """Файл .ics с занятием — вложением к письму.
+
+    Зачем вложение, а не только разметка для Gmail (ld_json ниже): карточку с
+    маршрутом рисует Gmail, а .ics кладут в календарь ВСЕ клиенты — Apple Mail,
+    Outlook, Thunderbird. Один файл закрывает всех, включая тех, кто письмо
+    вообще не разбирает.
+
+    cancelled=True — та же встреча со STATUS:CANCELLED и SEQUENCE:1: календарь
+    получателя вычёркивает занятие сам, а не оставляет мёртвую запись после
+    отмены. Поэтому uid обязан совпадать с uid подтверждения — он строится по
+    id занятия (см. notifier._calendar_for).
+
+    ponytail: TZID без VTIMEZONE-блока — Apple/Google/Outlook разбирают
+    олсоновское имя сами; полноценный VTIMEZONE нужен только древним клиентам.
+    """
+    stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    fmt = "%Y%m%dT%H%M%S"
+    when = f";TZID={tz}:" if tz else ":"
+    lines = [
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Velora//CRM//RU",
+        "CALSCALE:GREGORIAN", "METHOD:CANCEL" if cancelled else "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        f"UID:{uid}",
+        f"DTSTAMP:{stamp}",
+        f"SEQUENCE:{1 if cancelled else 0}",
+        f"STATUS:{'CANCELLED' if cancelled else 'CONFIRMED'}",
+        f"DTSTART{when}{start.strftime(fmt)}",
+        f"DTEND{when}{(start + timedelta(minutes=minutes or 60)).strftime(fmt)}",
+        f"SUMMARY:{_ics_escape(summary)}",
+    ]
+    if location:
+        lines.append(f"LOCATION:{_ics_escape(location)}")
+    if description:
+        lines.append(f"DESCRIPTION:{_ics_escape(description)}")
+    # Напоминание за час средствами самого календаря — оно сработает и там, где
+    # наше письмо-напоминание не дойдёт (отключён канал, папка «Промоакции»).
+    if not cancelled:
+        lines += ["BEGIN:VALARM", "TRIGGER:-PT1H", "ACTION:DISPLAY",
+                  f"DESCRIPTION:{_ics_escape(summary)}", "END:VALARM"]
+    lines += ["END:VEVENT", "END:VCALENDAR"]
+    # CRLF — по RFC; на LF спотыкается Outlook.
+    return ("\r\n".join(lines) + "\r\n").encode("utf-8")
+
+
+def ld_json(
+    *, summary: str, start: datetime, minutes: int, place: str, address: str, url: str,
+) -> str:
+    """schema.org-разметка брони — из неё Gmail рисует карточку события над
+    письмом: дата, кнопка «в календарь» и маршрут до студии. Ровно то, чем
+    заметны письма крупных сервисов; клиенты, которые разметку не понимают,
+    просто её не видят (script в теле письма не отображается)."""
+    data = {
+        "@context": "http://schema.org",
+        "@type": "EventReservation",
+        "reservationStatus": "http://schema.org/ReservationConfirmed",
+        "reservationFor": {
+            "@type": "Event",
+            "name": summary,
+            "startDate": start.isoformat(),
+            "endDate": (start + timedelta(minutes=minutes or 60)).isoformat(),
+            "location": {
+                "@type": "Place",
+                "name": place,
+                "address": address or place,
+            },
+        },
+        "url": url,
+    }
+    return f'<script type="application/ld+json">{json.dumps(data, ensure_ascii=False)}</script>'
 
 
 # ─── ССЫЛКА В НУЖНЫЙ РАЗДЕЛ ───────────────────────────────────────────────────
@@ -150,12 +308,16 @@ _LEGAL = {
 
 
 def wrap(body_html: str, *, title: str | None = None, brand: str = "Velora",
-         preheader: str = "") -> str:
+         preheader: str = "", greeting: str | None = None) -> str:
     """Фрагмент письма → цельный документ в стиле продукта.
 
     `title` (обычно тема письма) becomes заголовком, но только если своего в теле
     нет: у писем биллинга он свой и точнее темы («Оплата получена» против
     «Velora — чек об оплате тарифа»).
+
+    `greeting` — обращение по имени над заголовком. Письмо, начинающееся с
+    «Матвей, здравствуйте!», читается как письмо от студии, а не как системная
+    рассылка; имя знает только отправляющий слой, поэтому оно параметр.
 
     Уже обёрнутое письмо возвращается как есть — см. MARK.
 
@@ -172,6 +334,10 @@ def wrap(body_html: str, *, title: str | None = None, brand: str = "Velora",
             f'<h1 style="margin:0 0 14px;font:800 24px/1.25 {FONT};'
             f'letter-spacing:-0.6px;color:{INK}">{title}</h1>'
         )
+    if greeting:
+        heading = (
+            f'<div style="margin:0 0 6px;font:600 14px {FONT};color:{ACCENT}">{escape(greeting)}</div>'
+        ) + heading
     # Юридические ссылки — только под письмами самой платформы. В письме студии
     # своим клиентам условия использования CRM ни при чём.
     legal = ""

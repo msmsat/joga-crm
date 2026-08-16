@@ -17,13 +17,14 @@ import styles from './AI.module.css';
 export default function AIPage() {
   // useDrawerChat — тот же useAssistant плюс ref автоскролла: телефонный вид
   // собран из компонентов дровера и ждёт этот ref (на десктопе он не нужен и
-  // остаётся пустым).
+  // остаётся пустым). 'page' — своя поверхность: открытый здесь диалог не
+  // подменяет тот, что человек ведёт в панели, и запоминается отдельно.
   const {
     sessions, sessionsLoading, sessionsError, refetchSessions,
     activeSessionId, messages, messagesLoading, messagesError, refetchMessages, isThinking,
     sendMessage, newChat, loadSession, deleteSession, messagesEndRef,
     toolStatus, actionProposal, confirmAction, cancelAction, actionPending,
-  } = useDrawerChat();
+  } = useDrawerChat('page');
   const {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
     igConnected, isConnectingInstagram, waConnected,

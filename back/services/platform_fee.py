@@ -21,6 +21,7 @@ Velora сам. Своего учёта задолженности студии �
 import logging
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -54,6 +55,19 @@ def fee_amount(billing_mode: str | None, percent_rate: float | None, amount_mino
     return min(round(amount_minor * rate / 100), amount_minor)
 
 
+async def studio_takes_commission(db: AsyncSession, studio_id: int) -> bool:
+    """Берёт ли платформа процент с транзакций этой студии.
+
+    Дешёвый предикат для путей, где иначе пришлось бы поднимать валюту студии и
+    пересчитывать суммы ради студии, у которой комиссии нет вовсе. На подписке —
+    а это большинство — вопрос закрывается одним индексным чтением.
+    """
+    mode = (await db.execute(
+        select(StudioBillingPlan.billing_mode).where(StudioBillingPlan.studio_id == studio_id)
+    )).scalar_one_or_none()
+    return mode in _CATALOG_RATES
+
+
 async def fee_for_studio(db: AsyncSession, studio_id: int, amount_minor: int) -> int:
     """То же по студии. Строки тарифа нет (до онбординга) → 0."""
     plan = (await db.execute(
@@ -71,6 +85,34 @@ ONLINE_METHOD = "stripe"
 # Метод возвратного начисления. Не совпадает ни с одним способом оплаты —
 # по нему компенсирующие строки видно в разборе, и они не путаются с продажами.
 REFUND_METHOD = "refund"
+
+# Категория расходной операции, по которой CRM понимает «мы отдали деньги клиенту»
+# и снимает комиссию с той продажи. Пишется в Операции и владельцем руками, и
+# автооткатом возврата по карте (routers/checkout/stripe_pay._revert_sale).
+REFUND_CATEGORY = "Возвраты"
+
+# Написания, которые засчитываются как эта категория. Поле «Категория» —
+# свободный текст, и сравнение буква-в-букву означало, что «возвраты» с маленькой,
+# «Возврат» в единственном числе или английское «Refund» комиссию НЕ снимали:
+# студия вернула клиенту деньги и продолжала платить 3 % с продажи, которой уже
+# нет. В споре по такому счёту права она, а не мы.
+#
+# Именно НАБОР, а не вхождение подстроки: «Возврат поставщику» — это расход в
+# пользу контрагента, а не клиенту, и снимать по нему комиссию не за что.
+_REFUND_CATEGORY_ALIASES = frozenset({
+    "возвраты", "возврат", "возврат клиенту", "возвраты клиентам",
+    "refund", "refunds", "client refund", "customer refund",
+})
+
+
+def is_refund_category(category: str | None) -> bool:
+    """Считается ли эта категория возвратом клиенту.
+
+    Одна точка на весь продукт: по ней и снимается комиссия, и уходят
+    уведомления о возврате. Разъехавшись, они дали бы письмо клиенту без снятия
+    комиссии — или наоборот.
+    """
+    return (category or "").strip().casefold() in _REFUND_CATEGORY_ALIASES
 
 
 async def reverse_offline_fee(
@@ -112,6 +154,41 @@ async def reverse_offline_fee(
     fee = fee_amount(plan.billing_mode, plan.percent_rate, refund_amount_minor)
     if fee <= 0:
         return None
+
+    # ПОТОЛОК: вернуть нельзя больше, чем всего было начислено этой студии за всё
+    # время. Категорию расхода владелец вписывает руками, а сумму придумывает сам —
+    # без потолка «возврат» на 100 000 крон уменьшал счёт за месяц на 3 000, и ничто
+    # не сверяло, что за ним стоит реальная продажа. Считаем по ВСЕМ строкам, включая
+    # уже выставленные: месячный минус законен (продажу прошлого месяца вернули в
+    # этом), а пожизненный — нет, он означал бы, что платформа доплачивает студии
+    # за её собственные возвраты.
+    #
+    # Потолок не заменяет здравого смысла в учёте: студия по-прежнему может занулить
+    # свою комиссию, объявив возвратами всю выручку, — но тогда она и в своих книгах
+    # показывает возврат всей выручки, а снизу её всё равно держит минимальный
+    # месячный платёж.
+    charged = (await db.execute(
+        select(func.coalesce(func.sum(OfflineTransactionFee.fee_amount), 0))
+        .where(OfflineTransactionFee.studio_id == studio_id)
+    )).scalar_one()
+    if charged <= 0:
+        logger.warning(
+            "Комиссия: возврат на %s у студии %s снимать не с чего (начислено %s) — пропущен",
+            refund_amount_minor, studio_id, charged,
+        )
+        return None
+    if fee > charged:
+        logger.warning(
+            "Комиссия: возврат у студии %s просит снять %s при начисленных %s — снимаем по потолку",
+            studio_id, fee, charged,
+        )
+        fee = int(charged)
+        # Сумму продажи в строке обрезаем в той же пропорции, иначе в разборе
+        # окажется возврат на 100 000 с комиссией в 12 крон и «ставкой» 0,01 %.
+        refund_amount_minor = min(
+            refund_amount_minor,
+            round(fee * 100 / (plan.percent_rate or _CATALOG_RATES[plan.billing_mode])),
+        )
 
     row = OfflineTransactionFee(
         studio_id=studio_id,

@@ -22,6 +22,7 @@ import { NewBookingModal } from './components/modals/NewBookingModal';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
+import { useAiIntent } from '../../../hooks/useAiIntent';
 
 // Журнал помнит выбранный день между перезагрузками
 const JOURNAL_DATE_KEY = 'journal:selectedDate';
@@ -230,6 +231,15 @@ export default function Journal() {
     setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8' });
     setShowNewForm(true);
   };
+
+  // Ассистент: /dashboard/journal?ai=lesson.create (эпик AI-6, задача 9).
+  // Слот тот же, что при клике по пустой ячейке: первая колонка и ближайший
+  // целый час сетки — время и тренера человек всё равно правит в самой форме.
+  useAiIntent('lesson.create', () => {
+    const hour = new Date().getHours();
+    const timeIdx = Math.min(Math.max(hour - 7, 0), 13);
+    openNewSlot(0, timeIdx, 0);
+  });
 
   // Превью прыгает в колонку выбранного тренера/зала (задача 3 V4-4): в
   // режиме «Тренеры» источник — newBookingSlot.trainer, в «Залы» — newForm.hall.

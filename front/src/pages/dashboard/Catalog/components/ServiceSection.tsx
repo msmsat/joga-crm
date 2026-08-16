@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import type { Service } from '../types';
 import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
@@ -44,6 +45,9 @@ export function ServiceSection() {
   }, [services]);
 
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // Ассистент: ?tab=services&ai=service.create (эпик AI-6, задача 9).
+  useAiIntent('service.create', () => setServiceModal({ service: null }));
 
   const doDeleteService = async () => {
     if (!activeService) return;

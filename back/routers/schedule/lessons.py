@@ -16,7 +16,7 @@ from schemas.schedule.lessons import (
 from services import gcal
 from services.booking_access import can_book
 from services.members import full_name
-from services.notifier import notify
+from services.notifier import lesson_context, notify
 from services.subscription_charge import refund_reservation
 from services.working_hours import assert_within_working_hours
 
@@ -501,11 +501,10 @@ async def update_lesson(
                 Reservation.lesson_id == lesson_id, Reservation.status != "cancelled"
             )
         )).scalars().all()
+        lesson_ctx = await lesson_context(db, lesson)
         results = [
             await notify(db, ctx.studio_id, "client", "c11", {
-                "client_id": client_id,
-                "lesson_name": lesson.name,
-                "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+                **lesson_ctx, "client_id": client_id,
             })
             for client_id in booked_client_ids
         ]
@@ -601,11 +600,10 @@ async def cancel_lesson(
         await refund_reservation(db, reservation)
     await db.commit()
 
+    lesson_ctx = await lesson_context(db, lesson)
     results = [
         await notify(db, ctx.studio_id, "client", "c3", {
-            "client_id": client_id,
-            "lesson_name": lesson.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            **lesson_ctx, "client_id": client_id,
         })
         for client_id in booked_client_ids
     ]

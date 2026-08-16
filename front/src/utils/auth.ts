@@ -212,6 +212,9 @@ export function forgetAccount(email: string): void {
 export function clearActiveToken(): void {
   const email = getActiveEmail();
   localStorage.removeItem(TOKEN_KEY);
+  // Указатели на чаты ИИ (страница и панель) — они от прошлого аккаунта.
+  localStorage.removeItem('ai_active_session:page');
+  localStorage.removeItem('ai_active_session:drawer');
   queryClient.clear();   // вышли — данные аккаунта в памяти не оставляем
   if (!email) return;
   saveAccounts(listAccounts().map(a => (a.email === email ? { email: a.email, name: a.name } : a)));

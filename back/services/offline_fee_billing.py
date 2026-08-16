@@ -224,6 +224,55 @@ async def accrued_total(db: AsyncSession, studio_id: int) -> tuple[int, str]:
     return int(total), currency.upper()
 
 
+async def has_unsettled_commission(db: AsyncSession, studio_id: int) -> bool:
+    """Осталась ли за студией непогашенная постоплата. True — уходить с тарифа рано.
+
+    Гейт перехода с «процента»/«комбо» на чистую подписку (routers/billing:
+    activate_model и create_checkout). Комиссия с наличных начисляется весь месяц, а
+    счёт по ней выставляется ПОСЛЕ его конца — то есть в любой день месяца за студией
+    висит долг, о котором ещё не выставлен документ. Без этой проверки уход на
+    фиксированный тариф стирал его молча: `_bill` собирает начисления по студиям, у
+    которых есть НЕВЫСТАВЛЕННЫЕ строки, и выставит счёт и потом, но минимальный
+    месячный платёж (`_bill_minimum`) берёт только тех, кто на проценте В МОМЕНТ
+    ПРОХОДА, — месяц, отработанный на проценте и брошенный 30-го числа, не добирался
+    до минимума вовсе.
+
+    Считаем ОБЕ формы долга:
+      * выставленный и неоплаченный счёт (`offline_fee`/`min_fee`) — независимо от
+        того, наступил ли срок: блокировка ждёт срока, а переход ждать не обязан;
+      * начисления, до счёта ещё не доехавшие.
+
+    Порог у второй формы тот же, что у выставления (`MIN_INVOICE_AMOUNT`): три цента,
+    которые никогда не станут счётом, иначе заперли бы студию на проценте навсегда.
+
+    Курса нет — НЕ блокируем: долг в этом случае недоказуем, а запереть студию из-за
+    недоступного справочника курсов хуже, чем недобрать. Свежесть курса тут не важна
+    (сравнение идёт с одним евро), поэтому в сеть не ходим — берём записанный в БД.
+    """
+    # Локальный импорт: `platform_fee` тянет `routers.billing.plans`, а тот через
+    # пакет — `router.py`, который импортирует ЭТОТ модуль (тот же цикл, что у
+    # `_bill_minimum`).
+    from services.platform_fee import SUSPENDING_KINDS
+
+    unpaid = (await db.execute(
+        select(BillingInvoice.id).where(
+            BillingInvoice.studio_id == studio_id,
+            BillingInvoice.kind.in_(SUSPENDING_KINDS),
+            BillingInvoice.status.notin_(("paid", "refunded")),
+        ).limit(1)
+    )).first()
+    if unpaid is not None:
+        return True
+
+    accrued, currency = await accrued_total(db, studio_id)
+    if accrued <= 0:
+        return False
+    if not _FX:
+        await _load_fx(db)
+    converted = to_billing_currency(accrued, currency)
+    return converted is not None and converted >= MIN_INVOICE_AMOUNT
+
+
 async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> str | None:
     """Stripe Customer студии, заводя его при необходимости. None — не получилось.
 

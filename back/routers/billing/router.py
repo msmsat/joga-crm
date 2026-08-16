@@ -37,7 +37,7 @@ from services.exporter import csv_stream
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import (
     router as checkout_router, _metadata, _has_live_subscription, _live_plan_name,
-    billing_profile,
+    billing_profile, COMMISSION_UNSETTLED,
 )
 from .webhook import router as webhook_router, apply_status, mirror_invoice
 from .refunds import router as refunds_router
@@ -539,6 +539,17 @@ async def activate_model(
             "code": "billing.billing_profile_required",
             "message": "Заполните реквизиты плательщика — по ним выставляется счёт за комиссию",
         })
+
+    # Уйти с постоплаты, не рассчитавшись, нельзя. Комиссия с наличных копится весь
+    # месяц, а счёт по ней выставляется уже после его конца — то есть в любой день
+    # за студией висит долг без документа, и переход на фиксированный тариф стирал
+    # его молча: минимальный месячный платёж берёт только тех, кто на проценте в
+    # момент прохода, и месяц, отработанный на проценте и брошенный 30-го числа,
+    # не добирался вовсе. Отдаём 409 с адресом кнопки — рассчитаться можно тут же,
+    # `POST /billing/offline-fees/pay` выставляет счёт немедленно.
+    if previous_mode in ("percent", "combo") and body.mode == "subscription":
+        if await offline_fee_billing.has_unsettled_commission(db, ctx.studio_id):
+            raise HTTPException(status_code=409, detail=COMMISSION_UNSETTLED)
 
     # Комбо — ПОКУПКА, а не настройка, и здесь она НЕ происходит НИКОГДА. Прежний
     # код включал режим прямо тут: нажал «соглашаюсь» — и подписка переехала на

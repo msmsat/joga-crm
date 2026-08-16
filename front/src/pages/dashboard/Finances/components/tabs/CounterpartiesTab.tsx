@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useAiIntent } from '../../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import type { ToastType } from '../../types';
 import type { Counterparty as ApiCounterparty } from '../../../../../api/finances/finances.types';
@@ -33,6 +34,9 @@ export default function CounterpartiesTab({ showToast }: { showToast: (msg: stri
   const { createCounterparty, updateCounterparty, deleteCounterparty } = useFinanceMutations();
   const [selected, setSelected] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
+
+  // Ассистент: ?tab=counterparties&ai=counterparty.create (эпик AI-6, задача 9).
+  useAiIntent('counterparty.create', () => setAdding(true));
   const [form, setForm] = useState({ name: '', inn: '', type: 'Юр. лицо', category: '' });
   const [focused, setFocused] = useState<Record<string, boolean>>({});
   const [confirm, setConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });

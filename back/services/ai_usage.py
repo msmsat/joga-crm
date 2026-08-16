@@ -25,11 +25,19 @@ async def record_usage(
     billable: bool,
     user_id: int | None = None,
     sender_ref: str | None = None,
+    tools: str | None = None,
+    iterations: int | None = None,
+    escalated: bool | None = None,
 ) -> None:
     """Пишет строку расхода своей сессией и коммитит сразу.
 
     Исключения глушим — упавший учёт не имеет права уронить ответ человеку,
     но обязан попасть в лог.
+
+    tools/iterations/escalated (эпик AI-6, задача 18) — метрики цикла, по
+    которым видно, где ассистент «тупит»: вопрос, упёршийся в потолок итераций,
+    и вопрос, ушедший на дорогую модель, выглядят в отчёте по-разному. Текста
+    промптов здесь по-прежнему нет.
     """
     if not usage.model:
         return  # заглушка вместо модели (ключ не настроен) — платить не за что
@@ -48,6 +56,9 @@ async def record_usage(
                 cost_micro=usage.cost_micro,
                 billable=billable,
                 sender_ref=sender_ref,
+                tools=(tools or None),
+                iterations=iterations,
+                escalated=escalated,
             ))
             await db.commit()
     except Exception:

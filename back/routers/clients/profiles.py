@@ -231,6 +231,13 @@ async def list_clients(
             Client.last_name.ilike(s),
             Client.phone.ilike(s),
             Client.email.ilike(s),
+            # «Анна Петрова» целиком не лежит ни в одном поле, и поиск по
+            # полному имени не находил НИЧЕГО: имя в name, фамилия в last_name.
+            # Человек ищет так чаще всего, а ассистент — всегда (прогон набора
+            # 15.08.2026: «заморозь клиента Анну Петрову» → «клиент не найден»).
+            # concat игнорирует NULL, поэтому клиент без фамилии не выпадает.
+            func.concat(Client.name, " ", Client.last_name).ilike(s),
+            func.concat(Client.last_name, " ", Client.name).ilike(s),
         ))
 
     # status и category резолвятся одним и тем же правилом — иначе бейдж клиента

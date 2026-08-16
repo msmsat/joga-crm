@@ -8,6 +8,7 @@ import { ClientsToolbar } from './components/ClientsToolbar';
 import { ClientsTable } from './components/ClientsTable';
 import { ClientProfileSlider } from './components/ClientProfileSlider';
 import { AddClientModal } from './components/modals/AddClientModal';
+import { useAiIntent } from '../../../hooks/useAiIntent';
 import { ConfirmModal, useToast } from '../../../components/ui/index';
 import { getStudioRole } from '../../../utils/auth';
 import { mapProfile } from './utils/mapClient';
@@ -60,6 +61,16 @@ export default function Clients() {
       setSearchParams(prev => { prev.delete('client'); return prev; }, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
+  // Ассистент: /dashboard/clients?ai=client.create и ?ai=client.open&ai_id=<id>
+  // (эпик AI-6, задача 9). Диплинк ?client= выше остаётся как был — им ходят
+  // лента событий Дашборда и инсайты Отчётов.
+  useAiIntent('client.create', () => setIsAddModalOpen(true));
+  useAiIntent('client.open', (id) => {
+    if (id == null) return;
+    setActiveClientId(id);
+    setIsPanelOpen(true);
+  });
 
   const handleCatChange = useCallback((key: string) => {
     setActiveCatKey(key);

@@ -149,7 +149,71 @@ def test_no_reminder_outside_the_window():
     assert _billing_check(_plan(), days_left=-1) == []
 
 
+def _daily_report(revenue_by_day):
+    """Прогон _run_daily_report с фейковыми счётчиками. revenue_by_day — dict
+    {смещение в днях назад: выручка}, 0 — сегодня. Возвращает список отправок."""
+    import asyncio
+    from datetime import date as _date
+
+    today = _date(2026, 8, 11)
+    sent = []
+
+    async def fake_revenue(_db, _sid, day):
+        return revenue_by_day.get((today - day).days, 0)
+
+    async def fake_lessons(_db, _sid, _day):
+        return revenue_by_day.get("lessons", 0)
+
+    async def fake_new_clients(_db, _sid, _day):
+        return revenue_by_day.get("new_clients", 0)
+
+    async def fake_notify(_db, studio_id, role, event_id, ctx):
+        sent.append((event_id, ctx))
+
+    saved = (D.notify, D._revenue_for, D._lessons_count, D._new_clients_count)
+    D.notify, D._revenue_for, D._lessons_count, D._new_clients_count = (
+        fake_notify, fake_revenue, fake_lessons, fake_new_clients)
+    try:
+        asyncio.run(D._run_daily_report(None, 1, today))
+    finally:
+        D.notify, D._revenue_for, D._lessons_count, D._new_clients_count = saved
+    return sent
+
+
+def test_empty_day_sends_no_summary():
+    """Ноль выручки, ноль занятий, ноль клиентов — сводки нет.
+
+    До этого a8/o1 уходили каждый вечер в 20:00 безусловно, и студия без
+    активности получала письмо «Выручка: 0 ₽ / Занятий: 0 / Новых клиентов: 0»
+    365 раз в год. Именно оно приучает не открывать почту от собственной CRM.
+    """
+    assert _daily_report({}) == []
+
+
+def test_non_empty_day_still_sends_both_summaries():
+    events = [e for e, _ in _daily_report({0: 5000, "lessons": 2})]
+    assert events == ["a8", "o1"], events
+
+
+def test_summary_carries_yesterday_revenue_for_comparison():
+    """Голая цифра выручки ни о чём не говорит — в сводку идёт вчерашняя."""
+    ctx = dict(_daily_report({0: 5000, 1: 9000})[0][1])
+    assert ctx["revenue"] == 5000 and ctx["revenue_prev"] == 9000, ctx
+
+
+def test_revenue_drop_still_fires_on_a_dead_day():
+    """Пустой день гасит сводку, но НЕ предупреждение о провале выручки:
+    «была неделя продаж, сегодня по нулям» — это как раз то, о чём владелец
+    обязан узнать."""
+    week = {i: 20000 for i in range(1, 8)}  # семь дней по 20 000, сегодня — ноль
+    assert [e for e, _ in _daily_report(week)] == ["o4"]
+
+
 def test_run_daily_notify():
+    test_empty_day_sends_no_summary()
+    test_non_empty_day_still_sends_both_summaries()
+    test_summary_carries_yesterday_revenue_for_comparison()
+    test_revenue_drop_still_fires_on_a_dead_day()
     test_autocharge_reminder_respects_its_toggle()
     test_expiry_warning_ignores_the_autocharge_toggle()
     test_no_reminder_outside_the_window()

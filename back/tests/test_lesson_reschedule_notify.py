@@ -24,7 +24,17 @@ from services.notifier import notify
 
 # notify() реально шлёт email через SMTP (креды есть в .env этого проекта) —
 # в тестах подменяем send_email на no-op, чтобы не улетали настоящие письма.
-notifier_module.send_email = lambda *a, **kw: asyncio.sleep(0)
+# Подмена делается на уровне модуля, то есть на ВЕСЬ прогон (pytest импортирует
+# все файлы тестов до запуска первого), поэтому заглушка обязана возвращать то
+# же, что настоящий send_email — bool «письмо ушло». С None здесь падал
+# test_campaign: notify() возвращал False, и кампания не досчитывала отправки.
+
+
+async def _noop_send_email(*_args, **_kwargs) -> bool:
+    return True
+
+
+notifier_module.send_email = _noop_send_email
 
 
 class _User:
@@ -63,6 +73,7 @@ class _Client:
         self.tg_id = None
         self.phone = None
         self.ig_id = None  # _recipient читает все четыре реквизита канала
+        self.name = "Матвей"  # обращение в письме («Матвей, здравствуйте!»)
 
 
 class _Reservation:

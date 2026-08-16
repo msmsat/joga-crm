@@ -121,6 +121,12 @@ async def delete_branch(
     db: AsyncSession = Depends(get_db),
 ):
     branch = await _get_branch_or_404(branch_id, ctx.studio_id, db)
+    # Зал физически живёт внутри филиала, поэтому уезжает вместе с ним. FK стоит
+    # на SET NULL: без этой строки зал оставался «ничейным» — Каталог показывает
+    # залы только внутри филиала, а журнал берёт их из /schedule/halls по студии,
+    # и в расписании годами висели залы, которых в каталоге уже нет.
+    # Занятия при этом остаются: lessons.hall_id тоже SET NULL.
+    await db.execute(delete(Hall).where(Hall.branch_id == branch_id))
     await db.delete(branch)
     await db.commit()
 

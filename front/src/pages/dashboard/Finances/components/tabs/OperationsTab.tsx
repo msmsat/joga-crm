@@ -5,6 +5,7 @@ import { Ico } from '../ui/FinanceIcons';
 import { InfoHint } from '../../../../../components/ui/InfoHint';
 import styles from '../../Finances.module.css';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { useAiIntent } from '../../../../../hooks/useAiIntent';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { useQuery } from '@tanstack/react-query';
 import { useAccounts, useCounterparties, useOperations, useFinanceMutations } from '../../hooks/useFinances';
@@ -85,6 +86,9 @@ export default function OperationsTab({ showToast, initialSearch }: {
 
   // Форма создания
   const [addOpen, setAddOpen] = useState(false);
+
+  // Ассистент: ?tab=operations&ai=operation.create (эпик AI-6, задача 9).
+  useAiIntent('operation.create', () => setAddOpen(true));
   const [saving, setSaving] = useState(false);
   const [nType, setNType] = useState<'in' | 'out'>('in');
   const [nTitle, setNTitle] = useState('');
@@ -382,7 +386,21 @@ export default function OperationsTab({ showToast, initialSearch }: {
             </div>
             <div>
               <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{t('operations.categoryLabel')}</div>
-              <input value={nCategory} onChange={e => setNCategory(e.target.value)} onFocus={() => setAddFocused('c')} onBlur={() => setAddFocused(null)} placeholder={t('operations.categoryPlaceholder')} style={inp('c')} />
+              {/* Подсказка списком, а не жёсткий выбор: категория остаётся свободным
+                  текстом (по ней группируются отчёты, и свои названия у студий свои).
+                  Но одна из них несёт ДЕНЕЖНЫЙ смысл — «Возвраты» снимает комиссию
+                  платформы с возвращённой продажи, — и набирать её руками означало
+                  промахнуться регистром и заплатить 3 % с продажи, которой уже нет.
+                  Нативный datalist: подставляется в клик, ничего не ломает и не
+                  тянет ни строчки зависимостей. */}
+              <input value={nCategory} onChange={e => setNCategory(e.target.value)} onFocus={() => setAddFocused('c')} onBlur={() => setAddFocused(null)} placeholder={t('operations.categoryPlaceholder')} list="op-categories" style={inp('c')} />
+              <datalist id="op-categories">
+                {/* Значение одно на все языки — оно ложится в БД, по нему группируются
+                    отчёты и его же пишет автооткат возврата по карте. Переводится
+                    только подпись. */}
+                {(t(`operations.categoryPresets.${nType}`, { returnObjects: true }) as { value: string; label: string }[])
+                  .map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </datalist>
             </div>
             <div>
               <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{t('operations.accountLabel')}</div>

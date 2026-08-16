@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import Field
 
@@ -21,10 +21,15 @@ class ChatSessionRead(BaseSchema):
 
 class ChatMessageCreate(BaseSchema):
     text: str = Field(..., min_length=1, max_length=4000)
-    # Маршрут, на котором сейчас пользователь (/dashboard/clients) — на этом
-    # держится «объясни, что на этой странице». Необязателен: прямые вызовы из
-    # тестов и старые клиенты его не шлют.
+    # Маршрут, на котором сейчас пользователь (/dashboard/clients?tab=halls) —
+    # на этом держится «объясни, что на этой странице». Необязателен: прямые
+    # вызовы из тестов и старые клиенты его не шлют.
     current_page: Optional[str] = Field(None, max_length=200)
+    # Ширина окна тремя ступенями вёрстки (эпик AI-6, решение 12). Ответ «где
+    # кнопка» на телефоне другой: бокового меню нет, заголовки панелей скрыты,
+    # половина разделов — в шите «Ещё». Необязательно: клиентский агент в
+    # мессенджерах и старый фронт поля не шлют, и это не должно ломать запрос.
+    viewport: Optional[Literal["phone", "tablet", "desktop"]] = None
 
 
 class ChatMessageRead(BaseSchema):
@@ -37,6 +42,14 @@ class ChatMessageRead(BaseSchema):
     # рисует его неактивной карточкой с датой: история должна честно показывать,
     # что и когда подтвердили.
     action_jti: Optional[str] = None
+    # Оценка ответа: 1 / -1 / None. Приходит вместе с сообщением — отдельного
+    # запроса за оценками нет (эпик AI-6, задача 18).
+    rating: Optional[int] = None
+
+
+class MessageRatingIn(BaseSchema):
+    """None — снять оценку: повторный клик по той же кнопке."""
+    rating: Optional[Literal[1, -1]] = None
 
 
 class SendMessageResponse(BaseSchema):

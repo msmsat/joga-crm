@@ -727,7 +727,9 @@ async def _revert_sale(
         title="Возврат оплаты картой",
         amount=checkout.amount,
         op_date=date.today(),
-        category="Возвраты",
+        # Та же категория, по которой ручной возврат снимает комиссию
+        # (platform_fee.is_refund_category) — литералом она однажды разъедется.
+        category=platform_fee.REFUND_CATEGORY,
         method="stripe",
         account_id=account.id,
         client_id=client_id,

@@ -10,6 +10,7 @@ import type { AIChatSession, AIUISettings } from '../types';
 import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
 import AgentConfigCard from './AgentConfigCard';
 import CustomSelect from './CustomSelect';
+import MemoryCard from './MemoryCard';
 import { getStudioRole } from '../../../../utils/auth';
 import { aiApi } from '../../../../api/ai/ai.api';
 import { queryKeys } from '../../../../api/queryKeys';
@@ -179,6 +180,10 @@ export default function LeftPanel({
           )}
         </div>
       )}
+
+      {/* Что ассистент помнит о студии. Видят все роли — на этих фактах он
+          строит ответы любому сотруднику; стирать может владелец и админ. */}
+      <MemoryCard canEdit={isOwner || getStudioRole() === 'admin'} />
 
       {isOwner && <div className={styles.miniSettings}>
         <div className={styles.miniSettingsHeader}>

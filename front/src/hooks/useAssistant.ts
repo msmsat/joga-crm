@@ -3,8 +3,8 @@
 // Query (queryKeys.aiSessions / aiMessages) — несколько компонентов, вызвавших
 // хук одновременно, читают один и тот же кэш, без ручной синхронизации между
 // собой. Локальный React-стейт — только activeSessionId и isThinking.
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -47,20 +47,104 @@ interface SendMessageCtx {
 // до события done — на нём черновику проставляется настоящий id из БД, прямо
 // в кэше, тем же объектом.
 const DRAFT_ID = -1;
-// Ключ ленты, пока сессия ещё не создана: messagesQuery читает aiMessages(-1),
-// когда activeSessionId == null. Сюда кладём пузырь пользователя, чтобы он
-// появился по клику, а не после рейса за созданием сессии.
-const NO_SESSION_KEY = -1;
+// Ключ ленты, пока сессия ещё не создана: messagesQuery читает его, когда
+// activeSessionId == null. Сюда кладём пузырь пользователя, чтобы он появился
+// по клику, а не после рейса за созданием сессии. У поверхностей он разный:
+// иначе пустая панель на секунду показывала бы вопрос, заданный со страницы.
+const NO_SESSION_KEY: Record<AISurface, number> = { drawer: -1, page: -2 };
 
-export function useAssistant() {
+// Что ассистент попросил открыть (событие ui_action, инструмент open_ui).
+interface UiAction {
+  page: string;
+  tab?: string | null;
+  intent?: string | null;
+  entity_id?: number | null;
+}
+
+// Адрес вместо шины событий: страница подписывается на ?ai= хуком useAiIntent.
+function uiActionPath({ page, tab, intent, entity_id }: UiAction): string {
+  const params = new URLSearchParams();
+  if (tab) params.set('tab', tab);
+  if (intent) params.set('ai', intent);
+  if (entity_id != null) params.set('ai_id', String(entity_id));
+  const query = params.toString();
+  return query ? `${page}?${query}` : page;
+}
+
+// Поверхность чата. Страница AI и панель ведут диалоги независимо: на странице
+// разбирают выручку, в панели спрашивают про клиента — и каждая при следующем
+// открытии показывает СВОЙ последний чат. Шапка делит поверхность с панелью:
+// «продолжить в чате» там открывает именно её.
+export type AISurface = 'page' | 'drawer';
+
+// Последний открытый чат переживает перезагрузку страницы — по одному id на
+// поверхность.
+const storageKey = (surface: AISurface) => `ai_active_session:${surface}`;
+export const AI_SURFACES: readonly AISurface[] = ['page', 'drawer'];
+
+function storedSessionId(surface: AISurface): number | null {
+  const id = Number(localStorage.getItem(storageKey(surface)));
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
+// Единственная точка записи активной сессии: кэш и localStorage всегда меняются
+// вместе. Вне хука её дёргает удаление чата — оно гасит открытый диалог на
+// ОБЕИХ поверхностях, не только на той, откуда нажали.
+function writeActiveSession(qc: QueryClient, surface: AISurface, id: number | null): void {
+  qc.setQueryData(queryKeys.aiActiveSession(surface), id);
+  if (id == null) localStorage.removeItem(storageKey(surface));
+  else localStorage.setItem(storageKey(surface), String(id));
+}
+
+// Восстановленный id сверяем со списком сессий ровно один раз за загрузку
+// страницы: чат могли удалить с другого устройства, а после смены студии он и
+// вовсе чужой. Сессию, созданную в этой вкладке, проверять нельзя — список с
+// ней приходит только после стрима, и проверка выкинула бы человека из чата,
+// в который он прямо сейчас пишет.
+const sessionToVerify: Record<AISurface, number | null> = {
+  page: storedSessionId('page'),
+  drawer: storedSessionId('drawer'),
+};
+
+// Ширина окна тремя ступенями вёрстки — ассистент отвечает про ту раскладку,
+// которую человек видит сейчас: на телефоне нет ни бокового меню, ни заголовков
+// панелей, и «посмотри в левой колонке» там просто ложь. Пороги — брейкпоинты
+// App.css. Ресайз-хук не нужен: значение читается в момент отправки.
+function viewport(): 'phone' | 'tablet' | 'desktop' {
+  const width = window.innerWidth;
+  return width < 768 ? 'phone' : width < 1024 ? 'tablet' : 'desktop';
+}
+
+export function useAssistant(surface: AISurface = 'drawer') {
   const qc = useQueryClient();
   const toast = useToast();
   const { t } = useTranslation();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
+  // Адрес целиком, вместе с ?tab= и ?client=: «как это настроить?» на вкладке
+  // «Абонементы» и на вкладке «Услуги» — разные вопросы.
+  const currentPage = pathname + search;
 
-  // Теперь у каждого компонента, вызывающего useAssistant, будет своя независимая сессия
-  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
+  const noSessionKey = NO_SESSION_KEY[surface];
+  const activeKey = useMemo(() => queryKeys.aiActiveSession(surface), [surface]);
+
+  // Открытый диалог живёт в кэше Query, а не в useState: у поверхности бывает
+  // несколько вызовов хука (шапка и панель — оба 'drawer'), и локальный стейт
+  // давал каждому свой id — «продолжить в чате» открывало панель с
+  // activeSessionId === null. Лента там читалась по ключу «сессии нет», где
+  // лежит затравочный пузырь первого вопроса, — человек видел одно своё
+  // сообщение и лез за собственным диалогом в историю (эпик AI-1, задача 7).
+  const { data: activeSessionId = null } = useQuery<number | null>({
+    queryKey: activeKey,
+    queryFn: () => null,
+    initialData: () => storedSessionId(surface),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+  const setActiveSessionId = useCallback(
+    (id: number | null) => writeActiveSession(qc, surface, id),
+    [qc, surface],
+  );
   const [isThinking, setIsThinking] = useState(false);
   // Имя инструмента, который ассистент дёргает прямо сейчас («get_schedule») —
   // под строкой ввода из него делается «Смотрю расписание…».
@@ -82,8 +166,17 @@ export function useAssistant() {
     staleTime: 30_000,
   });
 
+  useEffect(() => {
+    const sessions = sessionsQuery.data;
+    const restored = sessionToVerify[surface];
+    if (restored == null || !sessions) return;
+    const gone = !sessions.some((s) => s.id === restored);
+    if (gone && qc.getQueryData<number | null>(activeKey) === restored) setActiveSessionId(null);
+    sessionToVerify[surface] = null;
+  }, [sessionsQuery.data, qc, setActiveSessionId, surface, activeKey]);
+
   const messagesQuery = useQuery({
-    queryKey: queryKeys.aiMessages(activeSessionId ?? -1),
+    queryKey: queryKeys.aiMessages(activeSessionId ?? noSessionKey),
     queryFn: () => aiApi.getMessages(activeSessionId as number),
     enabled: activeSessionId != null,
     placeholderData: [],
@@ -94,7 +187,7 @@ export function useAssistant() {
   });
 
   const sendMut = useMutation({
-    mutationFn: ({ sessionId, text }: SendMessageVars) => aiApi.sendMessage(sessionId, text, pathname),
+    mutationFn: ({ sessionId, text }: SendMessageVars) => aiApi.sendMessage(sessionId, text, currentPage, viewport()),
     onMutate: async ({ sessionId, text }): Promise<SendMessageCtx> => {
       await qc.cancelQueries({ queryKey: queryKeys.aiMessages(sessionId) });
       const snapshot = qc.getQueryData<AIChatMessage[]>(queryKeys.aiMessages(sessionId)) ?? [];
@@ -162,10 +255,12 @@ export function useAssistant() {
           setToolStatus(String(data));
         } else if (event === 'action_proposal') {
           setProposal(data as AIActionProposal);
-        } else if (event === 'navigate') {
-          // Переход только по явной просьбе пользователя: сервер шлёт это
-          // событие ровно тогда, когда модель вызвала инструмент navigate.
-          navigate(String(data));
+        } else if (event === 'ui_action') {
+          // Открываем экран только по явной просьбе пользователя: сервер шлёт
+          // это событие ровно тогда, когда модель вызвала open_ui. Адрес с
+          // параметрами, а не глобальная шина: его можно переслать, открыть в
+          // новой вкладке и пережить им F5 (эпик AI-6, решение 6).
+          navigate(uiActionPath(data as UiAction));
         } else if (event === 'quota') {
           qc.setQueryData(queryKeys.aiQuota, data);
         } else if (event === 'done') {
@@ -185,7 +280,7 @@ export function useAssistant() {
           const quota = code === 'ai_quota_exceeded' || code === 'ai_cost_cap';
           throw new ApiError(quota ? 429 : 503, code, code);
         }
-      }, { currentPage: pathname, signal: controller.signal });
+      }, { currentPage, viewport: viewport(), signal: controller.signal });
     } finally {
       abortRef.current = null;
       setIsThinking(false);
@@ -196,7 +291,7 @@ export function useAssistant() {
     // черновик с id -1 иначе столкнулся бы со следующим ответом.
     if (!saved) await qc.invalidateQueries({ queryKey: key });
     qc.invalidateQueries({ queryKey: queryKeys.aiSessions });   // изменился preview
-  }, [navigate, pathname, qc]);
+  }, [navigate, currentPage, qc]);
 
   const sendMessage = useCallback(async (text: string) => {
     const trimmed = text.trim();
@@ -216,11 +311,14 @@ export function useAssistant() {
     try {
       let sessionId = activeSessionId;
       if (sessionId == null) {
-        seed(NO_SESSION_KEY);
+        seed(noSessionKey);
         const session = await aiApi.createSession();
         sessionId = session.id;
         seed(sessionId);                // сначала данные в новый ключ...
         setActiveSessionId(sessionId);  // ...потом переключение: иначе кадр с пустым чатом
+        // Затравку под ключом «сессии нет» убираем сразу: сессия у неё уже есть,
+        // а оставшийся пузырь всплывал бы в следующем «новом чате».
+        qc.setQueryData(queryKeys.aiMessages(noSessionKey), []);
       } else {
         seed(sessionId);
       }
@@ -249,16 +347,16 @@ export function useAssistant() {
       sendingRef.current = false;
       setIsThinking(false);   // на случай, если упало создание сессии — до стрима
     }
-  }, [activeSessionId, qc, sendMut, streamMessage, t, toast]);
+  }, [activeSessionId, setActiveSessionId, noSessionKey, qc, sendMut, streamMessage, t, toast]);
 
   const newChat = useCallback(() => {
     abortRef.current?.abort();
     setProposal(null);
     // Чистим ленту «сессии нет»: иначе новый чат открылся бы с пузырём прошлого
-    // сообщения — он остаётся в кэше под ключом -1.
-    qc.setQueryData(queryKeys.aiMessages(NO_SESSION_KEY), []);
+    // сообщения — он остаётся в кэше под этим ключом.
+    qc.setQueryData(queryKeys.aiMessages(noSessionKey), []);
     setActiveSessionId(null);
-  }, [qc]);
+  }, [qc, noSessionKey, setActiveSessionId]);
 
   const loadSession = useCallback((sessionId: number) => {
     abortRef.current?.abort();
@@ -274,7 +372,7 @@ export function useAssistant() {
       qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
     } else if (tool === 'create_client') {
       qc.invalidateQueries({ queryKey: queryKeys.clientsAll });
-    } else if (tool === 'freeze_subscription') {
+    } else if (tool === 'freeze_client') {
       const id = Number(args.client_id);
       if (Number.isFinite(id)) {
         qc.invalidateQueries({ queryKey: queryKeys.client(id) });
@@ -308,8 +406,12 @@ export function useAssistant() {
     mutationFn: (sessionId: number) => aiApi.deleteSession(sessionId),
     onSuccess: (_data, sessionId) => {
       qc.invalidateQueries({ queryKey: queryKeys.aiSessions });
-      qc.setQueryData(queryKeys.aiMessages(NO_SESSION_KEY), []);   // см. newChat
-      setActiveSessionId((current) => (current === sessionId ? null : current));
+      qc.setQueryData(queryKeys.aiMessages(noSessionKey), []);   // см. newChat
+      // Удалённый чат мог быть открыт и на другой поверхности — гасим обе,
+      // иначе панель осталась бы с историей несуществующей сессии.
+      for (const s of AI_SURFACES) {
+        if (qc.getQueryData(queryKeys.aiActiveSession(s)) === sessionId) writeActiveSession(qc, s, null);
+      }
     },
     onError: (err) => toast.error(errorMessage(err, t)),
   });

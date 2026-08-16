@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAiIntent } from '../../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import type { ToastType } from '../../types';
 import { Ico } from '../ui/FinanceIcons';
@@ -35,6 +36,9 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
   const [historyId, setHistoryId] = useState<number | null>(null);
 
   const [addOpen, setAddOpen] = useState(false);
+
+  // Ассистент: ?tab=accounts&ai=account.create (эпик AI-6, задача 9).
+  useAiIntent('account.create', () => setAddOpen(true));
   const [newName, setNewName] = useState('');
   const [newBalance, setNewBalance] = useState('');
   const [newType, setNewType] = useState('cash');

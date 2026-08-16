@@ -33,7 +33,7 @@ from models.user import User
 from schemas.settings.billing import (
     CheckoutRequest, CheckoutResponse, CheckoutPreviewRead, BillingProfileRead,
 )
-from services import stripe_billing, stripe_catalog
+from services import offline_fee_billing, stripe_billing, stripe_catalog
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, COMBO_PERCENT_RATE, amount_for, combo_amount_for, tier,
 )
@@ -53,6 +53,17 @@ _NOT_CONFIGURED = {
 _STRIPE_ERROR = {
     "code": "billing.stripe_error",
     "message": "Stripe отклонил запрос",
+}
+
+# Отказ уйти с постоплаты, не рассчитавшись. Один на два входа — оформление оплаты
+# ниже и `POST /billing/model` (router.activate_model импортирует отсюда): запрет
+# один, и двумя текстами он выглядел бы как две разные причины.
+COMMISSION_UNSETTLED = {
+    "code": "billing.commission_unsettled",
+    "message": (
+        "Сначала рассчитайтесь по комиссии с офлайн-продаж — нажмите «Оплатить сейчас» "
+        "в блоке комиссии, а после оплаты счёта переходите на тариф с фиксированной оплатой"
+    ),
 }
 
 
@@ -483,6 +494,15 @@ async def create_checkout(
             "code": "billing.offline_terms_required",
             "message": "Подтвердите условия постоплаты комиссии с офлайн-продаж",
         })
+
+    # Переход на ЧИСТУЮ подписку с модели, которая берёт процент, — только после
+    # расчёта по накопленной комиссии. Гейт стоит здесь, а не только в
+    # `POST /billing/model`: режим поднимает ОПЛАТА (webhook._apply_paid_mode), то
+    # есть percent-студия уходит на фикс, вообще не трогая тот эндпоинт. Покупка
+    # комбо не блокируется — она процент не отменяет, а продолжает.
+    if plan.billing_mode in ("percent", "combo") and not combo:
+        if await offline_fee_billing.has_unsettled_commission(db, ctx.studio_id):
+            raise HTTPException(status_code=409, detail=COMMISSION_UNSETTLED)
 
     customer_id = await _ensure_customer(db, ctx, plan)
     await _forget_dead_subscription(db, plan)

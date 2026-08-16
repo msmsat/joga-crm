@@ -9,8 +9,9 @@ import services.notifier as N
 
 
 class _FakeUser:
-    def __init__(self, id, email, tg_id, phone):
+    def __init__(self, id, email, tg_id, phone, name="Пётр"):
         self.id, self.email, self.tg_id, self.phone = id, email, tg_id, phone
+        self.name = name  # обращение в письме
 
 
 class _Settings:
@@ -161,6 +162,36 @@ def test_recipient_a8_does_not_fall_back_to_owner():
     assert [r.email for r in got] == ["owner@studio.ru"]
 
 
+def test_recipient_admin_fallback_skips_owner_who_teaches_the_lesson():
+    """Владелец, который сам ведёт занятие, не получает a1 вдобавок к своему t1.
+
+    В студии без отдельного администратора admin-события подставляются владельцу.
+    Если он же тренер этого занятия, одна запись клиента приходила ему дважды:
+    a1 «Новая онлайн-запись» и t1 «Новая запись» — один факт, два письма.
+    """
+    owner = _FakeUser(id=9, email="owner@studio.ru", tg_id=None, phone=None)
+    got = asyncio.run(N._recipient(_DB([[], owner]), 1, "admin", {"trainer_id": 9}, "a1"))
+    assert got == [], got
+
+    # Занятие ведёт другой человек — владелец обязан узнать о записи как админ.
+    got = asyncio.run(N._recipient(_DB([[], owner]), 1, "admin", {"trainer_id": 7}, "a1"))
+    assert [r.email for r in got] == ["owner@studio.ru"]
+
+    # Тренера у занятия нет (t1 не уходит вовсе) — гасить a1 нечем.
+    got = asyncio.run(N._recipient(_DB([[], owner]), 1, "admin", {"trainer_id": None}, "a1"))
+    assert [r.email for r in got] == ["owner@studio.ru"]
+
+    # Настоящий администратор в студии эту ветку не проходит — он получает a1
+    # независимо от того, кто ведёт занятие.
+    admin = _FakeUser(id=9, email="admin@studio.ru", tg_id=None, phone=None)
+    got = asyncio.run(N._recipient(_DB([[admin]]), 1, "admin", {"trainer_id": 9}, "a1"))
+    assert [r.email for r in got] == ["admin@studio.ru"]
+
+    # Владельца события (o*) правило не касается вовсе.
+    got = asyncio.run(N._recipient(_DB([owner]), 1, "owner", {"trainer_id": 9}, "o1"))
+    assert [r.email for r in got] == ["owner@studio.ru"]
+
+
 def test_recipient_owner_fallback_can_be_switched_off_per_call():
     # Пара a4 «Оплата получена» ↔ o3 «Крупный платёж»: списком по event_id её не
     # погасить (o3 уходит только на крупных суммах), поэтому фолбэк снимает сам
@@ -279,11 +310,22 @@ def test_every_event_email_is_assembled_exactly_once():
 
 
 def test_render_report_events_are_multiline():
-    # Сводки/отчёты — по факту на строку (в мессенджере одна длинная строка
-    # нечитаема); в html переносы становятся <br>, а не схлопываются.
+    """Сводка — строки в мессенджере, таблица в письме.
+
+    Один и тот же текст «поле: значение» разъезжается по каналам: в Telegram он
+    остаётся строками (там таблиц нет), в письме становится карточкой деталей.
+    Второго набора шаблонов под письмо нет намеренно — цифры в двух местах
+    однажды разошлись бы.
+    """
     subject, text, html = N._render("o1", {"revenue": 12000, "lessons": 5, "new_clients": 2}, "ru", "RUB")
     assert text.count("\n") == 2, text
-    assert "<br>" in html, html
+    assert "<br>" not in html and html.count("<tr>") == 3, html
+    assert "Выручка" in html and "12 000 ₽" in html
+
+    # А обычная фраза таблицей не притворяется, даже если в ней есть двоеточие:
+    # «новое время: 19:00» — часть предложения, а не строка деталей.
+    _, _, moved = N._render("c11", {"lesson_name": "Хатха", "start_time": "19:00"}, "ru", "RUB")
+    assert moved.startswith("<p>") and "Новое время: 19:00" in moved
 
 
 def test_notify_payment_fires_c4_client_and_a4_admin():
@@ -331,6 +373,7 @@ def test_render():
     test_render_new_dead_events_t2_t5_a7_a9_o9_t7()
     test_recipient_staff_includes_tg_id_and_phone()
     test_recipient_a8_does_not_fall_back_to_owner()
+    test_recipient_admin_fallback_skips_owner_who_teaches_the_lesson()
     test_recipient_owner_fallback_can_be_switched_off_per_call()
     test_notify_staff_fanout_hits_telegram_and_whatsapp()
     test_render_c12_bonus_uses_raw_amount_and_description()

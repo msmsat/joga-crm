@@ -242,6 +242,69 @@ async def list_operations(
     return Page(items=[_to_read(o) for o in rows], total=total, offset=offset, limit=limit)
 
 
+async def _apply_platform_fee(
+    db: AsyncSession, studio_id: int, op_type: str, category: str | None,
+    method: str | None, amount: int, *, client_id: int | None = None, undo: bool = False,
+) -> None:
+    """Отразить в комиссии платформы движение денег, проведённое РУКАМИ в Финансах.
+
+    Одна точка на все три ручки — создание, правку и удаление операции, — потому
+    что для CRM это единственное место, где владелец объявляет деньги, не прошедшие
+    ни через кассу, ни через Stripe.
+
+    * доход (`in`) начисляет долю: без этого процентный тариф обходился в один клик —
+      те же деньги за то же занятие, проведённые не кассой, а Финансами, комиссией
+      не облагались, при том что абонемент, разовое, сертификат и депозит её платят;
+    * расход категории «Возвраты» снимает долю обратно: наличные Stripe не
+      расщепляет, про их возврат знает только CRM, и без этого студия получала счёт
+      за продажу, которой больше нет.
+
+    `undo=True` меняет знак: так правка и удаление снимают ПРЕЖНИЙ вклад операции.
+    Компенсирующей строкой, а не правкой исходной — тот же принцип, что во всём
+    остальном учёте: начисление могло уже уехать в выставленный счёт, и переписывать
+    выданный документ задним числом нельзя.
+
+    Без `undo` дыра зияла с обеих сторон: удалив доходную операцию, студия оставляла
+    себе начисленную комиссию к оплате, а удалив «возврат» — оставляла себе кредит,
+    который этот возврат создал. Второе — рабочая схема: завести фиктивный возврат,
+    получить минус в счёте и убрать операцию, чтобы она не мешалась в отчётах.
+
+    `stripe` исключён в обе стороны: онлайн-оплату расщепляет сам Stripe в момент
+    платежа, а её возврат откатывает его же вебхук (checkout/stripe_pay._revert_sale) —
+    второе начисление и второе снятие были бы двойными.
+    """
+    if method == platform_fee.ONLINE_METHOD:
+        return
+    if op_type == "in":
+        charge = not undo
+    elif platform_fee.is_refund_category(category):
+        charge = undo
+    else:
+        return
+
+    # На подписке комиссии нет вовсе, а это большинство студий: отсекаем одним
+    # индексным чтением, не поднимая валюту и не пересчитывая суммы.
+    if not await platform_fee.studio_takes_commission(db, studio_id):
+        return
+
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
+    currency = studio.currency or "CZK"
+    amount_minor = stripe_connect.to_minor_units(amount, currency)
+    if charge:
+        await platform_fee.record_offline_fee(
+            db, studio_id, amount_minor, currency,
+            client_id=client_id,
+            # Своя пометка метода: в разборе видно, что доход завели руками, а не
+            # продажей через кассу. `method` владельца — свободное поле и пустым
+            # приходит чаще всего.
+            payment_method=method or "manual",
+        )
+    else:
+        await platform_fee.reverse_offline_fee(
+            db, studio_id, amount_minor, currency, client_id=client_id,
+        )
+
+
 @router.post("/operations", status_code=201, response_model=OperationRead)
 async def create_operation(
     body: OperationCreate,
@@ -279,46 +342,10 @@ async def create_operation(
         await accrue_points(db, ctx.studio_id, body.client_id, body.amount)
         await register_purchase(db, ctx.studio_id, body.client_id, body.amount)
 
-    # Комиссия платформы с денег, проведённых РУКАМИ. Обе стороны — здесь, потому
-    # что для CRM это единственное место, где владелец объявляет движение денег,
-    # не проходящее ни через кассу, ни через Stripe.
-    #
-    # Доход (`in`) начисляет долю. Без этого ручная операция была обходом
-    # процентного тарифа в один клик: те же деньги за то же занятие, проведённые
-    # не кассой, а Финансами, комиссией не облагались вовсе — при том, что продажа
-    # абонемента, разовое, сертификат и депозит её платят.
-    #
-    # Расход категории «Возвраты» — снимает её обратно: наличные Stripe не
-    # расщепляет, про их возврат знает только CRM, и без этого студия получала счёт
-    # за продажу, которой больше нет.
-    #
-    # `stripe` исключён в обе стороны: онлайн-оплату расщепляет сам Stripe в момент
-    # платежа, а её возврат откатывает его же вебхук (checkout/stripe_pay.
-    # _revert_sale) — второе начисление и второе снятие были бы двойными.
-    fee_kind = (
-        "in" if body.type == "in"
-        else "out" if body.category == "Возвраты"
-        else None
+    await _apply_platform_fee(
+        db, ctx.studio_id, body.type, body.category, body.method, body.amount,
+        client_id=body.client_id,
     )
-    if fee_kind is not None and body.method != platform_fee.ONLINE_METHOD:
-        studio = (await db.execute(
-            select(Studio).where(Studio.id == ctx.studio_id)
-        )).scalar_one()
-        currency = studio.currency or "CZK"
-        amount_minor = stripe_connect.to_minor_units(body.amount, currency)
-        if fee_kind == "in":
-            await platform_fee.record_offline_fee(
-                db, ctx.studio_id, amount_minor, currency,
-                client_id=body.client_id,
-                # Своя пометка метода: в разборе видно, что доход завели руками, а
-                # не продажей через кассу. `method` владельца — свободное поле и
-                # пустым приходит чаще всего.
-                payment_method=body.method or "manual",
-            )
-        else:
-            await platform_fee.reverse_offline_fee(
-                db, ctx.studio_id, amount_minor, currency, client_id=body.client_id,
-            )
     await db.flush()  # нужен op.id для ленты
     sign = "+" if body.type == "in" else "−"
     log_activity(
@@ -353,7 +380,10 @@ async def create_operation(
             await notify(db, ctx.studio_id, "owner", "o3",
                          {"amount": body.amount, "client_name": client_name})
 
-    if body.type == "out" and body.category == "Возвраты":
+    # Тем же правилом, что и снятие комиссии выше: письмо о возврате и снятие доли
+    # обязаны срабатывать на одну и ту же операцию. Разъехавшись, они дали бы
+    # клиенту письмо «вам вернули деньги» по расходу, который возвратом не считается.
+    if body.type == "out" and platform_fee.is_refund_category(body.category):
         await notify(db, ctx.studio_id, "admin", "a10",
                      {"amount": body.amount, "client_name": client_name})
         if body.client_id is not None:
@@ -399,6 +429,16 @@ async def update_operation(
         if old_account is not None:
             old_account.balance -= _balance_delta(op.type, op.amount)
 
+    # То же и с комиссией: сначала снимаем ПРЕЖНИЙ вклад операции, потом применяем
+    # новый по итоговым полям. Без этого правка суммы не меняла начисление вовсе —
+    # доход на 1 000 можно было завести, а потом переписать на 100 000, и комиссия
+    # осталась бы от первой суммы. Обратная правка (в ноль) работала бы как способ
+    # стереть начисление задним числом.
+    await _apply_platform_fee(
+        db, ctx.studio_id, op.type, op.category, op.method, op.amount,
+        client_id=op.client_id, undo=True,
+    )
+
     for key, value in fields.items():
         setattr(op, key, value)
 
@@ -412,6 +452,11 @@ async def update_operation(
             )).scalar_one_or_none()
         if target_account is not None:
             target_account.balance += _balance_delta(op.type, op.amount)
+
+    await _apply_platform_fee(
+        db, ctx.studio_id, op.type, op.category, op.method, op.amount,
+        client_id=op.client_id,
+    )
 
     await db.commit()
     await db.refresh(op)
@@ -436,6 +481,14 @@ async def delete_operation(
         )).scalar_one_or_none()
         if account is not None:
             account.balance -= _balance_delta(op.type, op.amount)
+
+    # Удалённая операция не должна оставлять за собой след в комиссии. Особенно в
+    # сторону минуса: завести «возврат», получить кредит в счёте и убрать операцию,
+    # чтобы она не мешалась в отчётах, — рабочая схема, пока это снятие не стоит тут.
+    await _apply_platform_fee(
+        db, ctx.studio_id, op.type, op.category, op.method, op.amount,
+        client_id=op.client_id, undo=True,
+    )
 
     await db.delete(op)
     await db.commit()

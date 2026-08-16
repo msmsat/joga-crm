@@ -11,10 +11,14 @@ import PayModal from './components/modals/PayModal';
 import BillingProfileModal from './components/modals/BillingProfileModal';
 import styles from './Billing.module.css';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
+import { useAiIntent } from '../../../hooks/useAiIntent';
 
 export default function Billing() {
   const { t } = useTranslation('billing');
   const h = useBillingCalculator();
+
+  // Ассистент: /dashboard/billing?ai=billing.plans (эпик AI-6, задача 9).
+  useAiIntent('billing.plans', () => h.setActiveTab('plans'));
 
   return (
     // Класс — зацепка для телефонных правил: страница свёрстана инлайном

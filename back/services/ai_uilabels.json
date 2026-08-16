@@ -1,0 +1,490 @@
+{
+  "ai:actions.confirm": {
+    "ru": "Подтвердить",
+    "en": "Confirm"
+  },
+  "ai:actions.deleteChat": {
+    "ru": "Удалить чат",
+    "en": "Delete chat"
+  },
+  "ai:actions.newChat": {
+    "ru": "Новый чат",
+    "en": "New chat"
+  },
+  "ai:chat.navbarPlaceholder": {
+    "ru": "Спросите AI или поставьте задачу...",
+    "en": "Ask AI or set a task..."
+  },
+  "ai:history.title": {
+    "ru": "История чатов",
+    "en": "Chat history"
+  },
+  "ai:memory.forgetConfirmTitle": {
+    "ru": "Забыть этот факт?",
+    "en": "Forget this fact?"
+  },
+  "ai:memory.title": {
+    "ru": "Ассистент помнит",
+    "en": "Assistant remembers"
+  },
+  "ai:settings.title": {
+    "ru": "Настройки AI",
+    "en": "AI settings"
+  },
+  "ai:telegram.verifyButton": {
+    "ru": "Проверить и подключить",
+    "en": "Verify & connect"
+  },
+  "billing:method.portal.cta": {
+    "ru": "Открыть у Stripe",
+    "en": "Open at Stripe"
+  },
+  "billing:mode.title": {
+    "ru": "Модель оплаты",
+    "en": "Payment model"
+  },
+  "billing:paymentSchedule.payFor": {
+    "ru": "Оплатить {{count}} мес.",
+    "en": "Pay for {{count}} mo."
+  },
+  "billing:planCards.choosePlan": {
+    "ru": "Выбрать план",
+    "en": "Choose plan"
+  },
+  "billing:profile.add": {
+    "ru": "Добавить реквизиты",
+    "en": "Add billing details"
+  },
+  "billing:profile.cardTitle": {
+    "ru": "Реквизиты плательщика",
+    "en": "Billing details"
+  },
+  "billing:profile.edit": {
+    "ru": "Редактировать",
+    "en": "Edit"
+  },
+  "billing:trial.activate": {
+    "ru": "Активировать",
+    "en": "Activate"
+  },
+  "billing:trial.title": {
+    "ru": "Акция для новых студий",
+    "en": "Offer for new studios"
+  },
+  "booking:channels.miniapp.copy": {
+    "ru": "Скопировать ссылку",
+    "en": "Copy link"
+  },
+  "booking:channels.sectionTitle": {
+    "ru": "Каналы подключения",
+    "en": "Connection channels"
+  },
+  "booking:sections.coffee.enabled.label": {
+    "ru": "Кофе после занятия",
+    "en": "Coffee after class"
+  },
+  "booking:sections.main.bookingActive.label": {
+    "ru": "Онлайн-запись активна",
+    "en": "Online booking active"
+  },
+  "booking:sections.rules.title": {
+    "ru": "Ограничения и правила",
+    "en": "Limits & rules"
+  },
+  "booking:stripeGate.none.action": {
+    "ru": "Подключить Stripe",
+    "en": "Connect Stripe"
+  },
+  "booking:tg.connect": {
+    "ru": "Подключить бота",
+    "en": "Connect bot"
+  },
+  "catalog:modals.addStudio.submit": {
+    "ru": "Создать студию",
+    "en": "Create studio"
+  },
+  "catalog:modals.hall.titleNew": {
+    "ru": "Новый зал",
+    "en": "New hall"
+  },
+  "catalog:modals.package.titleNew": {
+    "ru": "Новый пакет",
+    "en": "New package"
+  },
+  "catalog:modals.service.titleNew": {
+    "ru": "Новая услуга",
+    "en": "New service"
+  },
+  "catalog:studios.addHall": {
+    "ru": "Добавить зал",
+    "en": "Add hall"
+  },
+  "catalog:studios.deleteBranch": {
+    "ru": "Удалить филиал",
+    "en": "Delete branch"
+  },
+  "catalog:studios.editBranch": {
+    "ru": "Редактировать филиал",
+    "en": "Edit branch"
+  },
+  "catalog:studios.hall.actions": {
+    "ru": "Действия",
+    "en": "Actions"
+  },
+  "catalog:studios.title": {
+    "ru": "СТУДИИ",
+    "en": "STUDIOS"
+  },
+  "catalog:subscriptions.addPackage": {
+    "ru": "Добавить абонемент",
+    "en": "Add package"
+  },
+  "catalog:subscriptions.deactivate": {
+    "ru": "Снять с продажи",
+    "en": "Delist"
+  },
+  "catalog:subscriptions.settings.title": {
+    "ru": "Настройки программы",
+    "en": "Program settings"
+  },
+  "clients:addModal.title": {
+    "ru": "Новый клиент",
+    "en": "New client"
+  },
+  "clients:deleteModal.title": {
+    "ru": "Удалить клиента?",
+    "en": "Delete client?"
+  },
+  "clients:filtersGuide.trigger": {
+    "ru": "О фильтрах",
+    "en": "About filters"
+  },
+  "clients:panel.bonusPanel.title": {
+    "ru": "Начислить бонус",
+    "en": "Grant bonus"
+  },
+  "clients:panel.bookingPanel.title": {
+    "ru": "Быстрая запись",
+    "en": "Quick booking"
+  },
+  "clients:panel.danger.delete": {
+    "ru": "Удалить",
+    "en": "Delete"
+  },
+  "clients:panel.danger.freeze": {
+    "ru": "Заморозить",
+    "en": "Freeze"
+  },
+  "clients:panel.danger.freezeDisabledHint": {
+    "ru": "Заморозка выключена в настройках Каталог → Абонементы",
+    "en": "Freezing is disabled in Catalog → Subscriptions settings"
+  },
+  "clients:panel.danger.unfreeze": {
+    "ru": "Разморозить",
+    "en": "Unfreeze"
+  },
+  "clients:panel.notes.add": {
+    "ru": "Добавить заметку",
+    "en": "Add note"
+  },
+  "clients:panel.offers.title": {
+    "ru": "Персональная скидка",
+    "en": "Personal discount"
+  },
+  "clients:panel.tags.add": {
+    "ru": "Добавить",
+    "en": "Add"
+  },
+  "clients:panel.tags.title": {
+    "ru": "Теги",
+    "en": "Tags"
+  },
+  "clients:panel.wallet.buy": {
+    "ru": "Купить",
+    "en": "Buy"
+  },
+  "clients:panel.wallet.transfer": {
+    "ru": "Передать",
+    "en": "Transfer"
+  },
+  "clients:toolbar.addClient": {
+    "ru": "Добавить клиента",
+    "en": "Add client"
+  },
+  "dashboard:events.title": {
+    "ru": "Последние события",
+    "en": "Recent events"
+  },
+  "dashboard:state.ownerOnly": {
+    "ru": "Доступ ограничен вашей ролью",
+    "en": "Access limited by your role"
+  },
+  "dashboard:tasks.add": {
+    "ru": "Добавить задачу",
+    "en": "Add task"
+  },
+  "dashboard:tasks.submit": {
+    "ru": "Добавить",
+    "en": "Add"
+  },
+  "dashboard:tasks.title": {
+    "ru": "Задачи",
+    "en": "Tasks"
+  },
+  "dashboard:today.openJournal": {
+    "ru": "В журнал",
+    "en": "Open journal"
+  },
+  "finances:accounts.createSavings": {
+    "ru": "Создать копилку",
+    "en": "Create savings account"
+  },
+  "finances:counterparties.add": {
+    "ru": "Добавить",
+    "en": "Add"
+  },
+  "finances:documents.upload": {
+    "ru": "Загрузить",
+    "en": "Upload"
+  },
+  "finances:goals.createGoal": {
+    "ru": "Создать цель",
+    "en": "Create goal"
+  },
+  "finances:onlinePayments.gatewaysTitle": {
+    "ru": "Платёжные провайдеры",
+    "en": "Payment providers"
+  },
+  "finances:operations.export": {
+    "ru": "Экспорт",
+    "en": "Export"
+  },
+  "finances:operations.operation": {
+    "ru": "Операция",
+    "en": "Operation"
+  },
+  "finances:salaries.payAction": {
+    "ru": "Выплатить",
+    "en": "Pay"
+  },
+  "journal:bookingPopup.add": {
+    "ru": "Добавить",
+    "en": "Add"
+  },
+  "journal:bookingPopup.addClient": {
+    "ru": "Добавить клиента",
+    "en": "Add client"
+  },
+  "journal:bookingPopup.booked": {
+    "ru": "Записаны",
+    "en": "Booked"
+  },
+  "journal:bookingPopup.deleteLesson": {
+    "ru": "Удалить занятие",
+    "en": "Delete lesson"
+  },
+  "journal:bookingPopup.edit": {
+    "ru": "Изменить",
+    "en": "Edit"
+  },
+  "journal:bookingPopup.markAttended": {
+    "ru": "Отметить посещение",
+    "en": "Mark attendance"
+  },
+  "journal:bookingPopup.noEligibleClients": {
+    "ru": "Нет клиентов с доступом на это занятие",
+    "en": "No clients with access to this lesson"
+  },
+  "journal:bookingPopup.removeFromLesson": {
+    "ru": "Снять с занятия",
+    "en": "Remove from lesson"
+  },
+  "journal:cancelBookingConfirm.title": {
+    "ru": "Отменить занятие?",
+    "en": "Cancel lesson?"
+  },
+  "journal:newBooking.create": {
+    "ru": "Создать занятие",
+    "en": "Create lesson"
+  },
+  "journal:newBooking.createServiceConfirm.title": {
+    "ru": "Создать услугу?",
+    "en": "Create a service?"
+  },
+  "journal:newBooking.title": {
+    "ru": "Новое занятие",
+    "en": "New lesson"
+  },
+  "journal:toasts.lessonMoved": {
+    "ru": "Занятие перенесено",
+    "en": "Lesson moved"
+  },
+  "journal:toasts.noPermission": {
+    "ru": "Недостаточно прав для изменения расписания",
+    "en": "Not enough permissions to change the schedule"
+  },
+  "journal:toolbar.today": {
+    "ru": "Сегодня",
+    "en": "Today"
+  },
+  "loyalty:card.configure": {
+    "ru": "Настроить",
+    "en": "Configure"
+  },
+  "loyalty:config.certIssue": {
+    "ru": "Выпустить сертификат",
+    "en": "Issue a certificate"
+  },
+  "loyalty:config.certIssueButton": {
+    "ru": "Выпустить",
+    "en": "Issue"
+  },
+  "loyalty:config.promoAdd": {
+    "ru": "+ Добавить промокод",
+    "en": "+ Add promo code"
+  },
+  "loyalty:drawer.save": {
+    "ru": "Сохранить и активировать",
+    "en": "Save and activate"
+  },
+  "loyalty:drawer.subtitle": {
+    "ru": "Настройка программы",
+    "en": "Program settings"
+  },
+  "loyalty:scenarios.add": {
+    "ru": "Сценарий",
+    "en": "Scenario"
+  },
+  "loyalty:scenarios.title": {
+    "ru": "Умные сценарии",
+    "en": "Smart scenarios"
+  },
+  "loyalty:segmentsBoard.title": {
+    "ru": "Сегменты и рекомендации",
+    "en": "Segments & recommendations"
+  },
+  "menu:nav.journal": {
+    "ru": "Журнал",
+    "en": "Journal"
+  },
+  "menu:navbar.create": {
+    "ru": "Создать",
+    "en": "Create"
+  },
+  "menu:userMenu.logout": {
+    "ru": "Выйти",
+    "en": "Log out"
+  },
+  "menu:userMenu.studios": {
+    "ru": "Мои студии",
+    "en": "My studios"
+  },
+  "notifications:channels.connect": {
+    "ru": "Подключить",
+    "en": "Connect"
+  },
+  "notifications:channels.title": {
+    "ru": "Каналы доставки",
+    "en": "Delivery channels"
+  },
+  "notifications:matrix.allSaved": {
+    "ru": "Все изменения сохранены",
+    "en": "All changes saved"
+  },
+  "notifications:matrix.lock.critical": {
+    "ru": "Обязательное уведомление — отключить нельзя",
+    "en": "Required notification — cannot be turned off"
+  },
+  "profile:accounts.enter": {
+    "ru": "Перейти",
+    "en": "Open"
+  },
+  "profile:accounts.title": {
+    "ru": "Мои студии",
+    "en": "My studios"
+  },
+  "profile:otherAccount.return": {
+    "ru": "Войти",
+    "en": "Sign in"
+  },
+  "profile:otherAccount.title": {
+    "ru": "Другой аккаунт",
+    "en": "Another account"
+  },
+  "profile:page.title": {
+    "ru": "Ваш профиль",
+    "en": "Your profile"
+  },
+  "profile:personalInfo.heading": {
+    "ru": "Личные данные",
+    "en": "Personal details"
+  },
+  "profile:security.changePassword": {
+    "ru": "Сменить пароль",
+    "en": "Change password"
+  },
+  "profile:security.logout": {
+    "ru": "Выйти",
+    "en": "Log out"
+  },
+  "reports:insights.action": {
+    "ru": "Перейти",
+    "en": "Open"
+  },
+  "reports:insights.title": {
+    "ru": "Что требует внимания",
+    "en": "Needs attention"
+  },
+  "reports:toolbar.export": {
+    "ru": "Экспорт",
+    "en": "Export"
+  },
+  "settings:general.company.title": {
+    "ru": "Данные компании",
+    "en": "Company details"
+  },
+  "settings:general.locale.title": {
+    "ru": "Язык и регион",
+    "en": "Language & region"
+  },
+  "settings:integrations.actions.connect": {
+    "ru": "Подключить",
+    "en": "Connect"
+  },
+  "settings:security.danger.title": {
+    "ru": "Управление данными (Опасная зона)",
+    "en": "Data management (Danger zone)"
+  },
+  "settings:security.password.change": {
+    "ru": "Сменить пароль",
+    "en": "Change password"
+  },
+  "settings:workspace.title": {
+    "ru": "Ваши CRM системы",
+    "en": "Your CRM systems"
+  },
+  "staff:addModal.step3.createAndInvite": {
+    "ru": "Создать и пригласить",
+    "en": "Create and invite"
+  },
+  "staff:editModal.cannotDeleteLastOwner": {
+    "ru": "Нельзя удалить единственного владельца",
+    "en": "Cannot remove the only owner"
+  },
+  "staff:editModal.deleteEmployee": {
+    "ru": "Удалить сотрудника",
+    "en": "Remove employee"
+  },
+  "staff:list.pendingLabel": {
+    "ru": "Ожидает приглашения",
+    "en": "Invitation pending"
+  },
+  "staff:ownerModal.heading": {
+    "ru": "Контактные данные",
+    "en": "Contact details"
+  },
+  "staff:toolbar.teamTitle": {
+    "ru": "Команда · {{count}} чел.",
+    "en": "Team · {{count}}"
+  }
+}

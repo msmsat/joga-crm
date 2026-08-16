@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AIChatMessage } from '../types';
 import { formatMessageTime } from '../../../../lib/datetime';
-import { ActionCard } from '../../../../components/ui/index';
+import { ActionCard, AIMessage, AIRating } from '../../../../components/ui/index';
 import styles from '../AI.module.css';
 
 interface MessageBubbleProps {
@@ -72,10 +72,16 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className={styles.aiLabel}>Velora AI</div>
           <div className={styles.aiBubble}>
-            <span>{shown}</span>
+            <AIMessage text={shown} streaming={typing || streaming} />
             {(typing || streaming) && <span className={styles.caret} />}
           </div>
-          <div className={styles.msgTime}>{formatMessageTime(message.created_at)}</div>
+          {/* Оценка — рядом со временем, а не отдельной строкой: лента и так
+              длинная, а две иконки под каждым ответом её удваивают. Пока идёт
+              печать, оценивать нечего. */}
+          <div className={styles.msgTime} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>{formatMessageTime(message.created_at)}</span>
+            {!typing && !streaming && <AIRating messageId={message.id} rating={message.rating} />}
+          </div>
         </div>
       </div>
     );

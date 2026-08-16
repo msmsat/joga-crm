@@ -127,7 +127,7 @@ async def _run():
             # ── Ни одного CRM-инструмента ни в каком режиме
             crm_only = {"get_finance_summary", "get_stats", "get_staff", "get_rooms",
                         "find_clients", "get_client", "book_client", "create_client",
-                        "cancel_booking", "create_lesson", "freeze_subscription"}
+                        "cancel_booking", "create_lesson", "freeze_client", "create_staff"}
             for who in (known, None):
                 assert not ({s["function"]["name"] for s in tools_for_client(who)} & crm_only)
 

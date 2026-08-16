@@ -19,10 +19,11 @@ from schemas.ai import (
     ChatMessageRead,
     ChatSessionCreate,
     ChatSessionRead,
+    MessageRatingIn,
     SendMessageResponse,
 )
 from services.ai_quota import ai_quota_status, check_ai_quota
-from services.ai_tools import call_tool, decode_action_token, describe_action
+from services.ai_tools import call_tool, decode_action_token, describe_action, resolve_entities
 from services.assistant import agent_events, get_or_create_ai_settings, run_agent
 
 logger = logging.getLogger(__name__)
@@ -117,9 +118,48 @@ async def list_messages(
     messages = (await db.execute(
         select(AIChatMessage)
         .where(AIChatMessage.session_id == session_id)
-        .order_by(AIChatMessage.created_at.asc())
+        # id вторым ключом обязателен: вопрос и ответ пишутся одной транзакцией,
+        # и func.now() у них СОВПАДАЕТ — сортировка по одному created_at
+        # выдавала пару в случайном порядке, то есть ответ перед вопросом.
+        .order_by(AIChatMessage.created_at.asc(), AIChatMessage.id.asc())
     )).scalars().all()
     return messages
+
+
+@router.patch("/messages/{message_id}/rating", response_model=ChatMessageRead)
+async def rate_message(
+    message_id: int,
+    body: MessageRatingIn,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Оценка ответа ассистента (эпик AI-6, задача 18).
+
+    Оценивает только автор сессии и только ответ ассистента: свой собственный
+    вопрос оценивать бессмысленно, а чужой диалог человеку и так не виден.
+    Строк в ленте не добавляется — оценка живёт колонкой существующего
+    сообщения, и проверка последовательности ролей продолжает проходить.
+
+    rating=null — снятие оценки: повторный клик по той же кнопке.
+    """
+    message = (await db.execute(
+        select(AIChatMessage)
+        .join(AIChatSession, AIChatSession.id == AIChatMessage.session_id)
+        .where(
+            AIChatMessage.id == message_id,
+            AIChatSession.studio_id == ctx.studio_id,
+            AIChatSession.user_id == ctx.user.id,
+        )
+    )).scalar_one_or_none()
+    if message is None:
+        raise HTTPException(status_code=404, detail="Сообщение не найдено")
+    if message.role != "assistant":
+        raise HTTPException(status_code=400, detail="Оценить можно только ответ ассистента")
+
+    message.rating = body.rating
+    await db.commit()
+    await db.refresh(message)
+    return message
 
 
 @router.post("/sessions/{session_id}/messages", response_model=SendMessageResponse)
@@ -156,7 +196,7 @@ async def send_message(
     history = list(reversed((await db.execute(
         select(AIChatMessage)
         .where(AIChatMessage.session_id == session.id)
-        .order_by(AIChatMessage.created_at.desc())
+        .order_by(AIChatMessage.created_at.desc(), AIChatMessage.id.desc())
         .limit(_HISTORY_LIMIT)
     )).scalars().all()))
 
@@ -170,6 +210,7 @@ async def send_message(
         session_id=session.id,
         studio_language=studio.language,
         current_page=body.current_page,
+        viewport=body.viewport,
     )
 
     assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=result.text)
@@ -194,7 +235,10 @@ def _sse(event: str, data: object) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False, default=str)}\n\n"
 
 
-async def _agent_stream(session_id: int, text: str, current_page: str | None, user_id: int, studio_id: int, role: str):
+async def _agent_stream(
+    session_id: int, text: str, current_page: str | None, user_id: int,
+    studio_id: int, role: str, viewport: str | None = None,
+):
     """Тело SSE-потока.
 
     Своя сессия БД обязательна: тело StreamingResponse выполняется ПОСЛЕ того,
@@ -219,7 +263,7 @@ async def _agent_stream(session_id: int, text: str, current_page: str | None, us
         history = list(reversed((await db.execute(
             select(AIChatMessage)
             .where(AIChatMessage.session_id == session.id)
-            .order_by(AIChatMessage.created_at.desc())
+            .order_by(AIChatMessage.created_at.desc(), AIChatMessage.id.desc())
             .limit(_HISTORY_LIMIT)
         )).scalars().all()))
 
@@ -231,7 +275,7 @@ async def _agent_stream(session_id: int, text: str, current_page: str | None, us
             async for kind, data in agent_events(
                 ctx, db, settings, history,
                 session_id=session.id, studio_language=studio.language,
-                current_page=current_page, stream=True,
+                current_page=current_page, viewport=viewport, stream=True,
             ):
                 if kind == "result":
                     result = data
@@ -288,7 +332,10 @@ async def stream_message(
     await check_ai_quota(db, ctx.studio_id)
 
     return StreamingResponse(
-        _agent_stream(session_id, text, body.current_page, ctx.user.id, ctx.studio_id, ctx.role),
+        _agent_stream(
+            session_id, text, body.current_page, ctx.user.id, ctx.studio_id, ctx.role,
+            viewport=body.viewport,
+        ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -324,10 +371,21 @@ async def execute_action(
     )).scalar_one_or_none() is not None:
         raise HTTPException(status_code=409, detail="action_already_executed")
 
+    # Имена сущностей разрешаем ДО исполнения: после delete_client разрешать
+    # уже нечего, а сообщение остаётся в ленте навсегда — и «client_id: 44» в
+    # нём читается не лучше, чем в карточке подтверждения (эпик AI-6, задача 14).
+    entities, _ = await resolve_entities(args, ctx, db)
+
     result = await call_tool(payload["tool"], args, ctx, db)
     if "error" in result:
         # Занятие переполнено, клиент удалён — это ответ человеку, а не 500:
         # пользователь должен понять, почему не получилось.
+        # warning, а не info: причина отказа по кнопке «Подтвердить» — то
+        # единственное, что видно в логе при разборе жалобы «пишет 400».
+        logger.warning(
+            "ai action failed: tool=%s studio=%s: %s",
+            payload["tool"], ctx.studio_id, result["error"],
+        )
         raise HTTPException(status_code=400, detail={
             "code": "action_failed",
             "message": result["error"],
@@ -336,7 +394,7 @@ async def execute_action(
     message = AIChatMessage(
         session_id=session.id,
         role="assistant",
-        text=f"Готово: {describe_action(payload['tool'], args)}",
+        text=f"Готово: {describe_action(payload['tool'], args, entities)}",
         action_jti=payload["jti"],
     )
     db.add(message)

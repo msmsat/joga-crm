@@ -45,6 +45,7 @@ text как раньше (путь сценариев лояльности, гд
 import asyncio
 import logging
 import os
+from datetime import datetime
 from html import escape
 from typing import Any, NamedTuple
 
@@ -55,7 +56,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from contact_format import to_e164
-from models import Client, Studio, StudioIntegration, StudioMember, User
+from models import Client, Hall, Lesson, Studio, StudioIntegration, StudioMember, User
 from services import email_layout, outbox
 from services.mailer import send_email
 
@@ -109,11 +110,16 @@ class Recipient(NamedTuple):
     """Лёгкий получатель уведомления — общий для клиента и сотрудника (N-9.2).
     id — для логов; email/tg_id/phone — реквизиты каналов, любое может быть
     None (канал просто не сработает). Client и User обоих совместимы по
-    атрибутам, поэтому deliver() принимает и живой Client напрямую."""
+    атрибутам, поэтому deliver() принимает и живой Client напрямую.
+
+    name — имя для обращения в письме («Матвей, здравствуйте!»). Последним и с
+    дефолтом: Recipient собирается позиционно в нескольких местах, и добавить
+    поле в середину значило бы молча переставить телефон с почтой."""
     id: int | None
     email: str | None
     tg_id: int | None
     phone: str | None
+    name: str | None = None
 
 
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
@@ -128,6 +134,35 @@ async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
 def _fmt_amount(amount: float | int | None, currency: str) -> str:
     sign = _CURRENCY_SIGNS.get(currency, currency)
     return f"{amount or 0:,.0f} {sign}".replace(",", " ")
+
+
+async def lesson_context(db: AsyncSession, lesson: "Lesson") -> dict[str, Any]:
+    """Стандартный контекст занятия для notify() — один на все места, где о
+    занятии сообщают (запись, перенос, отмена, напоминание).
+
+    Собирает разом и то, что попадёт в текст (`lesson_name`, `start_time`), и то,
+    из чего письмо строит «Детали»: тренер, зал, стоимость. `start_at`/
+    `duration_min`/`lesson_id` нужны файлу календаря — из строки «12.08 18:00»
+    встречу не создать, там нет ни года, ни длительности.
+
+    Раньше каждое место писало этот словарь руками из двух полей, и письмо про
+    запись знало о занятии меньше, чем строка в журнале.
+    """
+    hall_name = None
+    if lesson.hall_id is not None:
+        hall_name = (await db.execute(
+            select(Hall.name).where(Hall.id == lesson.hall_id)
+        )).scalar_one_or_none()
+    return {
+        "lesson_id": lesson.id,
+        "lesson_name": lesson.name,
+        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        "start_at": lesson.start_time.isoformat(),
+        "duration_min": lesson.duration_min,
+        "trainer_name": lesson.teacher_name,
+        "hall_name": hall_name,
+        "price": lesson.price,
+    }
 
 
 async def send_telegram(
@@ -268,6 +303,7 @@ async def deliver(
             ok = await _deliver_once(
                 db, channel, recipient, subject, text, html,
                 studio_id=studio_id, tg_text=tg_text, wa_template=wa_template,
+                event_id=event_id, context=context,
             )
             # False здесь — не отказ провайдера, а «слать было нечем»: нет адреса
             # у получателя, канал не подключён, шаблон не одобрен. Денег такое не
@@ -302,9 +338,65 @@ async def deliver(
     return False
 
 
+# События с занятием в календаре: подтверждение и перенос кладут занятие в
+# календарь, отмена — вычёркивает его оттуда (STATUS:CANCELLED по тому же UID).
+# Напоминание (c2) файл не прикладывает: занятие уже в календаре с c1, второй
+# файл создал бы дубль встречи.
+_CALENDAR_EVENTS = {"c1": False, "c11": False, "c3": True}
+
+
+def _calendar_for(event_id: str | None, context: dict[str, Any], studio) -> bytes | None:
+    """Вложение .ics для событий занятия. Нет ISO-времени в контексте — нет и
+    файла: строка «12.08 18:00» для календаря бесполезна, а угадывать год и
+    часовой пояс за студию нельзя."""
+    if event_id not in _CALENDAR_EVENTS or not context.get("start_at"):
+        return None
+    try:
+        start = datetime.fromisoformat(str(context["start_at"]))
+    except ValueError:
+        logger.warning("calendar: start_at=%r не разобран, .ics не приложен", context.get("start_at"))
+        return None
+    place = getattr(studio, "name", "") or ""
+    address = getattr(studio, "address", "") or ""
+    return email_layout.calendar_ics(
+        # UID по занятию, а не по письму: отмена обязана попасть в ту же встречу,
+        # которую создало подтверждение, иначе календарь оставит её висеть.
+        uid=f"lesson-{context.get('lesson_id') or start.strftime('%Y%m%d%H%M')}@velora",
+        summary=context.get("lesson_name") or place,
+        start=start,
+        minutes=int(context.get("duration_min") or 60),
+        location=", ".join(filter(None, [place, address])),
+        tz=getattr(studio, "timezone", None),
+        cancelled=_CALENDAR_EVENTS[event_id],
+    )
+
+
+def _event_markup(event_id: str | None, context: dict[str, Any], studio, studio_id: int) -> str:
+    """schema.org-разметка подтверждённой брони — из неё Gmail рисует над письмом
+    карточку занятия с датой, кнопкой «в календарь» и маршрутом до студии.
+
+    Только подтверждение и перенос: у отменённого занятия карточка с маршрутом —
+    приглашение съездить зря."""
+    if event_id not in ("c1", "c11") or not context.get("start_at"):
+        return ""
+    try:
+        start = datetime.fromisoformat(str(context["start_at"]))
+    except ValueError:
+        return ""
+    return email_layout.ld_json(
+        summary=context.get("lesson_name") or "",
+        start=start,
+        minutes=int(context.get("duration_min") or 60),
+        place=getattr(studio, "name", "") or "",
+        address=getattr(studio, "address", "") or "",
+        url=email_layout.section_url(event_id, studio_id) or "",
+    )
+
+
 async def _deliver_once(
     db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
     *, studio_id: int, tg_text: str | None = None, wa_template: dict | None = None,
+    event_id: str | None = None, context: dict[str, Any] | None = None,
 ) -> bool:
     """Одна попытка отправки. Исключения НЕ глушит — их разбирает deliver()."""
     if channel == "email":
@@ -312,14 +404,29 @@ async def _deliver_once(
             return False
         cfg = await _integration_config(db, studio_id, "email_sender")
         sender = cfg.get("email") if cfg.get("verified") else None
-        # Имя в шапке письма — студии, а не Velora: клиент записывался к ней.
-        # Отдельный select по первичному ключу рядом с походом на SMTP не стоит
-        # ничего, зато не заставляет всех вызывающих таскать имя студии с собой.
-        brand = (await db.execute(
-            select(Studio.name).where(Studio.id == studio_id)
-        )).scalar_one_or_none()
-        await send_email(recipient.email, subject, html, sender=sender, brand=brand)
-        return True
+        # Всё, чем письмо подписано, — одной строкой: имя в шапке (клиент
+        # записывался в студию, а не в CRM), контакты в подвале и часовой пояс
+        # для календаря. Отдельный select по первичному ключу рядом с походом на
+        # SMTP не стоит ничего, зато не заставляет всех вызывающих таскать
+        # карточку студии с собой.
+        studio = (await db.execute(
+            select(Studio.name, Studio.address, Studio.phone, Studio.email,
+                   Studio.timezone, Studio.language)
+            .where(Studio.id == studio_id)
+        )).first()
+        lang = ((studio.language if studio else None) or "ru")[:2]
+        lang = lang if lang in ("ru", "en") else "ru"
+        name = getattr(recipient, "name", None)
+        return await send_email(
+            recipient.email, subject,
+            html + (email_layout.studio_card(
+                studio.name, studio.address, studio.phone, studio.email, lang,
+            ) if studio else "") + _event_markup(event_id, context or {}, studio, studio_id),
+            sender=sender,
+            brand=studio.name if studio else None,
+            greeting=email_layout.greeting(name, lang),
+            calendar=_calendar_for(event_id, context or {}, studio),
+        )
     if channel == "telegram":
         if not recipient.tg_id:
             return False
@@ -353,8 +460,13 @@ def _render(
     when = context.get("start_time") or ""
     amount_str = _fmt_amount(context.get("amount"), currency)
     remaining = context.get("remaining")
+    # tail — время в КОНЦЕ фразы («Вы записаны на «Хатха» — 12.08 18:00.»).
+    # paren — то же время в СЕРЕДИНЕ, когда после него идут ещё слова: с тире
+    # получалось ««Хатха» — 12.08 18:00 — через 24 ч» с тремя тире подряд.
     tail_ru = f" — {when}" if when else ""
     tail_en = f" — {when}" if when else ""
+    paren_ru = f" ({when})" if when else ""
+    paren_en = f" ({when})" if when else ""
 
     client_name = context.get("client_name") or ""
     staff_name = context.get("staff_name") or ""
@@ -381,170 +493,362 @@ def _render(
     amount_raw = context.get("amount")  # сырое число (баллы), не денежный формат
     description = context.get("description") or ""
 
+    # ── Заглушки на пустой контекст ──────────────────────────────────────────
+    # Шаблон обязан рендериться при context={} (см. tests/test_notifier.py): часть
+    # вызовов приходит без части полей, а письмо с дырой вида «Клиенту  возвращено
+    # 0 ₽» или «Цель «» достигнута» выглядит как сбой продукта. Дефолт ставится
+    # ЗДЕСЬ, один раз на поле, а не в каждой из сорока строк шаблона.
+    def _or(value: str, ru: str, en: str) -> str:
+        return value or (ru if lang == "ru" else en)
+
+    client_txt = _or(client_name, "клиент", "the client")
+    staff_txt = _or(staff_name, "сотрудник", "the staff member")
+    goal_txt = _or(goal_name, "без названия", "untitled")
+    kind_txt = _or(kind, "данные", "data")
+    names_txt = _or(names, "пока никого", "nobody yet")
+    when_txt = _or(when, "уточняется", "to be confirmed")
+    second_txt = _or(second_lesson, "другое занятие", "another class")
+    resource_txt = _or(resource_ru if lang == "ru" else resource_en, "ресурс", "resource")
+    role_txt = _or(role_ru if lang == "ru" else role_en, "без роли", "unassigned")
+    rating_txt = "—" if rating is None else str(rating)
+    remaining_txt = "—" if remaining is None else str(remaining)
+    days_txt = "—" if days_left is None else str(days_left)
+    points_txt = "—" if amount_raw is None else str(amount_raw)
+    lessons_txt = "—" if lessons is None else str(lessons)
+    new_clients_txt = "—" if new_clients is None else str(new_clients)
+    # Устройство и город приходят порознь и любое может быть пустым — «, Москва»
+    # или «Chrome, » в письме о безопасности читаются как баг.
+    device_txt = ", ".join(p for p in (device, city) if p) or (
+        "неизвестное устройство" if lang == "ru" else "an unknown device")
+    period_txt = " — ".join(p for p in (period_start, period_end) if p) or "—"
+    # Сколько времени осталось до занятия (c2). hours приходит из офсета
+    # напоминания, но на пустом контексте его нет.
+    left_ru = f"через {hours} ч" if hours is not None else "уже скоро"
+    left_en = f"in {hours}h" if hours is not None else "soon"
+    # Вчерашняя выручка в дневной сводке: без неё сегодняшняя цифра ни о чём не
+    # говорит. Приходит только из daily_notify — в остальных случаях молчим.
+    prev = context.get("revenue_prev")
+    prev_ru = f" (вчера {_fmt_amount(prev, currency)})" if prev is not None else ""
+    prev_en = f" (yesterday {_fmt_amount(prev, currency)})" if prev is not None else ""
+    # Поздравление без имени не должно начинаться с запятой.
+    bday_ru = f"{client_name}, поздравляем вас с днём рождения!" if client_name else "Поздравляем вас с днём рождения!"
+    bday_en = f"{client_name}, happy birthday!" if client_name else "Happy birthday!"
+
     # «Кофе после занятия» (c13). Места — необязательная часть: студия могла их
     # не заводить, и «Рядом:» с пустотой после двоеточия читалось бы как сбой.
     people_count = context.get("count")
+    count_txt = _or("" if people_count is None else str(people_count), "несколько человек", "a few")
     spots = context.get("spots") or ""
     spots_ru = f"\nРядом: {spots}" if spots else ""
     spots_en = f"\nNearby: {spots}" if spots else ""
 
+    # ФОРМА ТЕКСТА. Первая строка — что случилось, вторая — что это значит или
+    # что с этим делать. Ссылку на раздел добавляет оболочка письма
+    # (email_layout.cta), поэтому «перейдите в раздел X» в тексте не пишем —
+    # получилось бы две кнопки об одном.
+    # Формулировки безличные там, где подставляется имя: «записался/отменил»
+    # угадывают род клиента, а он в БД не хранится.
     TEMPLATES: dict[str, dict[str, tuple[str, str]]] = {
         "c1": {
-            "ru": ("Запись подтверждена", f"Вы записаны на «{lesson_ru}»{tail_ru}. Ждём вас!"),
-            "en": ("Booking confirmed", f'You\'re booked for "{lesson_en}"{tail_en}. See you there!'),
+            "ru": ("Запись подтверждена",
+                   f"Вы записаны на «{lesson_ru}»{tail_ru}.\n"
+                   f"Если планы изменятся, отмените запись заранее — место достанется другому."),
+            "en": ("Booking confirmed",
+                   f'You\'re booked for "{lesson_en}"{tail_en}.\n'
+                   f"If your plans change, cancel in advance so someone else can take the spot."),
         },
         "c3": {
-            "ru": ("Занятие отменено", f"К сожалению, «{lesson_ru}»{tail_ru} отменено. Приносим извинения."),
-            "en": ("Class cancelled", f'Unfortunately, "{lesson_en}"{tail_en} has been cancelled. We apologize.'),
+            "ru": ("Занятие отменено",
+                   f"«{lesson_ru}»{paren_ru} отменено. Приносим извинения.\n"
+                   f"Другое время можно выбрать в расписании."),
+            "en": ("Class cancelled",
+                   f'"{lesson_en}"{paren_en} has been cancelled. We\'re sorry.\n'
+                   f"You can pick another time in the schedule."),
         },
         "c4": {
-            "ru": ("Оплата получена", f"Оплата на {amount_str} прошла успешно. Спасибо!"),
-            "en": ("Payment received", f"Your payment of {amount_str} was successful. Thank you!"),
+            "ru": ("Оплата получена",
+                   f"Оплата на {amount_str} прошла успешно.\n"
+                   f"История платежей и абонемент — в вашем профиле."),
+            "en": ("Payment received",
+                   f"Your payment of {amount_str} went through.\n"
+                   f"Payment history and your subscription are in your profile."),
         },
         "c5": {
-            "ru": ("Абонемент на исходе", f"В вашем абонементе осталось {remaining} занятий. Пора продлить."),
-            "en": ("Subscription running low", f"You have {remaining} classes left. Time to renew."),
+            "ru": ("Абонемент на исходе",
+                   f"В абонементе осталось занятий: {remaining_txt}.\n"
+                   f"Продлите заранее, чтобы не прерывать занятия."),
+            "en": ("Subscription running low",
+                   f"Classes left on your subscription: {remaining_txt}.\n"
+                   f"Renew in advance so your training doesn't stop."),
         },
         "c6": {
-            "ru": ("Абонемент закончился", "Ваш абонемент завершён. Оформите новый, чтобы продолжить занятия."),
-            "en": ("Subscription ended", "Your subscription has ended. Get a new one to keep training."),
+            "ru": ("Абонемент закончился",
+                   "Абонемент закончился — записаться по нему больше нельзя.\n"
+                   "Оформите новый, чтобы продолжить занятия."),
+            "en": ("Subscription ended",
+                   "Your subscription has ended — you can no longer book with it.\n"
+                   "Get a new one to keep training."),
         },
         "c2": {
-            "ru": ("Напоминание о занятии", f"Напоминаем: «{lesson_ru}»{tail_ru} через {hours} ч."),
-            "en": ("Class reminder", f'Reminder: "{lesson_en}"{tail_en} in {hours}h.'),
+            "ru": ("Напоминание о занятии",
+                   f"«{lesson_ru}»{paren_ru} — {left_ru}.\n"
+                   f"Не сможете прийти? Отмените запись, чтобы место освободилось."),
+            "en": ("Class reminder",
+                   f'"{lesson_en}"{paren_en} — {left_en}.\n'
+                   f"Can't make it? Cancel your booking so the spot frees up."),
         },
         "c13": {
-            "ru": ("Кофе после занятия", f"Вы собирались на кофе — вас {people_count}: {names}.{spots_ru}"),
-            "en": ("Coffee after class", f"You planned coffee together — {people_count} of you: {names}.{spots_en}"),
+            "ru": ("Кофе после занятия",
+                   f"Вы собирались на кофе — вас {count_txt}: {names_txt}.{spots_ru}"),
+            "en": ("Coffee after class",
+                   f"You planned coffee together — {count_txt} of you: {names_txt}.{spots_en}"),
         },
         "t1": {
-            "ru": ("Новая запись", f"Клиент {client_name} записался на «{lesson_ru}»{tail_ru}."),
-            "en": ("New booking", f'{client_name} booked "{lesson_en}"{tail_en}.'),
+            "ru": ("Новая запись",
+                   f"Новая запись на «{lesson_ru}»{paren_ru} — {client_txt}.\n"
+                   f"Полный состав группы придёт за 30 минут до начала."),
+            "en": ("New booking",
+                   f'New booking for "{lesson_en}"{paren_en} — {client_txt}.\n'
+                   f"The full roster arrives 30 minutes before the start."),
         },
         "t3": {
-            "ru": ("Занятие через час", f"«{lesson_ru}»{tail_ru} начнётся через час."),
-            "en": ("Class in an hour", f'"{lesson_en}"{tail_en} starts in an hour.'),
+            "ru": ("Занятие через час",
+                   f"«{lesson_ru}»{paren_ru} начнётся через час.\n"
+                   f"Состав группы придёт отдельно, за 30 минут до начала."),
+            "en": ("Class in an hour",
+                   f'"{lesson_en}"{paren_en} starts in an hour.\n'
+                   f"The roster comes separately, 30 minutes before the start."),
         },
+        # t4 — не второе напоминание, а состав группы (так он и подписан в матрице
+        # уведомлений: «Список участников группы»). Формулировку «начнётся через
+        # 30 минут» здесь держать нельзя: вместе с t3 это два письма об одном
+        # занятии с разницей в полчаса, и тренер перестаёт читать оба.
         "t4": {
-            "ru": ("Занятие через 30 минут", f"«{lesson_ru}»{tail_ru} начнётся через 30 минут.\nЗаписаны: {names}"),
-            "en": ("Class in 30 minutes", f'"{lesson_en}"{tail_en} starts in 30 minutes.\nAttendees: {names}'),
+            "ru": ("Список участников",
+                   f"Кто придёт на «{lesson_ru}»{paren_ru}:\n{names_txt}"),
+            "en": ("Class roster",
+                   f'Who\'s coming to "{lesson_en}"{paren_en}:\n{names_txt}'),
         },
         "c11": {
-            "ru": ("Занятие изменено", f"Занятие «{lesson_ru}» перенесено — новое время: {when}."),
-            "en": ("Class rescheduled", f'"{lesson_en}" has been rescheduled — new time: {when}.'),
+            "ru": ("Занятие перенесено",
+                   f"«{lesson_ru}» перенесено. Новое время: {when_txt}.\n"
+                   f"Запись сохранена — если время не подходит, отмените её."),
+            "en": ("Class rescheduled",
+                   f'"{lesson_en}" has been rescheduled. New time: {when_txt}.\n'
+                   f"Your booking is kept — cancel it if the new time doesn't work."),
         },
         "t6": {
-            "ru": ("Выплачена зарплата", f"Сумма: {amount_str}\nПериод: {period_start} — {period_end}"),
-            "en": ("Salary paid", f"Amount: {amount_str}\nPeriod: {period_start} — {period_end}"),
+            "ru": ("Выплачена зарплата",
+                   f"Сумма: {amount_str}\nПериод: {period_txt}\n"
+                   f"Расчёт по занятиям — в разделе финансов."),
+            "en": ("Salary paid",
+                   f"Amount: {amount_str}\nPeriod: {period_txt}\n"
+                   f"The per-class breakdown is in the finances section."),
         },
         "c7": {
-            "ru": ("С днём рождения!", f"{client_name}, поздравляем вас с днём рождения! Ждём вас на занятиях — будем рады видеть."),
-            "en": ("Happy Birthday!", f"{client_name}, happy birthday! We'd love to see you at a class soon."),
+            "ru": ("С днём рождения!",
+                   f"{bday_ru}\nБудем рады видеть вас на занятии — приходите, когда будет настроение."),
+            "en": ("Happy Birthday!",
+                   f"{bday_en}\nWe'd love to see you at a class whenever you feel like it."),
         },
         "t8": {
-            "ru": ("Дни рождения клиентов", f"Сегодня день рождения у: {names}."),
-            "en": ("Client birthdays today", f"Today's birthdays: {names}."),
+            "ru": ("Дни рождения клиентов",
+                   f"Сегодня день рождения у: {names_txt}.\n"
+                   f"Хороший повод поздравить лично, если человек придёт на занятие."),
+            "en": ("Client birthdays today",
+                   f"Today's birthdays: {names_txt}.\n"
+                   f"A good reason to say it in person if they come to class."),
         },
         "t9": {
-            "ru": ("Занятие отменено", f"Ваше занятие «{lesson_ru}»{tail_ru} отменено."),
-            "en": ("Class cancelled", f'Your class "{lesson_en}"{tail_en} has been cancelled.'),
+            "ru": ("Занятие отменено",
+                   f"Ваше занятие «{lesson_ru}»{paren_ru} отменено.\n"
+                   f"Записанные клиенты уведомлены — приходить не нужно."),
+            "en": ("Class cancelled",
+                   f'Your class "{lesson_en}"{paren_en} has been cancelled.\n'
+                   f"The booked clients have been notified — you don't need to come in."),
         },
         "a1": {
-            "ru": ("Новая онлайн-запись", f"Новая запись клиента {client_name} на «{lesson_ru}»."),
-            "en": ("New online booking", f'New booking from {client_name} for "{lesson_en}".'),
+            "ru": ("Новая онлайн-запись",
+                   f"Через онлайн-запись оформлена запись на «{lesson_ru}» — {client_txt}.\n"
+                   f"Занятие уже стоит в журнале."),
+            "en": ("New online booking",
+                   f'A booking for "{lesson_en}" came in online — {client_txt}.\n'
+                   f"It's already in the journal."),
         },
         "a2": {
-            "ru": ("Отмена менее чем за час", f"Клиент {client_name} отменил запись на «{lesson_ru}» менее чем за час до начала."),
-            "en": ("Cancellation under an hour", f'{client_name} cancelled "{lesson_en}" less than an hour before start.'),
+            "ru": ("Отмена менее чем за час",
+                   f"Поздняя отмена на «{lesson_ru}» — {client_txt}, меньше чем за час до начала.\n"
+                   f"Место освободилось: его ещё можно кому-то предложить."),
+            "en": ("Cancellation under an hour",
+                   f'Late cancellation for "{lesson_en}" — {client_txt}, under an hour before start.\n'
+                   f"The spot is free again and can still be offered to someone."),
         },
         "a3": {
-            "ru": ("Новый клиент в системе", f"В систему добавлен новый клиент: {client_name}."),
-            "en": ("New client added", f"A new client has been added: {client_name}."),
+            "ru": ("Новый клиент в системе",
+                   f"Добавлен новый клиент: {client_txt}.\n"
+                   f"Проверьте телефон и email — без них напоминания о занятиях ему не уйдут."),
+            "en": ("New client added",
+                   f"A new client has been added: {client_txt}.\n"
+                   f"Check their phone and email — without those, reminders won't reach them."),
         },
         "a4": {
-            "ru": ("Оплата получена", f"Оплата {amount_str} от клиента {client_name}."),
-            "en": ("Payment received", f"Payment of {amount_str} from {client_name}."),
+            "ru": ("Оплата получена",
+                   f"Оплата {amount_str} от клиента {client_txt}.\n"
+                   f"Операция проведена и уже видна в финансах."),
+            "en": ("Payment received",
+                   f"Payment of {amount_str} from {client_txt}.\n"
+                   f"The operation is recorded and already visible in finances."),
         },
         "a6": {
-            "ru": ("Абонемент на исходе", f"У клиента {client_name} осталось {remaining} занятий по абонементу."),
-            "en": ("Subscription running low", f"{client_name} has {remaining} classes left on their subscription."),
+            "ru": ("Абонемент клиента на исходе",
+                   f"У клиента {client_txt} осталось занятий: {remaining_txt}.\n"
+                   f"Хороший повод предложить продление до того, как абонемент кончится."),
+            "en": ("Client's subscription running low",
+                   f"Classes left for {client_txt}: {remaining_txt}.\n"
+                   f"A good moment to offer a renewal before it runs out."),
         },
         "a8": {
-            "ru": ("Отчёт за день", f"Выручка: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
-            "en": ("Daily report", f"Revenue: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
+            "ru": ("Отчёт за день",
+                   f"Выручка: {revenue_str}{prev_ru}\nЗанятий: {lessons_txt}\nНовых клиентов: {new_clients_txt}"),
+            "en": ("Daily report",
+                   f"Revenue: {revenue_str}{prev_en}\nClasses: {lessons_txt}\nNew clients: {new_clients_txt}"),
         },
         "a10": {
-            "ru": ("Оформлен возврат", f"Клиенту {client_name} возвращено {amount_str}."),
-            "en": ("Refund issued", f"{client_name} received {amount_str} back."),
+            "ru": ("Оформлен возврат",
+                   f"Клиенту {client_txt} возвращено {amount_str}.\n"
+                   f"Возврат проведён в финансах — деньги уйдут тем же способом, каким платили."),
+            "en": ("Refund issued",
+                   f"{client_txt} was refunded {amount_str}.\n"
+                   f"It's recorded in finances — the money goes back the same way it came."),
         },
         "c8": {
-            "ru": ("Как прошло занятие?", f"Как вам «{lesson_ru}»? Будем рады отзыву — это поможет нам стать лучше."),
-            "en": ("How was your class?", f'How was "{lesson_en}"? We\'d love your feedback.'),
+            "ru": ("Как прошло занятие?",
+                   f"Как вам «{lesson_ru}»?\n"
+                   f"Оценка займёт полминуты и поможет тренеру понять, что стоит поправить."),
+            "en": ("How was your class?",
+                   f'How was "{lesson_en}"?\n'
+                   f"Rating it takes half a minute and helps the instructor adjust."),
         },
         "c9": {
-            "ru": ("Возврат средств оформлен", f"Возврат {amount_str} оформлен и поступит в ближайшее время."),
-            "en": ("Refund issued", f"A refund of {amount_str} has been issued and is on its way."),
+            "ru": ("Возврат средств оформлен",
+                   f"Возврат {amount_str} оформлен.\n"
+                   f"Деньги вернутся тем же способом, каким была сделана оплата; срок зависит от банка."),
+            "en": ("Refund issued",
+                   f"A refund of {amount_str} has been issued.\n"
+                   f"The money returns the same way you paid; timing depends on your bank."),
         },
         "o1": {
-            "ru": ("Ежедневная сводка", f"Выручка: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
-            "en": ("Daily summary", f"Revenue: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
+            "ru": ("Ежедневная сводка",
+                   f"Выручка: {revenue_str}{prev_ru}\nЗанятий: {lessons_txt}\nНовых клиентов: {new_clients_txt}"),
+            "en": ("Daily summary",
+                   f"Revenue: {revenue_str}{prev_en}\nClasses: {lessons_txt}\nNew clients: {new_clients_txt}"),
         },
         "o2": {
-            "ru": ("Еженедельный отчёт", f"Выручка за неделю: {revenue_str}\nЗанятий: {lessons}\nНовых клиентов: {new_clients}"),
-            "en": ("Weekly report", f"Revenue this week: {revenue_str}\nClasses: {lessons}\nNew clients: {new_clients}"),
+            "ru": ("Еженедельный отчёт",
+                   f"Выручка за неделю: {revenue_str}\nЗанятий: {lessons_txt}\nНовых клиентов: {new_clients_txt}"),
+            "en": ("Weekly report",
+                   f"Revenue this week: {revenue_str}\nClasses: {lessons_txt}\nNew clients: {new_clients_txt}"),
         },
         "o3": {
-            "ru": ("Крупный платёж", f"Клиент {client_name} оплатил {amount_str} — заметно выше обычного."),
-            "en": ("Large payment", f"{client_name} paid {amount_str} — noticeably above the usual."),
+            "ru": ("Крупный платёж",
+                   f"Крупная оплата: {amount_str} от клиента {client_txt}.\n"
+                   f"Это заметно выше обычного чека."),
+            "en": ("Large payment",
+                   f"Large payment: {amount_str} from {client_txt}.\n"
+                   f"That's noticeably above the usual ticket."),
         },
         "o4": {
-            "ru": ("Резкое падение выручки", f"Сегодня: {revenue_str}\nСреднее за неделю: {avg7_str}"),
-            "en": ("Revenue drop", f"Today: {revenue_str}\nWeekly average: {avg7_str}"),
+            "ru": ("Резкое падение выручки",
+                   f"Сегодня: {revenue_str}\nСреднее за неделю: {avg7_str}\n"
+                   f"Падение больше чем вдвое — стоит посмотреть, что случилось с расписанием и записями."),
+            "en": ("Revenue drop",
+                   f"Today: {revenue_str}\nWeekly average: {avg7_str}\n"
+                   f"More than a twofold drop — worth checking the schedule and bookings."),
         },
         "o5": {
-            "ru": ("Добавлен сотрудник", f"В команду добавлен новый сотрудник: {staff_name}."),
-            "en": ("Staff member added", f"A new staff member has been added: {staff_name}."),
+            "ru": ("Добавлен сотрудник",
+                   f"В команду добавлен сотрудник: {staff_txt}.\n"
+                   f"Проверьте роль доступа — от неё зависит, какие разделы он видит."),
+            "en": ("Staff member added",
+                   f"A new staff member has been added: {staff_txt}.\n"
+                   f"Check their access role — it decides which sections they can see."),
         },
         "o6": {
-            "ru": ("Тариф истекает", f"До конца оплаченного периода {days_left} дн. Продлите подписку, чтобы не потерять доступ."),
-            "en": ("Plan expiring soon", f"Your plan expires in {days_left} days. Renew to keep access."),
+            "ru": ("Тариф истекает",
+                   f"До конца оплаченного периода дней: {days_txt}.\n"
+                   f"После этого доступ к CRM закроется — продлите подписку заранее."),
+            "en": ("Plan expiring soon",
+                   f"Days left in your paid period: {days_txt}.\n"
+                   f"After that access closes — renew in advance."),
         },
         "o7": {
-            "ru": ("Изменены права доступа", f"Сотрудник {staff_name} теперь {role_ru}."),
-            "en": ("Access role changed", f"{staff_name} is now {role_en}."),
+            "ru": ("Изменены права доступа",
+                   f"Роль доступа изменена: {staff_txt} — теперь {role_txt}.\n"
+                   f"Если вы этого не делали — проверьте, у кого ещё есть доступ владельца."),
+            "en": ("Access role changed",
+                   f"Access role changed: {staff_txt} is now {role_txt}.\n"
+                   f"If this wasn't you — check who else has owner access."),
         },
         "o8": {
-            "ru": ("Финансовая цель достигнута", f"Цель «{goal_name}» достигнута!"),
-            "en": ("Financial goal reached", f'Goal "{goal_name}" has been reached!'),
+            "ru": ("Финансовая цель достигнута",
+                   f"Цель «{goal_txt}» достигнута.\nМожно ставить следующую."),
+            "en": ("Financial goal reached",
+                   f'Goal "{goal_txt}" has been reached.\nTime to set the next one.'),
         },
         "t2": {
-            "ru": ("Отмена записи", f"Клиент {client_name} отменил запись на «{lesson_ru}»{tail_ru} менее чем за 2 часа до начала."),
-            "en": ("Booking cancelled", f'{client_name} cancelled "{lesson_en}"{tail_en} less than 2 hours before start.'),
+            "ru": ("Отмена записи",
+                   f"Отмена записи на «{lesson_ru}»{paren_ru} — {client_txt}, меньше чем за 2 часа до начала.\n"
+                   f"Состав группы изменился, проверьте его перед занятием."),
+            "en": ("Booking cancelled",
+                   f'Cancellation for "{lesson_en}"{paren_en} — {client_txt}, under 2 hours before start.\n'
+                   f"The roster changed — check it before the class."),
         },
         "t5": {
-            "ru": ("Изменение в расписании", f"Занятие «{lesson_ru}» перенесено — новое время: {when}."),
-            "en": ("Schedule change", f'"{lesson_en}" has been rescheduled — new time: {when}.'),
+            "ru": ("Изменение в расписании",
+                   f"«{lesson_ru}» перенесено. Новое время: {when_txt}.\n"
+                   f"Если новое время вам не подходит, скажите администратору."),
+            "en": ("Schedule change",
+                   f'"{lesson_en}" has been rescheduled. New time: {when_txt}.\n'
+                   f"Tell the administrator if the new time doesn't work for you."),
         },
         "a7": {
-            "ru": ("Конфликт расписания", f"Наложение занятий: «{lesson_ru}» и «{second_lesson}»{tail_ru} — общий {resource_ru}."),
-            "en": ("Schedule conflict", f'Overlapping classes: "{lesson_en}" and "{second_lesson}"{tail_en} — shared {resource_en}.'),
+            "ru": ("Конфликт расписания",
+                   f"Наложение: «{lesson_ru}» и «{second_txt}»{paren_ru} — общий {resource_txt}.\n"
+                   f"Одно из занятий нужно перенести, иначе придут обе группы."),
+            "en": ("Schedule conflict",
+                   f'Overlap: "{lesson_en}" and "{second_txt}"{paren_en} — shared {resource_txt}.\n'
+                   f"One of them has to move, or both groups will show up."),
         },
         "a9": {
-            "ru": ("Вход с нового устройства", f"Вход в аккаунт {staff_name} с нового устройства: {device}, {city}."),
-            "en": ("New device login", f"{staff_name}'s account was accessed from a new device: {device}, {city}."),
+            "ru": ("Вход с нового устройства",
+                   f"Вход в аккаунт {staff_txt} с нового устройства: {device_txt}.\n"
+                   f"Если это были не вы — смените пароль и завершите чужие сессии."),
+            "en": ("New device login",
+                   f"{staff_txt}'s account was accessed from a new device: {device_txt}.\n"
+                   f"If this wasn't you — change the password and end the other sessions."),
         },
         "o9": {
-            "ru": ("Экспорт данных", f"Тип выгрузки: {kind}. Инициатор — {staff_name}."),
-            "en": ("Data export", f"Export type: {kind}. Initiated by {staff_name}."),
+            "ru": ("Экспорт данных",
+                   f"Выгружены данные: {kind_txt}. Инициатор — {staff_txt}.\n"
+                   f"Если это были не вы — проверьте активные сессии и ключи доступа."),
+            "en": ("Data export",
+                   f"Data exported: {kind_txt}. Initiated by {staff_txt}.\n"
+                   f"If this wasn't you — review active sessions and access keys."),
         },
         "c12": {
-            "ru": ("Начислены бонусы", f"Вам начислено баллов: {amount_raw}. {description}".strip()),
-            "en": ("Bonus credited", f"You've earned {amount_raw} points. {description}".strip()),
+            "ru": ("Начислены бонусы",
+                   f"Вам начислено баллов: {points_txt}. {description}".strip()
+                   + "\nПотратить их можно при оплате занятий и абонементов."),
+            "en": ("Bonus credited",
+                   f"You've earned {points_txt} points. {description}".strip()
+                   + "\nYou can spend them on classes and subscriptions."),
         },
         # t7 — задел (N-9 границы): эндпоинта создания отзыва ещё нет, врезки тоже.
         "t7": {
-            "ru": ("Новый отзыв", f"Клиент {client_name} оценил занятие «{lesson_ru}» на {rating}★."),
-            "en": ("New review", f'{client_name} rated "{lesson_en}" {rating}★.'),
+            "ru": ("Новый отзыв",
+                   f"Новая оценка занятия «{lesson_ru}»: {rating_txt}★ от клиента {client_txt}."),
+            "en": ("New review",
+                   f'New rating for "{lesson_en}": {rating_txt}★ from {client_txt}.'),
         },
     }
 
@@ -554,9 +858,80 @@ def _render(
     if by_lang is None:
         return None
     subject, text = by_lang.get(lang) or by_lang["ru"]
-    # В теле есть переносы строк (сводки, отчёты) — в html они схлопнулись бы;
-    # escape по той же причине, что и в tg_format: в тексте подставлены имена.
-    return subject, text, "<p>{}</p>".format(escape(text, quote=False).replace("\n", "<br>"))
+    return subject, text, _html_body(event_id, text, context, lang, currency)
+
+
+# Поля контекста, которых НЕТ в тексте сообщения, но которые человек ищет в
+# письме глазами: с кем занятие, в каком зале, сколько стоит. В мессенджере они
+# раздули бы короткое уведомление, в письме — это «Детали записи», из-за которых
+# письмо и открывают. Нет значения в контексте — строки просто не будет.
+_EXTRA_FACTS: dict[str, tuple[str, ...]] = {
+    "c1": ("trainer_name", "hall_name", "price"),
+    "c2": ("trainer_name", "hall_name"),
+    "c11": ("trainer_name", "hall_name"),
+    "c8": ("trainer_name",),
+    "t1": ("hall_name",),
+    "t3": ("hall_name",),
+    "t4": ("hall_name",),
+    "a1": ("hall_name",),
+}
+
+_FACT_LABELS: dict[str, tuple[str, str]] = {
+    "trainer_name": ("Тренер", "Trainer"),
+    "hall_name": ("Зал", "Room"),
+    "price": ("Стоимость", "Price"),
+}
+
+# События, чей текст НАПИСАН как перечисление «поле: значение» — сводки, отчёты,
+# выплата, состав группы. Только у них строки текста превращаются в таблицу; на
+# остальных разбор не запускается вовсе, иначе фраза «Отменена: запись к тренеру
+# (18:00) — менее чем за 2 часа» стала бы строкой таблицы.
+_LIST_EVENTS = frozenset({"t4", "t6", "a8", "o1", "o2", "o4", "c13"})
+
+# Даже внутри перечисления первая строка бывает фразой («Вы собирались на кофе —
+# вас 3: Анна, Ольга»), поэтому ярлык и значение ограничены длиной: факт короток
+# по определению, предложение — нет.
+_FACT_LABEL_MAX = 20
+_FACT_VALUE_MAX = 40
+
+
+def _html_body(
+    event_id: str, text: str, context: dict[str, Any], lang: str, currency: str,
+) -> str:
+    """Тело письма из текста сообщения: фразы остаются абзацем, перечисления
+    («Выручка: 30 000 ₽») становятся карточкой деталей.
+
+    Разбор текста, а не второй набор шаблонов под письмо: сводки и отчёты УЖЕ
+    написаны как список «поле: значение», и держать те же цифры в двух местах
+    значит однажды их разойтись. escape — по той же причине, что и в tg_format:
+    в тексте подставлены имена клиентов и названия занятий.
+    """
+    lead: list[str] = []
+    rows: list[tuple[str, str]] = []
+    for line in text.split("\n"):
+        label, sep, value = line.partition(": ")
+        is_fact = (
+            event_id in _LIST_EVENTS and sep
+            and len(label) <= _FACT_LABEL_MAX and len(value) <= _FACT_VALUE_MAX
+            and not value.endswith(".") and ". " not in value
+        )
+        if is_fact:
+            rows.append((label, value))
+        else:
+            lead.append(line)
+
+    i = 0 if lang == "ru" else 1
+    for key in _EXTRA_FACTS.get(event_id, ()):
+        value = context.get(key)
+        if not value:
+            continue
+        rows.append((
+            _FACT_LABELS[key][i],
+            _fmt_amount(value, currency) if key == "price" else str(value),
+        ))
+
+    body = "<p>{}</p>".format(escape("\n".join(lead), quote=False).replace("\n", "<br>")) if lead else ""
+    return body + email_layout.facts(rows)
 
 
 # Стартовая проверка (EPIC 3, Задача 1): выполняется один раз при импорте модуля, вне
@@ -566,7 +941,7 @@ _render("c1", {}, "ru", "RUB")
 
 
 def _user_recipient(user: User) -> Recipient:
-    return Recipient(user.id, user.email, user.tg_id, user.phone)
+    return Recipient(user.id, user.email, user.tg_id, user.phone, user.name)
 
 
 # События-близнецы: у владельца есть СВОЯ версия того же письма — a8 «Отчёт за
@@ -612,7 +987,7 @@ async def _recipient(
         )).scalar_one_or_none()
         if client is None:
             return []
-        return [Recipient(client.id, client.email, client.tg_id, client.phone)]
+        return [Recipient(client.id, client.email, client.tg_id, client.phone, client.name)]
 
     to_email = context.get("to_email")
     if to_email:
@@ -650,7 +1025,17 @@ async def _recipient(
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id, StudioMember.role == "owner")
     )).scalars().first()
-    return [_user_recipient(owner)] if owner else []
+    if owner is None:
+        return []
+    # Подстановка владельца вместо отсутствующего администратора отменяется,
+    # если он же ведёт это занятие: тренерскую версию того же факта (t1 к a1,
+    # t2 к a2) он получает отдельным письмом, и в маленькой студии, где владелец
+    # сам и админ, и тренер, одна запись клиента приходила ему дважды.
+    # Настоящий администратор в студии эту ветку не проходит вовсе — он найден
+    # выше и получает a1/a2 как раньше.
+    if role == "admin" and context.get("trainer_id") == owner.id:
+        return []
+    return [_user_recipient(owner)]
 
 
 async def notify(

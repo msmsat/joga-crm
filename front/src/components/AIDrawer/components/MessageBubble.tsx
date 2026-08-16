@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from '../AIDrawer.module.css';
 import type { AIChatMessage } from '../types';
 import { formatMessageTime } from '../../../lib/datetime';
-import { ActionCard } from '../../ui/index';
+import { ActionCard, AIMessage, AIRating } from '../../ui/index';
 
 interface MessageBubbleProps {
   message: AIChatMessage;
@@ -64,10 +64,18 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
   return (
     <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.aiRow}`}>
       <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.aiBubble}`}>
-        {shown}
+        {/* Пузырь пользователя остаётся голым текстом: рендерить markdown из
+            собственного ввода человека незачем. */}
+        {isUser ? shown : <AIMessage text={shown} compact streaming={typing || streaming} />}
         {(typing || streaming) && <span className={styles.caret} />}
       </div>
-      <span className={styles.msgTime}>{formatMessageTime(message.created_at)}</span>
+      <span className={styles.msgTime} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {formatMessageTime(message.created_at)}
+        {/* Оценка только под ответом ассистента и только когда он дописан. */}
+        {!isUser && !typing && !streaming && (
+          <AIRating messageId={message.id} rating={message.rating} />
+        )}
+      </span>
     </div>
   );
 }

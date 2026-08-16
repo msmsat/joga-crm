@@ -11,6 +11,7 @@ from database import get_db
 from dependencies import get_current_user, oauth2_scheme
 from legal import CONSENT_REQUIRED, record_consent
 from models import User, StudioMember, UserSession
+from ratelimit import limiter
 from schemas import Login2FARequest, LoginRequest, TokenResponse, GoogleAuthRequest
 from security import verify_password, get_password_hash
 from services.notifier import notify
@@ -130,10 +131,10 @@ async def _finish_login(
 
 
 @router.post("/google", response_model=TokenResponse)
-async def google_auth(request: GoogleAuthRequest, http_request: Request, db: AsyncSession = Depends(get_db)):
+async def google_auth(body: GoogleAuthRequest, request: Request, db: AsyncSession = Depends(get_db)):
     try:
         idinfo = id_token.verify_oauth2_token(
-            request.token,
+            body.token,
             google_requests.Request(),
             GOOGLE_CLIENT_ID,
             clock_skew_in_seconds=30,
@@ -162,7 +163,7 @@ async def google_auth(request: GoogleAuthRequest, http_request: Request, db: Asy
         # Регистрация, а не вход: без принятых документов аккаунт не заводим.
         # Фронт на этот код показывает галочку и повторяет запрос с тем же
         # Google-токеном (front/src/pages/Loginpage.tsx).
-        if not request.accept_terms:
+        if not body.accept_terms:
             raise HTTPException(status_code=400, detail=CONSENT_REQUIRED)
 
         user = User(
@@ -174,21 +175,25 @@ async def google_auth(request: GoogleAuthRequest, http_request: Request, db: Asy
         )
         db.add(user)
         await db.flush()
-        await record_consent(db, user, http_request, "google")
+        await record_consent(db, user, request, "google")
         await db.commit()
         await db.refresh(user)
 
-    return await _finish_login(user, http_request, db)
+    return await _finish_login(user, request, db)
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, http_request: Request, db: AsyncSession = Depends(get_db)):
+# Без лимита пароль перебирается без ограничений вообще. bcrypt замедляет попытку,
+# но это не защита: он рассчитан на офлайн-перебор украденной базы, а не на живой
+# эндпоинт. Ключ — IP (ratelimit.py).
+@limiter.limit("10/minute")
+async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends(get_db)):
     user = (
         await db.execute(
             select(User)
             .join(StudioMember, StudioMember.user_id == User.id)
             .where(
-                (User.email == request.identifier) | (User.phone == request.identifier),
+                (User.email == body.identifier) | (User.phone == body.identifier),
             )
         )
     ).scalars().first()
@@ -208,31 +213,34 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
             detail="Аккаунт ещё не активирован. Примите приглашение по ссылке из письма или подтвердите email кодом.",
         )
 
-    if not verify_password(request.password, user.hashed_password):
+    if not verify_password(body.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный email, телефон или пароль",
         )
 
-    return await _finish_login(user, http_request, db)
+    return await _finish_login(user, request, db)
 
 
 @router.post("/login/2fa", response_model=TokenResponse)
-async def login_2fa(request: Login2FARequest, http_request: Request, db: AsyncSession = Depends(get_db)):
+# Сам код защищён счётчиком попыток в OTP (5 на код), но лимит по IP закрывает
+# обход через выпуск новых кодов: пять попыток, новый код, ещё пять.
+@limiter.limit("10/minute")
+async def login_2fa(body: Login2FARequest, request: Request, db: AsyncSession = Depends(get_db)):
     """Второй шаг входа при включённой 2FA (EPIC 5, задача 5)."""
     user = (
         await db.execute(
             select(User).where(
-                (User.email == request.identifier) | (User.phone == request.identifier),
+                (User.email == body.identifier) | (User.phone == body.identifier),
             )
         )
     ).scalars().first()
 
-    if user is None or not await otp.verify(db, user, "login_2fa", request.code):
+    if user is None or not await otp.verify(db, user, "login_2fa", body.code):
         raise HTTPException(status_code=400, detail="Неверный или истёкший код")
 
     access_token = await _build_token_for_user(user, db)
-    await _record_login_session(user, access_token, http_request, db)
+    await _record_login_session(user, access_token, request, db)
     return TokenResponse(access_token=access_token, token_type="bearer")
 
 

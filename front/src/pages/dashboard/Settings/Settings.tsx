@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAiIntent } from "../../../hooks/useAiIntent";
 import "./Settings.css";
 
 import { useBilling } from "./hooks/useBilling";
@@ -40,6 +41,15 @@ export default function Settings() {
   useEffect(() => {
     rightPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
+
+  // Ассистент: /dashboard/settings?tab=security&ai=settings.section (эпик AI-6,
+  // задача 9). Вкладку открывает ?tab= при первом рендере — интенту остаётся
+  // подтвердить выбор и увести взгляд наверх длинной страницы.
+  useAiIntent('settings.section', () => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab) setActiveSection(tab);
+    rightPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   const navItems = [
     { id: "general", icon: icons.building, label: t('nav.general') },

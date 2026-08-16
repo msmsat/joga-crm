@@ -21,14 +21,28 @@ class _Client:
         self.phone = phone
 
 
+class _Studio:
+    """Карточка студии, которой подписывается письмо: имя в шапку, контакты и
+    адрес в подвал, часовой пояс — в файл календаря."""
+    name = "Студия Лотос"
+    address = "Прага, Ke Kapslovně 3"
+    phone = "+420 739 007 750"
+    email = "hello@lotos.cz"
+    timezone = "Europe/Prague"
+    language = "ru"
+
+
 class _DB:
-    """Минимальная сессия: email-ветка спрашивает у неё имя студии — оно уходит
-    в шапку письма, потому что клиенту пишет студия, а не Velora."""
+    """Минимальная сессия: email-ветка спрашивает у неё карточку студии."""
 
     class _Row:
         @staticmethod
+        def first():
+            return _Studio()
+
+        @staticmethod
         def scalar_one_or_none():
-            return "Студия Лотос"
+            return _Studio.name
 
     async def execute(self, *_args, **_kwargs):
         return self._Row()
@@ -37,8 +51,9 @@ class _DB:
 async def _run():
     calls = []
 
-    async def fake_send_email(to, subject, html, sender=None, brand=None):
+    async def fake_send_email(to, subject, html, sender=None, brand=None, **_kw):
         calls.append(("email", to, subject, html, sender, brand))
+        return True  # как настоящий send_email: True — письмо ушло
 
     async def fake_send_telegram(chat_id, text, token=None, parse_mode=None):
         calls.append(("telegram", chat_id, text, parse_mode))
@@ -64,7 +79,13 @@ async def _run():
         # email: есть адрес — шлёт html, возвращает True
         ok = await N.deliver(_DB(), "email", _Client(email="a@x.com"), "Тема", "текст", "<p>текст</p>", studio_id=1)
         assert ok is True
-        assert calls[-1] == ("email", "a@x.com", "Тема", "<p>текст</p>", None, "Студия Лотос")
+        _, to, subject, html, sender, brand = calls[-1]
+        assert (to, subject, sender, brand) == ("a@x.com", "Тема", None, "Студия Лотос")
+        assert html.startswith("<p>текст</p>")
+        # К письму студии всегда подписана она сама: адрес, телефон и почта —
+        # кликабельные, чтобы позвонить и доехать можно было из письма.
+        assert "Ke Kapslovně 3" in html and 'href="tel:+420739007750"' in html
+        assert 'href="mailto:hello@lotos.cz"' in html and "google.com/maps" in html
 
         # email: нет адреса — не пытается слать, False
         calls.clear()

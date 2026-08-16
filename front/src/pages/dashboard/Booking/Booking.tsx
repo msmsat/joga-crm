@@ -7,6 +7,7 @@ import { useBookingSettings } from './hooks/useBookingSettings'
 import { useChannels }        from './hooks/useChannels'
 import { useGateways }        from '../Finances/hooks/useFinances'
 import { useToast }           from '../../../components/ui/Toast'
+import { useAiIntent }        from '../../../hooks/useAiIntent'
 import { BookingChannels }    from './components/sections/BookingChannels'
 import { BookingSettings }    from './components/sections/BookingSettings'
 import { CoffeeSettings }     from './components/sections/CoffeeSettings'
@@ -36,6 +37,16 @@ export default function Booking() {
       : !stripe.charges_enabled
         ? 'incomplete'
         : 'disabled' // charges_enabled=true, is_active=false — выключен тумблером на Финансах
+
+  // Ассистент: /dashboard/booking?ai=booking.rules (эпик AI-6, задача 9).
+  // У блока правил своей модалки нет, поэтому просто прокручиваем к нему:
+  // «открыл страницу» без прокрутки выглядит как «ничего не произошло».
+  useAiIntent('booking.rules', () => {
+    // Секция появляется вместе с загруженными настройками — ждём кадр отрисовки.
+    requestAnimationFrame(() => {
+      document.getElementById('booking-rules')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  })
 
   const modals = useBookingModals(stripeReady)
   const tgBot  = useChannels()

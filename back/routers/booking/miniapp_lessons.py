@@ -30,7 +30,7 @@ from services.booking_access import find_eligible_subscription
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
 )
-from services.notifier import _fmt_amount, _studio_prefs, notify
+from services.notifier import _fmt_amount, _studio_prefs, lesson_context, notify
 from services.referral import fire_referral
 from services.subscription_charge import charge_reservation, notify_subscription_remaining, refund_reservation
 
@@ -535,22 +535,23 @@ async def create_reservation(
     # c1 «Запись подтверждена» уходит только за подтверждённой бронью: пока
     # студия не одобрила, подтверждать нечего. Клиент видит статус «ожидает» в
     # мини-приложении, а c1 придёт после confirm в Журнале.
+    lesson_ctx = await lesson_context(db, lesson)
     if reservation.status == "active":
         await notify(db, client.studio_id, "client", "c1", {
-            "client_id": client.id,
-            "lesson_name": lesson.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            **lesson_ctx, "client_id": client.id,
         })
     await notify(db, client.studio_id, "admin", "a1", {
-        "lesson_name": lesson.name,
+        **lesson_ctx,
         "client_name": client.name,
+        # См. reservations.py: гасит a1 владельцу, который сам ведёт занятие и
+        # получит t1 (notifier._recipient).
+        "trainer_id": lesson.teacher_id,
     })
     if lesson.teacher_id is not None:
         await notify(db, client.studio_id, "trainer", "t1", {
+            **lesson_ctx,
             "trainer_id": lesson.teacher_id,
-            "lesson_name": lesson.name,
             "client_name": client.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
     await notify_subscription_remaining(db, client.studio_id, client.id, remaining)
 
@@ -588,9 +589,7 @@ async def cancel_reservation(
     await db.refresh(reservation)
 
     await notify(db, client.studio_id, "client", "c3", {
-        "client_id": client.id,
-        "lesson_name": lesson.name,
-        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        **await lesson_context(db, lesson), "client_id": client.id,
     })
 
     # a2/t2 «клиент отменил в последний момент» — их единственный живой путь.
@@ -611,6 +610,9 @@ async def cancel_reservation(
         await notify(db, client.studio_id, "admin", "a2", {
             "client_name": client_name,
             "lesson_name": lesson.name,
+            # Поздняя отмена при hours_left < 1 попадает и в t2 выше: без этого
+            # владелец-тренер студии без администратора получал обе версии.
+            "trainer_id": lesson.teacher_id,
         })
 
     return MiniappReservation(

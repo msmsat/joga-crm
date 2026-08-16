@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import './Staff.css';
 import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
 import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS, DEFAULT_WEEK_HOURS } from './constants';
+import { useAiIntent } from '../../../hooks/useAiIntent';
 import { useStaffList } from './hooks/useStaffList';
 import { useStaffProfile } from './hooks/useStaffProfile';
 import { useStaffFilters } from './hooks/useStaffFilters';
@@ -165,6 +166,11 @@ export default function Staff() {
   // ── Employee modals ───────────────────────────────────────────────────────
   const [isAddModalOpen,  setIsAddModalOpen]  = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Ассистент открывает мастер и карточку сам (эпик AI-6, задача 9):
+  // /dashboard/staff?ai=staff.create.
+  useAiIntent('staff.create', () => setIsAddModalOpen(true));
+  useAiIntent('staff.open', (id) => { if (id != null) selectStaff(id); });
 
   // ── Delete confirmation modal ─────────────────────────────────────────────
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({

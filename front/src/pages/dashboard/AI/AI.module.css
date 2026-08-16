@@ -311,6 +311,67 @@
   flex-shrink: 0;
 }
 
+/* ─── ПАМЯТЬ АССИСТЕНТА (эпик AI-6, задача 16) ───────────────────────────────── */
+.memoryBlock {
+  border-top: 1px solid var(--border, rgba(var(--ink),0.08));
+  padding: 14px 12px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.memoryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Сорок фактов в узкой колонке — свой скролл, иначе они выдавят историю чатов. */
+  max-height: 168px;
+  overflow-y: auto;
+}
+
+.memoryItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(var(--ink), 0.03);
+}
+
+.memoryText {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-family: var(--font, 'Manrope', sans-serif);
+  overflow-wrap: anywhere;
+}
+
+.memoryForget {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #B0ADA9;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.memoryForget:hover {
+  color: #D88C9A;
+  background: rgba(216, 140, 154, 0.12);
+}
+
 /* ─── CUSTOM SELECT ──────────────────────────────────────────────────────────── */
 .customSelectWrap {
   position: relative;
@@ -1162,7 +1223,7 @@
   color: #8A8783;
 }
 
-.quotaValue { font-weight: 700; color: var(--text-main, #1A1A1A); }
+.quotaValue { font-weight: 700; color: var(--text, #1A1A1A); }
 
 .quotaBar {
   height: 4px;

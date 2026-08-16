@@ -46,7 +46,13 @@ class _R:
 
 
 class _DB:
-    """execute() отдаёт значения из seq по порядку вызовов; commit/refresh — no-op."""
+    """execute() отдаёт значения из seq по порядку вызовов; commit/refresh — no-op.
+
+    Кончилась последовательность — отдаём None, а не падаем. Здесь проверяется
+    ТОЛЬКО арифметика балансов, а вокруг неё в ручке живут другие чтения (комиссия
+    платформы смотрит тарифную модель студии); None означает «студия на подписке,
+    комиссии нет», то есть эти ветки тихо выходят и балансам не мешают.
+    """
     def __init__(self, seq):
         self._seq = list(seq)
 
@@ -57,14 +63,16 @@ class _DB:
         pass
 
     async def execute(self, _q):
-        return _R(self._seq.pop(0))
+        return _R(self._seq.pop(0) if self._seq else None)
 
 
 def test_amount_change_moves_balance_by_delta():
     op = _Operation(amount=100, account_id=1)
     account = _Account(id=1, balance=1000)
-    # execute(): op lookup -> old_account lookup -> target_account lookup (account_id не менялся)
-    db = _DB([op, account, account])
+    # execute(): op lookup -> old_account -> тарифная модель студии (комиссия
+    # платформы снимает прежний вклад операции) -> target_account (account_id не
+    # менялся). None означает «на подписке, комиссии нет» — эта ветка тихо выходит.
+    db = _DB([op, account, None, account])
     body = O.OperationUpdate(amount=300)
     asyncio.run(O.update_operation(1, body, _Ctx(), db))
 

@@ -15,6 +15,7 @@ import NotificationLog from './components/sections/NotificationLog';
 import { TgTokenModal } from './components/modals/TgTokenModal';
 import { EmailVerifyModal } from './components/modals/EmailVerifyModal';
 import { WaConnectModal } from './components/modals/WaConnectModal';
+import { useAiIntent } from '../../../hooks/useAiIntent';
 
 const MODAL_BY_CHANNEL: Record<'telegram' | 'whatsapp' | 'email', 'tg' | 'wa' | 'email'> = {
   telegram: 'tg', whatsapp: 'wa', email: 'email',
@@ -27,6 +28,16 @@ export default function Notifications() {
   // Вкладки, а не секция ниже, — иначе матрица из 38 строк каждый раз стоит между
   // поддержкой и таблицей, ради которой экран и открыли.
   const [tab, setTab] = useState<'matrix' | 'log'>('matrix');
+
+  // Ассистент: /dashboard/notifications?tab=telegram&ai=notifications.channel
+  // (эпик AI-6, задача 9). Без канала в tab просто показываем вкладку настройки.
+  useAiIntent('notifications.channel', () => {
+    const channel = new URLSearchParams(window.location.search).get('tab');
+    setTab('matrix');
+    if (channel && channel in MODAL_BY_CHANNEL) {
+      setOpenModal(MODAL_BY_CHANNEL[channel as keyof typeof MODAL_BY_CHANNEL]);
+    }
+  });
   const enableChannel = useEnableChannel();
   const ci = useChannelIntegrations(enableChannel);
   const h = useNotifications(ci.channels, key => setOpenModal(MODAL_BY_CHANNEL[key]));

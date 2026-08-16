@@ -31,10 +31,12 @@ export function useStudioList() {
     queryFn: () => studioApi.getBranches(),
   })
 
-  // Правка филиала меняет и список, и его деталь — инвалидируем оба.
+  // Правка филиала меняет и список, и его деталь — инвалидируем оба. Удаление
+  // филиала уносит его залы, поэтому сбрасываем и список залов журнала.
   const invalidateBranch = (branchId: number) => {
     qc.invalidateQueries({ queryKey: queryKeys.branches })
     qc.invalidateQueries({ queryKey: queryKeys.branch(branchId) })
+    qc.invalidateQueries({ queryKey: queryKeys.halls })
   }
 
   const createMut = useMutation({
@@ -66,10 +68,13 @@ export function useBranchDetail(branchId: number | null) {
     enabled: branchId != null,
   })
 
-  // Залы влияют и на деталь филиала, и на счётчик hall_count в списке филиалов.
+  // Залы влияют и на деталь филиала, и на счётчик hall_count в списке филиалов,
+  // и на колонки/фильтр журнала (queryKeys.halls) — иначе удалённый зал остаётся
+  // в расписании до перезагрузки страницы.
   const invalidateHall = () => {
     if (branchId != null) qc.invalidateQueries({ queryKey: queryKeys.branch(branchId) })
     qc.invalidateQueries({ queryKey: queryKeys.branches })
+    qc.invalidateQueries({ queryKey: queryKeys.halls })
   }
 
   const createMut = useMutation({

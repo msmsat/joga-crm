@@ -10,7 +10,7 @@ from models import Client, Reservation
 from schemas.schedule.reservations import ReservationCreate, ReservationRead
 from services.booking_access import assert_can_book
 from services.booking_rules import load_rules
-from services.notifier import notify
+from services.notifier import lesson_context, notify
 from services.subscription_charge import (
     activate_pending_after_visit, charge_reservation, notify_subscription_remaining,
     refund_reservation,
@@ -84,22 +84,24 @@ async def create_reservation(
     await db.refresh(reservation)
 
     client_full_name = f"{client.name} {client.last_name or ''}".strip()
+    lesson_ctx = await lesson_context(db, lesson)
     await notify(db, ctx.studio_id, "client", "c1", {
-        "client_id": body.client_id,
-        "lesson_name": lesson.name,
-        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        **lesson_ctx, "client_id": body.client_id,
     })
     await notify(db, ctx.studio_id, "admin", "a1", {
-        "lesson_name": lesson.name,
+        **lesson_ctx,
         "client_name": client_full_name,
+        # Не для текста — для адресата: если админа в студии нет и письмо
+        # подставляется владельцу, а занятие ведёт он сам, a1 гасится в пользу
+        # его же t1 ниже (см. notifier._recipient).
+        "trainer_id": lesson.teacher_id,
     })
     # Тренеру этого занятия (t1) — только если у занятия задан teacher_id.
     if lesson.teacher_id is not None:
         await notify(db, ctx.studio_id, "trainer", "t1", {
+            **lesson_ctx,
             "trainer_id": lesson.teacher_id,
-            "lesson_name": lesson.name,
             "client_name": client_full_name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
         })
     await notify_subscription_remaining(db, ctx.studio_id, body.client_id, remaining)
     return ReservationRead.model_validate(reservation)
@@ -148,9 +150,7 @@ async def cancel_reservation(
     # Клиента сняли с занятия (крестик в Журнале) — сообщаем ему об отмене его
     # записи (переиспользуем c3 «Отмена занятия»; работает с текущими галочками).
     await notify(db, ctx.studio_id, "client", "c3", {
-        "client_id": reservation.client_id,
-        "lesson_name": lesson.name,
-        "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+        **await lesson_context(db, lesson), "client_id": reservation.client_id,
     })
     return ReservationRead.model_validate(reservation)
 
@@ -195,9 +195,7 @@ async def confirm_reservation(
         await db.refresh(reservation)
 
         await notify(db, ctx.studio_id, "client", "c1", {
-            "client_id": reservation.client_id,
-            "lesson_name": lesson.name,
-            "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+            **await lesson_context(db, lesson), "client_id": reservation.client_id,
         })
     return ReservationRead.model_validate(reservation)
 

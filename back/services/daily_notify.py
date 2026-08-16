@@ -34,7 +34,7 @@ from models import (
     User, UserSession,
 )
 from services.booking_rules import BookingRules, load_rules
-from services.notifier import notify
+from services.notifier import lesson_context, notify
 
 logger = logging.getLogger(__name__)
 
@@ -160,12 +160,33 @@ async def _run_daily_report(db: AsyncSession, studio_id: int, today: date) -> No
     revenue = await _revenue_for(db, studio_id, today)
     lessons = await _lessons_count(db, studio_id, today)
     new_clients = await _new_clients_count(db, studio_id, today)
-    ctx = {"revenue": revenue, "lessons": lessons, "new_clients": new_clients}
-    await notify(db, studio_id, "admin", "a8", ctx)
-    await notify(db, studio_id, "owner", "o1", ctx)
 
+    # День, в котором не случилось НИЧЕГО, сводкой не сообщают: три нуля не несут
+    # информации, а письмо приходит каждый вечер в 20:00 и приучает владельца не
+    # открывать почту от собственной студии. Отчёт за день — не пульс сервера, а
+    # повод посмотреть цифры; нет цифр — нет повода.
+    # state["report"] вызывающий проставляет в любом случае, поэтому пропуск не
+    # копится и назавтра не выстрелит двумя письмами.
+    # Считаем ДО отправки: вчерашняя выручка идёт в саму сводку. Голая цифра
+    # «Выручка: 12 000 ₽» не говорит владельцу ничего — хорошо это или плохо,
+    # видно только рядом со вчерашней.
     past_days = [today - timedelta(days=i) for i in range(1, 8)]
     past_revenues = [await _revenue_for(db, studio_id, d) for d in past_days]
+    yesterday = past_revenues[0]
+
+    if revenue or lessons or new_clients:
+        ctx = {
+            "revenue": revenue, "lessons": lessons, "new_clients": new_clients,
+            "revenue_prev": yesterday,
+        }
+        await notify(db, studio_id, "admin", "a8", ctx)
+        await notify(db, studio_id, "owner", "o1", ctx)
+    else:
+        logger.info("daily_notify: студия %s — за %s ничего не было, сводку не шлём", studio_id, today)
+
+    # Провал выручки проверяется ОТДЕЛЬНО от сводки и молчанием выше не гасится:
+    # «была неделя продаж, сегодня по нулям» — это ровно тот день, о котором
+    # владелец обязан узнать, а сводка из нулей его как раз и не показывает.
     avg7 = sum(past_revenues) / len(past_revenues) if past_revenues else 0
     if avg7 > 0 and revenue < 0.5 * avg7:
         # ponytail: наивная эвристика аномалии (порог 50% от среднего за 7 дней); статистика — после MVP
@@ -182,6 +203,10 @@ async def _run_weekly_report(db: AsyncSession, studio_id: int, today: date) -> N
         revenue += await _revenue_for(db, studio_id, d)
         lessons_count += await _lessons_count(db, studio_id, d)
         new_clients_count += await _new_clients_count(db, studio_id, d)
+    # Пустая неделя — по той же причине, что и пустой день в _run_daily_report.
+    if not (revenue or lessons_count or new_clients_count):
+        logger.info("daily_notify: студия %s — за неделю до %s ничего не было, отчёт не шлём", studio_id, today)
+        return
     await notify(db, studio_id, "owner", "o2", {
         "revenue": revenue, "lessons": lessons_count, "new_clients": new_clients_count,
     })
@@ -283,7 +308,7 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
             )).scalars().all()
             if not reservations:
                 continue
-            ctx_base = {"lesson_name": lesson.name, "start_time": lesson.start_time.strftime("%d.%m %H:%M")}
+            ctx_base = await lesson_context(db, lesson)
 
             if event_id == "c2":
                 # Напоминания клиенту включает страница «Онлайн-запись»: общий

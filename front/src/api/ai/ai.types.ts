@@ -16,6 +16,9 @@ export interface AIChatMessage {
   // Не null — сообщение об уже исполненном действии ассистента (эпик AI-5):
   // рисуется неактивной карточкой с датой, а не обычным пузырём.
   action_jti?: string | null
+  // Оценка ответа человеком: 1 / -1 / null (эпик AI-6, задача 18). Приходит
+  // вместе с сообщением — отдельного запроса за оценками нет.
+  rating?: number | null
 }
 
 // Предложенное ассистентом изменяющее действие (эпик AI-5, задача 6). Данные
@@ -23,7 +26,16 @@ export interface AIChatMessage {
 export interface AIActionProposal {
   tool: string
   args: Record<string, unknown>
+  // Что делаем.
   description: string
+  // С кем и чем: поле аргумента -> человеческое имя («client_id» -> «Анна
+  // Петрова»). Сервер разрешает id заранее (эпик AI-6, задача 14) — карточка
+  // показывает имена, а сами id из строк аргументов прячет.
+  entities?: Record<string, string>
+  // Что изменится после клика — формулировка из карты интерфейса.
+  effect?: string | null
+  // Необратимое действие (удаление): карточка подтверждения — danger-вариант.
+  danger?: boolean
   token: string
 }
 
@@ -37,6 +49,14 @@ export interface SendMessageResponse {
 export interface AIActionResult {
   result: Record<string, unknown>
   message: AIChatMessage
+}
+
+// Факт о студии, который ассистент помнит между диалогами (эпик AI-6, задача 16).
+export interface AIStudioFact {
+  id: number
+  text: string
+  created_at: string
+  author_name: string | null
 }
 
 // GET /ai/quota — остаток обращений к ИИ за календарный месяц.

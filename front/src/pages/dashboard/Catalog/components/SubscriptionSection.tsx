@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import { usePackageList, useSubscriptionConfig } from '../hooks/useSubscriptions';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -30,6 +31,9 @@ export function SubscriptionSection() {
   const [packageModal, setPackageModal] = useState<{ pkg: SubscriptionPackage | null } | null>(null);
   // Пакет, для которого спрашиваем подтверждение снятия с продажи (null → не спрашиваем).
   const [confirmDeactivate, setConfirmDeactivate] = useState<SubscriptionPackage | null>(null);
+
+  // Ассистент: ?tab=subscriptions&ai=package.create (эпик AI-6, задача 9).
+  useAiIntent('package.create', () => setPackageModal({ pkg: null }));
 
   const doDeactivate = async () => {
     if (!confirmDeactivate) return;

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -73,6 +74,7 @@ export function StudioSection() {
   // Что подтверждаем на удаление (null → модалки нет).
   const [confirmDelete, setConfirmDelete] = useState<'studio' | 'hall' | null>(null);
 
+
   const doDeleteStudio = async () => {
     if (!activeStudio) return;
     try {
@@ -99,6 +101,10 @@ export function StudioSection() {
 
   const [hoverAdd, setHoverAdd] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // Ассистент: ?tab=studios&ai=branch.create — вкладку открывает страница по
+  // ?tab=, форму создания — эта секция (эпик AI-6, задача 9).
+  useAiIntent('branch.create', () => setIsAddModalOpen(true));
+  useAiIntent('hall.create', () => setHallModal({ hall: null }));
 
   const minHourlyRate = activeStudio?.halls.length
     ? Math.min(...activeStudio.halls.map(h => h.hourly_rate ?? 0))

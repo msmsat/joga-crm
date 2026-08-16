@@ -32,7 +32,7 @@ from models import (
 )
 from routers.ai.chat import execute_action
 from schemas.ai import ActionExecuteIn
-from services.ai_tools import make_action_proposal
+from services.ai_tools import _sign_action, make_action_proposal, resolve_entities
 
 _OWNER_EMAIL = "ai-action-owner@test.local"
 _TRAINER_EMAIL = "ai-action-trainer@test.local"
@@ -122,17 +122,63 @@ async def _run():
             as_trainer = StudioContext(user=trainer, studio_id=ids["sid"], role="trainer")
 
             args = {"lesson_id": ids["lesson_id"], "client_id": ids["client_id"]}
-            proposal = make_action_proposal("book_client", args, as_owner, ids["session_id"])
+            proposal = await make_action_proposal(
+                "book_client", args, as_owner, db, ids["session_id"])
             assert proposal["token"] and proposal["description"]
+
+            # ── Сущности человеческими словами (эпик AI-6, задача 14) ─────────
+            # Человек подтверждает, глядя на карточку. Пока в ней «client_id: 44»,
+            # он подтверждает не глядя — а списывается чужой абонемент.
+            assert proposal["entities"]["client_id"] == "Анна Петрова", proposal["entities"]
+            lesson_label = proposal["entities"]["lesson_id"]
+            assert "Пилатес" in lesson_label and "свободно" in lesson_label, lesson_label
+            assert "client_id" not in proposal["description"]
+            # Последствие приезжает вместе с предложением — из карты интерфейса.
+            assert "абонемента" in proposal["effect"], proposal["effect"]
+
+            # Тренер в карточке — тоже именем. Роутер сотрудников отдаёт
+            # {summary, staff: {items}}, и разрешение, перебиравшее ответ без
+            # распаковки, падало на строках-ключах: в карточке оставался
+            # «teacher_id: 340».
+            named, err = await resolve_entities({"teacher_id": ids["trainer_id"]}, as_owner, db)
+            assert named.get("teacher_id") == "Тимур", (named, err)
+
+            # Зала с таким номером в студии нет (модель взяла номер филиала) —
+            # текст вместо карточки. Раньше это была молчаливо пропущенная
+            # строка: человек подтверждал карточку с голым номером и получал
+            # «Зал не найден в студии» уже ПОСЛЕ клика.
+            wrong_hall = await make_action_proposal(
+                "create_lesson", {"teacher_id": ids["trainer_id"], "hall_id": 999_999_999},
+                as_owner, db, ids["session_id"])
+            assert wrong_hall.get("error") and "token" not in wrong_hall, wrong_hall
+
+            # Выдуманный моделью id — текст вместо карточки: подтверждать нечего.
+            ghost = await make_action_proposal(
+                "book_client", {"lesson_id": 999_999_999, "client_id": ids["client_id"]},
+                as_owner, db, ids["session_id"])
+            assert ghost.get("error") and "token" not in ghost, ghost
+
+            # Две Анны -> вопрос со списком, карточки нет вовсе. Решает сервер:
+            # модель не переспрашивает ровно тогда, когда уверена.
+            two_anns = {"field": "client_id", "options": [
+                {"id": ids["client_id"], "label": "Анна Петрова, +420777000111"},
+                {"id": ids["client_id"] + 1, "label": "Анна Сидорова, +420777000222"},
+            ]}
+            asked = await make_action_proposal(
+                "book_client", args, as_owner, db, ids["session_id"], ambiguous=two_anns)
+            assert asked["clarify"]["options"] == two_anns["options"], asked
+            assert "token" not in asked, asked
 
             # Предложение само по себе ничего не создаёт.
             assert await _reservations(ids["lesson_id"]) == 0
 
             # Тренеру действие владельца недоступно — 403, а не «битый токен».
-            trainer_proposal = make_action_proposal("book_client", args, as_trainer, ids["session_id"])
+            # Токен подписываем напрямую: собрать предложение тренер и не смог бы
+            # — book_client ему не выдаётся, а чужого клиента он не прочитает.
+            trainer_token = _sign_action("book_client", args, as_trainer, ids["session_id"])
             try:
                 await execute_action.__wrapped__(
-                    None, ActionExecuteIn(token=trainer_proposal["token"]), ctx=as_trainer, db=db,
+                    None, ActionExecuteIn(token=trainer_token), ctx=as_trainer, db=db,
                 )
                 raise AssertionError("тренер исполнил действие владельца")
             except HTTPException as exc:

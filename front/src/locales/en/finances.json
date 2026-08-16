@@ -19,8 +19,29 @@
     "loading": "Loading…",
     "all": "All",
     "confirm": "Confirm",
-    "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "weekdaysShort": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "weekdaysShort": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ]
   },
   "info": {
     "accounts": "Accounts are the studio's cash registers, bank accounts and online acquiring. See each balance and the total capital here.",
@@ -43,8 +64,16 @@
     "editTitle": "Edit account",
     "namePlaceholder": "Name",
     "balancePlaceholder": "Balance, {{symbol}}",
-    "types": { "cash": "Cash", "bank": "Card", "online": "Online" },
-    "typesShort": { "cash": "Cash", "bank": "Card", "online": "Online" },
+    "types": {
+      "cash": "Cash",
+      "bank": "Card",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Cash",
+      "bank": "Card",
+      "online": "Online"
+    },
     "history": "History",
     "historyTitle": "History: {{name}}",
     "income30d": "Income (30d)",
@@ -116,6 +145,60 @@
       "updateFailed": "Failed to save operation",
       "exportFailed": "Failed to export operations",
       "receiptDownloaded": "Receipt downloaded"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Абонементы",
+          "label": "Memberships"
+        },
+        {
+          "value": "Услуги",
+          "label": "Services"
+        },
+        {
+          "value": "Сертификаты",
+          "label": "Gift certificates"
+        },
+        {
+          "value": "Депозит",
+          "label": "Deposit"
+        },
+        {
+          "value": "Прочее",
+          "label": "Other"
+        }
+      ],
+      "out": [
+        {
+          "value": "Возвраты",
+          "label": "Refunds"
+        },
+        {
+          "value": "Аренда",
+          "label": "Rent"
+        },
+        {
+          "value": "Зарплата",
+          "label": "Payroll"
+        },
+        {
+          "value": "Закупки",
+          "label": "Supplies"
+        },
+        {
+          "value": "Реклама",
+          "label": "Marketing"
+        },
+        {
+          "value": "Налоги",
+          "label": "Taxes"
+        },
+        {
+          "value": "Прочее",
+          "label": "Other"
+        }
+      ]
     }
   },
   "salaries": {
@@ -141,7 +224,11 @@
     "lessonsRevenue": "Sessions revenue",
     "totalToPay": "Total to pay",
     "rateWarning": "Rate is not set — set it in the staff member's profile so the accrual can be calculated.",
-    "rateUnit": { "hourly": "hr", "percent": "%", "fixed": "fixed" },
+    "rateUnit": {
+      "hourly": "hr",
+      "percent": "%",
+      "fixed": "fixed"
+    },
     "paidAt": "Paid {{date}}",
     "historyTitle": "Payment history",
     "historyEmpty": "No payments yet",
@@ -166,9 +253,18 @@
     "categoryPlaceholder": "Rent, Supplier…",
     "typeLabel": "Counterparty type",
     "types": {
-      "legal": { "label": "Legal entity", "desc": "Organization or company" },
-      "ie": { "label": "Sole proprietor", "desc": "Individual entrepreneur" },
-      "person": { "label": "Individual", "desc": "Private person" }
+      "legal": {
+        "label": "Legal entity",
+        "desc": "Organization or company"
+      },
+      "ie": {
+        "label": "Sole proprietor",
+        "desc": "Individual entrepreneur"
+      },
+      "person": {
+        "label": "Individual",
+        "desc": "Private person"
+      }
     },
     "addSubmit": "Add counterparty",
     "you": "You",
@@ -198,7 +294,11 @@
     "pendingCount": "Awaiting signature",
     "draftCount": "Internal (unsigned)",
     "searchPlaceholder": "Search by title or counterparty...",
-    "filters": { "all": "All", "signed": "Signed", "pending": "Awaiting signature" },
+    "filters": {
+      "all": "All",
+      "signed": "Signed",
+      "pending": "Awaiting signature"
+    },
     "upload": "Upload",
     "addTitle": "Add document to library",
     "dropzoneTitle": "Click or drag a file",
@@ -267,7 +367,11 @@
     "namePlaceholder": "Goal title",
     "amountLabel": "Amount, {{symbol}}",
     "achieved": "Goal achieved",
-    "priority": { "high": "High priority", "medium": "Medium priority", "low": "Low priority" },
+    "priority": {
+      "high": "High priority",
+      "medium": "Medium priority",
+      "low": "Low priority"
+    },
     "autoCollect": "Auto-tracked",
     "deadlinePrefix": "Deadline:",
     "noDeadline": "No deadline",
@@ -296,7 +400,9 @@
     "description": "Connect Stripe and your clients can pay by card at the till. The money lands directly in your studio's account — Velora never holds it. Commission follows your plan.",
     "gatewaysTitle": "Payment providers",
     "gateways": {
-      "stripe": { "name": "Stripe" },
+      "stripe": {
+        "name": "Stripe"
+      },
       "states": {
         "none": {
           "label": "Not connected",
@@ -333,17 +439,33 @@
   },
   "paymentMethods": {
     "totalTurnover": "Turnover for period",
-    "periods": { "month": "Month", "quarter": "Quarter", "year": "Year" },
+    "periods": {
+      "month": "Month",
+      "quarter": "Quarter",
+      "year": "Year"
+    },
     "amount": "Amount",
     "share": "Share",
     "transactions": "transactions",
     "methods": {
-      "cash": { "name": "Cash" },
-      "card": { "name": "Bank card" },
-      "qr": { "name": "SBP (QR)" },
-      "transfer": { "name": "Transfer" },
-      "stripe": { "name": "Stripe" },
-      "": { "name": "Not specified" }
+      "cash": {
+        "name": "Cash"
+      },
+      "card": {
+        "name": "Bank card"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Transfer"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Not specified"
+      }
     }
   },
   "reports": {
@@ -360,7 +482,12 @@
     "income": "Income",
     "expense": "Expense",
     "profit": "Profit",
-    "periods": { "today": "Today", "week": "Week", "month": "Month", "year": "Year" },
+    "periods": {
+      "today": "Today",
+      "week": "Week",
+      "month": "Month",
+      "year": "Year"
+    },
     "legendIncome": "Income",
     "legendExpense": "Expenses",
     "exportCsv": "Export CSV",

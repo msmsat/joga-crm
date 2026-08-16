@@ -122,7 +122,7 @@ export function BookingSettings(s: Props) {
           </svg>
         </div>
 
-        <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>{t('sections.rules.title')}</div>
+        <div id="booking-rules" style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>{t('sections.rules.title')}</div>
 
         <div className="settings-row" style={{ position: 'relative' }}>
           <div>

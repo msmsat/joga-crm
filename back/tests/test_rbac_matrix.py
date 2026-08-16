@@ -38,9 +38,16 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("POST", "/ai/sessions/{session_id}/stream"): ("*studio",),
     ("GET", "/ai/settings"): ("*studio",),          # читают все, PATCH — owner
     ("GET", "/ai/quota"): ("*studio",),             # остаток квоты ИИ: лимит общий на студию
+    # Память ассистента о студии (эпик AI-6, задача 16): читают все роли — на
+    # этих фактах ассистент строит ответы любому сотруднику, и «почему он так
+    # решил» должно быть видно тому же сотруднику. Правят POST/DELETE — owner+admin.
+    ("GET", "/ai/facts"): ("owner", "admin", "trainer"),
     # Исполнение предложенного действия: роль сверяется по инструменту внутри
     # (decode_action_token), а не гвардом — у разных инструментов она разная.
     ("POST", "/ai/actions/execute"): ("*studio",),
+    # Оценка ответа (эпик AI-6, задача 18): ставит её автор диалога, а диалоги
+    # личные — чужое сообщение и так не найдётся, скоуп внутри обработчика.
+    ("PATCH", "/ai/messages/{message_id}/rating"): ("*studio",),
     ("GET", "/ai/instagram/callback"): ("*public",),
     ("GET", "/ai/instagram/webhook"): ("*public",),
     ("POST", "/ai/instagram/webhook"): ("*public",),

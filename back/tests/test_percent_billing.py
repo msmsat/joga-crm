@@ -517,10 +517,32 @@ def test_refunded_subscription_still_cancels_it():
 
 # --------------- 8. возврат наличной продажи снимает начисленную комиссию
 
-def _reverse(mode, amount_minor, rate=None):
-    """Компенсирующее начисление по возврату: (сумма продажи, сумма комиссии)."""
+def _reverse(mode, amount_minor, rate=None, charged=10_000_000):
+    """Компенсирующее начисление по возврату: (сумма продажи, сумма комиссии).
+
+    `charged` — сколько комиссии студии начислено за всё время: по нему стоит
+    потолок снятия. По умолчанию заведомо много, чтобы обычные проверки его не
+    задевали; проверки самого потолка задают его явно.
+    """
     plan = SimpleNamespace(studio_id=1, billing_mode=mode, percent_rate=rate)
-    row = asyncio.run(PF.reverse_offline_fee(_db(plan), 1, amount_minor, "CZK"))
+
+    class _SeqDB:
+        """Сначала спрашивают тариф, потом сумму начисленного — отдаём по порядку."""
+
+        def __init__(self):
+            self.calls = 0
+
+        async def execute(self, _q):
+            self.calls += 1
+            return SimpleNamespace(
+                scalar_one_or_none=lambda: plan,
+                scalar_one=lambda: charged,
+            )
+
+        def add(self, _row):
+            """Начисления только ЛОЖАТСЯ в сессию — коммитит вызывающий."""
+
+    row = asyncio.run(PF.reverse_offline_fee(_SeqDB(), 1, amount_minor, "CZK"))
     return None if row is None else (row.sale_amount, row.fee_amount)
 
 
@@ -550,14 +572,54 @@ def test_reversal_is_a_compensating_row_not_an_edit():
     assert sale < 0 and fee < 0, "снятие обязано быть отрицательным, иначе оно добавит долг"
 
 
+def test_refund_cannot_give_back_more_than_was_ever_charged():
+    """Потолок снятия. Категорию расхода владелец вписывает руками, а сумму
+    придумывает сам: без потолка «возврат» на 100 000 уменьшал счёт на 3 000, и
+    ничто не сверяло, что за ним стоит реальная продажа.
+
+    Снять можно не больше, чем начислено за всё время. Пожизненный минус означал
+    бы, что платформа доплачивает студии за её собственные возвраты.
+    """
+    # Начислено 150 (одна продажа на 5000), «возвращают» 100 000 — снимается 150.
+    sale, fee = _reverse("percent", 10_000_000, charged=15000)
+    assert fee == -15000
+    # Сумма продажи в строке обрезана в ту же пропорцию: иначе в разборе окажется
+    # возврат на 100 000 с комиссией 150 и «ставкой» 0,15 %.
+    assert sale == -500000
+
+    # Не начислено ничего — снимать нечего вовсе, строки не будет.
+    assert _reverse("percent", 500000, charged=0) is None
+    assert _reverse("percent", 500000, charged=-100) is None
+
+
+def test_refund_within_the_ceiling_is_untouched():
+    """Обратная сторона: честный возврат обрезаться не должен."""
+    assert _reverse("percent", 500000, charged=15000) == (-500000, -15000)
+
+
+def test_refund_category_is_matched_case_and_wording_insensitively():
+    """Поле «Категория» — свободный текст. Сравнение буква-в-букву означало, что
+    «возвраты» с маленькой или английское «Refund» комиссию НЕ снимают: студия
+    вернула деньги и продолжает платить 3 % с продажи, которой нет."""
+    for value in ("Возвраты", "возвраты", "  ВОЗВРАТЫ ", "Возврат", "Refund", "refunds"):
+        assert PF.is_refund_category(value), value
+
+
+def test_unrelated_expenses_are_not_refunds():
+    """Набор написаний, а не вхождение подстроки: «Возврат поставщику» — расход в
+    пользу контрагента, комиссию по нему снимать не за что."""
+    for value in ("Возврат поставщику", "Аренда", "Зарплата", "", None, "возвратный лизинг"):
+        assert not PF.is_refund_category(value), value
+
+
 def test_card_refunds_do_not_double_reverse():
     """Возврат по карте откатывает вебхук Stripe (_revert_sale) — там своя ветка со
     снятием доли из леджера. Второе снятие здесь было бы двойным."""
     import inspect
     from routers.finances import operations
 
-    src_op = inspect.getsource(operations.create_operation)
-    assert 'body.category == "Возвраты"' in src_op
+    src_op = inspect.getsource(operations._apply_platform_fee)
+    assert "platform_fee.is_refund_category" in src_op
     assert "platform_fee.ONLINE_METHOD" in src_op, "онлайн-возвраты не исключены"
 
 
@@ -572,12 +634,20 @@ def test_manual_income_is_charged_like_any_other_sale():
     import inspect
     from routers.finances import operations
 
-    src_op = inspect.getsource(operations.create_operation)
-    assert "platform_fee.record_offline_fee" in src_op, "ручной доход снова мимо комиссии"
-    # Обе стороны обязаны жить в одной ветке и исключать онлайн одинаково: разъехавшись,
-    # они дадут либо двойное начисление, либо двойное снятие.
-    assert "platform_fee.reverse_offline_fee" in src_op
-    assert src_op.count("platform_fee.ONLINE_METHOD") == 1
+    src = inspect.getsource(operations._apply_platform_fee)
+    assert "platform_fee.record_offline_fee" in src, "ручной доход снова мимо комиссии"
+    # Обе стороны обязаны жить в одной функции и исключать онлайн одинаково:
+    # разъехавшись, они дадут либо двойное начисление, либо двойное снятие.
+    assert "platform_fee.reverse_offline_fee" in src
+    assert src.count("platform_fee.ONLINE_METHOD") == 1
+
+    # И зовётся она из ВСЕХ трёх ручек: правка и удаление, оставленные без неё,
+    # превращали начисление в необязательное — достаточно было завести операцию,
+    # а потом переписать сумму или убрать её вовсе.
+    for fn in (operations.create_operation, operations.update_operation, operations.delete_operation):
+        assert "_apply_platform_fee" in inspect.getsource(fn), fn.__name__
+    for fn in (operations.update_operation, operations.delete_operation):
+        assert "undo=True" in inspect.getsource(fn), fn.__name__
 
 
 # ------------------------- 9. VIES: реестр молчит — не отказываем, но и не врём

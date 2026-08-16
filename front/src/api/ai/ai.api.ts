@@ -5,6 +5,7 @@ import type {
   AIChatSession,
   AIQuota,
   AISettings,
+  AIStudioFact,
   SendMessageResponse,
 } from './ai.types'
 
@@ -21,9 +22,11 @@ export const aiApi = {
   getMessages: (sessionId: number) =>
     client.get<AIChatMessage[]>(`/ai/sessions/${sessionId}/messages`),
 
-  sendMessage: (sessionId: number, text: string, currentPage?: string) =>
+  // viewport — ширина окна ступенью вёрстки (phone/tablet/desktop): от неё
+  // зависит ответ «где эта кнопка», см. эпик AI-6, задача 7.
+  sendMessage: (sessionId: number, text: string, currentPage?: string, viewport?: string) =>
     client.post<SendMessageResponse>(`/ai/sessions/${sessionId}/messages`, {
-      text, current_page: currentPage,
+      text, current_page: currentPage, viewport,
     }),
 
   // Стрим ответа: события token / tool_status / navigate / action_proposal /
@@ -32,20 +35,33 @@ export const aiApi = {
     sessionId: number,
     text: string,
     onEvent: (event: string, data: unknown) => void,
-    options?: { currentPage?: string; signal?: AbortSignal },
+    options?: { currentPage?: string; viewport?: string; signal?: AbortSignal },
   ) =>
     streamRequest(
       `/ai/sessions/${sessionId}/stream`,
-      { text, current_page: options?.currentPage },
+      { text, current_page: options?.currentPage, viewport: options?.viewport },
       onEvent,
       options?.signal,
     ),
+
+  // Оценка ответа (эпик AI-6, задача 18). null — снять оценку.
+  rateMessage: (messageId: number, rating: 1 | -1 | null) =>
+    client.patch<AIChatMessage>(`/ai/messages/${messageId}/rating`, { rating }),
 
   executeAction: (token: string) =>
     client.post<AIActionResult>('/ai/actions/execute', { token }),
 
   getQuota: () =>
     client.get<AIQuota>('/ai/quota'),
+
+  // Память ассистента о студии (эпик AI-6, задача 16). Записывает её сам
+  // ассистент по просьбе человека; UI показывает список и даёт стереть —
+  // память, которую нельзя посмотреть и удалить, пугает больше, чем помогает.
+  getFacts: () =>
+    client.get<AIStudioFact[]>('/ai/facts'),
+
+  deleteFact: (id: number) =>
+    client.delete<void>(`/ai/facts/${id}`),
 
   getSettings: () =>
     client.get<AISettings>('/ai/settings'),

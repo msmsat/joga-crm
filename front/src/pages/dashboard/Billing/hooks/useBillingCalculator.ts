@@ -213,7 +213,13 @@ export function useBillingCalculator() {
         }
         onDone?.();
       })
-      .catch(() => toast.error(t('mode.activateError')))
+      // Причину показываем СЕРВЕРНУЮ, а не общее «не удалось переключить»: отказы
+      // здесь осмысленные и требуют РАЗНЫХ действий — заполнить реквизиты
+      // (billing.billing_profile_required) или сперва рассчитаться по комиссии
+      // (billing.commission_unsettled). Общий текст отправлял бы владельца жать ту
+      // же кнопку по кругу. Оба кода переведены в common:errors.billing, поэтому
+      // английский интерфейс не получит русскую фразу от сервера.
+      .catch(err => toast.error(errorMessage(err, t)))
       .finally(() => setModelBusy(false));
   };
 

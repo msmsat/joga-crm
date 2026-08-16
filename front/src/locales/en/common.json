@@ -119,7 +119,9 @@
       "renew_is_automatic": "The subscription renews automatically",
       "vat_invalid": "VIES doesn't recognise this VAT number — check it or save without one",
       "vat_unavailable": "The VIES registry isn't responding right now — try again later or save without a number",
-      "vat_country_mismatch": "The VAT number must start with the selected country's code"
+      "vat_country_mismatch": "The VAT number must start with the selected country's code",
+      "commission_unsettled": "Settle the offline-sales commission first: press \"Pay now\" in the commission block. Once that invoice is paid you can move to a fixed plan.",
+      "billing_profile_required": "Add your billing details — the commission invoice is issued to them."
     },
     "loyalty": {
       "cert_not_found": "Certificate not found",

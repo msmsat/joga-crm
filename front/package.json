@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:mobile": "node scripts/check-mobile.mjs",
-    "check:landing": "node scripts/check-landing-anchors.mjs"
+    "check:landing": "node scripts/check-landing-anchors.mjs",
+    "check:uimap": "node scripts/check-uimap.mjs",
+    "check:ai": "node scripts/check-ai-intents.mjs"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
@@ -26,9 +28,11 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-i18next": "^17.0.8",
+    "react-markdown": "^10.1.0",
     "react-phone-number-input": "^3.4.17",
     "react-router-dom": "^7.16.0",
     "recharts": "^3.8.1",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.14"
   },

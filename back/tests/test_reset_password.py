@@ -21,6 +21,7 @@ class _FakeDB:
 class _FakeUser:
     def __init__(self):
         self.email = "reset-test@example.com"
+        self.name = "Матвей"  # письмо обращается по имени
         self.otp_code_hash = None
         self.otp_action = None
         self.otp_expires_at = None
@@ -35,7 +36,9 @@ def _issue(user, action=RESET_ACTION) -> str:
     """Выдаёт код, перехватывая письмо: наружу возвращается то, что ушло бы в почту."""
     sent = {}
 
-    async def fake_send_email(to, subject, html):
+    # **_kw: письмо обрастает деталями (обращение по имени, вложения), и фейк с
+    # жёсткой сигнатурой падал бы TypeError'ом на каждой такой правке.
+    async def fake_send_email(to, subject, html, **_kw):
         sent["html"] = html
 
     original = otp.send_email
