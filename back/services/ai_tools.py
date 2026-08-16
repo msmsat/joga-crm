@@ -640,13 +640,16 @@ class CreateStaffArgs(BaseModel):
     # разведено намеренно — «role» в аргументах инструмента запрещено, иначе
     # модель однажды подставит туда роль вызывающего.
     access_role: Literal["admin", "trainer"]
+    # Пароль задаёт владелец и передаёт сотруднику лично. В карточку
+    # подтверждения и в ленту чата он не попадает (см. _visible) — поэтому поле
+    # ОБЯЗАТЕЛЬНОЕ: необязательное модель молча заполняла своей выдумкой, а
+    # владелец её не видел и передать сотруднику не мог. Обязательное она
+    # спрашивает — ровно так же, как спрашивает access_role.
+    password: str
     last_name: Optional[str] = None
     phone: Optional[str] = None
     department: Optional[str] = None      # должность свободным текстом
     service_ids: Optional[list[int]] = None
-    # Пароль задаёт владелец и передаёт сотруднику лично. В карточку
-    # подтверждения и в ленту чата он не попадает (см. _visible).
-    password: Optional[str] = None
 
 
 class UpdateStaffArgs(BaseModel):
@@ -1570,8 +1573,14 @@ async def create_staff(ctx: StudioContext, db: AsyncSession, args: CreateStaffAr
     видит журнал и клиентов) или trainer (тренер, видит только своё).
     department — должность свободным текстом («Тренер по пилатесу»).
     На email сотрудника уйдёт приглашение со ссылкой на 7 дней; в команде он
-    появится, когда примет его. Пароль сотруднику задаёт владелец и передаёт
-    лично — если человека ещё нет в Velora, а пароль не указан, роутер откажет."""
+    появится, когда примет его.
+    password — пароль для входа сотрудника: его придумывает ВЛАДЕЛЕЦ и передаёт
+    человеку лично, он же второй фактор к ссылке из письма. СПРОСИ пароль и
+    подставь ровно то, что назвали, — сам не придумывай: в карточке
+    подтверждения пароль не показывается, владелец своей выдумки не увидит и
+    сотруднику не передаст, а без неё тот не примет приглашение. Требования:
+    от 8 символов, буква и цифра, без «123» и подобных рядов, без трёх
+    одинаковых символов подряд. Не подошёл — попроси другой, не правь сам."""
     staff = await _r_create_staff(
         data=StaffCreate(
             name=args.name, last_name=args.last_name, email=args.email, phone=args.phone,
@@ -2182,6 +2191,18 @@ async def call_tool(name: str, args: dict, ctx: StudioContext, db: AsyncSession)
     except HTTPException as exc:
         logger.info("tool=%s studio=%s rejected status=%s", name, ctx.studio_id, exc.status_code)
         return {"error": _error_text(exc.detail)}
+    except ValidationError as exc:
+        # Схему проксируемого роутера обработчик собирает ВНУТРИ себя, и её
+        # ValidationError — не сбой, а тот же отказ валидации, что человек видит
+        # в форме. Без этой ветки он уезжал в generic ниже: на кнопке
+        # «Подтвердить» человек читал «попробуйте иначе» вместо «пароль слишком
+        # простой» и упирался в тупик. Текст сообщений отдаём целиком — это те
+        # же слова, что роутер вернул бы форме.
+        logger.info("tool=%s studio=%s rejected by schema", name, ctx.studio_id)
+        return {"error": "; ".join(
+            f"{'.'.join(str(p) for p in e['loc']) or '?'}: {e['msg'].removeprefix('Value error, ')}"
+            for e in exc.errors()
+        )}
     except Exception:
         logger.exception("tool=%s studio=%s failed", name, ctx.studio_id)
         return {"error": "Не удалось выполнить запрос — попробуйте иначе"}

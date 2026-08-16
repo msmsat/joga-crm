@@ -170,6 +170,24 @@ def _ctx_stub(role: str) -> StudioContext:
     return StudioContext(user=None, studio_id=0, role=role)
 
 
+def test_schema_error_reaches_human():
+    """Отказ схемы ПРОКСИРУЕМОГО роутера обязан доехать текстом.
+
+    Схему роутера обработчик собирает внутри себя, и её ValidationError не
+    HTTPException — раньше он падал в generic-ветку, и на кнопке «Подтвердить»
+    человек получал 400 с «попробуйте иначе» вместо причины. БД здесь не нужна:
+    StaffCreate не проходит валидацию до первого обращения к сессии.
+    """
+    err = asyncio.run(call_tool("create_staff", {
+        "name": "Кирилл", "email": "k@example.com", "access_role": "trainer",
+        "password": "Kirill123",
+    }, _ctx_stub("owner"), None))["error"]
+    assert "password" in err and "простой" in err, err
+    # И сам пароль — обязательное поле схемы: необязательное модель заполняла
+    # своей выдумкой, которой владелец не видит. Обязательное она спрашивает.
+    assert "password" in TOOLS["create_staff"].params.model_json_schema()["required"]
+
+
 # ─── Поведение на реальной БД ────────────────────────────────────────────────
 
 async def _seed() -> tuple[int, int, int]:
