@@ -59,7 +59,12 @@ def _lesson(context: dict, lang: str) -> str:
 
 
 def _when(context: dict, lang: str) -> str:
-    return _v(context.get("start_time"), "по расписанию" if lang == "ru" else "as scheduled")
+    # Тот же формат, что в письме и в Telegram («17 августа, 12:00»): человек,
+    # получивший подтверждение в WhatsApp, а напоминание на почту, не должен
+    # сверять два разных написания одного времени.
+    from services.notifier import when_text
+
+    return _v(when_text(context, lang), "по расписанию" if lang == "ru" else "as scheduled")
 
 
 def _client(context: dict, lang: str) -> str:

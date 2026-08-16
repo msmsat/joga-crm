@@ -376,8 +376,24 @@ def wrap(body_html: str, *, title: str | None = None, brand: str = "Velora",
 def plain_text(html: str) -> str:
     """Текстовая версия письма (multipart/alternative). Без неё письмо целиком
     состоит из HTML — спам-фильтры считают это признаком рассылки, а часть
-    клиентов (и умные часы) показывают пустоту."""
+    клиентов (и умные часы) показывают пустоту.
+
+    Это не «HTML без тегов», а вторая версия того же письма, и читаться она
+    обязана так же: скрытый сниппет выкинут (иначе первая строка дублируется),
+    ячейки деталей соединены двоеточием («Тренер: Анна», а не «ТренерАнна»),
+    адреса ссылок выписаны рядом с подписью — в тексте по кнопке не кликнешь.
+    """
     text = re.sub(r"(?is)<(script|style|head)[^>]*>.*?</\1>", " ", html)
+    # Прехедер невидим в почтовом клиенте и не должен быть видим здесь.
+    text = re.sub(r'(?is)<div style="display:none.*?</div>', " ", text)
+    # Ссылки: подпись плюс адрес. tel:/mailto: пропускаем — там подпись и есть
+    # адрес, и «+420 739 007 750 (tel:+420739007750)» только мусорит.
+    text = re.sub(
+        r'(?is)<a\b[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>',
+        lambda m: f"{re.sub(r'<[^>]+>', '', m.group(2)).strip()} ({m.group(1)})",
+        text,
+    )
+    text = re.sub(r"(?is)</td>\s*<td[^>]*>", ": ", text)
     text = re.sub(r"(?i)<br\s*/?>|</(p|div|tr|h[1-6]|table)>", "\n", text)
     text = re.sub(r"(?s)<[^>]+>", "", text)
     text = unescape(text)
@@ -416,9 +432,47 @@ if __name__ == "__main__":
     assert not set(_CRM_PAGE.values()) - set(_PAGE_LABEL), "страница CRM без подписи"
     assert not set(_CLIENT_TAB) & set(_CRM_PAGE), "событие ведёт сразу в два приложения"
 
-    # Текстовая версия: разметки нет, слова есть, строки не слиплись.
+    # Детали — карточка «поле → значение»; пустой список карточку не рисует.
+    card = facts([("Тренер", "Анна"), ("Зал", "Зал 2")])
+    assert card.count("<tr>") == 2 and "Анна" in card and facts([]) == ""
+    assert "&lt;" in facts([("Зал", "<b>")]), "значение из БД не экранировано"
+
+    # Подпись студии: позвонить, написать и доехать — прямо из письма.
+    card = studio_card("Лотос", "Прага, Ke Kapslovně 3", "+420 739 007 750", "a@b.cz")
+    assert 'href="tel:+420739007750"' in card and 'href="mailto:a@b.cz"' in card
+    assert "google.com/maps" in card and "Ke%20Kapslovn" in card
+    assert "google.com/maps" not in studio_card("Лотос"), "карта без адреса"
+
+    # Календарь: одна встреча, час по умолчанию, экранирование по RFC 5545.
+    ics = calendar_ics(uid="lesson-7@velora", summary="Хатха, у окна",
+                       start=datetime(2026, 8, 17, 12, 0), minutes=90,
+                       location="Прага; Ke Kapslovně 3", tz="Europe/Prague").decode()
+    assert ics.count("BEGIN:VEVENT") == 1 and ics.endswith("END:VCALENDAR\r\n")
+    assert "DTSTART;TZID=Europe/Prague:20260817T120000" in ics
+    assert "DTEND;TZID=Europe/Prague:20260817T133000" in ics, "длительность не учтена"
+    assert r"SUMMARY:Хатха\, у окна" in ics and r"LOCATION:Прага\; Ke" in ics
+    assert "TRIGGER:-PT1H" in ics, "напоминание календаря"
+    # Отмена — та же встреча по тому же UID, иначе занятие останется висеть.
+    off = calendar_ics(uid="lesson-7@velora", summary="Хатха",
+                       start=datetime(2026, 8, 17, 12, 0), cancelled=True).decode()
+    assert "STATUS:CANCELLED" in off and "SEQUENCE:1" in off and "VALARM" not in off
+    assert "UID:lesson-7@velora" in off and "UID:lesson-7@velora" in ics
+
+    # Обращение: имя есть — здороваемся, почта вместо имени — нет.
+    assert greeting("Матвей Садовский") == "Матвей, здравствуйте!"
+    assert greeting("Matvei", "en") == "Hi Matvei!"
+    assert greeting(None) is None and greeting("  ") is None and greeting("a@b.cz") is None
+
+    # Текстовая версия — вторая версия письма, а не HTML без тегов.
+    doc = wrap(
+        "<p>Вы записаны на «Хатха-йога».</p>"
+        + facts([("Тренер", "Анна")]) + button("Мои записи", "https://app.test/s/1?tab=my"),
+        title="Запись подтверждена", brand="Йога-студия",
+    )
     text = plain_text(doc)
-    assert "<" not in text and "Вы записаны" in text and "Запись подтверждена" in text
-    assert "«Хатха-йога»" in text, text
+    assert "<" not in text and "«Хатха-йога»" in text
+    assert "Тренер: Анна" in text, "ячейки таблицы слиплись"
+    assert "Мои записи (https://app.test/s/1?tab=my)" in text, "в тексте по кнопке не кликнешь"
+    assert text.count("Вы записаны") == 1, "скрытый сниппет продублировал первую строку"
 
     print("email_layout self-check ok")

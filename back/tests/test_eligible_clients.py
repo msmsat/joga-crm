@@ -4,7 +4,7 @@
 Запуск из back/:  python -m tests.test_eligible_clients
 """
 import asyncio
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from fastapi import HTTPException
 
@@ -23,6 +23,7 @@ class _Lesson:
         self.service_id = service_id
         self.teacher_id = teacher_id
         self.status = status
+        self.start_time = datetime.now() + timedelta(days=1)
 
 
 class _Client:

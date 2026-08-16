@@ -64,7 +64,8 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 NOTIFY_CHANNELS = ("email", "telegram", "whatsapp")
-_CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴"}
+_CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴",
+                   "CZK": "Kč", "PLN": "zł", "GBP": "£", "HUF": "Ft", "RON": "lei"}
 GRAPH = "https://graph.facebook.com/v23.0"
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000
@@ -134,6 +135,31 @@ async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
 def _fmt_amount(amount: float | int | None, currency: str) -> str:
     sign = _CURRENCY_SIGNS.get(currency, currency)
     return f"{amount or 0:,.0f} {sign}".replace(",", " ")
+
+
+# Месяцы прописью: у клиента в письме «17 августа, 12:00», а не «17.08 12:00».
+# Своя таблица, а не locale: серверная локаль на проде — C, и strftime отдал бы
+# английские названия русской студии (а на Windows — вообще кракозябры).
+_MONTHS = {
+    "ru": ("января", "февраля", "марта", "апреля", "мая", "июня",
+           "июля", "августа", "сентября", "октября", "ноября", "декабря"),
+    "en": ("January", "February", "March", "April", "May", "June",
+           "July", "August", "September", "October", "November", "December"),
+}
+
+
+def when_text(context: dict[str, Any], lang: str) -> str:
+    """Время занятия человеческим языком. Нет ISO-времени в контексте (старые
+    вызовы, ручные события) — отдаём как передали, «17.08 12:00»."""
+    raw = context.get("start_at")
+    if not raw:
+        return context.get("start_time") or ""
+    try:
+        at = datetime.fromisoformat(str(raw))
+    except ValueError:
+        return context.get("start_time") or ""
+    month = _MONTHS.get(lang, _MONTHS["ru"])[at.month - 1]
+    return f"{at.day} {month}, {at:%H:%M}"
 
 
 async def lesson_context(db: AsyncSession, lesson: "Lesson") -> dict[str, Any]:
@@ -457,7 +483,7 @@ def _render(
     и валюту передаёт вызывающий notify()."""
     lesson_ru = context.get("lesson_name") or "занятие"
     lesson_en = context.get("lesson_name") or "class"
-    when = context.get("start_time") or ""
+    when = when_text(context, lang)
     amount_str = _fmt_amount(context.get("amount"), currency)
     remaining = context.get("remaining")
     # tail — время в КОНЦЕ фразы («Вы записаны на «Хатха» — 12.08 18:00.»).

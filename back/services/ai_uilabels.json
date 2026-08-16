@@ -11,6 +11,10 @@
     "ru": "Новый чат",
     "en": "New chat"
   },
+  "ai:agents.configureButton": {
+    "ru": "Настроить агентов",
+    "en": "Configure agents"
+  },
   "ai:chat.navbarPlaceholder": {
     "ru": "Спросите AI или поставьте задачу...",
     "en": "Ask AI or set a task..."
@@ -26,6 +30,10 @@
   "ai:memory.title": {
     "ru": "Ассистент помнит",
     "en": "Assistant remembers"
+  },
+  "ai:quota.label": {
+    "ru": "Запросов к ИИ",
+    "en": "AI requests"
   },
   "ai:settings.title": {
     "ru": "Настройки AI",

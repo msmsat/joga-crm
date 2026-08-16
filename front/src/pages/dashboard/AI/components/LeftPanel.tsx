@@ -158,6 +158,75 @@ export default function LeftPanel({
         )}
       </div>
 
+      {/* Что ассистент помнит о студии. Видят все роли — на этих фактах он
+          строит ответы любому сотруднику; стирать может владелец и админ. */}
+      <MemoryCard canEdit={isOwner || getStudioRole() === 'admin'} />
+
+      {/* Настройки свёрнуты: модель и язык трогают раз в месяц, а места в узкой
+          колонке они занимали больше, чем сама история чатов. Раскрытие на
+          нативном <details> — состояние и доступность из коробки, без JS. */}
+      {isOwner && <details className={styles.settingsBlock}>
+        <summary className={styles.settingsToggle}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>{t('settings.title')}</span>
+          <svg className={styles.settingsChevron} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </summary>
+
+        <div className={styles.settingsBody}>
+          <div className={styles.miniSettingRow}>
+            <span className={styles.miniSettingLabel}>{t('settings.model')}</span>
+            <CustomSelect
+              value={aiSettings.model}
+              options={MODEL_OPTIONS.map(o => ({ value: o.value, label: t(`models.${o.value}`) }))}
+              onChange={v => onUpdateSettings({ model: v as AIUISettings['model'] })}
+              footerNote={t('models.comingSoon')}
+            />
+          </div>
+
+          <div className={styles.miniSettingRow}>
+            <span className={styles.miniSettingLabel}>{t('settings.language')}</span>
+            <CustomSelect
+              value={aiSettings.language}
+              options={LANGUAGE_OPTIONS.map(o => ({ value: o.value, label: t(`languages.${o.value}`) }))}
+              onChange={v => onUpdateSettings({ language: v as AIUISettings['language'] })}
+            />
+          </div>
+
+          <AgentConfigCard
+            telegramEnabled={telegramEnabled}
+            telegramConnected={telegramConnected}
+            telegramChannelActive={telegramChannelActive}
+            instagramEnabled={instagramEnabled}
+            instagramConnected={instagramConnected}
+            whatsappEnabled={whatsappEnabled}
+            whatsappConnected={whatsappConnected}
+            onToggleTelegram={onToggleTelegram}
+            onToggleInstagram={onToggleInstagram}
+            onToggleWhatsapp={onToggleWhatsapp}
+          />
+        </div>
+      </details>}
+
+      {/* Окно настройки агентов — своей кнопкой внизу панели: раньше она пряталась
+          в карточке агентов, теперь до неё не нужно ничего раскрывать. */}
+      {isOwner && (
+        <button onClick={onOpenAgentSetup} className={styles.setupBtn}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+          </svg>
+          {t('agents.configureButton')}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginLeft: 'auto' }}>
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      )}
+
       {quota.isSuccess && (
         <div className={`${styles.quotaBlock} ${low ? styles.quotaLow : ''}`}>
           <div className={styles.quotaRow}>
@@ -180,53 +249,6 @@ export default function LeftPanel({
           )}
         </div>
       )}
-
-      {/* Что ассистент помнит о студии. Видят все роли — на этих фактах он
-          строит ответы любому сотруднику; стирать может владелец и админ. */}
-      <MemoryCard canEdit={isOwner || getStudioRole() === 'admin'} />
-
-      {isOwner && <div className={styles.miniSettings}>
-        <div className={styles.miniSettingsHeader}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-          <span>{t('settings.title')}</span>
-        </div>
-
-        <div className={styles.miniSettingRow}>
-          <span className={styles.miniSettingLabel}>{t('settings.model')}</span>
-          <CustomSelect
-            value={aiSettings.model}
-            options={MODEL_OPTIONS.map(o => ({ value: o.value, label: t(`models.${o.value}`) }))}
-            onChange={v => onUpdateSettings({ model: v as AIUISettings['model'] })}
-            footerNote={t('models.comingSoon')}
-          />
-        </div>
-
-        <div className={styles.miniSettingRow}>
-          <span className={styles.miniSettingLabel}>{t('settings.language')}</span>
-          <CustomSelect
-            value={aiSettings.language}
-            options={LANGUAGE_OPTIONS.map(o => ({ value: o.value, label: t(`languages.${o.value}`) }))}
-            onChange={v => onUpdateSettings({ language: v as AIUISettings['language'] })}
-          />
-        </div>
-
-        <AgentConfigCard
-          telegramEnabled={telegramEnabled}
-          telegramConnected={telegramConnected}
-          telegramChannelActive={telegramChannelActive}
-          instagramEnabled={instagramEnabled}
-          instagramConnected={instagramConnected}
-          whatsappEnabled={whatsappEnabled}
-          whatsappConnected={whatsappConnected}
-          onToggleTelegram={onToggleTelegram}
-          onToggleInstagram={onToggleInstagram}
-          onToggleWhatsapp={onToggleWhatsapp}
-          onOpenSetup={onOpenAgentSetup}
-        />
-      </div>}
 
       {confirmDeleteId != null && (
         <ConfirmModal

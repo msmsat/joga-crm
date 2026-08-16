@@ -201,8 +201,10 @@
     "create_promo": "Создаю промокод…",
     "create_service": "Создаю услугу…",
     "create_staff": "Завожу сотрудника…",
+    "default": "Работаю…",
     "delete_client": "Удаляю клиента…",
     "delete_staff": "Удаляю сотрудника…",
+    "fill_schedule": "Заполняю расписание…",
     "find_clients": "Ищу клиентов…",
     "forget_fact": "Забываю факт…",
     "freeze_client": "Морожу клиента…",
@@ -242,8 +244,7 @@
     "update_booking_rules": "Меняю правила записи…",
     "update_client": "Правлю данные клиента…",
     "update_service": "Правлю услугу…",
-    "update_staff": "Правлю сотрудника…",
-    "default": "Работаю…"
+    "update_staff": "Правлю сотрудника…"
   },
   "quota": {
     "label": "Запросов к ИИ",

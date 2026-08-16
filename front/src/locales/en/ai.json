@@ -201,8 +201,10 @@
     "create_promo": "Creating a promo code…",
     "create_service": "Creating a service…",
     "create_staff": "Adding a team member…",
+    "default": "Working…",
     "delete_client": "Deleting the client…",
     "delete_staff": "Removing the team member…",
+    "fill_schedule": "Filling the schedule…",
     "find_clients": "Searching clients…",
     "forget_fact": "Forgetting the fact…",
     "freeze_client": "Freezing the client…",
@@ -242,8 +244,7 @@
     "update_booking_rules": "Updating booking rules…",
     "update_client": "Updating client details…",
     "update_service": "Updating the service…",
-    "update_staff": "Updating the team member…",
-    "default": "Working…"
+    "update_staff": "Updating the team member…"
   },
   "quota": {
     "label": "AI requests",

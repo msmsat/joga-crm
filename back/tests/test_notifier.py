@@ -299,7 +299,7 @@ def test_every_event_email_is_assembled_exactly_once():
             cta = L.cta(event_id, 42, lang)
             assert cta, f"{event_id}: письму некуда вести — событие без раздела"
             message = build_message("k@x.com", subject, html + cta, None, "Студия Лотос")
-            rich = list(message.iter_parts())[1].get_content()
+            rich = message.get_body(preferencelist=("html",)).get_content()
             where = (event_id, lang)
             assert rich.count("<h1") == 1, where
             assert rich.count('border-radius:12px"><a href') == 1, where
@@ -307,6 +307,88 @@ def test_every_event_email_is_assembled_exactly_once():
             # их быть не должно (шапка письма — имя студии).
             assert "static/terms.html" not in rich, where
             assert rich.count("Студия Лотос") == 1, where
+
+
+class _StudioCard:
+    """Студия, которой подписано письмо клиенту."""
+    name = "Студия Лотос"
+    address = "Прага, Ke Kapslovně 3"
+    phone = "+420 739 007 750"
+    email = "hello@lotos.cz"
+    timezone = "Europe/Prague"
+    language = "ru"
+
+
+def test_booking_email_carries_everything_the_client_needs():
+    """Письмо о записи целиком: обращение по имени, детали занятия, подпись
+    студии с картой и телефоном, файл календаря и разметка карточки Gmail.
+
+    Всё это собирается из ОДНОГО контекста занятия (lesson_context), поэтому
+    ломается оно тоже разом — и должно ловиться одним тестом. Отдельно каждый
+    кирпич проверен в services/email_layout.py (self-check).
+    """
+    from services import email_layout as L
+    from services.mailer import build_message
+
+    class _Row:
+        @staticmethod
+        def first():
+            return _StudioCard()
+
+    class _StudioDB:
+        async def execute(self, *_a, **_kw):
+            return _Row()
+
+    sent = {}
+
+    async def fake_send_email(to, subject, html, **kw):
+        sent.update(to=to, subject=subject, html=html, **kw)
+        return True
+
+    async def fake_cfg(_db, _studio_id, _kind):
+        return {}
+
+    ctx = {
+        "client_id": 1, "lesson_id": 77, "lesson_name": "Хатха-йога",
+        "start_at": "2026-08-17T12:00:00", "start_time": "17.08 12:00",
+        "duration_min": 90, "trainer_name": "Анна", "hall_name": "Зал 2", "price": 900,
+    }
+    orig_send, orig_cfg = N.send_email, N._integration_config
+    N.send_email, N._integration_config = fake_send_email, fake_cfg
+    try:
+        subject, _text, html = N._render("c1", ctx, "ru", "CZK")
+        recipient = N.Recipient(1, "k@x.com", None, None, "Матвей Садовский")
+        ok = asyncio.run(N._deliver_once(
+            _StudioDB(), "email", recipient, subject, _text, html + L.cta("c1", 42, "ru"),
+            studio_id=42, event_id="c1", context=ctx,
+        ))
+    finally:
+        N.send_email, N._integration_config = orig_send, orig_cfg
+
+    assert ok is True
+    assert sent["brand"] == "Студия Лотос", "письмо подписано студией, а не Velora"
+    assert sent["greeting"] == "Матвей, здравствуйте!"
+
+    body = sent["html"]
+    # Детали занятия — то, ради чего письмо открывают.
+    assert "Тренер" in body and "Анна" in body
+    assert "Зал 2" in body and "900 Kč" in body, body
+    # Подпись студии: доехать и позвонить можно из письма.
+    assert 'href="tel:+420739007750"' in body and "google.com/maps" in body
+    # Карточка события в Gmail — из неё же берётся маршрут.
+    assert '"@type": "EventReservation"' in body and '"2026-08-17T12:00:00"' in body
+
+    message = build_message(sent["to"], sent["subject"], body, None,
+                            sent["brand"], sent["greeting"], sent["calendar"])
+    ics = [p for p in message.walk() if p.get_content_type() == "text/calendar"]
+    assert len(ics) == 1, [p.get_content_type() for p in message.walk()]
+    calendar = ics[0].get_content()
+    assert "UID:lesson-77@velora" in calendar
+    assert "DTSTART;TZID=Europe/Prague:20260817T120000" in calendar
+    assert "DTEND;TZID=Europe/Prague:20260817T133000" in calendar  # 90 минут
+
+    # Время в тексте — человеческое, одно на все каналы.
+    assert "17 августа, 12:00" in _text, _text
 
 
 def test_render_report_events_are_multiline():
@@ -379,6 +461,7 @@ def test_render():
     test_render_c12_bonus_uses_raw_amount_and_description()
     test_tg_format_every_event_renders_valid_html()
     test_every_event_email_is_assembled_exactly_once()
+    test_booking_email_carries_everything_the_client_needs()
     test_render_report_events_are_multiline()
     test_notify_payment_fires_c4_client_and_a4_admin()
     test_notify_payment_skips_zero_amount_and_missing_client()

@@ -36,6 +36,12 @@ async def find_eligible_subscription(
             ClientSubscription.used_classes < ClientSubscription.total_classes,
         )
     )).scalars().all()
+    # Идущий абонемент годится, только если доживает до занятия: сгорающий 20-го
+    # не даёт записаться на 25-е, а купленный поверх, до 30-го, — даёт. Дата
+    # включительно, как везде в проекте (expires_at >= today). Очередь под это
+    # правило не попадает: её срок ещё не начался и стартует с реального визита.
+    lesson_date = lesson.start_time.date()
+    subs = [s for s in subs if s.status == "pending" or s.expires_at >= lesson_date]
     if not subs:
         return None
 
@@ -81,15 +87,24 @@ async def assert_can_book(
     if sub is not None:
         return sub
 
-    has_any_subscription = (await db.execute(
-        select(ClientSubscription.id).where(
+    rows = (await db.execute(
+        select(ClientSubscription.expires_at, ClientSubscription.status).where(
             ClientSubscription.client_id == client_id,
             ClientSubscription.status.in_(("active", "pending")),
             ClientSubscription.is_frozen == False,
             ClientSubscription.used_classes < ClientSubscription.total_classes,
-        ).limit(1)
-    )).scalar_one_or_none()
-    if has_any_subscription is not None:
+        )
+    )).all()
+    if rows:
+        # Все абонементы с остатком сгорают раньше занятия → дело в сроке, а не в
+        # типе: иначе клиент получал бы «не подходит для этого занятия» и искал
+        # причину в услуге.
+        lesson_date = lesson.start_time.date()
+        if all(status == "active" and expires_at < lesson_date for expires_at, status in rows):
+            raise HTTPException(
+                status_code=400,
+                detail="Абонемент клиента истекает раньше даты занятия",
+            )
         raise HTTPException(
             status_code=400,
             detail="Абонемент клиента не подходит для этого занятия",

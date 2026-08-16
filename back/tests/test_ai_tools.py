@@ -21,8 +21,8 @@ from sqlalchemy import delete, select
 from database import async_session_maker
 from dependencies import StudioContext
 from models import (
-    Hall, Lesson, Operation, Service, Studio, StudioBillingPlan, StudioBookingSettings,
-    StudioBranch, StudioMember, User,
+    Hall, Lesson, Operation, Service, StaffWorkingHours, Studio, StudioBillingPlan,
+    StudioBookingSettings, StudioBranch, StudioMember, User,
 )
 # Уведомления и Онлайн-запись ai_tools импортирует внутри обработчиков (круг
 # импортов через services.assistant) — в тесте берём их роутеры напрямую.
@@ -54,6 +54,7 @@ _PROXIES = {
     "get_loyalty_summary": ai_tools._r_loyalty_stats,
     "get_today_agenda": ai_tools._r_list_lessons,
     "create_lesson": ai_tools._r_create_lesson,
+    "fill_schedule": ai_tools._r_create_lesson,   # тот же роутер, N раз подряд
     "book_client": ai_tools._r_create_reservation,
     "cancel_booking": ai_tools._r_cancel_reservation,
     "create_client": ai_tools._r_create_client,
@@ -188,6 +189,16 @@ async def _seed() -> tuple[int, int, int]:
             StudioMember(studio_id=sid, user_id=trainer.id, role="trainer", status="active", name="Тимур"),
         ])
 
+        # Услуга и график тренера — сырьё для fill_schedule: часы занятий он
+        # берёт отсюда, а не из вопроса человеку.
+        service = Service(studio_id=sid, name="Хатха", price=0, duration_min=60)
+        db.add(service)
+        db.add_all([
+            StaffWorkingHours(studio_id=sid, user_id=trainer.id, day_of_week=d,
+                              is_open=True, open_time="10:00", close_time="14:00")
+            for d in range(7)
+        ])
+
         branch = StudioBranch(studio_id=sid, name="Филиал на Вацлаваке", city="Praha")
         db.add(branch)
         await db.flush()
@@ -266,6 +277,21 @@ async def _run():
             rooms = await call_tool("get_rooms", {}, as_owner, db)
             halls = [h for b in rooms["branches"] for h in b["halls"]]
             assert [h["name"] for h in halls] == ["Зал йоги"], rooms
+
+            # Массовое заполнение периода. Часы берутся из графика тренера
+            # (10:00–14:00), перерыв и уже занятые часы пропускаются. Без этого
+            # инструмента «заполни две недели» распадалось на допрос человека
+            # про рабочие часы, которые и так лежат в его же CRM.
+            service_id = (await db.execute(
+                select(Service.id).where(Service.studio_id == sid)
+            )).scalar_one()
+            day = (datetime.utcnow() + timedelta(days=3)).date()
+            fill = {"teacher_id": trainer_id, "service_id": service_id, "break_at": "12:00",
+                    "date_from": day.isoformat(), "date_to": day.isoformat()}
+            filled = await call_tool("fill_schedule", fill, as_owner, db)
+            assert filled["created"] == 3, filled     # 10:00, 11:00, 13:00 — в 12:00 перерыв
+            # Повтор не удваивает расписание: те же часы уже заняты.
+            assert "error" in await call_tool("fill_schedule", fill, as_owner, db)
 
             # Сегодняшний день считается в часовом поясе студии.
             agenda = await call_tool("get_today_agenda", {}, as_owner, db)
