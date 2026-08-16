@@ -227,7 +227,14 @@ async def get_eligible_clients(
 
 
 async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSession) -> str:
-    """Тренер должен состоять в студии; возвращает денормализованное имя. Иначе 404.
+    """Тренер должен состоять в студии И иметь роль доступа «Тренер»; возвращает
+    денормализованное имя. Нет членства — 404, роль не та — 400.
+
+    Занятие ведёт тренер и никто другой: владелец/администратор расписание
+    составляют, но в сетке не стоят. Проверка живёт здесь, а не в create_lesson,
+    потому что через эту же функцию проходит и смена тренера в update_lesson, и
+    инструменты ассистента (create_lesson/fill_schedule зовут тот же роутер) —
+    ассистент ставил занятия на владельца, подставляя его id.
 
     Имя берём с членства: в журнале этой студии он подписан так, как его назвал
     её владелец (docs/ROADMAP_ACCOUNTS, решение 9).
@@ -238,6 +245,12 @@ async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSess
     )).scalar_one_or_none()
     if member is None:
         raise HTTPException(status_code=404, detail="Тренер не найден в студии")
+    if member.role != "trainer":
+        raise HTTPException(
+            status_code=400,
+            detail=f"{full_name(member)} — не тренер: занятие можно поставить "
+                   "только сотруднику с ролью доступа «Тренер»",
+        )
     return full_name(member)
 
 

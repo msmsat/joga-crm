@@ -55,6 +55,8 @@ services:
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+      # Домен для голых путей бэкенда (мини-ап, вебхуки) — см. front/Caddyfile.
+      API_ADDRESS: ${API_ADDRESS:-:8080}
     ports:
       - "80:80"
       - "443:443"

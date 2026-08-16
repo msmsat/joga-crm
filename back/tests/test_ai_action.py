@@ -25,6 +25,7 @@ from models import (
     ClientSubscription,
     Lesson,
     Reservation,
+    Service,
     Studio,
     StudioBillingPlan,
     StudioMember,
@@ -32,11 +33,17 @@ from models import (
 )
 from routers.ai.chat import execute_action
 from schemas.ai import ActionExecuteIn
-from services.ai_tools import _sign_action, make_action_proposal, resolve_entities
+from services.ai_tools import (
+    FindStaffArgs, _sign_action, get_staff, make_action_proposal, resolve_entities,
+)
 
 _OWNER_EMAIL = "ai-action-owner@test.local"
 _TRAINER_EMAIL = "ai-action-trainer@test.local"
 _CLIENT_EMAIL = "ai-action-client@test.local"
+# Двое тёзок в команде — «поменяй Ване зарплату» без уточнения выполнить нельзя.
+_VANYA_A_EMAIL = "ai-action-vanya-a@test.local"
+_VANYA_B_EMAIL = "ai-action-vanya-b@test.local"
+_EMAILS = [_OWNER_EMAIL, _TRAINER_EMAIL, _VANYA_A_EMAIL, _VANYA_B_EMAIL]
 
 
 async def _seed() -> dict:
@@ -49,12 +56,25 @@ async def _seed() -> dict:
 
         owner = User(email=_OWNER_EMAIL, hashed_password="x", name="Ольга")
         trainer = User(email=_TRAINER_EMAIL, hashed_password="x", name="Тимур")
-        db.add_all([owner, trainer])
+        vanya_a = User(email=_VANYA_A_EMAIL, hashed_password="x", name="Иван")
+        vanya_b = User(email=_VANYA_B_EMAIL, hashed_password="x", name="Иван")
+        db.add_all([owner, trainer, vanya_a, vanya_b])
         await db.flush()
         db.add_all([
             StudioMember(studio_id=sid, user_id=owner.id, role="owner", status="active", name="Ольга"),
             StudioMember(studio_id=sid, user_id=trainer.id, role="trainer", status="active", name="Тимур"),
+            StudioMember(studio_id=sid, user_id=vanya_a.id, role="trainer", status="active",
+                         name="Иван", last_name="Петров", department="пилатес"),
+            StudioMember(studio_id=sid, user_id=vanya_b.id, role="trainer", status="active",
+                         name="Иван", last_name="Сидоров", department="йога"),
         ])
+
+        # Услуга со СВОЕЙ длительностью, ценой и потолком группы: занятие берёт
+        # их отсюда, а не из круглых 60/0/8 — иначе ассистент спрашивал бы.
+        service = Service(
+            studio_id=sid, name="Хатха", duration_min=90, price=1500, max_clients=12,
+        )
+        db.add(service)
 
         lesson = Lesson(
             studio_id=sid, name="Пилатес", teacher_name="Тимур", teacher_id=trainer.id,
@@ -79,6 +99,7 @@ async def _seed() -> dict:
         return {
             "sid": sid, "owner_id": owner.id, "trainer_id": trainer.id,
             "lesson_id": lesson.id, "client_id": client.id, "session_id": session.id,
+            "vanya_a_id": vanya_a.id, "vanya_b_id": vanya_b.id, "service_id": service.id,
         }
 
 
@@ -99,8 +120,9 @@ async def _cleanup(sid: int) -> None:
             await db.execute(delete(ClientSubscription).where(ClientSubscription.client_id.in_(client_ids)))
         await db.execute(delete(Client).where(Client.studio_id == sid))
         await db.execute(delete(StudioMember).where(StudioMember.studio_id == sid))
+        await db.execute(delete(Service).where(Service.studio_id == sid))
         await db.execute(delete(StudioBillingPlan).where(StudioBillingPlan.studio_id == sid))
-        await db.execute(delete(User).where(User.email.in_([_OWNER_EMAIL, _TRAINER_EMAIL])))
+        await db.execute(delete(User).where(User.email.in_(_EMAILS)))
         await db.execute(delete(Studio).where(Studio.id == sid))
         await db.commit()
 
@@ -160,7 +182,7 @@ async def _run():
 
             # Две Анны -> вопрос со списком, карточки нет вовсе. Решает сервер:
             # модель не переспрашивает ровно тогда, когда уверена.
-            two_anns = {"field": "client_id", "options": [
+            two_anns = {"fields": ["client_id"], "options": [
                 {"id": ids["client_id"], "label": "Анна Петрова, +420777000111"},
                 {"id": ids["client_id"] + 1, "label": "Анна Сидорова, +420777000222"},
             ]}
@@ -168,6 +190,61 @@ async def _run():
                 "book_client", args, as_owner, db, ids["session_id"], ambiguous=two_anns)
             assert asked["clarify"]["options"] == two_anns["options"], asked
             assert "token" not in asked, asked
+
+            # ── Тёзки в команде: «поменяй Ване зарплату», а Вань двое ─────────
+            # Поиск сотрудника идёт ИМЕНЕМ (id человек не знает), и сервер сам
+            # фиксирует неоднозначность — модель бы взяла первого попавшегося.
+            found = await get_staff(as_owner, db, FindStaffArgs(query="иван"))
+            assert found["count"] == 2, found
+            assert {o["id"] for o in found["ambiguous"]["options"]} == {
+                ids["vanya_a_id"], ids["vanya_b_id"]}, found
+            assert "тренер" in found["ambiguous"]["options"][0]["label"]
+
+            # Тот же список ловит человека и как сотрудника, и как тренера.
+            for tool_name, call_args in (
+                ("update_staff", {"staff_id": ids["vanya_a_id"], "salary": 1200}),
+                ("create_lesson", {
+                    "service_id": ids["service_id"], "teacher_id": ids["vanya_b_id"],
+                    "start_time": (datetime.utcnow() + timedelta(days=3)).isoformat(),
+                }),
+            ):
+                asked = await make_action_proposal(
+                    tool_name, call_args, as_owner, db, ids["session_id"],
+                    ambiguous=found["ambiguous"])
+                assert asked["clarify"]["options"] == found["ambiguous"]["options"], asked
+                assert "token" not in asked, (tool_name, asked)
+
+            # Полное имя однозначно — ни вопроса, ни неоднозначности.
+            exact = await get_staff(as_owner, db, FindStaffArgs(query="иван петров"))
+            assert exact["count"] == 1 and "ambiguous" not in exact, exact
+            assert exact["matched_by"] == "name"      # поиск состоялся -> цикл снимет прежнюю
+
+            # Речь о третьем человеке — прежний список не мешает собрать карточку.
+            other = await make_action_proposal(
+                "update_staff", {"staff_id": ids["trainer_id"], "salary": 900},
+                as_owner, db, ids["session_id"], ambiguous=found["ambiguous"])
+            assert "clarify" not in other and other["token"], other
+
+            # ── Длительность и цена занятия — из карточки услуги, а не вопросом ─
+            # Модель их не назвала: сервер подставляет каталог ДО карточки, и
+            # человек читает в ней настоящие 90 минут, а не круглые 60.
+            lesson_card = await make_action_proposal(
+                "create_lesson",
+                {"service_id": ids["service_id"], "teacher_id": ids["trainer_id"],
+                 "start_time": (datetime.utcnow() + timedelta(days=3)).isoformat()},
+                as_owner, db, ids["session_id"])
+            assert lesson_card["args"]["duration_min"] == 90, lesson_card["args"]
+            assert lesson_card["args"]["price"] == 1500, lesson_card["args"]
+            assert lesson_card["args"]["total_spots"] == 12, lesson_card["args"]
+            assert "90 мин" in lesson_card["description"], lesson_card["description"]
+            # Названное человеком каталог не перебивает.
+            explicit = await make_action_proposal(
+                "create_lesson",
+                {"service_id": ids["service_id"], "teacher_id": ids["trainer_id"],
+                 "duration_min": 45,
+                 "start_time": (datetime.utcnow() + timedelta(days=3)).isoformat()},
+                as_owner, db, ids["session_id"])
+            assert explicit["args"]["duration_min"] == 45, explicit["args"]
 
             # Предложение само по себе ничего не создаёт.
             assert await _reservations(ids["lesson_id"]) == 0

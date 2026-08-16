@@ -47,9 +47,10 @@ class _Service:
 
 
 class _Teacher:
-    def __init__(self, name="Анна", last_name="Иванова"):
+    def __init__(self, name="Анна", last_name="Иванова", role="trainer"):
         self.name = name
         self.last_name = last_name
+        self.role = role
 
 
 class _R:

@@ -534,13 +534,17 @@ class PeriodArgs(BaseModel):
 
 
 class CreateLessonArgs(BaseModel):
+    """Длительность, цена и число мест — None, а не число: сервер отличает
+    «человек не называл» от «назвал 60» и подставляет карточку услуги
+    (_lesson_defaults). С жёстким умолчанием 60/8/0 занятие вставало бы часовым
+    и бесплатным поверх услуги, которая длится 90 минут и стоит 1500."""
     service_id: int
     teacher_id: int
     start_time: datetime
     hall_id: Optional[int] = None
-    duration_min: int = 60
-    total_spots: int = 8
-    price: int = 0
+    duration_min: Optional[int] = None
+    total_spots: Optional[int] = None
+    price: Optional[int] = None
 
 
 class FillScheduleArgs(BaseModel):
@@ -555,9 +559,11 @@ class FillScheduleArgs(BaseModel):
     date_from: date
     date_to: date
     hall_id: Optional[int] = None
-    duration_min: int = 60
-    total_spots: int = 8
-    price: int = 0
+    # None вместо чисел — по той же причине, что в CreateLessonArgs: незаданное
+    # берётся из карточки услуги, а не из круглого умолчания.
+    duration_min: Optional[int] = None
+    total_spots: Optional[int] = None
+    price: Optional[int] = None
     break_at: Optional[str] = Field(None, description="Начало перерыва, «15:00»")
     break_min: int = 60
 
@@ -627,6 +633,10 @@ class UpdateClientArgs(BaseModel):
     birth_date: Optional[date] = None
     city: Optional[str] = None
     source: Optional[str] = None
+
+
+class FindStaffArgs(BaseModel):
+    query: str = ""
 
 
 class StaffArgs(BaseModel):
@@ -915,16 +925,45 @@ def _items(rows, *, limit: int = _MAX_ITEMS, currency: str | None = None) -> dic
 _MAX_OPTIONS = 5          # длиннее список в вопросе никто не читает
 
 
+def _full_name(row: dict) -> str:
+    return " ".join(str(p) for p in (row.get("name"), row.get("last_name")) if p).strip()
+
+
+def _name_hit(row: dict, query: str) -> bool:
+    """Совпадение записи с именем, которое назвал человек.
+
+    Все слова запроса должны найтись в «имя фамилия» — «Иван Петров» и «петров
+    иван» ищут одно и то же, а «Ваня» находит обоих Вань. Морфологии здесь нет
+    и не нужно: промах в обе стороны стоит одного уточняющего вопроса, а
+    выдуманный id стоил бы действия не с тем человеком.
+    """
+    full = _full_name(row).lower()
+    return all(word in full for word in query.lower().split())
+
+
 def _client_option(row: dict) -> dict:
     """Вариант для вопроса «какая именно Анна»: имя, телефон, абонемент —
     ровно то, чем два однофамильца различаются в глазах администратора."""
-    parts = [" ".join(p for p in (row.get("name"), row.get("last_name")) if p).strip() or "без имени"]
+    parts = [_full_name(row) or "без имени"]
     if row.get("phone"):
         parts.append(str(row["phone"]))
     sub = row.get("active_subscription")
     if sub and sub.get("expires_at"):
         parts.append(f"абонемент до {sub['expires_at']}")
     return {"id": row.get("id"), "label": ", ".join(parts)}
+
+
+_ROLE_WORD = {"owner": "владелец", "admin": "администратор", "trainer": "тренер"}
+
+
+def _staff_option(row: dict) -> dict:
+    """Вариант для вопроса «какой из двух Вань»: имя, должность, роль доступа —
+    тем два тёзки в команде и различаются."""
+    parts = [_full_name(row) or "без имени"]
+    if row.get("department"):
+        parts.append(str(row["department"]))
+    parts.append(_ROLE_WORD.get(row.get("role"), row.get("role") or ""))
+    return {"id": row.get("id"), "label": ", ".join(p for p in parts if p)}
 
 
 def _period_range(period: str, today: date) -> tuple[date, date]:
@@ -975,12 +1014,16 @@ async def find_clients(ctx: StudioContext, db: AsyncSession, args: FindClientsAr
     # Неоднозначность фиксирует СЕРВЕР, а не модель: под «Анну» подходят двое, и
     # переспрашивать модель перестаёт ровно тогда, когда уверена. Кандидаты
     # уезжают в сборку предложения (задача 14) и там превращаются в вопрос.
-    if args.query.strip() and result["count"] > 1:
+    # matched_by ставится на ЛЮБОЙ поиск по имени, а не только на спорный: по
+    # нему цикл понимает, что поиск состоялся, и снимает прежнюю неоднозначность
+    # (иначе уточнённый «Анна Петрова» продолжал бы тянуть за собой двух Анн).
+    if args.query.strip():
         result["matched_by"] = "name"
-        result["ambiguous"] = {
-            "field": "client_id",
-            "options": [_client_option(row) for row in result["items"][:_MAX_OPTIONS]],
-        }
+        if result["count"] > 1:
+            result["ambiguous"] = {
+                "fields": ["client_id"],
+                "options": [_client_option(row) for row in result["items"][:_MAX_OPTIONS]],
+            }
     return result
 
 
@@ -1050,10 +1093,31 @@ async def _staff_page(ctx: StudioContext, db: AsyncSession) -> dict:
 
 
 @tool()
-async def get_staff(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> dict:
+async def get_staff(ctx: StudioContext, db: AsyncSession, args: FindStaffArgs) -> dict:
     """Сотрудники студии: имя, должность, роль доступа и загрузка.
-    Тренеру отдаёт только его самого."""
-    return _items(await _staff_page(ctx, db))
+    Тренеру отдаёт только его самого.
+
+    Человек назвал сотрудника по имени («поменяй Ване зарплату», «занятие с
+    Кириллом») — передай это имя в query и возьми id из выдачи. Ищи ровно тем,
+    что назвал человек: назвал «Иван Петров» — так и ищи, поиск понимает имя с
+    фамилией в любом порядке. Пустой query — вся команда.
+    Под имя подошло несколько тёзок — не выбирай сам и не бери первого: сервер
+    покажет список и спросит, о ком речь."""
+    rows = (await _staff_page(ctx, db)).get("items") or []
+    query = args.query.strip()
+    if query:
+        rows = [row for row in rows if _name_hit(row, query)]
+    result = _items({"items": rows, "total": len(rows)})
+    if query:
+        result["matched_by"] = "name"
+        if len(rows) > 1:
+            # Те же поля, что принимают изменяющие инструменты: сотрудник в
+            # update_staff/delete_staff и он же тренером в create_lesson.
+            result["ambiguous"] = {
+                "fields": ["staff_id", "teacher_id"],
+                "options": [_staff_option(row) for row in rows[:_MAX_OPTIONS]],
+            }
+    return result
 
 
 @tool(roles=("owner", "admin"))
@@ -1167,33 +1231,6 @@ async def get_today_agenda(ctx: StudioContext, db: AsyncSession, args: NoArgs) -
 # в теле, create_client и freeze_client висят на require_role("owner","admin"),
 # create_lesson отбивает тренера в теле.
 
-@tool(
-    mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
-    summary="Создать занятие: {service_id}, {start_time}, тренер {teacher_id}, мест {total_spots}",
-    effect="Занятие появится в сетке Журнала цветом своего зала.",
-)
-async def create_lesson(ctx: StudioContext, db: AsyncSession, args: CreateLessonArgs) -> dict:
-    """Создать ОДНО занятие в расписании: услуга, тренер, зал, время начала,
-    длительность в минутах, число мест и цена.
-
-    Занятия на несколько дней или на период («заполни неделю», «поставь на две
-    недели вперёд») — это fill_schedule одним вызовом, а не этот инструмент
-    десять раз подряд."""
-    lesson = await _r_create_lesson(
-        body=LessonCreateRequest(
-            service_id=args.service_id, teacher_id=args.teacher_id, hall_id=args.hall_id,
-            start_time=args.start_time, duration_min=args.duration_min,
-            total_spots=args.total_spots, price=args.price,
-        ),
-        ctx=ctx, db=db, background_tasks=None,
-    )
-    return {"lesson": _dump(lesson)}
-
-
-_FILL_MAX_DAYS = 62         # два месяца; дальше расписание всё равно перекраивают
-_FILL_MAX_LESSONS = 200     # предохранитель: одно «да» не должно создать тысячу занятий
-
-
 async def _fill_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> dict:
     """Зал, если человек его не назвал: самый тесный из тех, куда влезает группа.
 
@@ -1211,6 +1248,62 @@ async def _fill_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> di
     best = min(fits, key=lambda h: h["capacity"]) if fits else max(
         halls, key=lambda h: h.get("capacity") or 0)
     return {**args, "hall_id": best["id"]}
+
+
+async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> dict:
+    """Длительность, цена и число мест — из карточки услуги, потом зал.
+
+    Ровно эти три вопроса ассистент задавал человеку («какая продолжительность?»),
+    хотя ответ лежит в его же каталоге: услуга знает и свою длительность, и цену,
+    и потолок группы. Названное моделью не трогаем — подставляем только то, чего
+    в аргументах нет, и человек видит подстановку в карточке подтверждения.
+    """
+    service = next(
+        (s for s in _dump(await _r_list_services(ctx=ctx, db=db))
+         if s.get("id") == args.get("service_id")),
+        None,
+    )
+    if service:
+        from_service = {
+            "duration_min": service.get("duration_min"),
+            "price": service.get("price"),
+            "total_spots": service.get("max_clients"),
+        }
+        # args ВТОРЫМ — явное значение модели всегда перебивает каталог.
+        args = {**{k: v for k, v in from_service.items() if v}, **args}
+    return await _fill_defaults(args, ctx, db)
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
+    summary="Создать занятие: {service_id}, {start_time}, тренер {teacher_id}, "
+            "мест {total_spots}, {duration_min} мин",
+    effect="Занятие появится в сетке Журнала цветом своего зала.",
+    defaults=_lesson_defaults,
+)
+async def create_lesson(ctx: StudioContext, db: AsyncSession, args: CreateLessonArgs) -> dict:
+    """Создать ОДНО занятие в расписании: услуга, тренер, зал и время начала.
+
+    Длительность, цену и число мест НЕ спрашивай: не назвал их человек — сервер
+    возьмёт их из карточки услуги. Занятие ставится только на сотрудника с ролью
+    доступа trainer — владельца и администратора бэкенд в сетку не пустит.
+
+    Занятия на несколько дней или на период («заполни неделю», «поставь на две
+    недели вперёд») — это fill_schedule одним вызовом, а не этот инструмент
+    десять раз подряд."""
+    lesson = await _r_create_lesson(
+        body=LessonCreateRequest(
+            service_id=args.service_id, teacher_id=args.teacher_id, hall_id=args.hall_id,
+            start_time=args.start_time, duration_min=args.duration_min or 60,
+            total_spots=args.total_spots or 8, price=args.price or 0,
+        ),
+        ctx=ctx, db=db, background_tasks=None,
+    )
+    return {"lesson": _dump(lesson)}
+
+
+_FILL_MAX_DAYS = 62         # два месяца; дальше расписание всё равно перекраивают
+_FILL_MAX_LESSONS = 200     # предохранитель: одно «да» не должно создать тысячу занятий
 
 
 def _at(day: date, hhmm: str) -> datetime:
@@ -1249,7 +1342,7 @@ async def _free_slots(
     opens, closes = _at(day, hours.open_time), _at(day, hours.close_time)
     if closes <= opens:      # ночная смена — хвост уезжает на следующие сутки
         closes += timedelta(days=1)
-    step = timedelta(minutes=args.duration_min)
+    step = timedelta(minutes=args.duration_min or 60)
     pause = (_at(day, args.break_at), timedelta(minutes=args.break_min)) if args.break_at else None
 
     busy = (await db.execute(
@@ -1278,7 +1371,7 @@ async def _free_slots(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
     summary="Заполнить расписание: {service_id}, тренер {teacher_id}, {date_from} — {date_to}, по {duration_min} мин",
     effect="Занятия встанут в Журнал на рабочие дни тренера по его графику; занятые часы и перерыв пропускаются.",
-    defaults=_fill_defaults,
+    defaults=_lesson_defaults,
 )
 async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillScheduleArgs) -> dict:
     """ЗАПОЛНИТЬ РАСПИСАНИЕ на период одним вызовом: «заполни график на неделю
@@ -1307,8 +1400,9 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
                     body=LessonCreateRequest(
                         service_id=args.service_id, teacher_id=args.teacher_id,
                         hall_id=args.hall_id, start_time=start,
-                        duration_min=args.duration_min, total_spots=args.total_spots,
-                        price=args.price,
+                        duration_min=args.duration_min or 60,
+                        total_spots=args.total_spots or 8,
+                        price=args.price or 0,
                     ),
                     ctx=ctx, db=db, background_tasks=None,
                 )
@@ -2451,17 +2545,28 @@ async def make_action_proposal(
             args = t.params.model_validate(args or {}).model_dump(mode="json", exclude_none=True)
         except ValidationError:
             pass    # кривые аргументы поймает call_tool при исполнении
-        if t.defaults is not None:
-            args = await t.defaults(args, ctx, db)
 
-    if ambiguous and isinstance(args.get(ambiguous.get("field")), int):
+    # Проверка неоднозначности — ДО умолчаний и до любого запроса в базу: этот
+    # исход обязан наступать раньше остальной сборки, подставлять зал и цену
+    # действию, которого не будет, незачем.
+    if ambiguous:
         options = ambiguous.get("options") or []
-        if any(o.get("id") == args[ambiguous["field"]] for o in options):
+        # Полей несколько, потому что один и тот же человек приезжает то
+        # staff_id (сменить зарплату), то teacher_id (поставить занятие).
+        spoken = [
+            args[field] for field in (ambiguous.get("fields") or ())
+            if isinstance(args.get(field), int)
+            and any(o.get("id") == args[field] for o in options)
+        ]
+        if spoken:
             return {"clarify": {
-                "field": ambiguous["field"],
+                "fields": list(ambiguous.get("fields") or ()),
                 "question": "Под запрос подошло несколько записей — уточните, о ком речь:",
                 "options": options[:_MAX_OPTIONS],
             }}
+
+    if t is not None and t.defaults is not None:
+        args = await t.defaults(args, ctx, db)
 
     entities, error = await resolve_entities(args, ctx, db)
     if error:
@@ -2707,7 +2812,7 @@ if __name__ == "__main__":
     # Неоднозначность обрывает сборку ДО обращения к базе: карточки не будет,
     # будет вопрос со списком (эпик AI-6, задача 14). Проверяется без БД именно
     # потому, что этот исход обязан наступать раньше любых запросов.
-    two_anns = {"field": "client_id", "options": [
+    two_anns = {"fields": ["client_id"], "options": [
         {"id": 3, "label": "Анна Петрова, +7 921…"},
         {"id": 9, "label": "Анна Сидорова, +7 916…"},
     ]}
@@ -2715,6 +2820,31 @@ if __name__ == "__main__":
         "book_client", {"lesson_id": 5, "client_id": 3}, mine, None, 42, ambiguous=two_anns))
     assert asked["clarify"]["options"] == two_anns["options"], asked
     assert "token" not in asked and "description" not in asked, asked
+
+    # Два тёзки в команде: один и тот же человек приезжает то staff_id (сменить
+    # зарплату), то teacher_id (поставить занятие) — спрашиваем в обоих случаях.
+    two_vanyas = {"fields": ["staff_id", "teacher_id"], "options": [
+        {"id": 4, "label": "Иван Петров, пилатес, тренер"},
+        {"id": 6, "label": "Иван Сидоров, йога, тренер"},
+    ]}
+    for tool_name, call_args in (
+        ("update_staff", {"staff_id": 4, "salary": 1000}),
+        ("create_lesson", {"service_id": 1, "teacher_id": 6,
+                           "start_time": "2026-09-10T10:00:00"}),
+    ):
+        asked = asyncio.run(make_action_proposal(
+            tool_name, call_args, mine, None, 42, ambiguous=two_vanyas))
+        assert asked["clarify"]["options"] == two_vanyas["options"], (tool_name, asked)
+        assert "token" not in asked, (tool_name, asked)
+    # «Речь о ком-то другом — вопроса нет» проверяется на живой базе
+    # (test_ai_action): этот путь идёт дальше, в разрешение сущностей.
+
+    # Поиск по имени: все слова запроса в «имя фамилия», порядок не важен.
+    vanya = {"id": 4, "name": "Иван", "last_name": "Петров"}
+    assert _name_hit(vanya, "иван") and _name_hit(vanya, "петров иван")
+    assert not _name_hit(vanya, "иван сидоров")
+    assert _staff_option({**vanya, "department": "пилатес", "role": "trainer"})["label"] == (
+        "Иван Петров, пилатес, тренер")
 
     # Последствие действия — из карты интерфейса, а не выдумано на месте.
     assert "спишется с абонемента" in TOOLS["book_client"].effect
