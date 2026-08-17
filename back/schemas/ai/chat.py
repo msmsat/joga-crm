@@ -55,9 +55,10 @@ class MessageRatingIn(BaseSchema):
 class SendMessageResponse(BaseSchema):
     user: ChatMessageRead
     assistant: ChatMessageRead
-    # Предложенное изменяющее действие (задача 6): {tool, args, description, token}.
-    # None — обычный ответ. Данные меняются только после /ai/actions/execute.
-    action_proposal: Optional[dict] = None
+    # Предложенные изменяющие действия (задача 6, часть A): {steps, warnings,
+    # ready, token}. None — обычный ответ. Данные меняются только после
+    # /ai/actions/execute-plan.
+    plan_proposal: Optional[dict] = None
 
 
 class ActionExecuteIn(BaseSchema):
@@ -68,6 +69,18 @@ class ActionExecuteIn(BaseSchema):
     прислать любой инструмент с любыми аргументами.
     """
     token: str
+
+
+class PlanExecuteIn(BaseSchema):
+    """Тело POST /ai/actions/execute-plan: подписанный план и ответы формы.
+
+    answers — {"номер шага": {"поле": значение}}. Отдельно от токена, потому
+    что их пишет человек в окне, а не сервер: подписать их заранее нечем. На
+    доверие это не влияет — каждое поле проходит ту же Pydantic-схему
+    инструмента, что и аргументы из токена, а имена шагов сверяются с планом.
+    """
+    token: str
+    answers: dict[str, dict] = {}
 
 
 class ActionExecuteOut(BaseSchema):

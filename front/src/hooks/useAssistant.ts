@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { aiApi } from '../api/ai';
-import type { AIActionProposal, AIChatMessage } from '../api/ai/ai.types';
+import type { AIChatMessage, AIPlanProposal } from '../api/ai/ai.types';
 import { queryKeys } from '../api/queryKeys';
 import { useToast } from '../components/ui/Toast';
 import { errorMessage } from '../api/errorMessage';
@@ -149,7 +149,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
   // Имя инструмента, который ассистент дёргает прямо сейчас («get_schedule») —
   // под строкой ввода из него делается «Смотрю расписание…».
   const [toolStatus, setToolStatus] = useState<string | null>(null);
-  const [proposal, setProposal] = useState<AIActionProposal | null>(null);
+  const [proposal, setProposal] = useState<AIPlanProposal | null>(null);
   // Защита от дубля при двойном Enter: закрывает и разрыв "создаём сессию" (до
   // старта мутации isPending ещё false), и сам полёт мутации.
   const sendingRef = useRef(false);
@@ -202,13 +202,13 @@ export function useAssistant(surface: AISurface = 'drawer') {
       setIsThinking(true);
       return { sessionId, snapshot };
     },
-    onSuccess: ({ user, assistant, action_proposal }, { sessionId }) => {
+    onSuccess: ({ user, assistant, plan_proposal }, { sessionId }) => {
       qc.setQueryData<AIChatMessage[]>(queryKeys.aiMessages(sessionId), (prev) => [
         ...(prev ?? []).filter((m) => m.id >= 0),
         user,
         assistant,
       ]);
-      setProposal(action_proposal);
+      setProposal(plan_proposal);
     },
     onError: (_err, _vars, ctx) => {
       // Тост показывает sendMessage — он один на оба пути (стрим и фолбэк),
@@ -253,8 +253,8 @@ export function useAssistant(surface: AISurface = 'drawer') {
           );
         } else if (event === 'tool_status') {
           setToolStatus(String(data));
-        } else if (event === 'action_proposal') {
-          setProposal(data as AIActionProposal);
+        } else if (event === 'plan_proposal') {
+          setProposal(data as AIPlanProposal);
         } else if (event === 'ui_action') {
           // Открываем экран только по явной просьбе пользователя: сервер шлёт
           // это событие ровно тогда, когда модель вызвала open_ui. Адрес с
@@ -368,7 +368,14 @@ export function useAssistant(surface: AISurface = 'drawer') {
   // в проекте не существует, а queryKeys.clients — функция (search, category),
   // не готовый ключ, поэтому инвалидируем префиксы.
   const invalidateAfterAction = useCallback((tool: string, args: Record<string, unknown>) => {
-    if (tool === 'book_client' || tool === 'cancel_booking' || tool === 'create_lesson') {
+    if (tool === 'book_client' || tool === 'cancel_booking' || tool === 'create_lesson'
+        || tool === 'fill_schedule') {
+      qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
+    } else if (tool === 'create_staff' || tool === 'update_staff'
+               || tool === 'set_staff_schedule' || tool === 'delete_staff') {
+      qc.invalidateQueries({ queryKey: queryKeys.staff });
+      // Расписание сотрудника — колонки Журнала: заведённый тренер обязан
+      // появиться в сетке сразу, иначе занятия ему поставить некуда.
       qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
     } else if (tool === 'create_client') {
       qc.invalidateQueries({ queryKey: queryKeys.clientsAll });
@@ -382,24 +389,28 @@ export function useAssistant(surface: AISurface = 'drawer') {
   }, [qc]);
 
   const executeMut = useMutation({
-    mutationFn: (token: string) => aiApi.executeAction(token),
+    mutationFn: (answers: Record<string, Record<string, unknown>>) =>
+      aiApi.executePlan(proposal?.token ?? '', answers),
     onSuccess: ({ message }) => {
       qc.setQueryData<AIChatMessage[]>(
         queryKeys.aiMessages(message.session_id),
         (prev) => [...(prev ?? []).filter((m) => m.id >= 0), message],
       );
-      if (proposal) invalidateAfterAction(proposal.tool, proposal.args);
+      // Гасим кэш по КАЖДОМУ шагу: пачка «завести четверых и поставить им
+      // занятия» трогает и команду, и журнал, а сбросить только по первому
+      // шагу значит оставить половину экранов со старыми данными.
+      for (const step of proposal?.steps ?? []) invalidateAfterAction(step.tool, step.args);
       setProposal(null);
       toast.success(message.text);
     },
     onError: (err) => toast.error(assistantErrorMessage(err, t)),
   });
 
-  const confirmAction = useCallback(() => {
-    if (proposal) executeMut.mutate(proposal.token);
+  const confirmAction = useCallback((answers: Record<string, Record<string, unknown>> = {}) => {
+    if (proposal) executeMut.mutate(answers);
   }, [executeMut, proposal]);
 
-  // Отказ: карточка исчезает, токен протухает сам через 10 минут.
+  // Отказ: окно исчезает, токен протухает сам через полчаса.
   const cancelAction = useCallback(() => setProposal(null), []);
 
   const deleteMut = useMutation({
@@ -428,7 +439,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
     refetchMessages: messagesQuery.refetch,
     isThinking,
     toolStatus,
-    actionProposal: proposal,
+    planProposal: proposal,
     confirmAction,
     cancelAction,
     actionPending: executeMut.isPending,

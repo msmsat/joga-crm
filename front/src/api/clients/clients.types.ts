@@ -75,6 +75,20 @@ export interface ActivityPoint {
 
 // ─── Основные сущности ────────────────────────────────────────────────────────
 
+/** Уровень клиента в программе лояльности — тот же, что он видит в «Клубе». */
+export interface ClientLoyaltyLevel {
+  name: string
+  color: string
+  /** Сколько денег даёт один балл на этом уровне. */
+  point_value: number
+  /** Баланс баллов в деньгах по этой цене. */
+  points_value: number
+  next_name: string | null
+  /** Сколько ещё потратить до следующей ступени. */
+  to_next: number | null
+  next_point_value: number | null
+}
+
 export interface ClientListItem {
   id: number
   name: string
@@ -89,6 +103,8 @@ export interface ClientListItem {
   active_subscription: ActiveSubscription | null
   products: ClientProduct[]
   loyalty_points: number
+  /** null — у студии нет лестницы уровней. */
+  loyalty_level: ClientLoyaltyLevel | null
   last_visit_date: string | null
   registration_date: string | null
 }
@@ -101,6 +117,10 @@ export interface ClientProfile extends ClientListItem {
   notifs_enabled: boolean
   reminders_enabled: boolean
   is_active: boolean
+  /** Сумма неоплаченных занятий («оплата на месте»). 0 — клиент ничего не должен. */
+  debt: number
+  /** Номер подтверждён Telegram, а не введён руками — по нему точно дозвонятся. */
+  phone_verified: boolean
   notes: ClientNote[]
 }
 

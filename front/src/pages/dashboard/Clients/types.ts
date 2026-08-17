@@ -1,5 +1,5 @@
-import type { ActiveSubscription, ClientNote, ClientProduct } from '../../../api/clients/clients.types';
-export type { ActiveSubscription, ClientNote, ClientProduct };
+import type { ActiveSubscription, ClientLoyaltyLevel, ClientNote, ClientProduct } from '../../../api/clients/clients.types';
+export type { ActiveSubscription, ClientLoyaltyLevel, ClientNote, ClientProduct };
 
 export interface ClientData {
   id: number;
@@ -14,6 +14,8 @@ export interface ClientData {
   subscription_alert?: ActiveSubscription;
   products: ClientProduct[];
   loyalty_points: number;
+  /** null/undefined — у студии нет лестницы уровней, блок уровня не рисуется. */
+  loyalty_level?: ClientLoyaltyLevel | null;
   last_visit_date?: string;
   registration_date?: string;
   phone?: string;
@@ -24,6 +26,10 @@ export interface ClientData {
   notifs_enabled?: boolean;
   reminders_enabled?: boolean;
   is_active?: boolean;
+  /** Сумма неоплаченных занятий («оплата на месте»); приходит только в карточке. */
+  debt?: number;
+  /** Номер подтверждён Telegram, а не введён руками. */
+  phone_verified?: boolean;
   notes?: ClientNote[];
   frozen?: boolean;
 }

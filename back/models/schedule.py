@@ -58,7 +58,9 @@ class Lesson(Base):
 
 class Reservation(Base):
     __tablename__ = "reservations"
-    __table_args__ = (CheckConstraint("status IN ('active', 'cancelled', 'attended')", name="check_reservation_status"),)
+    # pending — «Подтверждение тренером» в правилах записи: место уже держится,
+    # решение студии ещё нет (routers/booking/miniapp_lessons.create_reservation).
+    __table_args__ = (CheckConstraint("status IN ('active', 'pending', 'cancelled', 'attended')", name="check_reservation_status"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"))
@@ -82,6 +84,19 @@ class Reservation(Base):
     # вместе с бронью, и отмена записи (status != 'active') убирает человека из
     # списка сама, без второго кода отмены.
     coffee: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+    # Подаренное первое занятие («Первое занятие бесплатно» в правилах записи).
+    # Флаг нужен именно на брони, а не выводится из «это первая бронь клиента»:
+    # ко второй записи первая уже существует, и задним числом отличить подарок от
+    # обычного визита было бы нечем — ни в Журнале, ни в отчётах.
+    is_trial: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+    # Долг за эту бронь: ClientPayment в статусе pending (оплата на месте).
+    # Ссылка на брони, а не reservation_id на платеже: при включённой «Повторной
+    # записи» у клиента бывает две брони на одно занятие, и по паре
+    # client+lesson долги не различить. NULL — платить нечего (абонемент,
+    # пробное) либо долг уже погашен и отвязан.
+    debt_payment_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("client_payments.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     client: Mapped["Client"] = relationship(back_populates="reservations")
     lesson: Mapped["Lesson"] = relationship(back_populates="reservations")

@@ -58,9 +58,12 @@ export default function CheckoutBreakdown({ calc, fallbackAmountStr, itemName }:
       });
     }
     if (calc.bonuses_applied > 0) {
+      // В колонке сумм — деньги, а не баллы: раньше здесь стояло голое число
+      // баллов среди строк в валюте, и на уровне с ценой балла 2 оно ещё и
+      // расходилось с итогом. Сколько баллов ушло — в подписи слева.
       rows.push({
-        label: t('paymentModal.bonuses'),
-        value: `−${calc.bonuses_applied}`,
+        label: t('paymentModal.bonuses_spent', { count: calc.bonuses_applied }),
+        value: `−${calc.bonuses_value_str}`,
         tone: 'brand',
       });
     }

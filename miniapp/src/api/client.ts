@@ -40,7 +40,13 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
       window.location.reload();
     }
 
-    throw new Error(message);
+    // Код ответа едет вместе с текстом: 428 при записи означает «сначала оставь
+    // номер», и мини-приложение обязано открыть шит с телефоном, а не показать
+    // ошибку. Отличать это по тексту сообщения — путь к поломке на первом же
+    // переводе формулировки.
+    const error = new Error(message) as Error & { status?: number };
+    error.status = response.status;
+    throw error;
   }
 
   if (response.status === 204) return undefined as T;

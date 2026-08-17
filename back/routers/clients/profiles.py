@@ -22,7 +22,8 @@ from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
-from services.booking_access import assert_can_book
+from services.booking_access import assert_can_book, resolve_coverage
+from services.booking_rules import load_rules
 from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
 )
@@ -56,10 +57,11 @@ from schemas import (
     SegmentRulesUpdate,
     TagsOut,
 )
-from schemas.clients.responses import ActiveSubscriptionOut, ClientProductOut
+from schemas.clients.responses import ActiveSubscriptionOut, ClientLoyaltyLevelOut, ClientProductOut
 from schemas.common import Page
 from services.plan_limits import check_plan_limit
 from services.notifier import notify
+from services.points import point_value_of
 
 router = APIRouter()
 
@@ -107,7 +109,53 @@ def _product_out(sub: ClientSubscription) -> ClientProductOut:
     )
 
 
-def _client_list_item(client: Client, rules: SegmentRules = DEFAULT_RULES) -> ClientListItemOut:
+async def _studio_levels(db: AsyncSession, studio_id: int) -> list:
+    """Лестница уровней студии. Читаем, а не `_get_or_create_levels`: список
+    клиентов — GET, создавать в нём строки (и коммитить ради этого) незачем.
+    Лестницы ещё нет → уровня у клиента нет, карточка просто не рисует блок."""
+    from models import LoyaltyLevel  # ponytail: рядом с локальным импортом _level_for, чтобы модель уровней не тянуть в шапку ради одного места
+
+    return list((await db.execute(
+        select(LoyaltyLevel)
+        .where(LoyaltyLevel.studio_id == studio_id)
+        .order_by(LoyaltyLevel.sort_order)
+    )).scalars().all())
+
+
+def _client_level(client: Client, levels: list) -> ClientLoyaltyLevelOut | None:
+    """Уровень клиента и выгода от него — тем же расчётом, что в «Клубе»
+    (`_level_for` по `card.total_spent`), а не по сумме платежей: разойдись эти
+    два числа, владелец и клиент увидели бы разные ступени одной лестницы."""
+    from routers.loyalty.cards import _level_for  # ponytail: локальный импорт разрывает цикл (как в services/pricing.py)
+
+    if not levels:
+        return None
+
+    card = client.loyalty_card
+    total_spent = card.total_spent if card else 0
+    points = card.points_balance if card else 0
+
+    level_id = _level_for(total_spent, levels)
+    current = next((lvl for lvl in levels if lvl.id == level_id), None)
+    if current is None:
+        return None
+
+    value = point_value_of(current)
+    nxt = next((lvl for lvl in levels if total_spent < lvl.min_threshold), None)
+    return ClientLoyaltyLevelOut(
+        name=current.name,
+        color=current.color,
+        point_value=value,
+        points_value=points * value,
+        next_name=nxt.name if nxt else None,
+        to_next=(nxt.min_threshold - total_spent) if nxt else None,
+        next_point_value=point_value_of(nxt) if nxt else None,
+    )
+
+
+def _client_list_item(
+    client: Client, rules: SegmentRules = DEFAULT_RULES, levels: list | None = None,
+) -> ClientListItemOut:
     visit_count = sum(1 for r in client.reservations if r.status == "attended")
     total_spent = sum(p.amount for p in client.payments if p.status == "success")
     products = _live_products(client)
@@ -136,6 +184,7 @@ def _client_list_item(client: Client, rules: SegmentRules = DEFAULT_RULES) -> Cl
         ) if active_sub else None,
         products=[_product_out(s) for s in products],
         loyalty_points=loyalty_points,
+        loyalty_level=_client_level(client, levels or []),
         last_visit_date=client.last_visit_date.isoformat() if client.last_visit_date else None,
         registration_date=client.registration_date.date().isoformat() if client.registration_date else None,
     )
@@ -269,8 +318,11 @@ async def list_clients(
         .limit(limit)
     )
     clients = (await db.execute(q)).scalars().all()
+    # Лестница одна на студию — грузим её раз на страницу, а не на клиента:
+    # иначе таблица на 50 строк дала бы 50 одинаковых запросов.
+    levels = await _studio_levels(db, ctx.studio_id)
     return Page(
-        items=[_client_list_item(c, rules) for c in clients],
+        items=[_client_list_item(c, rules, levels) for c in clients],
         total=total,
         offset=offset,
         limit=limit,
@@ -402,10 +454,21 @@ async def get_client(
     client = await _get_client_or_404(client_id, ctx, db, load_relations=True)
     if await expire_points(db, studio_id, client_id):
         await db.commit()
-    base = _client_list_item(client, await get_segment_rules(db, studio_id))
+    base = _client_list_item(
+        client, await get_segment_rules(db, studio_id), await _studio_levels(db, studio_id),
+    )
     subscription_alert = _subscription_for_reminder(client)
+    # Неоплаченные занятия («оплата на месте»). Сумма, а не список: карточке
+    # нужен факт долга и его размер, разбор по занятиям виден в Журнале.
+    debt = (await db.execute(
+        select(func.coalesce(func.sum(ClientPayment.amount), 0)).where(
+            ClientPayment.client_id == client_id, ClientPayment.status == "pending",
+        )
+    )).scalar() or 0
     return ClientProfileOut(
         **base.model_dump(),
+        debt=debt,
+        phone_verified=client.phone_verified,
         subscription_alert=ActiveSubscriptionOut(
             used=subscription_alert.used_classes,
             total=subscription_alert.total_classes,
@@ -975,7 +1038,13 @@ async def book_lesson(
     if duplicate:
         raise HTTPException(status_code=400, detail="Клиент уже записан на это занятие")
 
-    sub = await assert_can_book(db, client_id, lesson)
+    # Пробное занятие снимает гейт абонемента — то же правило, что в Журнале
+    # (routers/schedule/reservations.py): подарок обязан работать везде, откуда
+    # клиента записывают, иначе он зависит от того, какую кнопку нажал админ.
+    rules = await load_rules(db, studio_id)
+    sub, is_trial = await resolve_coverage(db, client_id, lesson, rules)
+    if sub is None and not is_trial:
+        await assert_can_book(db, client_id, lesson)  # здесь всегда бросает — ради точной причины
 
     reservation = Reservation(
         client_id=client_id,
@@ -983,6 +1052,7 @@ async def book_lesson(
         spot_number=existing_count + 1,
         status="active",
         booking_channel="manual",
+        is_trial=is_trial,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, studio_id, reservation, sub)

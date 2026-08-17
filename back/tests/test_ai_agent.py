@@ -181,7 +181,7 @@ async def _run():
                 viewport="phone",
             )
         assert result.text == "Завтра два занятия."
-        assert result.action_proposal is None
+        assert result.plan_proposal is None
         assert len(script.calls) == 2
         assert await _usage_rows(sid) == (2, 1)   # платим за обе, квоту жжёт одна
 
@@ -236,13 +236,20 @@ async def _run():
             result = await run_agent(
                 ctx, db, await _settings(db, sid), [], session_id=ids["session_id"],
             )
-        assert result.action_proposal is not None
-        assert result.action_proposal["tool"] == "book_client" and result.action_proposal["token"]
+        # План на один шаг — окно человек видит всегда одно и то же, и «одно
+        # действие» отличается от «двенадцати» только длиной списка внутри.
+        plan = result.plan_proposal
+        assert plan is not None and plan["token"] and len(plan["steps"]) == 1, plan
+        step = plan["steps"][0]
+        assert step["tool"] == "book_client" and step["n"] == 1
+        # Спрашивать нечего — окно откроется сразу на «Проверьте», а кнопка
+        # подтверждения доступна с первого шага: одно касание, а не три.
+        assert plan["ready"] and not step["missing"], step
         assert result.text
-        # Карточка называет людей, а не номера (эпик AI-6, задача 14).
-        assert result.action_proposal["entities"]["client_id"] == "Анна Петрова"
-        assert "Пилатес" in result.action_proposal["entities"]["lesson_id"]
-        assert "client_id" not in result.action_proposal["description"]
+        # Окно называет людей, а не номера (эпик AI-6, задача 14).
+        assert step["entities"]["client_id"] == "Анна Петрова"
+        assert "Пилатес" in step["entities"]["lesson_id"]
+        assert "client_id" not in step["description"]
 
         # Тот же вызов после неоднозначного поиска — вопрос вместо карточки.
         _ScriptedLLM(
@@ -259,7 +266,7 @@ async def _run():
             asked = await run_agent(
                 ctx, db, await _settings(db, sid), [], session_id=ids["session_id"],
             )
-        assert asked.action_proposal is None, "карточка при двух Аннах — выбор за модель"
+        assert asked.plan_proposal is None, "окно при двух Аннах — выбор за модель"
         assert "Анна Петрова" in asked.text and "Анна Сидорова" in asked.text, asked.text
         async with async_session_maker() as db:
             booked = (await db.execute(

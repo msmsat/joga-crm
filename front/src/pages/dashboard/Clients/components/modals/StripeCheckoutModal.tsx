@@ -111,7 +111,11 @@ export function StripeCheckoutModal({ session, title, subtitle, quote, currency,
                   <SummaryRow label={t('panel.wallet.depositApplied')} value={`−${currency}${quote.deposit_applied}`} muted />
                 )}
                 {!!quote.bonuses_applied && (
-                  <SummaryRow label={t('panel.wallet.bonuses')} value={`−${currency}${quote.bonuses_applied}`} muted />
+                  <SummaryRow
+                    label={t('panel.wallet.bonusesSpent', { count: quote.bonuses_applied })}
+                    value={`−${currency}${quote.bonuses_value}`}
+                    muted
+                  />
                 )}
                 <div style={{ height: '1px', background: 'rgba(249,160,139,0.25)', margin: '2px 0' }} />
                 <SummaryRow label={t('panel.wallet.total')} value={`${currency}${quote.total_price}`} total />

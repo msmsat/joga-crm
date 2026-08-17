@@ -63,6 +63,33 @@ export default function LoyaltyCard({ data }: { data: LoyaltyOverview }) {
           {t('club.points_worth', { value: data.points_value_str })}
         </div>
 
+        {/* Курс прямо под суммой: «≈ 1 250 ₴» отвечает «сколько это», но не
+            «откуда» и не «почему столько». Обе цифры — с сервера, из конфига
+            студии, поэтому строка верна и для студии с курсом 50 ₴ за балл.
+            point_unit_str — цена балла на УРОВНЕ этого клиента, та же, что
+            применит касса. */}
+        <div className={`mt-1.5 text-[11.5px] font-medium leading-[1.4] opacity-45 ${ON_SURFACE}`}>
+          {t('club.points_rate', { unit: data.point_unit_str, rate: data.earn_rate_str })}
+        </div>
+
+        {/* Ради чего подниматься: на следующей ступени тот же балл стоит
+            дороже. Сервер присылает строку, только когда там действительно
+            дороже, — «выгода» без выгоды хуже молчания. */}
+        {data.next_point_unit_str && data.next_level && (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand/20 px-3 py-1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
+              <polyline points="17 11 12 6 7 11" />
+              <polyline points="17 17 12 12 7 17" />
+            </svg>
+            <span className="text-[11px] font-extrabold tracking-[-0.01em] text-brand">
+              {t('club.next_level_value', {
+                level: data.next_level.name,
+                value: data.next_point_unit_str,
+              })}
+            </span>
+          </div>
+        )}
+
         <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/15">
           <motion.div
             initial={{ width: 0 }}

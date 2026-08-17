@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { Card } from './Card';
+import { formatArg, visibleArgs } from './argFormat';
 
 export interface ActionCardProps {
-  /** Человекочитаемое описание предложенного действия (приходит с бэкенда). */
+  /** Человекочитаемое описание действия (приходит с бэкенда). */
   description: string;
   /** Аргументы инструмента — показываем строками «поле: значение». */
   args?: Record<string, unknown>;
@@ -34,9 +35,7 @@ export function ActionCard({
   const { t } = useTranslation();
   // Пароль сотрудника в карточку не выводим: она уходит в историю чата навсегда.
   // Разрешённые сервером id тоже не выводим — вместо них идут имена ниже.
-  const rows = Object.entries(args ?? {}).filter(
-    ([k, v]) => v !== null && v !== undefined && v !== ''
-      && !k.includes('password') && !(entities && k in entities));
+  const rows = visibleArgs(args, entities, undefined);
   const named = Object.entries(entities ?? {});
   const accent = danger ? '#D88C9A' : '#F9A08B';
 
@@ -95,7 +94,7 @@ export function ActionCard({
           {rows.map(([key, value]) => (
             <div key={key} style={{ fontSize: 13, color: 'var(--text2, #666666)' }}>
               <span style={{ opacity: 0.7 }}>{t(`ai:actions.args.${key}`, { defaultValue: key })}: </span>
-              <span style={{ color: 'var(--text, #1A1A1A)' }}>{String(value)}</span>
+              <span style={{ color: 'var(--text, #1A1A1A)' }}>{formatArg(key, value, t)}</span>
             </div>
           ))}
         </div>

@@ -56,6 +56,8 @@
     "programName": "Program name",
     "pointsRate": "Points rate ({{currency}} per 1 point)",
     "levels": "Levels",
+    "pointValue": "1 point =",
+    "pointValueHint": "Points are earned at the same rate on every level, but they are not worth the same. Give Gold 1 and Diamond 2, and a point earned by the client will take twice as much off the price at checkout. That is what a level gives: the more someone has spent at the studio, the more their points are worth.",
     "expiry": "Expiry period",
     "expiryTooltip": "How long a client can spend accumulated points",
     "expiryOptions": {
@@ -63,11 +65,6 @@
       "6m": "6 mo",
       "1y": "1 yr",
       "never": "No expiry"
-    },
-    "levelNames": {
-      "silver": "Silver",
-      "gold": "Gold",
-      "platinum": "Platinum"
     },
     "newLevelName": "New level",
     "addLevel": "+ Level",
@@ -201,7 +198,8 @@
     "levelDistribution": "Distribution by level",
     "noLevels": "Levels not configured yet",
     "totalClients": "Total clients in program",
-    "fromValue": "from {{value}}"
+    "fromValue": "from {{value}}",
+    "levelPointValue": "point = {{value}}"
   },
   "scenarios": {
     "title": "Smart scenarios",

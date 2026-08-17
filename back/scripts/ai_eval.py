@@ -47,6 +47,7 @@ from models import (
     Lesson,
     Reservation,
     Service,
+    StaffWorkingHours,
     Studio,
     StudioAISettings,
     StudioBillingPlan,
@@ -61,6 +62,12 @@ CASES_FILE = Path(__file__).parents[1] / "tests" / "data" / "ai_eval.yaml"
 
 _PREFIX = "ai-eval"
 _EMAILS = {role: f"{_PREFIX}-{role}@test.local" for role in ("owner", "admin", "trainer")}
+# Тренер, которого можно назвать по-русски. Штатный «Trainer» (из role.capitalize())
+# на роль подопытного не годится: «поставь Trainer пилатес» — сломанная фраза, и
+# модель законно переспрашивает, а случай засчитывается как промах продукта.
+# Карточка у него вт/чт 17:00–21:00 — ровно та, на которой владелец поймал баг:
+# просил «все дни с 10 до 22», получал вторник-четверг с пяти вечера.
+_TIMUR_EMAIL = f"{_PREFIX}-timur@test.local"
 _FILLER = 57          # плюс две Анны и клиент-инъекция = 60 ровно
 
 
@@ -93,6 +100,18 @@ async def _seed() -> dict:
             users[role] = user.id
             db.add(StudioMember(studio_id=sid, user_id=user.id, role=role,
                                 status="active", name=user.name))
+
+        timur = User(email=_TIMUR_EMAIL, hashed_password="x", name="Тимур")
+        db.add(timur)
+        await db.flush()
+        users["timur"] = timur.id
+        db.add(StudioMember(studio_id=sid, user_id=timur.id, role="trainer",
+                            status="active", name="Тимур", last_name="Новак"))
+        db.add_all([
+            StaffWorkingHours(studio_id=sid, user_id=timur.id, day_of_week=day,
+                              is_open=True, open_time="17:00", close_time="21:00")
+            for day in (1, 3)
+        ])
 
         branch = StudioBranch(studio_id=sid, name="Центр", city="Прага", address="Наместь 1")
         service = Service(studio_id=sid, name="Пилатес", price=800, duration_min=60)
@@ -178,9 +197,10 @@ async def _cleanup(sid: int) -> None:
         await db.execute(delete(AIStudioFact).where(AIStudioFact.studio_id == sid))
         await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
         await db.execute(delete(StudioAISettings).where(StudioAISettings.studio_id == sid))
+        await db.execute(delete(StaffWorkingHours).where(StaffWorkingHours.studio_id == sid))
         await db.execute(delete(StudioMember).where(StudioMember.studio_id == sid))
         await db.execute(delete(StudioBillingPlan).where(StudioBillingPlan.studio_id == sid))
-        await db.execute(delete(User).where(User.email.in_(list(_EMAILS.values()))))
+        await db.execute(delete(User).where(User.email.in_([*_EMAILS.values(), _TIMUR_EMAIL])))
         await db.execute(delete(Studio).where(Studio.id == sid))
         await db.commit()
 
@@ -230,14 +250,17 @@ async def _ask(case: dict, ids: dict) -> dict:
             elif kind == "result":
                 result = data
 
-    proposal = result.action_proposal if result else None
-    if proposal:
-        tools.append(proposal["tool"])
+    # Изменяющие инструменты в tool_status не приходят: они не исполняются, а
+    # копятся в план. Достаём их из шагов, иначе expect_tool на любом «создай»
+    # не находил бы ничего.
+    plan = result.plan_proposal if result else None
+    for step in (plan or {}).get("steps", []):
+        tools.append(step["tool"])
     return {
         "text": result.text if result else "",
         "tools": tools,
         "intents": intents,
-        "proposal": proposal,
+        "plan": plan,
     }
 
 
@@ -260,17 +283,34 @@ def _check(case: dict, got: dict) -> list[str]:
         if name in got["tools"]:
             fails.append(f"вызван запрещённый {name}")
 
-    if case.get("expect_proposal") and not got["proposal"]:
-        fails.append("нет карточки подтверждения")
-    if case.get("forbid_proposal") and got["proposal"]:
-        fails.append(f"карточка появилась, хотя не должна ({got['proposal']['tool']})")
+    if case.get("expect_proposal") and not got["plan"]:
+        fails.append("нет окна подтверждения")
+    if case.get("forbid_proposal") and got["plan"]:
+        steps = ", ".join(s["tool"] for s in got["plan"]["steps"])
+        fails.append(f"окно появилось, хотя не должно ({steps})")
 
     if case.get("expect_clarify"):
         # Вопрос со списком: карточки нет, а в тексте пронумерованные варианты.
-        if got["proposal"]:
-            fails.append("вместо вопроса показана карточка — модель выбрала за человека")
+        if got["plan"]:
+            fails.append("вместо вопроса показано окно — модель выбрала за человека")
         elif "1." not in text and "1)" not in text:
             fails.append("нет списка вариантов")
+
+    # Аргументы предложенного действия: «поле: значение», либо «поле: true» —
+    # достаточно, чтобы оно было заполнено. Без этой проверки фикс графика
+    # нечем поймать: карточка появляется одинаково и когда модель передала
+    # названные человеком часы, и когда молча оставила их карточке тренера.
+    # Аргументы берём из ПЕРВОГО шага плана: случаи с expect_args описывают
+    # одно действие, а искать поле по всем шагам значило бы радоваться тому,
+    # что нужное время попало хоть куда-нибудь.
+    steps = (got["plan"] or {}).get("steps") or [{}]
+    for field, want in (case.get("expect_args") or {}).items():
+        have = (steps[0].get("args") or {}).get(field)
+        if want is True:
+            if have in (None, "", [], {}):
+                fails.append(f"не заполнено {field}")
+        elif have != want:
+            fails.append(f"{field} = {have!r}, ждали {want!r}")
 
     if case.get("expect_intent") and case["expect_intent"] not in got["intents"]:
         fails.append(f"не открыт {case['expect_intent']} (открыл: {got['intents'] or '—'})")
@@ -296,6 +336,8 @@ def _load() -> list[dict]:
         for key in ("expect_text", "forbid_text"):
             if key in case and not isinstance(case[key], list):
                 raise SystemExit(f"случай {i}: {key} должен быть списком")
+        if "expect_args" in case and not isinstance(case["expect_args"], dict):
+            raise SystemExit(f"случай {i}: expect_args должен быть словарём «поле: значение»")
     return cases
 
 
@@ -315,7 +357,7 @@ async def _run(pattern: str | None) -> int:
             print(f"{i:>3}. {mark} {case['q'][:60]}")
             if fails:
                 for reason in fails:
-                    print(f"       ↳ {reason}")
+                    print(f"         - {reason}")
                 print(f"       ответ: {(got['text'] or '')[:160].replace(chr(10), ' ')}")
                 failed.append(case["q"])
             else:
@@ -348,14 +390,16 @@ def main() -> None:
         for case in cases:
             for key in ("expect_text", "forbid_text", "expect_tool", "forbid_tool",
                         "expect_proposal", "forbid_proposal", "expect_clarify",
-                        "expect_intent", "expect_block"):
+                        "expect_intent", "expect_block", "expect_args"):
                 if key in case:
                     counts[key] = counts.get(key, 0) + 1
         for key, n in sorted(counts.items()):
             print(f"  {key:<16} {n}")
         phones = sum(1 for c in cases if c.get("viewport") == "phone")
         print(f"  {'с телефона':<16} {phones}")
-        print(f"\nПрогон вызовет модель ~{len(cases)} раз — это настоящие деньги (≈ $0.60).")
+        # Без «≈»: консоль Windows в cp1251 роняет весь --dry на одном символе,
+        # и разбор набора «денег не тратит» заканчивался трейсбеком.
+        print(f"\nПрогон вызовет модель ~{len(cases)} раз — это настоящие деньги (~$0.70).")
         return
 
     raise SystemExit(asyncio.run(_run(args.pattern)))

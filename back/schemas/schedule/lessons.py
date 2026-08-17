@@ -54,6 +54,12 @@ class BookedClient(BaseSchema):
     avatar_color: Optional[str] = None
     spot_number: Optional[int] = None
     status: str
+    # Подаренное первое занятие — в Журнале помечается «Пробное», денег за него
+    # никто не ждёт.
+    is_trial: bool = False
+    # Сколько клиент должен за это занятие («оплата на месте»). 0 — покрыто
+    # абонементом, подарено или уже оплачено.
+    debt: int = 0
 
 
 class LessonDetail(LessonRead):
@@ -90,15 +96,16 @@ class LessonCreateRequest(BaseSchema):
     денормализуются из teacher_id/service_id на сервере. Диапазоны (total_spots
     1–50, конец позже начала) проверяет эндпоинт как 400 — по контракту.
     price/level/equipment опциональны: квик-форма создания занятия в Журнале
-    их не собирает (только услуга/зал/время/лимит/тренер) — заполняются
-    позже через редактирование."""
+    их не собирает (только услуга/зал/время/лимит/тренер). price=None —
+    «взять из карточки услуги» (как и name), а не «занятие бесплатное»:
+    иначе мини-приложение показывало 0 ₽ на платной хатхе."""
     service_id: int
     teacher_id: int
     hall_id: Optional[int] = None
     start_time: datetime
     duration_min: int = 60
     total_spots: int = 8
-    price: int = 0
+    price: Optional[int] = None
     level: str = ""
     equipment: str = ""
 

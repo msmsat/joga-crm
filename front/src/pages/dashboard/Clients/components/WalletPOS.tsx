@@ -136,7 +136,14 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
 
       {quote && quote.bonuses_available > 0 && (
         <div className={s.bonusRow}>
-          <span className={s.bonusLabel}>{t('panel.wallet.useBonuses', { count: quote.bonuses_available })}</span>
+          {/* Баллы и их цена — в одной строке: кассир должен видеть, на сколько
+              упадёт чек, а не только сколько у клиента баллов. На уровне с
+              point_value=2 это разные числа. */}
+          <span className={s.bonusLabel}>
+            {t('panel.wallet.useBonuses', { count: quote.bonuses_available })}
+            {' · '}
+            {currency}{quote.bonuses_available * quote.point_value}
+          </span>
           <Switch checked={useBonuses} onChange={setUseBonuses}/>
         </div>
       )}
@@ -146,7 +153,13 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
         {!!quote?.discount && <PriceRow label={t('panel.wallet.discount')} value={`−${currency}${quote.discount}`} accent="discount"/>}
         {!!quote?.certificate_applied && <PriceRow label={t('panel.wallet.certApplied')} value={`−${currency}${quote.certificate_applied}`} accent="discount"/>}
         {!!quote?.deposit_applied && <PriceRow label={t('panel.wallet.depositApplied')} value={`−${currency}${quote.deposit_applied}`} accent="discount"/>}
-        {!!quote?.bonuses_applied && <PriceRow label={t('panel.wallet.bonuses')} value={`−${currency}${quote.bonuses_applied}`} accent="discount"/>}
+        {!!quote?.bonuses_applied && (
+          <PriceRow
+            label={t('panel.wallet.bonusesSpent', { count: quote.bonuses_applied })}
+            value={`−${currency}${quote.bonuses_value}`}
+            accent="discount"
+          />
+        )}
         <div className={s.divider}/>
         <PriceRow label={t('panel.wallet.total')} value={quote ? `${currency}${quote.total_price}` : '—'} accent="total"/>
       </Card>

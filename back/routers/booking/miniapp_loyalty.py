@@ -33,6 +33,7 @@ from models import (
 from routers.loyalty.cards import _get_or_create_levels, _level_for
 from schemas._base import BaseSchema
 from services.notifier import _fmt_amount, _studio_prefs
+from services.points import DEFAULT_POINT_VALUE, point_value_of
 
 from .miniapp import get_current_client
 
@@ -52,6 +53,11 @@ class LoyaltyLevelInfo(BaseSchema):
     # лестница, чтобы клиент видел не только где он, но и что дальше.
     reached: bool
     is_current: bool
+    # Выгода уровня: во сколько денег обходится балл, если ты на нём стоишь.
+    # Без неё лестница показывает только «сколько потратить», ни слова о том,
+    # ради чего.
+    point_value: int
+    point_value_str: str
 
 
 class PointEntry(BaseSchema):
@@ -97,10 +103,25 @@ class LoyaltyOverview(BaseSchema):
     currency: str
 
     points_balance: int
-    # Сколько это в деньгах по курсу программы (points_exchange_rate баллов = 1
-    # единица валюты). Баллы без цены — абстракция, ради которой никто не ходит.
+    # Сколько это в деньгах — по цене балла НА УРОВНЕ КЛИЕНТА, той же, что
+    # применит касса (`services/points.client_point_value`, оттуда же берёт
+    # `_quote`). Раньше здесь стояло balance // rate, и кабинет обещал в rate
+    # раз меньше, чем клиент реально получал на кассе. Баллы без цены —
+    # абстракция, ради которой никто не ходит, но неверная цена хуже её
+    # отсутствия.
     points_value_str: str
     points_exchange_rate: int
+    # Курс словами: сколько потратить ради одного балла («100 ₴») и сколько
+    # стоит один балл при оплате на текущем уровне («2 ₴»). Форматируем здесь,
+    # а не на клиенте: знак валюты у мини-приложения один источник — сервер.
+    earn_rate_str: str
+    point_value: int
+    point_unit_str: str
+    # Цена балла на следующем уровне — ради неё клиент и копит. None, когда
+    # уровень последний или выгода на следующем такая же.
+    next_point_unit_str: Optional[str]
+    # Когда сгорают баллы: '3m' | '6m' | '1y' | 'never' (StudioLoyaltyConfig).
+    points_expiry: str
 
     total_spent: int
     total_spent_str: str
@@ -150,10 +171,11 @@ async def get_loyalty_overview(
     total_spent = card.total_spent if card else 0
     deposit_balance = card.deposit_balance if card else 0
 
+    # Курс — «сколько денег потратить ради одного балла» (владелец правит это
+    # поле как «Начисление баллов (₴ за 1 балл)»): accrue_points начисляет
+    # amount // rate. Одинаков на всех уровнях — уровень меняет не скорость
+    # накопления, а цену накопленного (point_value уровня).
     rate = config.points_exchange_rate if config else 100
-    # Курс — «сколько баллов в одной единице валюты». Ноль в делителе означал бы
-    # кривой конфиг, а не бесконечную ценность баллов.
-    points_value = points_balance // rate if rate > 0 else 0
 
     levels = await _get_or_create_levels(studio_id, db)
     current_level_id = _level_for(total_spent, levels)
@@ -167,6 +189,8 @@ async def get_loyalty_overview(
             min_threshold_str=_fmt_amount(lvl.min_threshold, currency),
             reached=total_spent >= lvl.min_threshold,
             is_current=lvl.id == current_level_id,
+            point_value=point_value_of(lvl),
+            point_value_str=_fmt_amount(point_value_of(lvl), currency),
         ))
 
     current = next((info for info in level_infos if info.is_current), None)
@@ -175,6 +199,16 @@ async def get_loyalty_overview(
     # сохранении (routers/loyalty/cards._validate_levels).
     nxt = next((info for info in level_infos if not info.reached), None)
     to_next = (nxt.min_threshold - total_spent) if nxt else None
+
+    # Цена балла клиента — уровня, на котором он стоит. Лестницу могли удалить
+    # целиком, тогда уровня нет и балл стоит единицу (point_value_of).
+    point_value = current.point_value if current else DEFAULT_POINT_VALUE
+    # «Дальше будет дороже» показываем, только если действительно дороже:
+    # одинаковая цена на соседних ступенях — не выгода, а шум.
+    next_point_unit_str = (
+        _fmt_amount(nxt.point_value, currency)
+        if nxt is not None and nxt.point_value > point_value else None
+    )
 
     history_rows = (await db.execute(
         select(LoyaltyPointTransaction)
@@ -285,8 +319,13 @@ async def get_loyalty_overview(
         program_name=(config.program_name if config else "Velora Club"),
         currency=currency,
         points_balance=points_balance,
-        points_value_str=_fmt_amount(points_value, currency),
+        points_value_str=_fmt_amount(points_balance * point_value, currency),
         points_exchange_rate=rate,
+        earn_rate_str=_fmt_amount(rate, currency),
+        point_value=point_value,
+        point_unit_str=_fmt_amount(point_value, currency),
+        next_point_unit_str=next_point_unit_str,
+        points_expiry=(config.expiry_period if config else "never"),
         total_spent=total_spent,
         total_spent_str=_fmt_amount(total_spent, currency),
         level=current,

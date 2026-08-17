@@ -28,6 +28,8 @@ _METHODS = {"POST", "PATCH", "PUT", "DELETE"}
 UI_ONLY: dict[str, str] = {
     # ── Сам ассистент: настраивать себя и отвечать за свой транспорт он не должен
     "POST /ai/actions/execute": "исполнение подтверждённого действия — это и есть кнопка человека",
+    "POST /ai/actions/execute-plan": "исполнение подтверждённой пачки — та же кнопка человека, "
+                                     "только на несколько шагов сразу",
     "POST /ai/sessions": "диалоги ассистента ведёт фронт, а не модель",
     "DELETE /ai/sessions/{session_id}": "удаление диалога — действие человека в списке чатов",
     "POST /ai/sessions/{session_id}/messages": "сам вход в ассистента",
@@ -86,6 +88,7 @@ UI_ONLY: dict[str, str] = {
     "POST /global/checkout/calculate": "покупка клиентом из мини-приложения",
     "POST /global/checkout/session": "покупка клиентом из мини-приложения",
     "PATCH /global/me/settings": "настройки клиента в его кабинете",
+    "POST /global/me/phone": "клиент оставляет свой номер в кабинете",
     "POST /global/reservations": "клиент записывается сам",
     "POST /global/reservations/{lesson_id}/cancel": "клиент отменяет запись сам",
     "POST /global/reservations/{lesson_id}/coffee": "клиент выбирает кофе сам",

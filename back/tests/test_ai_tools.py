@@ -57,6 +57,7 @@ _PROXIES = {
     "fill_schedule": ai_tools._r_create_lesson,   # тот же роутер, N раз подряд
     "book_client": ai_tools._r_create_reservation,
     "cancel_booking": ai_tools._r_cancel_reservation,
+    "pay_booking": ai_tools._r_pay_reservation,
     "create_client": ai_tools._r_create_client,
     "freeze_client": ai_tools._r_freeze_client,
     # Сотрудники и Каталог (эпик AI-6, задача 10).
@@ -310,6 +311,39 @@ async def _run():
             assert filled["created"] == 3, filled     # 10:00, 11:00, 13:00 — в 12:00 перерыв
             # Повтор не удваивает расписание: те же часы уже заняты.
             assert "error" in await call_tool("fill_schedule", fill, as_owner, db)
+
+            # Названные человеком дни и часы перебивают карточку тренера.
+            # Раньше их некуда было передать: человек просил «с 18 до 20»,
+            # сервер молча ставил по карточке (10:00–14:00), и это выглядело
+            # как «ассистент переврал». Заодно проверяем, что карточка едет за
+            # словами — иначе роутер отверг бы каждое занятие своей же
+            # проверкой рабочих часов, и «ставлю по вашему» было бы враньём.
+            evening_day = (datetime.utcnow() + timedelta(days=4)).date()
+            evening = {"teacher_id": trainer_id, "service_id": service_id,
+                       "date_from": evening_day.isoformat(), "date_to": evening_day.isoformat(),
+                       "weekdays": [evening_day.weekday()], "time_from": "18:00", "time_to": "20:00"}
+            late = await call_tool("fill_schedule", evening, as_owner, db)
+            assert late["created"] == 2, late             # 18:00 и 19:00
+            assert late["conflicts"] and "10:00–14:00" in late["conflicts"][0], late
+            hours = (await db.execute(select(StaffWorkingHours).where(
+                StaffWorkingHours.user_id == trainer_id,
+                StaffWorkingHours.studio_id == sid,
+                StaffWorkingHours.day_of_week == evening_day.weekday(),
+            ))).scalar_one()
+            # Раздвинули, а не подменили: утро тренера осталось при нём.
+            assert (hours.open_time, hours.close_time) == ("10:00", "20:00"), hours.open_time
+
+            # Тот же запрос с выключенной правкой карточки не создаёт ничего:
+            # проверка рабочих часов в роутере отвергает каждое занятие. Это и
+            # есть причина, по которой галочка включена по умолчанию.
+            dawn_day = (datetime.utcnow() + timedelta(days=5)).date()
+            dawn = await call_tool("fill_schedule", {
+                "teacher_id": trainer_id, "service_id": service_id,
+                "date_from": dawn_day.isoformat(), "date_to": dawn_day.isoformat(),
+                "weekdays": [dawn_day.weekday()], "time_from": "06:00", "time_to": "08:00",
+                "extend_hours": False,
+            }, as_owner, db)
+            assert "error" in dawn, dawn
 
             # Сегодняшний день считается в часовом поясе студии.
             agenda = await call_tool("get_today_agenda", {}, as_owner, db)

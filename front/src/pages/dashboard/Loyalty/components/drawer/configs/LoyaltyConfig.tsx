@@ -4,7 +4,7 @@ import styles from '../../../Loyalty.module.css';
 import type { LoyaltyConfig as LoyaltyConfigType, LoyaltyLevel } from '../../../../../../api/loyalty/loyalty.types';
 import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../../components/UI';
-import { ConfirmModal } from '../../../../../../components/ui/ConfirmModal';
+import { ConfirmModal, InfoHint } from '../../../../../../components/ui/index';
 import type { ConfigErrors } from '../../../hooks/validateConfig';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   onChange: (patch: Partial<LoyaltyConfigType>) => void;
   errors?: ConfigErrors;
   levels: LoyaltyLevel[] | null;
-  onUpdateLevel: (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold'>>) => void;
+  onUpdateLevel: (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold' | 'point_value'>>) => void;
   onAddLevel: () => void;
   onRemoveLevel: (id: number) => void;
 }
@@ -47,45 +47,68 @@ export default function LoyaltyConfig({ value, onChange, errors = {}, levels, on
       </div>
 
       <div>
-        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.levels')}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('config.levels')}</div>
+          <InfoHint title={t('config.levels')} text={t('config.pointValueHint')} />
+        </div>
         {sortedLevels.map((lvl, i) => (
-          <div key={lvl.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', borderRadius: 'var(--radius-sm)', border: `1px solid ${lvl.color}30`, background: `${lvl.color}08`, marginBottom: '8px' }}>
-            <input
-              type="color"
-              value={lvl.color}
-              onChange={e => onUpdateLevel(lvl.id, { color: e.target.value })}
-              style={{ width: '20px', height: '20px', padding: 0, border: 'none', borderRadius: '50%', cursor: 'pointer', flexShrink: 0, background: 'none' }}
-            />
-            <input
-              value={lvl.name}
-              onChange={e => onUpdateLevel(lvl.id, { name: e.target.value })}
-              style={{ flex: 1, minWidth: 0, fontSize: '13px', fontWeight: 600, color: 'var(--text)', background: 'transparent', border: 'none', outline: 'none' }}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{t('config.levelFrom')}</span>
-            <input
-              type="number"
-              value={lvl.min_threshold}
-              disabled={i === 0}
-              onChange={e => onUpdateLevel(lvl.id, { min_threshold: Number(e.target.value) })}
-              style={{ width: '84px', fontSize: '12px', color: 'var(--text2)', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '6px', padding: '4px 6px', opacity: i === 0 ? 0.5 : 1 }}
-            />
-            <span style={{ fontSize: '12px', color: 'var(--text2)' }}>
-              — {lvl.max_threshold === null ? '∞' : `${currency}${lvl.max_threshold.toLocaleString('ru-RU')}`}
-            </span>
-            <button
-              onClick={() => setDeleteTarget(lvl)}
-              disabled={sortedLevels.length <= 1}
-              style={{ background: 'none', border: 'none', cursor: sortedLevels.length <= 1 ? 'default' : 'pointer', color: 'var(--text3)', opacity: sortedLevels.length <= 1 ? 0.3 : 1, padding: '4px', display: 'flex' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6" /></svg>
-            </button>
+          <div key={lvl.id} className={styles.levelCard} style={{ boxShadow: `inset 0 0 0 1px ${lvl.color}33` }}>
+            <div className={styles.levelHead}>
+              <label className={styles.levelSwatch} style={{ background: lvl.color }}>
+                <input type="color" value={lvl.color} onChange={e => onUpdateLevel(lvl.id, { color: e.target.value })} />
+              </label>
+              <input
+                className={styles.levelName}
+                value={lvl.name}
+                onChange={e => onUpdateLevel(lvl.id, { name: e.target.value })}
+              />
+              <button
+                className={styles.levelDel}
+                onClick={() => setDeleteTarget(lvl)}
+                disabled={sortedLevels.length <= 1}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6" /></svg>
+              </button>
+            </div>
+
+            {/* Порог и цена балла — две равные плитки: порог отвечает «когда сюда
+                попадёшь», цена балла — «что здесь дают». В одной строке с именем
+                они не помещались и на телефоне расползались. */}
+            <div className={styles.levelFields}>
+              <div className={styles.levelField} style={i === 0 ? { opacity: 0.6 } : undefined}>
+                <span className={styles.levelFieldLabel}>{t('config.levelFrom')}</span>
+                <div className={styles.levelFieldRow}>
+                  <span className={styles.levelSuffix}>{currency}</span>
+                  <input
+                    type="number"
+                    className={styles.levelInput}
+                    value={lvl.min_threshold}
+                    disabled={i === 0}
+                    onChange={e => onUpdateLevel(lvl.id, { min_threshold: Number(e.target.value) })}
+                  />
+                  <span className={styles.levelSuffix}>
+                    — {lvl.max_threshold === null ? '∞' : lvl.max_threshold.toLocaleString('ru-RU')}
+                  </span>
+                </div>
+              </div>
+              <div className={styles.levelField} style={errors.point_value && lvl.point_value < 1 ? { borderColor: '#D88C9A' } : undefined}>
+                <span className={styles.levelFieldLabel}>{t('config.pointValue')}</span>
+                <div className={styles.levelFieldRow}>
+                  <input
+                    type="number"
+                    min={1}
+                    className={styles.levelInput}
+                    value={lvl.point_value}
+                    onChange={e => onUpdateLevel(lvl.id, { point_value: Number(e.target.value) })}
+                  />
+                  <span className={styles.levelSuffix}>{currency}</span>
+                </div>
+              </div>
+            </div>
           </div>
         ))}
-        <button
-          onClick={onAddLevel}
-          className={styles.btnOption}
-          style={{ padding: '8px 16px', border: '1px dashed var(--border)', background: 'var(--bg)', color: 'var(--text3)', fontSize: '13px', fontWeight: 600 }}
-        >
+        {errors.point_value && <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '4px', marginBottom: '8px' }}>{errors.point_value}</div>}
+        <button onClick={onAddLevel} className={styles.levelAdd}>
           {t('config.addLevel')}
         </button>
         {errors.levels && <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '8px' }}>{errors.levels}</div>}

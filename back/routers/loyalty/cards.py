@@ -22,10 +22,14 @@ from schemas.loyalty import (
 router = APIRouter()
 
 # Дефолтные уровни из формы LoyaltyConfig.tsx (пороги — сумма покупок в ₽).
+# point_value у всех 1: лестница создаётся молча при первом открытии раздела,
+# в том числе у студий, которые работают давно, — подняв цену балла за них, мы
+# бы задним числом переоценили баллы их клиентов. Выгоду уровней владелец
+# включает сам, руками.
 DEFAULT_LEVELS = [
-    {"name": "Серебро", "color": "#B0B0C0", "min_threshold": 0, "max_threshold": 10000, "sort_order": 0},
-    {"name": "Золото", "color": "#F0C040", "min_threshold": 10000, "max_threshold": 50000, "sort_order": 1},
-    {"name": "Платина", "color": "#FCAE91", "min_threshold": 50000, "max_threshold": None, "sort_order": 2},
+    {"name": "Серебро", "color": "#B0B0C0", "min_threshold": 0, "max_threshold": 10000, "sort_order": 0, "point_value": 1},
+    {"name": "Золото", "color": "#F0C040", "min_threshold": 10000, "max_threshold": 50000, "sort_order": 1, "point_value": 1},
+    {"name": "Платина", "color": "#FCAE91", "min_threshold": 50000, "max_threshold": None, "sort_order": 2, "point_value": 1},
 ]
 
 
@@ -73,6 +77,12 @@ def _validate_levels(levels: List[LoyaltyLevelWrite]) -> None:
         raise HTTPException(status_code=400, detail="Первый уровень должен начинаться с 0")
     if levels[-1].max_threshold is not None:
         raise HTTPException(status_code=400, detail="Последний уровень должен быть без верхней границы")
+    # Цена балла — деньги: ноль обесценил бы накопленное клиентами молча, минус
+    # вообще не имеет смысла. Верхней границы нет намеренно — это решение
+    # владельца, а не наше.
+    for lvl in levels:
+        if lvl.point_value is not None and lvl.point_value < 1:
+            raise HTTPException(status_code=400, detail=f"Цена балла на уровне «{lvl.name}» не может быть меньше 1")
     for i in range(len(levels) - 1):
         cur, nxt = levels[i], levels[i + 1]
         if cur.max_threshold is None:
@@ -111,6 +121,9 @@ async def update_levels(
             row.min_threshold = lvl_in.min_threshold
             row.max_threshold = lvl_in.max_threshold
             row.sort_order = lvl_in.sort_order
+            # Не прислали — не трогаем: см. LoyaltyLevelWrite.point_value.
+            if lvl_in.point_value is not None:
+                row.point_value = lvl_in.point_value
         else:
             row = LoyaltyLevel(
                 studio_id=ctx.studio_id,
@@ -119,6 +132,7 @@ async def update_levels(
                 min_threshold=lvl_in.min_threshold,
                 max_threshold=lvl_in.max_threshold,
                 sort_order=lvl_in.sort_order,
+                point_value=lvl_in.point_value or 1,
             )
             db.add(row)
         result.append(row)

@@ -9,7 +9,7 @@
 // Занято Каталогом: branches, branch(id), services. Журналом: staff, halls,
 // journalLessons(from, to), journalDays(month). Лояльностью: loyaltyConfigs, loyaltyStats, loyaltyLevels,
 // loyaltyCards, loyaltyPromoCodes, loyaltyDepositStats, loyaltyCertificates, loyaltyOffers(clientId).
-// Клиентами: clients(search, category), client(id), clientCategories, clientSegmentRules,
+// Клиентами: clients(search, category), clientsCount, client(id), clientCategories, clientSegmentRules,
 // clientEvents(id, filter), clientActivity(id), clientNotes(id), wallet(clientId).
 // Онлайн-записью: bookingSettings, bookingChannels.
 // Уведомлениями: notifyIntegrations, notificationSettings, notificationMatrix, notificationMyPrefs.
@@ -59,6 +59,7 @@ export const queryKeys = {
   studioSettings: ['settings', 'general'] as const,
   clients: (search: string, category: string) => ['clients', search, category] as const,
   clientsAll: ['clients'] as const, // префикс: инвалидация всех search/category разом
+  clientsCount: ['clients', 'count'] as const, // бейдж бокового меню — под тем же префиксом
   client: (id: number) => ['clients', 'detail', id] as const,
   clientCategories: ['clients', 'categories'] as const,
   clientSegmentRules: ['clients', 'segment-rules'] as const,

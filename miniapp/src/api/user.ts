@@ -12,6 +12,10 @@ export interface UserProfile {
   name: string;
   /** null — почта не привязана: профиль зовёт привязать, чтобы открыть вход из браузера. */
   email: string | null;
+  /** null — номера нет: запись с оплатой на месте попросит его перед бронью. */
+  phone: string | null;
+  /** Номер подтверждён Telegram (requestContact), а не введён руками. */
+  phone_verified: boolean;
   notifs_enabled: boolean;
   reminders_enabled: boolean;
   registration_date: string;
@@ -51,8 +55,14 @@ export interface CheckoutCalc {
   deposit_available: number;
   deposit_applied: number;
   deposit_applied_str: string;
+  /** available/applied — БАЛЛЫ; *_value_str — деньги по цене балла уровня. */
   bonuses_available: number;
+  bonuses_available_value_str: string;
   bonuses_applied: number;
+  bonuses_value: number;
+  bonuses_value_str: string;
+  point_value: number;
+  point_unit_str: string;
   total_price: number;
   total_price_str: string;
   /** Всё покрыто бонусами/сертификатом — Stripe не открывается. */
@@ -149,6 +159,18 @@ export const bookLesson = (data: BookLessonRequest): Promise<ReservationResponse
 /** Скасовує власну активну бронь на занятті. Ендпоінт: POST /global/reservations/{lesson_id}/cancel */
 export const cancelLesson = (lessonId: number): Promise<ReservationResponse> =>
   apiPost(`/global/reservations/${lessonId}/cancel`);
+
+/**
+ * Зберігає номер телефону клієнта — передумова запису з оплатою на місці.
+ *
+ * `contact_data` — підписана відповідь Telegram `requestContact`: номер
+ * підтверджує сам Telegram, коду вводити не треба. `phone` — ручне введення
+ * (браузер або старий клієнт), такий номер зберігається непідтвердженим.
+ * Ендпоінт: POST /global/me/phone
+ */
+export const setMyPhone = (
+  data: { contact_data: string } | { phone: string },
+): Promise<{ phone: string; phone_verified: boolean }> => apiPost('/global/me/phone', data);
 
 /** Оцінює минуле заняття. Ендпоінт: POST /global/reservations/{lesson_id}/rate */
 export const rateLesson = (lessonId: number, rating: number): Promise<ReservationResponse> =>

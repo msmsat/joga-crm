@@ -29,6 +29,9 @@ export default function App() {
   // покупку и сбрасывает — иначе тот же сертификат подставился бы и в следующий
   // раз, когда клиент просто зашёл купить абонемент.
   const [pendingCertificate, setPendingCertificate] = useState<string | null>(null);
+  // Запись упёрлась в «Предоплату при записи» (402): человека несёт в покупку
+  // абонемента — тем же путём, что и сертификат из Клуба.
+  const [wantsSubscription, setWantsSubscription] = useState(false);
   const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
 
@@ -157,6 +160,12 @@ export default function App() {
     switchTab('prof');
   };
 
+  /** «Нужен абонемент» из записи: открыть покупку в профиле. */
+  const goBuySubscription = () => {
+    setWantsSubscription(true);
+    switchTab('prof');
+  };
+
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
   if (isLoading) {
     return (
@@ -255,8 +264,15 @@ export default function App() {
   }
 
   const screens: Record<string, React.ReactNode> = {
-    home: <Home user={user} catalog={catalog} onNavigate={switchTab} />,
-    sched: <Shedule catalog={catalog} />,
+    home: (
+      <Home
+        user={user}
+        catalog={catalog}
+        onNavigate={switchTab}
+        onBuySubscription={goBuySubscription}
+      />
+    ),
+    sched: <Shedule catalog={catalog} onBuySubscription={goBuySubscription} />,
     my: <MyLessons />,
     prof: (
       <Profile
@@ -264,6 +280,8 @@ export default function App() {
         onCatalogRefresh={loadCatalog}
         pendingCertificate={pendingCertificate}
         onPendingCertificateUsed={() => setPendingCertificate(null)}
+        openBuy={wantsSubscription}
+        onBuyIntentUsed={() => setWantsSubscription(false)}
       />
     ),
     club: <Club data={loyalty} onUseCertificate={useCertificate} />,

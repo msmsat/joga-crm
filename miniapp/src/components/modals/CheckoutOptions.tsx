@@ -98,9 +98,15 @@ export default function CheckoutOptions({
       )}
 
       {calc !== null && calc.bonuses_available > 0 && (
+        /* Рядом с числом баллов — их цена: на уровне, где балл стоит 2 ₴,
+           «250 баллов» и «500 ₴» это одно и то же, и человек должен видеть
+           вторую цифру до того, как решит тратить. */
         <SettingRow
           icon={<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z" />}
-          label={t('paymentModal.use_bonuses', { count: calc.bonuses_available })}
+          label={t('paymentModal.use_bonuses_worth', {
+            count: calc.bonuses_available,
+            value: calc.bonuses_available_value_str,
+          })}
           toggle
           checked={useBonuses}
           onClick={() => !disabled && onUseBonuses(!useBonuses)}

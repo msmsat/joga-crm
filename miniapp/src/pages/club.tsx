@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import LoyaltyCard from '../components/club/LoyaltyCard';
 import LevelLadder from '../components/club/LevelLadder';
 import DepositSheet from '../components/club/DepositSheet';
+import ClubInfoSheet from '../components/club/ClubInfoSheet';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
@@ -36,6 +37,7 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
   const { tg, vibrateLight } = useTelegram();
 
   const [isDepositOpen, setIsDepositOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   if (!data) {
@@ -87,7 +89,33 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
 
   return (
     <>
-      <ScreenHeader kicker={data.program_name} title={t('club.title')} />
+      <ScreenHeader
+        kicker={data.program_name}
+        title={t('club.title')}
+        action={
+          /* Правила клуба одним тапом с любой точки раздела: подписи под
+             метками отвечают «что это», а сюда уходит «по какому курсу и в
+             каком порядке» — то, что не влезает в строку. */
+          <motion.button
+            type="button"
+            onClick={() => {
+              setIsInfoOpen(true);
+              vibrateLight();
+            }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-card py-2 pl-2.5 pr-3.5 shadow-soft"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+            <span className="text-[11px] font-extrabold tracking-[-0.01em] text-brand">
+              {t('club.info.action')}
+            </span>
+          </motion.button>
+        }
+      />
 
       <div className="pt-6 dt:pt-10">
         <LoyaltyCard data={data} />
@@ -95,8 +123,10 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
 
       {data.levels.length > 0 && (
         <>
+          {/* Без hint: объяснение уровней теперь внутри самой лестницы —
+              тремя шагами и цифрами студии, а не строчкой под меткой. */}
           <SectionLabel>{t('club.levels')}</SectionLabel>
-          <LevelLadder levels={data.levels} />
+          <LevelLadder data={data} />
         </>
       )}
 
@@ -104,7 +134,9 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
           сценарием или владельцем вручную, а не рекламное обещание. */}
       {data.offers.length > 0 && (
         <>
-          <SectionLabel trailing={`${data.offers.length}`}>{t('club.offers')}</SectionLabel>
+          <SectionLabel trailing={`${data.offers.length}`} hint={t('club.offers_hint')}>
+            {t('club.offers')}
+          </SectionLabel>
           <div className="flex flex-col gap-2 px-5">
             {data.offers.map((offer, i) => (
               <motion.div
@@ -134,7 +166,7 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
           администратору в студии, и отнимать эту возможность незачем. */}
       {data.certificates.length > 0 && (
         <>
-          <SectionLabel trailing={`${data.certificates.length}`}>
+          <SectionLabel trailing={`${data.certificates.length}`} hint={t('club.certificates_hint')}>
             {t('club.certificates')}
           </SectionLabel>
           <div className="flex flex-col gap-2 px-5">
@@ -203,7 +235,7 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
           этой механики нет вовсе, и пустой блок «0 ₴» был бы шумом. */}
       {data.deposit_balance > 0 && (
         <>
-          <SectionLabel>{t('club.deposit')}</SectionLabel>
+          <SectionLabel hint={t('club.deposit_hint')}>{t('club.deposit')}</SectionLabel>
           <div className="px-5">
             <Press
               onClick={() => {
@@ -235,7 +267,15 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
           числами из его же конфига: бонус приглашающему и скидка новичку. */}
       {referral && (
         <>
-          <SectionLabel>{t('club.referral')}</SectionLabel>
+          <SectionLabel
+            hint={
+              referral.new_client_discount > 0
+                ? t('club.referral_hint', { discount: referral.new_client_discount })
+                : t('club.referral_hint_plain')
+            }
+          >
+            {t('club.referral')}
+          </SectionLabel>
           <div className="px-5">
             <div className="rounded-[20px] bg-card p-5 shadow-soft dt:p-6">
               <div className="flex flex-wrap gap-2">
@@ -295,7 +335,9 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
         </>
       )}
 
-      <SectionLabel>{t('club.history')}</SectionLabel>
+      <SectionLabel hint={t('club.history_hint', { unit: data.point_unit_str })}>
+        {t('club.history')}
+      </SectionLabel>
       {data.history.length === 0 ? (
         <EmptyState
           size="sm"
@@ -342,6 +384,7 @@ export default function Club({ data, onUseCertificate }: ClubProps) {
       )}
 
       <DepositSheet isOpen={isDepositOpen} onClose={() => setIsDepositOpen(false)} />
+      <ClubInfoSheet isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} data={data} />
     </>
   );
 }

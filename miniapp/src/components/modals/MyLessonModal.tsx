@@ -147,6 +147,20 @@ export default function MyLessonModal({
         </div>
       )}
 
+      {/* Долг за занятие и подарок студии — те же две метки, что на карточке
+          списка. Без них лист занятия был единственным местом, где «Не
+          оплачено» пропадало ровно тогда, когда человек открыл подробности. */}
+      {lesson && lesson.debt > 0 && (
+        <div className="mt-3 rounded-[18px] bg-danger/12 px-4 py-3.5 text-[13px] font-bold text-danger">
+          {t('mylessons.unpaid', { amount: lesson.debt_str })}
+        </div>
+      )}
+      {lesson && lesson.debt <= 0 && lesson.is_trial && (
+        <div className="mt-3 rounded-[18px] bg-success/14 px-4 py-3.5 text-[13px] font-bold text-foreground">
+          {t('mylessons.trial')}
+        </div>
+      )}
+
       {/* Кофе — единственное, что клиент может изменить у будущего занятия,
           кроме самой записи. Полоска та же, что в карточке списка, и состояние
           у них общее: страница обновляет занятие ответом сервера. */}

@@ -10,26 +10,31 @@ import ServiceScheduleSheet from '../components/schedule/ServiceScheduleSheet';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { Press } from '../components/ui/Press';
 import BookingModal from '../components/modals/BookingModal';
+import PhoneSheet from '../components/modals/PhoneSheet';
+import SubscriptionSheet from '../components/modals/SubscriptionSheet';
 import SuccessModal from '../components/modals/SuccessModal';
 import CoffeeModal from '../components/modals/CoffeeModal';
 import { getLiked, toggleLiked } from '../lib/likes';
 import { type UserResponse } from '../api/auth';
-import { getNextLesson, type CoffeeState, type LessonResponse } from '../api/lessons';
-import { bookLesson, cancelLesson } from '../api/user';
+import { getNextLesson, type LessonResponse } from '../api/lessons';
 import type { Studio, StudioCatalog } from '../api/studio';
 import { useTelegram } from '../hooks/useTelegram';
-import { spawnPetals } from '../lib/petals';
-import { notify } from '../lib/notify';
+import { useLessonBooking } from '../hooks/useLessonBooking';
 
 interface HomeProps {
   user: UserResponse | null;
   catalog: StudioCatalog | null;
   /** Переход в другой раздел кабинета — пустая главная должна куда-то вести. */
   onNavigate: (tab: string) => void;
+  /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
+  onBuySubscription: () => void;
 }
 
-export default function Home({ user, catalog, onNavigate }: HomeProps) {
+export default function Home({ user, catalog, onNavigate, onBuySubscription }: HomeProps) {
   const branches = catalog?.branches ?? [];
+  // Лента рисуется и для одного филиала: карточка — единственный вход в
+  // описание студии (фото, адрес, часы, StudioSheet), а филиал ровно один у
+  // большинства студий. Счётчик при этом прячем — «1» рядом с «Студії» пустой.
   const isMultiStudio = branches.length > 1;
 
   const [activeStudioId, setActiveStudioId] = useState<number | null>(branches[0]?.id ?? null);
@@ -45,18 +50,8 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
 
   const [heroLesson, setHeroLesson] = useState<LessonResponse | null>(null);
   const [isHeroLoading, setIsHeroLoading] = useState(true);
-  const [activeLesson, setActiveLesson] = useState<LessonResponse | null>(null);
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSpot, setSelectedSpot] = useState<number | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  // Кофе спрашиваем последней панелью — после того, как человек закрыл успех.
-  // Состояние берём из ответа на бронь, а не из карточки занятия: там снимок
-  // сделан ДО записи, и счётчик успевал устареть.
-  const [isCoffeeOpen, setIsCoffeeOpen] = useState(false);
-  const [coffee, setCoffee] = useState<CoffeeState | null>(null);
 
-  const { tg, vibrateMedium, vibrateLight } = useTelegram();
+  const { vibrateMedium, vibrateLight } = useTelegram();
   const { t } = useTranslation();
 
   const loadHeroLesson = () => {
@@ -75,6 +70,20 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
     loadHeroLesson();
   }, []);
 
+  // Запись и отмена — общие с расписанием (useLessonBooking). Главной после
+  // них нужно перечитать и «ближайшее занятие», и открытый лист услуги.
+  const booking = useLessonBooking({
+    onChanged: () => {
+      loadHeroLesson();
+      setScheduleTick((tick) => tick + 1);
+    },
+    messages: {
+      bookError: t('home.booking_error'),
+      cancelError: t('home.cancel_booking_error'),
+      cancelSuccess: t('home.cancel_booking_success'),
+    },
+  });
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return t('home.greeting_morning');
@@ -82,14 +91,6 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
     return t('home.greeting_evening');
   };
 
-  const openModal = (lesson: LessonResponse | null) => {
-    setSelectedSpot(null);
-    setActiveLesson(lesson);
-    setIsModalOpen(true);
-    vibrateMedium();
-  };
-
-  const closeModal = () => setIsModalOpen(false);
 
   const handleLike = (id: number) => {
     setLiked(toggleLiked(id));
@@ -113,65 +114,6 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
     setActiveStudioId(studio.id);
     setSchedule({ serviceId: pendingService, studio });
     setPendingService(null);
-  };
-
-  // Запись приложение больше не закрывает: человек остаётся на главной и уходит
-  // сам, когда захочет. Раньше здесь стоял tg.close(), и он же был источником
-  // зависания — вне Telegram метод ничего не делает, а ветка
-  // `else setIsSuccessOpen(false)` не выполнялась никогда, потому что скрипт
-  // telegram-web-app.js создаёт window.Telegram.WebApp и в обычном браузере.
-  // Лист успеха оставался висеть и перекрывал всё приложение оверлеем.
-  const closeSuccess = () => {
-    setIsSuccessOpen(false);
-    // Кофе — только если студия его включила: иначе цепочка кончается успехом.
-    if (coffee?.enabled) setIsCoffeeOpen(true);
-  };
-
-  const pay = async () => {
-    if (!activeLesson || !selectedSpot) return;
-
-    setIsProcessing(true);
-
-    try {
-      const reservation = await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
-
-      setCoffee(reservation.coffee);
-      loadHeroLesson();
-      setScheduleTick((tick) => tick + 1);
-
-      setIsProcessing(false);
-      closeModal();
-      setIsSuccessOpen(true);
-      spawnPetals();
-
-      if (tg) tg.HapticFeedback.notificationOccurred('success');
-    } catch (error) {
-      setIsProcessing(false);
-      notify(error instanceof Error ? error.message : t('home.booking_error'));
-      if (tg) tg.HapticFeedback.notificationOccurred('error');
-    }
-  };
-
-  const cancelBooking = async () => {
-    if (!activeLesson) return;
-
-    setIsProcessing(true);
-
-    try {
-      await cancelLesson(activeLesson.id);
-
-      loadHeroLesson();
-      setScheduleTick((tick) => tick + 1);
-
-      setIsProcessing(false);
-      closeModal();
-      notify(t('home.cancel_booking_success'));
-      if (tg) tg.HapticFeedback.notificationOccurred('success');
-    } catch (error) {
-      setIsProcessing(false);
-      notify(error instanceof Error ? error.message : t('home.cancel_booking_error'));
-      if (tg) tg.HapticFeedback.notificationOccurred('error');
-    }
   };
 
   const isTomorrow = (() => {
@@ -199,9 +141,9 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
         logoUrl={catalog?.studio.logo_url}
       />
 
-      {isMultiStudio && (
+      {branches.length > 0 && (
         <>
-          <SectionLabel trailing={`${branches.length}`}>
+          <SectionLabel trailing={isMultiStudio ? `${branches.length}` : undefined}>
             {t('home.studios', { defaultValue: 'Студії' })}
           </SectionLabel>
 
@@ -234,7 +176,7 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
             title={t(`lesson.name.${heroLesson.name}`, { defaultValue: heroLesson.name })}
             meta={`${heroLesson.teacher} · ${heroLesson.duration_min} ${t('common.minutes')} · ${heroLesson.total_spots} ${t('home.spots')}`}
             startTime={heroLesson.start_time}
-            onClick={() => openModal(heroLesson)}
+            onClick={() => booking.openModal(heroLesson)}
           />
         </>
       ) : (
@@ -298,34 +240,50 @@ export default function Home({ user, catalog, onNavigate }: HomeProps) {
         serviceId={schedule?.serviceId ?? null}
         studio={schedule?.studio ?? null}
         refreshKey={scheduleTick}
-        onLessonPick={openModal}
+        onLessonPick={booking.openModal}
       />
 
       <BookingModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
+        isOpen={booking.isModalOpen}
+        onClose={booking.closeModal}
         layer={2}
-        selectedSpot={selectedSpot}
-        onSpotSelect={setSelectedSpot}
-        isProcessing={isProcessing}
-        onPay={pay}
-        onCancel={cancelBooking}
-        lesson={activeLesson}
+        selectedSpot={booking.selectedSpot}
+        onSpotSelect={booking.setSelectedSpot}
+        isProcessing={booking.isProcessing}
+        onPay={booking.pay}
+        onCancel={booking.cancelBooking}
+        lesson={booking.activeLesson}
+        allowRepeat={Boolean(catalog?.rules.repeat_booking_allowed)}
+      />
+
+      <PhoneSheet
+        isOpen={booking.needsPhone}
+        onClose={booking.closePhone}
+        onSaved={booking.retryAfterPhone}
+        layer={3}
+      />
+
+      <SubscriptionSheet
+        isOpen={booking.needsSubscription !== null}
+        onClose={booking.closeSubscription}
+        message={booking.needsSubscription}
+        onBuy={() => { booking.closeSubscription(); onBuySubscription(); }}
+        layer={3}
       />
 
       <SuccessModal
-        isOpen={isSuccessOpen}
-        onClose={closeSuccess}
-        lesson={activeLesson}
+        isOpen={booking.isSuccessOpen}
+        onClose={booking.closeSuccess}
+        lesson={booking.activeLesson}
         awaitingConfirmation={Boolean(catalog?.rules.confirmation_required)}
         layer={3}
       />
 
       <CoffeeModal
-        isOpen={isCoffeeOpen}
-        onClose={() => setIsCoffeeOpen(false)}
-        lessonId={activeLesson?.id ?? null}
-        coffee={coffee}
+        isOpen={booking.isCoffeeOpen}
+        onClose={booking.closeCoffee}
+        lessonId={booking.activeLesson?.id ?? null}
+        coffee={booking.coffee}
         onJoined={() => setScheduleTick((tick) => tick + 1)}
         layer={3}
       />

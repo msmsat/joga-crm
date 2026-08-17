@@ -3,12 +3,12 @@ from datetime import date, datetime, time, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
-from models import Client, Hall, Lesson, Reservation, Service, StudioMember, User
+from models import Client, ClientPayment, Hall, Lesson, Reservation, Service, StudioMember, User
 from schemas.schedule.lessons import (
     EligibleClient, LessonCancelRequest, LessonCreateRequest, LessonDaysResponse, LessonDetail,
     LessonRead, LessonUpdateRequest,
@@ -166,12 +166,21 @@ async def get_lesson(
             Reservation.client_id,
             Reservation.spot_number,
             Reservation.status,
+            Reservation.is_trial,
+            # Долг показываем только непогашенный: после оплаты строка платежа
+            # остаётся в истории клиента, но плашке «Не оплачено» в Журнале там
+            # уже не место. Внешним соединением, потому что у большинства броней
+            # долга нет вовсе.
+            func.coalesce(
+                case((ClientPayment.status == "pending", ClientPayment.amount), else_=0), 0,
+            ).label("debt"),
             Client.name,
             Client.last_name,
             Client.phone,
             Client.avatar_color,
         )
         .join(Client, Client.id == Reservation.client_id)
+        .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
         .where(Reservation.lesson_id == lesson_id, Reservation.status != "cancelled")
         .order_by(Reservation.spot_number)
     )).mappings().all()
@@ -400,7 +409,9 @@ async def create_lesson(
         start_time=body.start_time,
         duration_min=body.duration_min,
         total_spots=body.total_spots,
-        price=body.price,
+        # Цена денормализуется из услуги ровно как name: квик-форма Журнала её
+        # не собирает, и без этого занятие уходило в мини-приложение с 0.
+        price=service.price if body.price is None else body.price,
         level=body.level,
         equipment=body.equipment,
         service_id=body.service_id,
@@ -477,6 +488,9 @@ async def update_lesson(
     if "service_id" in fields and fields["service_id"] is not None:
         service = await _service_in_studio(fields["service_id"], ctx.studio_id, db)
         lesson.name = service.name
+        # Услугу поменяли — цена едет за ней, если её не прислали явно.
+        if "price" not in fields:
+            lesson.price = service.price
 
     if fields.get("hall_id") is not None:
         await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)

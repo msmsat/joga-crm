@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { clientsApi } from '../../api/clients/clients.api';
+import { queryKeys } from '../../api/queryKeys';
 import { useStudioSettings } from '../../hooks/useStudioCurrency';
 import { NAV, NAV_BOTTOM, prefetchJournal, type NavEntry } from './navItems';
 import { Tooltip } from './Tooltip';
@@ -50,13 +52,17 @@ export function Sidebar({ role }: SidebarProps) {
   const { data: studio } = useStudioSettings();
   const { isRail, canToggle, toggle } = useRail();
 
-  // Счётчик клиентов для бейджа меню — реальные данные, не хардкод
-  const [clientsCount, setClientsCount] = useState<number | null>(null);
-  useEffect(() => {
-    clientsApi.getCount()
-      .then((res) => setClientsCount(res.count))
-      .catch(() => setClientsCount(null));
-  }, []);
+  // Счётчик клиентов для бейджа меню — реальные данные, не хардкод. Через Query,
+  // а не разовым fetch в useState: каркас не размонтируется, и одноразовая
+  // загрузка застревала навсегда — у пустой на момент входа студии бейдж
+  // показывал 0 и после добавления клиентов. Ключ лежит под префиксом 'clients',
+  // который мутации клиента инвалидируют и так, — число обновляется само.
+  const { data: countData } = useQuery({
+    queryKey: queryKeys.clientsCount,
+    queryFn: () => clientsApi.getCount(),
+  });
+  // Ошибка запроса (нет прав, сеть) — бейджа просто нет, а не «0 клиентов».
+  const clientsCount = countData?.count ?? null;
 
   const renderItem = (item: NavEntry) => {
     if (item.owner && role !== 'owner') return null;

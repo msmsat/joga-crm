@@ -87,6 +87,8 @@
     "auto_activates": "Aktivuje se automaticky",
     "settings": "Nastavení",
     "buy_btn": "Koupit předplatné",
+    "link_email": "Připojit e-mail",
+    "email_linked": "Připojeno",
     "notifications": "Oznámení",
     "history": "Historie plateb",
     "support": "Podpora studia",
@@ -127,7 +129,9 @@
     "load_error": "Nepodařilo se načíst lekce",
     "no_lessons_period": "V tomto období nejsou žádné lekce",
     "no_lessons_period_hint": "Posuňte se šipkami — mohly být dříve",
-    "awaiting_confirmation": "Čeká na potvrzení"
+    "awaiting_confirmation": "Čeká na potvrzení",
+    "unpaid": "Nezaplaceno · {{amount}}",
+    "trial": "Zkušební lekce"
   },
   "schedule": {
     "title": "Rozvrh",
@@ -175,10 +179,30 @@
     "processing": "Zpracovává se...",
     "cancel_booking": "Zrušit rezervaci",
     "choose_spot": "Vyberte si místo",
-    "pay": "Zaplatit · {{price}}",
+    "facing_trainer": "Trenér stojí tady",
+    "book": "Rezervovat",
+    "book_more": "Rezervovat další podložku",
+    "book_trial": "Rezervovat zdarma",
+    "free": "Zdarma",
     "not_bookable": "Tuto lekci nelze rezervovat online",
     "not_bookable_hint": "Rezervovat lze jen v provozních hodinách studia a v rámci otevřeného rozvrhu.",
     "awaiting_confirmation": "Žádost odeslána — čeká na potvrzení studia"
+  },
+  "subscriptionSheet": {
+    "kicker": "Předplatné",
+    "title": "Je potřeba předplatné",
+    "hint": "Studio přijímá rezervace pouze s platným předplatným.",
+    "buy": "Pořídit předplatné"
+  },
+  "phoneSheet": {
+    "kicker": "Telefon",
+    "title": "Zanechte číslo",
+    "hint": "Tato lekce se platí ve studiu — na čísle potvrdíme rezervaci a dáme vědět o změnách.",
+    "share": "Sdílet číslo",
+    "placeholder": "+420 777 123 456",
+    "save": "Uložit a rezervovat",
+    "saving": "Ukládáme…",
+    "error": "Číslo se nepodařilo uložit"
   },
   "directionModal": {
     "tag": "Zaměření",
@@ -211,7 +235,7 @@
   },
   "coffeeModal": {
     "title": "Zůstanete na 15 minut?",
-    "subtitle": "Po lekci jdou holky na kávu. Bez závazků — jen si sednout a popovídat.",
+    "subtitle": "Po lekci jdou holky na kávu. Bez závazků — jen si sednout a popovídat.",
     "already_going": "Už s námi: {{n}}",
     "join": "Jdu do toho",
     "decline": "Dnes ne"
@@ -267,6 +291,8 @@
     "certificate_invalid": "Certifikát nenalezen nebo již použit",
     "use_deposit": "Zaplatit z depozitu",
     "use_bonuses": "Použít body ({{count}})",
+    "use_bonuses_worth": "Použít body: {{count}} = {{value}}",
+    "bonuses_spent": "Body ({{count}})",
     "confirm_free": "Potvrdit",
     "free_hint": "Platba kartou není potřeba — částka je plně pokryta"
   },
@@ -346,6 +372,51 @@
     "disabled": "Studio zatím klub nespustilo",
     "disabled_hint": "Jakmile věrnostní program poběží, body a úrovně se objeví tady.",
     "certificate_use": "Použít certifikát",
-    "code_copy": "Kopírovat kód"
+    "code_copy": "Kopírovat kód",
+    "points_rate": "1 bod = {{unit}} při platbě · připisujeme za každých {{rate}}",
+    "level_point_value": "1 bod = {{value}}",
+    "level_from": "od {{amount}}",
+    "level_here": "Jste zde",
+    "level_need": "ještě {{amount}}",
+    "how_earn": "Každých {{rate}} utracených ve studiu vám přinese 1 bod.",
+    "how_level": "Úroveň se počítá ze součtu všech vašich nákupů a zvyšuje se sama — nemusíte o ni žádat.",
+    "how_value": "Úroveň určuje, kolik bod strhne z ceny: teď má váš bod hodnotu {{unit}}, výš je dražší — a už nasbírané body rostou spolu s vámi.",
+    "next_level_value": "Na „{{level}}“ bude bod mít hodnotu {{value}}",
+    "offers_hint": "Slevy, které vám studio dalo osobně. Na pokladně se použijí automaticky.",
+    "certificates_hint": "Certifikát zaplatí nákup do výše své hodnoty — klepnutím ho uplatníte.",
+    "deposit_hint": "Peníze na klubovém účtu — zaplatíte jimi permanentku nebo lekci.",
+    "referral_hint": "Pozvěte kamarádku: pro ni {{discount}} % z první platby, pro vás bonus.",
+    "referral_hint_plain": "Pozvěte kamarádku a získejte bonus, jakmile přijde do studia.",
+    "history_hint": "Plus je připsáno, minus utraceno. Každý bod má hodnotu {{unit}}.",
+    "info": {
+      "action": "Jak to funguje",
+      "title": "Jak funguje klub",
+      "subtitle": "Pravidla a kurz bodů vašeho studia.",
+      "points_title": "Body",
+      "points_earn": "Za každých {{rate}} utracených ve studiu připisujeme 1 bod. Studio může body darovat i zvlášť — za akci, pozvanou kamarádku nebo narozeniny.",
+      "points_spend": "Při platbě v aplikaci zapněte „Použít body“ — každý bod sníží cenu o {{unit}}.",
+      "points_balance": "Právě máte {{points}} bodů — to je {{value}}.",
+      "points_expiry_never": "Body nepropadají.",
+      "points_expiry_3m": "Nevyužité body propadají 3 měsíce po připsání.",
+      "points_expiry_6m": "Nevyužité body propadají 6 měsíců po připsání.",
+      "points_expiry_1y": "Nevyužité body propadají rok po připsání.",
+      "points_grow": "Čím vyšší úroveň, tím větší hodnotu má bod: na dalším stupni to bude {{value}}. Body, které už máte, rostou spolu s vámi — nic se nemusí přepočítávat.",
+      "levels_how": "Úroveň se počítá ze součtu všech vašich nákupů ve studiu a mění se sama.",
+      "levels_benefit": "Úroveň mění hodnotu bodu: teď má váš bod hodnotu {{unit}}, na „{{level}}“ je to {{value}}. Body se připisují na všech úrovních stejně, roste hodnota nasbíraného.",
+      "levels_what": "Sama o sobě slevu nedává — výhody každé úrovně oznamuje studio zvlášť.",
+      "offers_what": "Osobní slevu vydává studio — ručně nebo automaticky, třeba při prodloužení permanentky. Na pokladně se použije sama.",
+      "offers_once": "Sleva je jednorázová a nesčítá se s ostatními: pokud jich je víc, použije se ta pro vás nejvýhodnější.",
+      "cert_what": "Certifikát je částka v penězích, která se odečte z ceny nákupu.",
+      "cert_how": "Klepněte na certifikát a zaplaťte jím permanentku, nebo zkopírujte kód a nadiktujte ho na recepci. Certifikát se uplatní celý při jednom nákupu.",
+      "deposit_what": "Depozit jsou vaše peníze na účtu studia. Zaplatí nákup místo karty.",
+      "deposit_balance": "Na depozitu máte {{value}}.",
+      "referral_you_points": "Vy dostanete {{bonus}} bodů, jakmile pozvaná kamarádka splní podmínku studia.",
+      "referral_you_money": "Vy dostanete {{bonus}}, jakmile pozvaná kamarádka splní podmínku studia.",
+      "referral_friend": "Kamarádka dostane {{discount}} % z první platby přes váš odkaz.",
+      "referral_friend_none": "Pošlete kamarádce svůj odkaz — spojí její účet s vaším.",
+      "order_title": "Pořadí odečtení",
+      "order_steps": "Sleva → certifikát → depozit → body → zbytek zaplatíte kartou.",
+      "order_note": "Odečte se přesně tolik, kolik je potřeba: pokud máte bodů víc než cena, zbytek zůstane na účtu."
+    }
   }
 }

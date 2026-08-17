@@ -21,7 +21,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export default function Loyalty() {
   const { t } = useTranslation('loyalty');
-  const { programs, configs, patchConfig, drawer, drawerVisible, mounted, saving, errors, loadError, refetchConfigs, configsLoading, levelsDraft, updateLevel, addLevel, removeLevel, drawerRef, openDrawer, closeDrawer, handleSave, toggleProgram } = useLoyalty();
+  const { programs, configs, patchConfig, drawer, drawerVisible, mounted, saving, errors, loadError, refetchConfigs, configsLoading, levelsDraft, updateLevel, addLevel, removeLevel, openDrawer, closeDrawer, handleSave, toggleProgram } = useLoyalty();
 
   // Живые счётчики карточек программ (задача 6, V5-2; discounts — V5-5 задача 7:
   // реальные активные ClientOffer вместо хардкоженного % скидки) — те же данные,
@@ -99,7 +99,6 @@ export default function Loyalty() {
         <LoyaltyDrawer
           drawer={drawer}
           drawerVisible={drawerVisible}
-          drawerRef={drawerRef}
           configs={configs}
           patchConfig={patchConfig}
           saving={saving}

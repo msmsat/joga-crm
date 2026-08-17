@@ -16,7 +16,7 @@ from sqlalchemy.future import select
 
 from activity import log_activity
 from models import (
-    Client, ClientLoyaltyCard, ClientSubscription, Reservation,
+    Client, ClientLoyaltyCard, ClientPayment, ClientSubscription, Lesson, Reservation,
     StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
 from services.notifier import notify
@@ -76,12 +76,70 @@ async def activate_pending_after_visit(db: AsyncSession, reservation: Reservatio
     return True
 
 
+async def open_debt(
+    db: AsyncSession, reservation: Reservation, lesson: Lesson
+) -> Optional[ClientPayment]:
+    """Долг за бронь, которую нечем оплатить, — «оплата на месте».
+
+    Это `ClientPayment` в статусе `pending`, а не отдельная сущность: статус уже
+    разрешён моделью, карточка клиента фильтрует историю по `success` (ничего не
+    поедет), а мини-приложение отдаёт `/me/payments` без фильтра — клиент увидит
+    «не оплачено» без единой правки той ручки. Гасит долг общий денежный движок
+    (`routers/checkout/router.perform_pay`), поэтому второй раз считать доход,
+    баллы и комиссию платформы здесь не нужно.
+
+    Молчит, когда платить не за что: занятие покрыто абонементом, подарено как
+    пробное, бесплатное по прайсу или долг уже открыт (идемпотентность).
+    Не коммитит.
+    """
+    if reservation.subscription_id is not None or reservation.is_trial:
+        return None
+    if lesson.price <= 0 or reservation.debt_payment_id is not None:
+        return None
+
+    debt = ClientPayment(
+        client_id=reservation.client_id,
+        amount=lesson.price,
+        description=f"Занятие «{lesson.name}» {lesson.start_time.strftime('%d.%m %H:%M')}",
+        status="pending",
+        action_type="lesson",
+        item_key=str(lesson.id),
+    )
+    db.add(debt)
+    await db.flush()  # нужен debt.id для ссылки с брони
+    reservation.debt_payment_id = debt.id
+    return debt
+
+
+async def clear_debt(db: AsyncSession, reservation: Reservation) -> None:
+    """Отмена брони снимает неоплаченный долг.
+
+    Погашенный (`success`) не трогает НИКОГДА: это уже проведённые деньги с
+    доходом в Финансах и начисленными баллами — отмена записи задним числом их
+    не отменяет (для этого есть возврат). Снимаем ссылку до проверки статуса,
+    поэтому повторный вызов — no-op, как и у возврата занятия ниже.
+    """
+    if reservation.debt_payment_id is None:
+        return
+    debt = await db.get(ClientPayment, reservation.debt_payment_id)
+    reservation.debt_payment_id = None
+    if debt is not None and debt.status == "pending":
+        await db.delete(debt)
+
+
 async def refund_reservation(db: AsyncSession, reservation: Reservation) -> None:
-    """+1 занятие назад на тот же абонемент при отмене записи.
+    """+1 занятие назад на тот же абонемент при отмене записи и снятие долга.
 
     Записи без списания (разовые, старые) не трогает. Закончившийся абонемент
     снова становится активным — занятие ведь вернулось.
+
+    Долг снимается ЗДЕСЬ, а не в четырёх точках отмены (клиент в мини-приложении,
+    админ в Журнале, снятие из профиля сотрудника, отмена всего занятия): эта
+    функция — единственное, что зовут все четыре, и копии разъехались бы так же,
+    как разъехались бы копии возврата занятия.
     """
+    await clear_debt(db, reservation)
+
     if reservation.subscription_id is None:
         return
 

@@ -6,6 +6,7 @@
 генератор кода означал бы два независимых источника уникальности на одну
 колонку.
 """
+import json
 import os
 from datetime import date, datetime
 from typing import Optional
@@ -27,11 +28,11 @@ from models import (
 from routers.checkout.router import _quote, consume_quote, reject_dead_promo
 from routers.clients.referrals import _unique_invite_code
 from routers.clients.subscriptions import attach_subscription
-from schemas._base import BaseSchema
+from schemas._base import BaseSchema, OptPhone
 from services import platform_fee, stripe_connect
 from services.notifier import _fmt_amount, _studio_prefs
 
-from .miniapp import get_current_client
+from .miniapp import get_current_client, verify_init_data
 
 router = APIRouter()
 
@@ -43,6 +44,11 @@ class MiniappMe(BaseSchema):
     # телеграмный клиент мог входить в ЭТУ ЖЕ карточку из браузера
     # (routers/booking/miniapp_email_auth.py, режим привязки).
     email: Optional[str]
+    # Пусто — мини-приложение попросит номер перед записью с оплатой на месте
+    # (POST /me/phone). `phone_verified` различает подтверждённый Telegram'ом
+    # номер и введённый руками.
+    phone: Optional[str]
+    phone_verified: bool
     notifs_enabled: bool
     reminders_enabled: bool
     registration_date: datetime
@@ -80,6 +86,26 @@ class MeSettingsResponse(BaseSchema):
     reminders_enabled: bool
 
 
+class MePhoneRequest(BaseSchema):
+    """Телефон клиента — два пути, и оба ведут в одну колонку.
+
+    `contact_data` — подписанный ответ Telegram `requestContact`: Telegram сам
+    подтвердил, что номер принадлежит этому аккаунту, и подписал ответ ботовым
+    токеном студии. SMS-шлюз для подтверждения не нужен и в продукте его нет.
+
+    `phone` — ручной ввод: браузер (там Telegram недоступен) и старые клиенты,
+    у которых `requestContact` не возвращает подписанный ответ. Такой номер
+    сохраняется неподтверждённым — студия видит разницу в карточке клиента.
+    """
+    contact_data: Optional[str] = None
+    phone: OptPhone = None
+
+
+class MePhoneResponse(BaseSchema):
+    phone: str
+    phone_verified: bool
+
+
 @router.get("/me", response_model=MiniappMe)
 async def get_me(
     client: Client = Depends(get_current_client),
@@ -94,6 +120,8 @@ async def get_me(
         id=client.id,
         name=client.name,
         email=client.email,
+        phone=client.phone,
+        phone_verified=client.phone_verified,
         notifs_enabled=client.notifs_enabled,
         reminders_enabled=client.reminders_enabled,
         registration_date=client.registration_date,
@@ -185,6 +213,65 @@ async def update_my_settings(
     )
 
 
+@router.post("/me/phone", response_model=MePhoneResponse)
+@limiter.limit("10/minute")
+async def set_my_phone(
+    request: Request,
+    body: MePhoneRequest,
+    client: Client = Depends(get_current_client),
+    db: AsyncSession = Depends(get_db),
+):
+    """Оставить номер телефона — предусловие записи с оплатой на месте.
+
+    Подпись `contact_data` проверяется ровно тем же `verify_init_data`, что и
+    вход в мини-приложение: у ответа `requestContact` та же схема подписи, что у
+    `initData`, и заводить вторую проверку HMAC было бы двумя разными правдами
+    об одном и том же секрете.
+
+    Обязательна сверка `user_id` из подписанного контакта с `tg_id` клиента:
+    подпись говорит «этот номер выдал наш бот», но не «выдал ИМЕННО этому
+    клиенту». Без сверки чужой подписанный контакт той же студии можно было бы
+    переиграть на свой аккаунт.
+
+    Подтверждённый номер ручным вводом не перезаписывается: Telegram уже сказал,
+    кому он принадлежит, и подменять его текстом из формы — шаг назад.
+    """
+    if body.contact_data:
+        channel = (await db.execute(
+            select(BookingChannelConfig).where(
+                BookingChannelConfig.studio_id == client.studio_id,
+                BookingChannelConfig.channel_type == "telegram",
+            )
+        )).scalar_one_or_none()
+        bot_token = ((channel.config or {}).get("token") if channel else None)
+        if not bot_token:
+            raise HTTPException(status_code=503, detail="Студия не подключила Telegram-бота")
+        try:
+            verified = verify_init_data(body.contact_data, bot_token)
+            contact = json.loads(verified.get("contact") or "{}")
+            phone = str(contact["phone_number"]).strip()
+            contact_user_id = int(contact["user_id"])
+        except (ValueError, KeyError, TypeError, json.JSONDecodeError):
+            raise HTTPException(status_code=401, detail="Не удалось проверить номер телефона")
+        if client.tg_id is None or contact_user_id != client.tg_id:
+            raise HTTPException(status_code=403, detail="Номер принадлежит другому аккаунту Telegram")
+        # Telegram отдаёт номер без плюса («420777123456») — в CRM он хранится в
+        # E.164 наравне с введёнными руками (schemas/_base.to_e164).
+        client.phone = phone if phone.startswith("+") else f"+{phone}"
+        client.phone_verified = True
+    elif body.phone:
+        if client.phone_verified:
+            raise HTTPException(status_code=409, detail="Номер уже подтверждён через Telegram")
+        client.phone = body.phone
+        client.phone_verified = False
+    else:
+        raise HTTPException(status_code=422, detail="Нужен номер телефона")
+
+    await db.commit()
+    await db.refresh(client)
+    return MePhoneResponse(phone=client.phone, phone_verified=client.phone_verified)
+
+
 class CheckoutCalcRequest(BaseSchema):
     """Чем клиент хочет расплатиться. Ровно те же рычаги, что у кассира в CRM
     (schemas/checkout.CheckoutPayRequest) — суммы считает один и тот же `_quote`,
@@ -220,7 +307,15 @@ class CheckoutCalcResponse(BaseSchema):
     deposit_applied: int
     deposit_applied_str: str
     bonuses_available: int
+    # available/applied — БАЛЛЫ, *_value_str — деньги по цене балла на уровне
+    # клиента. На «Бриллианте» 125 баллов снимают 250 ₴, и в чеке должна стоять
+    # вторая цифра, а первая — подписью «сколько баллов ушло».
+    bonuses_available_value_str: str
     bonuses_applied: int
+    bonuses_value: int
+    bonuses_value_str: str
+    point_value: int
+    point_unit_str: str
     total_price: int
     total_price_str: str
     # Всё покрыто сертификатом/депозитом/баллами — Stripe не нужен, покупка
@@ -364,7 +459,14 @@ async def calculate_checkout(
         deposit_applied=quote.deposit_applied,
         deposit_applied_str=_fmt_amount(quote.deposit_applied, currency),
         bonuses_available=quote.bonuses_available,
+        bonuses_available_value_str=_fmt_amount(
+            quote.bonuses_available * quote.point_value, currency,
+        ),
         bonuses_applied=quote.bonuses_applied,
+        bonuses_value=quote.bonuses_value,
+        bonuses_value_str=_fmt_amount(quote.bonuses_value, currency),
+        point_value=quote.point_value,
+        point_unit_str=_fmt_amount(quote.point_value, currency),
         total_price=quote.total_price,
         total_price_str=_fmt_amount(quote.total_price, currency),
         fully_covered=quote.total_price <= 0,

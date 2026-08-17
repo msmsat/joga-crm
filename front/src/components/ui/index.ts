@@ -29,6 +29,8 @@ export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { ActionCard } from './ActionCard';
 export type { ActionCardProps } from './ActionCard';
+export { AIPlanModal } from './AIPlanModal';
+export type { AIPlanModalProps, PlanAnswers } from './AIPlanModal';
 export { AIMessage } from './AIMessage';
 export type { AIMessageProps } from './AIMessage';
 export { AIChart } from './AIChart';

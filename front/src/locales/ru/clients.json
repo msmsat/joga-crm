@@ -79,6 +79,7 @@
       "city": "Город",
       "copyHint": " · нажмите для копирования"
     },
+    "debt": "Не оплачено занятий на {{amount}} — принять оплату можно в Журнале",
     "stats": {
       "visits": "Визитов",
       "spent": "Потрачено",
@@ -88,7 +89,12 @@
       "points": "баллов",
       "level": "Уровень {{tier}}",
       "toNext": "До следующего: {{points}} баллов",
-      "multiplier": "×{{value}} к баллам"
+      "multiplier": "×{{value}} к баллам",
+      "worth": "Это {{amount}} при оплате",
+      "toNextLevel": "Ещё {{amount}} до «{{level}}»",
+      "pointValue": "1 балл = {{amount}}",
+      "nextPointValue": "на «{{level}}» — {{amount}}",
+      "noBonus": "Уровень не меняет цену балла"
     },
     "referral": {
       "title": "Пригласи друга",
@@ -143,6 +149,7 @@
       "base": "Базовая цена",
       "discount": "Скидка",
       "bonuses": "Бонусы",
+      "bonusesSpent": "Бонусы ({{count}} б.)",
       "total": "Итого",
       "cash": "Наличные",
       "card": "Карта",

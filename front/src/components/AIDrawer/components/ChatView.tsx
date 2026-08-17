@@ -7,8 +7,8 @@ import EmptyStateSVG from './EmptyStateSVG';
 import ThinkingStateSVG from './ThinkingStateSVG';
 import InputBar from './InputBar';
 import { SUGGESTION_PILL_KEYS } from '../constants';
-import { ActionCard } from '../../ui/index';
-import type { AIActionProposal } from '../../../api/ai/ai.types';
+import { AIPlanModal, type PlanAnswers } from '../../ui/index';
+import type { AIPlanProposal } from '../../../api/ai/ai.types';
 
 interface ChatViewProps {
   messages: AIChatMessage[];
@@ -17,8 +17,8 @@ interface ChatViewProps {
   onSend: (text: string) => void;
   // Карточка подтверждения — тот же компонент кита, что на странице AI
   // (эпик AI-5, задача 10): две копии разошлись бы в поведении.
-  actionProposal?: AIActionProposal | null;
-  onConfirmAction?: () => void;
+  planProposal?: AIPlanProposal | null;
+  onConfirmAction?: (answers: PlanAnswers) => void;
   onCancelAction?: () => void;
   actionPending?: boolean;
   toolStatus?: string | null;
@@ -26,7 +26,7 @@ interface ChatViewProps {
 
 export default function ChatView({
   messages, isThinking, messagesEndRef, onSend,
-  actionProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+  planProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
 }: ChatViewProps) {
   const { t } = useTranslation('ai');
   const isEmpty = messages.length === 0;
@@ -75,16 +75,12 @@ export default function ChatView({
               onAnimateDone={() => setAnimateId(null)}
             />
           ))}
-          {actionProposal && (
-            <ActionCard
-              description={actionProposal.description}
-              args={actionProposal.args}
-              entities={actionProposal.entities}
-              effect={actionProposal.effect}
-              danger={actionProposal.danger}
+          {planProposal && (
+            <AIPlanModal
+              plan={planProposal}
               loading={actionPending}
-              onConfirm={() => onConfirmAction?.()}
-              onCancel={() => onCancelAction?.()}
+              onConfirm={(answers) => onConfirmAction?.(answers)}
+              onClose={() => onCancelAction?.()}
             />
           )}
           {/* Пока ответ печатается, «Думаю» уступает место самому пузырю —

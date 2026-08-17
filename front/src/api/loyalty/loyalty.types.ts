@@ -42,6 +42,8 @@ export interface LoyaltyLevel {
   min_threshold: number
   max_threshold: number | null
   sort_order: number
+  /** Сколько денег даёт балл на этом уровне при оплате. Выгода уровня. */
+  point_value: number
 }
 
 export interface LoyaltyLevelWrite {
@@ -51,6 +53,7 @@ export interface LoyaltyLevelWrite {
   min_threshold: number
   max_threshold: number | null
   sort_order: number
+  point_value: number
 }
 
 export interface LoyaltyCard {

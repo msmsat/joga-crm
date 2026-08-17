@@ -13,6 +13,8 @@ import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOpt
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
 import { useToast, Select, ConfirmModal } from '../../../../components/ui/index';
+import { formatMoney } from '../../../../lib/money';
+import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 
 const MIN_TIME_IDX = MIN_TIME_INDEX;
 const MAX_TIME_IDX = MAX_TIME_INDEX;
@@ -73,6 +75,10 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
 
   // Стейты добавления клиента
+  // Бронь, по которой сейчас спрашиваем способ оплаты (id записи) — строка
+  // клиента на это время превращается в выбор «Наличными / Переводом / Без оплаты».
+  const [payingFor, setPayingFor] = useState<number | null>(null);
+  const currency = useStudioCurrency();
   const [isAddingClient, setIsAddingClient] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
@@ -149,7 +155,20 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
       .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
 
+  // Отметка посещения у брони с долгом сначала спрашивает про деньги: именно в
+  // этот момент клиент стоит у стойки, и другого шанса взять наличные не будет.
+  // Отказаться можно («Без оплаты») — долг остаётся висеть на записи.
   const markAttended = (c: BookedClient) => {
+    if (c.status === 'attended' && c.debt <= 0) return;
+    if (c.debt > 0 && canEdit) {
+      setPayingFor(c.reservation_id);
+      return;
+    }
+    attendOnly(c);
+  };
+
+  const attendOnly = (c: BookedClient) => {
+    setPayingFor(null);
     if (c.status === 'attended') return;
     mutations.attendReservation(c.reservation_id)
       .then(() => {
@@ -157,6 +176,23 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           x.reservation_id === c.reservation_id ? { ...x, status: 'attended' as const } : x
         ));
         showToast(t('toasts.attendanceMarked'));
+      })
+      .catch((e: unknown) => toast.error(errorMessage(e, t)));
+  };
+
+  // Оплата и отметка посещения — два запроса, а не один: платёж проводит касса
+  // (доход, баллы, комиссия), посещение — Журнал. Порядок важен, посещение
+  // отмечаем только после успешной оплаты, иначе при сбое кассы визит уже
+  // отмечен, а денег нет.
+  const payAndAttend = (c: BookedClient, method: 'cash' | 'transfer') => {
+    setPayingFor(null);
+    mutations.payReservation(c.reservation_id, method)
+      .then(() => {
+        patchBooked(list => list.map(x =>
+          x.reservation_id === c.reservation_id ? { ...x, debt: 0 } : x
+        ));
+        showToast(t('toasts.paymentAccepted'));
+        if (c.status !== 'attended') attendOnly({ ...c, debt: 0 });
       })
       .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
@@ -542,10 +578,38 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                             {t('bookingPopup.awaitingConfirmation')}
                           </div>
                         )}
+                        {/* Подарок студии — деньги за это занятие никто не ждёт. */}
+                        {c.is_trial && (
+                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            {t('bookingPopup.trialLesson')}
+                          </div>
+                        )}
+                        {/* Долг висит, пока его не погасят: это и есть «спрашиваем,
+                            пока не нажмёт да» — плашка не исчезает сама. */}
+                        {c.debt > 0 && (
+                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--rose)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            {t('bookingPopup.unpaid', { amount: formatMoney(c.debt, currency) })}
+                          </div>
+                        )}
                       </div>
-                      {/* Заявка ждёт решения — сначала подтвердить, отмечать
-                          посещение неподтверждённой брони нечего. */}
-                      {c.status === 'pending' ? (
+                      {/* Спросили про деньги — на месте кнопок строки стоит выбор
+                          способа оплаты, пока кассир не ответит. */}
+                      {payingFor === c.reservation_id ? (
+                        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px' }}
+                            onClick={(e) => { e.stopPropagation(); payAndAttend(c, 'cash'); }}>
+                            {t('bookingPopup.payCash')}
+                          </button>
+                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px' }}
+                            onClick={(e) => { e.stopPropagation(); payAndAttend(c, 'transfer'); }}>
+                            {t('bookingPopup.payTransfer')}
+                          </button>
+                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px', color: 'var(--muted)' }}
+                            onClick={(e) => { e.stopPropagation(); attendOnly(c); }}>
+                            {t('bookingPopup.payLater')}
+                          </button>
+                        </div>
+                      ) : c.status === 'pending' ? (
                         canEdit && (
                           <button
                             className="btn-icon"
@@ -559,14 +623,20 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       ) : (
                         <button
                           className="btn-icon"
-                          title={c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
-                          style={{ color: c.status === 'attended' ? '#86b08c' : 'var(--border)', cursor: c.status === 'attended' ? 'default' : 'pointer' }}
+                          // Отмеченный визит с непогашенным долгом остаётся
+                          // кликабельным: галочка ведёт к оплате, а не молчит.
+                          title={c.debt > 0 ? t('bookingPopup.acceptPayment')
+                            : c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
+                          style={{
+                            color: c.debt > 0 ? 'var(--rose)' : c.status === 'attended' ? '#86b08c' : 'var(--border)',
+                            cursor: c.status === 'attended' && c.debt <= 0 ? 'default' : 'pointer',
+                          }}
                           onClick={(e) => { e.stopPropagation(); markAttended(c); }}
                         >
                           <Icons.Check />
                         </button>
                       )}
-                      {canEdit && (
+                      {canEdit && payingFor !== c.reservation_id && (
                         <button
                           className="btn-icon"
                           title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}

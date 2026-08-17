@@ -31,6 +31,26 @@ class NoteOut(BaseSchema):
     updated_at: Optional[str] = None
 
 
+class ClientLoyaltyLevelOut(BaseSchema):
+    """Уровень клиента в программе лояльности — то же, что видит он сам в
+    разделе «Клуб» мини-приложения (`_level_for` по сумме покупок с карты).
+
+    Раньше карточка клиента рисовала уровень сама: хардкод Bronze/Silver/Gold/
+    Platinum с порогами 1000/3000/8000 и «множителем» из процента прогресса.
+    Ни одно из этих чисел не существовало в базе — владелец видел одну лестницу
+    в настройках, другую в карточке и третью у клиента в телефоне.
+    """
+    name: str
+    color: str
+    # Цена балла на этом уровне и во что превращается баланс клиента.
+    point_value: int
+    points_value: int
+    # Следующая ступень: имя, сколько до неё потратить и подорожает ли там балл.
+    next_name: Optional[str] = None
+    to_next: Optional[int] = None
+    next_point_value: Optional[int] = None
+
+
 class ClientListItemOut(BaseSchema):
     id: int
     name: str
@@ -47,6 +67,8 @@ class ClientListItemOut(BaseSchema):
     # Все живые продукты клиента: несколько абонементов, разовые, очередь.
     products: List[ClientProductOut] = []
     loyalty_points: int
+    # None — у студии нет лестницы уровней (владелец удалил все ступени).
+    loyalty_level: Optional[ClientLoyaltyLevelOut] = None
     last_visit_date: Optional[str] = None
     registration_date: Optional[str] = None
 
@@ -59,6 +81,12 @@ class ClientProfileOut(ClientListItemOut):
     notifs_enabled: bool
     reminders_enabled: bool
     is_active: bool
+    # Сумма неоплаченных занятий («оплата на месте»): 0 — клиент ничего не должен.
+    # Отдельно от total_spent намеренно — то потраченные деньги, это невзятые.
+    debt: int = 0
+    # Номер подтверждён Telegram, а не введён руками: администратор видит, точно
+    # ли он дозвонится.
+    phone_verified: bool = False
     notes: List[NoteOut] = []
 
 

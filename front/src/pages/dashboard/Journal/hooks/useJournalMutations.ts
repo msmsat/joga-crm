@@ -145,6 +145,22 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
   });
   const confirmReservation = (reservationId: number) => confirmMut.mutateAsync(reservationId);
 
+  // ── Принять оплату на месте: мест не касается, но двигает деньги — поэтому
+  // инвалидируем всё, что показывает выручку и баланс клиента.
+  const payMut = useMutation({
+    mutationFn: ({ reservationId, method }: { reservationId: number; method: 'cash' | 'transfer' }) =>
+      scheduleApi.payReservation(reservationId, method),
+    // Префиксы, а не точные ключи: долг виден в карточке клиента, а доход — во
+    // всех срезах Финансов, и перечислять их фильтры отсюда значило бы дублировать
+    // их список в Журнале.
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['clients'] });
+      qc.invalidateQueries({ queryKey: ['finances'] });
+    },
+  });
+  const payReservation = (reservationId: number, method: 'cash' | 'transfer') =>
+    payMut.mutateAsync({ reservationId, method });
+
   return {
     updateLesson,
     cancelLesson,
@@ -153,6 +169,7 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     cancelReservation,
     attendReservation,
     confirmReservation,
+    payReservation,
     patchLocalCancelled,
     commitDeferredCancel,
     rollback,

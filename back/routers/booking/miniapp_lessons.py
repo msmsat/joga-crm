@@ -24,15 +24,17 @@ from sqlalchemy.future import select
 
 from database import get_db
 from ratelimit import limiter
-from models import Client, Hall, Lesson, Reservation
+from models import Client, ClientPayment, Hall, Lesson, Reservation
 from schemas._base import BaseSchema
-from services.booking_access import find_eligible_subscription
+from services.booking_access import resolve_coverage, trial_applies
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
 )
 from services.notifier import _fmt_amount, _studio_prefs, lesson_context, notify
 from services.referral import fire_referral
-from services.subscription_charge import charge_reservation, notify_subscription_remaining, refund_reservation
+from services.subscription_charge import (
+    charge_reservation, notify_subscription_remaining, open_debt, refund_reservation,
+)
 
 from .miniapp import get_current_client
 
@@ -95,6 +97,10 @@ class MiniappLesson(BaseSchema):
     # расписании видна, но кнопка записи не работает: убирать занятие из списка
     # нельзя, клиент должен видеть, что оно вообще есть.
     bookable: bool
+    # Запись на это занятие будет подарком студии («Первое занятие бесплатно»).
+    # Признак клиентский, а не занятийный — у всех карточек списка он одинаковый,
+    # но живёт на карточке: именно она рисует кнопку записи с ценой.
+    trial_available: bool = False
     coffee: CoffeeState = CoffeeState()
 
 
@@ -103,11 +109,20 @@ class MiniappUpcomingLesson(MiniappLesson):
     # "active" — бронь подтверждена, "pending" — студия включила подтверждение
     # тренером и бронь ждёт решения (место при этом уже держится).
     status: str
+    # Эта бронь — подаренное первое занятие.
+    is_trial: bool = False
+    # Сколько клиент должен студии за это занятие (оплата на месте). 0 — ничего:
+    # покрыто абонементом, подарено или уже оплачено.
+    debt: int = 0
+    debt_str: str = ""
 
 
 class MiniappPastLesson(MiniappLesson):
     spot_number: int
     rating: Optional[int]
+    is_trial: bool = False
+    debt: int = 0
+    debt_str: str = ""
 
 
 class MiniappMyLessons(BaseSchema):
@@ -141,6 +156,7 @@ def _lesson_fields(
     hall_colors: dict[int, str],
     rules: BookingRules,
     coffee: Optional[dict] = None,
+    trial_available: bool = False,
 ) -> dict:
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
@@ -163,6 +179,7 @@ def _lesson_fields(
         taken_spots=taken_spots,
         is_booked_by_user=is_booked_by_user,
         bookable=_is_bookable(rules, lesson),
+        trial_available=trial_available,
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
         coffee=coffee or {},
@@ -290,6 +307,8 @@ async def lessons_by_date(
         db, [l.id for l in lessons], client.id, rules,
         {lid for lid, clients in booked_by_client.items() if client.id in clients},
     )
+    # Признак клиентский — один запрос на весь список, а не на каждую карточку.
+    trial_available = await trial_applies(db, client.id, rules)
 
     return [
         MiniappLesson(**_lesson_fields(
@@ -300,6 +319,7 @@ async def lessons_by_date(
             hall_colors,
             rules,
             coffee.get(lesson.id),
+            trial_available,
         ))
         for lesson in lessons
     ]
@@ -351,6 +371,7 @@ async def next_lesson(
         hall_colors,
         rules,
         coffee.get(lesson.id),
+        await trial_applies(db, client.id, rules),
     ))
 
 
@@ -374,6 +395,20 @@ async def my_lessons(
     rules = await load_rules(db, client.studio_id)
     coffee = await _coffee_map(db, list(lessons_by_id), client.id, rules)
 
+    # Непогашенные долги по всем броням разом. Берём только `pending`: погашенный
+    # платёж живёт в истории, но на карточке занятия «не оплачено» уже не место.
+    debt_ids = [r.debt_payment_id for r, _ in rows if r.debt_payment_id is not None]
+    debts: dict[int, int] = {}
+    if debt_ids:
+        debts = {
+            payment_id: amount
+            for payment_id, amount in (await db.execute(
+                select(ClientPayment.id, ClientPayment.amount).where(
+                    ClientPayment.id.in_(debt_ids), ClientPayment.status == "pending",
+                )
+            )).all()
+        }
+
     now = datetime.now()
     upcoming: list[MiniappUpcomingLesson] = []
     past: list[MiniappPastLesson] = []
@@ -388,11 +423,21 @@ async def my_lessons(
             rules,
             coffee.get(lesson.id),
         )
+        debt = debts.get(reservation.debt_payment_id, 0) if reservation.debt_payment_id else 0
+        paid_fields = dict(
+            is_trial=reservation.is_trial,
+            debt=debt,
+            debt_str=_fmt_amount(debt, currency) if debt else "",
+        )
         if lesson.start_time < now:
-            past.append(MiniappPastLesson(**fields, spot_number=reservation.spot_number, rating=reservation.rating))
+            past.append(MiniappPastLesson(
+                **fields, **paid_fields,
+                spot_number=reservation.spot_number, rating=reservation.rating,
+            ))
         else:
             upcoming.append(MiniappUpcomingLesson(
-                **fields, spot_number=reservation.spot_number, status=reservation.status,
+                **fields, **paid_fields,
+                spot_number=reservation.spot_number, status=reservation.status,
             ))
 
     upcoming.sort(key=lambda lesson: lesson.start_time)
@@ -505,8 +550,8 @@ async def create_reservation(
         # (см. блок 3 EPIC_MA_REAL_BACKEND, api/user.ts:156 показывает detail как есть).
         raise HTTPException(status_code=409, detail="Це місце вже зайняте")
 
-    sub = await find_eligible_subscription(db, client.id, lesson)
-    if rules.prefill_on_booking and sub is None:
+    sub, is_trial = await resolve_coverage(db, client.id, lesson, rules)
+    if rules.prefill_on_booking and sub is None and not is_trial:
         # Текст свой, а не из assert_can_book (Журнал): там он обращён к
         # администратору («у клиента нет абонемента»), а читать его будет сам
         # клиент, и следующий его шаг — купить абонемент в этом же приложении.
@@ -515,15 +560,31 @@ async def create_reservation(
             detail="Для записи нужен действующий абонемент — оформите его в профиле",
         )
 
+    # Оплата на месте — единственная запись, за которую студия ждёт наличные от
+    # человека, которого пока не видела. Телефон обязателен именно здесь: без
+    # него ни позвонить, ни написать, а бронь держит место в зале. 428 («нужно
+    # предусловие») — по нему мини-приложение открывает шит с номером, а не
+    # показывает ошибку записи: пользователю нечего исправлять в самой записи.
+    if sub is None and not is_trial and lesson.price > 0 and not client.phone:
+        raise HTTPException(
+            status_code=428,
+            detail="Для записи с оплатой на месте нужен номер телефона",
+        )
+
     reservation = Reservation(
         client_id=client.id,
         lesson_id=body.lesson_id,
         spot_number=body.spot_number,
         status="pending" if rules.trainer_confirmation_required else "active",
         booking_channel="telegram",
+        is_trial=is_trial,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, client.studio_id, reservation, sub)
+    # Абонемента нет и подарка нет — клиент платит в студии: долг заводится
+    # сразу, а не в момент визита. Так он виден клиенту в «Моих занятиях» ещё
+    # до занятия, а отмена по правилам студии снимает его вместе с бронью.
+    await open_debt(db, reservation, lesson)
     # Тот же реферальный триггер, что и у публичного виджета (booking/public.py):
     # друг, пришедший по ссылке из Telegram, записывается ИМЕННО здесь, и без
     # этого вызова пригласивший не получал бонус вовсе — самый частый путь был

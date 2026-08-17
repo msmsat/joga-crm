@@ -20,6 +20,7 @@
     "main": {
       "title": "General settings",
       "prefill": { "label": "Prepayment on booking", "sub": "Require payment before confirmation" },
+      "trialLesson": { "label": "First class free", "sub": "A new client's first booking is on the studio" },
       "trainerConfirm": { "label": "Trainer confirmation", "sub": "Booking waits for manual approval" },
       "clientReminder": { "label": "Client reminder", "sub": "24 and 2 hours before class" },
       "bookingActive": { "label": "Online booking active", "sub": "Show the widget to clients" }

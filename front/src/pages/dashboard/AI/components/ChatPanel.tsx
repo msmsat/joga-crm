@@ -1,10 +1,10 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AIChatMessage } from '../types';
-import type { AIActionProposal } from '../../../../api/ai/ai.types';
+import type { AIPlanProposal } from '../../../../api/ai/ai.types';
 import MessageBubble from './MessageBubble';
 import ThinkingIndicator from './ThinkingIndicator';
-import { ActionCard } from '../../../../components/ui/index';
+import { AIPlanModal, type PlanAnswers } from '../../../../components/ui/index';
 import NeuralNetSVG from './animations/NeuralNetSVG';
 import styles from '../AI.module.css';
 
@@ -16,8 +16,8 @@ interface ChatPanelProps {
   isThinking: boolean;
   onSend: (text: string) => void;
   // Предложенное ассистентом изменяющее действие (эпик AI-5, задача 10).
-  actionProposal?: AIActionProposal | null;
-  onConfirmAction?: () => void;
+  planProposal?: AIPlanProposal | null;
+  onConfirmAction?: (answers: PlanAnswers) => void;
   onCancelAction?: () => void;
   actionPending?: boolean;
   // Имя инструмента, который ассистент дёргает прямо сейчас — переводится здесь,
@@ -29,7 +29,7 @@ const SUGGESTION_KEYS = ['revenue', 'sms', 'promo', 'retention'] as const;
 
 export default function ChatPanel({
   messages, messagesLoading, messagesError, onRetryMessages, isThinking, onSend,
-  actionProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+  planProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
 }: ChatPanelProps) {
   const { t } = useTranslation('ai');
   const [input, setInput] = useState('');
@@ -146,18 +146,14 @@ export default function ChatPanel({
                 onAnimateDone={() => setAnimateId(null)}
               />
             ))}
-            {actionProposal && (
-              <ActionCard
-                description={actionProposal.description}
-                args={actionProposal.args}
-                entities={actionProposal.entities}
-                effect={actionProposal.effect}
-                danger={actionProposal.danger}
-                loading={actionPending}
-                onConfirm={() => onConfirmAction?.()}
-                onCancel={() => onCancelAction?.()}
-              />
-            )}
+            {planProposal && (
+            <AIPlanModal
+              plan={planProposal}
+              loading={actionPending}
+              onConfirm={(answers) => onConfirmAction?.(answers)}
+              onClose={() => onCancelAction?.()}
+            />
+          )}
             {isThinking && !streaming && (
               <ThinkingIndicator label={toolStatus ? t(`toolStatus.${toolStatus}`, { defaultValue: t('toolStatus.default') }) : undefined} />
             )}

@@ -75,13 +75,19 @@ export default function StatsBoard({ configuredCount, mounted }: Props) {
   }, [statsError, levelsError, cardsError]);
 
   const totalCards = cards.length;
+  // Цена балла попадает в подпись, только если ступени ею отличаются: колонка
+  // одинаковых значений ничего не объясняет, а место занимает.
+  const hasPointBenefit = levels.some(lvl => lvl.point_value !== levels[0]?.point_value);
   // Распределение карт по уровням: считаем по level_id, отдаём в порядке уровней.
   const levelRows = levels.map(lvl => ({
     ...lvl,
     count: cards.filter(c => c.level_id === lvl.id).length,
-    desc: lvl.max_threshold === null
-      ? t('stats.fromValue', { value: fmtMoney(lvl.min_threshold) })
-      : `${fmtMoney(lvl.min_threshold)}–${fmtMoney(lvl.max_threshold)}`,
+    desc: [
+      lvl.max_threshold === null
+        ? t('stats.fromValue', { value: fmtMoney(lvl.min_threshold) })
+        : `${fmtMoney(lvl.min_threshold)}–${fmtMoney(lvl.max_threshold)}`,
+      hasPointBenefit ? t('stats.levelPointValue', { value: fmtMoney(lvl.point_value) }) : null,
+    ].filter(Boolean).join(' · '),
   }));
 
   const KPI = [

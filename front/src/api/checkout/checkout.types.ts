@@ -15,7 +15,12 @@ export interface CheckoutCalculateResult {
   discount: number
   promo_valid: boolean
   bonuses_available: number
+  /** Сколько БАЛЛОВ списано. */
   bonuses_applied: number
+  /** Сколько ДЕНЕГ они сняли: на уровне с point_value=2 это вдвое больше баллов. */
+  bonuses_value: number
+  /** Цена одного балла на уровне этого клиента. */
+  point_value: number
   deposit_available: number
   deposit_applied: number
   certificate_applied: number
@@ -38,6 +43,7 @@ export interface CheckoutPayRequest {
 export interface CheckoutPayResult {
   total_price: number
   bonuses_applied: number
+  bonuses_value: number
   deposit_applied: number
   certificate_applied: number
   subscription_id: number | null

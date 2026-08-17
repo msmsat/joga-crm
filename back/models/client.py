@@ -21,6 +21,12 @@ class Client(Base):
     name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    # Номер пришёл подписанным от Telegram (`requestContact` → тот же HMAC, что и
+    # у initData), а не набран руками в браузере или админом в CRM. Разница
+    # практическая: по подтверждённому номеру студия гарантированно дозвонится,
+    # и именно на нём держится оплата на месте — фейковую бронь с чужим номером
+    # так не оставить.
+    phone_verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     birth_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

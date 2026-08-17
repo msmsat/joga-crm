@@ -78,13 +78,14 @@ class _Client:
 
 class _Reservation:
     """Фейк Reservation для cancel_lesson: каскад отмены мутирует объект и
-    зовёт refund_reservation, который сразу выходит при subscription_id=None
-    (без похода в БД) — этим и упрощаем мок."""
+    зовёт refund_reservation, который сразу выходит при subscription_id=None и
+    debt_payment_id=None (без похода в БД) — этим и упрощаем мок."""
     def __init__(self, client_id):
         self.client_id = client_id
         self.status = "active"
         self.cancelled_at = None
         self.subscription_id = None
+        self.debt_payment_id = None
 
 
 class _R:

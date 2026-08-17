@@ -56,18 +56,31 @@ export interface LessonResponse {
    * но записаться нельзя: расписание студии клиент должен видеть целиком.
    */
   bookable: boolean;
+  /**
+   * Студия дарит первое занятие, и это будет оно: запись пройдёт бесплатно и
+   * без абонемента. Признак клиентский — у всех карточек списка одинаковый.
+   */
+  trial_available: boolean;
   coffee: CoffeeState;
 }
 
+/** Оплата брони: подарок студии либо долг «оплатить на месте». */
+interface LessonPayment {
+  is_trial: boolean;
+  /** 0 — покрыто абонементом, подарено или уже оплачено. */
+  debt: number;
+  debt_str: string;
+}
+
 // Схема для будущих занятий (наследует всё + добавляет номер коврика)
-export interface UpcomingLessonResponse extends LessonResponse {
+export interface UpcomingLessonResponse extends LessonResponse, LessonPayment {
   spot_number: number;
   /** "pending" — бронь ждёт подтверждения студии, место уже держится. */
   status: 'active' | 'pending';
 }
 
 // Схема для прошедших занятий (наследует всё + добавляет коврик и оценку)
-export interface PastLessonResponse extends LessonResponse {
+export interface PastLessonResponse extends LessonResponse, LessonPayment {
   spot_number: number;
   rating: number | null; // Может быть числом (1-5) или null, если еще не оценили
 }

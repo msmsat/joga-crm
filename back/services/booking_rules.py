@@ -41,6 +41,10 @@ class BookingRules:
     widget_logo_url: str | None = None
     widget_dark_mode: bool = False
     widget_language: str = "ru"
+    # «Первое занятие бесплатно». Живёт здесь, потому что решение о подарке
+    # принимают все четыре точки записи (services/booking_access.trial_applies),
+    # а не только мини-приложение.
+    trial_lesson_free: bool = False
     # «Кофе после занятия» (см. models/settings.py). Читают мини-приложение и
     # рассыльщик — поэтому живут здесь, рядом с остальными правилами записи.
     coffee_enabled: bool = True

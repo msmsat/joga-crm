@@ -23,7 +23,7 @@ export default function AIPage() {
     sessions, sessionsLoading, sessionsError, refetchSessions,
     activeSessionId, messages, messagesLoading, messagesError, refetchMessages, isThinking,
     sendMessage, newChat, loadSession, deleteSession, messagesEndRef,
-    toolStatus, actionProposal, confirmAction, cancelAction, actionPending,
+    toolStatus, planProposal, confirmAction, cancelAction, actionPending,
   } = useDrawerChat('page');
   const {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
@@ -114,7 +114,7 @@ export default function AIPage() {
           activeAgents={activeAgents}
           onOpenAgentSetup={() => isLoaded && setAgentModalOpen(true)}
           toolStatus={toolStatus}
-          actionProposal={actionProposal}
+          planProposal={planProposal}
           onConfirmAction={confirmAction}
           onCancelAction={cancelAction}
           actionPending={actionPending}
@@ -158,7 +158,7 @@ export default function AIPage() {
         isThinking={isThinking}
         onSend={sendMessage}
         toolStatus={toolStatus}
-        actionProposal={actionProposal}
+        planProposal={planProposal}
         onConfirmAction={confirmAction}
         onCancelAction={cancelAction}
         actionPending={actionPending}

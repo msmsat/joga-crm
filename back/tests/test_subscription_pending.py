@@ -30,6 +30,7 @@ class _Res:
     def __init__(self, subscription_id=None):
         self.client_id = 1
         self.subscription_id = subscription_id
+        self.debt_payment_id = None  # см. clear_debt в refund_reservation
 
 
 class _DB:

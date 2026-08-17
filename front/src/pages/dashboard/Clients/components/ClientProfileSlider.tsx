@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ClientData, EventRecord } from '../types';
-import type { ClientProfile } from '../../../../api/clients/clients.types';
+import type { ClientLoyaltyLevel, ClientProfile } from '../../../../api/clients/clients.types';
 import { STATUS_COLORS, EVENT_FILTER_TABS, BONUS_OPTION_IDS, BONUS_POINTS } from '../constants';
 import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
@@ -148,42 +148,78 @@ function EventIcon({ type, c }: { type: EventRecord['type']; c: string }) {
 }
 
 // ─── LOYALTY ILLUS ────────────────────────────────────────────────────────────
-function LoyaltyIllus({ points }: { points: number }) {
+/**
+ * Уровень клиента и что он ему даёт.
+ *
+ * Всё до единого числа — с сервера (`loyalty_level`, тот же `_level_for`, что
+ * видит клиент в «Клубе»). Раньше этот блок сочинял уровень сам: хардкод
+ * Bronze/Silver/Gold/Platinum с порогами 1000/3000/8000 и «множитель» из
+ * процента прогресса — три вымышленных числа, которых не было ни в настройках
+ * владельца, ни в телефоне клиента.
+ *
+ * Кольцо показывает путь к следующей ступени по СУММЕ ПОКУПОК (по ней и
+ * считается уровень), а не по баллам: баллы тратятся, и прогресс от них
+ * прыгал бы назад после каждой оплаты.
+ */
+function LoyaltyIllus({ points, level, currency }: {
+  points: number;
+  level: ClientLoyaltyLevel | null;
+  currency: string;
+}) {
   const { t } = useTranslation('clients');
-  const tier = points >= 8000 ? 'Platinum' : points >= 3000 ? 'Gold' : points >= 1000 ? 'Silver' : 'Bronze';
-  const tierColors: Record<string, [string, string]> = {
-    Platinum: ['#e8e8ff', '#9090d0'],
-    Gold:     ['#fff8d6', '#f0c040'],
-    Silver:   ['#f0f0f0', '#aaaaaa'],
-    Bronze:   ['#fde8d8', '#c87941'],
-  };
-  const [bg, stroke] = tierColors[tier];
+  // Лестницы у студии нет — показывать нечего: выдумывать уровень мы больше не будем.
+  if (!level) return null;
+
+  const stroke = level.color;
   const r    = 36;
   const circ = 2 * Math.PI * r;
-  const maxPoints = tier === 'Platinum' ? 15000 : tier === 'Gold' ? 8000 : tier === 'Silver' ? 3000 : 1000;
-  const pct  = Math.min(points / maxPoints, 1);
+  // to_next — сколько ещё потратить. Доля пройденного внутри ступени неизвестна
+  // без нижнего порога, поэтому кольцо заполняем «сколько осталось от шага»:
+  // шаг = потраченное на этой ступени + остаток. Верхний уровень — круг полный.
+  const pct  = level.to_next === null || level.to_next === undefined ? 1 : Math.max(0, Math.min(1, 1 - level.to_next / Math.max(level.to_next + points * level.point_value, 1)));
   const dash = pct * circ;
+  // Балл дороже единицы — это и есть выгода уровня, её и выносим бейджем.
+  const hasBonus = level.point_value > 1;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', background: `${bg}60`, borderRadius: '12px', border: `1px solid ${stroke}40`, marginBottom: '12px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', background: `${stroke}12`, borderRadius: '12px', border: `1px solid ${stroke}40`, marginBottom: '12px' }}>
       <svg width="84" height="84" viewBox="0 0 84 84">
         <circle cx="42" cy="42" r={r} fill="none" stroke={`${stroke}22`} strokeWidth="6"/>
         <circle cx="42" cy="42" r={r} fill="none" stroke={stroke} strokeWidth="6"
           strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
           transform="rotate(-90 42 42)" style={{ transition: 'stroke-dasharray 1s ease' }}/>
-        <text x="42" y="38" textAnchor="middle" fill={stroke} fontSize="10" fontWeight="800" fontFamily="Manrope">{tier}</text>
-        <text x="42" y="52" textAnchor="middle" fill={stroke} fontSize="9" fontWeight="600" fontFamily="Manrope">{points.toLocaleString()}</text>
-        <text x="42" y="62" textAnchor="middle" fill={`${stroke}99`} fontSize="7" fontWeight="500" fontFamily="Manrope">{t('panel.loyalty.points')}</text>
+        <text x="42" y="40" textAnchor="middle" fill={stroke} fontSize="13" fontWeight="800" fontFamily="Manrope">{points.toLocaleString()}</text>
+        <text x="42" y="52" textAnchor="middle" fill={`${stroke}99`} fontSize="7" fontWeight="500" fontFamily="Manrope">{t('panel.loyalty.points')}</text>
       </svg>
-      <div>
-        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.loyalty.level', { tier })}</div>
-        <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px', lineHeight: 1.5 }}>
-          {t('panel.loyalty.toNext', { points: (maxPoints - points).toLocaleString() })}
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.loyalty.level', { tier: level.name })}</div>
+        {/* Баллы в деньгах — главный ответ на «а что они стоят». */}
+        <div style={{ fontSize: '11.5px', color: 'var(--text2)', marginTop: '3px', fontWeight: 600 }}>
+          {t('panel.loyalty.worth', { amount: `${currency}${level.points_value.toLocaleString('ru-RU')}` })}
         </div>
-        <div style={{ fontSize: '11px', color: 'var(--text2)', marginTop: '6px' }}>
+        {level.next_name && level.to_next !== null && (
+          <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px', lineHeight: 1.5 }}>
+            {t('panel.loyalty.toNextLevel', {
+              amount: `${currency}${level.to_next.toLocaleString('ru-RU')}`,
+              level: level.next_name,
+            })}
+          </div>
+        )}
+        <div style={{ fontSize: '11px', color: 'var(--text2)', marginTop: '6px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
           <span style={{ background: `${stroke}22`, color: stroke, padding: '2px 8px', borderRadius: '20px', fontWeight: 700, fontSize: '10px' }}>
-            {t('panel.loyalty.multiplier', { value: pct >= 1 ? '2.0' : pct >= 0.6 ? '1.5' : '1.0' })}
+            {t('panel.loyalty.pointValue', { amount: `${currency}${level.point_value}` })}
           </span>
+          {/* «Дальше дороже» показываем только когда действительно дороже. */}
+          {level.next_point_value != null && level.next_point_value > level.point_value && (
+            <span style={{ background: 'rgba(var(--ink),0.05)', color: 'var(--text3)', padding: '2px 8px', borderRadius: '20px', fontWeight: 700, fontSize: '10px' }}>
+              {t('panel.loyalty.nextPointValue', { amount: `${currency}${level.next_point_value}`, level: level.next_name })}
+            </span>
+          )}
+          {!hasBonus && level.next_point_value == null && (
+            <span style={{ color: 'var(--text3)', fontSize: '10px', fontWeight: 600, alignSelf: 'center' }}>
+              {t('panel.loyalty.noBonus')}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -598,6 +634,25 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               })()}
             </div>
 
+            {/* Неоплаченные занятия («оплата на месте»). Не плитка в сетке
+                показателей: долг — не достижение клиента рядом с визитами и
+                тратами, а то, что администратору надо увидеть первым. Погашается
+                он в Журнале, на самой записи, — отсюда только видно, что он есть. */}
+            {(client.debt ?? 0) > 0 && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px',
+                padding: '10px 12px', borderRadius: '10px',
+                background: 'var(--tint-rose)', border: '1px solid var(--rose)',
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rose)' }}>
+                  {t('panel.debt', { amount: formatMoney(client.debt ?? 0, currency) })}
+                </div>
+              </div>
+            )}
+
             {/* Stats grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
               {[
@@ -613,7 +668,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               ))}
             </div>
 
-            <LoyaltyIllus points={client.loyalty_points}/>
+            <LoyaltyIllus points={client.loyalty_points} level={client.loyalty_level ?? null} currency={currency}/>
             {/* Реферальный код и персональные офферы — раздел «Лояльность», а он
                 по ТЗ 2.9 только владельца: конфиг рефералки и /loyalty/offers на
                 сервере owner-only, у админа оба блока молча ловили 403. */}

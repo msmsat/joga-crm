@@ -1,8 +1,4 @@
 {
-  "ai:actions.confirm": {
-    "ru": "Подтвердить",
-    "en": "Confirm"
-  },
   "ai:actions.deleteChat": {
     "ru": "Удалить чат",
     "en": "Delete chat"
@@ -30,6 +26,34 @@
   "ai:memory.title": {
     "ru": "Ассистент помнит",
     "en": "Assistant remembers"
+  },
+  "ai:plan.back": {
+    "ru": "Назад",
+    "en": "Back"
+  },
+  "ai:plan.confirm": {
+    "ru": "Создать",
+    "en": "Create"
+  },
+  "ai:plan.confirmDanger": {
+    "ru": "Подтвердить",
+    "en": "Confirm"
+  },
+  "ai:plan.next": {
+    "ru": "Далее",
+    "en": "Next"
+  },
+  "ai:plan.pages.check": {
+    "ru": "Проверьте",
+    "en": "Review"
+  },
+  "ai:plan.pages.when": {
+    "ru": "Когда",
+    "en": "When"
+  },
+  "ai:plan.pages.who": {
+    "ru": "Кто и что",
+    "en": "Who and what"
   },
   "ai:quota.label": {
     "ru": "Запросов к ИИ",
@@ -94,6 +118,10 @@
   "booking:sections.main.bookingActive.label": {
     "ru": "Онлайн-запись активна",
     "en": "Online booking active"
+  },
+  "booking:sections.main.trialLesson.label": {
+    "ru": "Первое занятие бесплатно",
+    "en": "First class free"
   },
   "booking:sections.rules.title": {
     "ru": "Ограничения и правила",
@@ -306,6 +334,14 @@
   "journal:bookingPopup.removeFromLesson": {
     "ru": "Снять с занятия",
     "en": "Remove from lesson"
+  },
+  "journal:bookingPopup.trialLesson": {
+    "ru": "Пробное",
+    "en": "Trial"
+  },
+  "journal:bookingPopup.unpaid": {
+    "ru": "Не оплачено · {{amount}}",
+    "en": "Unpaid · {{amount}}"
   },
   "journal:cancelBookingConfirm.title": {
     "ru": "Отменить занятие?",

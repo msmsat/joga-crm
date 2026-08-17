@@ -4,7 +4,11 @@ from typing import Literal
 
 from schemas._base import BaseSchema
 
-ProductType = Literal["subscription", "single"]
+# "lesson" — конкретное занятие Журнала, за которое клиент платит на месте
+# (долг «оплата на месте», routers/schedule/reservations.py::pay_reservation).
+# Отдельно от "single": там продаётся услуга из Каталога и права на конкретное
+# занятие не даёт, здесь оплачивается уже существующая бронь.
+ProductType = Literal["subscription", "single", "lesson"]
 
 
 class CheckoutCalculateRequest(BaseSchema):
@@ -22,7 +26,11 @@ class CheckoutCalculateResult(BaseSchema):
     discount: int
     promo_valid: bool
     bonuses_available: int
+    # applied — баллы, value — деньги, которые они сняли: на уровне с
+    # point_value=2 это разные числа (см. services/points.py).
     bonuses_applied: int
+    bonuses_value: int = 0
+    point_value: int = 1
     deposit_available: int = 0
     deposit_applied: int = 0
     certificate_applied: int = 0
@@ -38,12 +46,17 @@ class CheckoutPayRequest(BaseSchema):
     use_bonuses: bool = False
     use_deposit: bool = False
     certificate_code: str | None = None
-    payment_method: Literal["cash", "card"] = "cash"
+    # "transfer" — клиент перевёл деньги студии (оплата на месте, погашение долга
+    # за занятие). Офлайн-метод, как и наличные: комиссию платформы за него
+    # считает record_offline_fee. "card" по-прежнему означает эквайринг Stripe и
+    # проводится вебхуком, а не этой ручкой.
+    payment_method: Literal["cash", "card", "transfer"] = "cash"
 
 
 class CheckoutPayResult(BaseSchema):
     total_price: int
     bonuses_applied: int
+    bonuses_value: int = 0
     deposit_applied: int = 0
     certificate_applied: int = 0
     subscription_id: int | None = None

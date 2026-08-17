@@ -73,6 +73,16 @@ export function BookingSettings(s: Props) {
           <label className="toggle-switch"><input type="checkbox" checked={settings.prefill_on_booking} onChange={e => patch('prefill_on_booking', e.target.checked)} /><span className="toggle-slider"></span></label>
         </div>
 
+        {/* Сразу под «Предоплатой при записи»: пробное занятие её и отменяет —
+            первая бронь нового клиента проходит без абонемента и без долга. */}
+        <div className="settings-row">
+          <div>
+            <div className="label">{t('sections.main.trialLesson.label')}</div>
+            <div className="sub">{t('sections.main.trialLesson.sub')}</div>
+          </div>
+          <label className="toggle-switch"><input type="checkbox" checked={settings.trial_lesson_free} onChange={e => patch('trial_lesson_free', e.target.checked)} /><span className="toggle-slider"></span></label>
+        </div>
+
         <div className="settings-row">
           <div>
             <div className="label">{t('sections.main.trainerConfirm.label')}</div>

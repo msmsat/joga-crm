@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ConfigProgramKey, ProgramKey, DrawerConfig } from '../types';
@@ -82,7 +82,6 @@ export function useLoyalty() {
   const [drawer, setDrawer] = useState<DrawerConfig | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
 
   // Флаг «первый кадр отрисован» — по нему полоски уровней разъезжаются с 0%.
   // Через rAF, а не сразу: иначе React успевает слить обновление в тот же кадр
@@ -98,14 +97,6 @@ export function useLoyalty() {
     certificates: configs.certificates?.is_enabled ?? false,
     referral: configs.referral?.is_enabled ?? false,
   };
-
-  useEffect(() => {
-    const el = drawerRef.current;
-    if (!el) return;
-    const preventScroll = (e: WheelEvent) => e.preventDefault();
-    el.addEventListener('wheel', preventScroll, { passive: false });
-    return () => el.removeEventListener('wheel', preventScroll);
-  }, [drawer]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -148,7 +139,7 @@ export function useLoyalty() {
     }));
   };
 
-  const updateLevel = (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold'>>) => {
+  const updateLevel = (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold' | 'point_value'>>) => {
     setLevelsDraft(prev => prev && recomputeChain(prev.map(lvl => (lvl.id === id ? { ...lvl, ...patch } : lvl))));
   };
 
@@ -163,6 +154,9 @@ export function useLoyalty() {
         min_threshold: lastMin + 1000,
         max_threshold: null,
         sort_order: prev.length,
+        // Новый уровень заводим без выгоды: поднять цену балла — осознанное
+        // решение владельца, а не побочный эффект кнопки «+ Уровень».
+        point_value: 1,
       };
       return recomputeChain([...prev, newLevel]);
     });
@@ -255,6 +249,6 @@ export function useLoyalty() {
     programs, configs, patchConfig, drawer, drawerVisible, mounted,
     saving: saveMut.isPending, errors, loadError, refetchConfigs, configsLoading,
     levelsDraft, updateLevel, addLevel, removeLevel,
-    drawerRef, openDrawer, closeDrawer, handleSave, toggleProgram,
+    openDrawer, closeDrawer, handleSave, toggleProgram,
   };
 }

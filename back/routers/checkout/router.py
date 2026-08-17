@@ -4,6 +4,7 @@ Zero Trust — вся валидация доступа и расчёт цены
 """
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +14,7 @@ from activity import log_activity
 from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Operation, Service,
+    Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Lesson, Operation, Service,
     Studio, SubscriptionPackage, User,
 )
 from routers.clients.loyalty import accrue_points, apply_deposit_change, apply_points_change, expire_points, register_purchase
@@ -26,6 +27,7 @@ from schemas.checkout import (
 from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import notify_payment
+from services.points import client_point_value, redeem_points
 from services.pricing import resolve_price
 
 router = APIRouter(prefix="/checkout")
@@ -50,7 +52,15 @@ class PriceQuote:
     discount: int
     promo_valid: bool
     bonuses_available: int
+    # bonuses_applied — БАЛЛЫ (их списывает consume_quote и возвращает откат),
+    # bonuses_value — деньги, которые они сняли с цены. До уровней это было одно
+    # и то же число; теперь на «Бриллианте» 125 баллов гасят 250 ₴, и путать их
+    # нельзя: по первому считается баланс, по второму — итог чека.
     bonuses_applied: int
+    bonuses_value: int
+    # Цена балла этого клиента (services/points.client_point_value) — чтобы UI
+    # объяснил «125 баллов = 250 ₴», а не показывал два числа без связи.
+    point_value: int
     deposit_available: int
     deposit_applied: int
     certificate_applied: int
@@ -120,10 +130,15 @@ async def _quote(
         remaining -= deposit_applied
 
     bonuses_available = card.points_balance if card is not None else 0
+    # Цена балла нужна и когда баллы не списывают: по ней предпросмотр
+    # подписывает тумблер («250 баллов — это 500 ₴»), иначе клиент не поймёт,
+    # что ему предлагают включить.
+    point_value = await client_point_value(db, studio_id, client_id)
     bonuses_applied = 0
+    bonuses_value = 0
     if use_bonuses:
-        bonuses_applied = min(bonuses_available, remaining)
-        remaining -= bonuses_applied
+        bonuses_applied, bonuses_value = redeem_points(bonuses_available, remaining, point_value)
+        remaining -= bonuses_value
 
     total_price = remaining
 
@@ -133,6 +148,8 @@ async def _quote(
         promo_valid=promo_valid,
         bonuses_available=bonuses_available,
         bonuses_applied=bonuses_applied,
+        bonuses_value=bonuses_value,
+        point_value=point_value,
         deposit_available=deposit_available,
         deposit_applied=deposit_applied,
         certificate_applied=certificate_applied,
@@ -204,11 +221,19 @@ def reject_dead_promo(promo_code: str | None, quote: PriceQuote) -> None:
 class ServiceAsProduct:
     """Услуга Каталога в форме, ожидаемой _quote/pay (те же поля, что у
     SubscriptionPackage) — «разовое» продаётся из Каталог → Услуги, не из
-    пакетов лояльности."""
+    пакетов лояльности. В этой же форме приходит оплаченное на месте занятие
+    (product_type="lesson").
+
+    `service_id` отдельно от `id`: Operation ссылается на услугу, а `id` для
+    занятия — это Lesson.id. Раньше в Operation.service_id клали `package.id`, и
+    для занятия там оказался бы чужой первичный ключ — отчёты по услугам стали
+    бы считать выручку не тому. У занятия услуги может не быть вовсе (None).
+    """
     id: int
     name: str
     price: int
     per_visit_price: int
+    service_id: Optional[int] = None
     is_active: bool = True
 
 
@@ -227,7 +252,23 @@ async def _get_client_package(
         )).scalar_one_or_none()
         if service is None:
             raise HTTPException(status_code=404, detail={"code": "checkout.service_not_found", "message": "Услуга не найдена"})
-        return client, ServiceAsProduct(id=service.id, name=service.name, price=service.price, per_visit_price=service.price)
+        return client, ServiceAsProduct(
+            id=service.id, name=service.name, price=service.price,
+            per_visit_price=service.price, service_id=service.id,
+        )
+
+    if product_type == "lesson":
+        # Цена берётся с занятия, а не с его услуги: в Журнале её правят под
+        # конкретное занятие, и заплатить клиент должен ровно ту, что видел.
+        lesson = (await db.execute(
+            select(Lesson).where(Lesson.id == product_id, Lesson.studio_id == studio_id)
+        )).scalar_one_or_none()
+        if lesson is None:
+            raise HTTPException(status_code=404, detail={"code": "checkout.lesson_not_found", "message": "Занятие не найдено"})
+        return client, ServiceAsProduct(
+            id=lesson.id, name=lesson.name, price=lesson.price,
+            per_visit_price=lesson.price, service_id=lesson.service_id,
+        )
 
     package = (await db.execute(
         select(SubscriptionPackage).where(
@@ -249,7 +290,10 @@ async def _get_client_package(
 # Способ оплаты → тип счёта, на который по умолчанию ложится доход. Онлайн-деньги
 # приходят выплатой от Stripe, а не в кассу: смешивать их с наличными нельзя,
 # иначе ни один из двух остатков не сходится с реальностью.
-ACCOUNT_TYPE_FOR_METHOD = {"stripe": "online", "card": "online"}
+# Перевод приходит на расчётный счёт, а не в кассу: пересчитать ящик с наличными
+# в конце дня можно, а поступление на счёт — нет, и смешивать их так же нельзя,
+# как онлайн с наличными.
+ACCOUNT_TYPE_FOR_METHOD = {"stripe": "online", "card": "online", "transfer": "bank"}
 
 
 async def resolve_account(
@@ -297,6 +341,8 @@ async def calculate(
         promo_valid=quote.promo_valid,
         bonuses_available=quote.bonuses_available,
         bonuses_applied=quote.bonuses_applied,
+        bonuses_value=quote.bonuses_value,
+        point_value=quote.point_value,
         deposit_available=quote.deposit_available,
         deposit_applied=quote.deposit_applied,
         certificate_applied=quote.certificate_applied,
@@ -320,7 +366,7 @@ async def pay(
 
 async def perform_pay(
     db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *,
-    method: str, expected_total: int | None = None,
+    method: str, expected_total: int | None = None, debt: "ClientPayment | None" = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -339,6 +385,11 @@ async def perform_pay(
     если между созданием сессии и оплатой у клиента потратили бонусы/депозит или
     поменяли цену пакета в другом окне. Наличным передавать нечего — там оплата и
     пересчёт происходят в одном запросе.
+
+    `debt` — уже существующая pending-строка «оплата на месте»
+    (services/subscription_charge.open_debt): её ПЕРЕВОДИМ в success вместо того,
+    чтобы завести вторую. Иначе в истории клиента остались бы обе — вечный долг
+    рядом с оплатой того же занятия.
     """
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
@@ -383,22 +434,27 @@ async def perform_pay(
         # total_price == 0 — весь товар погашен депозитом/сертификатом (V5-6, 1.1):
         # они уже проведены как доход при пополнении/выпуске, повторной Operation
         # на 0 ₽ заводить не нужно (двойной учёт выручки).
+        title = (
+            f"Занятие «{package.name}»" if body.product_type == "lesson"
+            else f"Разовое посещение «{package.name}»"
+        )
         op = None
         if quote.total_price > 0:
             op = Operation(
                 studio_id=studio_id,
                 type="in",
-                title=f"Разовое посещение «{package.name}»",
+                title=title,
                 amount=quote.total_price,
                 op_date=date.today(),
                 category="Услуги",
                 method=method,
                 account_id=account.id,
                 client_id=body.client_id,
-                # Разовое продаётся из Каталог → Услуги, значит package.id — это
-                # Service.id: единственный доход, который честно сводится к одной
-                # услуге. Отчёты фильтруют выручку по этой ссылке.
-                service_id=package.id,
+                # Услуга, к которой сводится доход: у разового это сама услуга
+                # Каталога, у занятия — его service_id (может не быть вовсе).
+                # Отчёты фильтруют выручку по этой ссылке, и чужой id здесь
+                # молча приписал бы деньги не той услуге.
+                service_id=package.service_id,
             )
             db.add(op)
             account.balance += quote.total_price
@@ -417,15 +473,24 @@ async def perform_pay(
                     client_id=body.client_id,
                     payment_method=method,
                 )
-        payment = ClientPayment(
-            client_id=body.client_id,
-            amount=quote.total_price,
-            description=f"Разовое посещение «{package.name}»",
-            status="success",
-            action_type="single",
-            item_key=str(package.id),
-        )
-        db.add(payment)
+        if debt is not None:
+            # Долг за занятие погашен: та же строка, а не вторая. Сумма
+            # пересчитана `_quote` (могли примениться баллы/скидка), поэтому
+            # переписываем и её — в истории должно стоять уплаченное, а не
+            # выставленное при записи.
+            payment = debt
+            payment.amount = quote.total_price
+            payment.status = "success"
+        else:
+            payment = ClientPayment(
+                client_id=body.client_id,
+                amount=quote.total_price,
+                description=title,
+                status="success",
+                action_type=body.product_type,
+                item_key=str(package.id),
+            )
+            db.add(payment)
         # Баллы начисляются от реально уплаченной суммы, не от прайса —
         # attach_subscription делает это сам для subscription; для single дублируем.
         await accrue_points(db, studio_id, body.client_id, quote.total_price)
@@ -451,6 +516,7 @@ async def perform_pay(
     return CheckoutPayResult(
         total_price=quote.total_price,
         bonuses_applied=quote.bonuses_applied,
+        bonuses_value=quote.bonuses_value,
         deposit_applied=quote.deposit_applied,
         certificate_applied=quote.certificate_applied,
         subscription_id=subscription_id,

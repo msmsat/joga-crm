@@ -61,6 +61,7 @@ class BookingSettingsRead(BaseSchema):
     miniapp_generated: bool
     widget_work_start: str
     widget_work_end: str
+    trial_lesson_free: bool = False
     coffee_enabled: bool = True
     coffee_spots: list[CoffeeSpotInput] = []
     # Публичная ссылка на мини-приложение студии. Не колонка — считается из
@@ -100,6 +101,7 @@ class BookingSettingsUpdate(BaseSchema):
     miniapp_generated: Optional[bool] = None
     widget_work_start: Optional[str] = None
     widget_work_end: Optional[str] = None
+    trial_lesson_free: Optional[bool] = None
     coffee_enabled: Optional[bool] = None
     coffee_spots: Optional[list[CoffeeSpotInput]] = None
 

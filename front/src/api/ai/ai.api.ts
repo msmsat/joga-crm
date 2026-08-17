@@ -29,7 +29,7 @@ export const aiApi = {
       text, current_page: currentPage, viewport,
     }),
 
-  // Стрим ответа: события token / tool_status / navigate / action_proposal /
+  // Стрим ответа: события token / tool_status / navigate / plan_proposal /
   // quota / done / error. Разбор SSE — в client.streamRequest.
   streamMessage: (
     sessionId: number,
@@ -50,6 +50,12 @@ export const aiApi = {
 
   executeAction: (token: string) =>
     client.post<AIActionResult>('/ai/actions/execute', { token }),
+
+  // Исполнить пачку целиком. answers — ответы формы окна: {"1": {phone: '…'}}.
+  // Ключ — номер шага, тот же, что человек видит в окне и в отчёте о том, что
+  // не получилось.
+  executePlan: (token: string, answers: Record<string, Record<string, unknown>>) =>
+    client.post<AIActionResult>('/ai/actions/execute-plan', { token, answers }),
 
   getQuota: () =>
     client.get<AIQuota>('/ai/quota'),

@@ -21,6 +21,10 @@ class _Res:
     def __init__(self, subscription_id=None):
         self.client_id = 1
         self.subscription_id = subscription_id
+        # Долг за «оплату на месте» — refund_reservation снимает его первым делом
+        # (services/subscription_charge.clear_debt). Здесь его нет ни у одной
+        # записи: у этих проверок абонемент, а не наличные.
+        self.debt_payment_id = None
 
 
 class _DB:

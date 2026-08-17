@@ -165,6 +165,13 @@ WA_TEMPLATES: dict[str, WaTemplate] = {
         {"ru": ["3 000 ₽"], "en": ["$30"]},
         lambda c, lang, cur: [_v(_fmt_amount(c.get("amount"), cur), "—")],
     ),
+    "c10": WaTemplate(
+        "UTILITY",
+        {"ru": "За занятие «{{1}}» осталось оплатить {{2}} — сделать это можно на ресепшене студии.",
+         "en": 'For the class "{{1}}" there is {{2}} left to pay — you can settle up at the studio reception.'},
+        {"ru": ["йога", "500 ₽"], "en": ["yoga", "$5"]},
+        lambda c, lang, cur: [_lesson(c, lang), _v(_fmt_amount(c.get("amount"), cur), "—")],
+    ),
     # ─── Тренер ───────────────────────────────────────────────────────────────
     "t1": WaTemplate(
         "UTILITY",

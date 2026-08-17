@@ -31,6 +31,10 @@ interface ProfileProps {
   pendingCertificate?: string | null;
   /** Код забран и подставлен: чтобы он не всплыл при следующей покупке. */
   onPendingCertificateUsed?: () => void;
+  /** Пришли из записи, упёршейся в «Предоплату при записи» — открыть покупку. */
+  openBuy?: boolean;
+  /** Покупку закрыли: намерение отработано и не должно всплыть снова. */
+  onBuyIntentUsed?: () => void;
 }
 
 export default function Profile({
@@ -38,6 +42,8 @@ export default function Profile({
   onCatalogRefresh,
   pendingCertificate,
   onPendingCertificateUsed,
+  openBuy = false,
+  onBuyIntentUsed,
 }: ProfileProps) {
   const { t, i18n } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
@@ -341,12 +347,12 @@ export default function Profile({
                 больше не зовём: перепривязка это уже смена контакта, её место в
                 CRM у администратора, а не в самообслуживании клиента. */}
             <SettingRow
-              label={profile?.email ?? t('profile.link_email', 'Прив’язати пошту')}
+              label={profile?.email ?? t('profile.link_email')}
               onClick={() => { if (!profile?.email) setIsLinkEmailOpen(true); }}
               trailing={
                 profile?.email ? (
                   <span className="shrink-0 text-[10px] font-extrabold uppercase tracking-[0.08em] text-success">
-                    {t('profile.email_linked', 'Прив’язано')}
+                    {t('profile.email_linked')}
                   </span>
                 ) : undefined
               }
@@ -390,10 +396,11 @@ export default function Profile({
         // Пересоздаём при смене сертификата: форма оплаты берёт код в начальное
         // состояние, а чинить его эффектом — лишний каскад рендеров.
         key={pendingCertificate ?? 'plain'}
-        isOpen={isBuyOpen || Boolean(pendingCertificate)}
+        isOpen={isBuyOpen || Boolean(pendingCertificate) || openBuy}
         onClose={() => {
           setIsBuyOpen(false);
           onPendingCertificateUsed?.();
+          onBuyIntentUsed?.();
         }}
         onSuccess={() => {
           setRefreshTick((tick) => tick + 1);

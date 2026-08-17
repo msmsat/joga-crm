@@ -86,6 +86,7 @@ CATALOG: dict[str, EventSpec] = {
     "c13": EventSpec("client",  "optional",    _ET),   # кофе после занятия — социальное, не операционное
     "c4":  EventSpec("client",  "critical",    _E),    # оплата получена — чек, место в почте
     "c9":  EventSpec("client",  "critical",    _E),    # возврат средств — финансовый документ
+    "c10": EventSpec("client",  "critical",    _E),    # занятие не оплачено — деньги, место в почте
     # ─── Тренер: в зале, телефон в кармане — расписание в мессенджер ──────
     "t1":  EventSpec("trainer", "operational", _EW),   # новая запись на занятие
     "t2":  EventSpec("trainer", "operational", _EW),   # клиент отменил запись <2ч — срочное

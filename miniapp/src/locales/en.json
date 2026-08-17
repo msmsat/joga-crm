@@ -87,6 +87,8 @@
     "auto_activates": "Activates automatically",
     "settings": "Settings",
     "buy_btn": "Buy Subscription",
+    "link_email": "Link email",
+    "email_linked": "Linked",
     "notifications": "Notifications",
     "history": "Payment History",
     "support": "Studio Support",
@@ -127,7 +129,9 @@
     "load_error": "Couldn't load your classes",
     "no_lessons_period": "Nothing in this period",
     "no_lessons_period_hint": "Use the arrows — they might be earlier",
-    "awaiting_confirmation": "Awaiting confirmation"
+    "awaiting_confirmation": "Awaiting confirmation",
+    "unpaid": "Unpaid · {{amount}}",
+    "trial": "Trial class"
   },
   "schedule": {
     "title": "Schedule",
@@ -175,10 +179,30 @@
     "processing": "Processing...",
     "cancel_booking": "Cancel booking",
     "choose_spot": "Choose a spot",
-    "pay": "Pay · {{price}}",
+    "facing_trainer": "Trainer stands here",
+    "book": "Book",
+    "book_more": "Book another mat",
+    "book_trial": "Book for free",
+    "free": "Free",
     "not_bookable": "This class cannot be booked online",
     "not_bookable_hint": "Booking is open only during studio hours and within the published schedule.",
     "awaiting_confirmation": "Request sent — waiting for the studio to confirm"
+  },
+  "subscriptionSheet": {
+    "kicker": "Membership",
+    "title": "Membership required",
+    "hint": "This studio only takes bookings with an active membership.",
+    "buy": "Get a membership"
+  },
+  "phoneSheet": {
+    "kicker": "Phone",
+    "title": "Leave your number",
+    "hint": "You pay for this class at the studio — we use your number to confirm the booking and warn you about changes.",
+    "share": "Share my number",
+    "placeholder": "+420 777 123 456",
+    "save": "Save and book",
+    "saving": "Saving…",
+    "error": "Could not save the number"
   },
   "directionModal": {
     "tag": "Direction",
@@ -211,7 +235,7 @@
   },
   "coffeeModal": {
     "title": "Stay for 15 minutes?",
-    "subtitle": "The girls are going for coffee after class. No commitment — just sit down and chat.",
+    "subtitle": "The girls are going for coffee after class. No commitment — just sit down and chat.",
     "already_going": "Already in: {{n}}",
     "join": "I'm in",
     "decline": "Not today"
@@ -267,6 +291,8 @@
     "certificate_invalid": "Certificate not found or already redeemed",
     "use_deposit": "Pay from deposit",
     "use_bonuses": "Spend points ({{count}})",
+    "use_bonuses_worth": "Spend points: {{count}} = {{value}}",
+    "bonuses_spent": "Points ({{count}})",
     "confirm_free": "Confirm",
     "free_hint": "No card payment needed — the amount is fully covered"
   },
@@ -346,6 +372,51 @@
     "disabled": "The studio hasn't launched its club yet",
     "disabled_hint": "Once the loyalty program is live, your points and level will show up here.",
     "certificate_use": "Use certificate",
-    "code_copy": "Copy code"
+    "code_copy": "Copy code",
+    "points_rate": "1 point = {{unit}} at checkout · earned for every {{rate}} you spend",
+    "level_point_value": "1 point = {{value}}",
+    "level_from": "from {{amount}}",
+    "level_here": "You are here",
+    "level_need": "{{amount}} to go",
+    "how_earn": "Every {{rate}} you spend at the studio earns you 1 point.",
+    "how_level": "Your level follows the total you've spent and moves up on its own — no need to ask.",
+    "how_value": "The level sets what a point takes off your bill: yours is worth {{unit}} now, more on the next step — and the points you already have get more valuable with you.",
+    "next_level_value": "On {{level}} a point will be worth {{value}}",
+    "offers_hint": "Discounts the studio gave you personally. They apply at checkout automatically.",
+    "certificates_hint": "A certificate pays for a purchase up to its value — tap it to spend it.",
+    "deposit_hint": "Money on your club account — use it to pay for a pass or a class.",
+    "referral_hint": "Invite a friend: {{discount}}% off their first purchase, a bonus for you.",
+    "referral_hint_plain": "Invite a friend and get a bonus once they come to the studio.",
+    "history_hint": "Plus is earned, minus is spent. Each point is worth {{unit}}.",
+    "info": {
+      "action": "How it works",
+      "title": "How the club works",
+      "subtitle": "Your studio's rules and points rate.",
+      "points_title": "Points",
+      "points_earn": "You get 1 point for every {{rate}} spent at the studio. The studio can also gift points separately — for a promo, an invited friend or your birthday.",
+      "points_spend": "When paying in the app, switch on “Use points” — each point takes {{unit}} off the price.",
+      "points_balance": "You have {{points}} points right now — that's {{value}}.",
+      "points_expiry_never": "Points never expire.",
+      "points_expiry_3m": "Unused points expire 3 months after they were earned.",
+      "points_expiry_6m": "Unused points expire 6 months after they were earned.",
+      "points_expiry_1y": "Unused points expire a year after they were earned.",
+      "points_grow": "The higher your level, the more a point is worth: on the next step it will be {{value}}. Points you already have grow with you — nothing needs to be recalculated.",
+      "levels_how": "Your level is based on everything you've spent at the studio and updates on its own.",
+      "levels_benefit": "A level changes what a point is worth: yours is {{unit}} right now, and on {{level}} it is {{value}}. Points are earned at the same rate on every level — what grows is the value of what you saved.",
+      "levels_what": "A level grants no discount by itself — the studio announces what each level gives.",
+      "offers_what": "A personal discount is issued by the studio — by hand or automatically, for example when you renew a pass. It applies at checkout on its own.",
+      "offers_once": "It is single-use and does not stack: when several discounts fit, the best one for you wins.",
+      "cert_what": "A certificate is a money value that is subtracted from the price of your purchase.",
+      "cert_how": "Tap a certificate to pay for a pass with it, or copy the code and give it to the front desk. A certificate is redeemed in full on one purchase.",
+      "deposit_what": "The deposit is your money held by the studio. It pays for a purchase instead of your card.",
+      "deposit_balance": "You have {{value}} on deposit.",
+      "referral_you_points": "You get {{bonus}} points once your invited friend meets the studio's condition.",
+      "referral_you_money": "You get {{bonus}} once your invited friend meets the studio's condition.",
+      "referral_friend": "Your friend gets {{discount}}% off their first purchase made through your link.",
+      "referral_friend_none": "Send a friend your link — it ties their account to yours.",
+      "order_title": "Order of payment",
+      "order_steps": "Discount → certificate → deposit → points → the rest paid by card.",
+      "order_note": "Only what is needed is used: if you have more points than the price, the rest stays on your balance."
+    }
   }
 }

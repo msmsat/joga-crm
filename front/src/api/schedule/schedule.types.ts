@@ -53,6 +53,11 @@ export interface BookedClient {
   // pending — клиент записался онлайн, а студия включила «Подтверждение
   // тренером»: место держится, но бронь ждёт решения в Журнале.
   status: 'active' | 'attended' | 'pending'
+  // Подаренное первое занятие («Первое занятие бесплатно») — денег не ждём.
+  is_trial: boolean
+  // Долг за занятие (оплата на месте). 0 — покрыто абонементом, подарено или
+  // уже оплачено.
+  debt: number
 }
 
 export interface LessonDetail extends Lesson {

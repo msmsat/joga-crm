@@ -85,7 +85,27 @@
       "city": "City",
       "birth_date": "Date of birth",
       "source": "Source",
-      "frozen": "Freeze"
+      "frozen": "Freeze",
+      "date_from": "From",
+      "date_to": "To",
+      "weekdays": "Weekdays",
+      "time_from": "From",
+      "time_to": "Until",
+      "break_at": "Break at",
+      "break_min": "Break, min",
+      "extend_hours": "Widen trainer's hours",
+      "salary": "Rate",
+      "access_role": "Access",
+      "department": "Position",
+      "password": "Employee password",
+      "rate": "Rate",
+      "rate_type": "Pay type",
+      "service_ids": "Services",
+      "schedule": "Schedule"
+    },
+    "bool": {
+      "yes": "yes",
+      "no": "no"
     }
   },
   "settings": {
@@ -190,6 +210,7 @@
     "add_loyalty_points": "Adding points…",
     "book_client": "Booking the class…",
     "cancel_booking": "Cancelling the booking…",
+    "pay_booking": "Recording the class payment…",
     "create_account": "Creating an account…",
     "create_branch": "Creating a branch…",
     "create_client": "Creating a client…",
@@ -262,5 +283,28 @@
     "forgetConfirmTitle": "Forget this fact?",
     "forgetConfirmMessage": "The assistant will stop using it in answers.",
     "deleted": "Fact removed"
+  },
+  "plan": {
+    "pages": {
+      "who": "Who and what",
+      "when": "When",
+      "check": "Review"
+    },
+    "stepOf": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "confirm": "Create",
+    "confirmDanger": "Confirm",
+    "choose": "Choose",
+    "nothingFound": "Nothing found",
+    "nothingToFill": "Nothing to fill in here — go straight on.",
+    "fromStep": "created by step {{n}}",
+    "values": {
+      "group": "group",
+      "individual": "individual",
+      "trainer": "trainer",
+      "admin": "admin",
+      "owner": "owner"
+    }
   }
 }

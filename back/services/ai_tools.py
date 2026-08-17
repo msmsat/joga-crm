@@ -28,7 +28,7 @@ from typing import Callable, Literal, Optional
 
 from fastapi import HTTPException
 from jose import JWTError, jwt
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -91,6 +91,7 @@ from routers.schedule.lessons import (
 from routers.schedule.reservations import (
     cancel_reservation as _r_cancel_reservation,
     create_reservation as _r_create_reservation,
+    pay_reservation as _r_pay_reservation,
 )
 from routers.staff.profiles import (
     create_staff as _r_create_staff,
@@ -132,7 +133,7 @@ from schemas.loyalty.loyalty import (
 )
 from schemas.schedule.halls import HallCreate
 from schemas.schedule.lessons import LessonCreateRequest
-from schemas.schedule.reservations import ReservationCreate
+from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
 from schemas.settings.team import StaffCreate, StaffUpdate
@@ -455,13 +456,19 @@ class Tool:
     # именно подставили. Модель спрашивать «а в каком зале?» больше не имеет
     # права, и без такого умолчания она просто оставляла поле пустым.
     defaults: Callable | None = None
+    # Что человеку стоит знать ДО подтверждения: async (args, ctx, db) -> [текст].
+    # Отдельно от defaults, потому что предупреждение ничего не меняет в
+    # аргументах, а показать его после исполнения — значит показать поздно:
+    # «раздвинул график тренера» человек обязан прочитать до клика, а не в
+    # отчёте о том, что уже случилось.
+    warnings: Callable | None = None
 
 
 def tool(
     *, mutating: bool = False, roles: tuple[str, ...] = ALL_ROLES,
     tier_hint: str = TIER_FAST, summary: str | None = None, danger: bool = False,
     endpoint: str | None = None, effect: str | None = None,
-    defaults: Callable | None = None,
+    defaults: Callable | None = None, warnings: Callable | None = None,
 ):
     """Регистрирует функцию как инструмент.
 
@@ -486,6 +493,7 @@ def tool(
             endpoint=endpoint,
             effect=effect,
             defaults=defaults,
+            warnings=warnings,
         )
         return fn
     return deco
@@ -547,12 +555,35 @@ class CreateLessonArgs(BaseModel):
     price: Optional[int] = None
 
 
-class FillScheduleArgs(BaseModel):
-    """«Поставь хатху Валерии на две недели, перерыв в 15:00».
+def _hhmm(value: object) -> str | None:
+    """«10», «10:00», «10:00:00», «10.30» -> «10:00» / «10:30». None — не разобрали.
 
-    Часов работы здесь нет намеренно: они уже есть в карточке сотрудника, и
-    спрашивать их у человека («со скольки до скольки она работает?») — значит
-    требовать у него данные из его же CRM.
+    Терпимость к формату здесь не косметика: строку кладёт модель, и «10:00:00»
+    не повод ронять запрос пятисоткой. А вот мусор («утром») обязан стать
+    отказом валидации, а не молча превратиться в полночь.
+    """
+    if value in (None, ""):
+        return None
+    hours, _, rest = str(value).strip().replace(".", ":").partition(":")
+    mins = rest.partition(":")[0] or "0"
+    if not (hours.isdigit() and mins.isdigit()):
+        return None
+    h, m = int(hours), int(mins)
+    return f"{h:02d}:{m:02d}" if h <= 23 and m <= 59 else None
+
+
+class FillScheduleArgs(BaseModel):
+    """«Поставь хатху Валерии на две недели, перерыв в 15:00», «поставь всем
+    занятия на следующую неделю с 10 до 22».
+
+    Карточка сотрудника — умолчание для дней и часов, а НЕ закон. Названные
+    человеком дни и часы её перебивают: молчаливое «поставлю по карточке» на
+    просьбу «все дни с 10 до 22» и было тем багом, ради которого weekdays /
+    time_from / time_to здесь появились — человек просил десять утра, получал
+    пять вечера и не понимал, почему.
+
+    Не названное человеком по-прежнему берётся из карточки: спрашивать у него
+    рабочие часы его же тренера стыдно, и это правило никуда не делось.
     """
     teacher_id: int
     service_id: int
@@ -564,8 +595,44 @@ class FillScheduleArgs(BaseModel):
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None
     price: Optional[int] = None
+    weekdays: Optional[list[int]] = Field(
+        None, description="Дни недели, если человек их назвал: 0 — понедельник, "
+                          "6 — воскресенье. «По вторникам и четвергам» -> [1, 3]. "
+                          "Не назвал — не заполняй, возьмутся рабочие дни из карточки тренера")
+    time_from: Optional[str] = Field(
+        None, description="Начало рабочего окна, «10:00», если человек его назвал. "
+                          "Не назвал — не заполняй, возьмётся из карточки тренера")
+    time_to: Optional[str] = Field(
+        None, description="Конец рабочего окна, «22:00», если человек его назвал")
     break_at: Optional[str] = Field(None, description="Начало перерыва, «15:00»")
     break_min: int = 60
+    extend_hours: bool = Field(
+        True, description="Раздвинуть рабочие часы тренера в его карточке, если названные "
+                          "часы в неё не влезают. Сам не выключай: с false занятия в эти "
+                          "часы просто не создадутся — их отвергнет проверка часов")
+
+    @field_validator("weekdays")
+    @classmethod
+    def _days_in_range(cls, value: Optional[list[int]]) -> Optional[list[int]]:
+        if value is None:
+            return None
+        # 7 вместо 0 — постоянная промашка модели (ISO-нумерация, где неделя
+        # кончается воскресеньем). Чиним молча: человек в обоих случаях имел в
+        # виду воскресенье, и отказ валидации стоил бы ему лишнего круга.
+        days = sorted({0 if day == 7 else day for day in value})
+        if days and not (0 <= days[0] and days[-1] <= 6):
+            raise ValueError("день недели вне 0..6")
+        return days
+
+    @field_validator("time_from", "time_to", "break_at")
+    @classmethod
+    def _time_format(cls, value: Optional[str]) -> Optional[str]:
+        if value in (None, ""):
+            return None
+        normalized = _hhmm(value)
+        if normalized is None:
+            raise ValueError("время в формате «10:00»")
+        return normalized
 
 
 class BookClientArgs(BaseModel):
@@ -575,6 +642,11 @@ class BookClientArgs(BaseModel):
 
 class CancelBookingArgs(BaseModel):
     reservation_id: int
+
+
+class PayBookingArgs(BaseModel):
+    reservation_id: int
+    payment_method: Literal["cash", "transfer"] = "cash"
 
 
 class CreateClientArgs(BaseModel):
@@ -659,6 +731,16 @@ class CreateStaffArgs(BaseModel):
     last_name: Optional[str] = None
     phone: Optional[str] = None
     department: Optional[str] = None      # должность свободным текстом
+    # Оплата — здесь, а не только в update_staff. Роутер её принимал всегда, а
+    # инструмент нет, и «добавь сотрудников со ставкой 300 крон в час» разбивалось
+    # на create_staff + update_staff на каждого. Дешёвые модели второй вызов
+    # молча теряли: ставка пропадала, а в ответе человеку значилось, что она
+    # выставлена. Одно поле в схеме убирает четыре лишних шага и это враньё.
+    salary: Optional[float] = Field(None, description="Оклад за период")
+    rate: Optional[float] = Field(None, description="Ставка: за час, за занятие или процент")
+    rate_type: Optional[Literal["fixed", "percent", "hourly"]] = Field(
+        None, description="Что означает rate: hourly — за час, percent — процент с выручки, "
+                          "fixed — за занятие. «300 крон в час» -> rate=300, rate_type=hourly")
     service_ids: Optional[list[int]] = None
 
 
@@ -1308,7 +1390,7 @@ async def create_lesson(ctx: StudioContext, db: AsyncSession, args: CreateLesson
         body=LessonCreateRequest(
             service_id=args.service_id, teacher_id=args.teacher_id, hall_id=args.hall_id,
             start_time=args.start_time, duration_min=args.duration_min or 60,
-            total_spots=args.total_spots or 8, price=args.price or 0,
+            total_spots=args.total_spots or 8, price=args.price,
         ),
         ctx=ctx, db=db, background_tasks=None,
     )
@@ -1319,30 +1401,146 @@ _FILL_MAX_DAYS = 62         # два месяца; дальше расписан
 _FILL_MAX_LESSONS = 200     # предохранитель: одно «да» не должно создать тысячу занятий
 
 
+_WEEKDAYS_RU = ("пн", "вт", "ср", "чт", "пт", "сб", "вс")
+
+
 def _at(day: date, hhmm: str) -> datetime:
-    hours, _, mins = hhmm.partition(":")
-    return datetime(day.year, day.month, day.day, int(hours), int(mins or 0))
+    """«10:00» этого дня. Формат терпимый — см. _hhmm; неразбираемое время сюда
+    не доходит, его отсекает валидатор FillScheduleArgs."""
+    normalized = _hhmm(hhmm) or "00:00"
+    hours, _, mins = normalized.partition(":")
+    return datetime(day.year, day.month, day.day, int(hours), int(mins))
+
+
+async def _week_hours(
+    teacher_id: int, ctx: StudioContext, db: AsyncSession,
+) -> dict[int, StaffWorkingHours]:
+    """Недельный график тренера одним запросом.
+
+    Одним, а не по запросу на день: период бывает до 62 дней, и прежние 62
+    одинаковых SELECT-а ради семи строк были чистой платой за удобство цикла.
+    """
+    rows = (await db.execute(
+        select(StaffWorkingHours).where(
+            StaffWorkingHours.user_id == teacher_id,
+            StaffWorkingHours.studio_id == ctx.studio_id,
+        )
+    )).scalars().all()
+    return {row.day_of_week: row for row in rows}
+
+
+def _card_hours(week: dict[int, StaffWorkingHours]) -> str:
+    """Карточка тренера человеческой строкой: «вт 17:00–21:00, чт 17:00–21:00»."""
+    open_days = [(d, h) for d, h in sorted(week.items()) if h.is_open]
+    if not open_days:
+        return "рабочих дней нет"
+    return ", ".join(f"{_WEEKDAYS_RU[d]} {h.open_time}–{h.close_time}" for d, h in open_days)
+
+
+def _hours_conflict(args: "FillScheduleArgs", week: dict[int, StaffWorkingHours]) -> str | None:
+    """Расхождение названного человеком с карточкой тренера — или None.
+
+    Одной строкой на весь период, а не по строке на день: человеку важен факт
+    («в карточке другое»), а не четырнадцать одинаковых предупреждений. Молчать
+    об этом нельзя — человек увидел бы расхождение только в Журнале и решил,
+    что ассистент переврал его слова.
+    """
+    if args.weekdays is None and not args.time_from and not args.time_to:
+        return None                     # человек ничего не называл — расходиться не с чем
+    card_days = {d for d, h in week.items() if h.is_open}
+    asked_days = set(args.weekdays) if args.weekdays is not None else card_days
+    hours_differ = any(
+        (args.time_from and h.open_time != args.time_from)
+        or (args.time_to and h.close_time != args.time_to)
+        for d, h in week.items() if d in asked_days & card_days
+    )
+    if asked_days == card_days and not hours_differ:
+        return None
+    return f"В карточке тренера {_card_hours(week)} — ставлю по вашему."
+
+
+async def _extend_week(
+    args: "FillScheduleArgs", week: dict[int, StaffWorkingHours],
+    ctx: StudioContext, db: AsyncSession,
+) -> list[int]:
+    """Раздвинуть карточку тренера под названные человеком часы. Отдаёт дни,
+    которые пришлось тронуть.
+
+    Без этого «слова человека побеждают» остаётся обещанием: занятие вне
+    рабочих часов сотрудника отвергает assert_within_working_hours ВНУТРИ
+    роутера создания — того же, через который расписание правят руками в
+    Журнале. Значит либо карточка едет за словами, либо слова не исполняются
+    вовсе, и «нечего ставить» приходит на просьбу, которую человек проговорил
+    вслух. Третьего пути («создать в обход проверки») быть не должно: Журнал
+    считал бы такой день нерабочим и отказался бы двигать эти же занятия мышкой.
+
+    Часы только раздвигаются, никогда не сужаются: «поставь с 12 до 14» тренеру
+    с окном 10:00–22:00 не должно отнять у него утро и вечер.
+    """
+    if not (args.time_from and args.time_to):
+        # Окно названо наполовину — второй край берётся из карточки, значит в
+        # неё всё и влезает. Двигать нечего.
+        return []
+    asked = set(args.weekdays) if args.weekdays is not None else {
+        d for d, h in week.items() if h.is_open}
+    touched: list[int] = []
+    for day in sorted(asked):
+        hours = week.get(day)
+        if hours is None:
+            week[day] = hours = StaffWorkingHours(
+                studio_id=ctx.studio_id, user_id=args.teacher_id, day_of_week=day,
+                is_open=True, open_time=args.time_from, close_time=args.time_to,
+            )
+            db.add(hours)
+            touched.append(day)
+            continue
+        opens = _hhmm(hours.open_time) or "00:00"
+        closes = _hhmm(hours.close_time) or "23:59"
+        if hours.is_open and closes <= opens:
+            continue            # ночная смена — арифметика объединения на ней врёт
+        new_open = min(opens, args.time_from) if hours.is_open else args.time_from
+        new_close = max(closes, args.time_to) if hours.is_open else args.time_to
+        if (hours.is_open, hours.open_time, hours.close_time) == (True, new_open, new_close):
+            continue
+        hours.is_open, hours.open_time, hours.close_time = True, new_open, new_close
+        touched.append(day)
+    if touched:
+        # Роутер создания читает часы в ЭТОЙ же сессии — без flush он увидел бы
+        # старое окно и отверг занятия, ради которых карточку и двигали.
+        await db.flush()
+    return touched
 
 
 async def _free_slots(
-    day: date, args: "FillScheduleArgs", ctx: StudioContext, db: AsyncSession,
+    day: date, args: "FillScheduleArgs", week: dict[int, StaffWorkingHours],
+    ctx: StudioContext, db: AsyncSession,
 ) -> list[datetime]:
-    """Свободные начала занятий в рабочем дне тренера.
+    """Свободные начала занятий в дне тренера.
 
-    График сотрудника — единственный источник часов: именно его человек имеет в
-    виду под «весь её рабочий день». Занятость считаем сами, потому что роутер
-    накладку не запрещает, а только уведомляет о ней администратора: без этой
-    проверки повторное «заполни» удвоило бы расписание.
+    Приоритет источников: названные человеком дни и часы > карточка сотрудника.
+    Карточка остаётся умолчанием для всего, о чём человек не сказал, — но
+    перестала быть законом: на «все дни с 10 до 22» она молча подставляла свои
+    вторник-четверг и 17:00, и человек получал не то, что просил.
+
+    Занятость считаем сами, потому что роутер накладку не запрещает, а только
+    уведомляет о ней администратора: без этой проверки повторное «заполни»
+    удвоило бы расписание.
     """
-    hours = (await db.execute(
-        select(StaffWorkingHours).where(
-            StaffWorkingHours.user_id == args.teacher_id,
-            StaffWorkingHours.studio_id == ctx.studio_id,
-            StaffWorkingHours.day_of_week == day.weekday(),
-        )
-    )).scalar_one_or_none()
-    if hours is None or not hours.is_open:
+    if args.weekdays is not None and day.weekday() not in args.weekdays:
         return []
+
+    hours = week.get(day.weekday())
+    opens_at, closes_at = args.time_from, args.time_to
+    if not (opens_at and closes_at):
+        # Хотя бы один край не назван — недостающее берём из карточки. Нет и
+        # карточки (или день в ней выходной) — ставить не от чего.
+        if hours is None or not hours.is_open:
+            return []
+        opens_at = opens_at or hours.open_time
+        closes_at = closes_at or hours.close_time
+
+    # Отгул на конкретную дату перебивает и слова человека: это не «график по
+    # умолчанию», а «в этот день тренера нет».
     if (await db.execute(
         select(StaffDayOverride.is_working).where(
             StaffDayOverride.user_id == args.teacher_id,
@@ -1352,7 +1550,7 @@ async def _free_slots(
     )).scalar_one_or_none() is False:
         return []
 
-    opens, closes = _at(day, hours.open_time), _at(day, hours.close_time)
+    opens, closes = _at(day, opens_at), _at(day, closes_at)
     if closes <= opens:      # ночная смена — хвост уезжает на следующие сутки
         closes += timedelta(days=1)
     step = timedelta(minutes=args.duration_min or 60)
@@ -1380,19 +1578,43 @@ async def _free_slots(
     return slots
 
 
+async def _fill_warnings(args: dict, ctx: StudioContext, db: AsyncSession) -> list[str]:
+    """Расхождение с карточкой тренера — ДО подтверждения, для окна плана.
+
+    Тот же _hours_conflict, что вернётся в результате, но посчитанный заранее:
+    «раздвинул график Ани» человек обязан прочитать перед кликом, а не в отчёте
+    о том, что это уже произошло.
+    """
+    try:
+        parsed = FillScheduleArgs.model_validate(args or {})
+    except ValidationError:
+        return []               # неполные аргументы — это вопросы формы, не предупреждение
+    conflict = _hours_conflict(parsed, await _week_hours(parsed.teacher_id, ctx, db))
+    if not conflict:
+        return []
+    if parsed.extend_hours:
+        return [conflict + " Рабочие часы в карточке раздвину."]
+    return [conflict + " Карточку не трону — что в неё не влезет, не поставится."]
+
+
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
-    summary="Заполнить расписание: {service_id}, тренер {teacher_id}, {date_from} — {date_to}, по {duration_min} мин",
-    effect="Занятия встанут в Журнал на рабочие дни тренера по его графику; занятые часы и перерыв пропускаются.",
+    warnings=_fill_warnings,
+    summary="Заполнить расписание: {service_id}, тренер {teacher_id}, {date_from} — {date_to}, дни {weekdays}, с {time_from} до {time_to}, по {duration_min} мин",
+    effect="Занятия встанут в Журнал — в названные дни и часы либо по графику тренера; "
+           "занятые часы, отгулы и перерыв пропускаются. Часы шире графика — карточка тренера раздвинется.",
     defaults=_lesson_defaults,
 )
 async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillScheduleArgs) -> dict:
     """ЗАПОЛНИТЬ РАСПИСАНИЕ на период одним вызовом: «заполни график на неделю
     вперёд», «поставь хатху Валерии на две недели, перерыв в 15:00», «забей всё
-    её рабочее время».
+    её рабочее время», «поставь занятия на всю следующую неделю с 10 до 22».
 
-    Часы берёт из графика сотрудника сам — спрашивать их у человека не нужно и
-    смотреть отдельно тоже. Выходные, занятые часы и перерыв пропускает.
+    Назвал человек дни или часы — ОБЯЗАТЕЛЬНО передай их в weekdays / time_from /
+    time_to: они перебивают карточку тренера. Промолчал — не заполняй эти поля,
+    часы и рабочие дни возьмутся из карточки сами, спрашивать их не нужно.
+    Отгулы, занятые часы и перерыв пропускаются в любом случае.
+
     Вызывай сразу, как только речь о нескольких днях: перечислять дни вручную
     через create_lesson не нужно.
     """
@@ -1400,9 +1622,15 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
     if (args.date_to - day).days > _FILL_MAX_DAYS:
         return {"error": f"Слишком длинный период — не больше {_FILL_MAX_DAYS} дней за раз"}
 
+    week = await _week_hours(args.teacher_id, ctx, db)
+    # Расхождение считаем ДО правки карточки: после неё расходиться уже не с чем,
+    # а человеку нужно увидеть, как было.
+    conflict = _hours_conflict(args, week)
+    touched = await _extend_week(args, week, ctx, db) if args.extend_hours else []
+
     created, skipped = [], 0
     while day <= args.date_to and len(created) < _FILL_MAX_LESSONS:
-        for start in await _free_slots(day, args, ctx, db):
+        for start in await _free_slots(day, args, week, ctx, db):
             if len(created) >= _FILL_MAX_LESSONS:
                 break
             try:
@@ -1415,7 +1643,7 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
                         hall_id=args.hall_id, start_time=start,
                         duration_min=args.duration_min or 60,
                         total_spots=args.total_spots or 8,
-                        price=args.price or 0,
+                        price=args.price,
                     ),
                     ctx=ctx, db=db, background_tasks=None,
                 )
@@ -1427,15 +1655,31 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
                 skipped += 1
         day += timedelta(days=1)
 
+    if conflict and touched:
+        conflict += f" Рабочие часы в карточке раздвинул ({_card_hours(week)})."
+    elif conflict and not args.extend_hours:
+        conflict += " Карточку не трогал — что в неё не влезло, не поставилось."
+
     if not created:
+        # Названные человеком дни и часы прошли, а ставить нечего — причина
+        # почти всегда в них, а не в карточке: «нет рабочих часов» тут сбивало
+        # бы с толку («я же назвал часы»).
+        if args.weekdays is not None or args.time_from or args.time_to:
+            return {"error": "Нечего ставить: в названные дни и часы у тренера всё занято "
+                             "или эти дни в период не попали"}
         return {"error": "Нечего ставить: в этот период у тренера нет рабочих часов "
                          "или все они уже заняты"}
-    return {
+    result = {
         "created": len(created),
         "skipped": skipped,
         "first": created[0].isoformat(),
         "last": created[-1].isoformat(),
     }
+    if conflict:
+        # Списком, а не строкой: часть A собирает из этого warnings плана, и
+        # менять там форму поля на полпути дороже, чем завести список сразу.
+        result["conflicts"] = [conflict]
+    return result
 
 
 @tool(
@@ -1462,6 +1706,23 @@ async def cancel_booking(ctx: StudioContext, db: AsyncSession, args: CancelBooki
     """Снять клиента с занятия по номеру записи — освобождает место и
     возвращает занятие на абонемент."""
     reservation = await _r_cancel_reservation(reservation_id=args.reservation_id, ctx=ctx, db=db)
+    return {"reservation": _dump(reservation)}
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"),
+    endpoint="POST /schedule/reservations/{reservation_id}/pay",
+    summary="Принять оплату за занятие (запись #{reservation_id}, {payment_method})",
+    effect="Долг за занятие закроется, доход попадёт в Финансы, клиенту начислятся баллы и уйдёт уведомление об оплате.",
+)
+async def pay_booking(ctx: StudioContext, db: AsyncSession, args: PayBookingArgs) -> dict:
+    """Отметить, что клиент заплатил за занятие на месте (наличными или
+    переводом) — гасит долг «оплата на месте» и проводит доход."""
+    reservation = await _r_pay_reservation(
+        reservation_id=args.reservation_id,
+        body=ReservationPayRequest(payment_method=args.payment_method),
+        ctx=ctx, current_user=ctx.user, db=db,
+    )
     return {"reservation": _dump(reservation)}
 
 
@@ -1671,7 +1932,7 @@ async def get_staff_profile(ctx: StudioContext, db: AsyncSession, args: StaffArg
 
 @tool(
     mutating=True, roles=("owner",),
-    summary="Завести сотрудника {name} {last_name} ({access_role}), email {email}",
+    summary="Завести сотрудника {name} {last_name} ({access_role}), email {email}, ставка {rate} {rate_type}, оклад {salary}",
     endpoint="POST /staff/",
     effect="На email сотрудника уйдёт ссылка-приглашение на 7 дней; до входа он висит в списке с пометкой «Ожидает приглашения».",
 )
@@ -1692,6 +1953,7 @@ async def create_staff(ctx: StudioContext, db: AsyncSession, args: CreateStaffAr
         data=StaffCreate(
             name=args.name, last_name=args.last_name, email=args.email, phone=args.phone,
             password=args.password, role=args.access_role, department=args.department,
+            salary=args.salary, rate=args.rate, rate_type=args.rate_type,
             service_ids=args.service_ids or [],
         ),
         ctx=ctx, db=db,
@@ -1722,7 +1984,7 @@ async def _staff_update_body(staff_id: int, ctx: StudioContext, db: AsyncSession
 
 @tool(
     mutating=True, roles=("owner",),
-    summary="Изменить сотрудника {staff_id}: должность {department}, роль {access_role}",
+    summary="Изменить сотрудника {staff_id}: ставка {salary}, ставка/час {rate}, должность {department}, роль {access_role}",
     endpoint="PUT /staff/{staff_id}",
 )
 async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffArgs) -> dict:
@@ -2196,12 +2458,38 @@ async def forget_fact(ctx: StudioContext, db: AsyncSession, args: ForgetFactArgs
 
 # ─── Реестр ───────────────────────────────────────────────────────────────────
 
+_FORM_HINT = (
+    "\n\nЧего не знаешь — НЕ спрашивай в чате и не пропускай вызов: вызови этот "
+    "инструмент с тем, что есть. Недостающие поля сервер соберёт у человека "
+    "формой перед подтверждением."
+)
+
+
 def _json_schema(t: Tool) -> dict:
+    """Схема инструмента ДЛЯ МОДЕЛИ. У изменяющих она мягче настоящей.
+
+    `required` у них снимается намеренно, и это не поблажка, а единственный
+    способ, которым работает окно плана. Модель не может вызвать функцию, у
+    которой не заполнены required-поля схемы, — это механика function calling,
+    а не непослушание. Пока create_staff требовал email, роль и пароль, на
+    «добавь Аню, Сашу, Олю и Вику» ассистент был обязан ответить допросом:
+    вызвать инструмент ему было НЕЧЕМ, а значит и окну неоткуда было взяться.
+    Проверено на живой модели дважды — двумя разными формулировками правил.
+
+    Строгость никуда не делась, она просто переехала:
+      - `missing_fields` считает недостающее по НАСТОЯЩЕЙ схеме -> вопросы формы;
+      - `call_tool` валидирует по ней же перед исполнением -> мусор не пройдёт.
+    Читающих инструментов это не касается: там незаполненное поле означает не
+    вопрос человеку, а бессмысленный запрос в базу.
+    """
     schema = t.params.model_json_schema()
     schema.pop("title", None)
+    description = t.description
+    if t.mutating and schema.pop("required", None):
+        description += _FORM_HINT
     return {
         "type": "function",
-        "function": {"name": t.name, "description": t.description, "parameters": schema},
+        "function": {"name": t.name, "description": description, "parameters": schema},
     }
 
 
@@ -2334,23 +2622,36 @@ _ACTION_PURPOSE = "ai_action"
 _ACTION_TTL = timedelta(minutes=10)
 
 
+# Метка «этого поля не дали». Не «—»: тире законно стоит внутри значений
+# (период «2026-08-17 — 2026-08-23»), и вырезание незаполненных полей по нему
+# съедало вместе с ними даты.
+_UNSET = "␢"
+
+
 class _SafeArgs(dict):
     """Пропущенный аргумент в шаблоне summary не должен ронять предложение."""
 
     def __missing__(self, key: str) -> str:
-        return "—"
+        return _UNSET
 
 
 _WEEKDAYS = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
 
 
 def _render(key: str, value):
-    """Расписание по дням недели — словами, а не выпиской JSON.
+    """Расписание и дни недели — словами, а не выпиской JSON.
+
+    «weekdays: [1, 3]» человек в окне не прочитает и не проверит — это тот же
+    голый номер, что и id.
 
     set_staff_schedule стирает дни, которых нет в списке, а в карточке стояло
     `[{"day_of_week": 0, "is_open": true, …}, …]` — это подтверждают не глядя, и
     у тренера молча пропадают выходные, которые он себе поставил.
     """
+    if key == "weekdays" and isinstance(value, list) and value:
+        return ", ".join(_WEEKDAYS[int(d) % 7] for d in value)
+    if key == "rate_type":
+        return {"hourly": "за час", "percent": "% с выручки", "fixed": "за занятие"}.get(value, value)
     if key != "schedule" or not isinstance(value, list) or not value:
         return value
     parts = []
@@ -2369,6 +2670,32 @@ def _visible(key: str, value) -> bool:
     return value is not None and "password" not in key
 
 
+def _fill_summary(template: str, values: dict) -> str:
+    """Подставить значения в шаблон, выбросив фрагменты, которых человек не давал.
+
+    Разбираем ПО ФРАГМЕНТАМ шаблона, а не по готовой строке: только так видно,
+    какие поля во фрагменте были и сколько из них пустых. Резать готовый текст
+    по тире нельзя — тире законно стоит внутри значений («2026-08-17 —
+    2026-08-23»), и первый заход этой правки съедал вместе с пустыми полями
+    период.
+
+    Зачем вообще: «Изменить сотрудника: должность —, роль —» — это установка
+    ставки, показанная как пустое действие. Четыре таких в окне подряд человек
+    подтверждает не глядя, потому что понять их нельзя.
+    """
+    kept = []
+    for index, fragment in enumerate(template.split(",")):
+        keys = re.findall(r"\{(\w+)\}", fragment)
+        # Первый фрагмент несёт само название действия — он остаётся всегда.
+        if index and keys and all(values.get(key) in (None, "") for key in keys):
+            continue
+        text = fragment.format_map(_SafeArgs(values)).replace(_UNSET, "")
+        text = re.sub(r"\s{2,}", " ", text).rstrip()
+        if text.strip(" ()"):
+            kept.append(text)
+    return ",".join(kept)
+
+
 def describe_action(name: str, args: dict, entities: dict | None = None) -> str:
     """Человекочитаемое описание действия — для карточки подтверждения и для
     сообщения в ленте после исполнения.
@@ -2385,7 +2712,7 @@ def describe_action(name: str, args: dict, entities: dict | None = None) -> str:
     values = {k: _render(k, v) for k, v in args.items() if _visible(k, v)}
     values.update(entities or {})
     if t is not None and t.summary:
-        return t.summary.format_map(_SafeArgs(values))
+        return _fill_summary(t.summary, values)
     title = (t.description.splitlines()[0] if t else name).split(". ")[0].rstrip(":.")
     details = ", ".join(f"{k}: {v}" for k, v in values.items())
     return f"{title} ({details})" if details else title
@@ -2534,6 +2861,32 @@ async def resolve_entities(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     return entities, None
 
 
+def clarify_for(args: dict, ambiguous: dict | None) -> dict | None:
+    """Вопрос «о ком речь» вместо действия — или None, если всё однозначно.
+
+    Отдельной функцией, потому что спрашивать обязаны обе сборки: и одиночная
+    карточка, и план. Модель не переспрашивает ровно тогда, когда уверена, а
+    уверенность в «Ване», которых в команде двое, ничем не обеспечена.
+    """
+    if not ambiguous:
+        return None
+    options = ambiguous.get("options") or []
+    # Полей несколько, потому что один и тот же человек приезжает то
+    # staff_id (сменить зарплату), то teacher_id (поставить занятие).
+    spoken = [
+        args[field] for field in (ambiguous.get("fields") or ())
+        if isinstance(args.get(field), int)
+        and any(o.get("id") == args[field] for o in options)
+    ]
+    if not spoken:
+        return None
+    return {
+        "fields": list(ambiguous.get("fields") or ()),
+        "question": "Под запрос подошло несколько записей — уточните, о ком речь:",
+        "options": options[:_MAX_OPTIONS],
+    }
+
+
 async def make_action_proposal(
     name: str, args: dict, ctx: StudioContext, db: AsyncSession,
     session_id: int | None, ambiguous: dict | None = None,
@@ -2562,21 +2915,9 @@ async def make_action_proposal(
     # Проверка неоднозначности — ДО умолчаний и до любого запроса в базу: этот
     # исход обязан наступать раньше остальной сборки, подставлять зал и цену
     # действию, которого не будет, незачем.
-    if ambiguous:
-        options = ambiguous.get("options") or []
-        # Полей несколько, потому что один и тот же человек приезжает то
-        # staff_id (сменить зарплату), то teacher_id (поставить занятие).
-        spoken = [
-            args[field] for field in (ambiguous.get("fields") or ())
-            if isinstance(args.get(field), int)
-            and any(o.get("id") == args[field] for o in options)
-        ]
-        if spoken:
-            return {"clarify": {
-                "fields": list(ambiguous.get("fields") or ()),
-                "question": "Под запрос подошло несколько записей — уточните, о ком речь:",
-                "options": options[:_MAX_OPTIONS],
-            }}
+    asked = clarify_for(args, ambiguous)
+    if asked:
+        return {"clarify": asked}
 
     if t is not None and t.defaults is not None:
         args = await t.defaults(args, ctx, db)
@@ -2867,6 +3208,42 @@ if __name__ == "__main__":
     assert _by_name(others, "кирилл") == []
     assert _staff_option({**vanya, "department": "пилатес", "role": "trainer"})["label"] == (
         "Иван Петров, пилатес, тренер")
+
+    # Разбор времени от модели: терпим к формату, но не к мусору. «утром» обязано
+    # стать отказом валидации, а не молча превратиться в полночь.
+    assert _hhmm("10") == _hhmm("10:00") == _hhmm("10:00:00") == "10:00"
+    assert _hhmm("9.30") == "09:30" and _hhmm(None) is None
+    assert _hhmm("утром") is None and _hhmm("25:00") is None and _hhmm("10:70") is None
+
+    def _fill(**over):
+        return FillScheduleArgs(teacher_id=1, service_id=1, date_from=date(2026, 8, 17),
+                                date_to=date(2026, 8, 23), **over)
+
+    # Дни недели: 7 — промашка модели (ISO), значит воскресенье, а не отказ.
+    assert _fill(weekdays=[7, 1, 1]).weekdays == [0, 1]
+    assert _fill(time_from="9").time_from == "09:00"
+    for bad in ({"weekdays": [9]}, {"time_from": "утром"}):
+        try:
+            _fill(**bad)
+            raise AssertionError(f"мусор принят: {bad}")
+        except ValidationError:
+            pass
+
+    class _Hours:
+        def __init__(self, day, is_open=True, open_time="17:00", close_time="21:00"):
+            self.day_of_week, self.is_open = day, is_open
+            self.open_time, self.close_time = open_time, close_time
+
+    card = {1: _Hours(1), 3: _Hours(3)}                  # вт и чт, 17:00–21:00
+    assert _card_hours(card) == "вт 17:00–21:00, чт 17:00–21:00"
+    # Человек ничего не называл — расходиться не с чем, предупреждения нет.
+    assert _hours_conflict(_fill(), card) is None
+    # Назвал ровно то же, что в карточке, — тоже молчим.
+    assert _hours_conflict(_fill(weekdays=[1, 3], time_from="17:00", time_to="21:00"), card) is None
+    # А вот «все дни с 10 до 22» — это расхождение, и человек обязан его увидеть:
+    # молча поставить по карточке и было тем багом, ради которого всё это.
+    loud = _hours_conflict(_fill(weekdays=[0, 1, 2, 3, 4], time_from="10:00", time_to="22:00"), card)
+    assert loud and "вт 17:00–21:00" in loud, loud
 
     # Последствие действия — из карты интерфейса, а не выдумано на месте.
     assert "спишется с абонемента" in TOOLS["book_client"].effect

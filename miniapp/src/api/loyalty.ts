@@ -10,6 +10,9 @@ export interface LoyaltyLevelInfo {
   /** Уровень уже пройден по текущей сумме покупок. */
   reached: boolean;
   is_current: boolean;
+  /** Сколько денег даёт балл на этой ступени — выгода уровня. */
+  point_value: number;
+  point_value_str: string;
 }
 
 export interface PointEntry {
@@ -55,8 +58,19 @@ export interface LoyaltyOverview {
   currency: string;
 
   points_balance: number;
+  /** Баланс в деньгах по цене балла на уровне клиента — так его считает касса. */
   points_value_str: string;
   points_exchange_rate: number;
+  /** «100 ₴» — сколько потратить в студии ради одного балла. */
+  earn_rate_str: string;
+  /** Цена балла на текущем уровне клиента. */
+  point_value: number;
+  /** «2 ₴» — сколько денег снимает один балл при оплате. */
+  point_unit_str: string;
+  /** Цена балла на следующей ступени. null — выше нет или там не дороже. */
+  next_point_unit_str: string | null;
+  /** '3m' | '6m' | '1y' | 'never' — когда сгорают неистраченные баллы. */
+  points_expiry: string;
 
   total_spent: number;
   total_spent_str: string;

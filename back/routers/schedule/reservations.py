@@ -5,10 +5,13 @@ from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import get_scoped_lesson, get_studio_context, StudioContext
-from models import Client, Reservation
-from schemas.schedule.reservations import ReservationCreate, ReservationRead
-from services.booking_access import assert_can_book
+from dependencies import get_current_user, get_scoped_lesson, get_studio_context, StudioContext
+from models import Client, ClientPayment, Reservation, User
+# Долг за занятие гасит тот же движок, что и касса: см. pay_reservation ниже.
+from routers.checkout.router import perform_pay
+from schemas.checkout import CheckoutPayRequest
+from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest, ReservationRead
+from services.booking_access import assert_can_book, resolve_coverage
 from services.booking_rules import load_rules
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
@@ -69,7 +72,16 @@ async def create_reservation(
     if duplicate is not None:
         raise HTTPException(status_code=409, detail="Клиент уже записан на это занятие")
 
-    sub = await assert_can_book(db, body.client_id, lesson)
+    # Пробное занятие снимает гейт абонемента: новичка, которому студия дарит
+    # первый визит, администратор обязан мочь записать — покупать ему пока
+    # нечего, а без этого «Первое занятие бесплатно» работало бы только онлайн.
+    rules = await load_rules(db, ctx.studio_id)
+    sub, is_trial = await resolve_coverage(db, body.client_id, lesson, rules)
+    if sub is None and not is_trial:
+        # Подходящего абонемента нет и подарок не положен — assert_can_book
+        # здесь всегда бросает; зовём её ради точной причины отказа («истекает
+        # раньше занятия» / «не подходит для этого занятия» / «нет абонемента»).
+        await assert_can_book(db, body.client_id, lesson)
 
     reservation = Reservation(
         client_id=body.client_id,
@@ -77,6 +89,7 @@ async def create_reservation(
         spot_number=booked + 1,
         status="active",
         booking_channel="manual",
+        is_trial=is_trial,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, ctx.studio_id, reservation, sub)
@@ -234,6 +247,7 @@ async def attend_reservation(
             .values(last_visit_date=date.today())
         )
         await activate_pending_after_visit(db, reservation)
+        debt = await _open_debt_of(db, reservation)
 
         await db.commit()
         await db.refresh(reservation)
@@ -243,4 +257,82 @@ async def attend_reservation(
         if (await load_rules(db, ctx.studio_id)).review_request:
             await notify(db, ctx.studio_id, "client", "c8",
                          {"client_id": reservation.client_id, "lesson_name": lesson.name})
+
+        # Клиент пришёл, а занятие не оплачено — момент, когда долг перестаёт
+        # быть бумажным: деньги должны были перейти из рук в руки. Тумблера у
+        # c10 нет отдельного от матрицы уведомлений — владелец гасит его там,
+        # если не хочет напоминать клиентам о деньгах письмом.
+        if debt is not None:
+            await notify(db, ctx.studio_id, "client", "c10", {
+                "client_id": reservation.client_id,
+                "lesson_name": lesson.name,
+                # Число, а не строка: валюту подставляет сам шаблон
+                # (services/notifier._render → _fmt_amount).
+                "amount": debt.amount,
+            })
+    return ReservationRead.model_validate(reservation)
+
+
+async def _open_debt_of(db: AsyncSession, reservation: Reservation) -> ClientPayment | None:
+    """Непогашенный долг за бронь или None. Погашенный (`success`) долгом не
+    считается — платёж просто остаётся в истории клиента."""
+    if reservation.debt_payment_id is None:
+        return None
+    debt = await db.get(ClientPayment, reservation.debt_payment_id)
+    return debt if debt is not None and debt.status == "pending" else None
+
+
+@router.post("/reservations/{reservation_id}/pay", response_model=ReservationRead)
+async def pay_reservation(
+    reservation_id: int,
+    body: ReservationPayRequest,
+    ctx: StudioContext = Depends(get_studio_context),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Погасить долг «оплата на месте»: клиент отдал деньги на ресепшене.
+
+    Считает и проводит не эта ручка, а общий денежный движок кассы
+    (`routers/checkout/router.perform_pay`, `product_type="lesson"`): оттуда
+    приезжают доход в Финансы, комиссия платформы за офлайн-оплату, баллы,
+    сумма покупок клиента, событие c4 «оплата получена» и запись в Ленте
+    событий. Вторая реализация этого блока разъехалась бы с кассой на первой же
+    правке — как разъехались когда-то две копии реферальной выплаты.
+
+    Деньги берут владелец и администратор: тренер отмечает посещение, но кассу
+    не ведёт (ТЗ 2.3).
+    """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Принимать оплату могут владелец и администратор")
+
+    reservation = (await db.execute(
+        select(Reservation).where(Reservation.id == reservation_id)
+    )).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
+
+    debt = await _open_debt_of(db, reservation)
+    if debt is None:
+        # Идемпотентность: два кассира нажали «Оплатил» одновременно, второй
+        # получает честный отказ, а не вторую Operation на ту же сумму.
+        raise HTTPException(status_code=409, detail="За эту запись платить нечего")
+
+    # perform_pay держит свою транзакцию и коммитит сама — после неё бронь уже
+    # с погашенным долгом. Ссылку на платёж НЕ снимаем: по ней Журнал отличает
+    # «оплачено» от «долга не было вовсе».
+    await perform_pay(
+        db, ctx.studio_id, current_user.id,
+        CheckoutPayRequest(
+            client_id=reservation.client_id,
+            product_id=lesson.id,
+            product_type="lesson",
+            account_id=body.account_id,
+            payment_method=body.payment_method,
+        ),
+        method=body.payment_method,
+        debt=debt,
+    )
+    await db.refresh(reservation)
     return ReservationRead.model_validate(reservation)

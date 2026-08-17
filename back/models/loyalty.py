@@ -29,6 +29,12 @@ class LoyaltyLevel(Base):
     min_threshold: Mapped[int] = mapped_column(Integer)
     max_threshold: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    # Сколько денег даёт один балл при списании НА ЭТОМ УРОВНЕ: «Золото» — 1,
+    # «Бриллиант» — 2. Это и есть выгода уровня: начисление у всех одинаковое
+    # (StudioLoyaltyConfig.points_exchange_rate), а цена накопленного растёт.
+    # Дефолт 1 = прежнее поведение (балл гасил ровно единицу валюты), поэтому
+    # у студий, которые не трогали настройку, ничего не меняется.
+    point_value: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
 
     studio: Mapped["Studio"] = relationship(back_populates="loyalty_levels")
     client_cards: Mapped[List["ClientLoyaltyCard"]] = relationship(back_populates="level")

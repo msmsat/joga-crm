@@ -20,9 +20,11 @@ from schemas.ai import (
     ChatSessionCreate,
     ChatSessionRead,
     MessageRatingIn,
+    PlanExecuteIn,
     SendMessageResponse,
 )
 from services.ai_quota import ai_quota_status, check_ai_quota
+from services.ai_plan import decode_plan_token, merge_answers, run_plan, summarize
 from services.ai_tools import call_tool, decode_action_token, describe_action, resolve_entities
 from services.assistant import agent_events, get_or_create_ai_settings, run_agent
 
@@ -227,7 +229,7 @@ async def send_message(
     return SendMessageResponse(
         user=user_message,
         assistant=assistant_message,
-        action_proposal=result.action_proposal,
+        plan_proposal=result.plan_proposal,
     )
 
 
@@ -303,8 +305,8 @@ async def _agent_stream(
         await db.refresh(user_message)
         await db.refresh(assistant_message)
 
-        if result.action_proposal:
-            yield _sse("action_proposal", result.action_proposal)
+        if result.plan_proposal:
+            yield _sse("plan_proposal", result.plan_proposal)
         used, limit = await ai_quota_status(db, ctx.studio_id)
         yield _sse("quota", {"used": used, "limit": limit})
         yield _sse("done", {"user_id": user_message.id, "assistant_id": assistant_message.id})
@@ -410,3 +412,59 @@ async def execute_action(
     await db.refresh(message)
     logger.info("ai action executed: tool=%s studio=%s", payload["tool"], ctx.studio_id)
     return ActionExecuteOut(result=result, message=message)
+
+
+@router.post("/actions/execute-plan", response_model=ActionExecuteOut)
+@limiter.limit("10/minute")
+async def execute_plan(
+    request: Request,
+    body: PlanExecuteIn,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Исполнить пачку действий, собранную ассистентом (часть A).
+
+    Отдельный запрос — по той же причине, что и у одиночного действия:
+    проксируемые функции роутеров делают db.commit() внутри себя, и звать их из
+    середины агентного цикла значит коммитить чужую транзакцию наполовину.
+
+    Отказ шага не останавливает остальные — решение заказчика и единственное
+    честное: откатить уже разосланные уведомления всё равно нечем.
+    """
+    payload = decode_plan_token(body.token, ctx)
+    session = await _get_session_or_404(payload["session_id"], ctx, db)
+
+    # Однократность — ДО исполнения, как и у одиночного действия: повторный
+    # клик по «Создать» успел бы завести вторую пачку записей.
+    if (await db.execute(
+        select(AIChatMessage.id).where(AIChatMessage.action_jti == payload["jti"])
+    )).scalar_one_or_none() is not None:
+        raise HTTPException(status_code=409, detail="action_already_executed")
+
+    steps = merge_answers(payload["steps"], body.answers)
+    outcome = await run_plan(steps, ctx, db)
+    if not outcome["created"]:
+        # Не создалось НИЧЕГО — это отказ, а не «частичный успех»: сообщение в
+        # ленте про «0 из 5» человек прочитает как выполненное действие.
+        raise HTTPException(status_code=400, detail={
+            "code": "action_failed",
+            "message": (outcome["failed"][0]["error"] if outcome["failed"]
+                        else "Не удалось выполнить ни один шаг"),
+        })
+
+    message = AIChatMessage(
+        session_id=session.id, role="assistant",
+        text=summarize(outcome), action_jti=payload["jti"],
+    )
+    db.add(message)
+    session.preview = message.text[:500]
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="action_already_executed")
+
+    await db.refresh(message)
+    logger.info("ai plan executed: steps=%s failed=%s studio=%s",
+                len(outcome["created"]), len(outcome["failed"]), ctx.studio_id)
+    return ActionExecuteOut(result=outcome, message=message)

@@ -4,7 +4,8 @@ import ChatView from '../../../../components/AIDrawer/components/ChatView';
 import HistoryView from '../../../../components/AIDrawer/components/HistoryView';
 import drawer from '../../../../components/AIDrawer/AIDrawer.module.css';
 import { MODEL_OPTIONS, LANGUAGE_OPTIONS } from '../constants';
-import type { AIActionProposal } from '../../../../api/ai/ai.types';
+import type { AIPlanProposal } from '../../../../api/ai/ai.types';
+import type { PlanAnswers } from '../../../../components/ui/index';
 import type { AIChatMessage, AIChatSession, AIUISettings } from '../types';
 import CustomSelect from './CustomSelect';
 import { getStudioRole } from '../../../../utils/auth';
@@ -29,8 +30,8 @@ interface PhoneViewProps {
   // Проброс карточки подтверждения и статуса инструмента (эпик AI-5, задача 10):
   // телефонный вид собран из компонентов дровера и ждёт их так же.
   toolStatus?: string | null;
-  actionProposal?: AIActionProposal | null;
-  onConfirmAction?: () => void;
+  planProposal?: AIPlanProposal | null;
+  onConfirmAction?: (answers: PlanAnswers) => void;
   onCancelAction?: () => void;
   actionPending?: boolean;
 }
@@ -54,7 +55,7 @@ export default function PhoneView({
   activeSessionId, onLoadSession, onNewChat,
   aiSettings, onUpdateSettings,
   activeAgents, onOpenAgentSetup,
-  toolStatus = null, actionProposal = null, onConfirmAction, onCancelAction, actionPending = false,
+  toolStatus = null, planProposal = null, onConfirmAction, onCancelAction, actionPending = false,
 }: PhoneViewProps) {
   const { t } = useTranslation('ai');
   const [showHistory, setShowHistory] = useState(false);
@@ -113,7 +114,7 @@ export default function PhoneView({
             messagesEndRef={messagesEndRef}
             onSend={onSend}
             toolStatus={toolStatus}
-            actionProposal={actionProposal}
+            planProposal={planProposal}
             onConfirmAction={onConfirmAction}
             onCancelAction={onCancelAction}
             actionPending={actionPending}

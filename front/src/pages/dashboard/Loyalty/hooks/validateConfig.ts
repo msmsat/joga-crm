@@ -22,6 +22,9 @@ export function validateConfig(
     if (!c?.program_name?.trim()) errors.program_name = t('validation.required');
     if (!c || c.points_exchange_rate < 1) errors.points_exchange_rate = t('validation.minOne');
     if (levelsDraft?.some(lvl => !lvl.name.trim())) errors.levels = t('validation.required');
+    // Цена балла — деньги: ноль обесценил бы накопленное клиентами молча.
+    // Тот же порог, что на сервере (_validate_levels).
+    if (levelsDraft?.some(lvl => !lvl.point_value || lvl.point_value < 1)) errors.point_value = t('validation.minOne');
   }
 
   if (key === 'certificates') {

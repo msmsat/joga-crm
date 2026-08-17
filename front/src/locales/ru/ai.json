@@ -85,7 +85,27 @@
       "city": "Город",
       "birth_date": "Дата рождения",
       "source": "Источник",
-      "frozen": "Заморозить"
+      "frozen": "Заморозить",
+      "date_from": "С даты",
+      "date_to": "По дату",
+      "weekdays": "Дни недели",
+      "time_from": "С",
+      "time_to": "До",
+      "break_at": "Перерыв в",
+      "break_min": "Перерыв, мин",
+      "extend_hours": "Раздвинуть график тренера",
+      "salary": "Ставка",
+      "access_role": "Доступ",
+      "department": "Должность",
+      "password": "Пароль сотрудника",
+      "rate": "Ставка",
+      "rate_type": "Тип оплаты",
+      "service_ids": "Услуги",
+      "schedule": "График"
+    },
+    "bool": {
+      "yes": "да",
+      "no": "нет"
     }
   },
   "settings": {
@@ -190,6 +210,7 @@
     "add_loyalty_points": "Начисляю баллы…",
     "book_client": "Записываю на занятие…",
     "cancel_booking": "Снимаю с занятия…",
+    "pay_booking": "Провожу оплату за занятие…",
     "create_account": "Завожу счёт…",
     "create_branch": "Завожу филиал…",
     "create_client": "Завожу клиента…",
@@ -262,5 +283,28 @@
     "forgetConfirmTitle": "Забыть этот факт?",
     "forgetConfirmMessage": "Ассистент перестанет учитывать его в ответах.",
     "deleted": "Факт удалён"
+  },
+  "plan": {
+    "pages": {
+      "who": "Кто и что",
+      "when": "Когда",
+      "check": "Проверьте"
+    },
+    "stepOf": "Шаг {{current}} из {{total}}",
+    "next": "Далее",
+    "back": "Назад",
+    "confirm": "Создать",
+    "confirmDanger": "Подтвердить",
+    "choose": "Выберите",
+    "nothingFound": "Ничего не нашлось",
+    "nothingToFill": "Здесь заполнять нечего — можно сразу к следующему шагу.",
+    "fromStep": "создаётся шагом {{n}}",
+    "values": {
+      "group": "групповая",
+      "individual": "индивидуальная",
+      "trainer": "тренер",
+      "admin": "администратор",
+      "owner": "владелец"
+    }
   }
 }

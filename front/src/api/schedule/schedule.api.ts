@@ -48,4 +48,10 @@ export const scheduleApi = {
   // в Онлайн-записи). Отклонение — обычный cancelReservation.
   confirmReservation: (id: number) =>
     client.patch<Reservation>(`/schedule/reservations/${id}/confirm`, {}),
+
+  // Клиент заплатил за занятие на месте: гасит долг и проводит доход через
+  // кассовый движок. Карты здесь нет — эквайринг идёт через Stripe (бэк её и
+  // не примет).
+  payReservation: (id: number, paymentMethod: 'cash' | 'transfer') =>
+    client.post<Reservation>(`/schedule/reservations/${id}/pay`, { payment_method: paymentMethod }),
 }

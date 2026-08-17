@@ -12,6 +12,13 @@ type Props = {
   matLabel: string;
   countdown: string;
   index: number;
+  /**
+   * Плашка оплаты: «Не оплачено · 500 ₴» или «Пробне заняття». Пусто — платить
+   * нечего (абонемент), и лишней строки на карточке не появляется.
+   */
+  paymentLabel?: string;
+  /** Долг — тревожная плашка, подарок — спокойная. */
+  paymentTone?: 'debt' | 'trial';
   /** Полоска «кофе после занятия» — рендерится страницей, карточка её не знает. */
   footer?: ReactNode;
   /** Открыть карточку занятия. */
@@ -36,6 +43,8 @@ export default function UpcomingCard({
   matLabel,
   countdown,
   index,
+  paymentLabel,
+  paymentTone = 'debt',
   footer,
   onOpen,
 }: Props) {
@@ -77,6 +86,19 @@ export default function UpcomingCard({
           </svg>
           {countdown}
         </span>
+
+        {paymentLabel && (
+          <span
+            className={[
+              'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-extrabold',
+              paymentTone === 'debt'
+                ? 'bg-danger/12 text-danger'
+                : 'bg-success/14 text-success',
+            ].join(' ')}
+          >
+            {paymentLabel}
+          </span>
+        )}
       </div>
 
       {footer && <div onClick={(e) => e.stopPropagation()}>{footer}</div>}

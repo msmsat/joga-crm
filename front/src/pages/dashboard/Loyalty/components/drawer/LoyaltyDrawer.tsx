@@ -1,4 +1,3 @@
-import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from '../../Loyalty.module.css';
 import type { ConfigProgramKey, DrawerConfig, Program } from '../../types';
@@ -16,13 +15,12 @@ import DepositConfig from './configs/DepositConfig';
 interface Props {
   drawer: DrawerConfig;
   drawerVisible: boolean;
-  drawerRef: RefObject<HTMLDivElement | null>;
   configs: ProgramConfigs;
   patchConfig: <K extends ConfigProgramKey>(key: K, patch: Partial<ProgramConfigs[K]>) => void;
   saving: boolean;
   errors: ConfigErrors;
   levelsDraft: LoyaltyLevel[] | null;
-  onUpdateLevel: (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold'>>) => void;
+  onUpdateLevel: (id: number, patch: Partial<Pick<LoyaltyLevel, 'name' | 'color' | 'min_threshold' | 'point_value'>>) => void;
   onAddLevel: () => void;
   onRemoveLevel: (id: number) => void;
   closeDrawer: () => void;
@@ -59,14 +57,14 @@ function DrawerBody({ drawer, configs, patchConfig, errors, levelsDraft, onUpdat
   }
 }
 
-export default function LoyaltyDrawer({ drawer, drawerVisible, drawerRef, configs, patchConfig, saving, errors, levelsDraft, onUpdateLevel, onAddLevel, onRemoveLevel, closeDrawer, handleSave, programsList }: Props) {
+export default function LoyaltyDrawer({ drawer, drawerVisible, configs, patchConfig, saving, errors, levelsDraft, onUpdateLevel, onAddLevel, onRemoveLevel, closeDrawer, handleSave, programsList }: Props) {
   const { t } = useTranslation('loyalty');
   // Промокоды и депозит сохраняют каждую запись сразу (свой CRUD внутри) — не
   // проходят через общий config-конвейер (patchConfig/handleSave/Save-кнопку).
   const configKey = drawer.key === 'promocodes' || drawer.key === 'deposit' ? null : drawer.key;
   return (
     <>
-      <div className={`${styles.drawer} ${drawerVisible ? styles.drawerEntering : styles.drawerExiting}`} ref={drawerRef}>
+      <div className={`${styles.drawer} ${drawerVisible ? styles.drawerEntering : styles.drawerExiting}`}>
         <div className={styles.drawerHeader}>
           <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'rgba(252,174,145,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FCAE91', flexShrink: 0 }}>
             {programsList.find(p => p.key === drawer.key)?.icon}

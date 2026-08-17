@@ -39,11 +39,12 @@ class _Lesson:
 
 
 class _Service:
-    def __init__(self, id=1, studio_id=1, name="Пилатес", color="#F9A08B"):
+    def __init__(self, id=1, studio_id=1, name="Пилатес", color="#F9A08B", price=1500):
         self.id = id
         self.studio_id = studio_id
         self.name = name
         self.color = color
+        self.price = price
 
 
 class _Teacher:
@@ -126,6 +127,24 @@ def test_create_denormalizes_name_from_service():
     assert db.committed is True
 
 
+def test_create_denormalizes_price_from_service():
+    """Цена не прислана → берётся из услуги. Иначе мини-приложение показывало
+    0 на платной хатхе: квик-форма Журнала поле цены не собирает вообще."""
+    body = LessonCreateRequest(
+        service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
+    )
+    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, []])
+    assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
+
+
+def test_create_explicit_price_wins_over_service():
+    body = LessonCreateRequest(
+        service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4), price=0,
+    )
+    db = _DB([_Teacher(), _Service(id=1, price=1500), None, None, None, []])
+    assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
+
+
 def test_create_service_not_in_studio_404():
     body = LessonCreateRequest(
         service_id=99, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
@@ -145,13 +164,14 @@ def test_update_service_id_recomputes_name():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), service_id=1)
     db = _DB([
         lesson,                        # get_scoped_lesson
-        _Service(id=2, name="Стретчинг"),  # _service_in_studio
+        _Service(id=2, name="Стретчинг", price=2000),  # _service_in_studio
         0,                              # финальный _booked_count
     ])
     body = LessonUpdateRequest(service_id=2)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.name == "Стретчинг"
     assert result.name == "Стретчинг"
+    assert lesson.price == 2000     # цена едет за услугой
     assert db.committed is True
 
 
@@ -170,6 +190,8 @@ if __name__ == "__main__":
     test_create_request_requires_service_id()
     test_create_request_has_no_name_field()
     test_create_denormalizes_name_from_service()
+    test_create_denormalizes_price_from_service()
+    test_create_explicit_price_wins_over_service()
     test_create_service_not_in_studio_404()
     test_update_service_id_recomputes_name()
     test_update_service_not_in_studio_404()

@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import BookingModal from '../components/modals/BookingModal';
+import PhoneSheet from '../components/modals/PhoneSheet';
+import SubscriptionSheet from '../components/modals/SubscriptionSheet';
 import SuccessModal from '../components/modals/SuccessModal';
 import CoffeeModal from '../components/modals/CoffeeModal';
 import WeekRail from '../components/schedule/WeekRail';
@@ -10,11 +12,9 @@ import FilterSheet, { type Filters } from '../components/schedule/FilterSheet';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
-import { getLessonsByDate, type CoffeeState, type LessonResponse } from '../api/lessons';
+import { getLessonsByDate, type LessonResponse } from '../api/lessons';
 import { useTelegram } from '../hooks/useTelegram';
-import { bookLesson, cancelLesson } from '../api/user';
-import { spawnPetals } from '../lib/petals';
-import { notify } from '../lib/notify';
+import { useLessonBooking } from '../hooks/useLessonBooking';
 import type { StudioCatalog } from '../api/studio';
 
 /** `Date` → `YYYY-MM-DD` без ухода в UTC (иначе вечером день съезжает назад). */
@@ -28,9 +28,11 @@ const isSameDay = (a: Date, b: Date) =>
 
 interface SheduleProps {
   catalog: StudioCatalog | null;
+  /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
+  onBuySubscription: () => void;
 }
 
-export default function Shedule({ catalog }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription }: SheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -56,19 +58,19 @@ export default function Shedule({ catalog }: SheduleProps) {
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const [activeLesson, setActiveLesson] = useState<LessonResponse | null>(null);
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSpot, setSelectedSpot] = useState<number | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  // Кофе спрашиваем последней панелью — после того, как человек закрыл успех.
-  // Состояние берём из ответа на бронь, а не из карточки занятия: там снимок
-  // сделан ДО записи, и счётчик успевал устареть.
-  const [isCoffeeOpen, setIsCoffeeOpen] = useState(false);
-  const [coffee, setCoffee] = useState<CoffeeState | null>(null);
-
-  const { tg, vibrateMedium, vibrateLight } = useTelegram();
+  const { vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
+
+  // Запись и отмена — общие с главной (useLessonBooking): один сценарий, две
+  // страницы. Здесь остаётся только то, что у расписания своё, — список дня.
+  const booking = useLessonBooking({
+    onChanged: () => setRefreshTick((tick) => tick + 1),
+    messages: {
+      bookError: t('schedule.booking_error'),
+      cancelError: t('schedule.cancel_error'),
+      cancelSuccess: t('schedule.cancel_success'),
+    },
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -115,70 +117,6 @@ export default function Shedule({ catalog }: SheduleProps) {
 
   const activeCount = (filters.service ? 1 : 0) + (filters.teacher ? 1 : 0);
   const studioName = branches.find((s) => s.id === filters.studioId)?.name ?? '';
-
-  const openModal = (lesson: LessonResponse | null) => {
-    setSelectedSpot(null);
-    setActiveLesson(lesson);
-    setIsModalOpen(true);
-    vibrateMedium();
-  };
-
-  const closeModal = () => setIsModalOpen(false);
-
-  // Запись приложение больше не закрывает: человек остаётся в расписании и
-  // уходит сам, когда захочет. Раньше здесь стоял tg.close(), и он же был
-  // источником зависания — вне Telegram метод ничего не делает, а ветка
-  // `else setIsSuccessOpen(false)` не выполнялась никогда, потому что скрипт
-  // telegram-web-app.js создаёт window.Telegram.WebApp и в обычном браузере.
-  // Лист успеха оставался висеть и перекрывал всё приложение оверлеем.
-  const closeSuccess = () => {
-    setIsSuccessOpen(false);
-    // Кофе — только если студия его включила: иначе цепочка кончается успехом.
-    if (coffee?.enabled) setIsCoffeeOpen(true);
-  };
-
-  const pay = async () => {
-    if (!activeLesson || !selectedSpot) return;
-
-    setIsProcessing(true);
-
-    try {
-      const reservation = await bookLesson({ lesson_id: activeLesson.id, spot_number: selectedSpot });
-
-      setCoffee(reservation.coffee);
-      setRefreshTick((tick) => tick + 1);
-      setIsProcessing(false);
-      closeModal();
-      setIsSuccessOpen(true);
-      spawnPetals();
-
-      if (tg) tg.HapticFeedback.notificationOccurred('success');
-    } catch (error) {
-      setIsProcessing(false);
-      notify(error instanceof Error ? error.message : t('schedule.booking_error'));
-      if (tg) tg.HapticFeedback.notificationOccurred('error');
-    }
-  };
-
-  const cancelBooking = async () => {
-    if (!activeLesson) return;
-
-    setIsProcessing(true);
-
-    try {
-      await cancelLesson(activeLesson.id);
-
-      setRefreshTick((tick) => tick + 1);
-      setIsProcessing(false);
-      closeModal();
-      notify(t('schedule.cancel_success'));
-      if (tg) tg.HapticFeedback.notificationOccurred('success');
-    } catch (error) {
-      setIsProcessing(false);
-      notify(error instanceof Error ? error.message : t('schedule.cancel_error'));
-      if (tg) tg.HapticFeedback.notificationOccurred('error');
-    }
-  };
 
   const isToday = isSameDay(date, new Date());
 
@@ -321,7 +259,7 @@ export default function Shedule({ catalog }: SheduleProps) {
               bookedLabel={t('schedule.booked')}
               almostFullLabel={t('schedule.almost_full')}
               availableLabel={t('schedule.available')}
-              onClick={() => openModal(cl)}
+              onClick={() => booking.openModal(cl)}
             />
           ))
         ) : (
@@ -347,29 +285,44 @@ export default function Shedule({ catalog }: SheduleProps) {
       />
 
       <BookingModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        selectedSpot={selectedSpot}
-        onSpotSelect={setSelectedSpot}
-        isProcessing={isProcessing}
-        onPay={pay}
-        onCancel={cancelBooking}
-        lesson={activeLesson}
+        isOpen={booking.isModalOpen}
+        onClose={booking.closeModal}
+        selectedSpot={booking.selectedSpot}
+        onSpotSelect={booking.setSelectedSpot}
+        isProcessing={booking.isProcessing}
+        onPay={booking.pay}
+        onCancel={booking.cancelBooking}
+        lesson={booking.activeLesson}
+        allowRepeat={Boolean(rules?.repeat_booking_allowed)}
+      />
+
+      <PhoneSheet
+        isOpen={booking.needsPhone}
+        onClose={booking.closePhone}
+        onSaved={booking.retryAfterPhone}
+        layer={2}
+      />
+
+      <SubscriptionSheet
+        isOpen={booking.needsSubscription !== null}
+        onClose={booking.closeSubscription}
+        message={booking.needsSubscription}
+        onBuy={() => { booking.closeSubscription(); onBuySubscription(); }}
       />
 
       <SuccessModal
-        isOpen={isSuccessOpen}
-        onClose={closeSuccess}
-        lesson={activeLesson}
+        isOpen={booking.isSuccessOpen}
+        onClose={booking.closeSuccess}
+        lesson={booking.activeLesson}
         awaitingConfirmation={Boolean(rules?.confirmation_required)}
         layer={1}
       />
 
       <CoffeeModal
-        isOpen={isCoffeeOpen}
-        onClose={() => setIsCoffeeOpen(false)}
-        lessonId={activeLesson?.id ?? null}
-        coffee={coffee}
+        isOpen={booking.isCoffeeOpen}
+        onClose={booking.closeCoffee}
+        lessonId={booking.activeLesson?.id ?? null}
+        coffee={booking.coffee}
         onJoined={() => setRefreshTick((tick) => tick + 1)}
         layer={1}
       />

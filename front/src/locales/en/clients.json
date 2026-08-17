@@ -79,6 +79,7 @@
       "city": "City",
       "copyHint": " · click to copy"
     },
+    "debt": "{{amount}} unpaid for classes — accept payment in the Journal",
     "stats": {
       "visits": "Visits",
       "spent": "Spent",
@@ -88,7 +89,12 @@
       "points": "points",
       "level": "{{tier}} level",
       "toNext": "To next level: {{points}} points",
-      "multiplier": "×{{value}} points multiplier"
+      "multiplier": "×{{value}} points multiplier",
+      "worth": "Worth {{amount}} at checkout",
+      "toNextLevel": "{{amount}} more to reach {{level}}",
+      "pointValue": "1 point = {{amount}}",
+      "nextPointValue": "on {{level}} — {{amount}}",
+      "noBonus": "This level does not change the point value"
     },
     "referral": {
       "title": "Invite a friend",
@@ -143,6 +149,7 @@
       "base": "Base price",
       "discount": "Discount",
       "bonuses": "Bonuses",
+      "bonusesSpent": "Bonuses ({{count}} pts)",
       "total": "Total",
       "cash": "Cash",
       "card": "Card",

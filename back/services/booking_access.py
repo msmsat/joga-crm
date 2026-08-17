@@ -12,7 +12,8 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
-from models import ClientSubscription, Lesson, SubscriptionPackage
+from models import ClientSubscription, Lesson, Reservation, SubscriptionPackage
+from services.booking_rules import BookingRules
 
 
 async def find_eligible_subscription(
@@ -113,6 +114,54 @@ async def assert_can_book(
         status_code=403,
         detail="У клиента нет активного абонемента или разового занятия для записи",
     )
+
+
+async def trial_applies(
+    db: AsyncSession, client_id: int, rules: BookingRules
+) -> bool:
+    """Клиенту положено подаренное первое занятие («Первое занятие бесплатно»).
+
+    Условие одно: студия включила тумблер, и у клиента нет НИ ОДНОЙ неотменённой
+    брони. Считаем брони, а не визиты: иначе записавшийся на три занятия вперёд
+    получил бы три подарка — визитов-то ещё нет ни одного.
+
+    Обратная сторона того же правила: отменил пробную бронь до занятия — подарок
+    вернулся. Это осознанно, человек так и не пришёл.
+
+    Студию в условие не добавляем: клиент принадлежит ровно одной студии, а его
+    брони — занятиям этой же студии, второй фильтр ничего бы не отсёк.
+    """
+    if not rules.trial_lesson_free:
+        return False
+    booked = (await db.execute(
+        select(Reservation.id).where(
+            Reservation.client_id == client_id,
+            Reservation.status != "cancelled",
+        ).limit(1)
+    )).scalar_one_or_none()
+    return booked is None
+
+
+async def resolve_coverage(
+    db: AsyncSession, client_id: int, lesson: Lesson, rules: BookingRules
+) -> tuple[Optional[ClientSubscription], bool]:
+    """Чем покрыта новая бронь: `(абонемент, пробное)`.
+
+    Одно решение на все четыре точки записи (Журнал, карточка клиента,
+    мини-приложение, веб-виджет) — разъехавшись, они выдали бы подарок дважды
+    или списали абонемент за подаренное занятие.
+
+    Ничего не бросает: гейты у точек записи разные (Журналу нужен абонемент,
+    мини-приложению — по настройке «Предоплата при записи», виджету — никакой),
+    и решать, что делать с пустым результатом, обязан вызывающий.
+
+    Абонемент важнее подарка: купивший уже не пробует, и списывать с него
+    занятие правильнее, чем дарить визит поверх оплаченного пакета.
+    """
+    sub = await find_eligible_subscription(db, client_id, lesson)
+    if sub is not None:
+        return sub, False
+    return None, await trial_applies(db, client_id, rules)
 
 
 async def can_book(db: AsyncSession, client_id: int, lesson: Lesson) -> bool:

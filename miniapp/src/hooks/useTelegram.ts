@@ -14,6 +14,15 @@ interface TelegramWebApp {
    */
   disableVerticalSwipes?: () => void;
   openLink?: (url: string) => void;
+  /**
+   * Нативный запрос номера телефона. Второй аргумент колбэка (подписанный
+   * ответ, который сервер проверяет ботовым токеном) появился в Bot API 8.0 —
+   * на старых клиентах приходит только `ok`, поэтому и он, и сам метод
+   * необязательные: без подписи мини-приложение просит ввести номер руками.
+   */
+  requestContact?: (
+    callback: (ok: boolean, result?: { status: string; response?: string }) => void,
+  ) => void;
   // Telegram гарантирует объект HapticFeedback всегда, если есть сам tg —
   // необязательное только всё приложение целиком (window.Telegram.WebApp).
   HapticFeedback: {

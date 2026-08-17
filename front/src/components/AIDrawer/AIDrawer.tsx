@@ -23,7 +23,7 @@ export default function AIDrawer() {
     newChat,
     loadSession,
     toolStatus,
-    actionProposal,
+    planProposal,
     confirmAction,
     cancelAction,
     actionPending,
@@ -71,7 +71,7 @@ export default function AIDrawer() {
             messagesEndRef={messagesEndRef}
             onSend={sendMessage}
             toolStatus={toolStatus}
-            actionProposal={actionProposal}
+            planProposal={planProposal}
             onConfirmAction={confirmAction}
             onCancelAction={cancelAction}
             actionPending={actionPending}

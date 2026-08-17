@@ -26,6 +26,8 @@ export interface BookingSettings {
   miniapp_generated: boolean
   widget_work_start: string
   widget_work_end: string
+  /** «Первое занятие бесплатно»: первая бронь нового клиента — подарок студии. */
+  trial_lesson_free: boolean
   /** «Кофе после занятия» в мини-приложении: спрашивать ли и куда звать. */
   coffee_enabled: boolean
   coffee_spots: CoffeeSpot[]

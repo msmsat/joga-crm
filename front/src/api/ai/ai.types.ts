@@ -21,28 +21,54 @@ export interface AIChatMessage {
   rating?: number | null
 }
 
-// Предложенное ассистентом изменяющее действие (эпик AI-5, задача 6). Данные
-// меняются только после POST /ai/actions/execute с этим token.
-export interface AIActionProposal {
+// Вопрос формы: поле схемы инструмента, которого не хватило. Выводится
+// СЕРВЕРОМ из Pydantic-схемы, а не придумывается моделью — форма собирается из
+// того же кода, который потом примет данные, и разойтись им негде.
+export interface AIPlanField {
+  name: string
+  // Подпись из описания поля схемы; пусто — берём ключ локали ai:actions.args.*
+  hint?: string | null
+  control: 'select' | 'segmented' | 'switch' | 'date' | 'datetime' | 'number' | 'list' | 'text' | 'password'
+  // Откуда брать варианты для select: справочник, который уже есть на фронте.
+  source?: 'clients' | 'staff' | 'services' | 'halls' | 'lessons'
+  // Готовые значения для segmented/select из Literal-полей схемы.
+  options?: string[]
+}
+
+// Один шаг плана: одно изменяющее действие.
+export interface AIPlanStep {
+  n: number
   tool: string
   args: Record<string, unknown>
-  // Что делаем.
-  description: string
-  // С кем и чем: поле аргумента -> человеческое имя («client_id» -> «Анна
-  // Петрова»). Сервер разрешает id заранее (эпик AI-6, задача 14) — карточка
-  // показывает имена, а сами id из строк аргументов прячет.
+  // Поле аргумента -> человеческое имя («client_id» -> «Анна Петрова»). Сервер
+  // разрешает id заранее (эпик AI-6, задача 14) — окно показывает имена, а
+  // сами id из строк аргументов прячет.
   entities?: Record<string, string>
-  // Что изменится после клика — формулировка из карты интерфейса.
+  // Поле -> номер шага, который создаст эту запись. Окно рисует «тренер: шаг 1»
+  // вместо временного «-1»: голый номер человек не проверяет.
+  refs?: Record<string, number>
+  missing: AIPlanField[]
+  description: string
   effect?: string | null
-  // Необратимое действие (удаление): карточка подтверждения — danger-вариант.
   danger?: boolean
+}
+
+// Предложенная ассистентом пачка изменяющих действий (эпик AI-5, задача 6,
+// расширена частью A). Данные меняются только после POST
+// /ai/actions/execute-plan с этим token. Шаг может быть и один — окно человек
+// видит всегда одно и то же.
+export interface AIPlanProposal {
+  steps: AIPlanStep[]
+  warnings: { step: number; kind: string; text: string }[]
+  // Заполнять нечего: кнопка подтверждения доступна с первого шага окна.
+  ready: boolean
   token: string
 }
 
 export interface SendMessageResponse {
   user: AIChatMessage
   assistant: AIChatMessage
-  action_proposal: AIActionProposal | null
+  plan_proposal: AIPlanProposal | null
 }
 
 // Ответ POST /ai/actions/execute.

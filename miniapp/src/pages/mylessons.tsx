@@ -40,6 +40,7 @@ export default function MyLessons() {
 
   const [mode, setMode] = useState<PeriodMode>('month');
   const [anchor, setAnchor] = useState(() => new Date());
+  const [refreshTick, setRefreshTick] = useState(0);
 
   const [countdowns, setCountdowns] = useState<{ [key: number]: string }>({});
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
@@ -68,7 +69,7 @@ export default function MyLessons() {
     };
 
     fetchLessons();
-  }, [t]);
+  }, [t, refreshTick]);
 
   useEffect(() => {
     if (upcoming.length === 0) return;
@@ -152,15 +153,16 @@ export default function MyLessons() {
     );
   };
 
-  /** Отмена записи. Занятие просто убираем из списка: отменённых броней
-   *  /lessons/my не отдаёт, так что перезапрос вернул бы ровно это же. */
+  /** Отмена записи. Список перечитываем, а не фильтруем по lesson_id: при
+   *  включённой «Повторной записи» броней на одно занятие бывает две, сервер
+   *  снимает последнюю, а фильтр убрал бы с экрана обе. */
   const cancelBooking = async () => {
     if (!activeLesson) return;
 
     setIsProcessing(true);
     try {
       await cancelLesson(activeLesson.id);
-      setUpcoming((list) => list.filter((item) => item.id !== activeLesson.id));
+      setRefreshTick((tick) => tick + 1);
       setIsModalOpen(false);
       notify(t('schedule.cancel_success'));
       if (tg) tg.HapticFeedback.notificationOccurred('success');
@@ -288,7 +290,10 @@ export default function MyLessons() {
               <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodUpcoming.map((cls, i) => (
                   <UpcomingCard
-                    key={`upcoming-${cls.id}`}
+                    // Коврик в ключе: при «Повторной записи» у одного занятия
+                    // бывает две брони, и по одному lesson_id React увидел бы
+                    // дубль ключа и склеил карточки.
+                    key={`upcoming-${cls.id}-${cls.spot_number}`}
                     index={i}
                     title={translateName(cls.name)}
                     statusLabel={
@@ -300,6 +305,11 @@ export default function MyLessons() {
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
+                    {...(cls.debt > 0
+                      ? { paymentLabel: t('mylessons.unpaid', { amount: cls.debt_str }), paymentTone: 'debt' as const }
+                      : cls.is_trial
+                        ? { paymentLabel: t('mylessons.trial'), paymentTone: 'trial' as const }
+                        : {})}
                     onOpen={() => openLesson(cls, false)}
                     footer={
                       <CoffeeStrip
@@ -322,7 +332,7 @@ export default function MyLessons() {
               <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodPast.map((cls, i) => (
                   <PastCard
-                    key={`past-${cls.id}`}
+                    key={`past-${cls.id}-${cls.spot_number}`}
                     index={i}
                     lessonId={cls.id}
                     title={translateName(cls.name)}

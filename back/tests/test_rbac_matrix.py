@@ -45,6 +45,10 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     # Исполнение предложенного действия: роль сверяется по инструменту внутри
     # (decode_action_token), а не гвардом — у разных инструментов она разная.
     ("POST", "/ai/actions/execute"): ("*studio",),
+    # Роль сверяется не здесь, а по КАЖДОМУ инструменту внутри плана
+    # (decode_plan_token): пачка из безобидных шагов с подмешанным «удалить
+    # сотрудника» не должна проходить по праву первого шага.
+    ("POST", "/ai/actions/execute-plan"): ("*studio",),
     # Оценка ответа (эпик AI-6, задача 18): ставит её автор диалога, а диалоги
     # личные — чужое сообщение и так не найдётся, скоуп внутри обработчика.
     ("PATCH", "/ai/messages/{message_id}/rating"): ("*studio",),
@@ -91,6 +95,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("PATCH", "/schedule/reservations/{reservation_id}/cancel"): ("*studio",),  # тело: тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/attend"): ("*studio",),  # тренер отмечает приход на СВОЁМ
     ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
+    ("POST", "/schedule/reservations/{reservation_id}/pay"): ("*studio",),     # тело: тренеру 403 — кассу он не ведёт
 
     # ── Настройки: персональные вкладки доступны всем ролям (ТЗ 2.13)
     ("GET", "/settings/general"): ("*studio",),      # название/валюта студии — читают все, PATCH owner

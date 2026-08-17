@@ -30,6 +30,9 @@ class LoyaltyLevelRead(BaseSchema):
     min_threshold: int
     max_threshold: Optional[int] = None
     sort_order: int
+    # Сколько денег даёт балл на этом уровне (выгода уровня). 1 — прежнее
+    # поведение, значение по умолчанию у всех существующих уровней.
+    point_value: int = 1
 
 
 class LoyaltyLevelWrite(BaseSchema):
@@ -39,6 +42,10 @@ class LoyaltyLevelWrite(BaseSchema):
     min_threshold: int
     max_threshold: Optional[int] = None
     sort_order: int
+    # None — поле не прислали (открытая с прошлой версии вкладка): у
+    # существующего уровня цена остаётся прежней, у нового ставится 1. Дефолт
+    # `= 1` здесь молча обесценил бы уже настроенную студией выгоду.
+    point_value: Optional[int] = None
 
 
 class LoyaltyLevelsUpdate(BaseSchema):

@@ -6,6 +6,7 @@ from schemas.ai.chat import (
     ChatSessionCreate,
     ChatSessionRead,
     MessageRatingIn,
+    PlanExecuteIn,
     SendMessageResponse,
 )
 from schemas.ai.facts import (
@@ -28,6 +29,7 @@ __all__ = [
     "ChatSessionCreate",
     "ChatSessionRead",
     "MessageRatingIn",
+    "PlanExecuteIn",
     "SendMessageResponse",
     "AIQuotaRead",
     "AISettingsRead",

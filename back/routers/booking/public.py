@@ -18,12 +18,12 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
-from services.booking_access import find_eligible_subscription
+from services.booking_access import resolve_coverage
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
 from services.notifier import lesson_context, notify
 from services.referral import fire_referral
-from services.subscription_charge import charge_reservation, notify_subscription_remaining
+from services.subscription_charge import charge_reservation, notify_subscription_remaining, open_debt
 
 router = APIRouter()
 
@@ -220,18 +220,25 @@ async def public_reserve(
         if duplicate is not None:
             raise HTTPException(status_code=400, detail="Вы уже записаны на это занятие")
 
+    # Публичная бронь не гейтится абонементом (новый клиент записывается без него),
+    # поэтому списываем только если подходящий абонемент есть. Пробное занятие
+    # виджету доступно на общих правилах: он и есть главный вход новых клиентов,
+    # ради которых подарок и включают.
+    sub, is_trial = await resolve_coverage(db, client.id, lesson, rules)
+
     reservation = Reservation(
         client_id=client.id,
         lesson_id=body.lesson_id,
         spot_number=booked + 1,
         status="pending" if rules.trainer_confirmation_required else "active",
         booking_channel="web",
+        is_trial=is_trial,
     )
     db.add(reservation)
-    # Публичная бронь не гейтится абонементом (новый клиент записывается без него),
-    # поэтому списываем только если подходящий абонемент есть.
-    sub = await find_eligible_subscription(db, client.id, lesson)
     remaining = await charge_reservation(db, studio_id, reservation, sub)
+    # Ни абонемента, ни подарка — клиент платит в студии. Гейта телефона здесь
+    # нет: форма виджета его и так требует (ReserveRequest.phone).
+    await open_debt(db, reservation, lesson)
     await db.flush()  # нужен reservation.id для ленты
     log_activity(
         db, studio_id, "booking",
