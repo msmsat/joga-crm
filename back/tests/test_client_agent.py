@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 from sqlalchemy import delete, select
 
 from database import async_session_maker
-from models import Client, Studio, StudioAISettings, StudioBillingPlan
+from models import Client, Studio, StudioAISettings, StudioBillingPlan, StudioWorkingHours
 from services import client_agent, llm
 from services.client_agent import (
     CHANNEL_INSTAGRAM,
@@ -66,7 +66,10 @@ async def _seed() -> dict:
         db.add_all([
             StudioBillingPlan(studio_id=a.id, plan_name="pro"),
             StudioBillingPlan(studio_id=b.id, plan_name="pro"),
-            StudioAISettings(studio_id=a.id, tg_enabled=True, ig_enabled=True, wa_enabled=True),
+            StudioAISettings(studio_id=a.id, tg_enabled=True, ig_enabled=True, wa_enabled=True,
+                             system_prompt="Зови студию «наш дом йоги»."),
+            StudioWorkingHours(studio_id=a.id, day_of_week=0, is_open=True,
+                               open_time="08:00", close_time="20:00"),
             StudioAISettings(studio_id=b.id, tg_enabled=True),
         ])
         # Клиент студии A, у него привязан Telegram и телефон.
@@ -176,9 +179,19 @@ async def _run():
             # Уводить есть куда: точная ссылка на приложение лежит в контексте
             # каждого запроса — модели не приходится ни спрашивать её
             # инструментом, ни выдумывать адрес.
-            context = script2.calls[0]["messages"][1]["content"]
+            # Ищем по содержимому, а не по номеру: reply() дописывает в ТОТ ЖЕ
+            # список ответы модели и результаты инструментов, и любой индекс
+            # здесь врёт после первого же круга.
+            context = next(m["content"] for m in script2.calls[0]["messages"]
+                           if "Ссылка на приложение" in m["content"])
             assert f"/s/{ids['a']}" in context
-            assert "Адрес студии" in context and "Телефон студии" in context
+            assert "Адрес: Testovaci 1, Praha" in context
+            assert "Телефон: +420777000111" in context
+            # Часы работы — то, на чём агент раньше отговаривался ссылкой:
+            # инструмента для них нет, и не попав в контекст, они недоступны вовсе.
+            assert "Часы работы: Пн 08:00-20:00" in context
+            # Инструкция студии доезжает до мессенджера, а не только до CRM.
+            assert any("Инструкция студии" in m["content"] for m in script2.calls[0]["messages"])
     finally:
         llm.chat = real_chat
         await _cleanup(ids)
@@ -302,6 +315,10 @@ async def _run_off_hours():
             settings = await _settings(db, ids["a"])
             settings.ig_off_hours_only = True
             now = datetime.utcnow()
+            # Своё расписание — с чистого листа: в _seed есть часы для контекста
+            # промпта, и без этой строки тест зависел бы от того, совпал ли
+            # сегодняшний день недели с засеянным (uq_studio_day, «ровно одна»).
+            await db.execute(delete(StudioWorkingHours).where(StudioWorkingHours.studio_id == ids["a"]))
             # Открыто ровно сейчас (студия на UTC+0), окно с запасом в обе стороны.
             db.add(StudioWorkingHours(
                 studio_id=ids["a"], day_of_week=now.weekday(), is_open=True,
