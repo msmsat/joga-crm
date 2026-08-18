@@ -33,6 +33,13 @@ from fastapi import HTTPException
 logger = logging.getLogger(__name__)
 
 TIER_FAST, TIER_MAIN, TIER_SMART = "fast", "main", "smart"
+# Клиентский агент в мессенджерах (services/client_agent.py). Уровень отдельный,
+# потому что требования к нему противоположны остальным: там человек ждёт ответа
+# в чате прямо сейчас, а задачи простые — «когда занятие», «сколько стоит».
+# Замер 18.08.2026: на одном и том же вопросе gemini-3.7-flash отвечает 2.9 с,
+# gemini-3.5-flash-lite — 0.6 с. Раньше агент делил слаг с FAST, и любая смена
+# модели ради сообразительности CRM-ассистента била по скорости чата с клиентом.
+TIER_CLIENT = "client"
 
 _TIMEOUT_SECONDS = 60
 
@@ -44,8 +51,15 @@ _ENV_BY_TIER = {
     TIER_MAIN: "LLM_MODEL_MAIN",
     TIER_SMART: "LLM_MODEL_SMART",
 }
+# Необязательные: не задана — уровень работает на модели FAST, как до её
+# появления. Отдельно от _ENV_BY_TIER, потому что preflight требует ОБЯЗАТЕЛЬНОГО
+# заполнения всего, что там перечислено, а этой переменной можно и не быть.
+_OPTIONAL_ENV_BY_TIER = {TIER_CLIENT: "LLM_MODEL_CLIENT"}
 # Запасная модель для списка `models`: соседний уровень того же вендорного пула.
-_FALLBACK_TIER = {TIER_FAST: TIER_MAIN, TIER_MAIN: TIER_SMART, TIER_SMART: TIER_MAIN}
+# У клиентского агента запасная — FAST, а не MAIN: падать с дешёвой быстрой
+# модели сразу на Sonnet значит платить втрое за «привет».
+_FALLBACK_TIER = {TIER_FAST: TIER_MAIN, TIER_MAIN: TIER_SMART, TIER_SMART: TIER_MAIN,
+                  TIER_CLIENT: TIER_FAST}
 
 # model -> (вход, чтение кэша, ЗАПИСЬ кэша, выход) в микро-$ за 1M токенов.
 #
@@ -68,6 +82,10 @@ _PRICES: dict[str, tuple[int, int, int, int]] = {
     # 0.375) — редкий случай, и в таблице она стояла вшестеро дороже правды:
     # 125_000 было переписано по образцу соседей, а не сверено запросом.
     "google/gemini-3.7-flash":      (375_000,   37_500,    20_833,  1_875_000),
+    # Сверено живым /v1/models 18.08.2026. Строка заведена заранее, до смены
+    # LLM_MODEL_FAST: без неё эта модель считалась бы по ставке Opus (см. ниже),
+    # и месячная квота студии сгорала бы в разы быстрее — молча.
+    "google/gemini-3.5-flash-lite": (300_000,   30_000,    83_333,  2_500_000),
     "openai/gpt-5-mini":            (250_000,   25_000,    83_333,  2_000_000),
     "openai/gpt-5.4-nano":          (200_000,   20_000,    66_667,  1_250_000),
     "anthropic/claude-haiku-4.5": (1_000_000,  100_000, 1_250_000,  5_000_000),
@@ -107,6 +125,11 @@ def is_configured() -> bool:
 
 
 def model_for(tier: str) -> str:
+    if tier in _OPTIONAL_ENV_BY_TIER:
+        # Переменной нет — уровень работает на общей дешёвой модели, ровно как
+        # до её появления. Это и делает переменную безопасной для прода: пока её
+        # не добавили в back/.env на сервере, поведение прежнее.
+        return os.getenv(_OPTIONAL_ENV_BY_TIER[tier], "") or os.getenv(_ENV_BY_TIER[TIER_FAST], "")
     return os.getenv(_ENV_BY_TIER.get(tier, _ENV_BY_TIER[TIER_FAST]), "")
 
 
@@ -185,6 +208,7 @@ def _body(
     cache_prefix_len: int,
     *,
     stream: bool,
+    think: bool = True,
 ) -> dict:
     primary = model_for(tier)
     spare = model_for(_FALLBACK_TIER.get(tier, TIER_MAIN))
@@ -195,6 +219,17 @@ def _body(
     }
     if spare and spare != primary:
         body["models"] = [primary, spare]
+    if not think:
+        # Модели с размышлением тратят его и на «привет»: замерено на
+        # google/gemini-3.7-flash — 360-430 токенов размышления на 180 символов
+        # ответа, 3.5-5 секунд вместо 1.2-1.5. Клиент в мессенджере этих токенов
+        # не увидит никогда, а ждёт их и платит за них студия.
+        #
+        # Именно "minimal", а не выключение: {"enabled": false} и
+        # {"max_tokens": 0} эта модель не принимает, и OpenRouter молча
+        # переключается на запасную из `models` — в замере ответ приезжал уже от
+        # anthropic/claude-sonnet-5, то есть втрое дороже и не быстрее.
+        body["reasoning"] = {"effort": "minimal"}
     if tools:
         body["tools"] = tools
         body["tool_choice"] = "auto"
@@ -267,11 +302,14 @@ async def chat(
     tools: list[dict] | None = None,
     tier: str = TIER_FAST,
     cache_prefix_len: int = 0,
+    think: bool = True,
 ) -> LLMReply:
+    """think=False — «не размышляй, отвечай»: для простых вопросов, где
+    размышление модели это только задержка и деньги (см. _body)."""
     if not is_configured():
         return _stub_reply()
 
-    body = _body(messages, tools, tier, cache_prefix_len, stream=False)
+    body = _body(messages, tools, tier, cache_prefix_len, stream=False, think=think)
     data = await _request_json(body)
     message = ((data.get("choices") or [{}])[0] or {}).get("message") or {}
     return LLMReply(

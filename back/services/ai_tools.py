@@ -24,16 +24,18 @@ import uuid
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Callable, Literal, Optional
+from typing import Annotated, Callable, Literal, Optional
 
 from fastapi import HTTPException
 from jose import JWTError, jwt
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import AfterValidator, BaseModel, Field, ValidationError, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
-from models import Lesson, StaffDayOverride, StaffWorkingHours, Studio, StudioMember, User
+from models import (
+    Lesson, Reservation, StaffDayOverride, StaffWorkingHours, Studio, StudioMember, User,
+)
 from routers.analytics._filters import ReportFilters
 from routers.analytics.overview import analytics_overview
 from routers.analytics.reports import period_summary
@@ -57,12 +59,17 @@ from routers.clients.subscriptions import (
 )
 from routers.finances.accounts import (
     create_account as _r_create_account,
+    delete_account as _r_delete_account,
     list_accounts as _r_list_accounts,
 )
-from routers.finances.counterparties import create_counterparty as _r_create_counterparty
+from routers.finances.counterparties import (
+    create_counterparty as _r_create_counterparty,
+    delete_counterparty as _r_delete_counterparty,
+)
 from routers.finances.goals import list_goals as _r_list_goals
 from routers.finances.operations import (
     create_operation as _r_create_operation,
+    delete_operation as _r_delete_operation,
     get_by_category as _r_operations_by_category,
     list_operations as _r_list_operations,
 )
@@ -78,6 +85,7 @@ from routers.loyalty.configs import (
 from routers.loyalty.offers import create_offer as _r_create_offer
 from routers.loyalty.packages import (
     create_package as _r_create_package,
+    delete_package as _r_delete_package,
     get_subscription_config as _r_subscription_config,
 )
 from routers.loyalty.promocodes import create_promocode as _r_create_promocode
@@ -86,6 +94,7 @@ from routers.schedule.lessons import (
     MIN_CHANGE_LEAD,
     MIN_CREATE_LEAD,
     create_lesson as _r_create_lesson,
+    delete_lesson as _r_delete_lesson,
     get_lesson as _r_get_lesson,
     list_lessons as _r_list_lessons,
     update_lesson as _r_update_lesson,
@@ -102,14 +111,21 @@ from routers.staff.profiles import (
     list_staff as _r_list_staff,
     update_staff as _r_update_staff,
 )
+from routers.staff.schedule import (
+    _has_bookings,
+    set_day_override as _r_set_day_override,
+)
 from routers.studio.router import (
     create_branch as _r_create_branch,
     create_hall as _r_create_hall,
+    delete_branch as _r_delete_branch,
+    delete_hall as _r_delete_hall,
     get_branch as _r_get_branch,
     get_branches as _r_get_branches,
 )
 from routers.studio.services import (
     create_service as _r_create_service,
+    delete_service as _r_delete_service,
     list_services as _r_list_services,
     update_service as _r_update_service,
 )
@@ -139,6 +155,7 @@ from schemas.schedule.reservations import ReservationCreate, ReservationPayReque
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
 from schemas.settings.team import StaffCreate, StaffUpdate
+from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
@@ -556,6 +573,28 @@ class PeriodArgs(BaseModel):
     period: Literal["today", "week", "month", "year"] = "month"
 
 
+def _naive(value: datetime) -> datetime:
+    """Смещение из ответа модели — прочь.
+
+    Вся студия живёт в наивном локальном времени: `datetime.now()` в роутере,
+    `Lesson.start_time` в базе. Модель же иногда дописывает к времени пояс
+    («2026-08-25T10:00:00+03:00», а то и «Z»), и сравнение с наивным now падало
+    в `TypeError: can't compare offset-naive and offset-aware datetimes` — уже
+    внутри роутера, после клика «Утверждаю», без единого внятного слова человеку.
+
+    Часы модель пишет МЕСТНЫЕ (промпт даёт ей сегодня в поясе студии), поэтому
+    оставляем стрелки как есть и снимаем только ярлык пояса.
+    ponytail: настоящая конвертация UTC->пояс студии не нужна, пока модель не
+    начнёт сама переводить время; тогда пересчитывать здесь по Studio.timezone.
+    """
+    return value.replace(tzinfo=None) if value.tzinfo else value
+
+
+# Тип для полей, куда время кладёт модель. Обычный datetime сюда ставить нельзя —
+# см. _naive.
+LocalDateTime = Annotated[datetime, AfterValidator(_naive)]
+
+
 class CreateLessonArgs(BaseModel):
     """Длительность, цена и число мест — None, а не число: сервер отличает
     «человек не называл» от «назвал 60» и подставляет карточку услуги
@@ -563,11 +602,23 @@ class CreateLessonArgs(BaseModel):
     и бесплатным поверх услуги, которая длится 90 минут и стоит 1500."""
     service_id: int
     teacher_id: int
-    start_time: datetime
+    start_time: LocalDateTime
     hall_id: Optional[int] = None
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None
     price: Optional[int] = None
+
+
+class ClearScheduleArgs(BaseModel):
+    """«Сотри у Оли всё с 18 августа по 7 сентября», «убери её расписание на эту неделю».
+
+    Обратной стороны у fill_schedule до этого не было вовсе, и «заполнил не тем»
+    чинилось только руками по одному занятию: правка идёт по одному, а в плане
+    потолок в 25 шагов — на сотне занятий это тупик.
+    """
+    teacher_id: int
+    date_from: date
+    date_to: date
 
 
 class UpdateLessonArgs(BaseModel):
@@ -583,7 +634,7 @@ class UpdateLessonArgs(BaseModel):
                           "если price не назвали отдельно")
     teacher_id: Optional[int] = None
     hall_id: Optional[int] = None
-    start_time: Optional[datetime] = Field(None, description="Новое начало, если занятие переносят")
+    start_time: Optional[LocalDateTime] = Field(None, description="Новое начало, если занятие переносят")
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None
     price: Optional[int] = None
@@ -624,6 +675,11 @@ class FillScheduleArgs(BaseModel):
     date_from: date
     date_to: date
     hall_id: Optional[int] = None
+    alternate_with: Optional[list[int]] = Field(
+        None, description="Услуги, которые идут по очереди с service_id, если человек "
+                          "просил чередование. «Чередуй хатху и стретчинг» -> "
+                          "service_id = хатха, alternate_with = [id стретчинга]. "
+                          "Просят одну услугу на весь период — не заполняй")
     # None вместо чисел — по той же причине, что в CreateLessonArgs: незаданное
     # берётся из карточки услуги, а не из круглого умолчания.
     duration_min: Optional[int] = None
@@ -792,15 +848,49 @@ class UpdateStaffArgs(BaseModel):
 
 
 class WorkDay(BaseModel):
+    """День рабочей недели сотрудника.
+
+    Терпимость к формату — та же и по той же причине, что в FillScheduleArgs:
+    строку кладёт модель. «9», «09:00:00», «9.30» — не повод отказать,
+    воскресенье под номером 7 (ISO) — её постоянная промашка. Строгость тут
+    оборачивалась не защитой, а отказом всех семи дней разом.
+    """
     day_of_week: int = Field(..., ge=0, le=6)   # 0 — понедельник
     is_open: bool = True
     open_time: str = "09:00"
     close_time: str = "18:00"
 
+    @field_validator("day_of_week", mode="before")
+    @classmethod
+    def _iso_sunday(cls, value):
+        return 0 if value == 7 else value
+
+    @field_validator("open_time", "close_time", mode="before")
+    @classmethod
+    def _time_format(cls, value):
+        normalized = _hhmm(value)
+        if normalized is None:
+            raise ValueError("время в формате «09:00»")
+        return normalized
+
 
 class StaffScheduleArgs(BaseModel):
     staff_id: int
     schedule: list[WorkDay]
+
+
+class StaffDayArgs(BaseModel):
+    """«Открой Валерии 29 августа», «поставь ей выходной 3 сентября».
+
+    Отметка на КОНКРЕТНУЮ дату сильнее недельного графика — и именно она
+    отвечает «У сотрудника в этот день выходной», когда по дням недели день
+    открыт. Пока этого инструмента не было, ассистент упирался в тупик:
+    видел в графике открытую субботу, получал отказ и мог только отправить
+    человека снимать отметку руками.
+    """
+    staff_id: int
+    day: date
+    is_working: bool = True
 
 
 # Ровно те категории, что предлагает селект в Каталоге. Свободной строкой
@@ -1407,6 +1497,13 @@ async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> 
             "price": service.get("price"),
             "total_spots": service.get("max_clients"),
         }
+        if args.get("alternate_with"):
+            # Услуги чередуются — цену не фиксируем: роутер возьмёт её из
+            # карточки КАЖДОГО занятия, иначе стретчинг продавался бы по цене
+            # хатхи. Длительность и мест оставляем: сетка часов одна на всех.
+            # ponytail: сетка по первой услуге. Услуги разной длины чередовать
+            # нельзя — понадобится, считать слоты по циклу, а не шагом.
+            from_service.pop("price", None)
         # args ВТОРЫМ — явное значение модели всегда перебивает каталог.
         args = {**{k: v for k, v in from_service.items() if v}, **args}
     return await _fill_defaults(args, ctx, db)
@@ -1490,7 +1587,7 @@ async def _update_lesson_precheck(args: dict, ctx: StudioContext, db: AsyncSessi
     new_start = args.get("start_time")
     if isinstance(new_start, str):
         try:
-            new_start = datetime.fromisoformat(new_start)
+            new_start = _naive(datetime.fromisoformat(new_start))
         except ValueError:
             new_start = None
     if isinstance(new_start, datetime) and new_start < now + MIN_CHANGE_LEAD:
@@ -1786,9 +1883,10 @@ async def _fill_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> st
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
     warnings=_fill_warnings, precheck=_fill_precheck,
-    summary="Заполнить расписание: {service_id}, тренер {teacher_id}, {date_from} — {date_to}, дни {weekdays}, с {time_from} до {time_to}, по {duration_min} мин",
+    summary="Заполнить расписание: {service_id}, чередуя с {alternate_with}, тренер {teacher_id}, {date_from} — {date_to}, дни {weekdays}, с {time_from} до {time_to}, по {duration_min} мин",
     effect="Занятия встанут в Журнал — в названные дни и часы либо по графику тренера; "
-           "занятые часы, отгулы и перерыв пропускаются. Часы шире графика — карточка тренера раздвинется.",
+           "занятые часы, отгулы и перерыв пропускаются. Часы шире графика — карточка тренера раздвинется. "
+           "Услуг несколько — идут по кругу, каждая со своей ценой.",
     defaults=_lesson_defaults,
 )
 async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillScheduleArgs) -> dict:
@@ -1800,6 +1898,10 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
     time_to: они перебивают карточку тренера. Промолчал — не заполняй эти поля,
     часы и рабочие дни возьмутся из карточки сами, спрашивать их не нужно.
     Отгулы, занятые часы и перерыв пропускаются в любом случае.
+
+    Просят ЧЕРЕДОВАТЬ услуги («хатха, стретчинг, хатха») — service_id это первая,
+    alternate_with — остальные по кругу. Одним вызовом, руками через create_lesson
+    их перечислять не нужно и отказываться тоже: чередование здесь есть.
 
     Вызывай сразу, как только речь о нескольких днях: перечислять дни вручную
     через create_lesson не нужно.
@@ -1814,6 +1916,11 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
     conflict = _hours_conflict(args, week)
     touched = await _extend_week(args, week, ctx, db) if args.extend_hours else []
 
+    # Услуги по кругу: «хатха, стретчинг, хатха…». Счётчик по СОЗДАННЫМ, а не по
+    # слотам — пропущенный час (занят, вне графика студии) не должен сбивать
+    # очередь и превращать чередование в случайность.
+    cycle = [args.service_id, *(args.alternate_with or [])]
+
     created, skipped = [], 0
     while day <= args.date_to and len(created) < _FILL_MAX_LESSONS:
         for start in await _free_slots(day, args, week, ctx, db):
@@ -1825,7 +1932,8 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
                 # но тогда придётся повторить его уведомления и лимиты тарифа.
                 lesson = await _r_create_lesson(
                     body=LessonCreateRequest(
-                        service_id=args.service_id, teacher_id=args.teacher_id,
+                        service_id=cycle[len(created) % len(cycle)],
+                        teacher_id=args.teacher_id,
                         hall_id=args.hall_id, start_time=start,
                         duration_min=args.duration_min or 60,
                         total_spots=args.total_spots or 8,
@@ -1833,7 +1941,9 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
                     ),
                     ctx=ctx, db=db, background_tasks=None,
                 )
-                created.append(lesson.start_time)
+                # Занятие целиком, а не только час: id нужен кнопке «Вернуть»,
+                # иначе откатывать заполненную неделю нечем (undo_items).
+                created.append(lesson)
             except HTTPException as exc:
                 # Один отказ (зал занят, час вне графика студии) не должен
                 # ронять весь период: остальные дни от этого не хуже.
@@ -1858,14 +1968,101 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
     result = {
         "created": len(created),
         "skipped": skipped,
-        "first": created[0].isoformat(),
-        "last": created[-1].isoformat(),
+        "first": created[0].start_time.isoformat(),
+        "last": created[-1].start_time.isoformat(),
+        "ids": [lesson.id for lesson in created],
     }
     if conflict:
         # Списком, а не строкой: часть A собирает из этого warnings плана, и
         # менять там форму поля на полпути дороже, чем завести список сразу.
         result["conflicts"] = [conflict]
     return result
+
+
+async def _clear_counts(
+    args: "ClearScheduleArgs", ctx: StudioContext, db: AsyncSession,
+) -> tuple[list[Lesson], int]:
+    """Занятия периода и сколько из них с живыми записями. Один запрос на счёт."""
+    lessons = await _busy_lessons(args.teacher_id, args.date_from, args.date_to, ctx, db)
+    if not lessons:
+        return [], 0
+    booked = set((await db.execute(
+        select(Reservation.lesson_id).where(
+            Reservation.lesson_id.in_([l.id for l in lessons]),
+            Reservation.status != "cancelled",
+        )
+    )).scalars().all())
+    return lessons, len(booked)
+
+
+async def _clear_warnings(args: dict, ctx: StudioContext, db: AsyncSession) -> list[str]:
+    """Сколько занятий исчезнет — ДО клика и числом.
+
+    «Удалить расписание» без числа человек подтверждает не глядя; с числом —
+    читает. Это единственная строка, которая стоит между «сотри эту неделю» и
+    стёртым месяцем.
+    """
+    try:
+        parsed = ClearScheduleArgs.model_validate(args or {})
+    except ValidationError:
+        return []
+    lessons, booked = await _clear_counts(parsed, ctx, db)
+    if not lessons:
+        return []
+    text = f"Удалю {len(lessons)} занятий с {parsed.date_from} по {parsed.date_to}."
+    if booked:
+        # Роутер удаления сам отказывает по занятию с записями — здесь мы лишь
+        # честно предупреждаем, что часть останется, а не делаем вид, что чисто.
+        text += (f" {booked} из них с записанными клиентами — эти останутся: "
+                 f"снять людей и отменить занятие может только человек.")
+    return [text]
+
+
+async def _clear_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    try:
+        parsed = ClearScheduleArgs.model_validate(args or {})
+    except ValidationError:
+        return None
+    if (parsed.date_to - parsed.date_from).days > _FILL_MAX_DAYS:
+        return f"Слишком длинный период — не больше {_FILL_MAX_DAYS} дней за раз"
+    lessons, booked = await _clear_counts(parsed, ctx, db)
+    if not lessons:
+        return "Удалять нечего: в этом периоде у тренера занятий нет"
+    if booked == len(lessons):
+        return ("Удалять нечего: на все занятия периода записаны клиенты — их снимает "
+                "и отменяет человек, не ассистент")
+    return None
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"), danger=True,
+    endpoint="DELETE /schedule/lessons/{lesson_id}",
+    warnings=_clear_warnings, precheck=_clear_precheck,
+    summary="Очистить расписание: тренер {teacher_id}, {date_from} — {date_to}",
+    effect="Занятия периода исчезнут из Журнала безвозвратно. Занятия с записанными "
+           "клиентами останутся — их снимает и отменяет человек.",
+)
+async def clear_schedule(ctx: StudioContext, db: AsyncSession, args: ClearScheduleArgs) -> dict:
+    """ОЧИСТИТЬ расписание тренера за период — обратная сторона fill_schedule.
+
+    Для «сотри у неё всё с такого по такое и поставь заново»: заполнили не той
+    услугой, не в тех часах, передумали. Занятия с записанными клиентами НЕ
+    трогает — их снимает человек.
+
+    Заполнить заново после этого — тем же fill_schedule в том же плане: часы
+    освободятся, и «ставить некуда» не будет."""
+    lessons, _ = await _clear_counts(args, ctx, db)
+    deleted, kept = 0, 0
+    for lesson in lessons[:_FILL_MAX_LESSONS]:
+        try:
+            # Тот же роутер, что кнопка «Удалить» в Журнале: он и отказывает по
+            # занятию с записями. Своей проверки не пишем — разошлась бы.
+            await _r_delete_lesson(lesson_id=lesson.id, ctx=ctx, db=db)
+            deleted += 1
+        except HTTPException as exc:
+            logger.info("clear_schedule kept %s: %s", lesson.id, exc.detail)
+            kept += 1
+    return {"deleted": deleted, "kept_booked": kept}
 
 
 @tool(
@@ -2237,6 +2434,47 @@ async def set_staff_schedule(ctx: StudioContext, db: AsyncSession, args: StaffSc
         staff_id=args.staff_id, data=StaffUpdate(**body), ctx=ctx, db=db,
     )
     return _dump(staff)
+
+
+async def _staff_day_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    """Оба отказа роутера видны чтением — значит, до карточки, а не после клика."""
+    try:
+        parsed = StaffDayArgs.model_validate(args or {})
+    except ValidationError:
+        return None
+    if parsed.day < date.today():
+        return "Прошедшие дни в графике не меняются — возьми будущую дату"
+    if not parsed.is_working and await _has_bookings(
+            parsed.staff_id, ctx.studio_id, parsed.day, db):
+        return ("На этот день у тренера есть записанные клиенты — выходным он не станет. "
+                "Сначала человек снимает людей и отменяет занятия, потом ставится выходной.")
+    return None
+
+
+@tool(
+    mutating=True, roles=("owner",), endpoint="PUT /staff/{staff_id}/schedule/day",
+    precheck=_staff_day_precheck,
+    summary="График сотрудника {staff_id}: {day} — {is_working}",
+    effect="Отметка на дату сильнее недельного графика: занятия в этот день "
+           "начнут (или перестанут) вставать в Журнал.",
+)
+async def set_staff_day(ctx: StudioContext, db: AsyncSession, args: StaffDayArgs) -> dict:
+    """Открыть сотруднику КОНКРЕТНУЮ ДАТУ или поставить на неё выходной.
+
+    Сервер отвечает «У сотрудника в этот день выходной», а по дням недели день
+    рабочий — значит на дату стоит отдельная отметка, и снимает её только этот
+    инструмент. set_staff_schedule тут бессилен: он правит регулярную сетку
+    недели, а не отметки дат, и переписывать из-за одного дня весь график
+    сотрудника не нужно.
+
+    Отпуск или несколько дней подряд — по вызову на каждый день.
+    ponytail: диапазона нет намеренно; появится, когда упрёмся в потолок шагов
+    плана (25) на длинном отпуске."""
+    return await _r_set_day_override(
+        staff_id=args.staff_id,
+        payload=StaffDayOverrideRequest(date=args.day.isoformat(), is_working=args.is_working),
+        ctx=ctx, db=db,
+    )
 
 
 @tool(
@@ -2677,6 +2915,45 @@ async def forget_fact(ctx: StudioContext, db: AsyncSession, args: ForgetFactArgs
     return {"forgotten": args.fact_id}
 
 
+# ─── Обратный ход: кнопка «Вернуть» в чате ────────────────────────────────────
+# Что делает инструмент — записано выше; чем это отменяется — здесь. Значение
+# зовёт ТОТ ЖЕ роутер, что кнопка удаления в интерфейсе: правило «занятие с
+# записанными клиентами не удаляется» уже стоит в DELETE /schedule/lessons/{id}
+# (409), и своей проверки мы не пишем — через полгода она бы с ним разошлась.
+#
+# Здесь только то, что откатывается ЧЕСТНО. Правок (переименовал услугу),
+# денег (принял оплату, начислил баллы), рассылок и удалений в таблице нет и
+# быть не должно: кнопка «Вернуть», которая молча вернула не всё, хуже, чем её
+# отсутствие. Нет инструмента в таблице — нет и кнопки у карточки.
+#
+# Аргумент — словарь из undo_items (ai_plan), а не голый id: обратный ход
+# cancel_booking требует клиента и занятие, а не номер снятой записи.
+UNDO: dict[str, Callable] = {
+    "create_lesson": lambda p, ctx, db: _r_delete_lesson(lesson_id=p["id"], ctx=ctx, db=db),
+    "fill_schedule": lambda p, ctx, db: _r_delete_lesson(lesson_id=p["id"], ctx=ctx, db=db),
+    "book_client": lambda p, ctx, db: _r_cancel_reservation(
+        reservation_id=p["id"], ctx=ctx, db=db),
+    # Обратный ход отмены — записать заново. create_reservation заводит НОВУЮ
+    # строку (снятую он не воскрешает), поэтому помним клиента и занятие.
+    # Занятие успело заполниться или начаться — роутер откажет, и это честно:
+    # место действительно занял кто-то другой.
+    "cancel_booking": lambda p, ctx, db: _r_create_reservation(
+        body=ReservationCreate(client_id=p["client_id"], lesson_id=p["lesson_id"]), ctx=ctx, db=db),
+    "create_client": lambda p, ctx, db: _r_delete_client(
+        client_id=p["id"], ctx=ctx, current_user=ctx.user, db=db),
+    "create_staff": lambda p, ctx, db: _r_delete_staff(staff_id=p["id"], ctx=ctx, db=db),
+    "create_service": lambda p, ctx, db: _r_delete_service(service_id=p["id"], ctx=ctx, db=db),
+    "create_hall": lambda p, ctx, db: _r_delete_hall(hall_id=p["id"], ctx=ctx, db=db),
+    "create_branch": lambda p, ctx, db: _r_delete_branch(branch_id=p["id"], ctx=ctx, db=db),
+    "create_package": lambda p, ctx, db: _r_delete_package(package_id=p["id"], ctx=ctx, db=db),
+    "create_operation": lambda p, ctx, db: _r_delete_operation(
+        operation_id=p["id"], ctx=ctx, db=db),
+    "create_account": lambda p, ctx, db: _r_delete_account(account_id=p["id"], ctx=ctx, db=db),
+    "create_counterparty": lambda p, ctx, db: _r_delete_counterparty(
+        cp_id=p["id"], ctx=ctx, db=db),
+}
+
+
 # ─── Реестр ───────────────────────────────────────────────────────────────────
 
 _FORM_HINT = (
@@ -2871,6 +3148,10 @@ def _render(key: str, value):
     """
     if key == "weekdays" and isinstance(value, list) and value:
         return ", ".join(_WEEKDAYS[int(d) % 7] for d in value)
+    if key == "is_working":
+        # «— True» в карточке отметки дня человек читает как мусор, а перепутать
+        # тут значит поставить выходной вместо рабочего дня.
+        return "рабочий день" if value else "выходной"
     if key == "rate_type":
         return {"hourly": "за час", "percent": "% с выручки", "fixed": "за занятие"}.get(value, value)
     if key != "schedule" or not isinstance(value, list) or not value:
@@ -3051,6 +3332,14 @@ _RESOLVERS = {
     "hall_id": ("зал", _resolve_hall),
 }
 
+# Поля, где id не один, а списком. Отдельной картой, а не правилом «*_ids —
+# это справочник»: weekdays тоже список чисел, и по имени их не различить, а
+# перепутать значит написать в карточку «услуга понедельник».
+_LIST_RESOLVERS = {
+    "alternate_with": ("услугу", _resolve_service),
+    "service_ids": ("услугу", _resolve_service),
+}
+
 
 async def resolve_entities(args: dict, ctx: StudioContext, db: AsyncSession) -> tuple[dict, str | None]:
     """Идентификаторы аргументов -> человеческие имена.
@@ -3075,37 +3364,45 @@ async def resolve_entities(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     подписи, и человек подтверждает уже починенное действие.
     """
     entities: dict[str, str] = {}
-    for field, (word, resolver) in _RESOLVERS.items():
-        value = args.get(field)
-        if not isinstance(value, int):
+    for field, (word, resolver) in {**_RESOLVERS, **_LIST_RESOLVERS}.items():
+        raw = args.get(field)
+        many = isinstance(raw, list)
+        values = [v for v in (raw if many else [raw]) if isinstance(v, int) and not isinstance(v, bool)]
+        if not values:
             continue
-        try:
-            label = await resolver(value, ctx, db)
-        except _NotInStudio as exc:
-            # Запись в справочнике одна — правим id прямо в args, чтобы он уехал
-            # и в карточку, и в подпись. Промах модели («услуга #23» там, где
-            # услуга ровно одна) человека касаться не должен: он всё равно
-            # прочитает в карточке имя и подтвердит его.
-            if exc.only is not None:
-                args[field] = value = exc.only
+        labels, fixed = [], []
+        for value in values:
+            try:
                 label = await resolver(value, ctx, db)
-                if label:
-                    entities[field] = label
+            except _NotInStudio as exc:
+                # Запись в справочнике одна — правим id прямо в args, чтобы он уехал
+                # и в карточку, и в подпись. Промах модели («услуга #23» там, где
+                # услуга ровно одна) человека касаться не должен: он всё равно
+                # прочитает в карточке имя и подтвердит его.
+                if exc.only is None:
+                    # Иначе — свой текст со списком: он и объясняет человеку, и чинит
+                    # модель, которой этот же текст возвращается результатом инструмента.
+                    return entities, str(exc.detail)
+                value = exc.only
+                label = await resolver(value, ctx, db)
+            except HTTPException as exc:
+                if exc.status_code == 404:
+                    return entities, f"Не нашёл {word} #{value} — возможно, его уже удалили."
+                if exc.status_code == 403:
+                    continue
+                raise
+            except Exception:
+                logger.exception("resolve %s=%s failed studio=%s", field, value, ctx.studio_id)
                 continue
-            # Иначе — свой текст со списком: он и объясняет человеку, и чинит
-            # модель, которой этот же текст возвращается результатом инструмента.
-            return entities, str(exc.detail)
-        except HTTPException as exc:
-            if exc.status_code == 404:
-                return entities, f"Не нашёл {word} #{value} — возможно, его уже удалили."
-            if exc.status_code == 403:
-                continue
-            raise
-        except Exception:
-            logger.exception("resolve %s=%s failed studio=%s", field, value, ctx.studio_id)
-            continue
-        if label:
-            entities[field] = label
+            fixed.append(value)
+            if label:
+                labels.append(label)
+        if fixed:
+            args[field] = fixed if many else fixed[0]
+        if labels:
+            # Списком — через запятую: «Хатха, Стретчинг» в карточке читается,
+            # «[7, 9]» — это те же голые номера, от которых весь проект уходит.
+            entities[field] = ", ".join(labels)
     return entities, None
 
 
@@ -3238,8 +3535,8 @@ if __name__ == "__main__":
     # Самопроверка без сети и БД: реестр, ролевой скоуп, обрезка результата.
     import asyncio
 
-    assert len(TOOLS) == 61, sorted(TOOLS)
-    assert sum(1 for t in TOOLS.values() if t.mutating) == 32
+    assert len(TOOLS) == 63, sorted(TOOLS)
+    assert sum(1 for t in TOOLS.values() if t.mutating) == 34
     # Память студии данные студии не трогает — карточка подтверждения на
     # «запомни, что по воскресеньям мы не работаем» превратила бы одну фразу в
     # двухшаговый диалог (эпик AI-6, задача 16).
@@ -3409,7 +3706,8 @@ if __name__ == "__main__":
 
     # Необратимое действие помечено флагом — карточка нарисует его иначе, и
     # угадывать опасность по имени инструмента фронту не нужно.
-    assert {t.name for t in TOOLS.values() if t.danger} == {"delete_client", "delete_staff"}
+    assert {t.name for t in TOOLS.values() if t.danger} == {
+        "delete_client", "delete_staff", "clear_schedule"}
 
     # Неоднозначность обрывает сборку ДО обращения к базе: карточки не будет,
     # будет вопрос со списком (эпик AI-6, задача 14). Проверяется без БД именно

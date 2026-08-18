@@ -36,7 +36,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
 from services.ai_tools import (
-    TOOLS, action_title, call_tool, describe_action, resolve_entities,
+    TOOLS, UNDO, action_title, call_tool, describe_action, resolve_entities,
 )
 
 logger = logging.getLogger(__name__)
@@ -152,8 +152,55 @@ def allowed_answers(tool_name: str, args: dict) -> set[str]:
     return {f["name"] for f in missing_fields(tool_name, args)}
 
 
+def _malformed(exc: ValidationError) -> str | None:
+    """Жалобы схемы, которые формой не закрыть, — одной строкой для модели.
+
+    Пропущенное обязательное поле ВЕРХНЕГО уровня — это вопрос формы: его
+    спросит окно, и ронять из-за него шаг нельзя. Всё остальное — не тот тип, не
+    та форма вложенного списка, мусор во времени — форма спросить не умеет
+    (полей вложенных списков в ней нет вовсе), и до этой правки такой шаг молча
+    доезжал до карточки, а падал уже после клика: человек читал «Неверные
+    аргументы (schedule.0 … schedule.6) — проверьте формат и повторите» — совет,
+    адресованный модели, но показанный ему.
+
+    Теперь тот же текст уходит модели тем же путём, что «зала #2 нет»: с именами
+    полей и жалобами по каждому она пересобирает вызов в том же ходе.
+    """
+    bad = [e for e in exc.errors() if not (e["type"] == "missing" and len(e["loc"]) == 1)]
+    if not bad:
+        return None
+    detail = "; ".join(
+        f"{'.'.join(str(p) for p in e['loc']) or '?'}: "
+        f"{e['msg'].removeprefix('Value error, ')}"
+        for e in bad[:6]
+    )
+    return (f"Неверные аргументы — {detail}. Пересобери вызов по схеме инструмента "
+            f"и повтори его сам, у человека ничего не спрашивай.")
+
+
+# Инструменты, которые открывают сотруднику день. Стоя РАНЬШЕ в том же плане,
+# они делают проверку занятия слепой: она читает базу, где выходной ещё на месте.
+_OPENS_SCHEDULE = ("set_staff_day", "set_staff_schedule")
+
+
+def _schedule_fixed_earlier(planned: list[dict], args: dict) -> bool:
+    """Препятствие чинит соседний шаг: «открой Валерии 29-е и поставь тренировку».
+
+    Без этого проверка выкидывала шаг с занятием — и советовала сделать ровно то,
+    что план уже делает шагом выше. Человек получал план из одного шага вместо
+    двух и то самое «поставь ещё раз», ради устранения которого план и написан.
+    """
+    teacher = args.get("teacher_id")
+    return teacher is not None and any(
+        step.get("tool") in _OPENS_SCHEDULE
+        and (step.get("args") or {}).get("staff_id") == teacher
+        for step in planned
+    )
+
+
 async def make_step(
     number: int, name: str, args: dict, ctx: StudioContext, db: AsyncSession,
+    planned: list[dict] | None = None,
 ) -> dict:
     """Один шаг плана: аргументы, чего не хватает, чем это назвать человеку.
 
@@ -169,8 +216,12 @@ async def make_step(
         # Временные id (-1) целочисленные, схему проходят и переживают это.
         try:
             args = tool.params.model_validate(args or {}).model_dump(mode="json", exclude_none=True)
-        except ValidationError:
-            pass                    # неполные аргументы — это и есть вопросы формы
+        except ValidationError as exc:
+            # Пропущенное — вопросы формы. Кривое — ошибка модели, и узнать о ней
+            # она обязана СЕЙЧАС (см. _malformed).
+            broken = _malformed(exc)
+            if broken:
+                return {"n": number, "tool": name, "error": broken}
         if tool.defaults is not None:
             args = await tool.defaults(args, ctx, db)
         # Порядок полей — по схеме, а не по тому, как их выложила модель. Иначе
@@ -215,7 +266,8 @@ async def make_step(
     # которую создаст соседний шаг (её в базе пока нет, и любой ответ проверки
     # был бы про пустоту).
     if (tool is not None and tool.precheck is not None and ready
-            and not any(_is_placeholder(v) for v in args.values())):
+            and not any(_is_placeholder(v) for v in args.values())
+            and not _schedule_fixed_earlier(planned or [], args)):
         try:
             refusal = await tool.precheck(args, ctx, db)
         except Exception:
@@ -393,7 +445,7 @@ async def run_plan(
     числом, а не делаем вид, что откат был.
     """
     done: dict[int, int] = {}       # номер шага -> настоящий id созданной записи
-    created, failed = [], []
+    created, failed, undo = [], [], []
 
     for number, step in enumerate(steps, start=1):
         args = dict(step.get("args") or {})
@@ -424,10 +476,90 @@ async def run_plan(
         if new_id is not None:
             done[number] = new_id
         entities, _ = await resolve_entities(args, ctx, db)
-        created.append({"n": number, "tool": step["tool"],
-                        "description": describe_action(step["tool"], args, entities)})
+        description = describe_action(step["tool"], args, entities)
+        created.append({"n": number, "tool": step["tool"], "description": description})
+        for item in undo_items(step["tool"], result):
+            undo.append({"tool": step["tool"], "item": item, "description": description})
 
-    return {"created": created, "failed": failed}
+    return {"created": created, "failed": failed, "undo": undo}
+
+
+def undo_items(tool: str, result: dict) -> list[dict]:
+    """Что запомнить для кнопки «Вернуть» — по словарю на каждую запись.
+
+    Форма словаря своя у каждого обратного хода (UNDO в ai_tools): почти всем
+    хватает id созданного, а отмене записи нужны клиент и занятие — новую
+    резервацию заводят по ним, снятую воскресить нечем.
+
+    Инструмента нет в UNDO — возвращаем пусто, и кнопки у карточки не будет.
+    """
+    if tool not in UNDO or not isinstance(result, dict):
+        return []
+    if tool == "cancel_booking":
+        reservation = result.get("reservation") or {}
+        client_id, lesson_id = reservation.get("client_id"), reservation.get("lesson_id")
+        if client_id is None or lesson_id is None:
+            return []
+        return [{"client_id": client_id, "lesson_id": lesson_id}]
+    if tool == "fill_schedule":
+        return [{"id": lesson_id} for lesson_id in result.get("ids") or []]
+    new_id = _created_id(result)
+    return [{"id": new_id}] if new_id is not None else []
+
+
+async def run_undo(record: list[dict], ctx: StudioContext, db: AsyncSession) -> dict:
+    """Откатить то, что запомнил run_plan. Порядок — ОБРАТНЫЙ исполнению.
+
+    Обратный не для красоты: план «завести Аню и записать её на занятие» в
+    прямом порядке снёс бы Аню первой, а запись на занятие осталась бы висеть
+    на удалённом клиенте.
+
+    Отказ одного шага не останавливает остальные — ровно ради этого вся кнопка
+    и затевалась: занятие, на которое успели записаться, DELETE /schedule/
+    lessons/{id} не отдаёт (409), и это правильно, а остальные занятия пачки от
+    этого ни при чём и обязаны вернуться.
+    """
+    reverted, kept = [], []
+    for entry in reversed(record):
+        tool = entry.get("tool")
+        undo = UNDO.get(tool)
+        # Роль проверяем по тому же объявлению, что и у самого действия: вернуть
+        # можно ровно то, что тебе позволено было сделать.
+        # TOOLS.get, а не TOOLS[...]: запись лежит в БД вечно, а инструмент
+        # могут переименовать — старое сообщение обязано отказать, а не упасть.
+        declared = TOOLS.get(tool)
+        if undo is None or declared is None or ctx.role not in declared.roles:
+            kept.append({"description": entry.get("description") or tool,
+                         "error": "Это действие вернуть нельзя"})
+            continue
+        try:
+            await undo(entry.get("item") or {}, ctx, db)
+            reverted.append(entry)
+        except HTTPException as exc:
+            detail = exc.detail
+            if isinstance(detail, dict):
+                detail = detail.get("message") or detail.get("detail") or str(detail)
+            logger.info("undo kept %s: %s", tool, detail)
+            kept.append({"description": entry.get("description") or tool, "error": str(detail)})
+        except Exception:
+            # Роутер упал не отказом, а поломкой: остальные шаги пачки от этого
+            # не хуже, и молча проглотить его нельзя — человек прочитает в итоге.
+            logger.exception("undo failed: tool=%s studio=%s", tool, ctx.studio_id)
+            kept.append({"description": entry.get("description") or tool,
+                         "error": "Не удалось вернуть"})
+    return {"reverted": reverted, "kept": kept}
+
+
+def summarize_undo(outcome: dict) -> str:
+    """Итог отката одной фразой — тем же голосом, что и summarize."""
+    reverted, kept = outcome["reverted"], outcome["kept"]
+    total = len(reverted) + len(kept)
+    if not kept:
+        return f"Вернул: {total} из {total}." if total > 1 else "Вернул."
+    if not reverted:
+        return f"Вернуть не получилось: {kept[0]['error'].lower()}"
+    tail = "; ".join(f"{k['description']} — {k['error'].lower()}" for k in kept[:3])
+    return f"Вернул: {len(reverted)} из {total}. Оставил: {tail}"
 
 
 def _created_id(result: dict) -> int | None:

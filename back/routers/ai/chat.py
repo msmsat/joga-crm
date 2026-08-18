@@ -24,7 +24,9 @@ from schemas.ai import (
     SendMessageResponse,
 )
 from services.ai_quota import ai_quota_status, check_ai_quota
-from services.ai_plan import decode_plan_token, merge_answers, run_plan, summarize
+from services.ai_plan import (
+    decode_plan_token, merge_answers, run_plan, run_undo, summarize, summarize_undo,
+)
 from services.ai_tools import call_tool, decode_action_token, describe_action, resolve_entities
 from services.assistant import agent_events, get_or_create_ai_settings, run_agent
 
@@ -161,6 +163,64 @@ async def rate_message(
     message.rating = body.rating
     await db.commit()
     await db.refresh(message)
+    return message
+
+
+@router.post("/messages/{message_id}/undo", response_model=ChatMessageRead)
+@limiter.limit("10/minute")
+async def undo_message(
+    message_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+    request: Request = None,
+):
+    """Вернуть то, что наделало действие ассистента, — кнопкой «Вернуть» в чате.
+
+    Откат делает СЕРВЕР напрямую: зовёт те же роутеры, что кнопки удаления в
+    интерфейсе. Модель в этом не участвует вовсе — ни нового плана, ни второго
+    подтверждения. Просить ассистента «отмени, что ты сделал» значило бы
+    надеяться, что он вспомнит id-шники из истории чата; здесь они записаны.
+
+    Возвращается ровно то, что откатывается честно (таблица UNDO в ai_tools).
+    Занятие, на которое успели записаться, роутер не отдаёт (409) — оно
+    остаётся, остальные шаги пачки возвращаются, и в тексте карточки написано,
+    что именно осталось и почему.
+    """
+    message = (await db.execute(
+        select(AIChatMessage)
+        .join(AIChatSession, AIChatSession.id == AIChatMessage.session_id)
+        .where(
+            AIChatMessage.id == message_id,
+            AIChatSession.studio_id == ctx.studio_id,
+            AIChatSession.user_id == ctx.user.id,
+        )
+    )).scalar_one_or_none()
+    if message is None:
+        raise HTTPException(status_code=404, detail="Сообщение не найдено")
+    if not message.undo:
+        # Уже вернули, или возвращать в этом действии было нечего. 409, а не
+        # 404: сообщение на месте, невозможен именно откат.
+        raise HTTPException(status_code=409, detail="Это действие уже возвращено")
+
+    outcome = await run_undo(message.undo, ctx, db)
+    if not outcome["reverted"]:
+        # Не вернулось НИЧЕГО — это отказ, а не «частично». Гасить кнопку здесь
+        # нельзя: причина бывает временной (занятие вот-вот освободится).
+        raise HTTPException(status_code=400, detail={
+            "code": "undo_failed",
+            "message": outcome["kept"][0]["error"] if outcome["kept"] else "Не удалось вернуть",
+        })
+
+    # Что вернулось — дописываем к тексту действия, а не заменяем его: карточка
+    # обязана продолжать показывать, ЧТО было сделано, иначе история врёт.
+    message.text = f"{message.text}\n\n{summarize_undo(outcome)}"
+    message.undo = None                      # кнопка гаснет вместе с записью
+    # preview сессии не трогаем: он показывает ПОСЛЕДНЕЕ сообщение диалога, а
+    # возвращают часто не его — в списке чатов появилась бы фраза из середины.
+    await db.commit()
+    await db.refresh(message)
+    logger.info("ai undo: message=%s reverted=%s kept=%s studio=%s",
+                message_id, len(outcome["reverted"]), len(outcome["kept"]), ctx.studio_id)
     return message
 
 
@@ -455,6 +515,9 @@ async def execute_plan(
     message = AIChatMessage(
         session_id=session.id, role="assistant",
         text=summarize(outcome), action_jti=payload["jti"],
+        # Пусто — у карточки не будет кнопки «Вернуть»: в пачке не оказалось
+        # ничего, что откатывается честно (правки, оплаты, удаления).
+        undo=outcome["undo"] or None,
     )
     db.add(message)
     session.preview = message.text[:500]

@@ -27,6 +27,8 @@ export default function AIDrawer() {
     confirmAction,
     cancelAction,
     actionPending,
+    undoAction,
+    undoPending,
   } = useDrawerChat();
   const { t } = useTranslation('ai');
   const toast = useToast();
@@ -75,6 +77,8 @@ export default function AIDrawer() {
             onConfirmAction={confirmAction}
             onCancelAction={cancelAction}
             actionPending={actionPending}
+            onUndoAction={undoAction}
+            undoPending={undoPending}
           />
         </div>
 

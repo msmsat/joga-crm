@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { Card } from './Card';
+import { ConfirmModal } from './ConfirmModal';
 import { formatArg, visibleArgs } from './argFormat';
 
 export interface ActionCardProps {
@@ -22,6 +24,12 @@ export interface ActionCardProps {
   /** Необратимое действие (удаление): пыльная роза вместо персика на кнопке
       и в иконке — чтобы «Подтвердить» здесь не нажималось на автомате. */
   danger?: boolean;
+  /** Вернуть то, что действие наделало. Есть только у исполненных карточек,
+      которым сервер записал, чем их откатывать (can_undo). Спрашиваем ещё раз
+      перед вызовом: срок жизни кнопки не ограничен, и «Вернуть» по клиенту,
+      заведённому месяц назад, уносит его вместе с накопленной историей. */
+  onUndo?: () => Promise<unknown>;
+  undoing?: boolean;
 }
 
 // Карточка подтверждения действия ассистента (эпик AI-5, задача 10).
@@ -30,17 +38,20 @@ export interface ActionCardProps {
 // поведении — подтверждение из дровера вело бы себя не так, как со страницы.
 export function ActionCard({
   description, args, entities, effect, onConfirm, onCancel,
-  loading = false, doneAt = null, danger = false,
+  loading = false, doneAt = null, danger = false, onUndo, undoing = false,
 }: ActionCardProps) {
   const { t } = useTranslation();
+  const [confirmUndo, setConfirmUndo] = useState(false);
   // Пароль сотрудника в карточку не выводим: она уходит в историю чата навсегда.
   // Разрешённые сервером id тоже не выводим — вместо них идут имена ниже.
   const rows = visibleArgs(args, entities, undefined);
   const named = Object.entries(entities ?? {});
   const accent = danger ? '#D88C9A' : '#F9A08B';
+  // Гаснет карточка, с которой уже нечего сделать. Пока жива кнопка «Вернуть»,
+  // приглушать нельзя — кнопка в ней читалась бы как выключенная.
 
   return (
-    <Card padding={16} style={{ marginTop: 8, opacity: doneAt ? 0.6 : 1 }}>
+    <Card padding={16} style={{ marginTop: 8, opacity: doneAt && !onUndo ? 0.6 : 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2"
              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -98,6 +109,27 @@ export function ActionCard({
             </div>
           ))}
         </div>
+      )}
+
+      {doneAt && onUndo && (
+        // Внутри карточки, а не рядом с ней: вернуть можно ровно то действие,
+        // которое человек сейчас читает, и кнопка обязана стоять при нём.
+        <div style={{ marginTop: 12 }}>
+          <Button variant="ghost" size="sm" loading={undoing} onClick={() => setConfirmUndo(true)}>
+            {t('ai:actions.undo')}
+          </Button>
+        </div>
+      )}
+
+      {confirmUndo && onUndo && (
+        <ConfirmModal
+          danger
+          title={t('ai:actions.undoTitle')}
+          message={t('ai:actions.undoMessage', { action: description })}
+          confirmText={t('ai:actions.undo')}
+          onConfirm={async () => { await onUndo(); }}
+          onClose={() => setConfirmUndo(false)}
+        />
       )}
 
       {!doneAt && (

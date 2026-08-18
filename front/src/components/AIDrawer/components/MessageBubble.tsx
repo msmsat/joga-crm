@@ -8,9 +8,13 @@ interface MessageBubbleProps {
   message: AIChatMessage;
   animate?: boolean;
   onAnimateDone?: () => void;
+  onUndo?: (messageId: number) => Promise<unknown>;
+  undoPending?: boolean;
 }
 
-export default function MessageBubble({ message, animate = false, onAnimateDone }: MessageBubbleProps) {
+export default function MessageBubble({
+  message, animate = false, onAnimateDone, onUndo, undoPending = false,
+}: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const [displayText, setDisplayText] = useState(animate ? '' : message.text);
   const [typing, setTyping] = useState(animate);
@@ -52,6 +56,8 @@ export default function MessageBubble({ message, animate = false, onAnimateDone 
           doneAt={formatMessageTime(message.created_at)}
           onConfirm={() => {}}
           onCancel={() => {}}
+          onUndo={message.can_undo && onUndo ? () => onUndo(message.id) : undefined}
+          undoing={undoPending}
         />
       </div>
     );

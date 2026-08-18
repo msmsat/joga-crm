@@ -36,6 +36,8 @@ UI_ONLY: dict[str, str] = {
     "POST /ai/sessions/{session_id}/stream": "сам вход в ассистента",
     "PATCH /ai/settings": "модель, язык и промпт ассистента меняет владелец руками",
     "PATCH /ai/messages/{message_id}/rating": "оценка ответа — мнение человека, инструментом её не поставить",
+    "POST /ai/messages/{message_id}/undo": "кнопка «Вернуть» у карточки действия — откат делает сервер "
+                                           "напрямую, и просить об этом модель было бы кругом",
     "POST /ai/telegram/verify-token": "токен бота владелец вводит и проверяет сам",
     "DELETE /ai/telegram/token": "отключение бота — осознанное действие человека",
     "DELETE /ai/instagram/connection": "отключение Instagram — осознанное действие человека",
@@ -99,7 +101,6 @@ UI_ONLY: dict[str, str] = {
     "PATCH /booking/channels/{channel_type}": "подключение канала записи: токен бота вводит владелец",
 
     # ── Журнал: правка и отметки делаются кликом по карточке занятия
-    "DELETE /schedule/lessons/{lesson_id}": "удаление занятия из расписания — руками",
     "PATCH /schedule/lessons/{lesson_id}/cancel": "отмена занятия задевает всех записанных — только руками",
     "PATCH /schedule/reservations/{reservation_id}/attend": "отметка прихода — клик по клиенту в карточке занятия",
     "PATCH /schedule/reservations/{reservation_id}/confirm": "подтверждение записи — клик в карточке занятия",
@@ -116,11 +117,10 @@ UI_ONLY: dict[str, str] = {
     "PATCH /clients/{client_id}/registration-date": "правка даты регистрации задним числом двигает статусы всей базы",
     "PATCH /clients/segment-rules": "пороги статусов — формула, по которой пересчитается вся база",
 
-    # ── Сотрудники: связь и точечная правка графика
+    # ── Сотрудники: связь
     "POST /staff/{staff_id}/call": "звонок сотруднику — действие человека",
     "POST /staff/{staff_id}/message": "сообщение сотруднику пишет человек",
     "POST /staff/{staff_id}/invite": "повторное приглашение отправляет владелец",
-    "PUT /staff/{staff_id}/schedule/day": "правка одного дня графика; ассистент задаёт график целиком (set_staff_schedule)",
     "POST /staff/{staff_id}/schedule/{lesson_id}/cancel": "снятие тренера с занятия задевает записанных — руками",
 
     # ── Каталог: правка и удаление сущностей, фото

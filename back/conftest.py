@@ -91,7 +91,9 @@ def _stub_llm():
         return llm.LLMUsage(model="google/gemini-3-flash", prompt_tokens=10,
                             cached_tokens=0, completion_tokens=5, cost_micro=20)
 
-    async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):
+    # **_ вместо перечисления: заглушка обязана пережить появление нового
+    # параметра у llm.chat, иначе прогон падает не там, где ошибка.
+    async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0, **_):
         return llm.LLMReply(text="Тестовый ответ ассистента.", tool_calls=[], usage=_usage())
 
     async def _chat_stream(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):

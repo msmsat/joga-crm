@@ -15,6 +15,7 @@
   Instagram — НЕЧЕМ: IGSID выдаётся Meta для пары «приложение ↔ пользователь» и
               ни с чем в БД не сопоставим. Личные данные в IG недоступны, точка.
 """
+import asyncio
 import json
 import logging
 import os
@@ -38,7 +39,9 @@ CHANNEL_TELEGRAM, CHANNEL_INSTAGRAM, CHANNEL_WHATSAPP = "telegram", "instagram",
 MINIAPP_URL = os.getenv("MINIAPP_URL", "http://localhost:5174").rstrip("/")
 
 # Клиентских обращений на порядок больше, а задачи проще — уровень всегда дешёвый.
-_TIER = llm.TIER_FAST
+# И отдельный от CRM-ассистента (LLM_MODEL_CLIENT): здесь человек ждёт ответа в
+# чате, поэтому уровень выбирается по скорости, а не по сообразительности.
+_TIER = llm.TIER_CLIENT
 _MAX_ITERATIONS = 4
 # Префикс здесь короткий (нет карты интерфейса и схем CRM-инструментов), а на
 # сессию часто приходится ровно один вопрос — запись кэша не окупается никогда.
@@ -262,7 +265,12 @@ async def reply(
     last_text: str | None = None
 
     for step in range(_MAX_ITERATIONS):
-        answer = await llm.chat(messages, tools=tools, tier=_TIER, cache_prefix_len=_CACHE_PREFIX_LEN)
+        # think=False: клиенту в мессенджере отвечаем простыми фразами по данным
+        # инструментов — размышлять тут не над чем, а ждёт его живой человек.
+        # У CRM-ассистента (services/assistant.py) размышление остаётся: там оно
+        # решает, каким инструментом идти и не пора ли на старший уровень.
+        answer = await llm.chat(messages, tools=tools, tier=_TIER,
+                                cache_prefix_len=_CACHE_PREFIX_LEN, think=False)
         await record_usage(
             studio_id, answer.usage,
             surface=channel, billable=(step == 0), sender_ref=sender_ref,
@@ -324,9 +332,14 @@ async def _agent_reply_task(studio_id: int, channel: str, sender: str, text: str
 
             # Индикатор «печатает…» — только после того, как все гейты пройдены:
             # у выключенного агента он обещал бы ответ, которого не будет.
+            # Не await: это отдельное соединение к Telegram, и ожидание его
+            # ответа было бы добавленной задержкой ровно там, где мы её режем.
+            # Ссылку держим до конца задачи — иначе сборщик мусора вправе убить
+            # задачу на полпути.
+            typing_task = None
             if channel == CHANNEL_TELEGRAM and token:
                 from routers.booking.telegram_webhook import send_typing
-                await send_typing(token, int(sender))
+                typing_task = asyncio.create_task(send_typing(token, int(sender)))
 
             client = await identify(db, studio_id, channel, sender)
             answer = await reply(db, studio_id, settings, client, text, channel, sender_ref=sender[:64])

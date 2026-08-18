@@ -48,6 +48,11 @@ export const aiApi = {
   rateMessage: (messageId: number, rating: 1 | -1 | null) =>
     client.patch<AIChatMessage>(`/ai/messages/${messageId}/rating`, { rating }),
 
+  // Вернуть то, что наделало действие ассистента. Что именно сносить, сервер
+  // помнит сам — телом запроса это не передаётся и передаваться не должно.
+  undoAction: (messageId: number) =>
+    client.post<AIChatMessage>(`/ai/messages/${messageId}/undo`),
+
   executeAction: (token: string) =>
     client.post<AIActionResult>('/ai/actions/execute', { token }),
 

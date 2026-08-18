@@ -52,6 +52,10 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     # Оценка ответа (эпик AI-6, задача 18): ставит её автор диалога, а диалоги
     # личные — чужое сообщение и так не найдётся, скоуп внутри обработчика.
     ("PATCH", "/ai/messages/{message_id}/rating"): ("*studio",),
+    # Откат действия: как и у исполнения, роль сверяется по КАЖДОМУ шагу записи
+    # (run_undo смотрит TOOLS[tool].roles) — вернуть можно ровно то, что тебе
+    # было позволено сделать. Само сообщение и так ищется в своём диалоге.
+    ("POST", "/ai/messages/{message_id}/undo"): ("*studio",),
     ("GET", "/ai/instagram/callback"): ("*public",),
     ("GET", "/ai/instagram/webhook"): ("*public",),
     ("POST", "/ai/instagram/webhook"): ("*public",),

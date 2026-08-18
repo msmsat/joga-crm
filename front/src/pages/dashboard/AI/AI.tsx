@@ -24,6 +24,7 @@ export default function AIPage() {
     activeSessionId, messages, messagesLoading, messagesError, refetchMessages, isThinking,
     sendMessage, newChat, loadSession, deleteSession, messagesEndRef,
     toolStatus, planProposal, confirmAction, cancelAction, actionPending,
+    undoAction, undoPending,
   } = useDrawerChat('page');
   const {
     agentConfig, aiSettings, isSaving, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
@@ -118,6 +119,8 @@ export default function AIPage() {
           onConfirmAction={confirmAction}
           onCancelAction={cancelAction}
           actionPending={actionPending}
+          onUndoAction={undoAction}
+          undoPending={undoPending}
         />
         {agentModalOpen && createPortal(agentModal, document.body)}
       </div>
@@ -162,6 +165,8 @@ export default function AIPage() {
         onConfirmAction={confirmAction}
         onCancelAction={cancelAction}
         actionPending={actionPending}
+        onUndoAction={undoAction}
+        undoPending={undoPending}
       />
 
       {agentModalOpen && createPortal(agentModal, document.body)}

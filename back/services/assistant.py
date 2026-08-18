@@ -634,7 +634,10 @@ async def agent_events(
                     yield "result", AgentResult(text=_clarify_text(asked))
                     return
                 number = len(plan_steps) + 1
-                planned = await make_step(number, call["name"], dict(call["arguments"] or {}), ctx, db)
+                # Уже собранные шаги — чтобы проверка не выкинула занятие,
+                # выходной для которого снимает шаг выше (_schedule_fixed_earlier).
+                planned = await make_step(
+                    number, call["name"], dict(call["arguments"] or {}), ctx, db, plan_steps)
                 called.append(call["name"])
                 if planned.get("error"):
                     # Ошибку отдаём САМОЙ модели: id она берёт из своей головы, и

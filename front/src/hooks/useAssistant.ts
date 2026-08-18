@@ -410,6 +410,28 @@ export function useAssistant(surface: AISurface = 'drawer') {
     if (proposal) executeMut.mutate(answers);
   }, [executeMut, proposal]);
 
+  // Вернуть то, что наделало исполненное действие. Точечно гасить кэш здесь
+  // нечем: чем откатывать, помнит сервер, и списка инструментов у фронта нет.
+  // Гасим всё — откат человек делает редко и осознанно, а недогашенный экран
+  // показал бы занятие, которого уже нет.
+  const undoMut = useMutation({
+    mutationFn: (messageId: number) => aiApi.undoAction(messageId),
+    onSuccess: (message) => {
+      qc.setQueryData<AIChatMessage[]>(
+        queryKeys.aiMessages(message.session_id),
+        (prev) => (prev ?? []).map((m) => (m.id === message.id ? message : m)),
+      );
+      qc.invalidateQueries();
+      toast.success(message.text);
+    },
+    onError: (err) => toast.error(assistantErrorMessage(err, t)),
+  });
+
+  const undoAction = useCallback(
+    (messageId: number) => undoMut.mutateAsync(messageId),
+    [undoMut],
+  );
+
   // Отказ: окно исчезает, токен протухает сам через полчаса.
   const cancelAction = useCallback(() => setProposal(null), []);
 
@@ -442,6 +464,8 @@ export function useAssistant(surface: AISurface = 'drawer') {
     planProposal: proposal,
     confirmAction,
     cancelAction,
+    undoAction,
+    undoPending: undoMut.isPending,
     actionPending: executeMut.isPending,
     activeSessionId,
     sendMessage,

@@ -20,6 +20,9 @@ interface ChatPanelProps {
   onConfirmAction?: (answers: PlanAnswers) => void;
   onCancelAction?: () => void;
   actionPending?: boolean;
+  // Вернуть исполненное действие (кнопка живёт на карточке в ленте).
+  onUndoAction?: (messageId: number) => Promise<unknown>;
+  undoPending?: boolean;
   // Имя инструмента, который ассистент дёргает прямо сейчас — переводится здесь,
   // сервер шлёт машинное имя (эпик AI-4 выкорчевал русские строки из JSX).
   toolStatus?: string | null;
@@ -30,6 +33,7 @@ const SUGGESTION_KEYS = ['revenue', 'sms', 'promo', 'retention'] as const;
 export default function ChatPanel({
   messages, messagesLoading, messagesError, onRetryMessages, isThinking, onSend,
   planProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+  onUndoAction, undoPending = false,
 }: ChatPanelProps) {
   const { t } = useTranslation('ai');
   const [input, setInput] = useState('');
@@ -144,6 +148,8 @@ export default function ChatPanel({
                 message={msg}
                 animate={msg.id === animateId}
                 onAnimateDone={() => setAnimateId(null)}
+                onUndo={onUndoAction}
+                undoPending={undoPending}
               />
             ))}
             {planProposal && (

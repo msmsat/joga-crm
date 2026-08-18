@@ -428,14 +428,51 @@
 .channel-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #5BAB72; }
 .channel-status.pending .channel-status-dot { background: currentColor; }
 
-/* Ссылка на мини-приложение — занимает место статуса в своей карточке. */
+/* ── ССЫЛКА НА МИНИ-ПРИЛОЖЕНИЕ + QR ──
+   Третья карточка того же ряда: слева плита с кодом вместо квадрата с иконкой,
+   справа название, адрес и печать. Ширины трети ряда хватает только на такую
+   раскладку — QR над текстом растянул бы весь ряд вдвое. */
+.miniapp-card {
+  display: flex; align-items: flex-start; gap: 14px;
+  background:
+    radial-gradient(90% 140% at 0% 0%, rgba(91,171,114,0.10) 0%, transparent 46%),
+    radial-gradient(80% 140% at 100% 100%, rgba(252,174,145,0.13) 0%, transparent 52%),
+    var(--bg2);
+  cursor: default;
+}
+.miniapp-card::after { display: none; }
+.miniapp-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.07); }
+
+/* Плита кода всегда белая с тёмными модулями: сканеру нужен контраст,
+   инвертированный в тёмной теме QR читается через раз. */
+.miniapp-qr {
+  position: relative; flex-shrink: 0; line-height: 0;
+  padding: 9px; border-radius: 14px;
+  background: #FFFFFF; box-shadow: 0 8px 26px rgba(26,26,26,0.12);
+}
+/* Уголки видоискателя — две L-скобки по диагонали. */
+.miniapp-qr::before, .miniapp-qr::after {
+  content: ''; position: absolute; width: 13px; height: 13px;
+  border: 2px solid var(--channel-color, #5BAB72); opacity: 0.45;
+}
+.miniapp-qr::before { top: -5px; left: -5px; border-right: none; border-bottom: none; border-radius: 7px 0 0 0; }
+.miniapp-qr::after { right: -5px; bottom: -5px; border-left: none; border-top: none; border-radius: 0 0 7px 0; }
+.miniapp-qr-empty {
+  width: 84px; height: 84px; border-radius: 8px;
+  border: 1.5px dashed var(--border2, #EEEBE6);
+}
+
+.miniapp-body { flex: 1; min-width: 0; }
+.miniapp-body .channel-desc { margin-bottom: 8px; }
+.miniapp-print { margin-top: 8px; }
+
 .channel-link {
   display: flex; align-items: center; gap: 4px;
   padding: 5px 5px 5px 10px; border-radius: 10px;
   background: var(--bg); border: 1px solid var(--border);
   transition: border-color 0.2s;
 }
-.channel-card:hover .channel-link { border-color: rgba(91,171,114,0.45); }
+.miniapp-card:hover .channel-link { border-color: rgba(91,171,114,0.45); }
 .channel-link-url {
   flex: 1; min-width: 0;
   font-size: 10.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
@@ -939,8 +976,11 @@
      и разворачивало плитку вдвое. */
   .channels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   /* Карточка со ссылкой — во всю ширину: в половине ряда от адреса остаётся
-     многоточие, а копировать нечитаемое незачем. */
-  .channel-card-link { grid-column: 1 / -1; }
+     многоточие, а копировать нечитаемое незачем. QR остаётся слева от текста. */
+  .miniapp-card { grid-column: 1 / -1; gap: 12px; }
+  /* Описание у каналов скрыто, а здесь остаётся: рядом с кодом место есть,
+     и без него в карточке повисает пустая полоса высотой с QR. */
+  .miniapp-card .channel-desc { display: block; font-size: 11px; }
   .channel-card { padding: 10px 11px; border-radius: 12px; }
   .channel-card::after { display: none; }
   .channel-icon-wrap { width: 30px; height: 30px; border-radius: 9px; margin-bottom: 7px; }

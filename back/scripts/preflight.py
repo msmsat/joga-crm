@@ -116,16 +116,21 @@ def check_ai() -> None:
     здесь отсутствие ключа — блокер, как и остальные боевые проверки.
     """
     from services.ai_tools import UI_MAP
-    from services.llm import _ALLOWED_VENDORS, _PRICES, _ENV_BY_TIER
+    from services.llm import _ALLOWED_VENDORS, _PRICES, _ENV_BY_TIER, _OPTIONAL_ENV_BY_TIER
 
     if not os.getenv("LLM_API_KEY"):
         _err("LLM_API_KEY не задан — Velora AI отвечает заглушкой вместо модели")
     if not os.getenv("LLM_BASE_URL"):
         _err("LLM_BASE_URL не задан — запросы к модели идти некуда")
 
-    for tier, env_name in _ENV_BY_TIER.items():
+    # Необязательные слаги проверяем ТЕМИ ЖЕ правилами, когда они заданы: через
+    # клиентского агента идут имена клиентов студии, и запрет на вендоров вне
+    # GDPR обязан накрывать и его модель тоже.
+    for tier, env_name in {**_ENV_BY_TIER, **_OPTIONAL_ENV_BY_TIER}.items():
         slug = os.getenv(env_name, "")
         if not slug:
+            if tier in _OPTIONAL_ENV_BY_TIER:
+                continue        # не задана — уровень падает на FAST (llm.model_for)
             _err(f"{env_name} не задан — уровню {tier} нечем отвечать")
             continue
         # Решение 7: ПДн клиентов студии не уезжают в юрисдикции без адекватности GDPR.

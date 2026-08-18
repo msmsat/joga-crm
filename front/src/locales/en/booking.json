@@ -12,7 +12,10 @@
       "name": "Client link",
       "desc": "Booking mini app — for bio, stories and campaigns",
       "copy": "Copy link",
-      "open": "Open mini app"
+      "open": "Open mini app",
+      "print": "Print QR",
+      "posterTitle": "Book your class online",
+      "scanHint": "Point your phone camera at the code"
     }
   },
   "loading": "Loading settings…",
@@ -79,6 +82,7 @@
     "botDisconnected": "Bot disconnected",
     "codeCopied": "Code copied!",
     "linkCopied": "Link copied!",
+    "printBlocked": "Allow pop-ups to print the QR code",
     "stripeReturned": "Details sent to Stripe",
     "stripeLinkExpired": "The Stripe link expired — please try again"
   },

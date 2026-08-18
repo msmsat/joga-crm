@@ -56,6 +56,7 @@ _PROXIES = {
     "create_lesson": ai_tools._r_create_lesson,
     "fill_schedule": ai_tools._r_create_lesson,   # тот же роутер, N раз подряд
     "update_lesson": ai_tools._r_update_lesson,
+    "clear_schedule": ai_tools._r_delete_lesson,
     "book_client": ai_tools._r_create_reservation,
     "cancel_booking": ai_tools._r_cancel_reservation,
     "pay_booking": ai_tools._r_pay_reservation,
@@ -66,6 +67,7 @@ _PROXIES = {
     "create_staff": ai_tools._r_create_staff,
     "update_staff": ai_tools._r_update_staff,
     "set_staff_schedule": ai_tools._r_update_staff,
+    "set_staff_day": ai_tools._r_set_day_override,
     "delete_staff": ai_tools._r_delete_staff,
     "get_catalog_settings": ai_tools._r_subscription_config,
     "create_service": ai_tools._r_create_service,

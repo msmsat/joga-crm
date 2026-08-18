@@ -7,6 +7,10 @@
     "ru": "Новый чат",
     "en": "New chat"
   },
+  "ai:actions.undo": {
+    "ru": "Вернуть",
+    "en": "Undo"
+  },
   "ai:agents.configureButton": {
     "ru": "Настроить агентов",
     "en": "Configure agents"
@@ -103,6 +107,10 @@
     "ru": "Скопировать ссылку",
     "en": "Copy link"
   },
+  "booking:channels.miniapp.print": {
+    "ru": "Распечатать QR",
+    "en": "Print QR"
+  },
   "booking:channels.sectionTitle": {
     "ru": "Каналы подключения",
     "en": "Connection channels"
@@ -122,6 +130,14 @@
   "booking:sections.rules.title": {
     "ru": "Ограничения и правила",
     "en": "Limits & rules"
+  },
+  "booking:stripeGate.disabled.action": {
+    "ru": "Открыть Финансы",
+    "en": "Open Finances"
+  },
+  "booking:stripeGate.incomplete.action": {
+    "ru": "Продолжить настройку",
+    "en": "Continue setup"
   },
   "booking:stripeGate.none.action": {
     "ru": "Подключить Stripe",

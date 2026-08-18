@@ -22,11 +22,15 @@ interface ChatViewProps {
   onCancelAction?: () => void;
   actionPending?: boolean;
   toolStatus?: string | null;
+  // Вернуть исполненное действие — та же кнопка, что на странице AI.
+  onUndoAction?: (messageId: number) => Promise<unknown>;
+  undoPending?: boolean;
 }
 
 export default function ChatView({
   messages, isThinking, messagesEndRef, onSend,
   planProposal = null, onConfirmAction, onCancelAction, actionPending = false, toolStatus = null,
+  onUndoAction, undoPending = false,
 }: ChatViewProps) {
   const { t } = useTranslation('ai');
   const isEmpty = messages.length === 0;
@@ -73,6 +77,8 @@ export default function ChatView({
               message={msg}
               animate={msg.id === animateId}
               onAnimateDone={() => setAnimateId(null)}
+              onUndo={onUndoAction}
+              undoPending={undoPending}
             />
           ))}
           {planProposal && (

@@ -34,6 +34,8 @@ interface PhoneViewProps {
   onConfirmAction?: (answers: PlanAnswers) => void;
   onCancelAction?: () => void;
   actionPending?: boolean;
+  onUndoAction?: (messageId: number) => Promise<unknown>;
+  undoPending?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export default function PhoneView({
   aiSettings, onUpdateSettings,
   activeAgents, onOpenAgentSetup,
   toolStatus = null, planProposal = null, onConfirmAction, onCancelAction, actionPending = false,
+  onUndoAction, undoPending = false,
 }: PhoneViewProps) {
   const { t } = useTranslation('ai');
   const [showHistory, setShowHistory] = useState(false);
@@ -118,6 +121,8 @@ export default function PhoneView({
             onConfirmAction={onConfirmAction}
             onCancelAction={onCancelAction}
             actionPending={actionPending}
+            onUndoAction={onUndoAction}
+            undoPending={undoPending}
           />
         </div>
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, DateTime, Text, ForeignKey, Index, func
+from sqlalchemy import Integer, String, Float, Boolean, DateTime, Text, ForeignKey, Index, JSON, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.crypto import EncryptedStr, SECRET_COLUMN_LEN
@@ -84,8 +84,22 @@ class AIChatMessage(Base):
     # одному, и служебных строк в ленте она не создаёт — проверка порядка ролей
     # ["user","assistant",…] обязана продолжать проходить.
     rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    # Что это действие создало — чтобы кнопка «Вернуть» знала, что сносить:
+    # [{"tool": "create_lesson", "ids": [42, 43]}]. Заполнено — кнопка живая;
+    # откатили — колонка снова NULL, а что именно вернулось, дописано в text.
+    # Отдельной колонки undone_at нет намеренно: «откатили» человек читает в
+    # тексте карточки, а два источника правды об одном событии разъезжаются.
+    # Пишется только по тем инструментам, у которых есть обратный ход (UNDO в
+    # ai_tools): у остальных кнопки нет вовсе — «Вернуть», которое молча ничего
+    # не вернуло, хуже, чем его отсутствие.
+    undo: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
 
     session: Mapped["AIChatSession"] = relationship(back_populates="messages")
+
+    @property
+    def can_undo(self) -> bool:
+        """Читает ChatMessageRead: фронту нужен факт кнопки, а не список id."""
+        return bool(self.undo)
 
 
 class AIStudioFact(Base):

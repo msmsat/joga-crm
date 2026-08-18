@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import './Booking.css'
@@ -23,9 +23,10 @@ export default function Booking() {
   const { t } = useTranslation('booking')
   const settings = useBookingSettings()
 
-  // Приём оплат — общий шлюз всех каналов. Статус живой, со стороны Stripe:
-  // charges_enabled может выключиться сам (истёк документ, не пройдена проверка).
-  // is_active — тумблер владельца на странице Финансов, Stripe о нём не знает.
+  // Приём оплат — отдельный канал, а не условие остальных. Статус живой, со
+  // стороны Stripe: charges_enabled может выключиться сам (истёк документ, не
+  // пройдена проверка). is_active — тумблер владельца на странице Финансов,
+  // Stripe о нём не знает.
   const { gateways, isLoading: gatewaysLoading, connectStripe, isConnecting } = useGateways()
   const stripe = gateways.find(g => g.gateway_type === 'stripe')
   const stripeReady = gatewaysLoading ? undefined : !!(stripe?.charges_enabled && stripe?.is_active)
@@ -48,17 +49,25 @@ export default function Booking() {
     })
   })
 
-  const modals = useBookingModals(stripeReady)
+  const modals = useBookingModals()
   const tgBot  = useChannels()
+  const [gateOpen, setGateOpen] = useState(false)
+
+  // Клик по карточке приёма оплат объясняет состояние окном, а не молча уводит
+  // на сайт Stripe: владелец нажимает «Приём оплат», чтобы узнать, что с ним не
+  // так. Подключено — объяснять нечего, ведём управлять в Финансы.
+  const openStripe = () => {
+    if (stripeReady) navigate(FINANCES_PATH)
+    else setGateOpen(true)
+  }
 
   // Анкета Stripe открывается на месте и возвращает СЮДА (return_path), а не в
   // Финансы: владелец начал настройку на этой странице. Дозаполнить анкету —
   // тоже сюда; включить обратно выключенный приём можно только тумблером в
   // Финансах, поэтому там уводим.
-  const openStripe = () => {
-    if (gateState === 'loading') return
-    if (gateState === 'none' || gateState === 'incomplete') connectStripe(BOOKING_PATH)
-    else navigate(FINANCES_PATH)
+  const gateAction = () => {
+    if (gateState === 'disabled') navigate(FINANCES_PATH)
+    else connectStripe(BOOKING_PATH)
   }
 
   // Возврат с формы Stripe (?stripe=return|refresh): статус уже перезапрошен
@@ -96,12 +105,12 @@ export default function Booking() {
         </div>
       )}
 
-      {modals.gated && (
+      {gateOpen && (
         <StripeGateModal
           state={gateState}
           isConnecting={isConnecting}
-          onConnect={gateState === 'disabled' ? () => navigate(FINANCES_PATH) : () => connectStripe(BOOKING_PATH)}
-          onClose={modals.close}
+          onConnect={gateAction}
+          onClose={() => setGateOpen(false)}
         />
       )}
 

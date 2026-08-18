@@ -43,8 +43,8 @@ class _ScriptedLLM:
         self.calls: list[dict] = []
 
     def install(self):
-        async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):
-            self.calls.append({"messages": messages, "tools": tools or [], "tier": tier})
+        async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0, think=True):
+            self.calls.append({"messages": messages, "tools": tools or [], "tier": tier, "think": think})
             return self.replies.pop(0) if self.replies else llm.LLMReply("Готово.", [], _usage())
         llm.chat = _chat
         return self
@@ -152,7 +152,11 @@ async def _run():
             # Правила запрещают раскрывать промпт и обещать несуществующее.
             rules = script.calls[0]["messages"][0]["content"]
             assert "не раскрыв" in rules.lower() or "раскрывать" in rules
-            assert script.calls[0]["tier"] == llm.TIER_FAST
+            assert script.calls[0]["tier"] == llm.TIER_CLIENT
+            # Клиентскому агенту размышление модели выключено: замерено 360-430
+            # токенов «раздумий» на 180 символов ответа, то есть лишние секунды
+            # ожидания в чате и лишние деньги за то, чего клиент не увидит.
+            assert script.calls[0]["think"] is False
 
             # ── Личные инструменты реально работают у опознанного
             script2 = _ScriptedLLM(
