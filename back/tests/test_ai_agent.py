@@ -286,6 +286,30 @@ async def _run():
         tiers = [c["tier"] for c in script4.calls]
         assert tiers == [llm.TIER_FAST, llm.TIER_MAIN, llm.TIER_MAIN], tiers
 
+        # ── Отписка ПЕРВЫМ ходом без единого вопросительного знака — тоже отказ
+        # работать. Ровно этот текст (428 знаков, ни одного «?») уехал человеку
+        # на прод вместо окна подтверждения: примета «есть вопрос» его не ловила,
+        # эскалация не срабатывала, и он читал допрос про пароли и id услуги,
+        # которые собирает форма.
+        refusal = (
+            "Я могу добавить сотрудников, но мне нужен пароль для каждого нового "
+            "сотрудника, а также их email и роль. Пароль вы придумываете сами, а я его "
+            "передам сотрудникам. Без этих данных создать сотрудников я не смогу. "
+            "Также мне понадобится id услуги «стерлинг», чтобы добавить её в расписание."
+        )
+        assert "?" not in refusal, "проверка потеряла смысл: в тексте появился вопрос"
+        script_giveup = _ScriptedLLM(
+            _text(refusal),
+            _calls(("get_schedule", window)),
+            _text("Поставил."),
+        ).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            answered = await run_agent(
+                ctx, db, await _settings(db, sid), [], session_id=ids["session_id"])
+        assert [c["tier"] for c in script_giveup.calls][:2] == [llm.TIER_FAST, llm.TIER_MAIN],             [c["tier"] for c in script_giveup.calls]
+        assert answered.text != refusal, "отписка дешёвой модели уехала человеку"
+
         # ── Лимит итераций: ответ непустой, а не разрыв диалога.
         script5 = _ScriptedLLM(*[_calls(("get_schedule", window)) for _ in range(8)]).install()
         async with async_session_maker() as db:
@@ -563,3 +587,16 @@ def test_ai_provider_down():
 
 def test_ai_create_client_respects_plan_limit():
     asyncio.run(_run_create_client_respects_plan_limit())
+
+
+def test_gave_up_reads_a_refusal_without_a_question_mark():
+    """Примета «модель сдалась» — длина и вопрос, а не список слов."""
+    assert assistant._gave_up("Мне нужен их email и пароль. " * 6)      # длинная отписка
+    assert assistant._gave_up("Какой у него id?")                       # короткая, но вопрос
+    assert assistant._gave_up("I'll need their emails, a password and the access role "
+                              "for each of them before I can create anything at all here.")
+    # Любезность дорогую голову не будит: за это платит студия на каждом «спасибо».
+    assert not assistant._gave_up("Пожалуйста! Обращайтесь, если что-то ещё понадобится.")
+    assert not assistant._gave_up("Готово.")
+    assert not assistant._gave_up("")
+    assert not assistant._gave_up(None)

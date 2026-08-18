@@ -18,6 +18,7 @@
 import json
 import logging
 import os
+import time
 from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
@@ -48,7 +49,11 @@ _RULES = """Ты — ассистент студии, отвечаешь ЕЁ К
 Что можно:
 - расписание занятий, свободные места, услуги и цены — через инструменты;
 - если клиент опознан, его собственные записи и абонемент — через инструменты;
-- как записаться: дай ссылку на приложение студии (инструмент miniapp_link).
+- адрес, телефон, сайт и ссылку на приложение — они уже даны ниже в контексте.
+
+Про цены и расписание не отвечай по памяти: их знает только инструмент
+(get_services, get_schedule). Вызови его и назови то, что он вернул.
+Ссылку на приложение бери из контекста дословно — другого адреса у студии нет.
 
 Чего нельзя никогда:
 - называть данные других клиентов, выручку, статистику и внутренние дела студии;
@@ -88,7 +93,6 @@ _TOOL_SCHEMAS = [
         {"on_date": {"type": "string", "description": "Дата в формате YYYY-MM-DD"}}, ["on_date"],
     ),
     _schema("get_services", "Услуги студии: название, длительность, цена.", {}),
-    _schema("miniapp_link", "Ссылка на приложение студии — записаться, посмотреть абонемент.", {}),
     _schema("get_my_bookings", "Записи ЭТОГО клиента: ближайшие и прошедшие.", {}),
     _schema("get_my_subscription", "Абонемент ЭТОГО клиента: остаток занятий и срок.", {}),
 ]
@@ -120,8 +124,6 @@ async def _call(name: str, args: dict, db: AsyncSession, studio_id: int, client:
             # есть в проекте — tests/test_consent.py:77).
             rows = await public_services.__wrapped__(request=None, studio_id=studio_id, db=db)
             return {"items": [r.model_dump(mode="json") if hasattr(r, "model_dump") else _row(r) for r in rows][:50]}
-        if name == "miniapp_link":
-            return {"url": f"{MINIAPP_URL}/s/{studio_id}"}
         if name == "get_schedule":
             try:
                 on_date = date.fromisoformat(str(args.get("on_date") or ""))
@@ -193,12 +195,31 @@ async def identify(db: AsyncSession, studio_id: int, channel: str, sender: str) 
 
 # ─── Ответ ───────────────────────────────────────────────────────────────────
 
-def _context_prompt(studio: Studio | None, client: Client | None, today: date) -> str:
+def _context_prompt(studio: Studio | None, client: Client | None, today: date, studio_id: int) -> str:
+    """Всё, что известно без единого запроса к модели, — сразу в контекст.
+
+    Адрес и телефон инструментом не отдаются намеренно: это три поля уже
+    загруженной студии, а инструмент за ними стоил бы лишний круг к модели —
+    те самые секунды ожидания в мессенджере. Ссылка на приложение здесь по той
+    же причине: она не данные, а константа MINIAPP_URL + /s/{studio_id}, и
+    когда её приходилось спрашивать инструментом, модель на дешёвом уровне
+    вместо вызова просто выдумывала адрес вида «velora.test».
+    """
     lines = [
         f"Студия: {studio.name if studio else ''}",
         f"Сегодня: {today.isoformat()}",
         f"Валюта: {(studio.currency if studio else None) or 'EUR'}",
+        f"Ссылка на приложение студии (записаться, абонемент): {MINIAPP_URL}/s/{studio_id}",
     ]
+    # Пустые поля не печатаем вовсе: строка «Адрес: None» — приглашение
+    # ответить клиенту «None».
+    for label, value in (
+        ("Адрес", getattr(studio, "address", None)),
+        ("Телефон", getattr(studio, "phone", None)),
+        ("Сайт", getattr(studio, "website", None)),
+    ):
+        if value:
+            lines.append(f"{label} студии: {value}")
     lines.append(
         f"Клиент опознан: {client.name}. Можно отвечать про его записи и абонемент."
         if client is not None else
@@ -231,7 +252,7 @@ async def reply(
 
     messages = [
         {"role": "system", "content": _RULES + "\n\n" + channel_style(settings, channel)},
-        {"role": "system", "content": _context_prompt(studio, client, today)},
+        {"role": "system", "content": _context_prompt(studio, client, today, studio_id)},
         # Входящее оборачиваем явным разделителем и экранируем управляющие
         # маркеры: это буквально текст постороннего человека, и «```system:»
         # в нём — попытка притвориться разметкой диалога (задача 15).
@@ -282,6 +303,7 @@ async def _agent_reply_task(studio_id: int, channel: str, sender: str, text: str
     # ponytail: BackgroundTasks вместо очереди — при заметном потоке переносить
     # в воркер, задача не переживает рестарт процесса.
     """
+    started = time.monotonic()
     async with async_session_maker() as db:
         try:
             settings = (await db.execute(
@@ -300,6 +322,12 @@ async def _agent_reply_task(studio_id: int, channel: str, sender: str, text: str
                 logger.info("client agent silent, quota: studio=%s channel=%s %s", studio_id, channel, exc)
                 return
 
+            # Индикатор «печатает…» — только после того, как все гейты пройдены:
+            # у выключенного агента он обещал бы ответ, которого не будет.
+            if channel == CHANNEL_TELEGRAM and token:
+                from routers.booking.telegram_webhook import send_typing
+                await send_typing(token, int(sender))
+
             client = await identify(db, studio_id, channel, sender)
             answer = await reply(db, studio_id, settings, client, text, channel, sender_ref=sender[:64])
             if not answer:
@@ -308,9 +336,12 @@ async def _agent_reply_task(studio_id: int, channel: str, sender: str, text: str
             await _send(channel, db, studio_id, sender, answer, token)
             _bump_handled(settings, channel)
             await db.commit()
+            # Время в лог: «отвечает медленно» иначе неотличимо на глаз от
+            # «провайдер ушёл в запасную модель» и от «сервер в свопе». Меряем
+            # от начала задачи — ровно ту паузу, которую видит клиент в чате.
             logger.info(
-                "client agent replied: studio=%s channel=%s known=%s",
-                studio_id, channel, client is not None,
+                "client agent replied: studio=%s channel=%s known=%s за %.1f c",
+                studio_id, channel, client is not None, time.monotonic() - started,
             )
         except Exception:
             logger.exception("client agent failed: studio=%s channel=%s", studio_id, channel)
@@ -474,6 +505,20 @@ if __name__ == "__main__":
         assert len(cut) <= 60, (len(cut), cut)
         assert cut.endswith("…"), cut
     assert " " not in trim("х" * 300, s, CHANNEL_INSTAGRAM)[:-1]   # нечего резать по слову
+
+    # Контекст: ссылка на приложение есть всегда, а незаполненные поля студии
+    # не печатаются вовсе — строка «Адрес студии: None» вернулась бы клиенту.
+    class _St:
+        name, currency, address, phone, website = "Studio", "EUR", None, None, None
+
+    ctx = _context_prompt(_St(), None, date(2026, 8, 18), 42)
+    assert f"{MINIAPP_URL}/s/42" in ctx
+    assert "None" not in ctx, ctx
+    _St.address, _St.phone = "Testovaci 1, Praha", "+420777000111"
+    ctx = _context_prompt(_St(), None, date(2026, 8, 18), 42)
+    assert "Адрес студии: Testovaci 1, Praha" in ctx
+    assert "Телефон студии: +420777000111" in ctx
+    assert "Сайт студии" not in ctx          # сайта нет — строки нет
 
     class _H:
         def __init__(self, day, is_open=True, o="09:00", c="18:00"):

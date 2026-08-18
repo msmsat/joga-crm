@@ -90,6 +90,25 @@ async def _send_message(token: str, payload: dict) -> None:
                 raise RuntimeError(f"Telegram {resp.status}: {(await resp.text())[:400]}")
 
 
+async def send_typing(token: str, chat_id: int) -> None:
+    """«печатает…» на время, пока агент думает.
+
+    Ответ агента занимает несколько секунд (два круга к модели, когда нужен
+    инструмент), и всё это время чат выглядит так, будто сообщение не дошло.
+    Telegram гасит индикатор сам через 5 секунд, продлевать не нужно. Ошибку
+    глотаем: индикатор — не ответ, ронять из-за него генерацию не за что.
+    """
+    timeout = aiohttp.ClientTimeout(total=_TIMEOUT_SECONDS)
+    try:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            await session.post(
+                f"https://api.telegram.org/bot{token}/sendChatAction",
+                json={"chat_id": chat_id, "action": "typing"},
+            )
+    except (aiohttp.ClientError, TimeoutError):
+        logger.debug("telegram sendChatAction не прошёл — ответ это не отменяет")
+
+
 async def _studio_by_token(db: AsyncSession, token: str) -> int | None:
     """studio_id подключённого telegram-канала с этим токеном.
 

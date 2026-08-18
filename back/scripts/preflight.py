@@ -140,6 +140,75 @@ def check_ai() -> None:
         _err("services/ai_uimap.md пуст или потерян — ассистент начнёт выдумывать кнопки")
 
 
+def _live_rates(model: dict) -> tuple[int, int, int, int] | None:
+    """Цены каталога -> микро-$ за 1M токенов, как в _PRICES. None — не разобрали."""
+    pricing = model.get("pricing") or {}
+    out = []
+    for key in ("prompt", "input_cache_read", "input_cache_write", "completion"):
+        value = pricing.get(key)
+        if value in (None, ""):
+            return None             # провайдер не объявил графу — сверять нечего
+        try:
+            out.append(round(float(value) * 1e12))
+        except (TypeError, ValueError):
+            return None
+    return tuple(out)
+
+
+async def check_ai_models() -> None:
+    """Слаги моделей по ЖИВОМУ каталогу: есть ли такая, умеет ли инструменты, та ли цена.
+
+    Блокер здесь один и он выстраданный: модель без tool calling отвечает прозой
+    на каждый вопрос — окно подтверждения не появляется ни разу, и снаружи это
+    выглядит как «ассистент отказывается работать», а не как опечатка в env.
+    Слаги вроде google/gemini-3.7-flash-image проходят и проверку вендора, и
+    проверку цен, и ломают ровно это.
+
+    Цены — предупреждением: модель ответит, но расход в ai_usage посчитается
+    мимо. Правило «сверять запросом, а не по памяти» написано в services/llm.py
+    давно; здесь оно наконец проверяется, а не только обещается.
+    """
+    from services.llm import _ENV_BY_TIER, _PRICES
+
+    key, base = os.getenv("LLM_API_KEY"), os.getenv("LLM_BASE_URL")
+    if not key or not base:
+        return                      # отсутствие ключа — уже блокер в check_ai
+    try:
+        import aiohttp
+        timeout = aiohttp.ClientTimeout(total=15)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(
+                f"{base.rstrip('/')}/v1/models",
+                headers={"Authorization": f"Bearer {key}"},
+            ) as resp:
+                if resp.status >= 400:
+                    _warn(f"каталог моделей провайдера не проверить (HTTP {resp.status})")
+                    return
+                catalog = {m["id"]: m for m in (await resp.json()).get("data") or []}
+    except Exception as exc:  # noqa: BLE001 — мягкая проверка, падать из-за неё нельзя
+        _warn(f"каталог моделей провайдера не проверить: {type(exc).__name__}")
+        return
+
+    for env_name in _ENV_BY_TIER.values():
+        slug = os.getenv(env_name, "")
+        if not slug:
+            continue                # пустой слаг — уже блокер в check_ai
+        model = catalog.get(slug)
+        if model is None:
+            _err(f"{env_name}={slug}: такого слага в каталоге провайдера нет — "
+                 f"сверьте на openrouter.ai/models побайтово")
+            continue
+        if "tools" not in (model.get("supported_parameters") or []):
+            _err(f"{env_name}={slug}: модель не умеет вызывать инструменты — ассистент "
+                 f"будет отвечать прозой на каждый вопрос, окно подтверждения не появится ни разу")
+        live, table = _live_rates(model), _PRICES.get(slug)
+        if live and table and any(
+            abs(a - b) > max(2, b * 0.02) for a, b in zip(live, table)
+        ):
+            _warn(f"{env_name}={slug}: цены разошлись с _PRICES в services/llm.py "
+                  f"(в каталоге {live}, в таблице {table}) — расход в ai_usage считается мимо")
+
+
 async def check_ai_credits() -> None:
     """Остаток кредитов у провайдера. Пустой счёт выключает ИИ у всех студий
     разом, и узнать об этом лучше здесь, чем из тикета."""
@@ -655,6 +724,7 @@ async def main(sync: bool) -> int:
     check_platform_email()
     check_legal_docs()
     check_ai()
+    await check_ai_models()
     await check_ai_credits()
     await check_stripe_account()
     await check_stripe_payment_methods()

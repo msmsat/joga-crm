@@ -56,7 +56,10 @@ class _ScriptedLLM:
 
 async def _seed() -> dict:
     async with async_session_maker() as db:
-        a = Studio(name="TEST-CLIENT-AGENT-A", timezone="UTC+0", currency="EUR")
+        # Адрес и телефон только у A: у B они пустые — контекст не должен
+        # печатать «Адрес студии: None», иначе агент так и ответит клиенту.
+        a = Studio(name="TEST-CLIENT-AGENT-A", timezone="UTC+0", currency="EUR",
+                   address="Testovaci 1, Praha", phone="+420777000111")
         b = Studio(name="TEST-CLIENT-AGENT-B", timezone="UTC+0", currency="EUR")
         db.add_all([a, b])
         await db.flush()
@@ -122,7 +125,10 @@ async def _run():
             }
             stranger_tools = {s["function"]["name"] for s in tools_for_client(None)}
             assert not (stranger_tools & {"get_my_bookings", "get_my_subscription"})
-            assert "get_schedule" in stranger_tools and "miniapp_link" in stranger_tools
+            assert "get_schedule" in stranger_tools
+            # Ссылки на приложение среди инструментов больше нет: она константа
+            # и приезжает контекстом, а не отдельным кругом к модели.
+            assert "miniapp_link" not in stranger_tools
 
             # ── Ни одного CRM-инструмента ни в каком режиме
             crm_only = {"get_finance_summary", "get_stats", "get_staff", "get_rooms",
@@ -163,7 +169,12 @@ async def _run():
             # ── Изменяющих инструментов у клиентского агента нет вовсе:
             # просьба записаться уводится в мини-приложение.
             assert "book_me" not in {s["function"]["name"] for s in tools_for_client(known)}
-            assert "miniapp_link" in {s["function"]["name"] for s in tools_for_client(known)}
+            # Уводить есть куда: точная ссылка на приложение лежит в контексте
+            # каждого запроса — модели не приходится ни спрашивать её
+            # инструментом, ни выдумывать адрес.
+            context = script2.calls[0]["messages"][1]["content"]
+            assert f"/s/{ids['a']}" in context
+            assert "Адрес студии" in context and "Телефон студии" in context
     finally:
         llm.chat = real_chat
         await _cleanup(ids)
