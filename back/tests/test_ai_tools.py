@@ -55,6 +55,7 @@ _PROXIES = {
     "get_today_agenda": ai_tools._r_list_lessons,
     "create_lesson": ai_tools._r_create_lesson,
     "fill_schedule": ai_tools._r_create_lesson,   # тот же роутер, N раз подряд
+    "update_lesson": ai_tools._r_update_lesson,
     "book_client": ai_tools._r_create_reservation,
     "cancel_booking": ai_tools._r_cancel_reservation,
     "pay_booking": ai_tools._r_pay_reservation,

@@ -46,7 +46,6 @@ class BookingSettingsRead(BaseSchema):
     booking_active: bool
     prefill_on_booking: bool
     trainer_confirmation_required: bool
-    client_reminder_enabled: bool
     repeat_booking_allowed: bool
     min_booking_advance_min: int
     booking_window_days: int
@@ -86,7 +85,6 @@ class BookingSettingsUpdate(BaseSchema):
     booking_active: Optional[bool] = None
     prefill_on_booking: Optional[bool] = None
     trainer_confirmation_required: Optional[bool] = None
-    client_reminder_enabled: Optional[bool] = None
     repeat_booking_allowed: Optional[bool] = None
     min_booking_advance_min: Optional[int] = None
     booking_window_days: Optional[int] = None

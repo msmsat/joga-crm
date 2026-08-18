@@ -169,10 +169,15 @@ def test_percent_studio_is_not_blocked_when_adding_staff_either():
     assert _run_limit(_Plan("percent", expires_at=_LONG_AGO), entity="staff") is None
 
 
-def test_percent_studio_still_obeys_the_tier_ceiling():
-    """Освобождение касается ТОЛЬКО даты. Потолок тарифа продолжает действовать,
-    иначе «процент» стал бы способом снять лимиты бесплатно."""
-    assert _run_limit(_Plan("percent", plan_name="start", expires_at=_LONG_AGO), count=100) == "limit_exceeded"
+def test_percent_studio_has_no_tier_ceiling():
+    """Ступени у percent-студии нет: шапка биллинга печатает модель вместо тарифа,
+    карточки Старт/Pro/Business на этой модели не рендерятся, апгрейда у неё нет.
+    `plan_name` при этом остаётся от триала или прошлой подписки — и потолок по нему
+    запирал студию на НЕВИДИМОЙ ступени сообщением «улучшите тариф» (жалоба
+    18.08.2026: три сотрудника на `start`). Бесплатным безлимит не становится:
+    процент платится с оборота, не меньше MIN_MONTHLY_FEE в месяц."""
+    assert _run_limit(_Plan("percent", plan_name="start", expires_at=_LONG_AGO), count=100) is None
+    assert _run_limit(_Plan("percent", plan_name="start"), count=999, entity="staff") is None
 
 
 def test_expired_subscription_is_still_blocked():
@@ -187,7 +192,7 @@ def test_limits_and_gate_agree_on_percent():
     import dependencies as D
 
     assert 'billing_mode == "percent"' in inspect.getsource(D.require_active_subscription)
-    assert 'billing_mode != "percent"' in inspect.getsource(PL.check_plan_limit)
+    assert 'billing_mode == "percent"' in inspect.getsource(PL.check_plan_limit)
 
 
 # ------------------------------------- 3. реконсиляция подписки при смене режима

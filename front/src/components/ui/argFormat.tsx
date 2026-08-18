@@ -1,6 +1,7 @@
 import type { TFunction } from 'i18next';
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+const ENUM_KEYS = new Set(['rate_type', 'access_role', 'role', 'service_type', 'level']);
 
 /** Значение аргумента действия человеческой строкой.
  *
@@ -14,6 +15,11 @@ export function formatArg(key: string, value: unknown, t: TFunction): string {
       .map((day) => t(`common:days.short.${DAY_KEYS[Number(day)] ?? ''}`, { defaultValue: String(day) }))
       .join(', ');
   }
+  // Значения-перечисления показываем словами: «Доступ: trainer» и «Тип оплаты:
+  // hourly» — это внутренние коды, а не то, чем человек называет свою студию.
+  // Список полей закрытый: переводить подряд любое строковое значение нельзя —
+  // однажды под ключ попадёт имя клиента.
+  if (ENUM_KEYS.has(key)) return t(`ai:plan.values.${value}`, { defaultValue: String(value) });
   if (typeof value === 'boolean') return t(`ai:actions.bool.${value ? 'yes' : 'no'}`);
   if (Array.isArray(value)) return value.join(', ');
   return String(value);

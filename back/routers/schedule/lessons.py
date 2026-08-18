@@ -101,12 +101,17 @@ async def list_lessons(
 @router.get("/lessons/days", response_model=LessonDaysResponse)
 async def list_lesson_days(
     month: str = Query(..., pattern=r"^\d{4}-\d{2}$"),
+    exclude_teacher_id: Optional[List[int]] = Query(default=None),
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ):
     """Даты месяца, в которых есть неотменённые занятия — точки мини-календаря
     Журнала (задача 5 V4-5). Гонять полный список занятий месяца ради точек
     расточительно, поэтому отдельный лёгкий эндпоинт с DISTINCT по дате.
+
+    exclude_teacher_id — тренеры, скрытые фильтром журнала: точка обязана
+    гаснуть ровно тогда, когда сетка этого дня окажется пустой, иначе точки
+    обещают занятия, которых пользователь при своём фильтре не увидит.
 
     Тренер видит точки только своих занятий — тот же скоуп, что list_lessons.
     """
@@ -125,6 +130,13 @@ async def list_lesson_days(
     )
     if ctx.role == "trainer":
         stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
+    # Занятие без тренера сетка показывает при любом фильтре — NOT IN отбросил
+    # бы его вместе с NULL, поэтому явное OR.
+    if exclude_teacher_id:
+        stmt = stmt.where(or_(
+            Lesson.teacher_id.is_(None),
+            Lesson.teacher_id.notin_(exclude_teacher_id),
+        ))
 
     rows = (await db.execute(stmt)).scalars().all()
     days = sorted({d.isoformat() if hasattr(d, "isoformat") else str(d) for d in rows})

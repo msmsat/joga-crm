@@ -38,8 +38,13 @@ export function ServiceSection() {
   // null → нет модалки; { service: null } → создание; { service } → редактирование
   const [serviceModal, setServiceModal] = useState<{ service: Service | null } | null>(null);
 
+  // Группы — по фактическим категориям услуг; SERVICE_CATEGORIES задаёт только
+  // порядок. Раньше список строился ПО списку категорий, и услуга с чужой или
+  // пустой категорией не попадала в левую панель вовсе — при этом справа
+  // открывалась именно она (activeService падает на services[0] без фильтра).
   const groups = useMemo(() => {
-    return SERVICE_CATEGORIES
+    const cats = [...new Set([...SERVICE_CATEGORIES, ...services.map(s => s.category)])];
+    return cats
       .filter(cat => services.some(s => s.category === cat))
       .map(cat => ({ label: cat, items: services.filter(s => s.category === cat) }));
   }, [services]);

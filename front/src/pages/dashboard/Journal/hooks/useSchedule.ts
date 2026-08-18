@@ -9,7 +9,7 @@ import type { Booking, Hall } from '../types';
 
 // Стабильные «пусто»: `const { data: x = [] }` создаёт НОВЫЙ массив на каждый
 // рендер, пока запрос в пути. Такая ссылка течёт в мемо/эффекты потребителей
-// (сидирование фильтров в Journal) и зацикливает их до «Too many re-renders»
+// (мемо колонок здесь, эффект префетча ниже) и зацикливает их до «Too many re-renders»
 // ровно на время первой загрузки. Один общий литерал — ссылка не меняется.
 const EMPTY_STAFF: StaffListItem[] = [];
 const EMPTY_HALLS: Hall[] = [];
@@ -162,11 +162,16 @@ export function useSchedule(
 // без загрузки полного списка занятий месяца. staleTime подлиннее — точки не
 // обязаны быть секунда-в-секунду свежими, invalidate от мутаций (задача 5)
 // покрывает создание/отмену занятия немедленно.
-export function useJournalDays(calYear: number, calMonth: number) {
+//
+// hiddenTeacherIds — скрытые фильтром тренеры: точка стоит только там, где при
+// текущем фильтре в сетке действительно что-то будет. Порядок кликов не должен
+// плодить ключи кэша, поэтому список сортируем.
+export function useJournalDays(calYear: number, calMonth: number, hiddenTeacherIds: number[] = []) {
   const month = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
+  const exclude = [...hiddenTeacherIds].sort((a, b) => a - b);
   const { data } = useQuery({
-    queryKey: queryKeys.journalDays(month),
-    queryFn: () => scheduleApi.getLessonDays(month).then(res => res.days),
+    queryKey: queryKeys.journalDays(month, exclude.join(',')),
+    queryFn: () => scheduleApi.getLessonDays(month, exclude).then(res => res.days),
     staleTime: 5 * 60_000,
     placeholderData: keepPreviousData,
   });

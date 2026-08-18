@@ -32,12 +32,8 @@
     "en": "Back"
   },
   "ai:plan.confirm": {
-    "ru": "Создать",
-    "en": "Create"
-  },
-  "ai:plan.confirmDanger": {
-    "ru": "Подтвердить",
-    "en": "Confirm"
+    "ru": "Утверждаю",
+    "en": "Approve"
   },
   "ai:plan.next": {
     "ru": "Далее",

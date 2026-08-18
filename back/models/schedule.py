@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, func
+from sqlalchemy import Integer, String, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, Index, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -60,7 +60,17 @@ class Reservation(Base):
     __tablename__ = "reservations"
     # pending — «Подтверждение тренером» в правилах записи: место уже держится,
     # решение студии ещё нет (routers/booking/miniapp_lessons.create_reservation).
-    __table_args__ = (CheckConstraint("status IN ('active', 'pending', 'cancelled', 'attended')", name="check_reservation_status"),)
+    __table_args__ = (
+        CheckConstraint("status IN ('active', 'pending', 'cancelled', 'attended')", name="check_reservation_status"),
+        # Один коврик — один человек. Частичный: отменённые брони копятся на том
+        # же месте, и без условия вторая запись на освободившийся коврик была бы
+        # невозможна. Проверка «место свободно» в роутерах остаётся ради внятной
+        # ошибки, но арбитр — индекс: между SELECT и INSERT влезает второй клиент.
+        Index(
+            "uq_reservation_spot_active", "lesson_id", "spot_number",
+            unique=True, postgresql_where=text("status <> 'cancelled'"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"))

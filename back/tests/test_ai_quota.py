@@ -109,13 +109,18 @@ async def _run_ignores_other_rows():
 
 
 async def _run_percent_plan():
-    """Процентная студия не падает на проверке подписки и живёт по лимитам Старта."""
-    studio_id = await _seed("pro", billing_mode="percent")
+    """Процентная студия не падает на проверке подписки и живёт по ВЕРХНЕЙ ступени.
+
+    Ступени у неё нет вовсе (её не показывает биллинг, апгрейда у модели нет), а
+    платит она долей с оборота — от 39 €/мес и выше Business. Нижняя ступень
+    упирала такую студию в «Улучшите тариф» на 300-м вопросе, при том что улучшать
+    нечего; ровно тот же дефект, что потолок сотрудников по невидимому plan_name."""
+    studio_id = await _seed("start", billing_mode="percent")
     try:
         await _expect_ok(studio_id)
         async with async_session_maker() as db:
             _, limit = await ai_quota_status(db, studio_id)
-        assert limit == 300, limit   # Старт, а не Pro из plan_name
+        assert limit == 5000, limit   # верхняя ступень, а не Старт из plan_name
     finally:
         await _cleanup(studio_id)
 
@@ -163,7 +168,10 @@ def test_ai_quota_plan_states():
 
     assert _limits_for(None)["ai_requests"] == 0
     assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 1500
-    assert _limits_for(_P("percent", "pro"))["ai_requests"] == 300
+    assert _limits_for(_P("percent", "start"))["ai_requests"] == 5000
+    # Потолок себестоимости на проценте остаётся: безлимит расходов платформы не
+    # обещан НИ ОДНОМУ тарифу, а минимальный платёж на проценте — 39 €/мес.
+    assert _limits_for(_P("percent", "start"))["ai_cost_micro"] == 31_000_000
     assert _limits_for(_P("combo", "business"))["ai_requests"] == 5000
     assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300
 

@@ -41,7 +41,8 @@ export const queryKeys = {
   halls: ['halls'] as const,
   journalLessons: (from: string, to: string) => ['journal-lessons', from, to] as const,
   journalLessonsAll: ['journal-lessons'] as const, // префикс: инвалидация всех диапазонов разом
-  journalDays: (month: string) => ['journal-days', month] as const,
+  // excludeTeachers — скрытые фильтром тренеры: у каждого набора фильтров свои точки.
+  journalDays: (month: string, excludeTeachers = '') => ['journal-days', month, excludeTeachers] as const,
   journalDaysAll: ['journal-days'] as const, // префикс: инвалидация всех месяцев разом
   loyaltyConfigs: ['loyalty', 'configs'] as const,
   loyaltyReferralConfig: ['loyalty', 'referral-config'] as const,

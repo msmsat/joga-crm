@@ -11,7 +11,10 @@ function toUiService(s: ServiceRead): Service {
   return {
     id: s.id,
     name: s.name,
-    category: s.category ?? '—',
+    // Категории может не быть (услугу завёл ассистент или импорт) — это
+    // отдельная группа списка, а не прочерк: без неё услуга исчезала из
+    // левой панели Каталога, оставаясь выбранной справа.
+    category: s.category ?? 'other',
     type: s.service_type === 'individual' ? 'individual' : 'group',
     duration_min: s.duration_min,
     price: s.price,

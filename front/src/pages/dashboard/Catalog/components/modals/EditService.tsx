@@ -35,7 +35,11 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
   // Компонент пересоздаётся по key при открытии (см. родителя),
   // поэтому начальные значения из service корректны без useEffect.
   const [name, setName] = useState(service?.name ?? "");
-  const [category, setCategory] = useState(service?.category ?? SERVICE_CATEGORIES[0]);
+  // Категории вне списка (услуга из ассистента/импорта) в селекте нет — иначе
+  // поле открывалось бы пустым и сохранение возвращало ту же чужую категорию.
+  const [category, setCategory] = useState(
+    SERVICE_CATEGORIES.includes(service?.category ?? "") ? service!.category : SERVICE_CATEGORIES[0]
+  );
   const [type, setType] = useState<"group" | "individual">(service?.type ?? "group");
   const [price, setPrice] = useState(service != null ? String(service.price) : "");
   const [duration, setDuration] = useState(service != null ? String(service.duration_min) : "60");

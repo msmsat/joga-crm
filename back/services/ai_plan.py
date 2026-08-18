@@ -36,7 +36,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
 from services.ai_tools import (
-    TOOLS, call_tool, describe_action, resolve_entities,
+    TOOLS, action_title, call_tool, describe_action, resolve_entities,
 )
 
 logger = logging.getLogger(__name__)
@@ -173,6 +173,12 @@ async def make_step(
             pass                    # неполные аргументы — это и есть вопросы формы
         if tool.defaults is not None:
             args = await tool.defaults(args, ctx, db)
+        # Порядок полей — по схеме, а не по тому, как их выложила модель. Иначе
+        # в четырёх одинаковых карточках подряд поля идут в четырёх разных
+        # порядках, и человек перечитывает каждую вместо того, чтобы скользнуть
+        # взглядом.
+        args = {key: args[key] for key in tool.params.model_fields if key in args} | {
+            key: value for key, value in args.items() if key not in tool.params.model_fields}
 
     # Ссылки на ещё не созданные записи разрешать нечем — их имена подставит
     # окно по номеру шага. Настоящие id разрешаем как раньше.
@@ -192,6 +198,35 @@ async def make_step(
     secret = {k: v for k, v in args.items() if any(s in k for s in _SECRET_FIELDS)}
     args = {k: v for k, v in args.items() if k not in secret}
 
+    asked = missing_fields(name, args)
+    # Шаг «дособран» считаем ВМЕСТЕ с секретами: пароль всегда уезжает в secret,
+    # и по одному asked create_staff вечно выглядел бы недоделанным — проверка
+    # не запускалась бы ни разу. Самой проверке секреты при этом не передаём:
+    # ей нужен email, а не пароль.
+    ready = not missing_fields(name, {**args, **secret})
+    # Отказ, который сервер УЖЕ может предсказать чтением базы, — до карточки,
+    # а не после клика. Смысл ровно тот же, что у ветки resolve_entities выше:
+    # текст уходит модели в этом же ходе, и она чинится сама. «Готово: 1 из 4»
+    # с четырьмя причинами, каждую из которых было видно заранее, — это и есть
+    # то, ради чего проверка появилась.
+    #
+    # Не спрашиваем в двух случаях: шаг ещё не дособран (недостающее спросит
+    # форма — проверять полработы бессмысленно) и шаг ссылается на запись,
+    # которую создаст соседний шаг (её в базе пока нет, и любой ответ проверки
+    # был бы про пустоту).
+    if (tool is not None and tool.precheck is not None and ready
+            and not any(_is_placeholder(v) for v in args.values())):
+        try:
+            refusal = await tool.precheck(args, ctx, db)
+        except Exception:
+            # Проверка — страховка, а не закон: уронить из-за неё верный в
+            # остальном план значит поменять «ошибка после клика» на «нет
+            # карточки вовсе». Исполнение всё равно скажет то же самое.
+            logger.exception("precheck failed: tool=%s studio=%s", name, ctx.studio_id)
+            refusal = None
+        if refusal:
+            return {"n": number, "tool": name, "error": refusal}
+
     warnings = []
     if tool is not None and tool.warnings is not None:
         try:
@@ -205,13 +240,16 @@ async def make_step(
     return {
         "n": number,
         "tool": name,
+        # Короткое имя действия: по нему чат сворачивает одинаковые шаги в одну
+        # строку со счётчиком вместо четырёх одинаковых карточек подряд.
+        "title": action_title(name),
         "args": args,
         "entities": entities,
         # поле -> номер шага, который его создаст. Окно рисует «создаётся шагом
         # 1» вместо «-1»: временный номер человек не проверяет — это тот же
         # голый id, от которого весь проект и уходит.
         "refs": refs,
-        "missing": missing_fields(name, args),
+        "missing": asked,
         # Ссылки подставляем в подпись словами: «тренер -1» в окне читается
         # как мусор, а «тренер создаётся шагом 1» — как связь шагов.
         "description": describe_action(name, args, {

@@ -4,7 +4,7 @@ import type { AIChatMessage } from '../types';
 import type { AIPlanProposal } from '../../../../api/ai/ai.types';
 import MessageBubble from './MessageBubble';
 import ThinkingIndicator from './ThinkingIndicator';
-import { AIPlanModal, type PlanAnswers } from '../../../../components/ui/index';
+import { AIPlanCard, type PlanAnswers } from '../../../../components/ui/index';
 import NeuralNetSVG from './animations/NeuralNetSVG';
 import styles from '../AI.module.css';
 
@@ -147,11 +147,11 @@ export default function ChatPanel({
               />
             ))}
             {planProposal && (
-            <AIPlanModal
+            <AIPlanCard
               plan={planProposal}
               loading={actionPending}
               onConfirm={(answers) => onConfirmAction?.(answers)}
-              onClose={() => onCancelAction?.()}
+              onCancel={() => onCancelAction?.()}
             />
           )}
             {isThinking && !streaming && (

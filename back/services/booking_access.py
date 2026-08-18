@@ -8,12 +8,48 @@ profiles.py) должны проверять одно и то же право, �
 from datetime import date
 from typing import Optional
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
 from models import ClientSubscription, Lesson, Reservation, SubscriptionPackage
 from services.booking_rules import BookingRules
+
+
+async def next_free_spot(db: AsyncSession, lesson: Lesson) -> Optional[int]:
+    """Наименьший свободный коврик занятия или None, если мест нет.
+
+    Три точки записи (Журнал, карточка клиента, веб-виджет) номер места не
+    спрашивают и раньше ставили «занято + 1». Это не тот же номер, что
+    «первый свободный»: после отмены середины (заняты 1 и 3, снялся 2) счёт
+    даёт 3 — номер, который УЖЕ занят, и два человека получали один коврик.
+    Гонка двух одновременных записей давала то же самое.
+
+    Мини-приложение сюда не ходит: там коврик выбирает сам клиент.
+    """
+    taken = set((await db.execute(
+        select(Reservation.spot_number).where(
+            Reservation.lesson_id == lesson.id,
+            Reservation.status != "cancelled",
+        )
+    )).scalars().all())
+    return next((n for n in range(1, lesson.total_spots + 1) if n not in taken), None)
+
+
+async def commit_reservation(db: AsyncSession, *, conflict_detail: str) -> None:
+    """Коммит записи с переводом гонки за место в 409.
+
+    Последнее слово о занятости коврика — за уникальным индексом
+    `uq_reservation_spot_active`: проверка «место свободно» и вставка идут
+    разными запросами, и между ними влезает второй клиент. Без этого перевода
+    гонка выглядела бы как 500, а её честный ответ — «место уже заняли».
+    """
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail=conflict_detail)
 
 
 async def find_eligible_subscription(
@@ -76,6 +112,39 @@ async def find_eligible_subscription(
     return None
 
 
+async def coverage_gap(
+    db: AsyncSession, client_id: int, lesson: Lesson
+) -> tuple[str, Optional[date]]:
+    """Почему подходящего абонемента нет: `("none"|"expired"|"mismatch", дата)`.
+
+    Отвечает на «а что не так?» после того, как find_eligible_subscription вернул
+    None. Причина одна на все поверхности, слова — разные: администратору в
+    Журнале и клиенту в мини-приложении нужны разные формулировки, но не разные
+    правила. Разъехавшись, они дают то, ради чего это и написано: клиент с
+    непросроченным абонементом в руках читал «оформите абонемент».
+
+    Для "expired" вторым значением — самый поздний срок сгорания: именно эту дату
+    человек сверяет с датой занятия.
+    """
+    rows = (await db.execute(
+        select(ClientSubscription.expires_at, ClientSubscription.status).where(
+            ClientSubscription.client_id == client_id,
+            ClientSubscription.status.in_(("active", "pending")),
+            ClientSubscription.is_frozen == False,
+            ClientSubscription.used_classes < ClientSubscription.total_classes,
+        )
+    )).all()
+    if not rows:
+        return "none", None
+    # Все абонементы с остатком сгорают раньше занятия → дело в сроке, а не в
+    # типе: иначе клиент получал бы «не подходит для этого занятия» и искал
+    # причину в услуге.
+    lesson_date = lesson.start_time.date()
+    if all(status == "active" and expires_at < lesson_date for expires_at, status in rows):
+        return "expired", max(expires_at for expires_at, _ in rows)
+    return "mismatch", None
+
+
 async def assert_can_book(
     db: AsyncSession, client_id: int, lesson: Lesson
 ) -> ClientSubscription:
@@ -88,24 +157,13 @@ async def assert_can_book(
     if sub is not None:
         return sub
 
-    rows = (await db.execute(
-        select(ClientSubscription.expires_at, ClientSubscription.status).where(
-            ClientSubscription.client_id == client_id,
-            ClientSubscription.status.in_(("active", "pending")),
-            ClientSubscription.is_frozen == False,
-            ClientSubscription.used_classes < ClientSubscription.total_classes,
+    reason, expires_at = await coverage_gap(db, client_id, lesson)
+    if reason == "expired":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Абонемент клиента истекает {expires_at:%d.%m.%Y} — раньше даты занятия",
         )
-    )).all()
-    if rows:
-        # Все абонементы с остатком сгорают раньше занятия → дело в сроке, а не в
-        # типе: иначе клиент получал бы «не подходит для этого занятия» и искал
-        # причину в услуге.
-        lesson_date = lesson.start_time.date()
-        if all(status == "active" and expires_at < lesson_date for expires_at, status in rows):
-            raise HTTPException(
-                status_code=400,
-                detail="Абонемент клиента истекает раньше даты занятия",
-            )
+    if reason == "mismatch":
         raise HTTPException(
             status_code=400,
             detail="Абонемент клиента не подходит для этого занятия",

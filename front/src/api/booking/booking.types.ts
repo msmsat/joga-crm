@@ -11,7 +11,6 @@ export interface BookingSettings {
   booking_active: boolean
   prefill_on_booking: boolean
   trainer_confirmation_required: boolean
-  client_reminder_enabled: boolean
   repeat_booking_allowed: boolean
   min_booking_advance_min: number
   booking_window_days: number

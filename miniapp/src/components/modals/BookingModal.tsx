@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import { useTelegram } from '../../hooks/useTelegram';
 import { layoutRows } from '../../lib/hall';
+import { bookingState } from '../../lib/booking';
 import type { LessonResponse } from '../../api/lessons';
 
 interface BookingModalProps {
@@ -40,15 +41,11 @@ export default function BookingModal({
   const total = lesson?.total_spots || 0;
   const taken = lesson?.taken_spots?.length || 0;
   const left = total - taken;
-  const isBooked = Boolean(lesson?.is_booked_by_user);
-  // Занятие видно в расписании, но правила студии его для онлайн-записи
-  // закрыли (часы работы виджета, окно записи, минимум времени до начала или
-  // выключенная онлайн-запись). Своя бронь при этом остаётся отменяемой.
-  const isClosed = lesson !== null && !lesson.bookable && !isBooked;
-  // Второй коврик на том же занятии: студия разрешила повторную запись и само
-  // занятие ещё открыто. Свой занятый коврик в сетке всё равно погашен —
-  // taken_spots приходит со всеми бронями, включая собственную.
-  const canBookMore = isBooked && allowRepeat && Boolean(lesson?.bookable);
+  // Что предлагает лист (отмена / запись / второй коврик / закрыто) решает
+  // bookingState — там же это и проверяется без DOM (lib/booking.check.ts).
+  // Свой занятый коврик в сетке всё равно погашен: taken_spots приходит со
+  // всеми бронями, включая собственную.
+  const { isBooked, isClosed, canBookMore, showGrid } = bookingState(lesson, allowRepeat);
 
   const facts = [
     {
@@ -195,9 +192,9 @@ export default function BookingModal({
         </div>
       )}
 
-      {isBooked && !canBookMore ? null : isClosed ? (
-        // Сетку ковриков не показываем вовсе: выбирать место, которое всё равно
-        // не забронировать, — это кнопка «оплатить», ведущая в отказ.
+      {/* Сетку ковриков не показываем вовсе: выбирать место, которое всё равно
+          не забронировать, — это кнопка, ведущая в отказ. */}
+      {isClosed && (
         <div className="mt-5 rounded-[18px] bg-background px-4 py-3.5">
           <div className="text-[13px] font-extrabold tracking-[-0.015em] text-foreground">
             {t('bookingModal.not_bookable')}
@@ -206,7 +203,9 @@ export default function BookingModal({
             {t('bookingModal.not_bookable_hint')}
           </div>
         </div>
-      ) : (
+      )}
+
+      {showGrid && (
         <div className="mt-4">
           <div className="text-[9.5px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
             {t('bookingModal.choose_spot')}

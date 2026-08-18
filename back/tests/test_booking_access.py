@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 
 from fastapi import HTTPException
 
-from services.booking_access import assert_can_book
+from services.booking_access import assert_can_book, coverage_gap
 
 
 class _Lesson:
@@ -142,6 +142,26 @@ def test_expires_before_lesson_400():
         assert "истекает" in e.detail
 
 
+# ─── Причина отказа: сгоревший срок отличим от «не тот тип» (для мини-приложения) ──
+def test_coverage_gap_reasons():
+    lesson = _Lesson(service_id=1, in_days=9)  # занятие 25-го
+    short = _Sub(id=1, expires_in=4)           # до 20-го
+    long_ = _Sub(id=2, expires_in=6)           # до 22-го, тоже раньше занятия
+
+    db = _DB([[(short.expires_at, "active"), (long_.expires_at, "active")]])
+    reason, expires_at = asyncio.run(coverage_gap(db, client_id=1, lesson=lesson))
+    # Дата — самая поздняя из сгоревших: её человек и сверяет с датой занятия.
+    assert (reason, expires_at) == ("expired", long_.expires_at)
+
+    # Срок в порядке, значит причина в типе занятия.
+    ok = _Sub(id=3, expires_in=30)
+    db = _DB([[(ok.expires_at, "active")]])
+    assert asyncio.run(coverage_gap(db, client_id=1, lesson=lesson))[0] == "mismatch"
+
+    # Абонементов с остатком нет вовсе.
+    assert asyncio.run(coverage_gap(_DB([[]]), client_id=1, lesson=lesson)) == ("none", None)
+
+
 # ─── В день истечения записать ещё можно (срок включительно) ────────────────
 def test_expires_on_lesson_day_passes():
     sub = _Sub(id=1, expires_in=4)
@@ -183,6 +203,7 @@ if __name__ == "__main__":
     test_legacy_no_package_id_passes()
     test_frozen_or_exhausted_excluded_403()
     test_expires_before_lesson_400()
+    test_coverage_gap_reasons()
     test_expires_on_lesson_day_passes()
     test_later_subscription_covers_lesson()
     test_pending_ignores_expiry()

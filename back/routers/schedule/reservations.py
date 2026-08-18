@@ -11,7 +11,9 @@ from models import Client, ClientPayment, Reservation, User
 from routers.checkout.router import perform_pay
 from schemas.checkout import CheckoutPayRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest, ReservationRead
-from services.booking_access import assert_can_book, resolve_coverage
+from services.booking_access import (
+    assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
+)
 from services.booking_rules import load_rules
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
@@ -53,13 +55,8 @@ async def create_reservation(
     if client is None:
         raise HTTPException(status_code=404, detail="Клиент не найден")
 
-    booked = (await db.execute(
-        select(func.count(Reservation.id)).where(
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status != "cancelled",
-        )
-    )).scalar() or 0
-    if booked >= lesson.total_spots:
+    spot = await next_free_spot(db, lesson)
+    if spot is None:
         raise HTTPException(status_code=400, detail="Все места заняты")
 
     duplicate = (await db.execute(
@@ -86,14 +83,14 @@ async def create_reservation(
     reservation = Reservation(
         client_id=body.client_id,
         lesson_id=body.lesson_id,
-        spot_number=booked + 1,
+        spot_number=spot,
         status="active",
         booking_channel="manual",
         is_trial=is_trial,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, ctx.studio_id, reservation, sub)
-    await db.commit()
+    await commit_reservation(db, conflict_detail="Это место только что заняли")
     await db.refresh(reservation)
 
     client_full_name = f"{client.name} {client.last_name or ''}".strip()

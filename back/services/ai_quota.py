@@ -40,8 +40,17 @@ def _limits_for(plan: StudioBillingPlan | None) -> dict:
     if plan is None:
         return _NO_PLAN
     if plan.billing_mode == "percent":
-        # Подписки нет, платит оборотом — по нижней ступени.
-        return PLANS["start"]["limits"]
+        # Верхняя ступень: на проценте ступени у студии НЕТ (её не показывает
+        # шапка биллинга, карточки тарифов на этой модели не рендерятся, апгрейда
+        # нет), а плата идёт долей с оборота — и студия на проценте платит от
+        # 39 €/мес до сумм выше Business. Нижняя ступень тут была ошибкой того же
+        # рода, что и потолок сотрудников по невидимому plan_name (см.
+        # services/plan_limits): «Улучшите тариф» на 300-м вопросе, а улучшать
+        # нечего. Числа Business, а не безлимит: потолок себестоимости — страховка
+        # от аномалии на деньгах провайдера, её нет НИ У ОДНОГО тарифа (решения
+        # 6 и 9 эпика AI-5), и снимать её тарифу с минимальным платежом в 39 €
+        # значит разрешить месячный счёт провайдеру больше выручки со студии.
+        return PLANS["business"]["limits"]
     # combo — полноценный тариф с половинным фиксом, лимиты своего plan_name.
     name = "pro" if plan.plan_name == "free_trial" else plan.plan_name
     # Неизвестный план (none и пр.) — Старт, а НЕ безлимит: у денег безлимит опасен.
@@ -123,7 +132,7 @@ if __name__ == "__main__":
 
     assert _limits_for(None)["ai_requests"] == 0                              # нет тарифа — не безлимит
     assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 1500   # триал — по Pro
-    assert _limits_for(_P("percent", "pro"))["ai_requests"] == 300             # процент — по Старту
+    assert _limits_for(_P("percent", "start"))["ai_requests"] == 5000          # процент — по верхней ступени
     assert _limits_for(_P("combo", "business"))["ai_requests"] == 5000         # комбо — свой план
     assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300       # неизвестный — Старт
     assert _limits_for(_P("subscription", "business"))["ai_cost_micro"] == 31_000_000

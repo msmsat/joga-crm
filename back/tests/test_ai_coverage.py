@@ -99,7 +99,6 @@ UI_ONLY: dict[str, str] = {
     "PATCH /booking/channels/{channel_type}": "подключение канала записи: токен бота вводит владелец",
 
     # ── Журнал: правка и отметки делаются кликом по карточке занятия
-    "PATCH /schedule/lessons/{lesson_id}": "перенос и правка занятия — перетаскиванием в Журнале",
     "DELETE /schedule/lessons/{lesson_id}": "удаление занятия из расписания — руками",
     "PATCH /schedule/lessons/{lesson_id}/cancel": "отмена занятия задевает всех записанных — только руками",
     "PATCH /schedule/reservations/{reservation_id}/attend": "отметка прихода — клик по клиенту в карточке занятия",

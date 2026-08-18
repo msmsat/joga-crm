@@ -264,6 +264,7 @@
     "ui_section": "Checking how the section works…",
     "update_booking_rules": "Updating booking rules…",
     "update_client": "Updating client details…",
+    "update_lesson": "Updating the class…",
     "update_service": "Updating the service…",
     "update_staff": "Updating the team member…"
   },
@@ -293,8 +294,8 @@
     "stepOf": "Step {{current}} of {{total}}",
     "next": "Next",
     "back": "Back",
-    "confirm": "Create",
-    "confirmDanger": "Confirm",
+    "confirm": "Approve",
+    "confirmDanger": "Approve",
     "choose": "Choose",
     "nothingFound": "Nothing found",
     "nothingToFill": "Nothing to fill in here — go straight on.",
@@ -304,7 +305,12 @@
       "individual": "individual",
       "trainer": "trainer",
       "admin": "admin",
-      "owner": "owner"
-    }
+      "owner": "owner",
+      "hourly": "per hour",
+      "percent": "% of revenue",
+      "fixed": "per class"
+    },
+    "title": "Confirm — {{count}} actions",
+    "stillEmpty": "{{count}} field(s) left"
   }
 }

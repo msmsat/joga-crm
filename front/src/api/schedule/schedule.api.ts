@@ -15,8 +15,11 @@ export const scheduleApi = {
   getEligibleClients: (lessonId: number) =>
     client.get<EligibleClient[]>(`/schedule/lessons/${lessonId}/eligible-clients`),
 
-  getLessonDays: (month: string) =>
-    client.get<LessonDaysResponse>(`/schedule/lessons/days?month=${month}`),
+  getLessonDays: (month: string, excludeTeacherIds: number[] = []) =>
+    client.get<LessonDaysResponse>(
+      `/schedule/lessons/days?month=${month}` +
+      excludeTeacherIds.map(id => `&exclude_teacher_id=${id}`).join(''),
+    ),
 
   createLesson: (payload: LessonCreate) =>
     client.post<Lesson>('/schedule/lessons', payload),

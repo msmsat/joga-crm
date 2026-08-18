@@ -311,12 +311,11 @@ async def _run_reminders(db: AsyncSession, window_start: datetime, window_end: d
             ctx_base = await lesson_context(db, lesson)
 
             if event_id == "c2":
-                # Напоминания клиенту включает страница «Онлайн-запись»: общий
-                # тумблер «Напоминание клиенту» плюс отдельные за 24 ч и за 2 ч.
+                # Напоминания клиенту включает страница «Онлайн-запись», блок
+                # «Уведомления»: отдельные тумблеры за 24 ч и за 2 ч.
                 # Тренерских t3/t4 это не касается — они про работу студии.
                 rules = await _rules(lesson.studio_id)
-                enabled = rules.reminder_24h if hours == 24 else rules.reminder_2h
-                if not (rules.client_reminder_enabled and enabled):
+                if not (rules.reminder_24h if hours == 24 else rules.reminder_2h):
                     continue
                 for r in reservations:
                     await notify(db, lesson.studio_id, "client", "c2",

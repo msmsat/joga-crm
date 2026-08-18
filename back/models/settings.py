@@ -118,7 +118,6 @@ class StudioBookingSettings(Base):
     booking_active: Mapped[bool] = mapped_column(Boolean, default=True)
     prefill_on_booking: Mapped[bool] = mapped_column(Boolean, default=True)
     trainer_confirmation_required: Mapped[bool] = mapped_column(Boolean, default=False)
-    client_reminder_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     repeat_booking_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     min_booking_advance_min: Mapped[int] = mapped_column(Integer, default=120)

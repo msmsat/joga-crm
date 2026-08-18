@@ -93,14 +93,6 @@ export function BookingSettings(s: Props) {
 
         <div className="settings-row">
           <div>
-            <div className="label">{t('sections.main.clientReminder.label')}</div>
-            <div className="sub">{t('sections.main.clientReminder.sub')}</div>
-          </div>
-          <label className="toggle-switch"><input type="checkbox" checked={settings.client_reminder_enabled} onChange={e => patch('client_reminder_enabled', e.target.checked)} /><span className="toggle-slider"></span></label>
-        </div>
-
-        <div className="settings-row">
-          <div>
             <div className="label">{t('sections.main.bookingActive.label')}</div>
             <div className="sub">{t('sections.main.bookingActive.sub')}</div>
           </div>

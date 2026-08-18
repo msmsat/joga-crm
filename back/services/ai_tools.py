@@ -33,7 +33,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
-from models import Lesson, StaffDayOverride, StaffWorkingHours, Studio
+from models import Lesson, StaffDayOverride, StaffWorkingHours, Studio, StudioMember, User
 from routers.analytics._filters import ReportFilters
 from routers.analytics.overview import analytics_overview
 from routers.analytics.reports import period_summary
@@ -83,10 +83,12 @@ from routers.loyalty.packages import (
 from routers.loyalty.promocodes import create_promocode as _r_create_promocode
 from routers.loyalty.segments import list_segments as _r_list_segments
 from routers.schedule.lessons import (
+    MIN_CHANGE_LEAD,
     MIN_CREATE_LEAD,
     create_lesson as _r_create_lesson,
     get_lesson as _r_get_lesson,
     list_lessons as _r_list_lessons,
+    update_lesson as _r_update_lesson,
 )
 from routers.schedule.reservations import (
     cancel_reservation as _r_cancel_reservation,
@@ -132,12 +134,14 @@ from schemas.loyalty.loyalty import (
     SubscriptionProgramConfigRead,
 )
 from schemas.schedule.halls import HallCreate
-from schemas.schedule.lessons import LessonCreateRequest
+from schemas.schedule.lessons import LessonCreateRequest, LessonUpdateRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
 from schemas.settings.team import StaffCreate, StaffUpdate
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
+from services.contacts import normalize, normalized_column
+from services.working_hours import assert_within_working_hours
 from services.daily_notify import _studio_tz
 from services.llm import TIER_FAST, TIER_SMART
 
@@ -462,6 +466,15 @@ class Tool:
     # «раздвинул график тренера» человек обязан прочитать до клика, а не в
     # отчёте о том, что уже случилось.
     warnings: Callable | None = None
+    # Отказ, который виден ЗАРАНЕЕ: async (args, ctx, db) -> str | None.
+    # Проверка только читает базу и обязана возвращать ровно тот отказ, которым
+    # ответит исполнение. Смысл — не в красивой карточке: текст уходит МОДЕЛИ в
+    # том же ходе (ai_plan.make_step), и она чинится сама. Без этого человек
+    # читал «Готово: 1 из 4» после клика по карточке, которая была обречена в
+    # момент показа, — а модель узнавала о причине, когда исправлять уже поздно.
+    # Ставим только там, где отказ ПРЕДСКАЗУЕМ чтением: гонку с параллельным
+    # администратором ловит исполнение, дублировать её проверкой бессмысленно.
+    precheck: Callable | None = None
 
 
 def tool(
@@ -469,6 +482,7 @@ def tool(
     tier_hint: str = TIER_FAST, summary: str | None = None, danger: bool = False,
     endpoint: str | None = None, effect: str | None = None,
     defaults: Callable | None = None, warnings: Callable | None = None,
+    precheck: Callable | None = None,
 ):
     """Регистрирует функцию как инструмент.
 
@@ -494,6 +508,7 @@ def tool(
             effect=effect,
             defaults=defaults,
             warnings=warnings,
+            precheck=precheck,
         )
         return fn
     return deco
@@ -555,6 +570,25 @@ class CreateLessonArgs(BaseModel):
     price: Optional[int] = None
 
 
+class UpdateLessonArgs(BaseModel):
+    """«Поменяй хатху на стретчинг», «перенеси на 11:00», «поставь вместо Ани Сашу».
+
+    Меняются ТОЛЬКО названные поля — остальные остаются как есть. Второго
+    занятия при этом не появляется: именно попытка «поменять» через ещё один
+    create_lesson и упиралась в «эти часы уже заняты».
+    """
+    lesson_id: int
+    service_id: Optional[int] = Field(
+        None, description="Новая услуга, если меняют её. Цена поедет за услугой, "
+                          "если price не назвали отдельно")
+    teacher_id: Optional[int] = None
+    hall_id: Optional[int] = None
+    start_time: Optional[datetime] = Field(None, description="Новое начало, если занятие переносят")
+    duration_min: Optional[int] = None
+    total_spots: Optional[int] = None
+    price: Optional[int] = None
+
+
 def _hhmm(value: object) -> str | None:
     """«10», «10:00», «10:00:00», «10.30» -> «10:00» / «10:30». None — не разобрали.
 
@@ -605,7 +639,10 @@ class FillScheduleArgs(BaseModel):
     time_to: Optional[str] = Field(
         None, description="Конец рабочего окна, «22:00», если человек его назвал")
     break_at: Optional[str] = Field(None, description="Начало перерыва, «15:00»")
-    break_min: int = 60
+    # None, а не 60: без break_at длина перерыва — бессмысленное число, а в
+    # карточке подтверждения оно стояло отдельной строкой «Перерыв, мин: 60»
+    # у человека, который ни про какой перерыв не говорил.
+    break_min: Optional[int] = Field(None, description="Длина перерыва в минутах, если он назван")
     extend_hours: bool = Field(
         True, description="Раздвинуть рабочие часы тренера в его карточке, если названные "
                           "часы в неё не влезают. Сам не выключай: с false занятия в эти "
@@ -766,12 +803,18 @@ class StaffScheduleArgs(BaseModel):
     schedule: list[WorkDay]
 
 
+# Ровно те категории, что предлагает селект в Каталоге. Свободной строкой
+# модель писала «Стретчинг» или не писала ничего — услуга попадала в группу
+# «Без категории» вместо своей.
+ServiceCategory = Literal["yoga", "pilates", "stretching", "individual"]
+
+
 class CreateServiceArgs(BaseModel):
     name: str
     price: int
     duration_min: int = 60
     description: Optional[str] = None
-    category: Optional[str] = None
+    category: Optional[ServiceCategory] = None
     service_type: Optional[Literal["group", "individual"]] = None
     max_clients: Optional[int] = None
 
@@ -781,7 +824,7 @@ class UpdateServiceArgs(BaseModel):
     name: Optional[str] = None
     price: Optional[int] = None
     duration_min: Optional[int] = None
-    category: Optional[str] = None
+    category: Optional[ServiceCategory] = None
     max_clients: Optional[int] = None
 
 
@@ -1369,8 +1412,35 @@ async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     return await _fill_defaults(args, ctx, db)
 
 
+async def _create_lesson_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    """Два отказа роутера, которые видно чтением: «поздно» и «вне рабочих часов».
+
+    Часы спрашиваем той же функцией, которой их спросит роутер, — расходиться
+    её вердиктам негде. Накладку с другим занятием тут НЕ проверяем: роутер её
+    и не запрещает, он лишь уведомляет администратора.
+    """
+    try:
+        parsed = CreateLessonArgs.model_validate(args or {})
+    except ValidationError:
+        return None                 # неполные аргументы — это вопросы формы
+    if parsed.start_time < datetime.now() + MIN_CREATE_LEAD:
+        return ("Занятие ставится не позднее чем за 3 часа до начала — "
+                f"{parsed.start_time.strftime('%d.%m %H:%M')} уже поздно. Возьми ближайшее "
+                "подходящее время или следующий такой день.")
+    try:
+        await assert_within_working_hours(
+            db, ctx.studio_id, start_time=parsed.start_time,
+            duration_min=parsed.duration_min or 60,
+            teacher_id=parsed.teacher_id, hall_id=parsed.hall_id,
+        )
+    except HTTPException as exc:
+        return _error_text(exc.detail)
+    return None
+
+
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
+    precheck=_create_lesson_precheck,
     summary="Создать занятие: {service_id}, {start_time}, тренер {teacher_id}, "
             "мест {total_spots}, {duration_min} мин",
     effect="Занятие появится в сетке Журнала цветом своего зала.",
@@ -1392,6 +1462,63 @@ async def create_lesson(ctx: StudioContext, db: AsyncSession, args: CreateLesson
             start_time=args.start_time, duration_min=args.duration_min or 60,
             total_spots=args.total_spots or 8, price=args.price,
         ),
+        ctx=ctx, db=db, background_tasks=None,
+    )
+    return {"lesson": _dump(lesson)}
+
+
+async def _update_lesson_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    """Отказы правки занятия, видимые чтением: отменённое и «поздно менять».
+
+    Правило времени тут не формальность: «поменяй на этой неделе» половиной
+    попадает во вчера, и без этой проверки человек читал бы «Готово: 1 из 3»
+    после того, как уже нажал.
+    """
+    lesson_id = args.get("lesson_id")
+    if not isinstance(lesson_id, int) or lesson_id < 0:
+        return None
+    try:
+        lesson = await _r_get_lesson(lesson_id=lesson_id, ctx=ctx, db=db)
+    except HTTPException:
+        return None                 # «занятия нет» скажет resolve_entities — своими словами
+    if lesson.status == "cancelled":
+        return f"Занятие {lesson.name} {lesson.start_time.strftime('%d.%m %H:%M')} отменено — изменить его нельзя"
+    now = datetime.now()
+    if lesson.start_time < now + MIN_CHANGE_LEAD:
+        return (f"{lesson.name} {lesson.start_time.strftime('%d.%m %H:%M')} — менять занятие можно "
+                f"не позднее чем за 2 часа до начала. Это уже поздно: поставь новое на будущую дату.")
+    new_start = args.get("start_time")
+    if isinstance(new_start, str):
+        try:
+            new_start = datetime.fromisoformat(new_start)
+        except ValueError:
+            new_start = None
+    if isinstance(new_start, datetime) and new_start < now + MIN_CHANGE_LEAD:
+        return "Новое время уже ближе двух часов — занятие переносят не позднее чем за 2 часа до начала"
+    return None
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"), endpoint="PATCH /schedule/lessons/{lesson_id}",
+    precheck=_update_lesson_precheck,
+    summary="Изменить занятие {lesson_id}: услуга {service_id}, тренер {teacher_id}, зал {hall_id}, время {start_time}, {duration_min} мин, мест {total_spots}, цена {price}",
+    effect="Занятие изменится на месте — второго не появится. Перенос времени, зала или "
+           "длительности уведомит записанных клиентов и тренера.",
+)
+async def update_lesson(ctx: StudioContext, db: AsyncSession, args: UpdateLessonArgs) -> dict:
+    """ИЗМЕНИТЬ УЖЕ СТОЯЩЕЕ занятие: другая услуга, тренер, зал, время, цена, мест.
+
+    Это инструмент для слов «поменяй», «замени», «перенеси», «сделай вместо».
+    «Поменяй хатху на стретчинг» — это update_lesson на каждое такое занятие
+    (id бери из get_schedule), а НЕ create_lesson/fill_schedule: новое занятие
+    поверх старого не встанет — часы у тренера уже заняты, и старое никуда не
+    денется. Меняются только те поля, которые назвали.
+
+    Занятие можно менять не позднее чем за 2 часа до начала; отменённое —
+    нельзя вовсе."""
+    lesson = await _r_update_lesson(
+        lesson_id=args.lesson_id,
+        body=LessonUpdateRequest(**args.model_dump(exclude={"lesson_id"}, exclude_none=True)),
         ctx=ctx, db=db, background_tasks=None,
     )
     return {"lesson": _dump(lesson)}
@@ -1554,7 +1681,7 @@ async def _free_slots(
     if closes <= opens:      # ночная смена — хвост уезжает на следующие сутки
         closes += timedelta(days=1)
     step = timedelta(minutes=args.duration_min or 60)
-    pause = (_at(day, args.break_at), timedelta(minutes=args.break_min)) if args.break_at else None
+    pause = (_at(day, args.break_at), timedelta(minutes=args.break_min or 60)) if args.break_at else None
 
     busy = (await db.execute(
         select(Lesson.start_time, Lesson.duration_min).where(
@@ -1597,9 +1724,68 @@ async def _fill_warnings(args: dict, ctx: StudioContext, db: AsyncSession) -> li
     return [conflict + " Карточку не трону — что в неё не влезет, не поставится."]
 
 
+async def _busy_lessons(
+    teacher_id: int, date_from: date, date_to: date, ctx: StudioContext, db: AsyncSession,
+) -> list[Lesson]:
+    """Занятия тренера в периоде — те самые, что займут слоты."""
+    return list((await db.execute(
+        select(Lesson).where(
+            Lesson.studio_id == ctx.studio_id,
+            Lesson.teacher_id == teacher_id,
+            Lesson.start_time >= datetime.combine(date_from, datetime.min.time()),
+            Lesson.start_time < datetime.combine(date_to + timedelta(days=1), datetime.min.time()),
+        ).order_by(Lesson.start_time)
+    )).scalars().all())
+
+
+async def _fill_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    """«Ставить некуда» — ДО подтверждения, а не после.
+
+    Тот же расчёт, что сделает исполнение (_free_slots), только читающий: нашёл
+    первый свободный слот — выходим, ничего не считая дальше.
+
+    Текст пишется для МОДЕЛИ, а не для отчёта: он называет, ЧТО стоит в этих
+    часах, и говорит, что заменить услугу — это правка занятия, а не второе
+    занятие поверх первого. Ровно на этом человек и споткнулся: «поменяй хатху
+    на стретчинг» превращалось в новую услугу плюс fill_schedule в занятые
+    часы, и весь ответ был «нечего ставить».
+    """
+    try:
+        parsed = FillScheduleArgs.model_validate(args or {})
+    except ValidationError:
+        return None                 # неполные аргументы — это вопросы формы
+    if (parsed.date_to - parsed.date_from).days > _FILL_MAX_DAYS:
+        return f"Слишком длинный период — не больше {_FILL_MAX_DAYS} дней за раз"
+
+    # Карточку тренера здесь НЕ двигаем (это запись), и двигать нечего: _extend_week
+    # что-то меняет только когда названы оба края окна, а с обоими краями
+    # _free_slots в карточку и не заглядывает.
+    week = await _week_hours(parsed.teacher_id, ctx, db)
+    day = parsed.date_from
+    while day <= parsed.date_to:
+        if await _free_slots(day, parsed, week, ctx, db):
+            return None
+        day += timedelta(days=1)
+
+    busy = await _busy_lessons(parsed.teacher_id, parsed.date_from, parsed.date_to, ctx, db)
+    if busy:
+        what = ", ".join(f"{l.start_time.strftime('%d.%m %H:%M')} «{l.name}»" for l in busy[:4])
+        # Текст читают двое: модель (в этом же ходе, и по нему она переходит на
+        # правку) и человек — если исправить не вышло, строка попадёт в
+        # предупреждения карточки. Поэтому обычными словами, без имён
+        # инструментов: «поменять» модель и так знает как исполнить.
+        return (f"Ставить некуда: эти часы у тренера уже заняты — {what}. Если человек просил "
+                f"ПОМЕНЯТЬ занятие (другая услуга, другое время, другой тренер) — это правка "
+                f"каждого из этих занятий, а не новое занятие поверх них.")
+    if parsed.weekdays is not None or parsed.time_from or parsed.time_to:
+        return ("Ставить некуда: названные дни в период не попали или час уже прошёл "
+                "(занятие ставится не позднее чем за 3 часа до начала)")
+    return "Ставить некуда: в этот период у тренера нет рабочих часов"
+
+
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/lessons",
-    warnings=_fill_warnings,
+    warnings=_fill_warnings, precheck=_fill_precheck,
     summary="Заполнить расписание: {service_id}, тренер {teacher_id}, {date_from} — {date_to}, дни {weekdays}, с {time_from} до {time_to}, по {duration_min} мин",
     effect="Занятия встанут в Журнал — в названные дни и часы либо по графику тренера; "
            "занятые часы, отгулы и перерыв пропускаются. Часы шире графика — карточка тренера раздвинется.",
@@ -1930,10 +2116,41 @@ async def get_staff_profile(ctx: StudioContext, db: AsyncSession, args: StaffArg
     return {"staff": _dump(profile), "currency": await _currency(db, ctx.studio_id)}
 
 
+async def _staff_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
+    """«Он уже в команде» — ДО подтверждения.
+
+    Единственный отказ create_staff, который виден чтением (routers/staff/
+    profiles.py: аккаунт с таким email уже состоит в ЭТОЙ студии). Человек
+    получал его после клика — вместе с «пропустил шаг 5, он зависел от шага 1»,
+    потому что занятие ссылалось на несозданного тренера. Модель, узнав это
+    заранее, просто не кладёт шаг в план и берёт настоящий id из get_staff.
+    """
+    email = (args.get("email") or "").strip()
+    if not email:
+        return None
+    normalized = normalize("email", email)
+    if normalized is None:
+        return None
+    user_id = (await db.execute(
+        select(User.id).where(normalized_column(User, "email") == normalized)
+    )).scalars().first()
+    if user_id is None:
+        return None
+    member = (await db.execute(
+        select(StudioMember.id).where(
+            StudioMember.user_id == user_id, StudioMember.studio_id == ctx.studio_id,
+        )
+    )).scalars().first()
+    if member is None:
+        return None
+    return (f"{email} уже работает в этой студии — заводить второй раз не нужно. "
+            f"Посмотри его в списке команды и ссылайся на того, кто уже есть.")
+
+
 @tool(
     mutating=True, roles=("owner",),
     summary="Завести сотрудника {name} {last_name} ({access_role}), email {email}, ставка {rate} {rate_type}, оклад {salary}",
-    endpoint="POST /staff/",
+    endpoint="POST /staff/", precheck=_staff_precheck,
     effect="На email сотрудника уйдёт ссылка-приглашение на 7 дней; до входа он висит в списке с пометкой «Ожидает приглашения».",
 )
 async def create_staff(ctx: StudioContext, db: AsyncSession, args: CreateStaffArgs) -> dict:
@@ -2055,7 +2272,11 @@ async def get_catalog_settings(ctx: StudioContext, db: AsyncSession, args: NoArg
 async def create_service(ctx: StudioContext, db: AsyncSession, args: CreateServiceArgs) -> dict:
     """Добавить услугу студии: название, цена, длительность в минутах,
     категория, тип (group/individual), максимум клиентов. Услуга сразу
-    появляется в форме создания занятия и в онлайн-записи."""
+    появляется в форме создания занятия и в онлайн-записи.
+
+    category заполняй всегда — подбери ближайшую по названию услуги
+    («Стретчинг» → stretching, «Хатха» → yoga). Без неё услуга ложится в
+    Каталоге в группу «Без категории»."""
     service = await _r_create_service(
         data=ServiceCreate(
             name=args.name, price=args.price, duration_min=args.duration_min,
@@ -2693,7 +2914,34 @@ def _fill_summary(template: str, values: dict) -> str:
         text = re.sub(r"\s{2,}", " ", text).rstrip()
         if text.strip(" ()"):
             kept.append(text)
+    # «Заполнить расписание:, тренер …» — заголовок остался без значения, а
+    # двоеточие от него нет. Подчищаем хвост первого фрагмента, а не всей
+    # строки: у остальных двоеточий своя работа.
+    if kept:
+        kept[0] = kept[0].rstrip(" :,—-")
     return ",".join(kept)
+
+
+def action_title(name: str) -> str:
+    """Имя действия без значений: «Завести сотрудника», «Заполнить расписание».
+
+    Нужно, чтобы четыре одинаковых шага в чате свернулись в один заголовок со
+    счётчиком. Режем шаблон по ПЕРВОЙ подстановке, а не по запятой: до неё
+    стоит ровно название действия, а после — уже значения и их разделители,
+    из которых без подстановок получается мусор («Заморозить клиента: (frozen=»).
+
+    Второго списка названий не заводим: он разъедется с summary на второй неделе.
+    """
+    t = TOOLS.get(name)
+    if t is None:
+        return name
+    source = t.summary or t.description.splitlines()[0]
+    # По первой подстановке, затем по скобке и двоеточию: за ними идут уже
+    # подробности («(запись #», «: закрытие за»), а не имя действия.
+    head = source.split("{", 1)[0].split(" (")[0].split(":")[0]
+    # Висячий предлог в конце («Выпустить сертификат на») читается как обрыв.
+    head = re.sub(r"\s+(на|за|с|со|в|во|до|от|для|о|об|у|к)\s*$", "", head.strip(" ,.«»—-→=#"))
+    return head.strip() or name
 
 
 def describe_action(name: str, args: dict, entities: dict | None = None) -> str:
@@ -2990,8 +3238,8 @@ if __name__ == "__main__":
     # Самопроверка без сети и БД: реестр, ролевой скоуп, обрезка результата.
     import asyncio
 
-    assert len(TOOLS) == 59, sorted(TOOLS)
-    assert sum(1 for t in TOOLS.values() if t.mutating) == 30
+    assert len(TOOLS) == 61, sorted(TOOLS)
+    assert sum(1 for t in TOOLS.values() if t.mutating) == 32
     # Память студии данные студии не трогает — карточка подтверждения на
     # «запомни, что по воскресеньям мы не работаем» превратила бы одну фразу в
     # двухшаговый диалог (эпик AI-6, задача 16).

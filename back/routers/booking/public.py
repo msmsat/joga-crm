@@ -18,7 +18,7 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
-from services.booking_access import resolve_coverage
+from services.booking_access import commit_reservation, next_free_spot, resolve_coverage
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
 from services.notifier import lesson_context, notify
@@ -200,13 +200,8 @@ async def public_reserve(
             entity_type="client", entity_id=client.id,
         )
 
-    booked = (await db.execute(
-        select(func.count(Reservation.id)).where(
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status != "cancelled",
-        )
-    )).scalar() or 0
-    if booked >= lesson.total_spots:
+    spot = await next_free_spot(db, lesson)
+    if spot is None:
         raise HTTPException(status_code=400, detail="Все места заняты")
 
     if not rules.repeat_booking_allowed:
@@ -229,7 +224,7 @@ async def public_reserve(
     reservation = Reservation(
         client_id=client.id,
         lesson_id=body.lesson_id,
-        spot_number=booked + 1,
+        spot_number=spot,
         status="pending" if rules.trainer_confirmation_required else "active",
         booking_channel="web",
         is_trial=is_trial,
@@ -252,7 +247,7 @@ async def public_reserve(
     if not is_new_client:
         await fire_referral(db, studio_id, client.id, "first_visit", referred_name=client.name)
 
-    await db.commit()
+    await commit_reservation(db, conflict_detail="Это место только что заняли")
     await db.refresh(reservation)
 
     # «Запись подтверждена» — только за подтверждённой бронью: при включённом

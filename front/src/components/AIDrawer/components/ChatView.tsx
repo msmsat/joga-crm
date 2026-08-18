@@ -7,7 +7,7 @@ import EmptyStateSVG from './EmptyStateSVG';
 import ThinkingStateSVG from './ThinkingStateSVG';
 import InputBar from './InputBar';
 import { SUGGESTION_PILL_KEYS } from '../constants';
-import { AIPlanModal, type PlanAnswers } from '../../ui/index';
+import { AIPlanCard, type PlanAnswers } from '../../ui/index';
 import type { AIPlanProposal } from '../../../api/ai/ai.types';
 
 interface ChatViewProps {
@@ -76,11 +76,11 @@ export default function ChatView({
             />
           ))}
           {planProposal && (
-            <AIPlanModal
+            <AIPlanCard
               plan={planProposal}
               loading={actionPending}
               onConfirm={(answers) => onConfirmAction?.(answers)}
-              onClose={() => onCancelAction?.()}
+              onCancel={() => onCancelAction?.()}
             />
           )}
           {/* Пока ответ печатается, «Думаю» уступает место самому пузырю —

@@ -26,7 +26,9 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, ClientPayment, Hall, Lesson, Reservation
 from schemas._base import BaseSchema
-from services.booking_access import resolve_coverage, trial_applies
+from services.booking_access import (
+    commit_reservation, coverage_gap, resolve_coverage, trial_applies,
+)
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
 )
@@ -555,10 +557,20 @@ async def create_reservation(
         # Текст свой, а не из assert_can_book (Журнал): там он обращён к
         # администратору («у клиента нет абонемента»), а читать его будет сам
         # клиент, и следующий его шаг — купить абонемент в этом же приложении.
-        raise HTTPException(
-            status_code=402,
-            detail="Для записи нужен действующий абонемент — оформите его в профиле",
-        )
+        #
+        # Причину называем вслух. «Оформите абонемент» человеку, у которого
+        # абонемент открыт на соседнем экране, выглядит поломкой приложения:
+        # чаще всего абонемент есть, просто сгорает раньше этого занятия —
+        # тогда и надо показать дату, а не отправлять покупать второй.
+        reason, expires_at = await coverage_gap(db, client.id, lesson)
+        if reason == "expired":
+            detail = (f"Ваш абонемент действует до {expires_at:%d.%m.%Y} и это занятие "
+                      "уже не покрывает — оформите новый в профиле")
+        elif reason == "mismatch":
+            detail = "Ваш абонемент не подходит для этого занятия — оформите подходящий в профиле"
+        else:
+            detail = "Для записи нужен действующий абонемент — оформите его в профиле"
+        raise HTTPException(status_code=402, detail=detail)
 
     # Оплата на месте — единственная запись, за которую студия ждёт наличные от
     # человека, которого пока не видела. Телефон обязателен именно здесь: без
@@ -590,7 +602,9 @@ async def create_reservation(
     # этого вызова пригласивший не получал бонус вовсе — самый частый путь был
     # единственным неподключённым.
     await fire_referral(db, client.studio_id, client.id, "first_visit", referred_name=client.name)
-    await db.commit()
+    # Текст тот же, что у проверки выше: между ней и вставкой коврик мог занять
+    # второй клиент, и приложение обязано сказать об этом теми же словами.
+    await commit_reservation(db, conflict_detail="Це місце вже зайняте")
     await db.refresh(reservation)
 
     # c1 «Запись подтверждена» уходит только за подтверждённой бронью: пока

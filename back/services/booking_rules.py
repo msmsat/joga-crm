@@ -28,7 +28,6 @@ class BookingRules:
     prefill_on_booking: bool = True
     trainer_confirmation_required: bool = False
     repeat_booking_allowed: bool = False
-    client_reminder_enabled: bool = True
     reminder_24h: bool = True
     reminder_2h: bool = True
     review_request: bool = True

@@ -47,8 +47,13 @@ export default function Journal() {
   const [calMonth, setCalMonth] = useState(initialDate.getMonth());
   const [calYear, setCalYear] = useState(initialDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(initialDate.getDate());
-  const [activeTrainers, setActiveTrainers] = useState<number[]>([]);
-  const [activeHalls, setActiveHalls] = useState<string[]>([]);
+  // Фильтры колонок храним «от обратного» — что пользователь СКРЫЛ. Список
+  // тренеров пересобирается на каждое листание дня (useMemo от bookings в
+  // useSchedule), и прежнее сидирование «включить всех» сбрасывало выбор при
+  // каждом переключении. Скрытые id переживают смену списка, а новая колонка
+  // (сотрудник, ведущий занятие только в этом дне) появляется сразу видимой.
+  const [hiddenTrainers, setHiddenTrainers] = useState<number[]>([]);
+  const [hiddenHalls, setHiddenHalls] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   // 🔥 Черновик редактирования живёт здесь — карточка в сетке рисует его живьём (задача 4 V4-4)
@@ -89,7 +94,9 @@ export default function Journal() {
   // Реальные данные: тренеры (Сотрудники), залы, занятия за видимый диапазон
   const { trainers, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
     useSchedule(calYear, calMonth, selectedDay, calendarView);
-  const journalDays = useJournalDays(calYear, calMonth);
+  // Точки мини-календаря считаем с учётом фильтра тренеров — в режиме «Залы»
+  // сетка тренеров не фильтрует, значит и точки гасить нечем.
+  const journalDays = useJournalDays(calYear, calMonth, viewMode === 'trainers' ? hiddenTrainers : []);
   const hallNames = halls.map(h => h.name);
   const mutations = useJournalMutations(lessonsKey);
   const history = useUndoHistory();
@@ -132,18 +139,9 @@ export default function Journal() {
     localStorage.setItem(JOURNAL_DATE_KEY, toDateStr(new Date(calYear, calMonth, selectedDay)));
   }, [calYear, calMonth, selectedDay]);
 
-  // При загрузке данных включаем все колонки/залы в фильтрах. Синхронизация прямо
-  // в рендере (документированный React-паттерн) — сетка сразу рисуется со всеми
-  // колонками, а не пустой на один кадр.
-  const [filtersSeededFor, setFiltersSeededFor] = useState<{ trainers: unknown; halls: unknown }>({ trainers: null, halls: null });
-  if (filtersSeededFor.trainers !== trainers) {
-    setFiltersSeededFor(s => ({ ...s, trainers }));
-    setActiveTrainers(trainers.map(t => t.id));
-  }
-  if (filtersSeededFor.halls !== halls) {
-    setFiltersSeededFor(s => ({ ...s, halls }));
-    setActiveHalls(halls.map(h => h.name));
-  }
+  // Видимые колонки: всё, что пользователь не скрыл в тулбаре/правой панели.
+  const visibleTrainers = trainers.filter(t => !hiddenTrainers.includes(t.id));
+  const visibleHalls = hallNames.filter(h => !hiddenHalls.includes(h));
 
   // Фоновая ошибка (данные в кэше уже есть — сетка на экране, refetch просто
   // не удался): не ломаем сетку, только тост. Первую загрузку ловит LoadError.
@@ -191,9 +189,7 @@ export default function Journal() {
   // ── Колонки по режиму (Если неделя - отдаем даты, иначе тренеров/залы) ──
   const columns = calendarView === 'week' 
     ? getWeekDays()
-    : (viewMode === 'trainers'
-      ? trainers.filter(t => activeTrainers.includes(t.id))
-      : hallNames.filter(h => activeHalls.includes(h)));
+    : (viewMode === 'trainers' ? visibleTrainers : visibleHalls);
   
   // Живые занятия (без отменённых) — считаются в сводке дня и правой панели;
   // сетка (Grid) рисует всё подряд через filteredBookings, отменённые остаются на месте.
@@ -201,8 +197,8 @@ export default function Journal() {
 
   // ── Фильтрованные записи (для сетки — включают отменённые) ──
   const filteredBookings = bookings.filter(b => {
-    if (viewMode === 'trainers') return activeTrainers.includes(b.trainer);
-    return activeHalls.includes(b.hall);
+    if (viewMode === 'trainers') return !hiddenTrainers.includes(b.trainer);
+    return !hiddenHalls.includes(b.hall);
   });
 
   const liveBookings = filteredBookings.filter(b => b.status !== 'cancelled');
@@ -395,17 +391,19 @@ export default function Journal() {
     }
   };
 
-  // ── Тоггл тренера ──
+  // ── Тоггл тренера (последнюю видимую колонку скрыть нельзя — сетка опустеет) ──
   const toggleTrainer = (id: number) => {
-    setActiveTrainers(prev =>
-      prev.includes(id) ? (prev.length > 1 ? prev.filter(t => t !== id) : prev) : [...prev, id]
+    setHiddenTrainers(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id)
+        : (visibleTrainers.length > 1 ? [...prev, id] : prev)
     );
   };
 
   // ── Тоггл зала ──
   const toggleHall = (h: string) => {
-    setActiveHalls(prev =>
-      prev.includes(h) ? (prev.length > 1 ? prev.filter(x => x !== h) : prev) : [...prev, h]
+    setHiddenHalls(prev =>
+      prev.includes(h) ? prev.filter(x => x !== h)
+        : (visibleHalls.length > 1 ? [...prev, h] : prev)
     );
   };
   
@@ -637,8 +635,8 @@ export default function Journal() {
             calMonth={calMonth}
             calYear={calYear}
             viewMode={viewMode}
-            activeTrainers={activeTrainers}
-            activeHalls={activeHalls}
+            activeTrainers={visibleTrainers.map(t => t.id)}
+            activeHalls={visibleHalls}
             calendarView={calendarView}
             isEditingDate={isEditingDate}
             dateInputVal={dateInputVal}
@@ -662,7 +660,7 @@ export default function Journal() {
             totalClasses={totalClasses}
             totalClients={totalClients}
             avgLoad={avgLoad}
-            activeTrainersCount={trainers.filter(t => activeTrainers.includes(t.id)).length}
+            activeTrainersCount={visibleTrainers.length}
             timeStep={timeStep}
             setTimeStep={setTimeStep}
             canEdit={canEdit}
@@ -728,7 +726,7 @@ export default function Journal() {
                 calYear={calYear}
                 selectedDay={selectedDay}
                 today={today}
-                activeHalls={activeHalls}
+                activeHalls={visibleHalls}
                 activeBookings={activeBookings}
                 filteredBookings={liveBookings}
                 changeMonth={changeMonth}

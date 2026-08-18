@@ -105,7 +105,13 @@ export default function BillingTab({ plan, invoices, cards, setAutopay }: Billin
               </div>
             )}
             <div style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.55)" }}>
-              {p.max_staff >= UNLIMITED_STAFF ? t('billing.plan.staffUnlimited') : t('billing.plan.maxStaff', { count: p.max_staff })}
+              {/* На «проценте» ступени у студии нет, и сервер лимит по ней не режет
+                  (services/plan_limits.check_plan_limit) — `max_staff` там остаётся
+                  от триала или прошлой подписки, и печатать его значит обещать
+                  потолок, которого нет. */}
+              {p.billing_mode === 'percent' || p.max_staff >= UNLIMITED_STAFF
+                ? t('billing.plan.staffUnlimited')
+                : t('billing.plan.maxStaff', { count: p.max_staff })}
             </div>
           </div>
           {p.can_upgrade && (

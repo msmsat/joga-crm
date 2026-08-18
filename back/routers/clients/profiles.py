@@ -22,7 +22,9 @@ from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
-from services.booking_access import assert_can_book, resolve_coverage
+from services.booking_access import (
+    assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
+)
 from services.booking_rules import load_rules
 from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
@@ -1020,12 +1022,8 @@ async def book_lesson(
     if lesson.start_time < datetime.now() + timedelta(hours=2):
         raise HTTPException(status_code=400, detail="Записать на занятие можно не позднее чем за 2 часа до начала")
 
-    existing_count = (await db.execute(
-        select(func.count(Reservation.id))
-        .where(Reservation.lesson_id == body.lesson_id, Reservation.status != "cancelled")
-    )).scalar() or 0
-
-    if existing_count >= lesson.total_spots:
+    spot = await next_free_spot(db, lesson)
+    if spot is None:
         raise HTTPException(status_code=400, detail="Все места заняты")
 
     duplicate = (await db.execute(
@@ -1049,7 +1047,7 @@ async def book_lesson(
     reservation = Reservation(
         client_id=client_id,
         lesson_id=body.lesson_id,
-        spot_number=existing_count + 1,
+        spot_number=spot,
         status="active",
         booking_channel="manual",
         is_trial=is_trial,
@@ -1063,7 +1061,7 @@ async def book_lesson(
         actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
         entity_type="reservation", entity_id=reservation.id,
     )
-    await db.commit()
+    await commit_reservation(db, conflict_detail="Это место только что заняли")
     await db.refresh(reservation)
     await notify_subscription_remaining(db, studio_id, client_id, remaining)
     return BookingCreatedOut(id=reservation.id, message="Запись создана")
