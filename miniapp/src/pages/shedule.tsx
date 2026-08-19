@@ -133,6 +133,10 @@ export default function Shedule({ catalog, onBuySubscription }: SheduleProps) {
                 setDate(new Date());
                 vibrateLight();
               }}
+              // Место под кнопку в шапке зарезервировано (ScreenHeader), так что
+              // появиться она может мягко: без сдвига соседей это уже не «скачок».
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
               whileTap={{ scale: 0.94 }}
               transition={{ type: 'spring', stiffness: 500, damping: 32 }}
               className="flex shrink-0 items-center gap-1.5 rounded-full bg-card py-2 pl-2.5 pr-3.5 shadow-soft"

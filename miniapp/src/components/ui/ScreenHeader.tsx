@@ -28,18 +28,25 @@ export function ScreenHeader({
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className="pt-safe px-5"
     >
-      <div className="flex min-h-[34px] items-center justify-between gap-3 pt-8 dt:pt-20">
-        {kicker ? (
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-            <span className="truncate text-[10px] font-extrabold uppercase tracking-[0.24em] text-muted-foreground dt:text-[11px] dt:tracking-[0.28em]">
-              {kicker}
-            </span>
-          </div>
-        ) : (
-          <span />
-        )}
-        {action}
+      {/* Отступ сверху — на отдельном узле. Раньше `pt-8` и `min-h-[34px]`
+          стояли на одной строке, а при border-box паддинг съедает min-height
+          целиком: резерв под кнопку оказывался нулевым, и появление «Сегодня»
+          двигало вниз весь экран. Теперь строка держит 34px content-box в
+          любом случае — кнопка (32.5px) в них помещается. */}
+      <div className="pt-8 dt:pt-20">
+        <div className="flex min-h-[34px] items-center justify-between gap-3">
+          {kicker ? (
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+              <span className="truncate text-[10px] font-extrabold uppercase tracking-[0.24em] text-muted-foreground dt:text-[11px] dt:tracking-[0.28em]">
+                {kicker}
+              </span>
+            </div>
+          ) : (
+            <span />
+          )}
+          {action}
+        </div>
       </div>
 
       <h1 className="mt-3.5 text-[36px] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground dt:mt-5 dt:text-[44px]">
