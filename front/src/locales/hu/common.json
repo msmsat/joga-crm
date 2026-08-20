@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Adja meg a telefonszámát",
+    "sub": "A telefon a fiókja második elérhetősége: ezzel állítható vissza a hozzáférés, és ide érkeznek az értesítések. A stúdió száma ide nem való — ennek a sajátjának kell lennie."
+  },
+  "buttons": {
+    "cancel": "Mégse",
+    "save": "Mentés",
+    "saveChanges": "Módosítások mentése",
+    "delete": "Törlés",
+    "edit": "Szerkesztés",
+    "add": "Hozzáadás",
+    "create": "Létrehozás",
+    "close": "Bezárás",
+    "send": "Küldés",
+    "copy": "Másolás",
+    "back": "Vissza",
+    "continue": "Tovább",
+    "finish": "Befejezés",
+    "done": "Kész, bezárás",
+    "saving": "Mentés…",
+    "saved": "Elmentve!",
+    "upload": "Feltöltés"
+  },
+  "validation": {
+    "required": "Kötelező mező",
+    "minLength": "Legalább {{n}} karakter",
+    "email": "Érvénytelen e-mail",
+    "phone": "Érvénytelen telefonszám",
+    "contactRequired": "Adjon meg telefonszámot vagy e-mailt",
+    "min": "Legalább {{n}} legyen",
+    "positive": "0-nál nagyobbnak kell lennie",
+    "checkingContact": "Ellenőrzés…",
+    "emailTaken": "Ez az e-mail már foglalt",
+    "phoneTaken": "Ez a telefonszám már foglalt",
+    "emailInStudio": "Ez a személy már az Ön stúdiójában dolgozik",
+    "phoneInStudio": "Ez a személy már az Ön stúdiójában dolgozik",
+    "accountWillBeLinked": "Ezzel az elérhetőséggel már létezik fiók — a stúdiójához lesz kapcsolva"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktív",
+    "connected": "Csatlakoztatva",
+    "inactive": "Nincs online",
+    "loading": "Betöltés...",
+    "notFound": "Nem található",
+    "new": "ÚJ"
+  },
+  "fields": {
+    "fullName": "Teljes név",
+    "firstName": "Keresztnév",
+    "lastName": "Vezetéknév",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "photo": "Profilkép",
+    "salary": "Bér",
+    "schedule": "Beosztás",
+    "services": "Szolgáltatások",
+    "position": "Beosztás",
+    "role": "Szerepkör",
+    "status": "Állapot",
+    "size": "Összeg"
+  },
+  "days": {
+    "mon": "Hétfő",
+    "tue": "Kedd",
+    "wed": "Szerda",
+    "thu": "Csütörtök",
+    "fri": "Péntek",
+    "sat": "Szombat",
+    "sun": "Vasárnap",
+    "short": {
+      "mon": "H",
+      "tue": "K",
+      "wed": "Sze",
+      "thu": "Cs",
+      "fri": "P",
+      "sat": "Szo",
+      "sun": "V"
+    }
+  },
+  "salary": {
+    "fixed": "Fix",
+    "percent": "% a bevételből",
+    "hourly": "Órabér"
+  },
+  "toasts": {
+    "phoneCopied": "Telefonszám másolva",
+    "emailCopied": "E-mail másolva",
+    "copyFailed": "A másolás nem sikerült"
+  },
+  "errors": {
+    "403": "Hozzáférés megtagadva",
+    "404": "Nem található",
+    "500": "Szerverhiba, próbálja később",
+    "network": "Nincs kapcsolat a szerverrel",
+    "unknown": "Valami hiba történt",
+    "loadFailed": "A betöltés nem sikerült",
+    "retry": "Újra",
+    "invalid_bot_token": "A Telegram elutasította ezt a tokent — ellenőrizze, hogy létezik-e a bot",
+    "wa_payment_required": "Nincs fizetési mód. Kártya nélkül a WhatsApp Businessben a Meta egyetlen értesítést sem kézbesít — nyissa meg a WhatsApp-csatorna beállításait, és adjon meg fizetési módot",
+    "wa_verification_required": "Vállalkozása nem ment át a Meta ellenőrzésén. Addig a szám korlátozott marad, és semmi nem megy ki — az útmutató a WhatsApp-csatorna beállításaiban van",
+    "wa_templates_pending": "A sablonokat a Meta még nem hagyta jóvá. Jóváhagyott sablon nélkül nem írhat elsőként az ügyfélnek — várja meg az ellenőrzés végét, az állapot a WhatsApp-csatorna beállításaiban látható",
+    "checkout": {
+      "package_not_found": "A csomag nem található",
+      "package_inactive": "A csomag már nem kapható",
+      "client_not_found": "Az ügyfél nem található",
+      "account_not_found": "A számla nem található",
+      "card_unavailable": "A kártyás fizetés még nem érhető el",
+      "promo_expired": "A promóciós kód már nem érvényes"
+    },
+    "billing": {
+      "tax_details_required": "Adja meg a stúdió országát a számlázási adatoknál — enélkül nem állítható ki számla",
+      "nothing_to_pay": "A jelenlegi előfizetésen nincs több fizetnivaló",
+      "stripe_not_configured": "A fizetések nincsenek beállítva a szerveren",
+      "stripe_error": "A fizetési szolgáltatás elutasította a kérést. Próbálja újra",
+      "plan_not_paid": "Magasabb csomag csak fizetéssel aktiválható",
+      "renew_is_automatic": "Az előfizetés automatikusan megújul",
+      "vat_invalid": "A VIES nem ismeri ezt az adószámot — ellenőrizze, vagy mentsen enélkül",
+      "vat_unavailable": "A VIES nyilvántartás most nem válaszol — próbálja később, vagy mentsen szám nélkül",
+      "vat_country_mismatch": "Az adószámnak a kiválasztott ország kódjával kell kezdődnie",
+      "commission_unsettled": "Előbb rendezze az offline értékesítés jutalékát: nyomja meg a „Fizetés most” gombot a jutalék blokkban. Ha az a számla ki van fizetve, átválthat fix csomagra.",
+      "billing_profile_required": "Adja meg a számlázási adatait — a jutalékszámla ezekre készül."
+    },
+    "loyalty": {
+      "cert_not_found": "Az utalvány nem található",
+      "cert_used": "Az utalványt már beváltották, vagy érvénytelen",
+      "cert_expired": "Az utalvány lejárt"
+    },
+    "notifications": {
+      "critical_locked": "Ezt az értesítést nem lehet kikapcsolni",
+      "last_channel": "Legalább egy kézbesítési csatorna szükséges",
+      "unknown_event": "Ismeretlen esemény",
+      "not_personal": "A személyes beállítások nem módosítják a kötelező értesítéseket"
+    },
+    "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz."
+  },
+  "units": {
+    "min": "perc",
+    "sqm": "m²",
+    "perHour": "/óra"
+  },
+  "errorBoundary": {
+    "title": "Valami hiba történt",
+    "description": "Ezen az oldalon hiba lépett fel. Próbálja újratölteni — az alkalmazás többi része működik.",
+    "reload": "Oldal újratöltése"
+  }
+}

@@ -1,88 +1,22 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import type { Resource, ResourceLanguage } from 'i18next';
 
-// Импортируем наши словари
-import commonRU from './locales/ru/common.json';
-import staffRU from './locales/ru/staff.json';
-import profileRU from './locales/ru/profile.json';
-import catalogRU from './locales/ru/catalog.json';
-import loyaltyRU from './locales/ru/loyalty.json';
-import clientsRU from './locales/ru/clients.json';
-import journalRU from './locales/ru/journal.json';
-import financesRU from './locales/ru/finances.json';
-import bookingRU from './locales/ru/booking.json';
-import reportsRU from './locales/ru/reports.json';
-import notificationsRU from './locales/ru/notifications.json';
-import aiRU from './locales/ru/ai.json';
-import billingRU from './locales/ru/billing.json';
-import settingsRU from './locales/ru/settings.json';
-import dashboardRU from './locales/ru/dashboard.json';
-import menuRU from './locales/ru/menu.json';
-import onboardingRU from './locales/ru/onboarding.json';
-import joinRU from './locales/ru/join.json';
+// Словари подхватываются по структуре папок: locales/<язык>/<неймспейс>.json.
+// Раньше здесь лежало по строке import на каждый файл — при 22 языках и 18
+// неймспейсах это 396 строк, которые обязан дописать каждый, кто добавляет
+// язык. Теперь новый язык = новая папка, править этот файл не нужно.
+// eager: true — словари попадают в бандл (как при обычном import), а не
+// подгружаются по сети: язык переключается мгновенно, без состояния загрузки.
+const files = import.meta.glob<ResourceLanguage[string]>('./locales/*/*.json', { eager: true, import: 'default' });
 
-import commonEN from './locales/en/common.json';
-import staffEN from './locales/en/staff.json';
-import profileEN from './locales/en/profile.json';
-import catalogEN from './locales/en/catalog.json';
-import loyaltyEN from './locales/en/loyalty.json';
-import clientsEN from './locales/en/clients.json';
-import journalEN from './locales/en/journal.json';
-import financesEN from './locales/en/finances.json';
-import bookingEN from './locales/en/booking.json';
-import reportsEN from './locales/en/reports.json';
-import notificationsEN from './locales/en/notifications.json';
-import aiEN from './locales/en/ai.json';
-import billingEN from './locales/en/billing.json';
-import settingsEN from './locales/en/settings.json';
-import dashboardEN from './locales/en/dashboard.json';
-import menuEN from './locales/en/menu.json';
-import onboardingEN from './locales/en/onboarding.json';
-import joinEN from './locales/en/join.json';
-
-// 2. Раскладываем их по полочкам (namespaces)
-const resources = {
-  ru: {
-    common: commonRU,
-    staff: staffRU,
-    profile: profileRU,
-    catalog: catalogRU,
-    loyalty: loyaltyRU,
-    clients: clientsRU,
-    journal: journalRU,
-    finances: financesRU,
-    booking: bookingRU,
-    reports: reportsRU,
-    notifications: notificationsRU,
-    ai: aiRU,
-    billing: billingRU,
-    settings: settingsRU,
-    dashboard: dashboardRU,
-    menu: menuRU,
-    onboarding: onboardingRU,
-    join: joinRU,
-  },
-  en: {
-    common: commonEN,
-    staff: staffEN,
-    profile: profileEN,
-    catalog: catalogEN,
-    loyalty: loyaltyEN,
-    clients: clientsEN,
-    journal: journalEN,
-    finances: financesEN,
-    booking: bookingEN,
-    reports: reportsEN,
-    notifications: notificationsEN,
-    ai: aiEN,
-    billing: billingEN,
-    settings: settingsEN,
-    dashboard: dashboardEN,
-    menu: menuEN,
-    onboarding: onboardingEN,
-    join: joinEN,
-  }
-};
+const resources: Resource = {};
+for (const [file, dict] of Object.entries(files)) {
+  const match = file.match(/^\.\/locales\/([^/]+)\/(.+)\.json$/);
+  if (!match) continue;
+  const [, lang, ns] = match;
+  (resources[lang] ??= {})[ns] = dict;
+}
 
 // Postgres EXTRACT(dow): 0=воскресенье..6=суббота — используется в insights
 // бэка (R1, lesson_overfull.weekday). common.days ключи начинаются с mon.
@@ -98,7 +32,12 @@ i18n
   .init({
     resources,
     lng: 'en', // Язык по умолчанию
-    fallbackLng: 'en', // Если слова нет в русском, покажет английское
+    fallbackLng: 'en', // Если слова нет в языке студии, покажет английское
+    // 'en-US'/'pt-BR' (могли прийти из старой записи в БД) должны находить
+    // 'en' и 'pt', а не проваливаться в fallback целиком. supportedLngs не
+    // задаём намеренно: i18next и так отдаёт только то, что есть в resources,
+    // а список пришлось бы держать синхронным с папками вручную.
+    load: 'languageOnly',
     defaultNS: 'common',
     interpolation: {
       escapeValue: false, // React сам защищает от XSS, отключаем встроенную защиту

@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Il tuo profilo",
+    "sub": "Gestisci dati personali e sessioni"
+  },
+  "personalInfo": {
+    "heading": "Dati personali",
+    "emailLocked": "L'email è il nome utente del tuo account e non si modifica da qui"
+  },
+  "security": {
+    "changePassword": "Cambia password",
+    "logout": "Esci"
+  },
+  "accounts": {
+    "title": "I miei studi",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studi",
+    "enter": "Apri",
+    "login": "Accedi",
+    "register": "Registrati",
+    "addStudio": "Aggiungi studio",
+    "addStudioSub": "Un nuovo spazio di lavoro — ne diventi il proprietario"
+  },
+  "session": {
+    "current": "Sessione corrente",
+    "lastActive": "Attivo {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Dati personali aggiornati correttamente"
+  },
+  "otherAccount": {
+    "title": "Un altro account",
+    "sub": "Accedere come un'altra persona chiude la sessione corrente in questo browser — puoi tornare con un accesso normale.",
+    "recentTitle": "Hai già effettuato l'accesso",
+    "return": "Accedi",
+    "forget": "Dimentica account"
+  }
+}

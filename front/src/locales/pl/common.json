@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Dodaj swój numer telefonu",
+    "sub": "Telefon to drugi kontakt Twojego konta: przez niego odzyskasz dostęp i dostaniesz powiadomienia. Numer studia się tu nie nadaje — ten musi być Twój."
+  },
+  "buttons": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saveChanges": "Zapisz zmiany",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "create": "Utwórz",
+    "close": "Zamknij",
+    "send": "Wyślij",
+    "copy": "Kopiuj",
+    "back": "Wstecz",
+    "continue": "Dalej",
+    "finish": "Zakończ",
+    "done": "Gotowe, zamknij",
+    "saving": "Zapisywanie…",
+    "saved": "Zapisano!",
+    "upload": "Prześlij"
+  },
+  "validation": {
+    "required": "Pole wymagane",
+    "minLength": "Co najmniej {{n}} znaków",
+    "email": "Nieprawidłowy e-mail",
+    "phone": "Nieprawidłowy telefon",
+    "contactRequired": "Podaj telefon lub e-mail",
+    "min": "Musi być co najmniej {{n}}",
+    "positive": "Musi być większe niż 0",
+    "checkingContact": "Sprawdzanie…",
+    "emailTaken": "Ten e-mail jest już zajęty",
+    "phoneTaken": "Ten numer telefonu jest już zajęty",
+    "emailInStudio": "Ta osoba już pracuje w Twoim studiu",
+    "phoneInStudio": "Ta osoba już pracuje w Twoim studiu",
+    "accountWillBeLinked": "Konto z tym kontaktem już istnieje — zostanie powiązane z Twoim studiem"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktywny",
+    "connected": "Połączono",
+    "inactive": "Nie w sieci",
+    "loading": "Wczytywanie...",
+    "notFound": "Nie znaleziono",
+    "new": "NOWE"
+  },
+  "fields": {
+    "fullName": "Imię i nazwisko",
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "photo": "Zdjęcie profilowe",
+    "salary": "Wynagrodzenie",
+    "schedule": "Grafik",
+    "services": "Usługi",
+    "position": "Stanowisko",
+    "role": "Rola",
+    "status": "Status",
+    "size": "Kwota"
+  },
+  "days": {
+    "mon": "Poniedziałek",
+    "tue": "Wtorek",
+    "wed": "Środa",
+    "thu": "Czwartek",
+    "fri": "Piątek",
+    "sat": "Sobota",
+    "sun": "Niedziela",
+    "short": {
+      "mon": "Pn",
+      "tue": "Wt",
+      "wed": "Śr",
+      "thu": "Cz",
+      "fri": "Pt",
+      "sat": "Sb",
+      "sun": "Nd"
+    }
+  },
+  "salary": {
+    "fixed": "Stała",
+    "percent": "% od obrotu",
+    "hourly": "Godzinowa"
+  },
+  "toasts": {
+    "phoneCopied": "Telefon skopiowany",
+    "emailCopied": "E-mail skopiowany",
+    "copyFailed": "Nie udało się skopiować"
+  },
+  "errors": {
+    "403": "Brak dostępu",
+    "404": "Nie znaleziono",
+    "500": "Błąd serwera, spróbuj później",
+    "network": "Brak połączenia z serwerem",
+    "unknown": "Coś poszło nie tak",
+    "loadFailed": "Nie udało się wczytać",
+    "retry": "Spróbuj ponownie",
+    "invalid_bot_token": "Telegram odrzucił ten token — sprawdź, czy bot istnieje",
+    "wa_payment_required": "Brak metody płatności. Bez karty w WhatsApp Business Meta nie dostarczy ani jednego powiadomienia — otwórz ustawienia kanału WhatsApp i dodaj płatność",
+    "wa_verification_required": "Twoja firma nie przeszła weryfikacji Meta. Do tego czasu numer pozostaje ograniczony i nic nie wychodzi — instrukcja jest w ustawieniach kanału WhatsApp",
+    "wa_templates_pending": "Meta jeszcze nie zatwierdziła szablonów. Bez zatwierdzonego szablonu nie napiszesz do klienta jako pierwszy — poczekaj na koniec weryfikacji, status jest w ustawieniach kanału WhatsApp",
+    "checkout": {
+      "package_not_found": "Nie znaleziono pakietu",
+      "package_inactive": "Pakiet nie jest już w sprzedaży",
+      "client_not_found": "Nie znaleziono klienta",
+      "account_not_found": "Nie znaleziono konta",
+      "card_unavailable": "Płatność kartą nie jest jeszcze dostępna",
+      "promo_expired": "Kod promocyjny stracił ważność"
+    },
+    "billing": {
+      "tax_details_required": "Dodaj kraj studia w danych do faktury — bez niego faktury nie da się wystawić",
+      "nothing_to_pay": "W bieżącej subskrypcji nie ma nic do zapłaty",
+      "stripe_not_configured": "Płatności nie są skonfigurowane na serwerze",
+      "stripe_error": "Usługa płatnicza odrzuciła żądanie. Spróbuj ponownie",
+      "plan_not_paid": "Wyższy plan aktywuje się wyłącznie przez płatność",
+      "renew_is_automatic": "Subskrypcja odnawia się automatycznie",
+      "vat_invalid": "VIES nie rozpoznaje tego numeru VAT — sprawdź go lub zapisz bez niego",
+      "vat_unavailable": "Rejestr VIES w tej chwili nie odpowiada — spróbuj później lub zapisz bez numeru",
+      "vat_country_mismatch": "Numer VAT musi zaczynać się kodem wybranego kraju",
+      "commission_unsettled": "Najpierw rozlicz prowizję od sprzedaży offline: naciśnij „Zapłać teraz” w bloku prowizji. Gdy ta faktura zostanie opłacona, możesz przejść na plan stały.",
+      "billing_profile_required": "Uzupełnij dane do faktury — faktura za prowizję jest wystawiana na nie."
+    },
+    "loyalty": {
+      "cert_not_found": "Nie znaleziono bonu",
+      "cert_used": "Bon został już wykorzystany albo jest nieważny",
+      "cert_expired": "Bon stracił ważność"
+    },
+    "notifications": {
+      "critical_locked": "Tego powiadomienia nie można wyłączyć",
+      "last_channel": "Wymagany jest co najmniej jeden kanał wysyłki",
+      "unknown_event": "Nieznane zdarzenie",
+      "not_personal": "Ustawienia osobiste nie zmieniają powiadomień obowiązkowych"
+    },
+    "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/godz."
+  },
+  "errorBoundary": {
+    "title": "Coś poszło nie tak",
+    "description": "Na tej stronie wystąpił błąd. Spróbuj ją odświeżyć — reszta aplikacji działa dalej.",
+    "reload": "Odśwież stronę"
+  }
+}

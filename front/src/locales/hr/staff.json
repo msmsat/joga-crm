@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Ukupno u timu",
+    "onShift": "U smjeni",
+    "trainers": "Treneri",
+    "administrators": "Administratori",
+    "onlineNow": "{{count}} sada online"
+  },
+  "toolbar": {
+    "teamTitle": "Tim · {{count}}",
+    "addEmployee": "Dodaj zaposlenika",
+    "searchPlaceholder": "Traži...",
+    "allGroup": "Svi"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Puni pristup",
+    "ownerAccess": "Vlasnik ima pristup svim modulima sustava",
+    "loadBar": "Opterećenje trenera",
+    "weekSchedule": "Tjedni raspored",
+    "todaySchedule": "Današnji raspored",
+    "minutesSuffix": "min",
+    "clientsSuffix": "klijenata",
+    "hall": "Dvorana",
+    "staffHalls": "Dvorane zaposlenika",
+    "noName": "Ime nije uneseno",
+    "noRole": "Bez uloge",
+    "addEventStub": "Obrazac za dodavanje događaja..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Prihod",
+      "rating": "Ocjena",
+      "bookings": "Rezervacije",
+      "load": "Opterećenje"
+    },
+    "admin": {
+      "bookings": "Rezervacije",
+      "attended": "Obrađeno",
+      "revenue": "Blagajna",
+      "load": "Opterećenje"
+    },
+    "owner": {
+      "revenue": "Prihod",
+      "attended": "Dolasci",
+      "load": "Opterećenje",
+      "staff": "Osoblje"
+    },
+    "default": {
+      "bookings": "Rezervacije",
+      "attended": "Dolasci",
+      "revenue": "Prihod",
+      "load": "Opterećenje"
+    }
+  },
+  "schedule": {
+    "week": "Tjedan",
+    "month": "Mjesec",
+    "working": "Radno vrijeme",
+    "free": "Slobodan",
+    "busy": "Zauzet",
+    "dayOff": "Neradni dan",
+    "syncHint": "Raspored se sinkronizira s dnevnikom rezervacija i rasporedom termina.",
+    "workDaysInWeek": "{{count}} radnih dana tjedno",
+    "markWork": "Radi",
+    "markHint": "Odaberite oznaku gore, pa kliknite dan",
+    "prevMonth": "Prethodni mjesec",
+    "nextMonth": "Sljedeći mjesec",
+    "dayHasBookings": "Za ovaj dan već postoje rezervacije — ne može biti neradni",
+    "pastDayLocked": "Prošli se dani ne mogu mijenjati"
+  },
+  "permissions": {
+    "finance": "Financije",
+    "staff": "Osoblje",
+    "reports": "Izvještaji",
+    "clients": "Klijenti",
+    "settings": "Postavke"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Trener",
+    "owner": "Vlasnik"
+  },
+  "deleteModal": {
+    "cancelLesson": "Otkazati termin?",
+    "dontAsk": "Ne pitaj ponovno pri brisanju",
+    "cancelInvite": "Otkazati pridruživanje?",
+    "cancelInviteConfirm": "Otkaži pozivnicu"
+  },
+  "toasts": {
+    "lessonCanceled": "Termin otkazan",
+    "errorCancel": "Greška pri otkazivanju",
+    "employeeAdded": "Zaposlenik {{name}} dodan",
+    "changesSaved": "Promjene spremljene",
+    "employeeDeleted": "Zaposlenik izbrisan",
+    "errorDelete": "Greška pri brisanju",
+    "errorSave": "Spremanje promjena nije uspjelo",
+    "emailCopied": "E-pošta kopirana",
+    "phoneCopied": "Telefon kopiran",
+    "inviteSent": "Pozivnica poslana na {{email}}",
+    "inviteResent": "Pozivnica ponovno poslana",
+    "inviteCancelled": "Pozivnica otkazana"
+  },
+  "addModal": {
+    "stepIndicator": "Korak {{current}} od {{total}}",
+    "stepCounter": "{{current}}/4 — traje oko 2 minute",
+    "nameFallback": "njega",
+    "employeeFallback": "Zaposlenik",
+    "steps": {
+      "1": {
+        "title": "O zaposleniku",
+        "sub": "Kako se zove novi član tima?",
+        "trust": "Podaci zaposlenika su zaštićeni"
+      },
+      "2": {
+        "title": "Uloga i usluge",
+        "sub": "Radno mjesto i popis usluga",
+        "trust": "Uloga se može promijeniti bilo kada"
+      },
+      "3": {
+        "title": "Raspored i plaća",
+        "sub": "Kada radi i koliko zarađuje?",
+        "trust": "Raspored se sinkronizira s dnevnikom"
+      },
+      "4": {
+        "title": "Gotovo!",
+        "sub": "Pozivnica poslana: {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Osobni podaci",
+      "sub": "Krenimo od imena i kontakata",
+      "namePlaceholder": "Npr. Ana Horvat",
+      "emailLabel": "Adresa e-pošte",
+      "contactsNotSet": "Kontakti nisu uneseni",
+      "inviteHint": "Lozinku predajte zaposleniku osobno — u e-poruku nikada ne ide. E-poruka nosi samo poveznicu, a bez lozinke ona ne otvara studio.",
+      "errors": {
+        "name": "Ime je obavezno",
+        "phone": "Neispravan broj telefona",
+        "email": "Neispravna e-pošta",
+        "password": "Najmanje 8 znakova, obavezno slova i brojke",
+        "emailTaken": "Ova e-pošta već pripada drugom Velora računu"
+      },
+      "passwordLabel": "Lozinka za prijavu zaposlenika",
+      "passwordPlaceholder": "Najmanje 8 znakova, slova i brojke"
+    },
+    "step2": {
+      "heading": "Uloga i usluge",
+      "sub": "Odaberite radno mjesto — usluge se dodaju automatski",
+      "positionLabel": "Radno mjesto *",
+      "positionPlaceholder": "Ili upišite vlastito radno mjesto...",
+      "addServicePlaceholder": "Dodajte uslugu — pritisnite Enter"
+    },
+    "step3": {
+      "heading": "Raspored i plaća",
+      "sub": "Postavite radne dane i naknadu",
+      "scheduleLabel": "Radni raspored",
+      "salaryLabel": "Plaća (nije obavezno)",
+      "salaryPlaceholder": "Unesite broj",
+      "createAndInvite": "Kreiraj i pozovi"
+    },
+    "step4": {
+      "exclaim": "Odlično!",
+      "added": "dodan",
+      "sub": "Pozivnica je poslana. Zaposlenik ulazi u tim čim je prihvati.",
+      "inviteLinkLabel": "Poveznica pozivnice",
+      "sendInviteLabel": "Pošalji pozivnicu",
+      "inviteInfo": "Zaposlenik dobiva e-poruku, otvara poveznicu i potvrđuje pozivnicu svojom lozinkom — tek tada ulazi u tim i dobiva pristup. Poveznica vrijedi 7 dana. Lozinke nema u e-poruci — predajte je osobno.",
+      "emailSentTitle": "E-poruka poslana",
+      "resend": "Pošalji ponovno",
+      "resentOk": "E-poruka ponovno poslana",
+      "resendError": "Slanje nije uspjelo — pokušajte ponovno",
+      "copied": "Kopirano"
+    },
+    "illus": {
+      "contacts": "Kontakti",
+      "profile": "Profil",
+      "roleFallback": "Uloga",
+      "services": "Usluge",
+      "specialization": "Specijalizacija",
+      "scheduleTitle": "RADNI RASPORED",
+      "inviteSent": "Pozivnica poslana",
+      "inviteSub": "{{name}} će dobiti poveznicu za prijavu"
+    },
+    "summary": {
+      "employee": "Zaposlenik",
+      "role": "Uloga",
+      "workDays": "Radni dani",
+      "daysCount": "{{count}} od 7"
+    }
+  },
+  "editModal": {
+    "header": "UREĐIVANJE",
+    "employeeFallback": "Zaposlenik",
+    "positionFallback": "Bez radnog mjesta",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Uloga",
+      "salary": "Plaća",
+      "schedule": "Raspored"
+    },
+    "profile": {
+      "heading": "Osobni podaci",
+      "sub": "Ažurirajte kontakte zaposlenika",
+      "uploadPhoto": "Učitaj fotografiju",
+      "replacePhoto": "Zamijeni fotografiju",
+      "removePhoto": "Ukloni fotografiju",
+      "photoHint": "JPG, PNG — do 5 MB",
+      "namePlaceholder": "Ime Prezime",
+      "notifyHint": "Zaposlenika ćemo o promjenama obavijestiti na navedeni telefon ili e-poštu.",
+      "errors": {
+        "name": "Ime je obavezno",
+        "email": "Neispravna e-pošta"
+      },
+      "contactsOwnedByEmployee": "E-pošta i telefon pripadaju računu zaposlenika — mijenja ih u vlastitom profilu."
+    },
+    "role": {
+      "heading": "Uloga i specijalizacija",
+      "sub": "Radno mjesto zaposlenika i popis usluga",
+      "addService": "Dodaj uslugu",
+      "catalogConfirm": "Želite li otvoriti odjeljak Usluge u Katalogu?"
+    },
+    "salary": {
+      "heading": "Plaća",
+      "sub": "Navedite vrstu isplate i iznos",
+      "typeLabel": "Vrsta isplate",
+      "perWeek": "₽ / tjedan",
+      "selectTypeHint": "Odaberite vrstu isplate gore",
+      "currentLabel": "Trenutna naknada",
+      "typeFixed": "Fiksna plaća",
+      "typePercent": "% prihoda",
+      "typeHourly": "Plaćanje po satu",
+      "typeNotSet": "Vrsta nije odabrana",
+      "cardFixedSub": "Fiksni iznos",
+      "cardPercentSub": "% prihoda",
+      "cardHourlySub": "Po odrađenom satu",
+      "amountFixed": "Mjesečni iznos",
+      "amountPercent": "Postotak prihoda",
+      "amountHourly": "Satnica",
+      "reportHint": "Plaća se prikazuje u financijskim izvještajima. Zaposlenik vidi samo svoju naknadu."
+    },
+    "schedule": {
+      "heading": "Radni raspored",
+      "activeDays": "Aktivni dani: {{count}} od 7",
+      "syncHint": "Raspored se sinkronizira s dnevnikom rezervacija i rasporedom termina.",
+      "workDaysLabel": "Radni dani",
+      "totalHoursLabel": "Ukupno sati",
+      "daysOffLabel": "Neradni dani",
+      "daysLabel": "Dani",
+      "workDays": "{{count}} radnih dana",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Sada online",
+      "notOnline": "Nije online",
+      "schedule": "Raspored",
+      "daysCount": "{{count}}/7 dana"
+    },
+    "deleteEmployee": "Ukloni zaposlenika",
+    "deleteConfirm": "Ukloniti {{name}} iz tima?",
+    "defaultName": "zaposlenik",
+    "cannotDeleteLastOwner": "Jedinog vlasnika nije moguće ukloniti"
+  },
+  "ownerModal": {
+    "header": "KONTAKTI VLASNIKA",
+    "heading": "Kontakt podaci",
+    "sub": "Telefon i e-pošta vlasnika studija",
+    "cardNote": "e-pošta je korisničko ime",
+    "loginWarning": "E-pošta je korisničko ime vlasnika. Nakon spremanja prijavite se novom adresom.",
+    "lockedHint": "Ime, fotografija, uloga i prava ovdje se ne uređuju — nalaze se u odjeljku «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Čeka prihvaćanje pozivnice",
+    "pendingHint": "Profil se otvara čim zaposlenik prihvati pozivnicu",
+    "resendInvite": "Pošalji pozivnicu ponovno",
+    "cancelInvite": "Otkaži pridruživanje"
+  }
+}

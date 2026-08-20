@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Gesamt im Team",
+    "onShift": "Im Dienst",
+    "trainers": "Trainer",
+    "administrators": "Administratoren",
+    "onlineNow": "{{count}} jetzt online"
+  },
+  "toolbar": {
+    "teamTitle": "Team · {{count}}",
+    "addEmployee": "Mitarbeitende hinzufügen",
+    "searchPlaceholder": "Suchen...",
+    "allGroup": "Alle"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Vollzugriff",
+    "ownerAccess": "Der Inhaber hat Zugriff auf alle Systemmodule",
+    "loadBar": "Trainerauslastung",
+    "weekSchedule": "Wochenplan",
+    "todaySchedule": "Heutiger Plan",
+    "minutesSuffix": "Min.",
+    "clientsSuffix": "Kunden",
+    "hall": "Raum",
+    "staffHalls": "Räume der Mitarbeitenden",
+    "noName": "Name nicht angegeben",
+    "noRole": "Keine Rolle",
+    "addEventStub": "Formular zum Hinzufügen eines Termins..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Umsatz",
+      "rating": "Bewertung",
+      "bookings": "Buchungen",
+      "load": "Auslastung"
+    },
+    "admin": {
+      "bookings": "Buchungen",
+      "attended": "Bearbeitet",
+      "revenue": "Kasse",
+      "load": "Auslastung"
+    },
+    "owner": {
+      "revenue": "Umsatz",
+      "attended": "Besuche",
+      "load": "Auslastung",
+      "staff": "Personal"
+    },
+    "default": {
+      "bookings": "Buchungen",
+      "attended": "Besuche",
+      "revenue": "Umsatz",
+      "load": "Auslastung"
+    }
+  },
+  "schedule": {
+    "week": "Woche",
+    "month": "Monat",
+    "working": "Arbeitszeit",
+    "free": "Frei",
+    "busy": "Belegt",
+    "dayOff": "Freier Tag",
+    "syncHint": "Der Plan synchronisiert sich mit dem Buchungsjournal und dem Kursplan.",
+    "workDaysInWeek": "{{count}} Arbeitstage pro Woche",
+    "markWork": "Arbeitet",
+    "markHint": "Wählen Sie oben eine Markierung und klicken Sie dann auf einen Tag",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "dayHasBookings": "An diesem Tag gibt es bereits Buchungen — er kann kein freier Tag sein",
+    "pastDayLocked": "Vergangene Tage lassen sich nicht ändern"
+  },
+  "permissions": {
+    "finance": "Finanzen",
+    "staff": "Personal",
+    "reports": "Berichte",
+    "clients": "Kunden",
+    "settings": "Einstellungen"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Trainer",
+    "owner": "Inhaber"
+  },
+  "deleteModal": {
+    "cancelLesson": "Kurs stornieren?",
+    "dontAsk": "Beim Löschen nicht mehr nachfragen",
+    "cancelInvite": "Beitritt abbrechen?",
+    "cancelInviteConfirm": "Einladung zurückziehen"
+  },
+  "toasts": {
+    "lessonCanceled": "Kurs storniert",
+    "errorCancel": "Fehler beim Stornieren",
+    "employeeAdded": "Mitarbeitende:r {{name}} hinzugefügt",
+    "changesSaved": "Änderungen gespeichert",
+    "employeeDeleted": "Mitarbeitende:r gelöscht",
+    "errorDelete": "Fehler beim Löschen",
+    "errorSave": "Änderungen konnten nicht gespeichert werden",
+    "emailCopied": "E-Mail kopiert",
+    "phoneCopied": "Telefonnummer kopiert",
+    "inviteSent": "Einladung an {{email}} gesendet",
+    "inviteResent": "Einladung erneut gesendet",
+    "inviteCancelled": "Einladung zurückgezogen"
+  },
+  "addModal": {
+    "stepIndicator": "Schritt {{current}} von {{total}}",
+    "stepCounter": "{{current}}/4 — dauert etwa 2 Minuten",
+    "nameFallback": "die Person",
+    "employeeFallback": "Mitarbeitende:r",
+    "steps": {
+      "1": {
+        "title": "Zur Person",
+        "sub": "Wie heißt das neue Teammitglied?",
+        "trust": "Die Daten der Mitarbeitenden sind geschützt"
+      },
+      "2": {
+        "title": "Rolle und Leistungen",
+        "sub": "Position und Liste der Leistungen",
+        "trust": "Die Rolle lässt sich jederzeit ändern"
+      },
+      "3": {
+        "title": "Plan und Vergütung",
+        "sub": "Wann wird gearbeitet und wie viel verdient?",
+        "trust": "Der Plan synchronisiert sich mit dem Journal"
+      },
+      "4": {
+        "title": "Fertig!",
+        "sub": "Einladung an {{name}} gesendet",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Persönliche Daten",
+      "sub": "Beginnen wir mit Namen und Kontaktdaten",
+      "namePlaceholder": "z. B. Anna Schmidt",
+      "emailLabel": "E-Mail-Adresse",
+      "contactsNotSet": "Keine Kontaktdaten angegeben",
+      "inviteHint": "Geben Sie das Passwort persönlich weiter — in die E-Mail kommt es nie. Die E-Mail enthält nur den Link, und ohne Passwort öffnet er das Studio nicht.",
+      "errors": {
+        "name": "Name ist erforderlich",
+        "phone": "Ungültige Telefonnummer",
+        "email": "Ungültige E-Mail",
+        "password": "Mindestens 8 Zeichen, Buchstaben und Ziffern erforderlich",
+        "emailTaken": "Diese E-Mail gehört bereits zu einem anderen Velora-Konto"
+      },
+      "passwordLabel": "Anmeldepasswort für die Mitarbeitenden",
+      "passwordPlaceholder": "Mindestens 8 Zeichen, Buchstaben und Ziffern"
+    },
+    "step2": {
+      "heading": "Rolle und Leistungen",
+      "sub": "Wählen Sie eine Position — die Leistungen werden automatisch ergänzt",
+      "positionLabel": "Position *",
+      "positionPlaceholder": "Oder eigene Position eingeben...",
+      "addServicePlaceholder": "Leistung hinzufügen — Enter drücken"
+    },
+    "step3": {
+      "heading": "Plan und Vergütung",
+      "sub": "Legen Sie Arbeitstage und Vergütung fest",
+      "scheduleLabel": "Arbeitsplan",
+      "salaryLabel": "Vergütung (optional)",
+      "salaryPlaceholder": "Zahl eingeben",
+      "createAndInvite": "Anlegen und einladen"
+    },
+    "step4": {
+      "exclaim": "Super!",
+      "added": "hinzugefügt",
+      "sub": "Einladung gesendet. Die Person tritt dem Team bei, sobald sie annimmt.",
+      "inviteLinkLabel": "Einladungslink",
+      "sendInviteLabel": "Einladung senden",
+      "inviteInfo": "Die Person erhält die E-Mail, folgt dem Link und bestätigt die Einladung mit ihrem Passwort — erst dann tritt sie dem Team bei und bekommt Zugriff. Der Link gilt 7 Tage. Das Passwort steht nicht in der E-Mail — geben Sie es persönlich weiter.",
+      "emailSentTitle": "E-Mail gesendet",
+      "resend": "Erneut senden",
+      "resentOk": "E-Mail erneut gesendet",
+      "resendError": "Senden fehlgeschlagen — erneut versuchen",
+      "copied": "Kopiert"
+    },
+    "illus": {
+      "contacts": "Kontakte",
+      "profile": "Profil",
+      "roleFallback": "Rolle",
+      "services": "Leistungen",
+      "specialization": "Spezialisierung",
+      "scheduleTitle": "ARBEITSPLAN",
+      "inviteSent": "Einladung gesendet",
+      "inviteSub": "{{name}} erhält einen Anmeldelink"
+    },
+    "summary": {
+      "employee": "Mitarbeitende:r",
+      "role": "Rolle",
+      "workDays": "Arbeitstage",
+      "daysCount": "{{count}} von 7"
+    }
+  },
+  "editModal": {
+    "header": "BEARBEITEN",
+    "employeeFallback": "Mitarbeitende:r",
+    "positionFallback": "Ohne Position",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rolle",
+      "salary": "Vergütung",
+      "schedule": "Plan"
+    },
+    "profile": {
+      "heading": "Persönliche Daten",
+      "sub": "Aktualisieren Sie die Kontaktdaten",
+      "uploadPhoto": "Foto hochladen",
+      "replacePhoto": "Foto ersetzen",
+      "removePhoto": "Foto entfernen",
+      "photoHint": "JPG, PNG — bis 5 MB",
+      "namePlaceholder": "Vorname Nachname",
+      "notifyHint": "Die Person wird über Änderungen an der angegebenen Nummer oder E-Mail informiert.",
+      "errors": {
+        "name": "Name ist erforderlich",
+        "email": "Ungültige E-Mail"
+      },
+      "contactsOwnedByEmployee": "E-Mail und Telefon gehören zum Konto der Mitarbeitenden — sie ändern das im eigenen Profil."
+    },
+    "role": {
+      "heading": "Rolle und Spezialisierung",
+      "sub": "Position und Liste der Leistungen",
+      "addService": "Leistung hinzufügen",
+      "catalogConfirm": "Möchten Sie den Bereich Leistungen im Katalog öffnen?"
+    },
+    "salary": {
+      "heading": "Vergütung",
+      "sub": "Geben Sie Vergütungsart und Höhe an",
+      "typeLabel": "Vergütungsart",
+      "perWeek": "₽ / Woche",
+      "selectTypeHint": "Wählen Sie oben eine Vergütungsart",
+      "currentLabel": "Aktuelle Vergütung",
+      "typeFixed": "Festgehalt",
+      "typePercent": "% vom Umsatz",
+      "typeHourly": "Stundenlohn",
+      "typeNotSet": "Art nicht gewählt",
+      "cardFixedSub": "Fester Betrag",
+      "cardPercentSub": "% vom Umsatz",
+      "cardHourlySub": "Pro geleisteter Stunde",
+      "amountFixed": "Monatsbetrag",
+      "amountPercent": "Umsatzanteil",
+      "amountHourly": "Stundensatz",
+      "reportHint": "Die Vergütung erscheint in den Finanzberichten. Die Person sieht nur die eigene."
+    },
+    "schedule": {
+      "heading": "Arbeitsplan",
+      "activeDays": "Aktive Tage: {{count}} von 7",
+      "syncHint": "Der Plan synchronisiert sich mit dem Buchungsjournal und dem Kursplan.",
+      "workDaysLabel": "Arbeitstage",
+      "totalHoursLabel": "Stunden gesamt",
+      "daysOffLabel": "Freie Tage",
+      "daysLabel": "Tage",
+      "workDays": "{{count}} Arbeitstage",
+      "hoursSuffix": "Std."
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Jetzt online",
+      "notOnline": "Nicht online",
+      "schedule": "Plan",
+      "daysCount": "{{count}}/7 Tage"
+    },
+    "deleteEmployee": "Mitarbeitende:n entfernen",
+    "deleteConfirm": "{{name}} aus dem Team entfernen?",
+    "defaultName": "Mitarbeitende:r",
+    "cannotDeleteLastOwner": "Der einzige Inhaber kann nicht entfernt werden"
+  },
+  "ownerModal": {
+    "header": "KONTAKTDATEN DES INHABERS",
+    "heading": "Kontaktdaten",
+    "sub": "Telefon und E-Mail der Studioinhaberin bzw. des Studioinhabers",
+    "cardNote": "E-Mail ist der Anmeldename",
+    "loginWarning": "Die E-Mail ist der Anmeldename. Melden Sie sich nach dem Speichern mit der neuen Adresse an.",
+    "lockedHint": "Name, Foto, Rolle und Rechte werden hier nicht bearbeitet — sie stehen im Bereich «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Einladung ausstehend",
+    "pendingHint": "Das Profil öffnet sich, sobald die Einladung angenommen wurde",
+    "resendInvite": "Einladung erneut senden",
+    "cancelInvite": "Beitritt abbrechen"
+  }
+}

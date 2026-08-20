@@ -43,7 +43,7 @@ export interface NavEntry {
   owner?: boolean;             // только владелец
   end?: boolean;
   prefetch?: () => void;
-  badge?: 'clients' | 'new';
+  badge?: 'clients' | 'beta';
 }
 
 const ICON = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8 } as const;
@@ -94,7 +94,7 @@ export const NAV: NavEntry[] = [
     icon: <svg className="nav-icon" {...ICON}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>,
   },
   {
-    to: '/dashboard/ai', key: 'ai', badge: 'new',
+    to: '/dashboard/ai', key: 'ai', badge: 'beta',
     icon: <svg className="nav-icon" {...ICON} strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z" /></svg>,
   },
 ];

@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Canali di connessione",
+    "connected": "Collegato",
+    "disconnected": "Non collegato",
+    "pending": "Richiede configurazione",
+    "connectInNotifications": "Collega in Notifiche",
+    "manage": "Gestisci in Notifiche",
+    "telegram": {
+      "name": "Bot Telegram",
+      "desc": "Prenotazione automatica tramite il bot"
+    },
+    "stripe": {
+      "name": "Pagamenti",
+      "desc": "Stripe: carte, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Link per i clienti",
+      "desc": "Mini app di prenotazione — per bio, storie e campagne",
+      "copy": "Copia il link",
+      "open": "Apri la mini app",
+      "print": "Stampa il QR",
+      "posterTitle": "Prenota la tua lezione online",
+      "scanHint": "Punta la fotocamera del telefono sul codice"
+    }
+  },
+  "loading": "Caricamento delle impostazioni…",
+  "sections": {
+    "main": {
+      "title": "Impostazioni generali",
+      "prefill": {
+        "label": "Pagamento anticipato alla prenotazione",
+        "sub": "Richiedi il pagamento prima della conferma"
+      },
+      "trialLesson": {
+        "label": "Prima lezione gratuita",
+        "sub": "La prima prenotazione di un nuovo cliente la offre lo studio"
+      },
+      "trainerConfirm": {
+        "label": "Conferma dell'istruttore",
+        "sub": "La prenotazione attende approvazione manuale"
+      },
+      "bookingActive": {
+        "label": "Prenotazione online attiva",
+        "sub": "Mostra il widget ai clienti"
+      }
+    },
+    "rules": {
+      "title": "Limiti e regole",
+      "advance": {
+        "label": "Blocca la prenotazione a meno di",
+        "sub": "Tempo minimo prima della lezione"
+      },
+      "window": {
+        "label": "Le prenotazioni aprono",
+        "sub": "Quanti giorni in anticipo"
+      },
+      "cancel": {
+        "label": "Disdetta senza penale",
+        "sub": "Il cliente può disdire prima della lezione"
+      },
+      "repeat": {
+        "label": "Prenotazione ripetuta",
+        "sub": "Consenti a un cliente di prenotare due volte"
+      },
+      "workHours": {
+        "label": "Orari del widget",
+        "sub": "Le lezioni fuori da questi orari non sono prenotabili online"
+      }
+    },
+    "branding": {
+      "title": "Personalizzazione del widget",
+      "sub": "Aspetto della pagina di prenotazione",
+      "accentColor": "Colore d'accento",
+      "logo": {
+        "label": "Logo dello studio",
+        "sub": "Compare nell'intestazione del widget",
+        "upload": "Carica",
+        "uploading": "Caricamento…",
+        "remove": "Rimuovi",
+        "uploadFailed": "Caricamento del logo non riuscito"
+      },
+      "darkMode": {
+        "label": "Tema scuro",
+        "sub": "Widget in versione scura"
+      },
+      "language": {
+        "label": "Lingua predefinita",
+        "sub": "Lingua principale dell'interfaccia"
+      }
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "sub": "Messaggi automatici ai clienti",
+      "preview": {
+        "confirmed": "Prenotazione confermata! Lun 10:00",
+        "reminder2h": "Promemoria: tra 2 ore",
+        "reviewRequest": "Grazie della visita! Valuta la lezione"
+      },
+      "reminder24h": {
+        "label": "Promemoria 24 h prima",
+        "sub": "La mattina prima della lezione"
+      },
+      "reminder2h": {
+        "label": "Promemoria 2 h prima",
+        "sub": "Poco prima della lezione"
+      },
+      "reviewRequest": {
+        "label": "Richiesta di recensione",
+        "sub": "Appena la visita viene registrata"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Caffè dopo la lezione",
+        "sub": "Dopo la prenotazione il cliente è invitato a fermarsi 15 minuti con il gruppo. Se accettano in due o più, ricevono un promemoria dopo la lezione"
+      },
+      "spots": {
+        "label": "Dove invitarli",
+        "sub": "Fino a tre locali vicino allo studio. Compaiono solo quando aderiscono in due o più",
+        "namePlaceholder": "Nome",
+        "addressPlaceholder": "Indirizzo",
+        "urlPlaceholder": "Link alla mappa",
+        "add": "Aggiungi locale",
+        "remove": "Rimuovi locale"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 ora",
+      "2h": "2 ore",
+      "4h": "4 ore",
+      "12h": "12 ore",
+      "24h": "24 ore"
+    },
+    "window": {
+      "7d": "7 giorni",
+      "14d": "14 giorni",
+      "30d": "30 giorni",
+      "60d": "60 giorni"
+    },
+    "cancel": {
+      "2h": "2 ore",
+      "4h": "4 ore",
+      "12h": "12 ore",
+      "24h": "24 ore"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot collegato",
+    "botDisconnected": "Bot scollegato",
+    "codeCopied": "Codice copiato!",
+    "linkCopied": "Link copiato!",
+    "printBlocked": "Consenti i pop-up per stampare il codice QR",
+    "stripeReturned": "Dati inviati a Stripe",
+    "stripeLinkExpired": "Il link Stripe è scaduto — riprova"
+  },
+  "stripeGate": {
+    "kicker": "Necessario per la prenotazione online",
+    "none": {
+      "title": "Configura prima i pagamenti",
+      "sub": "Il cliente prenota e paga in un unico passaggio. Finché l'account Stripe non è collegato, non può pagare la prenotazione.",
+      "action": "Collega Stripe"
+    },
+    "incomplete": {
+      "title": "Completa la configurazione di Stripe",
+      "sub": "L'account esiste, ma Stripe non ha ancora abilitato i pagamenti — il modulo è incompleto.",
+      "action": "Continua la configurazione"
+    },
+    "disabled": {
+      "title": "I pagamenti sono disattivati",
+      "sub": "Stripe è collegato e pronto a incassare, ma è spento nella sezione Finanze.",
+      "action": "Apri Finanze"
+    },
+    "loading": {
+      "title": "Verifica della connessione",
+      "sub": "Stiamo chiedendo a Stripe se l'account dello studio è pronto a incassare.",
+      "action": "Verifica in corso…"
+    },
+    "perks": {
+      "direct": "I soldi arrivano direttamente sul conto dello studio",
+      "methods": "Carte, Apple Pay e Google Pay da subito",
+      "fee": "La commissione segue il tuo piano Velora"
+    },
+    "later": "Più tardi",
+    "note": "Si aprirà il modulo di Stripe. Quando hai finito, torni su questa pagina."
+  },
+  "tg": {
+    "title": "Bot Telegram",
+    "connected": "Collegato",
+    "openInTelegram": "Apri il bot in Telegram",
+    "showToken": "Mostra il token",
+    "hideToken": "Nascondi il token",
+    "acceptsBookings": "Il bot accetta prenotazioni dai clienti",
+    "instantNotify": "Le notifiche arrivano subito",
+    "disconnect": "Scollega il bot",
+    "pasteToken": "Incolla il token del bot ricevuto da @BotFather",
+    "invalidToken": "Formato del token non valido",
+    "connect": "Collega il bot",
+    "howToGet": "Come ottenere un token?",
+    "steps": {
+      "1a": "Apri Telegram → cerca",
+      "1b": "@BotFather",
+      "2a": "Invia il comando",
+      "2b": "/newbot",
+      "3": "Scegli un nome e uno username per il bot",
+      "4": "Copia il token e incollalo qui sopra"
+    }
+  },
+  "insta": {
+    "title": "Bio Instagram",
+    "sub": "Metti nel profilo e nelle storie un link per prenotare velocemente",
+    "steps": {
+      "1": "Copia il tuo link",
+      "2a": "Incollalo nel campo",
+      "2b": "«Sito web»",
+      "2c": " nelle impostazioni del profilo Instagram.",
+      "3a": "Aggiungi il link nelle",
+      "3b": "Storie",
+      "3c": " con l'apposito adesivo."
+    },
+    "proTip": "Fissa nelle Storie in evidenza una Storia con il percorso di prenotazione — la conversione sale del 30 %."
+  },
+  "web": {
+    "title": "Widget per il sito",
+    "sub": "Aggiungi un pulsante di prenotazione a qualsiasi sito (Tilda, WordPress o codice tuo)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Copia",
+    "instructionPrefix": "Incolla questo codice subito prima del tag di chiusura",
+    "instructionSuffix": " sul tuo sito. Il pulsante comparirà automaticamente."
+  },
+  "wa": {
+    "title": "Prenotazione via WhatsApp",
+    "sub": "Imposta in WhatsApp Business una risposta automatica che invia subito il link di prenotazione.",
+    "online": "online",
+    "sampleIncoming": "Salve! Vorrei prenotare una lezione.",
+    "sampleOutgoing": "Benvenuta! ✨",
+    "connect": "Collega WhatsApp Business",
+    "connected": "Collegato",
+    "autoReplyActive": "Risposta automatica attiva",
+    "instantLink": "Il link di prenotazione parte subito"
+  }
+}

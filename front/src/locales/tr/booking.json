@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Bağlantı kanalları",
+    "connected": "Bağlı",
+    "disconnected": "Bağlı değil",
+    "pending": "Kurulum gerekiyor",
+    "connectInNotifications": "Bildirimler'de bağla",
+    "manage": "Bildirimler'de yönet",
+    "telegram": {
+      "name": "Telegram botu",
+      "desc": "Bot üzerinden otomatik randevu"
+    },
+    "stripe": {
+      "name": "Ödemeler",
+      "desc": "Stripe: kartlar, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Müşteri bağlantısı",
+      "desc": "Randevu mini uygulaması — bio, hikâye ve kampanyalar için",
+      "copy": "Bağlantıyı kopyala",
+      "open": "Mini uygulamayı aç",
+      "print": "QR yazdır",
+      "posterTitle": "Dersinizi online ayırtın",
+      "scanHint": "Telefon kameranızı koda tutun"
+    }
+  },
+  "loading": "Ayarlar yükleniyor…",
+  "sections": {
+    "main": {
+      "title": "Genel ayarlar",
+      "prefill": {
+        "label": "Randevuda ön ödeme",
+        "sub": "Onaydan önce ödeme iste"
+      },
+      "trialLesson": {
+        "label": "İlk ders ücretsiz",
+        "sub": "Yeni müşterinin ilk randevusu stüdyodan"
+      },
+      "trainerConfirm": {
+        "label": "Eğitmen onayı",
+        "sub": "Randevu elle onay bekler"
+      },
+      "bookingActive": {
+        "label": "Online randevu aktif",
+        "sub": "Widget'ı müşterilere göster"
+      }
+    },
+    "rules": {
+      "title": "Sınırlar ve kurallar",
+      "advance": {
+        "label": "Şu süreden kısa randevuyu engelle",
+        "sub": "Dersten önceki en az süre"
+      },
+      "window": {
+        "label": "Randevular açılır",
+        "sub": "Kaç gün öncesinden"
+      },
+      "cancel": {
+        "label": "Cezasız iptal",
+        "sub": "Müşteri dersten önce iptal edebilir"
+      },
+      "repeat": {
+        "label": "Tekrarlı randevu",
+        "sub": "Müşterinin iki kez randevu almasına izin ver"
+      },
+      "workHours": {
+        "label": "Widget çalışma saatleri",
+        "sub": "Bu saatlerin dışındaki dersler online alınamaz"
+      }
+    },
+    "branding": {
+      "title": "Widget markası",
+      "sub": "Randevu sayfasının görünümü",
+      "accentColor": "Vurgu rengi",
+      "logo": {
+        "label": "Stüdyo logosu",
+        "sub": "Widget başlığında görünür",
+        "upload": "Yükle",
+        "uploading": "Yükleniyor…",
+        "remove": "Kaldır",
+        "uploadFailed": "Logo yüklenemedi"
+      },
+      "darkMode": {
+        "label": "Koyu tema",
+        "sub": "Widget koyu görünümde"
+      },
+      "language": {
+        "label": "Varsayılan dil",
+        "sub": "Arayüzün ana dili"
+      }
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "sub": "Müşterilere otomatik mesajlar",
+      "preview": {
+        "confirmed": "Randevu onaylandı! Pzt 10:00",
+        "reminder2h": "Hatırlatma: 2 saat sonra",
+        "reviewRequest": "Ziyaretiniz için teşekkürler! Dersi puanlayın"
+      },
+      "reminder24h": {
+        "label": "24 saat önce hatırlatma",
+        "sub": "Dersten önceki sabah"
+      },
+      "reminder2h": {
+        "label": "2 saat önce hatırlatma",
+        "sub": "Dersten kısa süre önce"
+      },
+      "reviewRequest": {
+        "label": "Değerlendirme isteği",
+        "sub": "Ziyaret işaretlenir işaretlenmez"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Ders sonrası kahve",
+        "sub": "Randevudan sonra müşteri grupla 15 dakika kalmaya davet edilir. İki ya da daha fazla kişi kabul ederse ders sonrası hatırlatma alırlar"
+      },
+      "spots": {
+        "label": "Nereye davet edilecek",
+        "sub": "Stüdyoya yakın en fazla üç mekân. Yalnızca iki ya da daha fazla kişi katılınca görünür",
+        "namePlaceholder": "Ad",
+        "addressPlaceholder": "Adres",
+        "urlPlaceholder": "Harita bağlantısı",
+        "add": "Mekân ekle",
+        "remove": "Mekânı kaldır"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 saat",
+      "2h": "2 saat",
+      "4h": "4 saat",
+      "12h": "12 saat",
+      "24h": "24 saat"
+    },
+    "window": {
+      "7d": "7 gün",
+      "14d": "14 gün",
+      "30d": "30 gün",
+      "60d": "60 gün"
+    },
+    "cancel": {
+      "2h": "2 saat",
+      "4h": "4 saat",
+      "12h": "12 saat",
+      "24h": "24 saat"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot bağlandı",
+    "botDisconnected": "Bot bağlantısı kesildi",
+    "codeCopied": "Kod kopyalandı!",
+    "linkCopied": "Bağlantı kopyalandı!",
+    "printBlocked": "QR kodu yazdırmak için açılır pencerelere izin verin",
+    "stripeReturned": "Bilgiler Stripe'a gönderildi",
+    "stripeLinkExpired": "Stripe bağlantısının süresi doldu — tekrar deneyin"
+  },
+  "stripeGate": {
+    "kicker": "Online randevu için gerekli",
+    "none": {
+      "title": "Önce ödemeleri kurun",
+      "sub": "Müşteri tek adımda randevu alır ve öder. Stripe hesabı bağlanmadan randevunun ücretini ödeyemez.",
+      "action": "Stripe'ı bağla"
+    },
+    "incomplete": {
+      "title": "Stripe kurulumunu tamamlayın",
+      "sub": "Hesap var ama Stripe ödemeleri henüz açmadı — form eksik.",
+      "action": "Kuruluma devam et"
+    },
+    "disabled": {
+      "title": "Ödemeler kapalı",
+      "sub": "Stripe bağlı ve ödeme almaya hazır, ancak Finans bölümünde kapalı.",
+      "action": "Finans'ı aç"
+    },
+    "loading": {
+      "title": "Bağlantı kontrol ediliyor",
+      "sub": "Stüdyo hesabının ödeme almaya hazır olup olmadığını Stripe'a soruyoruz.",
+      "action": "Kontrol ediliyor…"
+    },
+    "perks": {
+      "direct": "Para doğrudan stüdyo hesabına geçer",
+      "methods": "Kartlar, Apple Pay ve Google Pay baştan hazır",
+      "fee": "Komisyon Velora paketinize göre belirlenir"
+    },
+    "later": "Daha sonra",
+    "note": "Stripe formu açılacak. Bitirdiğinizde bu sayfaya dönersiniz."
+  },
+  "tg": {
+    "title": "Telegram botu",
+    "connected": "Bağlı",
+    "openInTelegram": "Botu Telegram'da aç",
+    "showToken": "Jetonu göster",
+    "hideToken": "Jetonu gizle",
+    "acceptsBookings": "Bot müşterilerden randevu alır",
+    "instantNotify": "Bildirimler anında ulaşır",
+    "disconnect": "Botun bağlantısını kes",
+    "pasteToken": "@BotFather'dan aldığınız bot jetonunu yapıştırın",
+    "invalidToken": "Geçersiz jeton biçimi",
+    "connect": "Botu bağla",
+    "howToGet": "Jeton nasıl alınır?",
+    "steps": {
+      "1a": "Telegram'ı açın → bulun:",
+      "1b": "@BotFather",
+      "2a": "Şu komutu gönderin:",
+      "2b": "/newbot",
+      "3": "Bot için bir ad ve kullanıcı adı seçin",
+      "4": "Jetonu kopyalayıp yukarıya yapıştırın"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Profilinize ve hikâyelerinize hızlı randevu bağlantısı koyun",
+    "steps": {
+      "1": "Bağlantınızı kopyalayın",
+      "2a": "Onu şu alana yapıştırın:",
+      "2b": "„Web sitesi”",
+      "2c": " Instagram profil ayarlarında.",
+      "3a": "Bağlantıyı şuraya ekleyin:",
+      "3b": "Hikâyeler",
+      "3c": " özel bir çıkartma ile."
+    },
+    "proTip": "Randevu akışını gösteren bir Hikâye'yi Öne Çıkanlar'a sabitleyin — dönüşümü %30 artırır."
+  },
+  "web": {
+    "title": "Site widget'ı",
+    "sub": "Herhangi bir siteye randevu düğmesi ekleyin (Tilda, WordPress veya kendi kodunuz)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopyala",
+    "instructionPrefix": "Bu kodu sitenizde kapanış etiketinden hemen önce yapıştırın:",
+    "instructionSuffix": " Düğme otomatik olarak görünecek."
+  },
+  "wa": {
+    "title": "WhatsApp ile randevu",
+    "sub": "WhatsApp Business'ta randevu bağlantısını anında gönderen bir otomatik yanıt kurun.",
+    "online": "çevrimiçi",
+    "sampleIncoming": "Merhaba! Bir ders için randevu almak istiyorum.",
+    "sampleOutgoing": "Hoş geldiniz! ✨",
+    "connect": "WhatsApp Business'ı bağla",
+    "connected": "Bağlı",
+    "autoReplyActive": "Otomatik yanıt aktif",
+    "instantLink": "Randevu bağlantısı anında gönderilir"
+  }
+}

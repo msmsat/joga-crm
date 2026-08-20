@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Vaihe {{step}} / {{total}}",
+    "securityNote": "Tietosi ovat suojattuja eikä niitä koskaan luovuteta kolmansille osapuolille",
+    "back": "Takaisin",
+    "continue": "Jatka",
+    "finish": "Aloita työskentely",
+    "saving": "Tallennetaan...",
+    "progress": "{{step}}/5 — vie alle 3 minuuttia",
+    "regionRequired": "Määritä alueelliset asetukset",
+    "networkError": "Verkkovirhe tietoja tallennettaessa.",
+    "phoneTakenTitle": "Numero on jo käytössä",
+    "phoneTaken": "Tämä puhelinnumero on jo rekisteröity",
+    "errorTitle": "Virhe",
+    "changeNumber": "Vaihda numero",
+    "gotIt": "Selvä"
+  },
+  "steps": {
+    "identity": {
+      "title": "Tietoa studiosta",
+      "desc": "Brändisi nimi, kuvaus ja visuaalinen tyyli."
+    },
+    "activity": {
+      "title": "Toimiala",
+      "desc": "Valitse suunta, niin räätälöimme CRM:n sinulle."
+    },
+    "contact": {
+      "title": "Yhteystiedot",
+      "desc": "Osoite, puhelin ja linkit asiakkaillesi."
+    },
+    "settings": {
+      "title": "Asetukset",
+      "desc": "Alue, valuutta ja päivämäärän muoto."
+    },
+    "schedule": {
+      "title": "Aukioloajat",
+      "desc": "Aseta päivät ja kellonajat, jolloin studiosi on auki."
+    }
+  },
+  "identity": {
+    "welcome": "Tervetuloa",
+    "subtitle": "Pari minuuttia asetuksia — ja työtilasi on valmis",
+    "replaceLogo": "Vaihda logo",
+    "uploadLogo": "Lataa logo",
+    "removeLogo": "Poista",
+    "logoHint": "JPG, PNG, WEBP enintään 5 Mt",
+    "nameLabel": "Studion tai yrityksen nimi",
+    "namePlaceholder": "Esim.: Studio Forma",
+    "descriptionLabel": "Kuvaus",
+    "descriptionPlaceholder": "Lyhyt kuvaus studiostasi, työtavastasi, erityispiirteistä...",
+    "newBadge": "UUSI"
+  },
+  "activity": {
+    "title": "Toiminnan tyyppi",
+    "subtitle": "Valitse suunta — räätälöimme CRM:n sinulle",
+    "comingSoon": "Pian: parturi, kuntosali, tanssi ja muuta",
+    "types": {
+      "yoga": {
+        "label": "Jooga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, mattapilates"
+      }
+    }
+  },
+  "contact": {
+    "title": "Yhteystiedot",
+    "subtitle": "Asiakkaat näkevät nämä tiedot varatessaan verkossa",
+    "phoneLabel": "Studion puhelin",
+    "checkingPhone": "Tarkistetaan numeroa...",
+    "addressLabel": "Osoite",
+    "emailLabel": "Sähköposti",
+    "websiteLabel": "Verkkosivusto",
+    "note": "Kaikki kentät puhelinta lukuun ottamatta ovat vapaaehtoisia. Voit täyttää ne myöhemmin asetuksissa."
+  },
+  "settings": {
+    "title": "Alueelliset asetukset",
+    "subtitle": "Voi muuttaa myöhemmin studion asetuksista",
+    "timezoneLabel": "Aikavyöhyke",
+    "timezonePlaceholder": "Valitse aikavyöhyke",
+    "languageLabel": "Kieli",
+    "languagePlaceholder": "Kieli",
+    "currencyLabel": "Valuutta",
+    "currencyPlaceholder": "Valuutta",
+    "dateFormatLabel": "Päivämäärän muoto",
+    "dateFormatPlaceholder": "Muoto",
+    "firstDayLabel": "Viikon ensimmäinen päivä",
+    "timezones": {
+      "UTC+3": "Moskova, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Taškent, Jekaterinburg, Karachi (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapore, Peking (UTC+8)",
+      "UTC+9": "Jakutsk, Tokio, Soul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Salomonsaaret (UTC+11)",
+      "UTC+12": "Kamtšatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Havaiji (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Mexico City (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Etelä-Georgia (UTC-2)",
+      "UTC-1": "Azorit (UTC-1)",
+      "UTC+0": "Lontoo, Lissabon (UTC+0)",
+      "UTC+1": "Berliini, Pariisi, Varsova (UTC+1)",
+      "UTC+2": "Kiova, Ateena, Kairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rupla",
+      "USD": "Dollari",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hryvnia",
+      "GBP": "Punta",
+      "AED": "Dirham",
+      "TRY": "Liira",
+      "CZK": "Tšekin koruna",
+      "PLN": "Zloty",
+      "HUF": "Forintti",
+      "RON": "Leu",
+      "BGN": "Leva",
+      "SEK": "Ruotsin kruunu",
+      "NOK": "Norjan kruunu",
+      "DKK": "Tanskan kruunu",
+      "CHF": "Sveitsin frangi",
+      "ISK": "Islannin kruunu",
+      "RSD": "Serbian dinaari"
+    }
+  },
+  "schedule": {
+    "title": "Aukioloajat",
+    "subtitle": "Aseta päivät ja kellonajat, jolloin studiosi on auki",
+    "scheduleLabel": "Studion aukiolo",
+    "dayOff": "Suljettu"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Studion nimi",
+    "clients": "Asiakkaat",
+    "attendance": "Osall.",
+    "studioCreated": "Studio luotu",
+    "chooseDirection": "Valitse suunta",
+    "phoneLabel": "Puhelin",
+    "emailLabel": "Sähköposti",
+    "addressLabel": "Osoite",
+    "phonePlaceholder": "+358 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Pääkatu 123",
+    "dayOff": "suljettu"
+  }
+}

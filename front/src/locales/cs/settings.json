@@ -1,0 +1,434 @@
+{
+  "nav": {
+    "sectionLabel": "Systémová nastavení",
+    "general": "Obecné",
+    "appearance": "Vzhled",
+    "notifications": "Oznámení",
+    "billing": "Fakturace",
+    "security": "Zabezpečení",
+    "integrations": "Integrace",
+    "data": "Data",
+    "logout": "Přepnout CRM"
+  },
+  "toast": {
+    "saved": "Uloženo",
+    "error": "Něco se pokazilo"
+  },
+  "workspace": {
+    "title": "Vaše CRM systémy",
+    "subtitle": "Vyberte pracovní prostor nebo vytvořte nový",
+    "current": "Aktuální",
+    "membersCount_one": "{{count}} člen",
+    "membersCount_few": "{{count}} členové",
+    "membersCount_other": "{{count}} členů",
+    "clientsCount_one": "{{count}} klient",
+    "clientsCount_few": "{{count}} klienti",
+    "clientsCount_other": "{{count}} klientů",
+    "createNew": "Vytvořit nové studio",
+    "loadError": "Vaše studia se nepodařilo načíst",
+    "selectError": "Na toto studio se nepodařilo přepnout"
+  },
+  "general": {
+    "company": {
+      "title": "Údaje o firmě",
+      "subtitle": "Veřejné informace o vašem podnikání",
+      "name": "Název firmy",
+      "namePh": "např. Moje studio",
+      "desc": "Popis",
+      "descPh": "Čím se vaše studio zabývá…",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "site": "Web",
+      "sitePh": "https://studio.com",
+      "address": "Adresa",
+      "addressPh": "Ukázková 123, Město"
+    },
+    "reset": "Obnovit",
+    "resetToast": "Nastavení obnoveno",
+    "locale": {
+      "title": "Jazyk a region",
+      "subtitle": "Nastavení lokalizace rozhraní",
+      "timezone": "Časové pásmo",
+      "timezoneSearch": "Město nebo posun",
+      "timezoneNotFound": "Časové pásmo nenalezeno",
+      "currency": "Měna",
+      "language": "Jazyk rozhraní",
+      "languageSearch": "Hledat jazyk",
+      "languageNotFound": "Jazyk nenalezen",
+      "dateFormat": "Formát data",
+      "firstDay": "První den týdne",
+      "firstDayLabels": [
+        "Pondělí",
+        "Neděle"
+      ]
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Motiv",
+      "subtitle": "Vyberte vizuální styl rozhraní",
+      "light": "Světlý",
+      "dark": "Tmavý",
+      "auto": "Systémový"
+    },
+    "accent": {
+      "title": "Barva zvýraznění",
+      "subtitle": "Přizpůsobte si hlavní barvu rozhraní",
+      "note": "Vaše volba se uloží, ale zatím se v rozhraní neprojeví — přijde v některé z dalších aktualizací.",
+      "noteTitle": "Již brzy",
+      "colors": {
+        "peach": "Broskvová",
+        "pistachio": "Pistáciová",
+        "lavender": "Levandulová",
+        "pink": "Růžová",
+        "gold": "Zlatá",
+        "mint": "Mátová"
+      }
+    },
+    "language": {
+      "title": "Jazyk rozhraní",
+      "subtitle": "Váš osobní jazyk — nemá vliv na nastavení studia",
+      "search": "Hledat jazyk",
+      "empty": "Jazyk nenalezen"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Moje oznámení",
+      "subtitle": "Osobní předvolby — nemají vliv na zbytek studia",
+      "hint": "Povinná oznámení nelze vypnout — díky nim vám neuteče změna rozvrhu ani platba.",
+      "empty": "Pro vaši roli nejsou žádná volitelná oznámení",
+      "channels": {
+        "email": "E-mail",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram pro oznámení",
+      "subtitle": "Kam vám osobně posílat události — rezervace, mzdy, reporty",
+      "chatId": "Vaše chat_id na Telegramu",
+      "chatIdPh": "např. 123456789",
+      "hintBefore": "Své chat_id zjistíte u bota",
+      "hintAfter": " na Telegramu — napište mu a pošle vám vaše ID.",
+      "invalidChatId": "Telegram chat_id musí být číslo, bez symbolů",
+      "saved": "Telegram propojen pro oznámení",
+      "saveFailed": "Telegram se nepodařilo uložit"
+    },
+    "email": {
+      "title": "E-mail pro oznámení",
+      "subtitle": "Kam posílat systémové e-maily",
+      "primary": "Hlavní e-mail",
+      "backup": "Záložní e-mail",
+      "backupPh": "zaloha@studio.com",
+      "saved": "Nastavení oznámení uloženo"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Zkušební zdarma"
+    },
+    "status": {
+      "active": "Aktivní",
+      "trial": "Zkušební",
+      "expired": "Vypršelo"
+    },
+    "plan": {
+      "title": "Aktuální tarif",
+      "expiresAt": "Aktivní do {{date}}",
+      "maxStaff": "Až {{count}} zaměstnanců",
+      "staffUnlimited": "Neomezený počet zaměstnanců",
+      "noSubscription": "Žádné aktivní předplatné",
+      "noSubscriptionCta": "Vybrat tarif",
+      "trialCta": "Vybrat tarif"
+    },
+    "upgrade": "Přejít na {{plan}}",
+    "renew": "Obnovit",
+    "autopay": {
+      "title": "Automatické obnovení",
+      "subtitle": "Strhává se z uložené karty",
+      "autoRenew": "Automatické obnovení",
+      "notifyBefore": "Připomeneme vám to {{count}} dní před stržením"
+    },
+    "payment": {
+      "title": "Způsob platby",
+      "cardSummary": "Karta •••• {{last4}}",
+      "notLinked": "Není připojena žádná karta",
+      "change": "Změnit"
+    },
+    "history": {
+      "title": "Historie plateb",
+      "subtitle": "Posledních 12 plateb",
+      "exportCsv": "Export CSV",
+      "empty": "Zatím žádné platby",
+      "showAll": "Zobrazit vše",
+      "period": "{{count}} měs.",
+      "noDate": "—",
+      "status": {
+        "paid": "Zaplaceno",
+        "pending": "Čeká",
+        "failed": "Neúspěšné",
+        "refunded": "Vráceno"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Nastavení automatického obnovení uloženo",
+      "renewed": "Obnovení spuštěno",
+      "csvExportError": "CSV se nepodařilo exportovat"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Zabezpečení účtu",
+      "subtitle": "Chraňte přístup do svého pracovního prostoru"
+    },
+    "twoFa": {
+      "title": "Dvoufaktorové ověření",
+      "sub": "Kód e-mailem při každém přihlášení",
+      "active": "Aktivní",
+      "disabled": "Vypnuto",
+      "enableTitle": "Zapnout 2FA",
+      "disableTitle": "Vypnout 2FA",
+      "enableWarning": "Po zapnutí bude každé přihlášení vyžadovat kód zaslaný na {{email}}. Ujistěte se, že k němu máte přístup — jinak riskujete ztrátu přístupu k účtu.",
+      "disableWarning": "Po vypnutí bude k přihlášení stačit samotné heslo, bez kódu z e-mailu.",
+      "enabledToast": "Dvoufaktorové ověření zapnuto",
+      "disabledToast": "Dvoufaktorové ověření vypnuto"
+    },
+    "password": {
+      "title": "Heslo k účtu",
+      "sub": "Změna se potvrzuje kódem z e-mailu",
+      "change": "Změnit heslo",
+      "changed": "Heslo bylo úspěšně změněno",
+      "current": "Současné heslo",
+      "currentPh": "Zadejte současné heslo",
+      "new": "Nové heslo",
+      "newPh": "Alespoň 8 znaků",
+      "repeat": "Zopakujte heslo",
+      "repeatPh": "Zadejte nové heslo znovu",
+      "mismatch": "Hesla se neshodují",
+      "forgot": "Zapomněli jste heslo?",
+      "resetTitle": "Obnovení hesla",
+      "step1Sub": "Ověříme, že jste to vy",
+      "step2Sub": "Kód odeslán na {{email}}",
+      "step3Sub": "Zvolte nové heslo",
+      "resetIntro": "Pošleme 6místný kód na e-mail vašeho účtu. Současné heslo znát nemusíte — kód dokazuje, že schránka je vaše.",
+      "sendCode": "Odeslat kód",
+      "back": "Zpět",
+      "save": "Uložit heslo",
+      "resetDone": "Heslo aktualizováno",
+      "resetLogoutHint": "Ostatní zařízení budou odhlášena — na tomto zůstáváte přihlášeni.",
+      "rules": {
+        "len": "8+ znaků",
+        "letter": "Obsahuje písmeno",
+        "digit": "Obsahuje číslici",
+        "simple": "Žádné 111 ani qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktivní relace",
+      "sub": "Kde je váš účet právě přihlášen",
+      "count": "{{count}} zařízení",
+      "manage": "Spravovat",
+      "hide": "Skrýt",
+      "current": "Aktuální",
+      "terminate": "Ukončit",
+      "terminateAll": "Ukončit všechny ostatní relace",
+      "terminatedToast": "Relace byla úspěšně ukončena",
+      "terminatedAllToast": "Ostatní relace ukončeny",
+      "justNow": "Aktivní teď",
+      "minutesAgo": "před {{count}} min",
+      "hoursAgo": "před {{count}} h",
+      "daysAgo": "před {{count}} d",
+      "unknownLocation": "Neznámé"
+    },
+    "otp": {
+      "sentHint": "Poslali jsme 6místný kód na váš e-mail. Zadejte ho níže.",
+      "resend": "Poslat kód znovu",
+      "resendIn": "Znovu za {{count}} s",
+      "confirm": "Potvrdit",
+      "cancel": "Zrušit",
+      "sendCode": "Odeslat kód",
+      "continue": "Pokračovat"
+    },
+    "danger": {
+      "title": "Správa dat (riziková zóna)",
+      "export": {
+        "title": "Exportovat všechna data",
+        "sub": "Stáhnout archiv klientské databáze a historie",
+        "prepare": "Připravit archiv",
+        "hide": "Skrýt",
+        "clients": "Klientská databáze (CSV)",
+        "finances": "Finanční operace",
+        "schedule": "Lekce a rozvrh",
+        "start": "Spustit export",
+        "started": "Archiv se připravuje, odkaz vám přijde na e-mail",
+        "emptySelection": "Vyberte alespoň jednu sekci k exportu"
+      },
+      "wipe": {
+        "title": "Vymazat databázi",
+        "sub": "Smaže všechny klienty a rezervace. Nastavení zůstane.",
+        "action": "Vymazat data",
+        "toast": "Databáze byla úspěšně vymazána",
+        "consequence1": "Trvale smazáno: klienti, lekce, rezervace, operace, dokumenty, permanentky klientů, historie věrnosti",
+        "consequence2": "Zůstává beze změny: studio, pobočky, sály, služby, zaměstnanci, tarif a nastavení",
+        "consequence3": "Tato akce je nevratná — po potvrzení ji nelze vzít zpět"
+      },
+      "deleteAccount": {
+        "title": "Smazat účet firmy",
+        "sub": "Úplné a nevratné zničení podniku v systému",
+        "action": "Smazat navždy",
+        "consequence1": "Studio a všechna jeho data budou trvale smazána, včetně klientů, lekcí, financí a nastavení",
+        "consequence2": "Váš osobní účet zůstává — maže se pouze toto studio",
+        "consequence3": "Smazání není možné s aktivním předplatným nebo pokud má studio další vlastníky"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrace",
+    "subtitle": "Připojte externí kanály a ekosystémy jedním kliknutím",
+    "loadError": "Stav integrací se nepodařilo načíst",
+    "items": {
+      "telegram": {
+        "name": "Telegram Bot",
+        "sub": "Oznámení klientům a rezervace přes bota"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Hromadné zprávy a automatická oznámení klientům"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI agent pro automatické odpovědi a online rezervace"
+      },
+      "google_calendar": {
+        "name": "Google Kalendář",
+        "sub": "Synchronizace rozvrhu studia"
+      }
+    },
+    "status": {
+      "connected": "Připojeno",
+      "notActive": "Nepřipojeno"
+    },
+    "actions": {
+      "configure": "Nastavit",
+      "connect": "Připojit",
+      "disconnect": "Odpojit"
+    },
+    "fields": {
+      "keyLabel": "Klíč",
+      "connectedAtLabel": "Připojeno",
+      "telegramToken": "API token bota (od @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Přístupový token",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Phone number ID",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA ID (nepovinné)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Přístupový token",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID firemního účtu na Instagramu",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Jak připojit",
+      "telegram": {
+        "steps": [
+          "Otevřete @BotFather v Telegramu a pošlete /newbot",
+          "Zvolte název a uživatelské jméno bota — BotFather vám pošle API token",
+          "Vložte token níže a klikněte na Připojit"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Vytvořte aplikaci v Meta for Developers a přidejte produkt WhatsApp",
+          "V API Setup zkopírujte dočasný nebo trvalý přístupový token",
+          "Zkopírujte také Phone number ID testovacího nebo ověřeného čísla",
+          "Vložte obě hodnoty níže a klikněte na Připojit"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Propojte instagramový účet studia s facebookovou stránkou — pro Direct API je to nutné",
+          "Vytvořte aplikaci v Meta for Developers s produktem Instagram Graph API",
+          "Vygenerujte přístupový token s oprávněními instagram_basic a instagram_manage_messages",
+          "Zkopírujte ID firemního účtu na Instagramu a token a vložte je níže",
+          "Bez schválení od Meta funguje připojení jen pro testovací účty aplikace"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Klikněte na Připojit — otevře se přihlašovací okno Google",
+          "Vyberte účet, ke kterému je kalendář studia připojen",
+          "Udělte přístup ke kalendáři — lekce se do něj začnou přidávat automaticky"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "oznámení klientům tímto kanálem",
+      "booking": "online rezervace tímto kanálem",
+      "dm_agent": "AI agent pro automatické odpovědi v Directu",
+      "schedule_sync": "synchronizace rozvrhu s Google Kalendářem"
+    },
+    "disconnect": {
+      "title": "Odpojit {{name}}?",
+      "willStop": "Přestane fungovat:",
+      "checkbox": "Rozumím důsledkům",
+      "cancel": "Zrušit",
+      "confirm": "Odpojit"
+    },
+    "google": {
+      "connected": "Google Kalendář připojen",
+      "denied": "Přístup ke Google Kalendáři nebyl udělen",
+      "error": "Google Kalendář se nepodařilo připojit",
+      "primary": "hlavní",
+      "calendar": "Kalendář",
+      "selectCalendar": "Vyberte kalendář",
+      "loadingCalendars": "Načítám kalendáře…",
+      "syncMode": "Režim synchronizace",
+      "syncModeOptions": {
+        "push": "Jen z CRM do Google",
+        "two_way": "Obousměrně"
+      },
+      "syncNow": "Synchronizovat teď",
+      "lastSync": "Naposledy synchronizováno: {{date}}",
+      "neverSynced": "Zatím nesynchronizováno",
+      "timezoneWarning": "Časové pásmo studia není nastaveno — události se odesílají v UTC a mohou se rozejít se skutečnými časy lekcí. Nastavte pásmo v sekci Obecné.",
+      "syncResult": "Synchronizováno: {{pushed}} odesláno, {{pulled}} načteno",
+      "settingsSaved": "Nastavení Google Kalendáře uloženo"
+    },
+    "toast": {
+      "connected": "Integrace připojena",
+      "disconnected": "Integrace odpojena"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Export reportů a seznamů",
+      "subtitle": "Stáhněte soubory v tabulkových formátech pro účetnictví a analytiku",
+      "clearFilter": "Zrušit období",
+      "items": {
+        "clients": {
+          "name": "Seznam klientů"
+        },
+        "schedule": {
+          "name": "Rozvrh a historie rezervací"
+        },
+        "finances": {
+          "name": "Finanční report"
+        },
+        "subscriptions": {
+          "name": "Permanentky klientů"
+        }
+      },
+      "rows_one": "{{count}} záznam",
+      "rows_few": "{{count}} záznamy",
+      "rows_other": "{{count}} záznamů",
+      "loading": "Načítám...",
+      "empty": "za toto období nejsou data"
+    }
+  }
+}

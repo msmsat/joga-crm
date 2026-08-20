@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Din profil",
+    "sub": "Hantera personuppgifter och sessioner"
+  },
+  "personalInfo": {
+    "heading": "Personuppgifter",
+    "emailLocked": "E-postadressen är din inloggning och kan inte ändras här"
+  },
+  "security": {
+    "changePassword": "Byt lösenord",
+    "logout": "Logga ut"
+  },
+  "accounts": {
+    "title": "Mina studios",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studios",
+    "enter": "Öppna",
+    "login": "Logga in",
+    "register": "Registrera dig",
+    "addStudio": "Lägg till studio",
+    "addStudioSub": "En ny arbetsyta — du blir dess ägare"
+  },
+  "session": {
+    "current": "Nuvarande session",
+    "lastActive": "Aktiv {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Personuppgifterna har uppdaterats"
+  },
+  "otherAccount": {
+    "title": "Ett annat konto",
+    "sub": "Att logga in som någon annan avslutar den nuvarande sessionen i den här webbläsaren — du kan komma tillbaka med en vanlig inloggning.",
+    "recentTitle": "Du har loggat in tidigare",
+    "return": "Logga in",
+    "forget": "Glöm konto"
+  }
+}

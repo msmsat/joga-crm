@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Tänään",
+    "trainers": "Ohjaajat",
+    "halls": "Salit",
+    "day": "Päivä",
+    "week": "Viikko"
+  },
+  "daySummary": {
+    "classesToday": "tuntia tänään",
+    "clientBookings": "asiakasvarausta",
+    "avgLoad": "keskim. täyttöaste",
+    "trainersActive": "ohjaajaa työssä",
+    "gridStep": "Ruudukon väli",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Kumoa: {{label}}",
+    "redo": "Tee uudelleen: {{label}}",
+    "nothingToUndo": "Ei kumottavaa",
+    "nothingToRedo": "Ei toistettavaa"
+  },
+  "newBooking": {
+    "title": "Uusi tunti",
+    "slotTime": "Aikaväli",
+    "service": "Palvelu",
+    "servicePlaceholder": "Valitse palvelu",
+    "namePlaceholder": "Esim. Reformer Pilates",
+    "location": "Paikka / sali",
+    "start": "Alku",
+    "end": "Loppu",
+    "groupLimit": "Ryhmän koko",
+    "maxSpots": "Enimmäispaikat",
+    "assignTrainer": "Määritä ohjaaja",
+    "cancel": "Peruuta",
+    "create": "Luo tunti",
+    "errors": {
+      "selectService": "Valitse palvelu",
+      "range": "1–50",
+      "endAfterStart": "Lopun on oltava alun jälkeen"
+    },
+    "createServiceConfirm": {
+      "title": "Luodaanko palvelu?",
+      "message": "Etkö löydä tarvitsemaasi palvelua? Luo se Luettelossa.",
+      "confirm": "Siirry Luetteloon"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Vahvistettu",
+    "pending": "Odottaa",
+    "cancelled": "Peruttu",
+    "spotsTaken": "varattua paikkaa",
+    "fillRate": "Täyttöaste",
+    "booked": "Ilmoittautunut",
+    "attended": "Osallistui",
+    "markAttended": "Merkitse läsnäolo",
+    "awaitingConfirmation": "Odottaa vahvistusta",
+    "trialLesson": "Kokeilu",
+    "unpaid": "Maksamatta · {{amount}}",
+    "acceptPayment": "Ota maksu vastaan",
+    "payCash": "Käteinen",
+    "payTransfer": "Tilisiirto",
+    "payLater": "Ei maksua",
+    "confirmBooking": "Vahvista varaus",
+    "rejectBooking": "Hylkää pyyntö",
+    "removeFromLesson": "Poista tunnilta",
+    "add": "Lisää",
+    "addClient": "Lisää asiakas",
+    "edit": "Muokkaa",
+    "editLesson": "Muokkaa tuntia",
+    "deleteLesson": "Poista tunti",
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "lessonTitle": "Tunnin nimi",
+    "untitled": "Nimetön",
+    "from": "Alkaen",
+    "to": "Asti",
+    "searchPlaceholder": "Hae nimellä tai puhelinnumerolla...",
+    "noClientsFound": "Asiakkaita ei löytynyt",
+    "noEligibleClients": "Yhdelläkään asiakkaalla ei ole pääsyä tälle tunnille",
+    "visitsCount_one": "{{count}} käynti",
+    "visitsCount_other": "{{count}} käyntiä",
+    "errors": {
+      "selectService": "Valitse palvelu",
+      "range": "1–50",
+      "minBooked": "{{count}} on jo ilmoittautunut — alemmas ei voi",
+      "endAfterStart": "Lopun on oltava alun jälkeen"
+    },
+    "createServiceConfirm": {
+      "title": "Luodaanko palvelu?",
+      "message": "Etkö löydä tarvitsemaasi palvelua? Luo se Luettelossa.",
+      "confirm": "Siirry Luetteloon"
+    }
+  },
+  "addClientModal": {
+    "title": "Lisää asiakas",
+    "searchPlaceholder": "Hae nimellä tai puhelinnumerolla...",
+    "noClientsFound": "Asiakkaita ei löytynyt",
+    "chooseFromList": "Valitse asiakkaat listalta",
+    "selectedCount_one": "Valittu: {{count}} asiakas",
+    "selectedCount_other": "Valittu: {{count}} asiakasta",
+    "cancel": "Peruuta",
+    "add": "Lisää"
+  },
+  "rightPanel": {
+    "halls": "Salit",
+    "load": "Täyttöaste",
+    "upcoming": "Tulossa"
+  },
+  "grid": {
+    "classesShort": "tunt.",
+    "peopleShort": "hlö",
+    "loadPercent": "Täyttöaste: {{percent}} %",
+    "classes": "tuntia",
+    "classesToday": "tuntia tänään",
+    "newLessonPreview": "Uusi tunti",
+    "cancelled": "Peruttu",
+    "noTrainers": "Ei ohjaajia",
+    "noHalls": "Ei saleja"
+  },
+  "createService": "+ Luo palvelu",
+  "invalidDateFormat": "Virheellinen päivämäärän muoto",
+  "toasts": {
+    "lessonMoved": "Tunti siirretty",
+    "endTimeChanged": "Päättymisaika muutettu",
+    "startTimeChanged": "Alkamisaika muutettu",
+    "attendanceMarked": "Läsnäolo merkitty",
+    "paymentAccepted": "Maksu vastaanotettu",
+    "bookingConfirmed": "Varaus vahvistettu",
+    "clientRemoved": "Asiakas poistettu tunnilta",
+    "lessonUpdated": "Tunti päivitetty",
+    "lessonAdded": "Tunti lisätty",
+    "selectTrainer": "Valitse ohjaaja",
+    "alreadyCancelled": "Tunti on jo peruttu",
+    "lessonCancelled": "Tunti peruttu",
+    "noPermission": "Oikeudet eivät riitä aikataulun muuttamiseen",
+    "undoLabel": "Kumottu: {{label}}",
+    "redoLabel": "Tehty uudelleen: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Ilmoitettu: {{count}} asiakas",
+    "clientsBooked_other": "Ilmoitettu: {{count}} asiakasta",
+    "clientsBookedPartial": "Ilmoitettu {{success}} / {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "asiakkaan poisto",
+      "moveLesson": "tunnin siirto",
+      "createLesson": "tunnin luonti",
+      "bookClient": "asiakkaan ilmoittautuminen",
+      "bookClients": "asiakkaiden ilmoittautuminen ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Lataaminen epäonnistui",
+    "retry": "Yritä uudelleen"
+  },
+  "cancelBookingConfirm": {
+    "title": "Perutaanko tunti?",
+    "message_one": "{{count}} asiakas saa ilmoituksen peruutuksesta.",
+    "message_other": "{{count}} asiakasta saa ilmoituksen peruutuksesta.",
+    "confirm": "Peru tunti"
+  }
+}

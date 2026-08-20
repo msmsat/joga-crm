@@ -8,6 +8,7 @@
 """
 import asyncio
 import warnings
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 warnings.filterwarnings("ignore")
@@ -17,9 +18,22 @@ from sqlalchemy import delete, select
 
 from database import async_session_maker
 from models import AIUsage, Studio, StudioBillingPlan
+from services import ai_quota
 from services.ai_quota import _limits_for, ai_quota_status, check_ai_quota
 
 _STUDIO_NAME = "TEST-AI-QUOTA"
+
+
+@contextmanager
+def _trial(limit: int):
+    """Пробный потолок на время теста. Тарифные проверки гоняем с limit=0: 150
+    меньше любой месячной ступени, иначе они упираются в него и ступени не видно."""
+    saved = ai_quota.TRIAL_LIMIT
+    ai_quota.TRIAL_LIMIT = limit
+    try:
+        yield
+    finally:
+        ai_quota.TRIAL_LIMIT = saved
 
 
 async def _seed(plan_name: str | None, billing_mode: str = "subscription") -> int:
@@ -159,6 +173,25 @@ async def _run_reserve():
         await _cleanup(studio_id)
 
 
+async def _run_trial_cap():
+    """Пробный потолок бьёт раньше тарифного и считает за ВСЁ время, а не за месяц.
+
+    Business (5000 в месяц) с записями прошлого месяца: по тарифу запас нетронут,
+    по пробному — исчерпан. UI обязан показывать именно пробные числа."""
+    studio_id = await _seed("business")
+    try:
+        await _add_usage(studio_id, 149, days_ago=40)   # прошлый месяц — потолок сквозной
+        await _expect_ok(studio_id)
+        await _add_usage(studio_id, 1)
+        await _expect_429(studio_id, "ai_trial_exhausted")
+
+        async with async_session_maker() as db:
+            used, limit = await ai_quota_status(db, studio_id)
+        assert (used, limit) == (150, 150), (used, limit)
+    finally:
+        await _cleanup(studio_id)
+
+
 def test_ai_quota_plan_states():
     """Разбор состояний тарифа — без БД: в двух случаях из трёх первая редакция
     эпика давала безлимитный ИИ."""
@@ -176,35 +209,32 @@ def test_ai_quota_plan_states():
     assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300
 
 
-def test_ai_quota_requests_limit():
-    asyncio.run(_run_requests_limit())
+def _plan_test(fn):
+    def wrapper():
+        with _trial(0):
+            asyncio.run(fn())
+    return wrapper
 
 
-def test_ai_quota_ignores_other_rows():
-    asyncio.run(_run_ignores_other_rows())
+test_ai_quota_requests_limit = _plan_test(_run_requests_limit)
+test_ai_quota_ignores_other_rows = _plan_test(_run_ignores_other_rows)
+test_ai_quota_percent_plan = _plan_test(_run_percent_plan)
+test_ai_quota_no_plan_row = _plan_test(_run_no_plan_row)
+test_ai_quota_cost_cap = _plan_test(_run_cost_cap)
+test_ai_quota_reserve = _plan_test(_run_reserve)
 
 
-def test_ai_quota_percent_plan():
-    asyncio.run(_run_percent_plan())
-
-
-def test_ai_quota_no_plan_row():
-    asyncio.run(_run_no_plan_row())
-
-
-def test_ai_quota_cost_cap():
-    asyncio.run(_run_cost_cap())
-
-
-def test_ai_quota_reserve():
-    asyncio.run(_run_reserve())
+def test_ai_quota_trial_cap():
+    with _trial(150):
+        asyncio.run(_run_trial_cap())
 
 
 if __name__ == "__main__":
     test_ai_quota_plan_states()
     for fn in (
-        _run_requests_limit, _run_ignores_other_rows, _run_percent_plan,
-        _run_no_plan_row, _run_cost_cap, _run_reserve,
+        test_ai_quota_requests_limit, test_ai_quota_ignores_other_rows,
+        test_ai_quota_percent_plan, test_ai_quota_no_plan_row,
+        test_ai_quota_cost_cap, test_ai_quota_reserve, test_ai_quota_trial_cap,
     ):
-        asyncio.run(fn())
+        fn()
     print("ALL PASS")

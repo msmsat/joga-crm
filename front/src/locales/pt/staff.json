@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Total na equipa",
+    "onShift": "Em turno",
+    "trainers": "Treinadores",
+    "administrators": "Administradores",
+    "onlineNow": "{{count}} online agora"
+  },
+  "toolbar": {
+    "teamTitle": "Equipa · {{count}}",
+    "addEmployee": "Adicionar funcionário",
+    "searchPlaceholder": "Pesquisar...",
+    "allGroup": "Todos"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Acesso total",
+    "ownerAccess": "O proprietário tem acesso a todos os módulos do sistema",
+    "loadBar": "Carga do treinador",
+    "weekSchedule": "Horário semanal",
+    "todaySchedule": "Horário de hoje",
+    "minutesSuffix": "min",
+    "clientsSuffix": "clientes",
+    "hall": "Sala",
+    "staffHalls": "Salas do funcionário",
+    "noName": "Nome não definido",
+    "noRole": "Sem função",
+    "addEventStub": "Formulário para adicionar evento..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Receita",
+      "rating": "Avaliação",
+      "bookings": "Reservas",
+      "load": "Carga"
+    },
+    "admin": {
+      "bookings": "Reservas",
+      "attended": "Atendidas",
+      "revenue": "Caixa",
+      "load": "Carga"
+    },
+    "owner": {
+      "revenue": "Receita",
+      "attended": "Visitas",
+      "load": "Carga",
+      "staff": "Funcionários"
+    },
+    "default": {
+      "bookings": "Reservas",
+      "attended": "Visitas",
+      "revenue": "Receita",
+      "load": "Carga"
+    }
+  },
+  "schedule": {
+    "week": "Semana",
+    "month": "Mês",
+    "working": "Horário de trabalho",
+    "free": "Livre",
+    "busy": "Ocupado",
+    "dayOff": "Folga",
+    "syncHint": "O horário sincroniza com o diário de reservas e a agenda de aulas.",
+    "workDaysInWeek": "{{count}} dias de trabalho por semana",
+    "markWork": "A trabalhar",
+    "markHint": "Escolha uma marca acima e depois clique num dia",
+    "prevMonth": "Mês anterior",
+    "nextMonth": "Mês seguinte",
+    "dayHasBookings": "Este dia já tem reservas — não pode ser folga",
+    "pastDayLocked": "Os dias passados não podem ser alterados"
+  },
+  "permissions": {
+    "finance": "Finanças",
+    "staff": "Funcionários",
+    "reports": "Relatórios",
+    "clients": "Clientes",
+    "settings": "Definições"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "trainer": "Treinador",
+    "owner": "Proprietário"
+  },
+  "deleteModal": {
+    "cancelLesson": "Cancelar a aula?",
+    "dontAsk": "Não perguntar de novo ao eliminar",
+    "cancelInvite": "Cancelar a adesão?",
+    "cancelInviteConfirm": "Cancelar convite"
+  },
+  "toasts": {
+    "lessonCanceled": "Aula cancelada",
+    "errorCancel": "Erro ao cancelar",
+    "employeeAdded": "Funcionário {{name}} adicionado",
+    "changesSaved": "Alterações guardadas",
+    "employeeDeleted": "Funcionário eliminado",
+    "errorDelete": "Erro ao eliminar",
+    "errorSave": "Não foi possível guardar as alterações",
+    "emailCopied": "Email copiado",
+    "phoneCopied": "Telefone copiado",
+    "inviteSent": "Convite enviado para {{email}}",
+    "inviteResent": "Convite enviado novamente",
+    "inviteCancelled": "Convite cancelado"
+  },
+  "addModal": {
+    "stepIndicator": "Passo {{current}} de {{total}}",
+    "stepCounter": "{{current}}/4 — cerca de 2 minutos",
+    "nameFallback": "esta pessoa",
+    "employeeFallback": "Funcionário",
+    "steps": {
+      "1": {
+        "title": "Sobre o funcionário",
+        "sub": "Como se chama o novo membro da equipa?",
+        "trust": "Os dados do funcionário estão protegidos"
+      },
+      "2": {
+        "title": "Função e serviços",
+        "sub": "Cargo e lista de serviços",
+        "trust": "A função pode ser alterada a qualquer momento"
+      },
+      "3": {
+        "title": "Horário e salário",
+        "sub": "Quando trabalha e quanto ganha?",
+        "trust": "O horário sincroniza com o diário"
+      },
+      "4": {
+        "title": "Pronto!",
+        "sub": "Convite enviado para {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Dados pessoais",
+      "sub": "Vamos começar pelo nome e pelos contactos",
+      "namePlaceholder": "Ex. Ana Silva",
+      "emailLabel": "Endereço de email",
+      "contactsNotSet": "Sem contactos indicados",
+      "inviteHint": "Entregue a palavra-passe ao funcionário pessoalmente — ela nunca vai no email. O email leva apenas o link e, sem a palavra-passe, não abre o estúdio.",
+      "errors": {
+        "name": "O nome é obrigatório",
+        "phone": "Número de telefone inválido",
+        "email": "Email inválido",
+        "password": "Pelo menos 8 caracteres, com letras e números",
+        "emailTaken": "Este email já pertence a outra conta Velora"
+      },
+      "passwordLabel": "Palavra-passe de acesso do funcionário",
+      "passwordPlaceholder": "Pelo menos 8 caracteres, letras e números"
+    },
+    "step2": {
+      "heading": "Função e serviços",
+      "sub": "Escolha um cargo — os serviços são adicionados automaticamente",
+      "positionLabel": "Cargo *",
+      "positionPlaceholder": "Ou introduza um cargo próprio...",
+      "addServicePlaceholder": "Adicionar serviço — prima Enter"
+    },
+    "step3": {
+      "heading": "Horário e salário",
+      "sub": "Defina os dias de trabalho e a remuneração",
+      "scheduleLabel": "Horário de trabalho",
+      "salaryLabel": "Salário (opcional)",
+      "salaryPlaceholder": "Introduza um número",
+      "createAndInvite": "Criar e convidar"
+    },
+    "step4": {
+      "exclaim": "Ótimo!",
+      "added": "adicionado",
+      "sub": "Convite enviado. O funcionário entra na equipa assim que o aceitar.",
+      "inviteLinkLabel": "Link do convite",
+      "sendInviteLabel": "Enviar convite",
+      "inviteInfo": "O funcionário recebe o email, abre o link e confirma o convite com a sua palavra-passe — só então entra na equipa e obtém acesso. O link é válido durante 7 dias. A palavra-passe não vai no email — entregue-a pessoalmente.",
+      "emailSentTitle": "Email enviado",
+      "resend": "Enviar novamente",
+      "resentOk": "Email enviado novamente",
+      "resendError": "Falha no envio — tente de novo",
+      "copied": "Copiado"
+    },
+    "illus": {
+      "contacts": "Contactos",
+      "profile": "Perfil",
+      "roleFallback": "Função",
+      "services": "Serviços",
+      "specialization": "Especialização",
+      "scheduleTitle": "HORÁRIO DE TRABALHO",
+      "inviteSent": "Convite enviado",
+      "inviteSub": "{{name}} vai receber um link de acesso"
+    },
+    "summary": {
+      "employee": "Funcionário",
+      "role": "Função",
+      "workDays": "Dias de trabalho",
+      "daysCount": "{{count}} de 7"
+    }
+  },
+  "editModal": {
+    "header": "EDIÇÃO",
+    "employeeFallback": "Funcionário",
+    "positionFallback": "Sem cargo",
+    "tabs": {
+      "profile": "Perfil",
+      "role": "Função",
+      "salary": "Salário",
+      "schedule": "Horário"
+    },
+    "profile": {
+      "heading": "Dados pessoais",
+      "sub": "Atualize os dados de contacto do funcionário",
+      "uploadPhoto": "Carregar foto",
+      "replacePhoto": "Substituir foto",
+      "removePhoto": "Remover foto",
+      "photoHint": "JPG, PNG — até 5 MB",
+      "namePlaceholder": "Nome Apelido",
+      "notifyHint": "O funcionário será notificado das alterações no telefone ou email indicados.",
+      "errors": {
+        "name": "O nome é obrigatório",
+        "email": "Email inválido"
+      },
+      "contactsOwnedByEmployee": "O email e o telefone pertencem à conta do funcionário — ele altera-os no seu próprio perfil."
+    },
+    "role": {
+      "heading": "Função e especialização",
+      "sub": "Cargo do funcionário e lista de serviços",
+      "addService": "Adicionar serviço",
+      "catalogConfirm": "Quer abrir a secção Serviços no Catálogo?"
+    },
+    "salary": {
+      "heading": "Salário",
+      "sub": "Indique o tipo de pagamento e o valor da remuneração",
+      "typeLabel": "Tipo de pagamento",
+      "perWeek": "₽ / semana",
+      "selectTypeHint": "Escolha acima um tipo de pagamento",
+      "currentLabel": "Remuneração atual",
+      "typeFixed": "Salário fixo",
+      "typePercent": "% da receita",
+      "typeHourly": "Pagamento à hora",
+      "typeNotSet": "Tipo não selecionado",
+      "cardFixedSub": "Valor fixo",
+      "cardPercentSub": "% da receita",
+      "cardHourlySub": "Por hora trabalhada",
+      "amountFixed": "Valor mensal",
+      "amountPercent": "Percentagem da receita",
+      "amountHourly": "Valor por hora",
+      "reportHint": "O salário aparece nos relatórios financeiros. O funcionário vê apenas a sua própria remuneração."
+    },
+    "schedule": {
+      "heading": "Horário de trabalho",
+      "activeDays": "Dias ativos: {{count}} de 7",
+      "syncHint": "O horário sincroniza com o diário de reservas e a agenda de aulas.",
+      "workDaysLabel": "Dias de trabalho",
+      "totalHoursLabel": "Total de horas",
+      "daysOffLabel": "Folgas",
+      "daysLabel": "Dias",
+      "workDays": "{{count}} dias de trabalho",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online agora",
+      "notOnline": "Não está online",
+      "schedule": "Horário",
+      "daysCount": "{{count}}/7 dias"
+    },
+    "deleteEmployee": "Remover funcionário",
+    "deleteConfirm": "Remover {{name}} da equipa?",
+    "defaultName": "funcionário",
+    "cannotDeleteLastOwner": "Não é possível remover o único proprietário"
+  },
+  "ownerModal": {
+    "header": "CONTACTOS DO PROPRIETÁRIO",
+    "heading": "Dados de contacto",
+    "sub": "Telefone e email do proprietário do estúdio",
+    "cardNote": "o email é o utilizador de acesso",
+    "loginWarning": "O email é o login do proprietário. Depois de guardar, inicie sessão com o novo endereço.",
+    "lockedHint": "O nome, a foto, a função e as permissões não se editam aqui — estão na secção «Perfil»."
+  },
+  "list": {
+    "pendingLabel": "Convite pendente",
+    "pendingHint": "O perfil abre quando o funcionário aceitar o convite",
+    "resendInvite": "Enviar o convite novamente",
+    "cancelInvite": "Cancelar adesão"
+  }
+}

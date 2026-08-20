@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "¿No eres tú?",
+    "login": "Inicia sesión con otra cuenta"
+  },
+  "card": {
+    "roleLine": "Invitación al equipo · {{role}}"
+  },
+  "title": {
+    "new": "Hola, {{name}}",
+    "existing": "Bienvenido de nuevo, {{name}}"
+  },
+  "sub": {
+    "new": "Introduce la contraseña que te dio el responsable del estudio.",
+    "existing": "Introduce la contraseña de {{email}} para aceptar la invitación."
+  },
+  "switch": {
+    "notice": "Has iniciado sesión como {{current}}. Esta invitación es para {{next}} — al aceptarla cambias a esa cuenta. Puedes volver desde tu perfil."
+  },
+  "fields": {
+    "newPassword": "Contraseña",
+    "newPasswordPlaceholder": "Contraseña del responsable",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Tu contraseña de Velora",
+    "phone": "Número de teléfono",
+    "phoneHint": "Todavía no tenemos tu número — introdúcelo con el prefijo del país",
+    "show": "Mostrar",
+    "hide": "Ocultar"
+  },
+  "cta": {
+    "enter": "Entrar en el estudio",
+    "accept": "Aceptar invitación"
+  },
+  "forgotHint": "¿Has olvidado la contraseña?",
+  "forgotLink": "Recuperar acceso",
+  "expired": {
+    "title": "El enlace no es válido",
+    "sub": "La invitación ha caducado o se ha revocado. Pide al propietario del estudio que la envíe de nuevo.",
+    "cta": "Ir al inicio de sesión"
+  },
+  "consent": {
+    "text": "Acepto los",
+    "terms": "Términos del servicio",
+    "and": "y la",
+    "privacy": "Política de privacidad"
+  },
+  "errors": {
+    "noToken": "El enlace no contiene código de invitación — ábrelo entero desde el correo.",
+    "network": "Error de conexión",
+    "passwordRequired": "Introduce tu contraseña",
+    "phoneRequired": "Introduce tu número de teléfono con el prefijo del país",
+    "consentRequired": "Se requiere tu consentimiento"
+  },
+  "newAccountHint": "La contraseña no está en el correo — esa es justamente la idea: un enlace por sí solo no basta para entrar. Si no te dieron ninguna, pregunta a tu responsable.",
+  "decline": {
+    "cta": "Rechazar invitación",
+    "confirm": "La invitación a «{{studio}}» se eliminará. No te unirás al equipo y solo el propietario del estudio puede volver a enviarla.",
+    "keep": "Conservar",
+    "confirmCta": "Rechazar",
+    "pending": "Rechazando…"
+  },
+  "declined": {
+    "title": "Invitación rechazada",
+    "sub": "No te hemos añadido al estudio. Si fue un error, pide al propietario que envíe la invitación de nuevo."
+  }
+}

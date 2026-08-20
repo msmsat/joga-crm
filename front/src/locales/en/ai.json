@@ -203,6 +203,7 @@
     "ig_not_connected": "Instagram isn't connected yet.",
     "wa_not_connected": "The WhatsApp number isn't connected yet — connect it in Notifications.",
     "assistant_unavailable": "The assistant is temporarily unavailable — please try again later.",
+    "trial_exhausted": "You have used all trial AI requests. The assistant is still in beta — contact us if you need a higher limit.",
     "quota_exceeded": "You have used all AI requests on this plan. The limit resets at the start of the month — or upgrade your plan."
   },
   "toasts": {
@@ -275,6 +276,7 @@
     "update_staff": "Updating the team member…"
   },
   "quota": {
+    "trialLow": "Your trial AI requests are running out.",
     "label": "AI requests",
     "value": "{{used}} of {{limit}}",
     "low": "You are close to the monthly limit.",

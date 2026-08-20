@@ -40,7 +40,7 @@ export default function PaymentMethodTab({
   profile, profileSaving, saveProfile,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
-  const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
+  const dateLocale = i18n.language || 'en';
 
   // Карта, сохранённая у Stripe: показываем основную, иначе первую сохранённую.
   const card = cards.find(c => c.is_primary) ?? cards[0] ?? null;

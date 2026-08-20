@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Kanały połączenia",
+    "connected": "Połączono",
+    "disconnected": "Niepołączony",
+    "pending": "Wymaga konfiguracji",
+    "connectInNotifications": "Połącz w Powiadomieniach",
+    "manage": "Zarządzaj w Powiadomieniach",
+    "telegram": {
+      "name": "Bot Telegram",
+      "desc": "Automatyczna rezerwacja przez bota"
+    },
+    "stripe": {
+      "name": "Płatności",
+      "desc": "Stripe: karty, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Link dla klientów",
+      "desc": "Mini aplikacja rezerwacji — do bio, stories i kampanii",
+      "copy": "Kopiuj link",
+      "open": "Otwórz mini aplikację",
+      "print": "Drukuj QR",
+      "posterTitle": "Zarezerwuj zajęcia online",
+      "scanHint": "Skieruj aparat telefonu na kod"
+    }
+  },
+  "loading": "Wczytywanie ustawień…",
+  "sections": {
+    "main": {
+      "title": "Ustawienia ogólne",
+      "prefill": {
+        "label": "Przedpłata przy rezerwacji",
+        "sub": "Wymagaj płatności przed potwierdzeniem"
+      },
+      "trialLesson": {
+        "label": "Pierwsze zajęcia za darmo",
+        "sub": "Pierwszą rezerwację nowego klienta pokrywa studio"
+      },
+      "trainerConfirm": {
+        "label": "Potwierdzenie trenera",
+        "sub": "Rezerwacja czeka na ręczne zatwierdzenie"
+      },
+      "bookingActive": {
+        "label": "Rezerwacja online aktywna",
+        "sub": "Pokazuj widget klientom"
+      }
+    },
+    "rules": {
+      "title": "Limity i zasady",
+      "advance": {
+        "label": "Blokuj rezerwację na mniej niż",
+        "sub": "Minimalny czas przed zajęciami"
+      },
+      "window": {
+        "label": "Rezerwacje otwierają się",
+        "sub": "Na ile dni do przodu"
+      },
+      "cancel": {
+        "label": "Odwołanie bez konsekwencji",
+        "sub": "Klient może odwołać przed zajęciami"
+      },
+      "repeat": {
+        "label": "Powtórna rezerwacja",
+        "sub": "Pozwól klientowi zarezerwować dwa razy"
+      },
+      "workHours": {
+        "label": "Godziny pracy widgetu",
+        "sub": "Zajęć poza tymi godzinami nie da się zarezerwować online"
+      }
+    },
+    "branding": {
+      "title": "Branding widgetu",
+      "sub": "Wygląd strony rezerwacji",
+      "accentColor": "Kolor akcentu",
+      "logo": {
+        "label": "Logo studia",
+        "sub": "Widoczne w nagłówku widgetu",
+        "upload": "Prześlij",
+        "uploading": "Przesyłanie…",
+        "remove": "Usuń",
+        "uploadFailed": "Nie udało się przesłać logo"
+      },
+      "darkMode": {
+        "label": "Ciemny motyw",
+        "sub": "Widget w ciemnej odsłonie"
+      },
+      "language": {
+        "label": "Język domyślny",
+        "sub": "Główny język interfejsu"
+      }
+    },
+    "notifications": {
+      "title": "Powiadomienia",
+      "sub": "Automatyczne wiadomości do klientów",
+      "preview": {
+        "confirmed": "Rezerwacja potwierdzona! Pn 10:00",
+        "reminder2h": "Przypomnienie: za 2 godziny",
+        "reviewRequest": "Dziękujemy za wizytę! Oceń zajęcia"
+      },
+      "reminder24h": {
+        "label": "Przypomnienie 24 h wcześniej",
+        "sub": "Rano przed zajęciami"
+      },
+      "reminder2h": {
+        "label": "Przypomnienie 2 h wcześniej",
+        "sub": "Krótko przed zajęciami"
+      },
+      "reviewRequest": {
+        "label": "Prośba o opinię",
+        "sub": "Gdy wizyta zostanie odnotowana"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kawa po zajęciach",
+        "sub": "Po rezerwacji klient dostaje zaproszenie, żeby zostać 15 minut z grupą. Gdy zgodzą się dwie osoby lub więcej, po zajęciach dostają przypomnienie"
+      },
+      "spots": {
+        "label": "Gdzie ich zaprosić",
+        "sub": "Do trzech miejsc blisko studia. Pokazują się dopiero, gdy dołączą dwie osoby lub więcej",
+        "namePlaceholder": "Nazwa",
+        "addressPlaceholder": "Adres",
+        "urlPlaceholder": "Link do mapy",
+        "add": "Dodaj miejsce",
+        "remove": "Usuń miejsce"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 godzina",
+      "2h": "2 godziny",
+      "4h": "4 godziny",
+      "12h": "12 godzin",
+      "24h": "24 godziny"
+    },
+    "window": {
+      "7d": "7 dni",
+      "14d": "14 dni",
+      "30d": "30 dni",
+      "60d": "60 dni"
+    },
+    "cancel": {
+      "2h": "2 godziny",
+      "4h": "4 godziny",
+      "12h": "12 godzin",
+      "24h": "24 godziny"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot połączony",
+    "botDisconnected": "Bot odłączony",
+    "codeCopied": "Kod skopiowany!",
+    "linkCopied": "Link skopiowany!",
+    "printBlocked": "Zezwól na wyskakujące okna, aby wydrukować kod QR",
+    "stripeReturned": "Dane wysłane do Stripe",
+    "stripeLinkExpired": "Link Stripe wygasł — spróbuj ponownie"
+  },
+  "stripeGate": {
+    "kicker": "Niezbędne do rezerwacji online",
+    "none": {
+      "title": "Najpierw skonfiguruj płatności",
+      "sub": "Klient rezerwuje i płaci w jednym kroku. Dopóki konto Stripe nie jest połączone, nie opłaci rezerwacji.",
+      "action": "Połącz Stripe"
+    },
+    "incomplete": {
+      "title": "Dokończ konfigurację Stripe",
+      "sub": "Konto istnieje, ale Stripe nie włączył jeszcze płatności — formularz jest niekompletny.",
+      "action": "Kontynuuj konfigurację"
+    },
+    "disabled": {
+      "title": "Płatności są wyłączone",
+      "sub": "Stripe jest połączony i gotów przyjmować płatności, ale w sekcji Finanse jest wyłączony.",
+      "action": "Otwórz Finanse"
+    },
+    "loading": {
+      "title": "Sprawdzanie połączenia",
+      "sub": "Pytamy Stripe, czy konto studia jest gotowe przyjmować płatności.",
+      "action": "Sprawdzanie…"
+    },
+    "perks": {
+      "direct": "Pieniądze trafiają wprost na konto studia",
+      "methods": "Karty, Apple Pay i Google Pay od razu",
+      "fee": "Prowizja zależy od Twojego planu Velora"
+    },
+    "later": "Później",
+    "note": "Otworzy się formularz Stripe. Po jego wypełnieniu wrócisz na tę stronę."
+  },
+  "tg": {
+    "title": "Bot Telegram",
+    "connected": "Połączono",
+    "openInTelegram": "Otwórz bota w Telegramie",
+    "showToken": "Pokaż token",
+    "hideToken": "Ukryj token",
+    "acceptsBookings": "Bot przyjmuje rezerwacje od klientów",
+    "instantNotify": "Powiadomienia docierają natychmiast",
+    "disconnect": "Odłącz bota",
+    "pasteToken": "Wklej token bota od @BotFather",
+    "invalidToken": "Nieprawidłowy format tokena",
+    "connect": "Połącz bota",
+    "howToGet": "Jak zdobyć token?",
+    "steps": {
+      "1a": "Otwórz Telegram → znajdź",
+      "1b": "@BotFather",
+      "2a": "Wyślij polecenie",
+      "2b": "/newbot",
+      "3": "Wybierz nazwę i nazwę użytkownika bota",
+      "4": "Skopiuj token i wklej go powyżej"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Umieść w profilu i w stories link do szybkiej rezerwacji",
+    "steps": {
+      "1": "Skopiuj swój link",
+      "2a": "Wklej go w pole",
+      "2b": "„Strona internetowa”",
+      "2c": " w ustawieniach profilu na Instagramie.",
+      "3a": "Dodaj link do",
+      "3b": "Stories",
+      "3c": " za pomocą specjalnej naklejki."
+    },
+    "proTip": "Przypnij do Wyróżnionych Story z przebiegiem rezerwacji — konwersja rośnie o 30 %."
+  },
+  "web": {
+    "title": "Widget na stronę",
+    "sub": "Dodaj przycisk rezerwacji na dowolnej stronie (Tilda, WordPress lub własny kod)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopiuj",
+    "instructionPrefix": "Wklej ten kod tuż przed zamykającym znacznikiem",
+    "instructionSuffix": " na swojej stronie. Przycisk pojawi się automatycznie."
+  },
+  "wa": {
+    "title": "Rezerwacja przez WhatsApp",
+    "sub": "Skonfiguruj w WhatsApp Business autoodpowiedź, która od razu wysyła link do rezerwacji.",
+    "online": "online",
+    "sampleIncoming": "Dzień dobry! Chciałabym zapisać się na zajęcia.",
+    "sampleOutgoing": "Witamy! ✨",
+    "connect": "Połącz WhatsApp Business",
+    "connected": "Połączono",
+    "autoReplyActive": "Autoodpowiedź jest aktywna",
+    "instantLink": "Link do rezerwacji wysyła się natychmiast"
+  }
+}

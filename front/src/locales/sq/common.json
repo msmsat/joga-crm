@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Shtoni numrin tuaj të telefonit",
+    "sub": "Telefoni është kontakti i dytë i llogarisë suaj: rikthen aksesin dhe merr njoftimet. Numri i studios nuk vlen këtu — ky duhet të jetë juaji."
+  },
+  "buttons": {
+    "cancel": "Anulo",
+    "save": "Ruaj",
+    "saveChanges": "Ruaj ndryshimet",
+    "delete": "Fshi",
+    "edit": "Redakto",
+    "add": "Shto",
+    "create": "Krijo",
+    "close": "Mbyll",
+    "send": "Dërgo",
+    "copy": "Kopjo",
+    "back": "Kthehu",
+    "continue": "Vazhdo",
+    "finish": "Përfundo",
+    "done": "Gati, mbyll",
+    "saving": "Duke ruajtur…",
+    "saved": "U ruajt!",
+    "upload": "Ngarko"
+  },
+  "validation": {
+    "required": "Fushë e detyrueshme",
+    "minLength": "Të paktën {{n}} karaktere",
+    "email": "Email i pavlefshëm",
+    "phone": "Telefon i pavlefshëm",
+    "contactRequired": "Vendosni një telefon ose email",
+    "min": "Duhet të jetë të paktën {{n}}",
+    "positive": "Duhet të jetë më i madh se 0",
+    "checkingContact": "Duke kontrolluar…",
+    "emailTaken": "Ky email është tashmë i zënë",
+    "phoneTaken": "Ky numër telefoni është tashmë i zënë",
+    "emailInStudio": "Ky person punon tashmë në studion tuaj",
+    "phoneInStudio": "Ky person punon tashmë në studion tuaj",
+    "accountWillBeLinked": "Një llogari me këtë kontakt ekziston tashmë — do të lidhet me studion tuaj"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktiv",
+    "connected": "I lidhur",
+    "inactive": "Jo online",
+    "loading": "Duke ngarkuar...",
+    "notFound": "Nuk u gjet",
+    "new": "I RI"
+  },
+  "fields": {
+    "fullName": "Emri i plotë",
+    "firstName": "Emri",
+    "lastName": "Mbiemri",
+    "phone": "Telefoni",
+    "email": "Email",
+    "photo": "Fotoja e profilit",
+    "salary": "Paga",
+    "schedule": "Orari",
+    "services": "Shërbimet",
+    "position": "Pozicioni",
+    "role": "Roli",
+    "status": "Statusi",
+    "size": "Shuma"
+  },
+  "days": {
+    "mon": "E hënë",
+    "tue": "E martë",
+    "wed": "E mërkurë",
+    "thu": "E enjte",
+    "fri": "E premte",
+    "sat": "E shtunë",
+    "sun": "E diel",
+    "short": {
+      "mon": "Hë",
+      "tue": "Ma",
+      "wed": "Më",
+      "thu": "En",
+      "fri": "Pr",
+      "sat": "Sh",
+      "sun": "Di"
+    }
+  },
+  "salary": {
+    "fixed": "Fikse",
+    "percent": "% e të ardhurave",
+    "hourly": "Në orë"
+  },
+  "toasts": {
+    "phoneCopied": "Telefoni u kopjua",
+    "emailCopied": "Email-i u kopjua",
+    "copyFailed": "Kopjimi dështoi"
+  },
+  "errors": {
+    "403": "Akses i ndaluar",
+    "404": "Nuk u gjet",
+    "500": "Gabim serveri, provoni më vonë",
+    "network": "Nuk ka lidhje me serverin",
+    "unknown": "Diçka shkoi keq",
+    "loadFailed": "Ngarkimi dështoi",
+    "retry": "Provo sërish",
+    "invalid_bot_token": "Telegram e refuzoi këtë token — sigurohuni që boti ekziston",
+    "wa_payment_required": "Nuk ka mënyrë pagese. Pa një kartë në WhatsApp Business, Meta nuk dërgon asnjë njoftim — hapni cilësimet e kanalit WhatsApp dhe shtoni pagesën",
+    "wa_verification_required": "Biznesi juaj nuk ka kaluar verifikimin e Meta-s. Deri atëherë numri mbetet i kufizuar dhe asgjë nuk dërgohet — hapni cilësimet e kanalit WhatsApp për udhëzimet",
+    "wa_templates_pending": "Shabllonet ende nuk janë miratuar nga Meta. Pa një shabllon të miratuar nuk mund t'i shkruani i pari një klienti — prisni përfundimin e shqyrtimit, statusi është te cilësimet e kanalit WhatsApp",
+    "checkout": {
+      "package_not_found": "Paketa nuk u gjet",
+      "package_inactive": "Paketa nuk shitet më",
+      "client_not_found": "Klienti nuk u gjet",
+      "account_not_found": "Llogaria nuk u gjet",
+      "card_unavailable": "Pagesa me kartë ende nuk është e disponueshme",
+      "promo_expired": "Kodi promocional nuk vlen më"
+    },
+    "billing": {
+      "tax_details_required": "Shtoni shtetin e studios te të dhënat e faturimit — pa të fatura nuk lëshohet",
+      "nothing_to_pay": "Nuk ka mbetur asgjë për të paguar për abonimin aktual",
+      "stripe_not_configured": "Pagesat nuk janë konfiguruar në server",
+      "stripe_error": "Shërbimi i pagesave e refuzoi kërkesën. Ju lutemi provoni sërish",
+      "plan_not_paid": "Një plan më i lartë aktivizohet vetëm me pagesë",
+      "renew_is_automatic": "Abonimi rinovohet automatikisht",
+      "vat_invalid": "VIES nuk e njeh këtë numër TVSH-je — kontrollojeni ose ruajeni pa të",
+      "vat_unavailable": "Regjistri VIES nuk po përgjigjet për momentin — provoni më vonë ose ruani pa numër",
+      "vat_country_mismatch": "Numri i TVSH-së duhet të fillojë me kodin e shtetit të zgjedhur",
+      "commission_unsettled": "Shlyeni fillimisht komisionin e shitjeve offline: shtypni \"Paguaj tani\" te blloku i komisionit. Pasi ajo faturë të paguhet, mund të kaloni në një plan fiks.",
+      "billing_profile_required": "Shtoni të dhënat e faturimit — fatura e komisionit lëshohet mbi to."
+    },
+    "loyalty": {
+      "cert_not_found": "Certifikata nuk u gjet",
+      "cert_used": "Certifikata është përdorur tashmë ose është e pavlefshme",
+      "cert_expired": "Certifikata ka skaduar"
+    },
+    "notifications": {
+      "critical_locked": "Ky njoftim nuk mund të çaktivizohet",
+      "last_channel": "Kërkohet të paktën një kanal dërgimi",
+      "unknown_event": "Ngjarje e panjohur",
+      "not_personal": "Cilësimet personale nuk i ndryshojnë njoftimet e detyrueshme"
+    },
+    "trial_already_used": "Prova falas nuk është më e disponueshme për këtë studio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/orë"
+  },
+  "errorBoundary": {
+    "title": "Diçka shkoi keq",
+    "description": "Kjo faqe hasi një gabim. Provoni ta rifreskoni — pjesa tjetër e aplikacionit vazhdon të punojë.",
+    "reload": "Rifresko faqen"
+  }
+}

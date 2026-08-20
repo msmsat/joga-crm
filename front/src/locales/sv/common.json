@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Lägg till ditt telefonnummer",
+    "sub": "Telefonen är kontots andra kontaktuppgift: den återställer åtkomst och tar emot aviseringar. Studions nummer duger inte här — det här måste vara ditt eget."
+  },
+  "buttons": {
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "saveChanges": "Spara ändringar",
+    "delete": "Radera",
+    "edit": "Redigera",
+    "add": "Lägg till",
+    "create": "Skapa",
+    "close": "Stäng",
+    "send": "Skicka",
+    "copy": "Kopiera",
+    "back": "Tillbaka",
+    "continue": "Fortsätt",
+    "finish": "Slutför",
+    "done": "Klart, stäng",
+    "saving": "Sparar…",
+    "saved": "Sparat!",
+    "upload": "Ladda upp"
+  },
+  "validation": {
+    "required": "Obligatoriskt fält",
+    "minLength": "Minst {{n}} tecken",
+    "email": "Ogiltig e-postadress",
+    "phone": "Ogiltigt telefonnummer",
+    "contactRequired": "Ange telefon eller e-post",
+    "min": "Måste vara minst {{n}}",
+    "positive": "Måste vara större än 0",
+    "checkingContact": "Kontrollerar…",
+    "emailTaken": "Den här e-postadressen är redan upptagen",
+    "phoneTaken": "Det här telefonnumret är redan upptaget",
+    "emailInStudio": "Den här personen arbetar redan i din studio",
+    "phoneInStudio": "Den här personen arbetar redan i din studio",
+    "accountWillBeLinked": "Det finns redan ett konto med den här kontaktuppgiften — det kopplas till din studio"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktiv",
+    "connected": "Ansluten",
+    "inactive": "Inte online",
+    "loading": "Läser in...",
+    "notFound": "Hittades inte",
+    "new": "NY"
+  },
+  "fields": {
+    "fullName": "Fullständigt namn",
+    "firstName": "Förnamn",
+    "lastName": "Efternamn",
+    "phone": "Telefon",
+    "email": "E-post",
+    "photo": "Profilbild",
+    "salary": "Ersättning",
+    "schedule": "Schema",
+    "services": "Tjänster",
+    "position": "Befattning",
+    "role": "Roll",
+    "status": "Status",
+    "size": "Belopp"
+  },
+  "days": {
+    "mon": "Måndag",
+    "tue": "Tisdag",
+    "wed": "Onsdag",
+    "thu": "Torsdag",
+    "fri": "Fredag",
+    "sat": "Lördag",
+    "sun": "Söndag",
+    "short": {
+      "mon": "Må",
+      "tue": "Ti",
+      "wed": "On",
+      "thu": "To",
+      "fri": "Fr",
+      "sat": "Lö",
+      "sun": "Sö"
+    }
+  },
+  "salary": {
+    "fixed": "Fast",
+    "percent": "% av omsättningen",
+    "hourly": "Timlön"
+  },
+  "toasts": {
+    "phoneCopied": "Telefonnumret kopierat",
+    "emailCopied": "E-postadressen kopierad",
+    "copyFailed": "Det gick inte att kopiera"
+  },
+  "errors": {
+    "403": "Åtkomst nekad",
+    "404": "Hittades inte",
+    "500": "Serverfel, försök igen senare",
+    "network": "Ingen anslutning till servern",
+    "unknown": "Något gick fel",
+    "loadFailed": "Det gick inte att läsa in",
+    "retry": "Försök igen",
+    "invalid_bot_token": "Telegram avvisade den här token — kontrollera att boten finns",
+    "wa_payment_required": "Ingen betalningsmetod. Utan ett kort i WhatsApp Business levererar Meta inte en enda avisering — öppna inställningarna för WhatsApp-kanalen och lägg till betalning",
+    "wa_verification_required": "Ditt företag har inte klarat Metas verifiering. Fram till dess är numret begränsat och inget skickas — öppna inställningarna för WhatsApp-kanalen för instruktioner",
+    "wa_templates_pending": "Mallarna är ännu inte godkända av Meta. Utan en godkänd mall kan du inte skriva först till en kund — vänta tills granskningen är klar, statusen finns i inställningarna för WhatsApp-kanalen",
+    "checkout": {
+      "package_not_found": "Paketet hittades inte",
+      "package_inactive": "Paketet säljs inte längre",
+      "client_not_found": "Kunden hittades inte",
+      "account_not_found": "Kontot hittades inte",
+      "card_unavailable": "Kortbetalning är inte tillgänglig ännu",
+      "promo_expired": "Rabattkoden gäller inte längre"
+    },
+    "billing": {
+      "tax_details_required": "Lägg till studions land i faktureringsuppgifterna — utan det går fakturan inte att utfärda",
+      "nothing_to_pay": "Det finns inget kvar att betala på nuvarande abonnemang",
+      "stripe_not_configured": "Betalningar är inte konfigurerade på servern",
+      "stripe_error": "Betaltjänsten avvisade begäran. Försök igen",
+      "plan_not_paid": "Ett högre abonnemang aktiveras endast genom betalning",
+      "renew_is_automatic": "Abonnemanget förnyas automatiskt",
+      "vat_invalid": "VIES känner inte igen det här momsnumret — kontrollera det eller spara utan",
+      "vat_unavailable": "VIES-registret svarar inte just nu — försök igen senare eller spara utan nummer",
+      "vat_country_mismatch": "Momsnumret måste börja med det valda landets kod",
+      "commission_unsettled": "Reglera först provisionen för offlineförsäljning: tryck på \"Betala nu\" i provisionsblocket. När den fakturan är betald kan du gå över till ett fast abonnemang.",
+      "billing_profile_required": "Lägg till dina faktureringsuppgifter — provisionsfakturan ställs ut på dem."
+    },
+    "loyalty": {
+      "cert_not_found": "Presentkortet hittades inte",
+      "cert_used": "Presentkortet är redan använt eller ogiltigt",
+      "cert_expired": "Presentkortet har gått ut"
+    },
+    "notifications": {
+      "critical_locked": "Den här aviseringen går inte att stänga av",
+      "last_channel": "Minst en leveranskanal krävs",
+      "unknown_event": "Okänd händelse",
+      "not_personal": "Personliga inställningar ändrar inte obligatoriska aviseringar"
+    },
+    "trial_already_used": "Den kostnadsfria provperioden är inte längre tillgänglig för den här studion."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/tim"
+  },
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "description": "Den här sidan stötte på ett fel. Prova att ladda om — resten av appen fungerar fortfarande.",
+    "reload": "Ladda om sidan"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Der er ingen sådanne medarbejdere i studiet",
+    "noData": "Ingen data",
+    "ownerOnly": "Adgangen er begrænset af din rolle",
+    "loadError": "Data kunne ikke indlæses",
+    "retry": "Prøv igen"
+  },
+  "metrics": {
+    "revenue": "Omsætning denne måned",
+    "clients": "Aktive kunder",
+    "bookings": "Bookinger denne måned",
+    "retention": "Fastholdelsesgrad",
+    "lessons": "Hold denne måned",
+    "attendance": "Fremmøde denne måned",
+    "fill_rate": "Belægning",
+    "rating": "Gennemsnitlig vurdering",
+    "active_clients": "Aktive kunder",
+    "more": "Detaljer"
+  },
+  "today": {
+    "titleTrainer": "Mine hold i dag",
+    "titleAdmin": "Dagens plan",
+    "subtitle": "{{count}} hold · {{booked}} af {{spots}} pladser",
+    "subtitle_one": "{{count}} hold · {{booked}} af {{spots}} pladser",
+    "openJournal": "Åbn kalenderen",
+    "empty": "Ingen hold i dag",
+    "emptyHintTrainer": "En fridag — nye bookinger dukker op her",
+    "emptyHintAdmin": "Der er intet planlagt i dag"
+  },
+  "chart": {
+    "byDay": "pr. dag",
+    "byMonth": "pr. måned",
+    "subWeek": "Denne uge",
+    "subMonth": "Denne måned",
+    "subYear": "Seneste 12 måneder",
+    "tabWeek": "Uge",
+    "tabMonth": "Måned",
+    "tabYear": "År",
+    "noData": "Ingen data for denne periode",
+    "retentionNA": "Diagram over fastholdelse er ikke tilgængeligt"
+  },
+  "tasks": {
+    "title": "Opgaver",
+    "empty": "Ingen opgaver",
+    "done": "Færdig",
+    "add": "Tilføj opgave",
+    "namePlaceholder": "Navn på opgaven…",
+    "cancel": "Annuller",
+    "submit": "Tilføj",
+    "priority": {
+      "low": "Lav",
+      "medium": "Mellem",
+      "high": "Høj"
+    },
+    "priorityHint": {
+      "low": "Lav prioritet",
+      "medium": "Mellem prioritet",
+      "high": "Høj prioritet"
+    },
+    "tags": {
+      "Клиент": "Kunde",
+      "Финансы": "Økonomi",
+      "Лиды": "Leads",
+      "Отчёты": "Rapporter",
+      "Журнал": "Kalender",
+      "Персонал": "Personale"
+    },
+    "scope": {
+      "mine": "Mine",
+      "admins": "Administratorer",
+      "trainers": "Undervisere"
+    },
+    "assigneePlaceholder": "Vælg en medarbejder",
+    "deleteTitle": "Slet opgaven?",
+    "deleteMessage": "Denne handling kan ikke fortrydes."
+  },
+  "events": {
+    "title": "Seneste hændelser",
+    "seeAll": "Se alle",
+    "justNow": "lige nu",
+    "openProfile": "Åbn profil",
+    "writeWhatsApp": "Skriv på WhatsApp",
+    "sendReceipt": "Send kvittering",
+    "cancelBooking": "Annuller booking"
+  },
+  "summary": {
+    "topServices": "Mest solgte ydelser",
+    "trainersLoad": "Undervisernes belastning",
+    "financeMonth": "Økonomi (måned)",
+    "revenue": "Omsætning",
+    "expenses": "Udgifter",
+    "avgCheck": "Gns. salg",
+    "profit": "Overskud"
+  }
+}

@@ -1,0 +1,347 @@
+{
+  "loading": "Wird geladen…",
+  "chModal": {
+    "eyebrow": "Benachrichtigungskanal",
+    "connected": "Verbunden",
+    "notConnected": "Nicht verbunden",
+    "setup": "Verbindung einrichten",
+    "details": "Verbindungsdetails",
+    "ready": "Der Kanal läuft",
+    "readyHint": "Benachrichtigungen für aktivierte Ereignisse werden automatisch versendet.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Nummer",
+    "account": "Konto",
+    "sender": "Absender"
+  },
+  "channels": {
+    "title": "Zustellkanäle",
+    "connect": "Verbinden",
+    "connected": "Verbunden",
+    "openSettings": "{{channel}}-Einstellungen",
+    "waLockedHint": "Der Kanal wird freigeschaltet, sobald Meta Ihre Zahlungsmethode, ein verifiziertes Unternehmen und freigegebene Vorlagen hat",
+    "waBlocker": {
+      "payment": "Keine Zahlungsmethode — Erinnerungen werden nicht zugestellt. Einrichten",
+      "verification": "Unternehmen bei Meta nicht verifiziert — Limit 250/Tag. So beheben Sie das",
+      "templates": "Vorlagen noch in der Meta-Prüfung — es wird nichts versendet. Details"
+    }
+  },
+  "roles": {
+    "client": "Kunde",
+    "trainer": "Trainer",
+    "admin": "Administrator",
+    "owner": "Inhaber",
+    "activeCount": "{{count}} aktiv"
+  },
+  "matrix": {
+    "saving": "Wird gespeichert…",
+    "allSaved": "Alle Änderungen gespeichert",
+    "notSaved": "Nicht gespeichert",
+    "activateAll": "Alle aktivieren",
+    "deactivateAll": "Alle Häkchen entfernen",
+    "activeCount": "Aktive Auslöser: {{count}} von {{total}}",
+    "scenariosFor": "Szenarien für: {{role}}",
+    "configureFor": "Kanäle für {{count}} System-Auslöser einrichten",
+    "eventColumn": "Systemereignis",
+    "noActiveChannels": "Keine aktiven Kanäle",
+    "noActiveChannelsHint": "Aktivieren Sie im linken Bereich mindestens einen Zustellkanal",
+    "adviceLabel": "Tipp:",
+    "advice": "Legen Sie für jede Rolle getrennt fest, was wohin gesendet wird — Velora erledigt den Rest automatisch.",
+    "tiers": {
+      "critical": "Pflicht · nicht abschaltbar",
+      "operational": "Betrieb",
+      "optional": "Optional"
+    },
+    "lock": {
+      "critical": "Pflichtbenachrichtigung — kann nicht abgeschaltet werden",
+      "lastChannel": "Letzter Zustellkanal — kann nicht abgeschaltet werden"
+    },
+    "channelDisconnected": "Kanal nicht verbunden"
+  },
+  "events": {
+    "c1": {
+      "title": "Buchung bestätigt",
+      "desc": "Bei erfolgreicher Kursbuchung"
+    },
+    "c2": {
+      "title": "Kurserinnerung",
+      "desc": "24 Stunden und 2 Stunden vorher"
+    },
+    "c3": {
+      "title": "Kurs abgesagt",
+      "desc": "Wenn Trainer oder Studio absagt"
+    },
+    "c4": {
+      "title": "Zahlung erfolgreich",
+      "desc": "Beleg nach erfolgreicher Abbuchung"
+    },
+    "c5": {
+      "title": "Wenige Einheiten übrig",
+      "desc": "Wenn noch 1–2 Besuche auf der Karte sind"
+    },
+    "c6": {
+      "title": "Karte läuft ab",
+      "desc": "3 Tage vor dem Ablaufdatum"
+    },
+    "c7": {
+      "title": "Geburtstag",
+      "desc": "Glückwunsch mit einem Sonderangebot"
+    },
+    "c8": {
+      "title": "Bewertungsanfrage",
+      "desc": "Nach dem Besuch eines Kurses"
+    },
+    "c9": {
+      "title": "Rückerstattung",
+      "desc": "Bei Stornierung und Bearbeitung der Rückzahlung"
+    },
+    "c10": {
+      "title": "Kurs noch nicht bezahlt",
+      "desc": "Kunde war da, hat aber nicht bezahlt"
+    },
+    "c11": {
+      "title": "Kurs verlegt",
+      "desc": "Zeit, Raum oder Trainer geändert"
+    },
+    "c12": {
+      "title": "Bonus gutgeschrieben",
+      "desc": "Punkte oder Bonus dem Kunden gutgeschrieben"
+    },
+    "c13": {
+      "title": "Kaffee nach dem Kurs",
+      "desc": "Wer aus der Gruppe auf einen Kaffee geht"
+    },
+    "t1": {
+      "title": "Neue Buchung beim Trainer",
+      "desc": "Ein Kunde hat ein Personal Training gebucht"
+    },
+    "t2": {
+      "title": "Kunde hat Buchung storniert",
+      "desc": "Kunde hat weniger als 2 Std. vorher storniert"
+    },
+    "t3": {
+      "title": "Kurserinnerung",
+      "desc": "1 Stunde vor Beginn"
+    },
+    "t4": {
+      "title": "Gruppenliste",
+      "desc": "30 Min. vor einem Gruppenkurs"
+    },
+    "t5": {
+      "title": "Planänderung",
+      "desc": "Administrator hat Zeitfenster oder Ort geändert"
+    },
+    "t6": {
+      "title": "Gehalt abgerechnet",
+      "desc": "Wöchentliche Auszahlungsberechnung"
+    },
+    "t7": {
+      "title": "Neue Trainerbewertung",
+      "desc": "Kunde hat nach dem Kurs bewertet"
+    },
+    "t8": {
+      "title": "Geburtstag des Kunden",
+      "desc": "Erinnerung, persönlich zu gratulieren"
+    },
+    "t9": {
+      "title": "Kurs abgesagt",
+      "desc": "Studio oder Admin hat Ihren Kurs abgesagt"
+    },
+    "a1": {
+      "title": "Neue Online-Buchung",
+      "desc": "Kunde hat über Website oder Widget gebucht"
+    },
+    "a2": {
+      "title": "Kurzfristige Stornierung",
+      "desc": "Weniger als 1 Stunde vor dem Kurs"
+    },
+    "a3": {
+      "title": "Neuer Kunde im System",
+      "desc": "Registrierung eines neuen Nutzers"
+    },
+    "a4": {
+      "title": "Zahlung eingegangen",
+      "desc": "Jede erfolgreiche Abbuchung"
+    },
+    "a6": {
+      "title": "Karten gehen zur Neige",
+      "desc": "Gruppe von Kunden mit ≤1 verbleibender Einheit"
+    },
+    "a7": {
+      "title": "Terminkonflikt",
+      "desc": "Überlappende Kurse im Journal"
+    },
+    "a8": {
+      "title": "Tagesbericht",
+      "desc": "Zusammenfassung zum Tagesende"
+    },
+    "a9": {
+      "title": "Anmeldeversuch",
+      "desc": "Anmeldung von einem neuen Gerät"
+    },
+    "a10": {
+      "title": "Rückerstattung",
+      "desc": "Administrator hat eine Rückzahlung veranlasst"
+    },
+    "o1": {
+      "title": "Tageszusammenfassung",
+      "desc": "Umsatz, Buchungen, Besuche des Tages"
+    },
+    "o2": {
+      "title": "Wochenbericht",
+      "desc": "KPIs: Kundenwachstum, LTV, Conversion"
+    },
+    "o3": {
+      "title": "Große Zahlung",
+      "desc": "Abbuchung über dem festgelegten Schwellenwert"
+    },
+    "o4": {
+      "title": "Datenanomalie",
+      "desc": "Starker Rückgang bei Buchungen oder Umsatz"
+    },
+    "o5": {
+      "title": "Neuer Mitarbeiter",
+      "desc": "Administrator hat ein neues Konto angelegt"
+    },
+    "o6": {
+      "title": "Tarifverlängerung",
+      "desc": "Erinnerung an die Zahlung des Velora-Abos"
+    },
+    "o7": {
+      "title": "Zugriffsrechte geändert",
+      "desc": "Die Berechtigungen eines Mitarbeiters wurden geändert"
+    },
+    "o8": {
+      "title": "KPI erreicht",
+      "desc": "Monatsziel erreicht"
+    },
+    "o9": {
+      "title": "Datenexport",
+      "desc": "Jemand hat die Kundendatenbank exportiert"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanal verbunden",
+    "subtitleDisconnected": "Benachrichtigungs-Bot verbinden",
+    "connected": "Verbunden",
+    "pasteToken": "Fügen Sie das Bot-Token ein, das Sie von @BotFather erhalten haben.",
+    "invalidToken": "Ungültiges Token-Format",
+    "howToGet": "So erhalten Sie ein Token:",
+    "steps": {
+      "1": "Öffnen Sie @BotFather in Telegram",
+      "2": "Senden Sie den Befehl /newbot und folgen Sie den Anweisungen",
+      "3": "Kopieren Sie das ausgegebene Token",
+      "4": "Fügen Sie es oben in das Feld ein"
+    },
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "disconnectTitle": "Telegram trennen?",
+    "disconnectMessage": "Kunden und Mitarbeiter erhalten über diesen Kanal keine Benachrichtigungen mehr.",
+    "close": "Schließen",
+    "cancel": "Abbrechen"
+  },
+  "emailCh": {
+    "title": "E-Mail",
+    "subtitle": "Absenderadresse für Kunden-E-Mails",
+    "verifiedLabel": "Verifiziert",
+    "emailLabel": "Absender-E-Mail",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Geben Sie eine gültige E-Mail-Adresse ein",
+    "sendCode": "Code senden",
+    "codeSentTo": "Code gesendet an",
+    "codeHint": "Geben Sie den 6-stelligen Code aus der E-Mail ein.",
+    "codeLabel": "Bestätigungscode",
+    "resend": "Code erneut senden",
+    "viaVelora": "E-Mails werden in Ihrem Namen über den Velora-Server versendet.",
+    "wrongCode": "Ungültiger oder abgelaufener Code",
+    "verify": "Bestätigen",
+    "back": "Zurück",
+    "cancel": "Abbrechen"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanal verbunden",
+    "subtitleDisconnected": "Melden Sie sich mit Ihrem Meta-Unternehmenskonto an",
+    "connected": "Verbunden",
+    "paymentRequiredTitle": "Eine Karte wird benötigt",
+    "paymentRequired": "Die Nummer zu verbinden ist kostenlos, aber Meta stellt Kundenerinnerungen erst zu, wenn eine Karte hinterlegt ist. Die fügen Sie separat hinzu —",
+    "paymentMissingTitle": "Keine Zahlungsmethode",
+    "paymentMissing": "Derzeit funktionieren nur Bot-Antworten auf eingehende Nachrichten. Erinnerungen, Bestätigungen und Rundsendungen weist Meta ab, solange keine Karte hinterlegt ist —",
+    "paymentOkTitle": "Zahlung verbunden",
+    "paymentOk": "Benachrichtigungen werden vollständig zugestellt.",
+    "paymentUnknown": "Die Zahlungsmethode konnte bei Meta nicht geprüft werden — wir zeigen den Status beim nächsten Versuch.",
+    "paymentLink": "Meta-Abrechnungscenter",
+    "paymentRecheck": "Erneut prüfen",
+    "paymentFound": "Zahlung verbunden",
+    "verify": {
+      "title": "Unternehmen bei Meta nicht verifiziert",
+      "lead": "Die Nummer funktioniert, aber mit einem reduzierten Limit von 250 eindeutigen Empfängern pro Tag. Die Verifizierung hebt das Limit auf und ermöglicht den vollen Start. Das Studio muss sie selbst durchführen — das WhatsApp-Konto gehört Ihnen, und Velora kann sie nicht in Ihrem Namen einreichen.",
+      "stepsTitle": "So verifizieren Sie das Unternehmen:",
+      "step1a": "Öffnen Sie das",
+      "link": "Meta Business Security Center",
+      "step1b": "und klicken Sie auf „Verifizierung starten“. Sie benötigen Adminrechte für das Unternehmenskonto.",
+      "step2": "Tragen Sie die rechtlichen Angaben ein: den Namen exakt wie in Ihren Dokumenten, Adresse, Telefon und Website. Die Website muss erreichbar sein und über HTTPS ausgeliefert werden.",
+      "step3": "Laden Sie ein Registrierungsdokument des Unternehmens hoch und warten Sie, bis Meta es prüft.",
+      "step4": "Bestätigen Sie Ihre Verbindung zum Unternehmen: eine E-Mail auf der Domain Ihrer Website, ein Anruf oder eine SMS an die angegebene Nummer oder die Domain-Verifizierung.",
+      "step5": "Warten Sie auf die Entscheidung — meist 1–5 Werktage. Der Status steht im selben Security Center; bei Ablehnung nennt Meta den Grund und lässt einen neuen Antrag zu.",
+      "docsTitle": "Welche Dokumente gelten (eines je Gruppe):",
+      "doc1": "Registrierung: Handelsregisterauszug, Gewerbeanmeldung, Betriebserlaubnis oder ein Steuerdokument.",
+      "doc2": "Präsenznachweis: eine erreichbare Website, eine offizielle Social-Media-Seite oder ein Eintrag in einem Firmenverzeichnis.",
+      "pitfallTitle": "Der häufigste Ablehnungsgrund",
+      "pitfall": "Der Firmenname bei Meta und im Dokument muss Zeichen für Zeichen übereinstimmen, einschließlich Rechtsform und Zeichensetzung. „Romashka LLC“ und „Romashka, LLC“ gelten als verschiedene Namen."
+    },
+    "templatesTitle": "Nachrichtenvorlagen",
+    "templates": "Meta lässt Sie einen Kunden nicht zuerst anschreiben, ohne eine vorab freigegebene Vorlage. Legen Sie die Vorlagen für jedes Ereignis an — sie gehen in die Prüfung und funktionieren, sobald sie freigegeben sind.",
+    "templatesAction": "Vorlagen vorbereiten",
+    "templatesPending": "Vorlagen werden erstellt…",
+    "templatesDone": "Vorlagen fertig: {{count}}. Warten auf die Meta-Prüfung",
+    "templatesPartial": "Meta hat einige Vorlagen abgelehnt: {{failed}}. Details stehen in den Logs",
+    "templatesRejectedTitle": "Meta hat {{count}} Vorlagen abgelehnt",
+    "templatesRejected": "— diese Benachrichtigungen werden nicht zugestellt. Prüfen Sie den Wortlaut in Ihrem Meta-Konto und legen Sie die Vorlagen neu an.",
+    "templatesPendingTitle": "{{count}} Vorlagen in Prüfung",
+    "templatesPendingHint": "— Meta braucht bis zu einem Tag. {{approved}} sind bereits freigegeben und werden zugestellt.",
+    "templatesOkTitle": "Vorlagen freigegeben",
+    "templatesOk": "alle {{count}} haben die Meta-Prüfung bestanden — Benachrichtigungen werden zugestellt.",
+    "paidWarning": "WhatsApp-Nachrichten sind kostenpflichtig",
+    "approxPrice": "ca.",
+    "pricingLoading": "aktueller Preis wird geladen…",
+    "perMessage": "pro Nachricht",
+    "viaMeta": "wird direkt von Meta abgerechnet",
+    "windowNotice": "Die Zustellung ist nur innerhalb des 24-Stunden-Gesprächsfensters garantiert.",
+    "connect": "WhatsApp verbinden",
+    "disconnect": "Trennen",
+    "disconnectTitle": "WhatsApp trennen?",
+    "disconnectMessage": "Kunden und Mitarbeiter erhalten über diesen Kanal keine Benachrichtigungen mehr.",
+    "close": "Schließen",
+    "cancel": "Abbrechen"
+  },
+  "tabs": {
+    "matrix": "Einstellungen",
+    "log": "Versandprotokoll"
+  },
+  "log": {
+    "title": "Versandprotokoll",
+    "subtitle": "Was wann an wen rausging und wie jeder Versand endete.",
+    "status": {
+      "sent": "Zugestellt",
+      "rejected": "Abgelehnt",
+      "error": "Verbindungsfehler",
+      "pending": "Läuft"
+    },
+    "searchPlaceholder": "Telefon, E-Mail oder Ereigniscode",
+    "allChannels": "Alle Kanäle",
+    "reset": "Zurücksetzen",
+    "refreshing": "Wird aktualisiert…",
+    "otherEvent": "Versand außerhalb des Katalogs",
+    "empty": "Es wurde noch nichts versendet",
+    "emptyHint": "Hier erscheint jede Benachrichtigung, die das Studio an Kunden und Mitarbeiter sendet.",
+    "emptyFiltered": "Nichts gefunden",
+    "emptyFilteredHint": "Ändern Sie die Filter oder suchen Sie nach einer anderen Nummer.",
+    "loadError": "Protokoll konnte nicht geladen werden",
+    "loadErrorHint": "Aktualisieren Sie die Seite — hilft das nicht, wenden Sie sich an den Support.",
+    "range": "{{from}}–{{to}} von {{total}}",
+    "prev": "Zurück",
+    "next": "Weiter"
+  }
+}

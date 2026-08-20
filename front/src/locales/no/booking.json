@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Tilkoblingskanaler",
+    "connected": "Tilkoblet",
+    "disconnected": "Ikke tilkoblet",
+    "pending": "Krever oppsett",
+    "connectInNotifications": "Koble til under Varsler",
+    "manage": "Administrer under Varsler",
+    "telegram": {
+      "name": "Telegram-bot",
+      "desc": "Automatisk booking via boten"
+    },
+    "stripe": {
+      "name": "Betalinger",
+      "desc": "Stripe: kort, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Kundelenke",
+      "desc": "Booking-miniapp — til bio, stories og kampanjer",
+      "copy": "Kopier lenke",
+      "open": "Åpne miniappen",
+      "print": "Skriv ut QR",
+      "posterTitle": "Book økten din på nett",
+      "scanHint": "Rett telefonkameraet mot koden"
+    }
+  },
+  "loading": "Laster innstillinger…",
+  "sections": {
+    "main": {
+      "title": "Generelle innstillinger",
+      "prefill": {
+        "label": "Forhåndsbetaling ved booking",
+        "sub": "Krev betaling før bekreftelse"
+      },
+      "trialLesson": {
+        "label": "Første økt gratis",
+        "sub": "Den første bookingen til en ny kunde spanderer studioet"
+      },
+      "trainerConfirm": {
+        "label": "Bekreftelse fra instruktør",
+        "sub": "Bookingen venter på manuell godkjenning"
+      },
+      "bookingActive": {
+        "label": "Nettbooking aktiv",
+        "sub": "Vis widgeten til kundene"
+      }
+    },
+    "rules": {
+      "title": "Grenser og regler",
+      "advance": {
+        "label": "Blokker booking mindre enn",
+        "sub": "Minste tid før økten"
+      },
+      "window": {
+        "label": "Booking åpner",
+        "sub": "Hvor mange dager frem"
+      },
+      "cancel": {
+        "label": "Avbestilling uten gebyr",
+        "sub": "Kunden kan avbestille før økten"
+      },
+      "repeat": {
+        "label": "Gjentatt booking",
+        "sub": "La en kunde booke to ganger"
+      },
+      "workHours": {
+        "label": "Widgetens åpningstid",
+        "sub": "Økter utenfor disse timene kan ikke bookes på nett"
+      }
+    },
+    "branding": {
+      "title": "Widgetens profil",
+      "sub": "Utseendet på bookingsiden",
+      "accentColor": "Aksentfarge",
+      "logo": {
+        "label": "Studioets logo",
+        "sub": "Vises i toppen av widgeten",
+        "upload": "Last opp",
+        "uploading": "Laster opp…",
+        "remove": "Fjern",
+        "uploadFailed": "Kunne ikke laste opp logoen"
+      },
+      "darkMode": {
+        "label": "Mørkt tema",
+        "sub": "Widget i mørk utgave"
+      },
+      "language": {
+        "label": "Standardspråk",
+        "sub": "Hovedspråk i grensesnittet"
+      }
+    },
+    "notifications": {
+      "title": "Varsler",
+      "sub": "Automatiske meldinger til kundene",
+      "preview": {
+        "confirmed": "Booking bekreftet! Man 10:00",
+        "reminder2h": "Påminnelse: om 2 timer",
+        "reviewRequest": "Takk for besøket! Gi økten en vurdering"
+      },
+      "reminder24h": {
+        "label": "Påminnelse 24 t før",
+        "sub": "Om morgenen før økten"
+      },
+      "reminder2h": {
+        "label": "Påminnelse 2 t før",
+        "sub": "Like før økten"
+      },
+      "reviewRequest": {
+        "label": "Forespørsel om vurdering",
+        "sub": "Så snart besøket er registrert"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kaffe etter økten",
+        "sub": "Etter bookingen blir kunden invitert til å bli 15 minutter med gruppen. Sier to eller flere ja, får de en påminnelse etter økten"
+      },
+      "spots": {
+        "label": "Hvor skal de møtes",
+        "sub": "Inntil tre steder nær studioet. Vises først når to eller flere er med",
+        "namePlaceholder": "Navn",
+        "addressPlaceholder": "Adresse",
+        "urlPlaceholder": "Kartlenke",
+        "add": "Legg til sted",
+        "remove": "Fjern sted"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 time",
+      "2h": "2 timer",
+      "4h": "4 timer",
+      "12h": "12 timer",
+      "24h": "24 timer"
+    },
+    "window": {
+      "7d": "7 dager",
+      "14d": "14 dager",
+      "30d": "30 dager",
+      "60d": "60 dager"
+    },
+    "cancel": {
+      "2h": "2 timer",
+      "4h": "4 timer",
+      "12h": "12 timer",
+      "24h": "24 timer"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot tilkoblet",
+    "botDisconnected": "Bot frakoblet",
+    "codeCopied": "Koden er kopiert!",
+    "linkCopied": "Lenken er kopiert!",
+    "printBlocked": "Tillat sprettoppvinduer for å skrive ut QR-koden",
+    "stripeReturned": "Opplysningene er sendt til Stripe",
+    "stripeLinkExpired": "Stripe-lenken er utløpt — prøv igjen"
+  },
+  "stripeGate": {
+    "kicker": "Nødvendig for nettbooking",
+    "none": {
+      "title": "Sett opp betalinger først",
+      "sub": "Kunden booker og betaler i én operasjon. Så lenge Stripe-kontoen ikke er tilkoblet, kan de ikke betale for bookingen.",
+      "action": "Koble til Stripe"
+    },
+    "incomplete": {
+      "title": "Fullfør Stripe-oppsettet",
+      "sub": "Kontoen finnes, men Stripe har ennå ikke aktivert betalinger — skjemaet er ufullstendig.",
+      "action": "Fortsett oppsettet"
+    },
+    "disabled": {
+      "title": "Betalinger er slått av",
+      "sub": "Stripe er tilkoblet og klar til å ta imot betalinger, men er slått av i Økonomi-delen.",
+      "action": "Åpne Økonomi"
+    },
+    "loading": {
+      "title": "Sjekker tilkoblingen",
+      "sub": "Vi spør Stripe om studioets konto er klar til å ta imot betalinger.",
+      "action": "Sjekker…"
+    },
+    "perks": {
+      "direct": "Pengene går rett inn på studioets konto",
+      "methods": "Kort, Apple Pay og Google Pay fra start",
+      "fee": "Provisjonen følger Velora-abonnementet ditt"
+    },
+    "later": "Senere",
+    "note": "Stripe-skjemaet åpnes. Når du er ferdig, kommer du tilbake til denne siden."
+  },
+  "tg": {
+    "title": "Telegram-bot",
+    "connected": "Tilkoblet",
+    "openInTelegram": "Åpne boten i Telegram",
+    "showToken": "Vis token",
+    "hideToken": "Skjul token",
+    "acceptsBookings": "Boten tar imot bookinger fra kunder",
+    "instantNotify": "Varsler kommer umiddelbart",
+    "disconnect": "Koble fra boten",
+    "pasteToken": "Lim inn bot-tokenet fra @BotFather",
+    "invalidToken": "Ugyldig tokenformat",
+    "connect": "Koble til boten",
+    "howToGet": "Hvordan får jeg et token?",
+    "steps": {
+      "1a": "Åpne Telegram → finn",
+      "1b": "@BotFather",
+      "2a": "Send kommandoen",
+      "2b": "/newbot",
+      "3": "Velg navn og brukernavn til boten",
+      "4": "Kopier tokenet og lim det inn ovenfor"
+    }
+  },
+  "insta": {
+    "title": "Instagram-bio",
+    "sub": "Legg en lenke til rask booking i profilen og i stories",
+    "steps": {
+      "1": "Kopier lenken din",
+      "2a": "Lim den inn i feltet",
+      "2b": "«Nettsted»",
+      "2c": " i Instagrams profilinnstillinger.",
+      "3a": "Legg lenken i",
+      "3b": "Stories",
+      "3c": " med et eget klistremerke."
+    },
+    "proTip": "Fest en Story med bookingflyten til Highlights — det øker konverteringen med 30 %."
+  },
+  "web": {
+    "title": "Widget for nettsted",
+    "sub": "Legg en bookingknapp på et hvilket som helst nettsted (Tilda, WordPress eller egen kode)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopier",
+    "instructionPrefix": "Lim inn denne koden rett før den avsluttende",
+    "instructionSuffix": "-taggen på nettstedet ditt. Knappen dukker opp automatisk."
+  },
+  "wa": {
+    "title": "Booking via WhatsApp",
+    "sub": "Sett opp et autosvar i WhatsApp Business som sender bookinglenken med en gang.",
+    "online": "pålogget",
+    "sampleIncoming": "Hei! Jeg vil gjerne booke en økt.",
+    "sampleOutgoing": "Velkommen! ✨",
+    "connect": "Koble til WhatsApp Business",
+    "connected": "Tilkoblet",
+    "autoReplyActive": "Autosvar er aktivt",
+    "instantLink": "Bookinglenken sendes umiddelbart"
+  }
+}

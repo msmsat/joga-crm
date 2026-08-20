@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Panou",
+    "staff": "Personal",
+    "catalog": "Catalog",
+    "clients": "Clienți",
+    "reports": "Rapoarte",
+    "booking": "Rezervare online",
+    "finances": "Finanțe",
+    "notifications": "Notificări",
+    "loyalty": "Fidelizare",
+    "ai": "Velora AI",
+    "settings": "Setări",
+    "billing": "Abonament și plată",
+    "journal": "Jurnal",
+    "profile": "Profil",
+    "more": "Mai mult"
+  },
+  "subtitles": {
+    "dashboard": "Bun venit în Velora CRM",
+    "staff": "Gestionarea echipei",
+    "catalog": "Filiale, săli și servicii",
+    "clients": "Baza de clienți a studioului",
+    "reports": "Analize și statistici",
+    "booking": "Gestionează canalele de rezervare",
+    "finances": "Conturi, tranzacții, documente",
+    "notifications": "Canale și tipuri de notificări",
+    "loyalty": "Programe și carduri pentru clienți",
+    "ai": "Asistent inteligent și răspunsuri automate",
+    "settings": "Configurarea sistemului",
+    "billing": "Gestionarea abonamentului",
+    "journal": "Programul ședințelor",
+    "profile": "Cont și setări"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Creează"
+  },
+  "userMenu": {
+    "logout": "Deconectare",
+    "studios": "Studiourile mele"
+  },
+  "tooltips": {
+    "studioName": "Studioul dvs.: {{name}}",
+    "openProfile": "Deschide profilul",
+    "openAccountMenu": "Meniul contului"
+  },
+  "sidebar": {
+    "expand": "Extinde meniul",
+    "collapse": "Restrânge meniul"
+  }
+}

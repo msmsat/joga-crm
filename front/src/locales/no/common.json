@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Legg til telefonnummeret ditt",
+    "sub": "Telefonen er kontoens andre kontakt: den gjenoppretter tilgang og mottar varsler. Studioets nummer passer ikke her — dette må være ditt eget."
+  },
+  "buttons": {
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "saveChanges": "Lagre endringer",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "add": "Legg til",
+    "create": "Opprett",
+    "close": "Lukk",
+    "send": "Send",
+    "copy": "Kopier",
+    "back": "Tilbake",
+    "continue": "Fortsett",
+    "finish": "Fullfør",
+    "done": "Ferdig, lukk",
+    "saving": "Lagrer…",
+    "saved": "Lagret!",
+    "upload": "Last opp"
+  },
+  "validation": {
+    "required": "Obligatorisk felt",
+    "minLength": "Minst {{n}} tegn",
+    "email": "Ugyldig e-post",
+    "phone": "Ugyldig telefonnummer",
+    "contactRequired": "Oppgi telefon eller e-post",
+    "min": "Må være minst {{n}}",
+    "positive": "Må være større enn 0",
+    "checkingContact": "Sjekker…",
+    "emailTaken": "Denne e-posten er allerede i bruk",
+    "phoneTaken": "Dette telefonnummeret er allerede i bruk",
+    "emailInStudio": "Denne personen jobber allerede i studioet ditt",
+    "phoneInStudio": "Denne personen jobber allerede i studioet ditt",
+    "accountWillBeLinked": "Det finnes allerede en konto med denne kontakten — den blir knyttet til studioet ditt"
+  },
+  "status": {
+    "online": "Pålogget",
+    "offline": "Frakoblet",
+    "active": "Aktiv",
+    "connected": "Tilkoblet",
+    "inactive": "Ikke pålogget",
+    "loading": "Laster...",
+    "notFound": "Ikke funnet",
+    "new": "NY"
+  },
+  "fields": {
+    "fullName": "Fullt navn",
+    "firstName": "Fornavn",
+    "lastName": "Etternavn",
+    "phone": "Telefon",
+    "email": "E-post",
+    "photo": "Profilbilde",
+    "salary": "Lønn",
+    "schedule": "Vaktplan",
+    "services": "Tjenester",
+    "position": "Stilling",
+    "role": "Rolle",
+    "status": "Status",
+    "size": "Beløp"
+  },
+  "days": {
+    "mon": "Mandag",
+    "tue": "Tirsdag",
+    "wed": "Onsdag",
+    "thu": "Torsdag",
+    "fri": "Fredag",
+    "sat": "Lørdag",
+    "sun": "Søndag",
+    "short": {
+      "mon": "Ma",
+      "tue": "Ti",
+      "wed": "On",
+      "thu": "To",
+      "fri": "Fr",
+      "sat": "Lø",
+      "sun": "Sø"
+    }
+  },
+  "salary": {
+    "fixed": "Fast",
+    "percent": "% av omsetningen",
+    "hourly": "Timelønn"
+  },
+  "toasts": {
+    "phoneCopied": "Telefonnummer kopiert",
+    "emailCopied": "E-post kopiert",
+    "copyFailed": "Kopiering mislyktes"
+  },
+  "errors": {
+    "403": "Ingen tilgang",
+    "404": "Ikke funnet",
+    "500": "Serverfeil, prøv igjen senere",
+    "network": "Ingen forbindelse til serveren",
+    "unknown": "Noe gikk galt",
+    "loadFailed": "Kunne ikke laste",
+    "retry": "Prøv igjen",
+    "invalid_bot_token": "Telegram avviste dette tokenet — sjekk at boten finnes",
+    "wa_payment_required": "Ingen betalingsmåte. Uten kort i WhatsApp Business leverer ikke Meta et eneste varsel — åpne innstillingene for WhatsApp-kanalen og legg til betaling",
+    "wa_verification_required": "Virksomheten din har ikke bestått Metas verifisering. Inntil da er nummeret begrenset og ingenting sendes — åpne innstillingene for WhatsApp-kanalen for veiledning",
+    "wa_templates_pending": "Malene er ikke godkjent av Meta ennå. Uten en godkjent mal kan du ikke skrive til en kunde først — vent til gjennomgangen er ferdig, statusen står i innstillingene for WhatsApp-kanalen",
+    "checkout": {
+      "package_not_found": "Pakken ble ikke funnet",
+      "package_inactive": "Pakken selges ikke lenger",
+      "client_not_found": "Kunden ble ikke funnet",
+      "account_not_found": "Kontoen ble ikke funnet",
+      "card_unavailable": "Kortbetaling er ikke tilgjengelig ennå",
+      "promo_expired": "Kampanjekoden er ikke lenger gyldig"
+    },
+    "billing": {
+      "tax_details_required": "Legg til studioets land i fakturaopplysningene — uten det kan ikke fakturaen utstedes",
+      "nothing_to_pay": "Det er ingenting igjen å betale på gjeldende abonnement",
+      "stripe_not_configured": "Betalinger er ikke satt opp på serveren",
+      "stripe_error": "Betalingstjenesten avviste forespørselen. Prøv igjen",
+      "plan_not_paid": "Et høyere abonnement aktiveres kun ved betaling",
+      "renew_is_automatic": "Abonnementet fornyes automatisk",
+      "vat_invalid": "VIES kjenner ikke igjen dette MVA-nummeret — sjekk det eller lagre uten",
+      "vat_unavailable": "VIES-registeret svarer ikke akkurat nå — prøv igjen senere eller lagre uten nummer",
+      "vat_country_mismatch": "MVA-nummeret må begynne med koden til valgt land",
+      "commission_unsettled": "Gjør først opp provisjonen for offline salg: trykk \"Betal nå\" i provisjonsblokken. Når den fakturaen er betalt, kan du gå over til et fast abonnement.",
+      "billing_profile_required": "Legg til faktureringsopplysningene dine — provisjonsfakturaen utstedes til dem."
+    },
+    "loyalty": {
+      "cert_not_found": "Gavekortet ble ikke funnet",
+      "cert_used": "Gavekortet er allerede brukt eller er ugyldig",
+      "cert_expired": "Gavekortet er utløpt"
+    },
+    "notifications": {
+      "critical_locked": "Dette varselet kan ikke slås av",
+      "last_channel": "Minst én leveringskanal kreves",
+      "unknown_event": "Ukjent hendelse",
+      "not_personal": "Personlige innstillinger endrer ikke obligatoriske varsler"
+    },
+    "trial_already_used": "Gratis prøveperiode er ikke lenger tilgjengelig for dette studioet."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/t"
+  },
+  "errorBoundary": {
+    "title": "Noe gikk galt",
+    "description": "Denne siden fikk en feil. Prøv å laste den på nytt — resten av appen fungerer fortsatt.",
+    "reload": "Last siden på nytt"
+  }
+}

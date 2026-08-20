@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Adicione o seu número de telefone",
+    "sub": "O telefone é o segundo contacto da sua conta: recupera o acesso e recebe as notificações. O número do estúdio não serve aqui — este tem de ser o seu."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saveChanges": "Guardar alterações",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "create": "Criar",
+    "close": "Fechar",
+    "send": "Enviar",
+    "copy": "Copiar",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "finish": "Concluir",
+    "done": "Pronto, fechar",
+    "saving": "A guardar…",
+    "saved": "Guardado!",
+    "upload": "Carregar"
+  },
+  "validation": {
+    "required": "Campo obrigatório",
+    "minLength": "Pelo menos {{n}} caracteres",
+    "email": "Email inválido",
+    "phone": "Telefone inválido",
+    "contactRequired": "Introduza um telefone ou email",
+    "min": "Tem de ser pelo menos {{n}}",
+    "positive": "Tem de ser maior que 0",
+    "checkingContact": "A verificar…",
+    "emailTaken": "Este email já está em uso",
+    "phoneTaken": "Este número de telefone já está em uso",
+    "emailInStudio": "Esta pessoa já trabalha no seu estúdio",
+    "phoneInStudio": "Esta pessoa já trabalha no seu estúdio",
+    "accountWillBeLinked": "Já existe uma conta com este contacto — será associada ao seu estúdio"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Ativo",
+    "connected": "Ligado",
+    "inactive": "Não está online",
+    "loading": "A carregar...",
+    "notFound": "Não encontrado",
+    "new": "NOVO"
+  },
+  "fields": {
+    "fullName": "Nome completo",
+    "firstName": "Nome próprio",
+    "lastName": "Apelido",
+    "phone": "Telefone",
+    "email": "Email",
+    "photo": "Fotografia de perfil",
+    "salary": "Remuneração",
+    "schedule": "Horário",
+    "services": "Serviços",
+    "position": "Função",
+    "role": "Perfil de acesso",
+    "status": "Estado",
+    "size": "Valor"
+  },
+  "days": {
+    "mon": "Segunda-feira",
+    "tue": "Terça-feira",
+    "wed": "Quarta-feira",
+    "thu": "Quinta-feira",
+    "fri": "Sexta-feira",
+    "sat": "Sábado",
+    "sun": "Domingo",
+    "short": {
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sáb",
+      "sun": "Dom"
+    }
+  },
+  "salary": {
+    "fixed": "Fixa",
+    "percent": "% da receita",
+    "hourly": "À hora"
+  },
+  "toasts": {
+    "phoneCopied": "Telefone copiado",
+    "emailCopied": "Email copiado",
+    "copyFailed": "Não foi possível copiar"
+  },
+  "errors": {
+    "403": "Acesso negado",
+    "404": "Não encontrado",
+    "500": "Erro do servidor, tente mais tarde",
+    "network": "Sem ligação ao servidor",
+    "unknown": "Algo correu mal",
+    "loadFailed": "Não foi possível carregar",
+    "retry": "Tentar novamente",
+    "invalid_bot_token": "O Telegram rejeitou este token — confirme que o bot existe",
+    "wa_payment_required": "Sem método de pagamento. Sem um cartão no WhatsApp Business, a Meta não entrega uma única notificação — abra as definições do canal WhatsApp e adicione um pagamento",
+    "wa_verification_required": "O seu negócio não passou a verificação da Meta. Até lá o número fica limitado e nada é enviado — abra as definições do canal WhatsApp para ver os passos",
+    "wa_templates_pending": "Os modelos ainda não foram aprovados pela Meta. Sem um modelo aprovado não pode contactar um cliente primeiro — aguarde o fim da análise, o estado está nas definições do canal WhatsApp",
+    "checkout": {
+      "package_not_found": "Pacote não encontrado",
+      "package_inactive": "O pacote já não está à venda",
+      "client_not_found": "Cliente não encontrado",
+      "account_not_found": "Conta não encontrada",
+      "card_unavailable": "O pagamento com cartão ainda não está disponível",
+      "promo_expired": "O código promocional já não é válido"
+    },
+    "billing": {
+      "tax_details_required": "Adicione o país do estúdio nos dados de faturação — sem ele a fatura não pode ser emitida",
+      "nothing_to_pay": "Não há nada por pagar na subscrição atual",
+      "stripe_not_configured": "Os pagamentos não estão configurados no servidor",
+      "stripe_error": "O serviço de pagamentos rejeitou o pedido. Tente novamente",
+      "plan_not_paid": "Um plano superior só é ativado com pagamento",
+      "renew_is_automatic": "A subscrição renova-se automaticamente",
+      "vat_invalid": "O VIES não reconhece este número de IVA — verifique-o ou guarde sem ele",
+      "vat_unavailable": "O registo VIES não está a responder neste momento — tente mais tarde ou guarde sem número",
+      "vat_country_mismatch": "O número de IVA tem de começar pelo código do país selecionado",
+      "commission_unsettled": "Liquide primeiro a comissão das vendas offline: prima \"Pagar agora\" no bloco da comissão. Assim que essa fatura estiver paga, pode passar para um plano fixo.",
+      "billing_profile_required": "Adicione os seus dados de faturação — a fatura da comissão é emitida em nome deles."
+    },
+    "loyalty": {
+      "cert_not_found": "Vale-oferta não encontrado",
+      "cert_used": "O vale-oferta já foi utilizado ou não é válido",
+      "cert_expired": "O vale-oferta expirou"
+    },
+    "notifications": {
+      "critical_locked": "Esta notificação não pode ser desativada",
+      "last_channel": "É necessário pelo menos um canal de entrega",
+      "unknown_event": "Evento desconhecido",
+      "not_personal": "As definições pessoais não alteram as notificações obrigatórias"
+    },
+    "trial_already_used": "O período experimental gratuito já não está disponível para este estúdio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Algo correu mal",
+    "description": "Esta página encontrou um erro. Experimente recarregá-la — o resto da aplicação continua a funcionar.",
+    "reload": "Recarregar a página"
+  }
+}

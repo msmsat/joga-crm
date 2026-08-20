@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "No hay empleados así en el estudio",
+    "noData": "Sin datos",
+    "ownerOnly": "Acceso limitado por tu rol",
+    "loadError": "No se pudieron cargar los datos",
+    "retry": "Reintentar"
+  },
+  "metrics": {
+    "revenue": "Ingresos de este mes",
+    "clients": "Clientes activos",
+    "bookings": "Reservas de este mes",
+    "retention": "Tasa de retención",
+    "lessons": "Clases de este mes",
+    "attendance": "Asistencia de este mes",
+    "fill_rate": "Ocupación",
+    "rating": "Valoración media",
+    "active_clients": "Clientes activos",
+    "more": "Detalles"
+  },
+  "today": {
+    "titleTrainer": "Mis clases de hoy",
+    "titleAdmin": "Horario de hoy",
+    "subtitle": "{{count}} clases · {{booked}} de {{spots}} plazas",
+    "subtitle_one": "{{count}} clase · {{booked}} de {{spots}} plazas",
+    "openJournal": "Abrir la agenda",
+    "empty": "Hoy no hay clases",
+    "emptyHintTrainer": "Un día libre — las nuevas reservas aparecerán aquí",
+    "emptyHintAdmin": "No hay nada programado para hoy"
+  },
+  "chart": {
+    "byDay": "por día",
+    "byMonth": "por mes",
+    "subWeek": "Semana actual",
+    "subMonth": "Mes actual",
+    "subYear": "Últimos 12 meses",
+    "tabWeek": "Semana",
+    "tabMonth": "Mes",
+    "tabYear": "Año",
+    "noData": "No hay datos de este periodo",
+    "retentionNA": "El gráfico de retención no está disponible"
+  },
+  "tasks": {
+    "title": "Tareas",
+    "empty": "Sin tareas",
+    "done": "Hecho",
+    "add": "Añadir tarea",
+    "namePlaceholder": "Nombre de la tarea…",
+    "cancel": "Cancelar",
+    "submit": "Añadir",
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta"
+    },
+    "priorityHint": {
+      "low": "Prioridad baja",
+      "medium": "Prioridad media",
+      "high": "Prioridad alta"
+    },
+    "tags": {
+      "Клиент": "Cliente",
+      "Финансы": "Finanzas",
+      "Лиды": "Leads",
+      "Отчёты": "Informes",
+      "Журнал": "Agenda",
+      "Персонал": "Personal"
+    },
+    "scope": {
+      "mine": "Mías",
+      "admins": "Administradores",
+      "trainers": "Monitores"
+    },
+    "assigneePlaceholder": "Selecciona un empleado",
+    "deleteTitle": "¿Eliminar la tarea?",
+    "deleteMessage": "Esta acción no se puede deshacer."
+  },
+  "events": {
+    "title": "Eventos recientes",
+    "seeAll": "Ver todos",
+    "justNow": "ahora mismo",
+    "openProfile": "Abrir perfil",
+    "writeWhatsApp": "Escribir por WhatsApp",
+    "sendReceipt": "Enviar el recibo",
+    "cancelBooking": "Cancelar la reserva"
+  },
+  "summary": {
+    "topServices": "Servicios más vendidos",
+    "trainersLoad": "Carga de los monitores",
+    "financeMonth": "Finanzas (mes)",
+    "revenue": "Ingresos",
+    "expenses": "Gastos",
+    "avgCheck": "Ticket medio",
+    "profit": "Beneficio"
+  }
+}

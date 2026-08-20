@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Přidejte své telefonní číslo",
+    "sub": "Telefon je druhý kontakt vašeho účtu: obnovuje přístup a chodí na něj oznámení. Číslo studia sem nepatří — tohle musí být vaše."
+  },
+  "buttons": {
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "saveChanges": "Uložit změny",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "add": "Přidat",
+    "create": "Vytvořit",
+    "close": "Zavřít",
+    "send": "Odeslat",
+    "copy": "Kopírovat",
+    "back": "Zpět",
+    "continue": "Pokračovat",
+    "finish": "Dokončit",
+    "done": "Hotovo, zavřít",
+    "saving": "Ukládání…",
+    "saved": "Uloženo!",
+    "upload": "Nahrát"
+  },
+  "validation": {
+    "required": "Povinné pole",
+    "minLength": "Alespoň {{n}} znaků",
+    "email": "Neplatný e-mail",
+    "phone": "Neplatný telefon",
+    "contactRequired": "Zadejte telefon nebo e-mail",
+    "min": "Musí být alespoň {{n}}",
+    "positive": "Musí být větší než 0",
+    "checkingContact": "Kontrola…",
+    "emailTaken": "Tento e-mail je již obsazený",
+    "phoneTaken": "Toto telefonní číslo je již obsazené",
+    "emailInStudio": "Tento člověk už ve vašem studiu pracuje",
+    "phoneInStudio": "Tento člověk už ve vašem studiu pracuje",
+    "accountWillBeLinked": "Účet s tímto kontaktem už existuje — bude propojen s vaším studiem"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktivní",
+    "connected": "Připojeno",
+    "inactive": "Není online",
+    "loading": "Načítání...",
+    "notFound": "Nenalezeno",
+    "new": "NOVÉ"
+  },
+  "fields": {
+    "fullName": "Celé jméno",
+    "firstName": "Jméno",
+    "lastName": "Příjmení",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "photo": "Profilová fotka",
+    "salary": "Mzda",
+    "schedule": "Rozvrh",
+    "services": "Služby",
+    "position": "Pozice",
+    "role": "Role",
+    "status": "Stav",
+    "size": "Částka"
+  },
+  "days": {
+    "mon": "Pondělí",
+    "tue": "Úterý",
+    "wed": "Středa",
+    "thu": "Čtvrtek",
+    "fri": "Pátek",
+    "sat": "Sobota",
+    "sun": "Neděle",
+    "short": {
+      "mon": "Po",
+      "tue": "Út",
+      "wed": "St",
+      "thu": "Čt",
+      "fri": "Pá",
+      "sat": "So",
+      "sun": "Ne"
+    }
+  },
+  "salary": {
+    "fixed": "Pevná",
+    "percent": "% z tržeb",
+    "hourly": "Hodinová"
+  },
+  "toasts": {
+    "phoneCopied": "Telefon zkopírován",
+    "emailCopied": "E-mail zkopírován",
+    "copyFailed": "Kopírování se nezdařilo"
+  },
+  "errors": {
+    "403": "Přístup odepřen",
+    "404": "Nenalezeno",
+    "500": "Chyba serveru, zkuste to později",
+    "network": "Není spojení se serverem",
+    "unknown": "Něco se pokazilo",
+    "loadFailed": "Načtení se nezdařilo",
+    "retry": "Zkusit znovu",
+    "invalid_bot_token": "Telegram tento token odmítl — ověřte, že bot existuje",
+    "wa_payment_required": "Chybí způsob platby. Bez karty ve WhatsApp Business Meta nedoručí ani jedno oznámení — otevřete nastavení kanálu WhatsApp a přidejte platbu",
+    "wa_verification_required": "Vaše firma neprošla ověřením u Meta. Do té doby zůstává číslo omezené a nic se neodesílá — návod najdete v nastavení kanálu WhatsApp",
+    "wa_templates_pending": "Šablony zatím Meta neschválila. Bez schválené šablony nemůžete klientovi napsat jako první — vyčkejte na dokončení kontroly, stav je v nastavení kanálu WhatsApp",
+    "checkout": {
+      "package_not_found": "Balíček nenalezen",
+      "package_inactive": "Balíček se už neprodává",
+      "client_not_found": "Klient nenalezen",
+      "account_not_found": "Účet nenalezen",
+      "card_unavailable": "Platba kartou zatím není dostupná",
+      "promo_expired": "Promo kód už neplatí"
+    },
+    "billing": {
+      "tax_details_required": "Doplňte zemi studia do fakturačních údajů — bez ní nelze fakturu vystavit",
+      "nothing_to_pay": "U aktuálního předplatného není co platit",
+      "stripe_not_configured": "Platby nejsou na serveru nastaveny",
+      "stripe_error": "Platební služba požadavek odmítla. Zkuste to prosím znovu",
+      "plan_not_paid": "Vyšší tarif se aktivuje pouze platbou",
+      "renew_is_automatic": "Předplatné se obnovuje automaticky",
+      "vat_invalid": "VIES toto DIČ nezná — zkontrolujte ho nebo uložte bez něj",
+      "vat_unavailable": "Registr VIES právě neodpovídá — zkuste to později nebo uložte bez čísla",
+      "vat_country_mismatch": "DIČ musí začínat kódem zvolené země",
+      "commission_unsettled": "Nejdřív vyrovnejte provizi z offline prodejů: stiskněte „Zaplatit teď“ v bloku provize. Jakmile bude faktura uhrazena, můžete přejít na pevný tarif.",
+      "billing_profile_required": "Doplňte fakturační údaje — faktura za provizi se vystavuje na ně."
+    },
+    "loyalty": {
+      "cert_not_found": "Poukaz nenalezen",
+      "cert_used": "Poukaz už byl uplatněn nebo je neplatný",
+      "cert_expired": "Platnost poukazu vypršela"
+    },
+    "notifications": {
+      "critical_locked": "Toto oznámení nelze vypnout",
+      "last_channel": "Je potřeba alespoň jeden kanál doručení",
+      "unknown_event": "Neznámá událost",
+      "not_personal": "Osobní nastavení nemění povinná oznámení"
+    },
+    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Něco se pokazilo",
+    "description": "Na této stránce došlo k chybě. Zkuste ji načíst znovu — zbytek aplikace funguje dál.",
+    "reload": "Načíst stránku znovu"
+  }
+}

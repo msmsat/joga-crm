@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "I dag",
+    "trainers": "Undervisere",
+    "halls": "Sale",
+    "day": "Dag",
+    "week": "Uge"
+  },
+  "daySummary": {
+    "classesToday": "hold i dag",
+    "clientBookings": "kundebookinger",
+    "avgLoad": "gns. belægning",
+    "trainersActive": "undervisere på arbejde",
+    "gridStep": "Gitterinterval",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Fortryd: {{label}}",
+    "redo": "Gentag: {{label}}",
+    "nothingToUndo": "Intet at fortryde",
+    "nothingToRedo": "Intet at gentage"
+  },
+  "newBooking": {
+    "title": "Nyt hold",
+    "slotTime": "Tidspunkt",
+    "service": "Ydelse",
+    "servicePlaceholder": "Vælg en ydelse",
+    "namePlaceholder": "F.eks. Reformer Pilates",
+    "location": "Sted / sal",
+    "start": "Start",
+    "end": "Slut",
+    "groupLimit": "Holdstørrelse",
+    "maxSpots": "Maks. pladser",
+    "assignTrainer": "Tildel underviser",
+    "cancel": "Annuller",
+    "create": "Opret hold",
+    "errors": {
+      "selectService": "Vælg en ydelse",
+      "range": "Fra 1 til 50",
+      "endAfterStart": "Slut skal være efter start"
+    },
+    "createServiceConfirm": {
+      "title": "Opret en ydelse?",
+      "message": "Kan du ikke finde den rette ydelse? Opret den i Kataloget.",
+      "confirm": "Gå til Katalog"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Bekræftet",
+    "pending": "Afventer",
+    "cancelled": "Aflyst",
+    "spotsTaken": "optagne pladser",
+    "fillRate": "Belægning",
+    "booked": "Tilmeldt",
+    "attended": "Mødt op",
+    "markAttended": "Registrer fremmøde",
+    "awaitingConfirmation": "Afventer bekræftelse",
+    "trialLesson": "Prøve",
+    "unpaid": "Ubetalt · {{amount}}",
+    "acceptPayment": "Modtag betaling",
+    "payCash": "Kontant",
+    "payTransfer": "Overførsel",
+    "payLater": "Ingen betaling",
+    "confirmBooking": "Bekræft booking",
+    "rejectBooking": "Afvis anmodning",
+    "removeFromLesson": "Fjern fra holdet",
+    "add": "Tilføj",
+    "addClient": "Tilføj kunde",
+    "edit": "Rediger",
+    "editLesson": "Rediger hold",
+    "deleteLesson": "Slet hold",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "lessonTitle": "Holdets navn",
+    "untitled": "Uden navn",
+    "from": "Fra",
+    "to": "Til",
+    "searchPlaceholder": "Søg på navn eller telefon...",
+    "noClientsFound": "Ingen kunder fundet",
+    "noEligibleClients": "Ingen kunder har adgang til dette hold",
+    "visitsCount_one": "{{count}} besøg",
+    "visitsCount_other": "{{count}} besøg",
+    "errors": {
+      "selectService": "Vælg en ydelse",
+      "range": "Fra 1 til 50",
+      "minBooked": "{{count}} er allerede tilmeldt — lavere går ikke",
+      "endAfterStart": "Slut skal være efter start"
+    },
+    "createServiceConfirm": {
+      "title": "Opret en ydelse?",
+      "message": "Kan du ikke finde den rette ydelse? Opret den i Kataloget.",
+      "confirm": "Gå til Katalog"
+    }
+  },
+  "addClientModal": {
+    "title": "Tilføj kunde",
+    "searchPlaceholder": "Søg på navn eller telefon...",
+    "noClientsFound": "Ingen kunder fundet",
+    "chooseFromList": "Vælg kunder fra listen",
+    "selectedCount_one": "Valgt: {{count}} kunde",
+    "selectedCount_other": "Valgt: {{count}} kunder",
+    "cancel": "Annuller",
+    "add": "Tilføj"
+  },
+  "rightPanel": {
+    "halls": "Sale",
+    "load": "Belægning",
+    "upcoming": "Kommende"
+  },
+  "grid": {
+    "classesShort": "hold",
+    "peopleShort": "pers.",
+    "loadPercent": "Belægning: {{percent}} %",
+    "classes": "hold",
+    "classesToday": "hold i dag",
+    "newLessonPreview": "Nyt hold",
+    "cancelled": "Aflyst",
+    "noTrainers": "Ingen undervisere",
+    "noHalls": "Ingen sale"
+  },
+  "createService": "+ Opret ydelse",
+  "invalidDateFormat": "Ugyldigt datoformat",
+  "toasts": {
+    "lessonMoved": "Holdet er flyttet",
+    "endTimeChanged": "Sluttidspunkt ændret",
+    "startTimeChanged": "Starttidspunkt ændret",
+    "attendanceMarked": "Fremmøde registreret",
+    "paymentAccepted": "Betaling modtaget",
+    "bookingConfirmed": "Booking bekræftet",
+    "clientRemoved": "Kunde fjernet fra holdet",
+    "lessonUpdated": "Holdet er opdateret",
+    "lessonAdded": "Holdet er tilføjet",
+    "selectTrainer": "Vælg en underviser",
+    "alreadyCancelled": "Holdet er allerede aflyst",
+    "lessonCancelled": "Holdet er aflyst",
+    "noPermission": "Ikke rettigheder nok til at ændre planen",
+    "undoLabel": "Fortrudt: {{label}}",
+    "redoLabel": "Gentaget: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Tilmeldt: {{count}} kunde",
+    "clientsBooked_other": "Tilmeldt: {{count}} kunder",
+    "clientsBookedPartial": "Tilmeldt {{success}} af {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "fjernelse af kunde",
+      "moveLesson": "flytning af hold",
+      "createLesson": "oprettelse af hold",
+      "bookClient": "tilmelding af kunde",
+      "bookClients": "tilmelding af kunder ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Kunne ikke indlæses",
+    "retry": "Prøv igen"
+  },
+  "cancelBookingConfirm": {
+    "title": "Aflys holdet?",
+    "message_one": "{{count}} kunde får besked om aflysningen.",
+    "message_other": "{{count}} kunder får besked om aflysningen.",
+    "confirm": "Aflys holdet"
+  }
+}

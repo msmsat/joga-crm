@@ -9,7 +9,7 @@ import { billingApi } from '../api/billing/billing.api';
 const WARN_DAYS = 3;
 
 const fmtDate = (iso: string, lang: string) =>
-  new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long' }).format(new Date(iso));
+  new Intl.DateTimeFormat(lang || 'en', { day: 'numeric', month: 'long' }).format(new Date(iso));
 
 // Ключ дизмисса на сегодня: закрыли — не показываем до конца дня, назавтра снова.
 const dismissKey = (iso: string) => `velora:sub-banner:${iso.slice(0, 10)}:${new Date().toISOString().slice(0, 10)}`;

@@ -5,19 +5,16 @@ import SectionHeader from "../ui/SectionHeader";
 import { Button, EmptyState, Input, Select, useToast } from "../../../../../components/ui/index";
 import { CURRENCIES, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
 import { resolveImageUrl } from "../../../../../api/client";
-import { DATE_FORMATS, DATE_FORMAT_LABELS, FIRST_DAY_OPTIONS } from "../../constants";
 import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import type { GeneralSettings, GeneralUpdate } from "../../../../../api/settings/settings.types";
 
-// Коды (уходят на бэк) + подписи (i18n/эндонимы/примеры формата) в одном списке опций.
-const zip = (values: readonly string[], labels: string[]) =>
-  values.map((v, i) => ({ value: v, label: labels[i] ?? v }));
-
 // logo_url — отдельный аплоад (uploadLogo), journal_time_step — без UI в этой задаче.
-const EDITABLE_FIELDS = [
-  "name", "description", "phone", "email", "website", "address",
-  "timezone", "language", "currency", "date_format", "first_day_of_week",
-] as const;
+// Карточка компании редактируется черновиком (Сохранить/Отмена), локаль
+// сохраняется сразу при выборе — у неё своих кнопок нет.
+// date_format и first_day_of_week полей не имеют: их никто не читает — ни один
+// формат даты и ни один календарь в продукте на них не смотрит.
+const COMPANY_FIELDS = ["name", "description", "phone", "email", "website", "address"] as const;
+type LocaleField = "timezone" | "language" | "currency";
 
 export default function GeneralTab() {
   const { t } = useTranslation(['settings', 'onboarding']);
@@ -30,8 +27,10 @@ export default function GeneralTab() {
   // useEffect (react-hooks/set-state-in-effect): нет лишнего цикла рендера.
   const [synced, setSynced] = useState<GeneralSettings | null>(null);
   if (data && data !== synced) {
+    // Локаль сохраняется мгновенно и обновляет data — незакоммиченные правки
+    // карточки компании при этом не затираем.
+    if (!draft || !synced || !COMPANY_FIELDS.some(k => draft[k] !== synced[k])) setDraft(data);
     setSynced(data);
-    setDraft(data);
   }
 
   if (isError) {
@@ -56,23 +55,27 @@ export default function GeneralTab() {
   // должен совпадать один в один, обычный kit Select, без визуальных правок.
   const currencyOptions = CURRENCIES.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
   const languageOptions = LANGUAGES;
-  const dateFormatOptions = zip(DATE_FORMATS, DATE_FORMAT_LABELS);
-  const firstDayOptions = zip(FIRST_DAY_OPTIONS, t('general.locale.firstDayLabels', { returnObjects: true }) as string[]);
   const timezoneOptions = TIMEZONES.map(tz => ({ value: tz.value, label: t(`onboarding:settings.timezones.${tz.value}`) }));
 
-  const dirty = EDITABLE_FIELDS.some(k => draft[k] !== data[k]);
+  const dirty = COMPANY_FIELDS.some(k => draft[k] !== data[k]);
 
   const set = <K extends keyof GeneralSettings>(key: K, value: GeneralSettings[K]) =>
     setDraft(prev => (prev ? { ...prev, [key]: value } : prev));
 
-  const handleReset = () => {
+  // Локаль: выбор сразу уходит на бэк, поэтому кнопок «Сохранить»/«Отмена» у неё нет.
+  const setLocale = <K extends LocaleField>(key: K, value: GeneralSettings[K]) => {
+    set(key, value);
+    save.mutate({ [key]: value } as GeneralUpdate);
+  };
+
+  const handleCancel = () => {
     setDraft(data);
     toast.success(t('general.resetToast'));
   };
 
   const handleSave = () => {
     const patch: Record<string, unknown> = {};
-    EDITABLE_FIELDS.forEach(key => {
+    COMPANY_FIELDS.forEach(key => {
       if (draft[key] !== data[key]) patch[key] = draft[key];
     });
     save.mutate(patch as GeneralUpdate);
@@ -84,7 +87,9 @@ export default function GeneralTab() {
     e.target.value = ""; // повторный выбор того же файла должен снова сработать
   };
 
-  const logoSrc = resolveImageUrl(draft.logo_url);
+  // Логотип — из ответа сервера: черновик мог не пересинхронизироваться, если в
+  // полях компании есть несохранённые правки.
+  const logoSrc = resolveImageUrl(data.logo_url);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -180,8 +185,9 @@ export default function GeneralTab() {
           <Input label={t('general.company.address')} value={draft.address ?? ''} onChange={v => set('address', v)} placeholder={t('general.company.addressPh')} />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-          <Button variant="ghost" onClick={handleReset}>{t('general.reset')}</Button>
-          <Button variant="primary" onClick={handleSave} disabled={!dirty} loading={save.isPending}>{t('common:buttons.save')}</Button>
+          {/* «Отмена» появляется только когда есть что отменять. */}
+          {dirty && <Button variant="ghost" onClick={handleCancel}>{t('common:buttons.cancel')}</Button>}
+          <Button variant="primary" onClick={handleSave} disabled={!dirty} loading={save.isPending && dirty}>{t('common:buttons.save')}</Button>
         </div>
       </div>
 
@@ -190,28 +196,26 @@ export default function GeneralTab() {
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.timezone')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.timezone ?? ''} onChange={v => set('timezone', v)} options={timezoneOptions} /></div>
+            {/* searchable — 26 поясов, искать город быстрее, чем листать. */}
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}>
+              <Select
+                value={draft.timezone ?? ''}
+                onChange={v => setLocale('timezone', v)}
+                options={timezoneOptions}
+                searchable
+                searchPlaceholder={t('general.locale.timezoneSearch')}
+                emptyText={t('general.locale.timezoneNotFound')}
+              />
+            </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.currency')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.currency ?? ''} onChange={v => set('currency', v)} options={currencyOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.currency ?? ''} onChange={v => setLocale('currency', v)} options={currencyOptions} /></div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.language')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.language ?? ''} onChange={v => set('language', v)} options={languageOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.language ?? ''} onChange={v => setLocale('language', v)} options={languageOptions} searchable searchPlaceholder={t('general.locale.languageSearch')} emptyText={t('general.locale.languageNotFound')} /></div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.dateFormat')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.date_format ?? ''} onChange={v => set('date_format', v)} options={dateFormatOptions} /></div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.firstDay')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.first_day_of_week ?? ''} onChange={v => set('first_day_of_week', v)} options={firstDayOptions} /></div>
-          </div>
-        </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "20px" }}>
-          <Button variant="ghost" onClick={handleReset}>{t('general.reset')}</Button>
-          <Button variant="primary" onClick={handleSave} disabled={!dirty} loading={save.isPending}>{t('common:buttons.save')}</Button>
         </div>
       </div>
     </div>

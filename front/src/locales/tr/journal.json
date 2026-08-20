@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Bugün",
+    "trainers": "Eğitmenler",
+    "halls": "Salonlar",
+    "day": "Gün",
+    "week": "Hafta"
+  },
+  "daySummary": {
+    "classesToday": "bugün ders",
+    "clientBookings": "müşteri randevusu",
+    "avgLoad": "ort. doluluk",
+    "trainersActive": "eğitmen görevde",
+    "gridStep": "Izgara adımı",
+    "minuteShort": "d",
+    "minutesShort": "dk",
+    "undo": "Geri al: {{label}}",
+    "redo": "Yinele: {{label}}",
+    "nothingToUndo": "Geri alınacak bir şey yok",
+    "nothingToRedo": "Yinelenecek bir şey yok"
+  },
+  "newBooking": {
+    "title": "Yeni ders",
+    "slotTime": "Zaman aralığı",
+    "service": "Hizmet",
+    "servicePlaceholder": "Bir hizmet seçin",
+    "namePlaceholder": "Örn. Reformer Pilates",
+    "location": "Konum / salon",
+    "start": "Başlangıç",
+    "end": "Bitiş",
+    "groupLimit": "Grup limiti",
+    "maxSpots": "Maks. kontenjan",
+    "assignTrainer": "Eğitmen ata",
+    "cancel": "İptal",
+    "create": "Ders oluştur",
+    "errors": {
+      "selectService": "Bir hizmet seçin",
+      "range": "1 ile 50 arası",
+      "endAfterStart": "Bitiş, başlangıçtan sonra olmalı"
+    },
+    "createServiceConfirm": {
+      "title": "Hizmet oluşturulsun mu?",
+      "message": "Aradığınız hizmeti bulamıyor musunuz? Katalog'da oluşturun.",
+      "confirm": "Katalog'a git"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Onaylandı",
+    "pending": "Beklemede",
+    "cancelled": "İptal edildi",
+    "spotsTaken": "dolu kontenjan",
+    "fillRate": "Doluluk",
+    "booked": "Kayıtlı",
+    "attended": "Katıldı",
+    "markAttended": "Katılımı işaretle",
+    "awaitingConfirmation": "Onay bekliyor",
+    "trialLesson": "Deneme",
+    "unpaid": "Ödenmedi · {{amount}}",
+    "acceptPayment": "Ödemeyi al",
+    "payCash": "Nakit",
+    "payTransfer": "Havale",
+    "payLater": "Ödemesiz",
+    "confirmBooking": "Randevuyu onayla",
+    "rejectBooking": "Talebi reddet",
+    "removeFromLesson": "Dersten çıkar",
+    "add": "Ekle",
+    "addClient": "Müşteri ekle",
+    "edit": "Düzenle",
+    "editLesson": "Dersi düzenle",
+    "deleteLesson": "Dersi sil",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "lessonTitle": "Ders adı",
+    "untitled": "Adsız",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "searchPlaceholder": "Ad veya telefonla ara...",
+    "noClientsFound": "Müşteri bulunamadı",
+    "noEligibleClients": "Bu derse erişimi olan müşteri yok",
+    "visitsCount_one": "{{count}} ziyaret",
+    "visitsCount_other": "{{count}} ziyaret",
+    "errors": {
+      "selectService": "Bir hizmet seçin",
+      "range": "1 ile 50 arası",
+      "minBooked": "{{count}} kişi zaten kayıtlı — daha aza inilemez",
+      "endAfterStart": "Bitiş, başlangıçtan sonra olmalı"
+    },
+    "createServiceConfirm": {
+      "title": "Hizmet oluşturulsun mu?",
+      "message": "Aradığınız hizmeti bulamıyor musunuz? Katalog'da oluşturun.",
+      "confirm": "Katalog'a git"
+    }
+  },
+  "addClientModal": {
+    "title": "Müşteri ekle",
+    "searchPlaceholder": "Ad veya telefonla ara...",
+    "noClientsFound": "Müşteri bulunamadı",
+    "chooseFromList": "Listeden müşteri seçin",
+    "selectedCount_one": "Seçildi: {{count}} müşteri",
+    "selectedCount_other": "Seçildi: {{count}} müşteri",
+    "cancel": "İptal",
+    "add": "Ekle"
+  },
+  "rightPanel": {
+    "halls": "Salonlar",
+    "load": "Doluluk",
+    "upcoming": "Yaklaşan"
+  },
+  "grid": {
+    "classesShort": "ders",
+    "peopleShort": "kişi",
+    "loadPercent": "Doluluk: %{{percent}}",
+    "classes": "ders",
+    "classesToday": "bugün ders",
+    "newLessonPreview": "Yeni ders",
+    "cancelled": "İptal edildi",
+    "noTrainers": "Eğitmen yok",
+    "noHalls": "Salon yok"
+  },
+  "createService": "+ Hizmet oluştur",
+  "invalidDateFormat": "Geçersiz tarih biçimi",
+  "toasts": {
+    "lessonMoved": "Ders taşındı",
+    "endTimeChanged": "Bitiş saati değiştirildi",
+    "startTimeChanged": "Başlangıç saati değiştirildi",
+    "attendanceMarked": "Katılım işaretlendi",
+    "paymentAccepted": "Ödeme alındı",
+    "bookingConfirmed": "Randevu onaylandı",
+    "clientRemoved": "Müşteri dersten çıkarıldı",
+    "lessonUpdated": "Ders güncellendi",
+    "lessonAdded": "Ders eklendi",
+    "selectTrainer": "Bir eğitmen seçin",
+    "alreadyCancelled": "Ders zaten iptal edilmiş",
+    "lessonCancelled": "Ders iptal edildi",
+    "noPermission": "Programı değiştirmek için yetki yetersiz",
+    "undoLabel": "Geri alındı: {{label}}",
+    "redoLabel": "Yinelendi: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Kaydedildi: {{count}} müşteri",
+    "clientsBooked_other": "Kaydedildi: {{count}} müşteri",
+    "clientsBookedPartial": "{{total}} müşteriden {{success}} tanesi kaydedildi: {{error}}",
+    "historyLabels": {
+      "removeClient": "müşteri çıkarma",
+      "moveLesson": "ders taşıma",
+      "createLesson": "ders oluşturma",
+      "bookClient": "müşteri kaydı",
+      "bookClients": "müşteri kaydı ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Yüklenemedi",
+    "retry": "Tekrar dene"
+  },
+  "cancelBookingConfirm": {
+    "title": "Ders iptal edilsin mi?",
+    "message_one": "{{count}} müşteriye iptal bildirimi gidecek.",
+    "message_other": "{{count}} müşteriye iptal bildirimi gidecek.",
+    "confirm": "Dersi iptal et"
+  }
+}

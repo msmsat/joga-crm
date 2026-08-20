@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Stüdyoda böyle bir personel yok",
+    "noData": "Veri yok",
+    "ownerOnly": "Erişim rolünüzle sınırlı",
+    "loadError": "Veriler yüklenemedi",
+    "retry": "Tekrar dene"
+  },
+  "metrics": {
+    "revenue": "Bu ayki ciro",
+    "clients": "Aktif müşteriler",
+    "bookings": "Bu ayki randevular",
+    "retention": "Elde tutma oranı",
+    "lessons": "Bu ayki dersler",
+    "attendance": "Bu ayki katılım",
+    "fill_rate": "Doluluk oranı",
+    "rating": "Ortalama puan",
+    "active_clients": "Aktif müşteriler",
+    "more": "Ayrıntılar"
+  },
+  "today": {
+    "titleTrainer": "Bugünkü derslerim",
+    "titleAdmin": "Bugünkü program",
+    "subtitle": "{{count}} ders · {{spots}} yerin {{booked}} tanesi dolu",
+    "subtitle_one": "{{count}} ders · {{spots}} yerin {{booked}} tanesi dolu",
+    "openJournal": "Takvimi aç",
+    "empty": "Bugün ders yok",
+    "emptyHintTrainer": "Boş bir gün — yeni randevular burada görünecek",
+    "emptyHintAdmin": "Bugün için planlanmış bir şey yok"
+  },
+  "chart": {
+    "byDay": "günlük",
+    "byMonth": "aylık",
+    "subWeek": "Bu hafta",
+    "subMonth": "Bu ay",
+    "subYear": "Son 12 ay",
+    "tabWeek": "Hafta",
+    "tabMonth": "Ay",
+    "tabYear": "Yıl",
+    "noData": "Bu dönem için veri yok",
+    "retentionNA": "Elde tutma grafiği kullanılamıyor"
+  },
+  "tasks": {
+    "title": "Görevler",
+    "empty": "Görev yok",
+    "done": "Tamam",
+    "add": "Görev ekle",
+    "namePlaceholder": "Görev adı…",
+    "cancel": "İptal",
+    "submit": "Ekle",
+    "priority": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek"
+    },
+    "priorityHint": {
+      "low": "Düşük öncelik",
+      "medium": "Orta öncelik",
+      "high": "Yüksek öncelik"
+    },
+    "tags": {
+      "Клиент": "Müşteri",
+      "Финансы": "Finans",
+      "Лиды": "Potansiyel müşteriler",
+      "Отчёты": "Raporlar",
+      "Журнал": "Takvim",
+      "Персонал": "Personel"
+    },
+    "scope": {
+      "mine": "Benim",
+      "admins": "Yöneticiler",
+      "trainers": "Eğitmenler"
+    },
+    "assigneePlaceholder": "Bir personel seçin",
+    "deleteTitle": "Görev silinsin mi?",
+    "deleteMessage": "Bu işlem geri alınamaz."
+  },
+  "events": {
+    "title": "Son olaylar",
+    "seeAll": "Tümünü gör",
+    "justNow": "az önce",
+    "openProfile": "Profili aç",
+    "writeWhatsApp": "WhatsApp'tan yaz",
+    "sendReceipt": "Fiş gönder",
+    "cancelBooking": "Randevuyu iptal et"
+  },
+  "summary": {
+    "topServices": "En çok tercih edilen hizmetler",
+    "trainersLoad": "Eğitmen doluluğu",
+    "financeMonth": "Finans (ay)",
+    "revenue": "Ciro",
+    "expenses": "Giderler",
+    "avgCheck": "Ortalama sepet",
+    "profit": "Kâr"
+  }
+}

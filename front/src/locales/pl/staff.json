@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Razem w zespole",
+    "onShift": "Na zmianie",
+    "trainers": "Trenerzy",
+    "administrators": "Administratorzy",
+    "onlineNow": "{{count}} online teraz"
+  },
+  "toolbar": {
+    "teamTitle": "Zespół · {{count}}",
+    "addEmployee": "Dodaj pracownika",
+    "searchPlaceholder": "Szukaj...",
+    "allGroup": "Wszyscy"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Pełny dostęp",
+    "ownerAccess": "Właściciel ma dostęp do wszystkich modułów systemu",
+    "loadBar": "Obciążenie trenera",
+    "weekSchedule": "Harmonogram tygodniowy",
+    "todaySchedule": "Dzisiejszy harmonogram",
+    "minutesSuffix": "min",
+    "clientsSuffix": "klientów",
+    "hall": "Sala",
+    "staffHalls": "Sale pracownika",
+    "noName": "Nie podano imienia",
+    "noRole": "Bez roli",
+    "addEventStub": "Formularz dodawania wydarzenia..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Przychód",
+      "rating": "Ocena",
+      "bookings": "Rezerwacje",
+      "load": "Obciążenie"
+    },
+    "admin": {
+      "bookings": "Rezerwacje",
+      "attended": "Obsłużone",
+      "revenue": "Kasa",
+      "load": "Obciążenie"
+    },
+    "owner": {
+      "revenue": "Przychód",
+      "attended": "Wizyty",
+      "load": "Obciążenie",
+      "staff": "Pracownicy"
+    },
+    "default": {
+      "bookings": "Rezerwacje",
+      "attended": "Wizyty",
+      "revenue": "Przychód",
+      "load": "Obciążenie"
+    }
+  },
+  "schedule": {
+    "week": "Tydzień",
+    "month": "Miesiąc",
+    "working": "Godziny pracy",
+    "free": "Wolne",
+    "busy": "Zajęte",
+    "dayOff": "Dzień wolny",
+    "syncHint": "Harmonogram synchronizuje się z dziennikiem rezerwacji i grafikiem zajęć.",
+    "workDaysInWeek": "{{count}} dni roboczych w tygodniu",
+    "markWork": "Pracuje",
+    "markHint": "Wybierz oznaczenie powyżej, a następnie kliknij dzień",
+    "prevMonth": "Poprzedni miesiąc",
+    "nextMonth": "Następny miesiąc",
+    "dayHasBookings": "Ten dzień ma już rezerwacje — nie może być dniem wolnym",
+    "pastDayLocked": "Minionych dni nie można zmieniać"
+  },
+  "permissions": {
+    "finance": "Finanse",
+    "staff": "Pracownicy",
+    "reports": "Raporty",
+    "clients": "Klienci",
+    "settings": "Ustawienia"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Trener",
+    "owner": "Właściciel"
+  },
+  "deleteModal": {
+    "cancelLesson": "Odwołać zajęcia?",
+    "dontAsk": "Nie pytaj ponownie przy usuwaniu",
+    "cancelInvite": "Anulować dołączenie?",
+    "cancelInviteConfirm": "Anuluj zaproszenie"
+  },
+  "toasts": {
+    "lessonCanceled": "Zajęcia odwołane",
+    "errorCancel": "Błąd podczas odwoływania",
+    "employeeAdded": "Pracownik {{name}} dodany",
+    "changesSaved": "Zmiany zapisane",
+    "employeeDeleted": "Pracownik usunięty",
+    "errorDelete": "Błąd podczas usuwania",
+    "errorSave": "Nie udało się zapisać zmian",
+    "emailCopied": "Email skopiowany",
+    "phoneCopied": "Telefon skopiowany",
+    "inviteSent": "Zaproszenie wysłane na {{email}}",
+    "inviteResent": "Zaproszenie wysłane ponownie",
+    "inviteCancelled": "Zaproszenie anulowane"
+  },
+  "addModal": {
+    "stepIndicator": "Krok {{current}} z {{total}}",
+    "stepCounter": "{{current}}/4 — zajmie około 2 minut",
+    "nameFallback": "tę osobę",
+    "employeeFallback": "Pracownik",
+    "steps": {
+      "1": {
+        "title": "O pracowniku",
+        "sub": "Jak nazywa się nowy członek zespołu?",
+        "trust": "Dane pracownika są chronione"
+      },
+      "2": {
+        "title": "Rola i usługi",
+        "sub": "Stanowisko i lista usług",
+        "trust": "Rolę można zmienić w każdej chwili"
+      },
+      "3": {
+        "title": "Harmonogram i wynagrodzenie",
+        "sub": "Kiedy pracuje i ile zarabia?",
+        "trust": "Harmonogram synchronizuje się z dziennikiem"
+      },
+      "4": {
+        "title": "Gotowe!",
+        "sub": "Zaproszenie wysłane do {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Dane osobowe",
+      "sub": "Zacznijmy od imienia i danych kontaktowych",
+      "namePlaceholder": "Np. Anna Kowalska",
+      "emailLabel": "Adres email",
+      "contactsNotSet": "Nie podano kontaktów",
+      "inviteHint": "Przekaż hasło pracownikowi osobiście — nigdy nie trafia ono do wiadomości email. Email zawiera tylko link, a bez hasła nie otworzy studia.",
+      "errors": {
+        "name": "Imię jest wymagane",
+        "phone": "Nieprawidłowy numer telefonu",
+        "email": "Nieprawidłowy email",
+        "password": "Co najmniej 8 znaków, litery i cyfry",
+        "emailTaken": "Ten email należy już do innego konta Velora"
+      },
+      "passwordLabel": "Hasło logowania dla pracownika",
+      "passwordPlaceholder": "Co najmniej 8 znaków, litery i cyfry"
+    },
+    "step2": {
+      "heading": "Rola i usługi",
+      "sub": "Wybierz stanowisko — usługi zostaną dodane automatycznie",
+      "positionLabel": "Stanowisko *",
+      "positionPlaceholder": "Albo wpisz własne stanowisko...",
+      "addServicePlaceholder": "Dodaj usługę — naciśnij Enter"
+    },
+    "step3": {
+      "heading": "Harmonogram i wynagrodzenie",
+      "sub": "Ustaw dni robocze i wynagrodzenie",
+      "scheduleLabel": "Grafik pracy",
+      "salaryLabel": "Wynagrodzenie (opcjonalnie)",
+      "salaryPlaceholder": "Wpisz liczbę",
+      "createAndInvite": "Utwórz i zaproś"
+    },
+    "step4": {
+      "exclaim": "Świetnie!",
+      "added": "dodany",
+      "sub": "Zaproszenie wysłane. Pracownik dołączy do zespołu, gdy je zaakceptuje.",
+      "inviteLinkLabel": "Link zaproszenia",
+      "sendInviteLabel": "Wyślij zaproszenie",
+      "inviteInfo": "Pracownik otrzymuje email, otwiera link i potwierdza zaproszenie swoim hasłem — dopiero wtedy dołącza do zespołu i uzyskuje dostęp. Link jest ważny 7 dni. Hasła nie ma w emailu — przekaż je osobiście.",
+      "emailSentTitle": "Email wysłany",
+      "resend": "Wyślij ponownie",
+      "resentOk": "Email wysłany ponownie",
+      "resendError": "Wysyłka nie powiodła się — spróbuj ponownie",
+      "copied": "Skopiowano"
+    },
+    "illus": {
+      "contacts": "Kontakty",
+      "profile": "Profil",
+      "roleFallback": "Rola",
+      "services": "Usługi",
+      "specialization": "Specjalizacja",
+      "scheduleTitle": "GRAFIK PRACY",
+      "inviteSent": "Zaproszenie wysłane",
+      "inviteSub": "{{name}} otrzyma link do logowania"
+    },
+    "summary": {
+      "employee": "Pracownik",
+      "role": "Rola",
+      "workDays": "Dni robocze",
+      "daysCount": "{{count}} z 7"
+    }
+  },
+  "editModal": {
+    "header": "EDYCJA",
+    "employeeFallback": "Pracownik",
+    "positionFallback": "Bez stanowiska",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rola",
+      "salary": "Wynagrodzenie",
+      "schedule": "Harmonogram"
+    },
+    "profile": {
+      "heading": "Dane osobowe",
+      "sub": "Zaktualizuj dane kontaktowe pracownika",
+      "uploadPhoto": "Wgraj zdjęcie",
+      "replacePhoto": "Zmień zdjęcie",
+      "removePhoto": "Usuń zdjęcie",
+      "photoHint": "JPG, PNG — do 5 MB",
+      "namePlaceholder": "Imię Nazwisko",
+      "notifyHint": "Pracownik zostanie powiadomiony o zmianach na podany telefon lub email.",
+      "errors": {
+        "name": "Imię jest wymagane",
+        "email": "Nieprawidłowy email"
+      },
+      "contactsOwnedByEmployee": "Email i telefon należą do konta pracownika — zmienia je we własnym profilu."
+    },
+    "role": {
+      "heading": "Rola i specjalizacja",
+      "sub": "Stanowisko pracownika i lista usług",
+      "addService": "Dodaj usługę",
+      "catalogConfirm": "Czy chcesz otworzyć sekcję Usługi w Katalogu?"
+    },
+    "salary": {
+      "heading": "Wynagrodzenie",
+      "sub": "Podaj rodzaj płatności i kwotę wynagrodzenia",
+      "typeLabel": "Rodzaj płatności",
+      "perWeek": "₽ / tydzień",
+      "selectTypeHint": "Wybierz rodzaj płatności powyżej",
+      "currentLabel": "Aktualne wynagrodzenie",
+      "typeFixed": "Stała pensja",
+      "typePercent": "% przychodu",
+      "typeHourly": "Stawka godzinowa",
+      "typeNotSet": "Nie wybrano rodzaju",
+      "cardFixedSub": "Stała kwota",
+      "cardPercentSub": "% przychodu",
+      "cardHourlySub": "Za przepracowaną godzinę",
+      "amountFixed": "Kwota miesięczna",
+      "amountPercent": "Procent przychodu",
+      "amountHourly": "Stawka godzinowa",
+      "reportHint": "Wynagrodzenie jest widoczne w raportach finansowych. Pracownik widzi tylko własne wynagrodzenie."
+    },
+    "schedule": {
+      "heading": "Grafik pracy",
+      "activeDays": "Aktywne dni: {{count}} z 7",
+      "syncHint": "Harmonogram synchronizuje się z dziennikiem rezerwacji i grafikiem zajęć.",
+      "workDaysLabel": "Dni robocze",
+      "totalHoursLabel": "Łączna liczba godzin",
+      "daysOffLabel": "Dni wolne",
+      "daysLabel": "Dni",
+      "workDays": "{{count}} dni roboczych",
+      "hoursSuffix": "godz."
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Teraz online",
+      "notOnline": "Nie jest online",
+      "schedule": "Harmonogram",
+      "daysCount": "{{count}}/7 dni"
+    },
+    "deleteEmployee": "Usuń pracownika",
+    "deleteConfirm": "Usunąć {{name}} z zespołu?",
+    "defaultName": "pracownik",
+    "cannotDeleteLastOwner": "Nie można usunąć jedynego właściciela"
+  },
+  "ownerModal": {
+    "header": "KONTAKTY WŁAŚCICIELA",
+    "heading": "Dane kontaktowe",
+    "sub": "Telefon i email właściciela studia",
+    "cardNote": "email jest loginem do logowania",
+    "loginWarning": "Email jest loginem właściciela. Po zapisaniu zaloguj się nowym adresem.",
+    "lockedHint": "Imię, zdjęcie, rola i uprawnienia nie są edytowane tutaj — znajdują się w sekcji «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Oczekuje na zaproszenie",
+    "pendingHint": "Profil otworzy się, gdy pracownik zaakceptuje zaproszenie",
+    "resendInvite": "Wyślij zaproszenie ponownie",
+    "cancelInvite": "Anuluj dołączenie"
+  }
+}

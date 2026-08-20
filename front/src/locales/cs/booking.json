@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Kanály připojení",
+    "connected": "Připojeno",
+    "disconnected": "Nepřipojeno",
+    "pending": "Vyžaduje nastavení",
+    "connectInNotifications": "Připojit v Oznámeních",
+    "manage": "Spravovat v Oznámeních",
+    "telegram": {
+      "name": "Telegram bot",
+      "desc": "Automatické rezervace přes bota"
+    },
+    "stripe": {
+      "name": "Platby",
+      "desc": "Stripe: karty, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Odkaz pro klienty",
+      "desc": "Rezervační mini aplikace — do bia, stories a kampaní",
+      "copy": "Kopírovat odkaz",
+      "open": "Otevřít mini aplikaci",
+      "print": "Vytisknout QR",
+      "posterTitle": "Rezervujte si lekci online",
+      "scanHint": "Namiřte fotoaparát telefonu na kód"
+    }
+  },
+  "loading": "Načítání nastavení…",
+  "sections": {
+    "main": {
+      "title": "Obecná nastavení",
+      "prefill": {
+        "label": "Platba předem při rezervaci",
+        "sub": "Vyžadovat platbu před potvrzením"
+      },
+      "trialLesson": {
+        "label": "První lekce zdarma",
+        "sub": "První rezervaci nového klienta hradí studio"
+      },
+      "trainerConfirm": {
+        "label": "Potvrzení trenérem",
+        "sub": "Rezervace čeká na ruční schválení"
+      },
+      "bookingActive": {
+        "label": "Online rezervace aktivní",
+        "sub": "Zobrazit widget klientům"
+      }
+    },
+    "rules": {
+      "title": "Limity a pravidla",
+      "advance": {
+        "label": "Zablokovat rezervaci méně než",
+        "sub": "Minimální doba před lekcí"
+      },
+      "window": {
+        "label": "Rezervace se otevírají",
+        "sub": "Na kolik dní dopředu"
+      },
+      "cancel": {
+        "label": "Zrušení bez sankce",
+        "sub": "Klient může zrušit před lekcí"
+      },
+      "repeat": {
+        "label": "Opakovaná rezervace",
+        "sub": "Povolit klientovi rezervovat dvakrát"
+      },
+      "workHours": {
+        "label": "Provozní doba widgetu",
+        "sub": "Lekce mimo tyto hodiny nelze rezervovat online"
+      }
+    },
+    "branding": {
+      "title": "Branding widgetu",
+      "sub": "Vzhled rezervační stránky",
+      "accentColor": "Akcentní barva",
+      "logo": {
+        "label": "Logo studia",
+        "sub": "Zobrazuje se v záhlaví widgetu",
+        "upload": "Nahrát",
+        "uploading": "Nahrávání…",
+        "remove": "Odebrat",
+        "uploadFailed": "Nahrání loga se nezdařilo"
+      },
+      "darkMode": {
+        "label": "Tmavý motiv",
+        "sub": "Widget v tmavém vzhledu"
+      },
+      "language": {
+        "label": "Výchozí jazyk",
+        "sub": "Hlavní jazyk rozhraní"
+      }
+    },
+    "notifications": {
+      "title": "Oznámení",
+      "sub": "Automatické zprávy klientům",
+      "preview": {
+        "confirmed": "Rezervace potvrzena! Po 10:00",
+        "reminder2h": "Připomínka: za 2 hodiny",
+        "reviewRequest": "Díky za návštěvu! Ohodnoťte lekci"
+      },
+      "reminder24h": {
+        "label": "Připomínka 24 h předem",
+        "sub": "Ráno před lekcí"
+      },
+      "reminder2h": {
+        "label": "Připomínka 2 h předem",
+        "sub": "Krátce před lekcí"
+      },
+      "reviewRequest": {
+        "label": "Žádost o hodnocení",
+        "sub": "Jakmile je návštěva označena"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Káva po lekci",
+        "sub": "Po rezervaci dostane klient pozvání zůstat 15 minut se skupinou. Souhlasí-li dva a více, přijde jim po lekci připomínka"
+      },
+      "spots": {
+        "label": "Kam je pozvat",
+        "sub": "Až tři podniky poblíž studia. Zobrazí se, teprve když se přidají dva a více lidí",
+        "namePlaceholder": "Název",
+        "addressPlaceholder": "Adresa",
+        "urlPlaceholder": "Odkaz na mapu",
+        "add": "Přidat podnik",
+        "remove": "Odebrat podnik"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 hodina",
+      "2h": "2 hodiny",
+      "4h": "4 hodiny",
+      "12h": "12 hodin",
+      "24h": "24 hodin"
+    },
+    "window": {
+      "7d": "7 dní",
+      "14d": "14 dní",
+      "30d": "30 dní",
+      "60d": "60 dní"
+    },
+    "cancel": {
+      "2h": "2 hodiny",
+      "4h": "4 hodiny",
+      "12h": "12 hodin",
+      "24h": "24 hodin"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot připojen",
+    "botDisconnected": "Bot odpojen",
+    "codeCopied": "Kód zkopírován!",
+    "linkCopied": "Odkaz zkopírován!",
+    "printBlocked": "Pro tisk QR kódu povolte vyskakovací okna",
+    "stripeReturned": "Údaje odeslány do Stripe",
+    "stripeLinkExpired": "Platnost odkazu Stripe vypršela — zkuste to prosím znovu"
+  },
+  "stripeGate": {
+    "kicker": "Nutné pro online rezervace",
+    "none": {
+      "title": "Nejdřív nastavte platby",
+      "sub": "Klient rezervuje a platí v jednom kroku. Dokud není účet Stripe připojený, rezervaci nezaplatí.",
+      "action": "Připojit Stripe"
+    },
+    "incomplete": {
+      "title": "Dokončete nastavení Stripe",
+      "sub": "Účet existuje, ale Stripe zatím platby nepovolil — formulář není kompletní.",
+      "action": "Pokračovat v nastavení"
+    },
+    "disabled": {
+      "title": "Platby jsou vypnuté",
+      "sub": "Stripe je připojený a připravený přijímat platby, ale v sekci Finance je vypnutý.",
+      "action": "Otevřít Finance"
+    },
+    "loading": {
+      "title": "Kontrola připojení",
+      "sub": "Ptáme se Stripe, zda je účet studia připravený přijímat platby.",
+      "action": "Kontrola…"
+    },
+    "perks": {
+      "direct": "Peníze přicházejí přímo na účet studia",
+      "methods": "Karty, Apple Pay a Google Pay rovnou v základu",
+      "fee": "Provize se řídí vaším tarifem Velora"
+    },
+    "later": "Později",
+    "note": "Otevře se formulář Stripe. Po jeho vyplnění se vrátíte na tuto stránku."
+  },
+  "tg": {
+    "title": "Telegram bot",
+    "connected": "Připojeno",
+    "openInTelegram": "Otevřít bota v Telegramu",
+    "showToken": "Zobrazit token",
+    "hideToken": "Skrýt token",
+    "acceptsBookings": "Bot přijímá rezervace od klientů",
+    "instantNotify": "Oznámení přicházejí okamžitě",
+    "disconnect": "Odpojit bota",
+    "pasteToken": "Vložte token bota od @BotFather",
+    "invalidToken": "Neplatný formát tokenu",
+    "connect": "Připojit bota",
+    "howToGet": "Jak získat token?",
+    "steps": {
+      "1a": "Otevřete Telegram → najděte",
+      "1b": "@BotFather",
+      "2a": "Pošlete příkaz",
+      "2b": "/newbot",
+      "3": "Zvolte jméno a uživatelské jméno bota",
+      "4": "Zkopírujte token a vložte ho výše"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Umístěte do profilu a stories odkaz na rychlou rezervaci",
+    "steps": {
+      "1": "Zkopírujte svůj odkaz",
+      "2a": "Vložte ho do pole",
+      "2b": "„Web“",
+      "2c": " v nastavení profilu na Instagramu.",
+      "3a": "Přidejte odkaz do",
+      "3b": "Stories",
+      "3c": " pomocí speciální samolepky."
+    },
+    "proTip": "Připněte Story s průchodem rezervací do Highlights — zvyšuje to konverzi o 30 %."
+  },
+  "web": {
+    "title": "Widget na web",
+    "sub": "Přidejte rezervační tlačítko na jakýkoli web (Tilda, WordPress nebo vlastní kód)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopírovat",
+    "instructionPrefix": "Vložte tento kód na svém webu těsně před uzavírací značku",
+    "instructionSuffix": ". Tlačítko se objeví automaticky."
+  },
+  "wa": {
+    "title": "Rezervace přes WhatsApp",
+    "sub": "Nastavte v WhatsApp Business automatickou odpověď, která ihned pošle odkaz na rezervaci.",
+    "online": "online",
+    "sampleIncoming": "Dobrý den! Ráda bych se objednala na lekci.",
+    "sampleOutgoing": "Vítejte! ✨",
+    "connect": "Připojit WhatsApp Business",
+    "connected": "Připojeno",
+    "autoReplyActive": "Automatická odpověď je aktivní",
+    "instantLink": "Odkaz na rezervaci se odesílá okamžitě"
+  }
+}

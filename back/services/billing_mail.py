@@ -21,6 +21,7 @@ from sqlalchemy.future import select
 from models import BillingInvoice, StudioBillingPlan, StudioMember, User
 from models.studio import Studio
 from services import stripe_billing
+from services.alerts import alert
 from services.email_layout import WEB_APP_URL, button, link
 from services.mailer import send_email
 from services.notifier import _CURRENCY_SIGNS, _studio_prefs
@@ -212,15 +213,14 @@ _INCOME_LINK = button("Открыть фактуру", "{url}")
 async def send_platform_income(db: AsyncSession, invoice: BillingInvoice) -> bool:
     """Уведомить платформу о поступлении по счёту. True — письмо ушло.
 
-    Шлётся на PLATFORM_BILLING_EMAIL и НЕ смотрит на тумблер «Чек на email»: тот
+    Два канала: алерт в Telegram (services/alerts.py) и письмо на
+    PLATFORM_BILLING_EMAIL. Оба НЕ смотрят на тумблер «Чек на email»: тот
     принадлежит владельцу студии и управляет ЕГО письмами, а не отчётностью
-    платформы. Адрес не задан — тихо выходим.
+    платформы. Адрес не задан — остаётся один Telegram.
 
     Язык только русский: адресат один и известен, локализовывать письмо самому
     себе незачем.
     """
-    if not PLATFORM_BILLING_EMAIL:
-        return False
     try:
         studio_name = (await db.execute(
             select(Studio.name).where(Studio.id == invoice.studio_id)
@@ -228,6 +228,16 @@ async def send_platform_income(db: AsyncSession, invoice: BillingInvoice) -> boo
 
         amount = fmt_amount(invoice.amount)
         kind = _INCOME_KIND.get(invoice.kind, invoice.kind)
+
+        # Telegram — до письма и независимо от него: деньги хочется видеть сразу,
+        # а PLATFORM_BILLING_EMAIL может быть и не задан.
+        alert(
+            f"💸 Оплата · {amount}\n{kind}\n{studio_name} (студия {invoice.studio_id})",
+            key=f"pay:{getattr(invoice, 'id', '?')}",
+        )
+
+        if not PLATFORM_BILLING_EMAIL:
+            return False
         url = invoice.pdf_url or invoice.hosted_invoice_url
         html = _INCOME_BODY.format(
             studio=studio_name,

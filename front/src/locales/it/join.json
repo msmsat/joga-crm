@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Non sei tu?",
+    "login": "Accedi con un altro account"
+  },
+  "card": {
+    "roleLine": "Invito nel team · {{role}}"
+  },
+  "title": {
+    "new": "Ciao, {{name}}",
+    "existing": "Bentornato, {{name}}"
+  },
+  "sub": {
+    "new": "Inserisci la password che ti ha dato il responsabile dello studio.",
+    "existing": "Inserisci la password di {{email}} per accettare l'invito."
+  },
+  "switch": {
+    "notice": "Hai effettuato l'accesso come {{current}}. Questo invito è per {{next}} — accettandolo passi a quell'account. Puoi tornare indietro dal tuo profilo."
+  },
+  "fields": {
+    "newPassword": "Password",
+    "newPasswordPlaceholder": "Password del responsabile",
+    "password": "Password",
+    "passwordPlaceholder": "La tua password Velora",
+    "phone": "Numero di telefono",
+    "phoneHint": "Non abbiamo ancora il tuo numero — inseriscilo con il prefisso internazionale",
+    "show": "Mostra",
+    "hide": "Nascondi"
+  },
+  "cta": {
+    "enter": "Accedi allo studio",
+    "accept": "Accetta l'invito"
+  },
+  "forgotHint": "Password dimenticata?",
+  "forgotLink": "Recupera l'accesso",
+  "expired": {
+    "title": "Il link non è valido",
+    "sub": "L'invito è scaduto o è stato revocato. Chiedi al proprietario dello studio di inviarlo di nuovo.",
+    "cta": "Vai all'accesso"
+  },
+  "consent": {
+    "text": "Accetto i",
+    "terms": "Termini di servizio",
+    "and": "e l'",
+    "privacy": "Informativa sulla privacy"
+  },
+  "errors": {
+    "noToken": "Il link non contiene un codice di invito — aprilo per intero dall'email.",
+    "network": "Errore di connessione",
+    "passwordRequired": "Inserisci la password",
+    "phoneRequired": "Inserisci il numero di telefono con il prefisso internazionale",
+    "consentRequired": "È necessario il tuo consenso"
+  },
+  "newAccountHint": "La password non è nell'email — ed è proprio questo il punto: un link da solo non basta per entrare. Se non te l'hanno data, chiedila al responsabile.",
+  "decline": {
+    "cta": "Rifiuta l'invito",
+    "confirm": "L'invito a «{{studio}}» verrà rimosso. Non entrerai nel team e solo il proprietario dello studio potrà inviarlo di nuovo.",
+    "keep": "Mantieni",
+    "confirmCta": "Rifiuta",
+    "pending": "Rifiuto in corso…"
+  },
+  "declined": {
+    "title": "Invito rifiutato",
+    "sub": "Non ti abbiamo aggiunto allo studio. Se è stato un errore, chiedi al proprietario di inviare di nuovo l'invito."
+  }
+}

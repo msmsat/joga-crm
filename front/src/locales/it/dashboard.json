@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Non ci sono dipendenti di questo tipo nello studio",
+    "noData": "Nessun dato",
+    "ownerOnly": "Accesso limitato dal tuo ruolo",
+    "loadError": "Caricamento dei dati non riuscito",
+    "retry": "Riprova"
+  },
+  "metrics": {
+    "revenue": "Ricavi questo mese",
+    "clients": "Clienti attivi",
+    "bookings": "Prenotazioni questo mese",
+    "retention": "Tasso di fidelizzazione",
+    "lessons": "Lezioni questo mese",
+    "attendance": "Presenze questo mese",
+    "fill_rate": "Tasso di riempimento",
+    "rating": "Valutazione media",
+    "active_clients": "Clienti attivi",
+    "more": "Dettagli"
+  },
+  "today": {
+    "titleTrainer": "Le mie lezioni di oggi",
+    "titleAdmin": "Programma di oggi",
+    "subtitle": "{{count}} lezioni · {{booked}} di {{spots}} posti",
+    "subtitle_one": "{{count}} lezione · {{booked}} di {{spots}} posti",
+    "openJournal": "Apri l'agenda",
+    "empty": "Nessuna lezione oggi",
+    "emptyHintTrainer": "Giornata libera — le nuove prenotazioni compariranno qui",
+    "emptyHintAdmin": "Non c'è nulla in programma per oggi"
+  },
+  "chart": {
+    "byDay": "per giorno",
+    "byMonth": "per mese",
+    "subWeek": "Settimana corrente",
+    "subMonth": "Mese corrente",
+    "subYear": "Ultimi 12 mesi",
+    "tabWeek": "Settimana",
+    "tabMonth": "Mese",
+    "tabYear": "Anno",
+    "noData": "Nessun dato per questo periodo",
+    "retentionNA": "Il grafico di fidelizzazione non è disponibile"
+  },
+  "tasks": {
+    "title": "Attività",
+    "empty": "Nessuna attività",
+    "done": "Fatto",
+    "add": "Aggiungi attività",
+    "namePlaceholder": "Nome dell'attività…",
+    "cancel": "Annulla",
+    "submit": "Aggiungi",
+    "priority": {
+      "low": "Bassa",
+      "medium": "Media",
+      "high": "Alta"
+    },
+    "priorityHint": {
+      "low": "Priorità bassa",
+      "medium": "Priorità media",
+      "high": "Priorità alta"
+    },
+    "tags": {
+      "Клиент": "Cliente",
+      "Финансы": "Finanze",
+      "Лиды": "Contatti",
+      "Отчёты": "Report",
+      "Журнал": "Agenda",
+      "Персонал": "Personale"
+    },
+    "scope": {
+      "mine": "Mie",
+      "admins": "Amministratori",
+      "trainers": "Istruttori"
+    },
+    "assigneePlaceholder": "Seleziona un dipendente",
+    "deleteTitle": "Eliminare l'attività?",
+    "deleteMessage": "Questa azione non può essere annullata."
+  },
+  "events": {
+    "title": "Eventi recenti",
+    "seeAll": "Vedi tutti",
+    "justNow": "proprio ora",
+    "openProfile": "Apri il profilo",
+    "writeWhatsApp": "Scrivi su WhatsApp",
+    "sendReceipt": "Invia la ricevuta",
+    "cancelBooking": "Annulla la prenotazione"
+  },
+  "summary": {
+    "topServices": "Servizi più richiesti",
+    "trainersLoad": "Carico degli istruttori",
+    "financeMonth": "Finanze (mese)",
+    "revenue": "Ricavi",
+    "expenses": "Spese",
+    "avgCheck": "Scontrino medio",
+    "profit": "Utile"
+  }
+}

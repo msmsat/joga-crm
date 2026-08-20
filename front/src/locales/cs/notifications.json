@@ -1,0 +1,347 @@
+{
+  "loading": "Načítání…",
+  "chModal": {
+    "eyebrow": "Kanál oznámení",
+    "connected": "Připojeno",
+    "notConnected": "Nepřipojeno",
+    "setup": "Nastavení připojení",
+    "details": "Podrobnosti připojení",
+    "ready": "Kanál běží",
+    "readyHint": "Oznámení k zapnutým událostem se odesílají automaticky.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Číslo",
+    "account": "Účet",
+    "sender": "Odesílatel"
+  },
+  "channels": {
+    "title": "Kanály doručení",
+    "connect": "Připojit",
+    "connected": "Připojeno",
+    "openSettings": "Nastavení {{channel}}",
+    "waLockedHint": "Kanál se odemkne, jakmile bude mít Meta váš způsob platby, ověřenou firmu a schválené šablony",
+    "waBlocker": {
+      "payment": "Chybí způsob platby — připomínky se nedoručují. Nastavit",
+      "verification": "Firma není u Meta ověřená — limit 250/den. Jak to napravit",
+      "templates": "Šablony stále čekají na kontrolu Meta — nic se neodešle. Podrobnosti"
+    }
+  },
+  "roles": {
+    "client": "Klient",
+    "trainer": "Trenér",
+    "admin": "Administrátor",
+    "owner": "Vlastník",
+    "activeCount": "{{count}} aktivních"
+  },
+  "matrix": {
+    "saving": "Ukládání…",
+    "allSaved": "Všechny změny uloženy",
+    "notSaved": "Neuloženo",
+    "activateAll": "Aktivovat vše",
+    "deactivateAll": "Zrušit všechna zaškrtnutí",
+    "activeCount": "Aktivních spouštěčů: {{count}} z {{total}}",
+    "scenariosFor": "Scénáře pro: {{role}}",
+    "configureFor": "Nastavte kanály pro {{count}} systémových spouštěčů",
+    "eventColumn": "Systémová událost",
+    "noActiveChannels": "Žádné aktivní kanály",
+    "noActiveChannelsHint": "Zapněte v panelu vlevo alespoň jeden kanál doručení",
+    "adviceLabel": "Tip:",
+    "advice": "Nastavte pro každou roli zvlášť, co a kam se odesílá — Velora se o zbytek postará automaticky.",
+    "tiers": {
+      "critical": "Povinné · nelze vypnout",
+      "operational": "Provozní",
+      "optional": "Volitelné"
+    },
+    "lock": {
+      "critical": "Povinné oznámení — nelze vypnout",
+      "lastChannel": "Poslední kanál doručení — nelze vypnout"
+    },
+    "channelDisconnected": "Kanál není připojen"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezervace potvrzena",
+      "desc": "Po úspěšné rezervaci lekce"
+    },
+    "c2": {
+      "title": "Připomínka lekce",
+      "desc": "24 hodin a 2 hodiny předem"
+    },
+    "c3": {
+      "title": "Lekce zrušena",
+      "desc": "Když ji zruší trenér nebo studio"
+    },
+    "c4": {
+      "title": "Platba proběhla",
+      "desc": "Účtenka po úspěšné platbě"
+    },
+    "c5": {
+      "title": "Docházejí lekce",
+      "desc": "Když na balíčku zbývají 1–2 návštěvy"
+    },
+    "c6": {
+      "title": "Končí platnost balíčku",
+      "desc": "3 dny před datem vypršení"
+    },
+    "c7": {
+      "title": "Narozeniny",
+      "desc": "Přání se speciální nabídkou"
+    },
+    "c8": {
+      "title": "Žádost o hodnocení",
+      "desc": "Po absolvované lekci"
+    },
+    "c9": {
+      "title": "Vrácení peněz",
+      "desc": "Při zrušení a vyřízení refundace"
+    },
+    "c10": {
+      "title": "Lekce zatím nezaplacená",
+      "desc": "Klient přišel, ale nezaplatil"
+    },
+    "c11": {
+      "title": "Lekce přeložena",
+      "desc": "Změnil se čas, sál nebo trenér"
+    },
+    "c12": {
+      "title": "Připsán bonus",
+      "desc": "Klientovi přibyly body nebo bonus"
+    },
+    "c13": {
+      "title": "Káva po lekci",
+      "desc": "Kdo ze skupiny jde na kávu"
+    },
+    "t1": {
+      "title": "Nová rezervace k trenérovi",
+      "desc": "Klient si rezervoval osobní lekci"
+    },
+    "t2": {
+      "title": "Klient zrušil rezervaci",
+      "desc": "Klient zrušil méně než 2 h předem"
+    },
+    "t3": {
+      "title": "Připomínka lekce",
+      "desc": "1 hodinu před začátkem"
+    },
+    "t4": {
+      "title": "Soupiska skupiny",
+      "desc": "30 min. před skupinovou lekcí"
+    },
+    "t5": {
+      "title": "Změna rozvrhu",
+      "desc": "Administrátor změnil slot nebo místo"
+    },
+    "t6": {
+      "title": "Vypočtena mzda",
+      "desc": "Týdenní výpočet výplaty"
+    },
+    "t7": {
+      "title": "Nové hodnocení trenéra",
+      "desc": "Klient po lekci zanechal hodnocení"
+    },
+    "t8": {
+      "title": "Narozeniny klienta",
+      "desc": "Připomínka popřát osobně"
+    },
+    "t9": {
+      "title": "Lekce zrušena",
+      "desc": "Studio nebo administrátor zrušil vaši lekci"
+    },
+    "a1": {
+      "title": "Nová online rezervace",
+      "desc": "Klient rezervoval přes web nebo widget"
+    },
+    "a2": {
+      "title": "Zrušení na poslední chvíli",
+      "desc": "Méně než hodinu před lekcí"
+    },
+    "a3": {
+      "title": "Nový klient v systému",
+      "desc": "Registrace nového uživatele"
+    },
+    "a4": {
+      "title": "Přijata platba",
+      "desc": "Jakákoli úspěšná platba"
+    },
+    "a6": {
+      "title": "Docházejí balíčky",
+      "desc": "Skupina klientů s ≤1 zbývající lekcí"
+    },
+    "a7": {
+      "title": "Kolize v rozvrhu",
+      "desc": "Překrývající se lekce v deníku"
+    },
+    "a8": {
+      "title": "Denní report",
+      "desc": "Shrnutí na konci dne"
+    },
+    "a9": {
+      "title": "Pokus o přihlášení",
+      "desc": "Přihlášení z nového zařízení"
+    },
+    "a10": {
+      "title": "Vrácení peněz",
+      "desc": "Administrátor vystavil refundaci"
+    },
+    "o1": {
+      "title": "Denní shrnutí",
+      "desc": "Tržby, rezervace a docházka za den"
+    },
+    "o2": {
+      "title": "Týdenní report",
+      "desc": "KPI: růst klientů, LTV, konverze"
+    },
+    "o3": {
+      "title": "Velká platba",
+      "desc": "Platba nad nastavenou hranicí"
+    },
+    "o4": {
+      "title": "Anomálie v datech",
+      "desc": "Prudký pokles rezervací nebo tržeb"
+    },
+    "o5": {
+      "title": "Nový zaměstnanec",
+      "desc": "Administrátor vytvořil nový účet"
+    },
+    "o6": {
+      "title": "Obnovení tarifu",
+      "desc": "Připomínka platby předplatného Velora"
+    },
+    "o7": {
+      "title": "Změna přístupových práv",
+      "desc": "Zaměstnanci se změnila oprávnění"
+    },
+    "o8": {
+      "title": "Dosaženo KPI",
+      "desc": "Splněn měsíční cíl"
+    },
+    "o9": {
+      "title": "Export dat",
+      "desc": "Někdo exportoval databázi klientů"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanál připojen",
+    "subtitleDisconnected": "Připojte bota pro oznámení",
+    "connected": "Připojeno",
+    "pasteToken": "Vložte token bota, který jste dostali od @BotFather.",
+    "invalidToken": "Neplatný formát tokenu",
+    "howToGet": "Jak získat token:",
+    "steps": {
+      "1": "Otevřete v Telegramu @BotFather",
+      "2": "Pošlete příkaz /newbot a řiďte se pokyny",
+      "3": "Zkopírujte vydaný token",
+      "4": "Vložte ho do pole výše"
+    },
+    "connect": "Připojit",
+    "disconnect": "Odpojit",
+    "disconnectTitle": "Odpojit Telegram?",
+    "disconnectMessage": "Klienti a zaměstnanci přestanou dostávat oznámení tímto kanálem.",
+    "close": "Zavřít",
+    "cancel": "Zrušit"
+  },
+  "emailCh": {
+    "title": "E-mail",
+    "subtitle": "Adresa odesílatele pro e-maily klientům",
+    "verifiedLabel": "Ověřeno",
+    "emailLabel": "E-mail odesílatele",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Zadejte platný e-mail",
+    "sendCode": "Odeslat kód",
+    "codeSentTo": "Kód odeslán na",
+    "codeHint": "Zadejte šestimístný kód z e-mailu.",
+    "codeLabel": "Ověřovací kód",
+    "resend": "Odeslat kód znovu",
+    "viaVelora": "E-maily se odesílají přes server Velora vaším jménem.",
+    "wrongCode": "Neplatný kód nebo vypršela jeho platnost",
+    "verify": "Ověřit",
+    "back": "Zpět",
+    "cancel": "Zrušit"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanál připojen",
+    "subtitleDisconnected": "Přihlaste se firemním účtem Meta",
+    "connected": "Připojeno",
+    "paymentRequiredTitle": "Bude potřeba karta",
+    "paymentRequired": "Připojení čísla je zdarma, ale Meta doručuje připomínky klientům až po přidání karty. Přidáváte ji zvlášť —",
+    "paymentMissingTitle": "Chybí způsob platby",
+    "paymentMissing": "Teď fungují jen odpovědi bota na příchozí zprávy. Připomínky, potvrzení a rozesílky Meta odmítá, dokud nepřidáte kartu —",
+    "paymentOkTitle": "Platba připojena",
+    "paymentOk": "oznámení se doručují v plném rozsahu.",
+    "paymentUnknown": "Způsob platby se u Meta nepodařilo ověřit — stav ukážeme při dalším pokusu.",
+    "paymentLink": "Fakturační centrum Meta",
+    "paymentRecheck": "Zkontrolovat znovu",
+    "paymentFound": "Platba připojena",
+    "verify": {
+      "title": "Firma není u Meta ověřená",
+      "lead": "Číslo funguje, ale se sníženým limitem 250 unikátních příjemců denně. Ověření limit zruší a odemkne plný provoz. Studio si ho musí zařídit samo — účet WhatsApp patří vám a Velora ho za vás projít nemůže.",
+      "stepsTitle": "Jak firmu ověřit:",
+      "step1a": "Otevřete",
+      "link": "Meta Business Security Center",
+      "step1b": "a klikněte na „Start verification“. Potřebujete práva administrátora firemního účtu.",
+      "step2": "Vyplňte právní údaje: název přesně jako v dokumentech, adresu, telefon a web. Web musí být funkční a běžet na HTTPS.",
+      "step3": "Nahrajte doklad o registraci firmy a počkejte, až si ho Meta přečte.",
+      "step4": "Potvrďte vazbu na firmu: e-mail na doméně vašeho webu, hovor nebo SMS na uvedený telefon, nebo ověření domény.",
+      "step5": "Vyčkejte na rozhodnutí — obvykle 1–5 pracovních dní. Stav najdete ve stejném Security Centru; při zamítnutí Meta uvede důvod a umožní podat žádost znovu.",
+      "docsTitle": "Jaké doklady projdou (jeden z každé skupiny):",
+      "doc1": "Registrace: výpis z obchodního rejstříku, živnostenský list, zakládací listina nebo daňový doklad.",
+      "doc2": "Doklad o existenci: funkční web, oficiální profil na sociální síti nebo záznam ve firemním katalogu.",
+      "pitfallTitle": "Nejčastější důvod zamítnutí",
+      "pitfall": "Název firmy v Meta a v dokladu se musí shodovat znak po znaku, včetně právní formy a interpunkce. „Romashka s.r.o.“ a „Romashka, s.r.o.“ jsou dva různé názvy."
+    },
+    "templatesTitle": "Šablony zpráv",
+    "templates": "Meta vám nedovolí napsat klientovi jako první bez předem schválené šablony. Vytvořte šablony pro každou událost — projdou kontrolou a pak začnou fungovat.",
+    "templatesAction": "Připravit šablony",
+    "templatesPending": "Vytváření šablon…",
+    "templatesDone": "Šablony připraveny: {{count}}. Čeká se na kontrolu Meta",
+    "templatesPartial": "Meta část šablon odmítla: {{failed}}. Podrobnosti najdete v logu",
+    "templatesRejectedTitle": "Meta odmítla {{count}} šablon",
+    "templatesRejected": "— tato oznámení se nedoručují. Zkontrolujte formulace v účtu Meta a šablony vytvořte znovu.",
+    "templatesPendingTitle": "{{count}} šablon v kontrole",
+    "templatesPendingHint": "— Meta na to má až den. {{approved}} už je schváleno a doručuje se.",
+    "templatesOkTitle": "Šablony schváleny",
+    "templatesOk": "všech {{count}} prošlo kontrolou Meta — oznámení se doručují.",
+    "paidWarning": "Zprávy WhatsApp jsou zpoplatněné",
+    "approxPrice": "přibl.",
+    "pricingLoading": "načítání aktuální ceny…",
+    "perMessage": "za zprávu",
+    "viaMeta": "účtuje přímo Meta",
+    "windowNotice": "Doručení je zaručeno jen v rámci 24hodinového okna konverzace.",
+    "connect": "Připojit WhatsApp",
+    "disconnect": "Odpojit",
+    "disconnectTitle": "Odpojit WhatsApp?",
+    "disconnectMessage": "Klienti a zaměstnanci přestanou dostávat oznámení tímto kanálem.",
+    "close": "Zavřít",
+    "cancel": "Zrušit"
+  },
+  "tabs": {
+    "matrix": "Nastavení",
+    "log": "Log doručení"
+  },
+  "log": {
+    "title": "Log doručení",
+    "subtitle": "Co odešlo, komu a kdy, a jak každé odeslání dopadlo.",
+    "status": {
+      "sent": "Doručeno",
+      "rejected": "Odmítnuto",
+      "error": "Selhání spojení",
+      "pending": "Probíhá"
+    },
+    "searchPlaceholder": "Telefon, e-mail nebo kód události",
+    "allChannels": "Všechny kanály",
+    "reset": "Zrušit filtry",
+    "refreshing": "Obnovování…",
+    "otherEvent": "Odeslání mimo katalog",
+    "empty": "Zatím nic neodešlo",
+    "emptyHint": "Každé oznámení, které studio pošle klientům a zaměstnancům, se objeví tady.",
+    "emptyFiltered": "Nic nenalezeno",
+    "emptyFilteredHint": "Zkuste změnit filtry nebo hledat jiné číslo.",
+    "loadError": "Log se nepodařilo načíst",
+    "loadErrorHint": "Načtěte stránku znovu — pokud to nepomůže, kontaktujte podporu.",
+    "range": "{{from}}–{{to}} z {{total}}",
+    "prev": "Zpět",
+    "next": "Dál"
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Canale de conectare",
+    "connected": "Conectat",
+    "disconnected": "Neconectat",
+    "pending": "Necesită configurare",
+    "connectInNotifications": "Conectează în Notificări",
+    "manage": "Gestionează în Notificări",
+    "telegram": {
+      "name": "Bot Telegram",
+      "desc": "Rezervare automată prin bot"
+    },
+    "stripe": {
+      "name": "Plăți",
+      "desc": "Stripe: carduri, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Link pentru clienți",
+      "desc": "Mini-aplicație de rezervări — pentru bio, stories și campanii",
+      "copy": "Copiază linkul",
+      "open": "Deschide mini-aplicația",
+      "print": "Printează QR",
+      "posterTitle": "Rezervați-vă ședința online",
+      "scanHint": "Îndreptați camera telefonului spre cod"
+    }
+  },
+  "loading": "Se încarcă setările…",
+  "sections": {
+    "main": {
+      "title": "Setări generale",
+      "prefill": {
+        "label": "Plată în avans la rezervare",
+        "sub": "Cere plata înainte de confirmare"
+      },
+      "trialLesson": {
+        "label": "Prima ședință gratuită",
+        "sub": "Prima rezervare a unui client nou o suportă studioul"
+      },
+      "trainerConfirm": {
+        "label": "Confirmare de la antrenor",
+        "sub": "Rezervarea așteaptă aprobare manuală"
+      },
+      "bookingActive": {
+        "label": "Rezervarea online activă",
+        "sub": "Afișează widgetul clienților"
+      }
+    },
+    "rules": {
+      "title": "Limite și reguli",
+      "advance": {
+        "label": "Blochează rezervarea sub",
+        "sub": "Timpul minim înainte de ședință"
+      },
+      "window": {
+        "label": "Rezervările se deschid",
+        "sub": "Cu câte zile înainte"
+      },
+      "cancel": {
+        "label": "Anulare fără penalizare",
+        "sub": "Clientul poate anula înainte de ședință"
+      },
+      "repeat": {
+        "label": "Rezervare repetată",
+        "sub": "Permite unui client să rezerve de două ori"
+      },
+      "workHours": {
+        "label": "Programul widgetului",
+        "sub": "Ședințele din afara acestor ore nu se rezervă online"
+      }
+    },
+    "branding": {
+      "title": "Personalizarea widgetului",
+      "sub": "Aspectul paginii de rezervare",
+      "accentColor": "Culoarea de accent",
+      "logo": {
+        "label": "Logoul studioului",
+        "sub": "Apare în antetul widgetului",
+        "upload": "Încarcă",
+        "uploading": "Se încarcă…",
+        "remove": "Elimină",
+        "uploadFailed": "Încărcarea logoului a eșuat"
+      },
+      "darkMode": {
+        "label": "Temă întunecată",
+        "sub": "Widget în aspect întunecat"
+      },
+      "language": {
+        "label": "Limba implicită",
+        "sub": "Limba principală a interfeței"
+      }
+    },
+    "notifications": {
+      "title": "Notificări",
+      "sub": "Mesaje automate către clienți",
+      "preview": {
+        "confirmed": "Rezervare confirmată! Lu 10:00",
+        "reminder2h": "Reamintire: peste 2 ore",
+        "reviewRequest": "Mulțumim pentru vizită! Evaluați ședința"
+      },
+      "reminder24h": {
+        "label": "Reamintire cu 24 h înainte",
+        "sub": "Dimineața, înainte de ședință"
+      },
+      "reminder2h": {
+        "label": "Reamintire cu 2 h înainte",
+        "sub": "Cu puțin înainte de ședință"
+      },
+      "reviewRequest": {
+        "label": "Cerere de evaluare",
+        "sub": "Imediat ce vizita este marcată"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Cafea după ședință",
+        "sub": "După rezervare, clientul este invitat să rămână 15 minute cu grupa. Dacă acceptă doi sau mai mulți, primesc o reamintire după ședință"
+      },
+      "spots": {
+        "label": "Unde să-i invitați",
+        "sub": "Până la trei locuri lângă studio. Apar doar când se alătură doi sau mai mulți",
+        "namePlaceholder": "Nume",
+        "addressPlaceholder": "Adresă",
+        "urlPlaceholder": "Link către hartă",
+        "add": "Adaugă loc",
+        "remove": "Elimină locul"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 oră",
+      "2h": "2 ore",
+      "4h": "4 ore",
+      "12h": "12 ore",
+      "24h": "24 de ore"
+    },
+    "window": {
+      "7d": "7 zile",
+      "14d": "14 zile",
+      "30d": "30 de zile",
+      "60d": "60 de zile"
+    },
+    "cancel": {
+      "2h": "2 ore",
+      "4h": "4 ore",
+      "12h": "12 ore",
+      "24h": "24 de ore"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot conectat",
+    "botDisconnected": "Bot deconectat",
+    "codeCopied": "Cod copiat!",
+    "linkCopied": "Link copiat!",
+    "printBlocked": "Permiteți ferestrele pop-up pentru a printa codul QR",
+    "stripeReturned": "Datele au fost trimise către Stripe",
+    "stripeLinkExpired": "Linkul Stripe a expirat — încercați din nou"
+  },
+  "stripeGate": {
+    "kicker": "Necesar pentru rezervarea online",
+    "none": {
+      "title": "Configurați mai întâi plățile",
+      "sub": "Clientul rezervă și plătește dintr-o singură mișcare. Până când contul Stripe nu e conectat, nu poate plăti rezervarea.",
+      "action": "Conectează Stripe"
+    },
+    "incomplete": {
+      "title": "Finalizați configurarea Stripe",
+      "sub": "Contul există, dar Stripe nu a activat încă plățile — formularul este incomplet.",
+      "action": "Continuă configurarea"
+    },
+    "disabled": {
+      "title": "Plățile sunt dezactivate",
+      "sub": "Stripe este conectat și gata să încaseze, dar este oprit în secțiunea Finanțe.",
+      "action": "Deschide Finanțe"
+    },
+    "loading": {
+      "title": "Se verifică conexiunea",
+      "sub": "Întrebăm Stripe dacă contul studioului e pregătit să încaseze plăți.",
+      "action": "Se verifică…"
+    },
+    "perks": {
+      "direct": "Banii ajung direct în contul studioului",
+      "methods": "Carduri, Apple Pay și Google Pay din start",
+      "fee": "Comisionul urmează abonamentul dvs. Velora"
+    },
+    "later": "Mai târziu",
+    "note": "Se va deschide formularul Stripe. Când terminați, reveniți pe această pagină."
+  },
+  "tg": {
+    "title": "Bot Telegram",
+    "connected": "Conectat",
+    "openInTelegram": "Deschide botul în Telegram",
+    "showToken": "Arată tokenul",
+    "hideToken": "Ascunde tokenul",
+    "acceptsBookings": "Botul primește rezervări de la clienți",
+    "instantNotify": "Notificările ajung instant",
+    "disconnect": "Deconectează botul",
+    "pasteToken": "Lipiți tokenul botului primit de la @BotFather",
+    "invalidToken": "Format de token invalid",
+    "connect": "Conectează botul",
+    "howToGet": "Cum obțin un token?",
+    "steps": {
+      "1a": "Deschideți Telegram → găsiți",
+      "1b": "@BotFather",
+      "2a": "Trimiteți comanda",
+      "2b": "/newbot",
+      "3": "Alegeți un nume și un username pentru bot",
+      "4": "Copiați tokenul și lipiți-l mai sus"
+    }
+  },
+  "insta": {
+    "title": "Bio Instagram",
+    "sub": "Puneți în profil și în stories un link pentru rezervare rapidă",
+    "steps": {
+      "1": "Copiați linkul dvs.",
+      "2a": "Lipiți-l în câmpul",
+      "2b": "„Site web”",
+      "2c": " din setările profilului de Instagram.",
+      "3a": "Adăugați linkul în",
+      "3b": "Stories",
+      "3c": " cu ajutorul unui sticker special."
+    },
+    "proTip": "Fixați la Highlights un Story cu parcursul rezervării — crește conversia cu 30 %."
+  },
+  "web": {
+    "title": "Widget pentru site",
+    "sub": "Adăugați un buton de rezervare pe orice site (Tilda, WordPress sau cod propriu)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Copiază",
+    "instructionPrefix": "Lipiți acest cod chiar înainte de eticheta de închidere",
+    "instructionSuffix": " de pe site-ul dvs. Butonul apare automat."
+  },
+  "wa": {
+    "title": "Rezervare prin WhatsApp",
+    "sub": "Configurați în WhatsApp Business un răspuns automat care trimite imediat linkul de rezervare.",
+    "online": "online",
+    "sampleIncoming": "Bună ziua! Aș vrea să rezerv o ședință.",
+    "sampleOutgoing": "Bine ați venit! ✨",
+    "connect": "Conectează WhatsApp Business",
+    "connected": "Conectat",
+    "autoReplyActive": "Răspunsul automat este activ",
+    "instantLink": "Linkul de rezervare se trimite instant"
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Steg {{step}} av {{total}}",
+    "securityNote": "Dina uppgifter är skyddade och delas aldrig med tredje part",
+    "back": "Tillbaka",
+    "continue": "Fortsätt",
+    "finish": "Kom igång",
+    "saving": "Sparar...",
+    "progress": "{{step}}/5 — tar under 3 minuter",
+    "regionRequired": "Ange dina regionala inställningar",
+    "networkError": "Nätverksfel när uppgifterna skulle sparas.",
+    "phoneTakenTitle": "Numret används redan",
+    "phoneTaken": "Det här telefonnumret är redan registrerat",
+    "errorTitle": "Fel",
+    "changeNumber": "Byt nummer",
+    "gotIt": "Uppfattat"
+  },
+  "steps": {
+    "identity": {
+      "title": "Om studion",
+      "desc": "Namn, beskrivning och visuell stil för ditt varumärke."
+    },
+    "activity": {
+      "title": "Verksamhet",
+      "desc": "Välj en inriktning så anpassar vi CRM:et åt dig."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "desc": "Adress, telefon och länkar till dina kunder."
+    },
+    "settings": {
+      "title": "Inställningar",
+      "desc": "Region, valuta och datumformat."
+    },
+    "schedule": {
+      "title": "Öppettider",
+      "desc": "Ange vilka dagar och tider din studio har öppet."
+    }
+  },
+  "identity": {
+    "welcome": "Välkommen",
+    "subtitle": "Ett par minuters uppsättning — och din arbetsyta är klar",
+    "replaceLogo": "Byt logotyp",
+    "uploadLogo": "Ladda upp logotyp",
+    "removeLogo": "Ta bort",
+    "logoHint": "JPG, PNG, WEBP upp till 5 MB",
+    "nameLabel": "Studions eller företagets namn",
+    "namePlaceholder": "T.ex.: Studio Forma",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Några rader om din studio, hur ni jobbar, vad som utmärker er...",
+    "newBadge": "NY"
+  },
+  "activity": {
+    "title": "Typ av verksamhet",
+    "subtitle": "Välj en inriktning — vi anpassar CRM:et åt dig",
+    "comingSoon": "Snart: barbershop, träning, dans och mer",
+    "types": {
+      "yoga": {
+        "label": "Yoga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, mattpilates"
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontaktuppgifter",
+    "subtitle": "Kunderna ser de här uppgifterna vid onlinebokning",
+    "phoneLabel": "Studions telefon",
+    "checkingPhone": "Kontrollerar numret...",
+    "addressLabel": "Adress",
+    "emailLabel": "E-post",
+    "websiteLabel": "Webbplats",
+    "note": "Alla fält utom telefon är valfria. Du kan fylla i dem senare i inställningarna."
+  },
+  "settings": {
+    "title": "Regionala inställningar",
+    "subtitle": "Kan ändras senare i studions inställningar",
+    "timezoneLabel": "Tidszon",
+    "timezonePlaceholder": "Välj tidszon",
+    "languageLabel": "Språk",
+    "languagePlaceholder": "Språk",
+    "currencyLabel": "Valuta",
+    "currencyPlaceholder": "Valuta",
+    "dateFormatLabel": "Datumformat",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "Veckans första dag",
+    "timezones": {
+      "UTC+3": "Moskva, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Tasjkent, Jekaterinburg, Karachi (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapore, Peking (UTC+8)",
+      "UTC+9": "Jakutsk, Tokyo, Seoul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Salomonöarna (UTC+11)",
+      "UTC+12": "Kamtjatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Mexico City (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Sydgeorgien (UTC-2)",
+      "UTC-1": "Azorerna (UTC-1)",
+      "UTC+0": "London, Lissabon (UTC+0)",
+      "UTC+1": "Berlin, Paris, Warszawa (UTC+1)",
+      "UTC+2": "Kiev, Aten, Kairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubel",
+      "USD": "Dollar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hryvnia",
+      "GBP": "Pund",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Tjeckisk krona",
+      "PLN": "Zloty",
+      "HUF": "Forint",
+      "RON": "Leu",
+      "BGN": "Lev",
+      "SEK": "Svensk krona",
+      "NOK": "Norsk krona",
+      "DKK": "Dansk krona",
+      "CHF": "Schweizerfranc",
+      "ISK": "Isländsk krona",
+      "RSD": "Serbisk dinar"
+    }
+  },
+  "schedule": {
+    "title": "Öppettider",
+    "subtitle": "Ange vilka dagar och tider din studio har öppet",
+    "scheduleLabel": "Studions öppettider",
+    "dayOff": "Stängt"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Studions namn",
+    "clients": "Kunder",
+    "attendance": "Närvaro",
+    "studioCreated": "Studio skapad",
+    "chooseDirection": "Välj en inriktning",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-post",
+    "addressLabel": "Adress",
+    "phonePlaceholder": "+46 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Storgatan 123",
+    "dayOff": "stängt"
+  }
+}

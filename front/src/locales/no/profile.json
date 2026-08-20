@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Profilen din",
+    "sub": "Administrer persondata og økter"
+  },
+  "personalInfo": {
+    "heading": "Personopplysninger",
+    "emailLocked": "E-posten er innloggingen til kontoen din og kan ikke endres her"
+  },
+  "security": {
+    "changePassword": "Endre passord",
+    "logout": "Logg ut"
+  },
+  "accounts": {
+    "title": "Mine studioer",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studioer",
+    "enter": "Åpne",
+    "login": "Logg inn",
+    "register": "Registrer deg",
+    "addStudio": "Legg til studio",
+    "addStudioSub": "Et nytt arbeidsområde — du blir eieren av det"
+  },
+  "session": {
+    "current": "Gjeldende økt",
+    "lastActive": "Aktiv {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Persondata er oppdatert"
+  },
+  "otherAccount": {
+    "title": "En annen konto",
+    "sub": "Å logge inn som en annen avslutter den gjeldende økten i denne nettleseren — du kan komme tilbake med vanlig innlogging.",
+    "recentTitle": "Du har logget inn før",
+    "return": "Logg inn",
+    "forget": "Glem konto"
+  }
+}

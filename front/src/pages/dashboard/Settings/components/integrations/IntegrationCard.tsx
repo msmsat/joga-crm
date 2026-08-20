@@ -31,7 +31,7 @@ interface IntegrationCardProps {
 function formatDate(iso: string | null, lang: string, withTime = false): string {
   if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleDateString(lang === "ru" ? "ru-RU" : "en-US", {
+  return d.toLocaleDateString(lang || "en", {
     day: "numeric", month: "long", ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
   });
 }

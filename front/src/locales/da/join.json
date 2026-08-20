@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Er det ikke dig?",
+    "login": "Log ind på en anden konto"
+  },
+  "card": {
+    "roleLine": "Teaminvitation · {{role}}"
+  },
+  "title": {
+    "new": "Hej, {{name}}",
+    "existing": "Velkommen tilbage, {{name}}"
+  },
+  "sub": {
+    "new": "Indtast den adgangskode, du fik af studiets leder.",
+    "existing": "Indtast adgangskoden for {{email}} for at acceptere invitationen."
+  },
+  "switch": {
+    "notice": "Du er logget ind som {{current}}. Denne invitation er til {{next}} — accepterer du den, skifter du til den konto. Du kan skifte tilbage fra din profil."
+  },
+  "fields": {
+    "newPassword": "Adgangskode",
+    "newPasswordPlaceholder": "Adgangskode fra din leder",
+    "password": "Adgangskode",
+    "passwordPlaceholder": "Din Velora-adgangskode",
+    "phone": "Telefonnummer",
+    "phoneHint": "Vi har ikke dit nummer endnu — indtast det med landekode",
+    "show": "Vis",
+    "hide": "Skjul"
+  },
+  "cta": {
+    "enter": "Log ind i studiet",
+    "accept": "Accepter invitation"
+  },
+  "forgotHint": "Glemt din adgangskode?",
+  "forgotLink": "Gendan adgang",
+  "expired": {
+    "title": "Linket er ikke gyldigt",
+    "sub": "Invitationen er udløbet eller trukket tilbage. Bed studiets ejer om at sende den igen.",
+    "cta": "Gå til login"
+  },
+  "consent": {
+    "text": "Jeg accepterer",
+    "terms": "Servicevilkårene",
+    "and": "og",
+    "privacy": "Privatlivspolitikken"
+  },
+  "errors": {
+    "noToken": "Linket indeholder ingen invitationskode — åbn det i sin helhed fra e-mailen.",
+    "network": "Forbindelsesfejl",
+    "passwordRequired": "Indtast din adgangskode",
+    "phoneRequired": "Indtast dit telefonnummer med landekode",
+    "consentRequired": "Dit samtykke er påkrævet"
+  },
+  "newAccountHint": "Adgangskoden står ikke i e-mailen — og det er netop pointen: et link alene er ikke nok til at komme ind. Har du ikke fået en, så spørg din leder.",
+  "decline": {
+    "cta": "Afvis invitation",
+    "confirm": "Invitationen til “{{studio}}” bliver fjernet. Du bliver ikke en del af teamet, og kun studiets ejer kan sende den igen.",
+    "keep": "Behold",
+    "confirmCta": "Afvis",
+    "pending": "Afviser…"
+  },
+  "declined": {
+    "title": "Invitation afvist",
+    "sub": "Vi tilføjede dig ikke til studiet. Var det en fejl, så bed ejeren om at sende invitationen igen."
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "I dag",
+    "trainers": "Instruktører",
+    "halls": "Saler",
+    "day": "Dag",
+    "week": "Uke"
+  },
+  "daySummary": {
+    "classesToday": "økter i dag",
+    "clientBookings": "kundebookinger",
+    "avgLoad": "gj.sn. belegg",
+    "trainersActive": "instruktører på jobb",
+    "gridStep": "Rutenettintervall",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Angre: {{label}}",
+    "redo": "Gjør om: {{label}}",
+    "nothingToUndo": "Ingenting å angre",
+    "nothingToRedo": "Ingenting å gjøre om"
+  },
+  "newBooking": {
+    "title": "Ny økt",
+    "slotTime": "Tidspunkt",
+    "service": "Tjeneste",
+    "servicePlaceholder": "Velg en tjeneste",
+    "namePlaceholder": "F.eks. Reformer Pilates",
+    "location": "Sted / sal",
+    "start": "Start",
+    "end": "Slutt",
+    "groupLimit": "Gruppestørrelse",
+    "maxSpots": "Maks. plasser",
+    "assignTrainer": "Tildel instruktør",
+    "cancel": "Avbryt",
+    "create": "Opprett økt",
+    "errors": {
+      "selectService": "Velg en tjeneste",
+      "range": "Fra 1 til 50",
+      "endAfterStart": "Slutt må være etter start"
+    },
+    "createServiceConfirm": {
+      "title": "Opprette en tjeneste?",
+      "message": "Finner du ikke tjenesten du trenger? Opprett den i Katalogen.",
+      "confirm": "Gå til Katalogen"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Bekreftet",
+    "pending": "Venter",
+    "cancelled": "Avlyst",
+    "spotsTaken": "opptatte plasser",
+    "fillRate": "Belegg",
+    "booked": "Påmeldt",
+    "attended": "Møtte opp",
+    "markAttended": "Registrer oppmøte",
+    "awaitingConfirmation": "Venter på bekreftelse",
+    "trialLesson": "Prøve",
+    "unpaid": "Ubetalt · {{amount}}",
+    "acceptPayment": "Ta imot betaling",
+    "payCash": "Kontant",
+    "payTransfer": "Overføring",
+    "payLater": "Uten betaling",
+    "confirmBooking": "Bekreft booking",
+    "rejectBooking": "Avslå forespørsel",
+    "removeFromLesson": "Fjern fra økten",
+    "add": "Legg til",
+    "addClient": "Legg til kunde",
+    "edit": "Rediger",
+    "editLesson": "Rediger økt",
+    "deleteLesson": "Slett økt",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "lessonTitle": "Navn på økten",
+    "untitled": "Uten navn",
+    "from": "Fra",
+    "to": "Til",
+    "searchPlaceholder": "Søk på navn eller telefon...",
+    "noClientsFound": "Ingen kunder funnet",
+    "noEligibleClients": "Ingen kunder har tilgang til denne økten",
+    "visitsCount_one": "{{count}} besøk",
+    "visitsCount_other": "{{count}} besøk",
+    "errors": {
+      "selectService": "Velg en tjeneste",
+      "range": "Fra 1 til 50",
+      "minBooked": "{{count}} er allerede påmeldt — lavere går ikke",
+      "endAfterStart": "Slutt må være etter start"
+    },
+    "createServiceConfirm": {
+      "title": "Opprette en tjeneste?",
+      "message": "Finner du ikke tjenesten du trenger? Opprett den i Katalogen.",
+      "confirm": "Gå til Katalogen"
+    }
+  },
+  "addClientModal": {
+    "title": "Legg til kunde",
+    "searchPlaceholder": "Søk på navn eller telefon...",
+    "noClientsFound": "Ingen kunder funnet",
+    "chooseFromList": "Velg kunder fra listen",
+    "selectedCount_one": "Valgt: {{count}} kunde",
+    "selectedCount_other": "Valgt: {{count}} kunder",
+    "cancel": "Avbryt",
+    "add": "Legg til"
+  },
+  "rightPanel": {
+    "halls": "Saler",
+    "load": "Belegg",
+    "upcoming": "Kommende"
+  },
+  "grid": {
+    "classesShort": "økt.",
+    "peopleShort": "pers.",
+    "loadPercent": "Belegg: {{percent}} %",
+    "classes": "økter",
+    "classesToday": "økter i dag",
+    "newLessonPreview": "Ny økt",
+    "cancelled": "Avlyst",
+    "noTrainers": "Ingen instruktører",
+    "noHalls": "Ingen saler"
+  },
+  "createService": "+ Opprett tjeneste",
+  "invalidDateFormat": "Ugyldig datoformat",
+  "toasts": {
+    "lessonMoved": "Økten er flyttet",
+    "endTimeChanged": "Sluttidspunkt endret",
+    "startTimeChanged": "Starttidspunkt endret",
+    "attendanceMarked": "Oppmøte registrert",
+    "paymentAccepted": "Betaling mottatt",
+    "bookingConfirmed": "Booking bekreftet",
+    "clientRemoved": "Kunde fjernet fra økten",
+    "lessonUpdated": "Økten er oppdatert",
+    "lessonAdded": "Økten er lagt til",
+    "selectTrainer": "Velg en instruktør",
+    "alreadyCancelled": "Økten er allerede avlyst",
+    "lessonCancelled": "Økten er avlyst",
+    "noPermission": "Ikke nok rettigheter til å endre timeplanen",
+    "undoLabel": "Angret: {{label}}",
+    "redoLabel": "Gjort om: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Påmeldt: {{count}} kunde",
+    "clientsBooked_other": "Påmeldt: {{count}} kunder",
+    "clientsBookedPartial": "Påmeldt {{success}} av {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "fjerning av kunde",
+      "moveLesson": "flytting av økt",
+      "createLesson": "oppretting av økt",
+      "bookClient": "påmelding av kunde",
+      "bookClients": "påmelding av kunder ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Kunne ikke laste",
+    "retry": "Prøv igjen"
+  },
+  "cancelBookingConfirm": {
+    "title": "Avlyse økten?",
+    "message_one": "{{count}} kunde får varsel om avlysningen.",
+    "message_other": "{{count}} kunder får varsel om avlysningen.",
+    "confirm": "Avlys økten"
+  }
+}

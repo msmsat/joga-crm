@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Profilul dvs.",
+    "sub": "Gestionați datele personale și sesiunile"
+  },
+  "personalInfo": {
+    "heading": "Date personale",
+    "emailLocked": "Emailul este numele de utilizator al contului și nu poate fi schimbat aici"
+  },
+  "security": {
+    "changePassword": "Schimbă parola",
+    "logout": "Deconectare"
+  },
+  "accounts": {
+    "title": "Studiourile mele",
+    "count_one": "{{count}} studio",
+    "count_few": "{{count}} studiouri",
+    "count_other": "{{count}} de studiouri",
+    "enter": "Deschide",
+    "login": "Conectare",
+    "register": "Înregistrare",
+    "addStudio": "Adaugă studio",
+    "addStudioSub": "Un spațiu de lucru nou — deveniți proprietarul lui"
+  },
+  "session": {
+    "current": "Sesiunea curentă",
+    "lastActive": "Activ {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Datele personale au fost actualizate"
+  },
+  "otherAccount": {
+    "title": "Alt cont",
+    "sub": "Conectarea cu alt cont încheie sesiunea curentă în acest browser — puteți reveni printr-o conectare obișnuită.",
+    "recentTitle": "V-ați conectat anterior",
+    "return": "Conectare",
+    "forget": "Uită contul"
+  }
+}

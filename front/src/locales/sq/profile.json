@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Profili juaj",
+    "sub": "Menaxhoni të dhënat personale dhe sesionet"
+  },
+  "personalInfo": {
+    "heading": "Të dhënat personale",
+    "emailLocked": "Email-i është identifikuesi i llogarisë suaj dhe nuk mund të ndryshohet këtu"
+  },
+  "security": {
+    "changePassword": "Ndrysho fjalëkalimin",
+    "logout": "Dil"
+  },
+  "accounts": {
+    "title": "Studiot e mia",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studio",
+    "enter": "Hap",
+    "login": "Hyr",
+    "register": "Regjistrohu",
+    "addStudio": "Shto studio",
+    "addStudioSub": "Një hapësirë e re pune — ju bëheni pronari i saj"
+  },
+  "session": {
+    "current": "Sesioni aktual",
+    "lastActive": "Aktiv {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Të dhënat personale u përditësuan me sukses"
+  },
+  "otherAccount": {
+    "title": "Llogari tjetër",
+    "sub": "Hyrja si dikush tjetër e mbyll sesionin aktual në këtë shfletues — mund të ktheheni me një hyrje të zakonshme.",
+    "recentTitle": "Keni hyrë më parë",
+    "return": "Hyr",
+    "forget": "Harro llogarinë"
+  }
+}

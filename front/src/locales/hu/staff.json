@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Összesen a csapatban",
+    "onShift": "Műszakban",
+    "trainers": "Oktatók",
+    "administrators": "Adminisztrátorok",
+    "onlineNow": "{{count}} most online"
+  },
+  "toolbar": {
+    "teamTitle": "Csapat · {{count}}",
+    "addEmployee": "Munkatárs hozzáadása",
+    "searchPlaceholder": "Keresés...",
+    "allGroup": "Mind"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Teljes hozzáférés",
+    "ownerAccess": "A tulajdonos a rendszer összes moduljához hozzáfér",
+    "loadBar": "Oktató terhelése",
+    "weekSchedule": "Heti beosztás",
+    "todaySchedule": "Mai beosztás",
+    "minutesSuffix": "perc",
+    "clientsSuffix": "ügyfél",
+    "hall": "Terem",
+    "staffHalls": "A munkatárs termei",
+    "noName": "Nincs megadva név",
+    "noRole": "Nincs szerepkör",
+    "addEventStub": "Esemény hozzáadása űrlap..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Bevétel",
+      "rating": "Értékelés",
+      "bookings": "Foglalások",
+      "load": "Terhelés"
+    },
+    "admin": {
+      "bookings": "Foglalások",
+      "attended": "Kezelve",
+      "revenue": "Kassza",
+      "load": "Terhelés"
+    },
+    "owner": {
+      "revenue": "Bevétel",
+      "attended": "Látogatások",
+      "load": "Terhelés",
+      "staff": "Munkatársak"
+    },
+    "default": {
+      "bookings": "Foglalások",
+      "attended": "Látogatások",
+      "revenue": "Bevétel",
+      "load": "Terhelés"
+    }
+  },
+  "schedule": {
+    "week": "Hét",
+    "month": "Hónap",
+    "working": "Munkaidő",
+    "free": "Szabad",
+    "busy": "Foglalt",
+    "dayOff": "Szabadnap",
+    "syncHint": "A beosztás szinkronizál a foglalási naplóval és az órarenddel.",
+    "workDaysInWeek": "Heti {{count}} munkanap",
+    "markWork": "Dolgozik",
+    "markHint": "Válasszon jelölést fent, majd kattintson egy napra",
+    "prevMonth": "Előző hónap",
+    "nextMonth": "Következő hónap",
+    "dayHasBookings": "Erre a napra már vannak foglalások — nem lehet szabadnap",
+    "pastDayLocked": "A múltbeli napok nem módosíthatók"
+  },
+  "permissions": {
+    "finance": "Pénzügyek",
+    "staff": "Munkatársak",
+    "reports": "Jelentések",
+    "clients": "Ügyfelek",
+    "settings": "Beállítások"
+  },
+  "roles": {
+    "admin": "Adminisztrátor",
+    "trainer": "Oktató",
+    "owner": "Tulajdonos"
+  },
+  "deleteModal": {
+    "cancelLesson": "Lemondja az órát?",
+    "dontAsk": "Törléskor ne kérdezze újra",
+    "cancelInvite": "Megszakítja a csatlakozást?",
+    "cancelInviteConfirm": "Meghívó visszavonása"
+  },
+  "toasts": {
+    "lessonCanceled": "Az óra lemondva",
+    "errorCancel": "Hiba a lemondáskor",
+    "employeeAdded": "{{name}} munkatárs hozzáadva",
+    "changesSaved": "A módosítások mentve",
+    "employeeDeleted": "A munkatárs törölve",
+    "errorDelete": "Hiba a törléskor",
+    "errorSave": "A módosítások mentése nem sikerült",
+    "emailCopied": "E-mail másolva",
+    "phoneCopied": "Telefonszám másolva",
+    "inviteSent": "Meghívó elküldve ide: {{email}}",
+    "inviteResent": "A meghívó újra elküldve",
+    "inviteCancelled": "A meghívó visszavonva"
+  },
+  "addModal": {
+    "stepIndicator": "{{current}} / {{total}} lépés",
+    "stepCounter": "{{current}}/4 — nagyjából 2 perc",
+    "nameFallback": "őt",
+    "employeeFallback": "Munkatárs",
+    "steps": {
+      "1": {
+        "title": "A munkatársról",
+        "sub": "Hogy hívják az új csapattagot?",
+        "trust": "A munkatárs adatai védettek"
+      },
+      "2": {
+        "title": "Szerepkör és szolgáltatások",
+        "sub": "Beosztás és a szolgáltatások listája",
+        "trust": "A szerepkör bármikor módosítható"
+      },
+      "3": {
+        "title": "Beosztás és bér",
+        "sub": "Mikor dolgozik és mennyit keres?",
+        "trust": "A beosztás szinkronizál a naplóval"
+      },
+      "4": {
+        "title": "Kész!",
+        "sub": "Meghívó elküldve: {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Személyes adatok",
+      "sub": "Kezdjük a névvel és az elérhetőségekkel",
+      "namePlaceholder": "Pl. Kovács Anna",
+      "emailLabel": "E-mail-cím",
+      "contactsNotSet": "Nincs megadva elérhetőség",
+      "inviteHint": "A jelszót személyesen adja át a munkatársnak — e-mailbe soha nem kerül. Az e-mail csak a hivatkozást viszi, és jelszó nélkül nem nyitja meg a stúdiót.",
+      "errors": {
+        "name": "A név kötelező",
+        "phone": "Érvénytelen telefonszám",
+        "email": "Érvénytelen e-mail",
+        "password": "Legalább 8 karakter, betűkkel és számokkal",
+        "emailTaken": "Ez az e-mail már egy másik Velora-fiókhoz tartozik"
+      },
+      "passwordLabel": "Belépési jelszó a munkatársnak",
+      "passwordPlaceholder": "Legalább 8 karakter, betűk és számok"
+    },
+    "step2": {
+      "heading": "Szerepkör és szolgáltatások",
+      "sub": "Válasszon beosztást — a szolgáltatások automatikusan bekerülnek",
+      "positionLabel": "Beosztás *",
+      "positionPlaceholder": "Vagy adjon meg saját beosztást...",
+      "addServicePlaceholder": "Szolgáltatás hozzáadása — nyomjon Entert"
+    },
+    "step3": {
+      "heading": "Beosztás és bér",
+      "sub": "Állítsa be a munkanapokat és a díjazást",
+      "scheduleLabel": "Munkabeosztás",
+      "salaryLabel": "Bér (nem kötelező)",
+      "salaryPlaceholder": "Adjon meg egy számot",
+      "createAndInvite": "Létrehozás és meghívás"
+    },
+    "step4": {
+      "exclaim": "Remek!",
+      "added": "hozzáadva",
+      "sub": "A meghívó elment. A munkatárs akkor lép be a csapatba, amikor elfogadja.",
+      "inviteLinkLabel": "Meghívó hivatkozás",
+      "sendInviteLabel": "Meghívó küldése",
+      "inviteInfo": "A munkatárs megkapja az e-mailt, megnyitja a hivatkozást, és a saját jelszavával erősíti meg a meghívót — csak ekkor lép be a csapatba és kap hozzáférést. A hivatkozás 7 napig él. A jelszó nincs az e-mailben — adja át személyesen.",
+      "emailSentTitle": "Az e-mail elment",
+      "resend": "Küldés újra",
+      "resentOk": "Az e-mail újra elment",
+      "resendError": "A küldés nem sikerült — próbálja újra",
+      "copied": "Másolva"
+    },
+    "illus": {
+      "contacts": "Elérhetőségek",
+      "profile": "Profil",
+      "roleFallback": "Szerepkör",
+      "services": "Szolgáltatások",
+      "specialization": "Szakterület",
+      "scheduleTitle": "MUNKABEOSZTÁS",
+      "inviteSent": "Meghívó elküldve",
+      "inviteSub": "{{name}} belépési hivatkozást kap"
+    },
+    "summary": {
+      "employee": "Munkatárs",
+      "role": "Szerepkör",
+      "workDays": "Munkanapok",
+      "daysCount": "{{count}} / 7"
+    }
+  },
+  "editModal": {
+    "header": "SZERKESZTÉS",
+    "employeeFallback": "Munkatárs",
+    "positionFallback": "Nincs beosztás",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Szerepkör",
+      "salary": "Bér",
+      "schedule": "Beosztás"
+    },
+    "profile": {
+      "heading": "Személyes adatok",
+      "sub": "Frissítse a munkatárs elérhetőségeit",
+      "uploadPhoto": "Fotó feltöltése",
+      "replacePhoto": "Fotó cseréje",
+      "removePhoto": "Fotó eltávolítása",
+      "photoHint": "JPG, PNG — legfeljebb 5 MB",
+      "namePlaceholder": "Vezetéknév Keresztnév",
+      "notifyHint": "A munkatárs a megadott telefonszámon vagy e-mailben kap értesítést a változásokról.",
+      "errors": {
+        "name": "A név kötelező",
+        "email": "Érvénytelen e-mail"
+      },
+      "contactsOwnedByEmployee": "Az e-mail és a telefon a munkatárs fiókjához tartozik — a saját profiljában módosítja őket."
+    },
+    "role": {
+      "heading": "Szerepkör és szakterület",
+      "sub": "A munkatárs beosztása és szolgáltatásai",
+      "addService": "Szolgáltatás hozzáadása",
+      "catalogConfirm": "Megnyitja a Katalógus Szolgáltatások részét?"
+    },
+    "salary": {
+      "heading": "Bér",
+      "sub": "Adja meg a díjazás típusát és összegét",
+      "typeLabel": "Díjazás típusa",
+      "perWeek": "₽ / hét",
+      "selectTypeHint": "Válasszon fent díjazási típust",
+      "currentLabel": "Jelenlegi díjazás",
+      "typeFixed": "Fix bér",
+      "typePercent": "% a bevételből",
+      "typeHourly": "Órabér",
+      "typeNotSet": "Nincs kiválasztva típus",
+      "cardFixedSub": "Fix összeg",
+      "cardPercentSub": "% a bevételből",
+      "cardHourlySub": "Ledolgozott óránként",
+      "amountFixed": "Havi összeg",
+      "amountPercent": "Bevételi részesedés",
+      "amountHourly": "Órabér mértéke",
+      "reportHint": "A bér megjelenik a pénzügyi jelentésekben. A munkatárs csak a sajátját látja."
+    },
+    "schedule": {
+      "heading": "Munkabeosztás",
+      "activeDays": "Aktív napok: {{count}} / 7",
+      "syncHint": "A beosztás szinkronizál a foglalási naplóval és az órarenddel.",
+      "workDaysLabel": "Munkanapok",
+      "totalHoursLabel": "Órák összesen",
+      "daysOffLabel": "Szabadnapok",
+      "daysLabel": "Napok",
+      "workDays": "{{count}} munkanap",
+      "hoursSuffix": "ó"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Most online",
+      "notOnline": "Nincs online",
+      "schedule": "Beosztás",
+      "daysCount": "{{count}}/7 nap"
+    },
+    "deleteEmployee": "Munkatárs eltávolítása",
+    "deleteConfirm": "Eltávolítja {{name}} munkatársat a csapatból?",
+    "defaultName": "munkatárs",
+    "cannotDeleteLastOwner": "Az egyetlen tulajdonos nem távolítható el"
+  },
+  "ownerModal": {
+    "header": "A TULAJDONOS ELÉRHETŐSÉGEI",
+    "heading": "Elérhetőségi adatok",
+    "sub": "A stúdió tulajdonosának telefonszáma és e-mailje",
+    "cardNote": "az e-mail a belépési azonosító",
+    "loginWarning": "Az e-mail a tulajdonos belépési azonosítója. Mentés után az új címmel lépjen be.",
+    "lockedHint": "A név, a fotó, a szerepkör és a jogosultságok nem itt módosulnak — a «Profil» részben találhatók."
+  },
+  "list": {
+    "pendingLabel": "Meghívó függőben",
+    "pendingHint": "A profil akkor nyílik meg, ha a munkatárs elfogadja a meghívót",
+    "resendInvite": "Meghívó újraküldése",
+    "cancelInvite": "Csatlakozás megszakítása"
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Yhteyskanavat",
+    "connected": "Yhdistetty",
+    "disconnected": "Ei yhdistetty",
+    "pending": "Vaatii määrityksen",
+    "connectInNotifications": "Yhdistä Ilmoituksissa",
+    "manage": "Hallitse Ilmoituksissa",
+    "telegram": {
+      "name": "Telegram-botti",
+      "desc": "Automaattinen varaus botin kautta"
+    },
+    "stripe": {
+      "name": "Maksut",
+      "desc": "Stripe: kortit, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Asiakaslinkki",
+      "desc": "Varausten minisovellus — bioon, storyihin ja kampanjoihin",
+      "copy": "Kopioi linkki",
+      "open": "Avaa minisovellus",
+      "print": "Tulosta QR",
+      "posterTitle": "Varaa tuntisi verkossa",
+      "scanHint": "Suuntaa puhelimen kamera koodiin"
+    }
+  },
+  "loading": "Ladataan asetuksia…",
+  "sections": {
+    "main": {
+      "title": "Yleiset asetukset",
+      "prefill": {
+        "label": "Ennakkomaksu varattaessa",
+        "sub": "Vaadi maksu ennen vahvistusta"
+      },
+      "trialLesson": {
+        "label": "Ensimmäinen tunti ilmaiseksi",
+        "sub": "Uuden asiakkaan ensimmäinen varaus on studion piikkiin"
+      },
+      "trainerConfirm": {
+        "label": "Ohjaajan vahvistus",
+        "sub": "Varaus odottaa manuaalista hyväksyntää"
+      },
+      "bookingActive": {
+        "label": "Verkkovaraus käytössä",
+        "sub": "Näytä widget asiakkaille"
+      }
+    },
+    "rules": {
+      "title": "Rajat ja säännöt",
+      "advance": {
+        "label": "Estä varaus alle",
+        "sub": "Vähimmäisaika ennen tuntia"
+      },
+      "window": {
+        "label": "Varaus aukeaa",
+        "sub": "Kuinka monta päivää eteenpäin"
+      },
+      "cancel": {
+        "label": "Peruutus ilman maksua",
+        "sub": "Asiakas voi perua ennen tuntia"
+      },
+      "repeat": {
+        "label": "Toistuva varaus",
+        "sub": "Salli asiakkaan varata kahdesti"
+      },
+      "workHours": {
+        "label": "Widgetin aukioloajat",
+        "sub": "Näiden tuntien ulkopuolisia tunteja ei voi varata verkossa"
+      }
+    },
+    "branding": {
+      "title": "Widgetin ilme",
+      "sub": "Varaussivun ulkoasu",
+      "accentColor": "Korostusväri",
+      "logo": {
+        "label": "Studion logo",
+        "sub": "Näkyy widgetin yläreunassa",
+        "upload": "Lataa",
+        "uploading": "Ladataan…",
+        "remove": "Poista",
+        "uploadFailed": "Logon lataus epäonnistui"
+      },
+      "darkMode": {
+        "label": "Tumma teema",
+        "sub": "Widget tummassa asussa"
+      },
+      "language": {
+        "label": "Oletuskieli",
+        "sub": "Käyttöliittymän pääkieli"
+      }
+    },
+    "notifications": {
+      "title": "Ilmoitukset",
+      "sub": "Automaattiset viestit asiakkaille",
+      "preview": {
+        "confirmed": "Varaus vahvistettu! Ma 10:00",
+        "reminder2h": "Muistutus: 2 tunnin päästä",
+        "reviewRequest": "Kiitos käynnistä! Arvioi tunti"
+      },
+      "reminder24h": {
+        "label": "Muistutus 24 h ennen",
+        "sub": "Aamulla ennen tuntia"
+      },
+      "reminder2h": {
+        "label": "Muistutus 2 h ennen",
+        "sub": "Vähän ennen tuntia"
+      },
+      "reviewRequest": {
+        "label": "Arviopyyntö",
+        "sub": "Heti kun käynti on merkitty"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kahvit tunnin jälkeen",
+        "sub": "Varauksen jälkeen asiakasta pyydetään jäämään 15 minuutiksi ryhmän kanssa. Jos kaksi tai useampi suostuu, he saavat muistutuksen tunnin jälkeen"
+      },
+      "spots": {
+        "label": "Minne kutsua",
+        "sub": "Enintään kolme paikkaa studion lähellä. Näytetään vasta, kun mukana on kaksi tai useampi",
+        "namePlaceholder": "Nimi",
+        "addressPlaceholder": "Osoite",
+        "urlPlaceholder": "Karttalinkki",
+        "add": "Lisää paikka",
+        "remove": "Poista paikka"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 tunti",
+      "2h": "2 tuntia",
+      "4h": "4 tuntia",
+      "12h": "12 tuntia",
+      "24h": "24 tuntia"
+    },
+    "window": {
+      "7d": "7 päivää",
+      "14d": "14 päivää",
+      "30d": "30 päivää",
+      "60d": "60 päivää"
+    },
+    "cancel": {
+      "2h": "2 tuntia",
+      "4h": "4 tuntia",
+      "12h": "12 tuntia",
+      "24h": "24 tuntia"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Botti yhdistetty",
+    "botDisconnected": "Botti irrotettu",
+    "codeCopied": "Koodi kopioitu!",
+    "linkCopied": "Linkki kopioitu!",
+    "printBlocked": "Salli ponnahdusikkunat tulostaaksesi QR-koodin",
+    "stripeReturned": "Tiedot lähetetty Stripeen",
+    "stripeLinkExpired": "Stripe-linkki vanhentui — yritä uudelleen"
+  },
+  "stripeGate": {
+    "kicker": "Vaaditaan verkkovaraukseen",
+    "none": {
+      "title": "Määritä ensin maksut",
+      "sub": "Asiakas varaa ja maksaa yhdellä kertaa. Ennen kuin Stripe-tili on yhdistetty, hän ei voi maksaa varausta.",
+      "action": "Yhdistä Stripe"
+    },
+    "incomplete": {
+      "title": "Viimeistele Stripen määritys",
+      "sub": "Tili on olemassa, mutta Stripe ei ole vielä sallinut maksuja — lomake on kesken.",
+      "action": "Jatka määritystä"
+    },
+    "disabled": {
+      "title": "Maksut on kytketty pois",
+      "sub": "Stripe on yhdistetty ja valmis vastaanottamaan maksuja, mutta se on pois päältä Talous-osiossa.",
+      "action": "Avaa Talous"
+    },
+    "loading": {
+      "title": "Tarkistetaan yhteyttä",
+      "sub": "Kysymme Stripeltä, onko studion tili valmis vastaanottamaan maksuja.",
+      "action": "Tarkistetaan…"
+    },
+    "perks": {
+      "direct": "Rahat menevät suoraan studion tilille",
+      "methods": "Kortit, Apple Pay ja Google Pay heti käyttöön",
+      "fee": "Palkkio määräytyy Velora-tilauksesi mukaan"
+    },
+    "later": "Myöhemmin",
+    "note": "Stripen lomake avautuu. Kun olet valmis, palaat tälle sivulle."
+  },
+  "tg": {
+    "title": "Telegram-botti",
+    "connected": "Yhdistetty",
+    "openInTelegram": "Avaa botti Telegramissa",
+    "showToken": "Näytä tunnus",
+    "hideToken": "Piilota tunnus",
+    "acceptsBookings": "Botti ottaa vastaan asiakkaiden varauksia",
+    "instantNotify": "Ilmoitukset saapuvat heti",
+    "disconnect": "Irrota botti",
+    "pasteToken": "Liitä botin tunnus @BotFatherilta",
+    "invalidToken": "Virheellinen tunnuksen muoto",
+    "connect": "Yhdistä botti",
+    "howToGet": "Miten saan tunnuksen?",
+    "steps": {
+      "1a": "Avaa Telegram → etsi",
+      "1b": "@BotFather",
+      "2a": "Lähetä komento",
+      "2b": "/newbot",
+      "3": "Valitse botille nimi ja käyttäjätunnus",
+      "4": "Kopioi tunnus ja liitä se yllä olevaan kenttään"
+    }
+  },
+  "insta": {
+    "title": "Instagram-bio",
+    "sub": "Laita profiiliin ja storyihin linkki nopeaan varaukseen",
+    "steps": {
+      "1": "Kopioi linkkisi",
+      "2a": "Liitä se kenttään",
+      "2b": "”Verkkosivusto”",
+      "2c": " Instagramin profiiliasetuksissa.",
+      "3a": "Lisää linkki",
+      "3b": "Storyihin",
+      "3c": " erityisellä tarralla."
+    },
+    "proTip": "Kiinnitä varauspolun Story kohokohtiin — se nostaa konversiota 30 %."
+  },
+  "web": {
+    "title": "Widget sivustolle",
+    "sub": "Lisää varauspainike mille tahansa sivustolle (Tilda, WordPress tai oma koodi)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopioi",
+    "instructionPrefix": "Liitä tämä koodi sivustollasi juuri ennen sulkevaa",
+    "instructionSuffix": "-tagia. Painike ilmestyy automaattisesti."
+  },
+  "wa": {
+    "title": "Varaus WhatsAppilla",
+    "sub": "Määritä WhatsApp Businessiin automaattivastaus, joka lähettää varauslinkin heti.",
+    "online": "verkossa",
+    "sampleIncoming": "Hei! Haluaisin varata tunnin.",
+    "sampleOutgoing": "Tervetuloa! ✨",
+    "connect": "Yhdistä WhatsApp Business",
+    "connected": "Yhdistetty",
+    "autoReplyActive": "Automaattivastaus on käytössä",
+    "instantLink": "Varauslinkki lähetetään heti"
+  }
+}

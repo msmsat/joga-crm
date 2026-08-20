@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
-  Logo, StepIndicator, PremiumSelect, LANGUAGES,
+  Logo, StepIndicator, PremiumSelect, LANGUAGES, browserTimezone,
   Illustration1, Illustration2, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
@@ -47,7 +47,7 @@ export default function OnboardingPage() {
     address: "",
     email: "",
     website: "",
-    timezone: "UTC+1",
+    timezone: browserTimezone(),
     language: localStorage.getItem(ONBOARDING_LANG_KEY) || "en",
     currency: "RUB",
     dateFormat: "DD.MM.YYYY",

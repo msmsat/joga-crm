@@ -96,12 +96,11 @@ export default function AddTaskForm({ scope, assigneeId, onCreate, onCreated }: 
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; }}
           />
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Select value={newTaskTag} options={tagOptions} onChange={setNewTaskTag} openUp />
+            <Select value={newTaskTag} options={tagOptions} onChange={setNewTaskTag} />
             <Select
               value={newTaskPriority}
               options={priorityOptions}
               onChange={v => setNewTaskPriority(v as Task['priority'])}
-              openUp
             />
           </div>
           <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>

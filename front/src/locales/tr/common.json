@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Telefon numaranızı ekleyin",
+    "sub": "Telefon, hesabınızın ikinci iletişim bilgisidir: erişimi kurtarır ve bildirimleri alır. Stüdyonun numarası buraya uymaz — bunun sizin olması gerekir."
+  },
+  "buttons": {
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saveChanges": "Değişiklikleri kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "create": "Oluştur",
+    "close": "Kapat",
+    "send": "Gönder",
+    "copy": "Kopyala",
+    "back": "Geri",
+    "continue": "Devam",
+    "finish": "Bitir",
+    "done": "Tamam, kapat",
+    "saving": "Kaydediliyor…",
+    "saved": "Kaydedildi!",
+    "upload": "Yükle"
+  },
+  "validation": {
+    "required": "Zorunlu alan",
+    "minLength": "En az {{n}} karakter",
+    "email": "Geçersiz e-posta",
+    "phone": "Geçersiz telefon",
+    "contactRequired": "Telefon veya e-posta girin",
+    "min": "En az {{n}} olmalı",
+    "positive": "0'dan büyük olmalı",
+    "checkingContact": "Kontrol ediliyor…",
+    "emailTaken": "Bu e-posta zaten kullanılıyor",
+    "phoneTaken": "Bu telefon numarası zaten kullanılıyor",
+    "emailInStudio": "Bu kişi zaten stüdyonuzda çalışıyor",
+    "phoneInStudio": "Bu kişi zaten stüdyonuzda çalışıyor",
+    "accountWillBeLinked": "Bu iletişim bilgisiyle bir hesap zaten var — stüdyonuza bağlanacak"
+  },
+  "status": {
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "active": "Aktif",
+    "connected": "Bağlı",
+    "inactive": "Çevrimiçi değil",
+    "loading": "Yükleniyor...",
+    "notFound": "Bulunamadı",
+    "new": "YENİ"
+  },
+  "fields": {
+    "fullName": "Ad soyad",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "photo": "Profil fotoğrafı",
+    "salary": "Ücret",
+    "schedule": "Çalışma programı",
+    "services": "Hizmetler",
+    "position": "Görev",
+    "role": "Rol",
+    "status": "Durum",
+    "size": "Tutar"
+  },
+  "days": {
+    "mon": "Pazartesi",
+    "tue": "Salı",
+    "wed": "Çarşamba",
+    "thu": "Perşembe",
+    "fri": "Cuma",
+    "sat": "Cumartesi",
+    "sun": "Pazar",
+    "short": {
+      "mon": "Pt",
+      "tue": "Sa",
+      "wed": "Ça",
+      "thu": "Pe",
+      "fri": "Cu",
+      "sat": "Ct",
+      "sun": "Pa"
+    }
+  },
+  "salary": {
+    "fixed": "Sabit",
+    "percent": "% ciro payı",
+    "hourly": "Saatlik"
+  },
+  "toasts": {
+    "phoneCopied": "Telefon kopyalandı",
+    "emailCopied": "E-posta kopyalandı",
+    "copyFailed": "Kopyalanamadı"
+  },
+  "errors": {
+    "403": "Erişim reddedildi",
+    "404": "Bulunamadı",
+    "500": "Sunucu hatası, daha sonra tekrar deneyin",
+    "network": "Sunucuyla bağlantı yok",
+    "unknown": "Bir şeyler ters gitti",
+    "loadFailed": "Yüklenemedi",
+    "retry": "Tekrar dene",
+    "invalid_bot_token": "Telegram bu jetonu reddetti — botun var olduğundan emin olun",
+    "wa_payment_required": "Ödeme yöntemi yok. WhatsApp Business'ta kart olmadan Meta tek bir bildirim bile iletmez — WhatsApp kanalı ayarlarını açıp ödeme ekleyin",
+    "wa_verification_required": "İşletmeniz Meta doğrulamasından geçmedi. O zamana kadar numara kısıtlı kalır ve hiçbir şey gönderilmez — adımlar için WhatsApp kanalı ayarlarını açın",
+    "wa_templates_pending": "Şablonlar henüz Meta tarafından onaylanmadı. Onaylı şablon olmadan bir müşteriye ilk siz yazamazsınız — incelemenin bitmesini bekleyin, durum WhatsApp kanalı ayarlarında",
+    "checkout": {
+      "package_not_found": "Paket bulunamadı",
+      "package_inactive": "Paket artık satışta değil",
+      "client_not_found": "Müşteri bulunamadı",
+      "account_not_found": "Hesap bulunamadı",
+      "card_unavailable": "Kartla ödeme henüz kullanılamıyor",
+      "promo_expired": "Promosyon kodu artık geçerli değil"
+    },
+    "billing": {
+      "tax_details_required": "Fatura bilgilerine stüdyonun ülkesini ekleyin — bu olmadan fatura kesilemez",
+      "nothing_to_pay": "Mevcut abonelikte ödenecek bir şey kalmadı",
+      "stripe_not_configured": "Ödemeler sunucuda yapılandırılmamış",
+      "stripe_error": "Ödeme servisi isteği reddetti. Lütfen tekrar deneyin",
+      "plan_not_paid": "Üst paket yalnızca ödemeyle etkinleşir",
+      "renew_is_automatic": "Abonelik otomatik olarak yenilenir",
+      "vat_invalid": "VIES bu KDV numarasını tanımıyor — kontrol edin ya da numarasız kaydedin",
+      "vat_unavailable": "VIES kaydı şu anda yanıt vermiyor — daha sonra deneyin ya da numarasız kaydedin",
+      "vat_country_mismatch": "KDV numarası seçilen ülkenin koduyla başlamalı",
+      "commission_unsettled": "Önce çevrimdışı satış komisyonunu kapatın: komisyon bloğundaki \"Şimdi öde\" düğmesine basın. O fatura ödendiğinde sabit pakete geçebilirsiniz.",
+      "billing_profile_required": "Fatura bilgilerinizi ekleyin — komisyon faturası bunlara kesilir."
+    },
+    "loyalty": {
+      "cert_not_found": "Hediye çeki bulunamadı",
+      "cert_used": "Hediye çeki zaten kullanılmış ya da geçersiz",
+      "cert_expired": "Hediye çekinin süresi doldu"
+    },
+    "notifications": {
+      "critical_locked": "Bu bildirim kapatılamaz",
+      "last_channel": "En az bir gönderim kanalı gerekli",
+      "unknown_event": "Bilinmeyen olay",
+      "not_personal": "Kişisel ayarlar zorunlu bildirimleri değiştiremez"
+    },
+    "trial_already_used": "Ücretsiz deneme bu stüdyo için artık kullanılamıyor."
+  },
+  "units": {
+    "min": "dk",
+    "sqm": "m²",
+    "perHour": "/sa"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "description": "Bu sayfada bir hata oluştu. Yeniden yüklemeyi deneyin — uygulamanın geri kalanı çalışmaya devam ediyor.",
+    "reload": "Sayfayı yenile"
+  }
+}

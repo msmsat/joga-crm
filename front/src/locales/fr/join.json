@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Ce n'est pas vous ?",
+    "login": "Se connecter à un autre compte"
+  },
+  "card": {
+    "roleLine": "Invitation dans l'équipe · {{role}}"
+  },
+  "title": {
+    "new": "Bonjour, {{name}}",
+    "existing": "Bon retour, {{name}}"
+  },
+  "sub": {
+    "new": "Saisissez le mot de passe que le responsable du studio vous a communiqué.",
+    "existing": "Saisissez le mot de passe de {{email}} pour accepter l'invitation."
+  },
+  "switch": {
+    "notice": "Vous êtes connecté en tant que {{current}}. Cette invitation concerne {{next}} — l'accepter vous bascule sur ce compte. Vous pourrez revenir depuis votre profil."
+  },
+  "fields": {
+    "newPassword": "Mot de passe",
+    "newPasswordPlaceholder": "Mot de passe de votre responsable",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe Velora",
+    "phone": "Numéro de téléphone",
+    "phoneHint": "Nous n'avons pas encore votre numéro — saisissez-le avec l'indicatif du pays",
+    "show": "Afficher",
+    "hide": "Masquer"
+  },
+  "cta": {
+    "enter": "Se connecter au studio",
+    "accept": "Accepter l'invitation"
+  },
+  "forgotHint": "Mot de passe oublié ?",
+  "forgotLink": "Récupérer l'accès",
+  "expired": {
+    "title": "Le lien n'est pas valide",
+    "sub": "L'invitation a expiré ou a été annulée. Demandez au propriétaire du studio de la renvoyer.",
+    "cta": "Aller à la connexion"
+  },
+  "consent": {
+    "text": "J'accepte les",
+    "terms": "Conditions d'utilisation",
+    "and": "et la",
+    "privacy": "Politique de confidentialité"
+  },
+  "errors": {
+    "noToken": "Le lien ne contient pas de code d'invitation — ouvrez-le en entier depuis l'e-mail.",
+    "network": "Erreur de connexion",
+    "passwordRequired": "Saisissez votre mot de passe",
+    "phoneRequired": "Saisissez votre numéro de téléphone avec l'indicatif du pays",
+    "consentRequired": "Votre consentement est requis"
+  },
+  "newAccountHint": "Le mot de passe n'est pas dans l'e-mail — c'est justement le principe : un lien seul ne suffit pas pour entrer. Si on ne vous en a pas donné, demandez à votre responsable.",
+  "decline": {
+    "cta": "Refuser l'invitation",
+    "confirm": "L'invitation à « {{studio}} » sera supprimée. Vous ne rejoindrez pas l'équipe, et seul le propriétaire du studio pourra la renvoyer.",
+    "keep": "Conserver",
+    "confirmCta": "Refuser",
+    "pending": "Refus en cours…"
+  },
+  "declined": {
+    "title": "Invitation refusée",
+    "sub": "Nous ne vous avons pas ajouté au studio. Si c'était une erreur, demandez au propriétaire de renvoyer l'invitation."
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "tabs": {
+    "studios": "Студії",
+    "services": "Послуги",
+    "subscriptions": "Абонементи"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Про студію",
+          "sub": "Назва та контактні дані",
+          "trust": "Ваші дані зашифровані й ніколи не передаються третім особам"
+        },
+        "location": {
+          "title": "Розташування",
+          "sub": "Де знаходиться цей філіал?",
+          "trust": "Адреса використовується в розкладі та на картах"
+        },
+        "photo": {
+          "title": "Фото",
+          "sub": "Обкладинка студії — необов'язково",
+          "trust": "Можна додати пізніше в налаштуваннях філіалу"
+        }
+      },
+      "stepCounter": "Крок {{current}} з {{total}}",
+      "step1": {
+        "heading": "Основна інформація",
+        "subheading": "Як називається студія і як з нею зв'язатися?",
+        "name": "Назва студії *",
+        "namePlaceholder": "Напр. Velora Studio",
+        "phone": "Телефон *",
+        "email": "Email *",
+        "contactHint": "Вкажіть телефон або email — хоча б щось одне",
+        "noContacts": "Контакти не вказані",
+        "new": "НОВЕ"
+      },
+      "step2": {
+        "heading": "Розташування",
+        "subheading": "Вкажіть, де знаходиться цей філіал",
+        "country": "Країна",
+        "countryPlaceholder": "Україна",
+        "city": "Місто *",
+        "cityPlaceholder": "Київ",
+        "address": "Адреса *",
+        "addressPlaceholder": "вул. Хрещатик 12, офіс 301",
+        "noAddress": "Адресу не вказано",
+        "groupHint": "Поля «Країна» і «Місто» використовуються для групування філіалів у списку."
+      },
+      "step3": {
+        "heading": "Фото студії",
+        "subheading": "Завантажте обкладинку — необов'язково, можна пропустити",
+        "uploadCta": "Натисніть, щоб завантажити",
+        "uploadHint": "JPG, PNG до 10 МБ",
+        "replace": "Замінити",
+        "remove": "Видалити",
+        "previewAlt": "Попередній перегляд",
+        "summary": "Підсумок",
+        "uploadError": "Не вдалося завантажити фото. Спробуйте інший файл або видаліть його."
+      },
+      "summaryRows": {
+        "name": "Назва",
+        "city": "Місто",
+        "address": "Адреса"
+      },
+      "nextPhoto": "Далі — фото",
+      "submit": "Створити студію",
+      "skipPhoto": "Пропустити фото та створити",
+      "illus": {
+        "contacts": "Контакти",
+        "newBranch": "Новий філіал",
+        "city": "Місто",
+        "newBranchStudio": "Новий філіал студії"
+      }
+    },
+    "editBranch": {
+      "title": "Редагувати філіал",
+      "name": "Назва філіалу",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Телефон",
+      "email": "Email",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Країна",
+      "countryPlaceholder": "Україна",
+      "city": "Місто",
+      "cityPlaceholder": "Київ",
+      "address": "Адреса",
+      "addressPlaceholder": "вул. Хрещатик 12",
+      "photo": "Фото філіалу",
+      "contactHint": "Вкажіть телефон або email",
+      "workingHours": "Робочі години"
+    },
+    "hall": {
+      "titleNew": "Новий зал",
+      "titleEdit": "Редагувати зал",
+      "name": "Назва залу",
+      "namePlaceholder": "Зал A",
+      "capacity": "Місткість",
+      "area": "Площа, м²",
+      "hourlyRate": "Ціна за годину, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Обладнання",
+      "equipmentPlaceholder": "Додати обладнання",
+      "color": "Колір",
+      "isOnline": "Онлайн-зал",
+      "photo": "Фото залу",
+      "subtitle": "Приміщення філіалу: місця, обладнання, колір у журналі",
+      "previewTitle": "Перегляд залу",
+      "sectionBasic": "Основне",
+      "sectionSpace": "Приміщення",
+      "sectionLook": "Вигляд",
+      "areaShort": "Площа",
+      "hourlyRateShort": "Ціна за годину",
+      "statArea": "Площа",
+      "statRate": "Ціна / година",
+      "isOnlineHint": "Заняття проходять онлайн — фізичного приміщення немає.",
+      "colorHint": "Заняття цього залу підсвічуються цим кольором у журналі."
+    },
+    "service": {
+      "titleNew": "Нова послуга",
+      "titleEdit": "Редагувати послугу",
+      "name": "Назва послуги",
+      "namePlaceholder": "Хатха-йога",
+      "category": "Категорія",
+      "type": "Тип",
+      "typeGroup": "Групове",
+      "typeIndividual": "Індивідуальне",
+      "price": "Ціна, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Тривалість, хв",
+      "durationPlaceholder": "60",
+      "maxClients": "Макс. клієнтів",
+      "maxClientsPlaceholder": "15",
+      "description": "Опис",
+      "descriptionPlaceholder": "Короткий опис послуги",
+      "color": "Колір",
+      "subtitle": "Відображається в журналі та онлайн-записі",
+      "previewTitle": "Перегляд у журналі",
+      "sectionBasic": "Основне",
+      "sectionPricing": "Ціна і час",
+      "sectionLook": "Вигляд",
+      "priceShort": "Ціна",
+      "durationShort": "Тривалість",
+      "statSeats": "Місця",
+      "colorHint": "Заняття підсвічуються цим кольором у сітці журналу."
+    },
+    "package": {
+      "titleNew": "Новий пакет",
+      "titleEdit": "Редагувати пакет",
+      "name": "Назва пакета",
+      "namePlaceholder": "8 занять",
+      "classCount": "Кількість занять",
+      "classCountPlaceholder": "8",
+      "price": "Ціна, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Ціна за відвідування",
+      "durationDays": "Діє, днів",
+      "durationDaysPlaceholder": "60",
+      "services": "Послуги",
+      "servicesHint": "Нічого не вибрано — пакет діє на всі заняття",
+      "isActive": "У продажу",
+      "soldAsSubscription": "Показувати на вкладці «Абонементи»",
+      "soldAsSingle": "Показувати на вкладці «Разові візити»",
+      "subtitle": "Набір занять, який ви продаєте клієнтам",
+      "previewTitle": "Перегляд картки",
+      "previewKind": "Картка",
+      "previewValid": "Діє",
+      "sectionBasic": "Основне",
+      "sectionTerms": "Умови",
+      "sectionSale": "Продаж",
+      "priceShort": "Ціна пакета",
+      "statClasses": "Заняття",
+      "statDays": "Днів",
+      "statAll": "Усі",
+      "isActiveHint": "Клієнти бачать цей пакет і можуть його купити.",
+      "soldAsSubscriptionHint": "Інакше пакет залишиться тільки в разових візитах."
+    }
+  },
+  "studios": {
+    "title": "СТУДІЇ",
+    "addStudio": "Додати студію",
+    "addHall": "Додати зал",
+    "editBranch": "Редагувати філіал",
+    "deleteBranch": "Видалити філіал",
+    "infoTab": "Загальна інформація",
+    "hallsTitle": "Зали студії",
+    "hallCount_one": "{{count}} зал",
+    "hallCount_few": "{{count}} зали",
+    "hallCount_many": "{{count}} залів",
+    "stats": {
+      "halls": "Зали",
+      "totalSeats": "Усього місць",
+      "fromPerHour": "Від / годину"
+    },
+    "hall": {
+      "seats": "місць",
+      "schedule": "Робочі години",
+      "closed": "Зачинено",
+      "stats": {
+        "seats": "Місця",
+        "area": "Площа",
+        "perHour": "За годину"
+      },
+      "equipment": "Обладнання",
+      "actions": "Дії",
+      "edit": "Редагувати зал",
+      "delete": "Видалити зал"
+    },
+    "empty": {
+      "title": "Студій немає",
+      "subtitle": "Додайте свою першу студію"
+    },
+    "toasts": {
+      "created": "Студію створено",
+      "createError": "Не вдалося створити студію",
+      "deleted": "Студію видалено",
+      "hallDeleted": "Зал видалено",
+      "saved": "Збережено",
+      "edit": "Редагування: {{name}}"
+    },
+    "confirmDelete": "Видалити філіал «{{name}}»? Це не можна скасувати.",
+    "confirmDeleteTitle": "Видалити філіал?",
+    "confirmDeleteHall": "Видалити зал «{{name}}»?",
+    "confirmDeleteHallTitle": "Видалити зал?"
+  },
+  "services": {
+    "title": "ПОСЛУГИ",
+    "addService": "Додати послугу",
+    "types": {
+      "group": "Групове",
+      "individual": "Інд.",
+      "groupFull": " · Групове",
+      "individualFull": " · Індивідуальне"
+    },
+    "stats": {
+      "price": "Ціна",
+      "duration": "Тривалість",
+      "bookings": "Записи",
+      "revenue": "Виторг"
+    },
+    "details": {
+      "description": "Опис",
+      "details": "Деталі",
+      "minutes": "хвилин",
+      "upTo": "До {{count}} осіб",
+      "personal": "Персональне",
+      "bookingsPerMonth": "записів за 30 днів",
+      "schedule": "Розклад занять"
+    },
+    "empty": {
+      "title": "Послуг немає",
+      "subtitle": "Додайте свою першу послугу"
+    },
+    "toasts": {
+      "deleted": "Послугу видалено",
+      "deleteError": "Не вдалося видалити послугу",
+      "saved": "Збережено",
+      "saveError": "Не вдалося зберегти послугу",
+      "edit": "Редагування: {{name}}"
+    },
+    "confirmDelete": "Видалити послугу «{{name}}»?",
+    "confirmDeleteTitle": "Видалити послугу?",
+    "categories": {
+      "yoga": "Йога",
+      "pilates": "Пілатес",
+      "stretching": "Стретчинг",
+      "individual": "Індивідуальні",
+      "other": "Без категорії"
+    }
+  },
+  "subscriptions": {
+    "title": "АБОНЕМЕНТИ",
+    "addPackage": "Додати пакет",
+    "card": {
+      "classCount_one": "{{count}} заняття",
+      "classCount_few": "{{count}} заняття",
+      "classCount_many": "{{count}} занять",
+      "duration": "{{count}} днів",
+      "allServices": "Усі заняття",
+      "serviceCount_one": "{{count}} послуга",
+      "serviceCount_few": "{{count}} послуги",
+      "serviceCount_many": "{{count}} послуг",
+      "inactiveBadge": "Знято з продажу"
+    },
+    "settings": {
+      "title": "Налаштування програми",
+      "allowFreeze": "Заморозка абонемента",
+      "allowTransfer": "Передача іншому клієнту",
+      "autoRenewal": "Автопродовження з депозиту клієнта"
+    },
+    "empty": {
+      "title": "Пакетів поки немає",
+      "cta": "Створити пакет"
+    },
+    "toasts": {
+      "created": "Пакет створено",
+      "saved": "Збережено",
+      "saveError": "Не вдалося зберегти пакет",
+      "deactivated": "Пакет знято з продажу",
+      "restored": "Пакет повернуто в продаж",
+      "actionError": "Не вдалося виконати дію"
+    },
+    "deactivate": "Зняти з продажу",
+    "restore": "Повернути в продаж",
+    "confirmDeactivateTitle": "Зняти цей пакет з продажу?",
+    "confirmDeactivate": "Уже продані абонементи продовжать діяти."
+  }
+}

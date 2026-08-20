@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Celkem v týmu",
+    "onShift": "Ve směně",
+    "trainers": "Trenéři",
+    "administrators": "Administrátoři",
+    "onlineNow": "{{count}} nyní online"
+  },
+  "toolbar": {
+    "teamTitle": "Tým · {{count}}",
+    "addEmployee": "Přidat zaměstnance",
+    "searchPlaceholder": "Hledat...",
+    "allGroup": "Všichni"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Plný přístup",
+    "ownerAccess": "Vlastník má přístup do všech modulů systému",
+    "loadBar": "Vytížení trenéra",
+    "weekSchedule": "Rozvrh na týden",
+    "todaySchedule": "Dnešní rozvrh",
+    "minutesSuffix": "min",
+    "clientsSuffix": "klientů",
+    "hall": "Sál",
+    "staffHalls": "Sály zaměstnance",
+    "noName": "Jméno není vyplněno",
+    "noRole": "Bez role",
+    "addEventStub": "Formulář pro přidání události..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Tržby",
+      "rating": "Hodnocení",
+      "bookings": "Rezervace",
+      "load": "Vytížení"
+    },
+    "admin": {
+      "bookings": "Rezervace",
+      "attended": "Vyřízeno",
+      "revenue": "Pokladna",
+      "load": "Vytížení"
+    },
+    "owner": {
+      "revenue": "Tržby",
+      "attended": "Návštěvy",
+      "load": "Vytížení",
+      "staff": "Zaměstnanci"
+    },
+    "default": {
+      "bookings": "Rezervace",
+      "attended": "Návštěvy",
+      "revenue": "Tržby",
+      "load": "Vytížení"
+    }
+  },
+  "schedule": {
+    "week": "Týden",
+    "month": "Měsíc",
+    "working": "Pracovní doba",
+    "free": "Volno",
+    "busy": "Obsazeno",
+    "dayOff": "Volný den",
+    "syncHint": "Rozvrh se synchronizuje s deníkem rezervací a rozvrhem lekcí.",
+    "workDaysInWeek": "{{count}} pracovních dní v týdnu",
+    "markWork": "Pracuje",
+    "markHint": "Vyberte značku nahoře a pak klikněte na den",
+    "prevMonth": "Předchozí měsíc",
+    "nextMonth": "Následující měsíc",
+    "dayHasBookings": "Na tento den už jsou rezervace — nemůže být volný",
+    "pastDayLocked": "Minulé dny nelze měnit"
+  },
+  "permissions": {
+    "finance": "Finance",
+    "staff": "Zaměstnanci",
+    "reports": "Reporty",
+    "clients": "Klienti",
+    "settings": "Nastavení"
+  },
+  "roles": {
+    "admin": "Administrátor",
+    "trainer": "Trenér",
+    "owner": "Vlastník"
+  },
+  "deleteModal": {
+    "cancelLesson": "Zrušit lekci?",
+    "dontAsk": "Při mazání se už neptat",
+    "cancelInvite": "Zrušit připojení?",
+    "cancelInviteConfirm": "Zrušit pozvánku"
+  },
+  "toasts": {
+    "lessonCanceled": "Lekce zrušena",
+    "errorCancel": "Chyba při rušení",
+    "employeeAdded": "Zaměstnanec {{name}} přidán",
+    "changesSaved": "Změny uloženy",
+    "employeeDeleted": "Zaměstnanec smazán",
+    "errorDelete": "Chyba při mazání",
+    "errorSave": "Uložení změn se nezdařilo",
+    "emailCopied": "E-mail zkopírován",
+    "phoneCopied": "Telefon zkopírován",
+    "inviteSent": "Pozvánka odeslána na {{email}}",
+    "inviteResent": "Pozvánka odeslána znovu",
+    "inviteCancelled": "Pozvánka zrušena"
+  },
+  "addModal": {
+    "stepIndicator": "Krok {{current}} z {{total}}",
+    "stepCounter": "{{current}}/4 — zabere asi 2 minuty",
+    "nameFallback": "jim",
+    "employeeFallback": "Zaměstnanec",
+    "steps": {
+      "1": {
+        "title": "O zaměstnanci",
+        "sub": "Jak se nový člen týmu jmenuje?",
+        "trust": "Údaje zaměstnance jsou chráněné"
+      },
+      "2": {
+        "title": "Role a služby",
+        "sub": "Pozice a seznam služeb",
+        "trust": "Roli lze kdykoli změnit"
+      },
+      "3": {
+        "title": "Rozvrh a mzda",
+        "sub": "Kdy pracuje a kolik si vydělá?",
+        "trust": "Rozvrh se synchronizuje s deníkem"
+      },
+      "4": {
+        "title": "Hotovo!",
+        "sub": "Pozvánka odeslána: {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Osobní údaje",
+      "sub": "Začneme jménem a kontaktními údaji",
+      "namePlaceholder": "Např. Anna Nováková",
+      "emailLabel": "E-mailová adresa",
+      "contactsNotSet": "Kontakty nejsou vyplněné",
+      "inviteHint": "Heslo předejte zaměstnanci osobně — do e-mailu se nikdy nedostane. E-mail nese jen odkaz a bez hesla studio neotevře.",
+      "errors": {
+        "name": "Jméno je povinné",
+        "phone": "Neplatné telefonní číslo",
+        "email": "Neplatný e-mail",
+        "password": "Alespoň 8 znaků, povinná písmena a číslice",
+        "emailTaken": "Tento e-mail už patří jinému účtu Velora"
+      },
+      "passwordLabel": "Přihlašovací heslo pro zaměstnance",
+      "passwordPlaceholder": "Alespoň 8 znaků, písmena a číslice"
+    },
+    "step2": {
+      "heading": "Role a služby",
+      "sub": "Vyberte pozici — služby se přidají automaticky",
+      "positionLabel": "Pozice *",
+      "positionPlaceholder": "Nebo zadejte vlastní pozici...",
+      "addServicePlaceholder": "Přidat službu — stiskněte Enter"
+    },
+    "step3": {
+      "heading": "Rozvrh a mzda",
+      "sub": "Nastavte pracovní dny a odměnu",
+      "scheduleLabel": "Pracovní rozvrh",
+      "salaryLabel": "Mzda (nepovinné)",
+      "salaryPlaceholder": "Zadejte číslo",
+      "createAndInvite": "Vytvořit a pozvat"
+    },
+    "step4": {
+      "exclaim": "Skvěle!",
+      "added": "přidán",
+      "sub": "Pozvánka odeslána. Zaměstnanec se připojí k týmu, jakmile ji přijme.",
+      "inviteLinkLabel": "Odkaz pozvánky",
+      "sendInviteLabel": "Odeslat pozvánku",
+      "inviteInfo": "Zaměstnanec dostane e-mail, otevře odkaz a potvrdí pozvánku svým heslem — teprve pak se připojí k týmu a získá přístup. Odkaz platí 7 dní. Heslo v e-mailu není — předejte ho osobně.",
+      "emailSentTitle": "E-mail odeslán",
+      "resend": "Odeslat znovu",
+      "resentOk": "E-mail odeslán znovu",
+      "resendError": "Odeslání se nezdařilo — zkuste to znovu",
+      "copied": "Zkopírováno"
+    },
+    "illus": {
+      "contacts": "Kontakty",
+      "profile": "Profil",
+      "roleFallback": "Role",
+      "services": "Služby",
+      "specialization": "Specializace",
+      "scheduleTitle": "PRACOVNÍ ROZVRH",
+      "inviteSent": "Pozvánka odeslána",
+      "inviteSub": "{{name}} obdrží přihlašovací odkaz"
+    },
+    "summary": {
+      "employee": "Zaměstnanec",
+      "role": "Role",
+      "workDays": "Pracovní dny",
+      "daysCount": "{{count}} ze 7"
+    }
+  },
+  "editModal": {
+    "header": "ÚPRAVA",
+    "employeeFallback": "Zaměstnanec",
+    "positionFallback": "Bez pozice",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Role",
+      "salary": "Mzda",
+      "schedule": "Rozvrh"
+    },
+    "profile": {
+      "heading": "Osobní údaje",
+      "sub": "Aktualizujte kontaktní údaje zaměstnance",
+      "uploadPhoto": "Nahrát fotku",
+      "replacePhoto": "Vyměnit fotku",
+      "removePhoto": "Odebrat fotku",
+      "photoHint": "JPG, PNG — do 5 MB",
+      "namePlaceholder": "Jméno Příjmení",
+      "notifyHint": "Zaměstnance o změnách upozorníme na uvedený telefon nebo e-mail.",
+      "errors": {
+        "name": "Jméno je povinné",
+        "email": "Neplatný e-mail"
+      },
+      "contactsOwnedByEmployee": "E-mail a telefon patří k účtu zaměstnance — mění si je ve vlastním profilu."
+    },
+    "role": {
+      "heading": "Role a specializace",
+      "sub": "Pozice zaměstnance a seznam služeb",
+      "addService": "Přidat službu",
+      "catalogConfirm": "Chcete otevřít sekci Služby v Katalogu?"
+    },
+    "salary": {
+      "heading": "Mzda",
+      "sub": "Zadejte typ odměny a její výši",
+      "typeLabel": "Typ odměny",
+      "perWeek": "₽ / týden",
+      "selectTypeHint": "Vyberte typ odměny výše",
+      "currentLabel": "Aktuální odměna",
+      "typeFixed": "Pevná mzda",
+      "typePercent": "% z tržeb",
+      "typeHourly": "Hodinová mzda",
+      "typeNotSet": "Typ není vybrán",
+      "cardFixedSub": "Pevná částka",
+      "cardPercentSub": "% z tržeb",
+      "cardHourlySub": "Za odpracovanou hodinu",
+      "amountFixed": "Měsíční částka",
+      "amountPercent": "Procento z tržeb",
+      "amountHourly": "Hodinová sazba",
+      "reportHint": "Mzda se zobrazuje ve finančních reportech. Zaměstnanec vidí jen svou vlastní odměnu."
+    },
+    "schedule": {
+      "heading": "Pracovní rozvrh",
+      "activeDays": "Aktivní dny: {{count}} ze 7",
+      "syncHint": "Rozvrh se synchronizuje s deníkem rezervací a rozvrhem lekcí.",
+      "workDaysLabel": "Pracovní dny",
+      "totalHoursLabel": "Celkem hodin",
+      "daysOffLabel": "Volné dny",
+      "daysLabel": "Dny",
+      "workDays": "{{count}} pracovních dní",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Nyní online",
+      "notOnline": "Není online",
+      "schedule": "Rozvrh",
+      "daysCount": "{{count}}/7 dní"
+    },
+    "deleteEmployee": "Odebrat zaměstnance",
+    "deleteConfirm": "Odebrat {{name}} z týmu?",
+    "defaultName": "zaměstnanec",
+    "cannotDeleteLastOwner": "Jediného vlastníka nelze odebrat"
+  },
+  "ownerModal": {
+    "header": "KONTAKTY VLASTNÍKA",
+    "heading": "Kontaktní údaje",
+    "sub": "Telefon a e-mail vlastníka studia",
+    "cardNote": "e-mail je přihlašovací jméno",
+    "loginWarning": "E-mail je přihlašovací jméno vlastníka. Po uložení se přihlaste novou adresou.",
+    "lockedHint": "Jméno, fotka, role a přístupová práva se zde neupravují — najdete je v sekci «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Čeká na přijetí pozvánky",
+    "pendingHint": "Profil se otevře, jakmile zaměstnanec pozvánku přijme",
+    "resendInvite": "Odeslat pozvánku znovu",
+    "cancelInvite": "Zrušit připojení"
+  }
+}

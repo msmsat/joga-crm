@@ -1,0 +1,422 @@
+{
+  "categories": {
+    "all": "Alle",
+    "vip": "VIP",
+    "active": "Aktiv",
+    "new": "Neu",
+    "has_subscription": "Mit Karte",
+    "inactive": "Inaktiv",
+    "frozen": "Eingefroren",
+    "birthday": "Geburtstag"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Die vollständige Kundenliste des Studios, ohne Statusfilter."
+    },
+    "vip": {
+      "text": "Erfolgreiche Zahlungen von insgesamt 50.000+ oder 30+ Besuche. VIP lässt sich auch manuell in der Kundenkarte anheften — eine manuelle Markierung gilt unabhängig von den Beträgen."
+    },
+    "active": {
+      "text": "Mindestens ein Besuch in den letzten 60 Tagen. Basiert auf der im Journal erfassten Anwesenheit — der Status aktualisiert sich selbst, Sie müssen ihn nicht setzen."
+    },
+    "new": {
+      "text": "Die ersten 15 Tage ab dem Registrierungsdatum — egal ob der Kunde manuell angelegt wurde oder über die Online-Buchung kam. Am 16. Tag wechselt er automatisch zu Aktiv oder Inaktiv."
+    },
+    "has_subscription": {
+      "text": "Hat eine gültige Karte: nicht abgelaufen, nicht eingefroren, Einheiten übrig. Aktualisiert sich sofort beim Kauf, bei jeder genutzten Einheit und beim Ablauf."
+    },
+    "inactive": {
+      "text": "Kein Besuch in den letzten 60 Tagen — oder nie da gewesen und seit der Registrierung sind mehr als 15 Tage vergangen."
+    },
+    "frozen": {
+      "text": "Einfrieren über die Schaltfläche in der Kundenkarte — der einzige manuell gesetzte Status. Nach dem Auftauen kehrt der Kunde zu seinem automatischen Status zurück."
+    },
+    "birthday": {
+      "text": "Wer heute Geburtstag hat — Tag und Monat stimmen überein, das Jahr wird ignoriert. Die Liste aktualisiert sich täglich automatisch."
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "vip": "VIP",
+    "new": "Neu",
+    "inactive": "Inaktiv",
+    "frozen": "Eingefroren"
+  },
+  "filtersGuide": {
+    "trigger": "Über die Filter",
+    "title": "Kundenfilter",
+    "subtitle": "Wie jede Kategorie berechnet wird. Klicken Sie eine Karte an, um den Filter zu setzen, oder ändern Sie einen Schwellenwert — die Status werden sofort neu berechnet.",
+    "close": "Schließen",
+    "rule": {
+      "new_client_days": "Neu für",
+      "active_within_days": "Besuch binnen",
+      "vip_min_spent": "Ausgegeben ab",
+      "vip_min_visits": "oder Besuche"
+    },
+    "unit": {
+      "days": "Tage",
+      "money": "",
+      "visits": "Besuche"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Kunde suchen...",
+    "addClient": "Kunde hinzufügen"
+  },
+  "table": {
+    "visits": "Besuche",
+    "frozenBadge": "❄ eingefroren",
+    "totalSpent": "Insgesamt ausgegeben",
+    "subscription": "Karte",
+    "of": "von",
+    "noSubscription": "Keine Karte"
+  },
+  "loadMore": "Mehr laden",
+  "loading": "Wird geladen…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Ereignisse",
+      "notes": "Notizen",
+      "wallet": "Käufe"
+    },
+    "actions": {
+      "book": "Buchen",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Zum Bearbeiten klicken",
+    "since": "seit {{date}}",
+    "contacts": {
+      "title": "Kontakte",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "telegram": "Telegram",
+      "birthDate": "Geburtsdatum",
+      "city": "Stadt",
+      "copyHint": " · zum Kopieren klicken"
+    },
+    "debt": "{{amount}} für Kurse offen — Zahlung im Journal annehmen",
+    "stats": {
+      "visits": "Besuche",
+      "spent": "Ausgegeben",
+      "subscription": "Karte"
+    },
+    "loyalty": {
+      "points": "Punkte",
+      "level": "Stufe {{tier}}",
+      "toNext": "Bis zur nächsten Stufe: {{points}} Punkte",
+      "multiplier": "Punktemultiplikator ×{{value}}",
+      "worth": "An der Kasse {{amount}} wert",
+      "toNextLevel": "Noch {{amount}} bis {{level}}",
+      "pointValue": "1 Punkt = {{amount}}",
+      "nextPointValue": "auf {{level}} — {{amount}}",
+      "noBonus": "Diese Stufe ändert den Punktwert nicht"
+    },
+    "referral": {
+      "title": "Freund einladen",
+      "copy": "Kopieren"
+    },
+    "abonement": {
+      "title": "Karte",
+      "lessons": "{{remaining}}/{{total}} Einheiten",
+      "noSubscription": "Keine aktive Karte",
+      "noSubscriptionWarning": "Der Kunde hat keine Karte — bieten Sie eine an",
+      "lowWarning": "Nur noch wenige Einheiten — Verlängerung anbieten",
+      "finishedWarning": "Keine Einheiten mehr — Verlängerung anbieten",
+      "remind": "Kunde erinnern",
+      "reminderSent": "Erinnerung an den Kunden gesendet"
+    },
+    "products": {
+      "single": "einzeln",
+      "pending": "in Warteschlange",
+      "frozen": "eingefroren",
+      "until": "Gültig bis {{date}}",
+      "startsOnFirstVisit": "Die Laufzeit beginnt mit dem ersten Kurs"
+    },
+    "wallet": {
+      "buy": "Kaufen",
+      "active": "Aktiv",
+      "archived": "Archiviert",
+      "singles": "Einzelbesuche",
+      "subscriptions": "Karten",
+      "noSingles": "Noch keine Einzelbesuche",
+      "emptyActive": "Keine aktiven Produkte",
+      "emptyArchived": "Keine archivierten Produkte",
+      "emptyCatalog": "Dieses Studio hat noch keine Kartenpakete",
+      "lessons": "{{remaining}}/{{total}} Einheiten",
+      "lessonsCount": "{{count}} Einheiten",
+      "perVisit": "Pro Einzelbesuch",
+      "until": "bis {{date}}",
+      "frozenBadge": "Eingefroren",
+      "loadFailed": "Die Geldbörse konnte nicht geladen werden",
+      "back": "← Zurück",
+      "catalogTitle": "Katalog",
+      "showAll": "Alle",
+      "posTitle": "Kasse",
+      "promoLabel": "Aktionscode",
+      "promoPlaceholder": "Aktionscode eingeben",
+      "promoInvalid": "Der Aktionscode ist ungültig",
+      "useBonuses": "Boni einlösen ({{count}})",
+      "useDeposit": "Vom Guthaben zahlen ({{amount}})",
+      "certLabel": "Gutscheincode",
+      "certPlaceholder": "Gutscheincode eingeben",
+      "certApplied": "Gutschein",
+      "depositApplied": "Guthaben",
+      "base": "Grundpreis",
+      "discount": "Rabatt",
+      "bonuses": "Boni",
+      "bonusesSpent": "Boni ({{count}} Pkt.)",
+      "total": "Gesamt",
+      "cash": "Bar",
+      "card": "Karte",
+      "cardStripe": "Kartenzahlungen laufen über eine Stripe-Seite und landen direkt auf dem Konto des Studios. Einrichten unter Finanzen → Online-Zahlungen.",
+      "offlineLocked": "Barzahlungen sind ab dem Kombi-Tarif verfügbar",
+      "payByCard": "Mit Karte zahlen",
+      "confirmPay": "Zahlung bestätigen",
+      "confirmPayCovered": "Bestätigen (bereits bezahlt)",
+      "confirmTitle": "Zahlungseingang bestätigen?",
+      "confirmMessage": "Damit werden Einnahmen von {{amount}} erfasst und dem Kunden das Produkt gutgeschrieben.",
+      "confirmMessageCard": "Ein Stripe-Zahlungsformular über {{amount}} wird geöffnet. Das Produkt wird gutgeschrieben und die Einnahme erfasst, sobald die Zahlung erfolgreich ist.",
+      "payToStudio": "Die Zahlung landet auf dem Konto des Studios",
+      "payConfirming": "Zahlung wird geprüft…",
+      "close": "Schließen",
+      "confirmMessageCovered": "Die Zahlung ist vollständig durch Guthaben/Gutschein gedeckt. Das Produkt wird dem Kunden gutgeschrieben.",
+      "paySuccess": "Zahlung erfasst",
+      "payCancelled": "Zahlung abgebrochen — es wurde nichts abgebucht",
+      "payNotCompleted": "Stripe hat die Zahlung noch nicht bestätigt. Falls die Karte belastet wurde, aktualisieren Sie in einer Minute.",
+      "payNotApplied": "Die Karte wurde belastet, aber der Verkauf konnte nicht erfasst werden: Die Konditionen haben sich geändert (Gutschein, Aktionscode oder Paket). Erfassen Sie den Verkauf manuell oder erstatten Sie ihn in Stripe.",
+      "transfer": "Übertragen",
+      "transferTitle": "Karte übertragen",
+      "transferSearchLabel": "Übertragen an",
+      "transferSearchPlaceholder": "Name oder Telefon des Kunden",
+      "transferSelectPlaceholder": "Kunde auswählen",
+      "transferConfirm": "Übertragen",
+      "transferSuccess": "Karte übertragen"
+    },
+    "offers": {
+      "title": "Persönlicher Rabatt",
+      "empty": "Keine aktiven Rabatte",
+      "grant": "Rabatt gewähren",
+      "cancel": "Aufheben",
+      "valuePercent": "{{value}} %",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "bis {{date}}",
+      "noExpiry": "unbefristet",
+      "scopeRenewal": "für die Verlängerung",
+      "grantTitle": "Persönlichen Rabatt gewähren",
+      "grantValue": "Rabatthöhe",
+      "grantType": {
+        "percent": "Prozent (%)",
+        "amount": "Betrag (₽)"
+      },
+      "grantValidUntil": "Gültig bis",
+      "grantSubmit": "Gewähren",
+      "cancelConfirmTitle": "Rabatt aufheben?",
+      "cancelConfirmMessage": "Der Kunde kann dieses Angebot dann nicht mehr nutzen.",
+      "toasts": {
+        "granted": "Rabatt gewährt",
+        "cancelled": "Rabatt aufgehoben",
+        "loadFailed": "Rabatte konnten nicht geladen werden"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivität (3 Mon.)",
+      "clickForDetails": "Für Details klicken",
+      "detailedTitle": "Detaillierte Aktivität",
+      "periods": {
+        "month3": "3 Mon.",
+        "month6": "6 Mon."
+      },
+      "visitsInPeriod": "Besuche im Zeitraum",
+      "visitsTooltip": "{{count}} Besuche",
+      "emptyState": "In diesem Zeitraum keine Besuche",
+      "insightTitle": "Durchschnittliche Besuchsrate",
+      "insightBody": "Im gewählten Zeitraum durchschnittlich {{avg}} Besuche pro Monat.",
+      "months": {
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mär",
+        "apr": "Apr",
+        "may": "Mai",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Okt",
+        "nov": "Nov",
+        "dec": "Dez"
+      }
+    },
+    "tags": {
+      "title": "Tags",
+      "add": "Hinzufügen",
+      "close": "Schließen",
+      "customPlaceholder": "Eigener Tag + Enter..."
+    },
+    "danger": {
+      "freeze": "Einfrieren",
+      "unfreeze": "Auftauen",
+      "freezeDisabledHint": "Das Einfrieren ist unter Katalog → Karteneinstellungen deaktiviert",
+      "delete": "Löschen"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Alle",
+        "payment": "Zahlungen",
+        "visit": "Besuche",
+        "booking": "Buchungen",
+        "cancel": "Stornierungen",
+        "bonus": "Boni",
+        "freeze": "Einfrierungen"
+      },
+      "empty": "Keine Ereignisse"
+    },
+    "notes": {
+      "title": "Notizen der Administration",
+      "prefix": "Notiz · {{date}}",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "addPlaceholder": "Notiz eingeben...",
+      "add": "Notiz hinzufügen",
+      "justNow": "gerade eben",
+      "deleteTitle": "Notiz löschen?",
+      "deleteMessage": "Diese Notiz lässt sich nicht wiederherstellen."
+    },
+    "bookingPanel": {
+      "title": "Schnellbuchung",
+      "today": "Heute",
+      "noLessons": "An diesem Tag gibt es keine Kurse",
+      "full": "Keine Plätze",
+      "confirm": "Buchen →",
+      "noSubscription": "Der Kunde hat keine verfügbare Karte für die Buchung"
+    },
+    "bonusPanel": {
+      "title": "Bonus gewähren"
+    },
+    "toasts": {
+      "noPhone": "Der Kunde hat keine Telefonnummer",
+      "copied": "Erfolgreich kopiert",
+      "bookingCreated": "Buchung erstellt",
+      "bookingFailed": "Buchung fehlgeschlagen",
+      "bonusFailed": "Punkte konnten nicht gutgeschrieben werden",
+      "bonusApplied": "Bonus gewährt: {{label}}",
+      "clientAdded": "Kunde hinzugefügt"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 Punkte",
+        "description": "Dem Loyalitätskonto gutschreiben"
+      },
+      "p500": {
+        "label": "+500 Punkte",
+        "description": "Dem Loyalitätskonto gutschreiben"
+      },
+      "p1000": {
+        "label": "+1000 Punkte",
+        "description": "Dem Loyalitätskonto gutschreiben"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Probe",
+      "VIP",
+      "Empfehlung",
+      "Online",
+      "Gruppe",
+      "Einzeln"
+    ]
+  },
+  "addModal": {
+    "title": "Neuer Kunde",
+    "cancel": "Abbrechen",
+    "back": "← Zurück",
+    "continue": "Weiter →",
+    "submit": "Kunde hinzufügen ✓",
+    "stepCounter": "Schritt {{current}} von {{total}}",
+    "trustSignal": "Die Daten sind geschützt und nur für Administratoren sichtbar",
+    "steps": {
+      "1": {
+        "title": "Persönliche Daten",
+        "sub": "Geben Sie die Kontaktdaten des Kunden ein"
+      },
+      "2": {
+        "title": "Profildaten",
+        "sub": "Zusätzliche Angaben (optional)"
+      },
+      "3": {
+        "title": "Karte",
+        "sub": "Wählen Sie eine Kartenart und ergänzen Sie eine Notiz"
+      },
+      "4": {
+        "title": "Alles bereit!",
+        "sub": "Prüfen Sie die Angaben und fügen Sie den Kunden hinzu"
+      }
+    },
+    "step1": {
+      "previewLabel": "Neuer Kunde · Vorschau",
+      "name": "Vollständiger Name *",
+      "namePlaceholder": "Anna Müller",
+      "phone": "Telefon",
+      "phonePlaceholder": "+49 30 0000000",
+      "email": "E-Mail",
+      "emailPlaceholder": "kunde@example.com"
+    },
+    "step2": {
+      "bday": "Geburtsdatum",
+      "bdayPlaceholder": "12. April 1990",
+      "city": "Stadt",
+      "cityPlaceholder": "Berlin",
+      "tags": "Tags",
+      "tagsPlaceholder": "Pilates, VIP, Reha... (Enter)",
+      "tagsHint": "Mit Enter fügen Sie einen Tag hinzu",
+      "inviteCode": "Einladungscode des Werbenden",
+      "inviteCodePlaceholder": "Optional",
+      "inviteCodeHint": "Wenn angegeben, bekommen Sie beide einen Bonus"
+    },
+    "step3": {
+      "classCount": "Karte",
+      "classesUnit": "Einheiten",
+      "classesCount": "{{count}} Einheiten",
+      "selected": "Ausgewählt",
+      "noPackage": "Keine Karte",
+      "noPackages": "Dieses Studio hat noch keine Kartenpakete",
+      "noPackagesLink": "Pakete im Katalog anlegen →",
+      "alreadyPaid": "Hat der Kunde diese Karte bereits bezahlt?",
+      "yes": "Ja",
+      "no": "Nein",
+      "note": "Notiz",
+      "notePlaceholder": "Besondere Wünsche, Kontraindikationen, Vorlieben..."
+    },
+    "step4": {
+      "readyTitle": "Angaben sind ausgefüllt!",
+      "readySub": "Prüfen Sie die Informationen und bestätigen Sie das Hinzufügen",
+      "newClient": "Neuer Kunde",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "bday": "Geburtsdatum",
+        "city": "Stadt",
+        "subscription": "Karte",
+        "tags": "Tags"
+      },
+      "subscriptionValue": "{{count}} Einheiten",
+      "smsTitle": "SMS-Begrüßung senden",
+      "smsSub": "Der Kunde erhält eine Einladungsnachricht"
+    },
+    "errors": {
+      "name": "Geben Sie einen Namen ein (mindestens 2 Zeichen)",
+      "phone": "Ungültige Telefonnummer",
+      "email": "Ungültige E-Mail",
+      "city": "Geben Sie eine Stadt ein"
+    }
+  },
+  "deleteModal": {
+    "title": "Kunde löschen?",
+    "body": "Sie sind dabei, folgenden Kunden zu löschen",
+    "warning": "Diese Aktion lässt sich nicht rückgängig machen.",
+    "cancel": "Abbrechen",
+    "confirm": "Löschen",
+    "success": "Kunde gelöscht"
+  }
+}

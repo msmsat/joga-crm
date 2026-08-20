@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Übersicht",
+    "sales": "Verkäufe",
+    "clients": "Kunden",
+    "team": "Team",
+    "schedule": "Zeitplan"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Tag",
+      "week": "Woche",
+      "month": "Monat",
+      "year": "Jahr",
+      "custom": "Eigener"
+    },
+    "vsPrevious": "vs. Vorperiode: {{from}}–{{to}}",
+    "allBranches": "Alle Filialen",
+    "allHalls": "Alle Säle",
+    "allTrainers": "Alle Trainer",
+    "allServices": "Alle Leistungen",
+    "export": "Export"
+  },
+  "insights": {
+    "title": "Braucht Aufmerksamkeit",
+    "action": "Öffnen",
+    "empty": "Aktuell alles in Ordnung — keine Hinweise",
+    "revenue_up_clients_down": "Der Umsatz steigt, aber die aktiven Kunden gehen zurück — prüfen Sie die Abwanderung",
+    "clients_at_risk": "{{count}} Kunden waren über 3 Wochen nicht da — Abwanderungsrisiko",
+    "lesson_overfull": "„{{name}}“ am {{weekday, weekday}} um {{hour}}:00 ist drei Wochen in Folge zu {{pct}} % voll — erwägen Sie einen weiteren Termin",
+    "trial_low_conversion": "Nur {{pct}} % von {{buyers}} Probestunden-Käufern haben danach eine Karte gekauft — erwägen Sie eine Kampagne",
+    "fastest_growing_product": "„{{name}}“ wächst am schnellsten: +{{pct}} % gegenüber der Vorperiode",
+    "renewals_low": "Nur {{pct}} % der Kunden mit abgelaufener Karte verlängern — erwägen Sie eine Erinnerung",
+    "new_no_second_visit": "{{count}} neue Kunden waren einmal da und haben nie wieder gebucht — erwägen Sie eine Erinnerung",
+    "subs_expiring_week": "Bei {{count}} Kunden läuft diese Woche die Karte ab — bieten Sie eine Verlängerung an",
+    "vip_inactive": "VIP-Kunde „{{name}}“ war seit {{days}} Tagen nicht da — erwägen Sie eine persönliche Nachricht",
+    "high_return_free_evenings": "„{{name}}“ hat eine hohe Rückkehrquote ({{return_pct}} %), aber die Abende sind frei — fügen Sie einen Termin hinzu",
+    "trainer_overloaded": "„{{name}}“ ist zu {{load_pct}} % ausgelastet — erwägen Sie eine Umverteilung des Plans",
+    "low_rating": "„{{name}}“ hat eine Bewertung von {{rating}} — genauer hinschauen lohnt sich",
+    "slot_chronic_low": "„{{name}}“ am {{weekday, isodowWeekday}} um {{hour}}:00 ist seit {{weeks}} Wochen nur zu {{pct}} % voll — verschieben oder streichen",
+    "hall_idle_evenings": "„{{name}}“ steht {{pct}} % der Abendstunden leer — erwägen Sie einen Termin",
+    "slot_overfull": "Der Termin {{weekday, isodowWeekday}} {{hour}}:00 ist drei Wochen in Folge zu {{pct}} % voll — erwägen Sie einen weiteren",
+    "loss_hotspot": "{{cancels}} Kurse wurden in diesem Zeitraum um {{label}} abgesagt — die meisten Absagen häufen sich um diese Stunde"
+  },
+  "table": {
+    "loading": "Wird geladen…",
+    "noProduct": "Kein Produkt"
+  },
+  "empty": {
+    "noData": {
+      "title": "Hier ist noch nichts",
+      "text": "Für den gewählten Zeitraum wurde keine Aktivität erfasst. Erweitern Sie den Bereich oder buchen Sie zunächst einen Kunden im Journal.",
+      "widen": "Jahr anzeigen"
+    },
+    "noRevenue": "In diesem Zeitraum gibt es keine Zahlungen",
+    "noSales": "In diesem Ausschnitt gibt es keine Verkäufe",
+    "noProducts": "Noch keine Pakete oder Leistungen verkauft",
+    "noLessons": "In diesem Zeitraum gibt es keine Kurse",
+    "noTrainerLessons": "Dieser Trainer hat noch keine Kurse gegeben",
+    "noRows": "In diesem Ausschnitt gibt es keine Einträge",
+    "noLosses": "In diesem Zeitraum keine Absagen oder Nichterscheinen"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Umsatz",
+      "profit": "Gewinn",
+      "attendance": "Besuche",
+      "activeClients": "Aktive Kunden",
+      "fillRate": "Auslastung"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Umsatz",
+        "profit": "Gewinn",
+        "attendance": "Besuche",
+        "new_clients": "Neue Kunden",
+        "fill_rate": "Auslastung"
+      }
+    },
+    "revenueStructure": {
+      "title": "Umsatzstruktur"
+    },
+    "category": {
+      "subscriptions": "Karten",
+      "services": "Leistungen",
+      "certificates": "Gutscheine",
+      "rent": "Miete",
+      "salary": "Löhne",
+      "refunds": "Erstattungen"
+    },
+    "clientDynamics": {
+      "title": "Kundenentwicklung",
+      "new": "Neu",
+      "returned": "Zurückgekehrt",
+      "lost": "Verloren"
+    },
+    "drilldown": {
+      "title": "Transaktion",
+      "category": "Kategorie",
+      "amount": "Betrag",
+      "lesson": "Kurs",
+      "time": "Zeit",
+      "occupancy": "Belegung",
+      "date": "Datum",
+      "method": "Methode",
+      "trainer": "Trainer",
+      "rowsCount": "Einträge",
+      "search": "In der Tabelle suchen",
+      "shownOf": "{{shown}} von {{total}} angezeigt",
+      "noMatches": "Nichts gefunden für „{{query}}“",
+      "reset": "Zurücksetzen",
+      "export": "CSV exportieren",
+      "subtitle": {
+        "money": "Transaktionen in diesem Ausschnitt",
+        "lessons": "Kurse in diesem Ausschnitt"
+      },
+      "hint": {
+        "operations": "Klicken Sie eine Zeile an, um die Transaktion in Finanzen zu öffnen",
+        "lessons": "Klicken Sie eine Zeile an, um diesen Tag im Journal zu öffnen"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Einnahmen",
+        "expense": "Ausgaben",
+        "operations": "Transaktionen",
+        "topCategory": "Top-Kategorie",
+        "lessons": "Kurse",
+        "booked": "Gebucht von Plätzen",
+        "avgFill": "Durchschnittliche Belegung",
+        "trainers": "Trainer",
+        "cancelled": "Abgesagt"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Umsatz",
+      "salesCount": "Verkäufe",
+      "avgCheck": "Durchschnittsbon",
+      "repeatShare": "Anteil Wiederkäufe",
+      "renewals": "Verlängerungsquote"
+    },
+    "chart": {
+      "title": "Verkäufe"
+    },
+    "incomeOperations": "Einnahmetransaktionen",
+    "breakdown": {
+      "byCategory": "Was gekauft wird",
+      "byMethod": "Wie bezahlt wird",
+      "buyerType": "Wer kauft",
+      "new": "Neu",
+      "returning": "Wiederkehrend",
+      "noClient": "Ohne Kunde"
+    },
+    "method": {
+      "card": "Karte",
+      "cash": "Bar",
+      "qr": "QR-Code",
+      "transfer": "Überweisung"
+    },
+    "products": {
+      "title": "Produkte",
+      "name": "Produkt",
+      "sold": "Verkauft",
+      "revenue": "Umsatz",
+      "avgCheck": "Durchschnittsbon",
+      "repeatShare": "Anteil Wiederkäufe",
+      "trend": "Trend",
+      "trendHint": "Verglichen mit der Vorperiode gleicher Länge"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Neu",
+      "returned": "Zurückgekehrt",
+      "lost": "Verloren",
+      "retention": "Bindung",
+      "avgValue": "Kundenwert"
+    },
+    "chart": {
+      "title": "Neu vs. wiederkehrend",
+      "new": "Neu",
+      "returned": "Wiederkehrend"
+    },
+    "riskTitle": "Risikosegmente",
+    "loyalTitle": "Treue",
+    "list": "Liste",
+    "campaign": "Kampagne starten",
+    "exportList": "Liste exportieren",
+    "emptySegment": "Im Segment „{{name}}“ gibt es derzeit keine Kunden",
+    "segments": {
+      "new": {
+        "name": "Neue Kunden",
+        "desc": "Im gewählten Zeitraum registriert"
+      },
+      "returned": {
+        "name": "Wiederkehrende Kunden",
+        "desc": "Waren in diesem und im vorherigen Zeitraum da"
+      },
+      "lost": {
+        "name": "Verlorene Kunden",
+        "desc": "Waren im letzten Zeitraum da, in diesem nicht mehr"
+      },
+      "active": {
+        "name": "Aktive Kunden",
+        "desc": "Waren im gewählten Zeitraum in mindestens einem Kurs"
+      },
+      "at_risk": {
+        "name": "Auf der Kippe",
+        "desc": "Aktiv, seit 21+ Tagen kein Besuch"
+      },
+      "vip_idle": {
+        "name": "VIP inaktiv",
+        "desc": "VIP-Kunden, seit 14+ Tagen kein Besuch"
+      },
+      "expiring_subscription": {
+        "name": "Karte läuft aus",
+        "desc": "≤2 Einheiten oder ≤7 Tage übrig"
+      },
+      "lost_newcomers": {
+        "name": "Nie zurückgekehrt",
+        "desc": "Einmal da, seit 14+ Tagen weg"
+      },
+      "upsell_candidates": {
+        "name": "Bereit für mehr",
+        "desc": "8+ Besuche diesen Monat, kein Paket"
+      },
+      "frequent": {
+        "name": "Vielbesucher",
+        "desc": "8+ Besuche im Zeitraum"
+      },
+      "high_ltv": {
+        "name": "Hoher LTV",
+        "desc": "Top 10 % nach Gesamtausgaben"
+      },
+      "referrers": {
+        "name": "Empfehler",
+        "desc": "Empfehlung im Zeitraum abgeschlossen"
+      }
+    },
+    "listSearch": "Nach Name oder Telefon suchen",
+    "shownOf": "{{shown}} von {{total}} angezeigt",
+    "noMatches": "Niemand gefunden für „{{query}}“",
+    "resetSearch": "Zurücksetzen",
+    "neverVisited": "Nie da gewesen",
+    "valueLabel": {
+      "visits": "Besuche",
+      "spent": "Ausgegeben",
+      "daysIdle": "Tage inaktiv",
+      "remaining": "Einheiten übrig",
+      "value": "Wert"
+    },
+    "relative": {
+      "today": "Heute",
+      "daysAgo_one": "vor {{count}} Tag",
+      "daysAgo_other": "vor {{count}} Tagen"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Kurse",
+      "revenuePerHour": "Umsatz/Stunde",
+      "avgFillPct": "Auslastung",
+      "cancelNoshowPct": "Absagen/Nichterscheinen",
+      "avgRating": "Bewertung"
+    },
+    "table": {
+      "title": "Trainer",
+      "trainer": "Trainer",
+      "lessons": "Kurse",
+      "fillPct": "Auslastung",
+      "attendance": "Besuche",
+      "revenue": "Umsatz",
+      "returnRate": "Rückkehrquote",
+      "cancels": "Absagen",
+      "fillPctHint": "Belegte Plätze von den geplanten",
+      "returnRateHint": "Kunden, die erneut bei diesem Trainer gebucht haben",
+      "cancelsHint": "Abgesagte Kurse und Nichterscheinen von Kunden",
+      "ratingHint": "Durchschnittliche Bewertung der Kurse dieses Trainers"
+    },
+    "drawer": {
+      "revenueByWeek": "Umsatz nach Wochen",
+      "loadByWeekday": "Auslastung nach Wochentag",
+      "loadByHour": "Auslastung nach Tageszeit",
+      "loadDim": {
+        "weekday": "Nach Tagen",
+        "hour": "Nach Stunden"
+      },
+      "schedule": {
+        "title": "Zeitplan",
+        "empty": "In diesem Zeitraum gibt es keine Kurse"
+      },
+      "topLessons": "Beliebteste Kurse",
+      "returnBlock": "Rückkehr der Kunden",
+      "returnOf": "{{returned}} von {{total}} Kunden sind zurückgekehrt ({{pct}} %)",
+      "openProfile": "Profil öffnen",
+      "held": "Gehalten",
+      "attendance": "Besuche"
+    },
+    "weekdays": [
+      "So",
+      "Mo",
+      "Di",
+      "Mi",
+      "Do",
+      "Fr",
+      "Sa"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Mo",
+      "Di",
+      "Mi",
+      "Do",
+      "Fr",
+      "Sa",
+      "So"
+    ],
+    "kpi": {
+      "avgFillPct": "Auslastung",
+      "freeSpots": "Freie Plätze",
+      "cancels": "Absagen",
+      "noshows": "Nichterscheinen",
+      "lostRevenue": "Entgangener Umsatz"
+    },
+    "heatmap": {
+      "title": "Auslastung nach Tag und Stunde",
+      "legend": "Auslastung:",
+      "tooltip": "{{lessons}} Kurse · {{attendance}} besucht · {{pct}} %",
+      "empty": "Keine Kurse"
+    },
+    "slices": {
+      "topProfitable": "Am profitabelsten",
+      "topFilled": "Am vollsten",
+      "chronicLow": "Chronisch schwach besucht",
+      "halls": "Saalauslastung",
+      "held": "{{count}} gehalten",
+      "weeks": "{{count}} Wo.",
+      "move": "Verschieben",
+      "cancel": "Absagen",
+      "eveningIdle": "abends {{pct}} % leer"
+    },
+    "losses": {
+      "title": "Absagen und Nichterscheinen",
+      "dim": {
+        "hour": "Nach Zeit",
+        "service": "Nach Leistung",
+        "trainer": "Nach Trainer"
+      },
+      "cancels_one": "{{count}} Absage",
+      "cancels_other": "{{count}} Absagen",
+      "noshows_one": "{{count}} Nichterscheinen",
+      "noshows_other": "{{count}} Nichterscheinen",
+      "lostSpots_one": "−{{count}} Platz",
+      "lostSpots_other": "−{{count}} Plätze"
+    },
+    "status": {
+      "confirmed": "Bestätigt",
+      "pending": "Ausstehend",
+      "cancelled": "Abgesagt"
+    },
+    "slot": {
+      "summary": "für {{from}} — {{to}}",
+      "lessonsCount": "Kurse gesamt"
+    }
+  },
+  "export": {
+    "csv": "CSV herunterladen"
+  },
+  "scopeNote": {
+    "label": "Studioweit",
+    "money": "Die Filter Filiale und Saal wirken sich nicht auf Geld aus — Zahlungen sind keinem Saal zugeordnet",
+    "clientBase": "Trainer, Saal, Filiale und Leistung ändern diese Kennzahl nicht — Kunden sind ihnen nicht zugeordnet"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Alles Geld, das im Zeitraum ins Studio kam",
+        "profit": "Was nach den Ausgaben des Zeitraums übrig bleibt",
+        "attendance": "Kurse, die Kunden tatsächlich besucht haben",
+        "new_clients": "Kunden, die sich in diesem Zeitraum registriert haben",
+        "fill_rate": "Wie voll die Kurse sind: gebuchte Plätze von den verfügbaren"
+      },
+      "revenueStructure": "Woraus Ihr Geld in diesem Zeitraum besteht",
+      "clientDynamics": "Wie viele zum ersten Mal kamen, zurückkehrten und aufhörten"
+    },
+    "sales": {
+      "chart": "Umsatz und Anzahl der Käufe nach Tagen",
+      "byCategory": "Der Umsatzanteil jedes Produkts",
+      "byMethod": "Wie sich der Umsatz nach Zahlungsart aufteilt",
+      "buyerType": "Wie viel Umsatz von Neukunden und wie viel von Stammkunden kommt",
+      "products": "Jedes Produkt: wie oft verkauft, zu welchem Preis und ob es wächst"
+    },
+    "clients": {
+      "chart": "Wie viele Kunden zum ersten Mal kamen und wie viele zurückkehrten, nach Wochen",
+      "riskSegments": "Kunden, die Sie verlieren könnten, wenn Sie sich jetzt nicht melden",
+      "loyalSegments": "Die, die am häufigsten kommen, am meisten ausgeben und Freunde mitbringen"
+    },
+    "team": {
+      "trainers": "Vergleich nach Auslastung, Umsatz und Rückkehrquote der Kunden",
+      "loadWeekday": "An welchen Wochentagen der Trainer ausgelastet ist und wann er frei hat",
+      "loadHour": "Zu welchen Zeiten sich seine Kurse füllen und wann sie leer bleiben",
+      "schedule": "Alle Kurse des Trainers im gewählten Zeitraum"
+    },
+    "schedule": {
+      "heatmap": "Wo der Plan überbucht ist und wo er leer bleibt",
+      "topProfitable": "Die Zeiten im Plan, die am meisten Geld bringen",
+      "topFilled": "Die Zeiten, die Kunden am liebsten buchen",
+      "chronicLow": "Termine, die seit Wochen weniger als ein Drittel des Saals füllen",
+      "halls": "Wie viel der Zeit Ihre Säle tatsächlich genutzt werden",
+      "losses": "Wo das Studio Plätze verliert: abgesagte Kurse oder Kunden, die nicht erscheinen"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Verkäufe",
+      "text": "Wie oft Kunden Ihnen in diesem Zeitraum bezahlt haben. Wer mehrfach zahlt, zählt als mehrere Verkäufe."
+    },
+    "revenue": {
+      "title": "Umsatz",
+      "text": "Alles Geld, das in diesem Zeitraum ins Studio kam, nach Zahlungsdatum. Karten, Einzelbesuche, Gutscheine und Warenverkauf — alles zusammen."
+    },
+    "profit": {
+      "title": "Gewinn",
+      "text": "Was nach den Ausgaben des Zeitraums übrig bleibt: Miete, Löhne, Material. Das ist Ihr tatsächlicher Verdienst."
+    },
+    "attendance": {
+      "title": "Besuche",
+      "text": "Wie viele Besuche Kunden tatsächlich gemacht haben. Gezählt werden nur als besucht markierte Kurse."
+    },
+    "bookings": {
+      "title": "Buchungen",
+      "text": "Wie viele Buchungen Kunden für Kurse gemacht haben. Stornierte Buchungen zählen nicht."
+    },
+    "noshow": {
+      "title": "Nichterscheinen",
+      "text": "Ein Kunde hat gebucht, der Kurs fand statt und er kam nicht. Jedes Mal ist das ein Platz, den jemand anderes hätte haben können."
+    },
+    "activeClients": {
+      "title": "Aktive Kunden",
+      "text": "Wie viele verschiedene Personen in diesem Zeitraum mindestens einmal da waren. Jeder Kunde zählt einmal, unabhängig von der Zahl der Besuche."
+    },
+    "occupancy": {
+      "title": "Belegung",
+      "text": "Wie voll Ihre Kurse sind: belegte Plätze von den geplanten. 100 % heißt, es ist kein Platz mehr frei."
+    },
+    "avgCheck": {
+      "title": "Durchschnittsbon",
+      "text": "Was eine Zahlung im Schnitt einbringt. Er steigt, wenn Kunden längere Karten kaufen oder Extras hinzunehmen."
+    },
+    "retention": {
+      "title": "Bindung",
+      "text": "Wie viele Kunden der Vorperiode in diesem Zeitraum zurückkamen. Zeigt, ob Sie Menschen halten oder jeden Monat bei null anfangen."
+    },
+    "newClients": {
+      "title": "Neue Kunden",
+      "text": "Menschen, die in diesem Zeitraum zum ersten Mal in Ihrer Kundenbasis auftauchten."
+    },
+    "returning": {
+      "title": "Wiederkehrend",
+      "text": "Kunden, die schon früher da waren und in diesem Zeitraum wiederkamen."
+    },
+    "lost": {
+      "title": "Verloren",
+      "text": "Waren in der Vorperiode da und sind in diesem Zeitraum kein einziges Mal aufgetaucht. Es lohnt sich trotzdem, sie anzusprechen."
+    },
+    "clientValue": {
+      "title": "Kundenwert",
+      "text": "Was ein Kunde in diesem Zeitraum im Schnitt einbringt."
+    },
+    "repeatPurchaseShare": {
+      "title": "Anteil Wiederkäufe",
+      "text": "Anteil der Kunden, die mehr als einmal bei Ihnen gekauft haben. Je höher, desto fester die Gewohnheit, zu Ihnen zu kommen."
+    },
+    "renewalRate": {
+      "title": "Verlängerungsquote",
+      "text": "Wie viele Kunden nach Ablauf ihrer bisherigen Karte eine neue gekauft haben."
+    },
+    "revenuePerHour": {
+      "title": "Umsatz pro Stunde (Trainer)",
+      "text": "Wie viel Geld eine Arbeitsstunde eines Trainers einbringt. Ermöglicht einen fairen Vergleich — jemand gibt vielleicht weniger Kurse, aber jeder bringt mehr."
+    },
+    "trainerReturnRate": {
+      "title": "Rückkehrquote (Trainer)",
+      "text": "Anteil der Kunden eines Trainers, die erneut bei ihm gebucht haben."
+    },
+    "missedRevenue": {
+      "title": "Entgangener Umsatz",
+      "text": "Geld, das dem Studio wegen leerer Plätze in vergangenen Kursen entgangen ist: freie Plätze mal Kurspreis."
+    },
+    "losses": {
+      "title": "Absagen und Nichterscheinen",
+      "text": "Eine „Absage“ ist ein abgesagter Kurs, ein „Nichterscheinen“ ein Kunde, der gebucht hat und nicht kam. Die Aufteilungen nach Zeit, Leistung und Trainer nutzen dieselben Filter wie der Tab und passen zu den KPIs im Kopf."
+    },
+    "lessonRevenue": {
+      "title": "Kursumsatz",
+      "text": "Eine grobe Schätzung des Kursumsatzes: Teilnehmer mal Preis. Zahlungen sind keinem konkreten Kurs zugeordnet, das ist also eine Näherung, keine exakte Zahl."
+    },
+    "filtersScope": {
+      "title": "Geltungsbereich der Filter",
+      "text": "Die Filter Filiale und Saal wirken nur auf kursbezogene Kennzahlen. Zahlungen sind keinem Saal zugeordnet, deshalb wird Geld studioweit angezeigt."
+    },
+    "avgValue": {
+      "title": "Kundenwert",
+      "text": "Was ein Kunde in diesem Zeitraum im Schnitt einbringt."
+    },
+    "cancelNoshow": {
+      "title": "Absagen und Nichterscheinen",
+      "text": "Anteil der gestörten Kurse: Absagen und Nichterscheinen an allem Geplanten."
+    },
+    "avgRating": {
+      "title": "Durchschnittliche Bewertung",
+      "text": "Die durchschnittliche Bewertung, die Kunden den Kursen dieses Trainers gegeben haben."
+    },
+    "teamScope": {
+      "title": "Datenumfang",
+      "text": "Gezählt wird nur Umsatz, der einem konkreten Trainer zugeordnet ist, daher kann die Summe über alle Trainer kleiner sein als der Gesamtumsatz des Studios."
+    },
+    "lessonsCount": {
+      "title": "Kurse",
+      "text": "Wie viele Kurse die Trainer in diesem Zeitraum gehalten haben."
+    },
+    "load": {
+      "title": "Auslastung",
+      "text": "Wie voll der Tag eines Trainers ist: seine gebuchten Stunden innerhalb der Öffnungszeiten des Studios."
+    },
+    "weeklyClients": {
+      "title": "Neu und wiederkehrend",
+      "text": "Nach Wochen: wie viele Menschen zum ersten Mal kamen und wie viele zurückkehrten. Ein gesundes Studio wächst auf beiden Linien."
+    },
+    "byCategory": {
+      "title": "Umsatz nach Kategorien",
+      "text": "Woran Sie tatsächlich verdienen: Karten, Einzelbesuche, Gutscheine, Warenverkauf."
+    },
+    "byMethod": {
+      "title": "Zahlungsarten",
+      "text": "Wie Kunden zahlen. Zeigt, ob Sie Kartenzahlung brauchen und wie viel Geld an der Kasse vorbeigeht."
+    },
+    "buyerType": {
+      "title": "Wer zahlt",
+      "text": "Neukunden gegenüber Stammkunden. Kommt fast der ganze Umsatz von Neukunden, hält das Studio niemanden."
+    },
+    "products": {
+      "title": "Was sich verkauft",
+      "text": "Alle Karten und Leistungen des Zeitraums: wie viele verkauft, zu welchem Preis und ob die Verkäufe wachsen."
+    },
+    "topProfitable": {
+      "title": "Profitabelste Termine",
+      "text": "Die Zeiten im Plan, die am meisten Geld bringen. Setzen Sie dort Ihre besten Trainer ein."
+    },
+    "topFilled": {
+      "title": "Vollste Termine",
+      "text": "Die Zeiten, die Kunden am liebsten buchen. Ist es randvoll, lohnt sich ein weiterer Termin."
+    },
+    "chronicLow": {
+      "title": "Chronisch leere Termine",
+      "text": "Zeiten, die seit mehreren Wochen weniger als ein Drittel des Saals füllen. Kandidaten zum Verschieben oder Streichen."
+    },
+    "hallUtil": {
+      "title": "Saalauslastung",
+      "text": "Wie viel der Zeit Ihre Säle tatsächlich genutzt werden. Ein leerer Saal ist Miete, die sich nicht rechnet."
+    },
+    "heatmap": {
+      "title": "Auslastung nach Tag und Stunde",
+      "text": "Die Farbe zeigt die durchschnittliche Auslastung des Termins im Zeitraum. Klicken Sie eine Zelle an, um die Kurse dieses Tages und dieser Stunde zu sehen."
+    },
+    "riskSegments": {
+      "title": "Risikosegmente",
+      "text": "Kunden gruppiert nach der Art des Risikos — sie zu verlieren oder den Umsatz, den sie nicht bringen. Jede Karte hat einen eigenen Grund und einen klaren nächsten Schritt: schreiben, Verlängerung anbieten oder ein größeres Paket."
+    },
+    "loyalSegments": {
+      "title": "Treue",
+      "text": "Kunden, die Ihnen schon jetzt den größten Wert bringen: Sie kommen am häufigsten, geben am meisten aus oder bringen Freunde mit. Sie zu pflegen und zu belohnen lohnt sich."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Auf der Kippe",
+        "text": "Kamen früher regelmäßig und sind nun verschwunden. Mit einer Nachricht noch zurückzuholen."
+      },
+      "vip_idle": {
+        "title": "VIP inaktiv",
+        "text": "Kunden, die mehr ausgegeben haben als alle anderen, aber schon länger nicht da waren."
+      },
+      "expiring_subscription": {
+        "title": "Karte läuft aus",
+        "text": "Diese Kunden haben noch 1–2 Einheiten. Der beste Moment, eine Verlängerung anzubieten."
+      },
+      "lost_newcomers": {
+        "title": "Neulinge ohne Rückkehr",
+        "text": "Einmal da und dann weg. Meist liegt es an dieser ersten Stunde — ein genauerer Blick lohnt sich."
+      },
+      "upsell_candidates": {
+        "title": "Bereit für mehr",
+        "text": "Kommen oft, kaufen aber das einfachste Paket. Ein teureres Abo anzubieten lohnt sich."
+      },
+      "frequent": {
+        "title": "Stammgäste",
+        "text": "Kommen häufiger als alle anderen. Das Rückgrat des Studioumsatzes."
+      },
+      "high_ltv": {
+        "title": "Wertvollste",
+        "text": "Haben dem Studio über die gesamte Zeit mehr Geld gebracht als alle anderen."
+      },
+      "referrers": {
+        "title": "Bringen Freunde mit",
+        "text": "Kunden, deren Empfehlungen andere Menschen zu Ihnen gebracht haben."
+      }
+    }
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Gjithsej në ekip",
+    "onShift": "Në turn",
+    "trainers": "Trajnerë",
+    "administrators": "Administratorë",
+    "onlineNow": "{{count}} online tani"
+  },
+  "toolbar": {
+    "teamTitle": "Ekipi · {{count}}",
+    "addEmployee": "Shto punonjës",
+    "searchPlaceholder": "Kërko...",
+    "allGroup": "Të gjithë"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Akses i plotë",
+    "ownerAccess": "Pronari ka akses në të gjitha modulet e sistemit",
+    "loadBar": "Ngarkesa e trajnerit",
+    "weekSchedule": "Orari javor",
+    "todaySchedule": "Orari i sotëm",
+    "minutesSuffix": "min",
+    "clientsSuffix": "klientë",
+    "hall": "Salla",
+    "staffHalls": "Sallat e punonjësit",
+    "noName": "Emri nuk është vendosur",
+    "noRole": "Pa rol",
+    "addEventStub": "Formulari i shtimit të ngjarjes..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Të ardhura",
+      "rating": "Vlerësimi",
+      "bookings": "Rezervime",
+      "load": "Ngarkesa"
+    },
+    "admin": {
+      "bookings": "Rezervime",
+      "attended": "Të trajtuara",
+      "revenue": "Arka",
+      "load": "Ngarkesa"
+    },
+    "owner": {
+      "revenue": "Të ardhura",
+      "attended": "Vizita",
+      "load": "Ngarkesa",
+      "staff": "Stafi"
+    },
+    "default": {
+      "bookings": "Rezervime",
+      "attended": "Vizita",
+      "revenue": "Të ardhura",
+      "load": "Ngarkesa"
+    }
+  },
+  "schedule": {
+    "week": "Javë",
+    "month": "Muaj",
+    "working": "Orari i punës",
+    "free": "I lirë",
+    "busy": "I zënë",
+    "dayOff": "Ditë pushimi",
+    "syncHint": "Orari sinkronizohet me ditarin e rezervimeve dhe me orarin e mësimeve.",
+    "workDaysInWeek": "{{count}} ditë pune në javë",
+    "markWork": "Punon",
+    "markHint": "Zgjidhni një shenjë më sipër, pastaj klikoni një ditë",
+    "prevMonth": "Muaji i mëparshëm",
+    "nextMonth": "Muaji i ardhshëm",
+    "dayHasBookings": "Kjo ditë ka tashmë rezervime — nuk mund të jetë e lirë",
+    "pastDayLocked": "Ditët e shkuara nuk ndryshohen"
+  },
+  "permissions": {
+    "finance": "Financat",
+    "staff": "Stafi",
+    "reports": "Raportet",
+    "clients": "Klientët",
+    "settings": "Cilësimet"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Trajner",
+    "owner": "Pronar"
+  },
+  "deleteModal": {
+    "cancelLesson": "Të anulohet mësimi?",
+    "dontAsk": "Mos pyet më kur fshij",
+    "cancelInvite": "Të anulohet bashkimi?",
+    "cancelInviteConfirm": "Anulo ftesën"
+  },
+  "toasts": {
+    "lessonCanceled": "Mësimi u anulua",
+    "errorCancel": "Gabim gjatë anulimit",
+    "employeeAdded": "Punonjësi {{name}} u shtua",
+    "changesSaved": "Ndryshimet u ruajtën",
+    "employeeDeleted": "Punonjësi u fshi",
+    "errorDelete": "Gabim gjatë fshirjes",
+    "errorSave": "Ruajtja e ndryshimeve dështoi",
+    "emailCopied": "Email-i u kopjua",
+    "phoneCopied": "Telefoni u kopjua",
+    "inviteSent": "Ftesa u dërgua te {{email}}",
+    "inviteResent": "Ftesa u dërgua sërish",
+    "inviteCancelled": "Ftesa u anulua"
+  },
+  "addModal": {
+    "stepIndicator": "Hapi {{current}} nga {{total}}",
+    "stepCounter": "{{current}}/4 — merr rreth 2 minuta",
+    "nameFallback": "ata",
+    "employeeFallback": "Punonjës",
+    "steps": {
+      "1": {
+        "title": "Për punonjësin",
+        "sub": "Si quhet anëtari i ri i ekipit?",
+        "trust": "Të dhënat e punonjësit janë të mbrojtura"
+      },
+      "2": {
+        "title": "Roli dhe shërbimet",
+        "sub": "Pozicioni dhe lista e shërbimeve",
+        "trust": "Roli mund të ndryshohet në çdo kohë"
+      },
+      "3": {
+        "title": "Orari dhe paga",
+        "sub": "Kur punon dhe sa fiton?",
+        "trust": "Orari sinkronizohet me ditarin"
+      },
+      "4": {
+        "title": "Gati!",
+        "sub": "Ftesa u dërgua: {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Të dhënat personale",
+      "sub": "Le të nisim me emrin dhe kontaktet",
+      "namePlaceholder": "P.sh. Ana Hoxha",
+      "emailLabel": "Adresa email",
+      "contactsNotSet": "Nuk janë dhënë kontakte",
+      "inviteHint": "Fjalëkalimin jepjani punonjësit personalisht — në email nuk shkon kurrë. Email-i mbart vetëm lidhjen dhe pa fjalëkalim studion nuk e hap.",
+      "errors": {
+        "name": "Emri është i detyrueshëm",
+        "phone": "Numër telefoni i pavlefshëm",
+        "email": "Email i pavlefshëm",
+        "password": "Të paktën 8 karaktere, me shkronja dhe shifra",
+        "emailTaken": "Ky email i përket tashmë një llogarie tjetër Velora"
+      },
+      "passwordLabel": "Fjalëkalimi i hyrjes për punonjësin",
+      "passwordPlaceholder": "Të paktën 8 karaktere, shkronja dhe shifra"
+    },
+    "step2": {
+      "heading": "Roli dhe shërbimet",
+      "sub": "Zgjidhni një pozicion — shërbimet shtohen automatikisht",
+      "positionLabel": "Pozicioni *",
+      "positionPlaceholder": "Ose shkruani një pozicion tuajin...",
+      "addServicePlaceholder": "Shtoni shërbim — shtypni Enter"
+    },
+    "step3": {
+      "heading": "Orari dhe paga",
+      "sub": "Vendosni ditët e punës dhe shpërblimin",
+      "scheduleLabel": "Orari i punës",
+      "salaryLabel": "Paga (opsionale)",
+      "salaryPlaceholder": "Shkruani një numër",
+      "createAndInvite": "Krijo dhe fto"
+    },
+    "step4": {
+      "exclaim": "Shkëlqyeshëm!",
+      "added": "u shtua",
+      "sub": "Ftesa u dërgua. Punonjësi hyn në ekip sapo ta pranojë.",
+      "inviteLinkLabel": "Lidhja e ftesës",
+      "sendInviteLabel": "Dërgo ftesën",
+      "inviteInfo": "Punonjësi merr email-in, ndjek lidhjen dhe e konfirmon ftesën me fjalëkalimin e vet — vetëm atëherë hyn në ekip dhe merr akses. Lidhja vlen 7 ditë. Fjalëkalimi nuk është në email — jepjani personalisht.",
+      "emailSentTitle": "Email-i u dërgua",
+      "resend": "Dërgo sërish",
+      "resentOk": "Email-i u dërgua sërish",
+      "resendError": "Dërgimi dështoi — provoni sërish",
+      "copied": "U kopjua"
+    },
+    "illus": {
+      "contacts": "Kontaktet",
+      "profile": "Profili",
+      "roleFallback": "Roli",
+      "services": "Shërbimet",
+      "specialization": "Specializimi",
+      "scheduleTitle": "ORARI I PUNËS",
+      "inviteSent": "Ftesa u dërgua",
+      "inviteSub": "{{name}} do të marrë një lidhje hyrjeje"
+    },
+    "summary": {
+      "employee": "Punonjësi",
+      "role": "Roli",
+      "workDays": "Ditë pune",
+      "daysCount": "{{count}} nga 7"
+    }
+  },
+  "editModal": {
+    "header": "REDAKTIM",
+    "employeeFallback": "Punonjës",
+    "positionFallback": "Pa pozicion",
+    "tabs": {
+      "profile": "Profili",
+      "role": "Roli",
+      "salary": "Paga",
+      "schedule": "Orari"
+    },
+    "profile": {
+      "heading": "Të dhënat personale",
+      "sub": "Përditësoni kontaktet e punonjësit",
+      "uploadPhoto": "Ngarko foto",
+      "replacePhoto": "Zëvendëso foton",
+      "removePhoto": "Hiq foton",
+      "photoHint": "JPG, PNG — deri në 5 MB",
+      "namePlaceholder": "Emri Mbiemri",
+      "notifyHint": "Punonjësi njoftohet për ndryshimet në telefonin ose email-in e dhënë.",
+      "errors": {
+        "name": "Emri është i detyrueshëm",
+        "email": "Email i pavlefshëm"
+      },
+      "contactsOwnedByEmployee": "Email-i dhe telefoni i përkasin llogarisë së punonjësit — i ndryshon vetë te profili i tij."
+    },
+    "role": {
+      "heading": "Roli dhe specializimi",
+      "sub": "Pozicioni i punonjësit dhe lista e shërbimeve",
+      "addService": "Shto shërbim",
+      "catalogConfirm": "Doni të hapni seksionin Shërbimet te Katalogu?"
+    },
+    "salary": {
+      "heading": "Paga",
+      "sub": "Përcaktoni llojin e pagesës dhe shumën",
+      "typeLabel": "Lloji i pagesës",
+      "perWeek": "₽ / javë",
+      "selectTypeHint": "Zgjidhni një lloj pagese më sipër",
+      "currentLabel": "Shpërblimi aktual",
+      "typeFixed": "Pagë fikse",
+      "typePercent": "% e të ardhurave",
+      "typeHourly": "Pagesë me orë",
+      "typeNotSet": "Lloji nuk është zgjedhur",
+      "cardFixedSub": "Shumë fikse",
+      "cardPercentSub": "% e të ardhurave",
+      "cardHourlySub": "Për orë pune",
+      "amountFixed": "Shuma mujore",
+      "amountPercent": "Përqindja e të ardhurave",
+      "amountHourly": "Tarifa për orë",
+      "reportHint": "Paga shfaqet në raportet financiare. Punonjësi sheh vetëm shpërblimin e vet."
+    },
+    "schedule": {
+      "heading": "Orari i punës",
+      "activeDays": "Ditë aktive: {{count}} nga 7",
+      "syncHint": "Orari sinkronizohet me ditarin e rezervimeve dhe me orarin e mësimeve.",
+      "workDaysLabel": "Ditë pune",
+      "totalHoursLabel": "Orë gjithsej",
+      "daysOffLabel": "Ditë pushimi",
+      "daysLabel": "Ditë",
+      "workDays": "{{count}} ditë pune",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online tani",
+      "notOnline": "Jo online",
+      "schedule": "Orari",
+      "daysCount": "{{count}}/7 ditë"
+    },
+    "deleteEmployee": "Hiq punonjësin",
+    "deleteConfirm": "Të hiqet {{name}} nga ekipi?",
+    "defaultName": "punonjës",
+    "cannotDeleteLastOwner": "Pronari i vetëm nuk mund të hiqet"
+  },
+  "ownerModal": {
+    "header": "KONTAKTET E PRONARIT",
+    "heading": "Të dhënat e kontaktit",
+    "sub": "Telefoni dhe email-i i pronarit të studios",
+    "cardNote": "email-i është emri i hyrjes",
+    "loginWarning": "Email-i është emri i hyrjes së pronarit. Pas ruajtjes, hyni me adresën e re.",
+    "lockedHint": "Emri, fotoja, roli dhe të drejtat nuk redaktohen këtu — janë te seksioni «Profili»."
+  },
+  "list": {
+    "pendingLabel": "Ftesa në pritje",
+    "pendingHint": "Profili hapet sapo punonjësi ta pranojë ftesën",
+    "resendInvite": "Dërgo ftesën sërish",
+    "cancelInvite": "Anulo bashkimin"
+  }
+}

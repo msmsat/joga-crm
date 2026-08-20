@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Přehled",
+    "staff": "Zaměstnanci",
+    "catalog": "Katalog",
+    "clients": "Klienti",
+    "reports": "Reporty",
+    "booking": "Online rezervace",
+    "finances": "Finance",
+    "notifications": "Oznámení",
+    "loyalty": "Věrnost",
+    "ai": "Velora AI",
+    "settings": "Nastavení",
+    "billing": "Tarif a platba",
+    "journal": "Deník",
+    "profile": "Profil",
+    "more": "Více"
+  },
+  "subtitles": {
+    "dashboard": "Vítejte ve Velora CRM",
+    "staff": "Správa týmu",
+    "catalog": "Pobočky, sály a služby",
+    "clients": "Klientská databáze studia",
+    "reports": "Analytika a statistiky",
+    "booking": "Správa rezervačních kanálů",
+    "finances": "Účty, transakce, dokumenty",
+    "notifications": "Kanály a typy oznámení",
+    "loyalty": "Klientské programy a karty",
+    "ai": "Chytrý asistent a automatické odpovědi",
+    "settings": "Konfigurace systému",
+    "billing": "Správa předplatného",
+    "journal": "Rozvrh lekcí",
+    "profile": "Účet a nastavení"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Vytvořit"
+  },
+  "userMenu": {
+    "logout": "Odhlásit se",
+    "studios": "Moje studia"
+  },
+  "tooltips": {
+    "studioName": "Vaše studio: {{name}}",
+    "openProfile": "Otevřít profil",
+    "openAccountMenu": "Nabídka účtu"
+  },
+  "sidebar": {
+    "expand": "Rozbalit menu",
+    "collapse": "Sbalit menu"
+  }
+}

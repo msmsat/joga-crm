@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Verbindungskanäle",
+    "connected": "Verbunden",
+    "disconnected": "Nicht verbunden",
+    "pending": "Einrichtung nötig",
+    "connectInNotifications": "In Benachrichtigungen verbinden",
+    "manage": "In Benachrichtigungen verwalten",
+    "telegram": {
+      "name": "Telegram-Bot",
+      "desc": "Automatische Buchung über den Bot"
+    },
+    "stripe": {
+      "name": "Zahlungen",
+      "desc": "Stripe: Karten, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Kundenlink",
+      "desc": "Buchungs-Mini-App — für Bio, Stories und Kampagnen",
+      "copy": "Link kopieren",
+      "open": "Mini-App öffnen",
+      "print": "QR drucken",
+      "posterTitle": "Buchen Sie Ihren Kurs online",
+      "scanHint": "Richten Sie die Handykamera auf den Code"
+    }
+  },
+  "loading": "Einstellungen werden geladen…",
+  "sections": {
+    "main": {
+      "title": "Allgemeine Einstellungen",
+      "prefill": {
+        "label": "Vorauszahlung bei Buchung",
+        "sub": "Zahlung vor der Bestätigung verlangen"
+      },
+      "trialLesson": {
+        "label": "Erster Kurs gratis",
+        "sub": "Die erste Buchung eines neuen Kunden geht aufs Studio"
+      },
+      "trainerConfirm": {
+        "label": "Bestätigung durch Trainer",
+        "sub": "Die Buchung wartet auf manuelle Freigabe"
+      },
+      "bookingActive": {
+        "label": "Online-Buchung aktiv",
+        "sub": "Widget für Kunden anzeigen"
+      }
+    },
+    "rules": {
+      "title": "Grenzen und Regeln",
+      "advance": {
+        "label": "Buchung sperren unter",
+        "sub": "Mindestzeit vor dem Kurs"
+      },
+      "window": {
+        "label": "Buchung öffnet",
+        "sub": "Wie viele Tage im Voraus"
+      },
+      "cancel": {
+        "label": "Stornierung ohne Gebühr",
+        "sub": "Der Kunde kann vor dem Kurs stornieren"
+      },
+      "repeat": {
+        "label": "Wiederholte Buchung",
+        "sub": "Einem Kunden zwei Buchungen erlauben"
+      },
+      "workHours": {
+        "label": "Öffnungszeiten des Widgets",
+        "sub": "Kurse außerhalb dieser Zeiten sind online nicht buchbar"
+      }
+    },
+    "branding": {
+      "title": "Widget-Branding",
+      "sub": "Aussehen der Buchungsseite",
+      "accentColor": "Akzentfarbe",
+      "logo": {
+        "label": "Studio-Logo",
+        "sub": "Wird im Kopfbereich des Widgets angezeigt",
+        "upload": "Hochladen",
+        "uploading": "Wird hochgeladen…",
+        "remove": "Entfernen",
+        "uploadFailed": "Logo konnte nicht hochgeladen werden"
+      },
+      "darkMode": {
+        "label": "Dunkles Design",
+        "sub": "Widget in dunkler Optik"
+      },
+      "language": {
+        "label": "Standardsprache",
+        "sub": "Hauptsprache der Oberfläche"
+      }
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "sub": "Automatische Nachrichten an Kunden",
+      "preview": {
+        "confirmed": "Buchung bestätigt! Mo 10:00",
+        "reminder2h": "Erinnerung: in 2 Stunden",
+        "reviewRequest": "Danke für Ihren Besuch! Bewerten Sie den Kurs"
+      },
+      "reminder24h": {
+        "label": "Erinnerung 24 Std. vorher",
+        "sub": "Am Morgen vor dem Kurs"
+      },
+      "reminder2h": {
+        "label": "Erinnerung 2 Std. vorher",
+        "sub": "Kurz vor dem Kurs"
+      },
+      "reviewRequest": {
+        "label": "Bewertungsanfrage",
+        "sub": "Sobald der Besuch erfasst ist"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kaffee nach dem Kurs",
+        "sub": "Nach der Buchung wird der Kunde eingeladen, 15 Minuten mit der Gruppe zu bleiben. Sagen zwei oder mehr zu, erhalten sie nach dem Kurs eine Erinnerung"
+      },
+      "spots": {
+        "label": "Wohin einladen",
+        "sub": "Bis zu drei Orte in der Nähe des Studios. Werden erst gezeigt, wenn zwei oder mehr mitmachen",
+        "namePlaceholder": "Name",
+        "addressPlaceholder": "Adresse",
+        "urlPlaceholder": "Kartenlink",
+        "add": "Ort hinzufügen",
+        "remove": "Ort entfernen"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 Stunde",
+      "2h": "2 Stunden",
+      "4h": "4 Stunden",
+      "12h": "12 Stunden",
+      "24h": "24 Stunden"
+    },
+    "window": {
+      "7d": "7 Tage",
+      "14d": "14 Tage",
+      "30d": "30 Tage",
+      "60d": "60 Tage"
+    },
+    "cancel": {
+      "2h": "2 Stunden",
+      "4h": "4 Stunden",
+      "12h": "12 Stunden",
+      "24h": "24 Stunden"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot verbunden",
+    "botDisconnected": "Bot getrennt",
+    "codeCopied": "Code kopiert!",
+    "linkCopied": "Link kopiert!",
+    "printBlocked": "Erlauben Sie Pop-ups, um den QR-Code zu drucken",
+    "stripeReturned": "Daten an Stripe gesendet",
+    "stripeLinkExpired": "Der Stripe-Link ist abgelaufen — bitte erneut versuchen"
+  },
+  "stripeGate": {
+    "kicker": "Für die Online-Buchung erforderlich",
+    "none": {
+      "title": "Richten Sie zuerst Zahlungen ein",
+      "sub": "Der Kunde bucht und zahlt in einem Zug. Solange das Stripe-Konto nicht verbunden ist, kann er die Buchung nicht bezahlen.",
+      "action": "Stripe verbinden"
+    },
+    "incomplete": {
+      "title": "Stripe-Einrichtung abschließen",
+      "sub": "Das Konto existiert, aber Stripe hat Zahlungen noch nicht freigegeben — das Formular ist unvollständig.",
+      "action": "Einrichtung fortsetzen"
+    },
+    "disabled": {
+      "title": "Zahlungen sind deaktiviert",
+      "sub": "Stripe ist verbunden und bereit, Zahlungen anzunehmen, ist aber im Bereich Finanzen ausgeschaltet.",
+      "action": "Finanzen öffnen"
+    },
+    "loading": {
+      "title": "Verbindung wird geprüft",
+      "sub": "Wir fragen Stripe, ob das Studiokonto bereit ist, Zahlungen anzunehmen.",
+      "action": "Wird geprüft…"
+    },
+    "perks": {
+      "direct": "Das Geld landet direkt auf dem Studiokonto",
+      "methods": "Karten, Apple Pay und Google Pay von Anfang an",
+      "fee": "Die Provision richtet sich nach Ihrem Velora-Tarif"
+    },
+    "later": "Später",
+    "note": "Das Stripe-Formular wird geöffnet. Danach kehren Sie auf diese Seite zurück."
+  },
+  "tg": {
+    "title": "Telegram-Bot",
+    "connected": "Verbunden",
+    "openInTelegram": "Bot in Telegram öffnen",
+    "showToken": "Token anzeigen",
+    "hideToken": "Token verbergen",
+    "acceptsBookings": "Der Bot nimmt Buchungen von Kunden an",
+    "instantNotify": "Benachrichtigungen kommen sofort an",
+    "disconnect": "Bot trennen",
+    "pasteToken": "Fügen Sie das Bot-Token von @BotFather ein",
+    "invalidToken": "Ungültiges Token-Format",
+    "connect": "Bot verbinden",
+    "howToGet": "Wie bekomme ich ein Token?",
+    "steps": {
+      "1a": "Telegram öffnen → suchen Sie",
+      "1b": "@BotFather",
+      "2a": "Senden Sie den Befehl",
+      "2b": "/newbot",
+      "3": "Wählen Sie Name und Benutzernamen für den Bot",
+      "4": "Kopieren Sie das Token und fügen Sie es oben ein"
+    }
+  },
+  "insta": {
+    "title": "Instagram-Bio",
+    "sub": "Platzieren Sie im Profil und in Stories einen Link zur schnellen Buchung",
+    "steps": {
+      "1": "Kopieren Sie Ihren Link",
+      "2a": "Fügen Sie ihn in das Feld",
+      "2b": "„Website“",
+      "2c": " in den Instagram-Profileinstellungen ein.",
+      "3a": "Fügen Sie den Link in",
+      "3b": "Stories",
+      "3c": " mit einem speziellen Sticker ein."
+    },
+    "proTip": "Heften Sie eine Story mit dem Buchungsablauf an die Highlights — das steigert die Conversion um 30 %."
+  },
+  "web": {
+    "title": "Website-Widget",
+    "sub": "Fügen Sie auf jeder Website einen Buchungsbutton hinzu (Tilda, WordPress oder eigener Code)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopieren",
+    "instructionPrefix": "Fügen Sie diesen Code direkt vor dem schließenden",
+    "instructionSuffix": "-Tag Ihrer Website ein. Der Button erscheint automatisch."
+  },
+  "wa": {
+    "title": "Buchung per WhatsApp",
+    "sub": "Richten Sie in WhatsApp Business eine Autoantwort ein, die sofort den Buchungslink schickt.",
+    "online": "online",
+    "sampleIncoming": "Hallo! Ich würde gern einen Kurs buchen.",
+    "sampleOutgoing": "Willkommen! ✨",
+    "connect": "WhatsApp Business verbinden",
+    "connected": "Verbunden",
+    "autoReplyActive": "Autoantwort aktiv",
+    "instantLink": "Der Buchungslink wird sofort gesendet"
+  }
+}

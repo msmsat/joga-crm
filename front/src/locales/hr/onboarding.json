@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Korak {{step}} od {{total}}",
+    "securityNote": "Vaši su podaci zaštićeni i nikada se ne dijele s trećim stranama",
+    "back": "Natrag",
+    "continue": "Nastavi",
+    "finish": "Počni raditi",
+    "saving": "Spremanje...",
+    "progress": "{{step}}/5 — traje manje od 3 minute",
+    "regionRequired": "Molimo postavite regionalne postavke",
+    "networkError": "Mrežna greška pri spremanju podataka.",
+    "phoneTakenTitle": "Broj je već u upotrebi",
+    "phoneTaken": "Ovaj je broj telefona već registriran",
+    "errorTitle": "Greška",
+    "changeNumber": "Promijeni broj",
+    "gotIt": "Razumijem"
+  },
+  "steps": {
+    "identity": {
+      "title": "O studiju",
+      "desc": "Naziv, opis i vizualni stil vašeg brenda."
+    },
+    "activity": {
+      "title": "Djelatnost",
+      "desc": "Odaberite smjer kako bismo prilagodili CRM za vas."
+    },
+    "contact": {
+      "title": "Kontakti",
+      "desc": "Adresa, telefon i poveznice za vaše klijente."
+    },
+    "settings": {
+      "title": "Postavke",
+      "desc": "Regija, valuta i format datuma."
+    },
+    "schedule": {
+      "title": "Radno vrijeme",
+      "desc": "Postavite dane i sate kada studio radi."
+    }
+  },
+  "identity": {
+    "welcome": "Dobrodošli",
+    "subtitle": "Nekoliko minuta postavljanja — i vaš je radni prostor spreman",
+    "replaceLogo": "Zamijeni logotip",
+    "uploadLogo": "Učitaj logotip",
+    "removeLogo": "Ukloni",
+    "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "nameLabel": "Naziv studija ili tvrtke",
+    "namePlaceholder": "Npr.: Studio Forma",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Kratka bilješka o studiju, načinu rada, posebnostima...",
+    "newBadge": "NOVO"
+  },
+  "activity": {
+    "title": "Vrsta djelatnosti",
+    "subtitle": "Odaberite smjer — prilagodit ćemo CRM za vas",
+    "comingSoon": "Uskoro: brijačnica, fitnes, ples i još",
+    "types": {
+      "yoga": {
+        "label": "Joga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates na strunjači"
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontakt podaci",
+    "subtitle": "Klijenti će vidjeti ove podatke pri online rezervaciji",
+    "phoneLabel": "Telefon studija",
+    "checkingPhone": "Provjera broja...",
+    "addressLabel": "Adresa",
+    "emailLabel": "E-pošta",
+    "websiteLabel": "Web stranica",
+    "note": "Sva su polja osim telefona neobavezna. Možete ih ispuniti kasnije u postavkama."
+  },
+  "settings": {
+    "title": "Regionalne postavke",
+    "subtitle": "Mogu se promijeniti kasnije u postavkama studija",
+    "timezoneLabel": "Vremenska zona",
+    "timezonePlaceholder": "Odaberite vremensku zonu",
+    "languageLabel": "Jezik",
+    "languagePlaceholder": "Jezik",
+    "currencyLabel": "Valuta",
+    "currencyPlaceholder": "Valuta",
+    "dateFormatLabel": "Format datuma",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "Prvi dan tjedna",
+    "timezones": {
+      "UTC+3": "Moskva, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Taškent, Jekaterinburg, Karači (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapur, Peking (UTC+8)",
+      "UTC+9": "Jakutsk, Tokio, Seul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Salomonovi Otoci (UTC+11)",
+      "UTC+12": "Kamčatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Havaji (UTC-10)",
+      "UTC-9": "Aljaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Ciudad de México (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Južna Georgija (UTC-2)",
+      "UTC-1": "Azori (UTC-1)",
+      "UTC+0": "London, Lisabon (UTC+0)",
+      "UTC+1": "Berlin, Pariz, Varšava (UTC+1)",
+      "UTC+2": "Kijev, Atena, Kairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubalj",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Grivna",
+      "GBP": "Funta",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Češka kruna",
+      "PLN": "Zlot",
+      "HUF": "Forinta",
+      "RON": "Lej",
+      "BGN": "Lev",
+      "SEK": "Švedska kruna",
+      "NOK": "Norveška kruna",
+      "DKK": "Danska kruna",
+      "CHF": "Švicarski franak",
+      "ISK": "Islandska kruna",
+      "RSD": "Srpski dinar"
+    }
+  },
+  "schedule": {
+    "title": "Radno vrijeme",
+    "subtitle": "Postavite dane i sate kada studio radi",
+    "scheduleLabel": "Raspored studija",
+    "dayOff": "Neradni dan"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Naziv studija",
+    "clients": "Klijenti",
+    "attendance": "Dolasci",
+    "studioCreated": "Studio je kreiran",
+    "chooseDirection": "Odaberite smjer",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-pošta",
+    "addressLabel": "Adresa",
+    "phonePlaceholder": "+385 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Glavna ulica 123",
+    "dayOff": "neradni"
+  }
+}

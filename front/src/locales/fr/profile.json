@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Votre profil",
+    "sub": "Gérez vos données personnelles et vos sessions"
+  },
+  "personalInfo": {
+    "heading": "Informations personnelles",
+    "emailLocked": "L'e-mail est l'identifiant de votre compte et ne peut pas être modifié ici"
+  },
+  "security": {
+    "changePassword": "Changer le mot de passe",
+    "logout": "Déconnexion"
+  },
+  "accounts": {
+    "title": "Mes studios",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studios",
+    "enter": "Ouvrir",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "addStudio": "Ajouter un studio",
+    "addStudioSub": "Un nouvel espace de travail — vous en devenez le propriétaire"
+  },
+  "session": {
+    "current": "Session en cours",
+    "lastActive": "Actif {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Données personnelles mises à jour"
+  },
+  "otherAccount": {
+    "title": "Un autre compte",
+    "sub": "Se connecter avec un autre compte met fin à la session en cours dans ce navigateur — vous pourrez revenir avec une connexion habituelle.",
+    "recentTitle": "Vous vous êtes déjà connecté",
+    "return": "Se connecter",
+    "forget": "Oublier le compte"
+  }
+}

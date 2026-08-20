@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Adăugați numărul dvs. de telefon",
+    "sub": "Telefonul este al doilea contact al contului: prin el recuperați accesul și primiți notificările. Numărul studioului nu se potrivește aici — acesta trebuie să fie al dvs."
+  },
+  "buttons": {
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "saveChanges": "Salvează modificările",
+    "delete": "Șterge",
+    "edit": "Editează",
+    "add": "Adaugă",
+    "create": "Creează",
+    "close": "Închide",
+    "send": "Trimite",
+    "copy": "Copiază",
+    "back": "Înapoi",
+    "continue": "Continuă",
+    "finish": "Finalizează",
+    "done": "Gata, închide",
+    "saving": "Se salvează…",
+    "saved": "Salvat!",
+    "upload": "Încarcă"
+  },
+  "validation": {
+    "required": "Câmp obligatoriu",
+    "minLength": "Cel puțin {{n}} caractere",
+    "email": "Email invalid",
+    "phone": "Telefon invalid",
+    "contactRequired": "Introduceți un telefon sau un email",
+    "min": "Trebuie să fie cel puțin {{n}}",
+    "positive": "Trebuie să fie mai mare decât 0",
+    "checkingContact": "Se verifică…",
+    "emailTaken": "Acest email este deja folosit",
+    "phoneTaken": "Acest număr de telefon este deja folosit",
+    "emailInStudio": "Această persoană lucrează deja în studioul dvs.",
+    "phoneInStudio": "Această persoană lucrează deja în studioul dvs.",
+    "accountWillBeLinked": "Există deja un cont cu acest contact — va fi asociat studioului dvs."
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Activ",
+    "connected": "Conectat",
+    "inactive": "Nu este online",
+    "loading": "Se încarcă...",
+    "notFound": "Nu a fost găsit",
+    "new": "NOU"
+  },
+  "fields": {
+    "fullName": "Nume complet",
+    "firstName": "Prenume",
+    "lastName": "Nume",
+    "phone": "Telefon",
+    "email": "Email",
+    "photo": "Fotografie de profil",
+    "salary": "Salariu",
+    "schedule": "Program",
+    "services": "Servicii",
+    "position": "Funcție",
+    "role": "Rol",
+    "status": "Stare",
+    "size": "Sumă"
+  },
+  "days": {
+    "mon": "Luni",
+    "tue": "Marți",
+    "wed": "Miercuri",
+    "thu": "Joi",
+    "fri": "Vineri",
+    "sat": "Sâmbătă",
+    "sun": "Duminică",
+    "short": {
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Mi",
+      "thu": "Jo",
+      "fri": "Vi",
+      "sat": "Sâ",
+      "sun": "Du"
+    }
+  },
+  "salary": {
+    "fixed": "Fix",
+    "percent": "% din încasări",
+    "hourly": "Pe oră"
+  },
+  "toasts": {
+    "phoneCopied": "Telefonul a fost copiat",
+    "emailCopied": "Emailul a fost copiat",
+    "copyFailed": "Copierea a eșuat"
+  },
+  "errors": {
+    "403": "Acces refuzat",
+    "404": "Nu a fost găsit",
+    "500": "Eroare de server, încercați mai târziu",
+    "network": "Nu există conexiune la server",
+    "unknown": "Ceva nu a mers bine",
+    "loadFailed": "Încărcarea a eșuat",
+    "retry": "Reîncearcă",
+    "invalid_bot_token": "Telegram a respins acest token — verificați dacă botul există",
+    "wa_payment_required": "Nu există metodă de plată. Fără un card în WhatsApp Business, Meta nu livrează nicio notificare — deschideți setările canalului WhatsApp și adăugați plata",
+    "wa_verification_required": "Afacerea dvs. nu a trecut verificarea Meta. Până atunci numărul rămâne limitat și nu se trimite nimic — deschideți setările canalului WhatsApp pentru pași",
+    "wa_templates_pending": "Șabloanele nu sunt încă aprobate de Meta. Fără un șablon aprobat nu puteți scrie primul unui client — așteptați finalizarea verificării, starea este în setările canalului WhatsApp",
+    "checkout": {
+      "package_not_found": "Pachetul nu a fost găsit",
+      "package_inactive": "Pachetul nu se mai vinde",
+      "client_not_found": "Clientul nu a fost găsit",
+      "account_not_found": "Contul nu a fost găsit",
+      "card_unavailable": "Plata cu cardul nu este încă disponibilă",
+      "promo_expired": "Codul promoțional nu mai este valabil"
+    },
+    "billing": {
+      "tax_details_required": "Adăugați țara studioului în datele de facturare — fără ea factura nu poate fi emisă",
+      "nothing_to_pay": "Nu mai există nimic de plătit pentru abonamentul curent",
+      "stripe_not_configured": "Plățile nu sunt configurate pe server",
+      "stripe_error": "Serviciul de plăți a respins cererea. Încercați din nou",
+      "plan_not_paid": "Un abonament superior se activează doar prin plată",
+      "renew_is_automatic": "Abonamentul se reînnoiește automat",
+      "vat_invalid": "VIES nu recunoaște acest cod de TVA — verificați-l sau salvați fără el",
+      "vat_unavailable": "Registrul VIES nu răspunde momentan — încercați mai târziu sau salvați fără cod",
+      "vat_country_mismatch": "Codul de TVA trebuie să înceapă cu codul țării selectate",
+      "commission_unsettled": "Achitați mai întâi comisionul pentru vânzările offline: apăsați „Plătește acum” în blocul de comision. După plata acelei facturi puteți trece la un abonament fix.",
+      "billing_profile_required": "Completați datele de facturare — factura de comision se emite pe ele."
+    },
+    "loyalty": {
+      "cert_not_found": "Voucherul nu a fost găsit",
+      "cert_used": "Voucherul a fost deja folosit sau este invalid",
+      "cert_expired": "Voucherul a expirat"
+    },
+    "notifications": {
+      "critical_locked": "Această notificare nu poate fi dezactivată",
+      "last_channel": "Este necesar cel puțin un canal de livrare",
+      "unknown_event": "Eveniment necunoscut",
+      "not_personal": "Setările personale nu modifică notificările obligatorii"
+    },
+    "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/oră"
+  },
+  "errorBoundary": {
+    "title": "Ceva nu a mers bine",
+    "description": "Această pagină a întâmpinat o eroare. Încercați să o reîncărcați — restul aplicației funcționează.",
+    "reload": "Reîncarcă pagina"
+  }
+}

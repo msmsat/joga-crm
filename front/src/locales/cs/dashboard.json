@@ -1,0 +1,97 @@
+{
+  "state": {
+    "empty": "Ve studiu nejsou takoví zaměstnanci",
+    "noData": "Žádná data",
+    "ownerOnly": "Přístup je omezen vaší rolí",
+    "loadError": "Načtení dat se nezdařilo",
+    "retry": "Zkusit znovu"
+  },
+  "metrics": {
+    "revenue": "Tržby tento měsíc",
+    "clients": "Aktivní klienti",
+    "bookings": "Rezervace tento měsíc",
+    "retention": "Míra udržení",
+    "lessons": "Lekce tento měsíc",
+    "attendance": "Docházka tento měsíc",
+    "fill_rate": "Naplněnost",
+    "rating": "Průměrné hodnocení",
+    "active_clients": "Aktivní klienti",
+    "more": "Podrobnosti"
+  },
+  "today": {
+    "titleTrainer": "Moje dnešní lekce",
+    "titleAdmin": "Dnešní rozvrh",
+    "subtitle": "{{count}} lekcí · {{booked}} z {{spots}} míst",
+    "subtitle_one": "{{count}} lekce · {{booked}} z {{spots}} míst",
+    "subtitle_few": "{{count}} lekce · {{booked}} z {{spots}} míst",
+    "openJournal": "Otevřít deník",
+    "empty": "Dnes nejsou žádné lekce",
+    "emptyHintTrainer": "Volný den — nové rezervace se objeví zde",
+    "emptyHintAdmin": "Na dnešek není nic naplánováno"
+  },
+  "chart": {
+    "byDay": "po dnech",
+    "byMonth": "po měsících",
+    "subWeek": "Aktuální týden",
+    "subMonth": "Aktuální měsíc",
+    "subYear": "Posledních 12 měsíců",
+    "tabWeek": "Týden",
+    "tabMonth": "Měsíc",
+    "tabYear": "Rok",
+    "noData": "Za toto období nejsou data",
+    "retentionNA": "Graf udržení není k dispozici"
+  },
+  "tasks": {
+    "title": "Úkoly",
+    "empty": "Žádné úkoly",
+    "done": "Hotovo",
+    "add": "Přidat úkol",
+    "namePlaceholder": "Název úkolu…",
+    "cancel": "Zrušit",
+    "submit": "Přidat",
+    "priority": {
+      "low": "Nízká",
+      "medium": "Střední",
+      "high": "Vysoká"
+    },
+    "priorityHint": {
+      "low": "Nízká priorita",
+      "medium": "Střední priorita",
+      "high": "Vysoká priorita"
+    },
+    "tags": {
+      "Клиент": "Klient",
+      "Финансы": "Finance",
+      "Лиды": "Poptávky",
+      "Отчёты": "Reporty",
+      "Журнал": "Deník",
+      "Персонал": "Personál"
+    },
+    "scope": {
+      "mine": "Moje",
+      "admins": "Administrátoři",
+      "trainers": "Trenéři"
+    },
+    "assigneePlaceholder": "Vyberte zaměstnance",
+    "deleteTitle": "Smazat úkol?",
+    "deleteMessage": "Tuto akci nelze vrátit zpět."
+  },
+  "events": {
+    "title": "Nedávné události",
+    "seeAll": "Zobrazit vše",
+    "justNow": "právě teď",
+    "openProfile": "Otevřít profil",
+    "writeWhatsApp": "Napsat na WhatsApp",
+    "sendReceipt": "Odeslat účtenku",
+    "cancelBooking": "Zrušit rezervaci"
+  },
+  "summary": {
+    "topServices": "Nejžádanější služby",
+    "trainersLoad": "Vytížení trenérů",
+    "financeMonth": "Finance (měsíc)",
+    "revenue": "Tržby",
+    "expenses": "Náklady",
+    "avgCheck": "Průměrná útrata",
+    "profit": "Zisk"
+  }
+}

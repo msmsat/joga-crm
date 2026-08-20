@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Az Ön profilja",
+    "sub": "Személyes adatok és munkamenetek kezelése"
+  },
+  "personalInfo": {
+    "heading": "Személyes adatok",
+    "emailLocked": "Az e-mail a fiókja belépési azonosítója, itt nem módosítható"
+  },
+  "security": {
+    "changePassword": "Jelszó módosítása",
+    "logout": "Kijelentkezés"
+  },
+  "accounts": {
+    "title": "Stúdióim",
+    "count_one": "{{count}} stúdió",
+    "count_other": "{{count}} stúdió",
+    "enter": "Megnyitás",
+    "login": "Bejelentkezés",
+    "register": "Regisztráció",
+    "addStudio": "Stúdió hozzáadása",
+    "addStudioSub": "Egy új munkaterület — Ön lesz a tulajdonosa"
+  },
+  "session": {
+    "current": "Jelenlegi munkamenet",
+    "lastActive": "Aktív {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "A személyes adatok sikeresen frissültek"
+  },
+  "otherAccount": {
+    "title": "Másik fiók",
+    "sub": "Ha másik fiókkal lép be, a jelenlegi munkamenet lezárul ebben a böngészőben — normál bejelentkezéssel visszatérhet.",
+    "recentTitle": "Korábban már bejelentkezett",
+    "return": "Bejelentkezés",
+    "forget": "Fiók elfelejtése"
+  }
+}

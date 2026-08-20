@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Canais de ligação",
+    "connected": "Ligado",
+    "disconnected": "Não ligado",
+    "pending": "Precisa de configuração",
+    "connectInNotifications": "Ligar em Notificações",
+    "manage": "Gerir em Notificações",
+    "telegram": {
+      "name": "Bot do Telegram",
+      "desc": "Marcação automática através do bot"
+    },
+    "stripe": {
+      "name": "Pagamentos",
+      "desc": "Stripe: cartões, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Link para clientes",
+      "desc": "Mini aplicação de marcações — para bio, stories e campanhas",
+      "copy": "Copiar link",
+      "open": "Abrir a mini aplicação",
+      "print": "Imprimir QR",
+      "posterTitle": "Marque a sua aula online",
+      "scanHint": "Aponte a câmara do telemóvel ao código"
+    }
+  },
+  "loading": "A carregar as definições…",
+  "sections": {
+    "main": {
+      "title": "Definições gerais",
+      "prefill": {
+        "label": "Pré-pagamento na marcação",
+        "sub": "Exigir pagamento antes da confirmação"
+      },
+      "trialLesson": {
+        "label": "Primeira aula grátis",
+        "sub": "A primeira marcação de um cliente novo é por conta do estúdio"
+      },
+      "trainerConfirm": {
+        "label": "Confirmação do instrutor",
+        "sub": "A marcação aguarda aprovação manual"
+      },
+      "bookingActive": {
+        "label": "Marcação online ativa",
+        "sub": "Mostrar o widget aos clientes"
+      }
+    },
+    "rules": {
+      "title": "Limites e regras",
+      "advance": {
+        "label": "Bloquear marcação com menos de",
+        "sub": "Tempo mínimo antes da aula"
+      },
+      "window": {
+        "label": "As marcações abrem",
+        "sub": "Com quantos dias de antecedência"
+      },
+      "cancel": {
+        "label": "Cancelamento sem penalização",
+        "sub": "O cliente pode cancelar antes da aula"
+      },
+      "repeat": {
+        "label": "Marcação repetida",
+        "sub": "Permitir ao cliente marcar duas vezes"
+      },
+      "workHours": {
+        "label": "Horário do widget",
+        "sub": "Aulas fora deste horário não são marcáveis online"
+      }
+    },
+    "branding": {
+      "title": "Imagem do widget",
+      "sub": "Aspeto da página de marcação",
+      "accentColor": "Cor de destaque",
+      "logo": {
+        "label": "Logótipo do estúdio",
+        "sub": "Aparece no cabeçalho do widget",
+        "upload": "Carregar",
+        "uploading": "A carregar…",
+        "remove": "Remover",
+        "uploadFailed": "Não foi possível carregar o logótipo"
+      },
+      "darkMode": {
+        "label": "Tema escuro",
+        "sub": "Widget em modo escuro"
+      },
+      "language": {
+        "label": "Idioma predefinido",
+        "sub": "Idioma principal da interface"
+      }
+    },
+    "notifications": {
+      "title": "Notificações",
+      "sub": "Mensagens automáticas para os clientes",
+      "preview": {
+        "confirmed": "Marcação confirmada! Seg 10:00",
+        "reminder2h": "Lembrete: daqui a 2 horas",
+        "reviewRequest": "Obrigado pela visita! Avalie a aula"
+      },
+      "reminder24h": {
+        "label": "Lembrete 24 h antes",
+        "sub": "De manhã, antes da aula"
+      },
+      "reminder2h": {
+        "label": "Lembrete 2 h antes",
+        "sub": "Pouco antes da aula"
+      },
+      "reviewRequest": {
+        "label": "Pedido de avaliação",
+        "sub": "Assim que a visita for registada"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Café depois da aula",
+        "sub": "Após a marcação, o cliente é convidado a ficar 15 minutos com o grupo. Se dois ou mais aceitarem, recebem um lembrete depois da aula"
+      },
+      "spots": {
+        "label": "Onde os convidar",
+        "sub": "Até três locais perto do estúdio. Só aparecem quando dois ou mais aderem",
+        "namePlaceholder": "Nome",
+        "addressPlaceholder": "Morada",
+        "urlPlaceholder": "Link do mapa",
+        "add": "Adicionar local",
+        "remove": "Remover local"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 hora",
+      "2h": "2 horas",
+      "4h": "4 horas",
+      "12h": "12 horas",
+      "24h": "24 horas"
+    },
+    "window": {
+      "7d": "7 dias",
+      "14d": "14 dias",
+      "30d": "30 dias",
+      "60d": "60 dias"
+    },
+    "cancel": {
+      "2h": "2 horas",
+      "4h": "4 horas",
+      "12h": "12 horas",
+      "24h": "24 horas"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot ligado",
+    "botDisconnected": "Bot desligado",
+    "codeCopied": "Código copiado!",
+    "linkCopied": "Link copiado!",
+    "printBlocked": "Permita as janelas pop-up para imprimir o código QR",
+    "stripeReturned": "Dados enviados para a Stripe",
+    "stripeLinkExpired": "O link da Stripe expirou — tente novamente"
+  },
+  "stripeGate": {
+    "kicker": "Necessário para a marcação online",
+    "none": {
+      "title": "Configure primeiro os pagamentos",
+      "sub": "O cliente marca e paga num só passo. Enquanto a conta Stripe não estiver ligada, não consegue pagar a marcação.",
+      "action": "Ligar a Stripe"
+    },
+    "incomplete": {
+      "title": "Termine a configuração da Stripe",
+      "sub": "A conta existe, mas a Stripe ainda não ativou os pagamentos — o formulário está incompleto.",
+      "action": "Continuar a configuração"
+    },
+    "disabled": {
+      "title": "Os pagamentos estão desligados",
+      "sub": "A Stripe está ligada e pronta a receber pagamentos, mas está desligada na secção Finanças.",
+      "action": "Abrir Finanças"
+    },
+    "loading": {
+      "title": "A verificar a ligação",
+      "sub": "Estamos a perguntar à Stripe se a conta do estúdio está pronta a receber pagamentos.",
+      "action": "A verificar…"
+    },
+    "perks": {
+      "direct": "O dinheiro entra diretamente na conta do estúdio",
+      "methods": "Cartões, Apple Pay e Google Pay desde o início",
+      "fee": "A comissão segue o seu plano Velora"
+    },
+    "later": "Mais tarde",
+    "note": "Vai abrir o formulário da Stripe. Quando terminar, regressa a esta página."
+  },
+  "tg": {
+    "title": "Bot do Telegram",
+    "connected": "Ligado",
+    "openInTelegram": "Abrir o bot no Telegram",
+    "showToken": "Mostrar token",
+    "hideToken": "Ocultar token",
+    "acceptsBookings": "O bot aceita marcações dos clientes",
+    "instantNotify": "As notificações chegam de imediato",
+    "disconnect": "Desligar o bot",
+    "pasteToken": "Cole o token do bot dado pelo @BotFather",
+    "invalidToken": "Formato de token inválido",
+    "connect": "Ligar o bot",
+    "howToGet": "Como obter um token?",
+    "steps": {
+      "1a": "Abra o Telegram → procure",
+      "1b": "@BotFather",
+      "2a": "Envie o comando",
+      "2b": "/newbot",
+      "3": "Escolha um nome e um username para o bot",
+      "4": "Copie o token e cole-o acima"
+    }
+  },
+  "insta": {
+    "title": "Bio do Instagram",
+    "sub": "Coloque no perfil e nas stories um link para marcação rápida",
+    "steps": {
+      "1": "Copie o seu link",
+      "2a": "Cole-o no campo",
+      "2b": "«Website»",
+      "2c": " nas definições de perfil do Instagram.",
+      "3a": "Adicione o link às",
+      "3b": "Stories",
+      "3c": " com um autocolante próprio."
+    },
+    "proTip": "Fixe nos Destaques uma Story com o percurso de marcação — aumenta a conversão em 30 %."
+  },
+  "web": {
+    "title": "Widget para o site",
+    "sub": "Adicione um botão de marcação a qualquer site (Tilda, WordPress ou código próprio)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Copiar",
+    "instructionPrefix": "Cole este código mesmo antes da etiqueta de fecho",
+    "instructionSuffix": " no seu site. O botão aparece automaticamente."
+  },
+  "wa": {
+    "title": "Marcação por WhatsApp",
+    "sub": "Configure no WhatsApp Business uma resposta automática que envia logo o link de marcação.",
+    "online": "online",
+    "sampleIncoming": "Olá! Gostaria de marcar uma aula.",
+    "sampleOutgoing": "Bem-vinda! ✨",
+    "connect": "Ligar o WhatsApp Business",
+    "connected": "Ligado",
+    "autoReplyActive": "Resposta automática ativa",
+    "instantLink": "O link de marcação é enviado de imediato"
+  }
+}

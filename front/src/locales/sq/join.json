@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Nuk jeni ju?",
+    "login": "Hyni në një llogari tjetër"
+  },
+  "card": {
+    "roleLine": "Ftesë për ekipin · {{role}}"
+  },
+  "title": {
+    "new": "Përshëndetje, {{name}}",
+    "existing": "Mirë se u ktheve, {{name}}"
+  },
+  "sub": {
+    "new": "Vendosni fjalëkalimin që ju dha menaxheri i studios.",
+    "existing": "Vendosni fjalëkalimin për {{email}} për të pranuar ftesën."
+  },
+  "switch": {
+    "notice": "Jeni i identifikuar si {{current}}. Kjo ftesë është për {{next}} — pranimi i saj ju kalon në atë llogari. Mund të ktheheni nga profili juaj."
+  },
+  "fields": {
+    "newPassword": "Fjalëkalimi",
+    "newPasswordPlaceholder": "Fjalëkalimi nga menaxheri juaj",
+    "password": "Fjalëkalimi",
+    "passwordPlaceholder": "Fjalëkalimi juaj Velora",
+    "phone": "Numri i telefonit",
+    "phoneHint": "Ende nuk e kemi numrin tuaj — shkruajeni me kodin e shtetit",
+    "show": "Shfaq",
+    "hide": "Fshih"
+  },
+  "cta": {
+    "enter": "Hyni në studio",
+    "accept": "Prano ftesën"
+  },
+  "forgotHint": "Harruat fjalëkalimin?",
+  "forgotLink": "Rikthe aksesin",
+  "expired": {
+    "title": "Lidhja nuk është e vlefshme",
+    "sub": "Ftesa ka skaduar ose është anuluar. Kërkojini pronarit të studios ta dërgojë sërish.",
+    "cta": "Shko te hyrja"
+  },
+  "consent": {
+    "text": "Pranoj",
+    "terms": "Kushtet e Shërbimit",
+    "and": "dhe",
+    "privacy": "Politikën e Privatësisë"
+  },
+  "errors": {
+    "noToken": "Lidhja nuk përmban kod ftese — hapeni të plotë nga email-i.",
+    "network": "Gabim lidhjeje",
+    "passwordRequired": "Vendosni fjalëkalimin",
+    "phoneRequired": "Vendosni numrin e telefonit me kodin e shtetit",
+    "consentRequired": "Kërkohet pëlqimi juaj"
+  },
+  "newAccountHint": "Fjalëkalimi nuk është në email — pikërisht kjo është ideja: vetëm një lidhje nuk mjafton për të hyrë. Nëse nuk ju është dhënë, pyesni menaxherin.",
+  "decline": {
+    "cta": "Refuzo ftesën",
+    "confirm": "Ftesa për “{{studio}}” do të hiqet. Nuk do t'i bashkoheni ekipit dhe vetëm pronari i studios mund ta dërgojë sërish.",
+    "keep": "Ruaje",
+    "confirmCta": "Refuzo",
+    "pending": "Duke refuzuar…"
+  },
+  "declined": {
+    "title": "Ftesa u refuzua",
+    "sub": "Nuk ju shtuam në studio. Nëse ishte gabim, kërkojini pronarit ta dërgojë ftesën sërish."
+  }
+}

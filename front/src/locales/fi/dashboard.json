@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Studiossa ei ole tällaisia työntekijöitä",
+    "noData": "Ei tietoja",
+    "ownerOnly": "Roolisi rajoittaa käyttöoikeutta",
+    "loadError": "Tietojen lataaminen epäonnistui",
+    "retry": "Yritä uudelleen"
+  },
+  "metrics": {
+    "revenue": "Liikevaihto tässä kuussa",
+    "clients": "Aktiiviset asiakkaat",
+    "bookings": "Varaukset tässä kuussa",
+    "retention": "Pysyvyysaste",
+    "lessons": "Tunnit tässä kuussa",
+    "attendance": "Osallistuminen tässä kuussa",
+    "fill_rate": "Täyttöaste",
+    "rating": "Keskiarvosana",
+    "active_clients": "Aktiiviset asiakkaat",
+    "more": "Tiedot"
+  },
+  "today": {
+    "titleTrainer": "Tämän päivän tuntini",
+    "titleAdmin": "Tämän päivän aikataulu",
+    "subtitle": "{{count}} tuntia · {{booked}} / {{spots}} paikkaa",
+    "subtitle_one": "{{count}} tunti · {{booked}} / {{spots}} paikkaa",
+    "openJournal": "Avaa päiväkirja",
+    "empty": "Ei tunteja tänään",
+    "emptyHintTrainer": "Vapaa päivä — uudet varaukset näkyvät täällä",
+    "emptyHintAdmin": "Tälle päivälle ei ole mitään aikataulutettu"
+  },
+  "chart": {
+    "byDay": "päivittäin",
+    "byMonth": "kuukausittain",
+    "subWeek": "Kuluva viikko",
+    "subMonth": "Kuluva kuukausi",
+    "subYear": "Viimeiset 12 kuukautta",
+    "tabWeek": "Viikko",
+    "tabMonth": "Kuukausi",
+    "tabYear": "Vuosi",
+    "noData": "Tältä ajalta ei ole tietoja",
+    "retentionNA": "Pysyvyyskaavio ei ole käytettävissä"
+  },
+  "tasks": {
+    "title": "Tehtävät",
+    "empty": "Ei tehtäviä",
+    "done": "Valmis",
+    "add": "Lisää tehtävä",
+    "namePlaceholder": "Tehtävän nimi…",
+    "cancel": "Peruuta",
+    "submit": "Lisää",
+    "priority": {
+      "low": "Matala",
+      "medium": "Keskitaso",
+      "high": "Korkea"
+    },
+    "priorityHint": {
+      "low": "Matala prioriteetti",
+      "medium": "Keskitason prioriteetti",
+      "high": "Korkea prioriteetti"
+    },
+    "tags": {
+      "Клиент": "Asiakas",
+      "Финансы": "Talous",
+      "Лиды": "Liidit",
+      "Отчёты": "Raportit",
+      "Журнал": "Päiväkirja",
+      "Персонал": "Henkilöstö"
+    },
+    "scope": {
+      "mine": "Omat",
+      "admins": "Ylläpitäjät",
+      "trainers": "Ohjaajat"
+    },
+    "assigneePlaceholder": "Valitse työntekijä",
+    "deleteTitle": "Poistetaanko tehtävä?",
+    "deleteMessage": "Tätä toimintoa ei voi perua."
+  },
+  "events": {
+    "title": "Viimeisimmät tapahtumat",
+    "seeAll": "Näytä kaikki",
+    "justNow": "juuri nyt",
+    "openProfile": "Avaa profiili",
+    "writeWhatsApp": "Viesti WhatsAppissa",
+    "sendReceipt": "Lähetä kuitti",
+    "cancelBooking": "Peruuta varaus"
+  },
+  "summary": {
+    "topServices": "Suosituimmat palvelut",
+    "trainersLoad": "Ohjaajien kuormitus",
+    "financeMonth": "Talous (kuukausi)",
+    "revenue": "Liikevaihto",
+    "expenses": "Kulut",
+    "avgCheck": "Keskiostos",
+    "profit": "Voitto"
+  }
+}

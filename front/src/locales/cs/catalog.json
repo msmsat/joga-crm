@@ -1,0 +1,308 @@
+{
+  "tabs": {
+    "studios": "Pobočky",
+    "services": "Služby",
+    "subscriptions": "Předplatné"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "O studiu",
+          "sub": "Název a kontaktní údaje",
+          "trust": "Vaše údaje jsou šifrované a nikdy je nepředáváme třetím stranám"
+        },
+        "location": {
+          "title": "Lokalita",
+          "sub": "Kde se tato pobočka nachází?",
+          "trust": "Adresa se používá v rozvrhu a na mapách"
+        },
+        "photo": {
+          "title": "Fotka",
+          "sub": "Titulní fotka studia — nepovinné",
+          "trust": "Přidat ji můžete později v nastavení pobočky"
+        }
+      },
+      "stepCounter": "Krok {{current}} z {{total}}",
+      "step1": {
+        "heading": "Základní informace",
+        "subheading": "Jak se studio jmenuje a jak se s ním spojit?",
+        "name": "Název studia *",
+        "namePlaceholder": "Např. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-mail *",
+        "contactHint": "Zadejte telefon nebo e-mail — alespoň jedno",
+        "noContacts": "Kontakty nejsou vyplněné",
+        "new": "NOVÉ"
+      },
+      "step2": {
+        "heading": "Lokalita",
+        "subheading": "Uveďte, kde se tato pobočka nachází",
+        "country": "Země",
+        "countryPlaceholder": "Česko",
+        "city": "Město *",
+        "cityPlaceholder": "Praha",
+        "address": "Adresa *",
+        "addressPlaceholder": "Národní 12, kancelář 301",
+        "noAddress": "Adresa není vyplněná",
+        "groupHint": "Pole „Země“ a „Město“ slouží k seskupení poboček v seznamu."
+      },
+      "step3": {
+        "heading": "Fotka studia",
+        "subheading": "Nahrajte titulní fotku — nepovinné, lze přeskočit",
+        "uploadCta": "Klikněte pro nahrání",
+        "uploadHint": "JPG, PNG do 10 MB",
+        "replace": "Vyměnit",
+        "remove": "Odebrat",
+        "previewAlt": "Náhled",
+        "summary": "Shrnutí",
+        "uploadError": "Nahrání fotky se nezdařilo. Zkuste jiný soubor nebo ji odeberte."
+      },
+      "summaryRows": {
+        "name": "Název",
+        "city": "Město",
+        "address": "Adresa"
+      },
+      "nextPhoto": "Dál — fotka",
+      "submit": "Vytvořit studio",
+      "skipPhoto": "Přeskočit fotku a vytvořit",
+      "illus": {
+        "contacts": "Kontakty",
+        "newBranch": "Nová pobočka",
+        "city": "Město",
+        "newBranchStudio": "Nová pobočka studia"
+      }
+    },
+    "editBranch": {
+      "title": "Upravit pobočku",
+      "name": "Název pobočky",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Země",
+      "countryPlaceholder": "Česko",
+      "city": "Město",
+      "cityPlaceholder": "Praha",
+      "address": "Adresa",
+      "addressPlaceholder": "Národní 12",
+      "photo": "Fotka pobočky",
+      "contactHint": "Zadejte telefon nebo e-mail",
+      "workingHours": "Provozní doba"
+    },
+    "hall": {
+      "titleNew": "Nový sál",
+      "titleEdit": "Upravit sál",
+      "name": "Název sálu",
+      "namePlaceholder": "Sál A",
+      "capacity": "Kapacita",
+      "area": "Plocha, m²",
+      "hourlyRate": "Cena za hodinu, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Vybavení",
+      "equipmentPlaceholder": "Přidat vybavení",
+      "color": "Barva",
+      "isOnline": "Online sál",
+      "photo": "Fotka sálu",
+      "subtitle": "Místnost v pobočce: místa, vybavení, barva v deníku",
+      "previewTitle": "Náhled sálu",
+      "sectionBasic": "Základ",
+      "sectionSpace": "Prostor",
+      "sectionLook": "Vzhled",
+      "areaShort": "Plocha",
+      "hourlyRateShort": "Cena za hodinu",
+      "statArea": "Plocha",
+      "statRate": "Cena / hod.",
+      "isOnlineHint": "Lekce probíhají online — bez fyzické místnosti.",
+      "colorHint": "Lekce v tomto sále jsou v deníku zvýrazněné touto barvou."
+    },
+    "service": {
+      "titleNew": "Nová služba",
+      "titleEdit": "Upravit službu",
+      "name": "Název služby",
+      "namePlaceholder": "Hatha jóga",
+      "category": "Kategorie",
+      "type": "Typ",
+      "typeGroup": "Skupinová",
+      "typeIndividual": "Individuální",
+      "price": "Cena, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Délka, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Max. klientů",
+      "maxClientsPlaceholder": "15",
+      "description": "Popis",
+      "descriptionPlaceholder": "Krátký popis služby",
+      "color": "Barva",
+      "subtitle": "Objeví se v deníku a v online rezervacích",
+      "previewTitle": "Náhled v deníku",
+      "sectionBasic": "Základ",
+      "sectionPricing": "Cena a čas",
+      "sectionLook": "Vzhled",
+      "priceShort": "Cena",
+      "durationShort": "Délka",
+      "statSeats": "Místa",
+      "colorHint": "Lekce jsou v mřížce deníku zvýrazněné touto barvou."
+    },
+    "package": {
+      "titleNew": "Nový balíček",
+      "titleEdit": "Upravit balíček",
+      "name": "Název balíčku",
+      "namePlaceholder": "8 lekcí",
+      "classCount": "Počet lekcí",
+      "classCountPlaceholder": "8",
+      "price": "Cena, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Cena za návštěvu",
+      "durationDays": "Platnost, dní",
+      "durationDaysPlaceholder": "60",
+      "services": "Služby",
+      "servicesHint": "Nic nevybráno — balíček platí na všechny lekce",
+      "isActive": "V prodeji",
+      "soldAsSubscription": "Zobrazit v záložce „Předplatné“",
+      "soldAsSingle": "Zobrazit v záložce „Jednorázové vstupy“",
+      "subtitle": "Balíček lekcí, který prodáváte klientům",
+      "previewTitle": "Náhled permanentky",
+      "previewKind": "Permanentka",
+      "previewValid": "Platnost",
+      "sectionBasic": "Základ",
+      "sectionTerms": "Podmínky",
+      "sectionSale": "Prodej",
+      "priceShort": "Cena balíčku",
+      "statClasses": "Lekce",
+      "statDays": "Dny",
+      "statAll": "Vše",
+      "isActiveHint": "Klienti tento balíček vidí a mohou ho koupit.",
+      "soldAsSubscriptionHint": "Jinak balíček zůstane jen mezi jednorázovými vstupy."
+    }
+  },
+  "studios": {
+    "title": "POBOČKY",
+    "addStudio": "Přidat studio",
+    "addHall": "Přidat sál",
+    "editBranch": "Upravit pobočku",
+    "deleteBranch": "Smazat pobočku",
+    "infoTab": "Obecné informace",
+    "hallsTitle": "Sály studia",
+    "hallCount_one": "{{count}} sál",
+    "hallCount_few": "{{count}} sály",
+    "hallCount_other": "{{count}} sálů",
+    "stats": {
+      "halls": "Sály",
+      "totalSeats": "Celkem míst",
+      "fromPerHour": "Od / hod."
+    },
+    "hall": {
+      "seats": "míst",
+      "schedule": "Provozní doba",
+      "closed": "Zavřeno",
+      "stats": {
+        "seats": "Místa",
+        "area": "Plocha",
+        "perHour": "Za hodinu"
+      },
+      "equipment": "Vybavení",
+      "actions": "Akce",
+      "edit": "Upravit sál",
+      "delete": "Smazat sál"
+    },
+    "empty": {
+      "title": "Žádné pobočky",
+      "subtitle": "Přidejte svou první pobočku"
+    },
+    "toasts": {
+      "created": "Studio vytvořeno",
+      "createError": "Vytvoření studia se nezdařilo",
+      "deleted": "Studio smazáno",
+      "hallDeleted": "Sál smazán",
+      "saved": "Uloženo",
+      "edit": "Úprava: {{name}}"
+    },
+    "confirmDelete": "Smazat pobočku „{{name}}“? Tuto akci nelze vrátit.",
+    "confirmDeleteTitle": "Smazat pobočku?",
+    "confirmDeleteHall": "Smazat sál „{{name}}“?",
+    "confirmDeleteHallTitle": "Smazat sál?"
+  },
+  "services": {
+    "title": "SLUŽBY",
+    "addService": "Přidat službu",
+    "types": {
+      "group": "Skupina",
+      "individual": "Ind.",
+      "groupFull": " · Skupinová",
+      "individualFull": " · Individuální"
+    },
+    "stats": {
+      "price": "Cena",
+      "duration": "Délka",
+      "bookings": "Rezervace",
+      "revenue": "Tržby"
+    },
+    "details": {
+      "description": "Popis",
+      "details": "Podrobnosti",
+      "minutes": "minut",
+      "upTo": "Až {{count}} os.",
+      "personal": "Osobní",
+      "bookingsPerMonth": "rezervací za 30 dní",
+      "schedule": "Rozvrh lekcí"
+    },
+    "empty": {
+      "title": "Žádné služby",
+      "subtitle": "Přidejte svou první službu"
+    },
+    "toasts": {
+      "deleted": "Služba smazána",
+      "deleteError": "Smazání služby se nezdařilo",
+      "saved": "Uloženo",
+      "saveError": "Uložení služby se nezdařilo",
+      "edit": "Úprava: {{name}}"
+    },
+    "confirmDelete": "Smazat službu „{{name}}“?",
+    "confirmDeleteTitle": "Smazat službu?",
+    "categories": {
+      "yoga": "Jóga",
+      "pilates": "Pilates",
+      "stretching": "Strečink",
+      "individual": "Individuální",
+      "other": "Bez kategorie"
+    }
+  },
+  "subscriptions": {
+    "title": "PŘEDPLATNÉ",
+    "addPackage": "Přidat balíček",
+    "card": {
+      "classCount_one": "{{count}} lekce",
+      "classCount_few": "{{count}} lekce",
+      "classCount_other": "{{count}} lekcí",
+      "duration": "{{count}} dní",
+      "allServices": "Všechny lekce",
+      "serviceCount_one": "{{count}} služba",
+      "serviceCount_few": "{{count}} služby",
+      "serviceCount_other": "{{count}} služeb",
+      "inactiveBadge": "Staženo"
+    },
+    "settings": {
+      "title": "Nastavení programu",
+      "allowFreeze": "Zmrazení předplatného",
+      "allowTransfer": "Převod na jiného klienta",
+      "autoRenewal": "Automatické obnovení z depozitu klienta"
+    },
+    "empty": {
+      "title": "Zatím žádné balíčky",
+      "cta": "Vytvořit balíček"
+    },
+    "toasts": {
+      "created": "Balíček vytvořen",
+      "saved": "Uloženo",
+      "saveError": "Uložení balíčku se nezdařilo",
+      "deactivated": "Balíček stažen z prodeje",
+      "restored": "Balíček vrácen do prodeje",
+      "actionError": "Akci se nepodařilo dokončit"
+    },
+    "deactivate": "Stáhnout z prodeje",
+    "restore": "Vrátit do prodeje",
+    "confirmDeactivateTitle": "Stáhnout tento balíček z prodeje?",
+    "confirmDeactivate": "Již prodaná předplatná budou dál fungovat."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "staff": "Personel",
+    "catalog": "Katalog",
+    "clients": "Müşteriler",
+    "reports": "Raporlar",
+    "booking": "Online randevu",
+    "finances": "Finans",
+    "notifications": "Bildirimler",
+    "loyalty": "Sadakat",
+    "ai": "Velora AI",
+    "settings": "Ayarlar",
+    "billing": "Paket ve ödeme",
+    "journal": "Takvim",
+    "profile": "Profil",
+    "more": "Daha fazla"
+  },
+  "subtitles": {
+    "dashboard": "Velora CRM'e hoş geldiniz",
+    "staff": "Ekip yönetimi",
+    "catalog": "Şubeler, salonlar ve hizmetler",
+    "clients": "Stüdyonun müşteri tabanı",
+    "reports": "Analiz ve istatistikler",
+    "booking": "Randevu kanallarını yönetin",
+    "finances": "Hesaplar, işlemler, belgeler",
+    "notifications": "Kanallar ve bildirim türleri",
+    "loyalty": "Müşteri programları ve kartları",
+    "ai": "Akıllı asistan ve otomatik yanıtlar",
+    "settings": "Sistem yapılandırması",
+    "billing": "Abonelik yönetimi",
+    "journal": "Ders programı",
+    "profile": "Hesap ve ayarlar"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Oluştur"
+  },
+  "userMenu": {
+    "logout": "Çıkış yap",
+    "studios": "Stüdyolarım"
+  },
+  "tooltips": {
+    "studioName": "Stüdyonuz: {{name}}",
+    "openProfile": "Profili aç",
+    "openAccountMenu": "Hesap menüsü"
+  },
+  "sidebar": {
+    "expand": "Menüyü genişlet",
+    "collapse": "Menüyü daralt"
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "toolbar": {
+    "today": "Dnes",
+    "trainers": "Trenéři",
+    "halls": "Sály",
+    "day": "Den",
+    "week": "Týden"
+  },
+  "daySummary": {
+    "classesToday": "lekcí dnes",
+    "clientBookings": "rezervací klientů",
+    "avgLoad": "prům. naplněnost",
+    "trainersActive": "trenérů v provozu",
+    "gridStep": "Krok mřížky",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Zpět: {{label}}",
+    "redo": "Znovu: {{label}}",
+    "nothingToUndo": "Není co vrátit",
+    "nothingToRedo": "Není co zopakovat"
+  },
+  "newBooking": {
+    "title": "Nová lekce",
+    "slotTime": "Čas slotu",
+    "service": "Služba",
+    "servicePlaceholder": "Vyberte službu",
+    "namePlaceholder": "Např. Reformer Pilates",
+    "location": "Místo / sál",
+    "start": "Začátek",
+    "end": "Konec",
+    "groupLimit": "Limit skupiny",
+    "maxSpots": "Max. míst",
+    "assignTrainer": "Přiřadit trenéra",
+    "cancel": "Zrušit",
+    "create": "Vytvořit lekci",
+    "errors": {
+      "selectService": "Vyberte službu",
+      "range": "Od 1 do 50",
+      "endAfterStart": "Konec musí být po začátku"
+    },
+    "createServiceConfirm": {
+      "title": "Vytvořit službu?",
+      "message": "Nenašli jste potřebnou službu? Vytvořte ji v Katalogu.",
+      "confirm": "Přejít do Katalogu"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Potvrzeno",
+    "pending": "Čeká na potvrzení",
+    "cancelled": "Zrušeno",
+    "spotsTaken": "obsazených míst",
+    "fillRate": "Naplněnost",
+    "booked": "Přihlášen",
+    "attended": "Přišel",
+    "markAttended": "Označit docházku",
+    "awaitingConfirmation": "Čeká na potvrzení",
+    "trialLesson": "Zkušební",
+    "unpaid": "Nezaplaceno · {{amount}}",
+    "acceptPayment": "Přijmout platbu",
+    "payCash": "Hotově",
+    "payTransfer": "Převodem",
+    "payLater": "Bez platby",
+    "confirmBooking": "Potvrdit rezervaci",
+    "rejectBooking": "Odmítnout žádost",
+    "removeFromLesson": "Odebrat z lekce",
+    "add": "Přidat",
+    "addClient": "Přidat klienta",
+    "edit": "Upravit",
+    "editLesson": "Upravit lekci",
+    "deleteLesson": "Smazat lekci",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "lessonTitle": "Název lekce",
+    "untitled": "Bez názvu",
+    "from": "Od",
+    "to": "Do",
+    "searchPlaceholder": "Hledat podle jména nebo telefonu...",
+    "noClientsFound": "Nenalezeni žádní klienti",
+    "noEligibleClients": "Žádní klienti s přístupem na tuto lekci",
+    "visitsCount_one": "{{count}} návštěva",
+    "visitsCount_few": "{{count}} návštěvy",
+    "visitsCount_other": "{{count}} návštěv",
+    "errors": {
+      "selectService": "Vyberte službu",
+      "range": "Od 1 do 50",
+      "minBooked": "{{count}} už je přihlášeno — níž to nejde",
+      "endAfterStart": "Konec musí být po začátku"
+    },
+    "createServiceConfirm": {
+      "title": "Vytvořit službu?",
+      "message": "Nenašli jste potřebnou službu? Vytvořte ji v Katalogu.",
+      "confirm": "Přejít do Katalogu"
+    }
+  },
+  "addClientModal": {
+    "title": "Přidat klienta",
+    "searchPlaceholder": "Hledat podle jména nebo telefonu...",
+    "noClientsFound": "Nenalezeni žádní klienti",
+    "chooseFromList": "Vyberte klienty ze seznamu",
+    "selectedCount_one": "Vybrán: {{count}} klient",
+    "selectedCount_few": "Vybráni: {{count}} klienti",
+    "selectedCount_other": "Vybráno: {{count}} klientů",
+    "cancel": "Zrušit",
+    "add": "Přidat"
+  },
+  "rightPanel": {
+    "halls": "Sály",
+    "load": "Naplněnost",
+    "upcoming": "Nadcházející"
+  },
+  "grid": {
+    "classesShort": "lek.",
+    "peopleShort": "os.",
+    "loadPercent": "Naplněnost: {{percent}} %",
+    "classes": "lekcí",
+    "classesToday": "lekcí dnes",
+    "newLessonPreview": "Nová lekce",
+    "cancelled": "Zrušeno",
+    "noTrainers": "Žádní trenéři",
+    "noHalls": "Žádné sály"
+  },
+  "createService": "+ Vytvořit službu",
+  "invalidDateFormat": "Neplatný formát data",
+  "toasts": {
+    "lessonMoved": "Lekce přesunuta",
+    "endTimeChanged": "Čas konce změněn",
+    "startTimeChanged": "Čas začátku změněn",
+    "attendanceMarked": "Docházka označena",
+    "paymentAccepted": "Platba přijata",
+    "bookingConfirmed": "Rezervace potvrzena",
+    "clientRemoved": "Klient odebrán z lekce",
+    "lessonUpdated": "Lekce upravena",
+    "lessonAdded": "Lekce přidána",
+    "selectTrainer": "Vyberte trenéra",
+    "alreadyCancelled": "Lekce už je zrušená",
+    "lessonCancelled": "Lekce zrušena",
+    "noPermission": "Nedostatečná oprávnění ke změně rozvrhu",
+    "undoLabel": "Vráceno: {{label}}",
+    "redoLabel": "Zopakováno: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Přihlášen: {{count}} klient",
+    "clientsBooked_few": "Přihlášeni: {{count}} klienti",
+    "clientsBooked_other": "Přihlášeno: {{count}} klientů",
+    "clientsBookedPartial": "Přihlášeno {{success}} z {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "odebrání klienta",
+      "moveLesson": "přesun lekce",
+      "createLesson": "vytvoření lekce",
+      "bookClient": "přihlášení klienta",
+      "bookClients": "přihlášení klientů ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Načtení se nezdařilo",
+    "retry": "Zkusit znovu"
+  },
+  "cancelBookingConfirm": {
+    "title": "Zrušit lekci?",
+    "message_one": "{{count}} klient dostane oznámení o zrušení.",
+    "message_few": "{{count}} klienti dostanou oznámení o zrušení.",
+    "message_other": "{{count}} klientů dostane oznámení o zrušení.",
+    "confirm": "Zrušit lekci"
+  }
+}

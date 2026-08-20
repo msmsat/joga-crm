@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Não é você?",
+    "login": "Inicie sessão com outra conta"
+  },
+  "card": {
+    "roleLine": "Convite para a equipa · {{role}}"
+  },
+  "title": {
+    "new": "Olá, {{name}}",
+    "existing": "Bem-vindo de volta, {{name}}"
+  },
+  "sub": {
+    "new": "Introduza a palavra-passe que o responsável do estúdio lhe deu.",
+    "existing": "Introduza a palavra-passe de {{email}} para aceitar o convite."
+  },
+  "switch": {
+    "notice": "Tem sessão iniciada como {{current}}. Este convite é para {{next}} — ao aceitá-lo, passa para essa conta. Pode voltar a partir do seu perfil."
+  },
+  "fields": {
+    "newPassword": "Palavra-passe",
+    "newPasswordPlaceholder": "Palavra-passe do responsável",
+    "password": "Palavra-passe",
+    "passwordPlaceholder": "A sua palavra-passe Velora",
+    "phone": "Número de telefone",
+    "phoneHint": "Ainda não temos o seu número — introduza-o com o indicativo do país",
+    "show": "Mostrar",
+    "hide": "Ocultar"
+  },
+  "cta": {
+    "enter": "Entrar no estúdio",
+    "accept": "Aceitar convite"
+  },
+  "forgotHint": "Esqueceu-se da palavra-passe?",
+  "forgotLink": "Recuperar acesso",
+  "expired": {
+    "title": "A ligação não é válida",
+    "sub": "O convite expirou ou foi anulado. Peça ao proprietário do estúdio para o enviar novamente.",
+    "cta": "Ir para o início de sessão"
+  },
+  "consent": {
+    "text": "Aceito os",
+    "terms": "Termos de Serviço",
+    "and": "e a",
+    "privacy": "Política de Privacidade"
+  },
+  "errors": {
+    "noToken": "A ligação não tem código de convite — abra-a por completo a partir do email.",
+    "network": "Erro de ligação",
+    "passwordRequired": "Introduza a sua palavra-passe",
+    "phoneRequired": "Introduza o número de telefone com o indicativo do país",
+    "consentRequired": "É necessário o seu consentimento"
+  },
+  "newAccountHint": "A palavra-passe não vem no email — e é mesmo essa a intenção: só a ligação não chega para entrar. Se não lhe deram nenhuma, pergunte ao responsável.",
+  "decline": {
+    "cta": "Recusar convite",
+    "confirm": "O convite para «{{studio}}» será removido. Não passará a integrar a equipa e só o proprietário do estúdio o pode enviar novamente.",
+    "keep": "Manter",
+    "confirmCta": "Recusar",
+    "pending": "A recusar…"
+  },
+  "declined": {
+    "title": "Convite recusado",
+    "sub": "Não o adicionámos ao estúdio. Se foi engano, peça ao proprietário para enviar o convite novamente."
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Passaggio {{step}} di {{total}}",
+    "securityNote": "I tuoi dati sono protetti e non vengono mai ceduti a terzi",
+    "back": "Indietro",
+    "continue": "Continua",
+    "finish": "Inizia a lavorare",
+    "saving": "Salvataggio...",
+    "progress": "{{step}}/5 — richiede meno di 3 minuti",
+    "regionRequired": "Imposta le tue preferenze regionali",
+    "networkError": "Errore di rete durante il salvataggio dei dati.",
+    "phoneTakenTitle": "Numero già in uso",
+    "phoneTaken": "Questo numero di telefono è già registrato",
+    "errorTitle": "Errore",
+    "changeNumber": "Cambia numero",
+    "gotIt": "Ho capito"
+  },
+  "steps": {
+    "identity": {
+      "title": "Lo studio",
+      "desc": "Nome, descrizione e stile visivo del tuo brand."
+    },
+    "activity": {
+      "title": "Attività",
+      "desc": "Scegli un ambito così adattiamo il CRM a te."
+    },
+    "contact": {
+      "title": "Contatti",
+      "desc": "Indirizzo, telefono e link per i tuoi clienti."
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "desc": "Area, valuta e formato della data."
+    },
+    "schedule": {
+      "title": "Orari di apertura",
+      "desc": "Imposta i giorni e gli orari in cui il tuo studio è aperto."
+    }
+  },
+  "identity": {
+    "welcome": "Benvenuto",
+    "subtitle": "Un paio di minuti di configurazione — e il tuo spazio di lavoro è pronto",
+    "replaceLogo": "Sostituisci il logo",
+    "uploadLogo": "Carica il logo",
+    "removeLogo": "Rimuovi",
+    "logoHint": "JPG, PNG, WEBP fino a 5 MB",
+    "nameLabel": "Nome dello studio o dell'azienda",
+    "namePlaceholder": "Es.: Studio Forma",
+    "descriptionLabel": "Descrizione",
+    "descriptionPlaceholder": "Due righe sul tuo studio, sul modo di lavorare, sulle particolarità...",
+    "newBadge": "NUOVO"
+  },
+  "activity": {
+    "title": "Tipo di attività",
+    "subtitle": "Scegli un ambito — adatteremo il CRM a te",
+    "comingSoon": "Presto: barbiere, fitness, danza e altro",
+    "types": {
+      "yoga": {
+        "label": "Yoga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates a corpo libero"
+      }
+    }
+  },
+  "contact": {
+    "title": "Dati di contatto",
+    "subtitle": "I clienti vedranno queste informazioni al momento della prenotazione online",
+    "phoneLabel": "Telefono dello studio",
+    "checkingPhone": "Verifica del numero...",
+    "addressLabel": "Indirizzo",
+    "emailLabel": "Email",
+    "websiteLabel": "Sito web",
+    "note": "Tutti i campi tranne il telefono sono facoltativi. Puoi compilarli più avanti nelle impostazioni."
+  },
+  "settings": {
+    "title": "Impostazioni regionali",
+    "subtitle": "Modificabili in seguito nelle impostazioni dello studio",
+    "timezoneLabel": "Fuso orario",
+    "timezonePlaceholder": "Scegli il fuso orario",
+    "languageLabel": "Lingua",
+    "languagePlaceholder": "Lingua",
+    "currencyLabel": "Valuta",
+    "currencyPlaceholder": "Valuta",
+    "dateFormatLabel": "Formato data",
+    "dateFormatPlaceholder": "Formato",
+    "firstDayLabel": "Primo giorno della settimana",
+    "timezones": {
+      "UTC+3": "Mosca, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Tashkent, Ekaterinburg, Karachi (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Giacarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapore, Pechino (UTC+8)",
+      "UTC+9": "Jakutsk, Tokyo, Seul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Isole Salomone (UTC+11)",
+      "UTC+12": "Kamčatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Città del Messico (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, San Paolo (UTC-3)",
+      "UTC-2": "Georgia del Sud (UTC-2)",
+      "UTC-1": "Azzorre (UTC-1)",
+      "UTC+0": "Londra, Lisbona (UTC+0)",
+      "UTC+1": "Berlino, Parigi, Varsavia (UTC+1)",
+      "UTC+2": "Kyiv, Atene, Il Cairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rublo",
+      "USD": "Dollaro",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Grivnia",
+      "GBP": "Sterlina",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Corona ceca",
+      "PLN": "Zloty",
+      "HUF": "Fiorino",
+      "RON": "Leu",
+      "BGN": "Lev",
+      "SEK": "Corona svedese",
+      "NOK": "Corona norvegese",
+      "DKK": "Corona danese",
+      "CHF": "Franco svizzero",
+      "ISK": "Corona islandese",
+      "RSD": "Dinaro serbo"
+    }
+  },
+  "schedule": {
+    "title": "Orari di apertura",
+    "subtitle": "Imposta i giorni e gli orari in cui il tuo studio è aperto",
+    "scheduleLabel": "Orari dello studio",
+    "dayOff": "Chiuso"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Nome dello studio",
+    "clients": "Clienti",
+    "attendance": "Presenze",
+    "studioCreated": "Studio creato",
+    "chooseDirection": "Scegli un ambito",
+    "phoneLabel": "Telefono",
+    "emailLabel": "Email",
+    "addressLabel": "Indirizzo",
+    "phonePlaceholder": "+39 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Via Principale 123",
+    "dayOff": "chiuso"
+  }
+}

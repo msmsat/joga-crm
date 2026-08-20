@@ -4,6 +4,7 @@ import i18n from "../../../../../i18n";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import { Select, useToast } from "../../../../../components/ui/index";
+import { LANGUAGES } from "../../../../../components/UI";
 import { settingsApi } from "../../../../../api/settings/settings.api";
 import { queryKeys } from "../../../../../api/queryKeys";
 import { errorMessage } from "../../../../../api/errorMessage";
@@ -127,18 +128,19 @@ export default function AppearanceTab() {
 
       {/* Язык интерфейса — личный, а не студийный: вкладка «Основные» (где живёт
           язык студии) администратору и тренеру закрыта, а свой язык выбрать они
-          должны. Список — только реально переведённые локали, а не восемь
-          вариантов из настроек студии. */}
+          должны. Список тот же, что у языка студии (LANGUAGES) — теперь у
+          каждого пункта есть папка перевода в src/locales, поэтому держать
+          здесь укороченную копию больше незачем. */}
       <div className="card" style={{ padding: "28px" }}>
         <SectionHeader icon={icons.globe} title={t('appearance.language.title')} subtitle={t('appearance.language.subtitle')} />
         <div style={{ width: "min(300px, 100%)" }}>
           <Select
             value={data?.language ?? i18n.language}
             onChange={(v) => save.mutate({ language: v })}
-            options={[
-              { value: "ru", label: "Русский" },
-              { value: "en", label: "English" },
-            ]}
+            options={LANGUAGES}
+            searchable
+            searchPlaceholder={t('appearance.language.search')}
+            emptyText={t('appearance.language.empty')}
           />
         </div>
       </div>

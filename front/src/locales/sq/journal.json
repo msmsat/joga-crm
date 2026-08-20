@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Sot",
+    "trainers": "Trajnerët",
+    "halls": "Sallat",
+    "day": "Ditë",
+    "week": "Javë"
+  },
+  "daySummary": {
+    "classesToday": "mësime sot",
+    "clientBookings": "rezervime klientësh",
+    "avgLoad": "ngarkesa mesatare",
+    "trainersActive": "trajnerë aktivë",
+    "gridStep": "Hapi i rrjetës",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Zhbëj: {{label}}",
+    "redo": "Ribëj: {{label}}",
+    "nothingToUndo": "S'ka çfarë të zhbëhet",
+    "nothingToRedo": "S'ka çfarë të ribëhet"
+  },
+  "newBooking": {
+    "title": "Mësim i ri",
+    "slotTime": "Ora e slotit",
+    "service": "Shërbimi",
+    "servicePlaceholder": "Zgjidhni një shërbim",
+    "namePlaceholder": "P.sh. Reformer Pilates",
+    "location": "Vendi / Salla",
+    "start": "Fillimi",
+    "end": "Mbarimi",
+    "groupLimit": "Kufiri i grupit",
+    "maxSpots": "Vende maksimale",
+    "assignTrainer": "Cakto trajnerin",
+    "cancel": "Anulo",
+    "create": "Krijo mësimin",
+    "errors": {
+      "selectService": "Zgjidhni një shërbim",
+      "range": "Nga 1 deri në 50",
+      "endAfterStart": "Mbarimi duhet të jetë pas fillimit"
+    },
+    "createServiceConfirm": {
+      "title": "Të krijohet një shërbim?",
+      "message": "Nuk e gjeni shërbimin që ju duhet? Krijojeni te Katalogu.",
+      "confirm": "Shko te Katalogu"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Konfirmuar",
+    "pending": "Në pritje",
+    "cancelled": "Anuluar",
+    "spotsTaken": "vende të zëna",
+    "fillRate": "Mbushja",
+    "booked": "I regjistruar",
+    "attended": "Erdhi",
+    "markAttended": "Shëno pjesëmarrjen",
+    "awaitingConfirmation": "Në pritje të konfirmimit",
+    "trialLesson": "Provë",
+    "unpaid": "E papaguar · {{amount}}",
+    "acceptPayment": "Prano pagesën",
+    "payCash": "Kesh",
+    "payTransfer": "Transfertë",
+    "payLater": "Pa pagesë",
+    "confirmBooking": "Konfirmo rezervimin",
+    "rejectBooking": "Refuzo kërkesën",
+    "removeFromLesson": "Hiq nga mësimi",
+    "add": "Shto",
+    "addClient": "Shto klient",
+    "edit": "Redakto",
+    "editLesson": "Redakto mësimin",
+    "deleteLesson": "Fshi mësimin",
+    "cancel": "Anulo",
+    "save": "Ruaj",
+    "lessonTitle": "Titulli i mësimit",
+    "untitled": "Pa titull",
+    "from": "Nga",
+    "to": "Deri",
+    "searchPlaceholder": "Kërko sipas emrit ose telefonit...",
+    "noClientsFound": "Nuk u gjet asnjë klient",
+    "noEligibleClients": "Asnjë klient me akses në këtë mësim",
+    "visitsCount_one": "{{count}} vizitë",
+    "visitsCount_other": "{{count}} vizita",
+    "errors": {
+      "selectService": "Zgjidhni një shërbim",
+      "range": "Nga 1 deri në 50",
+      "minBooked": "{{count}} janë regjistruar tashmë — më poshtë s'shkohet",
+      "endAfterStart": "Mbarimi duhet të jetë pas fillimit"
+    },
+    "createServiceConfirm": {
+      "title": "Të krijohet një shërbim?",
+      "message": "Nuk e gjeni shërbimin që ju duhet? Krijojeni te Katalogu.",
+      "confirm": "Shko te Katalogu"
+    }
+  },
+  "addClientModal": {
+    "title": "Shto klient",
+    "searchPlaceholder": "Kërko sipas emrit ose telefonit...",
+    "noClientsFound": "Nuk u gjet asnjë klient",
+    "chooseFromList": "Zgjidhni klientët nga lista",
+    "selectedCount_one": "Zgjedhur: {{count}} klient",
+    "selectedCount_other": "Zgjedhur: {{count}} klientë",
+    "cancel": "Anulo",
+    "add": "Shto"
+  },
+  "rightPanel": {
+    "halls": "Sallat",
+    "load": "Ngarkesa",
+    "upcoming": "Në vijim"
+  },
+  "grid": {
+    "classesShort": "mës.",
+    "peopleShort": "pers.",
+    "loadPercent": "Ngarkesa: {{percent}}%",
+    "classes": "mësime",
+    "classesToday": "mësime sot",
+    "newLessonPreview": "Mësim i ri",
+    "cancelled": "Anuluar",
+    "noTrainers": "Pa trajnerë",
+    "noHalls": "Pa salla"
+  },
+  "createService": "+ Krijo shërbim",
+  "invalidDateFormat": "Format date i pavlefshëm",
+  "toasts": {
+    "lessonMoved": "Mësimi u zhvendos",
+    "endTimeChanged": "Ora e mbarimit u ndryshua",
+    "startTimeChanged": "Ora e fillimit u ndryshua",
+    "attendanceMarked": "Pjesëmarrja u shënua",
+    "paymentAccepted": "Pagesa u pranua",
+    "bookingConfirmed": "Rezervimi u konfirmua",
+    "clientRemoved": "Klienti u hoq nga mësimi",
+    "lessonUpdated": "Mësimi u përditësua",
+    "lessonAdded": "Mësimi u shtua",
+    "selectTrainer": "Zgjidhni një trajner",
+    "alreadyCancelled": "Mësimi është tashmë i anuluar",
+    "lessonCancelled": "Mësimi u anulua",
+    "noPermission": "Nuk keni të drejta për të ndryshuar orarin",
+    "undoLabel": "U zhbë: {{label}}",
+    "redoLabel": "U ribë: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "U regjistrua: {{count}} klient",
+    "clientsBooked_other": "U regjistruan: {{count}} klientë",
+    "clientsBookedPartial": "U regjistruan {{success}} nga {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "heqje klienti",
+      "moveLesson": "zhvendosje mësimi",
+      "createLesson": "krijim mësimi",
+      "bookClient": "regjistrim klienti",
+      "bookClients": "regjistrim klientësh ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Ngarkimi dështoi",
+    "retry": "Provo sërish"
+  },
+  "cancelBookingConfirm": {
+    "title": "Të anulohet mësimi?",
+    "message_one": "{{count}} klient do të marrë njoftim për anulimin.",
+    "message_other": "{{count}} klientë do të marrin njoftim për anulimin.",
+    "confirm": "Anulo mësimin"
+  }
+}

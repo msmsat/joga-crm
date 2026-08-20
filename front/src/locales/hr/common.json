@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Dodajte svoj broj telefona",
+    "sub": "Telefon je drugi kontakt vašeg računa: preko njega se vraća pristup i stižu obavijesti. Broj studija ovdje ne odgovara — ovaj mora biti vaš."
+  },
+  "buttons": {
+    "cancel": "Odustani",
+    "save": "Spremi",
+    "saveChanges": "Spremi promjene",
+    "delete": "Izbriši",
+    "edit": "Uredi",
+    "add": "Dodaj",
+    "create": "Kreiraj",
+    "close": "Zatvori",
+    "send": "Pošalji",
+    "copy": "Kopiraj",
+    "back": "Natrag",
+    "continue": "Nastavi",
+    "finish": "Završi",
+    "done": "Gotovo, zatvori",
+    "saving": "Spremanje…",
+    "saved": "Spremljeno!",
+    "upload": "Učitaj"
+  },
+  "validation": {
+    "required": "Obavezno polje",
+    "minLength": "Najmanje {{n}} znakova",
+    "email": "Neispravna e-pošta",
+    "phone": "Neispravan telefon",
+    "contactRequired": "Unesite telefon ili e-poštu",
+    "min": "Mora biti najmanje {{n}}",
+    "positive": "Mora biti veće od 0",
+    "checkingContact": "Provjera…",
+    "emailTaken": "Ova je e-pošta već zauzeta",
+    "phoneTaken": "Ovaj je broj telefona već zauzet",
+    "emailInStudio": "Ta osoba već radi u vašem studiju",
+    "phoneInStudio": "Ta osoba već radi u vašem studiju",
+    "accountWillBeLinked": "Račun s ovim kontaktom već postoji — bit će povezan s vašim studijem"
+  },
+  "status": {
+    "online": "Na mreži",
+    "offline": "Izvan mreže",
+    "active": "Aktivan",
+    "connected": "Povezano",
+    "inactive": "Nije na mreži",
+    "loading": "Učitavanje...",
+    "notFound": "Nije pronađeno",
+    "new": "NOVO"
+  },
+  "fields": {
+    "fullName": "Ime i prezime",
+    "firstName": "Ime",
+    "lastName": "Prezime",
+    "phone": "Telefon",
+    "email": "E-pošta",
+    "photo": "Profilna slika",
+    "salary": "Plaća",
+    "schedule": "Raspored",
+    "services": "Usluge",
+    "position": "Radno mjesto",
+    "role": "Uloga",
+    "status": "Status",
+    "size": "Iznos"
+  },
+  "days": {
+    "mon": "Ponedjeljak",
+    "tue": "Utorak",
+    "wed": "Srijeda",
+    "thu": "Četvrtak",
+    "fri": "Petak",
+    "sat": "Subota",
+    "sun": "Nedjelja",
+    "short": {
+      "mon": "Po",
+      "tue": "Ut",
+      "wed": "Sr",
+      "thu": "Če",
+      "fri": "Pe",
+      "sat": "Su",
+      "sun": "Ne"
+    }
+  },
+  "salary": {
+    "fixed": "Fiksna",
+    "percent": "% prihoda",
+    "hourly": "Po satu"
+  },
+  "toasts": {
+    "phoneCopied": "Telefon je kopiran",
+    "emailCopied": "E-pošta je kopirana",
+    "copyFailed": "Kopiranje nije uspjelo"
+  },
+  "errors": {
+    "403": "Pristup odbijen",
+    "404": "Nije pronađeno",
+    "500": "Greška poslužitelja, pokušajte kasnije",
+    "network": "Nema veze s poslužiteljem",
+    "unknown": "Nešto je pošlo po zlu",
+    "loadFailed": "Učitavanje nije uspjelo",
+    "retry": "Pokušaj ponovno",
+    "invalid_bot_token": "Telegram je odbio ovaj token — provjerite postoji li bot",
+    "wa_payment_required": "Nema načina plaćanja. Bez kartice u WhatsApp Businessu Meta neće isporučiti nijednu obavijest — otvorite postavke WhatsApp kanala i dodajte plaćanje",
+    "wa_verification_required": "Vaša tvrtka nije prošla Metinu provjeru. Do tada broj ostaje ograničen i ništa se ne šalje — otvorite postavke WhatsApp kanala za upute",
+    "wa_templates_pending": "Meta još nije odobrila predloške. Bez odobrenog predloška ne možete se prvi javiti klijentu — pričekajte kraj provjere, status je u postavkama WhatsApp kanala",
+    "checkout": {
+      "package_not_found": "Paket nije pronađen",
+      "package_inactive": "Paket se više ne prodaje",
+      "client_not_found": "Klijent nije pronađen",
+      "account_not_found": "Račun nije pronađen",
+      "card_unavailable": "Plaćanje karticom još nije dostupno",
+      "promo_expired": "Promo kod više ne vrijedi"
+    },
+    "billing": {
+      "tax_details_required": "Dodajte državu studija u podatke za račun — bez nje se račun ne može izdati",
+      "nothing_to_pay": "Za trenutnu pretplatu nema ništa za platiti",
+      "stripe_not_configured": "Plaćanja nisu postavljena na poslužitelju",
+      "stripe_error": "Platna usluga odbila je zahtjev. Pokušajte ponovno",
+      "plan_not_paid": "Viši paket aktivira se isključivo plaćanjem",
+      "renew_is_automatic": "Pretplata se obnavlja automatski",
+      "vat_invalid": "VIES ne prepoznaje ovaj PDV broj — provjerite ga ili spremite bez njega",
+      "vat_unavailable": "Registar VIES trenutačno ne odgovara — pokušajte kasnije ili spremite bez broja",
+      "vat_country_mismatch": "PDV broj mora počinjati oznakom odabrane države",
+      "commission_unsettled": "Najprije podmirite proviziju za offline prodaju: pritisnite „Plati sada” u bloku provizije. Kad taj račun bude plaćen, možete prijeći na fiksni paket.",
+      "billing_profile_required": "Dodajte podatke za naplatu — račun za proviziju izdaje se na njih."
+    },
+    "loyalty": {
+      "cert_not_found": "Poklon-bon nije pronađen",
+      "cert_used": "Poklon-bon je već iskorišten ili nije važeći",
+      "cert_expired": "Poklon-bon je istekao"
+    },
+    "notifications": {
+      "critical_locked": "Ova se obavijest ne može isključiti",
+      "last_channel": "Potreban je barem jedan kanal dostave",
+      "unknown_event": "Nepoznat događaj",
+      "not_personal": "Osobne postavke ne mijenjaju obavezne obavijesti"
+    },
+    "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Nešto je pošlo po zlu",
+    "description": "Na ovoj je stranici došlo do greške. Pokušajte je osvježiti — ostatak aplikacije i dalje radi.",
+    "reload": "Osvježi stranicu"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Áttekintés",
+    "staff": "Munkatársak",
+    "catalog": "Katalógus",
+    "clients": "Ügyfelek",
+    "reports": "Jelentések",
+    "booking": "Online foglalás",
+    "finances": "Pénzügyek",
+    "notifications": "Értesítések",
+    "loyalty": "Hűségprogram",
+    "ai": "Velora AI",
+    "settings": "Beállítások",
+    "billing": "Csomag és fizetés",
+    "journal": "Napló",
+    "profile": "Profil",
+    "more": "Több"
+  },
+  "subtitles": {
+    "dashboard": "Üdvözöljük a Velora CRM-ben",
+    "staff": "Csapatkezelés",
+    "catalog": "Telephelyek, termek és szolgáltatások",
+    "clients": "A stúdió ügyféladatbázisa",
+    "reports": "Elemzések és statisztikák",
+    "booking": "Foglalási csatornák kezelése",
+    "finances": "Számlák, tranzakciók, dokumentumok",
+    "notifications": "Csatornák és értesítéstípusok",
+    "loyalty": "Ügyfélprogramok és kártyák",
+    "ai": "Okos asszisztens és automatikus válaszok",
+    "settings": "Rendszerbeállítás",
+    "billing": "Előfizetés kezelése",
+    "journal": "Órarend",
+    "profile": "Fiók és beállítások"
+  },
+  "badge": {
+    "beta": "BÉTA"
+  },
+  "navbar": {
+    "create": "Létrehozás"
+  },
+  "userMenu": {
+    "logout": "Kijelentkezés",
+    "studios": "Stúdióim"
+  },
+  "tooltips": {
+    "studioName": "Az Ön stúdiója: {{name}}",
+    "openProfile": "Profil megnyitása",
+    "openAccountMenu": "Fiók menü"
+  },
+  "sidebar": {
+    "expand": "Menü kibontása",
+    "collapse": "Menü összecsukása"
+  }
+}

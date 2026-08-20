@@ -49,8 +49,12 @@
       "title": "Язык и регион",
       "subtitle": "Настройки локализации интерфейса",
       "timezone": "Часовой пояс",
+      "timezoneSearch": "Город или смещение",
+      "timezoneNotFound": "Пояс не найден",
       "currency": "Валюта",
       "language": "Язык интерфейса",
+      "languageSearch": "Поиск языка",
+      "languageNotFound": "Язык не найден",
       "dateFormat": "Формат даты",
       "firstDay": "Первый день недели",
       "firstDayLabels": [
@@ -83,7 +87,9 @@
     },
     "language": {
       "title": "Язык интерфейса",
-      "subtitle": "Ваш личный язык — на настройки студии не влияет"
+      "subtitle": "Ваш личный язык — на настройки студии не влияет",
+      "search": "Поиск языка",
+      "empty": "Язык не найден"
     }
   },
   "notifications": {

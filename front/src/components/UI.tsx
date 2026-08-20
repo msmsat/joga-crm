@@ -480,12 +480,6 @@ export const ACTIVITY_TYPES = [
   },
 ];
 
-export const DATE_FORMATS = [
-  { value: "DD.MM.YYYY", label: "31.12.2026" },
-  { value: "MM/DD/YYYY", label: "12/31/2026" },
-  { value: "YYYY-MM-DD", label: "2026-12-31" },
-];
-
 export const WEEK_START_OPTIONS = [
   { value: "monday" },
   { value: "sunday" },
@@ -501,24 +495,61 @@ export const BUSINESS_CATEGORIES = [
   { id: "other", icon: "✦", label: "Другое", subtypes: ["Фотостудия", "Коворкинг", "Квест-комната", "Бьюти-бокс", "Иное"] },
 ];
 
-// Порядок начинается с UTC+1 (наш "домашний" пояс) и идёт в сторону убывания
-// (0, -5, -8), затем оборачивается через дальнюю сторону глобуса обратно к +2 — см. чат.
+// Все целые офсеты, по порядку и без дыр: начинаем с UTC+3 (домашний пояс) и
+// идём на восток — +4 … +14, за линией перемены дат -11 … -1, и обратно к дому
+// через 0, +1, +2. Список значений обязан совпадать с Literal Timezone в
+// back/schemas/settings/general.py, подписи — ключи onboarding:settings.timezones.
+// Получасовых поясов (+5:30) нет намеренно: офсет парсится как int часов
+// (services/daily_notify.py:_studio_tz).
 export const TIMEZONES = [
-  { value: "UTC+1" }, { value: "UTC+0" },
-  { value: "UTC-5" }, { value: "UTC-8" },
-  { value: "UTC+12" }, { value: "UTC+11" },
-  { value: "UTC+10" }, { value: "UTC+9" },
-  { value: "UTC+8" }, { value: "UTC+7" },
-  { value: "UTC+6" }, { value: "UTC+5" },
-  { value: "UTC+4" }, { value: "UTC+3" },
-  { value: "UTC+2" },
+  { value: "UTC+3" }, { value: "UTC+4" }, { value: "UTC+5" }, { value: "UTC+6" },
+  { value: "UTC+7" }, { value: "UTC+8" }, { value: "UTC+9" }, { value: "UTC+10" },
+  { value: "UTC+11" }, { value: "UTC+12" }, { value: "UTC+13" }, { value: "UTC+14" },
+  { value: "UTC-11" }, { value: "UTC-10" }, { value: "UTC-9" }, { value: "UTC-8" },
+  { value: "UTC-7" }, { value: "UTC-6" }, { value: "UTC-5" }, { value: "UTC-4" },
+  { value: "UTC-3" }, { value: "UTC-2" }, { value: "UTC-1" },
+  { value: "UTC+0" }, { value: "UTC+1" }, { value: "UTC+2" },
 ];
 
+// Стартовый пояс = пояс браузера: человеку остаётся согласиться, а не искать свой.
+// Дробные пояса (+5:30) обрезаем до целого — в списке только целые.
+export const browserTimezone = (): string => {
+  const hours = Math.trunc(-new Date().getTimezoneOffset() / 60);
+  const value = `UTC${hours >= 0 ? "+" : ""}${hours}`;
+  return TIMEZONES.some(tz => tz.value === value) ? value : "UTC+0";
+};
+
+// Языки интерфейса. Ровно те, для которых есть папка в src/locales — список и
+// переводы обязаны совпадать: раньше здесь стояли kz/ar/de/fr/es без единого
+// файла перевода, и выбор такого языка молча не менял ничего.
+// Коды — ISO 639-1 (важно для Intl.*: 'cz' не существует, чешский — 'cs').
+// Подписи — на самих языках, а не переводы: человек ищет в списке ту строку,
+// которую узнаёт, — «Čeština», а не «Чешский».
+// Порядок — по алфавиту подписи, кроме английского и русского: они первые,
+// потому что на них написан продукт и ими пользуется большинство студий.
 export const LANGUAGES = [
-  { value: "ru", label: "Русский", flag: "🇷🇺" }, { value: "en", label: "English", flag: "🇬🇧" },
-  { value: "uk", label: "Українська", flag: "🇺🇦" }, { value: "kz", label: "Қазақша", flag: "🇰🇿" },
-  { value: "de", label: "Deutsch", flag: "🇩🇪" }, { value: "fr", label: "Français", flag: "🇫🇷" },
-  { value: "es", label: "Español", flag: "🇪🇸" }, { value: "ar", label: "العربية", flag: "🇦🇪" },
+  { value: "en", label: "English", flag: "🇬🇧" },
+  { value: "ru", label: "Русский", flag: "🇷🇺" },
+  { value: "sq", label: "Shqip", flag: "🇦🇱" },
+  { value: "bg", label: "Български", flag: "🇧🇬" },
+  { value: "hr", label: "Hrvatski", flag: "🇭🇷" },
+  { value: "cs", label: "Čeština", flag: "🇨🇿" },
+  { value: "da", label: "Dansk", flag: "🇩🇰" },
+  { value: "fi", label: "Suomi", flag: "🇫🇮" },
+  { value: "fr", label: "Français", flag: "🇫🇷" },
+  { value: "de", label: "Deutsch", flag: "🇩🇪" },
+  { value: "el", label: "Ελληνικά", flag: "🇬🇷" },
+  { value: "hu", label: "Magyar", flag: "🇭🇺" },
+  { value: "it", label: "Italiano", flag: "🇮🇹" },
+  { value: "no", label: "Norsk", flag: "🇳🇴" },
+  { value: "pl", label: "Polski", flag: "🇵🇱" },
+  { value: "pt", label: "Português", flag: "🇵🇹" },
+  { value: "ro", label: "Română", flag: "🇷🇴" },
+  { value: "sr", label: "Српски", flag: "🇷🇸" },
+  { value: "es", label: "Español", flag: "🇪🇸" },
+  { value: "sv", label: "Svenska", flag: "🇸🇪" },
+  { value: "tr", label: "Türkçe", flag: "🇹🇷" },
+  { value: "uk", label: "Українська", flag: "🇺🇦" },
 ];
 
 export const CURRENCIES = [

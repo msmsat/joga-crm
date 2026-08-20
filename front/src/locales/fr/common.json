@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Ajoutez votre numéro de téléphone",
+    "sub": "Le téléphone est le second contact de votre compte : il permet de récupérer l'accès et de recevoir les notifications. Le numéro du studio ne convient pas ici — celui-ci doit être le vôtre."
+  },
+  "buttons": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "create": "Créer",
+    "close": "Fermer",
+    "send": "Envoyer",
+    "copy": "Copier",
+    "back": "Retour",
+    "continue": "Continuer",
+    "finish": "Terminer",
+    "done": "Terminé, fermer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré !",
+    "upload": "Téléverser"
+  },
+  "validation": {
+    "required": "Champ obligatoire",
+    "minLength": "Au moins {{n}} caractères",
+    "email": "E-mail invalide",
+    "phone": "Téléphone invalide",
+    "contactRequired": "Saisissez un téléphone ou un e-mail",
+    "min": "Doit être au moins {{n}}",
+    "positive": "Doit être supérieur à 0",
+    "checkingContact": "Vérification…",
+    "emailTaken": "Cet e-mail est déjà utilisé",
+    "phoneTaken": "Ce numéro de téléphone est déjà utilisé",
+    "emailInStudio": "Cette personne travaille déjà dans votre studio",
+    "phoneInStudio": "Cette personne travaille déjà dans votre studio",
+    "accountWillBeLinked": "Un compte avec ce contact existe déjà — il sera rattaché à votre studio"
+  },
+  "status": {
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "active": "Actif",
+    "connected": "Connecté",
+    "inactive": "Pas en ligne",
+    "loading": "Chargement...",
+    "notFound": "Introuvable",
+    "new": "NOUVEAU"
+  },
+  "fields": {
+    "fullName": "Nom complet",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "photo": "Photo de profil",
+    "salary": "Rémunération",
+    "schedule": "Planning",
+    "services": "Prestations",
+    "position": "Poste",
+    "role": "Rôle",
+    "status": "Statut",
+    "size": "Montant"
+  },
+  "days": {
+    "mon": "Lundi",
+    "tue": "Mardi",
+    "wed": "Mercredi",
+    "thu": "Jeudi",
+    "fri": "Vendredi",
+    "sat": "Samedi",
+    "sun": "Dimanche",
+    "short": {
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Me",
+      "thu": "Je",
+      "fri": "Ve",
+      "sat": "Sa",
+      "sun": "Di"
+    }
+  },
+  "salary": {
+    "fixed": "Fixe",
+    "percent": "% du chiffre d'affaires",
+    "hourly": "Horaire"
+  },
+  "toasts": {
+    "phoneCopied": "Téléphone copié",
+    "emailCopied": "E-mail copié",
+    "copyFailed": "Échec de la copie"
+  },
+  "errors": {
+    "403": "Accès refusé",
+    "404": "Introuvable",
+    "500": "Erreur serveur, réessayez plus tard",
+    "network": "Aucune connexion au serveur",
+    "unknown": "Une erreur est survenue",
+    "loadFailed": "Échec du chargement",
+    "retry": "Réessayer",
+    "invalid_bot_token": "Telegram a rejeté ce token — vérifiez que le bot existe",
+    "wa_payment_required": "Aucun moyen de paiement. Sans carte sur WhatsApp Business, Meta ne délivrera aucune notification — ouvrez les paramètres du canal WhatsApp et ajoutez un paiement",
+    "wa_verification_required": "Votre entreprise n'a pas passé la vérification de Meta. D'ici là, le numéro reste limité et rien n'est envoyé — ouvrez les paramètres du canal WhatsApp pour la marche à suivre",
+    "wa_templates_pending": "Les modèles ne sont pas encore validés par Meta. Sans modèle approuvé, vous ne pouvez pas écrire en premier à un client — attendez la fin de l'examen, le statut est dans les paramètres du canal WhatsApp",
+    "checkout": {
+      "package_not_found": "Forfait introuvable",
+      "package_inactive": "Le forfait n'est plus en vente",
+      "client_not_found": "Client introuvable",
+      "account_not_found": "Compte introuvable",
+      "card_unavailable": "Le paiement par carte n'est pas encore disponible",
+      "promo_expired": "Le code promo n'est plus valable"
+    },
+    "billing": {
+      "tax_details_required": "Ajoutez le pays du studio dans les informations de facturation — sans lui, la facture ne peut pas être émise",
+      "nothing_to_pay": "Il n'y a plus rien à payer sur l'abonnement en cours",
+      "stripe_not_configured": "Les paiements ne sont pas configurés sur le serveur",
+      "stripe_error": "Le service de paiement a rejeté la demande. Veuillez réessayer",
+      "plan_not_paid": "Un forfait supérieur ne s'active que par paiement",
+      "renew_is_automatic": "L'abonnement se renouvelle automatiquement",
+      "vat_invalid": "VIES ne reconnaît pas ce numéro de TVA — vérifiez-le ou enregistrez sans",
+      "vat_unavailable": "Le registre VIES ne répond pas pour le moment — réessayez plus tard ou enregistrez sans numéro",
+      "vat_country_mismatch": "Le numéro de TVA doit commencer par le code du pays sélectionné",
+      "commission_unsettled": "Réglez d'abord la commission sur les ventes hors ligne : appuyez sur « Payer maintenant » dans le bloc commission. Une fois cette facture payée, vous pourrez passer à un forfait fixe.",
+      "billing_profile_required": "Ajoutez vos informations de facturation — la facture de commission est établie à leur nom."
+    },
+    "loyalty": {
+      "cert_not_found": "Bon cadeau introuvable",
+      "cert_used": "Le bon cadeau a déjà été utilisé ou n'est pas valable",
+      "cert_expired": "Le bon cadeau a expiré"
+    },
+    "notifications": {
+      "critical_locked": "Cette notification ne peut pas être désactivée",
+      "last_channel": "Au moins un canal de diffusion est requis",
+      "unknown_event": "Événement inconnu",
+      "not_personal": "Les réglages personnels ne modifient pas les notifications obligatoires"
+    },
+    "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Une erreur est survenue",
+    "description": "Cette page a rencontré une erreur. Essayez de la recharger — le reste de l'application continue de fonctionner.",
+    "reload": "Recharger la page"
+  }
+}

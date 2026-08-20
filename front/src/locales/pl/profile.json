@@ -1,0 +1,40 @@
+{
+  "page": {
+    "title": "Twój profil",
+    "sub": "Zarządzaj danymi osobowymi i sesjami"
+  },
+  "personalInfo": {
+    "heading": "Dane osobowe",
+    "emailLocked": "E-mail jest loginem do Twojego konta i nie można go tu zmienić"
+  },
+  "security": {
+    "changePassword": "Zmień hasło",
+    "logout": "Wyloguj się"
+  },
+  "accounts": {
+    "title": "Moje studia",
+    "count_one": "{{count}} studio",
+    "count_few": "{{count}} studia",
+    "count_many": "{{count}} studiów",
+    "count_other": "{{count}} studia",
+    "enter": "Otwórz",
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "addStudio": "Dodaj studio",
+    "addStudioSub": "Nowa przestrzeń robocza — zostajesz jej właścicielem"
+  },
+  "session": {
+    "current": "Bieżąca sesja",
+    "lastActive": "Aktywny {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Dane osobowe zostały zaktualizowane"
+  },
+  "otherAccount": {
+    "title": "Inne konto",
+    "sub": "Zalogowanie się jako ktoś inny kończy bieżącą sesję w tej przeglądarce — możesz wrócić zwykłym logowaniem.",
+    "recentTitle": "Logowałeś się wcześniej",
+    "return": "Zaloguj się",
+    "forget": "Zapomnij konto"
+  }
+}

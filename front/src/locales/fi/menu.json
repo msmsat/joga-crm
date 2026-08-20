@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Yleisnäkymä",
+    "staff": "Henkilöstö",
+    "catalog": "Luettelo",
+    "clients": "Asiakkaat",
+    "reports": "Raportit",
+    "booking": "Verkkovaraus",
+    "finances": "Talous",
+    "notifications": "Ilmoitukset",
+    "loyalty": "Kanta-asiakkuus",
+    "ai": "Velora AI",
+    "settings": "Asetukset",
+    "billing": "Tilaus ja maksut",
+    "journal": "Päiväkirja",
+    "profile": "Profiili",
+    "more": "Lisää"
+  },
+  "subtitles": {
+    "dashboard": "Tervetuloa Velora CRM:ään",
+    "staff": "Tiimin hallinta",
+    "catalog": "Toimipisteet, salit ja palvelut",
+    "clients": "Studion asiakasrekisteri",
+    "reports": "Analytiikka ja tilastot",
+    "booking": "Hallitse varauskanavia",
+    "finances": "Tilit, tapahtumat, asiakirjat",
+    "notifications": "Kanavat ja ilmoitustyypit",
+    "loyalty": "Asiakasohjelmat ja kortit",
+    "ai": "Älykäs avustaja ja automaattivastaukset",
+    "settings": "Järjestelmän asetukset",
+    "billing": "Tilauksen hallinta",
+    "journal": "Tuntiaikataulu",
+    "profile": "Tili ja asetukset"
+  },
+  "badge": {
+    "beta": "BEETA"
+  },
+  "navbar": {
+    "create": "Luo"
+  },
+  "userMenu": {
+    "logout": "Kirjaudu ulos",
+    "studios": "Omat studiot"
+  },
+  "tooltips": {
+    "studioName": "Studiosi: {{name}}",
+    "openProfile": "Avaa profiili",
+    "openAccountMenu": "Tilin valikko"
+  },
+  "sidebar": {
+    "expand": "Laajenna valikko",
+    "collapse": "Kutista valikko"
+  }
+}

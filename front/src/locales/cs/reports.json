@@ -1,0 +1,615 @@
+{
+  "tabs": {
+    "overview": "Přehled",
+    "sales": "Prodeje",
+    "clients": "Klienti",
+    "team": "Tým",
+    "schedule": "Rozvrh"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Den",
+      "week": "Týden",
+      "month": "Měsíc",
+      "year": "Rok",
+      "custom": "Vlastní"
+    },
+    "vsPrevious": "oproti předchozímu období: {{from}}–{{to}}",
+    "allBranches": "Všechny pobočky",
+    "allHalls": "Všechny sály",
+    "allTrainers": "Všichni trenéři",
+    "allServices": "Všechny služby",
+    "export": "Export"
+  },
+  "insights": {
+    "title": "Vyžaduje pozornost",
+    "action": "Otevřít",
+    "empty": "Zatím je vše v pořádku — žádná doporučení",
+    "revenue_up_clients_down": "Tržby rostou, ale aktivních klientů ubývá — prověřte odchody",
+    "clients_at_risk": "{{count}} klientů nebylo přes 3 týdny — riziko odchodu",
+    "lesson_overfull": "„{{name}}“ v {{weekday, weekday}} v {{hour}}:00 je tři týdny po sobě na {{pct}} % — zvažte přidání dalšího termínu",
+    "trial_low_conversion": "Jen {{pct}} % z {{buyers}} kupců zkušební lekce si pak koupilo permanentku — zvažte kampaň",
+    "fastest_growing_product": "„{{name}}“ roste nejrychleji: +{{pct}} % oproti předchozímu období",
+    "renewals_low": "Jen {{pct}} % klientů s vypršelou permanentkou ji obnoví — zvažte připomínku",
+    "new_no_second_visit": "{{count}} nových klientů přišlo jednou a už se nepřihlásilo — zvažte připomínku",
+    "subs_expiring_week": "{{count}} klientům tento týden končí permanentka — zvažte nabídku obnovení",
+    "vip_inactive": "VIP klient „{{name}}“ nebyl {{days}} dní — zvažte osobní zprávu",
+    "high_return_free_evenings": "„{{name}}“ má vysokou návratnost ({{return_pct}} %), ale večery jsou volné — přidejte termín",
+    "trainer_overloaded": "„{{name}}“ je vytížen na {{load_pct}} % — zvažte přerozdělení rozvrhu",
+    "low_rating": "„{{name}}“ má hodnocení {{rating}} — stojí za bližší pohled",
+    "slot_chronic_low": "„{{name}}“ v {{weekday, isodowWeekday}} v {{hour}}:00 je {{weeks}} týdnů po sobě na {{pct}} % — přesuňte ho nebo zrušte",
+    "hall_idle_evenings": "„{{name}}“ je {{pct}} % večerních hodin prázdný — zvažte naplánování termínu",
+    "slot_overfull": "Termín {{weekday, isodowWeekday}} {{hour}}:00 je tři týdny po sobě na {{pct}} % — zvažte přidání dalšího",
+    "loss_hotspot": "Za toto období bylo v {{label}} zrušeno {{cancels}} lekcí — nejvíc rušení se drží kolem této hodiny"
+  },
+  "table": {
+    "loading": "Načítám…",
+    "noProduct": "Bez produktu"
+  },
+  "empty": {
+    "noData": {
+      "title": "Zatím tu nic není",
+      "text": "Za zvolené období se nezaznamenala žádná aktivita. Rozšiřte rozsah, nebo začněte tím, že v Rozvrhu zapíšete klienta.",
+      "widen": "Zobrazit rok"
+    },
+    "noRevenue": "V tomto období nejsou žádné platby",
+    "noSales": "V tomto řezu nejsou žádné prodeje",
+    "noProducts": "Zatím se neprodaly žádné balíčky ani služby",
+    "noLessons": "V tomto období nejsou žádné lekce",
+    "noTrainerLessons": "Tento trenér zatím neodučil žádnou lekci",
+    "noRows": "V tomto řezu nejsou žádné záznamy",
+    "noLosses": "Za toto období žádná zrušení ani neúčasti"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Tržby",
+      "profit": "Zisk",
+      "attendance": "Docházka",
+      "activeClients": "Aktivní klienti",
+      "fillRate": "Obsazenost"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Tržby",
+        "profit": "Zisk",
+        "attendance": "Docházka",
+        "new_clients": "Noví klienti",
+        "fill_rate": "Obsazenost"
+      }
+    },
+    "revenueStructure": {
+      "title": "Struktura tržeb"
+    },
+    "category": {
+      "subscriptions": "Permanentky",
+      "services": "Služby",
+      "certificates": "Certifikáty",
+      "rent": "Nájem",
+      "salary": "Mzdy",
+      "refunds": "Vratky"
+    },
+    "clientDynamics": {
+      "title": "Dynamika klientů",
+      "new": "Noví",
+      "returned": "Vrátili se",
+      "lost": "Ztraceni"
+    },
+    "drilldown": {
+      "title": "Operace",
+      "category": "Kategorie",
+      "amount": "Částka",
+      "lesson": "Lekce",
+      "time": "Čas",
+      "occupancy": "Obsazenost",
+      "date": "Datum",
+      "method": "Způsob",
+      "trainer": "Trenér",
+      "rowsCount": "záznamů",
+      "search": "Hledat v tabulce",
+      "shownOf": "Zobrazeno {{shown}} z {{total}}",
+      "noMatches": "Pro „{{query}}“ nic nenalezeno",
+      "reset": "Zrušit",
+      "export": "Export CSV",
+      "subtitle": {
+        "money": "Operace v tomto řezu",
+        "lessons": "Lekce v tomto řezu"
+      },
+      "hint": {
+        "operations": "Kliknutím na řádek otevřete operaci ve Financích",
+        "lessons": "Kliknutím na řádek otevřete ten den v Rozvrhu"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Příjem",
+        "expense": "Výdaj",
+        "operations": "Operace",
+        "topCategory": "Hlavní kategorie",
+        "lessons": "Lekce",
+        "booked": "Obsazeno z míst",
+        "avgFill": "Průměrná obsazenost",
+        "trainers": "Trenéři",
+        "cancelled": "Zrušeno"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Tržby",
+      "salesCount": "Prodeje",
+      "avgCheck": "Průměrná útrata",
+      "repeatShare": "Podíl opakovaných",
+      "renewals": "Míra obnovení"
+    },
+    "chart": {
+      "title": "Prodeje"
+    },
+    "incomeOperations": "Příjmové operace",
+    "breakdown": {
+      "byCategory": "Co kupují",
+      "byMethod": "Jak platí",
+      "buyerType": "Kdo kupuje",
+      "new": "Noví",
+      "returning": "Vracející se",
+      "noClient": "Bez klienta"
+    },
+    "method": {
+      "card": "Karta",
+      "cash": "Hotovost",
+      "qr": "QR kód",
+      "transfer": "Převod"
+    },
+    "products": {
+      "title": "Produkty",
+      "name": "Produkt",
+      "sold": "Prodáno",
+      "revenue": "Tržby",
+      "avgCheck": "Průměrná útrata",
+      "repeatShare": "Podíl opakovaných",
+      "trend": "Trend",
+      "trendHint": "Porovnáno s předchozím obdobím stejné délky"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Noví",
+      "returned": "Vrátili se",
+      "lost": "Ztraceni",
+      "retention": "Udržení",
+      "avgValue": "Hodnota klienta"
+    },
+    "chart": {
+      "title": "Noví vs vracející se",
+      "new": "Noví",
+      "returned": "Vracející se"
+    },
+    "riskTitle": "Rizikové segmenty",
+    "loyalTitle": "Věrní",
+    "list": "Seznam",
+    "campaign": "Spustit kampaň",
+    "exportList": "Exportovat seznam",
+    "emptySegment": "V segmentu „{{name}}“ teď nejsou žádní klienti",
+    "segments": {
+      "new": {
+        "name": "Noví klienti",
+        "desc": "Registrovaní ve zvoleném období"
+      },
+      "returned": {
+        "name": "Vracející se klienti",
+        "desc": "Byli v tomto i v předchozím období"
+      },
+      "lost": {
+        "name": "Ztracení klienti",
+        "desc": "Byli v minulém období, v tomto se nevrátili"
+      },
+      "active": {
+        "name": "Aktivní klienti",
+        "desc": "Přišli ve zvoleném období alespoň na jednu lekci"
+      },
+      "at_risk": {
+        "name": "Na hraně",
+        "desc": "Aktivní, bez návštěvy 21+ dní"
+      },
+      "vip_idle": {
+        "name": "VIP bez pohybu",
+        "desc": "VIP klienti, bez návštěvy 14+ dní"
+      },
+      "expiring_subscription": {
+        "name": "Permanentka končí",
+        "desc": "Zbývají ≤2 lekce nebo ≤7 dní"
+      },
+      "lost_newcomers": {
+        "name": "Nikdy se nevrátili",
+        "desc": "Přišli jednou, pryč 14+ dní"
+      },
+      "upsell_candidates": {
+        "name": "Připraveni na víc",
+        "desc": "8+ návštěv tento měsíc, bez balíčku"
+      },
+      "frequent": {
+        "name": "Častí",
+        "desc": "8+ návštěv za období"
+      },
+      "high_ltv": {
+        "name": "Vysoké LTV",
+        "desc": "Top 10 % podle celkové útraty"
+      },
+      "referrers": {
+        "name": "Doporučující",
+        "desc": "Dokončili doporučení v tomto období"
+      }
+    },
+    "listSearch": "Hledat podle jména nebo telefonu",
+    "shownOf": "Zobrazeno {{shown}} z {{total}}",
+    "noMatches": "Pro „{{query}}“ nikdo nenalezen",
+    "resetSearch": "Zrušit",
+    "neverVisited": "Nikdy nepřišel",
+    "valueLabel": {
+      "visits": "Návštěvy",
+      "spent": "Utraceno",
+      "daysIdle": "Dní bez návštěvy",
+      "remaining": "Zbývá lekcí",
+      "value": "Hodnota"
+    },
+    "relative": {
+      "today": "Dnes",
+      "daysAgo_one": "před {{count}} dnem",
+      "daysAgo_few": "před {{count}} dny",
+      "daysAgo_other": "před {{count}} dny"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Lekce",
+      "revenuePerHour": "Tržby/hodina",
+      "avgFillPct": "Obsazenost",
+      "cancelNoshowPct": "Zrušení/neúčasti",
+      "avgRating": "Hodnocení"
+    },
+    "table": {
+      "title": "Trenéři",
+      "trainer": "Trenér",
+      "lessons": "Lekce",
+      "fillPct": "Obsazenost",
+      "attendance": "Docházka",
+      "revenue": "Tržby",
+      "returnRate": "Návratnost",
+      "cancels": "Zrušení",
+      "fillPctHint": "Obsazená místa z toho, co bylo v plánu",
+      "returnRateHint": "Klienti, kteří se k tomuto trenérovi zapsali znovu",
+      "cancelsHint": "Zrušené lekce a neúčasti klientů",
+      "ratingHint": "Průměrné hodnocení, které klienti dali lekcím tohoto trenéra"
+    },
+    "drawer": {
+      "revenueByWeek": "Tržby po týdnech",
+      "loadByWeekday": "Vytížení podle dne v týdnu",
+      "loadByHour": "Vytížení podle denní doby",
+      "loadDim": {
+        "weekday": "Po dnech",
+        "hour": "Po hodinách"
+      },
+      "schedule": {
+        "title": "Rozvrh",
+        "empty": "V tomto období nejsou žádné lekce"
+      },
+      "topLessons": "Oblíbené lekce",
+      "returnBlock": "Návrat klientů",
+      "returnOf": "Vrátilo se {{returned}} z {{total}} klientů ({{pct}} %)",
+      "openProfile": "Otevřít profil",
+      "held": "Odučeno",
+      "attendance": "Docházka"
+    },
+    "weekdays": [
+      "Ne",
+      "Po",
+      "Út",
+      "St",
+      "Čt",
+      "Pá",
+      "So"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Po",
+      "Út",
+      "St",
+      "Čt",
+      "Pá",
+      "So",
+      "Ne"
+    ],
+    "kpi": {
+      "avgFillPct": "Obsazenost",
+      "freeSpots": "Volná místa",
+      "cancels": "Zrušení",
+      "noshows": "Neúčasti",
+      "lostRevenue": "Ušlé tržby"
+    },
+    "heatmap": {
+      "title": "Vytížení podle dne a hodiny",
+      "legend": "Obsazenost:",
+      "tooltip": "{{lessons}} lekcí · {{attendance}} navštíveno · {{pct}} %",
+      "empty": "Žádné lekce"
+    },
+    "slices": {
+      "topProfitable": "Nejvýnosnější",
+      "topFilled": "Nejobsazenější",
+      "chronicLow": "Chronicky nedoplněné",
+      "halls": "Využití sálů",
+      "held": "odučeno {{count}}",
+      "weeks": "{{count}} týd.",
+      "move": "Přesunout",
+      "cancel": "Zrušit",
+      "eveningIdle": "večery prázdné {{pct}} %"
+    },
+    "losses": {
+      "title": "Zrušení a neúčasti",
+      "dim": {
+        "hour": "Podle času",
+        "service": "Podle služby",
+        "trainer": "Podle trenéra"
+      },
+      "cancels_one": "{{count}} zrušení",
+      "cancels_few": "{{count}} zrušení",
+      "cancels_other": "{{count}} zrušení",
+      "noshows_one": "{{count}} neúčast",
+      "noshows_few": "{{count}} neúčasti",
+      "noshows_other": "{{count}} neúčastí",
+      "lostSpots_one": "−{{count}} místo",
+      "lostSpots_few": "−{{count}} místa",
+      "lostSpots_other": "−{{count}} míst"
+    },
+    "status": {
+      "confirmed": "Potvrzeno",
+      "pending": "Čeká",
+      "cancelled": "Zrušeno"
+    },
+    "slot": {
+      "summary": "za {{from}} — {{to}}",
+      "lessonsCount": "Celkem lekcí"
+    }
+  },
+  "export": {
+    "csv": "Stáhnout CSV"
+  },
+  "scopeNote": {
+    "label": "Za celé studio",
+    "money": "Filtry Pobočka a Sál na peníze nemají vliv — platby nejsou navázané na sál",
+    "clientBase": "Trenér, sál, pobočka ani služba tuto metriku nemění — klienti na ně nejsou navázáni"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Všechny peníze, které za období do studia přišly",
+        "profit": "Co zbyde po výdajích za období",
+        "attendance": "Lekce, na které klienti opravdu přišli",
+        "new_clients": "Klienti registrovaní v tomto období",
+        "fill_rate": "Jak plné jsou lekce: obsazená místa z dostupných"
+      },
+      "revenueStructure": "Z čeho se vaše peníze za toto období skládají",
+      "clientDynamics": "Kolik jich přišlo poprvé, vrátilo se a přestalo chodit"
+    },
+    "sales": {
+      "chart": "Tržby a počet nákupů po dnech",
+      "byCategory": "Podíl každého produktu na tržbách",
+      "byMethod": "Jak se tržby dělí podle způsobu platby",
+      "buyerType": "Kolik tržeb přinesou noví klienti a kolik stálí",
+      "products": "Každý produkt: kolik se prodalo, za kolik a zda roste"
+    },
+    "clients": {
+      "chart": "Kolik klientů přišlo poprvé a kolik se vrátilo, po týdnech",
+      "riskSegments": "Klienti, o které můžete přijít, když se teď neozvete",
+      "loyalSegments": "Ti, kdo chodí nejčastěji, utrácejí nejvíc a přivádějí přátele"
+    },
+    "team": {
+      "trainers": "Srovnání podle vytížení, tržeb a návratnosti klientů",
+      "loadWeekday": "Které dny v týdnu má trenér nabité a kdy má volno",
+      "loadHour": "V jaké časy se jeho lekce plní a kdy zůstávají prázdné",
+      "schedule": "Všechny lekce trenéra ve zvoleném období"
+    },
+    "schedule": {
+      "heatmap": "Kde je rozvrh přeplněný a kde prázdný",
+      "topProfitable": "Časy v rozvrhu, které přinášejí nejvíc peněz",
+      "topFilled": "Časy, které si klienti rezervují nejochotněji",
+      "chronicLow": "Termíny, které už týdny plní méně než třetinu sálu",
+      "halls": "Jakou část času jsou vaše sály skutečně využité",
+      "losses": "Kde studio přichází o místa: zrušené lekce nebo klienti, kteří nedorazili"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Prodeje",
+      "text": "Kolikrát vám klienti za období zaplatili. Jeden člověk, který platí víckrát, se počítá jako samostatné prodeje."
+    },
+    "revenue": {
+      "title": "Tržby",
+      "text": "Všechny peníze, které za období do studia přišly, podle data platby. Permanentky, jednorázové vstupy, dárkové poukazy i prodej zboží — vše dohromady."
+    },
+    "profit": {
+      "title": "Zisk",
+      "text": "Co zbyde po výdajích za období: nájem, mzdy, materiál. To je to, co vám opravdu zůstane."
+    },
+    "attendance": {
+      "title": "Docházka",
+      "text": "Kolik návštěv klienti skutečně absolvovali. Počítají se jen lekce označené jako navštívené."
+    },
+    "bookings": {
+      "title": "Rezervace",
+      "text": "Kolik rezervací klienti na lekce udělali. Zrušené rezervace se nepočítají."
+    },
+    "noshow": {
+      "title": "Neúčast",
+      "text": "Klient se zapsal, lekce proběhla a on nedorazil. Každá taková neúčast je místo, které mohl dostat někdo jiný."
+    },
+    "activeClients": {
+      "title": "Aktivní klienti",
+      "text": "Kolik různých lidí za období přišlo alespoň jednou. Každý klient se počítá jednou, bez ohledu na počet návštěv."
+    },
+    "occupancy": {
+      "title": "Obsazenost",
+      "text": "Jak plné jsou vaše lekce: obsazená místa z toho, co jste naplánovali. 100 % znamená, že už není kam."
+    },
+    "avgCheck": {
+      "title": "Průměrná útrata",
+      "text": "Kolik v průměru přinese jedna platba. Roste, když si klienti kupují delší permanentky nebo přidávají doplňky."
+    },
+    "retention": {
+      "title": "Udržení",
+      "text": "Kolik klientů z minulého období se vrátilo i v tomto. Ukazuje, jestli si lidi držíte, nebo každý měsíc začínáte od nuly."
+    },
+    "newClients": {
+      "title": "Noví klienti",
+      "text": "Lidé, kteří se ve vaší klientské bázi objevili poprvé právě v tomto období."
+    },
+    "returning": {
+      "title": "Vracející se",
+      "text": "Klienti, kteří u vás byli už dřív a v tomto období se vrátili."
+    },
+    "lost": {
+      "title": "Ztraceni",
+      "text": "Byli v minulém období a v tomto nepřišli ani jednou. Pořád se vyplatí je oslovit."
+    },
+    "clientValue": {
+      "title": "Hodnota klienta",
+      "text": "Kolik za období v průměru přinese jeden klient."
+    },
+    "repeatPurchaseShare": {
+      "title": "Podíl opakovaných nákupů",
+      "text": "Podíl klientů, kteří u vás nakoupili víc než jednou. Čím vyšší, tím silnější je návyk k vám chodit."
+    },
+    "renewalRate": {
+      "title": "Míra obnovení",
+      "text": "Kolik klientů si po vypršení předchozí permanentky koupilo novou."
+    },
+    "revenuePerHour": {
+      "title": "Tržby na hodinu (trenér)",
+      "text": "Kolik peněz přinese jedna hodina práce trenéra. Umožňuje férové srovnání — někdo může učit méně lekcí, ale každá vydělá víc."
+    },
+    "trainerReturnRate": {
+      "title": "Návratnost (trenér)",
+      "text": "Podíl klientů trenéra, kteří se k němu zapsali znovu."
+    },
+    "missedRevenue": {
+      "title": "Ušlé tržby",
+      "text": "Peníze, které studio nevydělalo kvůli prázdným místům na proběhlých lekcích: volná místa krát cena lekce."
+    },
+    "losses": {
+      "title": "Zrušení a neúčasti",
+      "text": "„Zrušení“ je zrušená lekce, „neúčast“ je klient, který se zapsal a nepřišel. Řezy podle času, služby a trenéra používají stejné filtry jako záložka a sedí s KPI v hlavičce."
+    },
+    "lessonRevenue": {
+      "title": "Tržby lekce",
+      "text": "Hrubý odhad tržby z lekce: účastníci krát cena. Platby nejsou navázané na konkrétní lekci, jde tedy o přibližné číslo, ne přesnou částku."
+    },
+    "filtersScope": {
+      "title": "Rozsah filtrů",
+      "text": "Filtry Pobočka a Sál ovlivňují jen metriky navázané na lekce. Platby nejsou vázané na sál, takže peníze se zobrazují za celé studio."
+    },
+    "avgValue": {
+      "title": "Hodnota klienta",
+      "text": "Kolik za období v průměru přinese jeden klient."
+    },
+    "cancelNoshow": {
+      "title": "Zrušení a neúčasti",
+      "text": "Podíl narušených lekcí: zrušení a neúčasti ze všeho naplánovaného."
+    },
+    "avgRating": {
+      "title": "Průměrné hodnocení",
+      "text": "Průměrné hodnocení, které klienti dali lekcím tohoto trenéra."
+    },
+    "teamScope": {
+      "title": "Rozsah dat",
+      "text": "Počítají se jen tržby navázané na konkrétního trenéra, takže součet přes všechny trenéry může být nižší než celkové tržby studia."
+    },
+    "lessonsCount": {
+      "title": "Lekce",
+      "text": "Kolik lekcí trenéři za období odučili."
+    },
+    "load": {
+      "title": "Vytížení",
+      "text": "Jak nabitý má trenér den: jeho obsazené hodiny z provozní doby studia."
+    },
+    "weeklyClients": {
+      "title": "Noví a vracející se",
+      "text": "Po týdnech: kolik lidí k vám přišlo poprvé a kolik se vrátilo. Zdravé studio roste na obou křivkách."
+    },
+    "byCategory": {
+      "title": "Tržby podle kategorií",
+      "text": "Na čem vlastně vyděláváte: permanentky, jednorázové vstupy, dárkové poukazy, prodej zboží."
+    },
+    "byMethod": {
+      "title": "Způsoby platby",
+      "text": "Jak klienti platí. Pomůže zjistit, jestli potřebujete platební terminál a kolik peněz jde mimo pokladnu."
+    },
+    "buyerType": {
+      "title": "Kdo platí",
+      "text": "Noví klienti versus stálí. Pokud skoro všechny tržby dělají noví, studio si lidi neudrží."
+    },
+    "products": {
+      "title": "Co se prodává",
+      "text": "Všechny permanentky a služby za období: kolik se prodalo, za kolik a jestli prodeje rostou."
+    },
+    "topProfitable": {
+      "title": "Nejvýnosnější termíny",
+      "text": "Časy v rozvrhu, které přinášejí nejvíc peněz. Postavte tam své nejlepší trenéry."
+    },
+    "topFilled": {
+      "title": "Nejobsazenější termíny",
+      "text": "Časy, které si klienti rezervují nejochotněji. Když je plno, vyplatí se přidat další termín."
+    },
+    "chronicLow": {
+      "title": "Chronicky prázdné termíny",
+      "text": "Časy, které už několik týdnů plní méně než třetinu sálu. Kandidáti na přesun nebo zrušení."
+    },
+    "hallUtil": {
+      "title": "Využití sálů",
+      "text": "Jakou část času jsou vaše sály skutečně využité. Prázdný sál je nájem, který se nevyplácí."
+    },
+    "heatmap": {
+      "title": "Vytížení podle dne a hodiny",
+      "text": "Barva ukazuje průměrnou obsazenost termínu za období. Kliknutím na buňku zobrazíte lekce toho dne a hodiny."
+    },
+    "riskSegments": {
+      "title": "Rizikové segmenty",
+      "text": "Klienti seskupení podle typu rizika — že o ně přijdete, nebo že nepřinášejí tržby. Každá karta má svůj důvod a jasný další krok: napsat jim, nabídnout obnovení nebo dražší balíček."
+    },
+    "loyalSegments": {
+      "title": "Věrní",
+      "text": "Klienti, kteří vám už teď přinášejí největší hodnotu: chodí nejčastěji, utrácejí nejvíc nebo přivádějí přátele. Vyplatí se o ně pečovat a odměňovat je."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Na hraně",
+        "text": "Dřív chodili pravidelně a teď zmizeli. Jednou zprávou se dají ještě získat zpět."
+      },
+      "vip_idle": {
+        "title": "VIP bez pohybu",
+        "text": "Klienti, kteří utratili nejvíc ze všech, ale už nějakou dobu nepřišli."
+      },
+      "expiring_subscription": {
+        "title": "Permanentka končí",
+        "text": "Těmto klientům zbývají 1–2 lekce. Nejlepší chvíle nabídnout obnovení."
+      },
+      "lost_newcomers": {
+        "title": "Nováčci, kteří se nevrátili",
+        "text": "Přišli jednou a zmizeli. Většinou jde o tu první lekci — stojí za to se na ni podívat."
+      },
+      "upsell_candidates": {
+        "title": "Připraveni na víc",
+        "text": "Chodí často, ale kupují nejlevnější balíček. Vyplatí se nabídnout dražší permanentku."
+      },
+      "frequent": {
+        "title": "Stálice",
+        "text": "Chodí častěji než kdokoli jiný. Páteř tržeb studia."
+      },
+      "high_ltv": {
+        "title": "Nejcennější",
+        "text": "Za celou dobu přinesli studiu víc peněz než kdokoli jiný."
+      },
+      "referrers": {
+        "title": "Přivádějí přátele",
+        "text": "Klienti, jejichž doporučení k vám přivedla další lidi."
+      }
+    }
+  }
+}

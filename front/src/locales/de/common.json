@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Fügen Sie Ihre Telefonnummer hinzu",
+    "sub": "Das Telefon ist der zweite Kontakt Ihres Kontos: Damit stellen Sie den Zugang wieder her und erhalten Benachrichtigungen. Die Studionummer passt hier nicht — diese muss Ihre eigene sein."
+  },
+  "buttons": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saveChanges": "Änderungen speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "create": "Erstellen",
+    "close": "Schließen",
+    "send": "Senden",
+    "copy": "Kopieren",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "finish": "Fertigstellen",
+    "done": "Fertig, schließen",
+    "saving": "Wird gespeichert…",
+    "saved": "Gespeichert!",
+    "upload": "Hochladen"
+  },
+  "validation": {
+    "required": "Pflichtfeld",
+    "minLength": "Mindestens {{n}} Zeichen",
+    "email": "Ungültige E-Mail",
+    "phone": "Ungültige Telefonnummer",
+    "contactRequired": "Telefon oder E-Mail eingeben",
+    "min": "Muss mindestens {{n}} sein",
+    "positive": "Muss größer als 0 sein",
+    "checkingContact": "Wird geprüft…",
+    "emailTaken": "Diese E-Mail ist bereits vergeben",
+    "phoneTaken": "Diese Telefonnummer ist bereits vergeben",
+    "emailInStudio": "Diese Person arbeitet bereits in Ihrem Studio",
+    "phoneInStudio": "Diese Person arbeitet bereits in Ihrem Studio",
+    "accountWillBeLinked": "Ein Konto mit diesem Kontakt existiert bereits — es wird mit Ihrem Studio verknüpft"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktiv",
+    "connected": "Verbunden",
+    "inactive": "Nicht online",
+    "loading": "Wird geladen...",
+    "notFound": "Nicht gefunden",
+    "new": "NEU"
+  },
+  "fields": {
+    "fullName": "Vollständiger Name",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "photo": "Profilbild",
+    "salary": "Vergütung",
+    "schedule": "Dienstplan",
+    "services": "Leistungen",
+    "position": "Position",
+    "role": "Rolle",
+    "status": "Status",
+    "size": "Betrag"
+  },
+  "days": {
+    "mon": "Montag",
+    "tue": "Dienstag",
+    "wed": "Mittwoch",
+    "thu": "Donnerstag",
+    "fri": "Freitag",
+    "sat": "Samstag",
+    "sun": "Sonntag",
+    "short": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    }
+  },
+  "salary": {
+    "fixed": "Fest",
+    "percent": "% vom Umsatz",
+    "hourly": "Stundensatz"
+  },
+  "toasts": {
+    "phoneCopied": "Telefonnummer kopiert",
+    "emailCopied": "E-Mail kopiert",
+    "copyFailed": "Kopieren fehlgeschlagen"
+  },
+  "errors": {
+    "403": "Zugriff verweigert",
+    "404": "Nicht gefunden",
+    "500": "Serverfehler, versuchen Sie es später erneut",
+    "network": "Keine Verbindung zum Server",
+    "unknown": "Etwas ist schiefgelaufen",
+    "loadFailed": "Laden fehlgeschlagen",
+    "retry": "Erneut versuchen",
+    "invalid_bot_token": "Telegram hat dieses Token abgelehnt — prüfen Sie, ob der Bot existiert",
+    "wa_payment_required": "Keine Zahlungsmethode. Ohne Karte bei WhatsApp Business stellt Meta keine einzige Benachrichtigung zu — öffnen Sie die Einstellungen des WhatsApp-Kanals und hinterlegen Sie eine Zahlung",
+    "wa_verification_required": "Ihr Unternehmen hat die Meta-Verifizierung nicht bestanden. Bis dahin bleibt die Nummer limitiert und es geht nichts raus — die Anleitung finden Sie in den Einstellungen des WhatsApp-Kanals",
+    "wa_templates_pending": "Die Vorlagen sind von Meta noch nicht freigegeben. Ohne freigegebene Vorlage können Sie einen Kunden nicht zuerst anschreiben — warten Sie die Prüfung ab, der Status steht in den Einstellungen des WhatsApp-Kanals",
+    "checkout": {
+      "package_not_found": "Paket nicht gefunden",
+      "package_inactive": "Das Paket wird nicht mehr verkauft",
+      "client_not_found": "Kunde nicht gefunden",
+      "account_not_found": "Konto nicht gefunden",
+      "card_unavailable": "Kartenzahlung ist noch nicht verfügbar",
+      "promo_expired": "Der Aktionscode ist nicht mehr gültig"
+    },
+    "billing": {
+      "tax_details_required": "Ergänzen Sie das Land des Studios in den Rechnungsdaten — ohne es kann keine Rechnung ausgestellt werden",
+      "nothing_to_pay": "Beim aktuellen Abo ist nichts mehr zu zahlen",
+      "stripe_not_configured": "Zahlungen sind auf dem Server nicht konfiguriert",
+      "stripe_error": "Der Zahlungsdienst hat die Anfrage abgelehnt. Bitte versuchen Sie es erneut",
+      "plan_not_paid": "Ein höherer Tarif wird nur durch Zahlung aktiviert",
+      "renew_is_automatic": "Das Abo verlängert sich automatisch",
+      "vat_invalid": "VIES kennt diese USt-IdNr. nicht — prüfen Sie sie oder speichern Sie ohne",
+      "vat_unavailable": "Das VIES-Register antwortet gerade nicht — versuchen Sie es später oder speichern Sie ohne Nummer",
+      "vat_country_mismatch": "Die USt-IdNr. muss mit dem Code des gewählten Landes beginnen",
+      "commission_unsettled": "Begleichen Sie zuerst die Provision aus Offline-Verkäufen: Klicken Sie im Provisionsblock auf „Jetzt zahlen“. Sobald diese Rechnung bezahlt ist, können Sie auf einen Festtarif wechseln.",
+      "billing_profile_required": "Ergänzen Sie Ihre Rechnungsdaten — die Provisionsrechnung wird darauf ausgestellt."
+    },
+    "loyalty": {
+      "cert_not_found": "Gutschein nicht gefunden",
+      "cert_used": "Der Gutschein wurde bereits eingelöst oder ist ungültig",
+      "cert_expired": "Der Gutschein ist abgelaufen"
+    },
+    "notifications": {
+      "critical_locked": "Diese Benachrichtigung kann nicht deaktiviert werden",
+      "last_channel": "Mindestens ein Zustellkanal ist erforderlich",
+      "unknown_event": "Unbekanntes Ereignis",
+      "not_personal": "Persönliche Einstellungen ändern keine Pflichtbenachrichtigungen"
+    },
+    "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung."
+  },
+  "units": {
+    "min": "Min.",
+    "sqm": "m²",
+    "perHour": "/Std."
+  },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Auf dieser Seite ist ein Fehler aufgetreten. Laden Sie sie neu — der Rest der App funktioniert weiter.",
+    "reload": "Seite neu laden"
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Ekipte toplam",
+    "onShift": "Vardiyada",
+    "trainers": "Eğitmenler",
+    "administrators": "Yöneticiler",
+    "onlineNow": "{{count}} kişi şu anda çevrimiçi"
+  },
+  "toolbar": {
+    "teamTitle": "Ekip · {{count}}",
+    "addEmployee": "Çalışan ekle",
+    "searchPlaceholder": "Ara...",
+    "allGroup": "Tümü"
+  },
+  "profile": {
+    "online": "· çevrimiçi",
+    "offline": "· çevrimdışı",
+    "fullAccess": "Tam erişim",
+    "ownerAccess": "Sahip, sistemin tüm modüllerine erişebilir",
+    "loadBar": "Eğitmen doluluğu",
+    "weekSchedule": "Haftalık program",
+    "todaySchedule": "Bugünkü program",
+    "minutesSuffix": "dk",
+    "clientsSuffix": "müşteri",
+    "hall": "Salon",
+    "staffHalls": "Çalışanın salonları",
+    "noName": "İsim belirtilmemiş",
+    "noRole": "Rol yok",
+    "addEventStub": "Etkinlik ekleme formu..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Gelir",
+      "rating": "Puan",
+      "bookings": "Rezervasyonlar",
+      "load": "Doluluk"
+    },
+    "admin": {
+      "bookings": "Rezervasyonlar",
+      "attended": "İşlenen",
+      "revenue": "Kasa",
+      "load": "Doluluk"
+    },
+    "owner": {
+      "revenue": "Gelir",
+      "attended": "Ziyaretler",
+      "load": "Doluluk",
+      "staff": "Çalışanlar"
+    },
+    "default": {
+      "bookings": "Rezervasyonlar",
+      "attended": "Ziyaretler",
+      "revenue": "Gelir",
+      "load": "Doluluk"
+    }
+  },
+  "schedule": {
+    "week": "Hafta",
+    "month": "Ay",
+    "working": "Çalışma saatleri",
+    "free": "Boş",
+    "busy": "Dolu",
+    "dayOff": "İzin günü",
+    "syncHint": "Program, rezervasyon günlüğü ve ders takvimiyle senkronize edilir.",
+    "workDaysInWeek": "Haftada {{count}} çalışma günü",
+    "markWork": "Çalışıyor",
+    "markHint": "Yukarıdan bir işaret seçin, sonra bir güne tıklayın",
+    "prevMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "dayHasBookings": "Bu günde zaten rezervasyon var — izin günü olamaz",
+    "pastDayLocked": "Geçmiş günler değiştirilemez"
+  },
+  "permissions": {
+    "finance": "Finans",
+    "staff": "Çalışanlar",
+    "reports": "Raporlar",
+    "clients": "Müşteriler",
+    "settings": "Ayarlar"
+  },
+  "roles": {
+    "admin": "Yönetici",
+    "trainer": "Eğitmen",
+    "owner": "Sahip"
+  },
+  "deleteModal": {
+    "cancelLesson": "Ders iptal edilsin mi?",
+    "dontAsk": "Silerken bir daha sorma",
+    "cancelInvite": "Katılım iptal edilsin mi?",
+    "cancelInviteConfirm": "Daveti iptal et"
+  },
+  "toasts": {
+    "lessonCanceled": "Ders iptal edildi",
+    "errorCancel": "İptal sırasında hata",
+    "employeeAdded": "{{name}} adlı çalışan eklendi",
+    "changesSaved": "Değişiklikler kaydedildi",
+    "employeeDeleted": "Çalışan silindi",
+    "errorDelete": "Silme sırasında hata",
+    "errorSave": "Değişiklikler kaydedilemedi",
+    "emailCopied": "E-posta kopyalandı",
+    "phoneCopied": "Telefon kopyalandı",
+    "inviteSent": "Davet {{email}} adresine gönderildi",
+    "inviteResent": "Davet yeniden gönderildi",
+    "inviteCancelled": "Davet iptal edildi"
+  },
+  "addModal": {
+    "stepIndicator": "Adım {{current}} / {{total}}",
+    "stepCounter": "{{current}}/4 — yaklaşık 2 dakika sürer",
+    "nameFallback": "bu kişi",
+    "employeeFallback": "Çalışan",
+    "steps": {
+      "1": {
+        "title": "Çalışan hakkında",
+        "sub": "Yeni ekip üyesinin adı nedir?",
+        "trust": "Çalışan verileri korunuyor"
+      },
+      "2": {
+        "title": "Rol ve hizmetler",
+        "sub": "Pozisyon ve hizmet listesi",
+        "trust": "Rol istediğiniz zaman değiştirilebilir"
+      },
+      "3": {
+        "title": "Program ve maaş",
+        "sub": "Ne zaman çalışıyor ve ne kadar kazanıyor?",
+        "trust": "Program günlükle senkronize edilir"
+      },
+      "4": {
+        "title": "Hazır!",
+        "sub": "Davet {{name}} adlı kişiye gönderildi",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Kişisel bilgiler",
+      "sub": "Ad ve iletişim bilgileriyle başlayalım",
+      "namePlaceholder": "Örn. Ayşe Yılmaz",
+      "emailLabel": "E-posta adresi",
+      "contactsNotSet": "İletişim bilgisi girilmemiş",
+      "inviteHint": "Şifreyi çalışana bizzat verin — e-postaya hiçbir zaman eklenmez. E-postada yalnızca bağlantı bulunur ve şifre olmadan stüdyo açılmaz.",
+      "errors": {
+        "name": "Ad zorunludur",
+        "phone": "Geçersiz telefon numarası",
+        "email": "Geçersiz e-posta",
+        "password": "En az 8 karakter, harf ve rakam içermeli",
+        "emailTaken": "Bu e-posta zaten başka bir Velora hesabına ait"
+      },
+      "passwordLabel": "Çalışanın giriş şifresi",
+      "passwordPlaceholder": "En az 8 karakter, harf ve rakam"
+    },
+    "step2": {
+      "heading": "Rol ve hizmetler",
+      "sub": "Bir pozisyon seçin — hizmetler otomatik olarak eklenir",
+      "positionLabel": "Pozisyon *",
+      "positionPlaceholder": "Ya da kendi pozisyonunuzu yazın...",
+      "addServicePlaceholder": "Hizmet ekle — Enter tuşuna basın"
+    },
+    "step3": {
+      "heading": "Program ve maaş",
+      "sub": "Çalışma günlerini ve ücreti belirleyin",
+      "scheduleLabel": "Çalışma programı",
+      "salaryLabel": "Maaş (isteğe bağlı)",
+      "salaryPlaceholder": "Bir sayı girin",
+      "createAndInvite": "Oluştur ve davet et"
+    },
+    "step4": {
+      "exclaim": "Harika!",
+      "added": "eklendi",
+      "sub": "Davet gönderildi. Çalışan, daveti kabul ettiğinde ekibe katılır.",
+      "inviteLinkLabel": "Davet bağlantısı",
+      "sendInviteLabel": "Davet gönder",
+      "inviteInfo": "Çalışan e-postayı alır, bağlantıyı açar ve daveti şifresiyle onaylar — ancak o zaman ekibe katılır ve erişim kazanır. Bağlantı 7 gün geçerlidir. Şifre e-postada yer almaz — bizzat teslim edin.",
+      "emailSentTitle": "E-posta gönderildi",
+      "resend": "Yeniden gönder",
+      "resentOk": "E-posta yeniden gönderildi",
+      "resendError": "Gönderilemedi — tekrar deneyin",
+      "copied": "Kopyalandı"
+    },
+    "illus": {
+      "contacts": "İletişim",
+      "profile": "Profil",
+      "roleFallback": "Rol",
+      "services": "Hizmetler",
+      "specialization": "Uzmanlık",
+      "scheduleTitle": "ÇALIŞMA PROGRAMI",
+      "inviteSent": "Davet gönderildi",
+      "inviteSub": "{{name}} bir giriş bağlantısı alacak"
+    },
+    "summary": {
+      "employee": "Çalışan",
+      "role": "Rol",
+      "workDays": "Çalışma günleri",
+      "daysCount": "7 günün {{count}} günü"
+    }
+  },
+  "editModal": {
+    "header": "DÜZENLEME",
+    "employeeFallback": "Çalışan",
+    "positionFallback": "Pozisyon yok",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rol",
+      "salary": "Maaş",
+      "schedule": "Program"
+    },
+    "profile": {
+      "heading": "Kişisel bilgiler",
+      "sub": "Çalışanın iletişim bilgilerini güncelleyin",
+      "uploadPhoto": "Fotoğraf yükle",
+      "replacePhoto": "Fotoğrafı değiştir",
+      "removePhoto": "Fotoğrafı kaldır",
+      "photoHint": "JPG, PNG — en fazla 5 MB",
+      "namePlaceholder": "Ad Soyad",
+      "notifyHint": "Çalışan, değişiklikler hakkında belirtilen telefon veya e-posta üzerinden bilgilendirilir.",
+      "errors": {
+        "name": "Ad zorunludur",
+        "email": "Geçersiz e-posta"
+      },
+      "contactsOwnedByEmployee": "E-posta ve telefon çalışanın hesabına aittir — bunları kendi profilinden değiştirir."
+    },
+    "role": {
+      "heading": "Rol ve uzmanlık",
+      "sub": "Çalışanın pozisyonu ve hizmet listesi",
+      "addService": "Hizmet ekle",
+      "catalogConfirm": "Katalogdaki Hizmetler bölümünü açmak ister misiniz?"
+    },
+    "salary": {
+      "heading": "Maaş",
+      "sub": "Ödeme türünü ve ücret tutarını belirtin",
+      "typeLabel": "Ödeme türü",
+      "perWeek": "₽ / hafta",
+      "selectTypeHint": "Yukarıdan bir ödeme türü seçin",
+      "currentLabel": "Mevcut ücret",
+      "typeFixed": "Sabit maaş",
+      "typePercent": "Gelirin %'si",
+      "typeHourly": "Saatlik ödeme",
+      "typeNotSet": "Tür seçilmedi",
+      "cardFixedSub": "Sabit tutar",
+      "cardPercentSub": "Gelirin %'si",
+      "cardHourlySub": "Çalışılan saat başına",
+      "amountFixed": "Aylık tutar",
+      "amountPercent": "Gelir yüzdesi",
+      "amountHourly": "Saatlik ücret",
+      "reportHint": "Maaş, finansal raporlarda gösterilir. Çalışan yalnızca kendi ücretini görür."
+    },
+    "schedule": {
+      "heading": "Çalışma programı",
+      "activeDays": "Aktif günler: 7 günün {{count}} günü",
+      "syncHint": "Program, rezervasyon günlüğü ve ders takvimiyle senkronize edilir.",
+      "workDaysLabel": "Çalışma günleri",
+      "totalHoursLabel": "Toplam saat",
+      "daysOffLabel": "İzin günleri",
+      "daysLabel": "Günler",
+      "workDays": "{{count}} çalışma günü",
+      "hoursSuffix": "sa"
+    },
+    "status": {
+      "online": "Çevrimiçi",
+      "offline": "Çevrimdışı",
+      "onlineNow": "Şu anda çevrimiçi",
+      "notOnline": "Çevrimiçi değil",
+      "schedule": "Program",
+      "daysCount": "{{count}}/7 gün"
+    },
+    "deleteEmployee": "Çalışanı kaldır",
+    "deleteConfirm": "{{name}} ekipten kaldırılsın mı?",
+    "defaultName": "çalışan",
+    "cannotDeleteLastOwner": "Tek sahip kaldırılamaz"
+  },
+  "ownerModal": {
+    "header": "SAHİP İLETİŞİM BİLGİLERİ",
+    "heading": "İletişim bilgileri",
+    "sub": "Stüdyo sahibinin telefonu ve e-postası",
+    "cardNote": "e-posta, giriş kullanıcı adıdır",
+    "loginWarning": "E-posta, sahibin giriş adıdır. Kaydettikten sonra yeni adresle giriş yapın.",
+    "lockedHint": "Ad, fotoğraf, rol ve erişim hakları burada düzenlenmez — «Profil» bölümünde bulunur."
+  },
+  "list": {
+    "pendingLabel": "Davet bekleniyor",
+    "pendingHint": "Çalışan daveti kabul ettiğinde profil açılır",
+    "resendInvite": "Daveti yeniden gönder",
+    "cancelInvite": "Katılımı iptal et"
+  }
+}

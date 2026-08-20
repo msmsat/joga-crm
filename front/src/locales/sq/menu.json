@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Paneli",
+    "staff": "Stafi",
+    "catalog": "Katalogu",
+    "clients": "Klientët",
+    "reports": "Raportet",
+    "booking": "Rezervimi online",
+    "finances": "Financat",
+    "notifications": "Njoftimet",
+    "loyalty": "Besnikëria",
+    "ai": "Velora AI",
+    "settings": "Cilësimet",
+    "billing": "Plani dhe pagesa",
+    "journal": "Ditari",
+    "profile": "Profili",
+    "more": "Më shumë"
+  },
+  "subtitles": {
+    "dashboard": "Mirë se vini në Velora CRM",
+    "staff": "Menaxhimi i ekipit",
+    "catalog": "Degët, sallat dhe shërbimet",
+    "clients": "Baza e klientëve të studios",
+    "reports": "Analiza dhe statistika",
+    "booking": "Menaxho kanalet e rezervimit",
+    "finances": "Llogaritë, transaksionet, dokumentet",
+    "notifications": "Kanalet dhe llojet e njoftimeve",
+    "loyalty": "Programet dhe kartat e klientëve",
+    "ai": "Asistent inteligjent dhe përgjigje automatike",
+    "settings": "Konfigurimi i sistemit",
+    "billing": "Menaxhimi i abonimit",
+    "journal": "Orari i mësimeve",
+    "profile": "Llogaria dhe cilësimet"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Krijo"
+  },
+  "userMenu": {
+    "logout": "Dil",
+    "studios": "Studiot e mia"
+  },
+  "tooltips": {
+    "studioName": "Studioja juaj: {{name}}",
+    "openProfile": "Hap profilin",
+    "openAccountMenu": "Menyja e llogarisë"
+  },
+  "sidebar": {
+    "expand": "Zgjero menynë",
+    "collapse": "Palos menynë"
+  }
+}

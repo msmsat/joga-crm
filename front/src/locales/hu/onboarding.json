@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "{{step}} / {{total}} lépés",
+    "securityNote": "Adatai védettek, és soha nem adjuk át harmadik félnek",
+    "back": "Vissza",
+    "continue": "Tovább",
+    "finish": "Kezdés",
+    "saving": "Mentés...",
+    "progress": "{{step}}/5 — kevesebb mint 3 perc",
+    "regionRequired": "Kérjük, adja meg a regionális beállításokat",
+    "networkError": "Hálózati hiba az adatok mentése közben.",
+    "phoneTakenTitle": "A szám már használatban van",
+    "phoneTaken": "Ez a telefonszám már regisztrálva van",
+    "errorTitle": "Hiba",
+    "changeNumber": "Szám módosítása",
+    "gotIt": "Értem"
+  },
+  "steps": {
+    "identity": {
+      "title": "A stúdióról",
+      "desc": "Márkájának neve, leírása és vizuális stílusa."
+    },
+    "activity": {
+      "title": "Tevékenység",
+      "desc": "Válasszon irányt, hogy a CRM-et Önre szabhassuk."
+    },
+    "contact": {
+      "title": "Elérhetőségek",
+      "desc": "Cím, telefon és linkek az ügyfelei számára."
+    },
+    "settings": {
+      "title": "Beállítások",
+      "desc": "Régió, pénznem és dátumformátum."
+    },
+    "schedule": {
+      "title": "Nyitvatartás",
+      "desc": "Állítsa be, mely napokon és órákban tart nyitva a stúdiója."
+    }
+  },
+  "identity": {
+    "welcome": "Üdvözöljük",
+    "subtitle": "Néhány perc beállítás — és a munkaterülete készen áll",
+    "replaceLogo": "Logó cseréje",
+    "uploadLogo": "Logó feltöltése",
+    "removeLogo": "Eltávolítás",
+    "logoHint": "JPG, PNG, WEBP legfeljebb 5 MB",
+    "nameLabel": "A stúdió vagy cég neve",
+    "namePlaceholder": "Pl.: Studio Forma",
+    "descriptionLabel": "Leírás",
+    "descriptionPlaceholder": "Néhány szó a stúdióról, a munkastílusról, a különlegességekről...",
+    "newBadge": "ÚJ"
+  },
+  "activity": {
+    "title": "Tevékenység típusa",
+    "subtitle": "Válasszon irányt — a CRM-et Önre szabjuk",
+    "comingSoon": "Hamarosan: borbély, fitnesz, tánc és még több",
+    "types": {
+      "yoga": {
+        "label": "Jóga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, szőnyeges pilates"
+      }
+    }
+  },
+  "contact": {
+    "title": "Elérhetőségi adatok",
+    "subtitle": "Az ügyfelek ezeket az adatokat látják online foglaláskor",
+    "phoneLabel": "A stúdió telefonszáma",
+    "checkingPhone": "Szám ellenőrzése...",
+    "addressLabel": "Cím",
+    "emailLabel": "E-mail",
+    "websiteLabel": "Weboldal",
+    "note": "A telefonszámon kívül minden mező opcionális. Később is kitöltheti a beállításokban."
+  },
+  "settings": {
+    "title": "Regionális beállítások",
+    "subtitle": "Később módosítható a stúdió beállításaiban",
+    "timezoneLabel": "Időzóna",
+    "timezonePlaceholder": "Válasszon időzónát",
+    "languageLabel": "Nyelv",
+    "languagePlaceholder": "Nyelv",
+    "currencyLabel": "Pénznem",
+    "currencyPlaceholder": "Pénznem",
+    "dateFormatLabel": "Dátumformátum",
+    "dateFormatPlaceholder": "Formátum",
+    "firstDayLabel": "A hét első napja",
+    "timezones": {
+      "UTC+3": "Moszkva, Minszk, Isztambul (UTC+3)",
+      "UTC+4": "Dubaj, Szamara, Tbiliszi (UTC+4)",
+      "UTC+5": "Taskent, Jekatyerinburg, Karacsi (UTC+5)",
+      "UTC+6": "Almati, Asztana, Omszk (UTC+6)",
+      "UTC+7": "Novoszibirszk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutszk, Szingapúr, Peking (UTC+8)",
+      "UTC+9": "Jakutszk, Tokió, Szöul (UTC+9)",
+      "UTC+10": "Vlagyivosztok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Salamon-szigetek (UTC+11)",
+      "UTC+12": "Kamcsatka, Auckland (UTC+12)",
+      "UTC+13": "Szamoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaszka (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Mexikóváros (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Déli-Georgia (UTC-2)",
+      "UTC-1": "Azori-szigetek (UTC-1)",
+      "UTC+0": "London, Lisszabon (UTC+0)",
+      "UTC+1": "Berlin, Párizs, Varsó (UTC+1)",
+      "UTC+2": "Kijev, Athén, Kairó (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubel",
+      "USD": "Dollár",
+      "EUR": "Euró",
+      "KZT": "Tenge",
+      "UAH": "Hrivnya",
+      "GBP": "Font",
+      "AED": "Dirham",
+      "TRY": "Líra",
+      "CZK": "Cseh korona",
+      "PLN": "Zloty",
+      "HUF": "Forint",
+      "RON": "Lej",
+      "BGN": "Leva",
+      "SEK": "Svéd korona",
+      "NOK": "Norvég korona",
+      "DKK": "Dán korona",
+      "CHF": "Svájci frank",
+      "ISK": "Izlandi korona",
+      "RSD": "Szerb dinár"
+    }
+  },
+  "schedule": {
+    "title": "Nyitvatartás",
+    "subtitle": "Állítsa be, mely napokon és órákban tart nyitva a stúdiója",
+    "scheduleLabel": "A stúdió nyitvatartása",
+    "dayOff": "Zárva"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "A stúdió neve",
+    "clients": "Ügyfelek",
+    "attendance": "Részv.",
+    "studioCreated": "A stúdió létrejött",
+    "chooseDirection": "Válasszon irányt",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-mail",
+    "addressLabel": "Cím",
+    "phonePlaceholder": "+36 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Fő utca 123",
+    "dayOff": "zárva"
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "toolbar": {
+    "today": "Danas",
+    "trainers": "Treneri",
+    "halls": "Dvorane",
+    "day": "Dan",
+    "week": "Tjedan"
+  },
+  "daySummary": {
+    "classesToday": "termina danas",
+    "clientBookings": "rezervacija klijenata",
+    "avgLoad": "prosj. popunjenost",
+    "trainersActive": "trenera u pogonu",
+    "gridStep": "Korak mreže",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Poništi: {{label}}",
+    "redo": "Ponovi: {{label}}",
+    "nothingToUndo": "Nema što poništiti",
+    "nothingToRedo": "Nema što ponoviti"
+  },
+  "newBooking": {
+    "title": "Novi termin",
+    "slotTime": "Vrijeme termina",
+    "service": "Usluga",
+    "servicePlaceholder": "Odaberite uslugu",
+    "namePlaceholder": "Npr. Reformer Pilates",
+    "location": "Mjesto / dvorana",
+    "start": "Početak",
+    "end": "Kraj",
+    "groupLimit": "Ograničenje grupe",
+    "maxSpots": "Maks. mjesta",
+    "assignTrainer": "Dodijeli trenera",
+    "cancel": "Odustani",
+    "create": "Kreiraj termin",
+    "errors": {
+      "selectService": "Odaberite uslugu",
+      "range": "Od 1 do 50",
+      "endAfterStart": "Kraj mora biti nakon početka"
+    },
+    "createServiceConfirm": {
+      "title": "Kreirati uslugu?",
+      "message": "Ne nalazite potrebnu uslugu? Kreirajte je u Katalogu.",
+      "confirm": "Idi u Katalog"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Potvrđeno",
+    "pending": "Čeka potvrdu",
+    "cancelled": "Otkazano",
+    "spotsTaken": "zauzetih mjesta",
+    "fillRate": "Popunjenost",
+    "booked": "Prijavljen",
+    "attended": "Došao",
+    "markAttended": "Označi dolazak",
+    "awaitingConfirmation": "Čeka potvrdu",
+    "trialLesson": "Probni",
+    "unpaid": "Neplaćeno · {{amount}}",
+    "acceptPayment": "Zaprimi plaćanje",
+    "payCash": "Gotovina",
+    "payTransfer": "Prijenos",
+    "payLater": "Bez plaćanja",
+    "confirmBooking": "Potvrdi rezervaciju",
+    "rejectBooking": "Odbij zahtjev",
+    "removeFromLesson": "Ukloni s termina",
+    "add": "Dodaj",
+    "addClient": "Dodaj klijenta",
+    "edit": "Uredi",
+    "editLesson": "Uredi termin",
+    "deleteLesson": "Izbriši termin",
+    "cancel": "Odustani",
+    "save": "Spremi",
+    "lessonTitle": "Naziv termina",
+    "untitled": "Bez naziva",
+    "from": "Od",
+    "to": "Do",
+    "searchPlaceholder": "Traži po imenu ili telefonu...",
+    "noClientsFound": "Nema pronađenih klijenata",
+    "noEligibleClients": "Nema klijenata s pristupom ovom terminu",
+    "visitsCount_one": "{{count}} dolazak",
+    "visitsCount_few": "{{count}} dolaska",
+    "visitsCount_other": "{{count}} dolazaka",
+    "errors": {
+      "selectService": "Odaberite uslugu",
+      "range": "Od 1 do 50",
+      "minBooked": "{{count}} već je prijavljeno — niže ne ide",
+      "endAfterStart": "Kraj mora biti nakon početka"
+    },
+    "createServiceConfirm": {
+      "title": "Kreirati uslugu?",
+      "message": "Ne nalazite potrebnu uslugu? Kreirajte je u Katalogu.",
+      "confirm": "Idi u Katalog"
+    }
+  },
+  "addClientModal": {
+    "title": "Dodaj klijenta",
+    "searchPlaceholder": "Traži po imenu ili telefonu...",
+    "noClientsFound": "Nema pronađenih klijenata",
+    "chooseFromList": "Odaberite klijente s popisa",
+    "selectedCount_one": "Odabran: {{count}} klijent",
+    "selectedCount_few": "Odabrana: {{count}} klijenta",
+    "selectedCount_other": "Odabrano: {{count}} klijenata",
+    "cancel": "Odustani",
+    "add": "Dodaj"
+  },
+  "rightPanel": {
+    "halls": "Dvorane",
+    "load": "Popunjenost",
+    "upcoming": "Nadolazeći"
+  },
+  "grid": {
+    "classesShort": "term.",
+    "peopleShort": "os.",
+    "loadPercent": "Popunjenost: {{percent}}%",
+    "classes": "termina",
+    "classesToday": "termina danas",
+    "newLessonPreview": "Novi termin",
+    "cancelled": "Otkazano",
+    "noTrainers": "Nema trenera",
+    "noHalls": "Nema dvorana"
+  },
+  "createService": "+ Kreiraj uslugu",
+  "invalidDateFormat": "Neispravan format datuma",
+  "toasts": {
+    "lessonMoved": "Termin premješten",
+    "endTimeChanged": "Vrijeme kraja promijenjeno",
+    "startTimeChanged": "Vrijeme početka promijenjeno",
+    "attendanceMarked": "Dolazak označen",
+    "paymentAccepted": "Plaćanje zaprimljeno",
+    "bookingConfirmed": "Rezervacija potvrđena",
+    "clientRemoved": "Klijent uklonjen s termina",
+    "lessonUpdated": "Termin ažuriran",
+    "lessonAdded": "Termin dodan",
+    "selectTrainer": "Odaberite trenera",
+    "alreadyCancelled": "Termin je već otkazan",
+    "lessonCancelled": "Termin otkazan",
+    "noPermission": "Nedovoljne ovlasti za izmjenu rasporeda",
+    "undoLabel": "Poništeno: {{label}}",
+    "redoLabel": "Ponovljeno: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Prijavljen: {{count}} klijent",
+    "clientsBooked_few": "Prijavljena: {{count}} klijenta",
+    "clientsBooked_other": "Prijavljeno: {{count}} klijenata",
+    "clientsBookedPartial": "Prijavljeno {{success}} od {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "uklanjanje klijenta",
+      "moveLesson": "premještanje termina",
+      "createLesson": "kreiranje termina",
+      "bookClient": "prijava klijenta",
+      "bookClients": "prijava klijenata ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Učitavanje nije uspjelo",
+    "retry": "Pokušaj ponovno"
+  },
+  "cancelBookingConfirm": {
+    "title": "Otkazati termin?",
+    "message_one": "{{count}} klijent dobit će obavijest o otkazivanju.",
+    "message_few": "{{count}} klijenta dobit će obavijest o otkazivanju.",
+    "message_other": "{{count}} klijenata dobit će obavijest o otkazivanju.",
+    "confirm": "Otkaži termin"
+  }
+}

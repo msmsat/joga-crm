@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Kanali povezivanja",
+    "connected": "Povezano",
+    "disconnected": "Nije povezano",
+    "pending": "Potrebno postavljanje",
+    "connectInNotifications": "Poveži u Obavijestima",
+    "manage": "Upravljaj u Obavijestima",
+    "telegram": {
+      "name": "Telegram bot",
+      "desc": "Automatske rezervacije preko bota"
+    },
+    "stripe": {
+      "name": "Plaćanja",
+      "desc": "Stripe: kartice, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Poveznica za klijente",
+      "desc": "Mini aplikacija za rezervacije — za bio, stories i kampanje",
+      "copy": "Kopiraj poveznicu",
+      "open": "Otvori mini aplikaciju",
+      "print": "Ispiši QR",
+      "posterTitle": "Rezervirajte termin online",
+      "scanHint": "Usmjerite kameru telefona na kod"
+    }
+  },
+  "loading": "Učitavanje postavki…",
+  "sections": {
+    "main": {
+      "title": "Opće postavke",
+      "prefill": {
+        "label": "Plaćanje unaprijed pri rezervaciji",
+        "sub": "Traži plaćanje prije potvrde"
+      },
+      "trialLesson": {
+        "label": "Prvi termin besplatno",
+        "sub": "Prvu rezervaciju novog klijenta plaća studio"
+      },
+      "trainerConfirm": {
+        "label": "Potvrda trenera",
+        "sub": "Rezervacija čeka ručno odobrenje"
+      },
+      "bookingActive": {
+        "label": "Online rezervacije aktivne",
+        "sub": "Prikaži widget klijentima"
+      }
+    },
+    "rules": {
+      "title": "Ograničenja i pravila",
+      "advance": {
+        "label": "Blokiraj rezervaciju manje od",
+        "sub": "Najmanje vremena prije termina"
+      },
+      "window": {
+        "label": "Rezervacije se otvaraju",
+        "sub": "Koliko dana unaprijed"
+      },
+      "cancel": {
+        "label": "Otkazivanje bez kazne",
+        "sub": "Klijent može otkazati prije termina"
+      },
+      "repeat": {
+        "label": "Ponovljena rezervacija",
+        "sub": "Dopusti klijentu da rezervira dvaput"
+      },
+      "workHours": {
+        "label": "Radno vrijeme widgeta",
+        "sub": "Termini izvan ovih sati ne mogu se rezervirati online"
+      }
+    },
+    "branding": {
+      "title": "Brendiranje widgeta",
+      "sub": "Izgled stranice za rezervacije",
+      "accentColor": "Boja naglaska",
+      "logo": {
+        "label": "Logotip studija",
+        "sub": "Prikazuje se u zaglavlju widgeta",
+        "upload": "Učitaj",
+        "uploading": "Učitavanje…",
+        "remove": "Ukloni",
+        "uploadFailed": "Učitavanje logotipa nije uspjelo"
+      },
+      "darkMode": {
+        "label": "Tamna tema",
+        "sub": "Widget u tamnom izgledu"
+      },
+      "language": {
+        "label": "Zadani jezik",
+        "sub": "Glavni jezik sučelja"
+      }
+    },
+    "notifications": {
+      "title": "Obavijesti",
+      "sub": "Automatske poruke klijentima",
+      "preview": {
+        "confirmed": "Rezervacija potvrđena! Pon 10:00",
+        "reminder2h": "Podsjetnik: za 2 sata",
+        "reviewRequest": "Hvala na dolasku! Ocijenite termin"
+      },
+      "reminder24h": {
+        "label": "Podsjetnik 24 h prije",
+        "sub": "Ujutro prije termina"
+      },
+      "reminder2h": {
+        "label": "Podsjetnik 2 h prije",
+        "sub": "Malo prije termina"
+      },
+      "reviewRequest": {
+        "label": "Zahtjev za ocjenu",
+        "sub": "Čim se dolazak označi"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kava nakon termina",
+        "sub": "Nakon rezervacije klijent dobiva poziv da ostane 15 minuta s grupom. Pristanu li dvoje ili više, dobiju podsjetnik nakon termina"
+      },
+      "spots": {
+        "label": "Kamo ih pozvati",
+        "sub": "Do tri mjesta u blizini studija. Prikazuju se tek kad se pridruže dvoje ili više",
+        "namePlaceholder": "Naziv",
+        "addressPlaceholder": "Adresa",
+        "urlPlaceholder": "Poveznica na kartu",
+        "add": "Dodaj mjesto",
+        "remove": "Ukloni mjesto"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 sat",
+      "2h": "2 sata",
+      "4h": "4 sata",
+      "12h": "12 sati",
+      "24h": "24 sata"
+    },
+    "window": {
+      "7d": "7 dana",
+      "14d": "14 dana",
+      "30d": "30 dana",
+      "60d": "60 dana"
+    },
+    "cancel": {
+      "2h": "2 sata",
+      "4h": "4 sata",
+      "12h": "12 sati",
+      "24h": "24 sata"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot povezan",
+    "botDisconnected": "Bot odspojen",
+    "codeCopied": "Kod kopiran!",
+    "linkCopied": "Poveznica kopirana!",
+    "printBlocked": "Dopustite skočne prozore da biste ispisali QR kod",
+    "stripeReturned": "Podaci poslani Stripeu",
+    "stripeLinkExpired": "Stripe poveznica je istekla — pokušajte ponovno"
+  },
+  "stripeGate": {
+    "kicker": "Nužno za online rezervacije",
+    "none": {
+      "title": "Prvo postavite plaćanja",
+      "sub": "Klijent rezervira i plaća u jednom koraku. Dok Stripe račun nije povezan, rezervaciju ne može platiti.",
+      "action": "Poveži Stripe"
+    },
+    "incomplete": {
+      "title": "Dovršite postavljanje Stripea",
+      "sub": "Račun postoji, ali Stripe još nije omogućio plaćanja — obrazac nije potpun.",
+      "action": "Nastavi postavljanje"
+    },
+    "disabled": {
+      "title": "Plaćanja su isključena",
+      "sub": "Stripe je povezan i spreman primati plaćanja, ali je isključen u odjeljku Financije.",
+      "action": "Otvori Financije"
+    },
+    "loading": {
+      "title": "Provjera veze",
+      "sub": "Pitamo Stripe je li račun studija spreman primati plaćanja.",
+      "action": "Provjera…"
+    },
+    "perks": {
+      "direct": "Novac stiže izravno na račun studija",
+      "methods": "Kartice, Apple Pay i Google Pay odmah",
+      "fee": "Provizija prati vaš Velora paket"
+    },
+    "later": "Kasnije",
+    "note": "Otvorit će se Stripe obrazac. Kad ga ispunite, vraćate se na ovu stranicu."
+  },
+  "tg": {
+    "title": "Telegram bot",
+    "connected": "Povezano",
+    "openInTelegram": "Otvori bota u Telegramu",
+    "showToken": "Prikaži token",
+    "hideToken": "Sakrij token",
+    "acceptsBookings": "Bot prima rezervacije od klijenata",
+    "instantNotify": "Obavijesti stižu odmah",
+    "disconnect": "Odspoji bota",
+    "pasteToken": "Zalijepite token bota od @BotFather",
+    "invalidToken": "Neispravan format tokena",
+    "connect": "Poveži bota",
+    "howToGet": "Kako doći do tokena?",
+    "steps": {
+      "1a": "Otvorite Telegram → pronađite",
+      "1b": "@BotFather",
+      "2a": "Pošaljite naredbu",
+      "2b": "/newbot",
+      "3": "Odaberite ime i korisničko ime bota",
+      "4": "Kopirajte token i zalijepite ga gore"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Stavite u profil i stories poveznicu za brzu rezervaciju",
+    "steps": {
+      "1": "Kopirajte svoju poveznicu",
+      "2a": "Zalijepite je u polje",
+      "2b": "„Web stranica”",
+      "2c": " u postavkama Instagram profila.",
+      "3a": "Dodajte poveznicu u",
+      "3b": "Stories",
+      "3c": " pomoću posebne naljepnice."
+    },
+    "proTip": "Zakačite u Highlights Story s tijekom rezervacije — konverzija raste za 30 %."
+  },
+  "web": {
+    "title": "Widget za web",
+    "sub": "Dodajte gumb za rezervaciju na bilo koju stranicu (Tilda, WordPress ili vlastiti kod)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopiraj",
+    "instructionPrefix": "Zalijepite ovaj kod neposredno prije zatvarajuće oznake",
+    "instructionSuffix": " na svojoj stranici. Gumb će se pojaviti automatski."
+  },
+  "wa": {
+    "title": "Rezervacija preko WhatsAppa",
+    "sub": "Postavite u WhatsApp Businessu automatski odgovor koji odmah šalje poveznicu za rezervaciju.",
+    "online": "online",
+    "sampleIncoming": "Dobar dan! Htjela bih rezervirati termin.",
+    "sampleOutgoing": "Dobrodošli! ✨",
+    "connect": "Poveži WhatsApp Business",
+    "connected": "Povezano",
+    "autoReplyActive": "Automatski odgovor je aktivan",
+    "instantLink": "Poveznica za rezervaciju šalje se odmah"
+  }
+}

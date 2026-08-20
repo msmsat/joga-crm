@@ -52,7 +52,7 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
   const expiresAt = active?.expires_at ? new Date(active.expires_at) : null;
   // trial — тоже рабочая подписка (выдаётся на онбординге), а не «истёк».
   const live = active?.status === 'active' || active?.status === 'trial';
-  const until = expiresAt?.toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  const until = expiresAt?.toLocaleDateString(i18n.language || 'en', { day: 'numeric', month: 'long', year: 'numeric' });
   const statusLabel = !active
     ? t('header.noPlan')
     : !live

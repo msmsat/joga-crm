@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Det finns inga sådana medarbetare i studion",
+    "noData": "Inga data",
+    "ownerOnly": "Åtkomsten begränsas av din roll",
+    "loadError": "Data kunde inte laddas",
+    "retry": "Försök igen"
+  },
+  "metrics": {
+    "revenue": "Intäkter denna månad",
+    "clients": "Aktiva kunder",
+    "bookings": "Bokningar denna månad",
+    "retention": "Andel som stannar",
+    "lessons": "Pass denna månad",
+    "attendance": "Närvaro denna månad",
+    "fill_rate": "Beläggning",
+    "rating": "Genomsnittligt betyg",
+    "active_clients": "Aktiva kunder",
+    "more": "Detaljer"
+  },
+  "today": {
+    "titleTrainer": "Mina pass idag",
+    "titleAdmin": "Dagens schema",
+    "subtitle": "{{count}} pass · {{booked}} av {{spots}} platser",
+    "subtitle_one": "{{count}} pass · {{booked}} av {{spots}} platser",
+    "openJournal": "Öppna schemat",
+    "empty": "Inga pass idag",
+    "emptyHintTrainer": "En ledig dag — nya bokningar dyker upp här",
+    "emptyHintAdmin": "Inget är inplanerat idag"
+  },
+  "chart": {
+    "byDay": "per dag",
+    "byMonth": "per månad",
+    "subWeek": "Aktuell vecka",
+    "subMonth": "Aktuell månad",
+    "subYear": "Senaste 12 månaderna",
+    "tabWeek": "Vecka",
+    "tabMonth": "Månad",
+    "tabYear": "År",
+    "noData": "Inga data för den här perioden",
+    "retentionNA": "Diagram över kundlojalitet är inte tillgängligt"
+  },
+  "tasks": {
+    "title": "Uppgifter",
+    "empty": "Inga uppgifter",
+    "done": "Klart",
+    "add": "Lägg till uppgift",
+    "namePlaceholder": "Uppgiftens namn…",
+    "cancel": "Avbryt",
+    "submit": "Lägg till",
+    "priority": {
+      "low": "Låg",
+      "medium": "Medel",
+      "high": "Hög"
+    },
+    "priorityHint": {
+      "low": "Låg prioritet",
+      "medium": "Medelhög prioritet",
+      "high": "Hög prioritet"
+    },
+    "tags": {
+      "Клиент": "Kund",
+      "Финансы": "Ekonomi",
+      "Лиды": "Leads",
+      "Отчёты": "Rapporter",
+      "Журнал": "Schema",
+      "Персонал": "Personal"
+    },
+    "scope": {
+      "mine": "Mina",
+      "admins": "Administratörer",
+      "trainers": "Instruktörer"
+    },
+    "assigneePlaceholder": "Välj en medarbetare",
+    "deleteTitle": "Radera uppgiften?",
+    "deleteMessage": "Den här åtgärden kan inte ångras."
+  },
+  "events": {
+    "title": "Senaste händelserna",
+    "seeAll": "Visa alla",
+    "justNow": "just nu",
+    "openProfile": "Öppna profil",
+    "writeWhatsApp": "Skriv på WhatsApp",
+    "sendReceipt": "Skicka kvitto",
+    "cancelBooking": "Avboka"
+  },
+  "summary": {
+    "topServices": "Mest sålda tjänster",
+    "trainersLoad": "Instruktörernas beläggning",
+    "financeMonth": "Ekonomi (månad)",
+    "revenue": "Intäkter",
+    "expenses": "Kostnader",
+    "avgCheck": "Snittköp",
+    "profit": "Vinst"
+  }
+}

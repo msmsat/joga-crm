@@ -23,7 +23,7 @@ from schemas.ai import (
     PlanExecuteIn,
     SendMessageResponse,
 )
-from services.ai_quota import ai_quota_status, check_ai_quota
+from services.ai_quota import TRIAL_LIMIT, ai_quota_status, check_ai_quota
 from services.ai_plan import (
     decode_plan_token, merge_answers, run_plan, run_undo, summarize, summarize_undo,
 )
@@ -368,7 +368,7 @@ async def _agent_stream(
         if result.plan_proposal:
             yield _sse("plan_proposal", result.plan_proposal)
         used, limit = await ai_quota_status(db, ctx.studio_id)
-        yield _sse("quota", {"used": used, "limit": limit})
+        yield _sse("quota", {"used": used, "limit": limit, "trial": bool(TRIAL_LIMIT)})
         yield _sse("done", {"user_id": user_message.id, "assistant_id": assistant_message.id})
 
 

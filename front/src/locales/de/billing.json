@@ -1,0 +1,371 @@
+{
+  "legal": {
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzerklärung"
+  },
+  "tabs": {
+    "plans": "Tarife & Preise",
+    "invoices": "Zahlungsverlauf",
+    "method": "Zahlungsmethode"
+  },
+  "tabsShort": {
+    "plans": "Tarife",
+    "invoices": "Verlauf",
+    "method": "Zahlung"
+  },
+  "paymentsHistory": {
+    "title": "Vollständiger Zahlungsverlauf",
+    "subtitle": "Alle Rechnungen dieses Studios",
+    "clearFilter": "Zurücksetzen",
+    "loadMore": "Mehr laden"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "banner": {
+    "trialEnds": "Ihre Testphase endet am {{date}} — wählen Sie einen Tarif",
+    "renews": "Ihr {{plan}}-Abo verlängert sich am {{date}}",
+    "expires": "Ihr {{plan}}-Abo endet am {{date}}",
+    "choosePlan": "Tarif wählen",
+    "dismiss": "Ausblenden"
+  },
+  "paymentReturn": {
+    "done": "Zahlung erfolgreich — der Tarif {{plan}} ist aktiv.",
+    "processing": "Die Zahlung wird verarbeitet — Ihr Abo wird in wenigen Minuten aktiviert."
+  },
+  "header": {
+    "eyebrow": "Velora · Abrechnung",
+    "title": "Tarife und Abrechnung",
+    "subtitle": "Verwalten Sie Abo, Zahlungsmethoden und Zahlungsverlauf",
+    "totalSpent": "Insgesamt ausgegeben",
+    "monthsWithUs": "Monate bei uns",
+    "saved": "Gespart",
+    "nextCharge": "Nächste Abbuchung",
+    "currentPlan": "AKTUELLER TARIF",
+    "noPlanName": "Kein Tarif",
+    "noPlan": "Kein aktives Abo",
+    "active": "Aktiv",
+    "activeUntil": "Aktiv · bis {{date}}",
+    "trialPlanName": "Testtarif",
+    "trial": "Testphase",
+    "trialUntil": "Testphase · bis {{date}}",
+    "expired": "Abgelaufen",
+    "percentRate": "{{rate}} % vom Umsatz",
+    "modePercent": "Prozenttarif",
+    "modeFixed": "Fest",
+    "modeCombo": "Kombi"
+  },
+  "mode": {
+    "title": "Abrechnungsmodell",
+    "subscription": "Festes Abo",
+    "percent": "% vom Umsatz",
+    "combo": "Fix + % kombiniert",
+    "short": {
+      "subscription": "Fix",
+      "percent": "Prozent",
+      "combo": "Kombi"
+    },
+    "descriptions": {
+      "subscription": "Ein Betrag pro Monat. Planbar und günstig.",
+      "percent": "Keine Grundgebühr: {{rate}} % von jedem Verkauf, Bargeld inklusive.",
+      "combo": "Halbes Abo + {{rate}} % von jedem Verkauf, Bargeld inklusive."
+    },
+    "badges": {
+      "popular": "Beliebt",
+      "flexible": "Flexibel"
+    },
+    "percentCard": {
+      "title": "Das Modell „3 % vom Umsatz“",
+      "description": "Zahlen Sie nur, wenn Sie verdienen: 3 % von jedem Verkauf, keine feste Abogebühr. Online-Zahlungen werden sofort aufgeteilt; Bargeld und Guthaben laufen auf und kommen einmal im Monat als eine Rechnung.",
+      "noFixed": "Keine Grundgebühr",
+      "payForResult": "Zahlen für Ergebnisse",
+      "oneClick": "Aktivierung mit einem Klick",
+      "cta": "3-%-Modell aktivieren",
+      "ctaShort": "3 % aktivieren"
+    },
+    "activateSuccess": "Abrechnungsmodell aktualisiert",
+    "activateError": "Das Abrechnungsmodell konnte nicht geändert werden",
+    "alreadyActive": "Dieses Abrechnungsmodell ist bereits aktiv — unten können Sie den Tarif verlängern oder wechseln",
+    "confirmSwitchTitle": "Abrechnungsmodell wechseln?",
+    "confirmSwitchMessage": "Ihr Abo ist aktiv. Der Wechsel gilt sofort und der Rest des bezahlten Zeitraums VERFÄLLT vollständig: Die ungenutzten Tage werden weder erstattet noch übertragen.",
+    "termsTitle": "Tarifbedingungen bestätigen",
+    "termsMessage": "In diesem Tarif behält die Plattform {{rate}} % von jedem Verkauf ein.\n\nBei Online-Zahlungen wird die Gebühr automatisch im Moment der Zahlung einbehalten. Bei Bargeld, Terminal und Guthabenaufladungen wird sie NICHT sofort einbehalten — sie läuft auf, und Sie erhalten einmal im Monat eine separate Rechnung.\n\nSie haben {{days}} Tage Zeit, diese Rechnung zu bezahlen. Wird sie nicht rechtzeitig beglichen, wird der Zugang zum CRM und zur Kunden-Mini-App gesperrt, bis sie bezahlt ist.\n\nDen aktuellen offenen Betrag sehen Sie unter Abrechnung; Sie können jederzeit zahlen, auch vorzeitig.",
+    "termsConfirm": "Ich akzeptiere die Bedingungen",
+    "termsMinimum": "Die monatliche Mindestgebühr beträgt {{amount}} {{currency}}. Hat die Plattform in einem Kalendermonat weniger an Ihrem Studio verdient (zum Beispiel weil es gar keine Verkäufe über das CRM gab), wird Ihnen die Differenz in Rechnung gestellt. Verdienen Sie mehr als das Minimum, kommt keine Rechnung. Eine unbezahlte Mindestgebühr sperrt den Zugang genauso wie eine unbezahlte Provisionsrechnung.",
+    "termsBurn": "ACHTUNG: Sie haben noch einen bezahlten Zeitraum offen. Der Wechsel des Abrechnungsmodells lässt ihn vollständig VERFALLEN — die ungenutzten Tage werden weder erstattet noch übertragen.",
+    "termsCombo": "Der Wechsel ist ein KAUF: direkt nach der Bestätigung sehen Sie den fälligen Betrag. Der Rest Ihres aktuellen bezahlten Zeitraums verfällt — er wird weder erstattet noch übertragen. Das Modell Fix + % wird ERST nach der Zahlung aktiv; bis dahin bleibt Ihr Tarif unverändert und es wird nichts abgebucht."
+  },
+  "combo": {
+    "rateBadge": "{{rate}} %",
+    "summary": "Fix {{fixed}}/Mon. + {{rate}} % vom Umsatz (Bargeld wird monatlich abgerechnet)",
+    "cta": "Kombi-Tarif aktivieren",
+    "ctaShort": "Kombi aktivieren"
+  },
+  "period": {
+    "1": "1 Monat",
+    "6": "6 Monate",
+    "12": "1 Jahr",
+    "24": "2 Jahre",
+    "title": "Zahlungszeitraum",
+    "discountActive": "{{percent}} % Rabatt aktiv",
+    "noDiscount": "Kein Rabatt",
+    "discountLabel": "−{{percent}} % Rabatt"
+  },
+  "calculator": {
+    "title": "Berechnungsparameter",
+    "monthlyTurnover": "Ihr monatlicher Online-Umsatz",
+    "turnoverRangeMin": "50 Tsd.",
+    "turnoverRangeMax": "3 Mio.+",
+    "chooseFeeLabel": "Provisionssatz wählen (beeinflusst die Funktionen)",
+    "feeOptions": {
+      "basic": "Basic",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "chooseFixedLabel": "Feste Grundgebühr wählen (Acquiring ist immer 3 %)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "TARIF-ÖKONOMIE",
+    "economyComboTitle": "ÖKONOMIE DES KOMBI-TARIFS",
+    "turnover": "Studio-Umsatz",
+    "systemFee": "Systemgebühr",
+    "totalMonthlyPayment": "GESAMT PRO MONAT",
+    "onlyPayForResult": "Sie zahlen keine Grundgebühr, nur für Ergebnisse",
+    "activatePercent": "{{percent}}-%-Modell aktivieren",
+    "baseSubscription": "Basis-Abo (Fix)",
+    "acquiringFee": "Acquiring / Gebühr",
+    "activateCombo": "Kombi-Tarif aktivieren"
+  },
+  "planCards": {
+    "bestChoice": "Beste Wahl",
+    "current": "Aktuell",
+    "enterprise": "Enterprise",
+    "perMonth": "/ Mon.",
+    "currentPlan": "Aktueller Tarif",
+    "choosePlan": "Tarif wählen",
+    "staffLimit": "Bis zu {{count}} Mitarbeitende",
+    "staffUnlimited": "Unbegrenzt Mitarbeitende"
+  },
+  "paymentSchedule": {
+    "title": "Zahlungsplan",
+    "total": "Gesamt fällig",
+    "morePayments": "+ {{count}} weitere Zahlungen à {{amount}}",
+    "processing": "Weiterleitung zur Zahlung…",
+    "payFor": "Für {{count}} Mon. bezahlen",
+    "vatNote": "Zzgl. MwSt. — die Steuer wird beim Bezahlen nach Ihrem Land ergänzt"
+  },
+  "trust": {
+    "title": "Warum uns 2.400+ Unternehmen vertrauen",
+    "reviews": [
+      {
+        "text": "Von Altegio gewechselt. Der Unterschied ist wie zwischen Taxi und Privatjet.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Das Beste ist, dass ich genau weiß, was ich jeden Monat zahle. Keine Überraschungen.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Der Support hat in 4 Minuten geantwortet. Das habe ich sonst nirgends erlebt.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Preis {{price}}/Mon.",
+    "discountNote": " {{percent}} % Rabatt bei Zahlung für {{period}} Mon.",
+    "planLabel": "Tarif",
+    "periodLabel": "Zeitraum",
+    "periodValue_one": "{{count}} Monat",
+    "periodValue_other": "{{count}} Monate",
+    "discountLabel": "Rabatt",
+    "scheduledBadge": "Ab {{date}} — Tarif „{{plan}}“",
+    "vatNote": "Zzgl. MwSt. — die Steuer wird beim Bezahlen nach Ihren Firmendaten ergänzt; EU-Firmen mit USt-IdNr. erhalten Reverse Charge."
+  },
+  "method": {
+    "notLinked": "Nicht hinterlegt",
+    "badgeTitle": "Zahlungsmethode gesichert",
+    "tokenSub": "Anbieter-Token · gültig bis {{expiry}}",
+    "tokenNote": "Ihre echten Kartendaten liegen beim Zahlungsanbieter (PCI DSS L1). Wir behalten nur ein Einmal-Token für Verlängerungen.",
+    "securityTitle": "Standards zum Datenschutz",
+    "security": {
+      "pciDss": "Verschlüsselung nach PCI DSS Level 1",
+      "secure3d": "Transaktionsschutz per 3D Secure",
+      "noStorage": "Kartendaten erreichen unsere Server nie",
+      "autoLink": "Die Karte wird bei der ersten Zahlung hinterlegt"
+    },
+    "noCardDetail": "Sie müssen nichts separat eingeben — die Zahlung läuft auf der sicheren Seite von Stripe.",
+    "renewDone": "Rechnung erstellt — Zahlung wird verarbeitet",
+    "renewBusy": "Rechnung wird erstellt…",
+    "renewSuccess": "Verlängerungsrechnung erstellt",
+    "renewError": "Die Rechnung konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "renewNow": "Jetzt verlängern mit Karte •••• {{last4}}",
+    "autopayTitle": "Einstellungen zur automatischen Zahlung",
+    "autopaySuccess": "Einstellung gespeichert",
+    "autopayError": "Die Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen.",
+    "autopay": {
+      "cardOnly": "Verfügbar bei Kartenzahlung",
+      "autoRenew": {
+        "label": "Automatische Verlängerung",
+        "desc": "Ausschalten, um zum Ende des bezahlten Zeitraums zu kündigen",
+        "until": "Das Abo verlängert sich nicht — Zugang bis {{date}}"
+      },
+      "emailNotify": {
+        "label": "E-Mail-Benachrichtigungen",
+        "desc": "Beleg nach jeder Zahlung per E-Mail"
+      },
+      "remind3d": {
+        "label": "3 Tage vorher erinnern",
+        "desc": "Wir erinnern Sie vor der automatischen Abbuchung"
+      },
+      "sms": {
+        "label": "SMS-Hinweis",
+        "desc": "SMS bei der Abbuchung"
+      }
+    },
+    "portal": {
+      "title": "Rechnungsdaten und USt.",
+      "subtitle": "Rechnungen, die hinterlegte Karte und der Abbuchungsverlauf liegen im Stripe-Kundenportal.",
+      "cta": "Bei Stripe öffnen"
+    },
+    "ibanBadgeLabel": "Banküberweisung (SEPA)",
+    "ibanBadgeNote": "Rechnungen kommen per E-Mail mit Zahlungslink — es wird nichts automatisch von einer Karte abgebucht. Sie können auch vorzeitig über die Rechnungsseite zahlen."
+  },
+  "invoices": {
+    "title": "Zahlungsverlauf",
+    "totalPaid": "insgesamt bezahlt {{amount}}",
+    "exportCsv": "CSV exportieren",
+    "exportError": "CSV konnte nicht exportiert werden. Bitte erneut versuchen.",
+    "receiptError": "Der Beleg konnte nicht geöffnet werden. Bitte erneut versuchen.",
+    "invoiceNo": "Rechnung Nr. {{id}}",
+    "methodCard": "Mit Karte bezahlt",
+    "methodIban": "Per Banküberweisung (IBAN) bezahlt",
+    "syncHint": "Status beim Zahlungsdienst prüfen",
+    "syncChanged": "Status aktualisiert: {{status}}",
+    "syncUnchanged": "Der Zahlungsdienst hat denselben Status bestätigt",
+    "syncError": "Der Status konnte nicht geprüft werden. Bitte erneut versuchen.",
+    "kindOfflineFee": "Provision aus Offline-Verkäufen",
+    "kindMinFee": "Monatliche Mindestgebühr",
+    "kindOnlineFee": "Provision aus Online-Zahlungen",
+    "methodWithheld": "Von Stripe bei der Zahlung einbehalten"
+  },
+  "table": {
+    "date": "Datum",
+    "description": "Beschreibung",
+    "amount": "Betrag",
+    "status": "Status",
+    "receipt": "Beleg"
+  },
+  "status": {
+    "paid": "Bezahlt",
+    "pending": "Ausstehend",
+    "failed": "Fehlgeschlagen",
+    "refunded": "Erstattet"
+  },
+  "empty": {
+    "noInvoices": "Noch keine Rechnungen — sie erscheinen nach Ihrer ersten Zahlung.",
+    "noCard": "Ihre Karte erscheint automatisch nach der ersten Zahlung.",
+    "monthsWithUs": "Sie haben noch kein Abo gekauft",
+    "noData": "Keine Daten"
+  },
+  "savings": {
+    "title": "Ihre Ersparnis",
+    "prepayTitle": "Ihre Ersparnis bei Vorauszahlung",
+    "emptyState": "Wählen Sie einen Zeitraum ab 6 Monaten, um zu sparen",
+    "youSave": "Sie sparen {{amount}} über {{months}} Mon.",
+    "freeMonths": "Das entspricht {{count}} Mon. gratis",
+    "amountLabel": "{{amount}} Ersparnis",
+    "comparedToMonthly": "gegenüber monatlicher Zahlung",
+    "forMonths_one": "Für {{count}} Monat",
+    "forMonths_other": "Für {{count}} Monate"
+  },
+  "pay": "Bezahlen",
+  "continuePlan": "Tarif fortsetzen",
+  "payModal": {
+    "titleNew": "Tarif {{plan}} starten",
+    "titleSwitch": "Zu {{plan}} wechseln",
+    "titleRenew": "{{plan}} verlängern",
+    "totalLabel": "Ihr Tarif kostet",
+    "burnWarning": "Ein Wechsel auf einen anderen Tarif startet den Zeitraum neu: Der Rest Ihres {{plan}}-Tarifs VERFÄLLT — er wird weder erstattet noch übertragen. Beim Verlängern desselben Tarifs bleibt er erhalten.",
+    "switched": "Tarif gewechselt: nichts zu zahlen — der Wechsel wurde durch den Rest des laufenden Zeitraums gedeckt.",
+    "renewNote": "Das verlängert denselben Tarif: Die gekauften Monate werden zu Ihrem aktuellen bezahlten Zeitraum addiert. Nichts verfällt.",
+    "cardNote": "Kartenzahlung auf der sicheren Stripe-Seite · Rückerstattung binnen 7 Tagen",
+    "freeUntil": "Bis {{date}} wird nichts abgebucht: Sie haben noch {{count}} Tag(e) aus Ihrem bereits bezahlten Zeitraum. Die Abrechnung beginnt an diesem Datum."
+  },
+  "offlineFee": {
+    "title": "Gebühr auf Offline-Verkäufe",
+    "accruing": "Läuft aus Bargeld und Guthaben mit {{rate}} % auf. Monatliche Rechnung, {{days}} Tage Zahlungsfrist.",
+    "due": "Rechnung gestellt. Verbleibende Tage zum Bezahlen: {{days}}.",
+    "suspended": "Zahlung überfällig — der Zugang zu CRM und Mini-App ist gesperrt.",
+    "pay": "Bezahlen",
+    "suspendedMin": "Monatliche Mindestgebühr überfällig — der Zugang zu CRM und Mini-App ist gesperrt.",
+    "alsoAccruing": "Zusätzlich läuft diesen Monat auf: {{amount}} — kommt auf die nächste Rechnung.",
+    "minimum": "Die monatliche Mindestgebühr beträgt {{amount}}. Verdienen Sie in einem Monat weniger, zahlen Sie die Differenz nach; verdienen Sie mehr, kommt keine Rechnung.",
+    "pendingBill": "Nach dem vorherigen Modell aufgelaufen, wartet auf eine Rechnung.",
+    "notBilledYet": "Noch keine Rechnung gestellt: Der aufgelaufene Betrag liegt unter der Mindestrechnungsgröße oder wird noch vorbereitet. Nichts geht verloren — er kommt auf die nächste Rechnung."
+  },
+  "trial": {
+    "title": "Angebot für neue Studios",
+    "subtitle": "Ihr Studio wurde gerade erstellt",
+    "headline": "{{days}} Tage gratis",
+    "noCard": "Keine Karte nötig — jetzt ist nichts zu zahlen",
+    "perks": {
+      "allModules": "Voller Zugriff auf alle Module: Journal, Kunden, Finanzen, Benachrichtigungen und Velora AI",
+      "noCommitment": "Keine Bindung: Passt es nicht, verlängern Sie einfach nicht",
+      "keepData": "Alles, was Sie in der Testphase einrichten, bleibt Ihnen erhalten"
+    },
+    "activate": "Aktivieren",
+    "decline": "Ablehnen",
+    "cardHint": "Sie haben die Gratisphase dieses Studios noch nicht aktiviert. Sie bleibt verfügbar, bis Sie einen Tarif kaufen."
+  },
+  "profile": {
+    "title": "Rechnungsdaten",
+    "editTitle": "Rechnungsdaten bearbeiten",
+    "subtitle": "Ihre Adresse steht auf der Rechnung und bestimmt den Steuersatz. Sie wird an Ihrem Konto gespeichert — in einem anderen Studio fragen wir nicht erneut.",
+    "subtitlePay": "Einmal ausfüllen und die Zahlung läuft beim nächsten Mal direkt durch. Ihre Adresse steht auf der Rechnung und bestimmt den Steuersatz.",
+    "cardTitle": "Rechnungsdaten",
+    "cardSubtitle": "Am Konto gespeichert und in allen Ihren Studios genutzt. So erscheinen sie auf der Rechnung.",
+    "cardEmpty": "Noch nicht ausgefüllt — wir fragen vor Ihrer ersten Zahlung. Sie können sie jetzt schon ergänzen.",
+    "add": "Rechnungsdaten ergänzen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "saveAndPay": "Speichern und weiter zur Zahlung",
+    "cancel": "Abbrechen",
+    "saved": "Rechnungsdaten gespeichert",
+    "vatNone": "Nicht angegeben",
+    "fields": {
+      "country": "Land oder Region",
+      "countryPlaceholder": "Land auswählen",
+      "address": "Adresse",
+      "line1": "Adresszeile 1",
+      "line1Placeholder": "Straße und Hausnummer",
+      "line2": "Adresszeile 2 — optional",
+      "line2Placeholder": "Wohnung, Etage, Einheit usw.",
+      "postalCode": "Postleitzahl",
+      "postalCodePlaceholder": "110 00",
+      "city": "Stadt",
+      "cityPlaceholder": "Prag",
+      "vat": "USt-IdNr. — optional",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Nur für Unternehmen. Die Nummer wird beim Speichern gegen das EU-Register (VIES) geprüft — ungeprüfte akzeptieren wir nicht. Mit gültiger Nummer wird einem Unternehmen aus einem anderen EU-Land ohne Steuer fakturiert (Reverse Charge). Privatpersonen haben keine — einfach leer lassen.",
+      "countrySearch": "Namen eingeben",
+      "countryNotFound": "Kein Land gefunden",
+      "vatOutsideEu": "Wir fragen keine USt-IdNr. ab: Außerhalb der EU bestimmt das Land des Zahlenden die Steuer, nicht seine Nummer — für die Rechnung macht sie also keinen Unterschied.",
+      "vatPending": "Ihre Nummer ist gespeichert, aber das EU-Register war gerade nicht erreichbar, daher ist sie noch nicht bestätigt und Ihre nächste Rechnung enthält die volle MwSt. Sie müssen sie nicht neu eingeben: Wir prüfen weiter, und sobald das Register antwortet, entfällt die Steuer. Für eine bereits bezahlte Rechnung erstattet der Support die Steuer."
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich"
+    },
+    "preview": {
+      "invoice": "Rechnung",
+      "billTo": "Rechnungsempfänger",
+      "note": "So erscheinen Ihre Daten auf jeder Rechnung. Sie können sie jederzeit unter Tarif und Abrechnung → Zahlungsmethode ändern."
+    }
+  }
+}

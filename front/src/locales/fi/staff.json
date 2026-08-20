@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Yhteensä tiimissä",
+    "onShift": "Vuorossa",
+    "trainers": "Ohjaajat",
+    "administrators": "Ylläpitäjät",
+    "onlineNow": "{{count}} nyt verkossa"
+  },
+  "toolbar": {
+    "teamTitle": "Tiimi · {{count}}",
+    "addEmployee": "Lisää työntekijä",
+    "searchPlaceholder": "Hae...",
+    "allGroup": "Kaikki"
+  },
+  "profile": {
+    "online": "· verkossa",
+    "offline": "· poissa",
+    "fullAccess": "Täydet oikeudet",
+    "ownerAccess": "Omistajalla on pääsy kaikkiin järjestelmän osiin",
+    "loadBar": "Ohjaajan kuormitus",
+    "weekSchedule": "Viikon aikataulu",
+    "todaySchedule": "Tämän päivän aikataulu",
+    "minutesSuffix": "min",
+    "clientsSuffix": "asiakasta",
+    "hall": "Sali",
+    "staffHalls": "Työntekijän salit",
+    "noName": "Nimeä ei ole asetettu",
+    "noRole": "Ei roolia",
+    "addEventStub": "Tapahtuman lisäyslomake..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Liikevaihto",
+      "rating": "Arvosana",
+      "bookings": "Varaukset",
+      "load": "Kuormitus"
+    },
+    "admin": {
+      "bookings": "Varaukset",
+      "attended": "Käsitelty",
+      "revenue": "Kassa",
+      "load": "Kuormitus"
+    },
+    "owner": {
+      "revenue": "Liikevaihto",
+      "attended": "Käynnit",
+      "load": "Kuormitus",
+      "staff": "Henkilöstö"
+    },
+    "default": {
+      "bookings": "Varaukset",
+      "attended": "Käynnit",
+      "revenue": "Liikevaihto",
+      "load": "Kuormitus"
+    }
+  },
+  "schedule": {
+    "week": "Viikko",
+    "month": "Kuukausi",
+    "working": "Työaika",
+    "free": "Vapaa",
+    "busy": "Varattu",
+    "dayOff": "Vapaapäivä",
+    "syncHint": "Aikataulu synkronoituu varauspäiväkirjan ja tuntiaikataulun kanssa.",
+    "workDaysInWeek": "{{count}} työpäivää viikossa",
+    "markWork": "Työssä",
+    "markHint": "Valitse merkintä ylhäältä ja napsauta sitten päivää",
+    "prevMonth": "Edellinen kuukausi",
+    "nextMonth": "Seuraava kuukausi",
+    "dayHasBookings": "Tälle päivälle on jo varauksia — se ei voi olla vapaapäivä",
+    "pastDayLocked": "Menneitä päiviä ei voi muuttaa"
+  },
+  "permissions": {
+    "finance": "Talous",
+    "staff": "Henkilöstö",
+    "reports": "Raportit",
+    "clients": "Asiakkaat",
+    "settings": "Asetukset"
+  },
+  "roles": {
+    "admin": "Ylläpitäjä",
+    "trainer": "Ohjaaja",
+    "owner": "Omistaja"
+  },
+  "deleteModal": {
+    "cancelLesson": "Perutaanko tunti?",
+    "dontAsk": "Älä kysy uudelleen poistettaessa",
+    "cancelInvite": "Perutaanko liittyminen?",
+    "cancelInviteConfirm": "Peru kutsu"
+  },
+  "toasts": {
+    "lessonCanceled": "Tunti peruttu",
+    "errorCancel": "Virhe peruttaessa",
+    "employeeAdded": "Työntekijä {{name}} lisätty",
+    "changesSaved": "Muutokset tallennettu",
+    "employeeDeleted": "Työntekijä poistettu",
+    "errorDelete": "Virhe poistettaessa",
+    "errorSave": "Muutosten tallennus epäonnistui",
+    "emailCopied": "Sähköposti kopioitu",
+    "phoneCopied": "Puhelinnumero kopioitu",
+    "inviteSent": "Kutsu lähetetty osoitteeseen {{email}}",
+    "inviteResent": "Kutsu lähetetty uudelleen",
+    "inviteCancelled": "Kutsu peruttu"
+  },
+  "addModal": {
+    "stepIndicator": "Vaihe {{current}} / {{total}}",
+    "stepCounter": "{{current}}/4 — vie noin 2 minuuttia",
+    "nameFallback": "heitä",
+    "employeeFallback": "Työntekijä",
+    "steps": {
+      "1": {
+        "title": "Työntekijästä",
+        "sub": "Mikä on uuden tiimiläisen nimi?",
+        "trust": "Työntekijän tiedot ovat suojattuja"
+      },
+      "2": {
+        "title": "Rooli ja palvelut",
+        "sub": "Tehtävä ja palveluluettelo",
+        "trust": "Roolin voi vaihtaa milloin tahansa"
+      },
+      "3": {
+        "title": "Työvuorot ja palkka",
+        "sub": "Milloin hän työskentelee ja paljonko ansaitsee?",
+        "trust": "Työvuorot synkronoituvat päiväkirjaan"
+      },
+      "4": {
+        "title": "Valmista!",
+        "sub": "Kutsu lähetetty: {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Henkilötiedot",
+      "sub": "Aloitetaan nimestä ja yhteystiedoista",
+      "namePlaceholder": "Esim. Anna Virtanen",
+      "emailLabel": "Sähköpostiosoite",
+      "contactsNotSet": "Yhteystietoja ei ole annettu",
+      "inviteHint": "Anna salasana työntekijälle henkilökohtaisesti — sähköpostiin se ei koskaan päädy. Sähköposti sisältää vain linkin, eikä se ilman salasanaa avaa studiota.",
+      "errors": {
+        "name": "Nimi on pakollinen",
+        "phone": "Virheellinen puhelinnumero",
+        "email": "Virheellinen sähköposti",
+        "password": "Vähintään 8 merkkiä, kirjaimia ja numeroita",
+        "emailTaken": "Tämä sähköposti kuuluu jo toiselle Velora-tilille"
+      },
+      "passwordLabel": "Työntekijän kirjautumissalasana",
+      "passwordPlaceholder": "Vähintään 8 merkkiä, kirjaimia ja numeroita"
+    },
+    "step2": {
+      "heading": "Rooli ja palvelut",
+      "sub": "Valitse tehtävä — palvelut lisätään automaattisesti",
+      "positionLabel": "Tehtävä *",
+      "positionPlaceholder": "Tai kirjoita oma tehtävänimike...",
+      "addServicePlaceholder": "Lisää palvelu — paina Enter"
+    },
+    "step3": {
+      "heading": "Työvuorot ja palkka",
+      "sub": "Aseta työpäivät ja korvaus",
+      "scheduleLabel": "Työvuorot",
+      "salaryLabel": "Palkka (valinnainen)",
+      "salaryPlaceholder": "Syötä luku",
+      "createAndInvite": "Luo ja kutsu"
+    },
+    "step4": {
+      "exclaim": "Hienoa!",
+      "added": "lisätty",
+      "sub": "Kutsu lähetetty. Työntekijä liittyy tiimiin heti hyväksyttyään sen.",
+      "inviteLinkLabel": "Kutsulinkki",
+      "sendInviteLabel": "Lähetä kutsu",
+      "inviteInfo": "Työntekijä saa sähköpostin, avaa linkin ja vahvistaa kutsun salasanallaan — vasta silloin hän liittyy tiimiin ja saa pääsyn. Linkki on voimassa 7 päivää. Salasana ei ole sähköpostissa — anna se henkilökohtaisesti.",
+      "emailSentTitle": "Sähköposti lähetetty",
+      "resend": "Lähetä uudelleen",
+      "resentOk": "Sähköposti lähetetty uudelleen",
+      "resendError": "Lähetys epäonnistui — yritä uudelleen",
+      "copied": "Kopioitu"
+    },
+    "illus": {
+      "contacts": "Yhteystiedot",
+      "profile": "Profiili",
+      "roleFallback": "Rooli",
+      "services": "Palvelut",
+      "specialization": "Erikoisala",
+      "scheduleTitle": "TYÖVUOROT",
+      "inviteSent": "Kutsu lähetetty",
+      "inviteSub": "{{name}} saa kirjautumislinkin"
+    },
+    "summary": {
+      "employee": "Työntekijä",
+      "role": "Rooli",
+      "workDays": "Työpäivät",
+      "daysCount": "{{count}} / 7"
+    }
+  },
+  "editModal": {
+    "header": "MUOKKAUS",
+    "employeeFallback": "Työntekijä",
+    "positionFallback": "Ei tehtävää",
+    "tabs": {
+      "profile": "Profiili",
+      "role": "Rooli",
+      "salary": "Palkka",
+      "schedule": "Työvuorot"
+    },
+    "profile": {
+      "heading": "Henkilötiedot",
+      "sub": "Päivitä työntekijän yhteystiedot",
+      "uploadPhoto": "Lataa kuva",
+      "replacePhoto": "Vaihda kuva",
+      "removePhoto": "Poista kuva",
+      "photoHint": "JPG, PNG — enintään 5 Mt",
+      "namePlaceholder": "Etunimi Sukunimi",
+      "notifyHint": "Työntekijälle ilmoitetaan muutoksista annettuun numeroon tai sähköpostiin.",
+      "errors": {
+        "name": "Nimi on pakollinen",
+        "email": "Virheellinen sähköposti"
+      },
+      "contactsOwnedByEmployee": "Sähköposti ja puhelin kuuluvat työntekijän tiliin — hän vaihtaa ne omassa profiilissaan."
+    },
+    "role": {
+      "heading": "Rooli ja erikoisala",
+      "sub": "Työntekijän tehtävä ja palveluluettelo",
+      "addService": "Lisää palvelu",
+      "catalogConfirm": "Haluatko avata Palvelut-osion Luettelossa?"
+    },
+    "salary": {
+      "heading": "Palkka",
+      "sub": "Määritä palkkatyyppi ja korvauksen suuruus",
+      "typeLabel": "Palkkatyyppi",
+      "perWeek": "₽ / viikko",
+      "selectTypeHint": "Valitse palkkatyyppi ylhäältä",
+      "currentLabel": "Nykyinen korvaus",
+      "typeFixed": "Kiinteä palkka",
+      "typePercent": "% liikevaihdosta",
+      "typeHourly": "Tuntipalkka",
+      "typeNotSet": "Tyyppiä ei ole valittu",
+      "cardFixedSub": "Kiinteä summa",
+      "cardPercentSub": "% liikevaihdosta",
+      "cardHourlySub": "Tehdyltä tunnilta",
+      "amountFixed": "Kuukausisumma",
+      "amountPercent": "Osuus liikevaihdosta",
+      "amountHourly": "Tuntitaksa",
+      "reportHint": "Palkka näkyy talousraporteissa. Työntekijä näkee vain oman korvauksensa."
+    },
+    "schedule": {
+      "heading": "Työvuorot",
+      "activeDays": "Aktiivisia päiviä: {{count}} / 7",
+      "syncHint": "Aikataulu synkronoituu varauspäiväkirjan ja tuntiaikataulun kanssa.",
+      "workDaysLabel": "Työpäivät",
+      "totalHoursLabel": "Tunteja yhteensä",
+      "daysOffLabel": "Vapaapäivät",
+      "daysLabel": "Päivät",
+      "workDays": "{{count}} työpäivää",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Verkossa",
+      "offline": "Poissa",
+      "onlineNow": "Nyt verkossa",
+      "notOnline": "Ei verkossa",
+      "schedule": "Työvuorot",
+      "daysCount": "{{count}}/7 päivää"
+    },
+    "deleteEmployee": "Poista työntekijä",
+    "deleteConfirm": "Poistetaanko {{name}} tiimistä?",
+    "defaultName": "työntekijä",
+    "cannotDeleteLastOwner": "Ainoaa omistajaa ei voi poistaa"
+  },
+  "ownerModal": {
+    "header": "OMISTAJAN YHTEYSTIEDOT",
+    "heading": "Yhteystiedot",
+    "sub": "Studion omistajan puhelin ja sähköposti",
+    "cardNote": "sähköposti on kirjautumistunnus",
+    "loginWarning": "Sähköposti on omistajan kirjautumistunnus. Kirjaudu tallennuksen jälkeen uudella osoitteella.",
+    "lockedHint": "Nimeä, kuvaa, roolia ja oikeuksia ei muokata täällä — ne ovat «Profiili»-osiossa."
+  },
+  "list": {
+    "pendingLabel": "Kutsu odottaa",
+    "pendingHint": "Profiili aukeaa, kun työntekijä hyväksyy kutsun",
+    "resendInvite": "Lähetä kutsu uudelleen",
+    "cancelInvite": "Peru liittyminen"
+  }
+}

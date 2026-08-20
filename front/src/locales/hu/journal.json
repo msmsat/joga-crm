@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Ma",
+    "trainers": "Oktatók",
+    "halls": "Termek",
+    "day": "Nap",
+    "week": "Hét"
+  },
+  "daySummary": {
+    "classesToday": "óra ma",
+    "clientBookings": "ügyfélfoglalás",
+    "avgLoad": "átl. kihasználtság",
+    "trainersActive": "oktató szolgálatban",
+    "gridStep": "Rácsméret",
+    "minuteShort": "p",
+    "minutesShort": "perc",
+    "undo": "Visszavonás: {{label}}",
+    "redo": "Újra: {{label}}",
+    "nothingToUndo": "Nincs mit visszavonni",
+    "nothingToRedo": "Nincs mit megismételni"
+  },
+  "newBooking": {
+    "title": "Új óra",
+    "slotTime": "Idősáv",
+    "service": "Szolgáltatás",
+    "servicePlaceholder": "Válasszon szolgáltatást",
+    "namePlaceholder": "Pl. Reformer Pilates",
+    "location": "Helyszín / terem",
+    "start": "Kezdés",
+    "end": "Vége",
+    "groupLimit": "Csoportlétszám",
+    "maxSpots": "Max. helyek",
+    "assignTrainer": "Oktató kijelölése",
+    "cancel": "Mégse",
+    "create": "Óra létrehozása",
+    "errors": {
+      "selectService": "Válasszon szolgáltatást",
+      "range": "1-től 50-ig",
+      "endAfterStart": "A vége a kezdés után legyen"
+    },
+    "createServiceConfirm": {
+      "title": "Létrehoz egy szolgáltatást?",
+      "message": "Nem találja a kívánt szolgáltatást? Hozza létre a Katalógusban.",
+      "confirm": "Tovább a Katalógusba"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Megerősítve",
+    "pending": "Függőben",
+    "cancelled": "Lemondva",
+    "spotsTaken": "foglalt hely",
+    "fillRate": "Kihasználtság",
+    "booked": "Jelentkezett",
+    "attended": "Megjelent",
+    "markAttended": "Jelenlét rögzítése",
+    "awaitingConfirmation": "Megerősítésre vár",
+    "trialLesson": "Próba",
+    "unpaid": "Fizetetlen · {{amount}}",
+    "acceptPayment": "Fizetés rögzítése",
+    "payCash": "Készpénz",
+    "payTransfer": "Átutalás",
+    "payLater": "Fizetés nélkül",
+    "confirmBooking": "Foglalás megerősítése",
+    "rejectBooking": "Kérés elutasítása",
+    "removeFromLesson": "Eltávolítás az óráról",
+    "add": "Hozzáadás",
+    "addClient": "Ügyfél hozzáadása",
+    "edit": "Szerkesztés",
+    "editLesson": "Óra szerkesztése",
+    "deleteLesson": "Óra törlése",
+    "cancel": "Mégse",
+    "save": "Mentés",
+    "lessonTitle": "Az óra neve",
+    "untitled": "Névtelen",
+    "from": "Ettől",
+    "to": "Eddig",
+    "searchPlaceholder": "Keresés név vagy telefon alapján...",
+    "noClientsFound": "Nem található ügyfél",
+    "noEligibleClients": "Egyetlen ügyfélnek sincs hozzáférése ehhez az órához",
+    "visitsCount_one": "{{count}} alkalom",
+    "visitsCount_other": "{{count}} alkalom",
+    "errors": {
+      "selectService": "Válasszon szolgáltatást",
+      "range": "1-től 50-ig",
+      "minBooked": "{{count}} már jelentkezett — ennél kevesebb nem lehet",
+      "endAfterStart": "A vége a kezdés után legyen"
+    },
+    "createServiceConfirm": {
+      "title": "Létrehoz egy szolgáltatást?",
+      "message": "Nem találja a kívánt szolgáltatást? Hozza létre a Katalógusban.",
+      "confirm": "Tovább a Katalógusba"
+    }
+  },
+  "addClientModal": {
+    "title": "Ügyfél hozzáadása",
+    "searchPlaceholder": "Keresés név vagy telefon alapján...",
+    "noClientsFound": "Nem található ügyfél",
+    "chooseFromList": "Válasszon ügyfeleket a listából",
+    "selectedCount_one": "Kiválasztva: {{count}} ügyfél",
+    "selectedCount_other": "Kiválasztva: {{count}} ügyfél",
+    "cancel": "Mégse",
+    "add": "Hozzáadás"
+  },
+  "rightPanel": {
+    "halls": "Termek",
+    "load": "Kihasználtság",
+    "upcoming": "Következő"
+  },
+  "grid": {
+    "classesShort": "óra",
+    "peopleShort": "fő",
+    "loadPercent": "Kihasználtság: {{percent}}%",
+    "classes": "óra",
+    "classesToday": "óra ma",
+    "newLessonPreview": "Új óra",
+    "cancelled": "Lemondva",
+    "noTrainers": "Nincs oktató",
+    "noHalls": "Nincs terem"
+  },
+  "createService": "+ Szolgáltatás létrehozása",
+  "invalidDateFormat": "Érvénytelen dátumformátum",
+  "toasts": {
+    "lessonMoved": "Az óra át lett helyezve",
+    "endTimeChanged": "A befejezés ideje módosult",
+    "startTimeChanged": "A kezdés ideje módosult",
+    "attendanceMarked": "Jelenlét rögzítve",
+    "paymentAccepted": "Fizetés rögzítve",
+    "bookingConfirmed": "Foglalás megerősítve",
+    "clientRemoved": "Ügyfél eltávolítva az óráról",
+    "lessonUpdated": "Az óra frissült",
+    "lessonAdded": "Az óra hozzáadva",
+    "selectTrainer": "Válasszon oktatót",
+    "alreadyCancelled": "Az óra már le van mondva",
+    "lessonCancelled": "Az óra lemondva",
+    "noPermission": "Nincs elég jogosultság az órarend módosításához",
+    "undoLabel": "Visszavonva: {{label}}",
+    "redoLabel": "Megismételve: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Jelentkeztetve: {{count}} ügyfél",
+    "clientsBooked_other": "Jelentkeztetve: {{count}} ügyfél",
+    "clientsBookedPartial": "{{total}} közül {{success}} jelentkeztetve: {{error}}",
+    "historyLabels": {
+      "removeClient": "ügyfél eltávolítása",
+      "moveLesson": "óra áthelyezése",
+      "createLesson": "óra létrehozása",
+      "bookClient": "ügyfél jelentkeztetése",
+      "bookClients": "ügyfelek jelentkeztetése ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "A betöltés nem sikerült",
+    "retry": "Újra"
+  },
+  "cancelBookingConfirm": {
+    "title": "Lemondja az órát?",
+    "message_one": "{{count}} ügyfél kap értesítést a lemondásról.",
+    "message_other": "{{count}} ügyfél kap értesítést a lemondásról.",
+    "confirm": "Óra lemondása"
+  }
+}

@@ -26,6 +26,9 @@ const MAX_MESSAGE_LENGTH = 4000;
 function assistantErrorMessage(err: unknown, t: TFunction): string {
   if (err instanceof ApiError) {
     if (err.message === 'assistant_unavailable') return t('ai:errors.assistant_unavailable');
+    // Пробный потолок — отдельным текстом: тариф его не поднимает, и совет
+    // «улучшите тариф» из quota_exceeded здесь стоил бы владельцу денег зря.
+    if (err.code === 'ai_trial_exhausted') return t('ai:errors.trial_exhausted');
     if (err.code === 'ai_quota_exceeded' || err.code === 'ai_cost_cap') {
       return t('ai:errors.quota_exceeded');
     }
@@ -277,7 +280,8 @@ export function useAssistant(surface: AISurface = 'drawer') {
           );
         } else if (event === 'error') {
           const code = (data as { code?: string }).code ?? 'assistant_unavailable';
-          const quota = code === 'ai_quota_exceeded' || code === 'ai_cost_cap';
+          const quota = code === 'ai_quota_exceeded' || code === 'ai_cost_cap'
+            || code === 'ai_trial_exhausted';
           throw new ApiError(quota ? 429 : 503, code, code);
         }
       }, { currentPage, viewport: viewport(), signal: controller.signal });

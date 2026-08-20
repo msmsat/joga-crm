@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Nincs ilyen munkatárs a stúdióban",
+    "noData": "Nincs adat",
+    "ownerOnly": "A hozzáférést a szerepköre korlátozza",
+    "loadError": "Az adatok betöltése nem sikerült",
+    "retry": "Újra"
+  },
+  "metrics": {
+    "revenue": "Bevétel ebben a hónapban",
+    "clients": "Aktív ügyfelek",
+    "bookings": "Foglalások ebben a hónapban",
+    "retention": "Megtartási arány",
+    "lessons": "Órák ebben a hónapban",
+    "attendance": "Részvétel ebben a hónapban",
+    "fill_rate": "Kihasználtság",
+    "rating": "Átlagos értékelés",
+    "active_clients": "Aktív ügyfelek",
+    "more": "Részletek"
+  },
+  "today": {
+    "titleTrainer": "Mai óráim",
+    "titleAdmin": "Mai beosztás",
+    "subtitle": "{{count}} óra · {{booked}} / {{spots}} hely",
+    "subtitle_one": "{{count}} óra · {{booked}} / {{spots}} hely",
+    "openJournal": "Napló megnyitása",
+    "empty": "Ma nincs óra",
+    "emptyHintTrainer": "Szabadnap — az új foglalások itt jelennek meg",
+    "emptyHintAdmin": "Mára nincs semmi betervezve"
+  },
+  "chart": {
+    "byDay": "naponta",
+    "byMonth": "havonta",
+    "subWeek": "Aktuális hét",
+    "subMonth": "Aktuális hónap",
+    "subYear": "Utolsó 12 hónap",
+    "tabWeek": "Hét",
+    "tabMonth": "Hónap",
+    "tabYear": "Év",
+    "noData": "Ehhez az időszakhoz nincs adat",
+    "retentionNA": "A megtartási diagram nem érhető el"
+  },
+  "tasks": {
+    "title": "Feladatok",
+    "empty": "Nincsenek feladatok",
+    "done": "Kész",
+    "add": "Feladat hozzáadása",
+    "namePlaceholder": "A feladat neve…",
+    "cancel": "Mégse",
+    "submit": "Hozzáadás",
+    "priority": {
+      "low": "Alacsony",
+      "medium": "Közepes",
+      "high": "Magas"
+    },
+    "priorityHint": {
+      "low": "Alacsony prioritás",
+      "medium": "Közepes prioritás",
+      "high": "Magas prioritás"
+    },
+    "tags": {
+      "Клиент": "Ügyfél",
+      "Финансы": "Pénzügyek",
+      "Лиды": "Érdeklődők",
+      "Отчёты": "Jelentések",
+      "Журнал": "Napló",
+      "Персонал": "Személyzet"
+    },
+    "scope": {
+      "mine": "Sajátok",
+      "admins": "Adminisztrátorok",
+      "trainers": "Oktatók"
+    },
+    "assigneePlaceholder": "Válasszon munkatársat",
+    "deleteTitle": "Törli a feladatot?",
+    "deleteMessage": "Ez a művelet nem vonható vissza."
+  },
+  "events": {
+    "title": "Legutóbbi események",
+    "seeAll": "Összes megtekintése",
+    "justNow": "épp most",
+    "openProfile": "Profil megnyitása",
+    "writeWhatsApp": "Üzenet WhatsAppon",
+    "sendReceipt": "Nyugta küldése",
+    "cancelBooking": "Foglalás lemondása"
+  },
+  "summary": {
+    "topServices": "Legnépszerűbb szolgáltatások",
+    "trainersLoad": "Oktatók terhelése",
+    "financeMonth": "Pénzügyek (hónap)",
+    "revenue": "Bevétel",
+    "expenses": "Kiadások",
+    "avgCheck": "Átlagos kosárérték",
+    "profit": "Nyereség"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Ihr Profil",
+    "sub": "Persönliche Daten und Sitzungen verwalten"
+  },
+  "personalInfo": {
+    "heading": "Persönliche Daten",
+    "emailLocked": "Die E-Mail ist Ihr Konto-Login und kann hier nicht geändert werden"
+  },
+  "security": {
+    "changePassword": "Passwort ändern",
+    "logout": "Abmelden"
+  },
+  "accounts": {
+    "title": "Meine Studios",
+    "count_one": "{{count}} Studio",
+    "count_other": "{{count}} Studios",
+    "enter": "Öffnen",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "addStudio": "Studio hinzufügen",
+    "addStudioSub": "Ein neuer Arbeitsbereich — Sie werden dessen Inhaber"
+  },
+  "session": {
+    "current": "Aktuelle Sitzung",
+    "lastActive": "Aktiv {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Persönliche Daten erfolgreich aktualisiert"
+  },
+  "otherAccount": {
+    "title": "Anderes Konto",
+    "sub": "Die Anmeldung als jemand anderes beendet die aktuelle Sitzung in diesem Browser — Sie können mit einer normalen Anmeldung zurückkehren.",
+    "recentTitle": "Sie waren bereits angemeldet",
+    "return": "Anmelden",
+    "forget": "Konto vergessen"
+  }
+}

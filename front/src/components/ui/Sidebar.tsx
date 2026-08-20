@@ -81,7 +81,7 @@ export function Sidebar({ role }: SidebarProps) {
         {item.badge === 'clients' && clientsCount !== null && (
           <span className="nav-badge">{clientsCount}</span>
         )}
-        {item.badge === 'new' && <span className="nav-badge nav-badge-new">{t('badge.new')}</span>}
+        {item.badge === 'beta' && <span className="nav-badge nav-badge-new">{t('badge.beta')}</span>}
       </NavLink>
     );
     // В рельсе подпись живёт в тултипе (портал — не режется overflow меню).

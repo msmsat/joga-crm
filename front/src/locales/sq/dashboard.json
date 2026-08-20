@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Nuk ka punonjës të tillë në studio",
+    "noData": "Pa të dhëna",
+    "ownerOnly": "Aksesi është i kufizuar nga roli juaj",
+    "loadError": "Ngarkimi i të dhënave dështoi",
+    "retry": "Provo sërish"
+  },
+  "metrics": {
+    "revenue": "Të ardhurat këtë muaj",
+    "clients": "Klientë aktivë",
+    "bookings": "Rezervimet këtë muaj",
+    "retention": "Norma e mbajtjes",
+    "lessons": "Mësimet këtë muaj",
+    "attendance": "Pjesëmarrja këtë muaj",
+    "fill_rate": "Norma e mbushjes",
+    "rating": "Vlerësimi mesatar",
+    "active_clients": "Klientë aktivë",
+    "more": "Detaje"
+  },
+  "today": {
+    "titleTrainer": "Mësimet e mia sot",
+    "titleAdmin": "Orari i sotëm",
+    "subtitle": "{{count}} mësime · {{booked}} nga {{spots}} vende",
+    "subtitle_one": "{{count}} mësim · {{booked}} nga {{spots}} vende",
+    "openJournal": "Hap ditarin",
+    "empty": "Sot nuk ka mësime",
+    "emptyHintTrainer": "Ditë e lirë — rezervimet e reja do të shfaqen këtu",
+    "emptyHintAdmin": "Asgjë e planifikuar për sot"
+  },
+  "chart": {
+    "byDay": "sipas ditës",
+    "byMonth": "sipas muajit",
+    "subWeek": "Java aktuale",
+    "subMonth": "Muaji aktual",
+    "subYear": "12 muajt e fundit",
+    "tabWeek": "Javë",
+    "tabMonth": "Muaj",
+    "tabYear": "Vit",
+    "noData": "Nuk ka të dhëna për këtë periudhë",
+    "retentionNA": "Grafiku i mbajtjes nuk është i disponueshëm"
+  },
+  "tasks": {
+    "title": "Detyrat",
+    "empty": "Nuk ka detyra",
+    "done": "Përfunduar",
+    "add": "Shto detyrë",
+    "namePlaceholder": "Emri i detyrës…",
+    "cancel": "Anulo",
+    "submit": "Shto",
+    "priority": {
+      "low": "E ulët",
+      "medium": "Mesatare",
+      "high": "E lartë"
+    },
+    "priorityHint": {
+      "low": "Përparësi e ulët",
+      "medium": "Përparësi mesatare",
+      "high": "Përparësi e lartë"
+    },
+    "tags": {
+      "Клиент": "Klient",
+      "Финансы": "Financa",
+      "Лиды": "Kontakte",
+      "Отчёты": "Raporte",
+      "Журнал": "Ditar",
+      "Персонал": "Staf"
+    },
+    "scope": {
+      "mine": "Të miat",
+      "admins": "Administratorë",
+      "trainers": "Trajnerë"
+    },
+    "assigneePlaceholder": "Zgjidhni një punonjës",
+    "deleteTitle": "Të fshihet detyra?",
+    "deleteMessage": "Ky veprim nuk mund të zhbëhet."
+  },
+  "events": {
+    "title": "Ngjarjet e fundit",
+    "seeAll": "Shiko të gjitha",
+    "justNow": "tani",
+    "openProfile": "Hap profilin",
+    "writeWhatsApp": "Shkruaj në WhatsApp",
+    "sendReceipt": "Dërgo faturën",
+    "cancelBooking": "Anulo rezervimin"
+  },
+  "summary": {
+    "topServices": "Shërbimet kryesore",
+    "trainersLoad": "Ngarkesa e trajnerëve",
+    "financeMonth": "Financat (muaji)",
+    "revenue": "Të ardhura",
+    "expenses": "Shpenzime",
+    "avgCheck": "Fatura mesatare",
+    "profit": "Fitimi"
+  }
+}

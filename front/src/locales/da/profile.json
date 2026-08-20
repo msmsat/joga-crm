@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Din profil",
+    "sub": "Administrer persondata og sessioner"
+  },
+  "personalInfo": {
+    "heading": "Personlige oplysninger",
+    "emailLocked": "E-mailen er dit login og kan ikke ændres her"
+  },
+  "security": {
+    "changePassword": "Skift adgangskode",
+    "logout": "Log ud"
+  },
+  "accounts": {
+    "title": "Mine studier",
+    "count_one": "{{count}} studie",
+    "count_other": "{{count}} studier",
+    "enter": "Åbn",
+    "login": "Log ind",
+    "register": "Opret konto",
+    "addStudio": "Tilføj studie",
+    "addStudioSub": "Et nyt arbejdsrum — du bliver ejer af det"
+  },
+  "session": {
+    "current": "Nuværende session",
+    "lastActive": "Aktiv {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Persondata er opdateret"
+  },
+  "otherAccount": {
+    "title": "En anden konto",
+    "sub": "Logger du ind som en anden, afsluttes den nuværende session i denne browser — du kan komme tilbage med et almindeligt login.",
+    "recentTitle": "Du har logget ind før",
+    "return": "Log ind",
+    "forget": "Glem konto"
+  }
+}

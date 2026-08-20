@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Anslutningskanaler",
+    "connected": "Ansluten",
+    "disconnected": "Inte ansluten",
+    "pending": "Kräver inställning",
+    "connectInNotifications": "Anslut under Aviseringar",
+    "manage": "Hantera under Aviseringar",
+    "telegram": {
+      "name": "Telegram-bot",
+      "desc": "Automatisk bokning via boten"
+    },
+    "stripe": {
+      "name": "Betalningar",
+      "desc": "Stripe: kort, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Kundlänk",
+      "desc": "Boknings-miniapp — för bio, stories och kampanjer",
+      "copy": "Kopiera länk",
+      "open": "Öppna miniappen",
+      "print": "Skriv ut QR",
+      "posterTitle": "Boka ditt pass online",
+      "scanHint": "Rikta mobilkameran mot koden"
+    }
+  },
+  "loading": "Läser in inställningar…",
+  "sections": {
+    "main": {
+      "title": "Allmänna inställningar",
+      "prefill": {
+        "label": "Förskottsbetalning vid bokning",
+        "sub": "Kräv betalning före bekräftelse"
+      },
+      "trialLesson": {
+        "label": "Första passet gratis",
+        "sub": "En ny kunds första bokning bjuder studion på"
+      },
+      "trainerConfirm": {
+        "label": "Bekräftelse av instruktör",
+        "sub": "Bokningen väntar på manuellt godkännande"
+      },
+      "bookingActive": {
+        "label": "Onlinebokning aktiv",
+        "sub": "Visa widgeten för kunderna"
+      }
+    },
+    "rules": {
+      "title": "Gränser och regler",
+      "advance": {
+        "label": "Blockera bokning under",
+        "sub": "Minsta tid före passet"
+      },
+      "window": {
+        "label": "Bokningen öppnar",
+        "sub": "Hur många dagar framåt"
+      },
+      "cancel": {
+        "label": "Avbokning utan avgift",
+        "sub": "Kunden kan avboka före passet"
+      },
+      "repeat": {
+        "label": "Upprepad bokning",
+        "sub": "Tillåt en kund att boka två gånger"
+      },
+      "workHours": {
+        "label": "Widgetens öppettider",
+        "sub": "Pass utanför dessa tider går inte att boka online"
+      }
+    },
+    "branding": {
+      "title": "Widgetens profil",
+      "sub": "Bokningssidans utseende",
+      "accentColor": "Accentfärg",
+      "logo": {
+        "label": "Studions logotyp",
+        "sub": "Visas i widgetens sidhuvud",
+        "upload": "Ladda upp",
+        "uploading": "Laddar upp…",
+        "remove": "Ta bort",
+        "uploadFailed": "Det gick inte att ladda upp logotypen"
+      },
+      "darkMode": {
+        "label": "Mörkt tema",
+        "sub": "Widget i mörkt utförande"
+      },
+      "language": {
+        "label": "Standardspråk",
+        "sub": "Gränssnittets huvudspråk"
+      }
+    },
+    "notifications": {
+      "title": "Aviseringar",
+      "sub": "Automatiska meddelanden till kunderna",
+      "preview": {
+        "confirmed": "Bokning bekräftad! Mån 10:00",
+        "reminder2h": "Påminnelse: om 2 timmar",
+        "reviewRequest": "Tack för besöket! Betygsätt passet"
+      },
+      "reminder24h": {
+        "label": "Påminnelse 24 h innan",
+        "sub": "På morgonen före passet"
+      },
+      "reminder2h": {
+        "label": "Påminnelse 2 h innan",
+        "sub": "Strax före passet"
+      },
+      "reviewRequest": {
+        "label": "Begäran om omdöme",
+        "sub": "Så snart besöket registrerats"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Fika efter passet",
+        "sub": "Efter bokningen bjuds kunden in att stanna 15 minuter med gruppen. Om två eller fler tackar ja får de en påminnelse efter passet"
+      },
+      "spots": {
+        "label": "Vart ska de bjudas",
+        "sub": "Upp till tre ställen nära studion. Visas först när två eller fler är med",
+        "namePlaceholder": "Namn",
+        "addressPlaceholder": "Adress",
+        "urlPlaceholder": "Kartlänk",
+        "add": "Lägg till ställe",
+        "remove": "Ta bort stället"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 timme",
+      "2h": "2 timmar",
+      "4h": "4 timmar",
+      "12h": "12 timmar",
+      "24h": "24 timmar"
+    },
+    "window": {
+      "7d": "7 dagar",
+      "14d": "14 dagar",
+      "30d": "30 dagar",
+      "60d": "60 dagar"
+    },
+    "cancel": {
+      "2h": "2 timmar",
+      "4h": "4 timmar",
+      "12h": "12 timmar",
+      "24h": "24 timmar"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Bot ansluten",
+    "botDisconnected": "Bot frånkopplad",
+    "codeCopied": "Koden är kopierad!",
+    "linkCopied": "Länken är kopierad!",
+    "printBlocked": "Tillåt popup-fönster för att skriva ut QR-koden",
+    "stripeReturned": "Uppgifterna har skickats till Stripe",
+    "stripeLinkExpired": "Stripe-länken har gått ut — försök igen"
+  },
+  "stripeGate": {
+    "kicker": "Krävs för onlinebokning",
+    "none": {
+      "title": "Ställ in betalningar först",
+      "sub": "Kunden bokar och betalar i ett svep. Så länge Stripe-kontot inte är anslutet kan de inte betala för bokningen.",
+      "action": "Anslut Stripe"
+    },
+    "incomplete": {
+      "title": "Slutför Stripe-inställningen",
+      "sub": "Kontot finns, men Stripe har ännu inte aktiverat betalningar — formuläret är ofullständigt.",
+      "action": "Fortsätt inställningen"
+    },
+    "disabled": {
+      "title": "Betalningar är avstängda",
+      "sub": "Stripe är anslutet och redo att ta emot betalningar, men är avstängt i avsnittet Ekonomi.",
+      "action": "Öppna Ekonomi"
+    },
+    "loading": {
+      "title": "Kontrollerar anslutningen",
+      "sub": "Vi frågar Stripe om studions konto är redo att ta emot betalningar.",
+      "action": "Kontrollerar…"
+    },
+    "perks": {
+      "direct": "Pengarna landar direkt på studions konto",
+      "methods": "Kort, Apple Pay och Google Pay direkt",
+      "fee": "Provisionen följer ditt Velora-abonnemang"
+    },
+    "later": "Senare",
+    "note": "Stripes formulär öppnas. När du är klar kommer du tillbaka hit."
+  },
+  "tg": {
+    "title": "Telegram-bot",
+    "connected": "Ansluten",
+    "openInTelegram": "Öppna boten i Telegram",
+    "showToken": "Visa token",
+    "hideToken": "Dölj token",
+    "acceptsBookings": "Boten tar emot bokningar från kunder",
+    "instantNotify": "Aviseringar kommer direkt",
+    "disconnect": "Koppla från boten",
+    "pasteToken": "Klistra in bot-token från @BotFather",
+    "invalidToken": "Ogiltigt tokenformat",
+    "connect": "Anslut boten",
+    "howToGet": "Hur får jag en token?",
+    "steps": {
+      "1a": "Öppna Telegram → hitta",
+      "1b": "@BotFather",
+      "2a": "Skicka kommandot",
+      "2b": "/newbot",
+      "3": "Välj namn och användarnamn för boten",
+      "4": "Kopiera token och klistra in den ovan"
+    }
+  },
+  "insta": {
+    "title": "Instagram-bio",
+    "sub": "Lägg en länk för snabb bokning i profilen och i dina stories",
+    "steps": {
+      "1": "Kopiera din länk",
+      "2a": "Klistra in den i fältet",
+      "2b": "”Webbplats”",
+      "2c": " i Instagrams profilinställningar.",
+      "3a": "Lägg länken i",
+      "3b": "Stories",
+      "3c": " med en särskild dekal."
+    },
+    "proTip": "Fäst en Story med bokningsflödet i Höjdpunkter — det ökar konverteringen med 30 %."
+  },
+  "web": {
+    "title": "Widget för webbplats",
+    "sub": "Lägg till en bokningsknapp på vilken webbplats som helst (Tilda, WordPress eller egen kod)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopiera",
+    "instructionPrefix": "Klistra in den här koden precis före den avslutande",
+    "instructionSuffix": "-taggen på din webbplats. Knappen dyker upp automatiskt."
+  },
+  "wa": {
+    "title": "Bokning via WhatsApp",
+    "sub": "Ställ in ett autosvar i WhatsApp Business som direkt skickar bokningslänken.",
+    "online": "online",
+    "sampleIncoming": "Hej! Jag skulle vilja boka ett pass.",
+    "sampleOutgoing": "Välkommen! ✨",
+    "connect": "Anslut WhatsApp Business",
+    "connected": "Ansluten",
+    "autoReplyActive": "Autosvar är aktivt",
+    "instantLink": "Bokningslänken skickas direkt"
+  }
+}

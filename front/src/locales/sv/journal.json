@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "I dag",
+    "trainers": "Instruktörer",
+    "halls": "Salar",
+    "day": "Dag",
+    "week": "Vecka"
+  },
+  "daySummary": {
+    "classesToday": "pass i dag",
+    "clientBookings": "kundbokningar",
+    "avgLoad": "snittbeläggning",
+    "trainersActive": "instruktörer i tjänst",
+    "gridStep": "Rutnätssteg",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Ångra: {{label}}",
+    "redo": "Gör om: {{label}}",
+    "nothingToUndo": "Inget att ångra",
+    "nothingToRedo": "Inget att göra om"
+  },
+  "newBooking": {
+    "title": "Nytt pass",
+    "slotTime": "Tid för passet",
+    "service": "Tjänst",
+    "servicePlaceholder": "Välj en tjänst",
+    "namePlaceholder": "T.ex. Reformer Pilates",
+    "location": "Plats / sal",
+    "start": "Start",
+    "end": "Slut",
+    "groupLimit": "Gruppstorlek",
+    "maxSpots": "Max antal platser",
+    "assignTrainer": "Tilldela instruktör",
+    "cancel": "Avbryt",
+    "create": "Skapa pass",
+    "errors": {
+      "selectService": "Välj en tjänst",
+      "range": "Från 1 till 50",
+      "endAfterStart": "Slutet måste ligga efter starten"
+    },
+    "createServiceConfirm": {
+      "title": "Skapa en tjänst?",
+      "message": "Hittar du inte tjänsten du behöver? Skapa den i Katalogen.",
+      "confirm": "Gå till Katalogen"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Bekräftat",
+    "pending": "Väntar",
+    "cancelled": "Inställt",
+    "spotsTaken": "upptagna platser",
+    "fillRate": "Beläggning",
+    "booked": "Anmäld",
+    "attended": "Deltog",
+    "markAttended": "Registrera närvaro",
+    "awaitingConfirmation": "Väntar på bekräftelse",
+    "trialLesson": "Prova på",
+    "unpaid": "Obetalt · {{amount}}",
+    "acceptPayment": "Ta emot betalning",
+    "payCash": "Kontant",
+    "payTransfer": "Överföring",
+    "payLater": "Utan betalning",
+    "confirmBooking": "Bekräfta bokningen",
+    "rejectBooking": "Avslå förfrågan",
+    "removeFromLesson": "Ta bort från passet",
+    "add": "Lägg till",
+    "addClient": "Lägg till kund",
+    "edit": "Redigera",
+    "editLesson": "Redigera passet",
+    "deleteLesson": "Radera passet",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "lessonTitle": "Passets namn",
+    "untitled": "Utan namn",
+    "from": "Från",
+    "to": "Till",
+    "searchPlaceholder": "Sök på namn eller telefon...",
+    "noClientsFound": "Inga kunder hittades",
+    "noEligibleClients": "Ingen kund har tillgång till det här passet",
+    "visitsCount_one": "{{count}} besök",
+    "visitsCount_other": "{{count}} besök",
+    "errors": {
+      "selectService": "Välj en tjänst",
+      "range": "Från 1 till 50",
+      "minBooked": "{{count}} är redan anmälda — lägre går inte",
+      "endAfterStart": "Slutet måste ligga efter starten"
+    },
+    "createServiceConfirm": {
+      "title": "Skapa en tjänst?",
+      "message": "Hittar du inte tjänsten du behöver? Skapa den i Katalogen.",
+      "confirm": "Gå till Katalogen"
+    }
+  },
+  "addClientModal": {
+    "title": "Lägg till kund",
+    "searchPlaceholder": "Sök på namn eller telefon...",
+    "noClientsFound": "Inga kunder hittades",
+    "chooseFromList": "Välj kunder från listan",
+    "selectedCount_one": "Vald: {{count}} kund",
+    "selectedCount_other": "Valda: {{count}} kunder",
+    "cancel": "Avbryt",
+    "add": "Lägg till"
+  },
+  "rightPanel": {
+    "halls": "Salar",
+    "load": "Beläggning",
+    "upcoming": "Kommande"
+  },
+  "grid": {
+    "classesShort": "pass",
+    "peopleShort": "pers.",
+    "loadPercent": "Beläggning: {{percent}} %",
+    "classes": "pass",
+    "classesToday": "pass i dag",
+    "newLessonPreview": "Nytt pass",
+    "cancelled": "Inställt",
+    "noTrainers": "Inga instruktörer",
+    "noHalls": "Inga salar"
+  },
+  "createService": "+ Skapa tjänst",
+  "invalidDateFormat": "Ogiltigt datumformat",
+  "toasts": {
+    "lessonMoved": "Passet har flyttats",
+    "endTimeChanged": "Sluttiden ändrad",
+    "startTimeChanged": "Starttiden ändrad",
+    "attendanceMarked": "Närvaro registrerad",
+    "paymentAccepted": "Betalning mottagen",
+    "bookingConfirmed": "Bokning bekräftad",
+    "clientRemoved": "Kunden borttagen från passet",
+    "lessonUpdated": "Passet har uppdaterats",
+    "lessonAdded": "Passet har lagts till",
+    "selectTrainer": "Välj en instruktör",
+    "alreadyCancelled": "Passet är redan inställt",
+    "lessonCancelled": "Passet är inställt",
+    "noPermission": "Otillräcklig behörighet för att ändra schemat",
+    "undoLabel": "Ångrat: {{label}}",
+    "redoLabel": "Gjort om: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Anmäld: {{count}} kund",
+    "clientsBooked_other": "Anmälda: {{count}} kunder",
+    "clientsBookedPartial": "Anmälda {{success}} av {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "borttagning av kund",
+      "moveLesson": "flytt av pass",
+      "createLesson": "skapande av pass",
+      "bookClient": "anmälan av kund",
+      "bookClients": "anmälan av kunder ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Kunde inte läsas in",
+    "retry": "Försök igen"
+  },
+  "cancelBookingConfirm": {
+    "title": "Ställa in passet?",
+    "message_one": "{{count}} kund får besked om inställningen.",
+    "message_other": "{{count}} kunder får besked om inställningen.",
+    "confirm": "Ställ in passet"
+  }
+}

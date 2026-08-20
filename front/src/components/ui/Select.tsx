@@ -12,8 +12,6 @@ export interface SelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
-  /** Список раскрывается вверх — для триггеров у нижней границы контейнера с overflow:hidden. */
-  openUp?: boolean;
   /** Поле поиска над списком. Для длинных перечней (страны — 250 строк), где
    *  прокрутка перестаёт быть способом что-то найти. */
   searchable?: boolean;
@@ -22,7 +20,10 @@ export interface SelectProps {
   emptyText?: string;
 }
 
-interface TriggerRect { top: number; bottom: number; left: number; width: number; }
+interface TriggerRect { top: number; left: number; width: number; up: boolean; offset: number; maxH: number; }
+
+const GAP = 6;   // просвет между триггером и панелью
+const PAD = 8;   // не прижимать панель вплотную к краю экрана
 
 // Общий выпадающий список: минимализм, glow-фокус, клавиатура (стрелки + Enter),
 // закрытие по Esc и клику мимо. Мультивыбора нет (YAGNI), поиск — по флагу
@@ -30,7 +31,7 @@ interface TriggerRect { top: number; bottom: number; left: number; width: number
 // Список рендерится в портал с position: fixed — иначе его обрезает overflow:hidden
 // родителя (карточка, модалка), как у Tooltip/InfoHint.
 export function Select({
-  value, options, onChange, placeholder, disabled, openUp,
+  value, options, onChange, placeholder, disabled,
   searchable, searchPlaceholder, emptyText,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
@@ -42,6 +43,10 @@ export function Select({
   const listRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
+  const listBoxRef = useRef<HTMLDivElement>(null);
+  // Куда поставить прокрутку списка: 'center' — при открытии (выбранное значение
+  // сразу на виду), 'nearest' — при ходьбе стрелками. null — не трогать (мышь).
+  const scrollTo = useRef<'center' | 'nearest' | null>('center');
 
   const selected = options.find(o => o.value === value) ?? null;
 
@@ -67,12 +72,31 @@ export function Select({
 
   // Позиция триггера в viewport — список больше не в потоке родителя, поэтому
   // пересчитываем при открытии и на scroll/resize (capture — ловит скролл вложенных карточек).
+  // Сторона выбирается сама: под нижними полями страницы (часовой пояс, валюта,
+  // язык в Настройках) места вниз не остаётся, и список уезжал за край экрана.
+  // Высота тоже режется по свободному месту — панель не должна вылезать за экран.
   useLayoutEffect(() => {
     if (!open) return;
-    const recalc = () => {
+    const recalc = (e?: Event) => {
+      // Скролл внутри самой панели её не двигает: пересчёт на каждый тик колеса
+      // перерисовывал весь список (до 250 строк) и был тем самым лагом.
+      if (e && listRef.current?.contains(e.target as Node)) return;
       if (!buttonRef.current) return;
       const r = buttonRef.current.getBoundingClientRect();
-      setTrigger({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+      const wanted = searchable ? 296 : 240;
+      const below = window.innerHeight - r.bottom - GAP - PAD;
+      const above = r.top - GAP - PAD;
+      const up = below < Math.min(wanted, above);
+      const next: TriggerRect = {
+        top: r.top, left: r.left, width: r.width, up,
+        offset: up ? window.innerHeight - r.top + GAP : r.bottom + GAP,
+        maxH: Math.max(140, Math.min(wanted, up ? above : below)),
+      };
+      // Ничего не сдвинулось — не создавать новый объект: иначе каждый событие
+      // скролла даёт лишний рендер портала.
+      setTrigger(prev => prev && prev.top === next.top && prev.left === next.left
+        && prev.width === next.width && prev.offset === next.offset && prev.maxH === next.maxH
+        ? prev : next);
     };
     recalc();
     window.addEventListener('scroll', recalc, { passive: true, capture: true });
@@ -81,7 +105,7 @@ export function Select({
       window.removeEventListener('scroll', recalc, true);
       window.removeEventListener('resize', recalc);
     };
-  }, [open]);
+  }, [open, searchable]);
 
   // При открытии подсветить текущий выбор. Правка состояния прямо в рендере —
   // документированный способ синхронизации с пропсами: React отбрасывает
@@ -104,13 +128,25 @@ export function Select({
     if (open && searchable) searchRef.current?.focus();
   }, [open, searchable]);
 
-  // Подсветку тянем в видимую часть. На коротком списке это было не нужно — всё
-  // и так на экране; на списке стран стрелка вниз уводила подсветку за границу
-  // панели, и клавиатурная навигация переставала быть видимой.
-  useEffect(() => {
-    if (!open) return;
-    highlightRef.current?.scrollIntoView({ block: 'nearest' });
-  }, [open, highlight]);
+  // Прокрутку ставим сами, через scrollTop контейнера. scrollIntoView здесь не
+  // годится: он листает ВСЕ прокручиваемые предки, и вместо списка уезжала вниз
+  // сама страница. Через layout-эффект — до кадра, чтобы список появлялся уже на
+  // нужном месте, а не дёргался после отрисовки. От мыши прокрутка не двигается.
+  useLayoutEffect(() => {
+    const mode = scrollTo.current;
+    const el = highlightRef.current;
+    const box = listBoxRef.current;
+    if (!open || !mode || !el || !box) return;   // портала ещё нет — режим не тратим
+    scrollTo.current = null;
+    const top = el.offsetTop - box.clientHeight / 2 + el.offsetHeight / 2;
+    if (mode === 'center') box.scrollTop = top;
+    else if (el.offsetTop < box.scrollTop) box.scrollTop = el.offsetTop;
+    else if (el.offsetTop + el.offsetHeight > box.scrollTop + box.clientHeight) {
+      box.scrollTop = el.offsetTop + el.offsetHeight - box.clientHeight;
+    }
+    // trigger в зависимостях: при самом первом открытии позиция ещё не посчитана,
+    // портала в кадре нет — эффект должен повториться, когда он появится.
+  }, [open, highlight, trigger]);
 
   const choose = (v: string) => { onChange(v); setOpen(false); };
 
@@ -120,11 +156,11 @@ export function Select({
     // Пробел открывает список, только пока фокус на кнопке: в поле поиска он —
     // обычный символ, и «Южная Корея» иначе было бы не набрать.
     if (!open && (e.key === 'Enter' || e.key === 'ArrowDown' || (e.key === ' ' && !searchable))) {
-      e.preventDefault(); setOpen(true); return;
+      e.preventDefault(); scrollTo.current = 'center'; setOpen(true); return;
     }
     if (!open) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setHighlight(h => Math.min(h + 1, visible.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlight(h => Math.max(h - 1, 0)); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); scrollTo.current = 'nearest'; setHighlight(h => Math.min(h + 1, visible.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); scrollTo.current = 'nearest'; setHighlight(h => Math.max(h - 1, 0)); }
     else if (e.key === 'Enter') { e.preventDefault(); const opt = visible[highlight]; if (opt) choose(opt.value); }
   };
 
@@ -134,7 +170,7 @@ export function Select({
         ref={buttonRef}
         type="button"
         disabled={disabled}
-        onClick={() => !disabled && setOpen(o => !o)}
+        onClick={() => { if (disabled) return; scrollTo.current = 'center'; setOpen(o => !o); }}
         onKeyDown={onKeyDown}
         style={{
           width: '100%', padding: '12px 15px', textAlign: 'left',
@@ -163,18 +199,15 @@ export function Select({
           ref={listRef}
           style={{
             position: 'fixed',
-            ...(openUp
-              ? { bottom: `${window.innerHeight - trigger.top + 6}px` }
-              : { top: `${trigger.bottom + 6}px` }),
+            ...(trigger.up ? { bottom: `${trigger.offset}px` } : { top: `${trigger.offset}px` }),
             left: `${trigger.left}px`, width: `${trigger.width}px`, zIndex: 1200,
             background: 'var(--bg-card, #FFFFFF)', borderRadius: '12px',
             border: '1px solid rgba(var(--ink),0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',
             // Колонка, а не один скролл-контейнер: поле поиска обязано стоять на
-            // месте, пока список под ним листается. Прежние 240px остаются всем,
-            // кроме поиска, — иначе правка ради одного поля подрастила бы каждый
-            // дропдаун в продукте.
-            maxHeight: searchable ? '296px' : '240px',
+            // месте, пока список под ним листается. Потолок (240px, с поиском —
+            // 296px) режется по свободному месту в recalc.
+            maxHeight: `${trigger.maxH}px`,
             display: 'flex', flexDirection: 'column',
             boxSizing: 'border-box', animation: 'sel-in 0.16s ease',
           }}
@@ -186,7 +219,7 @@ export function Select({
               <input
                 ref={searchRef}
                 value={query}
-                onChange={e => setQuery(e.target.value)}
+                onChange={e => { scrollTo.current = 'center'; setQuery(e.target.value); }}
                 onKeyDown={onKeyDown}
                 placeholder={searchPlaceholder}
                 style={{
@@ -200,7 +233,17 @@ export function Select({
             </div>
           )}
 
-          <div role="listbox" style={{ padding: '6px', overflowY: 'auto', minHeight: 0 }}>
+          <div
+            ref={listBoxRef}
+            role="listbox"
+            style={{
+              // position: relative — чтобы offsetTop строк считался от контейнера;
+              // overscrollBehavior: contain — колесо над списком не прокручивает
+              // страницу под ним (иначе панель ехала вслед за триггером).
+              padding: '6px', overflowY: 'auto', minHeight: 0,
+              position: 'relative', overscrollBehavior: 'contain',
+            }}
+          >
           {emptyText && visible.length === 0 && (
             <div style={{ padding: '10px 12px', fontSize: '13.5px', color: 'var(--text3, #AAA)', fontFamily: 'Manrope, sans-serif' }}>
               {emptyText}

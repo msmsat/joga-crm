@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Total dans l'équipe",
+    "onShift": "En service",
+    "trainers": "Coachs",
+    "administrators": "Administrateurs",
+    "onlineNow": "{{count}} en ligne maintenant"
+  },
+  "toolbar": {
+    "teamTitle": "Équipe · {{count}}",
+    "addEmployee": "Ajouter un employé",
+    "searchPlaceholder": "Rechercher...",
+    "allGroup": "Tous"
+  },
+  "profile": {
+    "online": "· en ligne",
+    "offline": "· hors ligne",
+    "fullAccess": "Accès complet",
+    "ownerAccess": "Le propriétaire a accès à tous les modules du système",
+    "loadBar": "Charge du coach",
+    "weekSchedule": "Planning de la semaine",
+    "todaySchedule": "Planning du jour",
+    "minutesSuffix": "min",
+    "clientsSuffix": "clients",
+    "hall": "Salle",
+    "staffHalls": "Salles de l'employé",
+    "noName": "Nom non renseigné",
+    "noRole": "Sans rôle",
+    "addEventStub": "Formulaire d'ajout d'événement..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Chiffre d'affaires",
+      "rating": "Note",
+      "bookings": "Réservations",
+      "load": "Charge"
+    },
+    "admin": {
+      "bookings": "Réservations",
+      "attended": "Traitées",
+      "revenue": "Caisse",
+      "load": "Charge"
+    },
+    "owner": {
+      "revenue": "Chiffre d'affaires",
+      "attended": "Visites",
+      "load": "Charge",
+      "staff": "Personnel"
+    },
+    "default": {
+      "bookings": "Réservations",
+      "attended": "Visites",
+      "revenue": "Chiffre d'affaires",
+      "load": "Charge"
+    }
+  },
+  "schedule": {
+    "week": "Semaine",
+    "month": "Mois",
+    "working": "Heures de travail",
+    "free": "Libre",
+    "busy": "Occupé",
+    "dayOff": "Jour de repos",
+    "syncHint": "Le planning se synchronise avec le journal de réservations et l'horaire des cours.",
+    "workDaysInWeek": "{{count}} jours travaillés par semaine",
+    "markWork": "Travaille",
+    "markHint": "Choisissez un marqueur ci-dessus, puis cliquez sur un jour",
+    "prevMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "dayHasBookings": "Ce jour a déjà des réservations — il ne peut pas être un jour de repos",
+    "pastDayLocked": "Les jours passés ne sont pas modifiables"
+  },
+  "permissions": {
+    "finance": "Finances",
+    "staff": "Personnel",
+    "reports": "Rapports",
+    "clients": "Clients",
+    "settings": "Paramètres"
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "trainer": "Coach",
+    "owner": "Propriétaire"
+  },
+  "deleteModal": {
+    "cancelLesson": "Annuler le cours ?",
+    "dontAsk": "Ne plus demander lors des suppressions",
+    "cancelInvite": "Annuler l'adhésion ?",
+    "cancelInviteConfirm": "Annuler l'invitation"
+  },
+  "toasts": {
+    "lessonCanceled": "Cours annulé",
+    "errorCancel": "Erreur lors de l'annulation",
+    "employeeAdded": "Employé {{name}} ajouté",
+    "changesSaved": "Modifications enregistrées",
+    "employeeDeleted": "Employé supprimé",
+    "errorDelete": "Erreur lors de la suppression",
+    "errorSave": "Échec de l'enregistrement des modifications",
+    "emailCopied": "E-mail copié",
+    "phoneCopied": "Téléphone copié",
+    "inviteSent": "Invitation envoyée à {{email}}",
+    "inviteResent": "Invitation renvoyée",
+    "inviteCancelled": "Invitation annulée"
+  },
+  "addModal": {
+    "stepIndicator": "Étape {{current}} sur {{total}}",
+    "stepCounter": "{{current}}/4 — environ 2 minutes",
+    "nameFallback": "cette personne",
+    "employeeFallback": "Employé",
+    "steps": {
+      "1": {
+        "title": "À propos de l'employé",
+        "sub": "Comment s'appelle le nouveau membre de l'équipe ?",
+        "trust": "Les données de l'employé sont protégées"
+      },
+      "2": {
+        "title": "Rôle et prestations",
+        "sub": "Poste et liste des prestations",
+        "trust": "Le rôle peut être changé à tout moment"
+      },
+      "3": {
+        "title": "Planning et rémunération",
+        "sub": "Quand travaille-t-il et combien gagne-t-il ?",
+        "trust": "Le planning se synchronise avec le journal"
+      },
+      "4": {
+        "title": "Terminé !",
+        "sub": "Invitation envoyée à {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Informations personnelles",
+      "sub": "Commençons par le nom et les coordonnées",
+      "namePlaceholder": "Ex. Anna Martin",
+      "emailLabel": "Adresse e-mail",
+      "contactsNotSet": "Aucune coordonnée fournie",
+      "inviteHint": "Remettez le mot de passe à l'employé en personne — il ne part jamais par e-mail. L'e-mail ne contient que le lien, et sans le mot de passe il n'ouvre pas le studio.",
+      "errors": {
+        "name": "Le nom est obligatoire",
+        "phone": "Numéro de téléphone invalide",
+        "email": "E-mail invalide",
+        "password": "Au moins 8 caractères, lettres et chiffres obligatoires",
+        "emailTaken": "Cet e-mail appartient déjà à un autre compte Velora"
+      },
+      "passwordLabel": "Mot de passe de connexion de l'employé",
+      "passwordPlaceholder": "Au moins 8 caractères, lettres et chiffres"
+    },
+    "step2": {
+      "heading": "Rôle et prestations",
+      "sub": "Choisissez un poste — les prestations seront ajoutées automatiquement",
+      "positionLabel": "Poste *",
+      "positionPlaceholder": "Ou saisissez un poste personnalisé...",
+      "addServicePlaceholder": "Ajouter une prestation — appuyez sur Entrée"
+    },
+    "step3": {
+      "heading": "Planning et rémunération",
+      "sub": "Définissez les jours travaillés et la rémunération",
+      "scheduleLabel": "Planning de travail",
+      "salaryLabel": "Rémunération (facultatif)",
+      "salaryPlaceholder": "Saisissez un nombre",
+      "createAndInvite": "Créer et inviter"
+    },
+    "step4": {
+      "exclaim": "Parfait !",
+      "added": "ajouté",
+      "sub": "Invitation envoyée. L'employé rejoint l'équipe dès qu'il l'accepte.",
+      "inviteLinkLabel": "Lien d'invitation",
+      "sendInviteLabel": "Envoyer l'invitation",
+      "inviteInfo": "L'employé reçoit l'e-mail, suit le lien et confirme l'invitation avec son mot de passe — c'est seulement alors qu'il rejoint l'équipe et obtient l'accès. Le lien est valable 7 jours. Le mot de passe n'est pas dans l'e-mail — remettez-le en personne.",
+      "emailSentTitle": "E-mail envoyé",
+      "resend": "Renvoyer",
+      "resentOk": "E-mail renvoyé",
+      "resendError": "Échec de l'envoi — réessayez",
+      "copied": "Copié"
+    },
+    "illus": {
+      "contacts": "Coordonnées",
+      "profile": "Profil",
+      "roleFallback": "Rôle",
+      "services": "Prestations",
+      "specialization": "Spécialisation",
+      "scheduleTitle": "PLANNING DE TRAVAIL",
+      "inviteSent": "Invitation envoyée",
+      "inviteSub": "{{name}} recevra un lien de connexion"
+    },
+    "summary": {
+      "employee": "Employé",
+      "role": "Rôle",
+      "workDays": "Jours travaillés",
+      "daysCount": "{{count}} sur 7"
+    }
+  },
+  "editModal": {
+    "header": "MODIFICATION",
+    "employeeFallback": "Employé",
+    "positionFallback": "Sans poste",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rôle",
+      "salary": "Rémunération",
+      "schedule": "Planning"
+    },
+    "profile": {
+      "heading": "Informations personnelles",
+      "sub": "Mettez à jour les coordonnées de l'employé",
+      "uploadPhoto": "Téléverser une photo",
+      "replacePhoto": "Remplacer la photo",
+      "removePhoto": "Supprimer la photo",
+      "photoHint": "JPG, PNG — jusqu'à 5 Mo",
+      "namePlaceholder": "Prénom Nom",
+      "notifyHint": "L'employé sera informé des modifications au téléphone ou à l'e-mail indiqué.",
+      "errors": {
+        "name": "Le nom est obligatoire",
+        "email": "E-mail invalide"
+      },
+      "contactsOwnedByEmployee": "L'e-mail et le téléphone appartiennent au compte de l'employé — il les modifie dans son propre profil."
+    },
+    "role": {
+      "heading": "Rôle et spécialisation",
+      "sub": "Poste de l'employé et liste des prestations",
+      "addService": "Ajouter une prestation",
+      "catalogConfirm": "Voulez-vous ouvrir la section Prestations du Catalogue ?"
+    },
+    "salary": {
+      "heading": "Rémunération",
+      "sub": "Indiquez le type de rémunération et le montant",
+      "typeLabel": "Type de rémunération",
+      "perWeek": "₽ / semaine",
+      "selectTypeHint": "Choisissez un type de rémunération ci-dessus",
+      "currentLabel": "Rémunération actuelle",
+      "typeFixed": "Salaire fixe",
+      "typePercent": "% du chiffre d'affaires",
+      "typeHourly": "Paiement à l'heure",
+      "typeNotSet": "Type non sélectionné",
+      "cardFixedSub": "Montant fixe",
+      "cardPercentSub": "% du chiffre d'affaires",
+      "cardHourlySub": "Par heure travaillée",
+      "amountFixed": "Montant mensuel",
+      "amountPercent": "Pourcentage du chiffre d'affaires",
+      "amountHourly": "Taux horaire",
+      "reportHint": "La rémunération apparaît dans les rapports financiers. L'employé ne voit que la sienne."
+    },
+    "schedule": {
+      "heading": "Planning de travail",
+      "activeDays": "Jours actifs : {{count}} sur 7",
+      "syncHint": "Le planning se synchronise avec le journal de réservations et l'horaire des cours.",
+      "workDaysLabel": "Jours travaillés",
+      "totalHoursLabel": "Total des heures",
+      "daysOffLabel": "Jours de repos",
+      "daysLabel": "Jours",
+      "workDays": "{{count}} jours travaillés",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "onlineNow": "En ligne maintenant",
+      "notOnline": "Pas en ligne",
+      "schedule": "Planning",
+      "daysCount": "{{count}}/7 jours"
+    },
+    "deleteEmployee": "Retirer l'employé",
+    "deleteConfirm": "Retirer {{name}} de l'équipe ?",
+    "defaultName": "employé",
+    "cannotDeleteLastOwner": "Impossible de retirer l'unique propriétaire"
+  },
+  "ownerModal": {
+    "header": "COORDONNÉES DU PROPRIÉTAIRE",
+    "heading": "Coordonnées",
+    "sub": "Téléphone et e-mail du propriétaire du studio",
+    "cardNote": "l'e-mail est l'identifiant de connexion",
+    "loginWarning": "L'e-mail est l'identifiant du propriétaire. Après l'enregistrement, connectez-vous avec la nouvelle adresse.",
+    "lockedHint": "Le nom, la photo, le rôle et les droits ne se modifient pas ici — ils se trouvent dans la section « Profil »."
+  },
+  "list": {
+    "pendingLabel": "Invitation en attente",
+    "pendingHint": "Le profil s'ouvre dès que l'employé accepte l'invitation",
+    "resendInvite": "Renvoyer l'invitation",
+    "cancelInvite": "Annuler l'adhésion"
+  }
+}

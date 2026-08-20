@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Är det inte du?",
+    "login": "Logga in på ett annat konto"
+  },
+  "card": {
+    "roleLine": "Teaminbjudan · {{role}}"
+  },
+  "title": {
+    "new": "Hej, {{name}}",
+    "existing": "Välkommen tillbaka, {{name}}"
+  },
+  "sub": {
+    "new": "Ange lösenordet du fick av studions ansvariga.",
+    "existing": "Ange lösenordet för {{email}} för att acceptera inbjudan."
+  },
+  "switch": {
+    "notice": "Du är inloggad som {{current}}. Den här inbjudan gäller {{next}} — accepterar du den byter du till det kontot. Du kan byta tillbaka från din profil."
+  },
+  "fields": {
+    "newPassword": "Lösenord",
+    "newPasswordPlaceholder": "Lösenord från din ansvariga",
+    "password": "Lösenord",
+    "passwordPlaceholder": "Ditt Velora-lösenord",
+    "phone": "Telefonnummer",
+    "phoneHint": "Vi har inte ditt nummer ännu — ange det med landskod",
+    "show": "Visa",
+    "hide": "Dölj"
+  },
+  "cta": {
+    "enter": "Logga in i studion",
+    "accept": "Acceptera inbjudan"
+  },
+  "forgotHint": "Glömt lösenordet?",
+  "forgotLink": "Återställ åtkomst",
+  "expired": {
+    "title": "Länken är inte giltig",
+    "sub": "Inbjudan har gått ut eller dragits tillbaka. Be studions ägare att skicka den igen.",
+    "cta": "Gå till inloggning"
+  },
+  "consent": {
+    "text": "Jag godkänner",
+    "terms": "användarvillkoren",
+    "and": "och",
+    "privacy": "integritetspolicyn"
+  },
+  "errors": {
+    "noToken": "Länken saknar inbjudningskod — öppna den i sin helhet från e-postmeddelandet.",
+    "network": "Anslutningsfel",
+    "passwordRequired": "Ange ditt lösenord",
+    "phoneRequired": "Ange ditt telefonnummer med landskod",
+    "consentRequired": "Ditt samtycke krävs"
+  },
+  "newAccountHint": "Lösenordet står inte i e-postmeddelandet — och det är hela poängen: en länk räcker inte för att komma in. Har du inte fått något, fråga din ansvariga.",
+  "decline": {
+    "cta": "Avböj inbjudan",
+    "confirm": "Inbjudan till ”{{studio}}” tas bort. Du går inte med i teamet, och bara studions ägare kan skicka den igen.",
+    "keep": "Behåll",
+    "confirmCta": "Avböj",
+    "pending": "Avböjer…"
+  },
+  "declined": {
+    "title": "Inbjudan avböjd",
+    "sub": "Vi lade inte till dig i studion. Var det ett misstag, be ägaren att skicka inbjudan igen."
+  }
+}

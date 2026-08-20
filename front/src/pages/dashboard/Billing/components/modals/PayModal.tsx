@@ -65,7 +65,7 @@ export default function PayModal({
   // выбрана дата), здесь только форматирование.
   const freeDays = preview?.free_days || 0;
   const freeUntil = preview?.free_until
-    ? new Date(preview.free_until).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
+    ? new Date(preview.free_until).toLocaleDateString(i18n.language || 'en', {
         day: 'numeric', month: 'long', year: 'numeric',
       })
     : null;

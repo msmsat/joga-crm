@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Totalt i teamet",
+    "onShift": "I pass",
+    "trainers": "Tränare",
+    "administrators": "Administratörer",
+    "onlineNow": "{{count}} online nu"
+  },
+  "toolbar": {
+    "teamTitle": "Team · {{count}}",
+    "addEmployee": "Lägg till anställd",
+    "searchPlaceholder": "Sök...",
+    "allGroup": "Alla"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Full åtkomst",
+    "ownerAccess": "Ägaren har åtkomst till alla systemets moduler",
+    "loadBar": "Tränarens beläggning",
+    "weekSchedule": "Veckoschema",
+    "todaySchedule": "Dagens schema",
+    "minutesSuffix": "min",
+    "clientsSuffix": "kunder",
+    "hall": "Sal",
+    "staffHalls": "Den anställdes salar",
+    "noName": "Namn saknas",
+    "noRole": "Ingen roll",
+    "addEventStub": "Formulär för att lägga till händelse..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Intäkter",
+      "rating": "Betyg",
+      "bookings": "Bokningar",
+      "load": "Beläggning"
+    },
+    "admin": {
+      "bookings": "Bokningar",
+      "attended": "Hanterade",
+      "revenue": "Kassa",
+      "load": "Beläggning"
+    },
+    "owner": {
+      "revenue": "Intäkter",
+      "attended": "Besök",
+      "load": "Beläggning",
+      "staff": "Anställda"
+    },
+    "default": {
+      "bookings": "Bokningar",
+      "attended": "Besök",
+      "revenue": "Intäkter",
+      "load": "Beläggning"
+    }
+  },
+  "schedule": {
+    "week": "Vecka",
+    "month": "Månad",
+    "working": "Arbetstid",
+    "free": "Ledig",
+    "busy": "Upptagen",
+    "dayOff": "Ledig dag",
+    "syncHint": "Schemat synkroniseras med bokningsjournalen och klasschemat.",
+    "workDaysInWeek": "{{count}} arbetsdagar per vecka",
+    "markWork": "Arbetar",
+    "markHint": "Välj en markering ovan och klicka sedan på en dag",
+    "prevMonth": "Föregående månad",
+    "nextMonth": "Nästa månad",
+    "dayHasBookings": "Den här dagen har redan bokningar — den kan inte vara ledig",
+    "pastDayLocked": "Tidigare dagar kan inte ändras"
+  },
+  "permissions": {
+    "finance": "Ekonomi",
+    "staff": "Anställda",
+    "reports": "Rapporter",
+    "clients": "Kunder",
+    "settings": "Inställningar"
+  },
+  "roles": {
+    "admin": "Administratör",
+    "trainer": "Tränare",
+    "owner": "Ägare"
+  },
+  "deleteModal": {
+    "cancelLesson": "Avboka klassen?",
+    "dontAsk": "Fråga inte igen vid radering",
+    "cancelInvite": "Avbryta anslutningen?",
+    "cancelInviteConfirm": "Avbryt inbjudan"
+  },
+  "toasts": {
+    "lessonCanceled": "Klassen är avbokad",
+    "errorCancel": "Fel vid avbokning",
+    "employeeAdded": "Anställd {{name}} tillagd",
+    "changesSaved": "Ändringarna har sparats",
+    "employeeDeleted": "Anställd borttagen",
+    "errorDelete": "Fel vid borttagning",
+    "errorSave": "Det gick inte att spara ändringarna",
+    "emailCopied": "E-post kopierad",
+    "phoneCopied": "Telefon kopierad",
+    "inviteSent": "Inbjudan skickad till {{email}}",
+    "inviteResent": "Inbjudan skickad igen",
+    "inviteCancelled": "Inbjudan avbruten"
+  },
+  "addModal": {
+    "stepIndicator": "Steg {{current}} av {{total}}",
+    "stepCounter": "{{current}}/4 — tar cirka 2 minuter",
+    "nameFallback": "personen",
+    "employeeFallback": "Anställd",
+    "steps": {
+      "1": {
+        "title": "Om den anställde",
+        "sub": "Vad heter den nya teammedlemmen?",
+        "trust": "Den anställdes uppgifter är skyddade"
+      },
+      "2": {
+        "title": "Roll och tjänster",
+        "sub": "Befattning och lista över tjänster",
+        "trust": "Rollen kan ändras när som helst"
+      },
+      "3": {
+        "title": "Schema och lön",
+        "sub": "När arbetar personen och hur mycket tjänar den?",
+        "trust": "Schemat synkroniseras med journalen"
+      },
+      "4": {
+        "title": "Klart!",
+        "sub": "Inbjudan skickad till {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Personuppgifter",
+      "sub": "Vi börjar med namn och kontaktuppgifter",
+      "namePlaceholder": "T.ex. Anna Andersson",
+      "emailLabel": "E-postadress",
+      "contactsNotSet": "Inga kontaktuppgifter angivna",
+      "inviteHint": "Ge lösenordet till den anställde personligen — det skickas aldrig i e-postmeddelandet. E-posten innehåller bara länken, och utan lösenordet öppnas inte studion.",
+      "errors": {
+        "name": "Namn krävs",
+        "phone": "Ogiltigt telefonnummer",
+        "email": "Ogiltig e-post",
+        "password": "Minst 8 tecken, med bokstäver och siffror",
+        "emailTaken": "Den här e-postadressen tillhör redan ett annat Velora-konto"
+      },
+      "passwordLabel": "Inloggningslösenord för den anställde",
+      "passwordPlaceholder": "Minst 8 tecken, bokstäver och siffror"
+    },
+    "step2": {
+      "heading": "Roll och tjänster",
+      "sub": "Välj en befattning — tjänsterna läggs till automatiskt",
+      "positionLabel": "Befattning *",
+      "positionPlaceholder": "Eller ange en egen befattning...",
+      "addServicePlaceholder": "Lägg till tjänst — tryck Enter"
+    },
+    "step3": {
+      "heading": "Schema och lön",
+      "sub": "Ange arbetsdagar och ersättning",
+      "scheduleLabel": "Arbetsschema",
+      "salaryLabel": "Lön (valfritt)",
+      "salaryPlaceholder": "Ange ett tal",
+      "createAndInvite": "Skapa och bjud in"
+    },
+    "step4": {
+      "exclaim": "Toppen!",
+      "added": "tillagd",
+      "sub": "Inbjudan är skickad. Den anställde ansluter till teamet så snart den accepteras.",
+      "inviteLinkLabel": "Inbjudningslänk",
+      "sendInviteLabel": "Skicka inbjudan",
+      "inviteInfo": "Den anställde får e-postmeddelandet, följer länken och bekräftar inbjudan med sitt lösenord — först då ansluter personen till teamet och får åtkomst. Länken gäller i 7 dagar. Lösenordet finns inte i e-posten — lämna det personligen.",
+      "emailSentTitle": "E-post skickad",
+      "resend": "Skicka igen",
+      "resentOk": "E-posten har skickats igen",
+      "resendError": "Sändningen misslyckades — försök igen",
+      "copied": "Kopierat"
+    },
+    "illus": {
+      "contacts": "Kontakter",
+      "profile": "Profil",
+      "roleFallback": "Roll",
+      "services": "Tjänster",
+      "specialization": "Specialisering",
+      "scheduleTitle": "ARBETSSCHEMA",
+      "inviteSent": "Inbjudan skickad",
+      "inviteSub": "{{name}} får en inloggningslänk"
+    },
+    "summary": {
+      "employee": "Anställd",
+      "role": "Roll",
+      "workDays": "Arbetsdagar",
+      "daysCount": "{{count}} av 7"
+    }
+  },
+  "editModal": {
+    "header": "REDIGERING",
+    "employeeFallback": "Anställd",
+    "positionFallback": "Ingen befattning",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Roll",
+      "salary": "Lön",
+      "schedule": "Schema"
+    },
+    "profile": {
+      "heading": "Personuppgifter",
+      "sub": "Uppdatera den anställdes kontaktuppgifter",
+      "uploadPhoto": "Ladda upp foto",
+      "replacePhoto": "Byt foto",
+      "removePhoto": "Ta bort foto",
+      "photoHint": "JPG, PNG — upp till 5 MB",
+      "namePlaceholder": "Förnamn Efternamn",
+      "notifyHint": "Den anställde meddelas om ändringar på angivet telefonnummer eller e-post.",
+      "errors": {
+        "name": "Namn krävs",
+        "email": "Ogiltig e-post"
+      },
+      "contactsOwnedByEmployee": "E-post och telefon tillhör den anställdes konto — de ändras i personens egen profil."
+    },
+    "role": {
+      "heading": "Roll och specialisering",
+      "sub": "Den anställdes befattning och lista över tjänster",
+      "addService": "Lägg till tjänst",
+      "catalogConfirm": "Vill du öppna avsnittet Tjänster i Katalogen?"
+    },
+    "salary": {
+      "heading": "Lön",
+      "sub": "Ange betalningstyp och ersättningens storlek",
+      "typeLabel": "Betalningstyp",
+      "perWeek": "₽ / vecka",
+      "selectTypeHint": "Välj en betalningstyp ovan",
+      "currentLabel": "Nuvarande ersättning",
+      "typeFixed": "Fast lön",
+      "typePercent": "% av intäkterna",
+      "typeHourly": "Timbetalning",
+      "typeNotSet": "Typ inte vald",
+      "cardFixedSub": "Fast belopp",
+      "cardPercentSub": "% av intäkterna",
+      "cardHourlySub": "Per arbetad timme",
+      "amountFixed": "Månadsbelopp",
+      "amountPercent": "Procent av intäkterna",
+      "amountHourly": "Timtaxa",
+      "reportHint": "Lönen visas i de finansiella rapporterna. Den anställde ser bara sin egen ersättning."
+    },
+    "schedule": {
+      "heading": "Arbetsschema",
+      "activeDays": "Aktiva dagar: {{count}} av 7",
+      "syncHint": "Schemat synkroniseras med bokningsjournalen och klasschemat.",
+      "workDaysLabel": "Arbetsdagar",
+      "totalHoursLabel": "Totalt antal timmar",
+      "daysOffLabel": "Lediga dagar",
+      "daysLabel": "Dagar",
+      "workDays": "{{count}} arbetsdagar",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online nu",
+      "notOnline": "Inte online",
+      "schedule": "Schema",
+      "daysCount": "{{count}}/7 dagar"
+    },
+    "deleteEmployee": "Ta bort anställd",
+    "deleteConfirm": "Ta bort {{name}} från teamet?",
+    "defaultName": "anställd",
+    "cannotDeleteLastOwner": "Det går inte att ta bort den enda ägaren"
+  },
+  "ownerModal": {
+    "header": "ÄGARENS KONTAKTER",
+    "heading": "Kontaktuppgifter",
+    "sub": "Telefon och e-post till studions ägare",
+    "cardNote": "e-posten är inloggningsnamnet",
+    "loginWarning": "E-posten är ägarens inloggning. Efter att du sparat loggar du in med den nya adressen.",
+    "lockedHint": "Namn, foto, roll och behörigheter redigeras inte här — de finns i avsnittet «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Inbjudan väntar",
+    "pendingHint": "Profilen öppnas när den anställde accepterar inbjudan",
+    "resendInvite": "Skicka inbjudan igen",
+    "cancelInvite": "Avbryt anslutning"
+  }
+}

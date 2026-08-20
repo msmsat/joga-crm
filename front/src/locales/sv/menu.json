@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Översikt",
+    "staff": "Personal",
+    "catalog": "Katalog",
+    "clients": "Kunder",
+    "reports": "Rapporter",
+    "booking": "Onlinebokning",
+    "finances": "Ekonomi",
+    "notifications": "Aviseringar",
+    "loyalty": "Lojalitet",
+    "ai": "Velora AI",
+    "settings": "Inställningar",
+    "billing": "Abonnemang och betalning",
+    "journal": "Schema",
+    "profile": "Profil",
+    "more": "Mer"
+  },
+  "subtitles": {
+    "dashboard": "Välkommen till Velora CRM",
+    "staff": "Teamhantering",
+    "catalog": "Filialer, salar och tjänster",
+    "clients": "Studions kundregister",
+    "reports": "Analys och statistik",
+    "booking": "Hantera bokningskanaler",
+    "finances": "Konton, transaktioner, dokument",
+    "notifications": "Kanaler och aviseringstyper",
+    "loyalty": "Kundprogram och kort",
+    "ai": "Smart assistent och autosvar",
+    "settings": "Systemkonfiguration",
+    "billing": "Hantering av abonnemang",
+    "journal": "Passchema",
+    "profile": "Konto och inställningar"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Skapa"
+  },
+  "userMenu": {
+    "logout": "Logga ut",
+    "studios": "Mina studios"
+  },
+  "tooltips": {
+    "studioName": "Din studio: {{name}}",
+    "openProfile": "Öppna profil",
+    "openAccountMenu": "Kontomeny"
+  },
+  "sidebar": {
+    "expand": "Expandera menyn",
+    "collapse": "Fäll ihop menyn"
+  }
+}

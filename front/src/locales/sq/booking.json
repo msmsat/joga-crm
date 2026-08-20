@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Kanalet e lidhjes",
+    "connected": "I lidhur",
+    "disconnected": "I palidhur",
+    "pending": "Kërkon konfigurim",
+    "connectInNotifications": "Lidhe te Njoftimet",
+    "manage": "Menaxho te Njoftimet",
+    "telegram": {
+      "name": "Bot Telegram",
+      "desc": "Rezervim automatik përmes botit"
+    },
+    "stripe": {
+      "name": "Pagesat",
+      "desc": "Stripe: karta, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Lidhja për klientët",
+      "desc": "Mini-aplikacioni i rezervimeve — për bio, stories dhe fushata",
+      "copy": "Kopjo lidhjen",
+      "open": "Hap mini-aplikacionin",
+      "print": "Printo QR",
+      "posterTitle": "Rezervoni mësimin online",
+      "scanHint": "Drejtojeni kamerën e telefonit nga kodi"
+    }
+  },
+  "loading": "Duke ngarkuar cilësimet…",
+  "sections": {
+    "main": {
+      "title": "Cilësime të përgjithshme",
+      "prefill": {
+        "label": "Parapagim në rezervim",
+        "sub": "Kërko pagesë para konfirmimit"
+      },
+      "trialLesson": {
+        "label": "Mësimi i parë falas",
+        "sub": "Rezervimin e parë të klientit të ri e paguan studioja"
+      },
+      "trainerConfirm": {
+        "label": "Konfirmim nga trajneri",
+        "sub": "Rezervimi pret miratim manual"
+      },
+      "bookingActive": {
+        "label": "Rezervimi online aktiv",
+        "sub": "Shfaq widget-in te klientët"
+      }
+    },
+    "rules": {
+      "title": "Kufizime dhe rregulla",
+      "advance": {
+        "label": "Blloko rezervimin më pak se",
+        "sub": "Koha minimale para mësimit"
+      },
+      "window": {
+        "label": "Rezervimet hapen",
+        "sub": "Sa ditë përpara"
+      },
+      "cancel": {
+        "label": "Anulim pa penalitet",
+        "sub": "Klienti mund të anulojë para mësimit"
+      },
+      "repeat": {
+        "label": "Rezervim i përsëritur",
+        "sub": "Lejo klientin të rezervojë dy herë"
+      },
+      "workHours": {
+        "label": "Orari i widget-it",
+        "sub": "Mësimet jashtë këtyre orëve nuk rezervohen online"
+      }
+    },
+    "branding": {
+      "title": "Brandimi i widget-it",
+      "sub": "Pamja e faqes së rezervimit",
+      "accentColor": "Ngjyra e theksit",
+      "logo": {
+        "label": "Logoja e studios",
+        "sub": "Shfaqet në krye të widget-it",
+        "upload": "Ngarko",
+        "uploading": "Duke ngarkuar…",
+        "remove": "Hiq",
+        "uploadFailed": "Ngarkimi i logos dështoi"
+      },
+      "darkMode": {
+        "label": "Tema e errët",
+        "sub": "Widget-i në pamje të errët"
+      },
+      "language": {
+        "label": "Gjuha e parazgjedhur",
+        "sub": "Gjuha kryesore e ndërfaqes"
+      }
+    },
+    "notifications": {
+      "title": "Njoftimet",
+      "sub": "Mesazhe automatike për klientët",
+      "preview": {
+        "confirmed": "Rezervimi u konfirmua! Hën 10:00",
+        "reminder2h": "Kujtesë: pas 2 orësh",
+        "reviewRequest": "Faleminderit për vizitën! Vlerësoni mësimin"
+      },
+      "reminder24h": {
+        "label": "Kujtesë 24 orë përpara",
+        "sub": "Në mëngjes para mësimit"
+      },
+      "reminder2h": {
+        "label": "Kujtesë 2 orë përpara",
+        "sub": "Pak para mësimit"
+      },
+      "reviewRequest": {
+        "label": "Kërkesë për vlerësim",
+        "sub": "Sapo vizita shënohet"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kafe pas mësimit",
+        "sub": "Pas rezervimit klienti ftohet të qëndrojë 15 minuta me grupin. Nëse pranojnë dy a më shumë, marrin kujtesë pas mësimit"
+      },
+      "spots": {
+        "label": "Ku t'i ftoni",
+        "sub": "Deri në tre vende pranë studios. Shfaqen vetëm kur bashkohen dy a më shumë",
+        "namePlaceholder": "Emri",
+        "addressPlaceholder": "Adresa",
+        "urlPlaceholder": "Lidhje harte",
+        "add": "Shto vend",
+        "remove": "Hiq vendin"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 orë",
+      "2h": "2 orë",
+      "4h": "4 orë",
+      "12h": "12 orë",
+      "24h": "24 orë"
+    },
+    "window": {
+      "7d": "7 ditë",
+      "14d": "14 ditë",
+      "30d": "30 ditë",
+      "60d": "60 ditë"
+    },
+    "cancel": {
+      "2h": "2 orë",
+      "4h": "4 orë",
+      "12h": "12 orë",
+      "24h": "24 orë"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "Boti u lidh",
+    "botDisconnected": "Boti u shkëput",
+    "codeCopied": "Kodi u kopjua!",
+    "linkCopied": "Lidhja u kopjua!",
+    "printBlocked": "Lejoni dritaret kërcyese për të printuar kodin QR",
+    "stripeReturned": "Të dhënat u dërguan te Stripe",
+    "stripeLinkExpired": "Lidhja e Stripe skadoi — provoni sërish"
+  },
+  "stripeGate": {
+    "kicker": "E nevojshme për rezervimin online",
+    "none": {
+      "title": "Së pari konfiguroni pagesat",
+      "sub": "Klienti rezervon dhe paguan në një hap. Derisa llogaria Stripe të lidhet, ai nuk e paguan dot rezervimin.",
+      "action": "Lidh Stripe"
+    },
+    "incomplete": {
+      "title": "Përfundoni konfigurimin e Stripe",
+      "sub": "Llogaria ekziston, por Stripe nuk i ka lejuar ende pagesat — formulari nuk është i plotë.",
+      "action": "Vazhdo konfigurimin"
+    },
+    "disabled": {
+      "title": "Pagesat janë të fikura",
+      "sub": "Stripe është i lidhur dhe gati për pagesa, por është i fikur te seksioni Financat.",
+      "action": "Hap Financat"
+    },
+    "loading": {
+      "title": "Po kontrollohet lidhja",
+      "sub": "Po pyesim Stripe nëse llogaria e studios është gati të pranojë pagesa.",
+      "action": "Duke kontrolluar…"
+    },
+    "perks": {
+      "direct": "Paratë shkojnë drejt e në llogarinë e studios",
+      "methods": "Karta, Apple Pay dhe Google Pay që në fillim",
+      "fee": "Komisioni ndjek planin tuaj Velora"
+    },
+    "later": "Më vonë",
+    "note": "Do të hapet formulari i Stripe. Kur ta mbaroni, ktheheni në këtë faqe."
+  },
+  "tg": {
+    "title": "Bot Telegram",
+    "connected": "I lidhur",
+    "openInTelegram": "Hap botin në Telegram",
+    "showToken": "Shfaq token-in",
+    "hideToken": "Fshih token-in",
+    "acceptsBookings": "Boti pranon rezervime nga klientët",
+    "instantNotify": "Njoftimet mbërrijnë menjëherë",
+    "disconnect": "Shkëput botin",
+    "pasteToken": "Ngjitni token-in e botit nga @BotFather",
+    "invalidToken": "Format i pavlefshëm token-i",
+    "connect": "Lidh botin",
+    "howToGet": "Si të merrni një token?",
+    "steps": {
+      "1a": "Hapni Telegram → gjeni",
+      "1b": "@BotFather",
+      "2a": "Dërgoni komandën",
+      "2b": "/newbot",
+      "3": "Zgjidhni një emër dhe një username për botin",
+      "4": "Kopjoni token-in dhe ngjiteni më sipër"
+    }
+  },
+  "insta": {
+    "title": "Instagram Bio",
+    "sub": "Vendosni në profil dhe stories një lidhje për rezervim të shpejtë",
+    "steps": {
+      "1": "Kopjoni lidhjen tuaj",
+      "2a": "Ngjiteni te fusha",
+      "2b": "«Website»",
+      "2c": " te cilësimet e profilit në Instagram.",
+      "3a": "Shtoni lidhjen te",
+      "3b": "Stories",
+      "3c": " me një ngjitëse të posaçme."
+    },
+    "proTip": "Fiksoni te Highlights një Story me hapat e rezervimit — konvertimi rritet me 30 %."
+  },
+  "web": {
+    "title": "Widget për faqen",
+    "sub": "Shtoni një buton rezervimi në çdo faqe (Tilda, WordPress ose kod i vetin)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Kopjo",
+    "instructionPrefix": "Ngjiteni këtë kod pak para etiketës mbyllëse",
+    "instructionSuffix": " në faqen tuaj. Butoni shfaqet automatikisht."
+  },
+  "wa": {
+    "title": "Rezervim me WhatsApp",
+    "sub": "Konfiguroni në WhatsApp Business një përgjigje automatike që dërgon menjëherë lidhjen e rezervimit.",
+    "online": "online",
+    "sampleIncoming": "Përshëndetje! Do të doja të rezervoja një mësim.",
+    "sampleOutgoing": "Mirë se vini! ✨",
+    "connect": "Lidh WhatsApp Business",
+    "connected": "I lidhur",
+    "autoReplyActive": "Përgjigja automatike është aktive",
+    "instantLink": "Lidhja e rezervimit dërgohet menjëherë"
+  }
+}

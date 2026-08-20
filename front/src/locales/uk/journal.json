@@ -1,0 +1,168 @@
+{
+  "toolbar": {
+    "today": "Сьогодні",
+    "trainers": "Тренери",
+    "halls": "Зали",
+    "day": "День",
+    "week": "Тиждень"
+  },
+  "daySummary": {
+    "classesToday": "занять сьогодні",
+    "clientBookings": "записів клієнтів",
+    "avgLoad": "середня заповненість",
+    "trainersActive": "тренерів на зміні",
+    "gridStep": "Крок сітки",
+    "minuteShort": "хв",
+    "minutesShort": "хв",
+    "undo": "Скасувати: {{label}}",
+    "redo": "Повторити: {{label}}",
+    "nothingToUndo": "Немає що скасовувати",
+    "nothingToRedo": "Немає що повторювати"
+  },
+  "newBooking": {
+    "title": "Нове заняття",
+    "slotTime": "Час слота",
+    "service": "Послуга",
+    "servicePlaceholder": "Оберіть послугу",
+    "namePlaceholder": "Напр. Reformer Pilates",
+    "location": "Місце / зала",
+    "start": "Початок",
+    "end": "Кінець",
+    "groupLimit": "Ліміт групи",
+    "maxSpots": "Макс. місць",
+    "assignTrainer": "Призначити тренера",
+    "cancel": "Скасувати",
+    "create": "Створити заняття",
+    "errors": {
+      "selectService": "Оберіть послугу",
+      "range": "Від 1 до 50",
+      "endAfterStart": "Кінець має бути після початку"
+    },
+    "createServiceConfirm": {
+      "title": "Створити послугу?",
+      "message": "Не знаходите потрібну послугу? Створіть її в Каталозі.",
+      "confirm": "До Каталогу"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Підтверджено",
+    "pending": "Очікує",
+    "cancelled": "Скасовано",
+    "spotsTaken": "зайнятих місць",
+    "fillRate": "Заповненість",
+    "booked": "Записаний",
+    "attended": "Прийшов",
+    "markAttended": "Позначити відвідування",
+    "awaitingConfirmation": "Очікує підтвердження",
+    "trialLesson": "Пробне",
+    "unpaid": "Не оплачено · {{amount}}",
+    "acceptPayment": "Прийняти оплату",
+    "payCash": "Готівка",
+    "payTransfer": "Переказ",
+    "payLater": "Без оплати",
+    "confirmBooking": "Підтвердити запис",
+    "rejectBooking": "Відхилити заявку",
+    "removeFromLesson": "Прибрати із заняття",
+    "add": "Додати",
+    "addClient": "Додати клієнта",
+    "edit": "Редагувати",
+    "editLesson": "Редагувати заняття",
+    "deleteLesson": "Видалити заняття",
+    "cancel": "Скасувати",
+    "save": "Зберегти",
+    "lessonTitle": "Назва заняття",
+    "untitled": "Без назви",
+    "from": "Від",
+    "to": "До",
+    "searchPlaceholder": "Пошук за іменем або телефоном...",
+    "noClientsFound": "Клієнтів не знайдено",
+    "noEligibleClients": "Немає клієнтів із доступом до цього заняття",
+    "visitsCount_one": "{{count}} візит",
+    "visitsCount_few": "{{count}} візити",
+    "visitsCount_many": "{{count}} візитів",
+    "visitsCount_other": "{{count}} візити",
+    "errors": {
+      "selectService": "Оберіть послугу",
+      "range": "Від 1 до 50",
+      "minBooked": "{{count}} вже записалися — менше не можна",
+      "endAfterStart": "Кінець має бути після початку"
+    },
+    "createServiceConfirm": {
+      "title": "Створити послугу?",
+      "message": "Не знаходите потрібну послугу? Створіть її в Каталозі.",
+      "confirm": "До Каталогу"
+    }
+  },
+  "addClientModal": {
+    "title": "Додати клієнта",
+    "searchPlaceholder": "Пошук за іменем або телефоном...",
+    "noClientsFound": "Клієнтів не знайдено",
+    "chooseFromList": "Оберіть клієнтів зі списку",
+    "selectedCount_one": "Обрано: {{count}} клієнта",
+    "selectedCount_few": "Обрано: {{count}} клієнтів",
+    "selectedCount_many": "Обрано: {{count}} клієнтів",
+    "selectedCount_other": "Обрано: {{count}} клієнтів",
+    "cancel": "Скасувати",
+    "add": "Додати"
+  },
+  "rightPanel": {
+    "halls": "Зали",
+    "load": "Заповненість",
+    "upcoming": "Найближчі"
+  },
+  "grid": {
+    "classesShort": "зан.",
+    "peopleShort": "ос.",
+    "loadPercent": "Заповненість: {{percent}}%",
+    "classes": "занять",
+    "classesToday": "занять сьогодні",
+    "newLessonPreview": "Нове заняття",
+    "cancelled": "Скасовано",
+    "noTrainers": "Немає тренерів",
+    "noHalls": "Немає зал"
+  },
+  "createService": "+ Створити послугу",
+  "invalidDateFormat": "Некоректний формат дати",
+  "toasts": {
+    "lessonMoved": "Заняття перенесено",
+    "endTimeChanged": "Час завершення змінено",
+    "startTimeChanged": "Час початку змінено",
+    "attendanceMarked": "Відвідування позначено",
+    "paymentAccepted": "Оплату прийнято",
+    "bookingConfirmed": "Запис підтверджено",
+    "clientRemoved": "Клієнта прибрано із заняття",
+    "lessonUpdated": "Заняття оновлено",
+    "lessonAdded": "Заняття додано",
+    "selectTrainer": "Оберіть тренера",
+    "alreadyCancelled": "Заняття вже скасоване",
+    "lessonCancelled": "Заняття скасовано",
+    "noPermission": "Недостатньо прав, щоб змінювати розклад",
+    "undoLabel": "Скасовано: {{label}}",
+    "redoLabel": "Повторено: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Записано: {{count}} клієнта",
+    "clientsBooked_few": "Записано: {{count}} клієнтів",
+    "clientsBooked_many": "Записано: {{count}} клієнтів",
+    "clientsBooked_other": "Записано: {{count}} клієнтів",
+    "clientsBookedPartial": "Записано {{success}} із {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "вилучення клієнта",
+      "moveLesson": "перенесення заняття",
+      "createLesson": "створення заняття",
+      "bookClient": "запис клієнта",
+      "bookClients": "запис клієнтів ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Не вдалося завантажити",
+    "retry": "Спробувати ще раз"
+  },
+  "cancelBookingConfirm": {
+    "title": "Скасувати заняття?",
+    "message_one": "{{count}} клієнт отримає сповіщення про скасування.",
+    "message_few": "{{count}} клієнти отримають сповіщення про скасування.",
+    "message_many": "{{count}} клієнтів отримають сповіщення про скасування.",
+    "message_other": "{{count}} клієнтів отримають сповіщення про скасування.",
+    "confirm": "Скасувати заняття"
+  }
+}

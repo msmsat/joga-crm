@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Er det ikke deg?",
+    "login": "Logg inn på en annen konto"
+  },
+  "card": {
+    "roleLine": "Teaminvitasjon · {{role}}"
+  },
+  "title": {
+    "new": "Hei, {{name}}",
+    "existing": "Velkommen tilbake, {{name}}"
+  },
+  "sub": {
+    "new": "Skriv inn passordet du fikk av lederen for studioet.",
+    "existing": "Skriv inn passordet for {{email}} for å godta invitasjonen."
+  },
+  "switch": {
+    "notice": "Du er logget inn som {{current}}. Denne invitasjonen gjelder {{next}} — godtar du den, bytter du til den kontoen. Du kan bytte tilbake fra profilen din."
+  },
+  "fields": {
+    "newPassword": "Passord",
+    "newPasswordPlaceholder": "Passord fra lederen din",
+    "password": "Passord",
+    "passwordPlaceholder": "Velora-passordet ditt",
+    "phone": "Telefonnummer",
+    "phoneHint": "Vi har ikke nummeret ditt ennå — skriv det med landkode",
+    "show": "Vis",
+    "hide": "Skjul"
+  },
+  "cta": {
+    "enter": "Logg inn i studioet",
+    "accept": "Godta invitasjonen"
+  },
+  "forgotHint": "Glemt passordet?",
+  "forgotLink": "Gjenopprett tilgang",
+  "expired": {
+    "title": "Lenken er ikke gyldig",
+    "sub": "Invitasjonen er utløpt eller trukket tilbake. Be eieren av studioet sende den på nytt.",
+    "cta": "Gå til innlogging"
+  },
+  "consent": {
+    "text": "Jeg godtar",
+    "terms": "vilkårene for bruk",
+    "and": "og",
+    "privacy": "personvernerklæringen"
+  },
+  "errors": {
+    "noToken": "Lenken inneholder ingen invitasjonskode — åpne den i sin helhet fra e-posten.",
+    "network": "Tilkoblingsfeil",
+    "passwordRequired": "Skriv inn passordet ditt",
+    "phoneRequired": "Skriv inn telefonnummeret ditt med landkode",
+    "consentRequired": "Ditt samtykke kreves"
+  },
+  "newAccountHint": "Passordet står ikke i e-posten — og det er hele poenget: en lenke alene er ikke nok til å komme inn. Har du ikke fått et, spør lederen din.",
+  "decline": {
+    "cta": "Avslå invitasjonen",
+    "confirm": "Invitasjonen til «{{studio}}» blir fjernet. Du blir ikke med i teamet, og bare eieren av studioet kan sende den på nytt.",
+    "keep": "Behold",
+    "confirmCta": "Avslå",
+    "pending": "Avslår…"
+  },
+  "declined": {
+    "title": "Invitasjon avslått",
+    "sub": "Vi la deg ikke til i studioet. Var det en feil, be eieren sende invitasjonen på nytt."
+  }
+}

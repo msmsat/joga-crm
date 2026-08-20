@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Solche Mitarbeitenden gibt es im Studio nicht",
+    "noData": "Keine Daten",
+    "ownerOnly": "Zugriff durch Ihre Rolle eingeschränkt",
+    "loadError": "Daten konnten nicht geladen werden",
+    "retry": "Erneut versuchen"
+  },
+  "metrics": {
+    "revenue": "Umsatz diesen Monat",
+    "clients": "Aktive Kunden",
+    "bookings": "Buchungen diesen Monat",
+    "retention": "Bindungsrate",
+    "lessons": "Kurse diesen Monat",
+    "attendance": "Teilnahme diesen Monat",
+    "fill_rate": "Auslastung",
+    "rating": "Durchschnittsbewertung",
+    "active_clients": "Aktive Kunden",
+    "more": "Details"
+  },
+  "today": {
+    "titleTrainer": "Meine Kurse heute",
+    "titleAdmin": "Heutiger Plan",
+    "subtitle": "{{count}} Kurse · {{booked}} von {{spots}} Plätzen",
+    "subtitle_one": "{{count}} Kurs · {{booked}} von {{spots}} Plätzen",
+    "openJournal": "Journal öffnen",
+    "empty": "Heute keine Kurse",
+    "emptyHintTrainer": "Ein freier Tag — neue Buchungen erscheinen hier",
+    "emptyHintAdmin": "Für heute ist nichts geplant"
+  },
+  "chart": {
+    "byDay": "pro Tag",
+    "byMonth": "pro Monat",
+    "subWeek": "Aktuelle Woche",
+    "subMonth": "Aktueller Monat",
+    "subYear": "Letzte 12 Monate",
+    "tabWeek": "Woche",
+    "tabMonth": "Monat",
+    "tabYear": "Jahr",
+    "noData": "Keine Daten für diesen Zeitraum",
+    "retentionNA": "Diagramm zur Kundenbindung ist nicht verfügbar"
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "empty": "Keine Aufgaben",
+    "done": "Erledigt",
+    "add": "Aufgabe hinzufügen",
+    "namePlaceholder": "Name der Aufgabe…",
+    "cancel": "Abbrechen",
+    "submit": "Hinzufügen",
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch"
+    },
+    "priorityHint": {
+      "low": "Niedrige Priorität",
+      "medium": "Mittlere Priorität",
+      "high": "Hohe Priorität"
+    },
+    "tags": {
+      "Клиент": "Kunde",
+      "Финансы": "Finanzen",
+      "Лиды": "Leads",
+      "Отчёты": "Berichte",
+      "Журнал": "Journal",
+      "Персонал": "Personal"
+    },
+    "scope": {
+      "mine": "Meine",
+      "admins": "Administratoren",
+      "trainers": "Trainer"
+    },
+    "assigneePlaceholder": "Mitarbeitende auswählen",
+    "deleteTitle": "Aufgabe löschen?",
+    "deleteMessage": "Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "events": {
+    "title": "Letzte Ereignisse",
+    "seeAll": "Alle ansehen",
+    "justNow": "gerade eben",
+    "openProfile": "Profil öffnen",
+    "writeWhatsApp": "Auf WhatsApp schreiben",
+    "sendReceipt": "Beleg senden",
+    "cancelBooking": "Buchung stornieren"
+  },
+  "summary": {
+    "topServices": "Top-Leistungen",
+    "trainersLoad": "Trainerauslastung",
+    "financeMonth": "Finanzen (Monat)",
+    "revenue": "Umsatz",
+    "expenses": "Ausgaben",
+    "avgCheck": "Ø Bon",
+    "profit": "Gewinn"
+  }
+}

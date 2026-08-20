@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Krok {{step}} z {{total}}",
+    "securityNote": "Vaše údaje jsou chráněné a nikdy je nepředáváme třetím stranám",
+    "back": "Zpět",
+    "continue": "Pokračovat",
+    "finish": "Začít pracovat",
+    "saving": "Ukládání...",
+    "progress": "{{step}}/5 — zabere méně než 3 minuty",
+    "regionRequired": "Nastavte prosím regionální nastavení",
+    "networkError": "Chyba sítě při ukládání dat.",
+    "phoneTakenTitle": "Číslo se už používá",
+    "phoneTaken": "Toto telefonní číslo je již registrováno",
+    "errorTitle": "Chyba",
+    "changeNumber": "Změnit číslo",
+    "gotIt": "Rozumím"
+  },
+  "steps": {
+    "identity": {
+      "title": "O studiu",
+      "desc": "Název, popis a vizuální styl vaší značky."
+    },
+    "activity": {
+      "title": "Činnost",
+      "desc": "Vyberte zaměření, ať vám CRM přizpůsobíme."
+    },
+    "contact": {
+      "title": "Kontakty",
+      "desc": "Adresa, telefon a odkazy pro vaše klienty."
+    },
+    "settings": {
+      "title": "Nastavení",
+      "desc": "Region, měna a formát data."
+    },
+    "schedule": {
+      "title": "Provozní doba",
+      "desc": "Nastavte dny a hodiny, kdy vaše studio funguje."
+    }
+  },
+  "identity": {
+    "welcome": "Vítejte",
+    "subtitle": "Pár minut nastavení — a váš pracovní prostor je připravený",
+    "replaceLogo": "Vyměnit logo",
+    "uploadLogo": "Nahrát logo",
+    "removeLogo": "Odebrat",
+    "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "nameLabel": "Název studia nebo firmy",
+    "namePlaceholder": "Např.: Studio Forma",
+    "descriptionLabel": "Popis",
+    "descriptionPlaceholder": "Krátce o vašem studiu, stylu práce, zvláštnostech...",
+    "newBadge": "NOVÉ"
+  },
+  "activity": {
+    "title": "Typ činnosti",
+    "subtitle": "Vyberte zaměření — CRM vám přizpůsobíme",
+    "comingSoon": "Brzy: barbershop, fitness, tanec a další",
+    "types": {
+      "yoga": {
+        "label": "Jóga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates na podložce"
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontaktní údaje",
+    "subtitle": "Klienti tyto údaje uvidí při online rezervaci",
+    "phoneLabel": "Telefon studia",
+    "checkingPhone": "Kontrola čísla...",
+    "addressLabel": "Adresa",
+    "emailLabel": "E-mail",
+    "websiteLabel": "Web",
+    "note": "Všechna pole kromě telefonu jsou nepovinná. Doplnit je můžete později v nastavení."
+  },
+  "settings": {
+    "title": "Regionální nastavení",
+    "subtitle": "Lze změnit později v nastavení studia",
+    "timezoneLabel": "Časové pásmo",
+    "timezonePlaceholder": "Vyberte časové pásmo",
+    "languageLabel": "Jazyk",
+    "languagePlaceholder": "Jazyk",
+    "currencyLabel": "Měna",
+    "currencyPlaceholder": "Měna",
+    "dateFormatLabel": "Formát data",
+    "dateFormatPlaceholder": "Formát",
+    "firstDayLabel": "První den týdne",
+    "timezones": {
+      "UTC+3": "Moskva, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubaj, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Taškent, Jekatěrinburg, Karáčí (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapur, Peking (UTC+8)",
+      "UTC+9": "Jakutsk, Tokio, Soul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Šalomounovy ostrovy (UTC+11)",
+      "UTC+12": "Kamčatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Havaj (UTC-10)",
+      "UTC-9": "Aljaška (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Ciudad de México (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Jižní Georgie (UTC-2)",
+      "UTC-1": "Azory (UTC-1)",
+      "UTC+0": "Londýn, Lisabon (UTC+0)",
+      "UTC+1": "Berlín, Paříž, Varšava (UTC+1)",
+      "UTC+2": "Kyjev, Atény, Káhira (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubl",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hřivna",
+      "GBP": "Libra",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Česká koruna",
+      "PLN": "Zlotý",
+      "HUF": "Forint",
+      "RON": "Leu",
+      "BGN": "Lev",
+      "SEK": "Švédská koruna",
+      "NOK": "Norská koruna",
+      "DKK": "Dánská koruna",
+      "CHF": "Švýcarský frank",
+      "ISK": "Islandská koruna",
+      "RSD": "Srbský dinár"
+    }
+  },
+  "schedule": {
+    "title": "Provozní doba",
+    "subtitle": "Nastavte dny a hodiny, kdy vaše studio funguje",
+    "scheduleLabel": "Rozvrh studia",
+    "dayOff": "Zavřeno"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Název studia",
+    "clients": "Klienti",
+    "attendance": "Docház.",
+    "studioCreated": "Studio vytvořeno",
+    "chooseDirection": "Vyberte zaměření",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-mail",
+    "addressLabel": "Adresa",
+    "phonePlaceholder": "+420 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Hlavní 123",
+    "dayOff": "zavřeno"
+  }
+}

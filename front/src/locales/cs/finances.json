@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Účty",
+    "operations": "Operace",
+    "salaries": "Mzdy",
+    "counterparties": "Protistrany",
+    "documents": "Dokumenty",
+    "onlinePayments": "Online platby",
+    "paymentMethods": "Způsoby platby",
+    "reports": "Reporty",
+    "goals": "Cíle"
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "create": "Vytvořit",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "loading": "Načítám…",
+    "all": "Vše",
+    "confirm": "Potvrdit",
+    "monthsShort": [
+      "Led",
+      "Úno",
+      "Bře",
+      "Dub",
+      "Kvě",
+      "Čvn",
+      "Čvc",
+      "Srp",
+      "Zář",
+      "Říj",
+      "Lis",
+      "Pro"
+    ],
+    "weekdaysShort": [
+      "Po",
+      "Út",
+      "St",
+      "Čt",
+      "Pá",
+      "So",
+      "Ne"
+    ]
+  },
+  "info": {
+    "accounts": "Účty jsou pokladny studia, bankovní účty a online acquiring. Tady vidíte každý zůstatek i celkový kapitál.",
+    "operations": "Operace jsou všechny příjmy a výdaje studia. Vytvoření operace okamžitě změní zůstatek propojeného účtu.",
+    "salaries": "Mzdy se počítají ze sazby zaměstnance (pevná, hodinová nebo procentní) za zvolené období.",
+    "counterparties": "Protistrany jsou organizace a osoby, se kterými studio vyrovnává účty: dodavatelé, pronajímatelé, partneři.",
+    "documents": "Dokumenty jsou smlouvy, akty a faktury navázané na protistrany, nebo interní dokumenty.",
+    "onlinePayments": "Online platby — připojení Stripe pro platby kartou. Účet vzniká pro vaše studio, takže peníze jdou rovnou vám, mimo Veloru.",
+    "paymentMethods": "Způsoby platby ukazují, jak klienti ve studiu platí, a statistiku pro každý z nich.",
+    "reports": "Reporty ukazují vývoj příjmů, výdajů a zisku za zvolené období.",
+    "goals": "Finanční cíle jsou plán spoření studia s automatickým nebo ručním sledováním pokroku."
+  },
+  "accounts": {
+    "loading": "Načítám účty…",
+    "totalCapital": "Celkový kapitál studia",
+    "donutTotal": "{{symbol}} celkem",
+    "todayChange": "dnes",
+    "system": "SYSTÉMOVÝ",
+    "today": "dnes",
+    "editTitle": "Upravit účet",
+    "namePlaceholder": "Název",
+    "balancePlaceholder": "Zůstatek, {{symbol}}",
+    "types": {
+      "cash": "Hotovost",
+      "bank": "Karta",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Hotovost",
+      "bank": "Karta",
+      "online": "Online"
+    },
+    "history": "Historie",
+    "historyTitle": "Historie: {{name}}",
+    "income30d": "Příjmy (30 d)",
+    "expense30d": "Výdaje (30 d)",
+    "samplePayment": "Platba za službu",
+    "sampleTime": "Dnes, 14:32",
+    "openAllOperations": "Otevřít všechny operace",
+    "newSavingsTitle": "Nový spořicí účet",
+    "createSavings": "Vytvořit spořicí účet",
+    "deleteConfirmTitle": "Smazat tento účet?",
+    "deleteConfirmText": "Všechny jeho prostředky budou vyňaty z celkové statistiky. Tuto akci nelze vrátit zpět.",
+    "toasts": {
+      "loadFailed": "Účty se nepodařilo načíst",
+      "deleted": "Účet smazán",
+      "deleteFailed": "Účet se nepodařilo smazat",
+      "saved": "Nastavení uloženo",
+      "saveFailed": "Účet se nepodařilo uložit",
+      "created": "Spořicí účet vytvořen",
+      "createFailed": "Účet se nepodařilo vytvořit"
+    }
+  },
+  "operations": {
+    "income": "Příjem",
+    "expense": "Výdaj",
+    "balance": "Zůstatek",
+    "searchPlaceholder": "Hledat podle názvu a kategorie...",
+    "close": "Zavřít",
+    "operation": "Operace",
+    "export": "Export",
+    "newOperationTitle": "Nová operace",
+    "titleLabel": "Název",
+    "titlePlaceholder": "Např. Platba za permanentku",
+    "amountLabel": "Částka, {{symbol}}",
+    "dateLabel": "Datum",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Kategorie",
+    "accountLabel": "Účet",
+    "noAccount": "Bez účtu",
+    "methodLabel": "Způsob platby",
+    "noMethod": "Neuvedeno",
+    "counterpartyLabel": "Protistrana",
+    "noCounterparty": "Bez protistrany",
+    "newCounterparty": "+ Nová protistrana",
+    "clientLabel": "Klient",
+    "clientHint": "Věrnostní body a úroveň se připíšou klientovi",
+    "clientSearchPlaceholder": "Začněte psát jméno…",
+    "noClient": "Bez klienta",
+    "editTitle": "Upravit operaci",
+    "saving": "Ukládám…",
+    "loading": "Načítám operace…",
+    "emptyTitle": "Žádné operace nenalezeny",
+    "emptyBody": "Změňte filtry nebo vytvořte první operaci",
+    "pending": "Čeká",
+    "detailAccount": "Přijímající účet",
+    "detailCategory": "Kategorie",
+    "detailMethod": "Způsob platby",
+    "detailCounterparty": "Protistrana",
+    "receipt": "Účtenka",
+    "loadMore": "Načíst další ({{count}})",
+    "toasts": {
+      "loadFailed": "Operace se nepodařilo načíst",
+      "loadMoreFailed": "Další operace se nepodařilo načíst",
+      "deleted": "Operace smazána",
+      "deleteFailed": "Operaci se nepodařilo smazat",
+      "enterAmount": "Zadejte částku",
+      "created": "Operace vytvořena",
+      "createFailed": "Operaci se nepodařilo vytvořit",
+      "updated": "Operace aktualizována",
+      "updateFailed": "Operaci se nepodařilo uložit",
+      "exportFailed": "Operace se nepodařilo exportovat",
+      "receiptDownloaded": "Účtenka stažena"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Абонементы",
+          "label": "Permanentky"
+        },
+        {
+          "value": "Услуги",
+          "label": "Služby"
+        },
+        {
+          "value": "Сертификаты",
+          "label": "Dárkové poukazy"
+        },
+        {
+          "value": "Депозит",
+          "label": "Vklad"
+        },
+        {
+          "value": "Прочее",
+          "label": "Ostatní"
+        }
+      ],
+      "out": [
+        {
+          "value": "Возвраты",
+          "label": "Vratky"
+        },
+        {
+          "value": "Аренда",
+          "label": "Nájem"
+        },
+        {
+          "value": "Зарплата",
+          "label": "Mzdy"
+        },
+        {
+          "value": "Закупки",
+          "label": "Nákupy"
+        },
+        {
+          "value": "Реклама",
+          "label": "Reklama"
+        },
+        {
+          "value": "Налоги",
+          "label": "Daně"
+        },
+        {
+          "value": "Прочее",
+          "label": "Ostatní"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Načítám mzdy…",
+    "noRows": "Není koho spočítat",
+    "fund": "Mzdový fond",
+    "fundSub": "aktuální měsíc",
+    "sessions": "Lekce",
+    "sessionsSub": "celkem odučeno",
+    "paidOf": "zaměstnanců",
+    "sessionsCount": "{{count}} lekcí",
+    "paid": "Vyplaceno",
+    "pending": "Čeká",
+    "paying": "…",
+    "payAction": "Vyplatit",
+    "cancelAction": "Zrušit mzdu",
+    "perMonth": "/měs.",
+    "accrualTitle": "Nárok za období",
+    "rate": "Sazba",
+    "rateNotSet": "nenastavena",
+    "sessionsInPeriod": "Lekce za období",
+    "hoursWorked": "Odpracované hodiny",
+    "lessonsRevenue": "Tržby z lekcí",
+    "totalToPay": "Celkem k výplatě",
+    "rateWarning": "Sazba není nastavena — nastavte ji v profilu zaměstnance, aby šel nárok spočítat.",
+    "rateUnit": {
+      "hourly": "hod",
+      "percent": "%",
+      "fixed": "pevná"
+    },
+    "paidAt": "Vyplaceno {{date}}",
+    "historyTitle": "Historie výplat",
+    "historyEmpty": "Zatím žádné výplaty",
+    "historyLoading": "Načítám historii…",
+    "toasts": {
+      "loadFailed": "Mzdy se nepodařilo načíst",
+      "paid": "Mzda vyplacena: {{name}}",
+      "payFailed": "Mzdu se nepodařilo vyplatit",
+      "canceled": "Mzda zrušena: {{name}}",
+      "historyLoadFailed": "Historii výplat se nepodařilo načíst"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} protistran",
+    "totalDebt": "Celkový dluh:",
+    "add": "Přidat",
+    "newTitle": "Nová protistrana",
+    "nameLabel": "Název / Jméno a příjmení",
+    "namePlaceholder": "Firma s.r.o. nebo Jan Novák",
+    "innLabel": "IČO",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Nájem, Dodavatel…",
+    "typeLabel": "Typ protistrany",
+    "types": {
+      "legal": {
+        "label": "Právnická osoba",
+        "desc": "Organizace nebo firma"
+      },
+      "ie": {
+        "label": "OSVČ",
+        "desc": "Podnikatel fyzická osoba"
+      },
+      "person": {
+        "label": "Fyzická osoba",
+        "desc": "Soukromá osoba"
+      }
+    },
+    "addSubmit": "Přidat protistranu",
+    "you": "Vy",
+    "otherCategory": "Ostatní",
+    "deals": "obchodů",
+    "dealsLabel": "Obchody",
+    "debtLabel": "Dluh",
+    "documents": "Dokumenty",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "deleteConfirmTitle": "Smazat protistranu?",
+    "deleteConfirmText": "Související dokumenty a historie obchodů zůstanou, ale protistrana zmizí ze seznamu.",
+    "toasts": {
+      "loadFailed": "Protistrany se nepodařilo načíst",
+      "enterName": "Zadejte název",
+      "saved": "Změny uloženy",
+      "saveFailed": "Uložení se nezdařilo",
+      "added": "Protistrana přidána",
+      "addFailed": "Protistranu se nepodařilo přidat",
+      "deleted": "Protistrana smazána",
+      "deleteFailed": "Protistranu se nepodařilo smazat",
+      "documentsOpened": "Dokumenty otevřeny"
+    }
+  },
+  "documents": {
+    "signed": "Podepsáno",
+    "pendingCount": "Čeká na podpis",
+    "draftCount": "Interní (nepodepsané)",
+    "searchPlaceholder": "Hledat podle názvu nebo protistrany...",
+    "filters": {
+      "all": "Vše",
+      "signed": "Podepsané",
+      "pending": "Čeká na podpis"
+    },
+    "upload": "Nahrát",
+    "addTitle": "Přidat dokument do knihovny",
+    "dropzoneTitle": "Klikněte nebo přetáhněte soubor",
+    "dropzoneHint": "PDF, DOCX, XLSX (do 15 MB)",
+    "dropzoneChange": "Kliknutím vyberte jiný soubor",
+    "titleLabel": "Název dokumentu",
+    "titlePlaceholder": "Např. Předávací protokol č. 48",
+    "partyLabel": "Protistrana (pokud je)",
+    "partyPlaceholder": "Název firmy nebo OSVČ",
+    "needsSignature": "Potřebuje dokument podpis?",
+    "needsSignatureHint": "Stav bude „Čeká na podpis“",
+    "saveToBase": "Uložit do knihovny",
+    "emptyTitle": "Tato složka je prázdná",
+    "emptyBody": "Nahrajte nový dokument nebo změňte filtry",
+    "internalDoc": "Interní dokument",
+    "uploaded": "Nahráno {{date}}",
+    "download": "Stáhnout",
+    "open": "Otevřít",
+    "fileRequired": "Přiložte soubor",
+    "options": "Možnosti",
+    "status": {
+      "title": "Stav",
+      "signed": "Podepsáno",
+      "pending": "Čeká na podpis",
+      "draft": "Nepodepsáno"
+    },
+    "delete": "Smazat",
+    "toasts": {
+      "loadFailed": "Dokumenty se nepodařilo načíst",
+      "titleRequired": "Nahrajte soubor nebo zadejte název",
+      "created": "Dokument nahrán do knihovny",
+      "createFailed": "Dokument se nepodařilo uložit",
+      "badFormat": "Povolené formáty: PDF, DOCX, XLSX",
+      "downloadFailed": "Soubor se nepodařilo stáhnout",
+      "noFile": "K tomuto dokumentu není přiložen žádný soubor",
+      "openFailed": "Soubor se nepodařilo otevřít",
+      "statusChanged": "Stav: {{label}}",
+      "statusFailed": "Stav se nepodařilo změnit",
+      "deleted": "Dokument smazán",
+      "deleteFailed": "Dokument se nepodařilo smazat"
+    }
+  },
+  "goals": {
+    "loading": "Načítám cíle…",
+    "active": "Cíle v běhu",
+    "done": "Splněno",
+    "avgProgress": "Celkový pokrok",
+    "trackingTitle": "Sledování plánu",
+    "createGoal": "Vytvořit cíl",
+    "newTitle": "Nový finanční cíl",
+    "titleLabel": "Název cíle",
+    "titlePlaceholder": "Např. Nové reformery",
+    "targetLabel": "Cílová částka, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Termín",
+    "trackingLabel": "Jak sledovat pokrok?",
+    "trackingAuto": "Automaticky (metrika CRM)",
+    "trackingAutoDesc": "Navažte cíl na příjmy zvolené kategorie. CRM bude ukazatel posouvat samo.",
+    "trackingManual": "Ručně (vlastní spoření)",
+    "trackingManualDesc": "Na kartě se objeví tlačítko „Přidat prostředky“. Pokrok závisí jen na vás.",
+    "opTypeLabel": "Typ operace",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Vyberte kategorii",
+    "editTitle": "Upravit cíl",
+    "nameLabel": "Název",
+    "namePlaceholder": "Název cíle",
+    "amountLabel": "Částka, {{symbol}}",
+    "achieved": "Cíl splněn",
+    "priority": {
+      "high": "Vysoká priorita",
+      "medium": "Střední priorita",
+      "low": "Nízká priorita"
+    },
+    "autoCollect": "Sledováno automaticky",
+    "deadlinePrefix": "Termín:",
+    "noDeadline": "Bez termínu",
+    "fundPlaceholder": "Částka, {{symbol}}",
+    "fund": "Přidat",
+    "addFunds": "Přidat prostředky",
+    "autoHint": "Hodnota se aktualizuje automaticky z příjmů kategorie",
+    "deleteConfirmTitle": "Smazat cíl?",
+    "deleteConfirmText": "Pokrok na tomto cíli bude ztracen. Tuto akci nelze vrátit zpět.",
+    "toasts": {
+      "loadFailed": "Cíle se nepodařilo načíst",
+      "fillRequired": "Vyplňte název a částku",
+      "chooseCategory": "Vyberte kategorii pro automatický cíl",
+      "created": "Cíl vytvořen",
+      "createFailed": "Cíl se nepodařilo vytvořit",
+      "enterName": "Zadejte název",
+      "updated": "Cíl aktualizován",
+      "updateFailed": "Cíl se nepodařilo aktualizovat",
+      "deleted": "Cíl smazán",
+      "deleteFailed": "Cíl se nepodařilo smazat",
+      "funded": "Prostředky přidány",
+      "fundFailed": "Prostředky se nepodařilo přidat"
+    }
+  },
+  "onlinePayments": {
+    "description": "Připojte Stripe a klienti u vás budou moci platit kartou. Peníze jdou přímo na účet vašeho studia — Velora je nikdy nedrží. Provize se řídí vaším tarifem.",
+    "gatewaysTitle": "Poskytovatelé plateb",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nepřipojeno",
+          "hint": "Přijímejte platby kartou na účet studia",
+          "action": "Připojit"
+        },
+        "incomplete": {
+          "label": "Chybí údaje",
+          "hint": "Stripe čeká na údaje vašeho studia — do té doby platby nejedou",
+          "action": "Pokračovat"
+        },
+        "action": {
+          "label": "Vyžaduje akci",
+          "hint": "Stripe část údajů zamítl a čeká na opravu — samo se to nespraví",
+          "action": "Opravit údaje"
+        },
+        "review": {
+          "label": "V posouzení",
+          "hint": "Údaje odeslány, Stripe je posuzuje. Obvykle to trvá do jednoho dne",
+          "action": "Otevřít Stripe"
+        },
+        "active": {
+          "label": "Připojeno",
+          "hint": "Platby kartou chodí na účet studia u Stripe",
+          "action": "Nastavení"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Nastavení brány aktualizováno",
+      "stripeReturned": "Údaje odeslány do Stripe",
+      "stripeLinkExpired": "Odkaz na Stripe vypršel — stiskněte znovu Připojit"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Obrat za období",
+    "periods": {
+      "month": "Měsíc",
+      "quarter": "Čtvrtletí",
+      "year": "Rok"
+    },
+    "amount": "Částka",
+    "share": "Podíl",
+    "transactions": "transakcí",
+    "methods": {
+      "cash": {
+        "name": "Hotovost"
+      },
+      "card": {
+        "name": "Platební karta"
+      },
+      "qr": {
+        "name": "QR platba"
+      },
+      "transfer": {
+        "name": "Převod"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Neuvedeno"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Tržby",
+      "expenses": "Výdaje",
+      "profit": "Zisk",
+      "margin": "Marže"
+    },
+    "vsPreviousPeriod": "oproti předchozímu období",
+    "cashflowTitle": "Peněžní tok",
+    "cashflowSub": "Analýza příjmů a výdajů",
+    "period": "Období",
+    "income": "Příjem",
+    "expense": "Výdaj",
+    "profit": "Zisk",
+    "periods": {
+      "today": "Dnes",
+      "week": "Týden",
+      "month": "Měsíc",
+      "year": "Rok"
+    },
+    "legendIncome": "Příjmy",
+    "legendExpense": "Výdaje",
+    "exportCsv": "Export CSV",
+    "expenseStructure": "Struktura výdajů",
+    "incomeStructure": "Struktura příjmů",
+    "total": "Celkem",
+    "otherCategory": "Bez kategorie",
+    "noData": "Za toto období nejsou data",
+    "insightsTitle": "Finanční souhrn a postřehy",
+    "insightsPlaceholder": "Tady se objeví finanční souhrn od AI: analýza trendů, rozpad výdajů a doporučení",
+    "toasts": {
+      "exportFailed": "Operace se nepodařilo exportovat"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Zrušit",
+    "confirm": "Potvrdit",
+    "delete": "Smazat"
+  }
+}

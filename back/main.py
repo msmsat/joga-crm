@@ -10,6 +10,7 @@ from slowapi import _rate_limit_exceeded_handler
 
 from ratelimit import limiter
 from database import async_session_maker
+from services.alerts import alert_on_server_error, install as install_alerts
 from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
 from services.offline_fee_billing import start_offline_fee_billing_loop
@@ -55,6 +56,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Velora CRM API", lifespan=lifespan)
+
+# Алерты платформе в Telegram (services/alerts.py): хендлер ловит все ERROR-логи,
+# middleware — падения запросов и 5xx с путём и пострадавшим. Без ALERT_TG_CHAT_ID
+# оба no-op, поэтому на деве и в тестах ничего не шлётся.
+install_alerts()
+app.middleware("http")(alert_on_server_error)
 
 # Rate-limit публичных эндпоинтов (задача 11b). Лимиты вешаются декораторами
 # на сами публичные роуты; на JWT-роутеры ничего не навешивается.

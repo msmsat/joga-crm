@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Trin {{step}} af {{total}}",
+    "securityNote": "Dine data er beskyttet og deles aldrig med tredjeparter",
+    "back": "Tilbage",
+    "continue": "Fortsæt",
+    "finish": "Kom i gang",
+    "saving": "Gemmer...",
+    "progress": "{{step}}/5 — tager under 3 minutter",
+    "regionRequired": "Angiv venligst dine regionale indstillinger",
+    "networkError": "Netværksfejl under lagring af data.",
+    "phoneTakenTitle": "Nummeret er allerede i brug",
+    "phoneTaken": "Dette telefonnummer er allerede registreret",
+    "errorTitle": "Fejl",
+    "changeNumber": "Skift nummer",
+    "gotIt": "Forstået"
+  },
+  "steps": {
+    "identity": {
+      "title": "Om studiet",
+      "desc": "Navn, beskrivelse og visuel stil for dit brand."
+    },
+    "activity": {
+      "title": "Aktivitet",
+      "desc": "Vælg en retning, så vi kan tilpasse CRM'et til dig."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "desc": "Adresse, telefon og links til dine kunder."
+    },
+    "settings": {
+      "title": "Indstillinger",
+      "desc": "Region, valuta og datoformat."
+    },
+    "schedule": {
+      "title": "Åbningstider",
+      "desc": "Angiv de dage og timer, dit studie har åbent."
+    }
+  },
+  "identity": {
+    "welcome": "Velkommen",
+    "subtitle": "Et par minutters opsætning — og dit arbejdsrum er klar",
+    "replaceLogo": "Udskift logo",
+    "uploadLogo": "Upload logo",
+    "removeLogo": "Fjern",
+    "logoHint": "JPG, PNG, WEBP op til 5 MB",
+    "nameLabel": "Navn på studie eller virksomhed",
+    "namePlaceholder": "F.eks.: Studio Forma",
+    "descriptionLabel": "Beskrivelse",
+    "descriptionPlaceholder": "En kort note om dit studie, arbejdsstil, særkender...",
+    "newBadge": "NY"
+  },
+  "activity": {
+    "title": "Type af aktivitet",
+    "subtitle": "Vælg en retning — vi tilpasser CRM'et til dig",
+    "comingSoon": "Snart: barbershop, fitness, dans og mere",
+    "types": {
+      "yoga": {
+        "label": "Yoga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, måttepilates"
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontaktoplysninger",
+    "subtitle": "Kunderne ser disse oplysninger ved onlinebooking",
+    "phoneLabel": "Studiets telefon",
+    "checkingPhone": "Kontrollerer nummer...",
+    "addressLabel": "Adresse",
+    "emailLabel": "E-mail",
+    "websiteLabel": "Websted",
+    "note": "Alle felter undtagen telefon er valgfrie. Du kan udfylde dem senere i indstillingerne."
+  },
+  "settings": {
+    "title": "Regionale indstillinger",
+    "subtitle": "Kan ændres senere i studiets indstillinger",
+    "timezoneLabel": "Tidszone",
+    "timezonePlaceholder": "Vælg tidszone",
+    "languageLabel": "Sprog",
+    "languagePlaceholder": "Sprog",
+    "currencyLabel": "Valuta",
+    "currencyPlaceholder": "Valuta",
+    "dateFormatLabel": "Datoformat",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "Ugens første dag",
+    "timezones": {
+      "UTC+3": "Moskva, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Tasjkent, Jekaterinburg, Karachi (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapore, Beijing (UTC+8)",
+      "UTC+9": "Jakutsk, Tokyo, Seoul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Salomonøerne (UTC+11)",
+      "UTC+12": "Kamtjatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Mexico City (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "South Georgia (UTC-2)",
+      "UTC-1": "Azorerne (UTC-1)",
+      "UTC+0": "London, Lissabon (UTC+0)",
+      "UTC+1": "Berlin, Paris, Warszawa (UTC+1)",
+      "UTC+2": "Kyiv, Athen, Kairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubel",
+      "USD": "Dollar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hryvnia",
+      "GBP": "Pund",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Tjekkisk koruna",
+      "PLN": "Zloty",
+      "HUF": "Forint",
+      "RON": "Leu",
+      "BGN": "Lev",
+      "SEK": "Svensk krone",
+      "NOK": "Norsk krone",
+      "DKK": "Dansk krone",
+      "CHF": "Schweizerfranc",
+      "ISK": "Islandsk krone",
+      "RSD": "Serbisk dinar"
+    }
+  },
+  "schedule": {
+    "title": "Åbningstider",
+    "subtitle": "Angiv de dage og timer, dit studie har åbent",
+    "scheduleLabel": "Studiets åbningstider",
+    "dayOff": "Lukket"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Studiets navn",
+    "clients": "Kunder",
+    "attendance": "Fremm.",
+    "studioCreated": "Studie oprettet",
+    "chooseDirection": "Vælg en retning",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-mail",
+    "addressLabel": "Adresse",
+    "phonePlaceholder": "+45 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Hovedgaden 123",
+    "dayOff": "lukket"
+  }
+}

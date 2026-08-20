@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "To nie Ty?",
+    "login": "Zaloguj się na inne konto"
+  },
+  "card": {
+    "roleLine": "Zaproszenie do zespołu · {{role}}"
+  },
+  "title": {
+    "new": "Cześć, {{name}}",
+    "existing": "Witaj ponownie, {{name}}"
+  },
+  "sub": {
+    "new": "Wpisz hasło, które otrzymałeś od kierownika studia.",
+    "existing": "Wpisz hasło do {{email}}, aby przyjąć zaproszenie."
+  },
+  "switch": {
+    "notice": "Jesteś zalogowany jako {{current}}. To zaproszenie dotyczy {{next}} — przyjęcie go przełączy Cię na tamto konto. Wrócisz z poziomu profilu."
+  },
+  "fields": {
+    "newPassword": "Hasło",
+    "newPasswordPlaceholder": "Hasło od kierownika",
+    "password": "Hasło",
+    "passwordPlaceholder": "Twoje hasło do Velory",
+    "phone": "Numer telefonu",
+    "phoneHint": "Nie mamy jeszcze Twojego numeru — wpisz go z kierunkowym kraju",
+    "show": "Pokaż",
+    "hide": "Ukryj"
+  },
+  "cta": {
+    "enter": "Zaloguj się do studia",
+    "accept": "Przyjmij zaproszenie"
+  },
+  "forgotHint": "Nie pamiętasz hasła?",
+  "forgotLink": "Odzyskaj dostęp",
+  "expired": {
+    "title": "Link jest nieprawidłowy",
+    "sub": "Zaproszenie wygasło lub zostało cofnięte. Poproś właściciela studia o ponowne wysłanie.",
+    "cta": "Przejdź do logowania"
+  },
+  "consent": {
+    "text": "Akceptuję",
+    "terms": "Regulamin",
+    "and": "oraz",
+    "privacy": "Politykę prywatności"
+  },
+  "errors": {
+    "noToken": "Link nie zawiera kodu zaproszenia — otwórz go w całości z wiadomości e-mail.",
+    "network": "Błąd połączenia",
+    "passwordRequired": "Wpisz hasło",
+    "phoneRequired": "Wpisz numer telefonu z kierunkowym kraju",
+    "consentRequired": "Wymagana jest Twoja zgoda"
+  },
+  "newAccountHint": "Hasła nie ma w e-mailu — i o to właśnie chodzi: sam link nie wystarczy, żeby wejść. Jeśli go nie dostałeś, zapytaj kierownika.",
+  "decline": {
+    "cta": "Odrzuć zaproszenie",
+    "confirm": "Zaproszenie do „{{studio}}” zostanie usunięte. Nie dołączysz do zespołu, a ponownie wysłać je może tylko właściciel studia.",
+    "keep": "Zachowaj",
+    "confirmCta": "Odrzuć",
+    "pending": "Odrzucanie…"
+  },
+  "declined": {
+    "title": "Zaproszenie odrzucone",
+    "sub": "Nie dodaliśmy Cię do studia. Jeśli to pomyłka, poproś właściciela o ponowne wysłanie zaproszenia."
+  }
+}

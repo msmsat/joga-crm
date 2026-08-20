@@ -12,7 +12,8 @@
     "check:mobile": "node scripts/check-mobile.mjs",
     "check:landing": "node scripts/check-landing-anchors.mjs",
     "check:uimap": "node scripts/check-uimap.mjs",
-    "check:ai": "node scripts/check-ai-intents.mjs"
+    "check:ai": "node scripts/check-ai-intents.mjs",
+    "check:i18n": "python scripts/i18n/verify.py"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",

@@ -1,0 +1,431 @@
+{
+  "nav": {
+    "sectionLabel": "Systemeinstellungen",
+    "general": "Allgemein",
+    "appearance": "Darstellung",
+    "notifications": "Benachrichtigungen",
+    "billing": "Abrechnung",
+    "security": "Sicherheit",
+    "integrations": "Integrationen",
+    "data": "Daten",
+    "logout": "CRM wechseln"
+  },
+  "toast": {
+    "saved": "Gespeichert",
+    "error": "Etwas ist schiefgelaufen"
+  },
+  "workspace": {
+    "title": "Ihre CRM-Systeme",
+    "subtitle": "Wählen Sie einen Arbeitsbereich oder legen Sie einen neuen an",
+    "current": "Aktuell",
+    "membersCount_one": "{{count}} Mitglied",
+    "membersCount_other": "{{count}} Mitglieder",
+    "clientsCount_one": "{{count}} Kunde",
+    "clientsCount_other": "{{count}} Kunden",
+    "createNew": "Neues Studio anlegen",
+    "loadError": "Ihre Studios konnten nicht geladen werden",
+    "selectError": "Zu diesem Studio konnte nicht gewechselt werden"
+  },
+  "general": {
+    "company": {
+      "title": "Firmendaten",
+      "subtitle": "Öffentliche Informationen über Ihr Unternehmen",
+      "name": "Firmenname",
+      "namePh": "z. B. Mein Studio",
+      "desc": "Beschreibung",
+      "descPh": "Was Ihr Studio macht…",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "site": "Website",
+      "sitePh": "https://studio.com",
+      "address": "Adresse",
+      "addressPh": "Musterstraße 123, Stadt"
+    },
+    "reset": "Zurücksetzen",
+    "resetToast": "Einstellungen zurückgesetzt",
+    "locale": {
+      "title": "Sprache & Region",
+      "subtitle": "Einstellungen zur Lokalisierung der Oberfläche",
+      "timezone": "Zeitzone",
+      "timezoneSearch": "Stadt oder Zeitversatz",
+      "timezoneNotFound": "Keine Zeitzone gefunden",
+      "currency": "Währung",
+      "language": "Sprache der Oberfläche",
+      "languageSearch": "Sprache suchen",
+      "languageNotFound": "Keine Sprache gefunden",
+      "dateFormat": "Datumsformat",
+      "firstDay": "Erster Wochentag",
+      "firstDayLabels": [
+        "Montag",
+        "Sonntag"
+      ]
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Design",
+      "subtitle": "Wählen Sie den visuellen Stil der Oberfläche",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "auto": "System"
+    },
+    "accent": {
+      "title": "Akzentfarbe",
+      "subtitle": "Passen Sie die Hauptfarbe der Oberfläche an",
+      "note": "Ihre Auswahl wird gespeichert, wirkt sich aber noch nicht auf die Oberfläche aus — das kommt in einem der nächsten Updates.",
+      "noteTitle": "Demnächst",
+      "colors": {
+        "peach": "Pfirsich",
+        "pistachio": "Pistazie",
+        "lavender": "Lavendel",
+        "pink": "Rosa",
+        "gold": "Gold",
+        "mint": "Minze"
+      }
+    },
+    "language": {
+      "title": "Sprache der Oberfläche",
+      "subtitle": "Ihre persönliche Sprache — die Studioeinstellungen bleiben unberührt",
+      "search": "Sprache suchen",
+      "empty": "Keine Sprache gefunden"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Meine Benachrichtigungen",
+      "subtitle": "Persönliche Einstellungen — betreffen den Rest des Studios nicht",
+      "hint": "Pflichtbenachrichtigungen lassen sich nicht abschalten — sie sorgen dafür, dass Sie Planänderungen und Zahlungen nie verpassen.",
+      "empty": "Für Ihre Rolle gibt es keine optionalen Benachrichtigungen",
+      "channels": {
+        "email": "E-Mail",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram für Benachrichtigungen",
+      "subtitle": "Wohin Ereignisse persönlich an Sie gehen — Buchungen, Löhne, Berichte",
+      "chatId": "Ihre Telegram-chat_id",
+      "chatIdPh": "z. B. 123456789",
+      "hintBefore": "Ihre chat_id erfahren Sie beim Bot",
+      "hintAfter": " auf Telegram — schreiben Sie ihm an, und er schickt Ihnen Ihre ID.",
+      "invalidChatId": "Die Telegram-chat_id muss eine Zahl sein, ohne Sonderzeichen",
+      "saved": "Telegram für Benachrichtigungen verknüpft",
+      "saveFailed": "Telegram konnte nicht gespeichert werden"
+    },
+    "email": {
+      "title": "E-Mail für Benachrichtigungen",
+      "subtitle": "Wohin System-E-Mails gehen",
+      "primary": "Haupt-E-Mail",
+      "backup": "Zweit-E-Mail",
+      "backupPh": "backup@studio.com",
+      "saved": "Benachrichtigungseinstellungen gespeichert"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Kostenlose Testphase"
+    },
+    "status": {
+      "active": "Aktiv",
+      "trial": "Testphase",
+      "expired": "Abgelaufen"
+    },
+    "plan": {
+      "title": "Aktueller Tarif",
+      "expiresAt": "Aktiv bis {{date}}",
+      "maxStaff": "Bis zu {{count}} Mitarbeitende",
+      "staffUnlimited": "Unbegrenzt Mitarbeitende",
+      "noSubscription": "Kein aktives Abo",
+      "noSubscriptionCta": "Tarif wählen",
+      "trialCta": "Tarif wählen"
+    },
+    "upgrade": "Auf {{plan}} upgraden",
+    "renew": "Verlängern",
+    "autopay": {
+      "title": "Automatische Verlängerung",
+      "subtitle": "Abbuchung von Ihrer hinterlegten Karte",
+      "autoRenew": "Automatische Verlängerung",
+      "notifyBefore": "Wir erinnern Sie {{count}} Tage vor der Abbuchung"
+    },
+    "payment": {
+      "title": "Zahlungsmethode",
+      "cardSummary": "Karte •••• {{last4}}",
+      "notLinked": "Keine Karte hinterlegt",
+      "change": "Ändern"
+    },
+    "history": {
+      "title": "Zahlungsverlauf",
+      "subtitle": "Letzte 12 Zahlungen",
+      "exportCsv": "CSV exportieren",
+      "empty": "Noch keine Zahlungen",
+      "showAll": "Alle anzeigen",
+      "period": "{{count}} Mon.",
+      "noDate": "—",
+      "status": {
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "refunded": "Erstattet"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Einstellungen zur automatischen Verlängerung gespeichert",
+      "renewed": "Verlängerung gestartet",
+      "csvExportError": "CSV konnte nicht exportiert werden"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Kontosicherheit",
+      "subtitle": "Schützen Sie den Zugang zu Ihrem Arbeitsbereich"
+    },
+    "twoFa": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "sub": "Code per E-Mail bei jeder Anmeldung",
+      "active": "Aktiv",
+      "disabled": "Deaktiviert",
+      "enableTitle": "2FA aktivieren",
+      "disableTitle": "2FA deaktivieren",
+      "enableWarning": "Nach der Aktivierung erfordert jede Anmeldung einen Code an {{email}}. Stellen Sie sicher, dass Sie Zugriff darauf haben — sonst riskieren Sie, den Zugang zu Ihrem Konto zu verlieren.",
+      "disableWarning": "Nach dem Deaktivieren genügt zum Anmelden das Passwort allein, ohne Code per E-Mail.",
+      "enabledToast": "Zwei-Faktor-Authentifizierung aktiviert",
+      "disabledToast": "Zwei-Faktor-Authentifizierung deaktiviert"
+    },
+    "password": {
+      "title": "Kontopasswort",
+      "sub": "Die Änderung wird mit einem Code per E-Mail bestätigt",
+      "change": "Passwort ändern",
+      "changed": "Passwort erfolgreich geändert",
+      "current": "Aktuelles Passwort",
+      "currentPh": "Aktuelles Passwort eingeben",
+      "new": "Neues Passwort",
+      "newPh": "Mindestens 8 Zeichen",
+      "repeat": "Passwort wiederholen",
+      "repeatPh": "Neues Passwort erneut eingeben",
+      "mismatch": "Die Passwörter stimmen nicht überein",
+      "forgot": "Passwort vergessen?",
+      "resetTitle": "Passwort wiederherstellen",
+      "step1Sub": "Wir bestätigen, dass Sie es sind",
+      "step2Sub": "Code an {{email}} gesendet",
+      "step3Sub": "Wählen Sie ein neues Passwort",
+      "resetIntro": "Wir senden einen 6-stelligen Code an die E-Mail-Adresse Ihres Kontos. Das aktuelle Passwort müssen Sie nicht kennen — der Code belegt, dass das Postfach Ihnen gehört.",
+      "sendCode": "Code senden",
+      "back": "Zurück",
+      "save": "Passwort speichern",
+      "resetDone": "Passwort aktualisiert",
+      "resetLogoutHint": "Andere Geräte werden abgemeldet — auf diesem bleiben Sie angemeldet.",
+      "rules": {
+        "len": "8+ Zeichen",
+        "letter": "Enthält einen Buchstaben",
+        "digit": "Enthält eine Ziffer",
+        "simple": "Kein 111 oder qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktive Sitzungen",
+      "sub": "Wo Ihr Konto gerade angemeldet ist",
+      "count": "{{count}} Geräte",
+      "manage": "Verwalten",
+      "hide": "Ausblenden",
+      "current": "Aktuell",
+      "terminate": "Beenden",
+      "terminateAll": "Alle anderen Sitzungen beenden",
+      "terminatedToast": "Sitzung erfolgreich beendet",
+      "terminatedAllToast": "Andere Sitzungen beendet",
+      "justNow": "Gerade aktiv",
+      "minutesAgo": "vor {{count}} Min.",
+      "hoursAgo": "vor {{count}} Std.",
+      "daysAgo": "vor {{count}} T.",
+      "unknownLocation": "Unbekannt"
+    },
+    "otp": {
+      "sentHint": "Wir haben einen 6-stelligen Code an Ihre E-Mail geschickt. Geben Sie ihn unten ein.",
+      "resend": "Code erneut senden",
+      "resendIn": "Erneut in {{count}} s",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "sendCode": "Code senden",
+      "continue": "Weiter"
+    },
+    "danger": {
+      "title": "Datenverwaltung (Gefahrenzone)",
+      "export": {
+        "title": "Alle Daten exportieren",
+        "sub": "Archiv mit Kundendatenbank und Verlauf herunterladen",
+        "prepare": "Archiv vorbereiten",
+        "hide": "Ausblenden",
+        "clients": "Kundendatenbank (CSV)",
+        "finances": "Finanztransaktionen",
+        "schedule": "Kurse & Zeitplan",
+        "start": "Export starten",
+        "started": "Das Archiv wird vorbereitet, der Link kommt per E-Mail",
+        "emptySelection": "Wählen Sie mindestens einen Bereich für den Export"
+      },
+      "wipe": {
+        "title": "Datenbank leeren",
+        "sub": "Löscht alle Kunden und Buchungen. Die Einstellungen bleiben erhalten.",
+        "action": "Daten löschen",
+        "toast": "Datenbank erfolgreich geleert",
+        "consequence1": "Endgültig gelöscht: Kunden, Kurse, Buchungen, Transaktionen, Dokumente, Kundenkarten, Loyalitätsverlauf",
+        "consequence2": "Bleibt unverändert: Studio, Filialen, Säle, Leistungen, Mitarbeitende, Tarif und Einstellungen",
+        "consequence3": "Diese Aktion ist unumkehrbar — nach der Bestätigung lässt sie sich nicht rückgängig machen"
+      },
+      "deleteAccount": {
+        "title": "Firmenkonto löschen",
+        "sub": "Vollständige und unumkehrbare Löschung des Unternehmens im System",
+        "action": "Für immer löschen",
+        "consequence1": "Das Studio und alle seine Daten werden endgültig gelöscht, einschließlich Kunden, Kursen, Finanzen und Einstellungen",
+        "consequence2": "Ihr persönliches Konto bleibt bestehen — nur dieses Studio wird gelöscht",
+        "consequence3": "Das Löschen ist bei aktivem Abo oder weiteren Inhabern des Studios nicht möglich"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrationen",
+    "subtitle": "Externe Kanäle und Ökosysteme mit einem Klick verbinden",
+    "loadError": "Der Status der Integrationen konnte nicht geladen werden",
+    "items": {
+      "telegram": {
+        "name": "Telegram Bot",
+        "sub": "Kundenbenachrichtigungen und Buchung über den Bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Rundnachrichten und automatische Benachrichtigungen an Kunden"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "KI-Autoresponder-Agent und Online-Buchung"
+      },
+      "google_calendar": {
+        "name": "Google Kalender",
+        "sub": "Synchronisation des Studioplans"
+      }
+    },
+    "status": {
+      "connected": "Verbunden",
+      "notActive": "Nicht verbunden"
+    },
+    "actions": {
+      "configure": "Einrichten",
+      "connect": "Verbinden",
+      "disconnect": "Trennen"
+    },
+    "fields": {
+      "keyLabel": "Schlüssel",
+      "connectedAtLabel": "Verbunden",
+      "telegramToken": "API-Token des Bots (von @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Zugriffstoken",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Phone number ID",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA ID (optional)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Zugriffstoken",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID des Instagram-Unternehmenskontos",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "So verbinden Sie",
+      "telegram": {
+        "steps": [
+          "Öffnen Sie @BotFather in Telegram und senden Sie /newbot",
+          "Wählen Sie Name und Benutzernamen des Bots — BotFather schickt Ihnen ein API-Token",
+          "Fügen Sie das Token unten ein und klicken Sie auf Verbinden"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Erstellen Sie eine App in Meta for Developers und fügen Sie das Produkt WhatsApp hinzu",
+          "Kopieren Sie im API Setup das temporäre oder permanente Zugriffstoken",
+          "Kopieren Sie außerdem die Phone number ID der Test- oder verifizierten Nummer",
+          "Fügen Sie beide Werte unten ein und klicken Sie auf Verbinden"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Verknüpfen Sie das Instagram-Konto des Studios mit einer Facebook-Seite — für die Direct-API erforderlich",
+          "Erstellen Sie in Meta for Developers eine App mit dem Produkt Instagram Graph API",
+          "Erzeugen Sie ein Zugriffstoken mit den Berechtigungen instagram_basic und instagram_manage_messages",
+          "Kopieren Sie die ID des Instagram-Unternehmenskontos und das Token und fügen Sie beides unten ein",
+          "Ohne Meta-Prüfung funktioniert die Verbindung nur für die Testkonten der App"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Klicken Sie auf Verbinden — ein Google-Anmeldefenster öffnet sich",
+          "Wählen Sie das Konto, mit dem der Studiokalender verknüpft ist",
+          "Erteilen Sie Kalenderzugriff — Kurse erscheinen dort dann automatisch"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "Kundenbenachrichtigungen über diesen Kanal",
+      "booking": "Online-Buchung über diesen Kanal",
+      "dm_agent": "KI-Autoresponder-Agent in Direct",
+      "schedule_sync": "Zeitplan-Synchronisation mit Google Kalender"
+    },
+    "disconnect": {
+      "title": "{{name}} trennen?",
+      "willStop": "Das wird nicht mehr funktionieren:",
+      "checkbox": "Ich verstehe die Folgen",
+      "cancel": "Abbrechen",
+      "confirm": "Trennen"
+    },
+    "google": {
+      "connected": "Google Kalender verbunden",
+      "denied": "Der Zugriff auf Google Kalender wurde nicht erteilt",
+      "error": "Google Kalender konnte nicht verbunden werden",
+      "primary": "Haupt",
+      "calendar": "Kalender",
+      "selectCalendar": "Kalender auswählen",
+      "loadingCalendars": "Kalender werden geladen…",
+      "syncMode": "Synchronisationsmodus",
+      "syncModeOptions": {
+        "push": "Nur vom CRM zu Google",
+        "two_way": "In beide Richtungen"
+      },
+      "syncNow": "Jetzt synchronisieren",
+      "lastSync": "Zuletzt synchronisiert: {{date}}",
+      "neverSynced": "Noch nicht synchronisiert",
+      "timezoneWarning": "Die Zeitzone des Studios ist nicht gesetzt — Termine werden in UTC gesendet und können von den echten Kurszeiten abweichen. Stellen Sie die Zeitzone unter Allgemein ein.",
+      "syncResult": "Synchronisiert: {{pushed}} gesendet, {{pulled}} geholt",
+      "settingsSaved": "Einstellungen für Google Kalender gespeichert"
+    },
+    "toast": {
+      "connected": "Integration verbunden",
+      "disconnected": "Integration getrennt"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Berichte und Listen exportieren",
+      "subtitle": "Dateien in Tabellenformaten für Buchhaltung und Auswertung herunterladen",
+      "clearFilter": "Zeitraum zurücksetzen",
+      "items": {
+        "clients": {
+          "name": "Kundenliste"
+        },
+        "schedule": {
+          "name": "Journal & Buchungsverlauf"
+        },
+        "finances": {
+          "name": "Finanzbericht"
+        },
+        "subscriptions": {
+          "name": "Kundenkarten"
+        }
+      },
+      "rows_one": "{{count}} Eintrag",
+      "rows_other": "{{count}} Einträge",
+      "loading": "Wird geladen...",
+      "empty": "keine Daten für diesen Zeitraum"
+    }
+  }
+}

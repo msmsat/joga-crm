@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Konten",
+    "operations": "Transaktionen",
+    "salaries": "Löhne",
+    "counterparties": "Geschäftspartner",
+    "documents": "Dokumente",
+    "onlinePayments": "Online-Zahlungen",
+    "paymentMethods": "Zahlungsarten",
+    "reports": "Berichte",
+    "goals": "Ziele"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "loading": "Wird geladen…",
+    "all": "Alle",
+    "confirm": "Bestätigen",
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mär",
+      "Apr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dez"
+    ],
+    "weekdaysShort": [
+      "Mo",
+      "Di",
+      "Mi",
+      "Do",
+      "Fr",
+      "Sa",
+      "So"
+    ]
+  },
+  "info": {
+    "accounts": "Konten sind die Kassen, Bankkonten und das Online-Acquiring des Studios. Hier sehen Sie jeden Saldo und das Gesamtkapital.",
+    "operations": "Transaktionen sind alle Einnahmen und Ausgaben des Studios. Eine neue Transaktion verändert sofort den Saldo des verknüpften Kontos.",
+    "salaries": "Löhne werden aus dem Satz des Mitarbeitenden (fest, stündlich oder prozentual) für den gewählten Zeitraum berechnet.",
+    "counterparties": "Geschäftspartner sind Organisationen und Personen, mit denen das Studio abrechnet: Lieferanten, Vermieter, Partner.",
+    "documents": "Dokumente sind Verträge, Protokolle und Rechnungen zu Geschäftspartnern oder interne Unterlagen.",
+    "onlinePayments": "Online-Zahlungen — die Anbindung von Stripe für Kartenzahlungen. Das Konto wird für Ihr Studio angelegt, das Geld geht also direkt an Sie, an Velora vorbei.",
+    "paymentMethods": "Zahlungsarten zeigen, wie Kunden im Studio bezahlen, samt Statistik zu jeder Art.",
+    "reports": "Berichte zeigen die Entwicklung von Einnahmen, Ausgaben und Gewinn im gewählten Zeitraum.",
+    "goals": "Finanzziele sind der Sparplan des Studios mit automatischer oder manueller Fortschrittsverfolgung."
+  },
+  "accounts": {
+    "loading": "Konten werden geladen…",
+    "totalCapital": "Gesamtkapital des Studios",
+    "donutTotal": "{{symbol}} gesamt",
+    "todayChange": "heute",
+    "system": "SYSTEM",
+    "today": "heute",
+    "editTitle": "Konto bearbeiten",
+    "namePlaceholder": "Name",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Bar",
+      "bank": "Karte",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Bar",
+      "bank": "Karte",
+      "online": "Online"
+    },
+    "history": "Verlauf",
+    "historyTitle": "Verlauf: {{name}}",
+    "income30d": "Einnahmen (30 T.)",
+    "expense30d": "Ausgaben (30 T.)",
+    "samplePayment": "Zahlung für Leistung",
+    "sampleTime": "Heute, 14:32",
+    "openAllOperations": "Alle Transaktionen öffnen",
+    "newSavingsTitle": "Neues Sparkonto",
+    "createSavings": "Sparkonto anlegen",
+    "deleteConfirmTitle": "Dieses Konto löschen?",
+    "deleteConfirmText": "Alle Mittel darauf werden aus der Gesamtstatistik ausgeschlossen. Diese Aktion lässt sich nicht rückgängig machen.",
+    "toasts": {
+      "loadFailed": "Konten konnten nicht geladen werden",
+      "deleted": "Konto gelöscht",
+      "deleteFailed": "Konto konnte nicht gelöscht werden",
+      "saved": "Einstellungen gespeichert",
+      "saveFailed": "Konto konnte nicht gespeichert werden",
+      "created": "Sparkonto angelegt",
+      "createFailed": "Konto konnte nicht angelegt werden"
+    }
+  },
+  "operations": {
+    "income": "Einnahme",
+    "expense": "Ausgabe",
+    "balance": "Saldo",
+    "searchPlaceholder": "Nach Titel und Kategorie suchen...",
+    "close": "Schließen",
+    "operation": "Transaktion",
+    "export": "Export",
+    "newOperationTitle": "Neue Transaktion",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Z. B. Zahlung für Karte",
+    "amountLabel": "Betrag, {{symbol}}",
+    "dateLabel": "Datum",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Kategorie",
+    "accountLabel": "Konto",
+    "noAccount": "Kein Konto",
+    "methodLabel": "Zahlungsart",
+    "noMethod": "Nicht angegeben",
+    "counterpartyLabel": "Geschäftspartner",
+    "noCounterparty": "Kein Geschäftspartner",
+    "newCounterparty": "+ Neuer Geschäftspartner",
+    "clientLabel": "Kunde",
+    "clientHint": "Treuepunkte und Stufe werden dem Kunden gutgeschrieben",
+    "clientSearchPlaceholder": "Namen eingeben…",
+    "noClient": "Kein Kunde",
+    "editTitle": "Transaktion bearbeiten",
+    "saving": "Wird gespeichert…",
+    "loading": "Transaktionen werden geladen…",
+    "emptyTitle": "Keine Transaktionen gefunden",
+    "emptyBody": "Ändern Sie die Filter oder legen Sie die erste Transaktion an",
+    "pending": "Ausstehend",
+    "detailAccount": "Empfangendes Konto",
+    "detailCategory": "Kategorie",
+    "detailMethod": "Zahlungsart",
+    "detailCounterparty": "Geschäftspartner",
+    "receipt": "Beleg",
+    "loadMore": "Mehr laden ({{count}})",
+    "toasts": {
+      "loadFailed": "Transaktionen konnten nicht geladen werden",
+      "loadMoreFailed": "Weitere Transaktionen konnten nicht geladen werden",
+      "deleted": "Transaktion gelöscht",
+      "deleteFailed": "Transaktion konnte nicht gelöscht werden",
+      "enterAmount": "Geben Sie einen Betrag ein",
+      "created": "Transaktion angelegt",
+      "createFailed": "Transaktion konnte nicht angelegt werden",
+      "updated": "Transaktion aktualisiert",
+      "updateFailed": "Transaktion konnte nicht gespeichert werden",
+      "exportFailed": "Transaktionen konnten nicht exportiert werden",
+      "receiptDownloaded": "Beleg heruntergeladen"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Абонементы",
+          "label": "Karten"
+        },
+        {
+          "value": "Услуги",
+          "label": "Leistungen"
+        },
+        {
+          "value": "Сертификаты",
+          "label": "Gutscheine"
+        },
+        {
+          "value": "Депозит",
+          "label": "Guthaben"
+        },
+        {
+          "value": "Прочее",
+          "label": "Sonstiges"
+        }
+      ],
+      "out": [
+        {
+          "value": "Возвраты",
+          "label": "Erstattungen"
+        },
+        {
+          "value": "Аренда",
+          "label": "Miete"
+        },
+        {
+          "value": "Зарплата",
+          "label": "Löhne"
+        },
+        {
+          "value": "Закупки",
+          "label": "Einkauf"
+        },
+        {
+          "value": "Реклама",
+          "label": "Werbung"
+        },
+        {
+          "value": "Налоги",
+          "label": "Steuern"
+        },
+        {
+          "value": "Прочее",
+          "label": "Sonstiges"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Löhne werden geladen…",
+    "noRows": "Keine Mitarbeitenden zum Abrechnen",
+    "fund": "Lohnbudget",
+    "fundSub": "laufender Monat",
+    "sessions": "Kurse",
+    "sessionsSub": "insgesamt gehalten",
+    "paidOf": "Mitarbeitende",
+    "sessionsCount": "{{count}} Kurse",
+    "paid": "Bezahlt",
+    "pending": "Ausstehend",
+    "paying": "…",
+    "payAction": "Auszahlen",
+    "cancelAction": "Lohn stornieren",
+    "perMonth": "/Mon.",
+    "accrualTitle": "Anspruch für den Zeitraum",
+    "rate": "Satz",
+    "rateNotSet": "nicht gesetzt",
+    "sessionsInPeriod": "Kurse im Zeitraum",
+    "hoursWorked": "Geleistete Stunden",
+    "lessonsRevenue": "Kursumsatz",
+    "totalToPay": "Gesamt auszuzahlen",
+    "rateWarning": "Der Satz ist nicht gesetzt — legen Sie ihn im Profil des Mitarbeitenden fest, damit der Anspruch berechnet werden kann.",
+    "rateUnit": {
+      "hourly": "Std.",
+      "percent": "%",
+      "fixed": "fest"
+    },
+    "paidAt": "Bezahlt {{date}}",
+    "historyTitle": "Auszahlungsverlauf",
+    "historyEmpty": "Noch keine Auszahlungen",
+    "historyLoading": "Verlauf wird geladen…",
+    "toasts": {
+      "loadFailed": "Löhne konnten nicht geladen werden",
+      "paid": "Lohn ausgezahlt: {{name}}",
+      "payFailed": "Lohn konnte nicht ausgezahlt werden",
+      "canceled": "Lohn storniert: {{name}}",
+      "historyLoadFailed": "Auszahlungsverlauf konnte nicht geladen werden"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} Geschäftspartner",
+    "totalDebt": "Gesamtschuld:",
+    "add": "Hinzufügen",
+    "newTitle": "Neuer Geschäftspartner",
+    "nameLabel": "Firma / Vollständiger Name",
+    "namePlaceholder": "Firma GmbH oder Anna Müller",
+    "innLabel": "Steuernummer",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Miete, Lieferant…",
+    "typeLabel": "Art des Geschäftspartners",
+    "types": {
+      "legal": {
+        "label": "Juristische Person",
+        "desc": "Organisation oder Firma"
+      },
+      "ie": {
+        "label": "Einzelunternehmer",
+        "desc": "Selbstständige Person"
+      },
+      "person": {
+        "label": "Privatperson",
+        "desc": "Natürliche Person"
+      }
+    },
+    "addSubmit": "Geschäftspartner hinzufügen",
+    "you": "Sie",
+    "otherCategory": "Sonstiges",
+    "deals": "Geschäfte",
+    "dealsLabel": "Geschäfte",
+    "debtLabel": "Schuld",
+    "documents": "Dokumente",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Geschäftspartner löschen?",
+    "deleteConfirmText": "Zugehörige Dokumente und der Geschäftsverlauf bleiben erhalten, der Partner verschwindet aber aus der Liste.",
+    "toasts": {
+      "loadFailed": "Geschäftspartner konnten nicht geladen werden",
+      "enterName": "Geben Sie einen Namen ein",
+      "saved": "Änderungen gespeichert",
+      "saveFailed": "Speichern fehlgeschlagen",
+      "added": "Geschäftspartner hinzugefügt",
+      "addFailed": "Geschäftspartner konnte nicht hinzugefügt werden",
+      "deleted": "Geschäftspartner gelöscht",
+      "deleteFailed": "Geschäftspartner konnte nicht gelöscht werden",
+      "documentsOpened": "Dokumente geöffnet"
+    }
+  },
+  "documents": {
+    "signed": "Unterschrieben",
+    "pendingCount": "Wartet auf Unterschrift",
+    "draftCount": "Intern (ohne Unterschrift)",
+    "searchPlaceholder": "Nach Titel oder Geschäftspartner suchen...",
+    "filters": {
+      "all": "Alle",
+      "signed": "Unterschrieben",
+      "pending": "Wartet auf Unterschrift"
+    },
+    "upload": "Hochladen",
+    "addTitle": "Dokument zur Bibliothek hinzufügen",
+    "dropzoneTitle": "Klicken oder Datei hierher ziehen",
+    "dropzoneHint": "PDF, DOCX, XLSX (bis 15 MB)",
+    "dropzoneChange": "Klicken, um eine andere Datei zu wählen",
+    "titleLabel": "Titel des Dokuments",
+    "titlePlaceholder": "Z. B. Abnahmeprotokoll Nr. 48",
+    "partyLabel": "Geschäftspartner (falls vorhanden)",
+    "partyPlaceholder": "Name der Firma oder des Unternehmers",
+    "needsSignature": "Braucht das Dokument eine Unterschrift?",
+    "needsSignatureHint": "Der Status lautet dann „Wartet auf Unterschrift“",
+    "saveToBase": "In der Bibliothek speichern",
+    "emptyTitle": "Dieser Ordner ist leer",
+    "emptyBody": "Laden Sie ein neues Dokument hoch oder ändern Sie die Filter",
+    "internalDoc": "Internes Dokument",
+    "uploaded": "Hochgeladen {{date}}",
+    "download": "Herunterladen",
+    "open": "Öffnen",
+    "fileRequired": "Fügen Sie eine Datei an",
+    "options": "Optionen",
+    "status": {
+      "title": "Status",
+      "signed": "Unterschrieben",
+      "pending": "Wartet auf Unterschrift",
+      "draft": "Ohne Unterschrift"
+    },
+    "delete": "Löschen",
+    "toasts": {
+      "loadFailed": "Dokumente konnten nicht geladen werden",
+      "titleRequired": "Laden Sie eine Datei hoch oder geben Sie einen Titel ein",
+      "created": "Dokument in die Bibliothek hochgeladen",
+      "createFailed": "Dokument konnte nicht gespeichert werden",
+      "badFormat": "Erlaubte Formate: PDF, DOCX, XLSX",
+      "downloadFailed": "Datei konnte nicht heruntergeladen werden",
+      "noFile": "An diesem Dokument hängt keine Datei",
+      "openFailed": "Datei konnte nicht geöffnet werden",
+      "statusChanged": "Status: {{label}}",
+      "statusFailed": "Status konnte nicht geändert werden",
+      "deleted": "Dokument gelöscht",
+      "deleteFailed": "Dokument konnte nicht gelöscht werden"
+    }
+  },
+  "goals": {
+    "loading": "Ziele werden geladen…",
+    "active": "Laufende Ziele",
+    "done": "Erreicht",
+    "avgProgress": "Gesamtfortschritt",
+    "trackingTitle": "Planverfolgung",
+    "createGoal": "Ziel erstellen",
+    "newTitle": "Neues Finanzziel",
+    "titleLabel": "Titel des Ziels",
+    "titlePlaceholder": "Z. B. Neue Reformer-Geräte",
+    "targetLabel": "Zielbetrag, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Frist",
+    "trackingLabel": "Wie soll der Fortschritt verfolgt werden?",
+    "trackingAuto": "Automatisch (CRM-Kennzahl)",
+    "trackingAutoDesc": "Verknüpfen Sie das Ziel mit den Einnahmen einer Kategorie. Das CRM bewegt den Balken selbst.",
+    "trackingManual": "Manuell (eigenes Sparen)",
+    "trackingManualDesc": "Auf der Karte erscheint die Schaltfläche „Mittel hinzufügen“. Der Fortschritt hängt nur von Ihnen ab.",
+    "opTypeLabel": "Art der Transaktion",
+    "categoryLabel": "Kategorie",
+    "categoryPlaceholder": "Kategorie wählen",
+    "editTitle": "Ziel bearbeiten",
+    "nameLabel": "Titel",
+    "namePlaceholder": "Titel des Ziels",
+    "amountLabel": "Betrag, {{symbol}}",
+    "achieved": "Ziel erreicht",
+    "priority": {
+      "high": "Hohe Priorität",
+      "medium": "Mittlere Priorität",
+      "low": "Niedrige Priorität"
+    },
+    "autoCollect": "Automatisch verfolgt",
+    "deadlinePrefix": "Frist:",
+    "noDeadline": "Ohne Frist",
+    "fundPlaceholder": "Betrag, {{symbol}}",
+    "fund": "Hinzufügen",
+    "addFunds": "Mittel hinzufügen",
+    "autoHint": "Der Wert aktualisiert sich automatisch aus den Einnahmen der Kategorie",
+    "deleteConfirmTitle": "Ziel löschen?",
+    "deleteConfirmText": "Der Fortschritt dieses Ziels geht verloren. Diese Aktion lässt sich nicht rückgängig machen.",
+    "toasts": {
+      "loadFailed": "Ziele konnten nicht geladen werden",
+      "fillRequired": "Füllen Sie Titel und Betrag aus",
+      "chooseCategory": "Wählen Sie eine Kategorie für das automatische Ziel",
+      "created": "Ziel erstellt",
+      "createFailed": "Ziel konnte nicht erstellt werden",
+      "enterName": "Geben Sie einen Namen ein",
+      "updated": "Ziel aktualisiert",
+      "updateFailed": "Ziel konnte nicht aktualisiert werden",
+      "deleted": "Ziel gelöscht",
+      "deleteFailed": "Ziel konnte nicht gelöscht werden",
+      "funded": "Mittel hinzugefügt",
+      "fundFailed": "Mittel konnten nicht hinzugefügt werden"
+    }
+  },
+  "onlinePayments": {
+    "description": "Verbinden Sie Stripe, und Ihre Kunden können an der Kasse mit Karte zahlen. Das Geld landet direkt auf dem Konto Ihres Studios — Velora hält es nie. Die Provision richtet sich nach Ihrem Tarif.",
+    "gatewaysTitle": "Zahlungsanbieter",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nicht verbunden",
+          "hint": "Kartenzahlungen auf das Konto des Studios annehmen",
+          "action": "Verbinden"
+        },
+        "incomplete": {
+          "label": "Angaben fehlen",
+          "hint": "Stripe wartet auf die Angaben Ihres Studios — bis dahin bleiben Zahlungen aus",
+          "action": "Fortfahren"
+        },
+        "action": {
+          "label": "Aktion erforderlich",
+          "hint": "Stripe hat einige Angaben abgelehnt und wartet auf Korrekturen — das löst sich nicht von selbst",
+          "action": "Angaben korrigieren"
+        },
+        "review": {
+          "label": "In Prüfung",
+          "hint": "Angaben übermittelt, Stripe prüft sie. Das dauert meist bis zu einem Tag",
+          "action": "Stripe öffnen"
+        },
+        "active": {
+          "label": "Verbunden",
+          "hint": "Kartenzahlungen landen auf dem Stripe-Konto des Studios",
+          "action": "Einstellungen"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Gateway-Einstellungen aktualisiert",
+      "stripeReturned": "Angaben an Stripe übermittelt",
+      "stripeLinkExpired": "Der Stripe-Link ist abgelaufen — drücken Sie erneut auf Verbinden"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Umsatz im Zeitraum",
+    "periods": {
+      "month": "Monat",
+      "quarter": "Quartal",
+      "year": "Jahr"
+    },
+    "amount": "Betrag",
+    "share": "Anteil",
+    "transactions": "Transaktionen",
+    "methods": {
+      "cash": {
+        "name": "Bar"
+      },
+      "card": {
+        "name": "Bankkarte"
+      },
+      "qr": {
+        "name": "QR-Zahlung"
+      },
+      "transfer": {
+        "name": "Überweisung"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nicht angegeben"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Umsatz",
+      "expenses": "Ausgaben",
+      "profit": "Gewinn",
+      "margin": "Marge"
+    },
+    "vsPreviousPeriod": "vs. Vorperiode",
+    "cashflowTitle": "Cashflow",
+    "cashflowSub": "Analyse von Einnahmen und Ausgaben",
+    "period": "Zeitraum",
+    "income": "Einnahme",
+    "expense": "Ausgabe",
+    "profit": "Gewinn",
+    "periods": {
+      "today": "Heute",
+      "week": "Woche",
+      "month": "Monat",
+      "year": "Jahr"
+    },
+    "legendIncome": "Einnahmen",
+    "legendExpense": "Ausgaben",
+    "exportCsv": "CSV exportieren",
+    "expenseStructure": "Ausgabenstruktur",
+    "incomeStructure": "Einnahmenstruktur",
+    "total": "Gesamt",
+    "otherCategory": "Ohne Kategorie",
+    "noData": "Keine Daten für diesen Zeitraum",
+    "insightsTitle": "Finanzüberblick & Hinweise",
+    "insightsPlaceholder": "Hier erscheint eine KI-gestützte Finanzübersicht: Trendanalyse, Ausgabenaufteilung und Empfehlungen",
+    "toasts": {
+      "exportFailed": "Transaktionen konnten nicht exportiert werden"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen"
+  }
+}

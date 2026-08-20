@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Siz değil misiniz?",
+    "login": "Başka bir hesapla giriş yapın"
+  },
+  "card": {
+    "roleLine": "Ekip daveti · {{role}}"
+  },
+  "title": {
+    "new": "Merhaba, {{name}}",
+    "existing": "Tekrar hoş geldiniz, {{name}}"
+  },
+  "sub": {
+    "new": "Stüdyo yöneticinizin verdiği şifreyi girin.",
+    "existing": "Daveti kabul etmek için {{email}} şifresini girin."
+  },
+  "switch": {
+    "notice": "{{current}} olarak giriş yaptınız. Bu davet {{next}} içindir — kabul ederseniz o hesaba geçersiniz. Profilinizden geri dönebilirsiniz."
+  },
+  "fields": {
+    "newPassword": "Şifre",
+    "newPasswordPlaceholder": "Yöneticinizden aldığınız şifre",
+    "password": "Şifre",
+    "passwordPlaceholder": "Velora şifreniz",
+    "phone": "Telefon numarası",
+    "phoneHint": "Numaranız henüz bizde yok — ülke koduyla birlikte girin",
+    "show": "Göster",
+    "hide": "Gizle"
+  },
+  "cta": {
+    "enter": "Stüdyoya giriş yap",
+    "accept": "Daveti kabul et"
+  },
+  "forgotHint": "Şifrenizi mi unuttunuz?",
+  "forgotLink": "Erişimi kurtar",
+  "expired": {
+    "title": "Bağlantı geçerli değil",
+    "sub": "Davetin süresi doldu ya da geri alındı. Stüdyo sahibinden yeniden göndermesini isteyin.",
+    "cta": "Girişe git"
+  },
+  "consent": {
+    "text": "Kabul ediyorum:",
+    "terms": "Hizmet Şartları",
+    "and": "ve",
+    "privacy": "Gizlilik Politikası"
+  },
+  "errors": {
+    "noToken": "Bağlantıda davet kodu yok — e-postadaki bağlantıyı tam olarak açın.",
+    "network": "Bağlantı hatası",
+    "passwordRequired": "Şifrenizi girin",
+    "phoneRequired": "Telefon numaranızı ülke koduyla girin",
+    "consentRequired": "Onayınız gerekiyor"
+  },
+  "newAccountHint": "Şifre e-postada yer almaz — amaç da bu: tek başına bir bağlantı girmeye yetmez. Size şifre verilmediyse yöneticinize sorun.",
+  "decline": {
+    "cta": "Daveti reddet",
+    "confirm": "„{{studio}}” daveti kaldırılacak. Ekibe katılmayacaksınız ve daveti yalnızca stüdyo sahibi yeniden gönderebilir.",
+    "keep": "Sakla",
+    "confirmCta": "Reddet",
+    "pending": "Reddediliyor…"
+  },
+  "declined": {
+    "title": "Davet reddedildi",
+    "sub": "Sizi stüdyoya eklemedik. Yanlışlıkla olduysa sahibinden daveti yeniden göndermesini isteyin."
+  }
+}

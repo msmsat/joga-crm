@@ -1,0 +1,168 @@
+{
+  "toolbar": {
+    "today": "Dziś",
+    "trainers": "Trenerzy",
+    "halls": "Sale",
+    "day": "Dzień",
+    "week": "Tydzień"
+  },
+  "daySummary": {
+    "classesToday": "zajęć dziś",
+    "clientBookings": "rezerwacji klientów",
+    "avgLoad": "śr. wypełnienie",
+    "trainersActive": "trenerów na zmianie",
+    "gridStep": "Krok siatki",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Cofnij: {{label}}",
+    "redo": "Ponów: {{label}}",
+    "nothingToUndo": "Nie ma czego cofać",
+    "nothingToRedo": "Nie ma czego ponawiać"
+  },
+  "newBooking": {
+    "title": "Nowe zajęcia",
+    "slotTime": "Godzina slotu",
+    "service": "Usługa",
+    "servicePlaceholder": "Wybierz usługę",
+    "namePlaceholder": "Np. Reformer Pilates",
+    "location": "Miejsce / sala",
+    "start": "Początek",
+    "end": "Koniec",
+    "groupLimit": "Limit grupy",
+    "maxSpots": "Maks. miejsc",
+    "assignTrainer": "Przypisz trenera",
+    "cancel": "Anuluj",
+    "create": "Utwórz zajęcia",
+    "errors": {
+      "selectService": "Wybierz usługę",
+      "range": "Od 1 do 50",
+      "endAfterStart": "Koniec musi być po początku"
+    },
+    "createServiceConfirm": {
+      "title": "Utworzyć usługę?",
+      "message": "Nie znajdujesz potrzebnej usługi? Utwórz ją w Katalogu.",
+      "confirm": "Przejdź do Katalogu"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Potwierdzone",
+    "pending": "Oczekuje",
+    "cancelled": "Odwołane",
+    "spotsTaken": "zajętych miejsc",
+    "fillRate": "Wypełnienie",
+    "booked": "Zapisany",
+    "attended": "Przyszedł",
+    "markAttended": "Odnotuj obecność",
+    "awaitingConfirmation": "Czeka na potwierdzenie",
+    "trialLesson": "Próbne",
+    "unpaid": "Nieopłacone · {{amount}}",
+    "acceptPayment": "Przyjmij płatność",
+    "payCash": "Gotówka",
+    "payTransfer": "Przelew",
+    "payLater": "Bez płatności",
+    "confirmBooking": "Potwierdź rezerwację",
+    "rejectBooking": "Odrzuć zgłoszenie",
+    "removeFromLesson": "Usuń z zajęć",
+    "add": "Dodaj",
+    "addClient": "Dodaj klienta",
+    "edit": "Edytuj",
+    "editLesson": "Edytuj zajęcia",
+    "deleteLesson": "Usuń zajęcia",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "lessonTitle": "Nazwa zajęć",
+    "untitled": "Bez nazwy",
+    "from": "Od",
+    "to": "Do",
+    "searchPlaceholder": "Szukaj po nazwisku lub telefonie...",
+    "noClientsFound": "Nie znaleziono klientów",
+    "noEligibleClients": "Żaden klient nie ma dostępu do tych zajęć",
+    "visitsCount_one": "{{count}} wizyta",
+    "visitsCount_few": "{{count}} wizyty",
+    "visitsCount_many": "{{count}} wizyt",
+    "visitsCount_other": "{{count}} wizyty",
+    "errors": {
+      "selectService": "Wybierz usługę",
+      "range": "Od 1 do 50",
+      "minBooked": "{{count}} już się zapisało — niżej się nie da",
+      "endAfterStart": "Koniec musi być po początku"
+    },
+    "createServiceConfirm": {
+      "title": "Utworzyć usługę?",
+      "message": "Nie znajdujesz potrzebnej usługi? Utwórz ją w Katalogu.",
+      "confirm": "Przejdź do Katalogu"
+    }
+  },
+  "addClientModal": {
+    "title": "Dodaj klienta",
+    "searchPlaceholder": "Szukaj po nazwisku lub telefonie...",
+    "noClientsFound": "Nie znaleziono klientów",
+    "chooseFromList": "Wybierz klientów z listy",
+    "selectedCount_one": "Wybrano: {{count}} klienta",
+    "selectedCount_few": "Wybrano: {{count}} klientów",
+    "selectedCount_many": "Wybrano: {{count}} klientów",
+    "selectedCount_other": "Wybrano: {{count}} klientów",
+    "cancel": "Anuluj",
+    "add": "Dodaj"
+  },
+  "rightPanel": {
+    "halls": "Sale",
+    "load": "Wypełnienie",
+    "upcoming": "Nadchodzące"
+  },
+  "grid": {
+    "classesShort": "zaj.",
+    "peopleShort": "os.",
+    "loadPercent": "Wypełnienie: {{percent}}%",
+    "classes": "zajęć",
+    "classesToday": "zajęć dziś",
+    "newLessonPreview": "Nowe zajęcia",
+    "cancelled": "Odwołane",
+    "noTrainers": "Brak trenerów",
+    "noHalls": "Brak sal"
+  },
+  "createService": "+ Utwórz usługę",
+  "invalidDateFormat": "Nieprawidłowy format daty",
+  "toasts": {
+    "lessonMoved": "Zajęcia przeniesione",
+    "endTimeChanged": "Godzina zakończenia zmieniona",
+    "startTimeChanged": "Godzina rozpoczęcia zmieniona",
+    "attendanceMarked": "Obecność odnotowana",
+    "paymentAccepted": "Płatność przyjęta",
+    "bookingConfirmed": "Rezerwacja potwierdzona",
+    "clientRemoved": "Klient usunięty z zajęć",
+    "lessonUpdated": "Zajęcia zaktualizowane",
+    "lessonAdded": "Zajęcia dodane",
+    "selectTrainer": "Wybierz trenera",
+    "alreadyCancelled": "Zajęcia są już odwołane",
+    "lessonCancelled": "Zajęcia odwołane",
+    "noPermission": "Za mało uprawnień, aby zmienić grafik",
+    "undoLabel": "Cofnięto: {{label}}",
+    "redoLabel": "Ponowiono: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Zapisano: {{count}} klienta",
+    "clientsBooked_few": "Zapisano: {{count}} klientów",
+    "clientsBooked_many": "Zapisano: {{count}} klientów",
+    "clientsBooked_other": "Zapisano: {{count}} klientów",
+    "clientsBookedPartial": "Zapisano {{success}} z {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "usunięcie klienta",
+      "moveLesson": "przeniesienie zajęć",
+      "createLesson": "utworzenie zajęć",
+      "bookClient": "zapisanie klienta",
+      "bookClients": "zapisanie klientów ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Nie udało się wczytać",
+    "retry": "Spróbuj ponownie"
+  },
+  "cancelBookingConfirm": {
+    "title": "Odwołać zajęcia?",
+    "message_one": "{{count}} klient dostanie powiadomienie o odwołaniu.",
+    "message_few": "{{count}} klientów dostanie powiadomienie o odwołaniu.",
+    "message_many": "{{count}} klientów dostanie powiadomienie o odwołaniu.",
+    "message_other": "{{count}} klientów dostanie powiadomienie o odwołaniu.",
+    "confirm": "Odwołaj zajęcia"
+  }
+}

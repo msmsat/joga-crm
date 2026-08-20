@@ -76,7 +76,7 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
 
   const badgeFor = (item: NavEntry) => {
     if (item.badge === 'clients' && clientsCount !== null) return String(clientsCount);
-    if (item.badge === 'new') return t('badge.new');
+    if (item.badge === 'beta') return t('badge.beta');
     return null;
   };
 

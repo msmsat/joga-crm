@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Nejste to vy?",
+    "login": "Přihlásit se k jinému účtu"
+  },
+  "card": {
+    "roleLine": "Pozvánka do týmu · {{role}}"
+  },
+  "title": {
+    "new": "Dobrý den, {{name}}",
+    "existing": "Vítejte zpět, {{name}}"
+  },
+  "sub": {
+    "new": "Zadejte heslo, které vám dal manažer studia.",
+    "existing": "Zadejte heslo pro {{email}} a přijměte pozvánku."
+  },
+  "switch": {
+    "notice": "Jste přihlášeni jako {{current}}. Tato pozvánka je pro {{next}} — jejím přijetím se přepnete na tento účet. Zpět se dostanete přes svůj profil."
+  },
+  "fields": {
+    "newPassword": "Heslo",
+    "newPasswordPlaceholder": "Heslo od manažera",
+    "password": "Heslo",
+    "passwordPlaceholder": "Vaše heslo k Veloře",
+    "phone": "Telefonní číslo",
+    "phoneHint": "Vaše číslo zatím nemáme — zadejte ho s předvolbou země",
+    "show": "Zobrazit",
+    "hide": "Skrýt"
+  },
+  "cta": {
+    "enter": "Přihlásit se do studia",
+    "accept": "Přijmout pozvánku"
+  },
+  "forgotHint": "Zapomněli jste heslo?",
+  "forgotLink": "Obnovit přístup",
+  "expired": {
+    "title": "Odkaz není platný",
+    "sub": "Pozvánka vypršela nebo byla zrušena. Požádejte majitele studia, aby ji poslal znovu.",
+    "cta": "Přejít na přihlášení"
+  },
+  "consent": {
+    "text": "Souhlasím s",
+    "terms": "Podmínkami služby",
+    "and": "a se",
+    "privacy": "Zásadami ochrany osobních údajů"
+  },
+  "errors": {
+    "noToken": "Odkaz neobsahuje kód pozvánky — otevřete ho celý z e-mailu.",
+    "network": "Chyba připojení",
+    "passwordRequired": "Zadejte heslo",
+    "phoneRequired": "Zadejte telefonní číslo s předvolbou země",
+    "consentRequired": "Je vyžadován váš souhlas"
+  },
+  "newAccountHint": "Heslo v e-mailu není — právě o to jde: samotný odkaz ke vstupu nestačí. Pokud vám heslo nikdo nedal, zeptejte se manažera.",
+  "decline": {
+    "cta": "Odmítnout pozvánku",
+    "confirm": "Pozvánka do „{{studio}}“ bude odstraněna. Do týmu se nepřipojíte a znovu ji může poslat jen majitel studia.",
+    "keep": "Ponechat",
+    "confirmCta": "Odmítnout",
+    "pending": "Odmítání…"
+  },
+  "declined": {
+    "title": "Pozvánka odmítnuta",
+    "sub": "Do studia jsme vás nepřidali. Pokud to byl omyl, požádejte majitele, aby pozvánku poslal znovu."
+  }
+}

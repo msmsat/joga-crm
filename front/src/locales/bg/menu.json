@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Табло",
+    "staff": "Служители",
+    "catalog": "Каталог",
+    "clients": "Клиенти",
+    "reports": "Отчети",
+    "booking": "Онлайн записване",
+    "finances": "Финанси",
+    "notifications": "Известия",
+    "loyalty": "Лоялност",
+    "ai": "Velora AI",
+    "settings": "Настройки",
+    "billing": "План и плащане",
+    "journal": "Дневник",
+    "profile": "Профил",
+    "more": "Още"
+  },
+  "subtitles": {
+    "dashboard": "Добре дошли във Velora CRM",
+    "staff": "Управление на екипа",
+    "catalog": "Клонове, зали и услуги",
+    "clients": "Клиентска база на студиото",
+    "reports": "Анализи и статистика",
+    "booking": "Управление на каналите за записване",
+    "finances": "Сметки, операции, документи",
+    "notifications": "Канали и видове известия",
+    "loyalty": "Клиентски програми и карти",
+    "ai": "Умен асистент и автоматични отговори",
+    "settings": "Системна конфигурация",
+    "billing": "Управление на абонамента",
+    "journal": "График на занятията",
+    "profile": "Акаунт и настройки"
+  },
+  "badge": {
+    "beta": "БЕТА"
+  },
+  "navbar": {
+    "create": "Създай"
+  },
+  "userMenu": {
+    "logout": "Изход",
+    "studios": "Моите студиа"
+  },
+  "tooltips": {
+    "studioName": "Вашето студио: {{name}}",
+    "openProfile": "Отвори профила",
+    "openAccountMenu": "Меню на акаунта"
+  },
+  "sidebar": {
+    "expand": "Разгъни менюто",
+    "collapse": "Сгъни менюто"
+  }
+}

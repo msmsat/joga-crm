@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Pasul {{step}} din {{total}}",
+    "securityNote": "Datele dvs. sunt protejate și nu sunt niciodată transmise terților",
+    "back": "Înapoi",
+    "continue": "Continuă",
+    "finish": "Începeți lucrul",
+    "saving": "Se salvează...",
+    "progress": "{{step}}/5 — durează sub 3 minute",
+    "regionRequired": "Vă rugăm să setați preferințele regionale",
+    "networkError": "Eroare de rețea la salvarea datelor.",
+    "phoneTakenTitle": "Numărul este deja folosit",
+    "phoneTaken": "Acest număr de telefon este deja înregistrat",
+    "errorTitle": "Eroare",
+    "changeNumber": "Schimbă numărul",
+    "gotIt": "Am înțeles"
+  },
+  "steps": {
+    "identity": {
+      "title": "Despre studio",
+      "desc": "Numele, descrierea și stilul vizual al brandului dvs."
+    },
+    "activity": {
+      "title": "Activitate",
+      "desc": "Alegeți o direcție ca să adaptăm CRM-ul pentru dvs."
+    },
+    "contact": {
+      "title": "Contacte",
+      "desc": "Adresa, telefonul și linkurile pentru clienții dvs."
+    },
+    "settings": {
+      "title": "Setări",
+      "desc": "Regiune, monedă și format de dată."
+    },
+    "schedule": {
+      "title": "Program de lucru",
+      "desc": "Setați zilele și orele în care studioul funcționează."
+    }
+  },
+  "identity": {
+    "welcome": "Bun venit",
+    "subtitle": "Câteva minute de configurare — și spațiul dvs. de lucru e gata",
+    "replaceLogo": "Înlocuiește logo-ul",
+    "uploadLogo": "Încarcă logo-ul",
+    "removeLogo": "Elimină",
+    "logoHint": "JPG, PNG, WEBP până la 5 MB",
+    "nameLabel": "Numele studioului sau al firmei",
+    "namePlaceholder": "De ex.: Studio Forma",
+    "descriptionLabel": "Descriere",
+    "descriptionPlaceholder": "Câteva rânduri despre studio, stilul de lucru, particularități...",
+    "newBadge": "NOU"
+  },
+  "activity": {
+    "title": "Tipul de activitate",
+    "subtitle": "Alegeți o direcție — vom adapta CRM-ul pentru dvs.",
+    "comingSoon": "În curând: frizerie, fitness, dans și altele",
+    "types": {
+      "yoga": {
+        "label": "Yoga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates la sol"
+      }
+    }
+  },
+  "contact": {
+    "title": "Date de contact",
+    "subtitle": "Clienții vor vedea aceste date la rezervarea online",
+    "phoneLabel": "Telefonul studioului",
+    "checkingPhone": "Se verifică numărul...",
+    "addressLabel": "Adresă",
+    "emailLabel": "Email",
+    "websiteLabel": "Site web",
+    "note": "Toate câmpurile în afară de telefon sunt opționale. Le puteți completa mai târziu în setări."
+  },
+  "settings": {
+    "title": "Setări regionale",
+    "subtitle": "Pot fi modificate ulterior în setările studioului",
+    "timezoneLabel": "Fus orar",
+    "timezonePlaceholder": "Alegeți fusul orar",
+    "languageLabel": "Limbă",
+    "languagePlaceholder": "Limbă",
+    "currencyLabel": "Monedă",
+    "currencyPlaceholder": "Monedă",
+    "dateFormatLabel": "Format dată",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "Prima zi a săptămânii",
+    "timezones": {
+      "UTC+3": "Moscova, Minsk, Istanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Tașkent, Ekaterinburg, Karachi (UTC+5)",
+      "UTC+6": "Almatî, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Jakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapore, Beijing (UTC+8)",
+      "UTC+9": "Iakutsk, Tokyo, Seul (UTC+9)",
+      "UTC+10": "Vladivostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Insulele Solomon (UTC+11)",
+      "UTC+12": "Kamceatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Ciudad de México (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Georgia de Sud (UTC-2)",
+      "UTC-1": "Azore (UTC-1)",
+      "UTC+0": "Londra, Lisabona (UTC+0)",
+      "UTC+1": "Berlin, Paris, Varșovia (UTC+1)",
+      "UTC+2": "Kiev, Atena, Cairo (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rublă",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Grivnă",
+      "GBP": "Liră",
+      "AED": "Dirham",
+      "TRY": "Liră turcească",
+      "CZK": "Coroană cehă",
+      "PLN": "Zlot",
+      "HUF": "Forint",
+      "RON": "Leu",
+      "BGN": "Levă",
+      "SEK": "Coroană suedeză",
+      "NOK": "Coroană norvegiană",
+      "DKK": "Coroană daneză",
+      "CHF": "Franc elvețian",
+      "ISK": "Coroană islandeză",
+      "RSD": "Dinar sârbesc"
+    }
+  },
+  "schedule": {
+    "title": "Program de lucru",
+    "subtitle": "Setați zilele și orele în care studioul funcționează",
+    "scheduleLabel": "Programul studioului",
+    "dayOff": "Închis"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Numele studioului",
+    "clients": "Clienți",
+    "attendance": "Prezență",
+    "studioCreated": "Studio creat",
+    "chooseDirection": "Alegeți o direcție",
+    "phoneLabel": "Telefon",
+    "emailLabel": "Email",
+    "addressLabel": "Adresă",
+    "phonePlaceholder": "+40 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Str. Principală 123",
+    "dayOff": "închis"
+  }
+}

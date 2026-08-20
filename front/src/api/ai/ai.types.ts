@@ -92,10 +92,12 @@ export interface AIStudioFact {
   author_name: string | null
 }
 
-// GET /ai/quota — остаток обращений к ИИ за календарный месяц.
+// GET /ai/quota — остаток обращений к ИИ: за календарный месяц по тарифу либо,
+// пока trial === true, пробный запас на всё время (тариф его не поднимает).
 export interface AIQuota {
   used: number
   limit: number
+  trial: boolean
 }
 
 export interface AISettings {

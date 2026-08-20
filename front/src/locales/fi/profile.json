@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Profiilisi",
+    "sub": "Hallitse henkilötietoja ja istuntoja"
+  },
+  "personalInfo": {
+    "heading": "Henkilötiedot",
+    "emailLocked": "Sähköposti on tilisi käyttäjätunnus, eikä sitä voi vaihtaa täällä"
+  },
+  "security": {
+    "changePassword": "Vaihda salasana",
+    "logout": "Kirjaudu ulos"
+  },
+  "accounts": {
+    "title": "Omat studiot",
+    "count_one": "{{count}} studio",
+    "count_other": "{{count}} studiota",
+    "enter": "Avaa",
+    "login": "Kirjaudu sisään",
+    "register": "Rekisteröidy",
+    "addStudio": "Lisää studio",
+    "addStudioSub": "Uusi työtila — sinusta tulee sen omistaja"
+  },
+  "session": {
+    "current": "Nykyinen istunto",
+    "lastActive": "Aktiivinen {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Henkilötiedot päivitettiin onnistuneesti"
+  },
+  "otherAccount": {
+    "title": "Toinen tili",
+    "sub": "Toisena käyttäjänä kirjautuminen päättää nykyisen istunnon tässä selaimessa — voit palata tavallisella kirjautumisella.",
+    "recentTitle": "Olet kirjautunut aiemmin",
+    "return": "Kirjaudu sisään",
+    "forget": "Unohda tili"
+  }
+}

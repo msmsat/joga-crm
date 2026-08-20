@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Totale nel team",
+    "onShift": "In turno",
+    "trainers": "Istruttori",
+    "administrators": "Amministratori",
+    "onlineNow": "{{count}} online ora"
+  },
+  "toolbar": {
+    "teamTitle": "Team · {{count}}",
+    "addEmployee": "Aggiungi dipendente",
+    "searchPlaceholder": "Cerca...",
+    "allGroup": "Tutti"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Accesso completo",
+    "ownerAccess": "Il proprietario ha accesso a tutti i moduli del sistema",
+    "loadBar": "Carico dell'istruttore",
+    "weekSchedule": "Orario settimanale",
+    "todaySchedule": "Orario di oggi",
+    "minutesSuffix": "min",
+    "clientsSuffix": "clienti",
+    "hall": "Sala",
+    "staffHalls": "Sale del dipendente",
+    "noName": "Nome non impostato",
+    "noRole": "Senza ruolo",
+    "addEventStub": "Modulo di aggiunta evento..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Ricavi",
+      "rating": "Valutazione",
+      "bookings": "Prenotazioni",
+      "load": "Carico"
+    },
+    "admin": {
+      "bookings": "Prenotazioni",
+      "attended": "Gestite",
+      "revenue": "Cassa",
+      "load": "Carico"
+    },
+    "owner": {
+      "revenue": "Ricavi",
+      "attended": "Visite",
+      "load": "Carico",
+      "staff": "Personale"
+    },
+    "default": {
+      "bookings": "Prenotazioni",
+      "attended": "Visite",
+      "revenue": "Ricavi",
+      "load": "Carico"
+    }
+  },
+  "schedule": {
+    "week": "Settimana",
+    "month": "Mese",
+    "working": "Orario di lavoro",
+    "free": "Libero",
+    "busy": "Occupato",
+    "dayOff": "Giorno di riposo",
+    "syncHint": "L'orario si sincronizza con l'agenda delle prenotazioni e il calendario delle lezioni.",
+    "workDaysInWeek": "{{count}} giorni lavorativi a settimana",
+    "markWork": "Lavora",
+    "markHint": "Scegli un contrassegno qui sopra, poi clicca su un giorno",
+    "prevMonth": "Mese precedente",
+    "nextMonth": "Mese successivo",
+    "dayHasBookings": "Questo giorno ha già prenotazioni — non può essere di riposo",
+    "pastDayLocked": "I giorni passati non si modificano"
+  },
+  "permissions": {
+    "finance": "Finanze",
+    "staff": "Personale",
+    "reports": "Report",
+    "clients": "Clienti",
+    "settings": "Impostazioni"
+  },
+  "roles": {
+    "admin": "Amministratore",
+    "trainer": "Istruttore",
+    "owner": "Proprietario"
+  },
+  "deleteModal": {
+    "cancelLesson": "Annullare la lezione?",
+    "dontAsk": "Non chiedere più quando elimino",
+    "cancelInvite": "Annullare l'adesione?",
+    "cancelInviteConfirm": "Annulla l'invito"
+  },
+  "toasts": {
+    "lessonCanceled": "Lezione annullata",
+    "errorCancel": "Errore durante l'annullamento",
+    "employeeAdded": "Dipendente {{name}} aggiunto",
+    "changesSaved": "Modifiche salvate",
+    "employeeDeleted": "Dipendente eliminato",
+    "errorDelete": "Errore durante l'eliminazione",
+    "errorSave": "Salvataggio delle modifiche non riuscito",
+    "emailCopied": "Email copiata",
+    "phoneCopied": "Telefono copiato",
+    "inviteSent": "Invito inviato a {{email}}",
+    "inviteResent": "Invito inviato di nuovo",
+    "inviteCancelled": "Invito annullato"
+  },
+  "addModal": {
+    "stepIndicator": "Passaggio {{current}} di {{total}}",
+    "stepCounter": "{{current}}/4 — circa 2 minuti",
+    "nameFallback": "questa persona",
+    "employeeFallback": "Dipendente",
+    "steps": {
+      "1": {
+        "title": "Sul dipendente",
+        "sub": "Come si chiama il nuovo membro del team?",
+        "trust": "I dati del dipendente sono protetti"
+      },
+      "2": {
+        "title": "Ruolo e servizi",
+        "sub": "Mansione ed elenco dei servizi",
+        "trust": "Il ruolo si può cambiare in qualsiasi momento"
+      },
+      "3": {
+        "title": "Orario e compenso",
+        "sub": "Quando lavora e quanto guadagna?",
+        "trust": "L'orario si sincronizza con l'agenda"
+      },
+      "4": {
+        "title": "Fatto!",
+        "sub": "Invito inviato a {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Dati personali",
+      "sub": "Partiamo dal nome e dai contatti",
+      "namePlaceholder": "Es. Anna Rossi",
+      "emailLabel": "Indirizzo email",
+      "contactsNotSet": "Nessun contatto indicato",
+      "inviteHint": "Consegna la password al dipendente di persona — nell'email non finisce mai. L'email porta solo il link, e senza password non apre lo studio.",
+      "errors": {
+        "name": "Il nome è obbligatorio",
+        "phone": "Numero di telefono non valido",
+        "email": "Email non valida",
+        "password": "Almeno 8 caratteri, con lettere e cifre",
+        "emailTaken": "Questa email appartiene già a un altro account Velora"
+      },
+      "passwordLabel": "Password di accesso per il dipendente",
+      "passwordPlaceholder": "Almeno 8 caratteri, lettere e cifre"
+    },
+    "step2": {
+      "heading": "Ruolo e servizi",
+      "sub": "Scegli una mansione — i servizi verranno aggiunti in automatico",
+      "positionLabel": "Mansione *",
+      "positionPlaceholder": "Oppure inserisci una mansione personalizzata...",
+      "addServicePlaceholder": "Aggiungi servizio — premi Invio"
+    },
+    "step3": {
+      "heading": "Orario e compenso",
+      "sub": "Imposta i giorni lavorativi e il compenso",
+      "scheduleLabel": "Orario di lavoro",
+      "salaryLabel": "Compenso (facoltativo)",
+      "salaryPlaceholder": "Inserisci un numero",
+      "createAndInvite": "Crea e invita"
+    },
+    "step4": {
+      "exclaim": "Ottimo!",
+      "added": "aggiunto",
+      "sub": "Invito inviato. Il dipendente entra nel team appena lo accetta.",
+      "inviteLinkLabel": "Link dell'invito",
+      "sendInviteLabel": "Invia l'invito",
+      "inviteInfo": "Il dipendente riceve l'email, apre il link e conferma l'invito con la sua password — solo allora entra nel team e ottiene l'accesso. Il link vale 7 giorni. La password non è nell'email — consegnala di persona.",
+      "emailSentTitle": "Email inviata",
+      "resend": "Invia di nuovo",
+      "resentOk": "Email inviata di nuovo",
+      "resendError": "Invio non riuscito — riprova",
+      "copied": "Copiato"
+    },
+    "illus": {
+      "contacts": "Contatti",
+      "profile": "Profilo",
+      "roleFallback": "Ruolo",
+      "services": "Servizi",
+      "specialization": "Specializzazione",
+      "scheduleTitle": "ORARIO DI LAVORO",
+      "inviteSent": "Invito inviato",
+      "inviteSub": "{{name}} riceverà un link di accesso"
+    },
+    "summary": {
+      "employee": "Dipendente",
+      "role": "Ruolo",
+      "workDays": "Giorni lavorativi",
+      "daysCount": "{{count}} su 7"
+    }
+  },
+  "editModal": {
+    "header": "MODIFICA",
+    "employeeFallback": "Dipendente",
+    "positionFallback": "Senza mansione",
+    "tabs": {
+      "profile": "Profilo",
+      "role": "Ruolo",
+      "salary": "Compenso",
+      "schedule": "Orario"
+    },
+    "profile": {
+      "heading": "Dati personali",
+      "sub": "Aggiorna i contatti del dipendente",
+      "uploadPhoto": "Carica foto",
+      "replacePhoto": "Sostituisci foto",
+      "removePhoto": "Rimuovi foto",
+      "photoHint": "JPG, PNG — fino a 5 MB",
+      "namePlaceholder": "Nome Cognome",
+      "notifyHint": "Il dipendente sarà avvisato delle modifiche al telefono o all'email indicati.",
+      "errors": {
+        "name": "Il nome è obbligatorio",
+        "email": "Email non valida"
+      },
+      "contactsOwnedByEmployee": "Email e telefono appartengono all'account del dipendente — li cambia dal proprio profilo."
+    },
+    "role": {
+      "heading": "Ruolo e specializzazione",
+      "sub": "Mansione del dipendente ed elenco dei servizi",
+      "addService": "Aggiungi servizio",
+      "catalogConfirm": "Vuoi aprire la sezione Servizi nel Catalogo?"
+    },
+    "salary": {
+      "heading": "Compenso",
+      "sub": "Indica il tipo di compenso e l'importo",
+      "typeLabel": "Tipo di compenso",
+      "perWeek": "₽ / settimana",
+      "selectTypeHint": "Scegli un tipo di compenso qui sopra",
+      "currentLabel": "Compenso attuale",
+      "typeFixed": "Stipendio fisso",
+      "typePercent": "% dei ricavi",
+      "typeHourly": "Paga oraria",
+      "typeNotSet": "Tipo non selezionato",
+      "cardFixedSub": "Importo fisso",
+      "cardPercentSub": "% dei ricavi",
+      "cardHourlySub": "Per ora lavorata",
+      "amountFixed": "Importo mensile",
+      "amountPercent": "Percentuale sui ricavi",
+      "amountHourly": "Tariffa oraria",
+      "reportHint": "Il compenso compare nei report finanziari. Il dipendente vede solo il proprio."
+    },
+    "schedule": {
+      "heading": "Orario di lavoro",
+      "activeDays": "Giorni attivi: {{count}} su 7",
+      "syncHint": "L'orario si sincronizza con l'agenda delle prenotazioni e il calendario delle lezioni.",
+      "workDaysLabel": "Giorni lavorativi",
+      "totalHoursLabel": "Ore totali",
+      "daysOffLabel": "Giorni di riposo",
+      "daysLabel": "Giorni",
+      "workDays": "{{count}} giorni lavorativi",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online ora",
+      "notOnline": "Non online",
+      "schedule": "Orario",
+      "daysCount": "{{count}}/7 giorni"
+    },
+    "deleteEmployee": "Rimuovi dipendente",
+    "deleteConfirm": "Rimuovere {{name}} dal team?",
+    "defaultName": "dipendente",
+    "cannotDeleteLastOwner": "Non si può rimuovere l'unico proprietario"
+  },
+  "ownerModal": {
+    "header": "CONTATTI DEL PROPRIETARIO",
+    "heading": "Dati di contatto",
+    "sub": "Telefono ed email del proprietario dello studio",
+    "cardNote": "l'email è il nome utente di accesso",
+    "loginWarning": "L'email è il nome utente del proprietario. Dopo il salvataggio accedi con il nuovo indirizzo.",
+    "lockedHint": "Nome, foto, ruolo e permessi non si modificano qui — stanno nella sezione «Profilo»."
+  },
+  "list": {
+    "pendingLabel": "Invito in sospeso",
+    "pendingHint": "Il profilo si apre appena il dipendente accetta l'invito",
+    "resendInvite": "Invia di nuovo l'invito",
+    "cancelInvite": "Annulla l'adesione"
+  }
+}

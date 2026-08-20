@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Total în echipă",
+    "onShift": "În tură",
+    "trainers": "Antrenori",
+    "administrators": "Administratori",
+    "onlineNow": "{{count}} online acum"
+  },
+  "toolbar": {
+    "teamTitle": "Echipă · {{count}}",
+    "addEmployee": "Adaugă angajat",
+    "searchPlaceholder": "Caută...",
+    "allGroup": "Toți"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Acces complet",
+    "ownerAccess": "Proprietarul are acces la toate modulele sistemului",
+    "loadBar": "Încărcarea antrenorului",
+    "weekSchedule": "Program săptămânal",
+    "todaySchedule": "Programul de azi",
+    "minutesSuffix": "min",
+    "clientsSuffix": "clienți",
+    "hall": "Sală",
+    "staffHalls": "Sălile angajatului",
+    "noName": "Numele nu este completat",
+    "noRole": "Fără rol",
+    "addEventStub": "Formular de adăugare a evenimentului..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Venituri",
+      "rating": "Evaluare",
+      "bookings": "Rezervări",
+      "load": "Încărcare"
+    },
+    "admin": {
+      "bookings": "Rezervări",
+      "attended": "Procesate",
+      "revenue": "Casă",
+      "load": "Încărcare"
+    },
+    "owner": {
+      "revenue": "Venituri",
+      "attended": "Vizite",
+      "load": "Încărcare",
+      "staff": "Angajați"
+    },
+    "default": {
+      "bookings": "Rezervări",
+      "attended": "Vizite",
+      "revenue": "Venituri",
+      "load": "Încărcare"
+    }
+  },
+  "schedule": {
+    "week": "Săptămână",
+    "month": "Lună",
+    "working": "Ore de lucru",
+    "free": "Liber",
+    "busy": "Ocupat",
+    "dayOff": "Zi liberă",
+    "syncHint": "Programul se sincronizează cu jurnalul de rezervări și cu orarul cursurilor.",
+    "workDaysInWeek": "{{count}} zile lucrătoare pe săptămână",
+    "markWork": "Lucrează",
+    "markHint": "Alege un marcaj mai sus, apoi apasă pe o zi",
+    "prevMonth": "Luna precedentă",
+    "nextMonth": "Luna următoare",
+    "dayHasBookings": "Această zi are deja rezervări — nu poate fi zi liberă",
+    "pastDayLocked": "Zilele trecute nu pot fi modificate"
+  },
+  "permissions": {
+    "finance": "Finanțe",
+    "staff": "Angajați",
+    "reports": "Rapoarte",
+    "clients": "Clienți",
+    "settings": "Setări"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Antrenor",
+    "owner": "Proprietar"
+  },
+  "deleteModal": {
+    "cancelLesson": "Anulezi cursul?",
+    "dontAsk": "Nu mai întreba la ștergere",
+    "cancelInvite": "Anulezi alăturarea?",
+    "cancelInviteConfirm": "Anulează invitația"
+  },
+  "toasts": {
+    "lessonCanceled": "Curs anulat",
+    "errorCancel": "Eroare la anulare",
+    "employeeAdded": "Angajatul {{name}} a fost adăugat",
+    "changesSaved": "Modificările au fost salvate",
+    "employeeDeleted": "Angajat șters",
+    "errorDelete": "Eroare la ștergere",
+    "errorSave": "Modificările nu au putut fi salvate",
+    "emailCopied": "Email copiat",
+    "phoneCopied": "Telefon copiat",
+    "inviteSent": "Invitație trimisă către {{email}}",
+    "inviteResent": "Invitația a fost trimisă din nou",
+    "inviteCancelled": "Invitație anulată"
+  },
+  "addModal": {
+    "stepIndicator": "Pasul {{current}} din {{total}}",
+    "stepCounter": "{{current}}/4 — durează aproximativ 2 minute",
+    "nameFallback": "această persoană",
+    "employeeFallback": "Angajat",
+    "steps": {
+      "1": {
+        "title": "Despre angajat",
+        "sub": "Cum se numește noul membru al echipei?",
+        "trust": "Datele angajatului sunt protejate"
+      },
+      "2": {
+        "title": "Rol și servicii",
+        "sub": "Funcția și lista de servicii",
+        "trust": "Rolul poate fi schimbat oricând"
+      },
+      "3": {
+        "title": "Program și salariu",
+        "sub": "Când lucrează și cât câștigă?",
+        "trust": "Programul se sincronizează cu jurnalul"
+      },
+      "4": {
+        "title": "Gata!",
+        "sub": "Invitație trimisă către {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Date personale",
+      "sub": "Începem cu numele și datele de contact",
+      "namePlaceholder": "Ex. Ana Popescu",
+      "emailLabel": "Adresă de email",
+      "contactsNotSet": "Nu au fost indicate contacte",
+      "inviteHint": "Predă parola angajatului personal — ea nu ajunge niciodată în email. Emailul conține doar linkul, iar fără parolă nu deschide studioul.",
+      "errors": {
+        "name": "Numele este obligatoriu",
+        "phone": "Număr de telefon invalid",
+        "email": "Email invalid",
+        "password": "Cel puțin 8 caractere, cu litere și cifre",
+        "emailTaken": "Acest email aparține deja altui cont Velora"
+      },
+      "passwordLabel": "Parola de autentificare a angajatului",
+      "passwordPlaceholder": "Cel puțin 8 caractere, litere și cifre"
+    },
+    "step2": {
+      "heading": "Rol și servicii",
+      "sub": "Alege o funcție — serviciile vor fi adăugate automat",
+      "positionLabel": "Funcție *",
+      "positionPlaceholder": "Sau introdu o funcție proprie...",
+      "addServicePlaceholder": "Adaugă serviciu — apasă Enter"
+    },
+    "step3": {
+      "heading": "Program și salariu",
+      "sub": "Stabilește zilele lucrătoare și remunerația",
+      "scheduleLabel": "Program de lucru",
+      "salaryLabel": "Salariu (opțional)",
+      "salaryPlaceholder": "Introdu un număr",
+      "createAndInvite": "Creează și invită"
+    },
+    "step4": {
+      "exclaim": "Excelent!",
+      "added": "adăugat",
+      "sub": "Invitația a fost trimisă. Angajatul se alătură echipei imediat ce o acceptă.",
+      "inviteLinkLabel": "Link de invitație",
+      "sendInviteLabel": "Trimite invitația",
+      "inviteInfo": "Angajatul primește emailul, deschide linkul și confirmă invitația cu parola sa — abia atunci se alătură echipei și primește acces. Linkul este valabil 7 zile. Parola nu se află în email — predă-o personal.",
+      "emailSentTitle": "Email trimis",
+      "resend": "Trimite din nou",
+      "resentOk": "Emailul a fost trimis din nou",
+      "resendError": "Trimiterea a eșuat — încearcă din nou",
+      "copied": "Copiat"
+    },
+    "illus": {
+      "contacts": "Contacte",
+      "profile": "Profil",
+      "roleFallback": "Rol",
+      "services": "Servicii",
+      "specialization": "Specializare",
+      "scheduleTitle": "PROGRAM DE LUCRU",
+      "inviteSent": "Invitație trimisă",
+      "inviteSub": "{{name}} va primi un link de autentificare"
+    },
+    "summary": {
+      "employee": "Angajat",
+      "role": "Rol",
+      "workDays": "Zile lucrătoare",
+      "daysCount": "{{count}} din 7"
+    }
+  },
+  "editModal": {
+    "header": "EDITARE",
+    "employeeFallback": "Angajat",
+    "positionFallback": "Fără funcție",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rol",
+      "salary": "Salariu",
+      "schedule": "Program"
+    },
+    "profile": {
+      "heading": "Date personale",
+      "sub": "Actualizează datele de contact ale angajatului",
+      "uploadPhoto": "Încarcă fotografia",
+      "replacePhoto": "Schimbă fotografia",
+      "removePhoto": "Șterge fotografia",
+      "photoHint": "JPG, PNG — până la 5 MB",
+      "namePlaceholder": "Prenume Nume",
+      "notifyHint": "Angajatul va fi notificat despre modificări la telefonul sau emailul indicat.",
+      "errors": {
+        "name": "Numele este obligatoriu",
+        "email": "Email invalid"
+      },
+      "contactsOwnedByEmployee": "Emailul și telefonul aparțin contului angajatului — el le schimbă în propriul profil."
+    },
+    "role": {
+      "heading": "Rol și specializare",
+      "sub": "Funcția angajatului și lista de servicii",
+      "addService": "Adaugă serviciu",
+      "catalogConfirm": "Vrei să deschizi secțiunea Servicii din Catalog?"
+    },
+    "salary": {
+      "heading": "Salariu",
+      "sub": "Indică tipul de plată și valoarea remunerației",
+      "typeLabel": "Tip de plată",
+      "perWeek": "₽ / săptămână",
+      "selectTypeHint": "Alege mai sus un tip de plată",
+      "currentLabel": "Remunerația curentă",
+      "typeFixed": "Salariu fix",
+      "typePercent": "% din venituri",
+      "typeHourly": "Plată la oră",
+      "typeNotSet": "Tip neselectat",
+      "cardFixedSub": "Sumă fixă",
+      "cardPercentSub": "% din venituri",
+      "cardHourlySub": "Pe oră lucrată",
+      "amountFixed": "Sumă lunară",
+      "amountPercent": "Procent din venituri",
+      "amountHourly": "Tarif orar",
+      "reportHint": "Salariul apare în rapoartele financiare. Angajatul își vede doar propria remunerație."
+    },
+    "schedule": {
+      "heading": "Program de lucru",
+      "activeDays": "Zile active: {{count}} din 7",
+      "syncHint": "Programul se sincronizează cu jurnalul de rezervări și cu orarul cursurilor.",
+      "workDaysLabel": "Zile lucrătoare",
+      "totalHoursLabel": "Total ore",
+      "daysOffLabel": "Zile libere",
+      "daysLabel": "Zile",
+      "workDays": "{{count}} zile lucrătoare",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online acum",
+      "notOnline": "Nu este online",
+      "schedule": "Program",
+      "daysCount": "{{count}}/7 zile"
+    },
+    "deleteEmployee": "Elimină angajatul",
+    "deleteConfirm": "Elimini {{name}} din echipă?",
+    "defaultName": "angajat",
+    "cannotDeleteLastOwner": "Nu poate fi eliminat singurul proprietar"
+  },
+  "ownerModal": {
+    "header": "CONTACTELE PROPRIETARULUI",
+    "heading": "Date de contact",
+    "sub": "Telefonul și emailul proprietarului studioului",
+    "cardNote": "emailul este numele de autentificare",
+    "loginWarning": "Emailul este loginul proprietarului. După salvare, autentifică-te cu noua adresă.",
+    "lockedHint": "Numele, fotografia, rolul și drepturile de acces nu se editează aici — se află în secțiunea «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Invitație în așteptare",
+    "pendingHint": "Profilul se deschide după ce angajatul acceptă invitația",
+    "resendInvite": "Trimite invitația din nou",
+    "cancelInvite": "Anulează alăturarea"
+  }
+}

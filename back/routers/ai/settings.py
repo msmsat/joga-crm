@@ -8,7 +8,7 @@ from database import get_db
 from models import BookingChannelConfig
 from dependencies import StudioContext, get_studio_context, require_role
 from schemas.ai import AIQuotaRead, AISettingsRead, AISettingsUpdate
-from services.ai_quota import ai_quota_status
+from services.ai_quota import TRIAL_LIMIT, ai_quota_status
 from services.assistant import get_or_create_ai_settings
 from services.notifier import _integration_config
 
@@ -23,7 +23,7 @@ async def get_ai_quota(
     """Остаток обращений к ИИ за месяц. Видят все роли: лимит общий на студию,
     и тренеру полезно понимать, почему ассистент отказал (require_role не нужен)."""
     used, limit = await ai_quota_status(db, ctx.studio_id)
-    return AIQuotaRead(used=used, limit=limit)
+    return AIQuotaRead(used=used, limit=limit, trial=bool(TRIAL_LIMIT))
 
 
 async def _tg_channel_active(db: AsyncSession, studio_id: int) -> bool:

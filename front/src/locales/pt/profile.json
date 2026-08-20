@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "O seu perfil",
+    "sub": "Faça a gestão dos dados pessoais e das sessões"
+  },
+  "personalInfo": {
+    "heading": "Dados pessoais",
+    "emailLocked": "O email é o utilizador da sua conta e não pode ser alterado aqui"
+  },
+  "security": {
+    "changePassword": "Alterar palavra-passe",
+    "logout": "Terminar sessão"
+  },
+  "accounts": {
+    "title": "Os meus estúdios",
+    "count_one": "{{count}} estúdio",
+    "count_other": "{{count}} estúdios",
+    "enter": "Abrir",
+    "login": "Iniciar sessão",
+    "register": "Criar conta",
+    "addStudio": "Adicionar estúdio",
+    "addStudioSub": "Um novo espaço de trabalho — passa a ser o proprietário"
+  },
+  "session": {
+    "current": "Sessão atual",
+    "lastActive": "Ativo {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Dados pessoais atualizados com sucesso"
+  },
+  "otherAccount": {
+    "title": "Outra conta",
+    "sub": "Iniciar sessão como outra pessoa termina a sessão atual neste navegador — pode voltar com um início de sessão normal.",
+    "recentTitle": "Já iniciou sessão antes",
+    "return": "Iniciar sessão",
+    "forget": "Esquecer conta"
+  }
+}

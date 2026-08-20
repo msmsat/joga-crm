@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Σήμερα",
+    "trainers": "Εκπαιδευτές",
+    "halls": "Αίθουσες",
+    "day": "Ημέρα",
+    "week": "Εβδομάδα"
+  },
+  "daySummary": {
+    "classesToday": "μαθήματα σήμερα",
+    "clientBookings": "κρατήσεις πελατών",
+    "avgLoad": "μέση πληρότητα",
+    "trainersActive": "εκπαιδευτές σε βάρδια",
+    "gridStep": "Βήμα πλέγματος",
+    "minuteShort": "λ",
+    "minutesShort": "λεπ",
+    "undo": "Αναίρεση: {{label}}",
+    "redo": "Επανάληψη: {{label}}",
+    "nothingToUndo": "Δεν υπάρχει τίποτα για αναίρεση",
+    "nothingToRedo": "Δεν υπάρχει τίποτα για επανάληψη"
+  },
+  "newBooking": {
+    "title": "Νέο μάθημα",
+    "slotTime": "Ώρα θέσης",
+    "service": "Υπηρεσία",
+    "servicePlaceholder": "Επιλέξτε υπηρεσία",
+    "namePlaceholder": "Π.χ. Reformer Pilates",
+    "location": "Τοποθεσία / αίθουσα",
+    "start": "Έναρξη",
+    "end": "Λήξη",
+    "groupLimit": "Όριο ομάδας",
+    "maxSpots": "Μέγ. θέσεις",
+    "assignTrainer": "Ανάθεση εκπαιδευτή",
+    "cancel": "Ακύρωση",
+    "create": "Δημιουργία μαθήματος",
+    "errors": {
+      "selectService": "Επιλέξτε υπηρεσία",
+      "range": "Από 1 έως 50",
+      "endAfterStart": "Η λήξη πρέπει να είναι μετά την έναρξη"
+    },
+    "createServiceConfirm": {
+      "title": "Δημιουργία υπηρεσίας;",
+      "message": "Δεν βρίσκετε την υπηρεσία που θέλετε; Δημιουργήστε τη στον Κατάλογο.",
+      "confirm": "Μετάβαση στον Κατάλογο"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Επιβεβαιωμένο",
+    "pending": "Σε αναμονή",
+    "cancelled": "Ακυρωμένο",
+    "spotsTaken": "πιασμένες θέσεις",
+    "fillRate": "Πληρότητα",
+    "booked": "Εγγεγραμμένος",
+    "attended": "Παρέστη",
+    "markAttended": "Καταγραφή παρουσίας",
+    "awaitingConfirmation": "Αναμονή επιβεβαίωσης",
+    "trialLesson": "Δοκιμαστικό",
+    "unpaid": "Απλήρωτο · {{amount}}",
+    "acceptPayment": "Καταχώριση πληρωμής",
+    "payCash": "Μετρητά",
+    "payTransfer": "Έμβασμα",
+    "payLater": "Χωρίς πληρωμή",
+    "confirmBooking": "Επιβεβαίωση κράτησης",
+    "rejectBooking": "Απόρριψη αιτήματος",
+    "removeFromLesson": "Αφαίρεση από το μάθημα",
+    "add": "Προσθήκη",
+    "addClient": "Προσθήκη πελάτη",
+    "edit": "Επεξεργασία",
+    "editLesson": "Επεξεργασία μαθήματος",
+    "deleteLesson": "Διαγραφή μαθήματος",
+    "cancel": "Ακύρωση",
+    "save": "Αποθήκευση",
+    "lessonTitle": "Τίτλος μαθήματος",
+    "untitled": "Χωρίς τίτλο",
+    "from": "Από",
+    "to": "Έως",
+    "searchPlaceholder": "Αναζήτηση με όνομα ή τηλέφωνο...",
+    "noClientsFound": "Δεν βρέθηκαν πελάτες",
+    "noEligibleClients": "Κανένας πελάτης δεν έχει πρόσβαση σε αυτό το μάθημα",
+    "visitsCount_one": "{{count}} επίσκεψη",
+    "visitsCount_other": "{{count}} επισκέψεις",
+    "errors": {
+      "selectService": "Επιλέξτε υπηρεσία",
+      "range": "Από 1 έως 50",
+      "minBooked": "{{count}} είναι ήδη εγγεγραμμένοι — πιο κάτω δεν γίνεται",
+      "endAfterStart": "Η λήξη πρέπει να είναι μετά την έναρξη"
+    },
+    "createServiceConfirm": {
+      "title": "Δημιουργία υπηρεσίας;",
+      "message": "Δεν βρίσκετε την υπηρεσία που θέλετε; Δημιουργήστε τη στον Κατάλογο.",
+      "confirm": "Μετάβαση στον Κατάλογο"
+    }
+  },
+  "addClientModal": {
+    "title": "Προσθήκη πελάτη",
+    "searchPlaceholder": "Αναζήτηση με όνομα ή τηλέφωνο...",
+    "noClientsFound": "Δεν βρέθηκαν πελάτες",
+    "chooseFromList": "Επιλέξτε πελάτες από τη λίστα",
+    "selectedCount_one": "Επιλέχθηκε: {{count}} πελάτης",
+    "selectedCount_other": "Επιλέχθηκαν: {{count}} πελάτες",
+    "cancel": "Ακύρωση",
+    "add": "Προσθήκη"
+  },
+  "rightPanel": {
+    "halls": "Αίθουσες",
+    "load": "Πληρότητα",
+    "upcoming": "Επόμενα"
+  },
+  "grid": {
+    "classesShort": "μαθ.",
+    "peopleShort": "άτ.",
+    "loadPercent": "Πληρότητα: {{percent}}%",
+    "classes": "μαθήματα",
+    "classesToday": "μαθήματα σήμερα",
+    "newLessonPreview": "Νέο μάθημα",
+    "cancelled": "Ακυρωμένο",
+    "noTrainers": "Χωρίς εκπαιδευτές",
+    "noHalls": "Χωρίς αίθουσες"
+  },
+  "createService": "+ Δημιουργία υπηρεσίας",
+  "invalidDateFormat": "Μη έγκυρη μορφή ημερομηνίας",
+  "toasts": {
+    "lessonMoved": "Το μάθημα μετακινήθηκε",
+    "endTimeChanged": "Η ώρα λήξης άλλαξε",
+    "startTimeChanged": "Η ώρα έναρξης άλλαξε",
+    "attendanceMarked": "Η παρουσία καταγράφηκε",
+    "paymentAccepted": "Η πληρωμή καταχωρήθηκε",
+    "bookingConfirmed": "Η κράτηση επιβεβαιώθηκε",
+    "clientRemoved": "Ο πελάτης αφαιρέθηκε από το μάθημα",
+    "lessonUpdated": "Το μάθημα ενημερώθηκε",
+    "lessonAdded": "Το μάθημα προστέθηκε",
+    "selectTrainer": "Επιλέξτε εκπαιδευτή",
+    "alreadyCancelled": "Το μάθημα είναι ήδη ακυρωμένο",
+    "lessonCancelled": "Το μάθημα ακυρώθηκε",
+    "noPermission": "Ανεπαρκή δικαιώματα για αλλαγή του προγράμματος",
+    "undoLabel": "Αναιρέθηκε: {{label}}",
+    "redoLabel": "Επαναλήφθηκε: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Εγγράφηκε: {{count}} πελάτης",
+    "clientsBooked_other": "Εγγράφηκαν: {{count}} πελάτες",
+    "clientsBookedPartial": "Εγγράφηκαν {{success}} από {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "αφαίρεση πελάτη",
+      "moveLesson": "μετακίνηση μαθήματος",
+      "createLesson": "δημιουργία μαθήματος",
+      "bookClient": "εγγραφή πελάτη",
+      "bookClients": "εγγραφή πελατών ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Η φόρτωση απέτυχε",
+    "retry": "Δοκιμάστε ξανά"
+  },
+  "cancelBookingConfirm": {
+    "title": "Ακύρωση μαθήματος;",
+    "message_one": "{{count}} πελάτης θα λάβει ειδοποίηση ακύρωσης.",
+    "message_other": "{{count}} πελάτες θα λάβουν ειδοποίηση ακύρωσης.",
+    "confirm": "Ακύρωση μαθήματος"
+  }
+}

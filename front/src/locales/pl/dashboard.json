@@ -1,0 +1,97 @@
+{
+  "state": {
+    "empty": "W studiu nie ma takich pracowników",
+    "noData": "Brak danych",
+    "ownerOnly": "Dostęp ograniczony przez Twoją rolę",
+    "loadError": "Nie udało się wczytać danych",
+    "retry": "Spróbuj ponownie"
+  },
+  "metrics": {
+    "revenue": "Przychód w tym miesiącu",
+    "clients": "Aktywni klienci",
+    "bookings": "Rezerwacje w tym miesiącu",
+    "retention": "Wskaźnik utrzymania",
+    "lessons": "Zajęcia w tym miesiącu",
+    "attendance": "Frekwencja w tym miesiącu",
+    "fill_rate": "Wypełnienie",
+    "rating": "Średnia ocena",
+    "active_clients": "Aktywni klienci",
+    "more": "Szczegóły"
+  },
+  "today": {
+    "titleTrainer": "Moje dzisiejsze zajęcia",
+    "titleAdmin": "Dzisiejszy grafik",
+    "subtitle": "{{count}} zajęć · {{booked}} z {{spots}} miejsc",
+    "subtitle_one": "{{count}} zajęcia · {{booked}} z {{spots}} miejsc",
+    "subtitle_few": "{{count}} zajęcia · {{booked}} z {{spots}} miejsc",
+    "openJournal": "Otwórz grafik",
+    "empty": "Dziś nie ma zajęć",
+    "emptyHintTrainer": "Wolny dzień — nowe rezerwacje pojawią się tutaj",
+    "emptyHintAdmin": "Na dziś nic nie zaplanowano"
+  },
+  "chart": {
+    "byDay": "dziennie",
+    "byMonth": "miesięcznie",
+    "subWeek": "Bieżący tydzień",
+    "subMonth": "Bieżący miesiąc",
+    "subYear": "Ostatnie 12 miesięcy",
+    "tabWeek": "Tydzień",
+    "tabMonth": "Miesiąc",
+    "tabYear": "Rok",
+    "noData": "Brak danych za ten okres",
+    "retentionNA": "Wykres utrzymania jest niedostępny"
+  },
+  "tasks": {
+    "title": "Zadania",
+    "empty": "Brak zadań",
+    "done": "Gotowe",
+    "add": "Dodaj zadanie",
+    "namePlaceholder": "Nazwa zadania…",
+    "cancel": "Anuluj",
+    "submit": "Dodaj",
+    "priority": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki"
+    },
+    "priorityHint": {
+      "low": "Niski priorytet",
+      "medium": "Średni priorytet",
+      "high": "Wysoki priorytet"
+    },
+    "tags": {
+      "Клиент": "Klient",
+      "Финансы": "Finanse",
+      "Лиды": "Leady",
+      "Отчёты": "Raporty",
+      "Журнал": "Grafik",
+      "Персонал": "Personel"
+    },
+    "scope": {
+      "mine": "Moje",
+      "admins": "Administratorzy",
+      "trainers": "Trenerzy"
+    },
+    "assigneePlaceholder": "Wybierz pracownika",
+    "deleteTitle": "Usunąć zadanie?",
+    "deleteMessage": "Tej operacji nie można cofnąć."
+  },
+  "events": {
+    "title": "Ostatnie zdarzenia",
+    "seeAll": "Zobacz wszystkie",
+    "justNow": "przed chwilą",
+    "openProfile": "Otwórz profil",
+    "writeWhatsApp": "Napisz na WhatsAppie",
+    "sendReceipt": "Wyślij paragon",
+    "cancelBooking": "Anuluj rezerwację"
+  },
+  "summary": {
+    "topServices": "Najpopularniejsze usługi",
+    "trainersLoad": "Obciążenie trenerów",
+    "financeMonth": "Finanse (miesiąc)",
+    "revenue": "Przychód",
+    "expenses": "Koszty",
+    "avgCheck": "Średni koszyk",
+    "profit": "Zysk"
+  }
+}

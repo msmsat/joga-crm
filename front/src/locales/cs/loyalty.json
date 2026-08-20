@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Všechny programy jsou nastavené",
+    "allConfiguredSub": "Váš věrnostní systém běží naplno",
+    "setup": "Nastavte věrnostní programy",
+    "setupSub": "Nastaveno {{count}} z {{total}} programů · Každý program zvyšuje udržení klientů",
+    "start": "Začít"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Věrnostní karty",
+      "desc": "Úrovňový systém sbírání bodů",
+      "statLabel": "klientů"
+    },
+    "discounts": {
+      "title": "Slevy a cashback",
+      "desc": "Osobní nabídky pro klienty",
+      "statLabel": "aktivních"
+    },
+    "certificates": {
+      "title": "Dárkové poukazy",
+      "desc": "Dárkové a jmenné poukazy",
+      "statLabel": "prodáno"
+    },
+    "referral": {
+      "title": "Doporučení",
+      "desc": "Program „Přiveď kamaráda“",
+      "statLabel": "doporučení"
+    },
+    "promocodes": {
+      "title": "Promo kódy",
+      "desc": "Slevové kódy s limitem použití",
+      "statLabel": "aktivních"
+    },
+    "deposit": {
+      "title": "Depozit",
+      "desc": "Peněžní zůstatek klienta ve studiu",
+      "statLabel": "se zůstatkem"
+    }
+  },
+  "card": {
+    "active": "Aktivní",
+    "disable": "Vypnout",
+    "notConfigured": "Nenastaveno",
+    "configure": "Nastavit"
+  },
+  "drawer": {
+    "subtitle": "Nastavení programu",
+    "saving": "Ukládání…",
+    "save": "Uložit a aktivovat",
+    "cancel": "Zrušit",
+    "close": "Zavřít"
+  },
+  "config": {
+    "mainParams": "Hlavní parametry",
+    "programName": "Název programu",
+    "pointsRate": "Kurz bodů ({{currency}} za 1 bod)",
+    "levels": "Úrovně",
+    "pointValue": "1 bod =",
+    "pointValueHint": "Body se na všech úrovních připisují stejným kurzem, ale nemají stejnou hodnotu. Dejte úrovni Gold 1 a Diamond 2 a stejný bod srazí při platbě dvakrát víc. Právě to úroveň přináší: čím víc člověk ve studiu utratil, tím víc jeho body vydají.",
+    "expiry": "Doba platnosti",
+    "expiryTooltip": "Jak dlouho může klient nasbírané body utratit",
+    "expiryOptions": {
+      "3m": "3 měs.",
+      "6m": "6 měs.",
+      "1y": "1 rok",
+      "never": "Bez expirace"
+    },
+    "newLevelName": "Nová úroveň",
+    "addLevel": "+ Úroveň",
+    "levelFrom": "od",
+    "levelTo": "do",
+    "deleteLevelTitle": "Smazat tuto úroveň?",
+    "deleteLevelMessage": "Klienti na úrovni „{{name}}“ přejdou na sousední úroveň podle své celkové útraty.",
+    "discountType": "Typ slevy",
+    "discountTypes": {
+      "percentage": "Procentní (%)",
+      "fixed": "Pevná ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Procento cashbacku",
+    "discountSize": "Výše slevy",
+    "minPurchase": "Minimální částka nákupu",
+    "noLimit": "Bez limitu",
+    "conditions": "Podmínky uplatnění",
+    "appliesToAll": "Platí na všechny služby",
+    "stackable": "Sčítat s dalšími slevami",
+    "visibleInCabinet": "Zobrazit klientovi v jeho účtu",
+    "certType": "Typ poukazu",
+    "certTypes": {
+      "named": "Jmenný",
+      "gift": "Dárkový",
+      "service": "Na službu"
+    },
+    "denominations": "Nominální hodnoty",
+    "addDenom": "+ Přidat",
+    "service": "Služba",
+    "noServices": "V katalogu zatím nejsou žádné služby — přidejte je v sekci „Katalog“",
+    "params": "Parametry",
+    "expiryDays": "Doba platnosti (dny)",
+    "certIssue": "Vystavit poukaz",
+    "certCustomAmount": "Vlastní částka",
+    "certRecipientName": "Jméno obdarovaného",
+    "certRecipientPlaceholder": "Nepovinné",
+    "certLinkClient": "Přiřadit klientovi",
+    "certClientSearchPlaceholder": "Začněte psát jméno…",
+    "certAccount": "Účet pro vklad",
+    "certAccountNone": "Nezaznamenávat v účetnictví",
+    "certIssueButton": "Vystavit",
+    "certIssuedTitle": "Poukaz vystaven",
+    "certCopyCode": "Kopírovat kód",
+    "certCopied": "Zkopírováno",
+    "certIssueAnother": "Vystavit další",
+    "certIssued": "Vystavené poukazy",
+    "certEmpty": "Zatím nebyl vystaven žádný poukaz",
+    "certStatus": {
+      "active": "Aktivní",
+      "used": "Uplatněn",
+      "expired": "Propadlý"
+    },
+    "certRedeem": "Uplatnit",
+    "certRedeemTitle": "Uplatnit tento poukaz?",
+    "certRedeemMessage": "Poukaz {{code}} bude označen jako použitý. Tuto akci nelze vrátit.",
+    "referrerBonusTitle": "Bonus za doporučení",
+    "referrerBonus": "Bonus doporučiteli ({{currency}})",
+    "newClientDiscount": "Sleva pro nového klienta (%)",
+    "triggerCondition": "Podmínka připsání",
+    "triggerConditions": {
+      "first_visit": "Po první návštěvě",
+      "first_payment": "Po první platbě",
+      "registration": "Ihned při registraci"
+    },
+    "bonusAccrual": "Připsání bonusu",
+    "bonusTypes": {
+      "points": "Body",
+      "deposit": "Na depozit",
+      "discount": "Jako sleva"
+    },
+    "promoCreate": "Vytvořit promo kód",
+    "promoCodePlaceholder": "LETO25",
+    "promoValidUntil": "Platí do",
+    "promoUsageLimit": "Limit použití",
+    "promoAdd": "+ Přidat promo kód",
+    "promoList": "Promo kódy",
+    "promoEmpty": "Zatím žádné promo kódy",
+    "promoUntil": "do",
+    "promoStatus": {
+      "active": "Aktivní",
+      "expired": "Propadlý",
+      "exhausted": "Limit vyčerpán",
+      "disabled": "Vypnutý"
+    },
+    "depositTotal": "Celkový zůstatek",
+    "depositTotalSub": "na depozitech klientů",
+    "depositTopClients": "Top klienti podle zůstatku",
+    "depositEmpty": "Depozit zatím nikdo nemá",
+    "depositHint": "Vklady a výběry se dělají v profilu klienta. Program doporučení může vyplácet bonusy na depozit místo bodů."
+  },
+  "validation": {
+    "required": "Toto pole je povinné",
+    "minOne": "Musí být alespoň 1",
+    "minZero": "Nemůže být záporné",
+    "positive": "Musí být větší než 0",
+    "range0to100": "0 až 100"
+  },
+  "toasts": {
+    "saved": "Program aktivován",
+    "saveFailed": "Uložení se nezdařilo",
+    "toggleFailed": "Program se nepodařilo aktualizovat",
+    "loadFailed": "Načtení dat se nezdařilo",
+    "retry": "Zkusit znovu"
+  },
+  "stats": {
+    "notConnected": "Program není zapnutý",
+    "willAppear": "Data se objeví po nastavení",
+    "noData": "Žádná data",
+    "connectProgram": "Zapnout program",
+    "revenueHeadline": "Tržby od členů",
+    "membersHeadline": "Členové programu",
+    "returnedClients": "Vrátivší se klienti",
+    "returnedClientsSub": "2+ návštěvy za 90 dní",
+    "avgCheckHeadline": "Průměrná útrata člena",
+    "bonusCostHeadline": "Náklady na bonusy",
+    "bonusCostSub": "tento měsíc",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "tento měsíc",
+    "cardHolders": "držitelů karet",
+    "kpi": "Klíčové metriky",
+    "members": "Členové",
+    "withCard": "s kartou",
+    "avgCheck": "Průměrná útrata",
+    "byMembers": "mezi členy",
+    "pointsInCirculation": "Body v oběhu",
+    "accrued": "připsáno",
+    "revenue": "Tržby",
+    "revenuePerMonth": "od členů / měs.",
+    "levelDistribution": "Rozdělení podle úrovní",
+    "noLevels": "Úrovně zatím nejsou nastavené",
+    "totalClients": "Celkem klientů v programu",
+    "fromValue": "od {{value}}",
+    "levelPointValue": "bod = {{value}}"
+  },
+  "scenarios": {
+    "title": "Chytré scénáře",
+    "subtitle": "Autopilot udržení: systém sám najde klienty a odmění je za vás",
+    "add": "Scénář",
+    "fired": "spuštěno {{count}}×",
+    "lastRun": "naposledy {{when}}",
+    "neverRun": "zatím nespuštěno",
+    "empty": "Zatím žádné scénáře",
+    "emptySub": "Sestavte první — systém bude udržovat klienty za vás",
+    "channel": "Kanál",
+    "channelSoon": "po připojení integrace",
+    "pickTemplate": "Vyberte scénář",
+    "pickTemplateSub": "Hotová šablona — hranice doladíte později",
+    "create": "Vytvořit",
+    "deleteConfirm": "Smazat scénář?",
+    "deleteConfirmSub": "Pravidlo se přestane spouštět. Tuto akci nelze vrátit.",
+    "triggers": {
+      "inactive_days": "nebyl {{days}} dní",
+      "low_subscription": "zbývá ≤ {{classes_left}} lekcí",
+      "birthday": "má narozeniny",
+      "nth_visit": "návštěva č. {{n}}",
+      "referral": "doporučil kamaráda"
+    },
+    "actions": {
+      "points": "darovat {{points}} bodů",
+      "gift_classes": "darovat {{classes}} lekcí",
+      "certificate": "vystavit poukaz na {{amount}} ₽",
+      "renewal_offer": "nabídnout obnovení se slevou {{discount}} %"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Chybíte nám",
+        "desc": "Získejte zpět klienta, který dlouho nebyl"
+      },
+      "expiring_subscription": {
+        "name": "Předplatné dochází",
+        "desc": "Nabídněte obnovení dřív, než lekce dojdou"
+      },
+      "birthday_gift": {
+        "name": "Dárek k narozeninám",
+        "desc": "Potěšte klienta v jeho den"
+      },
+      "fifth_visit": {
+        "name": "Odměna za věrnost",
+        "desc": "Lekce zdarma za věrnost"
+      },
+      "referral_thanks": {
+        "name": "Díky za kamaráda",
+        "desc": "Odměňte toho, kdo přivedl nového klienta"
+      }
+    },
+    "ifClient": "Pokud klient",
+    "then": "→",
+    "toasts": {
+      "created": "Scénář vytvořen",
+      "updated": "Scénář upraven",
+      "deleted": "Scénář smazán",
+      "failed": "Scénář se nepodařilo uložit"
+    },
+    "delete": "Smazat"
+  },
+  "segmentsBoard": {
+    "title": "Segmenty a doporučení",
+    "subtitle": "Živé skupiny klientů, každá s jednou jasnou výzvou k akci",
+    "empty": "Nic tu není, a to je dobře",
+    "clients": "klientů",
+    "daysAgo": "před {{count}} dny",
+    "neverVisited": "žádné návštěvy",
+    "more": "a dalších {{count}}",
+    "segments": {
+      "at_risk": {
+        "name": "Hrozí odchod",
+        "desc": "Aktivní, ale 21+ dní nepřišli",
+        "action": "Dát bonus"
+      },
+      "vip_idle": {
+        "name": "VIP ztichli",
+        "desc": "VIP klienti, 14+ dní bez návštěvy",
+        "action": "Spustit kampaň"
+      },
+      "expiring_subscription": {
+        "name": "Dochází předplatné",
+        "desc": "Zbývají ≤2 lekce nebo ≤7 dní",
+        "action": "Spustit kampaň"
+      },
+      "lost_newcomers": {
+        "name": "Nikdy se nevrátili",
+        "desc": "Přišli jednou, 14+ dní pryč",
+        "action": "Spustit kampaň"
+      },
+      "upsell_candidates": {
+        "name": "Připraveni na balíček",
+        "desc": "8+ návštěv tento měsíc, bez balíčku",
+        "action": "Spustit kampaň"
+      }
+    },
+    "campaignSub": "Segment „{{name}}“ · {{count}} klientů",
+    "pointsLabel": "Kolik bodů připsat",
+    "messageLabel": "Text zprávy",
+    "messagePlaceholder": "např. Chybíte nám! Vraťte se — čekáme na vás.",
+    "emailNote": "E-mail dostanou jen klienti, kteří ho mají vyplněný",
+    "confirm": "Odeslat",
+    "toasts": {
+      "pointsDone": "Body připsány · zpracováno {{processed}}, upozorněno {{emails}}",
+      "emailDone": "Kampaň odeslána · {{emails}} e-mailů z {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Obnovení předplatného",
+    "subtitle": "Jak dobře se klienti vracejí pro nový balíček",
+    "renewalRate": "Obnovují",
+    "avgPackages": "Balíčků na klienta",
+    "sold": "Prodáno",
+    "renewed": "Obnoveno",
+    "empty": "Zatím žádné prodeje předplatného",
+    "emptySub": "Analytika se objeví po prvních prodejích balíčků"
+  }
+}

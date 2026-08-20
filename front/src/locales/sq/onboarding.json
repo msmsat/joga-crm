@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Hapi {{step}} nga {{total}}",
+    "securityNote": "Të dhënat tuaja janë të mbrojtura dhe nuk u jepen kurrë palëve të treta",
+    "back": "Kthehu",
+    "continue": "Vazhdo",
+    "finish": "Fillo punën",
+    "saving": "Duke ruajtur...",
+    "progress": "{{step}}/5 — merr më pak se 3 minuta",
+    "regionRequired": "Ju lutemi vendosni cilësimet rajonale",
+    "networkError": "Gabim rrjeti gjatë ruajtjes së të dhënave.",
+    "phoneTakenTitle": "Numri është në përdorim",
+    "phoneTaken": "Ky numër telefoni është regjistruar tashmë",
+    "errorTitle": "Gabim",
+    "changeNumber": "Ndrysho numrin",
+    "gotIt": "E kuptova"
+  },
+  "steps": {
+    "identity": {
+      "title": "Rreth studios",
+      "desc": "Emri, përshkrimi dhe stili vizual i markës suaj."
+    },
+    "activity": {
+      "title": "Veprimtaria",
+      "desc": "Zgjidhni një drejtim që ta përshtatim CRM-në për ju."
+    },
+    "contact": {
+      "title": "Kontaktet",
+      "desc": "Adresa, telefoni dhe linqet për klientët tuaj."
+    },
+    "settings": {
+      "title": "Cilësimet",
+      "desc": "Rajoni, monedha dhe formati i datës."
+    },
+    "schedule": {
+      "title": "Orari i punës",
+      "desc": "Vendosni ditët dhe orët kur punon studioja juaj."
+    }
+  },
+  "identity": {
+    "welcome": "Mirë se vini",
+    "subtitle": "Disa minuta konfigurim — dhe hapësira juaj e punës është gati",
+    "replaceLogo": "Zëvendëso logon",
+    "uploadLogo": "Ngarko logon",
+    "removeLogo": "Hiq",
+    "logoHint": "JPG, PNG, WEBP deri në 5 MB",
+    "nameLabel": "Emri i studios ose i kompanisë",
+    "namePlaceholder": "P.sh.: Studio Forma",
+    "descriptionLabel": "Përshkrimi",
+    "descriptionPlaceholder": "Një shënim i shkurtër për studion, stilin e punës, veçoritë...",
+    "newBadge": "I RI"
+  },
+  "activity": {
+    "title": "Lloji i veprimtarisë",
+    "subtitle": "Zgjidhni një drejtim — do ta përshtatim CRM-në për ju",
+    "comingSoon": "Së shpejti: berber, fitnes, vallëzim e më shumë",
+    "types": {
+      "yoga": {
+        "label": "Joga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates në dysheme"
+      }
+    }
+  },
+  "contact": {
+    "title": "Të dhënat e kontaktit",
+    "subtitle": "Klientët do t'i shohin këto të dhëna kur rezervojnë online",
+    "phoneLabel": "Telefoni i studios",
+    "checkingPhone": "Duke kontrolluar numrin...",
+    "addressLabel": "Adresa",
+    "emailLabel": "Email",
+    "websiteLabel": "Faqja e internetit",
+    "note": "Të gjitha fushat përveç telefonit janë opsionale. Mund t'i plotësoni më vonë te cilësimet."
+  },
+  "settings": {
+    "title": "Cilësimet rajonale",
+    "subtitle": "Mund të ndryshohen më vonë te cilësimet e studios",
+    "timezoneLabel": "Zona kohore",
+    "timezonePlaceholder": "Zgjidhni zonën kohore",
+    "languageLabel": "Gjuha",
+    "languagePlaceholder": "Gjuha",
+    "currencyLabel": "Monedha",
+    "currencyPlaceholder": "Monedha",
+    "dateFormatLabel": "Formati i datës",
+    "dateFormatPlaceholder": "Formati",
+    "firstDayLabel": "Dita e parë e javës",
+    "timezones": {
+      "UTC+3": "Moska, Minsku, Stambolli (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Tashkent, Jekaterinburg, Karaçi (UTC+5)",
+      "UTC+6": "Almaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Xhakarta (UTC+7)",
+      "UTC+8": "Irkutsk, Singapor, Pekin (UTC+8)",
+      "UTC+9": "Jakutsk, Tokio, Seul (UTC+9)",
+      "UTC+10": "Vladivostok, Sidnei (UTC+10)",
+      "UTC+11": "Magadan, Ishujt Solomon (UTC+11)",
+      "UTC+12": "Kamçatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Anxhelos, Vankuver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Çikago, Meksiko (UTC-6)",
+      "UTC-5": "Nju-Jork, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, Sao Paulo (UTC-3)",
+      "UTC-2": "Xhorxhia e Jugut (UTC-2)",
+      "UTC-1": "Azoret (UTC-1)",
+      "UTC+0": "Londra, Lisbona (UTC+0)",
+      "UTC+1": "Berlini, Parisi, Varshava (UTC+1)",
+      "UTC+2": "Kievi, Athina, Kajro (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubla",
+      "USD": "Dollari",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Grivna",
+      "GBP": "Sterlina",
+      "AED": "Dirhami",
+      "TRY": "Lira",
+      "CZK": "Korona çeke",
+      "PLN": "Zloti",
+      "HUF": "Forinti",
+      "RON": "Leu",
+      "BGN": "Leva",
+      "SEK": "Korona suedeze",
+      "NOK": "Korona norvegjeze",
+      "DKK": "Korona daneze",
+      "CHF": "Franga zvicerane",
+      "ISK": "Korona islandeze",
+      "RSD": "Dinari serb"
+    }
+  },
+  "schedule": {
+    "title": "Orari i punës",
+    "subtitle": "Vendosni ditët dhe orët kur punon studioja juaj",
+    "scheduleLabel": "Orari i studios",
+    "dayOff": "Ditë pushimi"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Emri i studios",
+    "clients": "Klientë",
+    "attendance": "Pjesëm.",
+    "studioCreated": "Studioja u krijua",
+    "chooseDirection": "Zgjidhni një drejtim",
+    "phoneLabel": "Telefoni",
+    "emailLabel": "Email",
+    "addressLabel": "Adresa",
+    "phonePlaceholder": "+355 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Rr. Kryesore 123",
+    "dayOff": "pushim"
+  }
+}

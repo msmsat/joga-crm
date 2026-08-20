@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Aggiungi il tuo numero di telefono",
+    "sub": "Il telefono è il secondo contatto del tuo account: serve a recuperare l'accesso e a ricevere le notifiche. Il numero dello studio non va bene qui — questo deve essere il tuo."
+  },
+  "buttons": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "saveChanges": "Salva le modifiche",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "create": "Crea",
+    "close": "Chiudi",
+    "send": "Invia",
+    "copy": "Copia",
+    "back": "Indietro",
+    "continue": "Continua",
+    "finish": "Completa",
+    "done": "Fatto, chiudi",
+    "saving": "Salvataggio…",
+    "saved": "Salvato!",
+    "upload": "Carica"
+  },
+  "validation": {
+    "required": "Campo obbligatorio",
+    "minLength": "Almeno {{n}} caratteri",
+    "email": "Email non valida",
+    "phone": "Telefono non valido",
+    "contactRequired": "Inserisci un telefono o un'email",
+    "min": "Deve essere almeno {{n}}",
+    "positive": "Deve essere maggiore di 0",
+    "checkingContact": "Verifica in corso…",
+    "emailTaken": "Questa email è già in uso",
+    "phoneTaken": "Questo numero di telefono è già in uso",
+    "emailInStudio": "Questa persona lavora già nel tuo studio",
+    "phoneInStudio": "Questa persona lavora già nel tuo studio",
+    "accountWillBeLinked": "Esiste già un account con questo contatto — verrà collegato al tuo studio"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Attivo",
+    "connected": "Collegato",
+    "inactive": "Non online",
+    "loading": "Caricamento...",
+    "notFound": "Non trovato",
+    "new": "NUOVO"
+  },
+  "fields": {
+    "fullName": "Nome completo",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "phone": "Telefono",
+    "email": "Email",
+    "photo": "Foto profilo",
+    "salary": "Compenso",
+    "schedule": "Turni",
+    "services": "Servizi",
+    "position": "Ruolo professionale",
+    "role": "Ruolo",
+    "status": "Stato",
+    "size": "Importo"
+  },
+  "days": {
+    "mon": "Lunedì",
+    "tue": "Martedì",
+    "wed": "Mercoledì",
+    "thu": "Giovedì",
+    "fri": "Venerdì",
+    "sat": "Sabato",
+    "sun": "Domenica",
+    "short": {
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Me",
+      "thu": "Gi",
+      "fri": "Ve",
+      "sat": "Sa",
+      "sun": "Do"
+    }
+  },
+  "salary": {
+    "fixed": "Fisso",
+    "percent": "% del fatturato",
+    "hourly": "Orario"
+  },
+  "toasts": {
+    "phoneCopied": "Telefono copiato",
+    "emailCopied": "Email copiata",
+    "copyFailed": "Copia non riuscita"
+  },
+  "errors": {
+    "403": "Accesso negato",
+    "404": "Non trovato",
+    "500": "Errore del server, riprova più tardi",
+    "network": "Nessuna connessione al server",
+    "unknown": "Qualcosa è andato storto",
+    "loadFailed": "Caricamento non riuscito",
+    "retry": "Riprova",
+    "invalid_bot_token": "Telegram ha rifiutato questo token — verifica che il bot esista",
+    "wa_payment_required": "Nessun metodo di pagamento. Senza una carta su WhatsApp Business, Meta non consegna nessuna notifica — apri le impostazioni del canale WhatsApp e aggiungi un pagamento",
+    "wa_verification_required": "La tua azienda non ha superato la verifica di Meta. Fino ad allora il numero resta limitato e non parte nulla — apri le impostazioni del canale WhatsApp per la procedura",
+    "wa_templates_pending": "I modelli non sono ancora approvati da Meta. Senza un modello approvato non puoi scrivere per primo a un cliente — attendi la fine della revisione, lo stato è nelle impostazioni del canale WhatsApp",
+    "checkout": {
+      "package_not_found": "Pacchetto non trovato",
+      "package_inactive": "Il pacchetto non è più in vendita",
+      "client_not_found": "Cliente non trovato",
+      "account_not_found": "Conto non trovato",
+      "card_unavailable": "Il pagamento con carta non è ancora disponibile",
+      "promo_expired": "Il codice promozionale non è più valido"
+    },
+    "billing": {
+      "tax_details_required": "Aggiungi il paese dello studio nei dati di fatturazione — senza non si può emettere la fattura",
+      "nothing_to_pay": "Non resta nulla da pagare sull'abbonamento attuale",
+      "stripe_not_configured": "I pagamenti non sono configurati sul server",
+      "stripe_error": "Il servizio di pagamento ha rifiutato la richiesta. Riprova",
+      "plan_not_paid": "Un piano superiore si attiva solo con il pagamento",
+      "renew_is_automatic": "L'abbonamento si rinnova automaticamente",
+      "vat_invalid": "Il VIES non riconosce questa partita IVA — controllala o salva senza",
+      "vat_unavailable": "Il registro VIES non risponde in questo momento — riprova più tardi o salva senza numero",
+      "vat_country_mismatch": "La partita IVA deve iniziare con il codice del paese selezionato",
+      "commission_unsettled": "Salda prima la commissione sulle vendite offline: premi \"Paga ora\" nel blocco della commissione. Una volta pagata quella fattura potrai passare a un piano fisso.",
+      "billing_profile_required": "Aggiungi i tuoi dati di fatturazione — la fattura della commissione viene intestata a quelli."
+    },
+    "loyalty": {
+      "cert_not_found": "Buono regalo non trovato",
+      "cert_used": "Il buono regalo è già stato usato oppure non è valido",
+      "cert_expired": "Il buono regalo è scaduto"
+    },
+    "notifications": {
+      "critical_locked": "Questa notifica non può essere disattivata",
+      "last_channel": "È necessario almeno un canale di invio",
+      "unknown_event": "Evento sconosciuto",
+      "not_personal": "Le impostazioni personali non modificano le notifiche obbligatorie"
+    },
+    "trial_already_used": "La prova gratuita non è più disponibile per questo studio."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Qualcosa è andato storto",
+    "description": "Questa pagina ha incontrato un errore. Prova a ricaricarla — il resto dell'app continua a funzionare.",
+    "reload": "Ricarica la pagina"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Profiliniz",
+    "sub": "Kişisel verileri ve oturumları yönetin"
+  },
+  "personalInfo": {
+    "heading": "Kişisel bilgiler",
+    "emailLocked": "E-posta hesabınızın kullanıcı adıdır ve burada değiştirilemez"
+  },
+  "security": {
+    "changePassword": "Şifre değiştir",
+    "logout": "Çıkış yap"
+  },
+  "accounts": {
+    "title": "Stüdyolarım",
+    "count_one": "{{count}} stüdyo",
+    "count_other": "{{count}} stüdyo",
+    "enter": "Aç",
+    "login": "Giriş yap",
+    "register": "Kayıt ol",
+    "addStudio": "Stüdyo ekle",
+    "addStudioSub": "Yeni bir çalışma alanı — sahibi siz olursunuz"
+  },
+  "session": {
+    "current": "Mevcut oturum",
+    "lastActive": "Aktif {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Kişisel bilgiler başarıyla güncellendi"
+  },
+  "otherAccount": {
+    "title": "Başka bir hesap",
+    "sub": "Başka biri olarak giriş yapmak bu tarayıcıdaki mevcut oturumu sonlandırır — normal girişle geri dönebilirsiniz.",
+    "recentTitle": "Daha önce giriş yaptınız",
+    "return": "Giriş yap",
+    "forget": "Hesabı unut"
+  }
+}

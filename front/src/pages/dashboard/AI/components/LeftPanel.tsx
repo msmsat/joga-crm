@@ -94,6 +94,9 @@ export default function LeftPanel({
   });
   const used = quota.data?.used ?? 0;
   const limit = quota.data?.limit ?? 0;
+  // Пробный запас: тариф его не поднимает, поэтому ни текста про месяц, ни
+  // ссылки на оплату — иначе владелец купит Business и упрётся в те же 150.
+  const trial = quota.data?.trial ?? false;
   const filled = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 100;
   const low = limit > 0 && limit - used <= limit * 0.1;
 
@@ -238,9 +241,9 @@ export default function LeftPanel({
           </div>
           {low && (
             <div className={styles.quotaHint}>
-              {t('quota.low')}{' '}
+              {trial ? t('quota.trialLow') : t('quota.low')}{' '}
               {/* Тариф — зона владельца: остальным ролям только текст, без ссылки. */}
-              {isOwner && (
+              {isOwner && !trial && (
                 <button className={styles.quotaLink} onClick={() => navigate('/dashboard/billing')}>
                   {t('quota.upgrade')}
                 </button>

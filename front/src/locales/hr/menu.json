@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Nadzorna ploča",
+    "staff": "Osoblje",
+    "catalog": "Katalog",
+    "clients": "Klijenti",
+    "reports": "Izvještaji",
+    "booking": "Online rezervacije",
+    "finances": "Financije",
+    "notifications": "Obavijesti",
+    "loyalty": "Vjernost",
+    "ai": "Velora AI",
+    "settings": "Postavke",
+    "billing": "Paket i plaćanje",
+    "journal": "Dnevnik",
+    "profile": "Profil",
+    "more": "Više"
+  },
+  "subtitles": {
+    "dashboard": "Dobrodošli u Velora CRM",
+    "staff": "Upravljanje timom",
+    "catalog": "Poslovnice, dvorane i usluge",
+    "clients": "Baza klijenata studija",
+    "reports": "Analitika i statistika",
+    "booking": "Upravljanje kanalima rezervacija",
+    "finances": "Računi, transakcije, dokumenti",
+    "notifications": "Kanali i vrste obavijesti",
+    "loyalty": "Programi i kartice za klijente",
+    "ai": "Pametni asistent i automatski odgovori",
+    "settings": "Konfiguracija sustava",
+    "billing": "Upravljanje pretplatom",
+    "journal": "Raspored termina",
+    "profile": "Račun i postavke"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Kreiraj"
+  },
+  "userMenu": {
+    "logout": "Odjava",
+    "studios": "Moji studiji"
+  },
+  "tooltips": {
+    "studioName": "Vaš studio: {{name}}",
+    "openProfile": "Otvori profil",
+    "openAccountMenu": "Izbornik računa"
+  },
+  "sidebar": {
+    "expand": "Proširi izbornik",
+    "collapse": "Sklopi izbornik"
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "toolbar": {
+    "today": "Днес",
+    "trainers": "Треньори",
+    "halls": "Зали",
+    "day": "Ден",
+    "week": "Седмица"
+  },
+  "daySummary": {
+    "classesToday": "занятия днес",
+    "clientBookings": "записвания на клиенти",
+    "avgLoad": "средна заетост",
+    "trainersActive": "треньори на работа",
+    "gridStep": "Стъпка на мрежата",
+    "minuteShort": "м",
+    "minutesShort": "мин",
+    "undo": "Отмени: {{label}}",
+    "redo": "Повтори: {{label}}",
+    "nothingToUndo": "Няма какво да се отмени",
+    "nothingToRedo": "Няма какво да се повтори"
+  },
+  "newBooking": {
+    "title": "Ново занятие",
+    "slotTime": "Час на слота",
+    "service": "Услуга",
+    "servicePlaceholder": "Изберете услуга",
+    "namePlaceholder": "Напр. Reformer Pilates",
+    "location": "Място / зала",
+    "start": "Начало",
+    "end": "Край",
+    "groupLimit": "Лимит на групата",
+    "maxSpots": "Макс. места",
+    "assignTrainer": "Назначи треньор",
+    "cancel": "Отказ",
+    "create": "Създай занятие",
+    "errors": {
+      "selectService": "Изберете услуга",
+      "range": "От 1 до 50",
+      "endAfterStart": "Краят трябва да е след началото"
+    },
+    "createServiceConfirm": {
+      "title": "Да се създаде ли услуга?",
+      "message": "Не намирате нужната услуга? Създайте я в Каталога.",
+      "confirm": "Към Каталога"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Потвърдено",
+    "pending": "Чака потвърждение",
+    "cancelled": "Отменено",
+    "spotsTaken": "заети места",
+    "fillRate": "Запълване",
+    "booked": "Записан",
+    "attended": "Присъства",
+    "markAttended": "Отбележи присъствие",
+    "awaitingConfirmation": "Чака потвърждение",
+    "trialLesson": "Пробно",
+    "unpaid": "Неплатено · {{amount}}",
+    "acceptPayment": "Приеми плащане",
+    "payCash": "В брой",
+    "payTransfer": "Превод",
+    "payLater": "Без плащане",
+    "confirmBooking": "Потвърди записването",
+    "rejectBooking": "Откажи заявката",
+    "removeFromLesson": "Премахни от занятието",
+    "add": "Добави",
+    "addClient": "Добави клиент",
+    "edit": "Редактирай",
+    "editLesson": "Редактирай занятието",
+    "deleteLesson": "Изтрий занятието",
+    "cancel": "Отказ",
+    "save": "Запази",
+    "lessonTitle": "Заглавие на занятието",
+    "untitled": "Без заглавие",
+    "from": "От",
+    "to": "До",
+    "searchPlaceholder": "Търсене по име или телефон...",
+    "noClientsFound": "Няма намерени клиенти",
+    "noEligibleClients": "Няма клиенти с достъп до това занятие",
+    "visitsCount_one": "{{count}} посещение",
+    "visitsCount_other": "{{count}} посещения",
+    "errors": {
+      "selectService": "Изберете услуга",
+      "range": "От 1 до 50",
+      "minBooked": "{{count}} вече са записани — по-малко не може",
+      "endAfterStart": "Краят трябва да е след началото"
+    },
+    "createServiceConfirm": {
+      "title": "Да се създаде ли услуга?",
+      "message": "Не намирате нужната услуга? Създайте я в Каталога.",
+      "confirm": "Към Каталога"
+    }
+  },
+  "addClientModal": {
+    "title": "Добави клиент",
+    "searchPlaceholder": "Търсене по име или телефон...",
+    "noClientsFound": "Няма намерени клиенти",
+    "chooseFromList": "Изберете клиенти от списъка",
+    "selectedCount_one": "Избран: {{count}} клиент",
+    "selectedCount_other": "Избрани: {{count}} клиенти",
+    "cancel": "Отказ",
+    "add": "Добави"
+  },
+  "rightPanel": {
+    "halls": "Зали",
+    "load": "Заетост",
+    "upcoming": "Предстоящи"
+  },
+  "grid": {
+    "classesShort": "зан.",
+    "peopleShort": "д.",
+    "loadPercent": "Заетост: {{percent}}%",
+    "classes": "занятия",
+    "classesToday": "занятия днес",
+    "newLessonPreview": "Ново занятие",
+    "cancelled": "Отменено",
+    "noTrainers": "Няма треньори",
+    "noHalls": "Няма зали"
+  },
+  "createService": "+ Създай услуга",
+  "invalidDateFormat": "Невалиден формат на датата",
+  "toasts": {
+    "lessonMoved": "Занятието е преместено",
+    "endTimeChanged": "Часът на край е променен",
+    "startTimeChanged": "Часът на начало е променен",
+    "attendanceMarked": "Присъствието е отбелязано",
+    "paymentAccepted": "Плащането е прието",
+    "bookingConfirmed": "Записването е потвърдено",
+    "clientRemoved": "Клиентът е премахнат от занятието",
+    "lessonUpdated": "Занятието е обновено",
+    "lessonAdded": "Занятието е добавено",
+    "selectTrainer": "Изберете треньор",
+    "alreadyCancelled": "Занятието вече е отменено",
+    "lessonCancelled": "Занятието е отменено",
+    "noPermission": "Недостатъчни права за промяна на графика",
+    "undoLabel": "Отменено: {{label}}",
+    "redoLabel": "Повторено: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Записан: {{count}} клиент",
+    "clientsBooked_other": "Записани: {{count}} клиенти",
+    "clientsBookedPartial": "Записани {{success}} от {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "премахване на клиент",
+      "moveLesson": "преместване на занятие",
+      "createLesson": "създаване на занятие",
+      "bookClient": "записване на клиент",
+      "bookClients": "записване на клиенти ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Зареждането не бе успешно",
+    "retry": "Опитай пак"
+  },
+  "cancelBookingConfirm": {
+    "title": "Да се отмени ли занятието?",
+    "message_one": "{{count}} клиент ще получи известие за отмяна.",
+    "message_other": "{{count}} клиенти ще получат известие за отмяна.",
+    "confirm": "Отмени занятието"
+  }
+}

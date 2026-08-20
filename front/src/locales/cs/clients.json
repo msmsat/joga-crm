@@ -1,0 +1,422 @@
+{
+  "categories": {
+    "all": "Všichni",
+    "vip": "VIP",
+    "active": "Aktivní",
+    "new": "Noví",
+    "has_subscription": "S permanentkou",
+    "inactive": "Neaktivní",
+    "frozen": "Zmrazení",
+    "birthday": "Narozeniny"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Kompletní seznam klientů studia, bez filtru podle statusu."
+    },
+    "vip": {
+      "text": "Úspěšné platby v součtu 50 000+ nebo 30+ návštěv. VIP lze také připnout ručně v kartě klienta — ruční připnutí platí bez ohledu na částky."
+    },
+    "active": {
+      "text": "Alespoň jedna návštěva za posledních 60 dní. Vychází z docházky zapsané v rozvrhu — status se aktualizuje sám, ručně ho nastavovat nemusíte."
+    },
+    "new": {
+      "text": "Prvních 15 dní od data registrace — ať už byl klient přidán ručně, nebo přišel přes online rezervaci. 16. den se automaticky přesune mezi Aktivní nebo Neaktivní."
+    },
+    "has_subscription": {
+      "text": "Má živou permanentku: nevypršela, není zmrazená, zbývají lekce. Aktualizuje se hned při nákupu, při každé využité lekci i při vypršení."
+    },
+    "inactive": {
+      "text": "Za posledních 60 dní žádná návštěva — nebo nikdy nepřišel a od registrace uplynulo víc než 15 dní."
+    },
+    "frozen": {
+      "text": "Zmrazení tlačítkem v kartě klienta — jediný status nastavovaný ručně. Po rozmrazení se klient vrátí ke svému automatickému statusu."
+    },
+    "birthday": {
+      "text": "Kdo má dnes narozeniny — shoduje se den a měsíc, rok se ignoruje. Seznam se každý den obnovuje automaticky."
+    }
+  },
+  "status": {
+    "active": "Aktivní",
+    "vip": "VIP",
+    "new": "Nový",
+    "inactive": "Neaktivní",
+    "frozen": "Zmrazený"
+  },
+  "filtersGuide": {
+    "trigger": "O filtrech",
+    "title": "Filtry klientů",
+    "subtitle": "Jak se počítá každá kategorie. Kliknutím na kartu filtr použijete, nebo změňte prahovou hodnotu — statusy se ihned přepočítají.",
+    "close": "Zavřít",
+    "rule": {
+      "new_client_days": "Nový po dobu",
+      "active_within_days": "Návštěva do",
+      "vip_min_spent": "Utraceno od",
+      "vip_min_visits": "nebo návštěv"
+    },
+    "unit": {
+      "days": "dní",
+      "money": "",
+      "visits": "návštěv"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Hledat klienta...",
+    "addClient": "Přidat klienta"
+  },
+  "table": {
+    "visits": "návštěv",
+    "frozenBadge": "❄ zmrazeno",
+    "totalSpent": "Celkem utraceno",
+    "subscription": "Permanentka",
+    "of": "z",
+    "noSubscription": "Bez permanentky"
+  },
+  "loadMore": "Načíst další",
+  "loading": "Načítám…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Události",
+      "notes": "Poznámky",
+      "wallet": "Nákupy"
+    },
+    "actions": {
+      "book": "Rezervovat",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Klikněte pro úpravu",
+    "since": "od {{date}}",
+    "contacts": {
+      "title": "Kontakty",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Datum narození",
+      "city": "Město",
+      "copyHint": " · klikněte pro zkopírování"
+    },
+    "debt": "{{amount}} nezaplaceno za lekce — přijměte platbu v Rozvrhu",
+    "stats": {
+      "visits": "Návštěvy",
+      "spent": "Utraceno",
+      "subscription": "Permanentka"
+    },
+    "loyalty": {
+      "points": "bodů",
+      "level": "Úroveň {{tier}}",
+      "toNext": "Do další úrovně: {{points}} bodů",
+      "multiplier": "Násobitel bodů ×{{value}}",
+      "worth": "Při platbě má hodnotu {{amount}}",
+      "toNextLevel": "Ještě {{amount}} do úrovně {{level}}",
+      "pointValue": "1 bod = {{amount}}",
+      "nextPointValue": "na úrovni {{level}} — {{amount}}",
+      "noBonus": "Tato úroveň hodnotu bodu nemění"
+    },
+    "referral": {
+      "title": "Pozvat přítele",
+      "copy": "Kopírovat"
+    },
+    "abonement": {
+      "title": "Permanentka",
+      "lessons": "{{remaining}}/{{total}} lekcí",
+      "noSubscription": "Žádná aktivní permanentka",
+      "noSubscriptionWarning": "Klient nemá permanentku — nabídněte mu ji",
+      "lowWarning": "Zbývá málo lekcí — nabídněte obnovení",
+      "finishedWarning": "Nezbývají žádné lekce — nabídněte obnovení",
+      "remind": "Připomenout klientovi",
+      "reminderSent": "Připomínka odeslána klientovi"
+    },
+    "products": {
+      "single": "jednorázově",
+      "pending": "ve frontě",
+      "frozen": "zmrazeno",
+      "until": "Platí do {{date}}",
+      "startsOnFirstVisit": "Platnost začíná první lekcí"
+    },
+    "wallet": {
+      "buy": "Koupit",
+      "active": "Aktivní",
+      "archived": "Archiv",
+      "singles": "Jednorázové vstupy",
+      "subscriptions": "Permanentky",
+      "noSingles": "Zatím žádné jednorázové vstupy",
+      "emptyActive": "Žádné aktivní produkty",
+      "emptyArchived": "Žádné archivované produkty",
+      "emptyCatalog": "Toto studio zatím nemá žádné permanentky",
+      "lessons": "{{remaining}}/{{total}} lekcí",
+      "lessonsCount": "{{count}} lekcí",
+      "perVisit": "Za jeden vstup",
+      "until": "do {{date}}",
+      "frozenBadge": "Zmrazeno",
+      "loadFailed": "Peněženku se nepodařilo načíst",
+      "back": "← Zpět",
+      "catalogTitle": "Katalog",
+      "showAll": "Vše",
+      "posTitle": "Pokladna",
+      "promoLabel": "Promo kód",
+      "promoPlaceholder": "Zadejte promo kód",
+      "promoInvalid": "Promo kód není platný",
+      "useBonuses": "Uplatnit bonusy ({{count}})",
+      "useDeposit": "Zaplatit z vkladu ({{amount}})",
+      "certLabel": "Kód certifikátu",
+      "certPlaceholder": "Zadejte kód certifikátu",
+      "certApplied": "Certifikát",
+      "depositApplied": "Vklad",
+      "base": "Základní cena",
+      "discount": "Sleva",
+      "bonuses": "Bonusy",
+      "bonusesSpent": "Bonusy ({{count}} b.)",
+      "total": "Celkem",
+      "cash": "Hotovost",
+      "card": "Karta",
+      "cardStripe": "Platby kartou probíhají na stránce Stripe a chodí přímo na účet studia. Nastavte to ve Financích → Online platby.",
+      "offlineLocked": "Platby v hotovosti jsou dostupné od tarifu Kombi výš",
+      "payByCard": "Zaplatit kartou",
+      "confirmPay": "Potvrdit platbu",
+      "confirmPayCovered": "Potvrdit (již zaplaceno)",
+      "confirmTitle": "Potvrdit přijetí platby?",
+      "confirmMessage": "Zaznamená se příjem {{amount}} a klient dostane produkt.",
+      "confirmMessageCard": "Otevře se platební formulář Stripe na {{amount}}. Produkt se přidělí a příjem zaznamená po úspěšné platbě.",
+      "payToStudio": "Platba přichází na účet studia",
+      "payConfirming": "Ověřuji platbu…",
+      "close": "Zavřít",
+      "confirmMessageCovered": "Platba je plně pokryta vkladem/certifikátem. Produkt bude klientovi přidělen.",
+      "paySuccess": "Platba zaznamenána",
+      "payCancelled": "Platba zrušena — nic se nestrhlo",
+      "payNotCompleted": "Stripe platbu zatím nepotvrdil. Pokud byla karta stržena, obnovte za minutu.",
+      "payNotApplied": "Karta byla stržena, ale prodej se nepodařilo zaznamenat: změnily se podmínky (certifikát, promo kód nebo balíček). Zaznamenejte prodej ručně nebo vraťte peníze ve Stripe.",
+      "transfer": "Převést",
+      "transferTitle": "Převod permanentky",
+      "transferSearchLabel": "Převést na",
+      "transferSearchPlaceholder": "Jméno nebo telefon klienta",
+      "transferSelectPlaceholder": "Vyberte klienta",
+      "transferConfirm": "Převést",
+      "transferSuccess": "Permanentka převedena"
+    },
+    "offers": {
+      "title": "Osobní sleva",
+      "empty": "Žádné aktivní slevy",
+      "grant": "Udělit slevu",
+      "cancel": "Zrušit",
+      "valuePercent": "{{value}} %",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "do {{date}}",
+      "noExpiry": "bez omezení",
+      "scopeRenewal": "na obnovení",
+      "grantTitle": "Udělit osobní slevu",
+      "grantValue": "Výše slevy",
+      "grantType": {
+        "percent": "Procenta (%)",
+        "amount": "Částka (₽)"
+      },
+      "grantValidUntil": "Platí do",
+      "grantSubmit": "Udělit",
+      "cancelConfirmTitle": "Zrušit slevu?",
+      "cancelConfirmMessage": "Klient už tuto nabídku nebude moci využít.",
+      "toasts": {
+        "granted": "Sleva udělena",
+        "cancelled": "Sleva zrušena",
+        "loadFailed": "Slevy se nepodařilo načíst"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivita (3 měs.)",
+      "clickForDetails": "Klikněte pro detail",
+      "detailedTitle": "Podrobná aktivita",
+      "periods": {
+        "month3": "3 měs.",
+        "month6": "6 měs."
+      },
+      "visitsInPeriod": "Návštěvy za období",
+      "visitsTooltip": "{{count}} návštěv",
+      "emptyState": "V tomto období žádné návštěvy",
+      "insightTitle": "Průměrná docházka",
+      "insightBody": "Za zvolené období průměrně {{avg}} návštěv měsíčně.",
+      "months": {
+        "jan": "Led",
+        "feb": "Úno",
+        "mar": "Bře",
+        "apr": "Dub",
+        "may": "Kvě",
+        "jun": "Čvn",
+        "jul": "Čvc",
+        "aug": "Srp",
+        "sep": "Zář",
+        "oct": "Říj",
+        "nov": "Lis",
+        "dec": "Pro"
+      }
+    },
+    "tags": {
+      "title": "Štítky",
+      "add": "Přidat",
+      "close": "Zavřít",
+      "customPlaceholder": "Vlastní štítek + Enter..."
+    },
+    "danger": {
+      "freeze": "Zmrazit",
+      "unfreeze": "Rozmrazit",
+      "freezeDisabledHint": "Zmrazení je vypnuté v Katalog → Nastavení permanentek",
+      "delete": "Smazat"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Vše",
+        "payment": "Platby",
+        "visit": "Návštěvy",
+        "booking": "Rezervace",
+        "cancel": "Zrušení",
+        "bonus": "Bonusy",
+        "freeze": "Zmrazení"
+      },
+      "empty": "Žádné události"
+    },
+    "notes": {
+      "title": "Poznámky administrátora",
+      "prefix": "Poznámka · {{date}}",
+      "save": "Uložit",
+      "cancel": "Zrušit",
+      "addPlaceholder": "Zadejte poznámku...",
+      "add": "Přidat poznámku",
+      "justNow": "právě teď",
+      "deleteTitle": "Smazat poznámku?",
+      "deleteMessage": "Tuto poznámku nelze obnovit."
+    },
+    "bookingPanel": {
+      "title": "Rychlá rezervace",
+      "today": "Dnes",
+      "noLessons": "Tento den nejsou žádné lekce",
+      "full": "Žádná místa",
+      "confirm": "Rezervovat →",
+      "noSubscription": "Klient nemá dostupnou permanentku pro rezervaci"
+    },
+    "bonusPanel": {
+      "title": "Udělit bonus"
+    },
+    "toasts": {
+      "noPhone": "Klient nemá telefonní číslo",
+      "copied": "Úspěšně zkopírováno",
+      "bookingCreated": "Rezervace vytvořena",
+      "bookingFailed": "Rezervace se nezdařila",
+      "bonusFailed": "Body se nepodařilo udělit",
+      "bonusApplied": "Bonus udělen: {{label}}",
+      "clientAdded": "Klient přidán"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 bodů",
+        "description": "Přidat na věrnostní účet"
+      },
+      "p500": {
+        "label": "+500 bodů",
+        "description": "Přidat na věrnostní účet"
+      },
+      "p1000": {
+        "label": "+1000 bodů",
+        "description": "Přidat na věrnostní účet"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Zkušební",
+      "VIP",
+      "Doporučení",
+      "Online",
+      "Skupinové",
+      "Osobní"
+    ]
+  },
+  "addModal": {
+    "title": "Nový klient",
+    "cancel": "Zrušit",
+    "back": "← Zpět",
+    "continue": "Pokračovat →",
+    "submit": "Přidat klienta ✓",
+    "stepCounter": "Krok {{current}} z {{total}}",
+    "trustSignal": "Data jsou chráněna a vidí je jen administrátoři",
+    "steps": {
+      "1": {
+        "title": "Osobní údaje",
+        "sub": "Zadejte kontaktní údaje klienta"
+      },
+      "2": {
+        "title": "Údaje profilu",
+        "sub": "Doplňující informace (nepovinné)"
+      },
+      "3": {
+        "title": "Permanentka",
+        "sub": "Vyberte typ permanentky a přidejte poznámku"
+      },
+      "4": {
+        "title": "Hotovo!",
+        "sub": "Zkontrolujte údaje a přidejte klienta"
+      }
+    },
+    "step1": {
+      "previewLabel": "Nový klient · Náhled",
+      "name": "Celé jméno *",
+      "namePlaceholder": "Jan Novák",
+      "phone": "Telefon",
+      "phonePlaceholder": "+420 601 000 000",
+      "email": "E-mail",
+      "emailPlaceholder": "klient@example.com"
+    },
+    "step2": {
+      "bday": "Datum narození",
+      "bdayPlaceholder": "12. dubna 1990",
+      "city": "Město",
+      "cityPlaceholder": "Praha",
+      "tags": "Štítky",
+      "tagsPlaceholder": "Pilates, VIP, Rehabilitace... (Enter)",
+      "tagsHint": "Štítek přidáte stiskem Enter",
+      "inviteCode": "Kód pozvánky od doporučitele",
+      "inviteCodePlaceholder": "Nepovinné",
+      "inviteCodeHint": "Pokud ho zadáte, bonus dostanete oba"
+    },
+    "step3": {
+      "classCount": "Permanentka",
+      "classesUnit": "lekcí",
+      "classesCount": "{{count}} lekcí",
+      "selected": "Vybráno",
+      "noPackage": "Bez permanentky",
+      "noPackages": "Toto studio zatím nemá žádné permanentky",
+      "noPackagesLink": "Vytvořte balíčky v Katalogu →",
+      "alreadyPaid": "Zaplatil už klient tuto permanentku?",
+      "yes": "Ano",
+      "no": "Ne",
+      "note": "Poznámka",
+      "notePlaceholder": "Zvláštní přání, kontraindikace, preference..."
+    },
+    "step4": {
+      "readyTitle": "Údaje jsou vyplněné!",
+      "readySub": "Zkontrolujte informace a potvrďte přidání",
+      "newClient": "Nový klient",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Datum narození",
+        "city": "Město",
+        "subscription": "Permanentka",
+        "tags": "Štítky"
+      },
+      "subscriptionValue": "{{count}} lekcí",
+      "smsTitle": "Poslat SMS pozdrav",
+      "smsSub": "Klient dostane uvítací zprávu"
+    },
+    "errors": {
+      "name": "Zadejte jméno (alespoň 2 znaky)",
+      "phone": "Neplatné telefonní číslo",
+      "email": "Neplatný e-mail",
+      "city": "Zadejte město"
+    }
+  },
+  "deleteModal": {
+    "title": "Smazat klienta?",
+    "body": "Chystáte se smazat klienta",
+    "warning": "Tuto akci nelze vrátit zpět.",
+    "cancel": "Zrušit",
+    "confirm": "Smazat",
+    "success": "Klient smazán"
+  }
+}

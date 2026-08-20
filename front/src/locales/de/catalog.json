@@ -1,0 +1,305 @@
+{
+  "tabs": {
+    "studios": "Studios",
+    "services": "Leistungen",
+    "subscriptions": "Abos"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Über das Studio",
+          "sub": "Name und Kontaktdaten",
+          "trust": "Ihre Daten sind verschlüsselt und werden nie an Dritte weitergegeben"
+        },
+        "location": {
+          "title": "Standort",
+          "sub": "Wo befindet sich diese Filiale?",
+          "trust": "Die Adresse wird im Kalender und auf Karten verwendet"
+        },
+        "photo": {
+          "title": "Foto",
+          "sub": "Studio-Titelbild — optional",
+          "trust": "Sie können es später in den Filialeinstellungen hinzufügen"
+        }
+      },
+      "stepCounter": "Schritt {{current}} von {{total}}",
+      "step1": {
+        "heading": "Grunddaten",
+        "subheading": "Wie heißt das Studio und wie ist es erreichbar?",
+        "name": "Studioname *",
+        "namePlaceholder": "z. B. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-Mail *",
+        "contactHint": "Geben Sie Telefon oder E-Mail an — mindestens eines",
+        "noContacts": "Keine Kontakte angegeben",
+        "new": "NEU"
+      },
+      "step2": {
+        "heading": "Standort",
+        "subheading": "Geben Sie an, wo sich diese Filiale befindet",
+        "country": "Land",
+        "countryPlaceholder": "Deutschland",
+        "city": "Stadt *",
+        "cityPlaceholder": "Berlin",
+        "address": "Adresse *",
+        "addressPlaceholder": "Hauptstraße 12, Büro 301",
+        "noAddress": "Keine Adresse angegeben",
+        "groupHint": "Die Felder „Land“ und „Stadt“ dienen zur Gruppierung der Filialen in der Liste."
+      },
+      "step3": {
+        "heading": "Studiofoto",
+        "subheading": "Laden Sie ein Titelbild hoch — optional, kann übersprungen werden",
+        "uploadCta": "Zum Hochladen klicken",
+        "uploadHint": "JPG, PNG bis 10 MB",
+        "replace": "Ersetzen",
+        "remove": "Entfernen",
+        "previewAlt": "Vorschau",
+        "summary": "Zusammenfassung",
+        "uploadError": "Foto konnte nicht hochgeladen werden. Versuchen Sie eine andere Datei oder entfernen Sie es."
+      },
+      "summaryRows": {
+        "name": "Name",
+        "city": "Stadt",
+        "address": "Adresse"
+      },
+      "nextPhoto": "Weiter — Foto",
+      "submit": "Studio anlegen",
+      "skipPhoto": "Foto überspringen und anlegen",
+      "illus": {
+        "contacts": "Kontakte",
+        "newBranch": "Neue Filiale",
+        "city": "Stadt",
+        "newBranchStudio": "Neue Studiofiliale"
+      }
+    },
+    "editBranch": {
+      "title": "Filiale bearbeiten",
+      "name": "Filialname",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Land",
+      "countryPlaceholder": "Deutschland",
+      "city": "Stadt",
+      "cityPlaceholder": "Berlin",
+      "address": "Adresse",
+      "addressPlaceholder": "Hauptstraße 12",
+      "photo": "Filialfoto",
+      "contactHint": "Geben Sie Telefon oder E-Mail an",
+      "workingHours": "Öffnungszeiten"
+    },
+    "hall": {
+      "titleNew": "Neuer Saal",
+      "titleEdit": "Saal bearbeiten",
+      "name": "Saalname",
+      "namePlaceholder": "Saal A",
+      "capacity": "Kapazität",
+      "area": "Fläche, m²",
+      "hourlyRate": "Preis pro Stunde, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Ausstattung",
+      "equipmentPlaceholder": "Ausstattung hinzufügen",
+      "color": "Farbe",
+      "isOnline": "Online-Saal",
+      "photo": "Saalfoto",
+      "subtitle": "Ein Raum in der Filiale: Plätze, Ausstattung, Journalfarbe",
+      "previewTitle": "Saalvorschau",
+      "sectionBasic": "Grunddaten",
+      "sectionSpace": "Raum",
+      "sectionLook": "Darstellung",
+      "areaShort": "Fläche",
+      "hourlyRateShort": "Preis pro Stunde",
+      "statArea": "Fläche",
+      "statRate": "Preis / Stunde",
+      "isOnlineHint": "Kurse finden online statt — kein physischer Raum.",
+      "colorHint": "Die Kurse dieses Saals werden im Journal mit dieser Farbe hervorgehoben."
+    },
+    "service": {
+      "titleNew": "Neue Leistung",
+      "titleEdit": "Leistung bearbeiten",
+      "name": "Name der Leistung",
+      "namePlaceholder": "Hatha Yoga",
+      "category": "Kategorie",
+      "type": "Art",
+      "typeGroup": "Gruppe",
+      "typeIndividual": "Einzel",
+      "price": "Preis, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Dauer, Min.",
+      "durationPlaceholder": "60",
+      "maxClients": "Max. Teilnehmer",
+      "maxClientsPlaceholder": "15",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Kurze Beschreibung der Leistung",
+      "color": "Farbe",
+      "subtitle": "Erscheint im Journal und in der Online-Buchung",
+      "previewTitle": "Journal-Vorschau",
+      "sectionBasic": "Grunddaten",
+      "sectionPricing": "Preis und Zeit",
+      "sectionLook": "Darstellung",
+      "priceShort": "Preis",
+      "durationShort": "Dauer",
+      "statSeats": "Plätze",
+      "colorHint": "Kurse werden im Journalraster mit dieser Farbe hervorgehoben."
+    },
+    "package": {
+      "titleNew": "Neues Paket",
+      "titleEdit": "Paket bearbeiten",
+      "name": "Paketname",
+      "namePlaceholder": "8 Kurse",
+      "classCount": "Anzahl der Kurse",
+      "classCountPlaceholder": "8",
+      "price": "Preis, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Preis pro Besuch",
+      "durationDays": "Gültig für, Tage",
+      "durationDaysPlaceholder": "60",
+      "services": "Leistungen",
+      "servicesHint": "Nichts ausgewählt — das Paket gilt für alle Kurse",
+      "isActive": "Im Verkauf",
+      "soldAsSubscription": "Im Tab „Abos“ anzeigen",
+      "soldAsSingle": "Im Tab „Einzelbesuche“ anzeigen",
+      "subtitle": "Ein Kurspaket, das Sie an Kunden verkaufen",
+      "previewTitle": "Karten-Vorschau",
+      "previewKind": "Karte",
+      "previewValid": "Gültig für",
+      "sectionBasic": "Grunddaten",
+      "sectionTerms": "Konditionen",
+      "sectionSale": "Verkauf",
+      "priceShort": "Paketpreis",
+      "statClasses": "Kurse",
+      "statDays": "Tage",
+      "statAll": "Alle",
+      "isActiveHint": "Kunden sehen dieses Paket und können es kaufen.",
+      "soldAsSubscriptionHint": "Andernfalls bleibt das Paket nur bei den Einzelbesuchen."
+    }
+  },
+  "studios": {
+    "title": "STUDIOS",
+    "addStudio": "Studio hinzufügen",
+    "addHall": "Saal hinzufügen",
+    "editBranch": "Filiale bearbeiten",
+    "deleteBranch": "Filiale löschen",
+    "infoTab": "Allgemeine Infos",
+    "hallsTitle": "Säle des Studios",
+    "hallCount_one": "{{count}} Saal",
+    "hallCount_other": "{{count}} Säle",
+    "stats": {
+      "halls": "Säle",
+      "totalSeats": "Plätze gesamt",
+      "fromPerHour": "Ab / Stunde"
+    },
+    "hall": {
+      "seats": "Plätze",
+      "schedule": "Öffnungszeiten",
+      "closed": "Geschlossen",
+      "stats": {
+        "seats": "Plätze",
+        "area": "Fläche",
+        "perHour": "Pro Stunde"
+      },
+      "equipment": "Ausstattung",
+      "actions": "Aktionen",
+      "edit": "Saal bearbeiten",
+      "delete": "Saal löschen"
+    },
+    "empty": {
+      "title": "Keine Studios",
+      "subtitle": "Fügen Sie Ihr erstes Studio hinzu"
+    },
+    "toasts": {
+      "created": "Studio angelegt",
+      "createError": "Studio konnte nicht angelegt werden",
+      "deleted": "Studio gelöscht",
+      "hallDeleted": "Saal gelöscht",
+      "saved": "Gespeichert",
+      "edit": "Bearbeiten: {{name}}"
+    },
+    "confirmDelete": "Filiale „{{name}}“ löschen? Das kann nicht rückgängig gemacht werden.",
+    "confirmDeleteTitle": "Filiale löschen?",
+    "confirmDeleteHall": "Saal „{{name}}“ löschen?",
+    "confirmDeleteHallTitle": "Saal löschen?"
+  },
+  "services": {
+    "title": "LEISTUNGEN",
+    "addService": "Leistung hinzufügen",
+    "types": {
+      "group": "Gruppe",
+      "individual": "Einzel",
+      "groupFull": " · Gruppe",
+      "individualFull": " · Einzeltraining"
+    },
+    "stats": {
+      "price": "Preis",
+      "duration": "Dauer",
+      "bookings": "Buchungen",
+      "revenue": "Umsatz"
+    },
+    "details": {
+      "description": "Beschreibung",
+      "details": "Details",
+      "minutes": "Minuten",
+      "upTo": "Bis zu {{count}} Pers.",
+      "personal": "Einzeln",
+      "bookingsPerMonth": "Buchungen in 30 Tagen",
+      "schedule": "Kursplan"
+    },
+    "empty": {
+      "title": "Keine Leistungen",
+      "subtitle": "Fügen Sie Ihre erste Leistung hinzu"
+    },
+    "toasts": {
+      "deleted": "Leistung gelöscht",
+      "deleteError": "Leistung konnte nicht gelöscht werden",
+      "saved": "Gespeichert",
+      "saveError": "Leistung konnte nicht gespeichert werden",
+      "edit": "Bearbeiten: {{name}}"
+    },
+    "confirmDelete": "Leistung „{{name}}“ löschen?",
+    "confirmDeleteTitle": "Leistung löschen?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "individual": "Einzeltraining",
+      "other": "Ohne Kategorie"
+    }
+  },
+  "subscriptions": {
+    "title": "ABOS",
+    "addPackage": "Paket hinzufügen",
+    "card": {
+      "classCount_one": "{{count}} Kurs",
+      "classCount_other": "{{count}} Kurse",
+      "duration": "{{count}} Tage",
+      "allServices": "Alle Kurse",
+      "serviceCount_one": "{{count}} Leistung",
+      "serviceCount_other": "{{count}} Leistungen",
+      "inactiveBadge": "Nicht im Verkauf"
+    },
+    "settings": {
+      "title": "Programmeinstellungen",
+      "allowFreeze": "Abo einfrieren",
+      "allowTransfer": "Übertragung auf einen anderen Kunden",
+      "autoRenewal": "Automatische Verlängerung aus dem Kundenguthaben"
+    },
+    "empty": {
+      "title": "Noch keine Pakete",
+      "cta": "Paket erstellen"
+    },
+    "toasts": {
+      "created": "Paket erstellt",
+      "saved": "Gespeichert",
+      "saveError": "Paket konnte nicht gespeichert werden",
+      "deactivated": "Paket aus dem Verkauf genommen",
+      "restored": "Paket wieder im Verkauf",
+      "actionError": "Aktion konnte nicht abgeschlossen werden"
+    },
+    "deactivate": "Aus dem Verkauf nehmen",
+    "restore": "Wieder verkaufen",
+    "confirmDeactivateTitle": "Dieses Paket aus dem Verkauf nehmen?",
+    "confirmDeactivate": "Bereits verkaufte Abos bleiben gültig."
+  }
+}

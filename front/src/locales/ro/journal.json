@@ -1,0 +1,164 @@
+{
+  "toolbar": {
+    "today": "Azi",
+    "trainers": "Antrenori",
+    "halls": "Săli",
+    "day": "Zi",
+    "week": "Săptămână"
+  },
+  "daySummary": {
+    "classesToday": "ședințe azi",
+    "clientBookings": "rezervări ale clienților",
+    "avgLoad": "ocupare medie",
+    "trainersActive": "antrenori în tură",
+    "gridStep": "Pasul grilei",
+    "minuteShort": "m",
+    "minutesShort": "min",
+    "undo": "Anulează: {{label}}",
+    "redo": "Refă: {{label}}",
+    "nothingToUndo": "Nu e nimic de anulat",
+    "nothingToRedo": "Nu e nimic de refăcut"
+  },
+  "newBooking": {
+    "title": "Ședință nouă",
+    "slotTime": "Ora intervalului",
+    "service": "Serviciu",
+    "servicePlaceholder": "Alegeți un serviciu",
+    "namePlaceholder": "De ex. Reformer Pilates",
+    "location": "Locație / sală",
+    "start": "Început",
+    "end": "Sfârșit",
+    "groupLimit": "Limita grupei",
+    "maxSpots": "Locuri max.",
+    "assignTrainer": "Atribuie antrenor",
+    "cancel": "Anulează",
+    "create": "Creează ședința",
+    "errors": {
+      "selectService": "Alegeți un serviciu",
+      "range": "De la 1 la 50",
+      "endAfterStart": "Sfârșitul trebuie să fie după început"
+    },
+    "createServiceConfirm": {
+      "title": "Creați un serviciu?",
+      "message": "Nu găsiți serviciul dorit? Creați-l în Catalog.",
+      "confirm": "Mergi la Catalog"
+    }
+  },
+  "bookingPopup": {
+    "confirmed": "Confirmată",
+    "pending": "În așteptare",
+    "cancelled": "Anulată",
+    "spotsTaken": "locuri ocupate",
+    "fillRate": "Grad de ocupare",
+    "booked": "Înscris",
+    "attended": "A venit",
+    "markAttended": "Marchează prezența",
+    "awaitingConfirmation": "Așteaptă confirmarea",
+    "trialLesson": "De probă",
+    "unpaid": "Neplătită · {{amount}}",
+    "acceptPayment": "Încasează plata",
+    "payCash": "Numerar",
+    "payTransfer": "Transfer",
+    "payLater": "Fără plată",
+    "confirmBooking": "Confirmă rezervarea",
+    "rejectBooking": "Respinge cererea",
+    "removeFromLesson": "Scoate din ședință",
+    "add": "Adaugă",
+    "addClient": "Adaugă client",
+    "edit": "Editează",
+    "editLesson": "Editează ședința",
+    "deleteLesson": "Șterge ședința",
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "lessonTitle": "Titlul ședinței",
+    "untitled": "Fără titlu",
+    "from": "De la",
+    "to": "Până la",
+    "searchPlaceholder": "Caută după nume sau telefon...",
+    "noClientsFound": "Niciun client găsit",
+    "noEligibleClients": "Niciun client nu are acces la această ședință",
+    "visitsCount_one": "{{count}} vizită",
+    "visitsCount_few": "{{count}} vizite",
+    "visitsCount_other": "{{count}} de vizite",
+    "errors": {
+      "selectService": "Alegeți un serviciu",
+      "range": "De la 1 la 50",
+      "minBooked": "{{count}} sunt deja înscriși — mai jos nu se poate",
+      "endAfterStart": "Sfârșitul trebuie să fie după început"
+    },
+    "createServiceConfirm": {
+      "title": "Creați un serviciu?",
+      "message": "Nu găsiți serviciul dorit? Creați-l în Catalog.",
+      "confirm": "Mergi la Catalog"
+    }
+  },
+  "addClientModal": {
+    "title": "Adaugă client",
+    "searchPlaceholder": "Caută după nume sau telefon...",
+    "noClientsFound": "Niciun client găsit",
+    "chooseFromList": "Alegeți clienți din listă",
+    "selectedCount_one": "Selectat: {{count}} client",
+    "selectedCount_few": "Selectați: {{count}} clienți",
+    "selectedCount_other": "Selectați: {{count}} de clienți",
+    "cancel": "Anulează",
+    "add": "Adaugă"
+  },
+  "rightPanel": {
+    "halls": "Săli",
+    "load": "Ocupare",
+    "upcoming": "Urmează"
+  },
+  "grid": {
+    "classesShort": "șed.",
+    "peopleShort": "pers.",
+    "loadPercent": "Ocupare: {{percent}}%",
+    "classes": "ședințe",
+    "classesToday": "ședințe azi",
+    "newLessonPreview": "Ședință nouă",
+    "cancelled": "Anulată",
+    "noTrainers": "Fără antrenori",
+    "noHalls": "Fără săli"
+  },
+  "createService": "+ Creează serviciu",
+  "invalidDateFormat": "Format de dată invalid",
+  "toasts": {
+    "lessonMoved": "Ședința a fost mutată",
+    "endTimeChanged": "Ora de sfârșit a fost schimbată",
+    "startTimeChanged": "Ora de început a fost schimbată",
+    "attendanceMarked": "Prezența a fost marcată",
+    "paymentAccepted": "Plata a fost încasată",
+    "bookingConfirmed": "Rezervarea a fost confirmată",
+    "clientRemoved": "Clientul a fost scos din ședință",
+    "lessonUpdated": "Ședința a fost actualizată",
+    "lessonAdded": "Ședința a fost adăugată",
+    "selectTrainer": "Alegeți un antrenor",
+    "alreadyCancelled": "Ședința este deja anulată",
+    "lessonCancelled": "Ședința a fost anulată",
+    "noPermission": "Drepturi insuficiente pentru a modifica programul",
+    "undoLabel": "Anulat: {{label}}",
+    "redoLabel": "Refăcut: {{label}}",
+    "undoRedoError": "{{label}}: {{message}}",
+    "clientsBooked_one": "Înscris: {{count}} client",
+    "clientsBooked_few": "Înscriși: {{count}} clienți",
+    "clientsBooked_other": "Înscriși: {{count}} de clienți",
+    "clientsBookedPartial": "Înscriși {{success}} din {{total}}: {{error}}",
+    "historyLabels": {
+      "removeClient": "scoaterea unui client",
+      "moveLesson": "mutarea ședinței",
+      "createLesson": "crearea ședinței",
+      "bookClient": "înscrierea unui client",
+      "bookClients": "înscrierea clienților ({{count}})"
+    }
+  },
+  "loadError": {
+    "title": "Încărcarea a eșuat",
+    "retry": "Reîncearcă"
+  },
+  "cancelBookingConfirm": {
+    "title": "Anulați ședința?",
+    "message_one": "{{count}} client va primi notificare de anulare.",
+    "message_few": "{{count}} clienți vor primi notificare de anulare.",
+    "message_other": "{{count}} de clienți vor primi notificare de anulare.",
+    "confirm": "Anulează ședința"
+  }
+}

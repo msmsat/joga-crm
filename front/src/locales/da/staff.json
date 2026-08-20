@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "I alt i teamet",
+    "onShift": "På vagt",
+    "trainers": "Undervisere",
+    "administrators": "Administratorer",
+    "onlineNow": "{{count}} online nu"
+  },
+  "toolbar": {
+    "teamTitle": "Team · {{count}}",
+    "addEmployee": "Tilføj medarbejder",
+    "searchPlaceholder": "Søg...",
+    "allGroup": "Alle"
+  },
+  "profile": {
+    "online": "· online",
+    "offline": "· offline",
+    "fullAccess": "Fuld adgang",
+    "ownerAccess": "Ejeren har adgang til alle systemets moduler",
+    "loadBar": "Underviserens belastning",
+    "weekSchedule": "Ugeplan",
+    "todaySchedule": "Dagens plan",
+    "minutesSuffix": "min",
+    "clientsSuffix": "kunder",
+    "hall": "Sal",
+    "staffHalls": "Medarbejderens sale",
+    "noName": "Navn er ikke angivet",
+    "noRole": "Ingen rolle",
+    "addEventStub": "Formular til at tilføje begivenhed..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Omsætning",
+      "rating": "Bedømmelse",
+      "bookings": "Bookinger",
+      "load": "Belastning"
+    },
+    "admin": {
+      "bookings": "Bookinger",
+      "attended": "Behandlet",
+      "revenue": "Kasse",
+      "load": "Belastning"
+    },
+    "owner": {
+      "revenue": "Omsætning",
+      "attended": "Besøg",
+      "load": "Belastning",
+      "staff": "Medarbejdere"
+    },
+    "default": {
+      "bookings": "Bookinger",
+      "attended": "Besøg",
+      "revenue": "Omsætning",
+      "load": "Belastning"
+    }
+  },
+  "schedule": {
+    "week": "Uge",
+    "month": "Måned",
+    "working": "Arbejdstid",
+    "free": "Ledig",
+    "busy": "Optaget",
+    "dayOff": "Fridag",
+    "syncHint": "Planen synkroniseres med bookingkalenderen og holdplanen.",
+    "workDaysInWeek": "{{count}} arbejdsdage om ugen",
+    "markWork": "Arbejder",
+    "markHint": "Vælg et mærke ovenfor, og klik så på en dag",
+    "prevMonth": "Forrige måned",
+    "nextMonth": "Næste måned",
+    "dayHasBookings": "Denne dag har allerede bookinger — den kan ikke være fridag",
+    "pastDayLocked": "Tidligere dage kan ikke ændres"
+  },
+  "permissions": {
+    "finance": "Økonomi",
+    "staff": "Medarbejdere",
+    "reports": "Rapporter",
+    "clients": "Kunder",
+    "settings": "Indstillinger"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "trainer": "Underviser",
+    "owner": "Ejer"
+  },
+  "deleteModal": {
+    "cancelLesson": "Aflys holdet?",
+    "dontAsk": "Spørg ikke igen ved sletning",
+    "cancelInvite": "Annuller tilmeldingen?",
+    "cancelInviteConfirm": "Annuller invitationen"
+  },
+  "toasts": {
+    "lessonCanceled": "Holdet er aflyst",
+    "errorCancel": "Fejl ved aflysning",
+    "employeeAdded": "Medarbejderen {{name}} er tilføjet",
+    "changesSaved": "Ændringerne er gemt",
+    "employeeDeleted": "Medarbejderen er slettet",
+    "errorDelete": "Fejl ved sletning",
+    "errorSave": "Ændringerne kunne ikke gemmes",
+    "emailCopied": "E-mail kopieret",
+    "phoneCopied": "Telefonnummer kopieret",
+    "inviteSent": "Invitationen er sendt til {{email}}",
+    "inviteResent": "Invitationen er sendt igen",
+    "inviteCancelled": "Invitationen er annulleret"
+  },
+  "addModal": {
+    "stepIndicator": "Trin {{current}} af {{total}}",
+    "stepCounter": "{{current}}/4 — tager omkring 2 minutter",
+    "nameFallback": "dem",
+    "employeeFallback": "Medarbejder",
+    "steps": {
+      "1": {
+        "title": "Om medarbejderen",
+        "sub": "Hvad hedder det nye teammedlem?",
+        "trust": "Medarbejderens data er beskyttet"
+      },
+      "2": {
+        "title": "Rolle og ydelser",
+        "sub": "Stilling og liste over ydelser",
+        "trust": "Rollen kan ændres når som helst"
+      },
+      "3": {
+        "title": "Vagtplan og løn",
+        "sub": "Hvornår arbejder de, og hvad tjener de?",
+        "trust": "Planen synkroniseres med kalenderen"
+      },
+      "4": {
+        "title": "Færdig!",
+        "sub": "Invitation sendt til {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Personlige oplysninger",
+      "sub": "Lad os starte med navn og kontaktoplysninger",
+      "namePlaceholder": "F.eks. Anna Jensen",
+      "emailLabel": "E-mailadresse",
+      "contactsNotSet": "Der er ikke angivet kontaktoplysninger",
+      "inviteHint": "Giv adgangskoden til medarbejderen personligt — den ryger aldrig i e-mailen. E-mailen indeholder kun linket, og uden adgangskoden åbner det ikke studiet.",
+      "errors": {
+        "name": "Navn er påkrævet",
+        "phone": "Ugyldigt telefonnummer",
+        "email": "Ugyldig e-mail",
+        "password": "Mindst 8 tegn, bogstaver og tal påkrævet",
+        "emailTaken": "Denne e-mail tilhører allerede en anden Velora-konto"
+      },
+      "passwordLabel": "Loginadgangskode til medarbejderen",
+      "passwordPlaceholder": "Mindst 8 tegn, bogstaver og tal"
+    },
+    "step2": {
+      "heading": "Rolle og ydelser",
+      "sub": "Vælg en stilling — ydelserne tilføjes automatisk",
+      "positionLabel": "Stilling *",
+      "positionPlaceholder": "Eller skriv en egen stilling...",
+      "addServicePlaceholder": "Tilføj ydelse — tryk Enter"
+    },
+    "step3": {
+      "heading": "Vagtplan og løn",
+      "sub": "Angiv arbejdsdage og aflønning",
+      "scheduleLabel": "Arbejdsplan",
+      "salaryLabel": "Løn (valgfrit)",
+      "salaryPlaceholder": "Indtast et tal",
+      "createAndInvite": "Opret og invitér"
+    },
+    "step4": {
+      "exclaim": "Perfekt!",
+      "added": "tilføjet",
+      "sub": "Invitationen er sendt. Medarbejderen kommer med i teamet, når den accepteres.",
+      "inviteLinkLabel": "Invitationslink",
+      "sendInviteLabel": "Send invitationen",
+      "inviteInfo": "Medarbejderen får e-mailen, følger linket og bekræfter invitationen med sin adgangskode — først da kommer de med i teamet og får adgang. Linket gælder i 7 dage. Adgangskoden står ikke i e-mailen — giv den personligt.",
+      "emailSentTitle": "E-mail sendt",
+      "resend": "Send igen",
+      "resentOk": "E-mailen er sendt igen",
+      "resendError": "Afsendelsen mislykkedes — prøv igen",
+      "copied": "Kopieret"
+    },
+    "illus": {
+      "contacts": "Kontakt",
+      "profile": "Profil",
+      "roleFallback": "Rolle",
+      "services": "Ydelser",
+      "specialization": "Specialisering",
+      "scheduleTitle": "ARBEJDSPLAN",
+      "inviteSent": "Invitation sendt",
+      "inviteSub": "{{name}} modtager et login-link"
+    },
+    "summary": {
+      "employee": "Medarbejder",
+      "role": "Rolle",
+      "workDays": "Arbejdsdage",
+      "daysCount": "{{count}} ud af 7"
+    }
+  },
+  "editModal": {
+    "header": "REDIGERING",
+    "employeeFallback": "Medarbejder",
+    "positionFallback": "Ingen stilling",
+    "tabs": {
+      "profile": "Profil",
+      "role": "Rolle",
+      "salary": "Løn",
+      "schedule": "Vagtplan"
+    },
+    "profile": {
+      "heading": "Personlige oplysninger",
+      "sub": "Opdatér medarbejderens kontaktoplysninger",
+      "uploadPhoto": "Upload billede",
+      "replacePhoto": "Udskift billede",
+      "removePhoto": "Fjern billede",
+      "photoHint": "JPG, PNG — op til 5 MB",
+      "namePlaceholder": "Fornavn Efternavn",
+      "notifyHint": "Medarbejderen får besked om ændringer på det angivne telefonnummer eller den angivne e-mail.",
+      "errors": {
+        "name": "Navn er påkrævet",
+        "email": "Ugyldig e-mail"
+      },
+      "contactsOwnedByEmployee": "E-mail og telefon hører til medarbejderens konto — de ændrer dem i deres egen profil."
+    },
+    "role": {
+      "heading": "Rolle og specialisering",
+      "sub": "Medarbejderens stilling og liste over ydelser",
+      "addService": "Tilføj ydelse",
+      "catalogConfirm": "Vil du åbne afsnittet Ydelser i Kataloget?"
+    },
+    "salary": {
+      "heading": "Løn",
+      "sub": "Angiv aflønningstype og beløb",
+      "typeLabel": "Aflønningstype",
+      "perWeek": "₽ / uge",
+      "selectTypeHint": "Vælg en aflønningstype ovenfor",
+      "currentLabel": "Nuværende aflønning",
+      "typeFixed": "Fast løn",
+      "typePercent": "% af omsætningen",
+      "typeHourly": "Timeløn",
+      "typeNotSet": "Typen er ikke valgt",
+      "cardFixedSub": "Fast beløb",
+      "cardPercentSub": "% af omsætningen",
+      "cardHourlySub": "Pr. arbejdstime",
+      "amountFixed": "Månedligt beløb",
+      "amountPercent": "Procent af omsætningen",
+      "amountHourly": "Timesats",
+      "reportHint": "Lønnen vises i de økonomiske rapporter. Medarbejderen ser kun sin egen aflønning."
+    },
+    "schedule": {
+      "heading": "Arbejdsplan",
+      "activeDays": "Aktive dage: {{count}} ud af 7",
+      "syncHint": "Planen synkroniseres med bookingkalenderen og holdplanen.",
+      "workDaysLabel": "Arbejdsdage",
+      "totalHoursLabel": "Timer i alt",
+      "daysOffLabel": "Fridage",
+      "daysLabel": "Dage",
+      "workDays": "{{count}} arbejdsdage",
+      "hoursSuffix": "t"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "onlineNow": "Online nu",
+      "notOnline": "Ikke online",
+      "schedule": "Vagtplan",
+      "daysCount": "{{count}}/7 dage"
+    },
+    "deleteEmployee": "Fjern medarbejder",
+    "deleteConfirm": "Fjern {{name}} fra teamet?",
+    "defaultName": "medarbejder",
+    "cannotDeleteLastOwner": "Den eneste ejer kan ikke fjernes"
+  },
+  "ownerModal": {
+    "header": "EJERENS KONTAKTOPLYSNINGER",
+    "heading": "Kontaktoplysninger",
+    "sub": "Telefon og e-mail på studiets ejer",
+    "cardNote": "e-mailen er login",
+    "loginWarning": "E-mailen er ejerens login. Efter du har gemt, skal du logge ind med den nye adresse.",
+    "lockedHint": "Navn, billede, rolle og rettigheder redigeres ikke her — de findes i afsnittet «Profil»."
+  },
+  "list": {
+    "pendingLabel": "Afventer invitationen",
+    "pendingHint": "Profilen åbner, når medarbejderen accepterer invitationen",
+    "resendInvite": "Send invitationen igen",
+    "cancelInvite": "Annuller tilmeldingen"
+  }
+}

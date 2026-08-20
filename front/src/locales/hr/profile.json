@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Vaš profil",
+    "sub": "Upravljajte osobnim podacima i sesijama"
+  },
+  "personalInfo": {
+    "heading": "Osobni podaci",
+    "emailLocked": "E-pošta je vaša prijava na račun i ovdje se ne može promijeniti"
+  },
+  "security": {
+    "changePassword": "Promijeni lozinku",
+    "logout": "Odjava"
+  },
+  "accounts": {
+    "title": "Moji studiji",
+    "count_one": "{{count}} studio",
+    "count_few": "{{count}} studija",
+    "count_other": "{{count}} studija",
+    "enter": "Otvori",
+    "login": "Prijava",
+    "register": "Registracija",
+    "addStudio": "Dodaj studio",
+    "addStudioSub": "Novi radni prostor — postajete njegov vlasnik"
+  },
+  "session": {
+    "current": "Trenutna sesija",
+    "lastActive": "Aktivan {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Osobni podaci uspješno su ažurirani"
+  },
+  "otherAccount": {
+    "title": "Drugi račun",
+    "sub": "Prijava kao netko drugi prekida trenutnu sesiju u ovom pregledniku — možete se vratiti običnom prijavom.",
+    "recentTitle": "Već ste se prijavljivali",
+    "return": "Prijava",
+    "forget": "Zaboravi račun"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Oversikt",
+    "staff": "Ansatte",
+    "catalog": "Katalog",
+    "clients": "Kunder",
+    "reports": "Rapporter",
+    "booking": "Nettbooking",
+    "finances": "Økonomi",
+    "notifications": "Varsler",
+    "loyalty": "Lojalitet",
+    "ai": "Velora AI",
+    "settings": "Innstillinger",
+    "billing": "Abonnement og betaling",
+    "journal": "Timeplan",
+    "profile": "Profil",
+    "more": "Mer"
+  },
+  "subtitles": {
+    "dashboard": "Velkommen til Velora CRM",
+    "staff": "Teamadministrasjon",
+    "catalog": "Avdelinger, saler og tjenester",
+    "clients": "Studioets kunderegister",
+    "reports": "Analyser og statistikk",
+    "booking": "Administrer bookingkanaler",
+    "finances": "Kontoer, transaksjoner, dokumenter",
+    "notifications": "Kanaler og varseltyper",
+    "loyalty": "Kundeprogrammer og kort",
+    "ai": "Smart assistent og autosvar",
+    "settings": "Systemoppsett",
+    "billing": "Administrasjon av abonnement",
+    "journal": "Timeplan for økter",
+    "profile": "Konto og innstillinger"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Opprett"
+  },
+  "userMenu": {
+    "logout": "Logg ut",
+    "studios": "Mine studioer"
+  },
+  "tooltips": {
+    "studioName": "Studioet ditt: {{name}}",
+    "openProfile": "Åpne profil",
+    "openAccountMenu": "Kontomeny"
+  },
+  "sidebar": {
+    "expand": "Utvid menyen",
+    "collapse": "Skjul menyen"
+  }
+}

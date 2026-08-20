@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "staff": "Personnel",
+    "catalog": "Catalogue",
+    "clients": "Clients",
+    "reports": "Rapports",
+    "booking": "Réservation en ligne",
+    "finances": "Finances",
+    "notifications": "Notifications",
+    "loyalty": "Fidélité",
+    "ai": "Velora AI",
+    "settings": "Paramètres",
+    "billing": "Forfait et paiement",
+    "journal": "Journal",
+    "profile": "Profil",
+    "more": "Plus"
+  },
+  "subtitles": {
+    "dashboard": "Bienvenue dans Velora CRM",
+    "staff": "Gestion de l'équipe",
+    "catalog": "Établissements, salles et prestations",
+    "clients": "Fichier clients du studio",
+    "reports": "Analyses et statistiques",
+    "booking": "Gérer les canaux de réservation",
+    "finances": "Comptes, opérations, documents",
+    "notifications": "Canaux et types de notifications",
+    "loyalty": "Programmes et cartes clients",
+    "ai": "Assistant intelligent et réponses automatiques",
+    "settings": "Configuration du système",
+    "billing": "Gestion de l'abonnement",
+    "journal": "Planning des cours",
+    "profile": "Compte et paramètres"
+  },
+  "badge": {
+    "beta": "BÊTA"
+  },
+  "navbar": {
+    "create": "Créer"
+  },
+  "userMenu": {
+    "logout": "Déconnexion",
+    "studios": "Mes studios"
+  },
+  "tooltips": {
+    "studioName": "Votre studio : {{name}}",
+    "openProfile": "Ouvrir le profil",
+    "openAccountMenu": "Menu du compte"
+  },
+  "sidebar": {
+    "expand": "Déployer le menu",
+    "collapse": "Réduire le menu"
+  }
+}

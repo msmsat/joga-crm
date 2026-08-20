@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Aucun employé de ce type dans le studio",
+    "noData": "Aucune donnée",
+    "ownerOnly": "Accès limité par votre rôle",
+    "loadError": "Échec du chargement des données",
+    "retry": "Réessayer"
+  },
+  "metrics": {
+    "revenue": "Chiffre d'affaires ce mois-ci",
+    "clients": "Clients actifs",
+    "bookings": "Réservations ce mois-ci",
+    "retention": "Taux de fidélisation",
+    "lessons": "Cours ce mois-ci",
+    "attendance": "Présence ce mois-ci",
+    "fill_rate": "Taux de remplissage",
+    "rating": "Note moyenne",
+    "active_clients": "Clients actifs",
+    "more": "Détails"
+  },
+  "today": {
+    "titleTrainer": "Mes cours aujourd'hui",
+    "titleAdmin": "Planning du jour",
+    "subtitle": "{{count}} cours · {{booked}} places sur {{spots}}",
+    "subtitle_one": "{{count}} cours · {{booked}} place sur {{spots}}",
+    "openJournal": "Ouvrir le journal",
+    "empty": "Aucun cours aujourd'hui",
+    "emptyHintTrainer": "Journée libre — les nouvelles réservations apparaîtront ici",
+    "emptyHintAdmin": "Rien de prévu aujourd'hui"
+  },
+  "chart": {
+    "byDay": "par jour",
+    "byMonth": "par mois",
+    "subWeek": "Semaine en cours",
+    "subMonth": "Mois en cours",
+    "subYear": "12 derniers mois",
+    "tabWeek": "Semaine",
+    "tabMonth": "Mois",
+    "tabYear": "Année",
+    "noData": "Aucune donnée pour cette période",
+    "retentionNA": "Le graphique de fidélisation n'est pas disponible"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "empty": "Aucune tâche",
+    "done": "Terminé",
+    "add": "Ajouter une tâche",
+    "namePlaceholder": "Nom de la tâche…",
+    "cancel": "Annuler",
+    "submit": "Ajouter",
+    "priority": {
+      "low": "Basse",
+      "medium": "Moyenne",
+      "high": "Haute"
+    },
+    "priorityHint": {
+      "low": "Priorité basse",
+      "medium": "Priorité moyenne",
+      "high": "Priorité haute"
+    },
+    "tags": {
+      "Клиент": "Client",
+      "Финансы": "Finances",
+      "Лиды": "Prospects",
+      "Отчёты": "Rapports",
+      "Журнал": "Journal",
+      "Персонал": "Personnel"
+    },
+    "scope": {
+      "mine": "Les miennes",
+      "admins": "Administrateurs",
+      "trainers": "Coachs"
+    },
+    "assigneePlaceholder": "Choisir un employé",
+    "deleteTitle": "Supprimer la tâche ?",
+    "deleteMessage": "Cette action est irréversible."
+  },
+  "events": {
+    "title": "Événements récents",
+    "seeAll": "Tout voir",
+    "justNow": "à l'instant",
+    "openProfile": "Ouvrir le profil",
+    "writeWhatsApp": "Écrire sur WhatsApp",
+    "sendReceipt": "Envoyer le reçu",
+    "cancelBooking": "Annuler la réservation"
+  },
+  "summary": {
+    "topServices": "Prestations phares",
+    "trainersLoad": "Charge des coachs",
+    "financeMonth": "Finances (mois)",
+    "revenue": "Chiffre d'affaires",
+    "expenses": "Dépenses",
+    "avgCheck": "Panier moyen",
+    "profit": "Bénéfice"
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "channels": {
+    "sectionTitle": "Csatlakozási csatornák",
+    "connected": "Csatlakoztatva",
+    "disconnected": "Nincs csatlakoztatva",
+    "pending": "Beállítás szükséges",
+    "connectInNotifications": "Csatlakoztatás az Értesítéseknél",
+    "manage": "Kezelés az Értesítéseknél",
+    "telegram": {
+      "name": "Telegram bot",
+      "desc": "Automatikus foglalás a boton keresztül"
+    },
+    "stripe": {
+      "name": "Fizetések",
+      "desc": "Stripe: kártyák, Apple Pay, Google Pay"
+    },
+    "miniapp": {
+      "name": "Ügyféllink",
+      "desc": "Foglalási mini alkalmazás — bióhoz, storyhoz és kampányokhoz",
+      "copy": "Link másolása",
+      "open": "Mini alkalmazás megnyitása",
+      "print": "QR nyomtatása",
+      "posterTitle": "Foglaljon órát online",
+      "scanHint": "Irányítsa a telefon kameráját a kódra"
+    }
+  },
+  "loading": "Beállítások betöltése…",
+  "sections": {
+    "main": {
+      "title": "Általános beállítások",
+      "prefill": {
+        "label": "Előre fizetés foglaláskor",
+        "sub": "Fizetés kérése a megerősítés előtt"
+      },
+      "trialLesson": {
+        "label": "Első óra ingyenes",
+        "sub": "Az új ügyfél első foglalását a stúdió állja"
+      },
+      "trainerConfirm": {
+        "label": "Oktatói megerősítés",
+        "sub": "A foglalás kézi jóváhagyásra vár"
+      },
+      "bookingActive": {
+        "label": "Online foglalás aktív",
+        "sub": "Widget megjelenítése az ügyfeleknek"
+      }
+    },
+    "rules": {
+      "title": "Korlátok és szabályok",
+      "advance": {
+        "label": "Foglalás tiltása ennél kevesebb idővel",
+        "sub": "Minimális idő az óra előtt"
+      },
+      "window": {
+        "label": "A foglalás megnyílik",
+        "sub": "Hány nappal előre"
+      },
+      "cancel": {
+        "label": "Lemondás díj nélkül",
+        "sub": "Az ügyfél az óra előtt lemondhatja"
+      },
+      "repeat": {
+        "label": "Ismételt foglalás",
+        "sub": "Engedje meg az ügyfélnek a kétszeri foglalást"
+      },
+      "workHours": {
+        "label": "A widget nyitvatartása",
+        "sub": "Az ezen kívüli órák online nem foglalhatók"
+      }
+    },
+    "branding": {
+      "title": "A widget arculata",
+      "sub": "A foglalási oldal megjelenése",
+      "accentColor": "Kiemelőszín",
+      "logo": {
+        "label": "A stúdió logója",
+        "sub": "A widget fejlécében jelenik meg",
+        "upload": "Feltöltés",
+        "uploading": "Feltöltés…",
+        "remove": "Eltávolítás",
+        "uploadFailed": "A logó feltöltése nem sikerült"
+      },
+      "darkMode": {
+        "label": "Sötét téma",
+        "sub": "Widget sötét megjelenéssel"
+      },
+      "language": {
+        "label": "Alapértelmezett nyelv",
+        "sub": "A felület fő nyelve"
+      }
+    },
+    "notifications": {
+      "title": "Értesítések",
+      "sub": "Automatikus üzenetek az ügyfeleknek",
+      "preview": {
+        "confirmed": "Foglalás megerősítve! H 10:00",
+        "reminder2h": "Emlékeztető: 2 óra múlva",
+        "reviewRequest": "Köszönjük a látogatást! Értékelje az órát"
+      },
+      "reminder24h": {
+        "label": "Emlékeztető 24 órával előtte",
+        "sub": "Reggel az óra előtt"
+      },
+      "reminder2h": {
+        "label": "Emlékeztető 2 órával előtte",
+        "sub": "Röviddel az óra előtt"
+      },
+      "reviewRequest": {
+        "label": "Értékelés kérése",
+        "sub": "Amint a látogatás rögzül"
+      }
+    },
+    "coffee": {
+      "enabled": {
+        "label": "Kávé az óra után",
+        "sub": "Foglalás után az ügyfél meghívást kap, hogy maradjon 15 percet a csoporttal. Ha ketten vagy többen igent mondanak, óra után emlékeztetőt kapnak"
+      },
+      "spots": {
+        "label": "Hová hívja őket",
+        "sub": "Legfeljebb három hely a stúdió közelében. Csak akkor jelennek meg, ha ketten vagy többen csatlakoznak",
+        "namePlaceholder": "Név",
+        "addressPlaceholder": "Cím",
+        "urlPlaceholder": "Térképlink",
+        "add": "Hely hozzáadása",
+        "remove": "Hely eltávolítása"
+      }
+    }
+  },
+  "options": {
+    "advance": {
+      "1h": "1 óra",
+      "2h": "2 óra",
+      "4h": "4 óra",
+      "12h": "12 óra",
+      "24h": "24 óra"
+    },
+    "window": {
+      "7d": "7 nap",
+      "14d": "14 nap",
+      "30d": "30 nap",
+      "60d": "60 nap"
+    },
+    "cancel": {
+      "2h": "2 óra",
+      "4h": "4 óra",
+      "12h": "12 óra",
+      "24h": "24 óra"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cz": "Čeština"
+    }
+  },
+  "toasts": {
+    "botConnected": "A bot csatlakoztatva",
+    "botDisconnected": "A bot leválasztva",
+    "codeCopied": "A kód másolva!",
+    "linkCopied": "A link másolva!",
+    "printBlocked": "Engedélyezze a felugró ablakokat a QR-kód nyomtatásához",
+    "stripeReturned": "Az adatok elküldve a Stripe-nak",
+    "stripeLinkExpired": "A Stripe link lejárt — próbálja újra"
+  },
+  "stripeGate": {
+    "kicker": "Az online foglaláshoz szükséges",
+    "none": {
+      "title": "Először állítsa be a fizetéseket",
+      "sub": "Az ügyfél egy lépésben foglal és fizet. Amíg a Stripe fiók nincs összekötve, nem tudja kifizetni a foglalást.",
+      "action": "Stripe csatlakoztatása"
+    },
+    "incomplete": {
+      "title": "Fejezze be a Stripe beállítását",
+      "sub": "A fiók létezik, de a Stripe még nem engedélyezte a fizetéseket — az űrlap hiányos.",
+      "action": "Beállítás folytatása"
+    },
+    "disabled": {
+      "title": "A fizetések ki vannak kapcsolva",
+      "sub": "A Stripe csatlakoztatva van és kész fizetéseket fogadni, de a Pénzügyek részben ki van kapcsolva.",
+      "action": "Pénzügyek megnyitása"
+    },
+    "loading": {
+      "title": "Kapcsolat ellenőrzése",
+      "sub": "Megkérdezzük a Stripe-ot, hogy a stúdió fiókja készen áll-e fizetések fogadására.",
+      "action": "Ellenőrzés…"
+    },
+    "perks": {
+      "direct": "A pénz közvetlenül a stúdió számlájára érkezik",
+      "methods": "Kártyák, Apple Pay és Google Pay azonnal",
+      "fee": "A jutalék a Velora csomagját követi"
+    },
+    "later": "Később",
+    "note": "Megnyílik a Stripe űrlapja. Ha végzett, visszatér erre az oldalra."
+  },
+  "tg": {
+    "title": "Telegram bot",
+    "connected": "Csatlakoztatva",
+    "openInTelegram": "Bot megnyitása a Telegramban",
+    "showToken": "Token megjelenítése",
+    "hideToken": "Token elrejtése",
+    "acceptsBookings": "A bot fogadja az ügyfelek foglalásait",
+    "instantNotify": "Az értesítések azonnal megérkeznek",
+    "disconnect": "Bot leválasztása",
+    "pasteToken": "Illessze be a bot tokenjét a @BotFathertől",
+    "invalidToken": "Érvénytelen tokenformátum",
+    "connect": "Bot csatlakoztatása",
+    "howToGet": "Hogyan szerezhetek tokent?",
+    "steps": {
+      "1a": "Nyissa meg a Telegramot → keresse meg",
+      "1b": "@BotFather",
+      "2a": "Küldje el a parancsot",
+      "2b": "/newbot",
+      "3": "Válasszon nevet és felhasználónevet a botnak",
+      "4": "Másolja ki a tokent és illessze be fentebb"
+    }
+  },
+  "insta": {
+    "title": "Instagram bio",
+    "sub": "Helyezzen el a profiljában és a storykban egy gyors foglalási linket",
+    "steps": {
+      "1": "Másolja ki a linkjét",
+      "2a": "Illessze be a",
+      "2b": "„Weboldal”",
+      "2c": " mezőbe az Instagram profilbeállításokban.",
+      "3a": "Adja hozzá a linket a",
+      "3b": "Storykhoz",
+      "3c": " külön matricával."
+    },
+    "proTip": "Rögzítse a Kiemeltekhez a foglalási folyamatot bemutató Storyt — ez 30 %-kal növeli a konverziót."
+  },
+  "web": {
+    "title": "Widget weboldalra",
+    "sub": "Adjon foglalási gombot bármely oldalhoz (Tilda, WordPress vagy saját kód)",
+    "codeHeader": "HTML / JavaScript",
+    "copy": "Másolás",
+    "instructionPrefix": "Illessze be ezt a kódot közvetlenül a záró",
+    "instructionSuffix": " címke elé az oldalán. A gomb automatikusan megjelenik."
+  },
+  "wa": {
+    "title": "Foglalás WhatsAppon",
+    "sub": "Állítson be a WhatsApp Businessben automatikus választ, amely azonnal küldi a foglalási linket.",
+    "online": "online",
+    "sampleIncoming": "Üdv! Szeretnék foglalni egy órát.",
+    "sampleOutgoing": "Üdvözöljük! ✨",
+    "connect": "WhatsApp Business csatlakoztatása",
+    "connected": "Csatlakoztatva",
+    "autoReplyActive": "Az automatikus válasz aktív",
+    "instantLink": "A foglalási link azonnal megy"
+  }
+}

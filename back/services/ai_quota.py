@@ -1,6 +1,10 @@
-"""Месячная квота ИИ (эпик AI-5, задача 3).
+"""Квота ИИ (эпик AI-5, задача 3).
 
-Два потолка, кончается тот, что раньше:
+Поверх месячных тарифных лимитов лежит пробный потолок TRIAL_LIMIT — обращения
+студии за всё время (см. ниже). Пока он включён, до тарифных потолков дело не
+доходит: 150 меньше самой нижней ступени.
+
+Два тарифных потолка, кончается тот, что раньше:
   * `ai_requests`   — число обращений (billable-строк AIUsage) за календарный месяц;
   * `ai_cost_micro` — себестоимость в микро-$ за тот же месяц (решение 9).
 
@@ -12,6 +16,7 @@
 # ponytail: календарный месяц вместо периода подписки — на месяц-в-месяц оплате
 # совпадает; привязать к expires_at, если появятся длинные периоды со сдвигом.
 """
+import os
 from datetime import datetime
 
 from fastapi import HTTPException
@@ -20,6 +25,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import AIUsage, StudioBillingPlan
 from routers.billing.plans import PLANS
+
+# Пробный потолок поверх тарифного: N обращений на студию ЗА ВСЁ ВРЕМЯ, а не в
+# месяц. Пока ассистент не обкатан, тарифные 300–5000 вопросов в месяц — это счёт
+# провайдеру за качество, в котором мы сами не уверены. Кончается первым: 150 < 300.
+# AI_TRIAL_LIMIT=0 в окружении снимает потолок и возвращает чистые тарифные лимиты.
+TRIAL_LIMIT = int(os.getenv("AI_TRIAL_LIMIT") or 150)   # пустая переменная = дефолт, а не падение на старте
 
 # Студия без строки StudioBillingPlan (до онбординга) не получает ИИ вовсе.
 # check_plan_limit в таком случае пускает — у лимитов сотрудников это безопасно,
@@ -57,29 +68,39 @@ def _limits_for(plan: StudioBillingPlan | None) -> dict:
     return (PLANS.get(name) or PLANS["start"])["limits"]
 
 
-async def _usage_this_month(db: AsyncSession, studio_id: int) -> tuple[int, int]:
-    """(billable-обращений, потрачено микро-$) за календарный месяц.
+async def _usage(db: AsyncSession, studio_id: int, since: datetime | None) -> tuple[int, int]:
+    """(billable-обращений, потрачено микро-$) с момента `since`; None — за всё время.
 
     Один запрос по составному индексу (studio_id, created_at): считаем вопросы
     и деньги разом — вопросы только по billable, деньги по всем вызовам.
     """
-    row = (await db.execute(
+    q = (
         select(
             func.count().filter(AIUsage.billable.is_(True)),
             func.coalesce(func.sum(AIUsage.cost_micro), 0),
         )
         .select_from(AIUsage)
-        .where(AIUsage.studio_id == studio_id, AIUsage.created_at >= _month_start())
-    )).one()
+        .where(AIUsage.studio_id == studio_id)
+    )
+    if since is not None:
+        q = q.where(AIUsage.created_at >= since)
+    row = (await db.execute(q)).one()
     return int(row[0] or 0), int(row[1] or 0)
 
 
 async def ai_quota_status(db: AsyncSession, studio_id: int) -> tuple[int, int]:
-    """(использовано, лимит) обращений за календарный месяц — для UI (задача 11)."""
+    """(использовано, лимит) обращений — для UI (задача 11).
+
+    Пока включён пробный потолок, показываем именно его: он кончается первым, и
+    «12 из 1500» рядом с отказом на 150-м вопросе — прямая ложь в интерфейсе.
+    """
+    if TRIAL_LIMIT:
+        used, _ = await _usage(db, studio_id, None)
+        return used, TRIAL_LIMIT
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
     )).scalar_one_or_none()
-    used, _ = await _usage_this_month(db, studio_id)
+    used, _ = await _usage(db, studio_id, _month_start())
     return used, _limits_for(plan)["ai_requests"]
 
 
@@ -94,13 +115,24 @@ async def check_ai_quota(db: AsyncSession, studio_id: int, reserve_pct: int = 0)
     # вопроса на границе лимита могут пройти оба; перерасход на единицы запросов
     # дешевле блокировки на каждом вопросе.
     """
+    share = (100 - max(0, min(reserve_pct, 100))) / 100
+
+    if TRIAL_LIMIT:
+        total, _ = await _usage(db, studio_id, None)
+        if total >= TRIAL_LIMIT * share:
+            raise HTTPException(status_code=429, detail={
+                "code": "ai_trial_exhausted",
+                "message": f"Пробные {TRIAL_LIMIT} обращений к ИИ израсходованы.",
+                "used": total,
+                "limit": TRIAL_LIMIT,
+            })
+
     plan = (await db.execute(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
     )).scalar_one_or_none()
     limits = _limits_for(plan)
-    share = (100 - max(0, min(reserve_pct, 100))) / 100
 
-    used, spent = await _usage_this_month(db, studio_id)
+    used, spent = await _usage(db, studio_id, _month_start())
 
     limit = limits["ai_requests"]
     if used >= limit * share:

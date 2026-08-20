@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Nu sunteți dvs.?",
+    "login": "Conectați-vă cu alt cont"
+  },
+  "card": {
+    "roleLine": "Invitație în echipă · {{role}}"
+  },
+  "title": {
+    "new": "Bună, {{name}}",
+    "existing": "Bine ați revenit, {{name}}"
+  },
+  "sub": {
+    "new": "Introduceți parola primită de la managerul studioului.",
+    "existing": "Introduceți parola pentru {{email}} ca să acceptați invitația."
+  },
+  "switch": {
+    "notice": "Sunteți conectat ca {{current}}. Această invitație este pentru {{next}} — acceptând-o, treceți pe acel cont. Puteți reveni din profilul dvs."
+  },
+  "fields": {
+    "newPassword": "Parolă",
+    "newPasswordPlaceholder": "Parola de la manager",
+    "password": "Parolă",
+    "passwordPlaceholder": "Parola dvs. Velora",
+    "phone": "Număr de telefon",
+    "phoneHint": "Încă nu avem numărul dvs. — introduceți-l cu prefixul țării",
+    "show": "Arată",
+    "hide": "Ascunde"
+  },
+  "cta": {
+    "enter": "Conectare la studio",
+    "accept": "Acceptă invitația"
+  },
+  "forgotHint": "Ați uitat parola?",
+  "forgotLink": "Recuperați accesul",
+  "expired": {
+    "title": "Linkul nu este valid",
+    "sub": "Invitația a expirat sau a fost retrasă. Rugați proprietarul studioului să o trimită din nou.",
+    "cta": "Mergi la conectare"
+  },
+  "consent": {
+    "text": "Accept",
+    "terms": "Termenii serviciului",
+    "and": "și",
+    "privacy": "Politica de confidențialitate"
+  },
+  "errors": {
+    "noToken": "Linkul nu conține cod de invitație — deschideți-l integral din email.",
+    "network": "Eroare de conexiune",
+    "passwordRequired": "Introduceți parola",
+    "phoneRequired": "Introduceți numărul de telefon cu prefixul țării",
+    "consentRequired": "Este necesar acordul dvs."
+  },
+  "newAccountHint": "Parola nu se află în email — tocmai asta e ideea: un link singur nu e suficient pentru a intra. Dacă nu ați primit una, întrebați managerul.",
+  "decline": {
+    "cta": "Refuză invitația",
+    "confirm": "Invitația la „{{studio}}” va fi ștearsă. Nu veți intra în echipă, iar doar proprietarul studioului o poate trimite din nou.",
+    "keep": "Păstrează",
+    "confirmCta": "Refuză",
+    "pending": "Se refuză…"
+  },
+  "declined": {
+    "title": "Invitație refuzată",
+    "sub": "Nu v-am adăugat în studio. Dacă a fost o greșeală, rugați proprietarul să trimită invitația din nou."
+  }
+}

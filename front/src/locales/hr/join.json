@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Niste vi?",
+    "login": "Prijavite se na drugi račun"
+  },
+  "card": {
+    "roleLine": "Pozivnica u tim · {{role}}"
+  },
+  "title": {
+    "new": "Pozdrav, {{name}}",
+    "existing": "Dobro došli natrag, {{name}}"
+  },
+  "sub": {
+    "new": "Unesite lozinku koju vam je dao voditelj studija.",
+    "existing": "Unesite lozinku za {{email}} kako biste prihvatili pozivnicu."
+  },
+  "switch": {
+    "notice": "Prijavljeni ste kao {{current}}. Ova je pozivnica za {{next}} — prihvaćanjem prelazite na taj račun. Natrag se možete vratiti iz profila."
+  },
+  "fields": {
+    "newPassword": "Lozinka",
+    "newPasswordPlaceholder": "Lozinka od voditelja",
+    "password": "Lozinka",
+    "passwordPlaceholder": "Vaša Velora lozinka",
+    "phone": "Broj telefona",
+    "phoneHint": "Još nemamo vaš broj — unesite ga s pozivnim brojem države",
+    "show": "Prikaži",
+    "hide": "Sakrij"
+  },
+  "cta": {
+    "enter": "Prijavi se u studio",
+    "accept": "Prihvati pozivnicu"
+  },
+  "forgotHint": "Zaboravili ste lozinku?",
+  "forgotLink": "Vrati pristup",
+  "expired": {
+    "title": "Poveznica nije važeća",
+    "sub": "Pozivnica je istekla ili je povučena. Zamolite vlasnika studija da je pošalje ponovno.",
+    "cta": "Idi na prijavu"
+  },
+  "consent": {
+    "text": "Prihvaćam",
+    "terms": "Uvjete korištenja",
+    "and": "i",
+    "privacy": "Pravila privatnosti"
+  },
+  "errors": {
+    "noToken": "Poveznica ne sadrži kod pozivnice — otvorite je u cijelosti iz e-pošte.",
+    "network": "Greška u vezi",
+    "passwordRequired": "Unesite lozinku",
+    "phoneRequired": "Unesite broj telefona s pozivnim brojem države",
+    "consentRequired": "Potreban je vaš pristanak"
+  },
+  "newAccountHint": "Lozinka nije u e-poruci — u tome i jest smisao: sama poveznica nije dovoljna za ulazak. Ako je niste dobili, pitajte voditelja.",
+  "decline": {
+    "cta": "Odbij pozivnicu",
+    "confirm": "Pozivnica za „{{studio}}” bit će uklonjena. Nećete se pridružiti timu, a ponovno je može poslati samo vlasnik studija.",
+    "keep": "Zadrži",
+    "confirmCta": "Odbij",
+    "pending": "Odbijanje…"
+  },
+  "declined": {
+    "title": "Pozivnica je odbijena",
+    "sub": "Nismo vas dodali u studio. Ako je to bila pogreška, zamolite vlasnika da pošalje pozivnicu ponovno."
+  }
+}

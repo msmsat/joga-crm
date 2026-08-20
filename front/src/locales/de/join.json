@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Nicht Sie?",
+    "login": "Mit einem anderen Konto anmelden"
+  },
+  "card": {
+    "roleLine": "Team-Einladung · {{role}}"
+  },
+  "title": {
+    "new": "Hallo, {{name}}",
+    "existing": "Willkommen zurück, {{name}}"
+  },
+  "sub": {
+    "new": "Geben Sie das Passwort ein, das Sie von der Studioleitung erhalten haben.",
+    "existing": "Geben Sie das Passwort für {{email}} ein, um die Einladung anzunehmen."
+  },
+  "switch": {
+    "notice": "Sie sind als {{current}} angemeldet. Diese Einladung gilt für {{next}} — mit der Annahme wechseln Sie zu diesem Konto. Zurück wechseln können Sie über Ihr Profil."
+  },
+  "fields": {
+    "newPassword": "Passwort",
+    "newPasswordPlaceholder": "Passwort von der Studioleitung",
+    "password": "Passwort",
+    "passwordPlaceholder": "Ihr Velora-Passwort",
+    "phone": "Telefonnummer",
+    "phoneHint": "Ihre Nummer liegt uns noch nicht vor — bitte mit Ländervorwahl eingeben",
+    "show": "Anzeigen",
+    "hide": "Verbergen"
+  },
+  "cta": {
+    "enter": "Im Studio anmelden",
+    "accept": "Einladung annehmen"
+  },
+  "forgotHint": "Passwort vergessen?",
+  "forgotLink": "Zugang wiederherstellen",
+  "expired": {
+    "title": "Link ist ungültig",
+    "sub": "Die Einladung ist abgelaufen oder wurde zurückgezogen. Bitten Sie die Studioinhaberin oder den Studioinhaber, sie erneut zu senden.",
+    "cta": "Zur Anmeldung"
+  },
+  "consent": {
+    "text": "Ich akzeptiere die",
+    "terms": "Nutzungsbedingungen",
+    "and": "und die",
+    "privacy": "Datenschutzerklärung"
+  },
+  "errors": {
+    "noToken": "Der Link enthält keinen Einladungscode — öffnen Sie ihn vollständig aus der E-Mail.",
+    "network": "Verbindungsfehler",
+    "passwordRequired": "Geben Sie Ihr Passwort ein",
+    "phoneRequired": "Geben Sie Ihre Telefonnummer mit Ländervorwahl ein",
+    "consentRequired": "Ihre Zustimmung ist erforderlich"
+  },
+  "newAccountHint": "Das Passwort steht nicht in der E-Mail — genau das ist der Sinn: Ein Link allein reicht nicht zum Einloggen. Wenn Sie keines bekommen haben, fragen Sie Ihre Studioleitung.",
+  "decline": {
+    "cta": "Einladung ablehnen",
+    "confirm": "Die Einladung zu „{{studio}}“ wird entfernt. Sie treten dem Team nicht bei, und nur die Studioinhaberin oder der Studioinhaber kann sie erneut senden.",
+    "keep": "Behalten",
+    "confirmCta": "Ablehnen",
+    "pending": "Wird abgelehnt…"
+  },
+  "declined": {
+    "title": "Einladung abgelehnt",
+    "sub": "Wir haben Sie dem Studio nicht hinzugefügt. War das ein Versehen, bitten Sie die Inhaberin oder den Inhaber, die Einladung erneut zu senden."
+  }
+}

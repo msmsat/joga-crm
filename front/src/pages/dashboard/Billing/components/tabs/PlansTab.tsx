@@ -56,7 +56,7 @@ export default function PlansTab({
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const toast = useToast();
-  const dateLocale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
+  const dateLocale = i18n.language || 'en';
   // Ставка приходит числом (1.5), а по-русски пишется «1,5». i18next подставил бы
   // её через String() и оставил точку в обоих языках.
   const rate = (value: number) => value.toLocaleString(dateLocale);

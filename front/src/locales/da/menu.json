@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "product": "Velora"
+  },
+  "nav": {
+    "dashboard": "Overblik",
+    "staff": "Medarbejdere",
+    "catalog": "Katalog",
+    "clients": "Kunder",
+    "reports": "Rapporter",
+    "booking": "Onlinebooking",
+    "finances": "Økonomi",
+    "notifications": "Notifikationer",
+    "loyalty": "Loyalitet",
+    "ai": "Velora AI",
+    "settings": "Indstillinger",
+    "billing": "Abonnement og betaling",
+    "journal": "Kalender",
+    "profile": "Profil",
+    "more": "Mere"
+  },
+  "subtitles": {
+    "dashboard": "Velkommen til Velora CRM",
+    "staff": "Teamadministration",
+    "catalog": "Afdelinger, sale og ydelser",
+    "clients": "Studiets kundekartotek",
+    "reports": "Analyser og statistik",
+    "booking": "Administrer bookingkanaler",
+    "finances": "Konti, posteringer, dokumenter",
+    "notifications": "Kanaler og notifikationstyper",
+    "loyalty": "Kundeprogrammer og kort",
+    "ai": "Smart assistent og autosvar",
+    "settings": "Systemopsætning",
+    "billing": "Administration af abonnement",
+    "journal": "Holdplan",
+    "profile": "Konto og indstillinger"
+  },
+  "badge": {
+    "beta": "BETA"
+  },
+  "navbar": {
+    "create": "Opret"
+  },
+  "userMenu": {
+    "logout": "Log ud",
+    "studios": "Mine studier"
+  },
+  "tooltips": {
+    "studioName": "Dit studie: {{name}}",
+    "openProfile": "Åbn profil",
+    "openAccountMenu": "Kontomenu"
+  },
+  "sidebar": {
+    "expand": "Udvid menu",
+    "collapse": "Fold menu sammen"
+  }
+}

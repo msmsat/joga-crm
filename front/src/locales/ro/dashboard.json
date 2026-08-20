@@ -1,0 +1,97 @@
+{
+  "state": {
+    "empty": "Nu există astfel de angajați în studio",
+    "noData": "Fără date",
+    "ownerOnly": "Acces limitat de rolul dvs.",
+    "loadError": "Datele nu au putut fi încărcate",
+    "retry": "Reîncearcă"
+  },
+  "metrics": {
+    "revenue": "Venituri luna aceasta",
+    "clients": "Clienți activi",
+    "bookings": "Rezervări luna aceasta",
+    "retention": "Rata de retenție",
+    "lessons": "Ședințe luna aceasta",
+    "attendance": "Prezență luna aceasta",
+    "fill_rate": "Grad de ocupare",
+    "rating": "Rating mediu",
+    "active_clients": "Clienți activi",
+    "more": "Detalii"
+  },
+  "today": {
+    "titleTrainer": "Ședințele mele de azi",
+    "titleAdmin": "Programul de azi",
+    "subtitle": "{{count}} ședințe · {{booked}} din {{spots}} locuri",
+    "subtitle_one": "{{count}} ședință · {{booked}} din {{spots}} locuri",
+    "subtitle_few": "{{count}} ședințe · {{booked}} din {{spots}} locuri",
+    "openJournal": "Deschide jurnalul",
+    "empty": "Azi nu sunt ședințe",
+    "emptyHintTrainer": "O zi liberă — rezervările noi vor apărea aici",
+    "emptyHintAdmin": "Nu este nimic programat pentru azi"
+  },
+  "chart": {
+    "byDay": "pe zi",
+    "byMonth": "pe lună",
+    "subWeek": "Săptămâna curentă",
+    "subMonth": "Luna curentă",
+    "subYear": "Ultimele 12 luni",
+    "tabWeek": "Săptămână",
+    "tabMonth": "Lună",
+    "tabYear": "An",
+    "noData": "Nu există date pentru această perioadă",
+    "retentionNA": "Graficul de retenție nu este disponibil"
+  },
+  "tasks": {
+    "title": "Sarcini",
+    "empty": "Nicio sarcină",
+    "done": "Gata",
+    "add": "Adaugă sarcină",
+    "namePlaceholder": "Numele sarcinii…",
+    "cancel": "Anulează",
+    "submit": "Adaugă",
+    "priority": {
+      "low": "Scăzută",
+      "medium": "Medie",
+      "high": "Ridicată"
+    },
+    "priorityHint": {
+      "low": "Prioritate scăzută",
+      "medium": "Prioritate medie",
+      "high": "Prioritate ridicată"
+    },
+    "tags": {
+      "Клиент": "Client",
+      "Финансы": "Finanțe",
+      "Лиды": "Potențiali clienți",
+      "Отчёты": "Rapoarte",
+      "Журнал": "Jurnal",
+      "Персонал": "Personal"
+    },
+    "scope": {
+      "mine": "Ale mele",
+      "admins": "Administratori",
+      "trainers": "Antrenori"
+    },
+    "assigneePlaceholder": "Selectați un angajat",
+    "deleteTitle": "Ștergeți sarcina?",
+    "deleteMessage": "Această acțiune nu poate fi anulată."
+  },
+  "events": {
+    "title": "Evenimente recente",
+    "seeAll": "Vezi toate",
+    "justNow": "chiar acum",
+    "openProfile": "Deschide profilul",
+    "writeWhatsApp": "Scrie pe WhatsApp",
+    "sendReceipt": "Trimite bonul",
+    "cancelBooking": "Anulează rezervarea"
+  },
+  "summary": {
+    "topServices": "Servicii de top",
+    "trainersLoad": "Încărcarea antrenorilor",
+    "financeMonth": "Finanțe (lună)",
+    "revenue": "Venituri",
+    "expenses": "Cheltuieli",
+    "avgCheck": "Bon mediu",
+    "profit": "Profit"
+  }
+}

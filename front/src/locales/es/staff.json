@@ -1,0 +1,282 @@
+{
+  "stats": {
+    "totalInTeam": "Total en el equipo",
+    "onShift": "En turno",
+    "trainers": "Entrenadores",
+    "administrators": "Administradores",
+    "onlineNow": "{{count}} en línea ahora"
+  },
+  "toolbar": {
+    "teamTitle": "Equipo · {{count}}",
+    "addEmployee": "Añadir empleado",
+    "searchPlaceholder": "Buscar...",
+    "allGroup": "Todos"
+  },
+  "profile": {
+    "online": "· en línea",
+    "offline": "· desconectado",
+    "fullAccess": "Acceso completo",
+    "ownerAccess": "El propietario tiene acceso a todos los módulos del sistema",
+    "loadBar": "Carga del entrenador",
+    "weekSchedule": "Horario semanal",
+    "todaySchedule": "Horario de hoy",
+    "minutesSuffix": "min",
+    "clientsSuffix": "clientes",
+    "hall": "Sala",
+    "staffHalls": "Salas del empleado",
+    "noName": "Nombre sin especificar",
+    "noRole": "Sin rol",
+    "addEventStub": "Formulario para añadir evento..."
+  },
+  "cards": {
+    "trainer": {
+      "revenue": "Ingresos",
+      "rating": "Valoración",
+      "bookings": "Reservas",
+      "load": "Carga"
+    },
+    "admin": {
+      "bookings": "Reservas",
+      "attended": "Atendidas",
+      "revenue": "Caja",
+      "load": "Carga"
+    },
+    "owner": {
+      "revenue": "Ingresos",
+      "attended": "Visitas",
+      "load": "Carga",
+      "staff": "Empleados"
+    },
+    "default": {
+      "bookings": "Reservas",
+      "attended": "Visitas",
+      "revenue": "Ingresos",
+      "load": "Carga"
+    }
+  },
+  "schedule": {
+    "week": "Semana",
+    "month": "Mes",
+    "working": "Horario laboral",
+    "free": "Libre",
+    "busy": "Ocupado",
+    "dayOff": "Día libre",
+    "syncHint": "El horario se sincroniza con el diario de reservas y el calendario de clases.",
+    "workDaysInWeek": "{{count}} días laborables por semana",
+    "markWork": "Trabajando",
+    "markHint": "Elige una marca arriba y luego haz clic en un día",
+    "prevMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "dayHasBookings": "Este día ya tiene reservas — no puede ser día libre",
+    "pastDayLocked": "Los días pasados no se pueden cambiar"
+  },
+  "permissions": {
+    "finance": "Finanzas",
+    "staff": "Empleados",
+    "reports": "Informes",
+    "clients": "Clientes",
+    "settings": "Ajustes"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "trainer": "Entrenador",
+    "owner": "Propietario"
+  },
+  "deleteModal": {
+    "cancelLesson": "¿Cancelar la clase?",
+    "dontAsk": "No preguntar de nuevo al eliminar",
+    "cancelInvite": "¿Cancelar la incorporación?",
+    "cancelInviteConfirm": "Cancelar invitación"
+  },
+  "toasts": {
+    "lessonCanceled": "Clase cancelada",
+    "errorCancel": "Error al cancelar",
+    "employeeAdded": "Empleado {{name}} añadido",
+    "changesSaved": "Cambios guardados",
+    "employeeDeleted": "Empleado eliminado",
+    "errorDelete": "Error al eliminar",
+    "errorSave": "No se pudieron guardar los cambios",
+    "emailCopied": "Email copiado",
+    "phoneCopied": "Teléfono copiado",
+    "inviteSent": "Invitación enviada a {{email}}",
+    "inviteResent": "Invitación enviada de nuevo",
+    "inviteCancelled": "Invitación cancelada"
+  },
+  "addModal": {
+    "stepIndicator": "Paso {{current}} de {{total}}",
+    "stepCounter": "{{current}}/4 — unos 2 minutos",
+    "nameFallback": "esta persona",
+    "employeeFallback": "Empleado",
+    "steps": {
+      "1": {
+        "title": "Sobre el empleado",
+        "sub": "¿Cómo se llama el nuevo miembro del equipo?",
+        "trust": "Los datos del empleado están protegidos"
+      },
+      "2": {
+        "title": "Rol y servicios",
+        "sub": "Puesto y lista de servicios",
+        "trust": "El rol se puede cambiar en cualquier momento"
+      },
+      "3": {
+        "title": "Horario y salario",
+        "sub": "¿Cuándo trabaja y cuánto gana?",
+        "trust": "El horario se sincroniza con el diario"
+      },
+      "4": {
+        "title": "¡Listo!",
+        "sub": "Invitación enviada a {{name}}",
+        "trust": ""
+      }
+    },
+    "step1": {
+      "heading": "Datos personales",
+      "sub": "Empecemos por el nombre y los contactos",
+      "namePlaceholder": "Ej. Ana García",
+      "emailLabel": "Dirección de email",
+      "contactsNotSet": "Sin contactos indicados",
+      "inviteHint": "Entrega la contraseña al empleado en persona — nunca se incluye en el email. El email solo lleva el enlace y, sin la contraseña, no abrirá el estudio.",
+      "errors": {
+        "name": "El nombre es obligatorio",
+        "phone": "Número de teléfono no válido",
+        "email": "Email no válido",
+        "password": "Mínimo 8 caracteres, con letras y números",
+        "emailTaken": "Este email ya pertenece a otra cuenta de Velora"
+      },
+      "passwordLabel": "Contraseña de acceso del empleado",
+      "passwordPlaceholder": "Mínimo 8 caracteres, letras y números"
+    },
+    "step2": {
+      "heading": "Rol y servicios",
+      "sub": "Elige un puesto — los servicios se añadirán automáticamente",
+      "positionLabel": "Puesto *",
+      "positionPlaceholder": "O escribe un puesto propio...",
+      "addServicePlaceholder": "Añadir servicio — pulsa Enter"
+    },
+    "step3": {
+      "heading": "Horario y salario",
+      "sub": "Define los días laborables y la remuneración",
+      "scheduleLabel": "Horario de trabajo",
+      "salaryLabel": "Salario (opcional)",
+      "salaryPlaceholder": "Introduce un número",
+      "createAndInvite": "Crear e invitar"
+    },
+    "step4": {
+      "exclaim": "¡Genial!",
+      "added": "añadido",
+      "sub": "Invitación enviada. El empleado se une al equipo en cuanto la acepte.",
+      "inviteLinkLabel": "Enlace de invitación",
+      "sendInviteLabel": "Enviar invitación",
+      "inviteInfo": "El empleado recibe el email, abre el enlace y confirma la invitación con su contraseña — solo entonces se une al equipo y obtiene acceso. El enlace es válido 7 días. La contraseña no va en el email — entrégala en persona.",
+      "emailSentTitle": "Email enviado",
+      "resend": "Enviar de nuevo",
+      "resentOk": "Email enviado de nuevo",
+      "resendError": "Error al enviar — inténtalo otra vez",
+      "copied": "Copiado"
+    },
+    "illus": {
+      "contacts": "Contactos",
+      "profile": "Perfil",
+      "roleFallback": "Rol",
+      "services": "Servicios",
+      "specialization": "Especialización",
+      "scheduleTitle": "HORARIO DE TRABAJO",
+      "inviteSent": "Invitación enviada",
+      "inviteSub": "{{name}} recibirá un enlace de acceso"
+    },
+    "summary": {
+      "employee": "Empleado",
+      "role": "Rol",
+      "workDays": "Días laborables",
+      "daysCount": "{{count}} de 7"
+    }
+  },
+  "editModal": {
+    "header": "EDICIÓN",
+    "employeeFallback": "Empleado",
+    "positionFallback": "Sin puesto",
+    "tabs": {
+      "profile": "Perfil",
+      "role": "Rol",
+      "salary": "Salario",
+      "schedule": "Horario"
+    },
+    "profile": {
+      "heading": "Datos personales",
+      "sub": "Actualiza los datos de contacto del empleado",
+      "uploadPhoto": "Subir foto",
+      "replacePhoto": "Cambiar foto",
+      "removePhoto": "Eliminar foto",
+      "photoHint": "JPG, PNG — hasta 5 MB",
+      "namePlaceholder": "Nombre Apellido",
+      "notifyHint": "Se notificará al empleado sobre los cambios al teléfono o email indicados.",
+      "errors": {
+        "name": "El nombre es obligatorio",
+        "email": "Email no válido"
+      },
+      "contactsOwnedByEmployee": "El email y el teléfono pertenecen a la cuenta del empleado — los cambia en su propio perfil."
+    },
+    "role": {
+      "heading": "Rol y especialización",
+      "sub": "Puesto del empleado y lista de servicios",
+      "addService": "Añadir servicio",
+      "catalogConfirm": "¿Quieres abrir la sección Servicios en el Catálogo?"
+    },
+    "salary": {
+      "heading": "Salario",
+      "sub": "Indica el tipo de pago y el importe de la remuneración",
+      "typeLabel": "Tipo de pago",
+      "perWeek": "₽ / semana",
+      "selectTypeHint": "Elige arriba un tipo de pago",
+      "currentLabel": "Remuneración actual",
+      "typeFixed": "Salario fijo",
+      "typePercent": "% de los ingresos",
+      "typeHourly": "Pago por horas",
+      "typeNotSet": "Tipo sin seleccionar",
+      "cardFixedSub": "Importe fijo",
+      "cardPercentSub": "% de los ingresos",
+      "cardHourlySub": "Por hora trabajada",
+      "amountFixed": "Importe mensual",
+      "amountPercent": "Porcentaje de ingresos",
+      "amountHourly": "Tarifa por hora",
+      "reportHint": "El salario se muestra en los informes financieros. El empleado solo ve su propia remuneración."
+    },
+    "schedule": {
+      "heading": "Horario de trabajo",
+      "activeDays": "Días activos: {{count}} de 7",
+      "syncHint": "El horario se sincroniza con el diario de reservas y el calendario de clases.",
+      "workDaysLabel": "Días laborables",
+      "totalHoursLabel": "Horas totales",
+      "daysOffLabel": "Días libres",
+      "daysLabel": "Días",
+      "workDays": "{{count}} días laborables",
+      "hoursSuffix": "h"
+    },
+    "status": {
+      "online": "En línea",
+      "offline": "Desconectado",
+      "onlineNow": "En línea ahora",
+      "notOnline": "No está en línea",
+      "schedule": "Horario",
+      "daysCount": "{{count}}/7 días"
+    },
+    "deleteEmployee": "Eliminar empleado",
+    "deleteConfirm": "¿Eliminar a {{name}} del equipo?",
+    "defaultName": "empleado",
+    "cannotDeleteLastOwner": "No se puede eliminar al único propietario"
+  },
+  "ownerModal": {
+    "header": "CONTACTOS DEL PROPIETARIO",
+    "heading": "Datos de contacto",
+    "sub": "Teléfono y email del propietario del estudio",
+    "cardNote": "el email es el usuario de acceso",
+    "loginWarning": "El email es el usuario del propietario. Tras guardar, inicia sesión con la nueva dirección.",
+    "lockedHint": "El nombre, la foto, el rol y los permisos no se editan aquí — están en la sección «Perfil»."
+  },
+  "list": {
+    "pendingLabel": "Invitación pendiente",
+    "pendingHint": "El perfil se abrirá cuando el empleado acepte la invitación",
+    "resendInvite": "Enviar la invitación de nuevo",
+    "cancelInvite": "Cancelar incorporación"
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Adım {{step}} / {{total}}",
+    "securityNote": "Verileriniz korunur ve asla üçüncü taraflarla paylaşılmaz",
+    "back": "Geri",
+    "continue": "Devam",
+    "finish": "Çalışmaya başla",
+    "saving": "Kaydediliyor...",
+    "progress": "{{step}}/5 — 3 dakikadan kısa sürer",
+    "regionRequired": "Lütfen bölgesel ayarlarınızı yapın",
+    "networkError": "Veriler kaydedilirken ağ hatası oluştu.",
+    "phoneTakenTitle": "Numara zaten kullanımda",
+    "phoneTaken": "Bu telefon numarası zaten kayıtlı",
+    "errorTitle": "Hata",
+    "changeNumber": "Numarayı değiştir",
+    "gotIt": "Anladım"
+  },
+  "steps": {
+    "identity": {
+      "title": "Stüdyo hakkında",
+      "desc": "Markanızın adı, açıklaması ve görsel tarzı."
+    },
+    "activity": {
+      "title": "Faaliyet",
+      "desc": "CRM'i size göre uyarlayabilmemiz için bir alan seçin."
+    },
+    "contact": {
+      "title": "İletişim",
+      "desc": "Müşterileriniz için adres, telefon ve bağlantılar."
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "desc": "Bölge, para birimi ve tarih biçimi."
+    },
+    "schedule": {
+      "title": "Çalışma saatleri",
+      "desc": "Stüdyonuzun açık olduğu gün ve saatleri belirleyin."
+    }
+  },
+  "identity": {
+    "welcome": "Hoş geldiniz",
+    "subtitle": "Birkaç dakikalık kurulum — ve çalışma alanınız hazır",
+    "replaceLogo": "Logoyu değiştir",
+    "uploadLogo": "Logo yükle",
+    "removeLogo": "Kaldır",
+    "logoHint": "JPG, PNG, WEBP en fazla 5 MB",
+    "nameLabel": "Stüdyo veya şirket adı",
+    "namePlaceholder": "Örn.: Studio Forma",
+    "descriptionLabel": "Açıklama",
+    "descriptionPlaceholder": "Stüdyonuz, çalışma tarzınız ve farkınız hakkında kısa bir not...",
+    "newBadge": "YENİ"
+  },
+  "activity": {
+    "title": "Faaliyet türü",
+    "subtitle": "Bir alan seçin — CRM'i size göre uyarlayalım",
+    "comingSoon": "Yakında: berber, fitness, dans ve daha fazlası",
+    "types": {
+      "yoga": {
+        "label": "Yoga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, mat pilates"
+      }
+    }
+  },
+  "contact": {
+    "title": "İletişim bilgileri",
+    "subtitle": "Müşteriler online randevu alırken bu bilgileri görecek",
+    "phoneLabel": "Stüdyo telefonu",
+    "checkingPhone": "Numara kontrol ediliyor...",
+    "addressLabel": "Adres",
+    "emailLabel": "E-posta",
+    "websiteLabel": "Web sitesi",
+    "note": "Telefon dışındaki tüm alanlar isteğe bağlıdır. Daha sonra ayarlardan doldurabilirsiniz."
+  },
+  "settings": {
+    "title": "Bölgesel ayarlar",
+    "subtitle": "Daha sonra stüdyo ayarlarından değiştirilebilir",
+    "timezoneLabel": "Saat dilimi",
+    "timezonePlaceholder": "Saat dilimi seçin",
+    "languageLabel": "Dil",
+    "languagePlaceholder": "Dil",
+    "currencyLabel": "Para birimi",
+    "currencyPlaceholder": "Para birimi",
+    "dateFormatLabel": "Tarih biçimi",
+    "dateFormatPlaceholder": "Biçim",
+    "firstDayLabel": "Haftanın ilk günü",
+    "timezones": {
+      "UTC+3": "Moskova, Minsk, İstanbul (UTC+3)",
+      "UTC+4": "Dubai, Samara, Tiflis (UTC+4)",
+      "UTC+5": "Taşkent, Yekaterinburg, Karaçi (UTC+5)",
+      "UTC+6": "Almatı, Astana, Omsk (UTC+6)",
+      "UTC+7": "Novosibirsk, Bangkok, Cakarta (UTC+7)",
+      "UTC+8": "İrkutsk, Singapur, Pekin (UTC+8)",
+      "UTC+9": "Yakutsk, Tokyo, Seul (UTC+9)",
+      "UTC+10": "Vladivostok, Sidney (UTC+10)",
+      "UTC+11": "Magadan, Solomon Adaları (UTC+11)",
+      "UTC+12": "Kamçatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaii (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Şikago, Meksiko (UTC-6)",
+      "UTC-5": "New York, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Güney Georgia (UTC-2)",
+      "UTC-1": "Azorlar (UTC-1)",
+      "UTC+0": "Londra, Lizbon (UTC+0)",
+      "UTC+1": "Berlin, Paris, Varşova (UTC+1)",
+      "UTC+2": "Kiev, Atina, Kahire (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Ruble",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Grivna",
+      "GBP": "Sterlin",
+      "AED": "Dirhem",
+      "TRY": "Türk lirası",
+      "CZK": "Çek korunası",
+      "PLN": "Zloti",
+      "HUF": "Forint",
+      "RON": "Ley",
+      "BGN": "Leva",
+      "SEK": "İsveç kronu",
+      "NOK": "Norveç kronu",
+      "DKK": "Danimarka kronu",
+      "CHF": "İsviçre frangı",
+      "ISK": "İzlanda kronu",
+      "RSD": "Sırp dinarı"
+    }
+  },
+  "schedule": {
+    "title": "Çalışma saatleri",
+    "subtitle": "Stüdyonuzun açık olduğu gün ve saatleri belirleyin",
+    "scheduleLabel": "Stüdyo programı",
+    "dayOff": "Kapalı"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Stüdyo adı",
+    "clients": "Müşteriler",
+    "attendance": "Katılım",
+    "studioCreated": "Stüdyo oluşturuldu",
+    "chooseDirection": "Bir alan seçin",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-posta",
+    "addressLabel": "Adres",
+    "phonePlaceholder": "+90 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "Ana Cadde 123",
+    "dayOff": "kapalı"
+  }
+}

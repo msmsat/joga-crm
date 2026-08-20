@@ -2,6 +2,7 @@
 
 Запуск из back/:  python -m tests.test_notification_catalog
 """
+import json
 import pathlib
 import re
 
@@ -69,8 +70,20 @@ def test_every_event_can_reach_someone():
         assert "email" in spec.default_channels, f"{event_id}: нет гарантированного канала"
 
 
+def test_every_event_has_labels_in_both_locales():
+    """Событие без строки в locales/*/notifications.json показывается в матрице
+    сырым ключом («events.c10.title») — так в интерфейсе год прожили c10 и c13."""
+    root = pathlib.Path(__file__).resolve().parent.parent.parent / "front/src/locales"
+    for loc in ("ru", "en"):
+        events = json.loads((root / loc / "notifications.json").read_text(encoding="utf-8"))["events"]
+        missing = sorted(set(CATALOG) - set(events))
+        assert not missing, f"{loc}: события без подписи: {missing}"
+        assert not [e for e in events.values() if not e.get("title") or not e.get("desc")]
+
+
 if __name__ == "__main__":
     test_catalog_matches_templates()
+    test_every_event_has_labels_in_both_locales()
     test_every_event_has_a_trigger()
     test_every_event_can_reach_someone()
     test_events_for_role_filters_by_role()

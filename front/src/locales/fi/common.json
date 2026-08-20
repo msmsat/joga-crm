@@ -1,0 +1,149 @@
+{
+  "phoneGate": {
+    "title": "Lisää puhelinnumerosi",
+    "sub": "Puhelin on tilisi toinen yhteystieto: sillä palautat käyttöoikeuden ja saat ilmoitukset. Studion numero ei käy tähän — tämän on oltava sinun."
+  },
+  "buttons": {
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "saveChanges": "Tallenna muutokset",
+    "delete": "Poista",
+    "edit": "Muokkaa",
+    "add": "Lisää",
+    "create": "Luo",
+    "close": "Sulje",
+    "send": "Lähetä",
+    "copy": "Kopioi",
+    "back": "Takaisin",
+    "continue": "Jatka",
+    "finish": "Valmis",
+    "done": "Valmis, sulje",
+    "saving": "Tallennetaan…",
+    "saved": "Tallennettu!",
+    "upload": "Lataa"
+  },
+  "validation": {
+    "required": "Pakollinen kenttä",
+    "minLength": "Vähintään {{n}} merkkiä",
+    "email": "Virheellinen sähköposti",
+    "phone": "Virheellinen puhelinnumero",
+    "contactRequired": "Anna puhelinnumero tai sähköposti",
+    "min": "Oltava vähintään {{n}}",
+    "positive": "Oltava suurempi kuin 0",
+    "checkingContact": "Tarkistetaan…",
+    "emailTaken": "Tämä sähköposti on jo käytössä",
+    "phoneTaken": "Tämä puhelinnumero on jo käytössä",
+    "emailInStudio": "Tämä henkilö työskentelee jo studiossasi",
+    "phoneInStudio": "Tämä henkilö työskentelee jo studiossasi",
+    "accountWillBeLinked": "Tällä yhteystiedolla on jo tili — se liitetään studioosi"
+  },
+  "status": {
+    "online": "Verkossa",
+    "offline": "Ei verkossa",
+    "active": "Aktiivinen",
+    "connected": "Yhdistetty",
+    "inactive": "Ei verkossa",
+    "loading": "Ladataan...",
+    "notFound": "Ei löytynyt",
+    "new": "UUSI"
+  },
+  "fields": {
+    "fullName": "Koko nimi",
+    "firstName": "Etunimi",
+    "lastName": "Sukunimi",
+    "phone": "Puhelin",
+    "email": "Sähköposti",
+    "photo": "Profiilikuva",
+    "salary": "Palkka",
+    "schedule": "Työvuorot",
+    "services": "Palvelut",
+    "position": "Tehtävä",
+    "role": "Rooli",
+    "status": "Tila",
+    "size": "Summa"
+  },
+  "days": {
+    "mon": "Maanantai",
+    "tue": "Tiistai",
+    "wed": "Keskiviikko",
+    "thu": "Torstai",
+    "fri": "Perjantai",
+    "sat": "Lauantai",
+    "sun": "Sunnuntai",
+    "short": {
+      "mon": "Ma",
+      "tue": "Ti",
+      "wed": "Ke",
+      "thu": "To",
+      "fri": "Pe",
+      "sat": "La",
+      "sun": "Su"
+    }
+  },
+  "salary": {
+    "fixed": "Kiinteä",
+    "percent": "% liikevaihdosta",
+    "hourly": "Tuntipalkka"
+  },
+  "toasts": {
+    "phoneCopied": "Puhelinnumero kopioitu",
+    "emailCopied": "Sähköposti kopioitu",
+    "copyFailed": "Kopiointi epäonnistui"
+  },
+  "errors": {
+    "403": "Pääsy evätty",
+    "404": "Ei löytynyt",
+    "500": "Palvelinvirhe, yritä myöhemmin uudelleen",
+    "network": "Ei yhteyttä palvelimeen",
+    "unknown": "Jokin meni pieleen",
+    "loadFailed": "Lataaminen epäonnistui",
+    "retry": "Yritä uudelleen",
+    "invalid_bot_token": "Telegram hylkäsi tämän tunnuksen — varmista, että botti on olemassa",
+    "wa_payment_required": "Maksutapaa ei ole. Ilman korttia WhatsApp Businessissa Meta ei toimita yhtäkään ilmoitusta — avaa WhatsApp-kanavan asetukset ja lisää maksutapa",
+    "wa_verification_required": "Yrityksesi ei ole läpäissyt Metan vahvistusta. Siihen asti numero pysyy rajoitettuna eikä mitään lähde — ohjeet löytyvät WhatsApp-kanavan asetuksista",
+    "wa_templates_pending": "Meta ei ole vielä hyväksynyt malleja. Ilman hyväksyttyä mallia et voi kirjoittaa asiakkaalle ensimmäisenä — odota tarkistuksen valmistumista, tila näkyy WhatsApp-kanavan asetuksissa",
+    "checkout": {
+      "package_not_found": "Pakettia ei löytynyt",
+      "package_inactive": "Pakettia ei enää myydä",
+      "client_not_found": "Asiakasta ei löytynyt",
+      "account_not_found": "Tiliä ei löytynyt",
+      "card_unavailable": "Korttimaksu ei ole vielä käytettävissä",
+      "promo_expired": "Kampanjakoodi ei ole enää voimassa"
+    },
+    "billing": {
+      "tax_details_required": "Lisää studion maa laskutustietoihin — ilman sitä laskua ei voi muodostaa",
+      "nothing_to_pay": "Nykyisestä tilauksesta ei ole mitään maksettavaa",
+      "stripe_not_configured": "Maksuja ei ole määritetty palvelimella",
+      "stripe_error": "Maksupalvelu hylkäsi pyynnön. Yritä uudelleen",
+      "plan_not_paid": "Korkeampi tilaus aktivoituu vain maksamalla",
+      "renew_is_automatic": "Tilaus uusiutuu automaattisesti",
+      "vat_invalid": "VIES ei tunnista tätä ALV-numeroa — tarkista se tai tallenna ilman",
+      "vat_unavailable": "VIES-rekisteri ei vastaa juuri nyt — yritä myöhemmin tai tallenna ilman numeroa",
+      "vat_country_mismatch": "ALV-numeron on alettava valitun maan tunnuksella",
+      "commission_unsettled": "Maksa ensin offline-myynnin provisio: paina provisiolohkossa \"Maksa nyt\". Kun lasku on maksettu, voit siirtyä kiinteään tilaukseen.",
+      "billing_profile_required": "Lisää laskutustietosi — provisiolasku muodostetaan niille."
+    },
+    "loyalty": {
+      "cert_not_found": "Lahjakorttia ei löytynyt",
+      "cert_used": "Lahjakortti on jo käytetty tai se ei kelpaa",
+      "cert_expired": "Lahjakortti on vanhentunut"
+    },
+    "notifications": {
+      "critical_locked": "Tätä ilmoitusta ei voi ottaa pois käytöstä",
+      "last_channel": "Vähintään yksi toimituskanava vaaditaan",
+      "unknown_event": "Tuntematon tapahtuma",
+      "not_personal": "Henkilökohtaiset asetukset eivät muuta pakollisia ilmoituksia"
+    },
+    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle."
+  },
+  "units": {
+    "min": "min",
+    "sqm": "m²",
+    "perHour": "/h"
+  },
+  "errorBoundary": {
+    "title": "Jokin meni pieleen",
+    "description": "Tällä sivulla tapahtui virhe. Kokeile ladata uudelleen — muu sovellus toimii edelleen.",
+    "reload": "Lataa sivu uudelleen"
+  }
+}

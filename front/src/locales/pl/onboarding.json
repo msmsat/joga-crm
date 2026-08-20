@@ -1,0 +1,160 @@
+{
+  "wizard": {
+    "stepOf": "Krok {{step}} z {{total}}",
+    "securityNote": "Twoje dane są chronione i nigdy nie są przekazywane osobom trzecim",
+    "back": "Wstecz",
+    "continue": "Dalej",
+    "finish": "Zacznij pracę",
+    "saving": "Zapisywanie...",
+    "progress": "{{step}}/5 — zajmuje mniej niż 3 minuty",
+    "regionRequired": "Ustaw swoje ustawienia regionalne",
+    "networkError": "Błąd sieci podczas zapisywania danych.",
+    "phoneTakenTitle": "Numer jest już zajęty",
+    "phoneTaken": "Ten numer telefonu jest już zarejestrowany",
+    "errorTitle": "Błąd",
+    "changeNumber": "Zmień numer",
+    "gotIt": "Rozumiem"
+  },
+  "steps": {
+    "identity": {
+      "title": "O studiu",
+      "desc": "Nazwa, opis i styl wizualny Twojej marki."
+    },
+    "activity": {
+      "title": "Działalność",
+      "desc": "Wybierz kierunek, żebyśmy dopasowali CRM do Ciebie."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "desc": "Adres, telefon i linki dla Twoich klientów."
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "desc": "Region, waluta i format daty."
+    },
+    "schedule": {
+      "title": "Godziny otwarcia",
+      "desc": "Ustaw dni i godziny pracy studia."
+    }
+  },
+  "identity": {
+    "welcome": "Witamy",
+    "subtitle": "Kilka minut konfiguracji — i Twoja przestrzeń robocza jest gotowa",
+    "replaceLogo": "Zmień logo",
+    "uploadLogo": "Prześlij logo",
+    "removeLogo": "Usuń",
+    "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "nameLabel": "Nazwa studia lub firmy",
+    "namePlaceholder": "Np.: Studio Forma",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Krótko o studiu, stylu pracy, tym, co wyróżnia...",
+    "newBadge": "NOWE"
+  },
+  "activity": {
+    "title": "Rodzaj działalności",
+    "subtitle": "Wybierz kierunek — dopasujemy CRM do Ciebie",
+    "comingSoon": "Wkrótce: barbershop, fitness, taniec i więcej",
+    "types": {
+      "yoga": {
+        "label": "Joga",
+        "description": "Hatha, Ashtanga, Vinyasa"
+      },
+      "pilates": {
+        "label": "Pilates",
+        "description": "Reformer, pilates na macie"
+      }
+    }
+  },
+  "contact": {
+    "title": "Dane kontaktowe",
+    "subtitle": "Klienci zobaczą te dane przy rezerwacji online",
+    "phoneLabel": "Telefon studia",
+    "checkingPhone": "Sprawdzanie numeru...",
+    "addressLabel": "Adres",
+    "emailLabel": "E-mail",
+    "websiteLabel": "Strona internetowa",
+    "note": "Wszystkie pola poza telefonem są opcjonalne. Możesz je uzupełnić później w ustawieniach."
+  },
+  "settings": {
+    "title": "Ustawienia regionalne",
+    "subtitle": "Można zmienić później w ustawieniach studia",
+    "timezoneLabel": "Strefa czasowa",
+    "timezonePlaceholder": "Wybierz strefę czasową",
+    "languageLabel": "Język",
+    "languagePlaceholder": "Język",
+    "currencyLabel": "Waluta",
+    "currencyPlaceholder": "Waluta",
+    "dateFormatLabel": "Format daty",
+    "dateFormatPlaceholder": "Format",
+    "firstDayLabel": "Pierwszy dzień tygodnia",
+    "timezones": {
+      "UTC+3": "Moskwa, Mińsk, Stambuł (UTC+3)",
+      "UTC+4": "Dubaj, Samara, Tbilisi (UTC+4)",
+      "UTC+5": "Taszkent, Jekaterynburg, Karaczi (UTC+5)",
+      "UTC+6": "Ałmaty, Astana, Omsk (UTC+6)",
+      "UTC+7": "Nowosybirsk, Bangkok, Dżakarta (UTC+7)",
+      "UTC+8": "Irkuck, Singapur, Pekin (UTC+8)",
+      "UTC+9": "Jakuck, Tokio, Seul (UTC+9)",
+      "UTC+10": "Władywostok, Sydney (UTC+10)",
+      "UTC+11": "Magadan, Wyspy Salomona (UTC+11)",
+      "UTC+12": "Kamczatka, Auckland (UTC+12)",
+      "UTC+13": "Samoa, Tonga (UTC+13)",
+      "UTC+14": "Kiribati (UTC+14)",
+      "UTC-11": "Midway, Niue (UTC-11)",
+      "UTC-10": "Hawaje (UTC-10)",
+      "UTC-9": "Alaska (UTC-9)",
+      "UTC-8": "Los Angeles, Vancouver (UTC-8)",
+      "UTC-7": "Denver, Phoenix (UTC-7)",
+      "UTC-6": "Chicago, Meksyk (UTC-6)",
+      "UTC-5": "Nowy Jork, Toronto (UTC-5)",
+      "UTC-4": "Santiago, Halifax (UTC-4)",
+      "UTC-3": "Buenos Aires, São Paulo (UTC-3)",
+      "UTC-2": "Georgia Południowa (UTC-2)",
+      "UTC-1": "Azory (UTC-1)",
+      "UTC+0": "Londyn, Lizbona (UTC+0)",
+      "UTC+1": "Berlin, Paryż, Warszawa (UTC+1)",
+      "UTC+2": "Kijów, Ateny, Kair (UTC+2)"
+    },
+    "currencies": {
+      "RUB": "Rubel",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hrywna",
+      "GBP": "Funt",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Korona czeska",
+      "PLN": "Złoty",
+      "HUF": "Forint",
+      "RON": "Lej",
+      "BGN": "Lew",
+      "SEK": "Korona szwedzka",
+      "NOK": "Korona norweska",
+      "DKK": "Korona duńska",
+      "CHF": "Frank szwajcarski",
+      "ISK": "Korona islandzka",
+      "RSD": "Dinar serbski"
+    }
+  },
+  "schedule": {
+    "title": "Godziny otwarcia",
+    "subtitle": "Ustaw dni i godziny pracy studia",
+    "scheduleLabel": "Grafik studia",
+    "dayOff": "Zamknięte"
+  },
+  "illustration": {
+    "studioNamePlaceholder": "Nazwa studia",
+    "clients": "Klienci",
+    "attendance": "Frekw.",
+    "studioCreated": "Studio utworzone",
+    "chooseDirection": "Wybierz kierunek",
+    "phoneLabel": "Telefon",
+    "emailLabel": "E-mail",
+    "addressLabel": "Adres",
+    "phonePlaceholder": "+48 (___) ___",
+    "emailPlaceholder": "studio@mail.com",
+    "addressPlaceholder": "ul. Główna 123",
+    "dayOff": "zamknięte"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Nem Ön az?",
+    "login": "Bejelentkezés másik fiókkal"
+  },
+  "card": {
+    "roleLine": "Meghívó a csapatba · {{role}}"
+  },
+  "title": {
+    "new": "Üdvözöljük, {{name}}",
+    "existing": "Örülünk, hogy visszatért, {{name}}"
+  },
+  "sub": {
+    "new": "Adja meg a jelszót, amelyet a stúdió vezetőjétől kapott.",
+    "existing": "A meghívó elfogadásához adja meg a(z) {{email}} jelszavát."
+  },
+  "switch": {
+    "notice": "Jelenleg {{current}} néven van bejelentkezve. Ez a meghívó a(z) {{next}} fiókhoz tartozik — elfogadásával átvált arra a fiókra. A profiljából bármikor visszaválthat."
+  },
+  "fields": {
+    "newPassword": "Jelszó",
+    "newPasswordPlaceholder": "A vezetőtől kapott jelszó",
+    "password": "Jelszó",
+    "passwordPlaceholder": "A Velora-jelszava",
+    "phone": "Telefonszám",
+    "phoneHint": "Még nincs meg a száma — adja meg az országhívóval együtt",
+    "show": "Megjelenítés",
+    "hide": "Elrejtés"
+  },
+  "cta": {
+    "enter": "Belépés a stúdióba",
+    "accept": "Meghívó elfogadása"
+  },
+  "forgotHint": "Elfelejtette a jelszavát?",
+  "forgotLink": "Hozzáférés helyreállítása",
+  "expired": {
+    "title": "A hivatkozás érvénytelen",
+    "sub": "A meghívó lejárt vagy visszavonták. Kérje meg a stúdió tulajdonosát, hogy küldje el újra.",
+    "cta": "Tovább a bejelentkezéshez"
+  },
+  "consent": {
+    "text": "Elfogadom a",
+    "terms": "Felhasználási feltételeket",
+    "and": "és az",
+    "privacy": "Adatvédelmi tájékoztatót"
+  },
+  "errors": {
+    "noToken": "A hivatkozás nem tartalmaz meghívókódot — nyissa meg teljes egészében az e-mailből.",
+    "network": "Kapcsolódási hiba",
+    "passwordRequired": "Adja meg a jelszavát",
+    "phoneRequired": "Adja meg a telefonszámát az országhívóval együtt",
+    "consentRequired": "Szükség van a hozzájárulására"
+  },
+  "newAccountHint": "A jelszó nem szerepel az e-mailben — pontosan ez a lényeg: önmagában egy hivatkozás nem elég a belépéshez. Ha nem kapott jelszót, kérdezze meg a vezetőjét.",
+  "decline": {
+    "cta": "Meghívó elutasítása",
+    "confirm": "A(z) „{{studio}}” meghívója törlődik. Nem csatlakozik a csapathoz, és csak a stúdió tulajdonosa küldheti el újra.",
+    "keep": "Megtartás",
+    "confirmCta": "Elutasítás",
+    "pending": "Elutasítás…"
+  },
+  "declined": {
+    "title": "Meghívó elutasítva",
+    "sub": "Nem adtuk hozzá a stúdióhoz. Ha ez tévedés volt, kérje meg a tulajdonost, hogy küldje el újra a meghívót."
+  }
+}

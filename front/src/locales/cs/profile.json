@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Váš profil",
+    "sub": "Spravujte osobní údaje a relace"
+  },
+  "personalInfo": {
+    "heading": "Osobní údaje",
+    "emailLocked": "E-mail je vaše přihlašovací jméno a zde jej nelze změnit"
+  },
+  "security": {
+    "changePassword": "Změnit heslo",
+    "logout": "Odhlásit se"
+  },
+  "accounts": {
+    "title": "Moje studia",
+    "count_one": "{{count}} studio",
+    "count_few": "{{count}} studia",
+    "count_other": "{{count}} studií",
+    "enter": "Otevřít",
+    "login": "Přihlásit se",
+    "register": "Registrovat se",
+    "addStudio": "Přidat studio",
+    "addStudioSub": "Nový pracovní prostor — stáváte se jeho vlastníkem"
+  },
+  "session": {
+    "current": "Aktuální relace",
+    "lastActive": "Aktivní {{time}}"
+  },
+  "toasts": {
+    "infoSaved": "Osobní údaje byly úspěšně aktualizovány"
+  },
+  "otherAccount": {
+    "title": "Jiný účet",
+    "sub": "Přihlášení jako někdo jiný ukončí aktuální relaci v tomto prohlížeči — vrátit se můžete běžným přihlášením.",
+    "recentTitle": "Už jste se přihlašovali",
+    "return": "Přihlásit se",
+    "forget": "Zapomenout účet"
+  }
+}

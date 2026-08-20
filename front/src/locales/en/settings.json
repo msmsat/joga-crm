@@ -47,8 +47,12 @@
       "title": "Language & region",
       "subtitle": "Interface localization settings",
       "timezone": "Timezone",
+      "timezoneSearch": "City or offset",
+      "timezoneNotFound": "No timezone found",
       "currency": "Currency",
       "language": "Interface language",
+      "languageSearch": "Search language",
+      "languageNotFound": "No language found",
       "dateFormat": "Date format",
       "firstDay": "First day of week",
       "firstDayLabels": [
@@ -81,7 +85,9 @@
     },
     "language": {
       "title": "Interface language",
-      "subtitle": "Your personal language — does not affect studio settings"
+      "subtitle": "Your personal language — does not affect studio settings",
+      "search": "Search language",
+      "empty": "No language found"
     }
   },
   "notifications": {

@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "question": "Etkö sinä?",
+    "login": "Kirjaudu toiselle tilille"
+  },
+  "card": {
+    "roleLine": "Tiimikutsu · {{role}}"
+  },
+  "title": {
+    "new": "Hei, {{name}}",
+    "existing": "Tervetuloa takaisin, {{name}}"
+  },
+  "sub": {
+    "new": "Syötä salasana, jonka sait studion vastaavalta.",
+    "existing": "Syötä osoitteen {{email}} salasana hyväksyäksesi kutsun."
+  },
+  "switch": {
+    "notice": "Olet kirjautunut tilillä {{current}}. Tämä kutsu on tilille {{next}} — hyväksyminen vaihtaa sinut siihen tiliin. Voit vaihtaa takaisin profiilistasi."
+  },
+  "fields": {
+    "newPassword": "Salasana",
+    "newPasswordPlaceholder": "Vastaavalta saatu salasana",
+    "password": "Salasana",
+    "passwordPlaceholder": "Velora-salasanasi",
+    "phone": "Puhelinnumero",
+    "phoneHint": "Meillä ei ole vielä numeroasi — syötä se maatunnuksen kanssa",
+    "show": "Näytä",
+    "hide": "Piilota"
+  },
+  "cta": {
+    "enter": "Kirjaudu studioon",
+    "accept": "Hyväksy kutsu"
+  },
+  "forgotHint": "Unohditko salasanasi?",
+  "forgotLink": "Palauta käyttöoikeus",
+  "expired": {
+    "title": "Linkki ei kelpaa",
+    "sub": "Kutsu on vanhentunut tai peruttu. Pyydä studion omistajaa lähettämään se uudelleen.",
+    "cta": "Siirry kirjautumiseen"
+  },
+  "consent": {
+    "text": "Hyväksyn",
+    "terms": "käyttöehdot",
+    "and": "ja",
+    "privacy": "tietosuojakäytännön"
+  },
+  "errors": {
+    "noToken": "Linkissä ei ole kutsukoodia — avaa se kokonaisena sähköpostista.",
+    "network": "Yhteysvirhe",
+    "passwordRequired": "Syötä salasanasi",
+    "phoneRequired": "Syötä puhelinnumerosi maatunnuksen kanssa",
+    "consentRequired": "Suostumuksesi vaaditaan"
+  },
+  "newAccountHint": "Salasana ei ole sähköpostissa — juuri siinä on ideana: pelkkä linkki ei riitä sisäänpääsyyn. Jos et saanut salasanaa, kysy vastaavalta.",
+  "decline": {
+    "cta": "Hylkää kutsu",
+    "confirm": "Kutsu studioon ”{{studio}}” poistetaan. Et liity tiimiin, ja vain studion omistaja voi lähettää sen uudelleen.",
+    "keep": "Säilytä",
+    "confirmCta": "Hylkää",
+    "pending": "Hylätään…"
+  },
+  "declined": {
+    "title": "Kutsu hylätty",
+    "sub": "Emme lisänneet sinua studioon. Jos se oli virhe, pyydä omistajaa lähettämään kutsu uudelleen."
+  }
+}

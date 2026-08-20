@@ -1,0 +1,373 @@
+{
+  "legal": {
+    "terms": "Podmínky služby",
+    "privacy": "Zásady ochrany osobních údajů"
+  },
+  "tabs": {
+    "plans": "Tarify a ceny",
+    "invoices": "Historie plateb",
+    "method": "Způsob platby"
+  },
+  "tabsShort": {
+    "plans": "Tarify",
+    "invoices": "Historie",
+    "method": "Platba"
+  },
+  "paymentsHistory": {
+    "title": "Kompletní historie plateb",
+    "subtitle": "Všechny faktury tohoto studia",
+    "clearFilter": "Zrušit",
+    "loadMore": "Načíst další"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "banner": {
+    "trialEnds": "Zkušební období končí {{date}} — vyberte si tarif",
+    "renews": "Předplatné {{plan}} se obnoví {{date}}",
+    "expires": "Předplatné {{plan}} končí {{date}}",
+    "choosePlan": "Vybrat tarif",
+    "dismiss": "Skrýt"
+  },
+  "paymentReturn": {
+    "done": "Platba proběhla — tarif {{plan}} je aktivní.",
+    "processing": "Zpracováváme platbu — předplatné se aktivuje během pár minut."
+  },
+  "header": {
+    "eyebrow": "Velora · Fakturace",
+    "title": "Tarify a fakturace",
+    "subtitle": "Spravujte předplatné, platební metody a historii plateb",
+    "totalSpent": "Celkem utraceno",
+    "monthsWithUs": "Měsíců s námi",
+    "saved": "Ušetřeno",
+    "nextCharge": "Další platba",
+    "currentPlan": "AKTUÁLNÍ TARIF",
+    "noPlanName": "Bez tarifu",
+    "noPlan": "Žádné aktivní předplatné",
+    "active": "Aktivní",
+    "activeUntil": "Aktivní · do {{date}}",
+    "trialPlanName": "Zkušební tarif",
+    "trial": "Zkušební období",
+    "trialUntil": "Zkušební období · do {{date}}",
+    "expired": "Vypršelo",
+    "percentRate": "{{rate}} % z tržeb",
+    "modePercent": "Procentní tarif",
+    "modeFixed": "Pevný",
+    "modeCombo": "Kombinovaný"
+  },
+  "mode": {
+    "title": "Model platby",
+    "subscription": "Pevné předplatné",
+    "percent": "% z tržeb",
+    "combo": "Pevná část + %",
+    "short": {
+      "subscription": "Pevný",
+      "percent": "Procenta",
+      "combo": "Kombi"
+    },
+    "descriptions": {
+      "subscription": "Platíte jednu částku měsíčně. Předvídatelné a výhodné.",
+      "percent": "Bez pevného poplatku: {{rate}} % z každé tržby, včetně hotovosti.",
+      "combo": "Poloviční předplatné + {{rate}} % z každé tržby, včetně hotovosti."
+    },
+    "badges": {
+      "popular": "Oblíbené",
+      "flexible": "Flexibilní"
+    },
+    "percentCard": {
+      "title": "Model „3 % z tržeb“",
+      "description": "Platíte, jen když vyděláváte: 3 % z každé tržby, žádné pevné předplatné. Online platby se dělí okamžitě; hotovost a vklady se načítají a přijdou jednou měsíčně na jedné faktuře.",
+      "noFixed": "Bez pevného poplatku",
+      "payForResult": "Platíte za výsledek",
+      "oneClick": "Aktivace na jedno kliknutí",
+      "cta": "Aktivovat model 3 %",
+      "ctaShort": "Aktivovat 3 %"
+    },
+    "activateSuccess": "Model platby byl změněn",
+    "activateError": "Model platby se nepodařilo změnit",
+    "alreadyActive": "Tento model platby už je aktivní — níže můžete tarif obnovit nebo změnit",
+    "confirmSwitchTitle": "Změnit model platby?",
+    "confirmSwitchMessage": "Vaše předplatné je aktivní. Změna modelu platí okamžitě a zbytek zaplaceného období PROPADÁ celý: nevyužité dny se nevracejí ani nepřenášejí.",
+    "termsTitle": "Potvrďte podmínky tarifu",
+    "termsMessage": "V tomto tarifu si platforma sráží {{rate}} % z každé tržby.\n\nU online plateb se poplatek strhává automaticky v okamžiku platby. U hotovosti, terminálu a dobití vkladu se NESTRHÁVÁ hned — načítá se a jednou měsíčně dostanete samostatnou fakturu.\n\nNa její zaplacení máte {{days}} dní. Pokud nebude uhrazena včas, přístup do CRM i do klientské mini-aplikace se pozastaví, dokud ji nezaplatíte.\n\nAktuální dlužnou částku vidíte ve Fakturaci; zaplatit můžete kdykoli, i předem.",
+    "termsConfirm": "Souhlasím s podmínkami",
+    "termsMinimum": "Minimální měsíční platba je {{amount}} {{currency}}. Pokud si platforma za kalendářní měsíc vydělala na vašem studiu méně (například přes CRM nebyly žádné tržby), doúčtujeme vám rozdíl. Vyděláte-li víc než minimum, faktura nepřijde. Nezaplacená minimální platba pozastaví přístup stejně jako nezaplacená faktura za provizi.",
+    "termsBurn": "POZOR: máte nevyčerpané zaplacené období. Změna modelu fakturace ho celé RUŠÍ — nevyužité dny se nevracejí ani nepřenášejí.",
+    "termsCombo": "Změna je NÁKUP: hned po potvrzení uvidíte částku k úhradě. Zbytek aktuálního zaplaceného období propadá — nevrací se ani nepřenáší. Model pevná část + % se zapne AŽ po zaplacení; do té doby zůstává váš tarif beze změny a nic se nestrhává."
+  },
+  "combo": {
+    "rateBadge": "{{rate}} %",
+    "summary": "Pevně {{fixed}}/měs. + {{rate}} % z tržeb (hotovost se fakturuje měsíčně)",
+    "cta": "Aktivovat kombinovaný tarif",
+    "ctaShort": "Aktivovat kombi"
+  },
+  "period": {
+    "1": "1 měsíc",
+    "6": "6 měsíců",
+    "12": "1 rok",
+    "24": "2 roky",
+    "title": "Období platby",
+    "discountActive": "Sleva {{percent}} % je aktivní",
+    "noDiscount": "Bez slevy",
+    "discountLabel": "Sleva −{{percent}} %"
+  },
+  "calculator": {
+    "title": "Parametry výpočtu",
+    "monthlyTurnover": "Váš měsíční online obrat",
+    "turnoverRangeMin": "50 tis.",
+    "turnoverRangeMax": "3 mil.+",
+    "chooseFeeLabel": "Vyberte sazbu provize (ovlivňuje funkce)",
+    "feeOptions": {
+      "basic": "Basic",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "chooseFixedLabel": "Vyberte základní pevnou část (acquiring je vždy 3 %)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "EKONOMIKA TARIFU",
+    "economyComboTitle": "EKONOMIKA KOMBINOVANÉHO TARIFU",
+    "turnover": "Obrat studia",
+    "systemFee": "Poplatek systému",
+    "totalMonthlyPayment": "CELKEM MĚSÍČNĚ",
+    "onlyPayForResult": "Neplatíte pevný poplatek, jen za výsledek",
+    "activatePercent": "Aktivovat model {{percent}} %",
+    "baseSubscription": "Základní předplatné (Fix)",
+    "acquiringFee": "Acquiring / poplatek",
+    "activateCombo": "Aktivovat kombinovaný tarif"
+  },
+  "planCards": {
+    "bestChoice": "Nejlepší volba",
+    "current": "Aktuální",
+    "enterprise": "Enterprise",
+    "perMonth": "/ měs.",
+    "currentPlan": "Aktuální tarif",
+    "choosePlan": "Vybrat tarif",
+    "staffLimit": "Až {{count}} zaměstnanců",
+    "staffUnlimited": "Neomezený počet zaměstnanců"
+  },
+  "paymentSchedule": {
+    "title": "Splátkový kalendář",
+    "total": "Celkem k úhradě",
+    "morePayments": "+ dalších {{count}} plateb po {{amount}}",
+    "processing": "Přesměrováváme na platbu…",
+    "payFor": "Zaplatit za {{count}} měs.",
+    "vatNote": "Bez DPH — daň se přičte při platbě podle vaší země"
+  },
+  "trust": {
+    "title": "Proč nám věří 2 400+ firem",
+    "reviews": [
+      {
+        "text": "Přešli jsme z Altegio. Rozdíl je jako mezi taxíkem a soukromým letadlem.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Nejlepší je, že přesně vím, kolik každý měsíc platím. Žádná překvapení.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Podpora odpověděla za 4 minuty. Nikde jinde jsem to nezažila.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Cena {{price}}/měs.",
+    "discountNote": " sleva {{percent}} % při platbě na {{period}} měs.",
+    "planLabel": "Tarif",
+    "periodLabel": "Období",
+    "periodValue_one": "{{count}} měsíc",
+    "periodValue_few": "{{count}} měsíce",
+    "periodValue_other": "{{count}} měsíců",
+    "discountLabel": "Sleva",
+    "scheduledBadge": "Od {{date}} — tarif „{{plan}}“",
+    "vatNote": "Bez DPH — daň se přičte při platbě podle údajů vaší firmy; firmy z EU s DIČ mají reverse charge."
+  },
+  "method": {
+    "notLinked": "Nepřipojeno",
+    "badgeTitle": "Platební metoda je zabezpečena",
+    "tokenSub": "Token poskytovatele · platí do {{expiry}}",
+    "tokenNote": "Skutečné údaje karty uchovává poskytovatel plateb (PCI DSS L1). My držíme jen jednorázový token pro obnovení.",
+    "securityTitle": "Standardy ochrany dat",
+    "security": {
+      "pciDss": "Šifrování PCI DSS Level 1",
+      "secure3d": "Ochrana transakcí 3D Secure",
+      "noStorage": "Údaje karty se nikdy nedostanou na naše servery",
+      "autoLink": "Karta se připojí při první platbě"
+    },
+    "noCardDetail": "Údaje nemusíte zadávat zvlášť — platba probíhá na zabezpečené stránce Stripe.",
+    "renewDone": "Faktura vytvořena — platba se zpracovává",
+    "renewBusy": "Vytvářím fakturu…",
+    "renewSuccess": "Faktura na obnovení byla vytvořena",
+    "renewError": "Fakturu se nepodařilo vytvořit. Zkuste to prosím znovu.",
+    "renewNow": "Obnovit hned kartou •••• {{last4}}",
+    "autopayTitle": "Nastavení automatické platby",
+    "autopaySuccess": "Nastavení uloženo",
+    "autopayError": "Nastavení se nepodařilo uložit. Zkuste to prosím znovu.",
+    "autopay": {
+      "cardOnly": "Dostupné při platbě kartou",
+      "autoRenew": {
+        "label": "Automatické obnovení",
+        "desc": "Vypněte pro zrušení na konci zaplaceného období",
+        "until": "Předplatné se neobnoví — přístup do {{date}}"
+      },
+      "emailNotify": {
+        "label": "E-mailová oznámení",
+        "desc": "Účtenka přijde e-mailem po každé platbě"
+      },
+      "remind3d": {
+        "label": "Připomenout 3 dny předem",
+        "desc": "Před automatickým stržením vám dáme vědět"
+      },
+      "sms": {
+        "label": "SMS upozornění",
+        "desc": "Při stržení přijde SMS"
+      }
+    },
+    "portal": {
+      "title": "Fakturační údaje a DPH",
+      "subtitle": "Faktury, připojená karta a historie plateb jsou v zákaznickém portálu Stripe.",
+      "cta": "Otevřít na Stripe"
+    },
+    "ibanBadgeLabel": "Bankovní převod (SEPA)",
+    "ibanBadgeNote": "Faktury chodí e-mailem s odkazem na platbu — z karty se nic automaticky nestrhává. Zaplatit můžete i předem přímo z faktury."
+  },
+  "invoices": {
+    "title": "Historie plateb",
+    "totalPaid": "celkem zaplaceno {{amount}}",
+    "exportCsv": "Export CSV",
+    "exportError": "CSV se nepodařilo exportovat. Zkuste to prosím znovu.",
+    "receiptError": "Účtenku se nepodařilo otevřít. Zkuste to prosím znovu.",
+    "invoiceNo": "Faktura č. {{id}}",
+    "methodCard": "Zaplaceno kartou",
+    "methodIban": "Zaplaceno bankovním převodem (IBAN)",
+    "syncHint": "Ověřit stav u platební služby",
+    "syncChanged": "Stav aktualizován: {{status}}",
+    "syncUnchanged": "Platební služba potvrdila stejný stav",
+    "syncError": "Stav se nepodařilo ověřit. Zkuste to prosím znovu.",
+    "kindOfflineFee": "Provize z offline prodejů",
+    "kindMinFee": "Minimální měsíční poplatek",
+    "kindOnlineFee": "Provize z online plateb",
+    "methodWithheld": "Strženo Stripe při platbě"
+  },
+  "table": {
+    "date": "Datum",
+    "description": "Popis",
+    "amount": "Částka",
+    "status": "Stav",
+    "receipt": "Účtenka"
+  },
+  "status": {
+    "paid": "Zaplaceno",
+    "pending": "Čeká",
+    "failed": "Neúspěšné",
+    "refunded": "Vráceno"
+  },
+  "empty": {
+    "noInvoices": "Zatím žádné faktury — objeví se po první platbě.",
+    "noCard": "Karta se zobrazí automaticky po první platbě.",
+    "monthsWithUs": "Zatím jste si předplatné nekoupili",
+    "noData": "Žádná data"
+  },
+  "savings": {
+    "title": "Vaše úspora",
+    "prepayTitle": "Vaše úspora při platbě předem",
+    "emptyState": "Vyberte období od 6 měsíců a začněte šetřit",
+    "youSave": "Ušetříte {{amount}} za {{months}} měs.",
+    "freeMonths": "To je jako {{count}} měs. zdarma",
+    "amountLabel": "úspora {{amount}}",
+    "comparedToMonthly": "oproti měsíční platbě",
+    "forMonths_one": "Na {{count}} měsíc",
+    "forMonths_few": "Na {{count}} měsíce",
+    "forMonths_other": "Na {{count}} měsíců"
+  },
+  "pay": "Zaplatit",
+  "continuePlan": "Pokračovat v tarifu",
+  "payModal": {
+    "titleNew": "Spustit tarif {{plan}}",
+    "titleSwitch": "Přejít na {{plan}}",
+    "titleRenew": "Obnovit {{plan}}",
+    "totalLabel": "Váš tarif bude stát",
+    "burnWarning": "Přechod na jiný tarif restartuje období: zbytek tarifu {{plan}} PROPADÁ — nevrací se ani nepřenáší. Obnovení stejného tarifu ho zachová.",
+    "switched": "Tarif změněn: není co platit — přechod pokryl zbytek aktuálního období.",
+    "renewNote": "Jde o obnovení stejného tarifu: zakoupené měsíce se přičtou k aktuálnímu zaplacenému období. Nic nepropadá.",
+    "cardNote": "Platba kartou na zabezpečené stránce Stripe · vrácení do 7 dnů",
+    "freeUntil": "Do {{date}} se nic nestrhává: zbývá vám {{count}} dní už zaplaceného období. Fakturace začne tímto dnem."
+  },
+  "offlineFee": {
+    "title": "Poplatek z offline prodejů",
+    "accruing": "Načítá se z hotovosti a vkladů sazbou {{rate}} %. Fakturuje se měsíčně, splatnost {{days}} dní.",
+    "due": "Faktura vystavena. Zbývá dní na zaplacení: {{days}}.",
+    "suspended": "Platba po splatnosti — přístup do CRM a mini-aplikace je pozastaven.",
+    "pay": "Zaplatit",
+    "suspendedMin": "Minimální měsíční poplatek po splatnosti — přístup do CRM a mini-aplikace je pozastaven.",
+    "alsoAccruing": "Navíc se tento měsíc načítá: {{amount}} — půjde do další faktury.",
+    "minimum": "Minimální měsíční poplatek je {{amount}}. Vyděláte-li za měsíc méně, doplatíte rozdíl; vyděláte-li víc, faktura nepřijde.",
+    "pendingBill": "Načteno podle předchozího modelu, čeká na fakturu.",
+    "notBilledYet": "Faktura zatím nebyla vystavena: načtená částka je pod minimální velikostí faktury nebo se ještě připravuje. Nic se neztrácí — půjde do další faktury."
+  },
+  "trial": {
+    "title": "Nabídka pro nová studia",
+    "subtitle": "Vaše studio bylo právě vytvořeno",
+    "headline": "{{days}} dní zdarma",
+    "noCard": "Bez karty — teď se nic neplatí",
+    "perks": {
+      "allModules": "Plný přístup ke všem modulům: rozvrh, klienti, finance, oznámení a Velora AI",
+      "noCommitment": "Bez závazků: pokud vám to nesedne, prostě neobnovujte",
+      "keepData": "Vše, co si během zkušebního období nastavíte, vám zůstane"
+    },
+    "activate": "Aktivovat",
+    "decline": "Odmítnout",
+    "cardHint": "Zkušební období tohoto studia jste ještě neaktivovali. Zůstává dostupné, dokud si nekoupíte tarif."
+  },
+  "profile": {
+    "title": "Fakturační údaje",
+    "editTitle": "Upravit fakturační údaje",
+    "subtitle": "Vaše adresa jde na fakturu a určuje sazbu daně. Ukládá se k účtu — v jiném studiu se na ni už neptáme.",
+    "subtitlePay": "Vyplňte jednou a příště platba proběhne rovnou. Vaše adresa jde na fakturu a určuje sazbu daně.",
+    "cardTitle": "Fakturační údaje",
+    "cardSubtitle": "Ukládají se k účtu a používají se ve všech vašich studiích. Takto vypadají na faktuře.",
+    "cardEmpty": "Zatím nevyplněno — zeptáme se před první platbou. Můžete je doplnit hned.",
+    "add": "Doplnit fakturační údaje",
+    "edit": "Upravit",
+    "save": "Uložit",
+    "saveAndPay": "Uložit a pokračovat k platbě",
+    "cancel": "Zrušit",
+    "saved": "Fakturační údaje uloženy",
+    "vatNone": "Neuvedeno",
+    "fields": {
+      "country": "Země nebo region",
+      "countryPlaceholder": "Vyberte zemi",
+      "address": "Adresa",
+      "line1": "Adresa, řádek 1",
+      "line1Placeholder": "Ulice a číslo",
+      "line2": "Adresa, řádek 2 — nepovinné",
+      "line2Placeholder": "Byt, patro, jednotka apod.",
+      "postalCode": "PSČ",
+      "postalCodePlaceholder": "110 00",
+      "city": "Město",
+      "cityPlaceholder": "Praha",
+      "vat": "DIČ — nepovinné",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Jen pro firmy. Číslo se při uložení ověřuje v registru EU (VIES) — neověřená nepřijímáme. S platným číslem se firmě z jiné země EU fakturuje bez daně (reverse charge). Fyzické osoby ho nemají — nechte prázdné.",
+      "countrySearch": "Začněte psát název",
+      "countryNotFound": "Země nenalezena",
+      "vatOutsideEu": "DIČ nepožadujeme: mimo EU určuje daň země plátce, ne jeho číslo, takže na fakturu to nemá vliv.",
+      "vatPending": "Vaše číslo je uloženo, ale registr EU byl v tu chvíli nedostupný, takže zatím není potvrzeno a na další faktuře bude plná DPH. Nemusíte ho zadávat znovu: ověřujeme dál a jakmile registr odpoví, daň se přestane účtovat. U už zaplacené faktury vám daň vrátí podpora."
+    },
+    "errors": {
+      "required": "Toto pole je povinné"
+    },
+    "preview": {
+      "invoice": "Faktura",
+      "billTo": "Odběratel",
+      "note": "Takto se vaše údaje objeví na každé faktuře. Můžete je kdykoli změnit v Tarif a platba → Způsob platby."
+    }
+  }
+}

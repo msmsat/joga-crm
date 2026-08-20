@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "U studiju nema takvih zaposlenika",
+    "noData": "Nema podataka",
+    "ownerOnly": "Pristup je ograničen vašom ulogom",
+    "loadError": "Učitavanje podataka nije uspjelo",
+    "retry": "Pokušaj ponovno"
+  },
+  "metrics": {
+    "revenue": "Prihod ovog mjeseca",
+    "clients": "Aktivni klijenti",
+    "bookings": "Rezervacije ovog mjeseca",
+    "retention": "Stopa zadržavanja",
+    "lessons": "Termini ovog mjeseca",
+    "attendance": "Dolasci ovog mjeseca",
+    "fill_rate": "Popunjenost",
+    "rating": "Prosječna ocjena",
+    "active_clients": "Aktivni klijenti",
+    "more": "Detalji"
+  },
+  "today": {
+    "titleTrainer": "Moji današnji termini",
+    "titleAdmin": "Današnji raspored",
+    "subtitle": "{{count}} termina · {{booked}} od {{spots}} mjesta",
+    "subtitle_one": "{{count}} termin · {{booked}} od {{spots}} mjesta",
+    "openJournal": "Otvori dnevnik",
+    "empty": "Danas nema termina",
+    "emptyHintTrainer": "Slobodan dan — nove rezervacije pojavit će se ovdje",
+    "emptyHintAdmin": "Za danas nema ništa u rasporedu"
+  },
+  "chart": {
+    "byDay": "po danu",
+    "byMonth": "po mjesecu",
+    "subWeek": "Tekući tjedan",
+    "subMonth": "Tekući mjesec",
+    "subYear": "Zadnjih 12 mjeseci",
+    "tabWeek": "Tjedan",
+    "tabMonth": "Mjesec",
+    "tabYear": "Godina",
+    "noData": "Nema podataka za ovo razdoblje",
+    "retentionNA": "Grafikon zadržavanja nije dostupan"
+  },
+  "tasks": {
+    "title": "Zadaci",
+    "empty": "Nema zadataka",
+    "done": "Gotovo",
+    "add": "Dodaj zadatak",
+    "namePlaceholder": "Naziv zadatka…",
+    "cancel": "Odustani",
+    "submit": "Dodaj",
+    "priority": {
+      "low": "Nizak",
+      "medium": "Srednji",
+      "high": "Visok"
+    },
+    "priorityHint": {
+      "low": "Nizak prioritet",
+      "medium": "Srednji prioritet",
+      "high": "Visok prioritet"
+    },
+    "tags": {
+      "Клиент": "Klijent",
+      "Финансы": "Financije",
+      "Лиды": "Potencijalni klijenti",
+      "Отчёты": "Izvještaji",
+      "Журнал": "Dnevnik",
+      "Персонал": "Osoblje"
+    },
+    "scope": {
+      "mine": "Moji",
+      "admins": "Administratori",
+      "trainers": "Treneri"
+    },
+    "assigneePlaceholder": "Odaberite zaposlenika",
+    "deleteTitle": "Izbrisati zadatak?",
+    "deleteMessage": "Ova se radnja ne može poništiti."
+  },
+  "events": {
+    "title": "Nedavni događaji",
+    "seeAll": "Prikaži sve",
+    "justNow": "upravo sada",
+    "openProfile": "Otvori profil",
+    "writeWhatsApp": "Poruka na WhatsAppu",
+    "sendReceipt": "Pošalji račun",
+    "cancelBooking": "Otkaži rezervaciju"
+  },
+  "summary": {
+    "topServices": "Najtraženije usluge",
+    "trainersLoad": "Opterećenje trenera",
+    "financeMonth": "Financije (mjesec)",
+    "revenue": "Prihod",
+    "expenses": "Troškovi",
+    "avgCheck": "Prosječan račun",
+    "profit": "Dobit"
+  }
+}

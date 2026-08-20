@@ -3,7 +3,10 @@ import { queryClient } from '../api/queryClient';
 import { queryKeys } from '../api/queryKeys';
 import { getCurrencySymbol } from '../components/UI';
 
-const LOCALE: Record<string, string> = { ru: 'ru-RU', en: 'en-US' };
+// Код языка интерфейса — он же тег для Intl: 'cs', 'sv', 'el' и остальные
+// коды ISO 639-1 из LANGUAGES валидны как BCP-47. 'en' на случай, если
+// i18n ещё не инициализирован (форматтеры зовут и вне компонентов).
+const locale = () => i18n.language || 'en';
 
 // Синхронное чтение валюты студии из кэша react-query — те же данные, что
 // useStudioCurrency(), но доступны вне компонентов (как i18n.language выше).
@@ -14,14 +17,12 @@ function studioCurrencySymbol(): string {
 
 /** Целыми, с разделителями по языку интерфейса. Символ — валюта студии. Только для Отчётов. */
 export function fmtMoney(n: number, symbol = studioCurrencySymbol()): string {
-  const locale = LOCALE[i18n.language] ?? 'ru-RU';
-  return `${Math.round(n).toLocaleString(locale)} ${symbol}`;
+  return `${Math.round(n).toLocaleString(locale())} ${symbol}`;
 }
 
 /** Компактные деньги для плиток: «284K ₽», «1.2M ₽». Символ — из настроек студии. */
 export function fmtMoneyCompact(n: number, symbol = studioCurrencySymbol()): string {
-  const locale = LOCALE[i18n.language] ?? 'ru-RU';
-  const value = new Intl.NumberFormat(locale, {
+  const value = new Intl.NumberFormat(locale(), {
     notation: 'compact', maximumFractionDigits: 1,
   }).format(n);
   return `${value} ${symbol}`;
@@ -29,11 +30,11 @@ export function fmtMoneyCompact(n: number, symbol = studioCurrencySymbol()): str
 
 export function fmtPct(n: number): string {
   const sign = n > 0 ? '+' : '';
-  return `${sign}${n.toLocaleString(LOCALE[i18n.language] ?? 'ru-RU', { maximumFractionDigits: 1 })}%`;
+  return `${sign}${n.toLocaleString(locale(), { maximumFractionDigits: 1 })}%`;
 }
 
 export function fmtInt(n: number): string {
-  return Math.round(n).toLocaleString(LOCALE[i18n.language] ?? 'ru-RU');
+  return Math.round(n).toLocaleString(locale());
 }
 
 /** Подпись тика графика серии — формат зависит от разбивки бакета.

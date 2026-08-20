@@ -38,7 +38,7 @@ import database  # noqa: E402,F401  (импорт ради его же load_dote
 # при первом же load_dotenv() в services/mailer.py.
 for _key in (
     "SMTP_HOST", "SMTP_USER", "SMTP_PASS",
-    "TG_BOT_TOKEN", "TOKEN",
+    "TG_BOT_TOKEN", "TOKEN", "ALERT_TG_CHAT_ID",
     "WA_APP_ID", "WA_APP_SECRET",
     "IG_APP_ID", "IG_APP_SECRET",
 ):

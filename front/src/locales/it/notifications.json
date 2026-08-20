@@ -1,0 +1,347 @@
+{
+  "loading": "Caricamento…",
+  "chModal": {
+    "eyebrow": "Canale di notifica",
+    "connected": "Collegato",
+    "notConnected": "Non collegato",
+    "setup": "Configurazione del collegamento",
+    "details": "Dettagli del collegamento",
+    "ready": "Il canale è attivo",
+    "readyHint": "Le notifiche degli eventi attivati vengono inviate automaticamente.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Numero",
+    "account": "Account",
+    "sender": "Mittente"
+  },
+  "channels": {
+    "title": "Canali di consegna",
+    "connect": "Collega",
+    "connected": "Collegato",
+    "openSettings": "Impostazioni di {{channel}}",
+    "waLockedHint": "Il canale si sblocca quando Meta ha il tuo metodo di pagamento, un'attività verificata e i modelli approvati",
+    "waBlocker": {
+      "payment": "Nessun metodo di pagamento — i promemoria non vengono consegnati. Configura",
+      "verification": "Attività non verificata su Meta — limite di 250/giorno. Come risolvere",
+      "templates": "Modelli ancora in revisione da Meta — non verrà inviato nulla. Dettagli"
+    }
+  },
+  "roles": {
+    "client": "Cliente",
+    "trainer": "Istruttore",
+    "admin": "Amministratore",
+    "owner": "Titolare",
+    "activeCount": "{{count}} attivi"
+  },
+  "matrix": {
+    "saving": "Salvataggio…",
+    "allSaved": "Tutte le modifiche salvate",
+    "notSaved": "Non salvato",
+    "activateAll": "Attiva tutto",
+    "deactivateAll": "Deseleziona tutte le caselle",
+    "activeCount": "Trigger attivi: {{count}} su {{total}}",
+    "scenariosFor": "Scenari per: {{role}}",
+    "configureFor": "Configura i canali per {{count}} trigger di sistema",
+    "eventColumn": "Evento di sistema",
+    "noActiveChannels": "Nessun canale attivo",
+    "noActiveChannelsHint": "Attiva almeno un canale di consegna nel pannello a sinistra",
+    "adviceLabel": "Suggerimento:",
+    "advice": "Configura separatamente per ogni ruolo cosa viene inviato e dove — Velora fa il resto automaticamente.",
+    "tiers": {
+      "critical": "Obbligatorio · non disattivabile",
+      "operational": "Operativo",
+      "optional": "Facoltativo"
+    },
+    "lock": {
+      "critical": "Notifica obbligatoria — non può essere disattivata",
+      "lastChannel": "Ultimo canale di consegna — non può essere disattivato"
+    },
+    "channelDisconnected": "Canale non collegato"
+  },
+  "events": {
+    "c1": {
+      "title": "Prenotazione confermata",
+      "desc": "Alla prenotazione riuscita di una lezione"
+    },
+    "c2": {
+      "title": "Promemoria della lezione",
+      "desc": "24 ore e 2 ore prima"
+    },
+    "c3": {
+      "title": "Lezione annullata",
+      "desc": "Quando l'istruttore o lo studio annulla"
+    },
+    "c4": {
+      "title": "Pagamento riuscito",
+      "desc": "Ricevuta dopo un addebito riuscito"
+    },
+    "c5": {
+      "title": "Poche lezioni rimaste",
+      "desc": "Quando restano 1–2 ingressi sull'abbonamento"
+    },
+    "c6": {
+      "title": "Abbonamento in scadenza",
+      "desc": "3 giorni prima della data di scadenza"
+    },
+    "c7": {
+      "title": "Compleanno",
+      "desc": "Auguri con un'offerta speciale"
+    },
+    "c8": {
+      "title": "Richiesta di recensione",
+      "desc": "Dopo aver frequentato una lezione"
+    },
+    "c9": {
+      "title": "Rimborso",
+      "desc": "All'annullamento e all'elaborazione del rimborso"
+    },
+    "c10": {
+      "title": "Lezione non ancora pagata",
+      "desc": "Il cliente è venuto ma non ha pagato"
+    },
+    "c11": {
+      "title": "Lezione riprogrammata",
+      "desc": "Cambio di orario, sala o istruttore"
+    },
+    "c12": {
+      "title": "Bonus accreditato",
+      "desc": "Punti o bonus aggiunti al cliente"
+    },
+    "c13": {
+      "title": "Caffè dopo la lezione",
+      "desc": "Chi del gruppo va a prendere un caffè"
+    },
+    "t1": {
+      "title": "Nuova prenotazione con l'istruttore",
+      "desc": "Un cliente ha prenotato una sessione individuale"
+    },
+    "t2": {
+      "title": "Il cliente ha annullato la prenotazione",
+      "desc": "Il cliente ha annullato meno di 2 h prima"
+    },
+    "t3": {
+      "title": "Promemoria della lezione",
+      "desc": "1 ora prima dell'inizio"
+    },
+    "t4": {
+      "title": "Elenco del gruppo",
+      "desc": "30 min prima di una lezione di gruppo"
+    },
+    "t5": {
+      "title": "Modifica dell'orario",
+      "desc": "L'amministratore ha cambiato fascia oraria o sede"
+    },
+    "t6": {
+      "title": "Compenso calcolato",
+      "desc": "Calcolo settimanale del pagamento"
+    },
+    "t7": {
+      "title": "Nuova recensione dell'istruttore",
+      "desc": "Il cliente ha lasciato una valutazione dopo la lezione"
+    },
+    "t8": {
+      "title": "Compleanno del cliente",
+      "desc": "Promemoria per fare gli auguri di persona"
+    },
+    "t9": {
+      "title": "Lezione annullata",
+      "desc": "Lo studio o l'amministratore ha annullato la tua lezione"
+    },
+    "a1": {
+      "title": "Nuova prenotazione online",
+      "desc": "Il cliente ha prenotato dal sito o dal widget"
+    },
+    "a2": {
+      "title": "Annullamento dell'ultimo minuto",
+      "desc": "Meno di 1 ora prima della lezione"
+    },
+    "a3": {
+      "title": "Nuovo cliente nel sistema",
+      "desc": "Registrazione di un nuovo utente"
+    },
+    "a4": {
+      "title": "Pagamento ricevuto",
+      "desc": "Qualsiasi addebito riuscito"
+    },
+    "a6": {
+      "title": "Abbonamenti quasi esauriti",
+      "desc": "Gruppo di clienti con ≤1 lezione rimasta"
+    },
+    "a7": {
+      "title": "Conflitto di orario",
+      "desc": "Lezioni sovrapposte nel registro"
+    },
+    "a8": {
+      "title": "Report giornaliero",
+      "desc": "Riepilogo di fine giornata"
+    },
+    "a9": {
+      "title": "Tentativo di accesso",
+      "desc": "Accesso da un nuovo dispositivo"
+    },
+    "a10": {
+      "title": "Rimborso",
+      "desc": "L'amministratore ha emesso un rimborso"
+    },
+    "o1": {
+      "title": "Riepilogo giornaliero",
+      "desc": "Ricavi, prenotazioni e presenze del giorno"
+    },
+    "o2": {
+      "title": "Report settimanale",
+      "desc": "KPI: crescita clienti, LTV, conversione"
+    },
+    "o3": {
+      "title": "Pagamento elevato",
+      "desc": "Addebito superiore alla soglia impostata"
+    },
+    "o4": {
+      "title": "Anomalia nei dati",
+      "desc": "Calo netto di prenotazioni o ricavi"
+    },
+    "o5": {
+      "title": "Nuovo collaboratore",
+      "desc": "L'amministratore ha creato un nuovo account"
+    },
+    "o6": {
+      "title": "Rinnovo del piano",
+      "desc": "Promemoria per pagare l'abbonamento Velora"
+    },
+    "o7": {
+      "title": "Permessi modificati",
+      "desc": "I permessi di un collaboratore sono stati modificati"
+    },
+    "o8": {
+      "title": "KPI raggiunto",
+      "desc": "Obiettivo mensile raggiunto"
+    },
+    "o9": {
+      "title": "Esportazione dati",
+      "desc": "Qualcuno ha esportato l'anagrafica clienti"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Canale collegato",
+    "subtitleDisconnected": "Collega il bot delle notifiche",
+    "connected": "Collegato",
+    "pasteToken": "Incolla il token del bot ricevuto da @BotFather.",
+    "invalidToken": "Formato del token non valido",
+    "howToGet": "Come ottenere un token:",
+    "steps": {
+      "1": "Apri @BotFather in Telegram",
+      "2": "Invia il comando /newbot e segui le istruzioni",
+      "3": "Copia il token rilasciato",
+      "4": "Incollalo nel campo qui sopra"
+    },
+    "connect": "Collega",
+    "disconnect": "Scollega",
+    "disconnectTitle": "Scollegare Telegram?",
+    "disconnectMessage": "Clienti e collaboratori smetteranno di ricevere notifiche da questo canale.",
+    "close": "Chiudi",
+    "cancel": "Annulla"
+  },
+  "emailCh": {
+    "title": "Email",
+    "subtitle": "Indirizzo del mittente per le email ai clienti",
+    "verifiedLabel": "Verificato",
+    "emailLabel": "Email del mittente",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Inserisci un'email valida",
+    "sendCode": "Invia il codice",
+    "codeSentTo": "Codice inviato a",
+    "codeHint": "Inserisci il codice a 6 cifre ricevuto per email.",
+    "codeLabel": "Codice di verifica",
+    "resend": "Invia di nuovo il codice",
+    "viaVelora": "Le email vengono inviate tramite il server Velora a tuo nome.",
+    "wrongCode": "Codice non valido o scaduto",
+    "verify": "Verifica",
+    "back": "Indietro",
+    "cancel": "Annulla"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Canale collegato",
+    "subtitleDisconnected": "Accedi con il tuo account business Meta",
+    "connected": "Collegato",
+    "paymentRequiredTitle": "Servirà una carta",
+    "paymentRequired": "Collegare il numero è gratuito, ma Meta consegna i promemoria ai clienti solo quando è collegata una carta. La aggiungi separatamente —",
+    "paymentMissingTitle": "Nessun metodo di pagamento",
+    "paymentMissing": "Al momento funzionano solo le risposte del bot ai messaggi in arrivo. Promemoria, conferme e invii massivi vengono rifiutati da Meta finché non è collegata una carta —",
+    "paymentOkTitle": "Pagamento collegato",
+    "paymentOk": "le notifiche vengono consegnate per intero.",
+    "paymentUnknown": "Non è stato possibile verificare il metodo di pagamento con Meta — mostreremo lo stato al prossimo tentativo.",
+    "paymentLink": "Centro fatturazione di Meta",
+    "paymentRecheck": "Controlla di nuovo",
+    "paymentFound": "Pagamento collegato",
+    "verify": {
+      "title": "Attività non verificata su Meta",
+      "lead": "Il numero funziona, ma con un limite ridotto di 250 destinatari unici al giorno. La verifica elimina il limite e consente il lancio completo. Lo studio deve farla da sé — l'account WhatsApp è tuo e Velora non può presentarla per tuo conto.",
+      "stepsTitle": "Come verificare l'attività:",
+      "step1a": "Apri il",
+      "link": "Centro sicurezza di Meta Business",
+      "step1b": "e premi «Avvia verifica». Servono i diritti di amministratore sull'account business.",
+      "step2": "Compila i dati legali: la denominazione esattamente come nei documenti, indirizzo, telefono e sito. Il sito deve essere online e servito in HTTPS.",
+      "step3": "Carica un documento di registrazione dell'attività e attendi che Meta lo esamini.",
+      "step4": "Conferma il tuo legame con l'attività: un'email sul dominio del tuo sito, una chiamata o un SMS al telefono indicato, oppure la verifica del dominio.",
+      "step5": "Attendi la decisione — di solito 1–5 giorni lavorativi. Lo stato è nello stesso Centro sicurezza; in caso di rifiuto Meta indica il motivo e consente di riprovare.",
+      "docsTitle": "Quali documenti vanno bene (uno per gruppo):",
+      "doc1": "Registrazione: visura camerale, estratto del registro, licenza di attività o un documento fiscale.",
+      "doc2": "Prova di presenza: un sito online, una pagina ufficiale sui social o una scheda in un elenco aziende.",
+      "pitfallTitle": "Il rifiuto più frequente",
+      "pitfall": "La denominazione dell'attività su Meta e sul documento deve coincidere carattere per carattere, forma giuridica e punteggiatura incluse. «Romashka LLC» e «Romashka, LLC» valgono come nomi diversi."
+    },
+    "templatesTitle": "Modelli di messaggio",
+    "templates": "Meta non ti permette di scrivere per primo a un cliente senza un modello approvato in anticipo. Crea i modelli per ogni evento — vanno in revisione e iniziano a funzionare una volta approvati.",
+    "templatesAction": "Prepara i modelli",
+    "templatesPending": "Creazione dei modelli…",
+    "templatesDone": "Modelli pronti: {{count}}. In attesa della revisione di Meta",
+    "templatesPartial": "Meta ha rifiutato alcuni modelli: {{failed}}. Consulta i log per i dettagli",
+    "templatesRejectedTitle": "Meta ha rifiutato {{count}} modelli",
+    "templatesRejected": "— quelle notifiche non vengono consegnate. Controlla il testo nel tuo account Meta e ricrea i modelli.",
+    "templatesPendingTitle": "{{count}} modelli in revisione",
+    "templatesPendingHint": "— Meta impiega fino a un giorno. {{approved}} sono già approvati e funzionanti.",
+    "templatesOkTitle": "Modelli approvati",
+    "templatesOk": "tutti i {{count}} hanno superato la revisione di Meta — le notifiche vengono consegnate.",
+    "paidWarning": "I messaggi WhatsApp sono a pagamento",
+    "approxPrice": "circa",
+    "pricingLoading": "caricamento del prezzo attuale…",
+    "perMessage": "a messaggio",
+    "viaMeta": "fatturato direttamente da Meta",
+    "windowNotice": "La consegna è garantita solo entro la finestra di conversazione di 24 ore.",
+    "connect": "Collega WhatsApp",
+    "disconnect": "Scollega",
+    "disconnectTitle": "Scollegare WhatsApp?",
+    "disconnectMessage": "Clienti e collaboratori smetteranno di ricevere notifiche da questo canale.",
+    "close": "Chiudi",
+    "cancel": "Annulla"
+  },
+  "tabs": {
+    "matrix": "Impostazioni",
+    "log": "Registro invii"
+  },
+  "log": {
+    "title": "Registro invii",
+    "subtitle": "Cosa è stato inviato, a chi e quando, e come si è concluso ogni invio.",
+    "status": {
+      "sent": "Consegnato",
+      "rejected": "Rifiutato",
+      "error": "Errore di connessione",
+      "pending": "In corso"
+    },
+    "searchPlaceholder": "Telefono, email o codice evento",
+    "allChannels": "Tutti i canali",
+    "reset": "Reimposta",
+    "refreshing": "Aggiornamento…",
+    "otherEvent": "Invio fuori catalogo",
+    "empty": "Non è ancora stato inviato nulla",
+    "emptyHint": "Qui comparirà ogni notifica che lo studio invia a clienti e collaboratori.",
+    "emptyFiltered": "Nessun risultato",
+    "emptyFilteredHint": "Prova a cambiare i filtri o a cercare un altro numero.",
+    "loadError": "Impossibile caricare il registro",
+    "loadErrorHint": "Aggiorna la pagina — se non basta, contatta l'assistenza.",
+    "range": "{{from}}–{{to}} di {{total}}",
+    "prev": "Indietro",
+    "next": "Avanti"
+  }
+}

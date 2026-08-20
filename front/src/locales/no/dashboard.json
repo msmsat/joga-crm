@@ -1,0 +1,96 @@
+{
+  "state": {
+    "empty": "Det finnes ingen slike ansatte i studioet",
+    "noData": "Ingen data",
+    "ownerOnly": "Tilgangen er begrenset av rollen din",
+    "loadError": "Kunne ikke laste data",
+    "retry": "Prøv igjen"
+  },
+  "metrics": {
+    "revenue": "Omsetning denne måneden",
+    "clients": "Aktive kunder",
+    "bookings": "Bookinger denne måneden",
+    "retention": "Andel som blir værende",
+    "lessons": "Økter denne måneden",
+    "attendance": "Oppmøte denne måneden",
+    "fill_rate": "Fyllingsgrad",
+    "rating": "Gjennomsnittlig vurdering",
+    "active_clients": "Aktive kunder",
+    "more": "Detaljer"
+  },
+  "today": {
+    "titleTrainer": "Mine økter i dag",
+    "titleAdmin": "Dagens plan",
+    "subtitle": "{{count}} økter · {{booked}} av {{spots}} plasser",
+    "subtitle_one": "{{count}} økt · {{booked}} av {{spots}} plasser",
+    "openJournal": "Åpne timeplanen",
+    "empty": "Ingen økter i dag",
+    "emptyHintTrainer": "En fridag — nye bookinger dukker opp her",
+    "emptyHintAdmin": "Ingenting er planlagt i dag"
+  },
+  "chart": {
+    "byDay": "per dag",
+    "byMonth": "per måned",
+    "subWeek": "Denne uken",
+    "subMonth": "Denne måneden",
+    "subYear": "Siste 12 måneder",
+    "tabWeek": "Uke",
+    "tabMonth": "Måned",
+    "tabYear": "År",
+    "noData": "Ingen data for denne perioden",
+    "retentionNA": "Diagram for kundelojalitet er ikke tilgjengelig"
+  },
+  "tasks": {
+    "title": "Oppgaver",
+    "empty": "Ingen oppgaver",
+    "done": "Ferdig",
+    "add": "Legg til oppgave",
+    "namePlaceholder": "Navn på oppgaven…",
+    "cancel": "Avbryt",
+    "submit": "Legg til",
+    "priority": {
+      "low": "Lav",
+      "medium": "Middels",
+      "high": "Høy"
+    },
+    "priorityHint": {
+      "low": "Lav prioritet",
+      "medium": "Middels prioritet",
+      "high": "Høy prioritet"
+    },
+    "tags": {
+      "Клиент": "Kunde",
+      "Финансы": "Økonomi",
+      "Лиды": "Leads",
+      "Отчёты": "Rapporter",
+      "Журнал": "Timeplan",
+      "Персонал": "Ansatte"
+    },
+    "scope": {
+      "mine": "Mine",
+      "admins": "Administratorer",
+      "trainers": "Instruktører"
+    },
+    "assigneePlaceholder": "Velg en ansatt",
+    "deleteTitle": "Slette oppgaven?",
+    "deleteMessage": "Denne handlingen kan ikke angres."
+  },
+  "events": {
+    "title": "Siste hendelser",
+    "seeAll": "Se alle",
+    "justNow": "akkurat nå",
+    "openProfile": "Åpne profil",
+    "writeWhatsApp": "Skriv på WhatsApp",
+    "sendReceipt": "Send kvittering",
+    "cancelBooking": "Avbestill booking"
+  },
+  "summary": {
+    "topServices": "Mest solgte tjenester",
+    "trainersLoad": "Instruktørenes belegg",
+    "financeMonth": "Økonomi (måned)",
+    "revenue": "Omsetning",
+    "expenses": "Utgifter",
+    "avgCheck": "Gj.sn. salg",
+    "profit": "Overskudd"
+  }
+}

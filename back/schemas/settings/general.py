@@ -11,9 +11,16 @@ Currency = Literal[
     "RUB", "USD", "EUR", "KZT", "UAH", "GBP", "AED", "TRY",
     "CZK", "PLN", "HUF", "RON", "BGN", "SEK", "NOK", "DKK", "CHF", "ISK", "RSD",
 ]
-# ru/en — единственные языки с реальными файлами перевода (front/src/locales);
-# остальные пункты LANGUAGES на онбординге декоративные, но выбираемые — принимаем и здесь.
-Language = Literal["ru", "en", "uk", "kz", "de", "fr", "es", "ar"]
+# Коды ISO 639-1, 1-в-1 с LANGUAGES во front/src/components/UI.tsx: у каждого
+# есть папка перевода во front/src/locales. "kz" и "ar" в списке нет — их не
+# переводили и выбрать их больше негде, но они остаются здесь принимаемыми,
+# потому что студия могла сохранить их, пока список был декоративным: без них
+# у такой студии перестало бы открываться сохранение любых других настроек.
+Language = Literal[
+    "en", "ru", "sq", "bg", "hr", "cs", "da", "fi", "fr", "de", "el", "hu",
+    "it", "no", "pl", "pt", "ro", "sr", "es", "sv", "tr", "uk",
+    "kz", "ar",
+]
 DateFormat = Literal["DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD"]
 FirstDayOfWeek = Literal["monday", "sunday"]
 JournalTimeStep = Literal[5, 10, 15, 30, 60]
@@ -21,8 +28,10 @@ JournalTimeStep = Literal[5, 10, 15, 30, 60]
 # services/daily_notify.py:_studio_tz. Список офсетов совпадает с TIMEZONES
 # во front/src/components/UI.tsx (тот же, что выбирает онбординг).
 Timezone = Literal[
-    "UTC+1", "UTC+0", "UTC-5", "UTC-8", "UTC+12", "UTC+11", "UTC+10", "UTC+9",
-    "UTC+8", "UTC+7", "UTC+6", "UTC+5", "UTC+4", "UTC+3", "UTC+2",
+    "UTC-11", "UTC-10", "UTC-9", "UTC-8", "UTC-7", "UTC-6", "UTC-5", "UTC-4",
+    "UTC-3", "UTC-2", "UTC-1", "UTC+0", "UTC+1", "UTC+2", "UTC+3", "UTC+4",
+    "UTC+5", "UTC+6", "UTC+7", "UTC+8", "UTC+9", "UTC+10", "UTC+11", "UTC+12",
+    "UTC+13", "UTC+14",
 ]
 
 
@@ -126,7 +135,9 @@ class AppearanceRead(BaseSchema):
 
 class AppearanceUpdate(BaseSchema):
     theme: Optional[Literal["light", "dark", "auto"]] = None
-    language: Optional[Literal["ru", "en"]] = None
+    # Личный язык интерфейса — тот же набор, что у языка студии: человек
+    # выбирает его из одного и того же списка LANGUAGES.
+    language: Optional[Language] = None
     # Валидация цвета обязательна: значение уходит прямо в CSS-переменную/style
     # на фронте — без неё это инъекция в стиль.
     accent_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
