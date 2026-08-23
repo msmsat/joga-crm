@@ -292,28 +292,30 @@ async def get_staff_profile(
     total_bookings = sum(v for k, v in bookings_by_status.items() if k != "cancelled")
     total_attended = bookings_by_status.get("attended", 0)
 
-    # Load % — ratio of booked seats vs total seats over next 4 weeks
+    # Load % — ratio of booked seats vs total seats over next 4 weeks.
+    #
+    # Двумя запросами, а не одним с outer join: в join'е строка занятия
+    # повторялась на каждую бронь, и SUM(total_spots) складывал одни и те же
+    # места по многу раз. Знаменатель раздувало в среднее число броней на
+    # занятие — при 8 занятиях по 8 мест и 48 бронях выходило 384 места вместо
+    # 64, и владелец видел 13% там, где реально 75%.
+    # Регрессия: tests/test_staff_load_percent.py.
     load_window_end = datetime.now() + timedelta(weeks=4)
-    load_result = await db.execute(
-        select(
-            func.sum(Lesson.total_spots).label("total_spots"),
-            func.count(Reservation.id).label("booked"),
-        )
-        .outerjoin(
-            Reservation,
-            (Reservation.lesson_id == Lesson.id) & (Reservation.status != "cancelled"),
-        )
-        .where(
-            Lesson.teacher_id == staff_id,
-            Lesson.studio_id == studio_id,
-            Lesson.start_time >= datetime.now(),
-            Lesson.start_time <= load_window_end,
-            Lesson.status != "cancelled",
-        )
+    load_window = (
+        Lesson.teacher_id == staff_id,
+        Lesson.studio_id == studio_id,
+        Lesson.start_time >= datetime.now(),
+        Lesson.start_time <= load_window_end,
+        Lesson.status != "cancelled",
     )
-    load_row = load_result.first()
-    total_spots = load_row.total_spots or 0
-    booked_spots = load_row.booked or 0
+    total_spots = (await db.execute(
+        select(func.sum(Lesson.total_spots)).where(*load_window)
+    )).scalar() or 0
+    booked_spots = (await db.execute(
+        select(func.count(Reservation.id))
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Reservation.status != "cancelled", *load_window)
+    )).scalar() or 0
     load_percent = round(booked_spots / total_spots * 100) if total_spots > 0 else 0
 
     # Total revenue — sum of price × attended reservations per lesson

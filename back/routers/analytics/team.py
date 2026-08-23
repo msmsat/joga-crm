@@ -156,20 +156,43 @@ async def _rating_by_trainer(f: ReportFilters, sid: int, db: AsyncSession) -> di
     return {tid: (round(float(avg), 1), int(cnt)) for tid, avg, cnt in rows}
 
 
-async def _return_rate_by_trainer(f: ReportFilters, sid: int, db: AsyncSession) -> dict[int, float]:
-    """Клиенты с >=2 attended у тренера / клиенты с >=1 attended у тренера."""
+async def repeat_counts_by_trainer(f: ReportFilters, sid: int, db: AsyncSession) -> dict[int, dict]:
+    """Клиенты тренера за период и те из них, кто пришёл к нему ПОВТОРНО.
+
+    Считается по посещённым броням: клиент с >=2 attended у этого тренера
+    вернулся, с одним — нет. Группировка по паре (тренер, клиент) — поэтому
+    несколько броней одного человека не раздувают ни числитель, ни знаменатель.
+
+    Ставка возвращаемости ниже берётся отсюда же: знаменатель, числитель и сама
+    доля обязаны приезжать из одного запроса, иначе однажды разойдутся. Наружу
+    (ассистенту) уходят все три — на «1 из 1 = 100%» без знаменателя модель
+    назначает лучшего тренера студии.
+
+    Считаются РАЗНЫЕ ЗАНЯТИЯ, а не брони: при включённой «Повторной записи» у
+    клиента бывает две неотменённые брони на одном занятии (взял место себе и
+    подруге), и по count(Reservation.id) он становился «вернувшимся», сходив
+    один раз. Тот же класс ошибки, что жил в load_percent.
+    """
     rows = (await db.execute(
-        select(Lesson.teacher_id, Reservation.client_id, func.count(Reservation.id))
+        select(Lesson.teacher_id, Reservation.client_id, func.count(func.distinct(Lesson.id)))
         .join(Reservation, Reservation.lesson_id == Lesson.id)
         .where(*lesson_conds(f, sid), Lesson.teacher_id.isnot(None), Reservation.status == "attended")
         .group_by(Lesson.teacher_id, Reservation.client_id)
     )).all()
-    by_trainer: dict[int, list[int]] = {}
+    out: dict[int, dict] = {}
     for tid, _cid, cnt in rows:
-        by_trainer.setdefault(tid, []).append(int(cnt))
+        entry = out.setdefault(tid, {"unique_clients": 0, "repeat_clients": 0})
+        entry["unique_clients"] += 1
+        if int(cnt) >= 2:
+            entry["repeat_clients"] += 1
+    return out
+
+
+async def _return_rate_by_trainer(f: ReportFilters, sid: int, db: AsyncSession) -> dict[int, float]:
+    """Клиенты с >=2 attended у тренера / клиенты с >=1 attended у тренера."""
     return {
-        tid: round(sum(1 for c in counts if c >= 2) / len(counts) * 100, 1)
-        for tid, counts in by_trainer.items()
+        tid: round(c["repeat_clients"] / c["unique_clients"] * 100, 1)
+        for tid, c in (await repeat_counts_by_trainer(f, sid, db)).items()
     }
 
 

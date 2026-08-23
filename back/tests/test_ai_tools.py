@@ -47,6 +47,7 @@ _PROXIES = {
     "get_client": ai_tools._r_get_client,
     "get_client_events": ai_tools._r_get_client_events,
     "get_stats": ai_tools.analytics_overview,
+    "get_team_report": ai_tools.analytics_team,
     "get_finance_summary": ai_tools.period_summary,
     "get_staff": ai_tools._r_list_staff,
     "get_services": ai_tools._r_list_services,
@@ -109,6 +110,11 @@ _PROXIES = {
     # Роутера не проксируют: работают с картой интерфейса, доступны всем ролям.
     "ui_section": None,
     "open_ui": None,
+    # Множественный запрос мимо роутера: страницы с таким разрезом нет, а обход
+    # клиентов по одному упирался в потолок итераций. Скоуп берёт из той же
+    # client_scope, что и list_clients; что тренер видит только своих —
+    # проверяет tests/test_ai_bulk.py, а не таблица ролей.
+    "get_inactive_clients": None,
 }
 
 

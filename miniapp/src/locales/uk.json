@@ -333,6 +333,8 @@
     "lesson_today_at": "Заняття сьогодні о {{time}}",
     "lesson_tomorrow_at": "Заняття завтра о {{time}}",
     "no_next_lesson": "Найближчих занять немає",
+    "next_lesson": "Найближче заняття",
+    "your_lesson": "Ваше заняття",
     "booking_error": "Сталася помилка при бронюванні",
     "cancel_booking_success": "Запис успішно скасовано. Килимок знову вільний!",
     "cancel_booking_error": "Сталася помилка при скасуванні",

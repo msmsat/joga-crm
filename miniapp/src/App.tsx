@@ -16,7 +16,7 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry, readTab, setGuestStudio } from './lib/entry';
+import { readEntry, readTab, rememberStudio, setGuestStudio } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
@@ -83,6 +83,11 @@ export default function App() {
       // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
       applyBranding(data.studio.accent_color, data.studio.dark_mode);
       applyDefaultLanguage(data.studio.language);
+      // Студию запоминаем здесь, а не из ссылки: тут она подтверждена сервером
+      // и известна даже когда ссылки не было вовсе (студию назвал токен).
+      // Без этого выход из аккаунта на голом адресе терял её вместе с токеном.
+      rememberStudio(data.studio.id);
+      setGuestStudio(data.studio.id);
       setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
@@ -335,6 +340,7 @@ export default function App() {
             logoUrl={catalog?.studio.logo_url}
             userName={user?.name}
             onAddAccount={() => setIsAddingAccount(true)}
+            isGuest={!user}
           />
         )}
 

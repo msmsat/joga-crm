@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from './navItems';
 import AccountMenu from './AccountMenu';
+import LanguagePopover from './profile/LanguagePopover';
 import { cn } from '../lib/utils';
 
 type Props = {
@@ -15,6 +16,9 @@ type Props = {
   userName?: string;
   /** Вход ещё одним аккаунтом — экран входа поднимает App. */
   onAddAccount: () => void;
+  /** Человек без аккаунта. Ему сюда добавляется выбор языка: профиля, где эта
+   *  настройка живёт у вошедшего, у него нет. */
+  isGuest?: boolean;
 };
 
 /**
@@ -38,6 +42,7 @@ export default function DesktopNav({
   logoUrl,
   userName,
   onAddAccount,
+  isGuest,
 }: Props) {
   const { t } = useTranslation();
 
@@ -162,8 +167,14 @@ export default function DesktopNav({
       {/* Клиент внизу колонки: на телефоне его инициал стоит в шапке главной,
           на десктопе шапка от неё скрыта — иначе имя дублируется дважды.
           В профиль карточка не ведёт: он и так стоит пунктом меню выше, а
-          здесь у неё своя работа — аккаунты устройства (см. AccountMenu). */}
-      <AccountMenu userName={userName} onAddAccount={onAddAccount} />
+          здесь у неё своя работа — аккаунты устройства (см. AccountMenu).
+          Обёртка забирает `mt-auto` себе: он работает на первом элементе с
+          этим классом, и без неё язык остался бы висеть сразу под меню, а
+          аккаунт уехал бы вниз один. */}
+      <div className="mt-auto flex flex-col gap-2.5">
+        {isGuest && <LanguagePopover variant="card" />}
+        <AccountMenu userName={userName} onAddAccount={onAddAccount} />
+      </div>
     </aside>
   );
 }

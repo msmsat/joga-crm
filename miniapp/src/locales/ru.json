@@ -333,6 +333,8 @@
     "lesson_today_at": "Занятие сегодня в {{time}}",
     "lesson_tomorrow_at": "Занятие завтра в {{time}}",
     "no_next_lesson": "Ближайших занятий нет",
+    "next_lesson": "Ближайшее занятие",
+    "your_lesson": "Ваше занятие",
     "booking_error": "Произошла ошибка при бронировании",
     "cancel_booking_success": "Запись успешно отменена. Коврик снова свободен!",
     "cancel_booking_error": "Произошла ошибка при отмене",

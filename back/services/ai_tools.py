@@ -29,16 +29,19 @@ from typing import Annotated, Callable, Literal, Optional
 from fastapi import HTTPException
 from jose import JWTError, jwt
 from pydantic import AfterValidator, BaseModel, Field, ValidationError, field_validator
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
 from models import (
-    Lesson, Reservation, StaffDayOverride, StaffWorkingHours, Studio, StudioMember, User,
+    Client, Lesson, Reservation, StaffDayOverride, StaffWorkingHours, Studio,
+    StudioMember, User,
 )
+from routers.clients._scope import client_scope
 from routers.analytics._filters import ReportFilters
 from routers.analytics.overview import analytics_overview
 from routers.analytics.reports import period_summary
+from routers.analytics.team import analytics_team, repeat_counts_by_trainer
 from routers.clients.loyalty import add_bonus as _r_add_bonus
 from routers.clients.profiles import (
     add_note as _r_add_note,
@@ -555,6 +558,11 @@ class FindClientsArgs(BaseModel):
     limit: int = Field(10, ge=1, le=50)
 
 
+class InactiveClientsArgs(BaseModel):
+    days: int = Field(30, ge=1, le=365, description="Сколько дней клиент не приходил")
+    limit: int = Field(50, ge=1, le=100)
+
+
 class ClientArgs(BaseModel):
     client_id: int
 
@@ -802,6 +810,9 @@ class UpdateClientArgs(BaseModel):
 
 class FindStaffArgs(BaseModel):
     query: str = ""
+    include_stats: bool = Field(
+        False, description="Добавить каждому показатели: записи, посещения, выручка, "
+                           "загрузка. Ставь true, когда сравниваешь тренеров между собой")
 
 
 class StaffArgs(BaseModel):
@@ -1253,6 +1264,66 @@ async def find_clients(ctx: StudioContext, db: AsyncSession, args: FindClientsAr
     return result
 
 
+async def _last_trainers(client_ids: list[int], db: AsyncSession) -> dict[int, dict]:
+    """По клиенту — тренер его ПОСЛЕДНЕГО состоявшегося визита. Один запрос.
+
+    DISTINCT ON — постгресовый способ взять по одной строке на группу без
+    оконных функций и без подзапроса на каждого клиента. Именно этот обход по
+    одному (get_client_events на каждого из тридцати) и упирался в потолок
+    итераций: у Sonnet ушло на него 36 вызовов, и он всё равно не дошёл.
+    """
+    if not client_ids:
+        return {}
+    rows = (await db.execute(
+        select(Reservation.client_id, Lesson.teacher_id, Lesson.teacher_name, Lesson.start_time)
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Reservation.client_id.in_(client_ids), Reservation.status == "attended")
+        .distinct(Reservation.client_id)
+        .order_by(Reservation.client_id, Lesson.start_time.desc())
+    )).all()
+    return {r.client_id: {"last_trainer_id": r.teacher_id, "last_trainer": r.teacher_name}
+            for r in rows}
+
+
+@tool()
+async def get_inactive_clients(
+    ctx: StudioContext, db: AsyncSession, args: InactiveClientsArgs,
+) -> dict:
+    """КТО ПЕРЕСТАЛ ХОДИТЬ — списком и сразу с последним тренером каждого.
+    «Кто не был больше месяца», «покажи спящих клиентов», «кого мы теряем»,
+    «с кем они занимались в последний раз».
+
+    Отвечает одним вызовом. НЕ обходи клиентов по одному через get_client_events
+    ради даты визита или тренера — на трёх десятках человек это упрётся в
+    потолок итераций, и ответа не будет вовсе.
+
+    Считаются только те, кто ХОТЬ РАЗ был: новичок, не пришедший ни разу, —
+    это другой вопрос, он лежит в get_segments (lost_newcomers).
+    Порядок — от недавно пропавших к давним: этих вернуть проще всего.
+    Тренеру отдаёт только его клиентов.
+    """
+    edge = date.today() - timedelta(days=args.days)
+    rows = (await db.execute(
+        select(Client.id, Client.name, Client.last_name, Client.phone, Client.last_visit_date)
+        .where(*client_scope(ctx), Client.last_visit_date.is_not(None),
+               Client.last_visit_date < edge)
+        .order_by(Client.last_visit_date.desc())
+        .limit(args.limit)
+    )).all()
+    trainers = await _last_trainers([r.id for r in rows], db)
+    today = date.today()
+    return _items([{
+        "client_id": r.id,
+        "name": " ".join(filter(None, (r.name, r.last_name))),
+        "phone": r.phone,
+        "last_visit_date": r.last_visit_date.isoformat(),
+        # Разницу дат считает сервер, а не модель: «сколько дней прошло» —
+        # ровно тот детерминированный факт, который ей незачем выводить самой.
+        "days_since_visit": (today - r.last_visit_date).days,
+        **trainers.get(r.id, {"last_trainer_id": None, "last_trainer": None}),
+    } for r in rows], limit=args.limit)
+
+
 @tool()
 async def get_client(ctx: StudioContext, db: AsyncSession, args: ClientArgs) -> dict:
     """Карточка клиента: контакты, статус, абонемент с остатком занятий,
@@ -1292,6 +1363,48 @@ async def get_stats(ctx: StudioContext, db: AsyncSession, args: PeriodArgs) -> d
     }
 
 
+@tool(roles=("owner",))
+async def get_team_report(ctx: StudioContext, db: AsyncSession, args: PeriodArgs) -> dict:
+    """Per-trainer report for a period — the Reports > Team page of the product.
+
+    THIS IS THE ONLY SOURCE OF THE RETURN-RATE METRIC. `return_rate_pct` is the
+    share of a trainer's clients who came back to that SAME trainer: clients
+    with 2 or more attended lessons with them, divided by clients with at least
+    one. Both the first and the repeat visit must fall inside the period, so a
+    longer period ("year") reveals more repeat clients than a short one.
+
+    Use it for "which trainer do clients come back to", "who keeps clients",
+    "who has one-off clients", "how many lessons did X actually run".
+
+    NEVER answer those from booking volume, attendance count, occupancy or
+    revenue — they are different metrics and substituting one for another gives
+    a wrong answer. If you need the return rate, it is here and nowhere else.
+
+    Per trainer: `lessons` (actually conducted, cancelled excluded),
+    `attendance` (attended bookings), `unique_clients` and `repeat_clients`
+    (the denominator and numerator behind the rate — read them before calling
+    anyone the best, 1 of 1 is 100% and means nothing), `return_rate_pct`,
+    `fill_pct`, `load_pct`, `revenue`, `cancels`, `noshows`, `rating`.
+    """
+    date_from, date_to = _period_range(args.period, await _today(db, ctx.studio_id))
+    f = ReportFilters(date_from=date_from, date_to=date_to, branch_id=None,
+                      hall_id=None, trainer_id=None, service_id=None)
+    data = _dump(await analytics_team(f=f, ctx=ctx, db=db))
+    # Знаменатель и числитель — рядом со ставкой. Сама ставка их прячет, а на
+    # «1 из 1 = 100%» модель назначала лучшего тренера студии.
+    counts = await repeat_counts_by_trainer(f, ctx.studio_id, db)
+    trainers = [{**t, **counts.get(t["trainer_id"], {"unique_clients": 0, "repeat_clients": 0})}
+                for t in data["trainers"]]
+    # insights не отдаём: это ключи для интерфейса (`high_return_free_evenings`)
+    # вместе с параметрами кнопок, модели от них ни смысла, ни пользы.
+    return {
+        "period": {"from": date_from.isoformat(), "to": date_to.isoformat()},
+        "currency": await _currency(db, ctx.studio_id),
+        "trainers": trainers,
+        "kpi": data["kpi"],
+    }
+
+
 @tool(roles=("owner",), tier_hint=TIER_SMART)
 async def get_finance_summary(ctx: StudioContext, db: AsyncSession, args: PeriodArgs) -> dict:
     """Финансовая сводка за период: доходы, расходы, средний чек и балансы
@@ -1318,10 +1431,73 @@ async def _staff_page(ctx: StudioContext, db: AsyncSession) -> dict:
     return _dump(await _r_list_staff(ctx=ctx, db=db, offset=0, limit=_MAX_ITEMS))["staff"]
 
 
+async def _staff_stats(studio_id: int, db: AsyncSession) -> dict[int, dict]:
+    """Показатели ВСЕЙ команды разом — те же четыре, что в карточке сотрудника.
+
+    Четыре запроса с GROUP BY, и ни один не зависит от числа тренеров. Раньше
+    сравнить команду можно было только карточками по одной: «у кого больше
+    занятий» стоило шести вызовов, а на паре десятков сотрудников упёрлось бы в
+    потолок итераций — модель воспроизводила руками обычный GROUP BY.
+
+    Новых чисел тут нет намеренно: ровно то, что отдаёт get_staff_profile, — в
+    один вызов вместо N. Считать что-то, чего в карточке нет, значит менять не
+    только цену ответа, но и его содержание.
+    """
+    stats: dict[int, dict] = {}
+
+    def row(uid: int) -> dict:
+        return stats.setdefault(uid, {"total_bookings": 0, "total_attended": 0,
+                                      "total_revenue": 0, "load_percent": 0})
+
+    # Записи, посещения и выручка — одним разрезом по статусу брони.
+    for r in (await db.execute(
+        select(Lesson.teacher_id, Reservation.status,
+               func.count(Reservation.id), func.sum(Lesson.price))
+        .join(Reservation, Reservation.lesson_id == Lesson.id)
+        .where(Lesson.studio_id == studio_id, Lesson.teacher_id.is_not(None))
+        .group_by(Lesson.teacher_id, Reservation.status)
+    )).all():
+        uid, status, count, price = r
+        if status == "cancelled":
+            continue
+        row(uid)["total_bookings"] += count
+        if status == "attended":
+            row(uid)["total_attended"] += count
+            row(uid)["total_revenue"] += int(price or 0)
+
+    # Загрузка — ДВУМЯ запросами, а не одним с join к броням: в join'е строка
+    # занятия повторяется на каждую бронь и сумма мест раздувается (тот же
+    # промах, что жил в staff/profiles.py и показывал 13% вместо 75%).
+    now = datetime.now()
+    window = (Lesson.studio_id == studio_id, Lesson.teacher_id.is_not(None),
+              Lesson.start_time >= now, Lesson.start_time <= now + timedelta(weeks=4),
+              Lesson.status != "cancelled")
+    spots = dict((await db.execute(
+        select(Lesson.teacher_id, func.sum(Lesson.total_spots))
+        .where(*window).group_by(Lesson.teacher_id)
+    )).all())
+    booked = dict((await db.execute(
+        select(Lesson.teacher_id, func.count(Reservation.id))
+        .join(Reservation, Reservation.lesson_id == Lesson.id)
+        .where(Reservation.status != "cancelled", *window)
+        .group_by(Lesson.teacher_id)
+    )).all())
+    for uid, total in spots.items():
+        if total:
+            row(uid)["load_percent"] = round(booked.get(uid, 0) / total * 100)
+    return stats
+
+
 @tool()
 async def get_staff(ctx: StudioContext, db: AsyncSession, args: FindStaffArgs) -> dict:
     """Сотрудники студии: имя, должность, роль доступа и загрузка.
     Тренеру отдаёт только его самого.
+
+    Сравниваешь тренеров между собой («у кого больше занятий», «кто загружен
+    сильнее», «кто приносит больше выручки») — ставь include_stats=true и бери
+    числа отсюда. НЕ открывай карточку каждого через get_staff_profile: на
+    команде из десятка человек этот обход упрётся в потолок итераций.
+    Карточка нужна для ОДНОГО названного человека — расписание, залы, услуги.
 
     Человек назвал сотрудника по имени («поменяй Ване зарплату», «занятие с
     Кириллом») — передай это имя в query и возьми id из выдачи. Ищи ровно тем,
@@ -1335,6 +1511,13 @@ async def get_staff(ctx: StudioContext, db: AsyncSession, args: FindStaffArgs) -
     query = args.query.strip()
     if query:
         rows = _by_name(rows, query)
+    if args.include_stats:
+        # После фильтра по имени: считать команду целиком незачем, а вот
+        # запрашивать показатели по одному — ровно то, от чего мы уходим.
+        stats = await _staff_stats(ctx.studio_id, db)
+        rows = [{**r, **stats.get(r["id"], {"total_bookings": 0, "total_attended": 0,
+                                            "total_revenue": 0, "load_percent": 0})}
+                for r in rows]
     result = _items({"items": rows, "total": len(rows)})
     if query:
         result["matched_by"] = "name"
@@ -3543,7 +3726,7 @@ if __name__ == "__main__":
     # Самопроверка без сети и БД: реестр, ролевой скоуп, обрезка результата.
     import asyncio
 
-    assert len(TOOLS) == 63, sorted(TOOLS)
+    assert len(TOOLS) == 65, sorted(TOOLS)
     assert sum(1 for t in TOOLS.values() if t.mutating) == 34
     # Память студии данные студии не трогает — карточка подтверждения на
     # «запомни, что по воскресеньям мы не работаем» превратила бы одну фразу в

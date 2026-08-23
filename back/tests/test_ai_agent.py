@@ -590,7 +590,7 @@ def test_ai_create_client_respects_plan_limit():
 
 
 def test_gave_up_reads_a_refusal_without_a_question_mark():
-    """Примета «модель сдалась» — длина и вопрос, а не список слов."""
+    """Примета «модель сдалась» — содержание и вопрос, а не список слов."""
     assert assistant._gave_up("Мне нужен их email и пароль. " * 6)      # длинная отписка
     assert assistant._gave_up("Какой у него id?")                       # короткая, но вопрос
     assert assistant._gave_up("I'll need their emails, a password and the access role "
@@ -600,3 +600,34 @@ def test_gave_up_reads_a_refusal_without_a_question_mark():
     assert not assistant._gave_up("Готово.")
     assert not assistant._gave_up("")
     assert not assistant._gave_up(None)
+
+
+def test_gave_up_spares_an_answer_made_of_the_persons_own_numbers():
+    """Инструменты не нужны — и это не отказ работать.
+
+    Замерено на стенде: «сравни два числа: 4000 и 20000» Flash отвечает верно и
+    без единого инструмента, но ответ длиннее порога — и прежняя примета будила
+    дорогую голову, удваивая цену верного ответа (873 -> 1939 мк$).
+    """
+    ask = "сравни два числа: 4000 и 20000"
+    answer = ("20 000 больше 4 000:\n- В 5 раз (или 4 000 в 5 раз меньше 20 000)\n"
+              "- На 16 000\n- 4 000 составляет 20% от 20 000")
+    assert len(answer) >= assistant._GAVE_UP_LEN       # прежняя примета сработала бы
+    assert not assistant._gave_up(answer, ask)
+
+    # Тот же класс: человек принёс свои числа, ассистент посчитал по ним.
+    assert not assistant._gave_up(
+        "При 3 залах и 2 тренерах в день выходит максимум 24 занятия — по 12 на "
+        "каждого тренера, если ставить их подряд без перерыва.",
+        "у меня 3 зала и 2 тренера, сколько занятий в день максимум")
+
+
+def test_gave_up_still_catches_a_refusal_when_the_person_gave_numbers():
+    """Поблажка не должна открывать дыру: числа в ответе сами по себе не оправдание."""
+    # Человек назвал число, но ответ — перечень недостающего, а не работа.
+    assert assistant._gave_up(
+        "Чтобы завести 4 сотрудников, мне нужен email и пароль для каждого из "
+        "них, а также роль доступа и id услуги, на которую их ставить.",
+        "заведи четверых")
+    # Числа есть у обоих, но ответ — вопрос человеку, а не ответ ему.
+    assert assistant._gave_up("На какие 4 дня ставить занятия?", "поставь 4 занятия")

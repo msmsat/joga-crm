@@ -333,6 +333,8 @@
     "lesson_today_at": "Lekce dnes v {{time}}",
     "lesson_tomorrow_at": "Lekce zítra v {{time}}",
     "no_next_lesson": "Žádné nadcházející lekce",
+    "next_lesson": "Nejbližší lekce",
+    "your_lesson": "Vaše lekce",
     "booking_error": "Při rezervaci došlo k chybě",
     "cancel_booking_success": "Rezervace byla úspěšně zrušena. Podložka je opět volná!",
     "cancel_booking_error": "Při rušení došlo k chybě",

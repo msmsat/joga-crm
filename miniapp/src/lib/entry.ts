@@ -39,6 +39,39 @@ export const setGuestStudio = (studioId: number | null) => {
 
 export const getGuestStudio = (): number | null => guestStudioId;
 
+/**
+ * Последняя студия, которую приложение реально открывало.
+ *
+ * Ссылка со студией есть не всегда: человек добавил кабинет на домашний экран,
+ * вернулся из Stripe, перезагрузил вкладку — адрес остался голым. Пока была
+ * сессия, студию называл токен, и поэтому пропажу было не видно; в момент
+ * выхода из аккаунта она обнажалась экраном «нужна ссылка студии» — хотя
+ * приложение секунду назад держало каталог этой самой студии в руках.
+ *
+ * Пишется один раз, когда каталог загружен (App.loadCatalog), и работает
+ * запасным вариантом для `readEntry`. Ссылка со студией всегда сильнее памяти —
+ * иначе старая студия перебивала бы ссылку на новую.
+ */
+const STUDIO_KEY = 'velora.studio';
+
+export function rememberStudio(studioId: number) {
+  try {
+    localStorage.setItem(STUDIO_KEY, String(studioId));
+  } catch {
+    // Приватный режим/выключенный сторадж: просто не запомним — прежний путь
+    // по ссылке от этого не ломается.
+  }
+}
+
+function recallStudio(): number | null {
+  try {
+    const stored = Number(localStorage.getItem(STUDIO_KEY));
+    return Number.isInteger(stored) && stored > 0 ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
 export function readTab(): string | undefined {
   const tab = new URLSearchParams(window.location.search).get('tab');
   return tab && TABS.includes(tab) ? tab : undefined;
@@ -65,7 +98,10 @@ export function readEntry(startParam: string | undefined, inTelegram: boolean): 
   const fromPath = /^\/s\/(\d+)/.exec(window.location.pathname);
   const ref = new URLSearchParams(window.location.search).get('ref');
   return {
-    studioId: fromPath ? Number(fromPath[1]) : null,
+    // Ссылки нет — берём студию, в которой человек уже был. Выход из аккаунта
+    // не должен выкидывать его из студии: он остаётся тем же гостем, которому
+    // открыты расписание и запись, а не «человеком без ссылки».
+    studioId: fromPath ? Number(fromPath[1]) : recallStudio(),
     referralCode: ref || undefined,
     inTelegram,
   };

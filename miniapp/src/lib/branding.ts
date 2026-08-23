@@ -8,6 +8,7 @@
  * SVG-обводки и тени.
  */
 import i18n from '../i18n';
+import { CHOICE_KEY, resolveLanguage } from './language';
 
 const DEFAULT_ACCENT = '#F9A08B';
 
@@ -50,19 +51,40 @@ export function applyBranding(accentColor?: string | null, darkMode?: boolean | 
   root.classList.toggle('dark', Boolean(darkMode));
 }
 
+/** Человек выбрал язык сам. Пишем СВОЙ ключ, а не полагаемся на `i18nextLng`:
+ *  тот детектор ставит на старте и без всякого выбора (см. lib/language.ts). */
+export function chooseLanguage(code: string): void {
+  try {
+    localStorage.setItem(CHOICE_KEY, code);
+  } catch {
+    // Приватный режим: выбор не переживёт перезагрузку, но сейчас сработает.
+  }
+  i18n.changeLanguage(code);
+}
+
 /**
- * Язык студии — именно ДЕФОЛТНЫЙ: если клиент уже выбрал язык сам (профиль →
- * «Язык», LanguageDetector положил его в localStorage), его выбор главнее.
- * Языка, которого нет в мини-приложении, не бывает: список в CRM собран из
- * ровно тех же кодов (front/.../Booking/mapping.ts).
+ * Язык студии — именно ДЕФОЛТНЫЙ, и по-настоящему только для тех, чьё
+ * устройство говорит на языке, которого у нас нет. Порядок и его обоснование —
+ * в `lib/language.ts`; здесь остаётся только собрать источники и применить.
+ *
+ * Языка, которого нет в мини-приложении, у студии не бывает: список в CRM
+ * собран из ровно тех же кодов (front/.../Booking/mapping.ts) — но проверку
+ * держим, значение в базе свободное (String(5)).
  */
 export function applyDefaultLanguage(language?: string | null): void {
-  if (!language) return;
-  if (localStorage.getItem('i18nextLng')) return;
-  // У студий, настроивших виджет до переименования чешского, в базе лежит
-  // старый код 'cz' — правим его на лету, а не миграцией: значение свободное
-  // (String(5)), и завтра там может оказаться что угодно ещё.
-  const code = language === 'cz' ? 'cs' : language;
-  if (!i18n.options.resources || !(code in i18n.options.resources)) return;
-  i18n.changeLanguage(code);
+  let choice: string | null = null;
+  try {
+    choice = localStorage.getItem(CHOICE_KEY);
+  } catch {
+    // Сторадж недоступен — считаем, что выбора не было.
+  }
+
+  const next = resolveLanguage({
+    supported: Object.keys(i18n.options.resources ?? {}),
+    choice,
+    device: navigator.languages?.length ? navigator.languages : [navigator.language],
+    studio: language,
+  });
+
+  if (next && next !== i18n.language) i18n.changeLanguage(next);
 }

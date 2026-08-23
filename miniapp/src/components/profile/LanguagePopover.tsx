@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import SettingRow from './SettingRow';
 import { useTelegram } from '../../hooks/useTelegram';
 import { cn } from '../../lib/utils';
+import { chooseLanguage } from '../../lib/branding';
 
 const FLAG_VIEWBOX = '0 0 24 16';
 
@@ -91,8 +92,15 @@ const matches = (current: string, code: string) =>
  * Панель позиционируется относительно строки (absolute), а не портируется в
  * body с координатами: прокручивается вся страница целиком, и привязанная к
  * документу панель едет вместе со строкой без единого слушателя скролла.
+ *
+ * `variant="card"` — тот же список под карточкой в боковом меню, над аккаунтом.
+ * Он ровно для гостя: настроек у человека без аккаунта нет, а язык ему нужен.
+ * Вошедшему эта карточка не показывается — у него язык живёт строкой в
+ * профиле, и второй такой же выбор рядом был бы дублем. Отдельным компонентом
+ * вариант делать нельзя: список языков, замер направления, закрытие по нажатию
+ * снаружи и по Esc — один и тот же код, расходиться двум копиям незачем.
  */
-export default function LanguagePopover() {
+export default function LanguagePopover({ variant = 'row' }: { variant?: 'row' | 'card' } = {}) {
   const { i18n, t } = useTranslation();
   const { tg } = useTelegram();
 
@@ -133,13 +141,52 @@ export default function LanguagePopover() {
   };
 
   const pick = (code: string) => {
-    i18n.changeLanguage(code);
+    // chooseLanguage, а не i18n.changeLanguage: выбор обязан пережить язык
+    // студии на следующем запуске (см. lib/language.ts).
+    chooseLanguage(code);
     if (tg) tg.HapticFeedback.selectionChanged();
     setIsOpen(false);
   };
 
   return (
     <div ref={anchor} className="relative">
+      {variant === 'card' ? (
+        /* Карточка-близнец аккаунта под ней: тот же радиус, та же тень, тот же
+           шеврон, разворачивающийся при открытии. Две карточки читаются парой —
+           «кто я» и «на каком языке», — а не случайной кнопкой сверху.
+           Флаг слева вместо иконки-глобуса: язык узнают, не читая. */
+        <button
+          type="button"
+          onClick={toggle}
+          aria-haspopup="menu"
+          aria-expanded={isOpen}
+          aria-label={t('profile.language', 'Мова')}
+          className="group flex w-full min-w-0 items-center gap-3 rounded-[18px] bg-card px-3.5 py-3 text-left shadow-soft transition-shadow duration-200 hover:shadow-lift"
+        >
+          <span className="flex h-5 w-7 shrink-0 overflow-hidden rounded-[4px] ring-1 ring-foreground/10">
+            {active.flag}
+          </span>
+
+          <span className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-[-0.01em] text-card-foreground">
+            {active.name}
+          </span>
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--v-muted-foreground)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn(
+              'h-3.5 w-3.5 shrink-0 transition-transform duration-200',
+              isOpen ? 'rotate-180' : 'group-hover:-translate-y-0.5',
+            )}
+          >
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+      ) : (
       <SettingRow
         label={t('profile.language', 'Мова')}
         onClick={toggle}
@@ -175,6 +222,7 @@ export default function LanguagePopover() {
           </span>
         }
       />
+      )}
 
       <AnimatePresence>
         {isOpen && (
@@ -191,7 +239,11 @@ export default function LanguagePopover() {
             }}
             transition={{ type: 'spring', stiffness: 520, damping: 34 }}
             className={cn(
-              'absolute right-0 z-40 w-[252px] rounded-[20px] bg-card p-1.5 shadow-lift',
+              'absolute z-40 rounded-[20px] bg-card p-1.5 shadow-lift',
+              // В колонке меню панель идёт во всю её ширину: колонка уже 252px,
+              // и своя ширина вылезла бы за край, а `overflow-y-auto` на aside
+              // делает горизонталь прокручиваемой — панель бы попросту обрезало.
+              variant === 'card' ? 'inset-x-0' : 'right-0 w-[252px]',
               dropUp
                 ? 'bottom-[calc(100%+8px)] origin-bottom-right'
                 : 'top-[calc(100%+8px)] origin-top-right',

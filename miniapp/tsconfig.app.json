@@ -21,5 +21,10 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  /* Самопроверки (`node src/lib/*.check.ts`) — не код приложения: они читают
+     файлы через node:fs, которого в типах браузерного проекта нет, и в бандл
+     не попадают (их никто не импортирует). Иначе `tsc -b` падает на них,
+     хотя само приложение собирается. */
+  "exclude": ["src/**/*.check.ts"]
 }

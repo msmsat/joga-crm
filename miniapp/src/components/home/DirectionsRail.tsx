@@ -37,21 +37,19 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-/** Дефолтная иконка направления — лотос, когда название услуги незнакомо. */
-const DEFAULT_ICON = (
-  <path d="M12 21c-4-2.5-6-5.6-6-9a6 6 0 0112 0c0 3.4-2 6.5-6 9z M12 21c4-2.5 6-5.6 6-9" />
-);
-
 /**
  * Направления студии — лента чипов с прокруткой вбок.
  *
  * Раньше это были карточки с полосками «заполненности», но заполненность была
  * выдуманной: сервер её не отдаёт, ширины стояли константами в разметке. Врать
  * данными ради красоты нельзя, а без полосок карточке нечего показывать —
- * поэтому чипы. Заодно они не спорят по весу с лентой студий выше.
+ * поэтому чипы. Заодно они не спорят по весу с карточкой студии выше.
  *
  * Источник направлений — реальные услуги студии (`GET /global/studio`), а не
- * шесть зашитых констант.
+ * шесть зашитых констант. Иконка ставится только та, что действительно
+ * означает это направление: у настоящей студии названия услуг свои, и общий
+ * лотос-заглушка встал бы шесть раз подряд — ряд одинаковых значков не
+ * помогает выбрать, он просто шумит. Незнакомое направление остаётся словом.
  */
 export default function DirectionsRail({ services, onSelect }: Props) {
   const { t } = useTranslation();
@@ -62,6 +60,7 @@ export default function DirectionsRail({ services, onSelect }: Props) {
     <div className="flex gap-2.5 overflow-x-auto px-5 pb-1 dt:flex-wrap dt:gap-3 dt:overflow-visible">
       {services.map((service, i) => {
         const label = t(`lesson.name.${service.name}`, { defaultValue: service.name });
+        const icon = ICONS[service.name];
 
         return (
           <motion.div
@@ -74,19 +73,23 @@ export default function DirectionsRail({ services, onSelect }: Props) {
               onClick={() => onSelect(service.name, label)}
               role="button"
               tabIndex={0}
-              className="flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-card pl-3.5 pr-4 shadow-soft ring-1 ring-inset ring-transparent transition-shadow duration-300 dt:h-[52px] dt:gap-2.5 dt:pl-4.5 dt:pr-5 dt:hover:shadow-lift dt:hover:ring-brand/30"
+              className={`flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-card pr-4 shadow-soft ring-1 ring-inset ring-transparent transition-shadow duration-300 dt:h-[52px] dt:gap-2.5 dt:pr-5 dt:hover:shadow-lift dt:hover:ring-brand/30 ${
+                icon ? 'pl-3.5 dt:pl-4.5' : 'pl-4 dt:pl-5'
+              }`}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--v-brand)"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-[17px] w-[17px] shrink-0 dt:h-[19px] dt:w-[19px]"
-              >
-                {ICONS[service.name] ?? DEFAULT_ICON}
-              </svg>
+              {icon && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--v-brand)"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-[17px] w-[17px] shrink-0 dt:h-[19px] dt:w-[19px]"
+                >
+                  {icon}
+                </svg>
+              )}
               <span className="whitespace-nowrap text-[13px] font-bold tracking-[-0.01em] text-card-foreground dt:text-[14px]">
                 {label}
               </span>
