@@ -32,7 +32,7 @@ def test_every_plan_period_has_lookup_key():
         for plan_id in PLANS
         for months in PERIOD_DISCOUNTS
     }
-    assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) == 12
+    assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) == 80
 
 
 def test_intervals_cover_all_periods():
@@ -40,17 +40,17 @@ def test_intervals_cover_all_periods():
     assert set(stripe_catalog._INTERVALS) == set(PERIOD_DISCOUNTS)
 
 
-def test_two_year_period_fits_stripe_limit():
-    """24 месяца = year×2. Максимум интервала у Stripe — 3 года."""
-    interval, count = stripe_catalog._INTERVALS[24]
-    assert (interval, count) == ("year", 2)
+def test_year_period_is_a_yearly_interval():
+    """Год списывается раз в год, а не двенадцатью месячными интервалами."""
+    assert stripe_catalog._INTERVALS[12] == ("year", 1)
+    assert stripe_catalog._INTERVALS[3] == ("month", 3)
 
 
 def test_longer_period_is_cheaper_per_month():
     """Скидка за период обязана быть выгодной, иначе калькулятор врёт клиенту."""
     for plan_id in PLANS:
         monthly = PLANS[plan_id]["price"]
-        assert amount_for(plan_id, 24) / 24 < monthly
+        assert amount_for(plan_id, 12) / 12 < monthly
 
 
 def test_unknown_subscription_status_is_not_active():
@@ -88,7 +88,7 @@ async def _ensure_price_survives_one_time_price():
     # чтения .recurring дело не дойдёт — тест НЕ проверял бы регрессию.
     fake_existing = types.SimpleNamespace(
         id="price_onetime",
-        unit_amount=amount_for("start", 1),
+        unit_amount=amount_for("s3", 1),
         currency=stripe_catalog.CURRENCY,
         recurring=None,
     )
@@ -106,13 +106,13 @@ async def _ensure_price_survives_one_time_price():
     stripe_catalog._find_price = _fake_find_price
     stripe.Price.create = _fake_create
     try:
-        price_id = await stripe_catalog._ensure_price("velora_start", "start", 1)
+        price_id = await stripe_catalog._ensure_price("velora_s3", "s3", 1)
     finally:
         stripe_catalog._find_price = saved_find
         stripe.Price.create = saved_create
 
     assert price_id == "price_new"
-    assert created["lookup_key"] == "velora_start_1m"
+    assert created["lookup_key"] == "velora_s3_1m"
 
 
 def test_ensure_price_survives_one_time_price_under_lookup_key():

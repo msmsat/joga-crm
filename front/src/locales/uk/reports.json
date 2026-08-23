@@ -254,7 +254,8 @@
       "today": "Сьогодні",
       "daysAgo_one": "{{count}} день тому",
       "daysAgo_few": "{{count}} дні тому",
-      "daysAgo_many": "{{count}} днів тому"
+      "daysAgo_many": "{{count}} днів тому",
+      "daysAgo_other": "{{count}} днів тому"
     }
   },
   "team": {
@@ -352,12 +353,15 @@
       "cancels_one": "{{count}} скасування",
       "cancels_few": "{{count}} скасування",
       "cancels_many": "{{count}} скасувань",
+      "cancels_other": "{{count}} скасувань",
       "noshows_one": "{{count}} неявка",
       "noshows_few": "{{count}} неявки",
       "noshows_many": "{{count}} неявок",
+      "noshows_other": "{{count}} неявок",
       "lostSpots_one": "−{{count}} місце",
       "lostSpots_few": "−{{count}} місця",
-      "lostSpots_many": "−{{count}} місць"
+      "lostSpots_many": "−{{count}} місць",
+      "lostSpots_other": "−{{count}} місць"
     },
     "status": {
       "confirmed": "Підтверджено",

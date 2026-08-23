@@ -24,6 +24,7 @@ from schemas.settings.integrations import (
 )
 from services.assistant import get_or_create_ai_settings
 from services.email_layout import code_block
+from services.i18n import pick
 from services.instagram_account import FB_LOGIN_API, connect_instagram_account, disconnect_instagram_account
 from services.mailer import send_email
 from services.notifier import _studio_prefs
@@ -185,6 +186,27 @@ async def disconnect_telegram(
     return ChannelStatus()
 
 
+# Письмо с кодом уходит на адрес, который студия хочет сделать отправителем
+# своих писем клиентам, — читает его владелец, поэтому язык студийный.
+_SENDER_SUBJECT = {
+    "ru": "Код подтверждения", "en": "Verification code", "uk": "Код підтвердження",
+    "cs": "Ověřovací kód", "de": "Bestätigungscode",
+}
+
+_SENDER_INTRO = {
+    "ru": "<p>Введите этот код в разделе «Настройки» → «Интеграции», чтобы "
+          "письма клиентам уходили с этого адреса.</p>",
+    "en": "<p>Enter this code in Settings → Integrations to send client emails "
+          "from this address.</p>",
+    "uk": "<p>Введіть цей код у розділі «Налаштування» → «Інтеграції», щоб "
+          "листи клієнтам надходили з цієї адреси.</p>",
+    "cs": "<p>Zadejte tento kód v sekci «Nastavení» → «Integrace», aby e-maily "
+          "klientům chodily z této adresy.</p>",
+    "de": "<p>Geben Sie diesen Code unter «Einstellungen» → «Integrationen» ein, "
+          "damit E-Mails an Kunden von dieser Adresse ausgehen.</p>",
+}
+
+
 @router.post("/integrations/email/request-code", response_model=ChannelStatus)
 async def request_email_code(
     body: EmailCodeRequest,
@@ -204,15 +226,9 @@ async def request_email_code(
     await db.refresh(integ)
 
     lang, _ = await _studio_prefs(db, ctx.studio_id)
-    subject = "Код подтверждения" if lang == "ru" else "Verification code"
-    intro = (
-        "<p>Введите этот код в разделе «Настройки» → «Интеграции», чтобы "
-        "письма клиентам уходили с этого адреса.</p>" if lang == "ru" else
-        "<p>Enter this code in Settings → Integrations to send client emails "
-        "from this address.</p>"
-    )
     try:
-        await send_email(body.email, subject, intro + code_block(code))
+        await send_email(body.email, pick(_SENDER_SUBJECT, lang),
+                         pick(_SENDER_INTRO, lang) + code_block(code), lang=lang)
     except Exception:
         logger.exception("request_email_code: send_email failed for studio=%s", ctx.studio_id)
 
@@ -286,7 +302,7 @@ async def connect_whatsapp(
     # в 24-часовом окне, и это надо показать студии в тот же момент, а не когда
     # первое напоминание молча не уйдёт.
     await refresh_payment_status(db, integ)
-    # По той же причине сразу заводим шаблоны — фоном, потому что это 76 запросов
+    # По той же причине сразу заводим шаблоны — фоном, потому что это 40 запросов
     # к Meta (services/whatsapp.py::sync_templates_on_connect).
     if body.waba_id:
         background.add_task(sync_templates_on_connect, ctx.studio_id)
@@ -345,7 +361,7 @@ async def sync_whatsapp_templates(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Перезавести на WABA студии шаблоны всех 38 событий (по 2 языка).
+    """Перезавести на WABA студии шаблоны всех 40 событий на языке студии.
 
     При подключении номера это происходит само (sync_templates_on_connect) —
     ручка осталась на случай, когда автосинхронизация не прошла: Meta лежала,

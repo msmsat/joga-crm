@@ -38,7 +38,7 @@ from services.subscription_charge import (
     charge_reservation, notify_subscription_remaining, open_debt, refund_reservation,
 )
 
-from .miniapp import get_current_client
+from .miniapp import Viewer, get_current_client, get_viewer
 
 router = APIRouter()
 
@@ -282,16 +282,21 @@ async def _hall_colors(db: AsyncSession, lessons: list[Lesson]) -> dict[int, str
 @router.get("/lessons/date/{target_date}", response_model=list[MiniappLesson])
 async def lessons_by_date(
     target_date: date,
-    client: Client = Depends(get_current_client),
+    viewer: Viewer = Depends(get_viewer),
     db: AsyncSession = Depends(get_db),
 ):
+    """Расписание дня. Токен не обязателен: занятие выбирают ДО регистрации, и
+    гость по ссылке `/s/<id>` видит тот же список, что и клиент. Клиентские
+    поля у него пустые — своей брони, кофе и подарка первого занятия нет
+    ровно потому, что нет карточки; `None in set()` даёт это само собой."""
+    client_id = viewer.client.id if viewer.client else None
     day_start = datetime.combine(target_date, time.min)
     day_end = day_start + timedelta(days=1)
 
     lessons = (await db.execute(
         select(Lesson)
         .where(
-            Lesson.studio_id == client.studio_id,
+            Lesson.studio_id == viewer.studio_id,
             Lesson.status != "cancelled",
             Lesson.start_time >= day_start,
             Lesson.start_time < day_end,
@@ -303,20 +308,22 @@ async def lessons_by_date(
 
     taken_by_lesson, booked_by_client = await _reservations_map(db, [l.id for l in lessons])
     hall_colors = await _hall_colors(db, lessons)
-    _, currency = await _studio_prefs(db, client.studio_id)
-    rules = await load_rules(db, client.studio_id)
+    _, currency = await _studio_prefs(db, viewer.studio_id)
+    rules = await load_rules(db, viewer.studio_id)
     coffee = await _coffee_map(
-        db, [l.id for l in lessons], client.id, rules,
-        {lid for lid, clients in booked_by_client.items() if client.id in clients},
-    )
+        db, [l.id for l in lessons], client_id, rules,
+        {lid for lid, clients in booked_by_client.items() if client_id in clients},
+    ) if client_id is not None else {}
     # Признак клиентский — один запрос на весь список, а не на каждую карточку.
-    trial_available = await trial_applies(db, client.id, rules)
+    trial_available = (
+        await trial_applies(db, client_id, rules) if client_id is not None else False
+    )
 
     return [
         MiniappLesson(**_lesson_fields(
             lesson,
             taken_by_lesson.get(lesson.id, []),
-            client.id in booked_by_client.get(lesson.id, set()),
+            client_id in booked_by_client.get(lesson.id, set()),
             currency,
             hall_colors,
             rules,
@@ -330,10 +337,14 @@ async def lessons_by_date(
 @router.get("/lessons/next", response_model=Optional[MiniappLesson])
 async def next_lesson(
     response: Response,
-    client: Client = Depends(get_current_client),
+    viewer: Viewer = Depends(get_viewer),
     db: AsyncSession = Depends(get_db),
 ):
-    rules = await load_rules(db, client.studio_id)
+    """Ближайшее занятие студии — карточка-предложение на главной. Как и
+    расписание, открыта гостю: без неё главная сообщала бы пришедшему по ссылке,
+    что занятий нет, хотя они есть."""
+    client_id = viewer.client.id if viewer.client else None
+    rules = await load_rules(db, viewer.studio_id)
     earliest, latest = booking_window(rules)
 
     # Карточка «ближайшее занятие» на главной — это предложение записаться,
@@ -343,7 +354,7 @@ async def next_lesson(
     lessons = (await db.execute(
         select(Lesson)
         .where(
-            Lesson.studio_id == client.studio_id,
+            Lesson.studio_id == viewer.studio_id,
             Lesson.status != "cancelled",
             Lesson.start_time >= earliest,
             Lesson.start_time <= latest,
@@ -359,21 +370,22 @@ async def next_lesson(
 
     taken_by_lesson, booked_by_client = await _reservations_map(db, [lesson.id])
     hall_colors = await _hall_colors(db, [lesson])
-    _, currency = await _studio_prefs(db, client.studio_id)
+    _, currency = await _studio_prefs(db, viewer.studio_id)
+    is_booked = client_id in booked_by_client.get(lesson.id, set())
     coffee = await _coffee_map(
-        db, [lesson.id], client.id, rules,
-        {lesson.id} if client.id in booked_by_client.get(lesson.id, set()) else set(),
-    )
+        db, [lesson.id], client_id, rules,
+        {lesson.id} if is_booked else set(),
+    ) if client_id is not None else {}
 
     return MiniappLesson(**_lesson_fields(
         lesson,
         taken_by_lesson.get(lesson.id, []),
-        client.id in booked_by_client.get(lesson.id, set()),
+        is_booked,
         currency,
         hall_colors,
         rules,
         coffee.get(lesson.id),
-        await trial_applies(db, client.id, rules),
+        await trial_applies(db, client_id, rules) if client_id is not None else False,
     ))
 
 

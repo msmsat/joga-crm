@@ -335,16 +335,20 @@ def test_fees_are_reserved_before_going_to_stripe():
 # -------------------------------------------------------------- комбо-цены
 
 def test_combo_costs_exactly_half_on_every_period():
+    """Расхождение допустимо ровно на цент округления нечётной суммы, и только
+    в пользу студии: 15 € за 3 месяца со скидкой — это 38.25 €, а половины по
+    19.13 € в сумме дали бы больше половины."""
     for plan_id in PLANS:
         for months in PERIOD_DISCOUNTS:
-            assert combo_amount_for(plan_id, months) * 2 == amount_for(plan_id, months)
+            full, half = amount_for(plan_id, months), combo_amount_for(plan_id, months)
+            assert full - 1 <= half * 2 <= full, (plan_id, months)
 
 
 def test_combo_catalog_keys_never_collide():
     keys = {lookup_key(p, m, c) for p in PLANS for m in PERIOD_DISCOUNTS for c in (False, True)}
     assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) * 2
-    assert lookup_key("business", 1, True) == "velora_combo_business_1m"
-    assert _product_id("business", True) != _product_id("business")
+    assert lookup_key("unlimited", 1, True) == "velora_combo_unlimited_1m"
+    assert _product_id("unlimited", True) != _product_id("unlimited")
 
 
 # ------------------------- 5. долг нельзя вернуть себе самому
@@ -430,7 +434,7 @@ def _mode_after_paying(kind: str):
     plan = SimpleNamespace(billing_mode="percent", percent_rate=3.0, fixed_base_amount=None)
     subscription = SimpleNamespace(
         items=SimpleNamespace(data=[SimpleNamespace(
-            price=SimpleNamespace(lookup_key=lookup_key("pro", 1)),
+            price=SimpleNamespace(lookup_key=lookup_key("s15", 1)),
         )]),
     )
     _apply_paid_mode(plan, subscription, kind)

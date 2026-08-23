@@ -1,18 +1,11 @@
-import type { PlanType } from './types';
+// Плейсхолдеры на миг до первого ответа каталога — чтобы страница рисовалась
+// сразу, без скачка вёрстки. Источник истины — back/routers/billing/plans.py:
+// цены, ступени и скидки приходят с сервера (GET /billing/plans).
 
-// Цвет карточки тарифа — чисто UI, сервер каталога его не отдаёт (CLAUDE.md §8).
-// Имена и цены живут на сервере: GET /billing/plans (см. useBillingCalculator).
-export const PLAN_COLORS: Record<PlanType, string> = {
-  start:    '#A3C9A8',
-  pro:      '#FCAE91',
-  business: '#1A1A1A',
+/** Скидки за период: 3 мес −15%, 6 мес −25%, 12 мес −40%. */
+export const PERIOD_DISCOUNTS_FALLBACK: Record<number, number> = {
+  1: 0, 3: 0.15, 6: 0.25, 12: 0.4,
 };
 
-// Лимит сотрудников — единственное, чем тарифы реально отличаются сегодня (остальные
-// «фичи» ещё не гейтятся по плану). Источник истины — back/routers/billing/plans.py,
-// эти значения лишь плейсхолдер на миг до первого ответа каталога (без скачка вёрстки).
-export const PLAN_STAFF_FALLBACK: Record<PlanType, number | null> = {
-  start: 3,
-  pro: 15,
-  business: null,
-};
+/** Ступень, на которой открывается страница у студии без подписки. */
+export const DEFAULT_PLAN_ID = 's5';

@@ -1,546 +1,954 @@
 {
   "ai:actions.deleteChat": {
     "ru": "Удалить чат",
-    "en": "Delete chat"
+    "en": "Delete chat",
+    "uk": "Видалити чат",
+    "cs": "Smazat chat",
+    "de": "Chat löschen"
   },
   "ai:actions.newChat": {
     "ru": "Новый чат",
-    "en": "New chat"
+    "en": "New chat",
+    "uk": "Новий чат",
+    "cs": "Nový chat",
+    "de": "Neuer Chat"
   },
   "ai:actions.undo": {
     "ru": "Вернуть",
-    "en": "Undo"
+    "en": "Undo",
+    "uk": "Скасувати",
+    "cs": "Vrátit zpět",
+    "de": "Rückgängig"
   },
   "ai:agents.configureButton": {
     "ru": "Настроить агентов",
-    "en": "Configure agents"
+    "en": "Configure agents",
+    "uk": "Налаштувати агентів",
+    "cs": "Nastavit agenty",
+    "de": "Agenten einrichten"
   },
   "ai:chat.navbarPlaceholder": {
     "ru": "Спросите AI или поставьте задачу...",
-    "en": "Ask AI or set a task..."
+    "en": "Ask AI or set a task...",
+    "uk": "Спитайте ШІ або поставте задачу...",
+    "cs": "Zeptejte se AI nebo zadejte úkol...",
+    "de": "KI fragen oder Aufgabe stellen..."
   },
   "ai:history.title": {
     "ru": "История чатов",
-    "en": "Chat history"
+    "en": "Chat history",
+    "uk": "Історія чатів",
+    "cs": "Historie chatů",
+    "de": "Chatverlauf"
   },
   "ai:memory.forgetConfirmTitle": {
     "ru": "Забыть этот факт?",
-    "en": "Forget this fact?"
+    "en": "Forget this fact?",
+    "uk": "Забути цей факт?",
+    "cs": "Zapomenout tento fakt?",
+    "de": "Diesen Fakt vergessen?"
   },
   "ai:memory.title": {
     "ru": "Ассистент помнит",
-    "en": "Assistant remembers"
+    "en": "Assistant remembers",
+    "uk": "Асистент пам'ятає",
+    "cs": "Asistent si pamatuje",
+    "de": "Der Assistent merkt sich"
   },
   "ai:plan.back": {
     "ru": "Назад",
-    "en": "Back"
+    "en": "Back",
+    "uk": "Назад",
+    "cs": "Zpět",
+    "de": "Zurück"
   },
   "ai:plan.confirm": {
     "ru": "Утверждаю",
-    "en": "Approve"
+    "en": "Approve",
+    "uk": "Затверджую",
+    "cs": "Schvaluji",
+    "de": "Bestätigen"
   },
   "ai:plan.next": {
     "ru": "Далее",
-    "en": "Next"
+    "en": "Next",
+    "uk": "Далі",
+    "cs": "Dál",
+    "de": "Weiter"
   },
   "ai:plan.pages.check": {
     "ru": "Проверьте",
-    "en": "Review"
+    "en": "Review",
+    "uk": "Перевірка",
+    "cs": "Kontrola",
+    "de": "Prüfen"
   },
   "ai:plan.pages.when": {
     "ru": "Когда",
-    "en": "When"
+    "en": "When",
+    "uk": "Коли",
+    "cs": "Kdy",
+    "de": "Wann"
   },
   "ai:plan.pages.who": {
     "ru": "Кто и что",
-    "en": "Who and what"
+    "en": "Who and what",
+    "uk": "Хто і що",
+    "cs": "Kdo a co",
+    "de": "Wer und was"
   },
   "ai:quota.label": {
     "ru": "Запросов к ИИ",
-    "en": "AI requests"
+    "en": "AI requests",
+    "uk": "Запити до ШІ",
+    "cs": "AI dotazy",
+    "de": "KI-Anfragen"
   },
   "ai:settings.title": {
     "ru": "Настройки AI",
-    "en": "AI settings"
+    "en": "AI settings",
+    "uk": "Налаштування ШІ",
+    "cs": "Nastavení AI",
+    "de": "KI-Einstellungen"
   },
   "ai:telegram.verifyButton": {
     "ru": "Проверить и подключить",
-    "en": "Verify & connect"
+    "en": "Verify & connect",
+    "uk": "Перевірити й підключити",
+    "cs": "Ověřit a připojit",
+    "de": "Prüfen und verbinden"
   },
   "billing:method.portal.cta": {
     "ru": "Открыть у Stripe",
-    "en": "Open at Stripe"
+    "en": "Open at Stripe",
+    "uk": "Відкрити у Stripe",
+    "cs": "Otevřít na Stripe",
+    "de": "Bei Stripe öffnen"
   },
   "billing:mode.title": {
     "ru": "Модель оплаты",
-    "en": "Payment model"
+    "en": "Payment model",
+    "uk": "Модель оплати",
+    "cs": "Model platby",
+    "de": "Abrechnungsmodell"
   },
   "billing:paymentSchedule.payFor": {
     "ru": "Оплатить {{count}} мес.",
-    "en": "Pay for {{count}} mo."
-  },
-  "billing:planCards.choosePlan": {
-    "ru": "Выбрать план",
-    "en": "Choose plan"
+    "en": "Pay for {{count}} mo.",
+    "uk": "Сплатити за {{count}} міс.",
+    "cs": "Zaplatit za {{count}} měs.",
+    "de": "Für {{count}} Mon. bezahlen"
   },
   "billing:profile.add": {
     "ru": "Добавить реквизиты",
-    "en": "Add billing details"
+    "en": "Add billing details",
+    "uk": "Додати реквізити",
+    "cs": "Doplnit fakturační údaje",
+    "de": "Rechnungsdaten ergänzen"
   },
   "billing:profile.cardTitle": {
     "ru": "Реквизиты плательщика",
-    "en": "Billing details"
+    "en": "Billing details",
+    "uk": "Платіжні реквізити",
+    "cs": "Fakturační údaje",
+    "de": "Rechnungsdaten"
   },
   "billing:profile.edit": {
     "ru": "Редактировать",
-    "en": "Edit"
+    "en": "Edit",
+    "uk": "Редагувати",
+    "cs": "Upravit",
+    "de": "Bearbeiten"
+  },
+  "billing:seats.title": {
+    "ru": "Сколько сотрудников в студии",
+    "en": "How many staff in the studio",
+    "uk": "Скільки співробітників у студії",
+    "cs": "Kolik zaměstnanců má studio",
+    "de": "Wie viele Mitarbeitende hat das Studio"
   },
   "billing:trial.activate": {
     "ru": "Активировать",
-    "en": "Activate"
+    "en": "Activate",
+    "uk": "Активувати",
+    "cs": "Aktivovat",
+    "de": "Aktivieren"
   },
   "billing:trial.title": {
     "ru": "Акция для новых студий",
-    "en": "Offer for new studios"
+    "en": "Offer for new studios",
+    "uk": "Пропозиція для нових студій",
+    "cs": "Nabídka pro nová studia",
+    "de": "Angebot für neue Studios"
   },
   "booking:channels.miniapp.copy": {
     "ru": "Скопировать ссылку",
-    "en": "Copy link"
+    "en": "Copy link",
+    "uk": "Копіювати посилання",
+    "cs": "Kopírovat odkaz",
+    "de": "Link kopieren"
   },
   "booking:channels.miniapp.print": {
     "ru": "Распечатать QR",
-    "en": "Print QR"
+    "en": "Print QR",
+    "uk": "Друкувати QR",
+    "cs": "Vytisknout QR",
+    "de": "QR drucken"
   },
   "booking:channels.sectionTitle": {
     "ru": "Каналы подключения",
-    "en": "Connection channels"
+    "en": "Connection channels",
+    "uk": "Канали підключення",
+    "cs": "Kanály připojení",
+    "de": "Verbindungskanäle"
   },
   "booking:sections.coffee.enabled.label": {
     "ru": "Кофе после занятия",
-    "en": "Coffee after class"
+    "en": "Coffee after class",
+    "uk": "Кава після заняття",
+    "cs": "Káva po lekci",
+    "de": "Kaffee nach dem Kurs"
   },
   "booking:sections.main.bookingActive.label": {
     "ru": "Онлайн-запись активна",
-    "en": "Online booking active"
+    "en": "Online booking active",
+    "uk": "Онлайн-запис активний",
+    "cs": "Online rezervace aktivní",
+    "de": "Online-Buchung aktiv"
   },
   "booking:sections.main.trialLesson.label": {
     "ru": "Первое занятие бесплатно",
-    "en": "First class free"
+    "en": "First class free",
+    "uk": "Перше заняття безкоштовно",
+    "cs": "První lekce zdarma",
+    "de": "Erster Kurs gratis"
   },
   "booking:sections.rules.title": {
     "ru": "Ограничения и правила",
-    "en": "Limits & rules"
+    "en": "Limits & rules",
+    "uk": "Ліміти та правила",
+    "cs": "Limity a pravidla",
+    "de": "Grenzen und Regeln"
   },
   "booking:stripeGate.disabled.action": {
     "ru": "Открыть Финансы",
-    "en": "Open Finances"
+    "en": "Open Finances",
+    "uk": "Відкрити Фінанси",
+    "cs": "Otevřít Finance",
+    "de": "Finanzen öffnen"
   },
   "booking:stripeGate.incomplete.action": {
     "ru": "Продолжить настройку",
-    "en": "Continue setup"
+    "en": "Continue setup",
+    "uk": "Продовжити налаштування",
+    "cs": "Pokračovat v nastavení",
+    "de": "Einrichtung fortsetzen"
   },
   "booking:stripeGate.none.action": {
     "ru": "Подключить Stripe",
-    "en": "Connect Stripe"
+    "en": "Connect Stripe",
+    "uk": "Підключити Stripe",
+    "cs": "Připojit Stripe",
+    "de": "Stripe verbinden"
   },
   "booking:tg.connect": {
     "ru": "Подключить бота",
-    "en": "Connect bot"
+    "en": "Connect bot",
+    "uk": "Підключити бота",
+    "cs": "Připojit bota",
+    "de": "Bot verbinden"
   },
   "catalog:modals.addStudio.submit": {
     "ru": "Создать студию",
-    "en": "Create studio"
+    "en": "Create studio",
+    "uk": "Створити студію",
+    "cs": "Vytvořit studio",
+    "de": "Studio anlegen"
   },
   "catalog:modals.hall.titleNew": {
     "ru": "Новый зал",
-    "en": "New hall"
+    "en": "New hall",
+    "uk": "Новий зал",
+    "cs": "Nový sál",
+    "de": "Neuer Saal"
   },
   "catalog:modals.package.titleNew": {
     "ru": "Новый пакет",
-    "en": "New package"
+    "en": "New package",
+    "uk": "Новий пакет",
+    "cs": "Nový balíček",
+    "de": "Neues Paket"
   },
   "catalog:modals.service.titleNew": {
     "ru": "Новая услуга",
-    "en": "New service"
+    "en": "New service",
+    "uk": "Нова послуга",
+    "cs": "Nová služba",
+    "de": "Neue Leistung"
   },
   "catalog:studios.addHall": {
     "ru": "Добавить зал",
-    "en": "Add hall"
+    "en": "Add hall",
+    "uk": "Додати зал",
+    "cs": "Přidat sál",
+    "de": "Saal hinzufügen"
   },
   "catalog:studios.deleteBranch": {
     "ru": "Удалить филиал",
-    "en": "Delete branch"
+    "en": "Delete branch",
+    "uk": "Видалити філіал",
+    "cs": "Smazat pobočku",
+    "de": "Filiale löschen"
   },
   "catalog:studios.editBranch": {
     "ru": "Редактировать филиал",
-    "en": "Edit branch"
+    "en": "Edit branch",
+    "uk": "Редагувати філіал",
+    "cs": "Upravit pobočku",
+    "de": "Filiale bearbeiten"
   },
   "catalog:studios.hall.actions": {
     "ru": "Действия",
-    "en": "Actions"
+    "en": "Actions",
+    "uk": "Дії",
+    "cs": "Akce",
+    "de": "Aktionen"
   },
   "catalog:studios.title": {
     "ru": "СТУДИИ",
-    "en": "STUDIOS"
+    "en": "STUDIOS",
+    "uk": "СТУДІЇ",
+    "cs": "POBOČKY",
+    "de": "STUDIOS"
   },
   "catalog:subscriptions.addPackage": {
     "ru": "Добавить абонемент",
-    "en": "Add package"
+    "en": "Add package",
+    "uk": "Додати пакет",
+    "cs": "Přidat balíček",
+    "de": "Paket hinzufügen"
   },
   "catalog:subscriptions.deactivate": {
     "ru": "Снять с продажи",
-    "en": "Delist"
+    "en": "Delist",
+    "uk": "Зняти з продажу",
+    "cs": "Stáhnout z prodeje",
+    "de": "Aus dem Verkauf nehmen"
   },
   "catalog:subscriptions.settings.title": {
     "ru": "Настройки программы",
-    "en": "Program settings"
+    "en": "Program settings",
+    "uk": "Налаштування програми",
+    "cs": "Nastavení programu",
+    "de": "Programmeinstellungen"
   },
   "clients:addModal.title": {
     "ru": "Новый клиент",
-    "en": "New client"
+    "en": "New client",
+    "uk": "Новий клієнт",
+    "cs": "Nový klient",
+    "de": "Neuer Kunde"
   },
   "clients:deleteModal.title": {
     "ru": "Удалить клиента?",
-    "en": "Delete client?"
+    "en": "Delete client?",
+    "uk": "Видалити клієнта?",
+    "cs": "Smazat klienta?",
+    "de": "Kunde löschen?"
   },
   "clients:filtersGuide.trigger": {
     "ru": "О фильтрах",
-    "en": "About filters"
+    "en": "About filters",
+    "uk": "Про фільтри",
+    "cs": "O filtrech",
+    "de": "Über die Filter"
   },
   "clients:panel.bonusPanel.title": {
     "ru": "Начислить бонус",
-    "en": "Grant bonus"
+    "en": "Grant bonus",
+    "uk": "Нарахувати бонус",
+    "cs": "Udělit bonus",
+    "de": "Bonus gewähren"
   },
   "clients:panel.bookingPanel.title": {
     "ru": "Быстрая запись",
-    "en": "Quick booking"
+    "en": "Quick booking",
+    "uk": "Швидкий запис",
+    "cs": "Rychlá rezervace",
+    "de": "Schnellbuchung"
   },
   "clients:panel.danger.delete": {
     "ru": "Удалить",
-    "en": "Delete"
+    "en": "Delete",
+    "uk": "Видалити",
+    "cs": "Smazat",
+    "de": "Löschen"
   },
   "clients:panel.danger.freeze": {
     "ru": "Заморозить",
-    "en": "Freeze"
+    "en": "Freeze",
+    "uk": "Заморозити",
+    "cs": "Zmrazit",
+    "de": "Einfrieren"
   },
   "clients:panel.danger.freezeDisabledHint": {
     "ru": "Заморозка выключена в настройках Каталог → Абонементы",
-    "en": "Freezing is disabled in Catalog → Subscriptions settings"
+    "en": "Freezing is disabled in Catalog → Subscriptions settings",
+    "uk": "Заморозку вимкнено в Каталог → Налаштування абонементів",
+    "cs": "Zmrazení je vypnuté v Katalog → Nastavení permanentek",
+    "de": "Das Einfrieren ist unter Katalog → Karteneinstellungen deaktiviert"
   },
   "clients:panel.danger.unfreeze": {
     "ru": "Разморозить",
-    "en": "Unfreeze"
+    "en": "Unfreeze",
+    "uk": "Розморозити",
+    "cs": "Rozmrazit",
+    "de": "Auftauen"
   },
   "clients:panel.notes.add": {
     "ru": "Добавить заметку",
-    "en": "Add note"
+    "en": "Add note",
+    "uk": "Додати нотатку",
+    "cs": "Přidat poznámku",
+    "de": "Notiz hinzufügen"
   },
   "clients:panel.offers.title": {
     "ru": "Персональная скидка",
-    "en": "Personal discount"
+    "en": "Personal discount",
+    "uk": "Персональна знижка",
+    "cs": "Osobní sleva",
+    "de": "Persönlicher Rabatt"
   },
   "clients:panel.tags.add": {
     "ru": "Добавить",
-    "en": "Add"
+    "en": "Add",
+    "uk": "Додати",
+    "cs": "Přidat",
+    "de": "Hinzufügen"
   },
   "clients:panel.tags.title": {
     "ru": "Теги",
-    "en": "Tags"
+    "en": "Tags",
+    "uk": "Теги",
+    "cs": "Štítky",
+    "de": "Tags"
   },
   "clients:panel.wallet.buy": {
     "ru": "Купить",
-    "en": "Buy"
+    "en": "Buy",
+    "uk": "Купити",
+    "cs": "Koupit",
+    "de": "Kaufen"
   },
   "clients:panel.wallet.transfer": {
     "ru": "Передать",
-    "en": "Transfer"
+    "en": "Transfer",
+    "uk": "Передати",
+    "cs": "Převést",
+    "de": "Übertragen"
   },
   "clients:toolbar.addClient": {
     "ru": "Добавить клиента",
-    "en": "Add client"
+    "en": "Add client",
+    "uk": "Додати клієнта",
+    "cs": "Přidat klienta",
+    "de": "Kunde hinzufügen"
   },
   "dashboard:events.title": {
     "ru": "Последние события",
-    "en": "Recent events"
+    "en": "Recent events",
+    "uk": "Останні події",
+    "cs": "Nedávné události",
+    "de": "Letzte Ereignisse"
   },
   "dashboard:state.ownerOnly": {
     "ru": "Доступ ограничен вашей ролью",
-    "en": "Access limited by your role"
+    "en": "Access limited by your role",
+    "uk": "Доступ обмежено вашою роллю",
+    "cs": "Přístup je omezen vaší rolí",
+    "de": "Zugriff durch Ihre Rolle eingeschränkt"
   },
   "dashboard:tasks.add": {
     "ru": "Добавить задачу",
-    "en": "Add task"
+    "en": "Add task",
+    "uk": "Додати завдання",
+    "cs": "Přidat úkol",
+    "de": "Aufgabe hinzufügen"
   },
   "dashboard:tasks.submit": {
     "ru": "Добавить",
-    "en": "Add"
+    "en": "Add",
+    "uk": "Додати",
+    "cs": "Přidat",
+    "de": "Hinzufügen"
   },
   "dashboard:tasks.title": {
     "ru": "Задачи",
-    "en": "Tasks"
+    "en": "Tasks",
+    "uk": "Завдання",
+    "cs": "Úkoly",
+    "de": "Aufgaben"
   },
   "dashboard:today.openJournal": {
     "ru": "В журнал",
-    "en": "Open journal"
+    "en": "Open journal",
+    "uk": "Відкрити журнал",
+    "cs": "Otevřít deník",
+    "de": "Journal öffnen"
   },
   "finances:accounts.createSavings": {
     "ru": "Создать копилку",
-    "en": "Create savings account"
+    "en": "Create savings account",
+    "uk": "Створити накопичувальний рахунок",
+    "cs": "Vytvořit spořicí účet",
+    "de": "Sparkonto anlegen"
   },
   "finances:counterparties.add": {
     "ru": "Добавить",
-    "en": "Add"
+    "en": "Add",
+    "uk": "Додати",
+    "cs": "Přidat",
+    "de": "Hinzufügen"
   },
   "finances:documents.upload": {
     "ru": "Загрузить",
-    "en": "Upload"
+    "en": "Upload",
+    "uk": "Завантажити",
+    "cs": "Nahrát",
+    "de": "Hochladen"
   },
   "finances:goals.createGoal": {
     "ru": "Создать цель",
-    "en": "Create goal"
+    "en": "Create goal",
+    "uk": "Створити ціль",
+    "cs": "Vytvořit cíl",
+    "de": "Ziel erstellen"
   },
   "finances:onlinePayments.gatewaysTitle": {
     "ru": "Платёжные провайдеры",
-    "en": "Payment providers"
+    "en": "Payment providers",
+    "uk": "Платіжні провайдери",
+    "cs": "Poskytovatelé plateb",
+    "de": "Zahlungsanbieter"
   },
   "finances:operations.export": {
     "ru": "Экспорт",
-    "en": "Export"
+    "en": "Export",
+    "uk": "Експорт",
+    "cs": "Export",
+    "de": "Export"
   },
   "finances:operations.operation": {
     "ru": "Операция",
-    "en": "Operation"
+    "en": "Operation",
+    "uk": "Операція",
+    "cs": "Operace",
+    "de": "Transaktion"
   },
   "finances:salaries.payAction": {
     "ru": "Выплатить",
-    "en": "Pay"
+    "en": "Pay",
+    "uk": "Виплатити",
+    "cs": "Vyplatit",
+    "de": "Auszahlen"
   },
   "journal:bookingPopup.add": {
     "ru": "Добавить",
-    "en": "Add"
+    "en": "Add",
+    "uk": "Додати",
+    "cs": "Přidat",
+    "de": "Hinzufügen"
   },
   "journal:bookingPopup.addClient": {
     "ru": "Добавить клиента",
-    "en": "Add client"
+    "en": "Add client",
+    "uk": "Додати клієнта",
+    "cs": "Přidat klienta",
+    "de": "Kunde hinzufügen"
   },
   "journal:bookingPopup.booked": {
     "ru": "Записаны",
-    "en": "Booked"
+    "en": "Booked",
+    "uk": "Записаний",
+    "cs": "Přihlášen",
+    "de": "Angemeldet"
   },
   "journal:bookingPopup.deleteLesson": {
     "ru": "Удалить занятие",
-    "en": "Delete lesson"
+    "en": "Delete lesson",
+    "uk": "Видалити заняття",
+    "cs": "Smazat lekci",
+    "de": "Kurs löschen"
   },
   "journal:bookingPopup.edit": {
     "ru": "Изменить",
-    "en": "Edit"
+    "en": "Edit",
+    "uk": "Редагувати",
+    "cs": "Upravit",
+    "de": "Bearbeiten"
   },
   "journal:bookingPopup.markAttended": {
     "ru": "Отметить посещение",
-    "en": "Mark attendance"
+    "en": "Mark attendance",
+    "uk": "Позначити відвідування",
+    "cs": "Označit docházku",
+    "de": "Anwesenheit erfassen"
   },
   "journal:bookingPopup.noEligibleClients": {
     "ru": "Нет клиентов с доступом на это занятие",
-    "en": "No clients with access to this lesson"
+    "en": "No clients with access to this lesson",
+    "uk": "Немає клієнтів із доступом до цього заняття",
+    "cs": "Žádní klienti s přístupem na tuto lekci",
+    "de": "Keine Kunden mit Zugang zu diesem Kurs"
   },
   "journal:bookingPopup.removeFromLesson": {
     "ru": "Снять с занятия",
-    "en": "Remove from lesson"
+    "en": "Remove from lesson",
+    "uk": "Прибрати із заняття",
+    "cs": "Odebrat z lekce",
+    "de": "Aus dem Kurs entfernen"
   },
   "journal:bookingPopup.trialLesson": {
     "ru": "Пробное",
-    "en": "Trial"
+    "en": "Trial",
+    "uk": "Пробне",
+    "cs": "Zkušební",
+    "de": "Probe"
   },
   "journal:bookingPopup.unpaid": {
     "ru": "Не оплачено · {{amount}}",
-    "en": "Unpaid · {{amount}}"
+    "en": "Unpaid · {{amount}}",
+    "uk": "Не оплачено · {{amount}}",
+    "cs": "Nezaplaceno · {{amount}}",
+    "de": "Unbezahlt · {{amount}}"
   },
   "journal:cancelBookingConfirm.title": {
     "ru": "Отменить занятие?",
-    "en": "Cancel lesson?"
+    "en": "Cancel lesson?",
+    "uk": "Скасувати заняття?",
+    "cs": "Zrušit lekci?",
+    "de": "Kurs stornieren?"
   },
   "journal:newBooking.create": {
     "ru": "Создать занятие",
-    "en": "Create lesson"
+    "en": "Create lesson",
+    "uk": "Створити заняття",
+    "cs": "Vytvořit lekci",
+    "de": "Kurs erstellen"
   },
   "journal:newBooking.createServiceConfirm.title": {
     "ru": "Создать услугу?",
-    "en": "Create a service?"
+    "en": "Create a service?",
+    "uk": "Створити послугу?",
+    "cs": "Vytvořit službu?",
+    "de": "Leistung erstellen?"
   },
   "journal:newBooking.title": {
     "ru": "Новое занятие",
-    "en": "New lesson"
+    "en": "New lesson",
+    "uk": "Нове заняття",
+    "cs": "Nová lekce",
+    "de": "Neuer Kurs"
   },
   "journal:toasts.lessonMoved": {
     "ru": "Занятие перенесено",
-    "en": "Lesson moved"
+    "en": "Lesson moved",
+    "uk": "Заняття перенесено",
+    "cs": "Lekce přesunuta",
+    "de": "Kurs verschoben"
   },
   "journal:toasts.noPermission": {
     "ru": "Недостаточно прав для изменения расписания",
-    "en": "Not enough permissions to change the schedule"
+    "en": "Not enough permissions to change the schedule",
+    "uk": "Недостатньо прав, щоб змінювати розклад",
+    "cs": "Nedostatečná oprávnění ke změně rozvrhu",
+    "de": "Nicht genug Rechte, um den Plan zu ändern"
   },
   "journal:toolbar.today": {
     "ru": "Сегодня",
-    "en": "Today"
+    "en": "Today",
+    "uk": "Сьогодні",
+    "cs": "Dnes",
+    "de": "Heute"
   },
   "loyalty:card.configure": {
     "ru": "Настроить",
-    "en": "Configure"
+    "en": "Configure",
+    "uk": "Налаштувати",
+    "cs": "Nastavit",
+    "de": "Einrichten"
   },
   "loyalty:config.certIssue": {
     "ru": "Выпустить сертификат",
-    "en": "Issue a certificate"
+    "en": "Issue a certificate",
+    "uk": "Видати сертифікат",
+    "cs": "Vystavit poukaz",
+    "de": "Gutschein ausstellen"
   },
   "loyalty:config.certIssueButton": {
     "ru": "Выпустить",
-    "en": "Issue"
+    "en": "Issue",
+    "uk": "Видати",
+    "cs": "Vystavit",
+    "de": "Ausstellen"
   },
   "loyalty:config.promoAdd": {
     "ru": "+ Добавить промокод",
-    "en": "+ Add promo code"
+    "en": "+ Add promo code",
+    "uk": "+ Додати промокод",
+    "cs": "+ Přidat promo kód",
+    "de": "+ Aktionscode hinzufügen"
   },
   "loyalty:drawer.save": {
     "ru": "Сохранить и активировать",
-    "en": "Save and activate"
+    "en": "Save and activate",
+    "uk": "Зберегти й активувати",
+    "cs": "Uložit a aktivovat",
+    "de": "Speichern und aktivieren"
   },
   "loyalty:drawer.subtitle": {
     "ru": "Настройка программы",
-    "en": "Program settings"
+    "en": "Program settings",
+    "uk": "Налаштування програми",
+    "cs": "Nastavení programu",
+    "de": "Programmeinstellungen"
   },
   "loyalty:scenarios.add": {
     "ru": "Сценарий",
-    "en": "Scenario"
+    "en": "Scenario",
+    "uk": "Сценарій",
+    "cs": "Scénář",
+    "de": "Szenario"
   },
   "loyalty:scenarios.title": {
     "ru": "Умные сценарии",
-    "en": "Smart scenarios"
+    "en": "Smart scenarios",
+    "uk": "Розумні сценарії",
+    "cs": "Chytré scénáře",
+    "de": "Smarte Szenarien"
   },
   "loyalty:segmentsBoard.title": {
     "ru": "Сегменты и рекомендации",
-    "en": "Segments & recommendations"
+    "en": "Segments & recommendations",
+    "uk": "Сегменти та рекомендації",
+    "cs": "Segmenty a doporučení",
+    "de": "Segmente & Empfehlungen"
   },
   "menu:nav.journal": {
     "ru": "Журнал",
-    "en": "Journal"
+    "en": "Journal",
+    "uk": "Журнал",
+    "cs": "Deník",
+    "de": "Journal"
   },
   "menu:navbar.create": {
     "ru": "Создать",
-    "en": "Create"
+    "en": "Create",
+    "uk": "Створити",
+    "cs": "Vytvořit",
+    "de": "Erstellen"
   },
   "menu:userMenu.logout": {
     "ru": "Выйти",
-    "en": "Log out"
+    "en": "Log out",
+    "uk": "Вийти",
+    "cs": "Odhlásit se",
+    "de": "Abmelden"
   },
   "menu:userMenu.studios": {
     "ru": "Мои студии",
-    "en": "My studios"
+    "en": "My studios",
+    "uk": "Мої студії",
+    "cs": "Moje studia",
+    "de": "Meine Studios"
   },
   "notifications:channels.connect": {
     "ru": "Подключить",
-    "en": "Connect"
+    "en": "Connect",
+    "uk": "Підключити",
+    "cs": "Připojit",
+    "de": "Verbinden"
   },
   "notifications:channels.title": {
     "ru": "Каналы доставки",
-    "en": "Delivery channels"
+    "en": "Delivery channels",
+    "uk": "Канали доставки",
+    "cs": "Kanály doručení",
+    "de": "Zustellkanäle"
   },
   "notifications:matrix.allSaved": {
     "ru": "Все изменения сохранены",
-    "en": "All changes saved"
+    "en": "All changes saved",
+    "uk": "Усі зміни збережено",
+    "cs": "Všechny změny uloženy",
+    "de": "Alle Änderungen gespeichert"
   },
   "notifications:matrix.lock.critical": {
     "ru": "Обязательное уведомление — отключить нельзя",
-    "en": "Required notification — cannot be turned off"
+    "en": "Required notification — cannot be turned off",
+    "uk": "Обов'язкове сповіщення — вимкнути не можна",
+    "cs": "Povinné oznámení — nelze vypnout",
+    "de": "Pflichtbenachrichtigung — kann nicht abgeschaltet werden"
   },
   "profile:accounts.enter": {
     "ru": "Перейти",
-    "en": "Open"
+    "en": "Open",
+    "uk": "Відкрити",
+    "cs": "Otevřít",
+    "de": "Öffnen"
   },
   "profile:accounts.title": {
     "ru": "Мои студии",
-    "en": "My studios"
+    "en": "My studios",
+    "uk": "Мої студії",
+    "cs": "Moje studia",
+    "de": "Meine Studios"
   },
   "profile:otherAccount.return": {
     "ru": "Войти",
-    "en": "Sign in"
+    "en": "Sign in",
+    "uk": "Увійти",
+    "cs": "Přihlásit se",
+    "de": "Anmelden"
   },
   "profile:otherAccount.title": {
     "ru": "Другой аккаунт",
-    "en": "Another account"
+    "en": "Another account",
+    "uk": "Інший обліковий запис",
+    "cs": "Jiný účet",
+    "de": "Anderes Konto"
   },
   "profile:page.title": {
     "ru": "Ваш профиль",
-    "en": "Your profile"
+    "en": "Your profile",
+    "uk": "Ваш профіль",
+    "cs": "Váš profil",
+    "de": "Ihr Profil"
   },
   "profile:personalInfo.heading": {
     "ru": "Личные данные",
-    "en": "Personal details"
+    "en": "Personal details",
+    "uk": "Особисті дані",
+    "cs": "Osobní údaje",
+    "de": "Persönliche Daten"
   },
   "profile:security.changePassword": {
     "ru": "Сменить пароль",
-    "en": "Change password"
+    "en": "Change password",
+    "uk": "Змінити пароль",
+    "cs": "Změnit heslo",
+    "de": "Passwort ändern"
   },
   "profile:security.logout": {
     "ru": "Выйти",
-    "en": "Log out"
+    "en": "Log out",
+    "uk": "Вийти",
+    "cs": "Odhlásit se",
+    "de": "Abmelden"
   },
   "reports:insights.action": {
     "ru": "Перейти",
-    "en": "Open"
+    "en": "Open",
+    "uk": "Відкрити",
+    "cs": "Otevřít",
+    "de": "Öffnen"
   },
   "reports:insights.title": {
     "ru": "Что требует внимания",
-    "en": "Needs attention"
+    "en": "Needs attention",
+    "uk": "Потребує уваги",
+    "cs": "Vyžaduje pozornost",
+    "de": "Braucht Aufmerksamkeit"
   },
   "reports:toolbar.export": {
     "ru": "Экспорт",
-    "en": "Export"
+    "en": "Export",
+    "uk": "Експорт",
+    "cs": "Export",
+    "de": "Export"
   },
   "settings:general.company.title": {
     "ru": "Данные компании",
-    "en": "Company details"
+    "en": "Company details",
+    "uk": "Дані компанії",
+    "cs": "Údaje o firmě",
+    "de": "Firmendaten"
   },
   "settings:general.locale.title": {
     "ru": "Язык и регион",
-    "en": "Language & region"
+    "en": "Language & region",
+    "uk": "Мова й регіон",
+    "cs": "Jazyk a region",
+    "de": "Sprache & Region"
   },
   "settings:integrations.actions.connect": {
     "ru": "Подключить",
-    "en": "Connect"
+    "en": "Connect",
+    "uk": "Підключити",
+    "cs": "Připojit",
+    "de": "Verbinden"
   },
   "settings:security.danger.title": {
     "ru": "Управление данными (Опасная зона)",
-    "en": "Data management (Danger zone)"
+    "en": "Data management (Danger zone)",
+    "uk": "Керування даними (небезпечна зона)",
+    "cs": "Správa dat (riziková zóna)",
+    "de": "Datenverwaltung (Gefahrenzone)"
   },
   "settings:security.password.change": {
     "ru": "Сменить пароль",
-    "en": "Change password"
+    "en": "Change password",
+    "uk": "Змінити пароль",
+    "cs": "Změnit heslo",
+    "de": "Passwort ändern"
   },
   "settings:workspace.title": {
     "ru": "Ваши CRM системы",
-    "en": "Your CRM systems"
+    "en": "Your CRM systems",
+    "uk": "Ваші CRM-системи",
+    "cs": "Vaše CRM systémy",
+    "de": "Ihre CRM-Systeme"
   },
   "staff:addModal.step3.createAndInvite": {
     "ru": "Создать и пригласить",
-    "en": "Create and invite"
+    "en": "Create and invite",
+    "uk": "Створити та запросити",
+    "cs": "Vytvořit a pozvat",
+    "de": "Anlegen und einladen"
   },
   "staff:editModal.cannotDeleteLastOwner": {
     "ru": "Нельзя удалить единственного владельца",
-    "en": "Cannot remove the only owner"
+    "en": "Cannot remove the only owner",
+    "uk": "Неможливо видалити єдиного власника",
+    "cs": "Jediného vlastníka nelze odebrat",
+    "de": "Der einzige Inhaber kann nicht entfernt werden"
   },
   "staff:editModal.deleteEmployee": {
     "ru": "Удалить сотрудника",
-    "en": "Remove employee"
+    "en": "Remove employee",
+    "uk": "Видалити співробітника",
+    "cs": "Odebrat zaměstnance",
+    "de": "Mitarbeitende:n entfernen"
   },
   "staff:list.pendingLabel": {
     "ru": "Ожидает приглашения",
-    "en": "Invitation pending"
+    "en": "Invitation pending",
+    "uk": "Очікує на запрошення",
+    "cs": "Čeká na přijetí pozvánky",
+    "de": "Einladung ausstehend"
   },
   "staff:ownerModal.heading": {
     "ru": "Контактные данные",
-    "en": "Contact details"
+    "en": "Contact details",
+    "uk": "Контактні дані",
+    "cs": "Kontaktní údaje",
+    "de": "Kontaktdaten"
   },
   "staff:toolbar.teamTitle": {
     "ru": "Команда · {{count}} чел.",
-    "en": "Team · {{count}}"
+    "en": "Team · {{count}}",
+    "uk": "Команда · {{count}}",
+    "cs": "Tým · {{count}}",
+    "de": "Team · {{count}}"
   }
 }

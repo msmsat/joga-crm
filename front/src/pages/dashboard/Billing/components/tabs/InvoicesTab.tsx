@@ -5,7 +5,8 @@ import { HistoryIcon, DownloadIcon, RefreshIcon } from '../ui/BillingIcons';
 import { billingApi } from '../../../../../api/billing/billing.api';
 import { formatMoney } from '../../../../../lib/money';
 import { useToast } from '../../../../../components/ui/index';
-import type { Invoice, PlanType } from '../../types';
+import type { Invoice } from '../../types';
+import { planLabel } from '../../../../../lib/plan';
 
 function fmtDate(iso: string | null, noData: string): string {
   if (!iso) return noData;
@@ -67,11 +68,10 @@ interface Props {
   currency?: string;
   invoices: Invoice[];
   loaded: boolean;
-  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
   syncInvoice: (id: number) => Promise<Invoice>;
 }
 
-export default function InvoicesTab({ currency, invoices, loaded, plans, syncInvoice }: Props) {
+export default function InvoicesTab({ currency, invoices, loaded, syncInvoice }: Props) {
   const { t } = useTranslation('billing');
   const toast = useToast();
   const [exporting, setExporting] = useState(false);
@@ -168,7 +168,7 @@ export default function InvoicesTab({ currency, invoices, loaded, plans, syncInv
                   <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
                     {FEE_KIND_KEYS[inv.plan_name]
                       ? t(FEE_KIND_KEYS[inv.plan_name])
-                      : plans[inv.plan_name as PlanType]?.name ?? inv.plan_name}
+                      : planLabel(inv.plan_name, t)}
                     {/* Период у счетов за комиссию всегда «1 мес.» и смысла не несёт —
                         показываем его только у счетов за тариф, где он и куплен. */}
                     {!FEE_KIND_KEYS[inv.plan_name] && (

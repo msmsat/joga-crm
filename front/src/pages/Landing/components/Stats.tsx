@@ -4,12 +4,12 @@ import { Reveal } from "./primitives";
 // 4.9 — ни одну из этих цифр подтвердить нечем. Заменены на факты продукта,
 // каждый из которых проверяется по коду: TRIAL_DAYS (auth/onboarding.py),
 // список модулей ниже на странице, каналы записи (BookingChannelConfig),
-// цена «Старта» (routers/billing/plans.py).
+// цена нижней ступени — 2 места (routers/billing/plans.py).
 const STATS = [
   { value: "14 дней", label: "Бесплатно, без карты" },
   { value: "16", label: "Модулей в любом тарифе" },
   { value: "4", label: "Канала онлайн-записи" },
-  { value: "от 39 €", label: "В месяц за студию", invert: true },
+  { value: "от 15 €", label: "В месяц за студию", invert: true },
 ];
 
 const TRUST = [

@@ -131,7 +131,7 @@ def test_unsigned_event_is_rejected_loudly():
 # ------------------------------------------------- 2. лимиты на «проценте»
 
 class _Plan:
-    def __init__(self, billing_mode, plan_name="pro", expires_at=None):
+    def __init__(self, billing_mode, plan_name="s15", expires_at=None):
         self.billing_mode = billing_mode
         self.plan_name = plan_name
         self.expires_at = expires_at
@@ -176,8 +176,8 @@ def test_percent_studio_has_no_tier_ceiling():
     запирал студию на НЕВИДИМОЙ ступени сообщением «улучшите тариф» (жалоба
     18.08.2026: три сотрудника на `start`). Бесплатным безлимит не становится:
     процент платится с оборота, не меньше MIN_MONTHLY_FEE в месяц."""
-    assert _run_limit(_Plan("percent", plan_name="start", expires_at=_LONG_AGO), count=100) is None
-    assert _run_limit(_Plan("percent", plan_name="start"), count=999, entity="staff") is None
+    assert _run_limit(_Plan("percent", plan_name="s3", expires_at=_LONG_AGO), count=100) is None
+    assert _run_limit(_Plan("percent", plan_name="s3"), count=999, entity="staff") is None
 
 
 def test_expired_subscription_is_still_blocked():
@@ -199,7 +199,7 @@ def test_limits_and_gate_agree_on_percent():
 
 def _row(**kw):
     return SimpleNamespace(**{
-        "studio_id": 7, "plan_name": "pro", "status": "active",
+        "studio_id": 7, "plan_name": "s15", "status": "active",
         "stripe_subscription_id": "sub_1", "billing_mode": "subscription", **kw
     })
 
@@ -216,7 +216,7 @@ _USER = SimpleNamespace(
 _CTX = SimpleNamespace(studio_id=7, user=_USER)
 
 
-def _reconcile(row, body, *, price_key="velora_pro_12m"):
+def _reconcile(row, body, *, price_key="velora_s15_12m"):
     """Гоняет _reconcile_subscription с заглушками Stripe → (отменили, смена Price)."""
     calls = {"cancelled": None, "changed": None, "proration": None}
 
@@ -260,26 +260,26 @@ def test_switch_to_combo_moves_subscription_to_the_half_price():
     """У комбо ПОЛОВИННЫЙ Price. Без смены студия платила бы полную цену подписки,
     доплачивая сверху ещё и 1.5% с транзакций."""
     calls = _reconcile(_row(), ActivateModelRequest(
-        mode="combo", plan="pro", period_months=12, accept_offline_terms=True,
+        mode="combo", plan="s15", period_months=12, accept_offline_terms=True,
     ))
 
     assert calls["cancelled"] is None
     _sub_id, price, metadata = calls["changed"]
-    assert price == "price_pro_12_combo"
+    assert price == "price_s15_12_combo"
     # Метаданные обязаны ехать с новым Price: по ним webhook._activate поднимает
     # ступень тарифа на продлении.
-    assert metadata["plan"] == "pro" and metadata["period_months"] == "12"
+    assert metadata["plan"] == "s15" and metadata["period_months"] == "12"
     assert metadata["billing_mode"] == "combo"
 
 
 def test_switch_back_to_subscription_restores_the_full_price():
     """Обратный переход — недобор уже у платформы: полный тариф за половину цены."""
     calls = _reconcile(_row(billing_mode="combo"), ActivateModelRequest(mode="subscription"),
-                       price_key="velora_combo_pro_12m")
+                       price_key="velora_combo_s15_12m")
 
     _sub_id, price, _metadata = calls["changed"]
     # Тариф и период не прислали — взяли из lookup_key живой подписки, а не угадали.
-    assert price == "price_pro_12_sub"
+    assert price == "price_s15_12_sub"
 
 
 # --------------------------------- 3a. комбо включает ОПЛАТА, а не кнопка
@@ -304,17 +304,18 @@ def _paid(lookup_key, **kw):
 def test_paid_combo_price_turns_the_combo_mode_on():
     """Комбо включается оплатой, и режим читается из Price, за который заплатили:
     у комбо он свой (velora_combo_*), второй копии хранить незачем."""
-    plan = _paid("velora_combo_pro_12m")
+    plan = _paid("velora_combo_s15_12m")
     assert plan.billing_mode == "combo"
     assert plan.percent_rate == 1.5
-    # Половина Pro (4950) со скидкой 30% за год — та же формула, что в activate_model.
-    assert plan.fixed_base_amount == round(4950 * 0.7)
+    # Половина ступени «15 мест» (4000) со скидкой 40% за год — та же формула,
+    # что в activate_model.
+    assert plan.fixed_base_amount == round(4000 * 0.6)
 
 
 def test_paid_plain_price_turns_the_combo_mode_off():
     """Обратная сторона: оплаченный обычный Price снимает и ставку, и фикс-базу —
     иначе студия, ушедшая с комбо, продолжала бы числиться должной 1.5% с оборота."""
-    plan = _paid("velora_pro_12m", billing_mode="combo", percent_rate=1.5, fixed_base_amount=3465)
+    plan = _paid("velora_s15_12m", billing_mode="combo", percent_rate=1.5, fixed_base_amount=3465)
     assert plan.billing_mode == "subscription"
     assert plan.percent_rate is None and plan.fixed_base_amount is None
 
@@ -330,7 +331,7 @@ def test_an_unreadable_price_leaves_the_mode_alone():
 def _plan_row(**kw):
     """Строка плана, достаточная для _to_plan_read в конце activate_model."""
     return SimpleNamespace(**{
-        "id": 1, "studio_id": 7, "plan_name": "pro", "billing_cycle": "monthly",
+        "id": 1, "studio_id": 7, "plan_name": "s15", "billing_cycle": "monthly",
         "status": "active", "expires_at": None, "max_staff": 15, "auto_renewal": True,
         "billing_mode": "subscription", "percent_rate": None, "fixed_base_amount": None,
         "notify_before_days": 3, "notify_before_autocharge": True,
@@ -373,7 +374,7 @@ def _activate(body, row, monkeypatch, ctx=_CTX):
     return reconciled
 
 
-_COMBO = dict(mode="combo", plan="pro", period_months=12, accept_offline_terms=True)
+_COMBO = dict(mode="combo", plan="s15", period_months=12, accept_offline_terms=True)
 
 
 def test_combo_on_a_live_subscription_changes_nothing_until_paid(monkeypatch):
@@ -453,14 +454,14 @@ def test_switch_happens_at_once_without_refunding_the_remainder():
     НЕ возвращается. `create_prorations` вернул бы его кредитом на баланс клиента, и
     следующий счёт пришёл бы уменьшенным — вопреки тому, что обещает модалка."""
     calls = _reconcile(_row(), ActivateModelRequest(
-        mode="combo", plan="pro", period_months=12, accept_offline_terms=True,
+        mode="combo", plan="s15", period_months=12, accept_offline_terms=True,
     ))
     assert calls["proration"] == "none"
 
 
 def test_no_subscription_means_nothing_to_reconcile():
     """Студия без подписки (первый вход, чистый «процент») в Stripe не ходит вовсе."""
-    calls = _reconcile(_row(stripe_subscription_id=None), ActivateModelRequest(mode="combo", plan="pro"))
+    calls = _reconcile(_row(stripe_subscription_id=None), ActivateModelRequest(mode="combo", plan="s15"))
     assert calls == {"cancelled": None, "changed": None, "proration": None}
 
 
@@ -468,7 +469,7 @@ def test_dead_subscription_is_left_alone():
     """Отменённую/неоплаченную подписку не трогаем: менять Price у мёртвого объекта
     значит получить 502 на ровном месте."""
     for status in ("expired", "pending", "none"):
-        calls = _reconcile(_row(status=status), ActivateModelRequest(mode="combo", plan="pro"))
+        calls = _reconcile(_row(status=status), ActivateModelRequest(mode="combo", plan="s15"))
         assert calls["changed"] is None, status
         assert calls["cancelled"] is None, status
 

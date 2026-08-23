@@ -25,7 +25,9 @@ from security import get_password_hash
 _SENT: list[tuple[str, str, str]] = []
 
 
-async def _fake_send_email(to, subject, html, sender=None, brand=None):
+# **_kw: письмо обрастает деталями (язык оболочки, вложения), и фейк с жёсткой
+# сигнатурой падал бы TypeError'ом на каждой такой правке.
+async def _fake_send_email(to, subject, html, **_kw):
     _SENT.append((to, subject, html))
 
 

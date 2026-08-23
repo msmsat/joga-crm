@@ -35,7 +35,7 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
 import routers.auth.onboarding as O
-from routers.billing.plans import PLANS, TRIAL_DAYS
+from routers.billing.plans import PLANS, TRIAL_PLAN, TRIAL_DAYS
 from routers.billing.router import activate_trial, _trial_available
 from schemas import OnboardingRequest
 
@@ -151,7 +151,7 @@ def test_activation_creates_trial_for_exactly_trial_days():
     assert row.studio_id == 7
     assert row.plan_name == "free_trial" and row.status == "trial"
     # Лимиты триала равны Pro — так их читает и services/plan_limits.
-    assert row.max_staff == PLANS["pro"]["limits"]["staff"]
+    assert row.max_staff == PLANS[TRIAL_PLAN]["limits"]["staff"]
     assert before + timedelta(days=TRIAL_DAYS) <= row.expires_at <= after + timedelta(days=TRIAL_DAYS)
     # Отметка «триал брали» — она, а не статус, закрывает повторную выдачу.
     assert before <= row.trial_started_at <= after
@@ -180,7 +180,7 @@ def test_placeholder_row_from_abandoned_checkout_does_not_burn_the_offer():
     out = _run(activate_trial(_ctx(), db))
 
     assert placeholder.plan_name == "free_trial" and placeholder.status == "trial"
-    assert placeholder.max_staff == PLANS["pro"]["limits"]["staff"]
+    assert placeholder.max_staff == PLANS[TRIAL_PLAN]["limits"]["staff"]
     assert placeholder.trial_started_at is not None
     # Вторую строку не плодим: studio_id уникален, INSERT упал бы.
     assert not [x for x in db.added if type(x).__name__ == "StudioBillingPlan"]

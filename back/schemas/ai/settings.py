@@ -48,7 +48,8 @@ class AISettingsRead(BaseSchema):
 
 class AISettingsUpdate(BaseSchema):
     model: Optional[Literal["velora-3.5"]] = None
-    language: Optional[Literal["auto", "ru", "en", "uk"]] = None
+    # Языки продукта (services/i18n) + «auto» — отвечать на языке студии.
+    language: Optional[Literal["auto", "ru", "en", "uk", "cs", "de"]] = None
     system_prompt: Optional[str] = Field(None, max_length=2000)
     tg_enabled: Optional[bool] = None
     tg_tone: Optional[Tone] = None

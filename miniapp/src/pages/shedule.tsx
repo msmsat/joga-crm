@@ -30,9 +30,11 @@ interface SheduleProps {
   catalog: StudioCatalog | null;
   /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
   onBuySubscription: () => void;
+  /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
+  onNeedAuth: (retry: () => void) => void;
 }
 
-export default function Shedule({ catalog, onBuySubscription }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: SheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -70,6 +72,7 @@ export default function Shedule({ catalog, onBuySubscription }: SheduleProps) {
       cancelError: t('schedule.cancel_error'),
       cancelSuccess: t('schedule.cancel_success'),
     },
+    onNeedAuth,
   });
 
   useEffect(() => {

@@ -1,17 +1,20 @@
 {
   "auth": {
-    "title": "Seznámíme se",
-    "subtitle": "Jeden účet pro všechna studia Velora. Zabere to deset sekund.",
-    "name_label": "Jméno",
-    "name_placeholder": "Valerie",
-    "phone_label": "Telefon",
-    "phone_placeholder": "420601123456",
-    "name_error": "Zadejte jméno",
-    "phone_error": "Zkontrolujte telefonní číslo",
-    "note": "Žádná hesla: přihlášení zůstává v tomto zařízení a v každém studiu už vás znají.",
-    "submit": "Pokračovat",
-    "submitting": "Vytváříme profil...",
-    "failed": "Registrace se nezdařila. Zkuste to znovu."
+    "title": "Klientská zóna",
+    "title_link": "Připojit e-mail",
+    "title_other": "Jiný účet",
+    "hint_email": "Zadejte e-mail — pošleme vám přihlašovací kód. Heslo není potřeba.",
+    "hint_email_other": "Zadejte e-mail druhého účtu — pošleme kód. Současné přihlášení na tomto zařízení zůstane.",
+    "hint_link": "Potvrďte e-mail a do stejné zóny se dostanete i z prohlížeče, nejen z Telegramu.",
+    "hint_code": "Kód jsme poslali na {{email}}",
+    "name_placeholder": "Jak se jmenujete?",
+    "send_code": "Poslat kód",
+    "link": "Připojit",
+    "sign_in": "Přihlásit se",
+    "change_email": "Změnit e-mail",
+    "cancel": "Zrušit",
+    "code_send_error": "Kód se nepodařilo odeslat",
+    "code_invalid": "Nesprávný kód"
   },
   "studio": {
     "open": "Otevřeno",
@@ -28,7 +31,11 @@
   },
   "common": {
     "minutes": "min",
-    "classes_count": "lekcí"
+    "classes_count": "lekcí",
+    "preparing": "Připravujeme váš prostor",
+    "need_link_title": "Je potřeba odkaz studia",
+    "need_link_hint": "Tohle je klientská zóna. Otevřete ji přes odkaz vašeho studia — z Telegramu, Instagramu nebo z webu.",
+    "request_error": "Chyba požadavku ({{status}})"
   },
   "lesson": {
     "name": {

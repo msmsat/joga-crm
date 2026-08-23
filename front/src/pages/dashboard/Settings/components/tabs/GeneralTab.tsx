@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import { Button, EmptyState, Input, Select, useToast } from "../../../../../components/ui/index";
-import { CURRENCIES, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
+import { CURRENCY_OPTIONS, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
 import { resolveImageUrl } from "../../../../../api/client";
 import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import type { GeneralSettings, GeneralUpdate } from "../../../../../api/settings/settings.types";
@@ -53,7 +53,7 @@ export default function GeneralTab() {
   // Те же списки значений и подписи (namespace "onboarding"), что и на шаге
   // регион-настроек онбординга (StepSettings) — набор валют/поясов/языков
   // должен совпадать один в один, обычный kit Select, без визуальных правок.
-  const currencyOptions = CURRENCIES.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
+  const currencyOptions = CURRENCY_OPTIONS.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
   const languageOptions = LANGUAGES;
   const timezoneOptions = TIMEZONES.map(tz => ({ value: tz.value, label: t(`onboarding:settings.timezones.${tz.value}`) }));
 
@@ -214,7 +214,7 @@ export default function GeneralTab() {
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.language')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.language ?? ''} onChange={v => setLocale('language', v)} options={languageOptions} searchable searchPlaceholder={t('general.locale.languageSearch')} emptyText={t('general.locale.languageNotFound')} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.language ?? ''} onChange={v => setLocale('language', v)} options={languageOptions} /></div>
           </div>
         </div>
       </div>

@@ -38,6 +38,16 @@ function FlagCZ() {
   );
 }
 
+function FlagDE() {
+  return (
+    <svg viewBox={FLAG_VIEWBOX} width="28" height="20">
+      <rect width="24" height="5.33" fill="#000" />
+      <rect y="5.33" width="24" height="5.33" fill="#DD0000" />
+      <rect y="10.67" width="24" height="5.33" fill="#FFCE00" />
+    </svg>
+  );
+}
+
 function FlagRU() {
   return (
     <svg viewBox={FLAG_VIEWBOX} width="28" height="20">
@@ -53,11 +63,12 @@ function FlagRU() {
 const LANGUAGES = [
   { code: 'uk', name: 'Українська', flag: <FlagUA /> },
   { code: 'en', name: 'English', flag: <FlagGB /> },
-  { code: 'cz', name: 'Čeština', flag: <FlagCZ /> },
+  { code: 'cs', name: 'Čeština', flag: <FlagCZ /> },
+  { code: 'de', name: 'Deutsch', flag: <FlagDE /> },
   { code: 'ru', name: 'Русский', flag: <FlagRU /> },
 ];
 
-/** Высота панели: четыре строки по 44 плюс подбивка. Нужна ДО отрисовки. */
+/** Высота панели: строка списка — 44 плюс подбивка. Нужна ДО отрисовки. */
 const PANEL_HEIGHT = LANGUAGES.length * 44 + 12;
 
 // Детектор языка отдаёт и «en-US», поэтому сверяем по префиксу.

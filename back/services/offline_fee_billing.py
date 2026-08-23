@@ -83,6 +83,12 @@ REMINDER_DAYS = 2
 _FX: dict[str, float] = {}
 _fx_fetched_at: datetime | None = None
 _FX_URL = "https://api.frankfurter.dev/v1/latest"
+# ЕЦБ публикует ~30 валют, и ни UAH, ни RUB, ни KZT, ни AED в них нет (RUB снят с
+# публикации в 2022). Для студий в этих деньгах курса не было вовсе: комиссия
+# копилась, to_billing_currency отдавала None, счёт не выставлялся НИКОГДА, а
+# виджет показывал долг в гривнах. Второй источник дозаполняет то, чего нет у ЕЦБ,
+# и не трогает то, что ЕЦБ даёт: для евро-фактуры его курс остаётся эталонным.
+_FX_FALLBACK_URL = "https://open.er-api.com/v6/latest/{base}"
 _FX_TTL = timedelta(hours=24)
 
 
@@ -131,8 +137,28 @@ async def _save_fx(db: AsyncSession) -> None:
         logger.exception("Офлайн-комиссии: курс не сохранён в БД")
 
 
+async def _fetch_rates(url: str) -> dict[str, float]:
+    """Множители «валюта → валюта биллинга» с одного источника. Пусто — не вышло.
+
+    Сбой источника здесь и остаётся: биллинг работает на последнем записанном
+    курсе, и падать из-за молчащего провайдера ему нельзя.
+    """
+    try:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
+            async with session.get(url) as resp:
+                resp.raise_for_status()
+                data = await resp.json(content_type=None)
+    except Exception:
+        logger.exception(
+            "Офлайн-комиссии: курс валют с %s не получен, используется последний записанный",
+            url,
+        )
+        return {}
+    return {code.lower(): 1 / rate for code, rate in (data.get("rates") or {}).items() if rate}
+
+
 async def _refresh_fx(db: AsyncSession) -> None:
-    """Обновить курсы у ЕЦБ, если кэш старше суток. Молчит и не роняет биллинг.
+    """Обновить курсы, если кэш старше суток. Молчит и не роняет биллинг.
 
     Сбой запроса НЕ чистит ни память, ни БД: вчерашний курс безопаснее полного
     отказа считать — иначе to_billing_currency вернула бы None на все офлайн-
@@ -144,22 +170,20 @@ async def _refresh_fx(db: AsyncSession) -> None:
         await _load_fx(db)
     if _fx_fetched_at is not None and datetime.utcnow() - _fx_fetched_at < _FX_TTL:
         return
-    try:
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
-            async with session.get(
-                _FX_URL, params={"base": stripe_billing.CURRENCY.upper()},
-            ) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
-        rates = data.get("rates") or {}
-        _FX.update({code.lower(): 1 / rate for code, rate in rates.items() if rate})
+
+    base = stripe_billing.CURRENCY.upper()
+    fresh: dict[str, float] = {}
+    # Порядок значим: ЕЦБ первым, дозаполнение вторым — `**fresh` справа не даёт
+    # второму источнику перебить первый. Собираем в отдельный словарь, а не в _FX
+    # по ходу дела: иначе на вторые сутки дозаполнение видело бы курс ЕЦБ уже в
+    # кэше и «своя» валюта (UAH) осталась бы с позавчерашним множителем.
+    for url in (f"{_FX_URL}?base={base}", _FX_FALLBACK_URL.format(base=base)):
+        fresh = {**await _fetch_rates(url), **fresh}
+
+    if fresh:
+        _FX.update(fresh)
         _fx_fetched_at = datetime.utcnow()
         await _save_fx(db)
-    except Exception:
-        logger.exception(
-            "Офлайн-комиссии: курс валют с %s не получен, используется последний записанный",
-            _FX_URL,
-        )
 
 # Ниже этой суммы (в младших единицах валюты биллинга) счёт не выставляем: Stripe
 # отвергает платёж меньше минимального, а банковская комиссия съест остаток. Долг
@@ -222,6 +246,30 @@ async def accrued_total(db: AsyncSession, studio_id: int) -> tuple[int, str]:
     # Тогда показываем крупнейшую группу, а счёт всё равно сведёт всё в биллинг.
     currency, total = max(rows, key=lambda r: r[1])
     return int(total), currency.upper()
+
+
+async def accrued_in_billing_currency(db: AsyncSession, studio_id: int) -> tuple[int, str]:
+    """То же начисленное, но в ВАЛЮТЕ БИЛЛИНГА → (сумма, валюта).
+
+    Виджет обязан показывать те деньги, которые придут в счёте: счёт Stripe всегда
+    в валюте Customer'а, и «₴327,27» рядом с евровым минимальным платежом — две
+    несопоставимые цифры на одной карточке. Курс берём тот же, по которому сумма
+    уедет в счёт (`to_billing_currency`), — другого в продукте нет, и расходиться
+    экрану со счётом нельзя.
+
+    Курса нет — отдаём как начислено, в валюте студии: показать ноль значило бы
+    соврать, что долга нет. В сеть отсюда не ходим (это обработчик запроса) —
+    только поднимаем последний записанный курс; свежесть держит воркер.
+    """
+    accrued, currency = await accrued_total(db, studio_id)
+    if accrued == 0:
+        return 0, stripe_billing.CURRENCY.upper()
+    if not _FX:
+        await _load_fx(db)
+    converted = to_billing_currency(accrued, currency)
+    if converted is None:
+        return accrued, currency
+    return converted, stripe_billing.CURRENCY.upper()
 
 
 async def has_unsettled_commission(db: AsyncSession, studio_id: int) -> bool:
@@ -937,6 +985,12 @@ async def run_offline_fee_billing(session_maker: async_sessionmaker) -> int:
 async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
     """Тело прохода. Отдельно от run_offline_fee_billing, чтобы лок оборачивал
     его целиком одним `try/finally`, а не размазывался по шагам."""
+    # Курс освежаем КАЖДЫЙ проход (внутри TTL это no-op, то есть раз в сутки), а не
+    # только в момент выставления счёта: по нему считает и виджет «Комиссия с
+    # офлайн-продаж», а он читает курс из БД и своего похода в сеть не делает.
+    async with session_maker() as db:
+        await _refresh_fx(db)
+
     async with session_maker() as db:
         try:
             await _finish_pending(db)
@@ -1155,6 +1209,22 @@ if __name__ == "__main__":
     _writer = _FxDB([])
     asyncio.run(_save_fx(_writer))
     assert _writer.commits == 1
+
+    # Два источника курса: ЕЦБ главный, второй только дозаполняет то, чего у ЕЦБ
+    # нет (UAH/RUB/KZT). Перебить курс ЕЦБ он не имеет права — иначе евро-фактура
+    # считалась бы не по эталонному курсу.
+    _real_fetch = _fetch_rates
+
+    async def _fake_fetch(url):
+        return {"czk": 0.04} if url.startswith(_FX_URL) else {"czk": 0.99, "uah": 0.02}
+
+    _FX.clear()
+    _fetch_rates = _fake_fetch  # noqa: F811 — подмена на время self-check
+    _fx_fetched_at = None
+    asyncio.run(_refresh_fx(_FxDB([])))
+    assert _FX["czk"] == 0.04, "второй источник перебил ЕЦБ"
+    assert _FX["uah"] == 0.02, "валюта, которой нет у ЕЦБ, не дозаполнилась"
+    _fetch_rates = _real_fetch
 
     _FX.clear()
     _FX.update(_saved_fx)

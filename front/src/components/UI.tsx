@@ -519,9 +519,10 @@ export const browserTimezone = (): string => {
   return TIMEZONES.some(tz => tz.value === value) ? value : "UTC+0";
 };
 
-// Языки интерфейса. Ровно те, для которых есть папка в src/locales — список и
-// переводы обязаны совпадать: раньше здесь стояли kz/ar/de/fr/es без единого
-// файла перевода, и выбор такого языка молча не менял ничего.
+// Языки интерфейса. Список намеренно сокращён до пяти: продаём пока в этих
+// странах, а остальные переводы лежат в locales/ машинными и не вычитаны —
+// студия, выбравшая их, увидела бы кривой интерфейс. Возвращать по одному, по
+// мере вычитки перевода: папка в src/locales + строка здесь.
 // Коды — ISO 639-1 (важно для Intl.*: 'cz' не существует, чешский — 'cs').
 // Подписи — на самих языках, а не переводы: человек ищет в списке ту строку,
 // которую узнаёт, — «Čeština», а не «Чешский».
@@ -530,28 +531,15 @@ export const browserTimezone = (): string => {
 export const LANGUAGES = [
   { value: "en", label: "English", flag: "🇬🇧" },
   { value: "ru", label: "Русский", flag: "🇷🇺" },
-  { value: "sq", label: "Shqip", flag: "🇦🇱" },
-  { value: "bg", label: "Български", flag: "🇧🇬" },
-  { value: "hr", label: "Hrvatski", flag: "🇭🇷" },
   { value: "cs", label: "Čeština", flag: "🇨🇿" },
-  { value: "da", label: "Dansk", flag: "🇩🇰" },
-  { value: "fi", label: "Suomi", flag: "🇫🇮" },
-  { value: "fr", label: "Français", flag: "🇫🇷" },
   { value: "de", label: "Deutsch", flag: "🇩🇪" },
-  { value: "el", label: "Ελληνικά", flag: "🇬🇷" },
-  { value: "hu", label: "Magyar", flag: "🇭🇺" },
-  { value: "it", label: "Italiano", flag: "🇮🇹" },
-  { value: "no", label: "Norsk", flag: "🇳🇴" },
-  { value: "pl", label: "Polski", flag: "🇵🇱" },
-  { value: "pt", label: "Português", flag: "🇵🇹" },
-  { value: "ro", label: "Română", flag: "🇷🇴" },
-  { value: "sr", label: "Српски", flag: "🇷🇸" },
-  { value: "es", label: "Español", flag: "🇪🇸" },
-  { value: "sv", label: "Svenska", flag: "🇸🇪" },
-  { value: "tr", label: "Türkçe", flag: "🇹🇷" },
   { value: "uk", label: "Українська", flag: "🇺🇦" },
 ];
 
+// Таблица символов — полная и такой остаётся: getCurrencySymbol() рисует
+// деньги во всём продукте, и студия, выбравшая злотый, пока список был
+// длинным, не должна вдруг увидеть рубли. Выбирать же можно только из
+// CURRENCY_OPTIONS ниже.
 export const CURRENCIES = [
   { value: "RUB", symbol: "₽" }, { value: "USD", symbol: "$" },
   { value: "EUR", symbol: "€" }, { value: "KZT", symbol: "₸" },
@@ -564,6 +552,12 @@ export const CURRENCIES = [
   { value: "CHF", symbol: "CHF" }, { value: "ISK", symbol: "kr" },
   { value: "RSD", symbol: "дин." },
 ];
+
+// Что предлагаем выбрать — валюты стран, где говорят на языках из LANGUAGES:
+// ₽ (ru), ₴ (uk), Kč (cs), € и CHF (de: Германия/Австрия/Швейцария),
+// $ и £ (en). Расширять вместе со списком языков.
+const PICKABLE = ["RUB", "USD", "EUR", "UAH", "GBP", "CZK", "CHF"];
+export const CURRENCY_OPTIONS = CURRENCIES.filter(c => PICKABLE.includes(c.value));
 
 export function getCurrencySymbol(code: string | undefined): string {
   return CURRENCIES.find(c => c.value === code)?.symbol ?? "₽";

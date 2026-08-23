@@ -8,6 +8,7 @@ import { Button, EmptyState, Switch, useToast } from "../../../../../components/
 import { billingApi } from "../../../../../api/billing/billing.api";
 import { useBillingCurrency } from "../../../../../hooks/useBillingCurrency";
 import { formatMoney } from "../../../../../lib/money";
+import { planLabel } from "../../../../../lib/plan";
 import type { useBilling } from "../../hooks/useBilling";
 
 type BillingTabProps = ReturnType<typeof useBilling>;
@@ -29,6 +30,9 @@ function fmtDate(iso: string): string {
 
 export default function BillingTab({ plan, invoices, cards, setAutopay }: BillingTabProps) {
   const { t } = useTranslation('settings');
+  // Название тарифа живёт в неймспейсе биллинга: тариф — это места, и считает
+  // подпись общий помощник (lib/plan), а не свой список имён в каждом разделе.
+  const { t: tBilling } = useTranslation('billing');
   const navigate = useNavigate();
   const toast = useToast();
   const currency = useBillingCurrency();
@@ -95,7 +99,7 @@ export default function BillingTab({ plan, invoices, cards, setAutopay }: Billin
             {t('billing.plan.title')}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
-            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>{t(`billing.plans.${p.plan_name}`)}</div>
+            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>{planLabel(p.plan_name, tBilling)}</div>
             <StatusBadge type={p.status === "active" ? "active" : p.status === "trial" ? "info" : "warning"}>{t(`billing.status.${p.status}`)}</StatusBadge>
           </div>
           <div style={{ display: "flex", gap: "32px", marginBottom: "28px", flexWrap: "wrap" }}>
@@ -197,7 +201,7 @@ export default function BillingTab({ plan, invoices, cards, setAutopay }: Billin
               <div key={inv.id} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "12px 16px", borderRadius: "10px" }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>
-                    {t(`billing.plans.${inv.plan_name}`)} · {t('billing.history.period', { count: inv.period_months })}
+                    {planLabel(inv.plan_name, tBilling)} · {t('billing.history.period', { count: inv.period_months })}
                   </div>
                   <div style={{ fontSize: "11px", color: "var(--muted)" }}>{inv.paid_at ? fmtDate(inv.paid_at) : t('billing.history.noDate')}</div>
                 </div>

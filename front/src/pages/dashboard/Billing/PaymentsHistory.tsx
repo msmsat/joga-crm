@@ -6,6 +6,7 @@ import { billingApi } from '../../../api/billing/billing.api';
 import { queryKeys } from '../../../api/queryKeys';
 import { useBillingCurrency } from '../../../hooks/useBillingCurrency';
 import { formatMoney } from '../../../lib/money';
+import { planLabel } from '../../../lib/plan';
 import { Button, useToast } from '../../../components/ui/index';
 import { HistoryIcon, DownloadIcon } from './components/ui/BillingIcons';
 
@@ -124,7 +125,7 @@ export default function PaymentsHistory() {
                 >
                   <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{fmtDate(inv.paid_at)}</div>
                   <div style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
-                    {t(`planNames.${inv.plan_name}`)}
+                    {planLabel(inv.plan_name, t)}
                     <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {t('upgrade.periodValue', { count: inv.period_months })}</span>
                   </div>
                   <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>{formatMoney(inv.amount / 100, currency)}</div>

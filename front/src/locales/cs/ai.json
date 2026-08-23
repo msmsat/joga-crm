@@ -127,7 +127,9 @@
     "auto": "Automaticky",
     "ru": "Ruština",
     "en": "Angličtina",
-    "uk": "Ukrajinština"
+    "uk": "Ukrajinština",
+    "cs": "Čeština",
+    "de": "Němčina"
   },
   "chat": {
     "thinking": "Velora AI přemýšlí",

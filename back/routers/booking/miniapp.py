@@ -33,7 +33,7 @@ import json
 import random
 import time
 from datetime import datetime
-from typing import Optional
+from typing import NamedTuple, Optional
 from urllib.parse import parse_qsl
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -310,6 +310,41 @@ async def get_current_client(
     if await platform_fee.studio_suspended(db, client.studio_id):
         raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
     return client
+
+
+class Viewer(NamedTuple):
+    """Кто смотрит витрину студии: клиент с токеном или гость по ссылке `/s/<id>`.
+
+    Гость появился потому, что занятие выбирают ДО регистрации: расписание и
+    каталог человек видит без аккаунта, а имя студия узнаёт в момент брони —
+    `POST /reservations` как был, так и остаётся за `get_current_client`.
+
+    Токена у гостя нет, взять `studio_id` неоткуда — он называет студию сам,
+    query-параметром. Никакой авторизации это не даёт: тем же параметром любой
+    открывает витрину любой студии, ровно как публичные `/public/{id}/*`.
+    """
+    client: Optional[Client]
+    studio_id: int
+
+
+async def get_viewer(
+    studio_id: Optional[int] = None,
+    token: Optional[str] = Depends(client_oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> Viewer:
+    """`get_current_client`, допускающий гостя. Токен есть — ведёт себя ровно как
+    он (включая гейт неоплаченной студии), и `studio_id` из запроса игнорируется:
+    свою студию клиент не выбирает."""
+    if token:
+        client = await get_current_client(token, db)
+        return Viewer(client, client.studio_id)
+    if studio_id is None:
+        raise HTTPException(status_code=401, detail="Недействительный токен")
+    # Тот же гейт, что и у клиента с токеном: студия, отключённая за неоплату,
+    # не показывает расписание, на которое всё равно не записаться.
+    if await platform_fee.studio_suspended(db, studio_id):
+        raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
+    return Viewer(None, studio_id)
 
 
 if __name__ == "__main__":

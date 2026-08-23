@@ -68,7 +68,9 @@ COMMISSION_UNSETTLED = {
 
 
 def _validate(plan: str, period_months: int) -> None:
-    # Literal в схеме уже отсекает мусор до сюда; страховка на случай рассинхрона каталога.
+    # ЕДИНСТВЕННАЯ проверка каталога на этом входе: в схеме перечисления больше нет
+    # (ступеней два десятка, список разъехался бы с plans.py), и дальше `plan`
+    # уходит в цену и в lookup_key Price.
     if plan not in PLANS or period_months not in PERIOD_DISCOUNTS:
         raise HTTPException(status_code=422, detail="Неизвестный план или период")
 

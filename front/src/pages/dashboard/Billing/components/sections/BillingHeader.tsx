@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { BillingTab, BillingPlan, PlanType } from '../../types';
+import type { PlanInfo } from '../../hooks/useBillingCalculator';
+import { planLabel as planName } from '../../../../../lib/plan';
 import type { BillingStats } from '../../../../../api/billing/billing.types';
 import { CalendarIcon, CreditCardIcon, TrendingIcon, ZapIcon } from '../ui/BillingIcons';
 import AnimatedCounter from '../ui/AnimatedCounter';
@@ -13,7 +15,7 @@ interface Props {
   setActiveTab: (tab: BillingTab) => void;
   animateCards: boolean;
   plan: BillingPlan | null;
-  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
+  plans: Record<PlanType, PlanInfo>;
   stats: BillingStats | null;
 }
 
@@ -68,8 +70,9 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
     ? t('header.noPlanName')
     : active.billing_mode === 'percent'
     ? t('header.modePercent')
-    : plans[active.plan_name as PlanType]?.name
-      ?? (active.plan_name === 'free_trial' ? t('header.trialPlanName') : active.plan_name);
+    : active.plan_name === 'free_trial'
+    ? t('header.trialPlanName')
+    : planName(active.plan_name, t);
   // Вторая половина крупной строки: по какой модели берут деньги. Без неё шапка
   // отвечала только на «какой тариф», а «фикс это или комбо» оставалось в плитках
   // ниже — где подсветка показывает ВЫБОР, а не то, что работает сейчас.

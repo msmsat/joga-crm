@@ -10,4 +10,6 @@ export const LANGUAGE_OPTIONS: { value: AILanguage }[] = [
   { value: 'ru' },
   { value: 'en' },
   { value: 'uk' },
+  { value: 'cs' },
+  { value: 'de' },
 ];

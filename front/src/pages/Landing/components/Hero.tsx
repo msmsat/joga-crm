@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { EASE, GHOST_ON_DARK } from "./tokens";
+import { EASE } from "./tokens";
 import { GridBg, HeroArt } from "./Illustrations";
 
 const WORDS = ["CRM,", "которой", "хочется", "пользоваться"];
@@ -76,9 +76,6 @@ export function Hero() {
             <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
               Попробовать 14 дней бесплатно
             </button>
-            <a href="#product" className={GHOST_ON_DARK}>
-              Смотреть демо →
-            </a>
           </motion.div>
 
           {/* Здесь стоял счётчик «2 400+ бизнесов» и рейтинг 4.9 — цифр, которых

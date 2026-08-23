@@ -24,6 +24,12 @@
     "pro": "Pro",
     "business": "Business"
   },
+  "seats": {
+    "title": "How many staff in the studio",
+    "hint": "from {{amount}} a month",
+    "stepNote": "Every extra seat adds {{amount}} a month",
+    "unlimitedNote": "No limit on staff"
+  },
   "banner": {
     "trialEnds": "Your trial ends on {{date}} — pick a plan",
     "renews": "Your {{plan}} subscription renews on {{date}}",
@@ -105,9 +111,9 @@
   },
   "period": {
     "1": "1 month",
+    "3": "3 months",
     "6": "6 months",
     "12": "1 year",
-    "24": "2 years",
     "title": "Payment period",
     "discountActive": "{{percent}}% discount active",
     "noDiscount": "No discount",
@@ -145,10 +151,8 @@
   "planCards": {
     "bestChoice": "Best choice",
     "current": "Current",
-    "enterprise": "Enterprise",
     "perMonth": "/ mo.",
     "currentPlan": "Current plan",
-    "choosePlan": "Choose plan",
     "staffLimit": "Up to {{count}} staff",
     "staffUnlimited": "Unlimited staff"
   },

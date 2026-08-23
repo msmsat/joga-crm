@@ -125,7 +125,9 @@
     "auto": "Auto",
     "ru": "Russian",
     "en": "English",
-    "uk": "Ukrainian"
+    "uk": "Ukrainian",
+    "cs": "Czech",
+    "de": "German"
   },
   "chat": {
     "thinking": "Velora AI is thinking",

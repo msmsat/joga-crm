@@ -187,6 +187,7 @@
     "hallCount_one": "{{count}} зал",
     "hallCount_few": "{{count}} зали",
     "hallCount_many": "{{count}} залів",
+    "hallCount_other": "{{count}} залів",
     "stats": {
       "halls": "Зали",
       "totalSeats": "Усього місць",
@@ -275,11 +276,13 @@
       "classCount_one": "{{count}} заняття",
       "classCount_few": "{{count}} заняття",
       "classCount_many": "{{count}} занять",
+      "classCount_other": "{{count}} занять",
       "duration": "{{count}} днів",
       "allServices": "Усі заняття",
       "serviceCount_one": "{{count}} послуга",
       "serviceCount_few": "{{count}} послуги",
       "serviceCount_many": "{{count}} послуг",
+      "serviceCount_other": "{{count}} послуг",
       "inactiveBadge": "Знято з продажу"
     },
     "settings": {

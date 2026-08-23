@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { PremiumSelect, TIMEZONES, CURRENCIES, WEEK_START_OPTIONS } from "../../UI";
+import { PremiumSelect, TIMEZONES, CURRENCY_OPTIONS, WEEK_START_OPTIONS } from "../../UI";
 import type { OnboardingData } from "./types";
 
 interface Props {
@@ -18,7 +18,7 @@ export default function StepSettings({ data, onChange }: Props) {
   const { t } = useTranslation(["onboarding", "common"]);
 
   const timezoneOptions = TIMEZONES.map(o => ({ ...o, label: t(`onboarding:settings.timezones.${o.value}`) }));
-  const currencyOptions = CURRENCIES.map(o => ({ ...o, label: t(`onboarding:settings.currencies.${o.value}`) }));
+  const currencyOptions = CURRENCY_OPTIONS.map(o => ({ ...o, label: t(`onboarding:settings.currencies.${o.value}`) }));
   const weekStartOptions = WEEK_START_OPTIONS.map(o => ({ ...o, label: t(`common:days.${WEEK_START_DAY_KEY[o.value]}`) }));
 
   return (

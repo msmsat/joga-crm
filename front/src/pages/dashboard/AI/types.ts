@@ -2,7 +2,7 @@ export type { AIChatSession, AIChatMessage, AISettings } from '../../../api/ai/a
 
 export type AgentTone = 'friendly' | 'formal' | 'neutral';
 export type AIModel = 'velora-3.5';
-export type AILanguage = 'auto' | 'ru' | 'en' | 'uk';
+export type AILanguage = 'auto' | 'ru' | 'en' | 'uk' | 'cs' | 'de';
 
 export interface ChannelAgentConfig {
   enabled: boolean;

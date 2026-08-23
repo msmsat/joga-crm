@@ -13,7 +13,8 @@ from collections.abc import Iterable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from models import StudioMember
+from models import Studio, StudioMember
+from services.i18n import resolve
 
 
 def full_name(member: StudioMember) -> str:
@@ -43,3 +44,22 @@ async def member_names(
         .where(StudioMember.studio_id == studio_id, StudioMember.user_id.in_(ids))
     )).all()
     return {uid: " ".join(filter(None, (name, last_name))) for uid, name, last_name in rows}
+
+
+async def user_lang(db: AsyncSession, user) -> str:
+    """Язык, на котором писать этому человеку: личный, а если не выбран — язык
+    его студии (`User.language` = NULL значит «как в студии», см. models/user.py).
+
+    Нужен письмам, которые уходят человеку, а не студии: код подтверждения,
+    готовый архив данных. Там на входе только User, и без этого запроса чешский
+    владелец получал бы русское письмо.
+    """
+    if user.language:
+        return resolve(user.language)
+    lang = (await db.execute(
+        select(Studio.language)
+        .join(StudioMember, StudioMember.studio_id == Studio.id)
+        .where(StudioMember.user_id == user.id, StudioMember.status == "active")
+        .limit(1)
+    )).scalars().first()
+    return resolve(lang)

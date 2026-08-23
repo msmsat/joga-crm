@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BillingMode, PlanType, BillingPlan } from '../../types';
+import type { BillingMode, PlanType, PlanPeriod, BillingPlan } from '../../types';
+import type { PlanInfo } from '../../hooks/useBillingCalculator';
 import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
+import { planLabel } from '../../../../../lib/plan';
 import { usePhone } from '../../../../../hooks/usePhone';
 import { Button, ConfirmModal, useToast } from '../../../../../components/ui/index';
 import {
   CheckIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon,
-  PercentIcon, ArrowRightIcon, HistoryIcon,
+  PercentIcon, HistoryIcon,
 } from '../ui/BillingIcons';
 import SavingsIllustration from '../ui/SavingsIllustration';
 import PeriodSelector from '../ui/PeriodSelector';
+import SeatSelector from '../ui/SeatSelector';
 
 interface Props {
   currency?: string;
@@ -21,15 +24,15 @@ interface Props {
   // колбэки, а не Dispatch: updater-форма тут смысла не имеет.
   selectedPlan: PlanType;
   setSelectedPlan: (plan: PlanType) => void;
-  selectedPeriod: 1 | 6 | 12 | 24;
-  setSelectedPeriod: (period: 1 | 6 | 12 | 24) => void;
-  getPrice: (plan: PlanType, period: number) => number;
+  selectedPeriod: PlanPeriod;
+  setSelectedPeriod: (period: PlanPeriod) => void;
   periodDiscounts: Record<number, number>;
-  plans: Record<PlanType, { name: string; monthly: number; color: string; staffLimit: number | null }>;
+  plans: Record<PlanType, PlanInfo>;
+  /** Ступени каталога по возрастанию — порядок линии мест. */
+  planIds: PlanType[];
   currentMonthly: number;
   discountedPrice: number;
   totalToPay: number;
-  animateCards: boolean;
   /** Открывает модалку оплаты — единственный экран перед страницей Stripe. */
   startCheckout: () => void;
   activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
@@ -48,9 +51,8 @@ export default function PlansTab({
   billingMode, setBillingMode,
   selectedPlan, setSelectedPlan,
   selectedPeriod, setSelectedPeriod,
-  getPrice, periodDiscounts, plans,
+  periodDiscounts, plans, planIds,
   currentMonthly, discountedPrice, totalToPay,
-  animateCards,
   startCheckout,
   activateModel, modelBusy, plan, minMonthly, terms,
 }: Props) {
@@ -108,11 +110,6 @@ export default function PlansTab({
     startCheckout();
   };
 
-  // «Продолжить план» (аудит §1, эпик B6, §3): нативный плавный скролл к графику
-  // платежей — без библиотек, браузер сам уважает prefers-reduced-motion.
-  const scrollToPayment = () =>
-    document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
   // Вынесено из разметки: описание выбранного метода печатается ещё и под
   // рядом плиток (телефон, см. .bl-mode-pick).
   // На телефоне названия короткие — «Фиксированная подписка» в плитке шириной
@@ -137,7 +134,7 @@ export default function PlansTab({
         <div style={{ padding: '12px 16px', marginBottom: '20px', background: 'rgba(163,201,168,0.1)', border: '1px solid rgba(163,201,168,0.25)', borderRadius: '12px', fontSize: '12.5px', fontWeight: 600, color: 'var(--onyx)' }}>
           {t('upgrade.scheduledBadge', {
             date: new Date(plan.scheduled_at).toLocaleDateString(dateLocale),
-            plan: plans[plan.scheduled_plan as PlanType]?.name ?? plan.scheduled_plan,
+            plan: planLabel(plan.scheduled_plan, t),
           })}
         </div>
       )}
@@ -203,120 +200,52 @@ export default function PlansTab({
 
       </div>
 
+      {/* ── ЛИНИЯ МЕСТ ──
+          Одна на обе модели с фиксом: тариф это число сотрудников, а комбо
+          отличается только тем, что платит половину этой цены (её и показывает
+          `discountedPrice` — второй формулы здесь быть не должно). */}
+      {billingMode !== 'percent' && (
+        <SeatSelector
+          planIds={planIds}
+          plans={plans}
+          selected={selectedPlan}
+          onSelect={setSelectedPlan}
+          currency={currency}
+          monthly={discountedPrice}
+          fullMonthly={currentMonthly}
+          discount={periodDiscounts[selectedPeriod] || 0}
+          currentPlanId={currentPlanId}
+        />
+      )}
+
       {/* ── PERIOD SELECTOR (подписка + комбо — период двигает только фикс-часть) ── */}
       {(billingMode === 'subscription' || billingMode === 'fixed') && (
         <PeriodSelector selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} periodDiscounts={periodDiscounts} />
       )}
 
-      {/* ── COMBO REGIMES: 3 фикс-режима ÷2 от подписки + 1.5% (аудит §3) ── */}
+      {/* ── КОМБО: фикс÷2 + 1.5% с оборота ── */}
       {billingMode === 'fixed' && (
-        <>
-          <div className="bl-combo" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
-            {(['start', 'pro', 'business'] as const).map(planId => {
-              const plan = plans[planId];
-              // Ровно половина подписки, БЕЗ округления до целых евро: 39/2 = 19,50,
-              // и Math.round показывал бы 20 € там, где Stripe спишет 19,50.
-              const comboBase = plan.monthly / 2;
-              const comboDiscount = periodDiscounts[selectedPeriod] || 0;
-              const comboFixed = getPrice(planId, selectedPeriod) / 2;
-              const isSelected = selectedPlan === planId;
-              return (
-                <button key={planId} onClick={() => setSelectedPlan(planId)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: isSelected ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'var(--bg-card)', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: isSelected ? '0 4px 20px rgba(252,174,145,0.15)' : 'var(--shadow)' }}>
-                  {isSelected && <div style={{ position: 'absolute', top: '14px', right: '14px' }}><CheckIcon size={16} /></div>}
-                  <div className="bl-combo-name" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                    {plan.name}
-                    {currentPlanId === planId && <span style={{ padding: '3px 10px', background: 'rgba(252,174,145,0.15)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--peach)' }}>{t('planCards.current')}</span>}
-                  </div>
-                  <div className="bl-combo-price" style={{ marginBottom: '4px' }}>
-                    <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-0.5px' }}>{formatMoney(comboFixed, currency)}</span>
-                    <span style={{ fontSize: '12px', color: 'var(--muted)', marginLeft: '4px' }}>{t('planCards.perMonth')}</span>
-                  </div>
-                  {comboDiscount > 0 && (
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '6px' }}>
-                      <span style={{ textDecoration: 'line-through' }}>{formatMoney(comboBase, currency)}</span>
-                      <span style={{ color: 'var(--pistachio)', fontWeight: 700, marginLeft: '6px' }}>−{comboDiscount * 100}%</span>
-                    </div>
-                  )}
-                  <span style={{ padding: '2px 8px', background: 'rgba(163,201,168,0.15)', borderRadius: '100px', color: 'var(--pistachio)', fontSize: '11px', fontWeight: 700, display: 'inline-block', marginTop: comboDiscount > 0 ? 0 : '4px' }}>
-                    {t('combo.rateBadge', { rate: 1.5 })}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="bl-card bl-combo-sum" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--onyx)' }}>
-              {/* discountedPrice уже комбо-половина со скидкой периода — считать её
-                  здесь второй формулой значит завести второй источник истины. */}
-              {t('combo.summary', { fixed: formatMoney(discountedPrice, currency), rate: 1.5 })}
-            </span>
-            {/* Кнопка нужна только пока комбо НЕ активировано: дальше оплата идёт
-                через график платежей ниже, где видна итоговая сумма за период. */}
-            {plan?.billing_mode !== 'combo' && (
-              <Button
-                variant="primary"
-                loading={modelBusy}
-                // Согласие → сразу модалка расчёта: комбо покупается, а не
-                // включается кнопкой, и владелец обязан увидеть сумму до списания.
-                onClick={() => requestActivate(
-                  { mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true,
-                )}
-              >
-                {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
-              </Button>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* ── PLAN CARDS ── */}
-      {billingMode === 'subscription' && (
-        <div className="bl-plans" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px', marginBottom: '20px', animation: 'fadeSlideIn 0.4s ease forwards' }}>
-          {(['start', 'pro', 'business'] as const).map((planId, i) => {
-            const plan = plans[planId];
-            const price = getPrice(planId, selectedPeriod);
-            const isSelected = selectedPlan === planId;
-            const isCurrent = currentPlanId === planId;
-            return (
-              <div key={planId} className={`bl-plan${isSelected ? ' sel' : ''}`} onClick={() => setSelectedPlan(planId)} style={{ padding: '28px', background: 'var(--bg-card)', border: `2px solid ${isSelected ? 'var(--peach)' : 'var(--border)'}`, borderRadius: '20px', cursor: 'pointer', position: 'relative', boxShadow: isSelected ? '0 8px 40px rgba(252,174,145,0.18)' : 'var(--shadow)', transition: 'all 0.3s cubic-bezier(0.34,1.1,0.64,1)', transform: isSelected ? 'translateY(-3px)' : 'none', opacity: animateCards ? 1 : 0, transitionDelay: `${i * 0.08}s` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `${plan.color}20`, border: `1.5px solid ${plan.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: plan.color }} />
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    {isCurrent && <span style={{ padding: '3px 10px', background: 'rgba(252,174,145,0.15)', border: '1px solid rgba(252,174,145,0.3)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--peach)' }}>{t('planCards.current')}</span>}
-                    {planId === 'business' && <span style={{ padding: '3px 10px', background: 'rgba(var(--ink),0.08)', border: '1px solid rgba(var(--ink),0.12)', borderRadius: '100px', fontSize: '10px', fontWeight: 700, color: 'var(--onyx)' }}>{t('planCards.enterprise')}</span>}
-                  </div>
-                </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '4px' }}>{plan.name}</div>
-                <div style={{ marginBottom: '4px' }}>
-                  <span style={{ fontSize: '32px', fontWeight: 900, color: 'var(--onyx)', letterSpacing: '-1px' }}>{formatMoney(price, currency)}</span>
-                  <span style={{ fontSize: '13px', color: 'var(--muted)', marginLeft: '4px' }}>{t('planCards.perMonth')}</span>
-                </div>
-                {selectedPeriod > 1 && (
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '16px' }}>
-                    <span style={{ textDecoration: 'line-through' }}>{formatMoney(plan.monthly, currency)}</span>
-                    <span style={{ color: 'var(--pistachio)', fontWeight: 700, marginLeft: '6px' }}>−{periodDiscounts[selectedPeriod] * 100}%</span>
-                  </div>
-                )}
-                <div style={{ height: '1px', background: 'var(--border)', margin: '16px 0' }} />
-                <div className="bl-plan-feats" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                  <CheckIcon size={16} color={plan.color === '#1A1A1A' ? 'var(--onyx)' : plan.color} />
-                  <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 500 }}>
-                    {plan.staffLimit == null ? t('planCards.staffUnlimited') : t('planCards.staffLimit', { count: plan.staffLimit })}
-                  </span>
-                </div>
-                {/* startCheckout, а не прямое открытие модалки: он сначала выравнивает
-                    тарифную модель на сервере (комбо → подписка), а иначе расчёт
-                    показал бы половинную цену комбо для выбранной подписки. */}
-                <button onClick={e => { e.stopPropagation(); setSelectedPlan(planId); if (isCurrent) scrollToPayment(); else startCheckout(); }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isCurrent ? '1.5px solid var(--border)' : 'none', background: isCurrent ? 'transparent' : planId === 'business' ? 'var(--onyx)' : 'var(--peach)', color: isCurrent ? 'var(--muted)' : planId === 'business' ? 'var(--bg)' : 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                  {isCurrent ? t('continuePlan') : t('planCards.choosePlan')}
-                  <ArrowRightIcon />
-                </button>
-              </div>
-            );
-          })}
+        <div className="bl-card bl-combo-sum" style={{ padding: '28px 32px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--onyx)' }}>
+            {/* discountedPrice уже комбо-половина со скидкой периода — считать её
+                здесь второй формулой значит завести второй источник истины. */}
+            {t('combo.summary', { fixed: formatMoney(discountedPrice, currency), rate: rate(terms.combo_rate) })}
+          </span>
+          {/* Кнопка нужна только пока комбо НЕ активировано: дальше оплата идёт
+              через график платежей ниже, где видна итоговая сумма за период. */}
+          {plan?.billing_mode !== 'combo' && (
+            <Button
+              variant="primary"
+              loading={modelBusy}
+              // Согласие → сразу модалка расчёта: комбо покупается, а не
+              // включается кнопкой, и владелец обязан увидеть сумму до списания.
+              onClick={() => requestActivate(
+                { mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true,
+              )}
+            >
+              {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
+            </Button>
+          )}
         </div>
       )}
 

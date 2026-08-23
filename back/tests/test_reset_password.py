@@ -22,6 +22,7 @@ class _FakeUser:
     def __init__(self):
         self.email = "reset-test@example.com"
         self.name = "Матвей"  # письмо обращается по имени
+        self.language = "ru"  # язык письма; без него otp пошёл бы за ним в БД
         self.otp_code_hash = None
         self.otp_action = None
         self.otp_expires_at = None

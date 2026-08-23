@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Home from './pages/home';
 import Shedule from './pages/shedule';
 import MyLessons from './pages/mylessons';
@@ -15,12 +16,21 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry, readTab } from './lib/entry';
+import { readEntry, readTab, setGuestStudio } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
 import './App.css';
 
+/**
+ * Разделы, открытые до входа. Витрина студии — расписание и главная — видна
+ * гостю целиком: занятие выбирают ДО регистрации, иначе форма входа стоит
+ * поперёк единственного, зачем человек пришёл. Остальное — кабинет: там нужен
+ * токен, и вместо 401 гость получает вход (см. `authGate`).
+ */
+const GUEST_TABS = ['home', 'sched'];
+
 export default function App() {
+  const { t } = useTranslation();
   // Ссылка из письма студии ведёт в конкретный раздел (`?tab=my`), а не «в
   // приложение вообще»: клиент открыл письмо про запись — он должен увидеть
   // запись. Читаем один раз при первом рендере: дальше вкладками управляет меню.
@@ -41,19 +51,23 @@ export default function App() {
   // страница «Клуб», но и есть ли этот пункт в меню вообще.
   const [loyalty, setLoyalty] = useState<LoyaltyOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // Студия известна, сессии нет → показываем вход по почте. Студия неизвестна
-  // (голый адрес без `/s/<id>` и без deep-link) → показать нечего: в какой
-  // кабинет пускать, приложение не знает.
+  // Студия известна, сессии нет → пускаем гостем: витрина открыта, вход
+  // спросит сама бронь. Студия неизвестна (голый адрес без `/s/<id>` и без
+  // deep-link) → показать нечего: в какой кабинет пускать, приложение не знает.
   // useMemo, а не голый вызов: ссылка на entry уходит в зависимости boot-эффекта,
   // и пересоздание объекта на каждый рендер гоняло бы авторизацию по кругу.
   const entry = useMemo(
     () => readEntry(tg?.initDataUnsafe?.start_param, Boolean(tg)),
     [tg],
   );
-  const [needsAuth, setNeedsAuth] = useState(false);
+  const [noStudio, setNoStudio] = useState(false);
+  // Бронь гостя, которая ждёт входа. Хранится само продолжение, а не флаг:
+  // после входа надо дожать ТУ ЖЕ запись — занятие и коврик человек уже выбрал,
+  // и возвращать его в расписание искать их заново было бы издевательством.
+  const [pendingBooking, setPendingBooking] = useState<(() => void) | null>(null);
   // Вход ещё одним аккаунтом из меню (AccountMenu). Отдельное состояние, а не
-  // `needsAuth`: текущая сессия жива и обязана вернуться на место, если человек
-  // передумал на полпути.
+  // общий гейт входа: текущая сессия жива и обязана вернуться на место, если
+  // человек передумал на полпути.
   const [isAddingAccount, setIsAddingAccount] = useState(false);
 
   /** Каталог грузится после входа — и перечитывается после покупки.
@@ -86,6 +100,10 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Студию из ссылки api/client.ts подставляет в запросы, пока сессии нет:
+    // гостю сервер не может взять её из токена. Ставим до первого запроса.
+    setGuestStudio(entry.studioId);
+
     if (tg) {
       tg.ready();
       tg.expand();
@@ -104,35 +122,33 @@ export default function App() {
         // только .name (home.tsx), остальное подтянется из /global/me, когда
         // экраны его запросят (профиль уже это делает).
         setUser({ name: session.name } as UserResponse);
-      } else {
-        const initData: string | undefined = tg?.initData;
-
+      } else if (entry.studioId === null) {
+        // Ни сессии, ни студии — единственный тупик, который остался.
+        setNoStudio(true);
+        setIsLoading(false);
+        return;
+      } else if (tg?.initData) {
         // Telegram — молчаливый вход: подпись initData уже доказала личность,
         // спрашивать почту сверху было бы лишним экраном на ровном месте.
-        if (initData && entry.studioId) {
-          try {
-            const { token, user: authedUser } = await authTelegram({
-              init_data: initData,
-              studio_id: entry.studioId,
-              referral_code: entry.referralCode,
-            });
-            saveSession({ token, name: authedUser.name });
-            setUser(authedUser);
-          } catch (error) {
-            console.error('Помилка авторизації через Telegram:', error);
-            // На случай, если в сторадже лежал протухший токен.
-            clearSession();
-            setNeedsAuth(true);
-            setIsLoading(false);
-            return;
-          }
-        } else {
-          setNeedsAuth(true);
-          setIsLoading(false);
-          return;
+        try {
+          const { token, user: authedUser } = await authTelegram({
+            init_data: tg.initData,
+            studio_id: entry.studioId,
+            referral_code: entry.referralCode,
+          });
+          saveSession({ token, name: authedUser.name });
+          setUser(authedUser);
+        } catch (error) {
+          console.error('Помилка авторизації через Telegram:', error);
+          // На случай, если в сторадже лежал протухший токен.
+          clearSession();
+          // Дальше идём гостем: расписание студии открыто и без входа, а
+          // упереться в него человек должен на броне, а не на пороге.
         }
       }
 
+      // Гость (сессии нет, студия из ссылки известна) грузит тот же каталог —
+      // сервер отдаёт его по studio_id из запроса (см. api/client.ts).
       await loadCatalog();
     };
 
@@ -166,6 +182,10 @@ export default function App() {
     switchTab('prof');
   };
 
+  /** Бронь гостя упёрлась во вход. Продолжение кладём в состояние — обёртка
+   *  обязательна, иначе setState принял бы функцию за апдейтер. */
+  const requireAuth = (retry: () => void) => setPendingBooking(() => retry);
+
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
   if (isLoading) {
     return (
@@ -176,7 +196,7 @@ export default function App() {
           className="h-3 w-3 rounded-full bg-brand"
         />
         <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-          Налаштування простору
+          {t('common.preparing')}
         </span>
       </div>
     );
@@ -200,26 +220,9 @@ export default function App() {
     );
   }
 
-  // Студию знаем — значит вход возможен и вне Telegram: по коду на почту.
-  if (needsAuth && entry.studioId) {
-    return (
-      <Auth
-        studioId={entry.studioId}
-        referralCode={entry.referralCode}
-        onDone={(authedUser, token) => {
-          saveSession({ token, name: authedUser.name });
-          setUser(authedUser);
-          setNeedsAuth(false);
-          setIsLoading(true);
-          loadCatalog();
-        }}
-      />
-    );
-  }
-
   // Студии нет вовсе: открыли голый адрес без `/s/<id>` и без deep-link.
   // Единственное, что можно честно сказать — нужна ссылка студии.
-  if (needsAuth) {
+  if (noStudio) {
     return (
       <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden px-8 text-center">
         <AmbientBackdrop tint="#F9A08B" />
@@ -252,16 +255,23 @@ export default function App() {
           className="pt-6"
         >
           <h1 className="text-[26px] font-extrabold leading-[1.08] tracking-[-0.03em] text-foreground">
-            Потрібне посилання студії
+            {t('common.need_link_title')}
           </h1>
           <p className="mt-2.5 max-w-[19rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground">
-            Це кабінет клієнта. Відкрийте його за посиланням вашої студії —
-            з Telegram, Instagram або сайту.
+            {t('common.need_link_hint')}
           </p>
         </motion.div>
       </div>
     );
   }
+
+  // Вход спрашиваем ровно там, где без аккаунта дальше нельзя: у самой брони и
+  // у разделов кабинета. Отдельного флага под это нет — это следствие текущего
+  // состояния, а не решение, принятое где-то раньше и способное с ним разойтись.
+  const authGate = !user && (pendingBooking !== null || !GUEST_TABS.includes(activeTab));
+  // Гость остаётся на витрине, даже если ссылка вела в кабинет (`?tab=my`):
+  // намерение живёт в activeTab и откроется само, как только появится токен.
+  const screenTab = user || GUEST_TABS.includes(activeTab) ? activeTab : 'home';
 
   const screens: Record<string, React.ReactNode> = {
     home: (
@@ -270,9 +280,16 @@ export default function App() {
         catalog={catalog}
         onNavigate={switchTab}
         onBuySubscription={goBuySubscription}
+        onNeedAuth={requireAuth}
       />
     ),
-    sched: <Shedule catalog={catalog} onBuySubscription={goBuySubscription} />,
+    sched: (
+      <Shedule
+        catalog={catalog}
+        onBuySubscription={goBuySubscription}
+        onNeedAuth={requireAuth}
+      />
+    ),
     my: <MyLessons />,
     prof: (
       <Profile
@@ -311,7 +328,7 @@ export default function App() {
       <div className="flex">
         {isDesktop && (
           <DesktopNav
-            active={activeTab}
+            active={screenTab}
             onSelect={switchTab}
             items={navItems}
             studioName={catalog?.studio.name}
@@ -327,7 +344,7 @@ export default function App() {
               как подтормаживание, а не как переход. */}
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={activeTab}
+              key={screenTab}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
@@ -339,14 +356,42 @@ export default function App() {
                   Нижний отступ на телефоне — под плавающую капсулу меню,
                   иначе про неё обязан помнить каждый экран. */}
               <div className="mx-auto w-full pb-32 dt:max-w-[980px] dt:px-8 dt:pb-20">
-                {screens[activeTab]}
+                {screens[screenTab]}
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
-      {!isDesktop && <BottomNav active={activeTab} onSelect={switchTab} items={navItems} />}
+      {!isDesktop && <BottomNav active={screenTab} onSelect={switchTab} items={navItems} />}
+
+      {/* Вход — поверх кабинета, а не вместо него: под ним стоит открытый лист
+          брони с выбранным занятием и ковриком, и размонтировать его значит
+          потерять всё, что человек уже выбрал. Свой фон обязателен по той же
+          причине — сквозь прозрачный экран входа просвечивало бы расписание. */}
+      {authGate && entry.studioId !== null && (
+        // zIndex в той же шкале, что у листов кита (Sheet: 200 + layer*10), и
+        // выше их всех: под входом может стоять открытая бронь со своим листом.
+        <div className="fixed inset-0 overflow-y-auto bg-background" style={{ zIndex: 300 }}>
+          <Auth
+            studioId={entry.studioId}
+            referralCode={entry.referralCode}
+            onCancel={() => {
+              setPendingBooking(null);
+              setActiveTab(screenTab);
+            }}
+            onDone={(authedUser, token) => {
+              saveSession({ token, name: authedUser.name });
+              setUser(authedUser);
+              // Каталог перечитываем под токеном (цены пакетов у клиента свои),
+              // но без экрана загрузки — он снёс бы тот самый лист брони.
+              loadCatalog();
+              pendingBooking?.();
+              setPendingBooking(null);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

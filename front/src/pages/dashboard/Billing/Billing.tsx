@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import type { PlanType } from './types';
 import { useBillingCalculator } from './hooks/useBillingCalculator';
 import BillingHeader from './components/sections/BillingHeader';
 import OfflineFeeCard from './components/sections/OfflineFeeCard';
@@ -12,6 +11,7 @@ import BillingProfileModal from './components/modals/BillingProfileModal';
 import styles from './Billing.module.css';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
 import { useAiIntent } from '../../../hooks/useAiIntent';
+import { planLabel } from '../../../lib/plan';
 
 export default function Billing() {
   const { t } = useTranslation('billing');
@@ -45,7 +45,7 @@ export default function Billing() {
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pistachio)', flexShrink: 0 }} />
           <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 600 }}>
             {h.plan?.status === 'active'
-              ? t('paymentReturn.done', { plan: h.plans[h.plan.plan_name as PlanType]?.name ?? h.plan.plan_name })
+              ? t('paymentReturn.done', { plan: planLabel(h.plan.plan_name, t) })
               : t('paymentReturn.processing')}
           </span>
         </div>
@@ -57,13 +57,12 @@ export default function Billing() {
           billingMode={h.billingMode}        setBillingMode={h.setBillingMode}
           selectedPlan={h.selectedPlan}      setSelectedPlan={h.setSelectedPlan}
           selectedPeriod={h.selectedPeriod}  setSelectedPeriod={h.setSelectedPeriod}
-          getPrice={h.getPrice}
           periodDiscounts={h.periodDiscounts}
           plans={h.plans}
+          planIds={h.planIds}
           currentMonthly={h.currentMonthly}
           discountedPrice={h.discountedPrice}
           totalToPay={h.totalToPay}
-          animateCards={h.animateCards}
           startCheckout={h.startCheckout}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
@@ -78,7 +77,6 @@ export default function Billing() {
           currency={h.currency}
           invoices={h.invoices}
           loaded={h.invoicesLoaded}
-          plans={h.plans}
           syncInvoice={h.syncInvoice}
         />
       )}
@@ -111,7 +109,6 @@ export default function Billing() {
           selectedPlan={h.selectedPlan}
           selectedPeriod={h.selectedPeriod}
           periodDiscounts={h.periodDiscounts}
-          plans={h.plans}
           monthlyPrice={h.discountedPrice}
           savedTotal={h.savedTotal}
           totalToPay={h.totalToPay}

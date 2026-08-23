@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { BillingPlan } from '../api/billing/billing.types';
 import { billingApi } from '../api/billing/billing.api';
+import { planLabel } from '../lib/plan';
 
 // Баннер «подписка заканчивается/обновится» за 3 дня (задача 12c). Только owner —
 // план и карты тянутся с owner-only эндпоинтов; у остальных ролей план = null.
@@ -43,12 +44,13 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
   // Спокойный info-баннер только если карта привязана И автопродление включено.
   const willRenew = !isTrial && hasCard && plan.auto_renewal;
   const date = fmtDate(expiresAt!, i18n.language);
-  // Названия тарифов — те же ключи, что и на странице биллинга (сервер отдаёт их по-русски).
-  const planLabel = t(`planNames.${plan.plan_name}`, plan.plan_name);
+  // Название тарифа — тем же помощником, что и на странице биллинга: тариф это
+  // места, и называют его они же.
+  const planName = planLabel(plan.plan_name, t);
 
   const text = isTrial
     ? t('banner.trialEnds', { date })
-    : t(willRenew ? 'banner.renews' : 'banner.expires', { plan: planLabel, date });
+    : t(willRenew ? 'banner.renews' : 'banner.expires', { plan: planName, date });
 
   const close = () => { localStorage.setItem(dismissKey(expiresAt!), '1'); setClosed(true); };
 

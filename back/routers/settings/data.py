@@ -17,6 +17,7 @@ from dependencies import StudioContext, require_role
 from models import Client, ClientSubscription, Lesson, Operation
 from schemas.settings.data import ExportEstimateOut, ExportKind
 from services.exporter import csv_stream
+from services.i18n import pick
 from services.members import member_name
 from services.notifier import _CURRENCY_SIGNS, _studio_prefs
 
@@ -26,43 +27,73 @@ router = APIRouter()
 # Больше — 413 с просьбой сузить период, а не зависшая ручка на всю студию разом.
 MAX_EXPORT_ROWS = 100_000
 
+# Шапки и словари значений — на всех пяти языках продукта (services/i18n):
+# выгрузку открывают в Excel, и «Registration date» в чешской студии выглядит
+# ровно так же чуждо, как выглядело бы «Дата регистрации».
 _HEADERS = {
     "clients": {
         "ru": ["ID", "Имя", "Фамилия", "Телефон", "Email", "Дата рождения", "Статус", "Теги",
                "Визиты", "Сумма покупок, {cur}", "Дата регистрации"],
         "en": ["ID", "Name", "Last name", "Phone", "Email", "Birth date", "Status", "Tags",
                "Visits", "Total spent, {cur}", "Registration date"],
+        "uk": ["ID", "Ім'я", "Прізвище", "Телефон", "Email", "Дата народження", "Статус", "Теги",
+               "Візити", "Сума покупок, {cur}", "Дата реєстрації"],
+        "cs": ["ID", "Jméno", "Příjmení", "Telefon", "Email", "Datum narození", "Stav", "Štítky",
+               "Návštěvy", "Útrata celkem, {cur}", "Datum registrace"],
+        "de": ["ID", "Vorname", "Nachname", "Telefon", "E-Mail", "Geburtsdatum", "Status", "Tags",
+               "Besuche", "Umsatz gesamt, {cur}", "Registrierung"],
     },
     "schedule": {
         "ru": ["Дата и время", "Занятие", "Тренер", "Зал", "Мест", "Записано", "Посещено", "Статус"],
         "en": ["Date and time", "Lesson", "Trainer", "Hall", "Spots", "Booked", "Attended", "Status"],
+        "uk": ["Дата й час", "Заняття", "Тренер", "Зал", "Місць", "Записано", "Відвідано", "Статус"],
+        "cs": ["Datum a čas", "Lekce", "Lektor", "Sál", "Míst", "Rezervováno", "Účast", "Stav"],
+        "de": ["Datum und Zeit", "Kurs", "Trainer", "Raum", "Plätze", "Gebucht", "Anwesend", "Status"],
     },
     "finances": {
         "ru": ["Дата", "Тип", "Категория", "Сумма, {cur}", "Метод", "Счёт", "Клиент", "Статус"],
         "en": ["Date", "Type", "Category", "Amount, {cur}", "Method", "Account", "Client", "Status"],
+        "uk": ["Дата", "Тип", "Категорія", "Сума, {cur}", "Метод", "Рахунок", "Клієнт", "Статус"],
+        "cs": ["Datum", "Typ", "Kategorie", "Částka, {cur}", "Metoda", "Účet", "Klient", "Stav"],
+        "de": ["Datum", "Art", "Kategorie", "Betrag, {cur}", "Methode", "Konto", "Kunde", "Status"],
     },
     "subscriptions": {
         "ru": ["Клиент", "Пакет", "Остаток", "Срок", "Статус"],
         "en": ["Client", "Package", "Remaining", "Expires", "Status"],
+        "uk": ["Клієнт", "Пакет", "Залишок", "Термін", "Статус"],
+        "cs": ["Klient", "Balíček", "Zbývá", "Platnost do", "Stav"],
+        "de": ["Kunde", "Paket", "Rest", "Gültig bis", "Status"],
     },
 }
 
 _CLIENT_STATUS = {
     "ru": {"new": "Новый", "active": "Активный", "vip": "VIP", "inactive": "Неактивный"},
     "en": {"new": "New", "active": "Active", "vip": "VIP", "inactive": "Inactive"},
+    "uk": {"new": "Новий", "active": "Активний", "vip": "VIP", "inactive": "Неактивний"},
+    "cs": {"new": "Nový", "active": "Aktivní", "vip": "VIP", "inactive": "Neaktivní"},
+    "de": {"new": "Neu", "active": "Aktiv", "vip": "VIP", "inactive": "Inaktiv"},
 }
 _LESSON_STATUS = {
     "ru": {"confirmed": "Подтверждено", "pending": "Ожидает", "cancelled": "Отменено"},
     "en": {"confirmed": "Confirmed", "pending": "Pending", "cancelled": "Cancelled"},
+    "uk": {"confirmed": "Підтверджено", "pending": "Очікує", "cancelled": "Скасовано"},
+    "cs": {"confirmed": "Potvrzeno", "pending": "Čeká", "cancelled": "Zrušeno"},
+    "de": {"confirmed": "Bestätigt", "pending": "Ausstehend", "cancelled": "Abgesagt"},
 }
 _OPERATION_TYPE = {
     "ru": {"in": "Приход", "out": "Расход"},
     "en": {"in": "Income", "out": "Expense"},
+    "uk": {"in": "Надходження", "out": "Витрата"},
+    "cs": {"in": "Příjem", "out": "Výdaj"},
+    "de": {"in": "Einnahme", "out": "Ausgabe"},
 }
 # is_frozen перекрывает status (заморозка — отдельный флаг в модели, не значение status).
 _SUB_STATUS = {
     "ru": {"frozen": "Заморожен", "active": "Активен"},
     "en": {"frozen": "Frozen", "active": "Active"},
+    "uk": {"frozen": "Заморожено", "active": "Активний"},
+    "cs": {"frozen": "Zmrazeno", "active": "Aktivní"},
+    "de": {"frozen": "Pausiert", "active": "Aktiv"},
 }
 
 
@@ -95,7 +126,7 @@ async def _rows_clients(db: AsyncSession, studio_id: int, date_from, date_to, li
 
 
 def _clients_csv_rows(clients, lang: str):
-    labels = _CLIENT_STATUS[lang]
+    labels = pick(_CLIENT_STATUS, lang)
     for c in clients:
         visits = sum(1 for r in c.reservations if r.status == "attended")
         spent = sum(p.amount for p in c.payments if p.status == "success")
@@ -127,7 +158,7 @@ async def _rows_schedule(db: AsyncSession, studio_id: int, date_from, date_to, l
 
 
 def _schedule_csv_rows(lessons, lang: str):
-    labels = _LESSON_STATUS[lang]
+    labels = pick(_LESSON_STATUS, lang)
     for l in lessons:
         booked = sum(1 for r in l.reservations if r.status in ("active", "attended"))
         attended = sum(1 for r in l.reservations if r.status == "attended")
@@ -156,7 +187,7 @@ async def _rows_finances(db: AsyncSession, studio_id: int, date_from, date_to, l
 
 
 def _finances_csv_rows(ops, lang: str):
-    type_labels = _OPERATION_TYPE[lang]
+    type_labels = pick(_OPERATION_TYPE, lang)
     for o in ops:
         client_name = f"{o.client.name} {o.client.last_name or ''}".strip() if o.client else ""
         yield [
@@ -191,7 +222,7 @@ async def _rows_subscriptions(db: AsyncSession, studio_id: int, date_from, date_
 
 
 def _subscriptions_csv_rows(subs, lang: str):
-    labels = _SUB_STATUS[lang]
+    labels = pick(_SUB_STATUS, lang)
     for s in subs:
         client_name = f"{s.client.name} {s.client.last_name or ''}".strip()
         status_label = labels["frozen"] if s.is_frozen else labels.get(s.status, s.status)
@@ -236,7 +267,7 @@ async def export_data(
 
     lang, currency = await _studio_prefs(db, ctx.studio_id)
     sign = _CURRENCY_SIGNS.get(currency, currency)
-    header = [h.format(cur=sign) for h in _HEADERS[kind][lang]]
+    header = [h.format(cur=sign) for h in pick(_HEADERS[kind], lang)]
 
     if kind == "clients":
         rows = await _rows_clients(db, ctx.studio_id, date_from, date_to, MAX_EXPORT_ROWS)

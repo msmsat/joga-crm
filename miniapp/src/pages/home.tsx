@@ -28,9 +28,11 @@ interface HomeProps {
   onNavigate: (tab: string) => void;
   /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
   onBuySubscription: () => void;
+  /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
+  onNeedAuth: (retry: () => void) => void;
 }
 
-export default function Home({ user, catalog, onNavigate, onBuySubscription }: HomeProps) {
+export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth }: HomeProps) {
   const branches = catalog?.branches ?? [];
   // Лента рисуется и для одного филиала: карточка — единственный вход в
   // описание студии (фото, адрес, часы, StudioSheet), а филиал ровно один у
@@ -82,6 +84,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription }: H
       cancelError: t('home.cancel_booking_error'),
       cancelSuccess: t('home.cancel_booking_success'),
     },
+    onNeedAuth,
   });
 
   const getGreeting = () => {

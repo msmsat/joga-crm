@@ -22,6 +22,23 @@ export type Entry = {
  *  опечатка в ссылке открывала бы пустой экран вместо главной. */
 const TABS = ['home', 'sched', 'my', 'club', 'prof'];
 
+/**
+ * Студия гостя — того, кто открыл ссылку студии, но ещё не входил.
+ *
+ * Клиенту студию называет токен (`client.studio_id` на бэкенде), гостю — никто:
+ * токена у него нет и до самой брони не будет. Поэтому App кладёт сюда студию
+ * из ссылки один раз на старте, а api/client.ts подставляет её в запросы, пока
+ * сессии нет. Модульная переменная, а не проп: единственный, кому это нужно, —
+ * обёртка над fetch, и тащить студию до неё через все страницы незачем.
+ */
+let guestStudioId: number | null = null;
+
+export const setGuestStudio = (studioId: number | null) => {
+  guestStudioId = studioId;
+};
+
+export const getGuestStudio = (): number | null => guestStudioId;
+
 export function readTab(): string | undefined {
   const tab = new URLSearchParams(window.location.search).get('tab');
   return tab && TABS.includes(tab) ? tab : undefined;

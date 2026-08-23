@@ -172,7 +172,7 @@ class _DB:
 
 def _plan_row(**kw):
     return SimpleNamespace(**{
-        "studio_id": 1, "plan_name": "start", "status": "active",
+        "studio_id": 1, "plan_name": "s3", "status": "active",
         "billing_mode": "subscription", "stripe_subscription_id": "sub_1",
         "stripe_customer_id": "cus_1",
         # Читает _trial_end: превью без подписки называет дату, до которой ещё
@@ -182,7 +182,7 @@ def _plan_row(**kw):
 
 
 def _call_preview(plan_row, monkeypatch, live_key=None,
-                  settled=False, want="pro", combo=False):
+                  settled=False, want="s15", combo=False):
     """`live_key` — lookup_key Price, по которому подписка идёт в Stripe СЕЙЧАС.
     По умолчанию совпадает с тарифом в нашей строке (зеркало не отстало).
     `settled` — оплачен ли последний счёт подписки; спрашивается только когда Price
@@ -223,8 +223,8 @@ def test_preview_of_a_switch_is_the_full_catalog_price(monkeypatch):
 
     res = _call_preview(_plan_row(), monkeypatch)
     assert res.kind == "switch"
-    assert res.current_plan == "start"
-    assert res.gross == res.total == amount_for("pro", 1)
+    assert res.current_plan == "s3"
+    assert res.gross == res.total == amount_for("s15", 1)
 
 
 def test_switching_down_costs_full_price_too(monkeypatch):
@@ -232,15 +232,15 @@ def test_switching_down_costs_full_price_too(monkeypatch):
     не гасит новый счёт. Показать здесь ноль значит пообещать бесплатный месяц."""
     from routers.billing.plans import amount_for
 
-    res = _call_preview(_plan_row(plan_name="business"), monkeypatch, want="start")
+    res = _call_preview(_plan_row(plan_name="unlimited"), monkeypatch, want="s3")
     assert res.kind == "switch"
-    assert res.total == amount_for("start", 1) > 0
+    assert res.total == amount_for("s3", 1) > 0
 
 
 def test_preview_of_a_renewal_is_a_renewal(monkeypatch):
     """Тот же тариф — продление: месяцы прибавляются к сроку, терять нечего.
     Разобрать его как смену значит сжечь студии оплаченный остаток за продление."""
-    res = _call_preview(_plan_row(plan_name="pro"), monkeypatch)
+    res = _call_preview(_plan_row(plan_name="s15"), monkeypatch)
     assert res.kind == "renewal"
     assert res.total == res.gross > 0
 
@@ -252,11 +252,11 @@ def test_preview_follows_the_live_subscription_not_our_mirror(monkeypatch):
     увидел 99,07 € за Pro, который в подписке уже стоял (жалоба 13.08.2026)."""
     res = _call_preview(
         # В БД business, в Stripe подписка уже на pro — покупаем pro.
-        _plan_row(plan_name="business"), monkeypatch,
-        live_key="velora_pro_1m",
+        _plan_row(plan_name="unlimited"), monkeypatch,
+        live_key="velora_s15_1m",
     )
     assert res.kind == "renewal", "продление своего тарифа разобрано как смена"
-    assert res.current_plan == "pro", "подпись показывает тариф из отставшего зеркала"
+    assert res.current_plan == "s15", "подпись показывает тариф из отставшего зеркала"
 
 
 def test_preview_ignores_a_price_nobody_has_paid_for(monkeypatch):
@@ -269,11 +269,11 @@ def test_preview_ignores_a_price_nobody_has_paid_for(monkeypatch):
     Текущий тариф = тот, за который заплачено. Неоплаченный Price им не является."""
     res = _call_preview(
         # В БД pro (оплачен), в Stripe подписка уже на business — счёт за неё висит.
-        _plan_row(plan_name="pro"), monkeypatch, want="business",
-        live_key="velora_business_1m", settled=False,
+        _plan_row(plan_name="s15"), monkeypatch, want="unlimited",
+        live_key="velora_unlimited_1m", settled=False,
     )
     assert res.kind == "switch", "неоплаченный Price выдан за текущий тариф"
-    assert res.current_plan == "pro"
+    assert res.current_plan == "s15"
 
 
 def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
@@ -281,11 +281,11 @@ def test_preview_trusts_a_higher_price_once_its_invoice_is_paid(monkeypatch):
     уже новый, и покупка его же — продление (13.08.2026). Проверка на оплату не
     должна возвращать эту дыру."""
     res = _call_preview(
-        _plan_row(plan_name="pro"), monkeypatch, want="business",
-        live_key="velora_business_1m", settled=True,
+        _plan_row(plan_name="s15"), monkeypatch, want="unlimited",
+        live_key="velora_unlimited_1m", settled=True,
     )
     assert res.kind == "renewal", "оплаченный переход снова разобран как смена тарифа"
-    assert res.current_plan == "business"
+    assert res.current_plan == "unlimited"
 
 
 def test_preview_without_a_subscription_is_the_plain_catalog_price(monkeypatch):
@@ -332,8 +332,8 @@ def test_combo_preview_uses_the_half_price(monkeypatch):
         _plan_row(billing_mode="combo", stripe_subscription_id=None, status="none"),
         monkeypatch, combo=True,
     )
-    assert combo.gross == combo_amount_for("pro", 1)
-    assert combo.gross * 2 == amount_for("pro", 1)
+    assert combo.gross == combo_amount_for("s15", 1)
+    assert combo.gross * 2 == amount_for("s15", 1)
 
 
 # ------------------------- 7. триал миграции не должен ронять первую оплату
@@ -406,7 +406,7 @@ def _run_switch(monkeypatch, invoice, metadata=None, mirrored_plan=None, sent=No
     from routers.billing import checkout as checkout_mod
     from routers.billing import webhook as webhook_mod
 
-    metadata = metadata or {"plan": "pro", "period_months": "1"}
+    metadata = metadata or {"plan": "s15", "period_months": "1"}
 
     async def noop(*_a, **_kw):
         return None
@@ -596,7 +596,7 @@ def test_switch_ignores_a_paid_invoice_of_another_plan(monkeypatch):
     значит вернуть студию на прежний тариф её же старым платежом."""
     _url, _finalized, applied, _burned = _run_switch(
         monkeypatch, _Inv("in_old", "paid"),
-        metadata={"plan": "pro"}, mirrored_plan="business",
+        metadata={"plan": "s15"}, mirrored_plan="unlimited",
     )
     assert applied == [], "чужой счёт поднял тариф"
 
@@ -644,8 +644,8 @@ def test_plan_page_follows_the_live_subscription(monkeypatch):
     """Владелец видел «Business» и цены Business, когда Stripe уже списывал Pro:
     вебхук, который поднимает наше зеркало, не дошёл. Страница обязана показывать
     тариф, за который берут деньги (жалоба 13.08.2026)."""
-    row, commits = _reconcile(monkeypatch, mirror_plan="business", live_key="velora_pro_1m")
-    assert row.plan_name == "pro"
+    row, commits = _reconcile(monkeypatch, mirror_plan="unlimited", live_key="velora_s15_1m")
+    assert row.plan_name == "s15"
     assert row.max_staff == 15, "лимиты остались от прежней ступени"
     assert commits == 1, "выравнивание не сохранено"
 
@@ -655,8 +655,8 @@ def test_plan_page_never_raises_the_tier_for_free(monkeypatch):
     Price СРАЗУ, а счёт-прорация в этот момент ещё `open`. Сверка «по Price
     подписки» выдала студии Business за неоплаченные 169,41 €. Вверх ступень
     двигает только оплаченный счёт (webhook._activate) — и никто больше."""
-    row, commits = _reconcile(monkeypatch, mirror_plan="pro", live_key="velora_business_1m")
-    assert row.plan_name == "pro", "тариф выдан за неоплаченный счёт"
+    row, commits = _reconcile(monkeypatch, mirror_plan="s15", live_key="velora_unlimited_1m")
+    assert row.plan_name == "s15", "тариф выдан за неоплаченный счёт"
     assert row.max_staff == 999, "лимиты подняты за неоплаченный счёт"
     assert commits == 0
 
@@ -664,7 +664,7 @@ def test_plan_page_never_raises_the_tier_for_free(monkeypatch):
 def test_plan_page_does_not_upgrade_a_trial(monkeypatch):
     """У пробного периода цены в каталоге нет, сравнивать не с чем — а любой
     переход с него был бы повышением. Молча уходим и ждём оплату."""
-    row, commits = _reconcile(monkeypatch, mirror_plan="free_trial", live_key="velora_business_1m")
+    row, commits = _reconcile(monkeypatch, mirror_plan="free_trial", live_key="velora_unlimited_1m")
     assert row.plan_name == "free_trial"
     assert commits == 0
 
@@ -673,7 +673,7 @@ def test_plan_reconcile_never_touches_the_paid_period(monkeypatch):
     """Срок у нас законно уходит вперёд цикла подписки: продление — отдельный счёт,
     который двигает дату сам. Подтянуть `expires_at` «как в Stripe» значило бы
     отобрать уже оплаченные месяцы."""
-    row, _commits = _reconcile(monkeypatch, mirror_plan="business", live_key="velora_pro_1m")
+    row, _commits = _reconcile(monkeypatch, mirror_plan="unlimited", live_key="velora_s15_1m")
     assert row.expires_at == "2027-01-26"
     assert row.status == "active"
 
@@ -684,18 +684,18 @@ def test_plan_reconcile_is_throttled(monkeypatch):
     import time as _time
 
     row, commits = _reconcile(
-        monkeypatch, mirror_plan="business", live_key="velora_pro_1m",
+        monkeypatch, mirror_plan="unlimited", live_key="velora_s15_1m",
         checked_at={1: _time.time()},
     )
-    assert row.plan_name == "business", "сверка ушла в сеть раньше срока"
+    assert row.plan_name == "unlimited", "сверка ушла в сеть раньше срока"
     assert commits == 0
 
 
 def test_plan_reconcile_ignores_a_foreign_price(monkeypatch):
     """Price не из нашего каталога (заведён руками в дашборде) тарифом не является —
     затирать им ступень значит уронить студию в «неизвестный тариф»."""
-    row, commits = _reconcile(monkeypatch, mirror_plan="business", live_key="some_other_price")
-    assert row.plan_name == "business"
+    row, commits = _reconcile(monkeypatch, mirror_plan="unlimited", live_key="some_other_price")
+    assert row.plan_name == "unlimited"
     assert commits == 0
 
 

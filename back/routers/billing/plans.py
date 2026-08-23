@@ -1,25 +1,91 @@
 """Каталог тарифов — единственный источник истины о ценах и лимитах.
 
+Тариф = МЕСТА. Студия сама выбирает, сколько сотрудников ей нужно: 2 места стоят
+`SEAT_BASE`, каждое следующее +`SEAT_STEP`, а `UNLIMITED` снимает потолок вовсе.
+Ступеней поэтому не три, а двадцать — и «улучшить тариф» означает докупить места,
+а не угадать, в какую из трёх коробок студия помещается.
+
 Цены в центах EUR (младшие единицы, как их ждёт Stripe). Сумма к оплате
 считается ТОЛЬКО тут по period_discounts — фронту не доверяем. Лимиты
-используются задачей 8 (check_plan_limit); None = безлимит (Business).
+используются задачей 8 (check_plan_limit); None = безлимит.
 """
 
-# id -> {name, price (центы EUR/мес), limits {staff, clients, ai_requests, ai_cost_micro}}.
-# None = безлимит, но только там, где безлимит безопасен: у сотрудников и клиентов
-# он ничего не стоит платформе, у ИИ — стоит деньгами провайдера, поэтому Business
-# получает число (эпик AI-5, решения 6 и 9).
-#   ai_requests   — обращений к ИИ в месяц (витрина, PlanLimits);
-#   ai_cost_micro — потолок себестоимости в микро-$, 12 % MRR. ВНУТРЕННИЙ:
-#                   в PlanLimits не выносится — студии он ничего не говорит.
+# Ценовая линия: 2 места — 15 €, каждое следующее — +5 €, безлимит — 120 €.
+SEAT_BASE = 1500        # центы EUR/мес за минимальные MIN_SEATS мест
+SEAT_STEP = 500         # +за каждое место сверх минимума
+MIN_SEATS = 2
+MAX_SEATS = 20
+UNLIMITED = "unlimited"
+UNLIMITED_PRICE = 12000
+
+
+def plan_id(seats: int | None) -> str:
+    """Мест → id тарифа. None (безлимит) → "unlimited"."""
+    return UNLIMITED if seats is None else f"s{seats}"
+
+
+def _price(seats: int) -> int:
+    return SEAT_BASE + (seats - MIN_SEATS) * SEAT_STEP
+
+
+def _name(seats: int | None) -> str:
+    """Имя для фактуры Stripe. Форма слова — только для 2..20, других мест нет."""
+    if seats is None:
+        return "Безлимит"
+    return f"{seats} мест" + ("а" if seats <= 4 else "")
+
+
+def _limits(seats: int | None, price: int) -> dict:
+    """Лимиты ступени. Всё, кроме мест, привязано к самим местам и к цене —
+    второго прайс-листа, который забудут обновить, тут быть не должно.
+
+    ai_requests   — обращений к ИИ в месяц (витрина, PlanLimits);
+    ai_cost_micro — потолок себестоимости в микро-$, ~12 % MRR. ВНУТРЕННИЙ:
+                    в PlanLimits не выносится — студии он ничего не говорит.
+    """
+    return {
+        "staff": seats,
+        "clients": None if seats is None else seats * 100,
+        "ai_requests": 5000 if seats is None else seats * 150,
+        # price в центах → 12 % от MRR в микро-долларах: price/100 * 0.12 * 1e6.
+        "ai_cost_micro": price * 1200,
+    }
+
+
+# id -> {name, price (центы EUR/мес), limits}. Порядок — по возрастанию цены:
+# по нему считается ступень (`tier`) и следующая ступень апгрейда.
 PLANS: dict[str, dict] = {
-    "start":    {"name": "Старт",    "price":  3900, "limits": {"staff": 3,    "clients": 100,  "ai_requests": 300,  "ai_cost_micro":  5_000_000}},
-    "pro":      {"name": "Pro",      "price":  9900, "limits": {"staff": 15,   "clients": 1000, "ai_requests": 1500, "ai_cost_micro": 13_000_000}},
-    "business": {"name": "Business", "price": 23900, "limits": {"staff": None, "clients": None, "ai_requests": 5000, "ai_cost_micro": 31_000_000}},
+    **{
+        plan_id(n): {"name": _name(n), "price": _price(n), "limits": _limits(n, _price(n))}
+        for n in range(MIN_SEATS, MAX_SEATS + 1)
+    },
+    UNLIMITED: {
+        "name": _name(None),
+        "price": UNLIMITED_PRICE,
+        "limits": _limits(None, UNLIMITED_PRICE),
+    },
 }
 
-# Скидка за период оплаты: 6 мес −20%, 12 мес −30%, 24 мес −40%.
-PERIOD_DISCOUNTS: dict[int, float] = {1: 0.0, 6: 0.20, 12: 0.30, 24: 0.40}
+# Тарифы прежнего каталога (Старт/Pro/Business) → ближайшая ступень новой линии.
+# В БД лежат оплаченные строки и счета с этими именами, и они обязаны читаться
+# после переезда: без карты студия на «pro» получила бы лимиты неизвестного плана.
+TRIAL_PLAN = plan_id(15)
+LEGACY_PLANS: dict[str, str] = {
+    "start": plan_id(3),
+    "pro": TRIAL_PLAN,
+    "business": UNLIMITED,
+    # free_trial всегда давал лимиты Pro (services/plan_limits) — сохраняем.
+    "free_trial": TRIAL_PLAN,
+}
+
+
+def canon(plan_name: str) -> str:
+    """Имя тарифа из БД → id действующего каталога. Незнакомое возвращает как есть."""
+    return LEGACY_PLANS.get(plan_name, plan_name)
+
+
+# Скидка за период оплаты: 3 мес −15%, 6 мес −25%, 12 мес −40%.
+PERIOD_DISCOUNTS: dict[int, float] = {1: 0.0, 3: 0.15, 6: 0.25, 12: 0.40}
 
 # Длина пробного периода. Живёт здесь, а не в онбординге: выдаёт триал теперь
 # биллинг (POST /billing/trial), по явному согласию владельца, — а условия
@@ -39,47 +105,41 @@ COMBO_PERCENT_RATE = 1.5
 # меньше этой суммы — выставляется счёт на РАЗНИЦУ (services/offline_fee_billing.
 # _bill_minimum). Заработали больше — счёта нет вовсе.
 #
-# Плоский, от «Старта», а НЕ от ступени студии: на процент идут маленькие студии,
-# а после триала в plan_name у всех стоит Pro — брать с них 99 € за пустой месяц
-# несоразмерно. Плоская сумма к тому же называется одной цифрой в модалке согласия,
-# и владелец точно знает, на что подписался.
-MIN_MONTHLY_FEE = PLANS["start"]["price"]
-# Комбо-фикс: половина от подписки (аудит «уменьшить цену в 2 раза»), коп/мес.
-COMBO_FIXED: dict[str, int] = {
-    "start":    PLANS["start"]["price"]    // 2,
-    "pro":      PLANS["pro"]["price"]      // 2,
-    "business": PLANS["business"]["price"] // 2,
-}
+# Плоский, от самой дешёвой ступени, а НЕ от ступени студии: на процент идут
+# маленькие студии, а после триала в plan_name у всех стоит средняя ступень.
+# Плоская сумма к тому же называется одной цифрой в модалке согласия, и владелец
+# точно знает, на что подписался.
+MIN_MONTHLY_FEE = SEAT_BASE
+# Комбо-фикс: половина от подписки (аудит «уменьшить цену в 2 раза»), центы/мес.
+COMBO_FIXED: dict[str, int] = {pid: p["price"] // 2 for pid, p in PLANS.items()}
 
 
 def tier(plan_name: str) -> int:
-    """Ступень тарифа для сравнения. free_trial даёт лимиты Pro (services/plan_limits),
-    поэтому и здесь считается его ступенью; неизвестный план (none) — ниже всех.
+    """Ступень тарифа для сравнения. Имена прежнего каталога (и free_trial)
+    переводятся `canon`; неизвестный план (none) — ниже всех.
 
     Живёт в каталоге, а не в роутере: по ней сверяются ОБА места, где ступень из
     нашей БД встречается со ступенью подписки Stripe (router.activate_model и
-    checkout._live_plan_name). Вторая копия правила «free_trial равен Pro» однажды
-    разъехалась бы с первой.
+    checkout._live_plan_name). Вторая копия правила однажды разъехалась бы с первой.
     """
-    plan_id = "pro" if plan_name == "free_trial" else plan_name
     plan_ids = list(PLANS)
-    return plan_ids.index(plan_id) if plan_id in plan_ids else -1
+    pid = canon(plan_name)
+    return plan_ids.index(pid) if pid in plan_ids else -1
 
 
 def combo_amount_for(plan_id: str, period_months: int) -> int:
-    """Фиксированная часть тарифа «комбо» за период — ровно половина подписки.
+    """Фиксированная часть тарифа «комбо» за период — половина подписки.
 
-    Формула та же, что у `amount_for`, но от `COMBO_FIXED`: скидка за длинный
-    период на комбо действует так же, иначе годовая комбо-оплата выходила бы
-    дороже годовой подписки, поделённой пополам.
+    Считается ОТ ИТОГА подписки, а не от половинной месячной цены: на ступенях с
+    нечётной ценой (15 € за 3 мес со скидкой = 38,25 €) две половинки по своей
+    формуле давали в сумме на цент меньше — и «комбо стоит ровно половину»
+    переставало быть правдой. Лишний цент делим в пользу студии (floor).
     """
-    monthly = COMBO_FIXED[plan_id]
-    discount = PERIOD_DISCOUNTS[period_months]
-    return round(monthly * period_months * (1 - discount))
+    return amount_for(plan_id, period_months) // 2
 
 
 def amount_for(plan_id: str, period_months: int) -> int:
-    """Итоговая сумма к оплате в копейках: цена×месяцы со скидкой периода.
+    """Итоговая сумма к оплате в центах: цена×месяцы со скидкой периода.
 
     KeyError, если план/период неизвестны — вызывающая сторона (checkout,
     задача 4) должна валидировать и отдавать 422.
@@ -90,43 +150,62 @@ def amount_for(plan_id: str, period_months: int) -> int:
 
 
 if __name__ == "__main__":
-    # Итоговые суммы к оплате в центах EUR (спека §4.1).
-    assert amount_for("start", 1) == 3900
-    assert amount_for("start", 6) == 18720
-    assert amount_for("start", 12) == 32760
-    assert amount_for("start", 24) == 56160
-    assert amount_for("pro", 1) == 9900
-    assert amount_for("pro", 12) == 83160
-    assert amount_for("business", 24) == 344160
+    # Ценовая линия: 15 € за двоих, +5 € за место, 120 € за безлимит.
+    assert PLANS["s2"]["price"] == 1500
+    assert PLANS["s3"]["price"] == 2000
+    assert PLANS["s20"]["price"] == 10500
+    assert PLANS[UNLIMITED]["price"] == UNLIMITED_PRICE == 12000
+    assert len(PLANS) == 20                      # 2..20 мест + безлимит
+    assert list(PLANS)[-1] == UNLIMITED
+    # Безлимит обязан стоить дороже любой конечной ступени — иначе покупать 20 мест
+    # незачем, а ступень «дороже безлимита» ломала бы и порядок tier().
+    assert UNLIMITED_PRICE > PLANS[plan_id(MAX_SEATS)]["price"]
+    # Цены строго возрастают: на этом держится и tier(), и _upgrade_target.
+    _prices = [p["price"] for p in PLANS.values()]
+    assert _prices == sorted(_prices) and len(set(_prices)) == len(_prices)
+    # Мест ровно столько, сколько куплено, — по ним режет check_plan_limit.
+    assert PLANS["s7"]["limits"]["staff"] == 7
+    assert PLANS[UNLIMITED]["limits"]["staff"] is None
+
+    # Итоговые суммы к оплате в центах EUR.
+    assert amount_for("s2", 1) == 1500
+    assert amount_for("s2", 3) == round(1500 * 3 * 0.85) == 3825
+    assert amount_for("s2", 12) == round(1500 * 12 * 0.60) == 10800
+    assert amount_for(UNLIMITED, 6) == round(12000 * 6 * 0.75) == 54000
 
     # Скидка за период обязана быть выгодной: длинный период дешевле помесячного.
-    for _pid in PLANS:
-        _monthly = PLANS[_pid]["price"]
-        for _months in (6, 12, 24):
-            assert amount_for(_pid, _months) < _monthly * _months, (_pid, _months)
+    for _pid, _plan in PLANS.items():
+        for _months in (3, 6, 12):
+            assert amount_for(_pid, _months) < _plan["price"] * _months, (_pid, _months)
 
     # Комбо-фикс производный от цены подписки — не константа, которую забудут обновить.
-    assert COMBO_FIXED["pro"] == 4950
-    assert COMBO_FIXED["business"] == 11950
+    assert COMBO_FIXED["s2"] == 750
+    assert COMBO_FIXED[UNLIMITED] == 6000
 
-    # Комбо стоит ровно половину подписки на каждом периоде — это и есть смысл
-    # тарифа (вторую половину платформа добирает процентом с транзакций).
+    # Комбо стоит половину подписки на каждом периоде — это и есть смысл тарифа
+    # (вторую половину платформа добирает процентом с транзакций). Расхождение
+    # допустимо ровно на цент округления, и только в пользу студии.
     for _pid in PLANS:
         for _months in PERIOD_DISCOUNTS:
-            assert combo_amount_for(_pid, _months) * 2 == amount_for(_pid, _months), (_pid, _months)
-    assert combo_amount_for("business", 1) == 11950
-    assert combo_amount_for("pro", 12) == 41580
+            _full, _half = amount_for(_pid, _months), combo_amount_for(_pid, _months)
+            assert _full - 1 <= _half * 2 <= _full, (_pid, _months)
 
-    # Ступени тарифа: их сравнивают activate_model (чтобы не отдать лимиты Business
+    # Ступени тарифа: их сравнивают activate_model (чтобы не отдать безлимит
     # бесплатно) и _live_plan_name (чтобы не принять неоплаченный Price за текущий
-    # тариф). free_trial равен Pro — так же его читает services/plan_limits.
-    assert tier("start") < tier("pro") < tier("business")
-    assert tier("free_trial") == tier("pro")
+    # тариф). Имена прежнего каталога читаются наравне с новыми.
+    assert tier("s2") < tier("s3") < tier("s20") < tier(UNLIMITED)
+    assert tier("free_trial") == tier(TRIAL_PLAN) == tier("pro")
+    assert tier("start") == tier("s3") and tier("business") == tier(UNLIMITED)
     assert tier("none") == -1 and tier("") == -1
-    assert tier("business") > tier("none")   # без строки плана апгрейд невозможен
+    assert tier(UNLIMITED) > tier("none")   # без строки плана апгрейд невозможен
 
-    # Минимум процентного тарифа — ровно месяц «Старта», 39.00 €.
-    assert MIN_MONTHLY_FEE == 3900
+    # Старые имена обязаны читаться каталогом: в БД лежат их счета и подписки.
+    for _old in LEGACY_PLANS:
+        assert canon(_old) in PLANS, _old
+    assert canon("s7") == "s7"              # новое имя не трогаем
+
+    # Минимум процентного тарифа — ровно месяц самой дешёвой ступени, 15.00 €.
+    assert MIN_MONTHLY_FEE == 1500
     # Он обязан быть НЕ ВЫШЕ самого дешёвого тарифа: иначе «процент» дороже
     # подписки в пустой месяц, и смысл тарифа пропадает.
     assert MIN_MONTHLY_FEE <= min(p["price"] for p in PLANS.values())

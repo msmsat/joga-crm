@@ -7,7 +7,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from pydantic import ValidationError
 from sqlalchemy import delete
 
@@ -48,11 +48,22 @@ async def _run():
         # (exclude_unset). Это и есть регресс задачи 1: useStudioCurrency() читает
         # тот же эндпоинт из Каталога/Клиентов/Лояльности.
         async with async_session_maker() as db:
+            background = BackgroundTasks()
             patched = await update_general_settings(
-                body=GeneralUpdate(currency="EUR"), ctx=owner, db=db,
+                body=GeneralUpdate(currency="EUR"), background=background, ctx=owner, db=db,
             )
         assert patched.currency == "EUR", patched.currency
         assert patched.phone == "+7 900 000-00-00", patched.phone  # не затёрто
+        assert not background.tasks, "смена валюты шаблоны WhatsApp не трогает"
+
+        # Смена языка студии — единственное, что тянет за собой WhatsApp: его
+        # шаблоны заведены на WABA на языке студии, и на новом их там ещё нет.
+        async with async_session_maker() as db:
+            background = BackgroundTasks()
+            await update_general_settings(
+                body=GeneralUpdate(language="cs"), background=background, ctx=owner, db=db,
+            )
+        assert [t.func.__name__ for t in background.tasks] == ["sync_templates_on_connect"]
 
         # Значение переживает новый GET (эмулирует F5).
         async with async_session_maker() as db:

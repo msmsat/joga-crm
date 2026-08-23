@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from models import Client, StudioBillingPlan, StudioMember
-from routers.billing.plans import PLANS
+from routers.billing.plans import PLANS, canon
 
 # entity -> (модель, колонка studio_id, ключ лимита в каталоге, что показать юзеру)
 _ENTITIES = {
@@ -24,9 +24,9 @@ _ENTITIES = {
 
 
 def _limit_for(plan_name: str, entity: str) -> int | None:
-    """Потолок для плана и сущности. None = безлимит. free_trial → лимиты Pro."""
-    plan_id = "pro" if plan_name == "free_trial" else plan_name
-    plan = PLANS.get(plan_id)
+    """Потолок для плана и сущности. None = безлимит. Имена прежнего каталога и
+    free_trial переводит `canon` — в БД лежат оплаченные строки с ними."""
+    plan = PLANS.get(canon(plan_name))
     if plan is None:  # неизвестный план (none и пр.) — лимит не наш вопрос, пусть решает гейт 8b
         return None
     return plan["limits"][entity]

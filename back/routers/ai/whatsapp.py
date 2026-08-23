@@ -280,7 +280,7 @@ async def whatsapp_oauth_callback(
     await refresh_payment_status(db, integ)
     # И сразу заводим шаблоны. Без них канал подключён, тумблер включается, статус
     # зелёный — а не уходит ни одно уведомление: написать первым Meta даёт только
-    # по одобренному шаблону. Фоном, потому что это 76 запросов к Graph, а мастер
+    # по одобренному шаблону. Фоном, потому что это 40 запросов к Graph, а мастер
     # ждёт редиректа (services/whatsapp.py::sync_templates_on_connect).
     background.add_task(sync_templates_on_connect, studio_id)
     logger.info("wa callback: номер подключён, studio_id=%s", studio_id)

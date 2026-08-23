@@ -41,6 +41,7 @@ from schemas._base import BaseSchema, NormEmail
 from security import create_access_token, get_password_hash, verify_password
 from services.contacts import contact_taken, normalize, normalized_column
 from services.email_layout import code_block
+from services.i18n import pick, resolve
 from services.mailer import send_email
 
 from .miniapp import (
@@ -101,6 +102,34 @@ async def _optional_client(
         return None
 
 
+# Письмо уходит КЛИЕНТУ студии, поэтому язык берём студийный: свой язык
+# интерфейса клиент нигде не выбирает, а мини-приложение он видит на языке,
+# который студия задала в «Онлайн-записи».
+_CODE_SUBJECT = {
+    "ru": "Код входа — {studio}", "en": "Login code — {studio}",
+    "uk": "Код входу — {studio}", "cs": "Přihlašovací kód — {studio}",
+    "de": "Anmeldecode — {studio}",
+}
+
+_CODE_BODY = {
+    "ru": ("<p>Введите этот код, чтобы войти в свой кабинет.</p>{code}"
+           "<p>Код действует {minutes} минут. "
+           "Если вход запрашивали не вы — письмо можно удалить.</p>"),
+    "en": ("<p>Enter this code to sign in to your account.</p>{code}"
+           "<p>The code is valid for {minutes} minutes. "
+           "If you didn't request it, you can delete this email.</p>"),
+    "uk": ("<p>Введіть цей код, щоб увійти до свого кабінету.</p>{code}"
+           "<p>Код діє {minutes} хвилин. "
+           "Якщо вхід запитували не ви — лист можна видалити.</p>"),
+    "cs": ("<p>Zadejte tento kód a přihlaste se do své zóny.</p>{code}"
+           "<p>Kód platí {minutes} minut. "
+           "Pokud jste o přihlášení nežádali, e-mail můžete smazat.</p>"),
+    "de": ("<p>Geben Sie diesen Code ein, um sich anzumelden.</p>{code}"
+           "<p>Der Code gilt {minutes} Minuten. "
+           "Haben Sie ihn nicht angefordert, können Sie diese E-Mail löschen.</p>"),
+}
+
+
 @router.post("/auth/email/request", response_model=EmailCodeResponse, status_code=202)
 @limiter.limit("3/minute")
 async def request_email_code(
@@ -139,14 +168,15 @@ async def request_email_code(
         )
     )).scalars().first() is None
 
+    lang = resolve(studio.language)
     await send_email(
         body.email,
-        f"Код входа — {studio.name}",
-        "<p>Введите этот код, чтобы войти в свой кабинет.</p>"
-        + code_block(code)
-        + f"<p>Код действует {int(CODE_TTL.total_seconds() // 60)} минут. "
-        "Если вход запрашивали не вы — письмо можно удалить.</p>",
+        pick(_CODE_SUBJECT, lang).format(studio=studio.name),
+        pick(_CODE_BODY, lang).format(
+            code=code_block(code), minutes=int(CODE_TTL.total_seconds() // 60),
+        ),
         brand=studio.name,
+        lang=lang,
     )
     return EmailCodeResponse(expires_in=int(CODE_TTL.total_seconds()), is_new=is_new)
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AmbientBackdrop from '../components/home/AmbientBackdrop';
 import { Press } from '../components/ui/Press';
 import {
@@ -41,6 +42,7 @@ export default function Auth({
   onDone: (user: UserResponse, token: string) => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation();
   const [brand, setBrand] = useState<StudioBrand | null>(null);
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
@@ -79,7 +81,7 @@ export default function Auth({
       setNeedsName(is_new && !linkMode);
       setStep('code');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Не вдалося надіслати код');
+      setError(e instanceof Error ? e.message : t('auth.code_send_error'));
     } finally {
       setBusy(false);
     }
@@ -101,7 +103,7 @@ export default function Auth({
       );
       onDone(user, token);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Невірний код');
+      setError(e instanceof Error ? e.message : t('auth.code_invalid'));
       setBusy(false);
     }
   };
@@ -110,12 +112,12 @@ export default function Auth({
   const codeValid = code.trim().length === 6 && (!needsName || name.trim().length > 0);
 
   const hint = linkMode
-    ? 'Підтвердьте пошту — і зможете заходити в цей самий кабінет із браузера, не лише з Telegram.'
+    ? t('auth.hint_link')
     : step === 'code'
-      ? `Код надіслано на ${email.trim()}`
+      ? t('auth.hint_code', { email: email.trim() })
       : anonymous
-        ? 'Введіть пошту іншого акаунта — надішлемо код. Поточний вхід залишиться на цьому пристрої.'
-        : 'Введіть пошту — надішлемо код для входу. Пароль не потрібен.';
+        ? t('auth.hint_email_other')
+        : t('auth.hint_email');
 
   return (
     /* На телефоне форма живёт прямо на фоне — карточка в карточке там лишний
@@ -153,7 +155,7 @@ export default function Auth({
         )}
 
         <h1 className="text-[28px] font-extrabold leading-[1.06] tracking-[-0.03em] text-foreground dt:text-[32px]">
-          {linkMode ? 'Прив’язати пошту' : anonymous ? 'Інший акаунт' : brand?.name ?? 'Кабінет клієнта'}
+          {linkMode ? t('auth.title_link') : anonymous ? t('auth.title_other') : brand?.name ?? t('auth.title')}
         </h1>
         <p className="mt-2.5 max-w-[20rem] text-[13.5px] font-medium leading-relaxed text-muted-foreground dt:text-[14px]">
           {hint}
@@ -180,7 +182,7 @@ export default function Auth({
                   autoComplete="given-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Як вас звати?"
+                  placeholder={t('auth.name_placeholder')}
                   className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[15px] font-medium text-foreground outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-brand focus:shadow-brand"
                 />
               )}
@@ -215,7 +217,7 @@ export default function Auth({
               onClick={step === 'email' ? submitEmail : submitCode}
               className="w-full rounded-2xl bg-brand py-3.5 text-[15px] font-extrabold text-brand-foreground shadow-brand transition-opacity disabled:opacity-40"
             >
-              {busy ? '…' : step === 'email' ? 'Надіслати код' : linkMode ? 'Прив’язати' : 'Увійти'}
+              {busy ? '…' : step === 'email' ? t('auth.send_code') : linkMode ? t('auth.link') : t('auth.sign_in')}
             </button>
           </Press>
 
@@ -224,7 +226,7 @@ export default function Auth({
               onClick={() => { setStep('email'); setCode(''); setError(null); }}
               className="w-full py-2 text-[12.5px] font-semibold text-muted-foreground"
             >
-              Змінити пошту
+              {t('auth.change_email')}
             </button>
           )}
 
@@ -233,7 +235,7 @@ export default function Auth({
               onClick={onCancel}
               className="w-full py-2 text-[12.5px] font-semibold text-muted-foreground"
             >
-              Скасувати
+              {t('auth.cancel')}
             </button>
           )}
         </div>

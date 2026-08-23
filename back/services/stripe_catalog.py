@@ -32,13 +32,12 @@ CURRENCY = os.getenv("BILLING_CURRENCY", "eur").lower()
 # здесь значит однажды обложить тариф иначе, чем комиссию, у одного продавца.
 from services.stripe_billing import TAX_BEHAVIOR, TAX_CODE  # noqa: E402
 
-# Период оплаты → интервал биллинга Stripe. Максимум интервала у Stripe — 3 года,
-# так что 24 месяца проходят как year×2.
+# Период оплаты → интервал биллинга Stripe.
 _INTERVALS: dict[int, tuple[str, int]] = {
     1:  ("month", 1),
+    3:  ("month", 3),
     6:  ("month", 6),
     12: ("year", 1),
-    24: ("year", 2),
 }
 
 
@@ -201,17 +200,17 @@ if __name__ == "__main__":
             print(f"{key:24} {pid}")
     else:
         # Чистые функции — без сети.
-        assert lookup_key("start", 12) == "velora_start_12m"
-        assert lookup_key("business", 1) == "velora_business_1m"
-        assert _product_id("pro") == "velora_pro"
+        assert lookup_key("s2", 12) == "velora_s2_12m"
+        assert lookup_key("unlimited", 1) == "velora_unlimited_1m"
+        assert _product_id("s15") == "velora_s15"
 
         # Комбо — ПАРАЛЛЕЛЬНЫЙ набор: ключи и продукты не должны совпадать с
         # подписочными, иначе sync() перетрёт полную цену половинной.
-        assert lookup_key("business", 1, combo=True) == "velora_combo_business_1m"
-        assert _product_id("pro", combo=True) == "velora_combo_pro"
+        assert lookup_key("unlimited", 1, combo=True) == "velora_combo_unlimited_1m"
+        assert _product_id("s15", combo=True) == "velora_combo_s15"
         _keys = {lookup_key(p, m, c) for p in PLANS for m in PERIOD_DISCOUNTS for c in (False, True)}
         assert len(_keys) == len(PLANS) * len(PERIOD_DISCOUNTS) * 2, "ключи столкнулись"
-        assert _product_id("pro") != _product_id("pro", combo=True)
+        assert _product_id("s15") != _product_id("s15", combo=True)
 
         # parse_lookup_key обязан быть точным обратным к lookup_key на ВСЁМ каталоге:
         # по нему activate_model выбирает Price для живой подписки, и ошибка здесь
@@ -225,14 +224,13 @@ if __name__ == "__main__":
         assert parse_lookup_key("") is None
         assert parse_lookup_key("stripe_default_price") is None
         assert parse_lookup_key("velora_unknown_1m") is None    # нет такого плана
-        assert parse_lookup_key("velora_pro_3m") is None        # нет такого периода
-        assert parse_lookup_key("velora_pro_xm") is None        # период не число
-        assert parse_lookup_key("velora_pro") is None           # без периода
+        assert parse_lookup_key("velora_s2_24m") is None        # нет такого периода
+        assert parse_lookup_key("velora_s2_xm") is None         # период не число
+        assert parse_lookup_key("velora_s2") is None            # без периода
         # Каждый период из каталога цен обязан иметь интервал Stripe, иначе
         # sync() упадёт по KeyError уже на боевом ключе.
         assert set(_INTERVALS) == set(PERIOD_DISCOUNTS), (set(_INTERVALS), set(PERIOD_DISCOUNTS))
-        # 24 месяца укладываются в лимит Stripe (максимум интервала — 3 года).
-        assert _INTERVALS[24] == ("year", 2)
+        assert _INTERVALS[3] == ("month", 3)
         assert _INTERVALS[12] == ("year", 1)
         # Валюта тарифа обязана быть с младшими единицами: цены в plans.py — центы.
         from services.stripe_connect import _ZERO_DECIMAL

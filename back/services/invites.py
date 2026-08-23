@@ -16,6 +16,7 @@ from jose import JWTError, jwt
 from models import Studio, User
 from security import ALGORITHM, SECRET_KEY, create_access_token
 from services.email_layout import FONT, INK, button
+from services.i18n import LANGS, pick, resolve
 from services.mailer import send_email
 
 logger = logging.getLogger(__name__)
@@ -82,11 +83,63 @@ _STRINGS = {
         "ignore": "Not expecting an invitation? You do not have to do anything — nobody gets access to the studio "
                   "without your consent. The invitation page also has a Decline button that removes it right away.",
     },
+
+    "uk": {
+        "subject": "{studio} запрошує вас до команди",
+        "hello": "Вітаємо, {name}!",
+        "lead_new": "Вас запрошують до команди студії <b>{studio}</b> як <b>{role}</b>. "
+                    "Щоб прийняти запрошення, натисніть кнопку нижче та введіть пароль, який вам передав керівник. "
+                    "У цьому листі пароля немає й бути не може — тож самого лише посилання для доступу замало.",
+        "lead_existing": "Вас запрошують до команди студії <b>{studio}</b> як <b>{role}</b>. "
+                         "Щоб прийняти, увійдіть паролем від свого акаунта Velora — студія з'явиться у списку ваших робочих просторів.",
+        "cta_new": "Прийняти запрошення",
+        "cta_existing": "Прийняти запрошення",
+        "role_label": "Роль",
+        "studio_label": "Студія",
+        "expires": "Посилання діє {days} днів. Якщо кнопка не відкривається, скопіюйте адресу в браузер:",
+        "ignore": "Не чекали на запрошення? Нічого робити не потрібно: без вашої згоди доступ до студії "
+                  "не відкриється. На сторінці запрошення є кнопка «Відхилити» — вона зніме запрошення одразу.",
+    },
+    "cs": {
+        "subject": "{studio} vás zve do týmu",
+        "hello": "Dobrý den, {name}!",
+        "lead_new": "Zveme vás do týmu studia <b>{studio}</b> na pozici <b>{role}</b>. "
+                    "Pozvánku přijmete tlačítkem níže — zadejte heslo, které vám předal vedoucí. "
+                    "Heslo v tomto e-mailu není a ani být nemůže: samotný odkaz tedy k přístupu nestačí.",
+        "lead_existing": "Zveme vás do týmu studia <b>{studio}</b> na pozici <b>{role}</b>. "
+                         "Pro přijetí se přihlaste heslem ke svému účtu Velora — studio se objeví v seznamu vašich pracovních prostorů.",
+        "cta_new": "Přijmout pozvánku",
+        "cta_existing": "Přijmout pozvánku",
+        "role_label": "Role",
+        "studio_label": "Studio",
+        "expires": "Odkaz platí {days} dní. Pokud tlačítko nefunguje, vložte adresu do prohlížeče:",
+        "ignore": "Pozvánku jste nečekali? Nemusíte dělat nic: bez vašeho souhlasu se přístup do studia "
+                  "neotevře. Na stránce pozvánky je i tlačítko «Odmítnout» — pozvánku zruší okamžitě.",
+    },
+    "de": {
+        "subject": "{studio} lädt Sie ins Team ein",
+        "hello": "Hallo {name}!",
+        "lead_new": "Sie werden ins Team des Studios <b>{studio}</b> als <b>{role}</b> eingeladen. "
+                    "Klicken Sie zum Annehmen auf die Schaltfläche unten und geben Sie das Passwort ein, das Sie von der Leitung erhalten haben. "
+                    "Das Passwort steht nicht in dieser E-Mail — der Link allein genügt also nicht für den Zugang.",
+        "lead_existing": "Sie werden ins Team des Studios <b>{studio}</b> als <b>{role}</b> eingeladen. "
+                         "Melden Sie sich zum Annehmen mit dem Passwort Ihres Velora-Kontos an — das Studio erscheint dann in Ihren Arbeitsbereichen.",
+        "cta_new": "Einladung annehmen",
+        "cta_existing": "Einladung annehmen",
+        "role_label": "Rolle",
+        "studio_label": "Studio",
+        "expires": "Der Link gilt {days} Tage. Falls die Schaltfläche nicht funktioniert, kopieren Sie die Adresse in den Browser:",
+        "ignore": "Sie haben keine Einladung erwartet? Dann müssen Sie nichts tun: ohne Ihre Zustimmung wird "
+                  "kein Zugang eröffnet. Auf der Einladungsseite gibt es zudem «Ablehnen» — das entfernt sie sofort.",
+    },
 }
 
 _ROLE_NAMES = {
     "ru": {"owner": "Владелец", "admin": "Администратор", "trainer": "Тренер"},
     "en": {"owner": "Owner", "admin": "Administrator", "trainer": "Trainer"},
+    "uk": {"owner": "Власник", "admin": "Адміністратор", "trainer": "Тренер"},
+    "cs": {"owner": "Vlastník", "admin": "Administrátor", "trainer": "Lektor"},
+    "de": {"owner": "Inhaber", "admin": "Administrator", "trainer": "Trainer"},
 }
 
 
@@ -122,9 +175,9 @@ async def send_invite(user: User, studio: Studio, role: str, *, name: str) -> st
     откатывать это из-за почты нельзя — ссылку владелец видит в интерфейсе.
     """
     url = build_invite_url(user.email, studio.id)
-    lang = (studio.language or "ru").lower()[:2]
-    s = _STRINGS.get(lang, _STRINGS["ru"])
-    role_name = _ROLE_NAMES.get(lang, _ROLE_NAMES["ru"]).get(role, role)
+    lang = resolve(studio.language)
+    s = pick(_STRINGS, lang)
+    role_name = pick(_ROLE_NAMES, lang).get(role, role)
 
     try:
         await send_email(
@@ -140,6 +193,7 @@ async def send_invite(user: User, studio: Studio, role: str, *, name: str) -> st
                 # его завела эта же студия, и пароль ему задал владелец.
                 is_new_account=not user.is_verified,
             ),
+            lang=lang,
         )
     except Exception:
         logger.exception("Не удалось отправить приглашение на %s", user.email)

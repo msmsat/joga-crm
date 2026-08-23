@@ -92,7 +92,7 @@ async def _expect_ok(studio_id: int, reserve_pct: int = 0) -> None:
 
 async def _run_requests_limit():
     """Старт: 300 billable-записей -> 301-й запрос даёт 429; прошлый месяц не в счёт."""
-    studio_id = await _seed("start")
+    studio_id = await _seed("s2")
     try:
         await _expect_ok(studio_id)
         await _add_usage(studio_id, 299)
@@ -109,7 +109,7 @@ async def _run_requests_limit():
 
 async def _run_ignores_other_rows():
     """Не-billable вызовы цикла и записи прошлого месяца квоту не жгут."""
-    studio_id = await _seed("start")
+    studio_id = await _seed("s2")
     try:
         # 40 дней назад — гарантированно прошлый календарный месяц.
         await _add_usage(studio_id, 400, days_ago=40)
@@ -129,7 +129,7 @@ async def _run_percent_plan():
     платит она долей с оборота — от 39 €/мес и выше Business. Нижняя ступень
     упирала такую студию в «Улучшите тариф» на 300-м вопросе, при том что улучшать
     нечего; ровно тот же дефект, что потолок сотрудников по невидимому plan_name."""
-    studio_id = await _seed("start", billing_mode="percent")
+    studio_id = await _seed("s2", billing_mode="percent")
     try:
         await _expect_ok(studio_id)
         async with async_session_maker() as db:
@@ -153,7 +153,7 @@ async def _run_no_plan_row():
 
 async def _run_cost_cap():
     """Денежный потолок срабатывает до вызова модели и отличим по коду."""
-    studio_id = await _seed("start")
+    studio_id = await _seed("s2")
     try:
         # Одна строка, но дорогая: вопросов мало, денег потрачено сверх потолка.
         await _add_usage(studio_id, 1, billable=False, cost=5_000_000)
@@ -164,7 +164,7 @@ async def _run_cost_cap():
 
 async def _run_reserve():
     """reserve_pct=20 отсекает клиентского агента раньше, чем владельца."""
-    studio_id = await _seed("start")
+    studio_id = await _seed("s2")
     try:
         await _add_usage(studio_id, 240)          # ровно 80 % от 300
         await _expect_429(studio_id, "ai_quota_exceeded", reserve_pct=20)
@@ -178,7 +178,7 @@ async def _run_trial_cap():
 
     Business (5000 в месяц) с записями прошлого месяца: по тарифу запас нетронут,
     по пробному — исчерпан. UI обязан показывать именно пробные числа."""
-    studio_id = await _seed("business")
+    studio_id = await _seed("unlimited")
     try:
         await _add_usage(studio_id, 149, days_ago=40)   # прошлый месяц — потолок сквозной
         await _expect_ok(studio_id)
@@ -200,12 +200,15 @@ def test_ai_quota_plan_states():
             self.billing_mode, self.plan_name = mode, name
 
     assert _limits_for(None)["ai_requests"] == 0
-    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 1500
-    assert _limits_for(_P("percent", "start"))["ai_requests"] == 5000
+    # Триал и прежние имена каталога (start/pro/business) читаются через canon:
+    # в БД они лежат у всех, кто платил до перехода на ступени-места.
+    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 2250
+    assert _limits_for(_P("subscription", "pro"))["ai_requests"] == 2250
+    assert _limits_for(_P("percent", "s2"))["ai_requests"] == 5000
     # Потолок себестоимости на проценте остаётся: безлимит расходов платформы не
-    # обещан НИ ОДНОМУ тарифу, а минимальный платёж на проценте — 39 €/мес.
-    assert _limits_for(_P("percent", "start"))["ai_cost_micro"] == 31_000_000
-    assert _limits_for(_P("combo", "business"))["ai_requests"] == 5000
+    # обещан НИ ОДНОМУ тарифу, а минимальный платёж на проценте — 15 €/мес.
+    assert _limits_for(_P("percent", "s2"))["ai_cost_micro"] == 12000 * 1200
+    assert _limits_for(_P("combo", "unlimited"))["ai_requests"] == 5000
     assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300
 
 

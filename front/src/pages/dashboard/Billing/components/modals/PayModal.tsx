@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { PlanType } from '../../types';
+import { planLabel } from '../../../../../lib/plan';
 import type { CheckoutPreview, BillingProfile } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
 import { InfoIcon } from '../ui/BillingIcons';
@@ -10,7 +11,6 @@ interface Props {
   selectedPlan: PlanType;
   selectedPeriod: number;
   periodDiscounts: Record<number, number>;
-  plans: Record<PlanType, { name: string; monthly: number; color: string }>;
   /** Цена за месяц ВЫБРАННОЙ модели со скидкой периода: у комбо она половинная,
    *  и считать её тут по каталогу подписки значило бы противоречить итогу ниже. */
   monthlyPrice: number;
@@ -52,12 +52,12 @@ const Row = ({ label, value, muted, accent }: {
  * выставит счёт. Своя формула однажды разошлась бы с реально списанным.
  */
 export default function PayModal({
-  currency, selectedPlan, selectedPeriod, periodDiscounts, plans, monthlyPrice,
+  currency, selectedPlan, selectedPeriod, periodDiscounts, monthlyPrice,
   savedTotal, totalToPay, preview, previewBusy, payBusy, onClose, onPay,
   profile, onEditProfile,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
-  const plan = plans[selectedPlan];
+  const planName = planLabel(selectedPlan, t);
   const money = (cents: number) => formatMoney(cents / 100, currency);
 
   // Бесплатный старт: до этой даты подписка не списывает — там ещё лежит уже
@@ -76,15 +76,13 @@ export default function PayModal({
   const total = preview ? preview.total : Math.round(totalToPay * 100);
   // Имя тарифа, который студия теряет, переходя на другой. Незнакомый id
   // (легаси-план) выводим как есть — предупреждение важнее красивого названия.
-  const currentName = preview?.current_plan
-    ? plans[preview.current_plan as PlanType]?.name ?? preview.current_plan
-    : '';
+  const currentName = preview?.current_plan ? planLabel(preview.current_plan, t) : '';
 
   const title = kind === 'renewal'
-    ? t('payModal.titleRenew', { plan: plan.name })
+    ? t('payModal.titleRenew', { plan: planName })
     : kind === 'switch'
-    ? t('payModal.titleSwitch', { plan: plan.name })
-    : t('payModal.titleNew', { plan: plan.name });
+    ? t('payModal.titleSwitch', { plan: planName })
+    : t('payModal.titleNew', { plan: planName });
 
   const subtitle = t('upgrade.priceLine', { price: formatMoney(monthlyPrice, currency) })
     + (selectedPeriod > 1 ? t('upgrade.discountNote', { percent: periodDiscounts[selectedPeriod] * 100, period: selectedPeriod }) : '');
@@ -94,7 +92,7 @@ export default function PayModal({
       <ModalHeader title={title} subtitle={subtitle} />
       <ModalBody>
         <div style={{ padding: '16px 20px', background: 'rgba(252,174,145,0.06)', borderRadius: '14px' }}>
-          <Row label={t('upgrade.planLabel')} value={plan.name} />
+          <Row label={t('upgrade.planLabel')} value={planName} />
           <Row label={t('upgrade.periodLabel')} value={t('upgrade.periodValue', { count: selectedPeriod })} />
           {selectedPeriod > 1 && (
             <Row

@@ -23,6 +23,7 @@ from models.studio import Studio
 from services import stripe_billing
 from services.alerts import alert
 from services.email_layout import WEB_APP_URL, button, link
+from services.i18n import LANGS, pick
 from services.mailer import send_email
 from services.notifier import _CURRENCY_SIGNS, _studio_prefs
 
@@ -37,6 +38,9 @@ PLATFORM_BILLING_EMAIL = os.getenv("PLATFORM_BILLING_EMAIL", "")
 _SUBJECT = {
     "ru": "Velora — чек об оплате тарифа",
     "en": "Velora — subscription payment receipt",
+    "uk": "Velora — чек про оплату тарифу",
+    "cs": "Velora — potvrzení o platbě tarifu",
+    "de": "Velora — Zahlungsbeleg für Ihren Tarif",
 }
 
 _BILLING_PAGE = f"{WEB_APP_URL}/dashboard/billing"
@@ -67,16 +71,55 @@ _BODY = {
         "Invoices and your card live in " + link("Billing", _BILLING_PAGE) +
         " — receipts can be turned off there too.</p>"
     ),
+    "uk": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Оплату отримано</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Тариф: <b style='color:#1A1A1A'>{plan}</b><br>"
+        "Період: {period} міс.<br>"
+        "Сума: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Спосіб оплати: {method}</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Рахунки та картка — у розділі " + link("Тариф і оплата", _BILLING_PAGE) +
+        "; там само вимикаються чеки на пошту.</p>"
+    ),
+    "cs": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Platba přijata</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Tarif: <b style='color:#1A1A1A'>{plan}</b><br>"
+        "Období: {period} měs.<br>"
+        "Částka: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Způsob platby: {method}</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Faktury a kartu najdete v sekci " + link("Tarif a platba", _BILLING_PAGE) +
+        "; tam se dají potvrzení na e-mail i vypnout.</p>"
+    ),
+    "de": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Zahlung erhalten</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Tarif: <b style='color:#1A1A1A'>{plan}</b><br>"
+        "Zeitraum: {period} Mon.<br>"
+        "Betrag: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Zahlungsart: {method}</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Rechnungen und Karte finden Sie unter " + link("Tarif und Zahlung", _BILLING_PAGE) +
+        "; dort lassen sich Belege per E-Mail auch abschalten.</p>"
+    ),
 }
 
 _LINK = {
     "ru": button("Открыть фактуру", "{url}"),
     "en": button("View invoice", "{url}"),
+    "uk": button("Відкрити фактуру", "{url}"),
+    "cs": button("Otevřít fakturu", "{url}"),
+    "de": button("Rechnung öffnen", "{url}"),
 }
 
 _METHOD = {
     "ru": {"card": "банковская карта", "iban": "банковский перевод (IBAN)"},
     "en": {"card": "bank card", "iban": "bank transfer (IBAN)"},
+    "uk": {"card": "банківська картка", "iban": "банківський переказ (IBAN)"},
+    "cs": {"card": "platební karta", "iban": "bankovní převod (IBAN)"},
+    "de": {"card": "Bankkarte", "iban": "Banküberweisung (IBAN)"},
 }
 
 # Подвал денежных писем со ссылками на Условия и Политику ставит общая оболочка
@@ -89,6 +132,9 @@ _METHOD = {
 _WARN_SUBJECT = {
     "ru": "Velora — счёт за комиссию не оплачен, скоро отключение",
     "en": "Velora — unpaid fee invoice, access will be suspended soon",
+    "uk": "Velora — рахунок за комісію не оплачено, скоро відключення",
+    "cs": "Velora — neuhrazená faktura za provizi, přístup bude pozastaven",
+    "de": "Velora — offene Provisionsrechnung, Zugang wird bald gesperrt",
 }
 
 _WARN_BODY = {
@@ -114,11 +160,47 @@ _WARN_BODY = {
         "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
         "You can also pay it from " + link("Billing", _BILLING_PAGE) + ".</p>"
     ),
+    "uk": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Рахунок за комісію не оплачено</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Сума: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Оплатити до: <b style='color:#1A1A1A'>{due}</b></p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Якщо рахунок не буде оплачено вчасно, доступ до CRM і до міні-застосунку "
+        "для ваших клієнтів призупиниться до погашення.</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Оплатити можна й у розділі " + link("Тариф і оплата", _BILLING_PAGE) + ".</p>"
+    ),
+    "cs": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Faktura za provizi není uhrazená</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Částka: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Splatnost: <b style='color:#1A1A1A'>{due}</b></p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Pokud nebude uhrazena včas, přístup do CRM i do klientské aplikace se "
+        "pozastaví až do zaplacení.</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Zaplatit můžete i v sekci " + link("Tarif a platba", _BILLING_PAGE) + ".</p>"
+    ),
+    "de": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Provisionsrechnung offen</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Betrag: <b style='color:#1A1A1A'>{amount}</b><br>"
+        "Fällig am: <b style='color:#1A1A1A'>{due}</b></p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Wird sie nicht rechtzeitig bezahlt, werden der Zugang zur CRM und die "
+        "Kunden-App bis zur Zahlung gesperrt.</p>{link}"
+        "<p style='font:400 13px/1.6 Arial,sans-serif;color:#999;margin:18px 0 0'>"
+        "Bezahlen können Sie auch unter " + link("Tarif und Zahlung", _BILLING_PAGE) + ".</p>"
+    ),
 }
 
 _WARN_LINK = {
     "ru": button("Оплатить счёт", "{url}"),
     "en": button("Pay invoice", "{url}"),
+    "uk": button("Оплатити рахунок", "{url}"),
+    "cs": button("Zaplatit fakturu", "{url}"),
+    "de": button("Rechnung bezahlen", "{url}"),
 }
 
 
@@ -170,14 +252,14 @@ async def send_receipt(db: AsyncSession, invoice: BillingInvoice) -> bool:
 
         lang, _currency = await _studio_prefs(db, invoice.studio_id)
         url = invoice.pdf_url or invoice.hosted_invoice_url
-        html = _BODY[lang].format(
+        html = pick(_BODY, lang).format(
             plan=invoice.plan_name,
             period=invoice.period_months,
             amount=fmt_amount(invoice.amount),
-            method=_METHOD[lang].get(invoice.payment_method or "", invoice.payment_method or "—"),
-            link=_LINK[lang].format(url=url) if url else "",
+            method=pick(_METHOD, lang).get(invoice.payment_method or "", invoice.payment_method or "—"),
+            link=pick(_LINK, lang).format(url=url) if url else "",
         )
-        await send_email(to, _SUBJECT[lang], html)
+        await send_email(to, pick(_SUBJECT, lang), html, lang=lang)
         return True
     except Exception:
         logger.exception("Billing mail: чек по счёту %s не отправлен", getattr(invoice, "id", "?"))
@@ -281,12 +363,12 @@ async def send_block_warning(db: AsyncSession, invoice: BillingInvoice) -> bool:
 
         lang, _currency = await _studio_prefs(db, invoice.studio_id)
         url = invoice.hosted_invoice_url or invoice.pdf_url
-        html = _WARN_BODY[lang].format(
+        html = pick(_WARN_BODY, lang).format(
             amount=fmt_amount(invoice.amount),
             due=invoice.due_at.strftime("%d.%m.%Y") if invoice.due_at else "—",
-            link=_WARN_LINK[lang].format(url=url) if url else "",
+            link=pick(_WARN_LINK, lang).format(url=url) if url else "",
         )
-        await send_email(to, _WARN_SUBJECT[lang], html)
+        await send_email(to, pick(_WARN_SUBJECT, lang), html, lang=lang)
         return True
     except Exception:
         logger.exception(
@@ -303,6 +385,9 @@ async def send_block_warning(db: AsyncSession, invoice: BillingInvoice) -> bool:
 _VAT_SUBJECT = {
     "ru": "Velora — номер НДС не прошёл проверку",
     "en": "Velora — your VAT number failed validation",
+    "uk": "Velora — номер ПДВ не пройшов перевірку",
+    "cs": "Velora — DIČ neprošlo ověřením",
+    "de": "Velora — Ihre USt-IdNr. konnte nicht bestätigt werden",
 }
 
 _VAT_BODY = {
@@ -326,6 +411,37 @@ _VAT_BODY = {
         "enter it again to run the check once more.</p>"
         + button("Open settings", f"{WEB_APP_URL}/dashboard/settings")
     ),
+    "uk": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>Номер ПДВ не підтверджено</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Номер <b style='color:#1A1A1A'>{vat}</b> не знайдено в європейській базі "
+        "платників ПДВ (VIES) і видалено з реквізитів вашої студії.</p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Наступні рахунки буде виставлено з урахуванням ПДВ. Якщо номер указано "
+        "правильно і він дійсний, впишіть його знову — перевірка запуститься ще раз.</p>"
+        + button("Відкрити налаштування", f"{WEB_APP_URL}/dashboard/settings")
+    ),
+    "cs": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>DIČ nebylo potvrzeno</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Číslo <b style='color:#1A1A1A'>{vat}</b> nebylo nalezeno v evropské databázi "
+        "plátců DPH (VIES) a bylo odebráno z údajů vašeho studia.</p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Další faktury budou vystaveny včetně DPH. Pokud je číslo správné a platné, "
+        "zadejte ho znovu — ověření proběhne ještě jednou.</p>"
+        + button("Otevřít nastavení", f"{WEB_APP_URL}/dashboard/settings")
+    ),
+    "de": (
+        "<h2 style='font:800 22px/1.3 Arial,sans-serif;color:#1A1A1A;margin:0 0 14px'>USt-IdNr. nicht bestätigt</h2>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:0'>"
+        "Die Nummer <b style='color:#1A1A1A'>{vat}</b> wurde nicht in der EU-Datenbank "
+        "der Umsatzsteuer-Identifikationsnummern (VIES) gefunden und aus den Daten "
+        "Ihres Studios entfernt.</p>"
+        "<p style='font:400 15px/1.7 Arial,sans-serif;color:#666;margin:14px 0 0'>"
+        "Kommende Rechnungen enthalten Umsatzsteuer. Ist die Nummer korrekt und "
+        "gültig, tragen Sie sie erneut ein — die Prüfung startet dann neu.</p>"
+        + button("Einstellungen öffnen", f"{WEB_APP_URL}/dashboard/settings")
+    ),
 }
 
 
@@ -343,8 +459,8 @@ async def send_vat_rejected(db: AsyncSession, studio_id: int, vat_id: str | None
             return False
 
         lang, _currency = await _studio_prefs(db, studio_id)
-        html = _VAT_BODY[lang].format(vat=vat_id or "—")
-        await send_email(to, _VAT_SUBJECT[lang], html)
+        html = pick(_VAT_BODY, lang).format(vat=vat_id or "—")
+        await send_email(to, pick(_VAT_SUBJECT, lang), html, lang=lang)
         return True
     except Exception:
         logger.exception("Billing mail: письмо о снятом VAT ID студии %s не отправлено", studio_id)
@@ -359,23 +475,24 @@ if __name__ == "__main__":
     assert fmt_amount(3900) == "39.00 €", fmt_amount(3900)
     assert fmt_amount(344160) == "3 441.60 €", fmt_amount(344160)
 
-    # Оба языка держат один и тот же набор подстановок: разъехавшийся шаблон падал бы
-    # KeyError уже на боевом письме, а не здесь.
+    # Все пять языков держат один и тот же набор подстановок: разъехавшийся шаблон
+    # падал бы KeyError уже на боевом письме, а не здесь.
+    _langs = set(LANGS)
     _slots = dict(plan="Pro", period=12, amount="1.00 €", method="card", link="")
-    for _lang in ("ru", "en"):
+    _warn_slots = dict(amount="39.00 €", due="16.08.2026", link="")
+    for _lang in LANGS:
         assert _BODY[_lang].format(**_slots)
         assert "{url}" in _LINK[_lang]
         assert set(_METHOD[_lang]) == {"card", "iban"}
-
-    _warn_slots = dict(amount="39.00 €", due="16.08.2026", link="")
-    for _lang in ("ru", "en"):
         assert _WARN_BODY[_lang].format(**_warn_slots)
         assert "{url}" in _WARN_LINK[_lang]
-    assert set(_WARN_SUBJECT) == set(_WARN_BODY) == set(_WARN_LINK) == {"ru", "en"}
-
-    for _lang in ("ru", "en"):
         assert _VAT_BODY[_lang].format(vat="DE000000000")
-    assert set(_VAT_SUBJECT) == set(_VAT_BODY) == {"ru", "en"}
+    assert set(_SUBJECT) == set(_BODY) == set(_LINK) == set(_METHOD) == _langs
+    assert set(_WARN_SUBJECT) == set(_WARN_BODY) == set(_WARN_LINK) == _langs
+    assert set(_VAT_SUBJECT) == set(_VAT_BODY) == _langs
+
+    # Язык студии вне набора не роняет письмо — уходит английское.
+    assert pick(_SUBJECT, "pl") == _SUBJECT["en"]
 
     # Выключенный тумблер молчит, и до отправки дело не доходит.
     _sent = []

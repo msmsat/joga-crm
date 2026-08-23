@@ -24,6 +24,12 @@
     "pro": "Pro",
     "business": "Business"
   },
+  "seats": {
+    "title": "Скільки співробітників у студії",
+    "hint": "від {{amount}} на місяць",
+    "stepNote": "Кожне наступне місце — плюс {{amount}} на місяць",
+    "unlimitedNote": "Співробітників без обмежень"
+  },
   "banner": {
     "trialEnds": "Пробний період завершується {{date}} — оберіть тариф",
     "renews": "Передплата {{plan}} поновиться {{date}}",
@@ -105,6 +111,7 @@
   },
   "period": {
     "1": "1 місяць",
+    "3": "3 місяці",
     "6": "6 місяців",
     "12": "1 рік",
     "24": "2 роки",
@@ -185,6 +192,7 @@
     "periodValue_one": "{{count}} місяць",
     "periodValue_few": "{{count}} місяці",
     "periodValue_many": "{{count}} місяців",
+    "periodValue_other": "{{count}} місяців",
     "discountLabel": "Знижка",
     "scheduledBadge": "З {{date}} — тариф «{{plan}}»",
     "vatNote": "Без ПДВ — податок додається під час оплати за даними вашої компанії; компанії з ЄС із номером ПДВ отримують reverse charge."
@@ -285,7 +293,8 @@
     "comparedToMonthly": "порівняно з щомісячною оплатою",
     "forMonths_one": "На {{count}} місяць",
     "forMonths_few": "На {{count}} місяці",
-    "forMonths_many": "На {{count}} місяців"
+    "forMonths_many": "На {{count}} місяців",
+    "forMonths_other": "На {{count}} місяців"
   },
   "pay": "Сплатити",
   "continuePlan": "Продовжити тариф",

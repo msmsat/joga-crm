@@ -59,6 +59,10 @@ export function applyBranding(accentColor?: string | null, darkMode?: boolean | 
 export function applyDefaultLanguage(language?: string | null): void {
   if (!language) return;
   if (localStorage.getItem('i18nextLng')) return;
-  if (!i18n.options.resources || !(language in i18n.options.resources)) return;
-  i18n.changeLanguage(language);
+  // У студий, настроивших виджет до переименования чешского, в базе лежит
+  // старый код 'cz' — правим его на лету, а не миграцией: значение свободное
+  // (String(5)), и завтра там может оказаться что угодно ещё.
+  const code = language === 'cz' ? 'cs' : language;
+  if (!i18n.options.resources || !(code in i18n.options.resources)) return;
+  i18n.changeLanguage(code);
 }

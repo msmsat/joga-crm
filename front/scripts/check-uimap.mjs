@@ -103,14 +103,20 @@ function flatten(obj, prefix = '', out = {}) {
 }
 
 const NAMESPACES = readdirSync(path.join(SRC, 'locales', 'ru')).map((f) => f.replace('.json', ''));
-const ru = {};   // ns:key → строка
-const en = {};
+// Языки продукта — те же пять, что знает бэкенд (back/services/i18n.py): по этому
+// артефакту ассистент называет владельцу подпись кнопки, и чешской студии он
+// обязан назвать чешскую, а не английскую.
+const LANGS = ['ru', 'en', 'uk', 'cs', 'de'];
+const locales = Object.fromEntries(LANGS.map((l) => [l, {}]));  // язык → ns:key → строка
 for (const ns of NAMESPACES) {
-  for (const [k, v] of Object.entries(flatten(loadLocale('ru', ns)))) ru[`${ns}:${k}`] = v;
-  try {
-    for (const [k, v] of Object.entries(flatten(loadLocale('en', ns)))) en[`${ns}:${k}`] = v;
-  } catch { /* неймспейса нет в en — поймает проверка ключей */ }
+  for (const lang of LANGS) {
+    try {
+      for (const [k, v] of Object.entries(flatten(loadLocale(lang, ns)))) locales[lang][`${ns}:${k}`] = v;
+    } catch { /* неймспейса нет в этом языке — поймает проверка ключей ниже */ }
+  }
 }
+const ru = locales.ru;
+const en = locales.en;
 
 const corpus = (sources + '\n' + Object.values(ru).join('\n')).toLowerCase();
 // Значения с {{плейсхолдерами}} — шаблоны: «Команда · {{count}} чел.» обязана
@@ -239,7 +245,14 @@ for (const label of uniqueLabels) {
 const usedKeys = [...new Set([...mapText.matchAll(/\(([a-z]+:[\w.]+)\)/g)].map((m) => m[1]))];
 for (const key of usedKeys) {
   if (!(key in ru)) fail.push(`карта ссылается на ключ локали ${key} — в ru-локалях его нет`);
-  else if (!(key in en)) fail.push(`ключ ${key} есть в ru, но не в en — ассистент назовёт англоязычной студии русскую подпись`);
+  else {
+    for (const lang of LANGS) {
+      if (lang === 'ru') continue;
+      if (!(key in locales[lang])) {
+        fail.push(`ключ ${key} есть в ru, но не в ${lang} — ассистент назовёт студии на этом языке русскую подпись`);
+      }
+    }
+  }
 }
 
 /* ─── 6. Мобильный вариант ──────────────────────────────────────────────── */
@@ -256,7 +269,9 @@ for (const [dir, route] of Object.entries(DIR_ROUTE)) {
 
 if (!fail.length) {
   const artifact = {};
-  for (const key of usedKeys.sort()) artifact[key] = { ru: ru[key], en: en[key] };
+  for (const key of usedKeys.sort()) {
+    artifact[key] = Object.fromEntries(LANGS.map((lang) => [lang, locales[lang][key]]));
+  }
   writeFileSync(LABELS_FILE, JSON.stringify(artifact, null, 2) + '\n', 'utf8');
 }
 

@@ -4,6 +4,12 @@ from pydantic import BaseModel, BeforeValidator, Field, field_validator
 
 from schemas._base import BaseSchema
 
+# Тариф и период — простые str/int, а НЕ Literal со списком значений: ступеней
+# теперь два десятка (места 2…20 + безлимит), и перечень разъехался бы с
+# routers/billing/plans.py на первой же правке ценовой линии. Принадлежность
+# каталогу сверяют сами эндпоинты (checkout._validate, router.activate_model) —
+# импортировать каталог сюда нельзя, он импортирует эти же схемы.
+
 
 def _blank_to_none(value: object) -> object:
     """Пустая строка из формы = «не заполнено», а не значение из пробелов."""
@@ -27,7 +33,7 @@ class PlanLimits(BaseSchema):
 
 
 class PlanRead(BaseSchema):
-    id: str            # start | pro | business
+    id: str            # s2 … s20 | unlimited
     name: str
     price: int         # месячная цена в копейках
     limits: PlanLimits
@@ -36,7 +42,7 @@ class PlanRead(BaseSchema):
 class PlansCatalogRead(BaseSchema):
     """Каталог тарифов — единственный источник истины о ценах и лимитах."""
     plans: list[PlanRead]
-    period_discounts: dict[int, float]   # {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+    period_discounts: dict[int, float]   # {1: 0, 3: 0.15, 6: 0.25, 12: 0.40}
     # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
     # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
     currency: str                        # ISO-код, например EUR
@@ -108,8 +114,8 @@ class AutopaySettingsUpdate(BaseModel):
 
 class ActivateModelRequest(BaseModel):
     mode: Literal["subscription", "percent", "combo"]
-    plan: Optional[Literal["start", "pro", "business"]] = None
-    period_months: Optional[Literal[1, 6, 12, 24]] = None
+    plan: Optional[str] = None            # id ступени каталога, например "s7"
+    period_months: Optional[int] = None
     # Явное согласие на постоплату комиссии. Обязательно для mode="percent":
     # без него бэк отвечает 422, и модалку подтверждения нельзя обойти запросом.
     accept_offline_terms: bool = False
@@ -230,8 +236,8 @@ class BillingProfileUpdate(BaseModel):
 
 
 class CheckoutRequest(BaseModel):
-    plan: Literal["start", "pro", "business"]
-    period_months: Literal[1, 6, 12, 24]
+    plan: str               # id ступени каталога: "s2" … "s20" | "unlimited"
+    period_months: int
     # Покупается комбо (фикс÷2 + % с оборота), а не чистая подписка. Раньше это
     # решалось по `billing_mode` в БД, а тот включался ОТДЕЛЬНЫМ запросом до оплаты —
     # то есть комбо доставалось нажатием кнопки. Теперь режим поднимает оплата

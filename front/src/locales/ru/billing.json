@@ -24,6 +24,12 @@
     "pro": "Pro",
     "business": "Business"
   },
+  "seats": {
+    "title": "Сколько сотрудников в студии",
+    "hint": "от {{amount}} в месяц",
+    "stepNote": "Каждое следующее место — плюс {{amount}} к месяцу",
+    "unlimitedNote": "Сотрудников без ограничений"
+  },
   "banner": {
     "trialEnds": "Пробный период заканчивается {{date}} — выберите тариф",
     "renews": "Подписка {{plan}} обновится {{date}}",
@@ -105,9 +111,9 @@
   },
   "period": {
     "1": "1 месяц",
+    "3": "3 месяца",
     "6": "6 месяцев",
     "12": "1 год",
-    "24": "2 года",
     "title": "Период оплаты",
     "discountActive": "Скидка {{percent}}% активна",
     "noDiscount": "Без скидки",
@@ -145,10 +151,8 @@
   "planCards": {
     "bestChoice": "Лучший выбор",
     "current": "Текущий",
-    "enterprise": "Enterprise",
     "perMonth": "/ мес.",
     "currentPlan": "Текущий план",
-    "choosePlan": "Выбрать план",
     "staffLimit": "До {{count}} сотрудников",
     "staffUnlimited": "Неограниченно сотрудников"
   },

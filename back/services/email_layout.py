@@ -28,6 +28,8 @@ from urllib.parse import quote
 
 from dotenv import load_dotenv
 
+from services.i18n import pick, resolve
+
 load_dotenv()
 
 WEB_APP_URL = os.getenv("WEB_APP_URL", "http://localhost:5173").rstrip("/")
@@ -61,6 +63,15 @@ def button(label: str, url: str) -> str:
     )
 
 
+_GREETING = {
+    "ru": "{name}, здравствуйте!",
+    "en": "Hi {name}!",
+    "uk": "{name}, вітаємо!",
+    "cs": "Dobrý den, {name}!",
+    "de": "Hallo {name}!",
+}
+
+
 def greeting(name: str | None, lang: str = "ru") -> str | None:
     """«Матвей, здравствуйте!» — только если имя есть и это имя, а не заглушка.
 
@@ -71,7 +82,7 @@ def greeting(name: str | None, lang: str = "ru") -> str | None:
     first = (name or "").strip().split(" ")[0]
     if not first or "@" in first:  # почта вместо имени — у клиента без карточки
         return None
-    return f"{first}, здравствуйте!" if lang == "ru" else f"Hi {first}!"
+    return pick(_GREETING, lang).format(name=first)
 
 
 def link(label: str, url: str) -> str:
@@ -118,6 +129,12 @@ def maps_url(address: str) -> str:
     return f"https://www.google.com/maps/search/?api=1&query={quote(address)}"
 
 
+_MAP_LINK = {
+    "ru": "Посмотреть на карте", "en": "View on the map", "uk": "Подивитися на карті",
+    "cs": "Zobrazit na mapě", "de": "Auf der Karte ansehen",
+}
+
+
 def studio_card(
     name: str, address: str | None = None, phone: str | None = None,
     email: str | None = None, lang: str = "ru",
@@ -135,7 +152,7 @@ def studio_card(
         if email else "",
     ]))
     route = (
-        f'<div style="margin-top:10px">{link("Посмотреть на карте" if lang == "ru" else "View on the map", maps_url(address))}</div>'
+        f'<div style="margin-top:10px">{link(pick(_MAP_LINK, lang), maps_url(address))}</div>'
         if address else ""
     )
     return (
@@ -244,12 +261,21 @@ _CLIENT_TAB = {
     "c12": "club", "c13": "my",
 }
 
+# Подписи кнопки — на всех языках, на которых говорит продукт (services/i18n).
+# Одни и те же для письма и для кнопки шаблона WhatsApp: адрес у них общий, и
+# расходиться подписи не должны.
+# Подпись обязана влезать в 25 символов: столько Meta даёт кнопке шаблона.
 _TAB_LABEL = {
-    "my": ("Мои записи", "My bookings"),
-    "sched": ("Расписание", "Schedule"),
-    "prof": ("Мой абонемент", "My subscription"),
-    "club": ("Клуб и бонусы", "Club and bonuses"),
-    "home": ("Открыть приложение", "Open the app"),
+    "my": {"ru": "Мои записи", "en": "My bookings", "uk": "Мої записи",
+           "cs": "Moje rezervace", "de": "Meine Buchungen"},
+    "sched": {"ru": "Расписание", "en": "Schedule", "uk": "Розклад",
+              "cs": "Rozvrh", "de": "Kursplan"},
+    "prof": {"ru": "Мой абонемент", "en": "My subscription", "uk": "Мій абонемент",
+             "cs": "Moje permanentka", "de": "Mein Abo"},
+    "club": {"ru": "Клуб и бонусы", "en": "Club and bonuses", "uk": "Клуб і бонуси",
+             "cs": "Klub a bonusy", "de": "Club und Bonus"},
+    "home": {"ru": "Открыть приложение", "en": "Open the app", "uk": "Відкрити застосунок",
+             "cs": "Otevřít aplikaci", "de": "App öffnen"},
 }
 
 # Страницы CRM (front/src/App.tsx, ветка /dashboard).
@@ -266,14 +292,23 @@ _CRM_PAGE = {
     "o6": "billing",
 }
 
+# Названия разделов CRM — из словарей интерфейса (front/src/locales/<язык>/menu.json,
+# ключи nav.*), чтобы кнопка называла раздел ровно так, как он подписан в меню.
 _PAGE_LABEL = {
-    "journal": ("Открыть журнал", "Open the journal"),
-    "clients": ("Открыть клиентов", "Open clients"),
-    "finances": ("Открыть финансы", "Open finances"),
-    "reports": ("Открыть отчёты", "Open reports"),
-    "staff": ("Открыть сотрудников", "Open staff"),
-    "settings": ("Открыть настройки", "Open settings"),
-    "billing": ("Открыть тариф и оплату", "Open billing"),
+    "journal": {"ru": "Открыть журнал", "en": "Open the journal", "uk": "Відкрити журнал",
+                "cs": "Otevřít deník", "de": "Journal öffnen"},
+    "clients": {"ru": "Открыть клиентов", "en": "Open clients", "uk": "Відкрити клієнтів",
+                "cs": "Otevřít klienty", "de": "Kunden öffnen"},
+    "finances": {"ru": "Открыть финансы", "en": "Open finances", "uk": "Відкрити фінанси",
+                 "cs": "Otevřít finance", "de": "Finanzen öffnen"},
+    "reports": {"ru": "Открыть отчёты", "en": "Open reports", "uk": "Відкрити звіти",
+                "cs": "Otevřít reporty", "de": "Berichte öffnen"},
+    "staff": {"ru": "Открыть сотрудников", "en": "Open staff", "uk": "Відкрити команду",
+              "cs": "Otevřít zaměstnance", "de": "Mitarbeiter öffnen"},
+    "settings": {"ru": "Открыть настройки", "en": "Open settings", "uk": "Відкрити налаштування",
+                 "cs": "Otevřít nastavení", "de": "Einstellungen öffnen"},
+    "billing": {"ru": "Тариф и оплата", "en": "Open billing", "uk": "Тариф і оплата",
+                "cs": "Tarif a platba", "de": "Tarif und Zahlung"},
 }
 
 
@@ -286,14 +321,26 @@ def section_url(event_id: str, studio_id: int) -> str | None:
     return f"{WEB_APP_URL}/dashboard/{page}" if page else None
 
 
+def section_label(event_id: str, lang: str = "ru") -> str | None:
+    """Подпись кнопки «открыть раздел» на языке получателя. None — раздела нет.
+
+    Одна на письмо и на кнопку шаблона WhatsApp: адрес у них общий (section_url),
+    и подпись расходиться не должна — человек, получивший одно и то же событие в
+    двух каналах, не должен гадать, ведут ли кнопки в разные места.
+    """
+    tab = _CLIENT_TAB.get(event_id)
+    labels = _TAB_LABEL.get(tab) if tab else _PAGE_LABEL.get(_CRM_PAGE.get(event_id, ""))
+    if labels is None:
+        return None
+    return labels.get(lang) or labels["en"]
+
+
 def cta(event_id: str, studio_id: int, lang: str = "ru") -> str:
     """Готовая кнопка «открыть раздел» под событие или "" — если раздела нет."""
     url = section_url(event_id, studio_id)
-    if not url:
+    label = section_label(event_id, lang)
+    if not url or not label:
         return ""
-    i = 0 if lang == "ru" else 1
-    tab = _CLIENT_TAB.get(event_id)
-    label = _TAB_LABEL[tab][i] if tab else _PAGE_LABEL[_CRM_PAGE[event_id]][i]
     return button(label, url)
 
 
@@ -302,16 +349,22 @@ def cta(event_id: str, studio_id: int, lang: str = "ru") -> str:
 _FOOTER = {
     "ru": "Письмо отправлено автоматически — отвечать на него не нужно.",
     "en": "This is an automated message — no reply needed.",
+    "uk": "Лист надіслано автоматично — відповідати на нього не потрібно.",
+    "cs": "Tento e-mail byl odeslán automaticky — neodpovídejte na něj.",
+    "de": "Diese E-Mail wurde automatisch versendet — eine Antwort ist nicht nötig.",
 }
 
 _LEGAL = {
     "ru": ("Условия использования", "Политика конфиденциальности"),
     "en": ("Terms of Service", "Privacy Policy"),
+    "uk": ("Умови використання", "Політика конфіденційності"),
+    "cs": ("Podmínky použití", "Zásady ochrany osobních údajů"),
+    "de": ("Nutzungsbedingungen", "Datenschutzerklärung"),
 }
 
 
 def wrap(body_html: str, *, title: str | None = None, brand: str = "Velora",
-         preheader: str = "", greeting: str | None = None) -> str:
+         preheader: str = "", greeting: str | None = None, lang: str | None = None) -> str:
     """Фрагмент письма → цельный документ в стиле продукта.
 
     `title` (обычно тема письма) becomes заголовком, но только если своего в теле
@@ -324,13 +377,14 @@ def wrap(body_html: str, *, title: str | None = None, brand: str = "Velora",
 
     Уже обёрнутое письмо возвращается как есть — см. MARK.
 
-    ponytail: язык определяется наличием кириллицы в теле, а не параметром —
-    иначе lang пришлось бы протаскивать через все места отправки ради двух строк
-    подвала. Появится третий язык — станет параметром.
+    `lang` — язык подвала и юридических ссылок. Не передан — определяем по телу
+    письма, но грубо: кириллица считается русским. С появлением украинского это
+    перестало быть безобидным (украинское письмо получало русский подвал),
+    поэтому места отправки, которые язык знают, передают его явно.
     """
     if MARK in body_html:
         return body_html
-    lang = "ru" if re.search("[а-яА-Я]", body_html) else "en"
+    lang = resolve(lang) if lang else ("ru" if re.search("[а-яА-Я]", body_html) else "en")
     heading = ""
     if title and not re.search(r"<h[12]\b", body_html):
         heading = (
@@ -427,6 +481,15 @@ if __name__ == "__main__":
     assert section_url("zzz", 1) is None and cta("zzz", 1) == ""
     assert 'href="' + section_url("c5", 7) + '"' in cta("c5", 7) and "Мой абонемент" in cta("c5", 7)
     assert "My subscription" in cta("c5", 7, "en")
+
+    # Подпись раздела знает все языки продукта; незнакомый язык — английская.
+    assert section_label("c5", "cs") == "Moje permanentka"
+    assert section_label("o6", "de") == "Tarif und Zahlung"
+    assert section_label("c5", "pl") == "My subscription"
+    assert section_label("zzz") is None
+    # 25 символов — предел подписи кнопки шаблона WhatsApp (whatsapp_templates).
+    assert max(len(v) for m in (*_TAB_LABEL.values(), *_PAGE_LABEL.values())
+               for v in m.values()) <= 25, "подпись не влезет в кнопку WhatsApp"
 
     # Карта разделов не должна разъехаться с каталогом событий и с подписями.
     from services.notifier import KNOWN_EVENT_IDS

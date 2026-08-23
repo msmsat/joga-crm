@@ -23,7 +23,7 @@ from sqlalchemy.future import select
 from database import async_session_maker
 from models import Studio, StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember, User
 from services import stripe_billing, stripe_catalog
-from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE
+from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE, canon
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -1040,9 +1040,9 @@ async def _activate(db: AsyncSession, invoice: BillingInvoice) -> None:
         return
 
     plan.status = "active"
-    if invoice.plan_name in PLANS:
-        plan.plan_name = invoice.plan_name
-        limits = PLANS[invoice.plan_name]["limits"]
+    if canon(invoice.plan_name) in PLANS:
+        plan.plan_name = canon(invoice.plan_name)
+        limits = PLANS[canon(invoice.plan_name)]["limits"]
         plan.max_staff = limits["staff"] or 9999  # None (business) = безлимит
         # Отложенный апгрейд наступил — снимаем подпись «тариф сменится с …».
         # Сверяем с именем оплаченного счёта: посторонний счёт не должен гасить

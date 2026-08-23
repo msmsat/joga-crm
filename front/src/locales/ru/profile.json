@@ -16,6 +16,7 @@
     "count_one": "{{count}} студия",
     "count_few": "{{count}} студии",
     "count_many": "{{count}} студий",
+    "count_other": "{{count}} студий",
     "enter": "Перейти",
     "login": "Логин",
     "register": "Регистрация",

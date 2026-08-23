@@ -24,7 +24,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import AIUsage, StudioBillingPlan
-from routers.billing.plans import PLANS
+from routers.billing.plans import PLANS, UNLIMITED, canon
 
 # Пробный потолок поверх тарифного: N обращений на студию ЗА ВСЁ ВРЕМЯ, а не в
 # месяц. Пока ассистент не обкатан, тарифные 300–5000 вопросов в месяц — это счёт
@@ -61,11 +61,11 @@ def _limits_for(plan: StudioBillingPlan | None) -> dict:
         # от аномалии на деньгах провайдера, её нет НИ У ОДНОГО тарифа (решения
         # 6 и 9 эпика AI-5), и снимать её тарифу с минимальным платежом в 39 €
         # значит разрешить месячный счёт провайдеру больше выручки со студии.
-        return PLANS["business"]["limits"]
+        return PLANS[UNLIMITED]["limits"]
     # combo — полноценный тариф с половинным фиксом, лимиты своего plan_name.
-    name = "pro" if plan.plan_name == "free_trial" else plan.plan_name
-    # Неизвестный план (none и пр.) — Старт, а НЕ безлимит: у денег безлимит опасен.
-    return (PLANS.get(name) or PLANS["start"])["limits"]
+    # Неизвестный план (none и пр.) — нижняя ступень, а НЕ безлимит: у денег
+    # безлимит опасен.
+    return (PLANS.get(canon(plan.plan_name)) or next(iter(PLANS.values())))["limits"]
 
 
 async def _usage(db: AsyncSession, studio_id: int, since: datetime | None) -> tuple[int, int]:
@@ -162,12 +162,18 @@ if __name__ == "__main__":
         def __init__(self, mode, name):
             self.billing_mode, self.plan_name = mode, name
 
+    from routers.billing.plans import PLANS, TRIAL_PLAN
+
     assert _limits_for(None)["ai_requests"] == 0                              # нет тарифа — не безлимит
-    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 1500   # триал — по Pro
-    assert _limits_for(_P("percent", "start"))["ai_requests"] == 5000          # процент — по верхней ступени
-    assert _limits_for(_P("combo", "business"))["ai_requests"] == 5000         # комбо — свой план
-    assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300       # неизвестный — Старт
-    assert _limits_for(_P("subscription", "business"))["ai_cost_micro"] == 31_000_000
+    # Триал и прежние имена каталога читаются через canon: в БД они лежат до сих пор.
+    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == PLANS[TRIAL_PLAN]["limits"]["ai_requests"]
+    assert _limits_for(_P("subscription", "pro"))["ai_requests"] == PLANS[TRIAL_PLAN]["limits"]["ai_requests"]
+    assert _limits_for(_P("percent", "s3"))["ai_requests"] == 5000             # процент — по верхней ступени
+    assert _limits_for(_P("combo", "unlimited"))["ai_requests"] == 5000        # комбо — свой план
+    assert _limits_for(_P("subscription", "s7"))["ai_requests"] == 7 * 150     # ступень платит за свои места
+    # Неизвестный план — НИЖНЯЯ ступень, а не безлимит: у денег безлимит опасен.
+    assert _limits_for(_P("subscription", "none"))["ai_requests"] == PLANS["s2"]["limits"]["ai_requests"]
+    assert _limits_for(_P("subscription", "unlimited"))["ai_cost_micro"] == 12000 * 1200
 
     assert _month_start().day == 1 and _month_start().hour == 0
     print("ai_quota self-check ok")

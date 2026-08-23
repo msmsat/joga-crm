@@ -6,6 +6,7 @@ _render/_fmt_amount без БД, плюс staff-фан-аут _recipient/notify 
 import asyncio
 
 import services.notifier as N
+from services.i18n import LANGS
 
 
 class _FakeUser:
@@ -72,10 +73,19 @@ def test_render_unknown_event_returns_none():
     assert N._render("c99-unknown", {}, "ru", "RUB") is None
 
 
-def test_render_unknown_lang_falls_back_to_ru():
-    subject_ru, text_ru, _ = N._render("c4", {"amount": 100}, "ru", "RUB")
-    subject_de, text_de, _ = N._render("c4", {"amount": 100}, "de", "RUB")
-    assert (subject_de, text_de) == (subject_ru, text_ru)
+def test_render_unknown_lang_falls_back_to_en():
+    """Язык продукта переводится, чужой — уходит в английский, а не в русский.
+
+    Раньше фолбэком был русский: переводов было два, и «всё, что не en» значило
+    «ru». С пятью языками это перестало быть безобидным — польская студия
+    получала письмо на русском.
+    """
+    subject_en, text_en, _ = N._render("c4", {"amount": 100}, "en", "RUB")
+    subject_pl, text_pl, _ = N._render("c4", {"amount": 100}, "pl", "RUB")
+    assert (subject_pl, text_pl) == (subject_en, text_en)
+
+    subject_de, _text_de, _ = N._render("c4", {"amount": 100}, "de", "RUB")
+    assert subject_de == "Zahlung erhalten", "у немецкого есть свой перевод"
 
 
 def test_fmt_amount_none_defaults_to_zero():
@@ -113,13 +123,15 @@ def test_render_new_dead_events_t2_t5_a7_a9_o9_t7():
         "t7": {"client_name": "Матвей", "rating": 5, "lesson_name": "Хатха"},
     }
     for event_id, ctx in full_ctx.items():
-        for lang, currency in (("ru", "RUB"), ("en", "USD")):
-            res = N._render(event_id, ctx, lang, currency)
+        for lang in LANGS:
+            res = N._render(event_id, ctx, lang, "RUB" if lang == "ru" else "EUR")
             assert res is not None, (event_id, lang)
             subject, text, html = res
             assert subject and text and html == _expected_html(text)
-        # пустой контекст — не должен падать (дефолты вида context.get(...) or "")
-        assert N._render(event_id, {}, "ru", "RUB") is not None, f"{event_id}: пустой контекст ломает рендер"
+            # Незаполненная подстановка выдала бы себя фигурной скобкой в тексте.
+            assert "{" not in text and "}" not in text, (event_id, lang, text)
+            # пустой контекст — не должен падать (заглушки в notify_texts.WORDS)
+            assert N._render(event_id, {}, lang, "RUB") is not None, (event_id, lang)
 
 
 def test_render_t9_trainer_lesson_cancelled():
@@ -265,10 +277,10 @@ def test_render_c12_bonus_uses_raw_amount_and_description():
 
 def test_tg_format_every_event_renders_valid_html():
     # Telegram-версия сообщения: эмодзи + <b>заголовок</b> + тело. Проверяем ВСЕ
-    # события каталога в обоих языках — событие без эмодзи или с неэкранированным
-    # телом Telegram отвергнет с 400, и уведомление молча не дойдёт.
+    # события каталога на всех пяти языках — событие без эмодзи или с
+    # неэкранированным телом Telegram отвергнет с 400, и уведомление молча не дойдёт.
     for event_id in sorted(N.KNOWN_EVENT_IDS):
-        for lang in ("ru", "en"):
+        for lang in LANGS:
             subject, text, _ = N._render(event_id, {}, lang, "RUB")
             tg = N.tg_format(event_id, subject, text)
             assert tg.startswith(N.EVENT_EMOJI[event_id]), (event_id, tg)
@@ -294,7 +306,7 @@ def test_every_event_email_is_assembled_exactly_once():
     from services.mailer import build_message
 
     for event_id in sorted(N.KNOWN_EVENT_IDS):
-        for lang in ("ru", "en"):
+        for lang in LANGS:
             subject, _text, html = N._render(event_id, {}, lang, "RUB")
             cta = L.cta(event_id, 42, lang)
             assert cta, f"{event_id}: письму некуда вести — событие без раздела"
@@ -447,7 +459,7 @@ def test_notify_payment_skips_zero_amount_and_missing_client():
 def test_render():
     test_render_localizes_by_lang_and_currency()
     test_render_unknown_event_returns_none()
-    test_render_unknown_lang_falls_back_to_ru()
+    test_render_unknown_lang_falls_back_to_en()
     test_fmt_amount_none_defaults_to_zero()
     test_fmt_amount_unknown_currency_uses_code_as_sign()
     test_render_t1_trainer_booking()

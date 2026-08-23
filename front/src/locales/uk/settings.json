@@ -21,9 +21,11 @@
     "membersCount_one": "{{count}} учасник",
     "membersCount_few": "{{count}} учасники",
     "membersCount_many": "{{count}} учасників",
+    "membersCount_other": "{{count}} учасників",
     "clientsCount_one": "{{count}} клієнт",
     "clientsCount_few": "{{count}} клієнти",
     "clientsCount_many": "{{count}} клієнтів",
+    "clientsCount_other": "{{count}} клієнтів",
     "createNew": "Створити нову студію",
     "loadError": "Не вдалося завантажити ваші студії",
     "selectError": "Не вдалося перейти до цієї студії"
@@ -427,6 +429,7 @@
       "rows_one": "{{count}} запис",
       "rows_few": "{{count}} записи",
       "rows_many": "{{count}} записів",
+      "rows_other": "{{count}} записів",
       "loading": "Завантаження...",
       "empty": "за цей період даних немає"
     }

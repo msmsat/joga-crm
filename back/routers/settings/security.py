@@ -23,7 +23,9 @@ from schemas.settings.security import (
 )
 from services.email_layout import button
 from services.exporter import csv_stream
+from services.i18n import pick
 from services.mailer import send_email
+from services.notifier import _studio_prefs
 from services.sessions import hash_token, revoke_sessions
 
 logger = logging.getLogger(__name__)
@@ -142,6 +144,35 @@ async def _schedule_csv(db: AsyncSession, studio_id: int) -> str:
 
 _SECTION_BUILDERS = {"clients": _clients_csv, "finances": _finances_csv, "schedule": _schedule_csv}
 
+_ARCHIVE_SUBJECT = {
+    "ru": "Ваш архив данных Velora готов", "en": "Your Velora data archive is ready",
+    "uk": "Ваш архів даних Velora готовий", "cs": "Váš archiv dat Velora je připravený",
+    "de": "Ihr Velora-Datenarchiv ist fertig",
+}
+
+_ARCHIVE_BODY = {
+    "ru": ("<p>Архив данных вашей студии сформирован. Скачать его можно в "
+           "разделе «Настройки» → «Безопасность».</p>{button}"
+           "<p>Ссылка на скачивание в приложении действительна 7 дней.</p>"),
+    "en": ("<p>The data archive for your studio is ready. You can download it in "
+           "Settings → Security.</p>{button}"
+           "<p>The download link inside the app is valid for 7 days.</p>"),
+    "uk": ("<p>Архів даних вашої студії сформовано. Завантажити його можна в "
+           "розділі «Налаштування» → «Безпека».</p>{button}"
+           "<p>Посилання на завантаження в застосунку дійсне 7 днів.</p>"),
+    "cs": ("<p>Archiv dat vašeho studia je připravený. Stáhnout ho můžete v "
+           "sekci «Nastavení» → «Zabezpečení».</p>{button}"
+           "<p>Odkaz ke stažení v aplikaci platí 7 dní.</p>"),
+    "de": ("<p>Das Datenarchiv Ihres Studios ist fertig. Sie können es unter "
+           "«Einstellungen» → «Sicherheit» herunterladen.</p>{button}"
+           "<p>Der Download-Link in der App ist 7 Tage gültig.</p>"),
+}
+
+_ARCHIVE_BUTTON = {
+    "ru": "Открыть настройки", "en": "Open settings", "uk": "Відкрити налаштування",
+    "cs": "Otevřít nastavení", "de": "Einstellungen öffnen",
+}
+
 
 async def _build_and_send_archive(studio_id: int, owner_email: str, include: list[str], file_id: str) -> None:
     """Фон (`BackgroundTasks`), не Celery — очередь ради кнопки, которую
@@ -158,12 +189,13 @@ async def _build_and_send_archive(studio_id: int, owner_email: str, include: lis
                 for section in include:
                     zf.writestr(f"{section}.csv", await _SECTION_BUILDERS[section](db, studio_id))
 
+            lang, _currency = await _studio_prefs(db, studio_id)
             await send_email(
-                owner_email, "Ваш архив данных Velora готов",
-                "<p>Архив данных вашей студии сформирован. Скачать его можно в "
-                "разделе «Настройки» → «Безопасность».</p>"
-                + button("Открыть настройки", f"{WEB_APP_URL}/dashboard/settings")
-                + "<p>Ссылка на скачивание в приложении действительна 7 дней.</p>",
+                owner_email, pick(_ARCHIVE_SUBJECT, lang),
+                pick(_ARCHIVE_BODY, lang).format(
+                    button=button(pick(_ARCHIVE_BUTTON, lang), f"{WEB_APP_URL}/dashboard/settings"),
+                ),
+                lang=lang,
             )
         except Exception:
             logger.exception("export-archive: сборка не удалась (studio_id=%s)", studio_id)

@@ -1,17 +1,20 @@
 {
   "auth": {
-    "title": "Nice to meet you",
-    "subtitle": "One account for every Velora studio. Ten seconds, no more.",
-    "name_label": "Name",
-    "name_placeholder": "Valeria",
-    "phone_label": "Phone",
-    "phone_placeholder": "380671234567",
-    "name_error": "Please enter your name",
-    "phone_error": "Please check the phone number",
-    "note": "No passwords: this device stays signed in, and every studio already knows you.",
-    "submit": "Continue",
-    "submitting": "Creating your profile...",
-    "failed": "Sign-up failed. Please try again."
+    "title": "Client area",
+    "title_link": "Link email",
+    "title_other": "Another account",
+    "hint_email": "Enter your email — we'll send a sign-in code. No password needed.",
+    "hint_email_other": "Enter the email of the other account — we'll send a code. Your current session stays on this device.",
+    "hint_link": "Confirm your email and you'll be able to open this same account from a browser, not only from Telegram.",
+    "hint_code": "Code sent to {{email}}",
+    "name_placeholder": "What's your name?",
+    "send_code": "Send code",
+    "link": "Link",
+    "sign_in": "Sign in",
+    "change_email": "Change email",
+    "cancel": "Cancel",
+    "code_send_error": "Couldn't send the code",
+    "code_invalid": "Wrong code"
   },
   "studio": {
     "open": "Open",
@@ -28,7 +31,11 @@
   },
   "common": {
     "minutes": "min",
-    "classes_count": "classes"
+    "classes_count": "classes",
+    "preparing": "Setting up your space",
+    "need_link_title": "A studio link is needed",
+    "need_link_hint": "This is the client area. Open it via your studio's link — from Telegram, Instagram or its website.",
+    "request_error": "Request failed ({{status}})"
   },
   "lesson": {
     "name": {

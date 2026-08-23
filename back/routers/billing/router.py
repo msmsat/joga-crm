@@ -29,11 +29,12 @@ from schemas.settings.billing import (
 )
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED,
-    MIN_MONTHLY_FEE, TRIAL_DAYS, amount_for, tier,
+    MIN_MONTHLY_FEE, TRIAL_DAYS, TRIAL_PLAN, amount_for, canon, tier,
 )
 from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
 from activity import log_activity
 from services.exporter import csv_stream
+from services.i18n import pick
 from services.notifier import _studio_prefs, _CURRENCY_SIGNS
 from .checkout import (
     router as checkout_router, _metadata, _has_live_subscription, _live_plan_name,
@@ -64,7 +65,7 @@ _NOT_CONFIGURED = {
 # согласилась студия, было нечем. Совпадение цифр в документе с этим словарём
 # сторожит preflight (check_legal_docs).
 OFFLINE_TERMS = {
-    "version": "2026-08-3",
+    "version": "2026-08-4",
     "grace_days": offline_fee_billing.GRACE_DAYS,
     "percent_rate": PERCENT_ONLY_RATE,
     "combo_rate": COMBO_PERCENT_RATE,
@@ -114,9 +115,9 @@ def _upgrade_target(row: StudioBillingPlan) -> str | None:
     if row.billing_mode not in ("subscription", "combo") or row.status != "active":
         return None
     plan_ids = list(PLANS)
-    if row.plan_name not in plan_ids:
+    if canon(row.plan_name) not in plan_ids:
         return None
-    idx = plan_ids.index(row.plan_name)
+    idx = plan_ids.index(canon(row.plan_name))
     return plan_ids[idx + 1] if idx + 1 < len(plan_ids) else None
 
 
@@ -241,7 +242,7 @@ async def _reconcile_plan_name(db: AsyncSession, row: StudioBillingPlan) -> None
     # Цену берём из каталога — того же, по которому выставляются счета. Тариф,
     # которого в каталоге нет (free_trial, легаси-имя), сравнивать не с чем:
     # любой переход с него был бы повышением, поэтому просто уходим.
-    mirrored = PLANS.get(row.plan_name)
+    mirrored = PLANS.get(canon(row.plan_name))
     if mirrored is None or PLANS[live]["price"] > mirrored["price"]:
         logger.info(
             "Stripe billing: подписка студии %s стоит на %s, у нас %s — ступень вверх "
@@ -319,7 +320,7 @@ async def activate_trial(
     now = datetime.utcnow()
     expires_at = now + timedelta(days=TRIAL_DAYS)
     # Лимиты триала — как у Pro (services/plan_limits читает free_trial так же).
-    max_staff = PLANS["pro"]["limits"]["staff"]
+    max_staff = PLANS[TRIAL_PLAN]["limits"]["staff"]
     if row is None:
         row = StudioBillingPlan(
             studio_id=ctx.studio_id, plan_name="free_trial", status="trial",
@@ -405,7 +406,7 @@ async def get_billing_stats(
     if plan and plan.status in ("active", "past_due"):
         if plan.billing_mode == "combo":
             next_charge = plan.fixed_base_amount or 0
-        elif plan.billing_mode == "subscription" and plan.plan_name in PLANS:
+        elif plan.billing_mode == "subscription" and canon(plan.plan_name) in PLANS:
             # Период берём у последнего счёта ЗА ТАРИФ, а не у последнего вообще:
             # счёт за комиссию всегда месячный (period_months=1), и студия,
             # перешедшая с «процента» на подписку, видела бы в плашке месячную
@@ -413,7 +414,7 @@ async def get_billing_stats(
             months = next(
                 (inv.period_months for inv in reversed(paid) if inv.kind == "subscription"), 1,
             )
-            next_charge = amount_for(plan.plan_name, months)
+            next_charge = amount_for(canon(plan.plan_name), months)
         # percent: фикса нет, списывать по расписанию нечего — остаётся 0
 
     return BillingStatsRead(
@@ -464,7 +465,7 @@ async def _reconcile_subscription(
     current = stripe_catalog.parse_lookup_key(
         await stripe_billing.subscription_price_key(row.stripe_subscription_id)
     )
-    plan_id = body.plan or (current[0] if current else row.plan_name)
+    plan_id = canon(body.plan or (current[0] if current else row.plan_name))
     period_months = body.period_months or (current[1] if current else 1)
     if plan_id not in PLANS or period_months not in PERIOD_DISCOUNTS:
         logger.error(
@@ -495,13 +496,23 @@ async def activate_model(
     )).scalar_one_or_none()
     # Ступень «до» считаем ДО создания строки: иначе новый план сравнивался бы сам с
     # собой и проверка ниже пропускала бы любой тариф.
-    current_plan = row.plan_name if row is not None else "pro"
+    current_plan = row.plan_name if row is not None else TRIAL_PLAN
     # Режим «до» — по той же причине: ниже он перезаписывается телом запроса, а
     # отметка о согласии обязана знать, ВХОДИТ студия в режим или уже в нём сидит.
     previous_mode = row.billing_mode if row is not None else None
     if row is None:
         row = StudioBillingPlan(studio_id=ctx.studio_id, plan_name=current_plan)
         db.add(row)
+
+    # Каталог сверяем здесь: в схеме списка ступеней больше нет (их два десятка),
+    # а `body.plan` уходит в `row.plan_name` — то есть в лимиты студии.
+    if (body.plan is not None and body.plan not in PLANS) or (
+        body.period_months is not None and body.period_months not in PERIOD_DISCOUNTS
+    ):
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.unknown_plan",
+            "message": "Неизвестный тариф или период оплаты",
+        })
 
     # Ступень тарифа поднимает ТОЛЬКО оплаченный счёт (webhook._activate). Без этой
     # проверки владелец переключал бы себе plan_name на business одним запросом сюда —
@@ -571,7 +582,7 @@ async def activate_model(
         elif body.mode == "combo":
             disc = PERIOD_DISCOUNTS[body.period_months or 1]
             row.percent_rate = COMBO_PERCENT_RATE
-            row.fixed_base_amount = round(COMBO_FIXED[body.plan or "pro"] * (1 - disc))
+            row.fixed_base_amount = round(COMBO_FIXED[body.plan or TRIAL_PLAN] * (1 - disc))
             row.plan_name = body.plan or row.plan_name
         else:
             row.percent_rate = None
@@ -640,7 +651,12 @@ async def get_offline_fee_status(
     Гейта подписки на /billing нет — заблокированная студия обязана видеть свой
     долг и иметь возможность его закрыть, иначе блокировка стала бы тупиком.
     """
-    accrued, accrued_currency = await offline_fee_billing.accrued_total(db, ctx.studio_id)
+    # В валюте БИЛЛИНГА, а не студии: на карточке рядом стоят минимальный месячный
+    # платёж и выставленный счёт — оба в евро, и гривны накопленного не с чем было
+    # сложить. Курс — тот же, что уедет в счёт (см. accrued_in_billing_currency).
+    accrued, accrued_currency = await offline_fee_billing.accrued_in_billing_currency(
+        db, ctx.studio_id,
+    )
 
     # Оба вида постоплаты: комиссия и минимальный месячный платёж. Показать только
     # комиссию значило бы, что заблокированная за минимум студия видит долг 0 и не
@@ -882,16 +898,25 @@ async def sync_invoice(
 _EXPORT_HEADERS = {
     "ru": ["Дата", "Тариф", "Период", "Сумма, {cur}", "Метод", "Статус"],
     "en": ["Date", "Plan", "Period", "Amount, {cur}", "Method", "Status"],
+    "uk": ["Дата", "Тариф", "Період", "Сума, {cur}", "Метод", "Статус"],
+    "cs": ["Datum", "Tarif", "Období", "Částka, {cur}", "Metoda", "Stav"],
+    "de": ["Datum", "Tarif", "Zeitraum", "Betrag, {cur}", "Methode", "Status"],
 }
 _EXPORT_METHOD = {
     # `stripe` — онлайн-комиссия: денег студия не переводила, их удержал Stripe из
     # платежа клиента. Без своей подписи она уехала бы в CSV сырым ключом.
     "ru": {"card": "Карта", "iban": "IBAN", "invoice": "Счёт", "stripe": "Удержано"},
     "en": {"card": "Card", "iban": "IBAN", "invoice": "Invoice", "stripe": "Withheld"},
+    "uk": {"card": "Картка", "iban": "IBAN", "invoice": "Рахунок", "stripe": "Утримано"},
+    "cs": {"card": "Karta", "iban": "IBAN", "invoice": "Faktura", "stripe": "Strženo"},
+    "de": {"card": "Karte", "iban": "IBAN", "invoice": "Rechnung", "stripe": "Einbehalten"},
 }
 _EXPORT_STATUS = {
     "ru": {"paid": "Оплачено", "pending": "Ожидает", "failed": "Ошибка", "refunded": "Возврат"},
     "en": {"paid": "Paid", "pending": "Pending", "failed": "Failed", "refunded": "Refunded"},
+    "uk": {"paid": "Оплачено", "pending": "Очікує", "failed": "Помилка", "refunded": "Повернення"},
+    "cs": {"paid": "Zaplaceno", "pending": "Čeká", "failed": "Chyba", "refunded": "Vráceno"},
+    "de": {"paid": "Bezahlt", "pending": "Ausstehend", "failed": "Fehler", "refunded": "Erstattet"},
 }
 
 
@@ -918,7 +943,7 @@ async def export_invoices_csv(
         select(BillingInvoice).where(*filters).order_by(BillingInvoice.id.desc())
     )).scalars().all()
 
-    header = [h.format(cur=sign) for h in _EXPORT_HEADERS[lang]]
+    header = [h.format(cur=sign) for h in pick(_EXPORT_HEADERS, lang)]
 
     def _rows():
         for inv in rows:
@@ -927,8 +952,8 @@ async def export_invoices_csv(
                 inv.plan_name,
                 inv.period_months,
                 f"{inv.amount / 100:.2f}",
-                _EXPORT_METHOD[lang].get(inv.payment_method, inv.payment_method or ""),
-                _EXPORT_STATUS[lang].get(inv.status, inv.status),
+                pick(_EXPORT_METHOD, lang).get(inv.payment_method, inv.payment_method or ""),
+                pick(_EXPORT_STATUS, lang).get(inv.status, inv.status),
             ]
 
     fname = f"velora-invoices-{datetime.utcnow().strftime('%Y-%m-%d')}.csv"
@@ -1107,11 +1132,13 @@ if __name__ == "__main__":
     assert _months_between(datetime(2026, 7, 27), datetime(2026, 7, 27)) == 0
 
     # Кнопка «Улучшить тариф» (задача 2): fix/combo + активна + не максимальный тариф → апгрейд есть.
-    _row = lambda **kw: SimpleNamespace(**{"billing_mode": "subscription", "status": "active", "plan_name": "pro", **kw})
-    assert _upgrade_target(_row()) == "business"
-    assert _upgrade_target(_row(billing_mode="combo")) == "business"
+    _row = lambda **kw: SimpleNamespace(**{"billing_mode": "subscription", "status": "active", "plan_name": "s7", **kw})
+    assert _upgrade_target(_row()) == "s8"                             # следующая ступень — плюс место
+    assert _upgrade_target(_row(billing_mode="combo")) == "s8"
     assert _upgrade_target(_row(billing_mode="percent")) is None       # % от оборота — апгрейда нет
-    assert _upgrade_target(_row(plan_name="business")) is None         # максимальный тариф
+    assert _upgrade_target(_row(plan_name="unlimited")) is None        # максимальная ступень
+    # Легаси-имя читается каноническим: студия на «pro» видит апгрейд, а не пустоту.
+    assert _upgrade_target(_row(plan_name="pro")) == _upgrade_target(_row(plan_name=TRIAL_PLAN))
     assert _upgrade_target(_row(status="past_due")) is None            # неоплаченный не апгрейдим
 
     # Ступени тарифа переехали в plans.tier — их сравнивает не только activate_model,
@@ -1119,13 +1146,13 @@ if __name__ == "__main__":
 
     # Экономия за период считается по каталогу с ОБЕИХ сторон и не зависит от НДС,
     # который Stripe накинул сверху (из-за него прежняя формула показывала ноль).
-    assert _period_saving("pro", 1) == 0                       # помесячно скидки нет
-    assert _period_saving("pro", 12) == 9900 * 12 - 83160      # 30% за год
-    assert _period_saving("start", 6) == 3900 * 6 - 18720      # 20% за полгода
-    assert _period_saving("business", 24) > _period_saving("business", 12)
+    assert _period_saving("s2", 1) == 0                        # помесячно скидки нет
+    assert _period_saving("s2", 12) == 1500 * 12 - 10800       # 40% за год
+    assert _period_saving("s2", 6) == 1500 * 6 - 6750          # 25% за полгода
+    assert _period_saving("unlimited", 12) > _period_saving("unlimited", 6)
     # Счёт за комиссию и легаси-строки не роняют плашку и ничего не «экономят».
     assert _period_saving("offline_fee", 1) == 0
-    assert _period_saving("pro", 3) == 0
+    assert _period_saving("s2", 24) == 0                       # периода 24 в каталоге нет
 
     # CSV-экранирование/BOM теперь проверяет services/exporter.py (задача 4) — не дублируем тут.
     print("billing router self-check ok")

@@ -5,12 +5,19 @@ import type { CoffeeState, LessonResponse } from '../api/lessons';
 import { useTelegram } from './useTelegram';
 import { spawnPetals } from '../lib/petals';
 import { notify } from '../lib/notify';
+import { getSession } from '../lib/session';
 
 interface Options {
   /** Списки этой страницы устарели — перечитать (главная тянет ещё и «ближайшее»). */
   onChanged: () => void;
   /** Свои подписи страницы: у главной и расписания они разные. */
   messages: { bookError: string; cancelError: string; cancelSuccess: string };
+  /**
+   * Гость дошёл до брони: расписание он смотрел без аккаунта, а место студия
+   * держит на конкретного человека. Поднимает существующий вход (App) и
+   * повторяет ту же бронь после него — тем же приёмом, что и `retryAfterPhone`.
+   */
+  onNeedAuth?: (retry: () => void) => void;
 }
 
 /**
@@ -20,13 +27,16 @@ interface Options {
  *
  * Два ответа сервера здесь не ошибки, а недостающие предусловия, и каждое
  * открывает свою панель вместо тоста:
+ *   нет сессии — занятие выбирал гость → существующий вход (`onNeedAuth`),
+ *         после него повторяем ту же бронь. Это единственное место, где
+ *         регистрация обязательна: смотреть и выбирать можно без неё;
  *   428 — нет телефона (запись с оплатой на месте) → PhoneSheet, после
  *         сохранения повторяем ту же бронь: занятие и коврик остались в состоянии;
  *   402 — студия требует абонемент («Предоплата при записи») → лист с текстом
  *         сервера и кнопкой в покупку. Тост тут был тупиком: человеку сообщали,
  *         что нужен абонемент, и не давали способа его купить.
  */
-export function useLessonBooking({ onChanged, messages }: Options) {
+export function useLessonBooking({ onChanged, messages, onNeedAuth }: Options) {
   const { t } = useTranslation();
   const { tg, vibrateMedium } = useTelegram();
 
@@ -66,6 +76,14 @@ export function useLessonBooking({ onChanged, messages }: Options) {
 
   const pay = async () => {
     if (!activeLesson || !selectedSpot) return;
+
+    // Момент, ради которого регистрацию и отодвигали: до него занятие можно
+    // было и посмотреть, и выбрать. Лист брони при этом не закрываем — занятие
+    // и коврик обязаны дождаться человека с той стороны входа.
+    if (!getSession() && onNeedAuth) {
+      onNeedAuth(() => void pay());
+      return;
+    }
 
     setIsProcessing(true);
     try {

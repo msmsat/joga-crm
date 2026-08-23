@@ -196,7 +196,7 @@ def test_combo_renews_at_the_half_price():
     иначе студия платит полный тариф за половинный."""
     from routers.billing.plans import amount_for, combo_amount_for
 
-    assert combo_amount_for("pro", 12) * 2 == amount_for("pro", 12)
+    assert combo_amount_for("s15", 12) * 2 == amount_for("s15", 12)
 
 
 if __name__ == "__main__":

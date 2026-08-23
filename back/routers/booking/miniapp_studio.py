@@ -15,7 +15,7 @@ from sqlalchemy.future import select
 from database import get_db
 from ratelimit import limiter
 from models import (
-    BookingChannelConfig, BranchWorkingHours, Client, OnlineChannel, Service, Studio,
+    BookingChannelConfig, BranchWorkingHours, OnlineChannel, Service, Studio,
     StudioBranch, SubscriptionPackage,
 )
 from schemas._base import BaseSchema
@@ -23,7 +23,7 @@ from services.booking_rules import load_rules
 from services.notifier import _fmt_amount
 from services.pricing import resolve_price
 
-from .miniapp import get_current_client
+from .miniapp import Viewer, get_viewer
 
 router = APIRouter()
 
@@ -181,12 +181,21 @@ async def get_studio_brand(
 @limiter.limit("30/minute")
 async def get_studio_catalog(
     request: Request,
-    client: Client = Depends(get_current_client),
+    viewer: Viewer = Depends(get_viewer),
     db: AsyncSession = Depends(get_db),
 ):
-    studio_id = client.studio_id
+    """Витрина студии. Токен не обязателен: занятие выбирают до регистрации, и
+    гость, пришедший по ссылке `/s/<id>`, обязан увидеть филиалы, услуги и
+    правила записи. Клиентского здесь ровно одно поле — цена пакета со скидкой
+    (см. ниже), и она считается только когда клиент есть."""
+    studio_id = viewer.studio_id
 
-    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
+    studio = (await db.execute(
+        select(Studio).where(Studio.id == studio_id)
+    )).scalar_one_or_none()
+    # Гость называет студию сам — id из ссылки может быть каким угодно.
+    if studio is None:
+        raise HTTPException(status_code=404, detail="Студия не найдена")
     rules = await load_rules(db, studio_id)
 
     telegram_channel = (await db.execute(
@@ -238,10 +247,16 @@ async def get_studio_catalog(
     # суммы (min_purchase_amount у студийной, фиксированный оффер в деньгах).
     # ponytail: N × resolve_price при N ~ 3-6 пакетах; если каталог разрастётся —
     # тянуть конфиги один раз и считать скидку в памяти.
-    resolved_prices = {
-        package.id: await resolve_price(db, studio_id, client.id, package.price)
-        for package in packages
-    }
+    #
+    # Гостю считать нечего: скидки привязаны к карточке клиента, которой ещё нет.
+    # Он видит базовую цену — ту же, что увидит новичок сразу после входа.
+    final_prices: dict[int, int] = {}
+    for package in packages:
+        final_prices[package.id] = (
+            (await resolve_price(db, studio_id, viewer.client.id, package.price)).final_price
+            if viewer.client is not None
+            else package.price
+        )
 
     return StudioCatalog(
         studio=StudioInfo(
@@ -299,9 +314,9 @@ async def get_studio_catalog(
                 price=package.price,
                 price_str=_fmt_amount(package.price, currency),
                 duration_days=package.duration_days,
-                final_price=resolved_prices[package.id].final_price,
-                final_price_str=_fmt_amount(resolved_prices[package.id].final_price, currency),
-                discount_label=_discount_label(package.price, resolved_prices[package.id].final_price),
+                final_price=final_prices[package.id],
+                final_price_str=_fmt_amount(final_prices[package.id], currency),
+                discount_label=_discount_label(package.price, final_prices[package.id]),
             )
             for package in packages
         ],

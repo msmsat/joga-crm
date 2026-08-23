@@ -35,7 +35,7 @@ _UNDELIVERABLE = (
 
 def build_message(
     to: str, subject: str, html: str, sender: str | None, brand: str | None,
-    greeting: str | None = None, calendar: bytes | None = None,
+    greeting: str | None = None, calendar: bytes | None = None, lang: str | None = None,
 ) -> EmailMessage:
     """Готовое письмо: оболочка вокруг фрагмента + текстовая версия рядом с HTML.
 
@@ -44,9 +44,12 @@ def build_message(
     добавляется последним — иначе text/plain и text/html перестали бы быть
     альтернативами друг другу и клиент показал бы обе.
 
+    `lang` — язык подвала оболочки; не передан — определяется по тексту письма
+    (email_layout.wrap).
+
     Отдельно от отправки, чтобы сборку можно было проверить, не поднимая SMTP.
     """
-    body = email_layout.wrap(html, title=subject, brand=brand or "Velora", greeting=greeting)
+    body = email_layout.wrap(html, title=subject, brand=brand or "Velora", greeting=greeting, lang=lang)
 
     message = EmailMessage()
     message["From"] = sender
@@ -71,12 +74,14 @@ def is_deliverable(to: str) -> bool:
 
 async def send_email(
     to: str, subject: str, html: str, sender: str | None = None, brand: str | None = None,
-    greeting: str | None = None, calendar: bytes | None = None,
+    greeting: str | None = None, calendar: bytes | None = None, lang: str | None = None,
 ) -> bool:
     """Возвращает True, если письмо ушло (или дев-фолбэк его напечатал).
     `brand` — имя в шапке письма: студия пишет клиенту от своего имени, а не
     от имени CRM, которой он не покупал. Не передан — письмо платформы (Velora).
-    `greeting` — обращение по имени, `calendar` — вложенный .ics с занятием."""
+    `greeting` — обращение по имени, `calendar` — вложенный .ics с занятием.
+    `lang` — язык подвала оболочки; не передан — определяется по тексту письма
+    (email_layout.wrap), что для украинского даёт русский подвал."""
     if not is_deliverable(to):
         logger.warning("mailer: %s — зарезервированный домен (RFC 2606/6761), не отправляем", to)
         return False
@@ -96,7 +101,7 @@ async def send_email(
         return True
 
     await aiosmtplib.send(
-        build_message(to, subject, html, sender, brand, greeting, calendar),
+        build_message(to, subject, html, sender, brand, greeting, calendar, lang),
         hostname=host,
         port=port,
         username=user,

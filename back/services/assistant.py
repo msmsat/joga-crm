@@ -34,6 +34,7 @@ from services.ai_tools import (
     tools_for,
 )
 from services.ai_usage import record_usage
+from services.i18n import pick, resolve
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,21 @@ _FALLBACK_REPLIES = {
         "Velora AI 3.5 is arriving in the next update — I'm already saving our conversation and will reply properly soon.",
         "The real Velora AI is coming very soon — for now I'm carefully keeping track of everything you write.",
         "Velora AI 3.5 isn't connected yet, but this conversation's history is safely saved.",
+    ],
+    "uk": [
+        "Velora AI 3.5 підключається в найближчому оновленні — я вже зберігаю ваші діалоги й скоро відповім по суті.",
+        "Справжній інтелект Velora AI з'явиться дуже скоро — а поки я уважно все записую й нічого не гублю.",
+        "Модель Velora AI 3.5 ще не підключена, але історія цього діалогу вже збережена й нікуди не зникне.",
+    ],
+    "cs": [
+        "Velora AI 3.5 se připojí v nejbližší aktualizaci — vaše konverzace už ukládám a brzy odpovím k věci.",
+        "Skutečná inteligence Velora AI přijde velmi brzy — zatím si vše pečlivě zapisuji a nic neztrácím.",
+        "Model Velora AI 3.5 zatím není připojený, ale historie této konverzace je uložená a nikam nezmizí.",
+    ],
+    "de": [
+        "Velora AI 3.5 kommt mit dem nächsten Update — Ihre Dialoge speichere ich bereits und antworte bald inhaltlich.",
+        "Die echte Velora-KI ist sehr bald da — bis dahin halte ich alles sorgfältig fest.",
+        "Velora AI 3.5 ist noch nicht angebunden, der Verlauf dieses Gesprächs ist aber gespeichert.",
     ],
 }
 
@@ -115,14 +131,13 @@ async def _maybe_refresh_instagram_token(settings: StudioAISettings, db: AsyncSe
 
 
 def _resolve_language(settings_language: str, studio_language: str | None) -> str:
-    lang = (settings_language if settings_language != "auto" else studio_language) or "ru"
-    lang = lang.split("-")[0]
-    return lang if lang in _FALLBACK_REPLIES else "ru"
+    """Язык ответа: выбранный в настройках ассистента, «auto» — язык студии."""
+    return resolve((settings_language if settings_language != "auto" else studio_language) or "ru")
 
 
 def _fallback_reply(settings_language: str, studio_language: str | None) -> str:
     lang = _resolve_language(settings_language, studio_language)
-    return random.choice(_FALLBACK_REPLIES[lang])
+    return random.choice(pick(_FALLBACK_REPLIES, lang))
 
 
 @dataclass

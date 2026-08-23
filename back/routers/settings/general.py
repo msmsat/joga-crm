@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -37,14 +37,23 @@ async def get_general_settings(
 @router.patch("/general", response_model=GeneralRead)
 async def update_general_settings(
     body: GeneralUpdate,
+    background: BackgroundTasks,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     studio = await _get_studio(ctx.studio_id, db)
+    was_lang = studio.language
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(studio, field, value)
     await db.commit()
     await db.refresh(studio)
+    if studio.language != was_lang:
+        # Шаблоны WhatsApp заведены на WABA на языке студии, и на новом языке их
+        # там просто нет — Meta откажет, а уведомления замолчат. Досоздаём фоном:
+        # это 40 запросов к Graph, в ответ на сохранение настроек они не влезают.
+        from services.whatsapp import sync_templates_on_connect
+
+        background.add_task(sync_templates_on_connect, ctx.studio_id)
     return studio
 
 

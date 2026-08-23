@@ -226,28 +226,24 @@
   .blPane :global(.bl-combo-sum) { gap: 10px !important; }
   .blPane :global(.bl-combo-sum) > span { font-size: 12.5px !important; }
 
-  /* ── Комбо-режимы: три в ряд ────────────────────────────────────────────── */
-  .blPane :global(.bl-combo) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
-  .blPane :global(.bl-combo) button { padding: 10px 7px !important; border-radius: 12px !important; }
-  .blPane :global(.bl-combo-name) { font-size: 11px !important; margin-bottom: 6px !important; }
-  .blPane :global(.bl-combo-price) { margin-bottom: 6px !important; }
-  .blPane :global(.bl-combo-price) span:first-child { font-size: 15px !important; }
-  /* «/мес» подписывает все три плитки одинаково — в колонке 90px это перенос
-     строки ради слова, которое и так стоит в заголовке секции. */
-  .blPane :global(.bl-combo-price) span:last-child { display: none; }
-  .blPane :global(.bl-combo) button > span { font-size: 9.5px !important; padding: 2px 6px !important; }
-
-  /* ── Тарифы: одна строка лимита сотрудников — плана хватает всегда ───────── */
-  .blPane :global(.bl-plans) { gap: 8px !important; }
-  .blPane :global(.bl-plan) { padding: 12px !important; border-radius: 14px !important; }
-  .blPane :global(.bl-plan-feats) { margin-bottom: 12px !important; }
-  .blPane :global(.bl-plan-feats) span { font-size: 12px !important; }
-  /* Плитка-кружок тарифа: цвет тарифа несёт и рамка карточки */
-  .blPane :global(.bl-plan) > div:first-child { margin-bottom: 8px !important; }
-  .blPane :global(.bl-plan) > div:first-child > div:first-child { width: 30px !important; height: 30px !important; border-radius: 10px !important; }
-  .blPane :global(.bl-plan) span[style*="font-size: 32px"] { font-size: 23px !important; }
-  .blPane :global(.bl-plan) > div[style*="height: 1px"] { margin: 10px 0 !important; }
-  .blPane :global(.bl-plan) > button { padding: 10px !important; font-size: 12.5px !important; }
+  /* ── Линия мест: рельс вбок ──────────────────────────────────────────────
+     Двадцать кнопок по 36px не помещаются ни в какой телефон, а сжимать их до
+     нечитаемых точек бессмысленно: ряд листается пальцем, как ряды вкладок и
+     чипов по всему продукту. Дорожка под кнопками при этом снимается — она
+     позиционирована по КОНТЕЙНЕРУ и при прокрутке ряда разъехалась бы с ним. */
+  .blPane :global(.bl-seats-line) > div[style*="position: absolute"] { display: none !important; }
+  .blPane :global(.bl-seats) {
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 3px 2px;
+  }
+  .blPane :global(.bl-seats)::-webkit-scrollbar { display: none; }
+  .blPane :global(.bl-seats-head) { margin-bottom: 12px !important; }
+  .blPane :global(.bl-seats-sum) { margin-top: 14px !important; align-items: center !important; }
+  .blPane :global(.bl-seats-price) span:first-child { font-size: 26px !important; }
 
   /* ── Отзывы: рельс вбок вместо трёх карточек друг под другом ────────────── */
   .blPane :global(.bl-trust) { padding: 13px !important; border-radius: 14px !important; }

@@ -21,9 +21,11 @@
     "membersCount_one": "{{count}} сотрудник",
     "membersCount_few": "{{count}} сотрудника",
     "membersCount_many": "{{count}} сотрудников",
+    "membersCount_other": "{{count}} сотрудников",
     "clientsCount_one": "{{count}} клиент",
     "clientsCount_few": "{{count}} клиента",
     "clientsCount_many": "{{count}} клиентов",
+    "clientsCount_other": "{{count}} клиентов",
     "createNew": "Создать новую студию",
     "loadError": "Не удалось загрузить список студий",
     "selectError": "Не удалось переключиться на эту студию"
@@ -427,6 +429,7 @@
       "rows_one": "{{count}} запись",
       "rows_few": "{{count}} записи",
       "rows_many": "{{count}} записей",
+      "rows_other": "{{count}} записей",
       "loading": "Загрузка...",
       "empty": "нет данных за период"
     }

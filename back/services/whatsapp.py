@@ -45,7 +45,8 @@ _APPROVED = "APPROVED"
 # отказала либо шаблон отключён за качество. Остальное (PENDING, IN_APPEAL, PENDING_
 # DELETION) — «ещё не решено», и это ждёт, а не хоронит событие.
 _DEAD_STATUSES = frozenset({"REJECTED", "PAUSED", "DISABLED"})
-# Наших шаблонов 76 (38 событий x 2 языка) — одной страницы хватает с запасом.
+# Наших шаблонов 40 (по одному на событие, на языке студии) плюс версии под
+# прежними именами и собственные шаблоны студии — одной страницы хватает с запасом.
 # ponytail: без обхода paging; шаблон, не попавший в ответ, трактуется как
 # «статус неизвестен» и отправку НЕ блокирует, поэтому усечение безопасно.
 _TEMPLATE_PAGE_LIMIT = 250
@@ -163,8 +164,19 @@ async def refresh_payment_status(db: AsyncSession, integ: StudioIntegration) -> 
     return config["payment_connected"]
 
 
-async def sync_templates(token: str, waba_id: str) -> dict[str, int]:
-    """Заводит на WABA студии все 38 шаблонов x 2 языка. -> счётчики итогов.
+async def sync_templates(
+    token: str, waba_id: str, *, studio_id: int | None = None, langs: tuple[str, ...] | None = None,
+) -> dict[str, int]:
+    """Заводит на WABA студии все 40 шаблонов на нужных языках. -> счётчики итогов.
+
+    langs — какие языковые версии создавать; по умолчанию все пять. Вызов из
+    студии передаёт ОДИН язык — её собственный (sync_templates_for_studio):
+    остальные четыре ушли бы на модерацию, заняли место в лимите шаблонов WABA
+    и потом мозолили бы владельцу глаза отказами на языках, которых его студия
+    в глаза не видела.
+
+    studio_id нужен кнопке «открыть раздел»: её адрес свой у каждой студии
+    (whatsapp_templates.url_button). Без него шаблоны создаются без кнопки.
 
     Идемпотентна: уже существующий шаблон Meta отклоняет ошибкой, и это не сбой —
     просто считаем его в `exists`. Создание никому НЕ пишет: шаблон уходит на
@@ -172,7 +184,8 @@ async def sync_templates(token: str, waba_id: str) -> dict[str, int]:
 
     ⚠️ Удалять шаблоны нельзя мимоходом: после удаления Meta блокирует повторное
     использование ИМЕНИ на заметный срок («Message template language is being
-    deleted»), и канал останется без шаблона.
+    deleted»), и канал останется без шаблона. Поменялся текст шаблона — меняется
+    префикс имени (whatsapp_templates._NAME_PREFIX), а не удаляется старый.
     """
     from services.whatsapp_templates import WA_LANGS, WA_TEMPLATES, build_payload
 
@@ -183,11 +196,11 @@ async def sync_templates(token: str, waba_id: str) -> dict[str, int]:
     headers = {"Authorization": f"Bearer {token}"}
     async with aiohttp.ClientSession(timeout=timeout) as session:
         for event_id in WA_TEMPLATES:
-            for lang in WA_LANGS:
+            for lang in (langs or WA_LANGS):
                 try:
                     async with session.post(
                         f"{GRAPH}/{waba_id}/message_templates",
-                        json=build_payload(event_id, lang), headers=headers,
+                        json=build_payload(event_id, lang, studio_id), headers=headers,
                     ) as resp:
                         if resp.status == 200:
                             result["created"] += 1
@@ -207,9 +220,19 @@ async def sync_templates(token: str, waba_id: str) -> dict[str, int]:
 
 
 async def sync_templates_for_studio(db: AsyncSession, integ: StudioIntegration) -> dict[str, int]:
-    """sync_templates + запись итога и свежих статусов в config. Коммитит сам."""
+    """sync_templates на языке студии + запись итога и статусов в config. Коммитит сам.
+
+    Язык берём из карточки студии каждый раз заново: владелец мог сменить его
+    после подключения номера, и тогда эта же ручка досоздаёт версии шаблонов на
+    новом языке (старые остаются лежать, мешать они не мешают).
+    """
+    from services.notifier import _wa_lang
+
     config = dict(integ.config or {})
-    result = await sync_templates(config.get("token", ""), config.get("waba_id") or "")
+    result = await sync_templates(
+        config.get("token", ""), config.get("waba_id") or "",
+        studio_id=integ.studio_id, langs=(await _wa_lang(db, integ.studio_id),),
+    )
     config["templates_synced_at"] = datetime.utcnow().isoformat()
     config["templates_result"] = result
     integ.config = config  # целиком: JSON-колонка без MutableDict мутацию не заметит
@@ -219,14 +242,16 @@ async def sync_templates_for_studio(db: AsyncSession, integ: StudioIntegration) 
 
 
 async def sync_templates_on_connect(studio_id: int) -> None:
-    """Автосинхронизация шаблонов сразу после подключения номера (BackgroundTasks).
+    """Автосинхронизация шаблонов фоном (BackgroundTasks): после подключения
+    номера и после смены языка студии (routers/settings/general).
 
     Зачем автоматом. Без шаблонов канал выглядит рабочим — статус зелёный, тумблер
     включается, — но не уходит ни одно уведомление: написать первым Meta даёт только
     по одобренному шаблону. Пока это висело на кнопке «Подготовить шаблоны», студия
     после Embedded Signup получала мёртвый канал и узнавала об этом от клиента.
+    Смена языка — тот же случай: на новом языке версий шаблонов на WABA ещё нет.
 
-    Зачем фоном: 76 запросов к Meta не влезают в HTTP-ответ — редирект из мастера
+    Зачем фоном: 40 запросов к Meta не влезают в HTTP-ответ — редирект из мастера
     висел бы минуту. Своя сессия — запрос, который нас запустил, свою уже закрыл.
     Исключения гасим здесь же: фоновая задача падает уже после ответа, и её падение
     ничем не поможет ни пользователю, ни вызывающему коду.
@@ -250,7 +275,7 @@ def status_key(name: str, lang: str) -> str:
 
 
 async def fetch_template_statuses(token: str, waba_id: str) -> dict[str, str] | None:
-    """{"vlr_c1:ru": "APPROVED", ...}, либо None — если спросить не удалось.
+    """{"vlr2_c1:ru": "APPROVED", ...}, либо None — если спросить не удалось.
 
     None это НЕ «ничего не одобрено» (та же логика, что в fetch_health): сетевой
     сбой не повод считать канал сломанным, вызывающий оставляет прежние значения.
@@ -316,10 +341,16 @@ def template_summary(config: dict | None) -> dict | None:
     rejected_events — id событий (c1, o3, …), а не имена шаблонов: интерфейс знает
     их человеческие названия из матрицы уведомлений и может показать, какие именно
     уведомления сейчас мертвы.
-    """
-    from services.whatsapp_templates import event_from_template_name  # цикл: он тянет notifier
 
-    statuses = (config or {}).get("templates_status")
+    Считаем ТОЛЬКО свои шаблоны текущего поколения (is_our_template). На WABA
+    лежат и собственные шаблоны студии, и версии под прежним префиксом имени —
+    и те и другие раздували бы «одобрено N» ровно тогда, когда владельцу важно
+    понять, готовы ли уведомления Velora.
+    """
+    from services.whatsapp_templates import event_from_template_name, is_our_template  # цикл: он тянет notifier
+
+    statuses = {k: v for k, v in ((config or {}).get("templates_status") or {}).items()
+                if is_our_template(k.split(":")[0])}
     if not statuses:
         return None
     rejected_events: set[str] = set()
@@ -486,9 +517,9 @@ if __name__ == "__main__":
 
     mixed = {
         "templates_status": {
-            "vlr_c1:ru": "APPROVED", "vlr_c1:en": "APPROVED",
-            "vlr_c5:ru": "PENDING", "vlr_c5:en": "APPROVED",
-            "vlr_o3:ru": "REJECTED", "vlr_o3:en": "PAUSED",
+            "vlr2_c1:ru": "APPROVED", "vlr2_c1:en": "APPROVED",
+            "vlr2_c5:ru": "PENDING", "vlr2_c5:en": "APPROVED",
+            "vlr2_o3:ru": "REJECTED", "vlr2_o3:en": "PAUSED",
         },
         "templates_checked_at": "2026-08-07T10:00:00",
     }
@@ -513,17 +544,17 @@ if __name__ == "__main__":
 
     # Гейт отправки. Ни один из этих случаев не должен ходить в БД, поэтому db=None:
     # если гейт полезет за интеграцией — тест упадёт с AttributeError, а не соврёт.
-    _tpl = {"name": "vlr_c1", "language": {"code": "ru"}}
+    _tpl = {"name": "vlr2_c1", "language": {"code": "ru"}}
     # Свободный текст — не наша забота.
     assert asyncio.run(template_approved(None, 1, {}, None)) is True
     # Статусов не читали ни разу — не запираем канал.
     assert asyncio.run(template_approved(None, 1, {}, _tpl)) is True
     # Шаблона нет в ответе Meta — «не знаем», отказывать будет сама Meta.
     assert asyncio.run(template_approved(
-        None, 1, {"templates_status": {"vlr_c2:ru": "APPROVED"}}, _tpl)) is True
+        None, 1, {"templates_status": {"vlr2_c2:ru": "APPROVED"}}, _tpl)) is True
     # Одобрен — пропускаем, не тратя ни одного запроса.
     assert asyncio.run(template_approved(
-        None, 1, {"templates_status": {"vlr_c1:ru": "APPROVED"}}, _tpl)) is True
+        None, 1, {"templates_status": {"vlr2_c1:ru": "APPROVED"}}, _tpl)) is True
     # Отклонён — блокируем. Здесь гейт идёт перечитывать статус, поэтому подсовываем
     # заглушку БД без строки интеграции: перечитать неоткуда, решение остаётся «нет».
     class _EmptyDb:
@@ -535,7 +566,7 @@ if __name__ == "__main__":
 
     # Одобрен другой язык того же имени — этот всё равно не поедет.
     assert asyncio.run(template_approved(
-        _EmptyDb(), 1, {"templates_status": {"vlr_c1:ru": "REJECTED", "vlr_c1:en": "APPROVED"}},
+        _EmptyDb(), 1, {"templates_status": {"vlr2_c1:ru": "REJECTED", "vlr2_c1:en": "APPROVED"}},
         _tpl)) is False
 
     # Гейт ВКЛЮЧЕНИЯ: три условия и порядок, в котором студия их закрывает.
@@ -559,7 +590,7 @@ if __name__ == "__main__":
         finally:
             refresh_payment_status, refresh_template_statuses, wa_integration = orig
 
-    _ok_templates = {"templates_status": {"vlr_c1:ru": "APPROVED"}}
+    _ok_templates = {"templates_status": {"vlr2_c1:ru": "APPROVED"}}
     # Ни одной проверки не пройдено -> первым называем карту: с неё начинают.
     assert asyncio.run(_blocker({})) == "wa_payment_required"
     # Карта есть, верификации нет -> вторая ступень, а не «оплата».
@@ -568,7 +599,7 @@ if __name__ == "__main__":
     # Ровно состояние dev-студии на 07.08.2026: 76 шаблонов, 0 одобренных.
     assert asyncio.run(_blocker({
         "payment_connected": True, "business_verified": True,
-        "templates_status": {"vlr_c1:ru": "PENDING", "vlr_c1:en": "PENDING"},
+        "templates_status": {"vlr2_c1:ru": "PENDING", "vlr2_c1:en": "PENDING"},
     })) == "wa_templates_pending"
     # Статусы не читали вовсе — тоже не пускаем: «не знаем» это не «работает».
     assert asyncio.run(_blocker({"payment_connected": True, "business_verified": True})) == "wa_templates_pending"

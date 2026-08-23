@@ -1,13 +1,13 @@
 // 1:1 с back/schemas/settings/billing.py — бэкенд диктует структуру.
 
 export interface PlanLimits {
-  staff: number | null   // null = безлимит (business)
+  staff: number | null   // null = безлимит («unlimited»)
   clients: number | null
   ai_requests: number | null   // обращений к ИИ в месяц; у Business это число, а не безлимит
 }
 
 export interface Plan {
-  id: string             // start | pro | business
+  id: string             // s2 … s20 | unlimited
   name: string
   price: number          // месячная цена в копейках
   limits: PlanLimits
@@ -15,7 +15,7 @@ export interface Plan {
 
 export interface PlansCatalog {
   plans: Plan[]
-  period_discounts: Record<number, number>   // {1: 0, 6: 0.20, 12: 0.30, 24: 0.40}
+  period_discounts: Record<number, number>   // {1: 0, 3: 0.15, 6: 0.25, 12: 0.40}
   currency: string                           // валюта подписки (EUR), не валюта кассы студии
   // Минимальный месячный платёж тарифа «только процент», в копейках. Месяц, в
   // котором платформа заработала на студии меньше этой суммы, добирается счётом.
@@ -81,8 +81,8 @@ export interface AutopaySettings {
 
 export interface ActivateModelRequest {
   mode: 'subscription' | 'percent' | 'combo'
-  plan?: 'start' | 'pro' | 'business'
-  period_months?: 1 | 6 | 12 | 24
+  plan?: string                // id ступени каталога, например «s7»
+  period_months?: number       // какие бывают — говорит каталог (period_discounts)
   /** Согласие на постоплату комиссии. Обязательно для percent/combo — иначе бэк даёт 422. */
   accept_offline_terms?: boolean
 }
@@ -175,8 +175,8 @@ export interface PaymentCard {
 }
 
 export interface CheckoutRequest {
-  plan: 'start' | 'pro' | 'business'
-  period_months: 1 | 6 | 12 | 24
+  plan: string             // id ступени каталога: «s2» … «s20» | «unlimited»
+  period_months: number    // какие бывают — говорит каталог (period_discounts)
   // Поля `apply` нет: переход всегда немедленный, с зачётом остатка текущего
   // периода. Отложенный переход «с начала следующего периода» убран.
   /** Покупается модель «фикс + процент» (половинный фикс + % с оборота).
