@@ -90,6 +90,7 @@ export default function OfflineFeeCard({ plan }: Props) {
 
   return (
     <div
+      className="bl-banner"
       style={{
         margin: '0 32px 20px', padding: '20px 24px', borderRadius: '16px',
         background: 'var(--card)', border: `1px solid ${overdue ? accent : 'var(--border)'}`,

@@ -20,6 +20,7 @@ import json
 import logging
 import os
 import time
+import uuid
 from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
@@ -187,6 +188,40 @@ def _row(obj) -> dict:
 
 # ─── Опознание отправителя ───────────────────────────────────────────────────
 
+async def _before_network(db) -> None:
+    """Завершить транзакцию ПЕРЕД сетевым вызовом.
+
+    Ход агента идёт до десяти минут. Открытая всё это время транзакция — это
+    занятое соединение и строка `idle in transaction`, за которой встаёт в
+    очередь любая DDL и которая держит снапшот, мешая автовакууму. Ровно эта
+    патология обнаружилась в общей dev-БД во время P0.1.
+
+    Почему коммит, а не откат. Откат обесценивает ВСЕ объекты сессии, а не
+    только наши: вызывающий, державший загруженный ORM-объект, при следующем
+    обращении к полю получил бы синхронный поход в базу — в async-SQLAlchemy это
+    MissingGreenlet прямо посреди ответа клиенту. Коммит с выключенным
+    expire_on_commit заканчивает транзакцию и оставляет прочитанное пригодным.
+
+    Чужую незаписанную работу коммитить нельзя ни при каких обстоятельствах
+    (тот же запрет, что в services/outbox), поэтому при непустой сессии
+    честно откатываемся: транзакцию закрыть важнее.
+
+    Проверяется не комментарием: tests/test_worker_runtime.py подменяет llm.chat
+    и отправку и падает, если в этот момент есть хоть одна живая транзакция.
+    """
+    if not db.in_transaction():
+        return
+    if db.new or db.dirty or db.deleted:
+        await db.rollback()
+        return
+    sync = db.sync_session
+    keep, sync.expire_on_commit = sync.expire_on_commit, False
+    try:
+        await db.commit()
+    finally:
+        sync.expire_on_commit = keep
+
+
 async def identify(db: AsyncSession, studio_id: int, channel: str, sender: str) -> Client | None:
     """Клиент студии по идентификатору канала. None — незнакомец, публичный режим."""
     if channel == CHANNEL_TELEGRAM:
@@ -332,9 +367,20 @@ async def reply(
         {"role": "user", "content": f"сообщение клиента: {sanitize_external(text)}"},
     ]
     tools = tools_for_client(client)
+    # Предел длины читаем ДО первого отката: после отцепления settings отдаёт
+    # только уже прочитанные поля, и промахнуться тут дороже, чем взять число
+    # заранее.
+    length_limit = int(_channel_field(settings, channel, "max_length", 300) or 300)
     last_text: str | None = None
+    # Тот же идентификатор прогона, что у CRM-ассистента: вопрос из мессенджера
+    # так же состоит из нескольких вызовов модели, и считать их по соседству
+    # строк нельзя — вебхуки прилетают одновременно.
+    request_id = uuid.uuid4().hex
 
     for step in range(_MAX_ITERATIONS):
+        # Транзакцию закрываем на КАЖДОЙ итерации: предыдущий круг читал
+        # инструментами и открыл её заново.
+        await _before_network(db)
         # think=False: клиенту в мессенджере отвечаем простыми фразами по данным
         # инструментов — размышлять тут не над чем, а ждёт его живой человек.
         # У CRM-ассистента (services/assistant.py) размышление остаётся: там оно
@@ -344,6 +390,9 @@ async def reply(
         await record_usage(
             studio_id, answer.usage,
             surface=channel, billable=(step == 0), sender_ref=sender_ref,
+            # iterations — порядковый номер вызова внутри вопроса; в CRM-цикле
+            # он пишется с самого начала, здесь его не хватало.
+            iterations=step + 1, request_id=request_id,
         )
         if answer.text:
             last_text = answer.text
@@ -366,101 +415,89 @@ async def reply(
                 "content": as_tool_message(call["name"], sanitize_external(result)),
             })
 
-    return trim(last_text, settings, channel) if last_text else None
+    return trim(last_text, length_limit) if last_text else None
 
 
 # ─── Фон ─────────────────────────────────────────────────────────────────────
 
-async def _agent_reply_task(studio_id: int, channel: str, sender: str, text: str, token: str = "") -> None:
-    """Генерация и отправка ответа вне запроса вебхука.
+async def produce_reply(studio_id: int, channel: str, sender: str, text: str,
+                        token: str = "") -> str | None:
+    """Провести ход агента и вернуть ТЕКСТ ответа. Ничего не отправляет.
 
-    У Meta ~5 секунд на ответ вебхука, а агентный цикл идёт дольше — иначе Meta
-    ретраит, и клиент получает три одинаковых ответа. Сессия БД своя: get_db
-    отдаёт сессию через yield, и FastAPI закрывает её на выходе из запроса, то
-    есть до того, как эта корутина дойдёт до первого запроса к базе.
-    # ponytail: BackgroundTasks вместо очереди — при заметном потоке переносить
-    # в воркер, задача не переживает рестарт процесса.
+    С P0.4 сеть здесь кончается: ответ уезжает в очередь исходящих одной
+    транзакцией с закрытием работы (services/agent_jobs::process). Раньше на
+    этом месте стоял прямой вызов Telegram/Meta, и между ним и коммитом было
+    окно, в котором ответ либо задваивался, либо пропадал.
+
+    None — отвечать не нужно: агент выключен, квота, антиспам, нерабочие часы
+    или модель не дала текста. Это законный исход хода, а не сбой.
+
+    Сессия своя и короткая: get_db отдаёт сессию через yield и закрывает её на
+    выходе из запроса. Исключение НЕ глотает — закрыть работу можно только за
+    успехом, и решает это agent_jobs.
     """
     started = time.monotonic()
     async with async_session_maker() as db:
-        try:
-            settings = (await db.execute(
-                select(StudioAISettings).where(StudioAISettings.studio_id == studio_id)
-            )).scalar_one_or_none()
-            if settings is None or not channel_enabled(settings, channel):
-                return
-            if not await should_reply(db, studio_id, settings, channel, sender):
-                return
-
-            # Резерв владельца: последняя пятая часть месячного запаса
-            # принадлежит CRM, а не толпе в директе.
-            try:
-                await check_ai_quota(db, studio_id, reserve_pct=20)
-            except Exception as exc:
-                logger.info("client agent silent, quota: studio=%s channel=%s %s", studio_id, channel, exc)
-                return
-
-            # Индикатор «печатает…» — только после того, как все гейты пройдены:
-            # у выключенного агента он обещал бы ответ, которого не будет.
-            # Не await: это отдельное соединение к Telegram, и ожидание его
-            # ответа было бы добавленной задержкой ровно там, где мы её режем.
-            # Ссылку держим до конца задачи — иначе сборщик мусора вправе убить
-            # задачу на полпути.
-            typing_task = None
-            if channel == CHANNEL_TELEGRAM and token:
-                from routers.booking.telegram_webhook import send_typing
-                typing_task = asyncio.create_task(send_typing(token, int(sender)))
-
-            client = await identify(db, studio_id, channel, sender)
-            answer = await reply(db, studio_id, settings, client, text, channel, sender_ref=sender[:64])
-            if not answer:
-                return
-
-            await _send(channel, db, studio_id, sender, answer, token)
-            _bump_handled(settings, channel)
-            await db.commit()
-            # Время в лог: «отвечает медленно» иначе неотличимо на глаз от
-            # «провайдер ушёл в запасную модель» и от «сервер в свопе». Меряем
-            # от начала задачи — ровно ту паузу, которую видит клиент в чате.
-            logger.info(
-                "client agent replied: studio=%s channel=%s known=%s за %.1f c",
-                studio_id, channel, client is not None, time.monotonic() - started,
-            )
-        except Exception:
-            logger.exception("client agent failed: studio=%s channel=%s", studio_id, channel)
-
-
-def schedule_reply(background_tasks, studio_id: int, channel: str, sender: str, text: str, token: str = "") -> None:
-    """background_tasks не None только на реальном HTTP-запросе — прямые вызовы
-    из тестов его не передают, и это не должно падать (тот же приём, что в
-    routers/schedule/lessons.py::_schedule_gcal_push)."""
-    if background_tasks is not None:
-        background_tasks.add_task(_agent_reply_task, studio_id, channel, sender, text, token)
-
-
-async def _send(channel: str, db: AsyncSession, studio_id: int, sender: str, text: str, token: str) -> None:
-    """Отправка ответа своим транспортом канала. Импорты локальные: роутеры
-    зовут этот модуль, обратный импорт на уровне модуля дал бы цикл."""
-    if channel == CHANNEL_INSTAGRAM:
-        from routers.ai.instagram import _send_ig_message
         settings = (await db.execute(
             select(StudioAISettings).where(StudioAISettings.studio_id == studio_id)
-        )).scalar_one()
-        await _send_ig_message(settings.ig_token, sender, text)
-    elif channel == CHANNEL_WHATSAPP:
-        from routers.ai.whatsapp import _send_wa_message, _studio_by_phone_number_id  # noqa: F401
-        # token здесь — (phone_number_id, token) одной строкой через "|": у WA
-        # своего хранилища нет, всё приходит из интеграции wa_notify.
-        phone_number_id, wa_token = token.split("|", 1)
-        await _send_wa_message(wa_token, phone_number_id, sender, text)
-    else:
-        from routers.booking.telegram_webhook import _send_message
-        await _send_message(token, {"chat_id": int(sender), "text": text})
+        )).scalar_one_or_none()
+        if settings is None or not channel_enabled(settings, channel):
+            return None
+        if not await should_reply(db, studio_id, settings, channel, sender):
+            return None
+
+        # Резерв владельца: последняя пятая часть месячного запаса
+        # принадлежит CRM, а не толпе в директе.
+        try:
+            await check_ai_quota(db, studio_id, reserve_pct=20)
+        except Exception as exc:
+            logger.info("client agent silent, quota: studio=%s channel=%s %s", studio_id, channel, exc)
+            return None
+
+        client = await identify(db, studio_id, channel, sender)
+        await _before_network(db)
+
+        # Индикатор «печатает…» — единственный сетевой вызов, оставшийся у
+        # воркера агента. Он намеренно не в очереди: смысл имеет только ВО ВРЕМЯ
+        # хода, Telegram гасит его сам через 5 секунд, и сообщением он не
+        # является. Ждём его, а не пускаем фоновой задачей: параллельная задача
+        # неизбежно попадала бы в транзакцию, открытую соседней корутиной, и
+        # инвариант «никакой сети при открытой транзакции» переставал бы
+        # держаться буквально. Цена — сотня миллисекунд на ход в несколько
+        # секунд; ошибка проглочена внутри.
+        if channel == CHANNEL_TELEGRAM and token:
+            from services.channels.telegram import send_typing
+            await send_typing(token, int(sender))
+
+        answer = await reply(db, studio_id, settings, client, text, channel, sender_ref=sender[:64])
+        if not answer:
+            return None
+
+        await _bump_handled(db, studio_id, channel)
+        await db.commit()
+        logger.info(
+            "client agent turn: studio=%s channel=%s known=%s за %.1f c",
+            studio_id, channel, client is not None, time.monotonic() - started,
+        )
+        return answer
 
 
-def _bump_handled(settings: StudioAISettings, channel: str) -> None:
-    prefix = {CHANNEL_TELEGRAM: "tg", CHANNEL_INSTAGRAM: "ig", CHANNEL_WHATSAPP: "wa"}[channel]
-    setattr(settings, f"{prefix}_handled_count", getattr(settings, f"{prefix}_handled_count", 0) + 1)
+# Планированием и повторами занимается services/agent_jobs: сюда приходит уже
+# взятая работа. Прежние _agent_reply_task/schedule_reply убраны намеренно —
+# два пути запуска ответа означали бы два ответа на одно сообщение.
+
+
+async def _bump_handled(db: AsyncSession, studio_id: int, channel: str) -> None:
+    """+1 к счётчику обработанных. Явным UPDATE, а не присваиванием полю ORM:
+    объект к этому моменту отцеплен от сессии (_before_network), да и прибавка
+    на стороне БД не теряется, когда два ответа считаются одновременно."""
+    from sqlalchemy import update
+
+    column = getattr(StudioAISettings, f"{_PREFIX[channel]}_handled_count")
+    await db.execute(
+        update(StudioAISettings).where(StudioAISettings.studio_id == studio_id)
+        .values({column: column + 1})
+    )
 
 
 def channel_enabled(settings: StudioAISettings, channel: str) -> bool:
@@ -503,8 +540,7 @@ def channel_style(settings: StudioAISettings, channel: str) -> str:
     return f"{_TONE.get(tone, _TONE['friendly'])}\nОтвет не длиннее {limit} символов."
 
 
-def trim(text: str, settings: StudioAISettings, channel: str) -> str:
-    limit = int(_channel_field(settings, channel, "max_length", 300) or 300)
+def trim(text: str, limit: int) -> str:
     text = text.strip()
     if len(text) <= limit:
         return text
@@ -585,14 +621,13 @@ if __name__ == "__main__":
     # Неизвестный тон не роняет сборку промпта.
     assert _TONE["friendly"] in channel_style(_S("шёпотом", 120), CHANNEL_INSTAGRAM)
 
-    s = _S("friendly", 60)
-    assert trim("Короткий ответ.", s, CHANNEL_INSTAGRAM) == "Короткий ответ."
+    assert trim("Короткий ответ.", 60) == "Короткий ответ."
     # Длина соблюдается при любой формулировке — и не по границе слова тоже.
     for text in ("слово " * 40, "х" * 300, "Расписание на завтра: " + "Пилатес 10:00, " * 20):
-        cut = trim(text, s, CHANNEL_INSTAGRAM)
+        cut = trim(text, 60)
         assert len(cut) <= 60, (len(cut), cut)
         assert cut.endswith("…"), cut
-    assert " " not in trim("х" * 300, s, CHANNEL_INSTAGRAM)[:-1]   # нечего резать по слову
+    assert " " not in trim("х" * 300, 60)[:-1]                       # нечего резать по слову
 
     # Контекст: ссылка на приложение есть всегда, а незаполненные поля студии
     # не печатаются вовсе — строка «Адрес студии: None» вернулась бы клиенту.

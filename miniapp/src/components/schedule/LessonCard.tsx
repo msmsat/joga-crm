@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Press } from '../ui/Press';
 import { Badge } from '../ui/Badge';
@@ -12,6 +11,13 @@ type Props = {
   almostFullLabel: string;
   availableLabel: string;
   index: number;
+  /**
+   * Проигрывать появление. По умолчанию да — так список ведёт себя везде, где
+   * он показывается один раз на открытие поверхности (лист услуги). Расписание
+   * гасит лесенку после первого дня: при переключении дат карточки обязаны
+   * вставать мгновенно — см. `entrance` в pages/shedule.tsx.
+   */
+  entrance?: boolean;
   onClick: () => void;
 };
 
@@ -29,6 +35,7 @@ export default function LessonCard({
   almostFullLabel,
   availableLabel,
   index,
+  entrance = true,
   onClick,
 }: Props) {
   const { t } = useTranslation();
@@ -39,18 +46,29 @@ export default function LessonCard({
     .join('');
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      /* Лесенка 40ms на элемент: список собирается, а не вспыхивает целиком */
-      transition={{ duration: 0.38, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+    /* Появление живёт на самой карточке, а не на обёртке вокруг неё: Press —
+       уже motion-элемент, и второй такой же сверху удваивал число анимируемых
+       узлов в списке ровно в тот момент, когда браузер монтирует весь экран.
+       Отсюда и брались провалы кадров на первых 200ms расписания.
+       Длительность задана внутри `animate`, чтобы не перебить пружину нажатия,
+       которая объявлена у Press собственным `transition`. */
+    <Press
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      /* `false` — не «без анимации потом», а «начать сразу с конечных значений»:
+         карточка появляется готовой, без единого лишнего кадра. */
+      initial={entrance ? { opacity: 0, y: 14 } : false}
+      animate={{
+        opacity: 1,
+        y: 0,
+        /* Лесенка 35ms на элемент, но не длиннее шести шагов: в дне из
+           пятнадцати занятий последняя карточка иначе доезжала на 0.6с позже
+           первой, и список не «собирался», а тянулся. */
+        transition: { duration: 0.34, delay: Math.min(index, 6) * 0.035, ease: [0.33, 1, 0.68, 1] },
+      }}
+      className="flex h-full cursor-pointer gap-4 rounded-[22px] bg-card p-5 shadow-soft transition-shadow duration-300 dt:gap-5 dt:rounded-[24px] dt:p-6 dt:hover:shadow-lift"
     >
-      <Press
-        onClick={onClick}
-        role="button"
-        tabIndex={0}
-        className="flex h-full cursor-pointer gap-4 rounded-[22px] bg-card p-5 shadow-soft transition-shadow duration-300 dt:gap-5 dt:rounded-[24px] dt:p-6 dt:hover:shadow-lift"
-      >
         <div className="shrink-0">
           <div className="text-[19px] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-card-foreground dt:text-[24px]">
             {lesson.time}
@@ -89,7 +107,6 @@ export default function LessonCard({
             </span>
           </div>
         </div>
-      </Press>
-    </motion.div>
+    </Press>
   );
 }

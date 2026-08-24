@@ -65,6 +65,7 @@ class Studio(Base):
     working_hours: Mapped[List["StudioWorkingHours"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     notification_settings: Mapped[Optional["StudioNotificationSettings"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     notification_event_toggles: Mapped[List["NotificationEventToggle"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
+    feature_flags: Mapped[List["StudioFeatureFlag"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     booking_settings: Mapped[Optional["StudioBookingSettings"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")
     booking_channel_configs: Mapped[List["BookingChannelConfig"]] = relationship(back_populates="studio", cascade="all, delete-orphan")
     billing_plan: Mapped[Optional["StudioBillingPlan"]] = relationship(back_populates="studio", uselist=False, cascade="all, delete-orphan")

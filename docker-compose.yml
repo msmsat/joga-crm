@@ -47,6 +47,29 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Исполнитель работ агента (P0.3): тот же образ, что api, другая команда.
+  # Второго репозитория и второго сервиса-сборки нет намеренно — код один.
+  # Миграции НЕ накатывает: их делает api на старте, и два процесса, спорящих
+  # за alembic, не нужны. Если воркер поднялся раньше схемы, он не падает
+  # насмерть, а ждёт с откатом (workers/main.py).
+  worker:
+    build: ./back
+    command: ["python", "-m", "workers.main"]
+    env_file: ./back/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://velora:${POSTGRES_PASSWORD}@db:5432/velora
+    volumes:
+      # Те же тома, что у api: ответы агента могут читать загруженные файлы.
+      - static_data:/app/static
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    # Реплик можно поставить сколько угодно: работу раздаёт Postgres через
+    # FOR UPDATE SKIP LOCKED, разговор сериализует аренда треда. Координации в
+    # памяти нет, поэтому `--scale worker=N` безопасен.
+    restart: unless-stopped
+
   web:
     build:
       context: ./front

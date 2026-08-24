@@ -7,7 +7,9 @@
 Реальная БД, ручная чистка. Запуск из back/:  python -m tests.test_ai_agent
 """
 import asyncio
+import dataclasses
 import warnings
+from contextlib import contextmanager
 from datetime import datetime, time, timedelta
 
 warnings.filterwarnings("ignore")
@@ -631,3 +633,327 @@ def test_gave_up_still_catches_a_refusal_when_the_person_gave_numbers():
         "заведи четверых")
     # Числа есть у обоих, но ответ — вопрос человеку, а не ответ ему.
     assert assistant._gave_up("На какие 4 дня ставить занятия?", "поставь 4 занятия")
+
+
+# ── Наблюдаемость эскалации ───────────────────────────────────────────────────
+#
+# Голого `escalated` не хватало: веток переключения на дорогую модель четыре, и
+# по флагу нельзя отличить «дешёвая отписалась вместо работы» от «вызван
+# инструмент, которому положена умная модель». Ниже проверяется, что каждая
+# ветка называет СЕБЯ, что причина не течёт в следующий вопрос и что в строке
+# видно обе модели — с какой ушли и какая ответила на самом деле.
+
+_CHEAP = "google/gemini-3.7-flash"
+_SMART = "anthropic/claude-sonnet-5"
+
+
+def _text_from(model: str, text: str = "Готово.") -> llm.LLMReply:
+    return llm.LLMReply(text=text, tool_calls=[], usage=_usage(model=model))
+
+
+def _calls_from(model: str, *pairs) -> llm.LLMReply:
+    return llm.LLMReply(
+        text=None,
+        tool_calls=[{"id": f"c{i}", "name": n, "arguments": a} for i, (n, a) in enumerate(pairs)],
+        usage=_usage(model=model),
+    )
+
+
+@contextmanager
+def _tier_hint(name: str, tier: str):
+    """Подсказка уровня на одном инструменте — на время блока.
+
+    Реестр хранит замороженные dataclass-ы, поэтому подменяем целиком через
+    replace и возвращаем прежний в finally: соседние тесты работают с тем же
+    словарём в том же процессе.
+    """
+    before = ai_tools.TOOLS[name]
+    ai_tools.TOOLS[name] = dataclasses.replace(before, tier_hint=tier)
+    try:
+        yield
+    finally:
+        ai_tools.TOOLS[name] = before
+
+
+async def _escalations(sid: int) -> list[tuple]:
+    """Строки расхода с причиной эскалации, по порядку."""
+    async with async_session_maker() as db:
+        return (await db.execute(
+            select(AIUsage.escalation_reason, AIUsage.escalation_from_model,
+                   AIUsage.model, AIUsage.escalated)
+            .where(AIUsage.studio_id == sid, AIUsage.escalation_reason.is_not(None))
+            .order_by(AIUsage.id)
+        )).all()
+
+
+async def _run_escalation_reasons() -> None:
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    window = {"date_from": "2026-01-01", "date_to": "2026-01-07"}
+
+    async def ask(*replies):
+        """Прогнать один вопрос по сценарию и вернуть его строки с причиной."""
+        async with async_session_maker() as db:
+            await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+            await db.commit()
+        _ScriptedLLM(*replies).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            await run_agent(ctx, db, await _settings(db, sid), [], session_id=ids["session_id"])
+        return await _escalations(sid)
+
+    try:
+        # ── Обычный вопрос: эскалации нет, причины нет.
+        assert await ask(_text_from(_CHEAP, "Занятий завтра два.")) == []
+
+        # ── Отписка первым ходом.
+        refusal = ("Я могу добавить сотрудников, но мне нужен пароль для каждого, "
+                   "а также их email и роль доступа. Без этого создать их я не смогу.")
+        rows = await ask(_text_from(_CHEAP, refusal),
+                         _calls_from(_SMART, ("get_schedule", window)),
+                         _text_from(_SMART, "Поставил."))
+        assert len(rows) == 1, rows
+        reason, from_model, model, escalated = rows[0]
+        assert reason == "gave_up_no_tools", reason
+        # С какой ушли и какая ответила — разные колонки и разные модели.
+        assert from_model == _CHEAP and model == _SMART, (from_model, model)
+        assert escalated is True
+
+        # ── Инструмент вернул ошибку.
+        rows = await ask(_calls_from(_CHEAP, ("get_lesson", {"lesson_id": 999_000_111})),
+                         _text_from(_SMART, "Не нашёл такое занятие."))
+        assert [r[0] for r in rows] == ["tool_error"], rows
+        assert rows[0][1] == _CHEAP and rows[0][2] == _SMART
+
+        # ── Шаг плана отклонён: занятие в прошлом (precheck), а не сломанный инструмент.
+        past = (datetime.utcnow() - timedelta(days=2)).replace(microsecond=0).isoformat()
+        rows = await ask(
+            _calls_from(_CHEAP, ("create_lesson", {
+                "service_id": 1, "teacher_id": ids["trainer_id"], "start_time": past})),
+            _text_from(_SMART, "Это время уже прошло."))
+        assert [r[0] for r in rows] == ["plan_step_error"], rows
+
+        # ── Аналитическое чтение больше НЕ утаскивает на умную модель.
+        # Замер 24.08.2026: те же 7 вопросов стоили $0.3698 через Opus и $0.0180
+        # на одном Flash при формальном результате 6/7 против 6/7.
+        rows = await ask(_calls_from(_CHEAP, ("get_stats", {"period": "month"})),
+                         _text_from(_CHEAP, "Выручка за месяц."))
+        assert rows == [], rows
+
+        # ── Но сама ветка жива: подсказку ставит тест, а не реестр.
+        # Убрали неверный повод, а не механизм — если завтра найдётся класс
+        # задач, которому умная модель действительно нужна, он должен работать.
+        with _tier_hint("get_schedule", llm.TIER_SMART):
+            rows = await ask(_calls_from(_CHEAP, ("get_schedule", window)),
+                             _text_from(_SMART, "Собрал."))
+        assert [r[0] for r in rows] == ["explicit_smart_tier"], rows
+
+        # ── Четвёртая итерация без единой ошибки — это про глубину, не про поломку.
+        rows = await ask(*[_calls_from(_CHEAP, ("get_schedule", window)) for _ in range(4)],
+                         _text_from(_SMART, "Собрал."))
+        assert [r[0] for r in rows] == ["iterations_deep"], rows
+
+        # ── Причина не течёт в следующий вопрос: тот же цикл, эскалации нет.
+        assert await ask(_text_from(_CHEAP, "Хорошо.")) == []
+
+        # ── Эскалация случается не больше раза за вопрос.
+        rows = await ask(_calls_from(_CHEAP, ("get_lesson", {"lesson_id": 999_000_222})),
+                         _calls_from(_SMART, ("get_lesson", {"lesson_id": 999_000_333})),
+                         _text_from(_SMART, "Не нашёл."))
+        assert len(rows) == 1, rows
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_escalation_reason_names_the_branch_that_fired():
+    asyncio.run(_run_escalation_reasons())
+
+
+# ── request_id: вызовы одного вопроса связаны, а не соседствуют ───────────────
+#
+# До этой колонки строки одного вопроса собирались по соседству: billable плюс
+# всё, что за ним по id. Два одновременных вопроса одной студии перемешивают
+# цепочки, и «сколько стоил ЭТОТ вопрос» отвечалось догадкой. Тест ставит два
+# прогона внахлёст барьером и требует, чтобы они разделялись.
+
+
+async def _run_request_id_survives_interleaving() -> None:
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    today = datetime.utcnow().date()
+    window = {"date_from": today.isoformat(), "date_to": (today + timedelta(days=1)).isoformat()}
+    barrier = asyncio.Barrier(2)
+
+    async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0):
+        """Оба прогона входят в каждый вызов модели одновременно."""
+        called = sum(1 for m in messages if m.get("role") == "tool")
+        await barrier.wait()
+        if called:
+            return _text_from(_CHEAP, "Готово.")
+        return _calls_from(_CHEAP, ("get_schedule", window))
+
+    llm.chat = _chat
+    try:
+        async def one():
+            async with async_session_maker() as db:
+                ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+                return await run_agent(
+                    ctx, db, await _settings(db, sid), [], session_id=ids["session_id"])
+
+        first, second = await asyncio.wait_for(asyncio.gather(one(), one()), timeout=30)
+
+        # Идентификатор возвращается наружу — чат кладёт его на сообщение.
+        assert first.request_id and second.request_id
+        assert first.request_id != second.request_id, "два вопроса получили один id"
+
+        async with async_session_maker() as db:
+            rows = (await db.execute(
+                select(AIUsage.request_id, AIUsage.iterations, AIUsage.billable)
+                .where(AIUsage.studio_id == sid).order_by(AIUsage.id)
+            )).all()
+
+        assert len(rows) == 4, rows
+        by_request: dict[str, list] = {}
+        for request_id, iterations, billable in rows:
+            assert request_id is not None
+            by_request.setdefault(request_id, []).append((iterations, billable))
+
+        assert set(by_request) == {first.request_id, second.request_id}, by_request
+        for request_id, calls in by_request.items():
+            # Ровно два вызова, порядок читается по iterations, первый billable.
+            assert [i for i, _b in calls] == [1, 2], (request_id, calls)
+            assert [b for _i, b in calls] == [True, False], (request_id, calls)
+
+        # Главное: строки ЧЕРЕДУЮТСЯ. Значит группировка по соседству дала бы
+        # неверный ответ, и тест доказывает не только «id проставлен», а что он
+        # вообще был нужен.
+        order = [r[0] for r in rows]
+        assert order[0] != order[1], f"прогоны не перемешались, тест ничего не проверил: {order}"
+        assert order != sorted(order, key=order.index), order
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+async def _run_request_id_survives_escalation() -> None:
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    refusal = ("Я могу добавить сотрудников, но мне нужен пароль для каждого, "
+               "а также их email и роль доступа. Без этого создать их я не смогу.")
+    try:
+        _ScriptedLLM(
+            _text_from(_CHEAP, refusal),
+            _text_from(_SMART, "Завёл всех четверых."),
+        ).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            result = await run_agent(
+                ctx, db, await _settings(db, sid), [], session_id=ids["session_id"])
+
+        async with async_session_maker() as db:
+            rows = (await db.execute(
+                select(AIUsage.request_id, AIUsage.model, AIUsage.escalated,
+                       AIUsage.escalation_reason)
+                .where(AIUsage.studio_id == sid).order_by(AIUsage.id)
+            )).all()
+
+        assert len(rows) == 2, rows
+        # Эскалация меняет модель и ярус, но не вопрос: id один на оба вызова.
+        assert rows[0][0] == rows[1][0] == result.request_id, rows
+        assert (rows[0][1], rows[1][1]) == (_CHEAP, _SMART), rows
+        assert rows[0][2] is False and rows[1][2] is True, rows
+        assert rows[1][3] == "gave_up_no_tools", rows
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_request_id_survives_interleaving():
+    asyncio.run(_run_request_id_survives_interleaving())
+
+
+def test_request_id_survives_escalation():
+    asyncio.run(_run_request_id_survives_escalation())
+
+
+async def _run_assistant_message_points_at_the_run() -> None:
+    """Мост от расхода к оценке человека: сообщение знает свой прогон.
+
+    Связь лежит на сообщении, а не на строках расхода: те пишутся своей сессией
+    по ходу цикла, когда сообщения ещё нет. Так это одно присваивание в уже
+    открытой транзакции чата — и висячих ссылок не бывает.
+    """
+    from routers.ai.chat import send_message
+    from schemas.ai import ChatMessageCreate
+
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    try:
+        _ScriptedLLM(_text_from(_CHEAP, "Завтра два занятия.")).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            answer = await send_message.__wrapped__(
+                ids["session_id"], ChatMessageCreate(text="что завтра?"), ctx=ctx, db=db)
+
+        async with async_session_maker() as db:
+            said = (await db.execute(
+                select(AIChatMessage.request_id)
+                .where(AIChatMessage.id == answer.assistant.id))).scalar_one()
+            spent = (await db.execute(
+                select(AIUsage.request_id).where(AIUsage.studio_id == sid))).scalars().all()
+
+        assert said, "сообщение ассистента не знает, каким прогоном получено"
+        assert set(spent) == {said}, (said, spent)
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_assistant_message_points_at_the_run():
+    asyncio.run(_run_assistant_message_points_at_the_run())
+
+
+# ── Уровень модели не выводится из того, какой инструмент позвали ─────────────
+#
+# Четыре аналитических чтения объявляли tier_hint=TIER_SMART, и любой вопрос,
+# который их задевал, дальше отвечал Opus. Замер 24.08.2026 на семи таких
+# вопросах: $0.3698 через Opus против $0.0180 на одном Flash, формальный
+# результат 6/7 против 6/7. Единственное содержательное расхождение оказалось
+# привязано к типу вопроса, а не к инструменту, — get_stats звался в четырёх
+# вопросах и в трёх из них Flash справлялся полностью.
+
+_WAS_SMART = ("get_stats", "get_finance_summary", "get_payroll", "get_segments")
+
+
+def test_analytics_reads_no_longer_demand_the_expensive_model():
+    for name in _WAS_SMART:
+        assert ai_tools.TOOLS[name].tier_hint == llm.TIER_FAST, name
+
+
+def test_no_capability_declares_the_smart_tier():
+    """Повод исчез целиком, а не у четырёх известных имён: новый инструмент с
+    подсказкой SMART обязан приезжать с замером, а не по образцу соседа."""
+    declared = [t.name for t in ai_tools.TOOLS.values() if t.tier_hint == llm.TIER_SMART]
+    assert declared == [], declared
+
+
+def test_the_smart_hint_still_exists_as_a_mechanism():
+    """Убрали неверный повод, а не механизм."""
+    with _tier_hint("get_schedule", llm.TIER_SMART):
+        assert ai_tools.TOOLS["get_schedule"].tier_hint == llm.TIER_SMART
+    assert ai_tools.TOOLS["get_schedule"].tier_hint == llm.TIER_FAST
+
+
+def test_removing_the_hint_did_not_touch_what_the_model_sees():
+    """Подсказка уровня — свойство сервера. В схеме, которую видит модель, её
+    не было и нет, поэтому снятие не могло изменить ни одного описания."""
+    ctx = StudioContext(user=None, studio_id=1, role="owner")
+    schema = {s["function"]["name"]: s["function"] for s in ai_tools.tools_for(ctx)}
+    for name in _WAS_SMART:
+        assert name in schema, name
+        assert "tier" not in str(schema[name]).lower()

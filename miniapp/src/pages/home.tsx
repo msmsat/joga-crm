@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import HomeGreeting from '../components/home/HomeGreeting';
+import HomeGreeting, { type Daypart } from '../components/home/HomeGreeting';
 import StudioRail from '../components/home/StudioRail';
 import StudioStrip from '../components/home/StudioStrip';
 import StudioSheet from '../components/home/StudioSheet';
@@ -18,6 +18,7 @@ import SubscriptionSheet from '../components/modals/SubscriptionSheet';
 import SuccessModal from '../components/modals/SuccessModal';
 import CoffeeModal from '../components/modals/CoffeeModal';
 import { getLiked, toggleLiked } from '../lib/likes';
+import { bumpLessons, useLessonsVersion } from '../lib/revision';
 import { type UserResponse } from '../api/auth';
 import {
   getMyLessons,
@@ -32,6 +33,13 @@ import { useLessonBooking } from '../hooks/useLessonBooking';
 interface HomeProps {
   user: UserResponse | null;
   catalog: StudioCatalog | null;
+  /**
+   * Номер открытия раздела (App). Уходит ключом в шапку: раздел остаётся
+   * смонтированным при переключении вкладок, а приветствие обязано здороваться
+   * заново при каждом возвращении — иначе «Доброе утро» человек видит один раз
+   * за запуск. Ключ пересобирает ровно шапку, не трогая ни списки, ни запросы.
+   */
+  visitKey: number;
   /** Переход в другой раздел кабинета — пустая главная должна куда-то вести. */
   onNavigate: (tab: string) => void;
   /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
@@ -40,7 +48,14 @@ interface HomeProps {
   onNeedAuth: (retry: () => void) => void;
 }
 
-export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth }: HomeProps) {
+export default function Home({
+  user,
+  catalog,
+  visitKey,
+  onNavigate,
+  onBuySubscription,
+  onNeedAuth,
+}: HomeProps) {
   const branches = catalog?.branches ?? [];
   // Филиалов несколько — карточка студии становится выбором (лента с
   // примагничиванием), один — просто местом. Счётчик у метки нужен только в
@@ -57,14 +72,15 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
   const [pendingService, setPendingService] = useState<string | null>(null);
   const [openedStudio, setOpenedStudio] = useState<Studio | null>(null);
   const [schedule, setSchedule] = useState<{ serviceId: string; studio: Studio | null } | null>(null);
-  const [scheduleTick, setScheduleTick] = useState(0);
 
   // Два источника главной карточки: ближайшее занятие студии (предложение,
   // видно и гостю) и ближайшая СВОЯ бронь клиента. Своя сильнее — см. `hero`.
   const [studioNext, setStudioNext] = useState<LessonResponse | null>(null);
   const [myNext, setMyNext] = useState<UpcomingLessonResponse | null>(null);
   const [isHeroLoading, setIsHeroLoading] = useState(true);
-  const [reloadTick, setReloadTick] = useState(0);
+  // Раздел остаётся смонтированным при переключении вкладок, поэтому о чужих
+  // записях он узнаёт из общей версии, а не из повторного монтирования.
+  const lessonsVersion = useLessonsVersion();
 
   const { vibrateMedium, vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
@@ -104,15 +120,12 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
     return () => {
       cancelled = true;
     };
-  }, [user, reloadTick]);
+  }, [user, lessonsVersion]);
 
-  // Запись и отмена — общие с расписанием (useLessonBooking). Главной после
-  // них нужно перечитать и «ближайшее занятие», и открытый лист услуги.
+  // Запись и отмена — общие с расписанием (useLessonBooking). Перечитать после
+  // них и «ближайшее занятие», и открытый лист услуги хук просит сам, подняв
+  // версию: обе величины уже висят на ней.
   const booking = useLessonBooking({
-    onChanged: () => {
-      setReloadTick((tick) => tick + 1);
-      setScheduleTick((tick) => tick + 1);
-    },
     messages: {
       bookError: t('home.booking_error'),
       cancelError: t('home.cancel_booking_error'),
@@ -121,12 +134,10 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
     onNeedAuth,
   });
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t('home.greeting_morning');
-    if (hour < 18) return t('home.greeting_afternoon');
-    return t('home.greeting_evening');
-  };
+  // Часть дня, а не готовая строка: шапке нужно и слово, и глиф рядом с ним —
+  // солнце над горизонтом, солнце или месяц. Порог один на двоих.
+  const hour = new Date().getHours();
+  const daypart: Daypart = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
 
   const handleLike = (id: number) => {
     setLiked(toggleLiked(id));
@@ -273,7 +284,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
      случаях — это выбор, а не витрина. */
   const studioBlock =
     branches.length === 0 ? null : isAuthed && !isMultiStudio ? (
-      <div className="pt-7 dt:pt-12">
+      <div className="pt-4 dt:pt-8">
         <StudioStrip
           studio={branches[0]}
           onOpen={() => setOpenedStudio(branches[0])}
@@ -285,7 +296,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
         {isMultiStudio ? (
           <SectionLabel trailing={`${branches.length}`}>{t('home.studios')}</SectionLabel>
         ) : (
-          <div className="pt-7 dt:pt-12" />
+          <div className="pt-4 dt:pt-8" />
         )}
 
         <StudioRail
@@ -308,10 +319,11 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
           оказалось хуже: блок без данных повисал в строке с именем клиента, а
           глазу приходилось читать экран зигзагом вместо сверху вниз. */}
       <HomeGreeting
-        greeting={getGreeting()}
+        key={visitKey}
+        greeting={t(`home.greeting_${daypart}`)}
+        daypart={daypart}
         name={user?.name || t('home.guest_name')}
-        studioName={catalog?.studio.name}
-        logoUrl={catalog?.studio.logo_url}
+        isGuest={!isAuthed}
       />
 
       {isAuthed ? (
@@ -353,7 +365,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
         onClose={() => setSchedule(null)}
         serviceId={schedule?.serviceId ?? null}
         studio={schedule?.studio ?? null}
-        refreshKey={scheduleTick}
+        refreshKey={lessonsVersion}
         onLessonPick={booking.openModal}
       />
 
@@ -398,7 +410,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
         onClose={booking.closeCoffee}
         lessonId={booking.activeLesson?.id ?? null}
         coffee={booking.coffee}
-        onJoined={() => setScheduleTick((tick) => tick + 1)}
+        onJoined={bumpLessons}
         layer={3}
       />
     </div>

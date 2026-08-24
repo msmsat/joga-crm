@@ -15,6 +15,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { getLessonsByDate, type LessonResponse } from '../api/lessons';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLessonBooking } from '../hooks/useLessonBooking';
+import { bumpLessons, useLessonsVersion } from '../lib/revision';
 import type { StudioCatalog } from '../api/studio';
 
 /** `Date` → `YYYY-MM-DD` без ухода в UTC (иначе вечером день съезжает назад). */
@@ -25,6 +26,26 @@ const isoDate = (date: Date) =>
 
 const isSameDay = (a: Date, b: Date) =>
   a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+
+/**
+ * Дни, уже полученные с сервера, и версия занятий, при которой их получили.
+ *
+ * Листая неделю, человек ходит по одним и тем же дням туда-обратно: вчера —
+ * сегодня — вчера. Второй заход обязан рисоваться сразу, а не заказывать тот же
+ * день заново и показывать под него скелет. Запрос при этом всё равно уходит —
+ * список на экране заменяется молча, когда ответ пришёл (stale-while-revalidate).
+ *
+ * Модуль, а не состояние: кэш переживает и переключение вкладок, и любой
+ * перерендер экрана, ради чего он и заведён.
+ *
+ * Первая же бронь обесценивает ВСЕ дни разом (занятые места — часть карточки),
+ * поэтому при смене версии кэш сбрасывается целиком, а не по одному дню.
+ */
+const dayCache = new Map<string, LessonResponse[]>();
+let cachedVersion = -1;
+
+/** Задержка перед скелетом. Ответ приходит быстрее — и он не появится вовсе. */
+const SKELETON_DELAY_MS = 220;
 
 interface SheduleProps {
   catalog: StudioCatalog | null;
@@ -49,9 +70,22 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   }, [rules]);
 
   const [date, setDate] = useState(() => new Date());
-  const [dayClasses, setDayClasses] = useState<LessonResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [refreshTick, setRefreshTick] = useState(0);
+  const day = isoDate(date);
+  /* Последний полученный день. Вместе со списком хранится, первый ли он за
+     жизнь экрана: лесенка появления положена только ему. Листая неделю, человек
+     смотрит расписание, а не анимацию — повторный въезд карточек на каждый день
+     читается как задержка, а не как оформление. */
+  const [loaded, setLoaded] = useState<{
+    day: string;
+    lessons: LessonResponse[];
+    first: boolean;
+  } | null>(null);
+  /* День, ответ по которому не пришёл вовремя. Хранится днём, а не флагом:
+     смена даты обнуляет его сама, без второго setState. */
+  const [slowDay, setSlowDay] = useState<string | null>(null);
+  // Раздел остаётся смонтированным при переключении вкладок, поэтому о записях,
+  // сделанных на главной, он узнаёт из общей версии (см. lib/revision.ts).
+  const lessonsVersion = useLessonsVersion();
 
   const [filters, setFilters] = useState<Filters>({
     studioId: branches[0]?.id ?? 0,
@@ -60,13 +94,23 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  /* Что на экране: день из кэша — сразу, в тот же кадр; иначе последний
+     загруженный список, пока идёт запрос. Скелет остаётся ровно для двух
+     случаев — первый заход, когда показывать нечего, и по-настоящему долгий
+     ответ. Промежуточного «занятия → заглушки → занятия» больше нет. */
+  const cached = dayCache.get(day);
+  // useMemo ради постоянной ссылки: пустой список иначе создавался бы заново
+  // каждый рендер и обнулял три useMemo ниже (фильтры и видимый список).
+  const dayClasses = useMemo(() => cached ?? loaded?.lessons ?? [], [cached, loaded]);
+  const isLoading = cached === undefined && (loaded === null || slowDay === day);
+  const entrance = loaded?.first ?? true;
+
   const { vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
 
   // Запись и отмена — общие с главной (useLessonBooking): один сценарий, две
   // страницы. Здесь остаётся только то, что у расписания своё, — список дня.
   const booking = useLessonBooking({
-    onChanged: () => setRefreshTick((tick) => tick + 1),
     messages: {
       bookError: t('schedule.booking_error'),
       cancelError: t('schedule.cancel_error'),
@@ -77,25 +121,41 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
 
   useEffect(() => {
     let cancelled = false;
+    const wanted = isoDate(date);
 
-    const fetchClasses = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getLessonsByDate(isoDate(date));
-        if (!cancelled) setDayClasses(data);
-      } catch (error) {
+    // Первая же бронь обесценивает все дни разом — занятые места есть в каждой
+    // карточке. Поэтому кэш сбрасывается целиком, а не по одному дню.
+    if (cachedVersion !== lessonsVersion) {
+      dayCache.clear();
+      cachedVersion = lessonsVersion;
+    }
+
+    // Запрос уходит и по известному дню: место могли занять с другого
+    // устройства, и список обновится молча, прямо под рукой. Скелет включается
+    // только если ответа нет дольше SKELETON_DELAY_MS — на быстром ответе он не
+    // появится вовсе.
+    const timer = window.setTimeout(() => {
+      if (!cancelled) setSlowDay(wanted);
+    }, SKELETON_DELAY_MS);
+
+    getLessonsByDate(wanted)
+      .then((data) => {
+        dayCache.set(wanted, data);
+        if (!cancelled) setLoaded((prev) => ({ day: wanted, lessons: data, first: prev === null }));
+      })
+      .catch((error) => {
         console.error('Помилка завантаження розкладу:', error);
-        if (!cancelled) setDayClasses([]);
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
+        if (!cancelled) setLoaded((prev) => ({ day: wanted, lessons: [], first: prev === null }));
+      })
+      .finally(() => {
+        window.clearTimeout(timer);
+      });
 
-    fetchClasses();
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
     };
-  }, [date, refreshTick]);
+  }, [date, lessonsVersion]);
 
   // Варианты фильтров собираются из самого дня: показывать «Олену», которой
   // сегодня нет в расписании, — это выбор, ведущий в пустоту.
@@ -262,6 +322,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
               key={cl.id ?? i}
               lesson={cl}
               index={i}
+              entrance={entrance}
               title={cl.name ? t(`lesson.name.${cl.name}`, { defaultValue: cl.name }) : ''}
               bookedLabel={t('schedule.booked')}
               almostFullLabel={t('schedule.almost_full')}
@@ -330,7 +391,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
         onClose={booking.closeCoffee}
         lessonId={booking.activeLesson?.id ?? null}
         coffee={booking.coffee}
-        onJoined={() => setRefreshTick((tick) => tick + 1)}
+        onJoined={bumpLessons}
         layer={1}
       />
     </>

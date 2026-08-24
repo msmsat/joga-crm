@@ -28,6 +28,9 @@ async def record_usage(
     tools: str | None = None,
     iterations: int | None = None,
     escalated: bool | None = None,
+    escalation_reason: str | None = None,
+    escalation_from_model: str | None = None,
+    request_id: str | None = None,
 ) -> None:
     """Пишет строку расхода своей сессией и коммитит сразу.
 
@@ -38,6 +41,15 @@ async def record_usage(
     которым видно, где ассистент «тупит»: вопрос, упёршийся в потолок итераций,
     и вопрос, ушедший на дорогую модель, выглядят в отчёте по-разному. Текста
     промптов здесь по-прежнему нет.
+
+    request_id — один на весь вопрос человека: по нему собираются все вызовы
+    модели, сделанные ради него. Соседство строк для этого не годится: два
+    одновременных вопроса одной студии перемешивают цепочки.
+
+    escalation_reason/escalation_from_model приезжают ровно на ПЕРВОЙ строке
+    после переключения — той, что оплачена дорогой моделью. Причина на всех
+    последующих строках вопроса сделала бы «сколько было эскалаций» неотличимым
+    от «сколько после них было вызовов».
     """
     if not usage.model:
         return  # заглушка вместо модели (ключ не настроен) — платить не за что
@@ -59,6 +71,9 @@ async def record_usage(
                 tools=(tools or None),
                 iterations=iterations,
                 escalated=escalated,
+                escalation_reason=escalation_reason,
+                escalation_from_model=escalation_from_model,
+                request_id=request_id,
             ))
             await db.commit()
     except Exception:

@@ -22,7 +22,9 @@ export default function TrialOfferCard({ plan }: { plan: BillingPlan | null }) {
   if (!plan?.trial_available) return null;
 
   return (
-    <div style={{
+    // bl-banner — общий класс плашек над вкладками: на телефоне 32px полей по
+    // бокам съедали пятую часть экрана (см. Billing.module.css).
+    <div className="bl-banner" style={{
       margin: '0 32px 20px', padding: '20px 24px', borderRadius: '16px',
       background: 'rgba(249,160,139,0.08)', border: '1px solid rgba(249,160,139,0.32)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',

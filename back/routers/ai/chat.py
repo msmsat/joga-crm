@@ -275,7 +275,9 @@ async def send_message(
         viewport=body.viewport,
     )
 
-    assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=result.text)
+    assistant_message = AIChatMessage(
+        session_id=session.id, role="assistant", text=result.text,
+        request_id=result.request_id)
     db.add(assistant_message)
 
     session.preview = result.text[:500]
@@ -356,7 +358,9 @@ async def _agent_stream(
 
         # Сообщения пишем ПО ЗАВЕРШЕНИИ потока целиком: частичный ответ в
         # истории хуже отсутствующего.
-        assistant_message = AIChatMessage(session_id=session.id, role="assistant", text=result.text)
+        assistant_message = AIChatMessage(
+            session_id=session.id, role="assistant", text=result.text,
+            request_id=result.request_id)
         db.add(assistant_message)
         session.preview = result.text[:500]
         if session.title == _DEFAULT_TITLE:

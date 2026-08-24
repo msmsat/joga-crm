@@ -243,7 +243,141 @@
   .blPane :global(.bl-seats)::-webkit-scrollbar { display: none; }
   .blPane :global(.bl-seats-head) { margin-bottom: 12px !important; }
   .blPane :global(.bl-seats-sum) { margin-top: 14px !important; align-items: center !important; }
-  .blPane :global(.bl-seats-price) span:first-child { font-size: 26px !important; }
+  .blPane :global(.bl-seats-price) span:first-child { font-size: 30px !important; }
+
+  /* ── Плашки над вкладками (триал, комиссия, возврат с оплаты) ────────────
+     32px по бокам — десктопное поле страницы; на телефоне это 64px из 360,
+     тогда как всё остальное на странице стоит по --card-pad. Кнопка внутри
+     тянется во всю ширину: она в плашке единственная. */
+  .blPane :global(.bl-banner) {
+    margin: 0 var(--card-pad) 12px !important;
+    padding: 13px 15px !important;
+    border-radius: 14px !important;
+  }
+  .blPane :global(.bl-banner) > div > div:nth-child(2) { font-size: 17px !important; }
+  .blPane :global(.bl-banner) :global(.v-btn) { width: 100%; }
+
+  /* ── Выгода предоплаты и график платежей: одна колонка ───────────────────
+     Две колонки по ~130px ломали обе карточки: сумма «−40%» съезжала под свою
+     подпись, а строка графика (дата + сумма) переносилась в три этажа. Поля
+     карточек тоже режем — 28px вокруг 130px содержимого это рамка, а не воздух. */
+  .blPane :global(.bl-pay-grid) {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+  .blPane :global(.bl-pay-grid) > div { padding: 15px 16px !important; border-radius: 16px !important; }
+
+  /* ══ ПОДПИСКА И КОМБО НА ТЕЛЕФОНЕ ═════════════════════════════════════════
+     Два режима, где на телефоне действительно есть что выбирать (у процента —
+     одна карточка с кнопкой). Экран строится как в приложении покупки: герой
+     с ценой наверху, ленты выбора под ним, итог и оплата — на липкой панели
+     над нижней навигацией, а не в конце длинной прокрутки.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /* Карточку линии мест, в отличие от остальных .bl-card, НЕ снимаем: это
+     главный блок экрана, и подложка отделяет выбор от всего, что под ним. */
+  .blPane :global(.bl-seats-card) {
+    padding: 15px 14px 17px !important;
+    background:
+      radial-gradient(130% 100% at 88% 0%, rgba(252, 174, 145, 0.22) 0%, rgba(252, 174, 145, 0) 62%),
+      var(--bg-card) !important;
+    border: 1px solid rgba(252, 174, 145, 0.3) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 30px rgba(252, 174, 145, 0.16) !important;
+  }
+
+  /* Рельс мест: снап по центру и растворяющиеся края. Обрезанная кнопка у
+     границы сама говорит, что ряд листается, — стрелок и подписей не нужно. */
+  .blPane :global(.bl-seats) {
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  }
+  .blPane :global(.bl-seats) button {
+    scroll-snap-align: center;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+  }
+  /* Невыбранные ступени — на лёгкой подложке: их инлайновый фон это var(--bg-card),
+     то есть фон самой карточки, и там, где персиковый градиент сходит на нет,
+     от кнопки оставалась одна волосяная рамка. */
+  .blPane :global(.bl-seats) button[aria-pressed='false'] { background: rgba(var(--ink), 0.04) !important; }
+
+  /* ── Период: выбранная плитка залита персиковым ──────────────────────────
+     Рамка + бледная заливка на 90px плитке почти не отличали выбранное от
+     соседей; на телефоне выбор должен читаться боковым зрением. */
+  .blPane :global(.bl-periods) button[aria-pressed='true'] {
+    background: linear-gradient(135deg, #fcae91 0%, #f9a08b 100%) !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 22px rgba(249, 160, 139, 0.32) !important;
+  }
+  .blPane :global(.bl-periods) button[aria-pressed='true'] > div { color: #fff !important; }
+  /* Бейдж «Лучший выбор» на залитой плитке инвертируется — иначе персик на персике. */
+  .blPane :global(.bl-periods) button[aria-pressed='true'] > div[style*="position: absolute"] {
+    background: #fff !important;
+    color: #f9a08b !important;
+  }
+
+  /* ── Комбо: строка «половина фикса + 1.5%» ───────────────────────────────
+     Это описание того, что покупаешь, а не примечание: возвращаем ему
+     карточку с персиковой каймой (общее правило .bl-card её сняло). */
+  .blPane :global(.bl-combo-sum) {
+    padding: 13px 14px !important;
+    background: rgba(252, 174, 145, 0.08) !important;
+    border: 1px solid rgba(252, 174, 145, 0.28) !important;
+    border-radius: 16px !important;
+    align-items: stretch !important;
+  }
+
+  /* ── Итог и оплата: липкая панель над нижней навигацией ──────────────────
+     Сумма меняется от каждого касания ступени и периода, а кнопка оплаты
+     лежала под графиком платежей и блоком отзывов — чтобы увидеть цену и
+     заплатить, приходилось листать туда-обратно. z-index ниже .mnav (150) и
+     модалок (1000): панель стоит НАД контентом, но под ними. */
+  .blPane :global(.bl-pay-cta) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--mnav-safe);
+    z-index: 140;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 11px var(--content-pad) 13px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.12);
+  }
+  /* Строка итога: плашка внутри панели не нужна — сама панель и есть плашка. */
+  .blPane :global(.bl-pay-cta) > div:first-child {
+    grid-area: 1 / 1;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    justify-content: flex-start !important;
+    gap: 8px;
+  }
+  .blPane :global(.bl-pay-cta) > div:nth-child(2) {
+    grid-area: 2 / 1;
+    margin: 1px 0 0 !important;
+    text-align: left !important;
+    font-size: 10px !important;
+  }
+  .blPane :global(.bl-pay-cta) > button {
+    grid-area: 1 / 2 / 3 / 3;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 12px 16px !important;
+    border-radius: 14px !important;
+  }
+  /* Место под панель — только когда она есть: у процентной модели её не рисуют.
+     К этим 44px снизу добавляются 60px самой страницы (Billing.tsx) — вместе
+     они и есть высота полосы плюс воздух под последней карточкой. */
+  .blPane :global(.bl-plans:has(.bl-pay-cta)) { padding-bottom: 44px !important; }
 
   /* ── Отзывы: рельс вбок вместо трёх карточек друг под другом ────────────── */
   .blPane :global(.bl-trust) { padding: 13px !important; border-radius: 14px !important; }

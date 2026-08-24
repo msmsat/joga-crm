@@ -37,8 +37,11 @@ export default function PeriodSelector({ selectedPeriod, setSelectedPeriod, peri
       <div className="bl-periods" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: '12px' }}>
         {periods.map(period => {
           const discount = Math.round((periodDiscounts[period] || 0) * 100);
+          // aria-pressed — не только доступность: по нему красится выбранная
+          // плитка на телефоне (Billing.module.css), инлайновый стиль оттуда
+          // не виден.
           return (
-            <button key={period} onClick={() => setSelectedPeriod(period)} style={{ padding: '16px', borderRadius: '14px', border: `1.5px solid ${selectedPeriod === period ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'center', background: selectedPeriod === period ? 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.04) 100%)' : 'transparent', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: selectedPeriod === period ? '0 4px 20px rgba(252,174,145,0.15)' : 'none' }}>
+            <button key={period} onClick={() => setSelectedPeriod(period)} aria-pressed={selectedPeriod === period} style={{ padding: '16px', borderRadius: '14px', border: `1.5px solid ${selectedPeriod === period ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'center', background: selectedPeriod === period ? 'linear-gradient(135deg, rgba(252,174,145,0.12) 0%, rgba(249,160,139,0.04) 100%)' : 'transparent', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: selectedPeriod === period ? '0 4px 20px rgba(252,174,145,0.15)' : 'none' }}>
               {period === best && <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', padding: '2px 10px', background: 'var(--peach)', color: 'white', fontSize: '10px', fontWeight: 700, borderRadius: '100px', whiteSpace: 'nowrap', letterSpacing: '0.5px' }}>{t('planCards.bestChoice')}</div>}
               <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '4px' }}>{t(`period.${period}`)}</div>
               <div style={{ fontSize: '12px', fontWeight: 600, color: discount > 0 ? 'var(--pistachio)' : 'var(--muted)' }}>{discount > 0 ? t('period.discountLabel', { percent: discount }) : t('period.noDiscount')}</div>

@@ -10,6 +10,7 @@ import json
 import logging
 import random
 import re
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import AsyncIterator, Sequence
@@ -144,6 +145,10 @@ def _fallback_reply(settings_language: str, studio_language: str | None) -> str:
 @dataclass
 class AgentResult:
     text: str
+    # Идентификатор прогона: по нему в ai_usage лежат ВСЕ вызовы модели, ушедшие
+    # на этот вопрос. Возвращается наружу, чтобы чат положил его на сообщение
+    # ассистента — единственный мост от расхода к оценке человека.
+    request_id: str | None = None
     # Изменяющие действия не исполнены, а предложены (задача 6, расширена
     # частью A): {steps, warnings, ready, token}. Один план на весь ход, даже
     # если шаг в нём один — окно человек видит всегда одно и то же, а «одно
@@ -593,6 +598,9 @@ async def agent_events(
         yield "result", AgentResult(text=_fallback_reply(settings.language, studio_language))
         return
 
+    # ДО первого вызова модели и ПОСЛЕ проверки провайдера: без ключа вызовов
+    # не будет вовсе, и идентификатор указывал бы в пустоту.
+    request_id = uuid.uuid4().hex
     messages = await build_messages(ctx, db, settings, history, studio_language, current_page, viewport)
     tools = tools_for(ctx)
     # Что человек принёс с собой. Ответ без единого инструмента законен ровно
@@ -600,6 +608,12 @@ async def agent_events(
     asked = " ".join(m.text or "" for m in history if m.role == "user")
     tier = llm.TIER_FAST
     escalated = False
+    # Почему и с чего эскалировали — едет в СЛЕДУЮЩУЮ строку расхода, ту, что
+    # оплатит дорогая модель. Так одна строка отвечает на все вопросы сразу:
+    # почему ушли, с чего ушли и что в итоге ответило (model — фактический
+    # ответчик). Отдельного id вопроса в ai_usage нет, и склеивать соседние
+    # строки догадками не пришлось бы.
+    escalation: tuple[str, str] | None = None
     last_text: str | None = None
     # Последний поиск, под который подошло несколько записей. Живёт в пределах
     # вопроса: если модель возьмёт id из этой выдачи для изменяющего действия —
@@ -629,7 +643,11 @@ async def agent_events(
             ctx.studio_id, reply.usage,
             surface=surface, billable=(step == 0), user_id=ctx.user.id,
             tools=",".join(called), iterations=step + 1, escalated=escalated,
+            escalation_reason=escalation[0] if escalation else None,
+            escalation_from_model=escalation[1] if escalation else None,
+            request_id=request_id,
         )
+        escalation = None
         if reply.text:
             last_text = reply.text
         if not reply.tool_calls:
@@ -650,16 +668,22 @@ async def agent_events(
                     and _gave_up(reply.text, asked)):
                 logger.info("escalating: fast tier asked instead of acting, studio=%s", ctx.studio_id)
                 tier, escalated = llm.TIER_MAIN, True
+                escalation = ("gave_up_no_tools", reply.usage.model)
                 continue
             text = reply.text or last_text or _fallback_reply(settings.language, studio_language)
             yield "result", AgentResult(
                 text=text,
+                request_id=request_id,
                 plan_proposal=finish_plan(plan_steps, ctx, session_id, dropped) if plan_steps else None,
             )
             return
 
         messages.append(_assistant_turn(reply))
         had_error = False
+        # Что именно сломалось. Само поведение цикла от этого не зависит — им
+        # по-прежнему правит had_error; различаются только записи в телеметрии:
+        # отклонённый шаг плана и упавший инструмент — разные болезни.
+        error_kind: str | None = None
         wants_smart = False
         for call in reply.tool_calls:
             t = TOOLS.get(call["name"])
@@ -672,7 +696,8 @@ async def agent_events(
                 # — не тот случай, когда можно собрать план и спросить потом.
                 asked = clarify_for(call["arguments"] or {}, ambiguous)
                 if asked:
-                    yield "result", AgentResult(text=_clarify_text(asked))
+                    yield "result", AgentResult(
+                        text=_clarify_text(asked), request_id=request_id)
                     return
                 number = len(plan_steps) + 1
                 # Уже собранные шаги — чтобы проверка не выкинула занятие,
@@ -685,6 +710,7 @@ async def agent_events(
                     # «зала #2 нет» — повод сходить за настоящим списком, а не
                     # тупик. Человеку этот тупик стоил четырёх «создай» подряд.
                     had_error = True
+                    error_kind = error_kind or "plan_step_error"
                     # С именем инструмента впереди — по нему же удавшийся повтор
                     # снимет эту запись ниже.
                     dropped.append(f"{call['name']}: {planned['error']}")
@@ -723,7 +749,9 @@ async def agent_events(
             # найденный однозначно человек снова упирался бы в вопрос.
             if result.get("matched_by"):
                 ambiguous = result.get("ambiguous")
-            had_error = had_error or "error" in result
+            if "error" in result:
+                had_error = True
+                error_kind = error_kind or "tool_error"
             wants_smart = wants_smart or (t is not None and t.tier_hint == llm.TIER_SMART)
             messages.append({
                 "role": "tool",
@@ -736,8 +764,12 @@ async def agent_events(
         if not escalated and tier == llm.TIER_FAST:
             if wants_smart:
                 tier, escalated = llm.TIER_SMART, True
+                escalation = ("explicit_smart_tier", reply.usage.model)
             elif step >= 3 or had_error:
                 tier, escalated = llm.TIER_MAIN, True
+                # had_error перебивает счётчик шагов: если сломался инструмент,
+                # причина — он, а не то, что заодно набежала четвёртая итерация.
+                escalation = (error_kind or "iterations_deep", reply.usage.model)
 
     # Лимит итераций исчерпан. Пустой ответ хуже неполного, а собранные шаги
     # тем более не выбрасываем: человек их всё равно заказал, и потерять
@@ -748,6 +780,7 @@ async def agent_events(
             else "\n\nЗадача оказалась сложнее обычного — уточните вопрос, и я продолжу.")
     yield "result", AgentResult(
         text=(last_text or "Не удалось довести ответ до конца.") + tail,
+        request_id=request_id,
         plan_proposal=finish_plan(plan_steps, ctx, session_id, dropped) if plan_steps else None,
     )
 

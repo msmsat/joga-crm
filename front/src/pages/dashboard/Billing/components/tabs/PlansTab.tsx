@@ -124,7 +124,7 @@ export default function PlansTab({
   ];
 
   return (
-    <div style={{ padding: '0 var(--card-pad)' }}>
+    <div className="bl-plans" style={{ padding: '0 var(--card-pad)' }}>
 
       {/* Оплаченный, но ещё не наступивший апгрейд. Держится на сервере
           (StudioBillingPlan.scheduled_plan), поэтому переживает перезагрузку —
@@ -252,10 +252,19 @@ export default function PlansTab({
       {/* ── SAVINGS + PAYMENT TIMELINE ──
           Комбо тоже платит фикс подпиской, и без этого блока у него не было
           кнопки оплаты вообще: заплатить можно было только переключившись на
-          вкладку подписки, где показывалась полная цена вместо половинной. */}
+          вкладку подписки, где показывалась полная цена вместо половинной.
+
+          На телефоне колонки становятся строками (.bl-pay-grid): два столбца
+          по 130px превращали и график платежей, и выгоду от предоплаты в
+          лесенку из переносов. */}
       {billingMode !== 'percent' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-          <SavingsIllustration currency={currency} monthlyPrice={currentMonthly} period={selectedPeriod} discount={periodDiscounts[selectedPeriod]} />
+        <div className="bl-pay-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+          {/* На месяц скидки нет, и карточка выгоды показывает пустое состояние.
+              На десктопе это держит колонку, а на телефоне — просто карточка
+              «тут ничего» перед графиком платежей. */}
+          {!(isPhone && !periodDiscounts[selectedPeriod]) && (
+            <SavingsIllustration currency={currency} monthlyPrice={currentMonthly} period={selectedPeriod} discount={periodDiscounts[selectedPeriod]} />
+          )}
 
           <div id="payment-section" style={{ padding: '28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
@@ -283,19 +292,25 @@ export default function PlansTab({
                 </div>
               )}
             </div>
-            <div style={{ marginTop: '20px', padding: '14px 16px', background: 'var(--bg)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('paymentSchedule.total')}</span>
-              <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
+            {/* Итог и кнопка — один узел (.bl-pay-cta): на телефоне он
+                прилипает над нижней панелью, чтобы сумма и оплата были на
+                экране, пока листаешь места, период и график. На десктопе
+                обычный div — раскладка карточки не меняется. */}
+            <div className="bl-pay-cta">
+              <div style={{ marginTop: '20px', padding: '14px 16px', background: 'var(--bg)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', color: 'var(--muted)' }}>{t('paymentSchedule.total')}</span>
+                <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)' }}>{formatMoney(totalToPay, currency)}</span>
+              </div>
+              {/* Цены в каталоге без НДС (stripe_catalog.TAX_BEHAVIOR = "exclusive"),
+                  налог Stripe Tax накидывает сверху на своей странице. Без этой строки
+                  итог в счёте оказывался бы заметно больше показанного здесь. */}
+              <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--muted)', textAlign: 'right' }}>
+                {t('paymentSchedule.vatNote')}
+              </div>
+              <button onClick={payFixed} style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <ZapIcon /> {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
+              </button>
             </div>
-            {/* Цены в каталоге без НДС (stripe_catalog.TAX_BEHAVIOR = "exclusive"),
-                налог Stripe Tax накидывает сверху на своей странице. Без этой строки
-                итог в счёте оказывался бы заметно больше показанного здесь. */}
-            <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--muted)', textAlign: 'right' }}>
-              {t('paymentSchedule.vatNote')}
-            </div>
-            <button onClick={payFixed} style={{ marginTop: '12px', width: '100%', padding: '13px', borderRadius: '12px', border: 'none', background: 'var(--peach)', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(252,174,145,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <ZapIcon /> {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
-            </button>
           </div>
         </div>
       )}

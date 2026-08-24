@@ -9,20 +9,18 @@ import logging
 import os
 from html import escape
 
-import aiohttp
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import BookingChannelConfig, Studio
-from services.client_agent import CHANNEL_TELEGRAM, schedule_reply
+from services import inbound
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 MINIAPP_URL = os.getenv("MINIAPP_URL", "http://localhost:5174").rstrip("/")
-_TIMEOUT_SECONDS = 10
 
 # Ответ на /start объясняет ровно то, чего человек не может знать сам: Start
 # открыл боту диалог, но кто он такой, мы ещё не знаем. Телефона и почты Telegram
@@ -54,59 +52,25 @@ def _is_start(text: str) -> bool:
     return text.strip().startswith("/start")
 
 
-def _reply_payload(chat_id: int, studio_id: int, studio_name: str) -> dict:
-    """Тело sendMessage: приветствие + кнопка web_app, открывающая /s/{studio_id}
-    прямо в Telegram (не t.me?startapp= — тот требует Web App, зарегистрированный
-    в BotFather, а бот тут произвольный, его студия подключает своим токеном).
+async def greeting(db, studio_id: int) -> dict:
+    """Приветствие на /start — каноническим намерением, а не телом Telegram.
 
-    В web_app-кнопке Telegram принимает ТОЛЬКО https и на http отвергает
-    сообщение целиком — с MINIAPP_URL=localhost клиент не получал на /start
-    вообще ничего вместо «ответ без кнопки». Поэтому не-https уходит ссылкой
-    в тексте: ответить на /start важнее, чем показать кнопку.
+    Кнопка описана смыслом («ссылка туда-то»), в inline-клавиатуру её превращает
+    отправщик (services/channels/telegram.render). Так добавление кнопок в
+    другие каналы становится делом рендерера, а не миграции данных. Транспорт и
+    индикатор «печатает…» уехали туда же: роутер — граница вебхука, сеть — в
+    сервисе.
     """
     # Studio.name не nullable в схеме, но здесь мы вне транзакции создания
     # студии — пустая строка на всякий случай не рвёт фразу знаком «« »».
+    studio_name = (await db.execute(
+        select(Studio.name).where(Studio.id == studio_id))).scalar_one_or_none() or ""
     name_part = f" «{escape(studio_name, quote=False)}»" if studio_name else ""
-    intro = _START_INTRO.format(studio_name=name_part)
-    url = f"{MINIAPP_URL}/s/{studio_id}"
-    if not url.startswith("https://"):
-        text = intro + _START_CTA.format(where="по ссылке ниже") + f"\n\n{url}"
-        return {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     return {
-        "chat_id": chat_id,
-        "text": intro + _START_CTA.format(where="кнопкой ниже"),
+        "text": _START_INTRO.format(studio_name=name_part) + _START_CTA,
         "parse_mode": "HTML",
-        "reply_markup": {
-            "inline_keyboard": [[{"text": _BUTTON_TEXT, "web_app": {"url": url}}]],
-        },
+        "button": {"text": _BUTTON_TEXT, "url": f"{MINIAPP_URL}/s/{studio_id}"},
     }
-
-
-async def _send_message(token: str, payload: dict) -> None:
-    timeout = aiohttp.ClientTimeout(total=_TIMEOUT_SECONDS)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.post(f"https://api.telegram.org/bot{token}/sendMessage", json=payload) as resp:
-            if resp.status >= 400:
-                raise RuntimeError(f"Telegram {resp.status}: {(await resp.text())[:400]}")
-
-
-async def send_typing(token: str, chat_id: int) -> None:
-    """«печатает…» на время, пока агент думает.
-
-    Ответ агента занимает несколько секунд (два круга к модели, когда нужен
-    инструмент), и всё это время чат выглядит так, будто сообщение не дошло.
-    Telegram гасит индикатор сам через 5 секунд, продлевать не нужно. Ошибку
-    глотаем: индикатор — не ответ, ронять из-за него генерацию не за что.
-    """
-    timeout = aiohttp.ClientTimeout(total=_TIMEOUT_SECONDS)
-    try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            await session.post(
-                f"https://api.telegram.org/bot{token}/sendChatAction",
-                json={"chat_id": chat_id, "action": "typing"},
-            )
-    except (aiohttp.ClientError, TimeoutError):
-        logger.debug("telegram sendChatAction не прошёл — ответ это не отменяет")
 
 
 async def _studio_by_token(db: AsyncSession, token: str) -> int | None:
@@ -131,6 +95,8 @@ async def _studio_by_token(db: AsyncSession, token: str) -> int | None:
 async def telegram_webhook(
     token: str,
     request: Request,
+    # Ничего не планирует с P0.3 и остаётся намеренно: параметр — граница,
+    # на которой архитектурный тест проверяет, что web не запускает агента.
     background: BackgroundTasks = None,
     db: AsyncSession = Depends(get_db),
 ):
@@ -164,21 +130,29 @@ async def telegram_webhook(
         logger.warning("telegram webhook: студия не найдена, канал записи выключен? token=…%s", token[-6:])
         return {"ok": True}
 
-    if not _is_start(text):
-        # Не /start — это разговор с ассистентом студии. Тумблер агента и квоту
-        # проверяет сама фоновая задача: до неё доходит только текст и отправитель.
-        sender_id = (message.get("from") or {}).get("id")
-        if sender_id is not None:
-            schedule_reply(background, studio_id, CHANNEL_TELEGRAM, str(sender_id), text, token)
+    # Приём — ПОСЛЕ опознания студии по токену (он же секрет вебхука) и ПЕРЕД
+    # любым побочным действием. update_id уникален в пределах ОДНОГО бота, а
+    # ботов у нас столько же, сколько студий, — поэтому в ключ входит студия,
+    # иначе апдейт №1 второй студии выглядел бы дублем апдейта №1 первой.
+    # Апдейта без update_id не бывает, но ключ «studio:None» из него был бы
+    # выдуманным: два разных битых апдейта склеились бы в один.
+    update_id = update.get("update_id")
+    admission = await inbound.admit(
+        inbound.TELEGRAM, f"{studio_id}:{update_id}" if update_id is not None else None,
+        studio_id, inbound.MESSAGE, str(chat_id), text, update,
+    )
+    if not admission.accepted:
+        # Повтор той же доставки. Ответ обычный 200: 4xx/5xx заставили бы
+        # Telegram ретраить её снова и снова. Работа по оригиналу жива.
+        logger.info("telegram webhook: повтор апдейта отброшен, studio_id=%s", studio_id)
         return {"ok": True}
 
-    studio_name = (await db.execute(select(Studio.name).where(Studio.id == studio_id))).scalar_one_or_none()
-
-    try:
-        await _send_message(token, _reply_payload(chat_id, studio_id, studio_name or ""))
-    except (aiohttp.ClientError, TimeoutError, RuntimeError) as exc:
-        logger.error("telegram webhook: /start не отправлен, studio_id=%s: %s", studio_id, exc)
-
+    # Обе ветки — и приветствие на /start, и ответ ассистента — исполняет одна
+    # работа (services/agent_jobs::_handle). Раньше приветствие уходило прямо
+    # здесь, синхронно: упал процесс или Telegram — и человек не получал ничего.
+    # Ответственность web на этом закончилась: работа лежит в БД, её возьмёт
+    # процесс-исполнитель (`python -m workers.main`). Запускать агента здесь
+    # значило бы снова привязать ответ клиенту к жизни web-реплики.
     return {"ok": True}
 
 
@@ -189,36 +163,24 @@ if __name__ == "__main__":
     assert not _is_start("привет")
     assert not _is_start("")
 
-    _saved = MINIAPP_URL
-    MINIAPP_URL = "https://jogaua.online"
-    payload = _reply_payload(chat_id=555, studio_id=42, studio_name="Velora Yoga")
-    assert payload["chat_id"] == 555
-    assert payload["parse_mode"] == "HTML"
-    assert "«Velora Yoga»" in payload["text"]
-    assert "кнопкой ниже" in payload["text"]
+    # Приветствие — намерение, а не тело Telegram: текст плюс описание кнопки.
+    # Как оно ляжет в inline-клавиатуру (и ляжет ли — на http Telegram отверг бы
+    # сообщение целиком), решает services/channels/telegram.render, и проверено
+    # это там же.
+    from html import escape as _e
+
+    intro = _START_INTRO.format(studio_name=" «Velora Yoga»") + _START_CTA
+    assert "«Velora Yoga»" in intro
     # Разметка — только <b></b>: незакрытый или лишний тег = 400 от Telegram,
     # и человек не получает на /start вообще ничего.
-    assert payload["text"].count("<") == payload["text"].count(">") == 2
-    button = payload["reply_markup"]["inline_keyboard"][0][0]
-    assert button["web_app"]["url"] == "https://jogaua.online/s/42"
+    assert intro.count("<") == intro.count(">") == 2
 
     # Название с HTML-символами не должно ломать разметку сообщения.
-    payload = _reply_payload(chat_id=555, studio_id=42, studio_name="Fit & <Yoga>")
-    assert "Fit &amp; &lt;Yoga&gt;" in payload["text"]
-    assert payload["text"].count("<") == payload["text"].count(">") == 2  # только <b></b>
+    hostile = _START_INTRO.format(studio_name=f" «{_e('Fit & <Yoga>', quote=False)}»") + _START_CTA
+    assert "Fit &amp; &lt;Yoga&gt;" in hostile
+    assert hostile.count("<") == hostile.count(">") == 2
 
     # Пустое имя студии — фраза не рвётся пустыми кавычками.
-    payload = _reply_payload(chat_id=555, studio_id=42, studio_name="")
-    assert "Это бот студии. Здесь" in payload["text"]
+    assert "Это бот студии. Здесь" in _START_INTRO.format(studio_name="")
 
-    # http (дев): кнопки нет, но ответ на /start есть — Telegram отверг бы всё сообщение.
-    MINIAPP_URL = "http://localhost:5174"
-    payload = _reply_payload(chat_id=555, studio_id=42, studio_name="Velora Yoga")
-    assert "reply_markup" not in payload
-    assert "по ссылке ниже" in payload["text"]
-    assert payload["text"].endswith("http://localhost:5174/s/42")
-    MINIAPP_URL = _saved
-
-    print(_reply_payload(chat_id=1, studio_id=1, studio_name="Velora Yoga")["text"]
-          .replace("<b>", "").replace("</b>", ""))
     print("telegram_webhook self-check ok")

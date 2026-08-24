@@ -41,7 +41,7 @@ export default function Billing() {
       <OfflineFeeCard plan={h.plan} />
 
       {h.paymentReturn && (
-        <div style={{ margin: '0 32px 20px', padding: '16px 20px', background: 'rgba(163,201,168,0.12)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="bl-banner" style={{ margin: '0 32px 20px', padding: '16px 20px', background: 'rgba(163,201,168,0.12)', border: '1px solid rgba(163,201,168,0.3)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pistachio)', flexShrink: 0 }} />
           <span style={{ fontSize: '13px', color: 'var(--onyx)', fontWeight: 600 }}>
             {h.plan?.status === 'active'

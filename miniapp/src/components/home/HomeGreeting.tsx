@@ -1,34 +1,75 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import LanguagePopover from '../profile/LanguagePopover';
+
+/** Часть дня. Считает страница — из неё же берётся слово приветствия. */
+export type Daypart = 'morning' | 'afternoon' | 'evening';
 
 type Props = {
   /** «Доброго ранку» */
   greeting: string;
+  /** Та же часть дня, из которой собрано `greeting`: глиф обязан совпадать со
+      словом, иначе над «Добрым утром» светит месяц. */
+  daypart: Daypart;
   /** Имя клиента, у гостя — тёплое обращение студии (`home.guest_name`). */
   name: string;
-  /** Название студии — шапка кабинета принадлежит ей, а не Velora. */
-  studioName?: string;
-  /** Логотип виджета из настроек «Онлайн-запись». Нет — остаётся точка-марка. */
-  logoUrl?: string | null;
+  /**
+   * Гость. Ему в шапку встаёт выбор языка: на телефоне бокового меню с
+   * карточкой языка нет, а раздела профиля у человека без аккаунта — тем более.
+   * Вошедшему чип не показывается: у него язык живёт строкой в профиле.
+   */
+  isGuest: boolean;
 };
 
 /**
- * Шапка главной. Ростом в четыре строки: марка студии с датой, приветствие,
- * имя и девиз дня.
+ * Солнце над горизонтом, солнце в зените, месяц — по три-пять штрихов, потому
+ * что рисуются в 15px. Эмодзи запрещены ДС, поэтому inline SVG.
+ */
+const DAYPART_GLYPH: Record<Daypart, React.ReactNode> = {
+  morning: (
+    <>
+      <path d="M4 18h16" />
+      <path d="M7.5 18a4.5 4.5 0 0 1 9 0" />
+      <path d="M12 5v2.4" />
+      <path d="m5.7 9.7 1.7 1.7" />
+      <path d="m18.3 9.7-1.7 1.7" />
+    </>
+  ),
+  afternoon: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 3v2" />
+      <path d="M12 19v2" />
+      <path d="M3 12h2" />
+      <path d="M19 12h2" />
+    </>
+  ),
+  evening: <path d="M20 14.4A8.4 8.4 0 1 1 9.6 4a6.6 6.6 0 0 0 10.4 10.4z" />,
+};
+
+/**
+ * Шапка главной. Ростом в три строки: дата, приветствие с именем и девиз дня.
+ *
+ * Марки студии здесь нет ни на одной ширине: на десктопе она стоит в боковом
+ * меню, на телефоне — в карточке студии сразу под шапкой, с фотографией и
+ * состоянием. Название дважды на одном экране ничего не добавляло, а этаж
+ * шапки занимало.
  *
  * Раньше имя набиралось 40px и вместе с отступами съедало треть первого экрана,
  * хотя ничего не сообщало — «Марія» человек и так про себя знает. Главный объект
  * экрана ниже (студия у гостя, занятие у клиента), поэтому шапка обязана быть
- * компактной: контраст масштабов держится микрометкой против 27px, а не высотой.
+ * компактной: присутствие ей даёт не рост, а три приёма, ничего не стоящих по
+ * высоте, — глиф части дня, выезд имени из-под обрезки и персиковое тире
+ * девиза. Появляются по очереди сверху вниз, одной фразой, а не пачкой.
  *
  * Никакой заливки акцентом — ДС Velora прямо запрещает крупные персиковые
  * плашки, цвет на этом экране несут фотографии студий.
  */
-export default function HomeGreeting({ greeting, name, studioName, logoUrl }: Props) {
+export default function HomeGreeting({ greeting, daypart, name, isGuest }: Props) {
   const { t, i18n } = useTranslation();
+  const reduce = useReducedMotion();
 
   // Дата словами — тихий контекст под «Завтра · 10:00» в карточке занятия.
-  // Без дня недели: с длинным названием студии строка на 320px не помещается.
   const today = new Date().toLocaleDateString(i18n.language, {
     day: 'numeric',
     month: 'long',
@@ -36,57 +77,108 @@ export default function HomeGreeting({ greeting, name, studioName, logoUrl }: Pr
 
   return (
     <div className="pt-safe px-5">
-      <div className="flex items-center justify-between gap-3 pt-5 dt:pt-16">
-        {/* Марка студии — только на телефоне: на десктопе она уже стоит в
-            боковом меню, второй раз в шапке это просто дубль. */}
-        <div className="flex min-w-0 items-center gap-2 dt:hidden">
-          {logoUrl ? (
-            <img src={logoUrl} alt="" className="h-5 w-5 shrink-0 rounded-md object-cover" />
-          ) : (
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-          )}
-          <span className="truncate text-[10.5px] font-extrabold uppercase tracking-[0.26em] text-foreground">
-            {studioName || 'Velora'}
-          </span>
-        </div>
-
-        <span className="ml-auto shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-muted-foreground dt:text-[11px]">
-          {today}
-        </span>
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-6 dt:pt-8"
-      >
-        <div className="text-[13px] font-medium text-muted-foreground dt:text-[14px]">
-          {greeting},
-        </div>
-        {/* Две строки максимум вместо обрезки: у немцев обращение к гостю —
-            целая фраза («Schön, dass Sie da sind»), и многоточие вместо неё
-            выглядело бы поломкой, а не длинным именем. */}
-        <h1 className="mt-0.5 line-clamp-2 text-[27px] font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground dt:text-[34px]">
-          {name}
-        </h1>
-
-        {/* Девиз дня — единственное место экрана, где акцент студии работает
-            самим текстом. Персик по жемчугу тонковат для 12px и слишком
-            криклив для 27px: 15.5px с плотной посадкой — та середина, где
-            строка звучит бодро и всё ещё принадлежит шапке, а не спорит с
-            карточкой ниже. Появляется чуть позже имени: не вместе с ним, а
-            вслед — так читается как продолжение фразы, а не как второй
-            заголовок. */}
+      <div className="pt-6 dt:pt-16">
+        {/* Дата встала в строку приветствия. Выравнивание по базовой линии, а не
+            по центру: кегли разные (13px против 10.5px), и по центру строки
+            разошлись бы на пиксель — ровно та мелочь, которую видно. Глиф
+            поэтому не флекс-элемент, а инлайн внутри самой строки: у svg
+            базовой линии нет, и он утащил бы за собой всю раскладку. */}
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-2 w-fit bg-gradient-to-r from-brand via-brand-light to-brand bg-clip-text text-[15.5px] font-extrabold leading-snug tracking-[-0.02em] text-transparent dt:mt-2.5 dt:text-[17px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-baseline gap-3"
         >
-          {t('home.today_is_your_day')}
+          <span className="shrink-0 text-[13px] font-medium text-muted-foreground dt:text-[14px]">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--v-brand)"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-1.5 inline-block h-[15px] w-[15px] align-[-3px]"
+            >
+              {DAYPART_GLYPH[daypart]}
+            </svg>
+            {greeting},
+          </span>
+
+          <span className="ml-auto shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-muted-foreground dt:text-[11px]">
+            {today}
+          </span>
         </motion.div>
-      </motion.div>
+
+        {/* Имя выезжает из-под обрезки — приём набора, а не эффект: буквы
+            появляются оттуда же, где стоит строка приветствия, и шапка читается
+            одной фразой. Обрезка расширена вниз на 0.16em и тем же значением
+            подтянута назад: иначе «р» и «у» лишились бы хвостов, а высота блока
+            выросла бы на пустое место.
+            Две строки максимум вместо многоточия: у немцев обращение к гостю —
+            целая фраза («Schön, dass Sie da sind»), и обрезка вместо неё
+            выглядела бы поломкой, а не длинным именем.
+
+            ПОЧЕМУ 0.5с И ИМЕННО ЭТА КРИВАЯ. Здесь стояло 0.8с с [0.16,1,0.3,1]
+            — экспонентой, которая проходит 99% пути за первые 40% времени.
+            Оставшиеся полсекунды имя доползало меньше чем на полпикселя, и
+            видно было ровно это: рывок, а следом долгое подрагивание у самого
+            края обрезки — «лагает в конце». Дело не в кадрах: в хвосте такой
+            кривой их и нечем заполнить. Кубическая кривая тратит время
+            пропорционально пути, поэтому доводки на месте у неё нет. */}
+        <div className="-mb-[0.16em] mt-1 overflow-hidden pb-[0.16em]">
+          <motion.h1
+            initial={{ y: reduce ? 0 : '125%' }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05, ease: [0.33, 1, 0.68, 1] }}
+            className="line-clamp-2 text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-foreground dt:text-[38px]"
+          >
+            {name}
+          </motion.h1>
+        </div>
+
+        {/* Девиз дня — язык меток разделов («НАПРЯМКИ», «НАЙБЛИЖЧЕ ЗАНЯТТЯ»),
+            поднятый до акцента: тот же кегль и трекинг, но персиком и жирным.
+            Тире перед ним — единственная линия на экране; оно не делит блоки, а
+            держит строку, как надзаголовок в журнальной вёрстке, и прочерчивает
+            себя вслед за именем — той же кривой и по той же причине, что имя
+            (см. выше): у 20-пиксельного тире хвост экспоненты был заметен даже
+            сильнее, чем у крупного текста. */}
+        <div className="mt-3 flex items-center gap-2.5 dt:mt-3.5">
+          <motion.span
+            initial={{ scaleX: reduce ? 1 : 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.4, delay: 0.24, ease: [0.33, 1, 0.68, 1] }}
+            className="h-[2px] w-5 shrink-0 origin-left rounded-full bg-brand dt:w-6"
+          />
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, delay: 0.28 }}
+            /* truncate — страховка от 320px с чипом языка на той же строке:
+               девиз там укладывается впритык, и без обрезки он не ужался бы, а
+               вытолкнул чип за поле экрана. */
+            className="truncate text-[11px] font-extrabold uppercase leading-[1.5] tracking-[0.24em] text-brand dt:text-[12.5px]"
+          >
+            {/* Точка в конце: в капители с широким трекингом она висит отдельным
+                знаком в пустоте. Убираем на выводе, а не в переводах — фраза
+                живёт в пяти языках и в остальных местах остаётся предложением. */}
+            {t('home.today_is_your_day').replace(/[.!]+$/, '')}
+          </motion.span>
+
+          {/* Выбор языка гостю — в дальнем углу шапки, на одной строке с
+              девизом. Наверху, к дате, он не встал бы: там строка уже занята с
+              обоих концов, и третий предмет на 320px её ломает. Здесь у правого
+              края пусто, а сам угол — то место, где выбор языка ищут во всех
+              приложениях. Появляется вместе с нижней строкой, отдельного входа
+              на экран не создаёт.
+              На десктопе он живёт карточкой в боковом меню — здесь скрыт. */}
+          {isGuest && (
+            <div className="ml-auto shrink-0 dt:hidden">
+              <LanguagePopover variant="chip" />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,10 +6,9 @@ import { useTelegram } from './useTelegram';
 import { spawnPetals } from '../lib/petals';
 import { notify } from '../lib/notify';
 import { getSession } from '../lib/session';
+import { bumpLessons } from '../lib/revision';
 
 interface Options {
-  /** Списки этой страницы устарели — перечитать (главная тянет ещё и «ближайшее»). */
-  onChanged: () => void;
   /** Свои подписи страницы: у главной и расписания они разные. */
   messages: { bookError: string; cancelError: string; cancelSuccess: string };
   /**
@@ -35,8 +34,13 @@ interface Options {
  *   402 — студия требует абонемент («Предоплата при записи») → лист с текстом
  *         сервера и кнопкой в покупку. Тост тут был тупиком: человеку сообщали,
  *         что нужен абонемент, и не давали способа его купить.
+ *
+ * Об успешной записи и отмене хук объявляет сам — `bumpLessons()` вместо
+ * колбэка страницы. Устаревают не «списки этой страницы», а данные о занятиях
+ * вообще: бронь с главной меняет и расписание, и «мои занятия», а те со времён
+ * постоянно смонтированных разделов сами о ней не узнают.
  */
-export function useLessonBooking({ onChanged, messages, onNeedAuth }: Options) {
+export function useLessonBooking({ messages, onNeedAuth }: Options) {
   const { t } = useTranslation();
   const { tg, vibrateMedium } = useTelegram();
 
@@ -93,7 +97,7 @@ export function useLessonBooking({ onChanged, messages, onNeedAuth }: Options) {
       });
 
       setCoffee(reservation.coffee);
-      onChanged();
+      bumpLessons();
       setIsProcessing(false);
       closeModal();
       setIsSuccessOpen(true);
@@ -125,7 +129,7 @@ export function useLessonBooking({ onChanged, messages, onNeedAuth }: Options) {
     try {
       await cancelLesson(activeLesson.id);
 
-      onChanged();
+      bumpLessons();
       setIsProcessing(false);
       closeModal();
       notify(messages.cancelSuccess);

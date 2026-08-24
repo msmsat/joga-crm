@@ -61,12 +61,16 @@ function FlagRU() {
 
 // Названия на самих языках, а не переводы: человек ищет в списке ту строку,
 // которую узнаёт, — «Čeština», а не «Чеська».
+//
+// `short` — подпись для чипа, где на название места нет. Это НЕ код языка в
+// верхнем регистре: у украинского он «uk», и «UK» рядом с «EN» читается как
+// United Kingdom. Поэтому пишем страну флага, а не тег локали.
 const LANGUAGES = [
-  { code: 'uk', name: 'Українська', flag: <FlagUA /> },
-  { code: 'en', name: 'English', flag: <FlagGB /> },
-  { code: 'cs', name: 'Čeština', flag: <FlagCZ /> },
-  { code: 'de', name: 'Deutsch', flag: <FlagDE /> },
-  { code: 'ru', name: 'Русский', flag: <FlagRU /> },
+  { code: 'uk', short: 'UA', name: 'Українська', flag: <FlagUA /> },
+  { code: 'en', short: 'EN', name: 'English', flag: <FlagGB /> },
+  { code: 'cs', short: 'CZ', name: 'Čeština', flag: <FlagCZ /> },
+  { code: 'de', short: 'DE', name: 'Deutsch', flag: <FlagDE /> },
+  { code: 'ru', short: 'RU', name: 'Русский', flag: <FlagRU /> },
 ];
 
 /** Высота панели: строка списка — 44 плюс подбивка. Нужна ДО отрисовки. */
@@ -99,8 +103,13 @@ const matches = (current: string, code: string) =>
  * профиле, и второй такой же выбор рядом был бы дублем. Отдельным компонентом
  * вариант делать нельзя: список языков, замер направления, закрытие по нажатию
  * снаружи и по Esc — один и тот же код, расходиться двум копиям незачем.
+ *
+ * `variant="chip"` — тот же выбор для гостя на телефоне, где боковой панели с
+ * карточкой нет вовсе. Капсула с флагом и страной живёт в шапке главной: язык
+ * гостю нужен в первую секунду (пришёл по ссылке из инстаграма и попал не в
+ * свой язык), а не в разделе, которого у него ещё нет.
  */
-export default function LanguagePopover({ variant = 'row' }: { variant?: 'row' | 'card' } = {}) {
+export default function LanguagePopover({ variant = 'row' }: { variant?: 'row' | 'card' | 'chip' } = {}) {
   const { i18n, t } = useTranslation();
   const { tg } = useTelegram();
 
@@ -184,6 +193,46 @@ export default function LanguagePopover({ variant = 'row' }: { variant?: 'row' |
             )}
           >
             <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+      ) : variant === 'chip' ? (
+        /* Капсула размером с подпись: флаг, страна, шеврон. Белая поверхность с
+           мягкой тенью — тот же предмет, что карточки экрана, только ростом со
+           строку. Без персика: акцент в шапке уже занят девизом дня, а второй
+           цветной объект рядом с ним превратил бы выбор языка в кнопку
+           действия, которой он не является. */
+        <button
+          type="button"
+          onClick={toggle}
+          aria-haspopup="menu"
+          aria-expanded={isOpen}
+          aria-label={t('profile.language', 'Мова')}
+          className="flex items-center gap-1.5 rounded-full bg-card py-1.5 pl-1.5 pr-2.5 shadow-soft transition-shadow duration-200 active:shadow-none"
+        >
+          {/* Флаг рисуется в 28×20 атрибутами svg — в капсуле он вдвое меньше,
+              поэтому размер задаётся дочернему элементу, иначе он вылезет за
+              рамку и его срежет overflow. */}
+          <span className="flex h-[13px] w-5 shrink-0 overflow-hidden rounded-[3px] ring-1 ring-foreground/10 [&>svg]:h-full [&>svg]:w-full">
+            {active.flag}
+          </span>
+
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-card-foreground">
+            {active.short}
+          </span>
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--v-muted-foreground)"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn(
+              'h-2.5 w-2.5 shrink-0 transition-transform duration-200',
+              isOpen && 'rotate-180',
+            )}
+          >
+            <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
       ) : (

@@ -109,6 +109,89 @@ async def _stuck(db, since: datetime) -> None:
         print("  ↳ это места, где ассистент «тупит»: добавьте такие вопросы в набор задачи 19")
 
 
+async def _escalations(db, since: datetime) -> None:
+    """Почему уходили на дорогую модель и во что это обошлось.
+
+    Строка с причиной ровно одна на вопрос — первая после переключения, — так
+    что счётчик слева это число эскалаций, а не число вызовов после них.
+    Стоимость считается по ВСЕМ строкам с escalated: платим за весь хвост.
+    """
+    rows = (await db.execute(
+        select(AIUsage.escalation_reason, func.count(),
+               func.sum(AIUsage.cost_micro), func.max(AIUsage.model))
+        .where(AIUsage.created_at >= since, AIUsage.escalation_reason.isnot(None))
+        .group_by(AIUsage.escalation_reason)
+        .order_by(func.count().desc())
+    )).all()
+    total = (await db.execute(
+        select(func.count()).select_from(AIUsage)
+        .where(AIUsage.created_at >= since, AIUsage.billable.is_(True))
+    )).scalar_one()
+    spent = (await db.execute(
+        select(func.coalesce(func.sum(AIUsage.cost_micro), 0)).select_from(AIUsage)
+        .where(AIUsage.created_at >= since, AIUsage.escalated.is_(True))
+    )).scalar_one()
+
+    print("\nЭСКАЛАЦИИ НА ДОРОГУЮ МОДЕЛЬ")
+    if not rows:
+        print("  за период не было (или строки от версии до этой колонки)")
+        return
+    fired = sum(n for _r, n, _c, _m in rows)
+    print(f"  {'причина':<22} {'сколько':>8} {'доля вопросов':>15}   куда ушли")
+    for reason, n, _cost, model in rows:
+        print(f"  {reason:<22} {n:>8} {_pct(n, total):>15}   {model or '—'}")
+    print(f"  ИТОГО {fired} эскалаций, потрачено на них {_money(int(spent or 0))}")
+    print("  ↳ вот по этим цифрам и решается, нужна ли дорогая модель в проде")
+
+
+async def _requests(db, since: datetime) -> None:
+    """Вопросы целиком: вызовы, модели, инструменты, деньги — по request_id.
+
+    До этой колонки строки одного вопроса связывались соседством (billable плюс
+    всё, что за ним по id), и два одновременных вопроса одной студии
+    перемешивались. Здесь ничего не выводится из порядка строк.
+    """
+    calls = func.count().label("calls")
+    rows = (await db.execute(
+        select(
+            AIUsage.request_id,
+            calls,
+            func.count(func.distinct(AIUsage.model)).label("models"),
+            func.max(AIUsage.iterations).label("last_step"),
+            func.sum(AIUsage.cost_micro).label("cost"),
+            func.max(AIUsage.escalation_reason).label("reason"),
+        )
+        .where(AIUsage.created_at >= since, AIUsage.request_id.isnot(None))
+        .group_by(AIUsage.request_id)
+    )).all()
+
+    print("\nВОПРОСЫ ЦЕЛИКОМ (по request_id)")
+    if not rows:
+        print("  за период нет (или строки от версии до этой колонки)")
+        return
+    costs = sorted(int(r.cost or 0) for r in rows)
+    per_call = sorted(r.calls for r in rows)
+    escalated = [r for r in rows if r.reason]
+    # Пропуск строки виден только потому, что iterations — порядковый номер
+    # вызова: record_usage глушит свои ошибки, и потерянная строка иначе
+    # неотличима от «вызова не было».
+    gaps = [r for r in rows if r.last_step and r.last_step != r.calls]
+    multi = [r for r in rows if r.models > 1]
+
+    print(f"  вопросов                {len(rows)}")
+    print(f"  вызовов модели: медиана {per_call[len(per_call) // 2]}, максимум {max(per_call)}")
+    print(f"  цена вопроса:   медиана {_money(costs[len(costs) // 2])}, максимум {_money(max(costs))}")
+    print(f"  сменили модель          {len(multi)} ({_pct(len(multi), len(rows))})")
+    print(f"  с эскалацией            {len(escalated)} ({_pct(len(escalated), len(rows))})")
+    if escalated:
+        top = sorted(escalated, key=lambda r: -int(r.cost or 0))[:3]
+        print("  самые дорогие из них:")
+        for r in top:
+            print(f"    {r.request_id}  {r.calls} вызовов  {_money(int(r.cost or 0))}  {r.reason}")
+    if gaps:
+        print(f"  ⚠ строк потеряно в {len(gaps)} вопросах (iterations больше числа строк)")
+
+
 async def _tools(db, since: datetime) -> None:
     rows = (await db.execute(
         select(AIUsage.tools)
@@ -153,6 +236,8 @@ async def _run(days: int) -> None:
         await _ratings(db, since)
         await _by_surface(db, since)
         await _stuck(db, since)
+        await _escalations(db, since)
+        await _requests(db, since)
         await _tools(db, since)
         await _studios(db, since)
     print("\nРегламент: раз в месяц смотреть 👎-ответы и добавлять из них случаи")

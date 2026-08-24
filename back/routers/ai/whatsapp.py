@@ -35,7 +35,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings, StudioIntegration
 from ratelimit import limiter
-from services.client_agent import CHANNEL_WHATSAPP, schedule_reply
+from services import inbound
 from services.whatsapp import refresh_payment_status, sync_templates_on_connect
 
 logger = logging.getLogger(__name__)
@@ -77,14 +77,19 @@ def _valid_signature(raw: bytes, header: str | None) -> bool:
     return hmac.compare_digest(expected, header[len("sha256="):])
 
 
-def _incoming_messages(payload: dict) -> list[tuple[str, str, str]]:
+def _incoming_messages(payload: dict) -> list[tuple[str, str, str, dict]]:
     """Полезные текстовые сообщения из тела вебхука -> [(phone_number_id студии,
-    номер клиента, текст)].
+    номер клиента, текст, само сообщение)].
 
     Отсекаем: статусы доставки (`statuses`, без них бот отвечал бы на собственные
     «доставлено»), нетекстовые сообщения (картинки, кнопки, локации).
+
+    Сообщение целиком нужно приёму (services/inbound.py): в нём лежит wamid —
+    идентификатор события у Meta. Разбираем ПОШТУЧНО, а не одним конвертом: в
+    одном HTTP-запросе Meta присылает пачку, и дубль одного сообщения не должен
+    отменить обработку соседних.
     """
-    out: list[tuple[str, str, str]] = []
+    out: list[tuple[str, str, str, dict]] = []
     for entry in payload.get("entry") or []:
         for change in entry.get("changes") or []:
             value = change.get("value") or {}
@@ -93,23 +98,8 @@ def _incoming_messages(payload: dict) -> list[tuple[str, str, str]]:
                 text = (message.get("text") or {}).get("body")
                 sender = message.get("from")
                 if text and sender and account:
-                    out.append((str(account), str(sender), text))
+                    out.append((str(account), str(sender), text, message))
     return out
-
-
-async def _send_wa_message(token: str, phone_number_id: str, to: str, text: str) -> None:
-    timeout = aiohttp.ClientTimeout(total=_TIMEOUT_SECONDS)
-    payload = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text}}
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.post(
-            f"{GRAPH}/{phone_number_id}/messages",
-            json=payload,
-            headers={"Authorization": f"Bearer {token}"},
-        ) as resp:
-            if resp.status >= 400:
-                # Тело ответа Graph — единственное место, где написана причина отказа
-                # («вне 24-часового окна», «нет прав»). Токен не логируем.
-                raise RuntimeError(f"Graph {resp.status}: {(await resp.text())[:400]}")
 
 
 async def _studio_by_phone_number_id(db: AsyncSession, phone_number_id: str) -> tuple[int, str] | None:
@@ -306,6 +296,8 @@ async def verify_whatsapp_webhook(
 @webhook_router.post("/whatsapp/webhook")
 async def whatsapp_webhook(
     request: Request,
+    # Ничего не планирует с P0.3 и остаётся намеренно: параметр — граница,
+    # на которой архитектурный тест проверяет, что web не запускает агента.
     background: BackgroundTasks = None,
     db: AsyncSession = Depends(get_db),
 ):
@@ -322,23 +314,32 @@ async def whatsapp_webhook(
     except ValueError:
         return {"ok": True}
 
-    for phone_number_id, sender, text in _incoming_messages(payload):
+    for phone_number_id, sender, text, message in _incoming_messages(payload):
         found = await _studio_by_phone_number_id(db, phone_number_id)
         if found is None:
             continue
-        studio_id, token = found
+        studio_id, _ = found   # токен ответа работа достаёт сама, см. agent_jobs._transport
         settings = (await db.execute(
             select(StudioAISettings).where(StudioAISettings.studio_id == studio_id)
         )).scalar_one_or_none()
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.wa_enabled:
             continue
-        # Отвечаем В ФОНЕ, но сразу, без отложенной очереди: свободный текст Meta
-        # принимает только в пределах 24 часов от последнего сообщения клиента
-        # (_send_wa_message поднимает RuntimeError с текстом Graph за окном).
-        # Своего хранилища у WA нет — номер и токен приходят из wa_notify, поэтому
-        # уезжают в задачу одной строкой.
-        schedule_reply(background, studio_id, CHANNEL_WHATSAPP, sender, text, f"{phone_number_id}|{token}")
+        # Приём — после проверки подписи и опознания студии, перед побочным
+        # действием. Ключ — wamid, идентификатор сообщения у Meta: он стабилен
+        # между ретраями и уникален глобально.
+        admission = await inbound.admit(
+            inbound.WHATSAPP, message.get("id"), studio_id, inbound.MESSAGE,
+            sender, text, message,
+        )
+        if not admission.accepted:
+            logger.info("whatsapp webhook: повтор сообщения отброшен, studio_id=%s", studio_id)
+            continue
+        # Ответ считает процесс-исполнитель. Свободный текст Meta принимает
+        # только в пределах 24 часов от последнего сообщения клиента, поэтому
+        # очередь обязана оставаться короткой — за этим следит отставание
+        # (agent_jobs.stuck_ids). Номер и токен работа достаёт из wa_notify
+        # сама: секретам в журнале приёма не место.
         logger.info("whatsapp webhook: принято, studio_id=%s, входящее=%r", studio_id, text[:50])
 
     return {"ok": True}
@@ -364,7 +365,9 @@ if __name__ == "__main__":
         }},
         {"value": {"metadata": {"phone_number_id": "999"}, "statuses": [{"status": "delivered"}]}},
     ]}]}
-    assert _incoming_messages(event) == [("999", "79990000000", "Привет")]
+    assert _incoming_messages(event) == [
+        ("999", "79990000000", "Привет", {"from": "79990000000", "type": "text", "text": {"body": "Привет"}}),
+    ]
     assert _incoming_messages({}) == []
 
     # Возврат строго по белому списку: чужой back не должен делать из callback

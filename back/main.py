@@ -47,6 +47,9 @@ async def lifespan(app: FastAPI):
     daily_notify_task = start_daily_notify_loop(async_session_maker)
     # Ежемесячный счёт за комиссию с офлайн-продаж (тарифы «процент» и «комбо»).
     offline_fee_task = start_offline_fee_billing_loop(async_session_maker)
+    # Работы агента здесь НЕ исполняются: это отдельный процесс
+    # (`python -m workers.main`, P0.3). Web заканчивается на коммите приёма —
+    # иначе деплой web обрывал бы ход агента на полуслове.
     try:
         yield
     finally:

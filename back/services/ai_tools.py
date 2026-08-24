@@ -456,6 +456,17 @@ class Tool:
     handler: Callable            # async (ctx: StudioContext, db, args) -> dict
     mutating: bool
     roles: tuple[str, ...]
+    # Уровень модели, на который агент переходит после вызова инструмента.
+    # Механизм жив (services/assistant.py, ветка explicit_smart_tier), но SMART
+    # сейчас не объявляет НИКТО, и это осознанно. Его объявляли четыре чтения —
+    # get_stats, get_finance_summary, get_payroll, get_segments, — и замер
+    # 24.08.2026 показал, что платили зря: те же 7 вопросов стоили $0.3698 через
+    # Opus и $0.0180 на одном Flash, формальный результат 6/7 против 6/7.
+    # Единственное содержательное расхождение оказалось привязано к типу
+    # вопроса (выбор между гипотезами), а не к инструменту: get_stats звался в
+    # четырёх вопросах и в трёх из них Flash справлялся полностью. Поэтому
+    # объявлять SMART «потому что инструмент аналитический» — неверный признак;
+    # прежде чем вернуть подсказку, нужен замер на своём классе задач.
     tier_hint: str = TIER_FAST
     # Шаблон фразы для карточки подтверждения: «Завести сотрудника {name}
     # {last_name} с ролью {role}». Без него человек читает «create_staff
@@ -1344,7 +1355,7 @@ async def get_client_events(ctx: StudioContext, db: AsyncSession, args: ClientEv
     return _items(rows, limit=args.limit, currency=await _currency(db, ctx.studio_id))
 
 
-@tool(roles=("owner",), tier_hint=TIER_SMART)
+@tool(roles=("owner",))
 async def get_stats(ctx: StudioContext, db: AsyncSession, args: PeriodArgs) -> dict:
     """Ключевые показатели студии за период: выручка, число записей, активные
     клиенты, удержание — с динамикой к прошлому периоду такой же длины."""
@@ -1405,7 +1416,7 @@ async def get_team_report(ctx: StudioContext, db: AsyncSession, args: PeriodArgs
     }
 
 
-@tool(roles=("owner",), tier_hint=TIER_SMART)
+@tool(roles=("owner",))
 async def get_finance_summary(ctx: StudioContext, db: AsyncSession, args: PeriodArgs) -> dict:
     """Финансовая сводка за период: доходы, расходы, средний чек и балансы
     счетов студии (касса, расчётный счёт, эквайринг)."""
@@ -2887,7 +2898,7 @@ async def create_counterparty(ctx: StudioContext, db: AsyncSession, args: Create
     return _dump(cp)
 
 
-@tool(roles=("owner",), tier_hint=TIER_SMART)
+@tool(roles=("owner",))
 async def get_payroll(ctx: StudioContext, db: AsyncSession, args: PayrollArgs) -> dict:
     """Зарплаты команды за период: ставка и её тип, проведённые тренировки и
     часы, начислено и сколько уже выплачено по каждому сотруднику. Саму выплату
@@ -2963,7 +2974,7 @@ async def create_promo(ctx: StudioContext, db: AsyncSession, args: CreatePromoAr
     return _dump(promo)
 
 
-@tool(roles=("owner",), tier_hint=TIER_SMART)
+@tool(roles=("owner",))
 async def get_segments(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> dict:
     """Клиентские сегменты Лояльности со счётчиком и примерами: at_risk (не
     ходят 3 недели), vip_idle (VIP пропал на 2 недели), expiring_subscription

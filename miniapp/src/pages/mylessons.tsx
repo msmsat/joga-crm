@@ -19,6 +19,7 @@ import {
 import { cancelLesson, rateLesson } from '../api/user';
 import { useTelegram } from '../hooks/useTelegram';
 import { notify } from '../lib/notify';
+import { bumpLessons, useLessonsVersion } from '../lib/revision';
 
 type MyLesson = UpcomingLessonResponse | PastLessonResponse;
 
@@ -40,7 +41,9 @@ export default function MyLessons() {
 
   const [mode, setMode] = useState<PeriodMode>('month');
   const [anchor, setAnchor] = useState(() => new Date());
-  const [refreshTick, setRefreshTick] = useState(0);
+  // Раздел остаётся смонтированным при переключении вкладок: о записи, сделанной
+  // на главной или в расписании, он узнаёт из общей версии (lib/revision.ts).
+  const lessonsVersion = useLessonsVersion();
 
   const [countdowns, setCountdowns] = useState<{ [key: number]: string }>({});
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
@@ -69,7 +72,7 @@ export default function MyLessons() {
     };
 
     fetchLessons();
-  }, [t, refreshTick]);
+  }, [t, lessonsVersion]);
 
   useEffect(() => {
     if (upcoming.length === 0) return;
@@ -162,7 +165,8 @@ export default function MyLessons() {
     setIsProcessing(true);
     try {
       await cancelLesson(activeLesson.id);
-      setRefreshTick((tick) => tick + 1);
+      // Освободившееся место видно и в расписании — объявляем изменение всем.
+      bumpLessons();
       setIsModalOpen(false);
       notify(t('schedule.cancel_success'));
       if (tg) tg.HapticFeedback.notificationOccurred('success');

@@ -1,6 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, DateTime, ForeignKey, JSON, UniqueConstraint, func
+from sqlalchemy import (
+    BigInteger, Integer, String, Float, Boolean, DateTime, ForeignKey, Index, JSON, Text,
+    UniqueConstraint, func, text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -52,6 +55,44 @@ class NotificationEventToggle(Base):
     is_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 
     studio: Mapped["Studio"] = relationship(back_populates="notification_event_toggles")
+
+
+class StudioFeatureFlag(Base):
+    """Переопределение фичефлага для одной студии.
+
+    Зачем таблица, а не колонка. Каждый прежний тумблер студии — колонка в
+    settings-таблице, и на каждый новый этап Receptionist потребовалась бы своя
+    миграция. Здесь ключ лежит строкой, поэтому новый этап — это новое значение
+    в StudioFeature и ноль изменений схемы.
+
+    ОТСУТСТВИЕ СТРОКИ — это «выключено», а не «не задано». Строки заводятся
+    только на студии, которым этап включают; при раскатке на 3 пилота их будет
+    ровно 3, а не по одной на каждую студию (см. services/feature_flags).
+
+    Форма скопирована с NotificationEventToggle: тот же составной UNIQUE, тот же
+    is_enabled, тот же CASCADE. Отличие одно — updated_at: у тумблера уведомлений
+    его нет, а здесь нужно знать, когда студию перевели на новый этап, иначе при
+    разборе инцидента «с какого момента поведение изменилось» ответить нечем.
+    created_at сознательно нет: строка создаётся включением и живёт до отключения,
+    отдельная дата создания ничего не добавляет к updated_at.
+    """
+    __tablename__ = "studio_feature_flags"
+    __table_args__ = (
+        UniqueConstraint("studio_id", "flag", name="uq_studio_feature_flag"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    # Значение StudioFeature (services/feature_flags). Строкой, а не Enum БД:
+    # добавление этапа не должно требовать ALTER TYPE, а неизвестный ключ и так
+    # читается как «выключено» — сам столбец ничего не разрешает.
+    flag: Mapped[str] = mapped_column(String(50))
+    is_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
+    )
+
+    studio: Mapped["Studio"] = relationship(back_populates="feature_flags")
 
 
 class UserNotificationPreference(Base):
@@ -107,6 +148,212 @@ class NotificationLog(Base):
     error: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
     finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+
+
+class InboundEvent(Base):
+    """Принятое входящее событие провайдера (P0.2) — НЕИЗМЕНЯЕМАЯ запись.
+
+    Зеркало NotificationLog для входящего направления: там «мы это уже
+    отправляли?», здесь «мы это уже принимали?». Одна строка = одно событие
+    провайдера, а НЕ один HTTP-запрос: в конверте Meta приходит пачка сообщений,
+    и дубль одного из них не должен глушить соседние.
+
+    Строка НЕ несёт состояния обработки — ни статуса, ни попытки, ни владельца.
+    Это разделение принципиальное: попытка обработки живёт в AgentJob, и только
+    там её можно перехватить. Смешав то и другое в одной строке, мы получаем
+    журнал приёма, который врёт про историю при каждом перехвате.
+
+    ХРАНИМ РАЗОБРАННОЕ, НЕ КОНВЕРТ. Обработке нужны ровно отправитель и текст;
+    остальное (токены каналов, номер телефона студии, подписи Meta) выводится из
+    studio_id в момент обработки и в базе делать нечего. Токенов и заголовков
+    авторизации здесь нет ни одного.
+
+    ХРАНИМ ИМЕННО ТЕКСТ, а не только его отпечаток: без него работу нельзя
+    доделать после рестарта, а провайдер, получивший от нас 200, повторять
+    доставку не обязан. Это переписка клиента чужого бизнеса — то есть
+    персональные данные, — поэтому у строк есть срок жизни:
+    services/agent_jobs.py::_RETENTION, чистка идёт в той же фоновой петле.
+    payload_sha256 остаётся для другого: заметить повтор того же ключа с ДРУГИМ
+    содержимым.
+    """
+    __tablename__ = "inbound_events"
+    __table_args__ = (
+        UniqueConstraint("provider", "provider_event_id", name="uq_inbound_provider_event"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    provider: Mapped[str] = mapped_column(String(20))
+    # Идентификатор события у самого провайдера: Telegram — update_id (уникален
+    # в пределах бота, поэтому в ключ входит и студия), WhatsApp — wamid,
+    # Instagram — mid. Свой ключ по тексту/отправителю/времени не считаем:
+    # у провайдера уже есть стабильный, а самодельный склеил бы два одинаковых
+    # сообщения подряд в одно.
+    provider_event_id: Mapped[str] = mapped_column(String(200))
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    event_type: Mapped[str] = mapped_column(String(30))
+    # Внешний идентификатор отправителя в его канале: chat_id, IGSID, номер.
+    sender_ref: Mapped[str] = mapped_column(String(128))
+    text: Mapped[str] = mapped_column(Text)
+    payload_sha256: Mapped[str] = mapped_column(String(64))
+    received_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), index=True,
+    )
+
+    job: Mapped[Optional["AgentJob"]] = relationship(back_populates="event", cascade="all, delete-orphan")
+
+
+class AgentJob(Base):
+    """Обработка одного принятого события — владение и попытки (P0.2).
+
+    Заводится В ТОЙ ЖЕ ТРАНЗАКЦИИ, что и InboundEvent. Отсюда главный инвариант:
+    к моменту, когда провайдер получил от нас 200, событие либо не принято
+    вовсе, либо у него ЕСТЬ durable-работа, которую доделают без провайдера.
+    Ровно одна: UNIQUE на inbound_event_id.
+
+    attempt — не счётчик для отчёта, а fencing-токен. Перехват увеличивает его,
+    поэтому прежний владелец, очнувшийся после зависания, физически не может
+    закрыть чужую попытку: его UPDATE не найдёт строки. Без этого «зависший A
+    помечает успехом работу, которую сейчас делает B» — обычный вторник.
+    """
+    __tablename__ = "agent_jobs"
+    __table_args__ = (
+        # Восстановление ищет только незакрытые работы, и их всегда единицы.
+        # Полный индекс по status рос бы вместе с историей и не давал бы ничего.
+        # Объявлен здесь, а не только в миграции: иначе autogenerate следующей
+        # миграции решит, что индекс лишний, и удалит его (ловит alembic check).
+        Index("ix_agent_jobs_open", "claimed_at",
+              postgresql_where=text("status IN ('pending', 'running')")),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    inbound_event_id: Mapped[int] = mapped_column(
+        ForeignKey("inbound_events.id", ondelete="CASCADE"), unique=True,
+    )
+    # pending — ждёт исполнителя (в том числе после падения процесса, который её
+    # завёл); running — кто-то взял; done — обработка завершена; failed —
+    # попытки исчерпаны, дальше только руками.
+    status: Mapped[str] = mapped_column(String(10), default="pending")
+    attempt: Mapped[int] = mapped_column(Integer, default=0)
+    claimed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    # Не раньше этого момента работу можно брать. Нужен для двух разных пауз:
+    # откат после неудачной попытки и отступ, когда тред занят соседней работой.
+    # Второе — НЕ неудача, и бюджет попыток за него не списывается.
+    run_after: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), index=True,
+    )
+    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    last_error: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
+    event: Mapped["InboundEvent"] = relationship(back_populates="job")
+
+
+class OutboundMessage(Base):
+    """Намерение отправить сообщение — durable, до всякой сети (P0.4).
+
+    ЗАЧЕМ. До P0.4 ход агента заканчивался прямым вызовом Telegram/Meta, и между
+    ним и коммитом в Postgres зияло классическое окно двойной записи: упасть
+    после отправки — задвоить ответ, отправить после коммита — потерять его.
+    Теперь ход агента заканчивается СТРОКОЙ, а не сетью, и «работа выполнена»
+    означает «ответ надёжно записан», а не «ответ доставлен».
+
+    Отдельная таблица, а не notification_logs: тот журнал append-only, его
+    dedup-ключ намеренно включает календарный час, и отправку в нём делает сам
+    вызывающий между двумя короткими коммитами. Здесь нужна очередь — порядок
+    внутри разговора, срок повторной попытки, владение попыткой и токен
+    вытеснения. Это другой контракт, и общей таблицей они станут только на
+    словах.
+
+    ХРАНИМ НАМЕРЕНИЕ, А НЕ ТЕЛО ЗАПРОСА ПРОВАЙДЕРА. В payload лежит канонический
+    смысл ответа (текст и, если нужен, одна ссылка-кнопка), а телеграмную
+    клавиатуру или тело Graph собирает уже отправщик (services/channels). Иначе
+    добавление кнопок означало бы миграцию данных, а не нового рендерера.
+
+    ПОРЯДОК внутри разговора держат два механизма разом: выборка не берёт
+    сообщение, пока в его треде есть более раннее незавершённое, и частичный
+    UNIQUE физически запрещает две одновременные отправки в один тред.
+
+    payload — переписка клиента чужого бизнеса, то есть персональные данные;
+    срок хранения общий с принятыми событиями (services/agent_jobs::_RETENTION).
+    """
+    __tablename__ = "outbound_messages"
+    __table_args__ = (
+        # Один разговор — одна отправка одновременно. Не проверка «а нет ли
+        # sending?» перед апдейтом: между проверкой и апдейтом успевает второй
+        # воркер. Здесь это запрещено самим хранилищем.
+        Index("uq_outbound_thread_sending", "thread_id",
+              unique=True, postgresql_where=text("status = 'sending'")),
+        # Выборка очереди: только незавершённые, их всегда единицы.
+        Index("ix_outbound_open", "thread_id", "id",
+              postgresql_where=text("status IN ('queued', 'sending')")),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    thread_id: Mapped[int] = mapped_column(ForeignKey("channel_threads.id", ondelete="CASCADE"))
+    # Кто породил сообщение. Сегодня всегда agent; колонка есть, потому что
+    # передача диалога человеку изменит правила отправки, а не схему.
+    origin: Mapped[str] = mapped_column(String(10), default="agent")
+    # Канонический смысл ответа: {"text": str, "button": {"text","url"} | None}.
+    payload: Mapped[dict] = mapped_column(JSON)
+    # Причинный ключ, а не хеш текста: повтор хода агента обязан узнаваться даже
+    # тогда, когда модель сформулировала ответ иначе.
+    dedup_key: Mapped[str] = mapped_column(String(120), unique=True)
+    # queued — ждёт отправки; sending — попытка идёт (или её процесс умер);
+    # accepted — ПРОВАЙДЕР ПРИНЯЛ запрос (не «человек прочитал» и даже не
+    # «доставлено»); failed — терминальный отказ или исчерпаны попытки.
+    status: Mapped[str] = mapped_column(String(10), default="queued")
+    attempt: Mapped[int] = mapped_column(Integer, default=0)
+    run_after: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
+    locked_by: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    locked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    # id сообщения у провайдера. Единственная ниточка к его статусам доставки.
+    provider_message_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
+    accepted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    # Код и короткая причина. Тело ответа провайдера целиком сюда не кладём: там
+    # бывают и данные клиента, и куски токенов.
+    last_error: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+
+
+class ChannelThread(Base):
+    """Разговор с одним человеком в одном канале — единица сериализации (P0.3).
+
+    Зачем. Блокировка работы защищает от двух исполнителей ОДНОГО сообщения, но
+    ничего не говорит о двух РАЗНЫХ сообщениях одного диалога: «хочу завтра
+    вечером» и «лучше после 19» приходят подряд и запускают два хода агента
+    параллельно, каждый со своим представлением о разговоре. Тред — то, что
+    делает их последовательными.
+
+    Ключ канонический и выводится только из проверенных данных провайдера:
+    Telegram — chat_id, Instagram — IGSID, WhatsApp — wa_id отправителя. Всё это
+    уже лежит в InboundEvent.sender_ref. Ни имени, ни текста, ни модели в ключе
+    нет: имя меняется, текст не идентифицирует, а модели тут доверять нечему.
+
+    АРЕНДА, А НЕ БЛОКИРОВКА БД. Ход агента идёт минутами, и держать на нём
+    открытую транзакцию или advisory-лок нельзя: соединение занято, а падение
+    процесса оставляет разговор запертым навсегда. Поэтому владение выражено
+    строкой со сроком: lease_until истёк — тред свободен, кто бы его ни держал.
+
+    lease_seq — fencing-токен, монотонный на тред. Владелец записывает результат
+    только с тем номером, который получил; перехват увеличивает номер, и
+    очнувшийся прежний владелец не запишет ничего. Отсюда bigint: за срок жизни
+    разговора номер не должен переполниться даже теоретически.
+    """
+    __tablename__ = "channel_threads"
+    __table_args__ = (
+        UniqueConstraint("studio_id", "channel", "sender_ref", name="uq_channel_thread"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    channel: Mapped[str] = mapped_column(String(20))
+    sender_ref: Mapped[str] = mapped_column(String(128))
+    # Кто держит: имя процесса-воркера. Только для разбора инцидентов — решает
+    # не оно, а срок: истёкшая аренда свободна независимо от владельца.
+    lease_owner: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    lease_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    lease_seq: Mapped[int] = mapped_column(BigInteger, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
 
 class StudioBookingSettings(Base):

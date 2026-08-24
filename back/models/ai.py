@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Float, Boolean, DateTime, Text, ForeignKey, Index, JSON, func
+from sqlalchemy import Integer, String, Float, Boolean, DateTime, Text, ForeignKey, Index, JSON, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.crypto import EncryptedStr, SECRET_COLUMN_LEN
@@ -93,6 +93,17 @@ class AIChatMessage(Base):
     # ai_tools): у остальных кнопки нет вовсе — «Вернуть», которое молча ничего
     # не вернуло, хуже, чем его отсутствие.
     undo: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    # Каким прогоном ассистента получен этот ответ (AIUsage.request_id). Связь
+    # лежит ЗДЕСЬ, а не на строках расхода: те пишутся своей сессией по ходу
+    # цикла, когда сообщения ещё нет, и дописывать их потом значило бы завести
+    # второй путь записи с собственным откатом. Так это одно присваивание в уже
+    # открытой транзакции чата, и висячих ссылок не бывает: откатился чат —
+    # сообщения тоже нет.
+    # Нужно ровно для одного вопроса: помогла ли эскалация. Ответ на него —
+    # rating этого сообщения, а расход и причина эскалации — по request_id.
+    # У мессенджеров (Telegram/Instagram/WhatsApp) своих AIChatMessage нет,
+    # там связь остаётся NULL — это ожидаемо, а не пробел.
+    request_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, index=True)
 
     session: Mapped["AIChatSession"] = relationship(back_populates="messages")
 
@@ -164,10 +175,41 @@ class AIUsage(Base):
     iterations: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     escalated: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
 
+    # Один вопрос человека = 2-4 вызова модели, и до этой колонки они были
+    # связаны только соседством: первая строка помечена billable, остальные
+    # идут за ней по id. Под двумя одновременными вопросами одной студии
+    # цепочки перемешиваются, и «сколько стоил ЭТОТ вопрос» отвечалось
+    # догадкой. Идентификатор рождается ДО первого вызова модели и не меняется
+    # ни при эскалации, ни на следующих итерациях.
+    # Порядок вызовов внутри вопроса читается по iterations (шаг цикла, с 1):
+    # отдельный call_index был бы его точной копией.
+    request_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, index=True)
+
+    # ПОЧЕМУ эскалировали. Голого `escalated` не хватало: веток эскалации в
+    # цикле четыре, и по флагу нельзя отличить «дешёвая отписалась вместо
+    # работы» от «вызван инструмент, которому положена умная модель». А решать
+    # по этим цифрам предстоит, нужна ли дорогая модель в проде вообще.
+    #
+    # Ставится РОВНО НА ОДНОЙ строке вопроса — первой после переключения, той,
+    # что оплачена дорогой моделью. Поэтому:
+    #   число эскалаций  = count(escalation_reason IS NOT NULL)
+    #   их стоимость     = sum(cost_micro) WHERE escalated
+    #   на что ушли      = model этой же строки (это фактически ответившая
+    #                      модель, а не запрошенная — services/llm._usage)
+    #   с чего ушли      = escalation_from_model
+    # Исторические строки остаются с NULL: выдуманная причина хуже пропуска.
+    escalation_reason: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    escalation_from_model: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
+
     # Оба запроса квоты (задача 3) и антиспама (задача 13) — это «строки одной
     # студии за период». Двух раздельных индексов по studio_id и created_at для
     # такого запроса мало: планировщик возьмёт один из них и отфильтрует остаток
     # перебором. Составной нужен явно — autogenerate его сам не придумает.
     __table_args__ = (
         Index("ix_ai_usage_studio_created", "studio_id", "created_at"),
+        # Частичный: эскалаций единицы процентов от строк, и весь смысл индекса
+        # в отборе именно их («сколько, почему, почём»). Полный индекс по
+        # колонке, где почти везде NULL, планировщик всё равно не возьмёт.
+        Index("ix_ai_usage_escalation", "escalation_reason",
+              postgresql_where=text("escalation_reason IS NOT NULL")),
     )

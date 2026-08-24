@@ -26,7 +26,7 @@ from database import get_db
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext, require_role
 from models import StudioAISettings
 from ratelimit import limiter
-from services.client_agent import CHANNEL_INSTAGRAM, schedule_reply
+from services import inbound
 from services.instagram_account import connect_instagram_account, disconnect_instagram_account
 
 logger = logging.getLogger(__name__)
@@ -206,13 +206,19 @@ def _valid_signature(raw: bytes, header: str | None) -> bool:
     return hmac.compare_digest(expected, header[len("sha256="):])
 
 
-def _incoming_messages(payload: dict) -> list[tuple[str, str, str]]:
-    """Полезные текстовые сообщения из тела вебхука -> [(id аккаунта студии, IGSID клиента, текст)].
+def _incoming_messages(payload: dict) -> list[tuple[str, str, str, dict]]:
+    """Полезные текстовые сообщения из тела вебхука -> [(id аккаунта студии,
+    IGSID клиента, текст, само сообщение)].
 
     Отсекаем: is_echo (наш же ответ — иначе бот отвечает сам себе по кругу),
     события без текста (read, reaction, postback, вложения).
+
+    Сообщение целиком нужно приёму (services/inbound.py): в нём лежит mid —
+    идентификатор события у Meta. Разбираем ПОШТУЧНО, а не одним конвертом: в
+    одном HTTP-запросе Meta присылает пачку, и дубль одного сообщения не должен
+    отменить обработку соседних.
     """
-    out: list[tuple[str, str, str]] = []
+    out: list[tuple[str, str, str, dict]] = []
     for entry in payload.get("entry") or []:
         for event in entry.get("messaging") or []:
             message = event.get("message") or {}
@@ -220,23 +226,8 @@ def _incoming_messages(payload: dict) -> list[tuple[str, str, str]]:
             sender = (event.get("sender") or {}).get("id")
             account = (event.get("recipient") or {}).get("id")
             if text and sender and account and not message.get("is_echo"):
-                out.append((str(account), str(sender), text))
+                out.append((str(account), str(sender), text, message))
     return out
-
-
-async def _send_ig_message(token: str, recipient_igsid: str, text: str) -> None:
-    timeout = aiohttp.ClientTimeout(total=_OAUTH_TIMEOUT_SECONDS)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.post(
-            f"{IG_GRAPH}/me/messages",
-            params={"access_token": token},
-            json={"recipient": {"id": recipient_igsid}, "message": {"text": text}},
-        ) as resp:
-            if resp.status >= 400:
-                # Тело ответа Graph — единственное место, где написана причина отказа
-                # («вне 24-часового окна», «нет прав», «получатель недоступен»).
-                # Без него в логе остаётся голая 400 и гадание. Токен не логируем.
-                raise RuntimeError(f"Graph {resp.status}: {(await resp.text())[:400]}")
 
 
 @webhook_router.get("/instagram/webhook")
@@ -255,6 +246,8 @@ async def verify_instagram_webhook(
 @webhook_router.post("/instagram/webhook")
 async def instagram_webhook(
     request: Request,
+    # Ничего не планирует с P0.3 и остаётся намеренно: параметр — граница,
+    # на которой архитектурный тест проверяет, что web не запускает агента.
     background: BackgroundTasks = None,
     db: AsyncSession = Depends(get_db),
 ):
@@ -272,17 +265,26 @@ async def instagram_webhook(
     except ValueError:
         return {"ok": True}
 
-    for account_id, sender_igsid, text in _incoming_messages(payload):
+    for account_id, sender_igsid, text, message in _incoming_messages(payload):
         settings = (await db.execute(
             select(StudioAISettings).where(StudioAISettings.ig_user_id == account_id)
         )).scalar_one_or_none()
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.ig_enabled or not settings.ig_token:
             continue
-        # Ответ, счётчик обработанных и учёт расхода — в фоновой задаче со своей
-        # сессией БД (services/client_agent). Текст входящего в лог не уходит
-        # целиком: там переписка клиента чужого бизнеса.
-        schedule_reply(background, settings.studio_id, CHANNEL_INSTAGRAM, sender_igsid, text)
+        # Приём — после проверки подписи и опознания студии, перед побочным
+        # действием. Ключ — mid, идентификатор сообщения у Meta: он стабилен
+        # между ретраями и уникален глобально.
+        admission = await inbound.admit(
+            inbound.INSTAGRAM, message.get("mid"), settings.studio_id, inbound.MESSAGE,
+            sender_igsid, text, message,
+        )
+        if not admission.accepted:
+            logger.info("instagram webhook: повтор сообщения отброшен, studio_id=%s", settings.studio_id)
+            continue
+        # Ответ, счётчик обработанных и учёт расхода — в отдельном процессе
+        # (`python -m workers.main`). Текст входящего в лог не уходит целиком:
+        # там переписка клиента чужого бизнеса.
         logger.info("instagram webhook: принято, studio_id=%s, входящее=%r", settings.studio_id, text[:50])
 
     return {"ok": True}
@@ -298,11 +300,13 @@ if __name__ == "__main__":
     assert not _valid_signature(body, None)
     assert not _valid_signature(b'{"object":"x"}', good)  # тело подменили — подпись не сходится
 
+    # Транспорт (_send_ig_message) уехал в services/channels/instagram.py:
+    # роутер — граница вебхука, сеть — сервис (P0.4).
     event = {"entry": [{"messaging": [
         {"sender": {"id": "111"}, "recipient": {"id": "999"}, "message": {"mid": "m1", "text": "Привет"}},
         {"sender": {"id": "999"}, "recipient": {"id": "111"}, "message": {"mid": "m2", "text": "Hello", "is_echo": True}},
         {"sender": {"id": "111"}, "recipient": {"id": "999"}, "read": {"mid": "m1"}},
     ]}]}
-    assert _incoming_messages(event) == [("999", "111", "Привет")]
+    assert _incoming_messages(event) == [("999", "111", "Привет", {"mid": "m1", "text": "Привет"})]
     assert _incoming_messages({}) == []
     print("instagram webhook self-check ok")

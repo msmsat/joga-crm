@@ -273,6 +273,13 @@ async def _run_antispam():
     try:
         async with async_session_maker() as db:
             settings = await _settings(db, ids["a"])
+            # Тумблер off_hours_only у Instagram включён по умолчанию, и
+            # should_reply проверяет рабочие часы РАНЬШЕ антиспама. Без этой
+            # строки тест мерил не то, что обещает имя: ночью он проходил, а
+            # днём падал на первой же строчке, ни разу не дойдя до счётчика.
+            # Само поведение рабочих часов проверяет _run_off_hours.
+            settings.ig_off_hours_only = False
+            await db.commit()
             assert await client_agent.should_reply(db, ids["a"], settings, CHANNEL_INSTAGRAM, sender)
 
             # Ровно 20 ответов за сутки — предел выбран.
