@@ -89,7 +89,19 @@ export default function StudioCard({
           className="group cursor-pointer"
         >
           <div
-            className="relative aspect-[16/10] overflow-hidden rounded-[26px] shadow-lift transition-shadow duration-300 dt:group-hover:shadow-hover"
+            className={
+              /* Кадр 16:10 хорош, пока карточка узкая: в ленте она шириной
+                 85vw телефона или половины колонки на десктопе. Единственному
+                 филиалу карточка отдаётся во всю ширину — и та же пропорция
+                 превращается в стену: 980px колонки дают больше 500px высоты,
+                 фотография занимает первый экран целиком, а приветствие и
+                 направления уезжают за сгиб. Поэтому у одиночной карточки есть
+                 потолок высоты: кадр остаётся широким баннером на любой ширине
+                 колонки. На телефоне потолок почти не срабатывает — 16:10 от
+                 350px и так укладывается около него. */
+              'relative aspect-[16/10] overflow-hidden rounded-[26px] shadow-lift transition-shadow duration-300 dt:group-hover:shadow-hover' +
+              (solo ? ' max-h-[190px] dt:max-h-[260px]' : '')
+            }
             style={
               showPhoto
                 ? undefined
