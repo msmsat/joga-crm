@@ -160,9 +160,9 @@ from schemas.settings.notifications import EventToggle
 from schemas.settings.team import StaffCreate, StaffUpdate
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
+from services import studio_time
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
-from services.daily_notify import _studio_tz
 from services.llm import TIER_FAST, TIER_SMART
 
 logger = logging.getLogger(__name__)
@@ -691,8 +691,20 @@ class FillScheduleArgs(BaseModel):
     """
     teacher_id: int
     service_id: int
+    # Даты, посчитанные моделью. Named period их ПЕРЕБИВАЕТ — см. period ниже.
     date_from: date
     date_to: date
+    period: Optional[Literal["this_week", "next_week", "this_month", "next_month"]] = Field(
+        None, description="Say which period the person named instead of computing "
+                          "the dates yourself: this_week, next_week, this_month, "
+                          "next_month. The server turns it into exact calendar dates "
+                          "in the studio timezone and ignores date_from/date_to. "
+                          "The person named explicit dates - leave this empty")
+    times: Optional[list[str]] = Field(
+        None, description="Exact start times the person named, e.g. [\"10:00\", \"18:00\"]. "
+                          "Each selected day gets a lesson at each of these times. "
+                          "The person named a working window instead - use "
+                          "time_from/time_to and leave this empty")
     hall_id: Optional[int] = None
     alternate_with: Optional[list[int]] = Field(
         None, description="Услуги, которые идут по очереди с service_id, если человек "
@@ -1091,11 +1103,18 @@ async def studio_context_facts(db: AsyncSession, studio_id: int) -> dict:
     для инструментов. «Записи на завтра» считаются в Studio.timezone, иначе в
     студии на UTC+3 после 21:00 ассистент отвечает за позавчера."""
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
-    tz_name = (studio.timezone if studio else None) or _DEFAULT_TZ
-    today = datetime.now(_studio_tz(tz_name)).date()
+    from services import studio_time
+
+    # Канонический резолвер: зона IANA, если студия её подтвердила, иначе старый
+    # сдвиг. Признак подтверждённости отдаём наверх — по неоднозначному сдвигу
+    # обещать человеку точное «завтра в 19:00» нельзя.
+    what = studio_time.clock(studio)
+    tz_name = (getattr(studio, "tz_iana", None) or (studio.timezone if studio else None) or _DEFAULT_TZ)
+    today = studio_time.today(studio)
     return {
         "studio_name": studio.name if studio else "",
         "timezone": tz_name,
+        "timezone_verified": what.verified,
         "currency": (studio.currency if studio else None) or _DEFAULT_CURRENCY,
         "language": (studio.language if studio else None) or "ru",
         "today": today.isoformat(),
@@ -1933,6 +1952,40 @@ async def _extend_week(
     return touched
 
 
+async def _resolve_period(parsed: "FillScheduleArgs", ctx: StudioContext,
+                          db: AsyncSession) -> "FillScheduleArgs":
+    """Названный период -> точные даты по календарю СТУДИИ.
+
+    Модель называет период словом, даты считает сервер. Раньше их считала
+    модель, и на «следующую неделю» она была последней инстанцией сразу по
+    четырём вопросам: где граница недели, в каком часовом поясе сегодня, не
+    уехал ли день из-за перевода часов и не оказался ли край в прошлом. Ни на
+    один из них у неё нет данных — часовой пояс студии живёт в базе.
+
+    Период не назван — ничего не трогаем: явные даты человека остаются явными.
+    """
+    if parsed.period is None:
+        return parsed
+    studio = (await db.execute(
+        select(Studio).where(Studio.id == ctx.studio_id))).scalar_one_or_none()
+    today = studio_time.today(studio)
+
+    if parsed.period in ("this_week", "next_week"):
+        monday = today - timedelta(days=today.weekday())
+        if parsed.period == "next_week":
+            monday += timedelta(days=7)
+        start, end = monday, monday + timedelta(days=6)
+    else:
+        first = today.replace(day=1)
+        if parsed.period == "next_month":
+            first = (first + timedelta(days=32)).replace(day=1)
+        end = (first + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        start = first
+    # Начало в прошлом бессмысленно: ставить занятия задним числом нельзя, и
+    # без этой строки «на этой неделе» в пятницу означало бы понедельник.
+    return parsed.model_copy(update={"date_from": max(start, today), "date_to": end})
+
+
 async def _free_slots(
     day: date, args: "FillScheduleArgs", week: dict[int, StaffWorkingHours],
     ctx: StudioContext, db: AsyncSession,
@@ -1972,7 +2025,13 @@ async def _free_slots(
     )).scalar_one_or_none() is False:
         return []
 
-    opens, closes = _at(day, opens_at), _at(day, closes_at)
+    # Человек назвал часы поимённо — окно не режем шагом, ставим ровно их.
+    # Порядок и повторы убираем: «в 10:00 и в 10:00» это одно занятие.
+    wanted = sorted({_at(day, t) for t in args.times}) if args.times else None
+    if wanted:
+        opens, closes = wanted[0], wanted[-1] + timedelta(minutes=args.duration_min or 60)
+    else:
+        opens, closes = _at(day, opens_at), _at(day, closes_at)
     if closes <= opens:      # ночная смена — хвост уезжает на следующие сутки
         closes += timedelta(days=1)
     step = timedelta(minutes=args.duration_min or 60)
@@ -1991,12 +2050,19 @@ async def _free_slots(
         taken.append((pause[0], pause[0] + pause[1]))
 
     earliest = datetime.now() + MIN_CREATE_LEAD
+
+    def _fits(start: datetime) -> bool:
+        end = start + step
+        return (start >= earliest
+                and not any(start < bend and bstart < end for bstart, bend in taken))
+
+    if wanted is not None:
+        return [start for start in wanted if _fits(start)]
     slots, start = [], opens
     while start + step <= closes:
-        end = start + step
-        if start >= earliest and not any(start < bend and bstart < end for bstart, bend in taken):
+        if _fits(start):
             slots.append(start)
-        start = end
+        start += step
     return slots
 
 
@@ -2011,6 +2077,7 @@ async def _fill_warnings(args: dict, ctx: StudioContext, db: AsyncSession) -> li
         parsed = FillScheduleArgs.model_validate(args or {})
     except ValidationError:
         return []               # неполные аргументы — это вопросы формы, не предупреждение
+    parsed = await _resolve_period(parsed, ctx, db)
     conflict = _hours_conflict(parsed, await _week_hours(parsed.teacher_id, ctx, db))
     if not conflict:
         return []
@@ -2049,6 +2116,7 @@ async def _fill_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> st
         parsed = FillScheduleArgs.model_validate(args or {})
     except ValidationError:
         return None                 # неполные аргументы — это вопросы формы
+    parsed = await _resolve_period(parsed, ctx, db)
     if (parsed.date_to - parsed.date_from).days > _FILL_MAX_DAYS:
         return f"Слишком длинный период — не больше {_FILL_MAX_DAYS} дней за раз"
 
@@ -2108,6 +2176,7 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
     Вызывай сразу, как только речь о нескольких днях: перечислять дни вручную
     через create_lesson не нужно.
     """
+    args = await _resolve_period(args, ctx, db)
     day = args.date_from
     if (args.date_to - day).days > _FILL_MAX_DAYS:
         return {"error": f"Слишком длинный период — не больше {_FILL_MAX_DAYS} дней за раз"}

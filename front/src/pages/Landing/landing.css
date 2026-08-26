@@ -12,6 +12,9 @@
 @keyframes lp-spin    { to { transform: rotate(360deg); } }
 @keyframes lp-float-a { 50% { transform: translateY(-9px); } }
 @keyframes lp-float-b { 50% { transform: translateY(8px); } }
+@keyframes lp-typing  { 0%, 60%, 100% { transform: translateY(0); opacity: 0.35; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes lp-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes lp-ping    { 0% { transform: scale(0.85); opacity: 0.4; } 100% { transform: scale(1.5); opacity: 0; } }
 
 .lp-marquee {
   animation: lp-marquee 34s linear infinite;
@@ -103,6 +106,13 @@
 
   .lp-float-a { animation: lp-float-a 6s ease-in-out 1.2s infinite; }
   .lp-float-b { animation: lp-float-b 7s ease-in-out 1.6s infinite; }
+
+  .lp-typing-1, .lp-typing-2, .lp-typing-3 { animation: lp-typing 1.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .lp-typing-2 { animation-delay: 0.15s; }
+  .lp-typing-3 { animation-delay: 0.3s; }
+
+  .lp-breathe { animation: lp-breathe 3.2s ease-in-out infinite; }
+  .lp-ping    { animation: lp-ping 2.2s cubic-bezier(0,0,0.2,1) infinite; }
 }
 
 /* MotionConfig reducedMotion="user" глушит только framer-motion — то, что
@@ -112,5 +122,10 @@
   .lp-spin-slow,
   .lp-orbit,
   .lp-float-a,
-  .lp-float-b { animation: none; }
+  .lp-float-b,
+  .lp-typing-1,
+  .lp-typing-2,
+  .lp-typing-3,
+  .lp-breathe,
+  .lp-ping { animation: none; }
 }

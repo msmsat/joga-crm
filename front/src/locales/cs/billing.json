@@ -28,7 +28,14 @@
     "title": "Kolik zaměstnanců má studio",
     "hint": "od {{amount}} měsíčně",
     "stepNote": "Každé další místo přidá {{amount}} měsíčně",
-    "unlimitedNote": "Zaměstnanci bez omezení"
+    "unlimitedNote": "Zaměstnanci bez omezení",
+    "perSeat": "Za jedno místo"
+  },
+  "limits": {
+    "staff": "Zaměstnanci",
+    "clients": "Klientů v databázi",
+    "ai": "Dotazů na Velora AI",
+    "unlimited": "Bez omezení"
   },
   "banner": {
     "trialEnds": "Zkušební období končí {{date}} — vyberte si tarif",
@@ -155,6 +162,7 @@
     "enterprise": "Enterprise",
     "perMonth": "/ měs.",
     "currentPlan": "Aktuální tarif",
+    "yourPrice": "Vaše cena",
     "choosePlan": "Vybrat tarif",
     "staffLimit": "Až {{count}} zaměstnanců",
     "staffUnlimited": "Neomezený počet zaměstnanců"
@@ -285,7 +293,7 @@
   "savings": {
     "title": "Vaše úspora",
     "prepayTitle": "Vaše úspora při platbě předem",
-    "emptyState": "Vyberte období od 6 měsíců a začněte šetřit",
+    "emptyState": "Zvolte delší období a začnete šetřit",
     "youSave": "Ušetříte {{amount}} za {{months}} měs.",
     "freeMonths": "To je jako {{count}} měs. zdarma",
     "amountLabel": "úspora {{amount}}",

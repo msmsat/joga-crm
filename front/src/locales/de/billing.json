@@ -28,7 +28,14 @@
     "title": "Wie viele Mitarbeitende hat das Studio",
     "hint": "ab {{amount}} pro Monat",
     "stepNote": "Jeder weitere Platz kostet {{amount}} pro Monat mehr",
-    "unlimitedNote": "Mitarbeitende ohne Limit"
+    "unlimitedNote": "Mitarbeitende ohne Limit",
+    "perSeat": "Pro Platz"
+  },
+  "limits": {
+    "staff": "Mitarbeitende",
+    "clients": "Kunden in der Datenbank",
+    "ai": "Velora-AI-Anfragen",
+    "unlimited": "Unbegrenzt"
   },
   "banner": {
     "trialEnds": "Ihre Testphase endet am {{date}} — wählen Sie einen Tarif",
@@ -155,6 +162,7 @@
     "enterprise": "Enterprise",
     "perMonth": "/ Mon.",
     "currentPlan": "Aktueller Tarif",
+    "yourPrice": "Ihr Preis",
     "choosePlan": "Tarif wählen",
     "staffLimit": "Bis zu {{count}} Mitarbeitende",
     "staffUnlimited": "Unbegrenzt Mitarbeitende"
@@ -284,7 +292,7 @@
   "savings": {
     "title": "Ihre Ersparnis",
     "prepayTitle": "Ihre Ersparnis bei Vorauszahlung",
-    "emptyState": "Wählen Sie einen Zeitraum ab 6 Monaten, um zu sparen",
+    "emptyState": "Wählen Sie einen längeren Zeitraum und Sie sparen",
     "youSave": "Sie sparen {{amount}} über {{months}} Mon.",
     "freeMonths": "Das entspricht {{count}} Mon. gratis",
     "amountLabel": "{{amount}} Ersparnis",

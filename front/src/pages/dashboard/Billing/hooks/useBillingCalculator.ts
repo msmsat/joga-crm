@@ -13,7 +13,12 @@ import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/index';
 
-export type PlanInfo = { name: string; monthly: number; staffLimit: number | null };
+// Лимиты ступени — те же, что считает plans._limits на сервере: их показывает
+// панель итога («клиентов в базе», «обращений к Velora AI»). null = безлимит.
+export type PlanInfo = {
+  name: string; monthly: number;
+  staffLimit: number | null; clients: number | null; ai: number | null;
+};
 
 // Режим тарифа в БД ↔ плитка в интерфейсе. Комбо на сервере зовётся "combo",
 // а плитка исторически называется 'fixed' — без этой пары UI и БД молча
@@ -403,7 +408,10 @@ export function useBillingCalculator() {
   // (CLAUDE.md §8). Цены приходят в центах — делим на 100 один раз тут.
   const plans = useMemo(
     () => Object.fromEntries(catalog.map(p => [
-      p.id, { name: planLabel(p.id, t), monthly: p.price / 100, staffLimit: p.limits.staff },
+      p.id, {
+        name: planLabel(p.id, t), monthly: p.price / 100,
+        staffLimit: p.limits.staff, clients: p.limits.clients, ai: p.limits.ai_requests,
+      },
     ])) as Record<PlanType, PlanInfo>,
     [catalog, t],
   );

@@ -1,8 +1,54 @@
-import type { ComponentType } from "react";
-import { DashboardMockup } from "../../../components/UI";
+import type { ComponentType, MouseEvent, ReactNode } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { usePhone } from "../../../hooks/usePhone";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
+import { PlatformArt } from "./Illustrations";
+import { EASE } from "./tokens";
 import { JournalScreen, BookingScreen, FinanceScreen, NotifyScreen, AiScreen } from "./Screens";
+
+/**
+ * Мокап «следит» за курсором лёгким 3D-наклоном вместо плоского
+ * hover:rotate-0 — тот читался как «падает набок», а не как деталь интерфейса.
+ * Пружины тянут наклон обратно к базовым -1° при уходе мыши. На телефоне и
+ * планшете (нет курсора) наклон остаётся статичным — двигать motion-values
+ * там нечему, только даром считать на каждый тач.
+ */
+function TiltCard({ children }: { children: ReactNode }) {
+  const isPhone = usePhone();
+  const rotX = useMotionValue(0);
+  const rotY = useMotionValue(0);
+  const springX = useSpring(rotX, { stiffness: 220, damping: 22 });
+  const springY = useSpring(rotY, { stiffness: 220, damping: 22 });
+
+  if (isPhone) {
+    return <div className="rotate-[-1deg]">{children}</div>;
+  }
+
+  const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    rotY.set(((e.clientX - rect.left) / rect.width - 0.5) * 12);
+    rotX.set(((e.clientY - rect.top) / rect.height - 0.5) * -12);
+  };
+  const onMouseLeave = () => {
+    rotX.set(0);
+    rotY.set(0);
+  };
+
+  return (
+    <div style={{ perspective: 1400 }}>
+      <motion.div
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        whileHover={{ scale: 1.015 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        style={{ rotateZ: -1, rotateX: springX, rotateY: springY, transformStyle: "preserve-3d" }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
 
 // id — якорь блока: на него ведут ссылки подвала («Онлайн-запись», «Velora AI»),
 // чтобы они попадали в свой разбор, а не наверх страницы.
@@ -117,9 +163,9 @@ export function Showcase() {
           <div className="lp-glow absolute -inset-8" />
           <div className="relative mx-auto max-w-[900px]">
             <Reveal y={40}>
-              <div className="rotate-[-1deg] transition-transform duration-500 hover:rotate-0">
-                <DashboardMockup />
-              </div>
+              <TiltCard>
+                <PlatformArt />
+              </TiltCard>
             </Reveal>
           </div>
         </div>

@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from models import Lesson, StudioBookingSettings
+from services import lesson_time
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,12 @@ def _minutes(hhmm: str) -> int:
 def booking_window(rules: BookingRules, now: datetime | None = None) -> tuple[datetime, datetime]:
     """Границы, между которыми занятие можно бронировать онлайн: раньше нижней
     — «поздно» (min_booking_advance_min), позже верхней — «рано» (окно записи).
+
+    `now` — стенное время СТУДИИ, и передавать его обязательно: границы
+    сравниваются с `Lesson.start_time`, который тоже стенной. Значение по
+    умолчанию берёт часы процесса и потому верно лишь тогда, когда сервер стоит
+    в зоне студии — оно оставлено для прямых вызовов из тестов, а боевые пути
+    считают его через services/lesson_time.local_now (P1.2).
     """
     now = now or datetime.now()
     return (
@@ -105,12 +112,43 @@ def within_widget_hours(rules: BookingRules, start_time: datetime) -> bool:
     return at >= start or at < end  # интервал через полночь (22:00–06:00)
 
 
-def assert_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = None) -> None:
-    """Все правила окна записи разом. Бросает 400 с текстом для клиента."""
+def is_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = None) -> bool:
+    """Те же правила окна, что проверяет `assert_bookable`, но флагом, а не
+    исключением: карточка расписания рисуется и для занятия вне окна.
+
+    Живёт здесь, а не в мини-приложении, по той же причине, что и всё в этом
+    модуле: спрашивать «можно ли записаться» будет не одна поверхность, и
+    второй список из четырёх правил разъедется с первым.
+
+    `now` — стенное время СТУДИИ; про значение по умолчанию см. booking_window.
+    """
+    if not rules.booking_active:
+        return False
+    lower, upper = booking_window(rules, now)
+    return lower <= lesson.start_time <= upper and within_widget_hours(rules, lesson.start_time)
+
+
+def assert_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = None,
+                    studio=None, now_instant: datetime | None = None) -> None:
+    """Все правила окна записи разом. Бросает 400 с текстом для клиента.
+
+    Два параметра времени, потому что сравниваются две разные вещи:
+      now         — стенное время СТУДИИ, им проверяется горизонт записи в днях
+                    (ему точность до часа не нужна);
+      now_instant — настоящий момент, им проверяется «поздно записываться».
+    «За 2 часа до начала» обязано означать два ПРОШЕДШИХ часа, а вычитание
+    стенного из стенного в ночь перевода стрелок даёт час или три.
+
+    Без studio (и без снимка зоны у занятия) обе границы считаются по стенному
+    времени — ровно как до P1.2.
+    """
     if not rules.booking_active:
         raise HTTPException(status_code=400, detail="Онлайн-запись закрыта")
     lower, upper = booking_window(rules, now)
-    if lesson.start_time < lower:
+    left = lesson_time.until(lesson, studio, now_instant) if studio is not None else None
+    too_late = (left < timedelta(minutes=rules.min_booking_advance_min)
+                if left is not None else lesson.start_time < lower)
+    if too_late:
         raise HTTPException(status_code=400, detail="Запись на это занятие закрыта")
     if lesson.start_time > upper:
         raise HTTPException(

@@ -957,3 +957,122 @@ def test_removing_the_hint_did_not_touch_what_the_model_sees():
     for name in _WAS_SMART:
         assert name in schema, name
         assert "tier" not in str(schema[name]).lower()
+
+
+# ── Оборванный ответ: помечен и не считается отказом ──────────────────────────
+#
+# Потолок вывода (llm._MAX_OUTPUT_TOKENS) создал исход, которого раньше не было:
+# модель молчит не потому, что договорила. Внешне это обычный ответ, и без
+# пометки «...и тогда стоит» без продолжения читается как законченная мысль.
+
+
+def _cut(text: str) -> llm.LLMReply:
+    """Ответ, оборванный потолком."""
+    return llm.LLMReply(text=text, tool_calls=[], usage=_usage(model=_CHEAP),
+                        finish_reason="length")
+
+
+async def _run_truncated() -> None:
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    try:
+        _ScriptedLLM(_cut("Выручка за август — 4 000 EUR, и основной расход это")).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            result = await run_agent(ctx, db, await _settings(db, sid), [],
+                                     session_id=ids["session_id"])
+        # Текст модели сохранён целиком — обрезанный ответ лучше пустого.
+        assert "4 000 EUR" in result.text
+        # …но человек предупреждён, что это не весь ответ.
+        assert "оборван" in result.text, result.text
+
+        # Законченный ответ приписки не получает.
+        _ScriptedLLM(_text_from(_CHEAP, "Выручка за август — 4 000 EUR.")).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            plain = await run_agent(ctx, db, await _settings(db, sid), [],
+                                    session_id=ids["session_id"])
+        assert "оборван" not in plain.text
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_truncated_answer_is_marked_and_kept():
+    asyncio.run(_run_truncated())
+
+
+async def _run_truncated_is_not_a_refusal() -> None:
+    """Обрыв на середине фразы похож на отказ: длинный текст, ни одного вызова
+    инструмента. Без явной оговорки такой ответ уезжал бы на дорогую модель
+    лечить то, что лечится потолком вывода."""
+    ids = await _seed()
+    sid = ids["sid"]
+    real_chat = llm.chat
+    refusal = ("Я могу добавить сотрудников, но мне нужен пароль для каждого, "
+               "а также их email и роль доступа. Без этого создать их я не смогу.")
+    try:
+        async with async_session_maker() as db:
+            await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+            await db.commit()
+        _ScriptedLLM(_cut(refusal)).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            await run_agent(ctx, db, await _settings(db, sid), [],
+                            session_id=ids["session_id"])
+        assert await _escalations(sid) == [], "обрыв приняли за отказ и заплатили за это"
+
+        # Тот же текст, но законченный, — по-прежнему отказ и по-прежнему повод.
+        async with async_session_maker() as db:
+            await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+            await db.commit()
+        _ScriptedLLM(_text_from(_CHEAP, refusal),
+                     _text_from(_SMART, "Завёл.")).install()
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], sid, "owner")
+            await run_agent(ctx, db, await _settings(db, sid), [],
+                            session_id=ids["session_id"])
+        assert [r[0] for r in await _escalations(sid)] == ["gave_up_no_tools"]
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_truncated_answer_is_not_treated_as_giving_up():
+    asyncio.run(_run_truncated_is_not_a_refusal())
+
+
+# ── Правило обоснованности лежит в промпте и доезжает до модели ───────────────
+#
+# Само поведение проверяется живым набором (категория «обоснованность» в
+# tests/data/ai_eval.yaml): отличить «добавьте занятий, придут ещё 2-3 человека»
+# от «сначала заполните существующие» может только модель. Здесь — рубеж
+# попроще и бесплатный: правило не должно исчезнуть из промпта незаметно.
+
+def test_grounding_policy_is_part_of_the_rules():
+    rules = assistant._RULES
+    # Якоря выбраны так, чтобы не попадать на перенос строки: правило свёрстано
+    # по 80 колонок, и словосочетание через перенос тест не нашёл бы.
+    for must in ("это выдуманный", "Гипотезу", "не доказательство причины",
+                 "Малая выборка", "не заменяй похожей"):
+        assert must in rules, must
+
+
+async def _run_grounding_policy_reaches_the_model() -> None:
+    ids = await _seed()
+    try:
+        async with async_session_maker() as db:
+            ctx = await _ctx(db, ids["owner_id"], ids["sid"], "owner")
+            messages = await assistant.build_messages(
+                ctx, db, await _settings(db, ids["sid"]), [], "ru")
+        # Слот [1] — кэшируемый префикс: правило приезжает в каждый вызов и
+        # оплачивается по ставке чтения кэша, а не пишется в каждый вопрос.
+        assert "это выдуманный" in messages[1]["content"]
+        assert messages[1]["role"] == "system"
+    finally:
+        await _cleanup(ids["sid"])
+
+
+def test_grounding_policy_reaches_the_model():
+    asyncio.run(_run_grounding_policy_reaches_the_model())

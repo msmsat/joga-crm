@@ -71,7 +71,7 @@ export function LandingNav() {
     >
       <Wordmark compact />
 
-      <div className="hidden items-center gap-8 lg:flex">
+      <div className="hidden items-center gap-10 lg:absolute lg:left-[44%] lg:flex lg:-translate-x-1/2 xl:gap-12">
         {LINKS.map((l) => (
           <a
             key={l.href}

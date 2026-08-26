@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useAiEntity } from '../../../../hooks/useAiEntity';
 import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
@@ -45,6 +46,8 @@ export function StudioSection() {
 
   const { branch: activeStudio, isLoading: isBranchLoading, error: branchError, refetch: refetchBranch, createHall, updateHall, deleteHall } = useBranchDetail(activeStudioId);
   const activeHall = activeStudio?.halls.find(h => h.id === activeHallId) ?? null;
+  // Ассистенту: какой зал открыт (см. Journal — та же фраза, другой ответ).
+  useAiEntity('hall', activeHallId);
 
   // Ошибка загрузки списка/детали — тост (панель ниже покажет «Повторить»).
   const loadError = listError ?? branchError;

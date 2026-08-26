@@ -11,6 +11,7 @@ import type { TFunction } from 'i18next';
 import { aiApi } from '../api/ai';
 import type { AIChatMessage, AIPlanProposal } from '../api/ai/ai.types';
 import { queryKeys } from '../api/queryKeys';
+import { currentAiEntity } from './useAiEntity';
 import { useToast } from '../components/ui/Toast';
 import { errorMessage } from '../api/errorMessage';
 import { ApiError } from '../api/client';
@@ -190,7 +191,8 @@ export function useAssistant(surface: AISurface = 'drawer') {
   });
 
   const sendMut = useMutation({
-    mutationFn: ({ sessionId, text }: SendMessageVars) => aiApi.sendMessage(sessionId, text, currentPage, viewport()),
+    mutationFn: ({ sessionId, text }: SendMessageVars) =>
+      aiApi.sendMessage(sessionId, text, currentPage, viewport(), currentAiEntity()),
     onMutate: async ({ sessionId, text }): Promise<SendMessageCtx> => {
       await qc.cancelQueries({ queryKey: queryKeys.aiMessages(sessionId) });
       const snapshot = qc.getQueryData<AIChatMessage[]>(queryKeys.aiMessages(sessionId)) ?? [];
@@ -284,7 +286,10 @@ export function useAssistant(surface: AISurface = 'drawer') {
             || code === 'ai_trial_exhausted';
           throw new ApiError(quota ? 429 : 503, code, code);
         }
-      }, { currentPage, viewport: viewport(), signal: controller.signal });
+      }, {
+        currentPage, viewport: viewport(),
+        currentEntity: currentAiEntity(), signal: controller.signal,
+      });
     } finally {
       abortRef.current = null;
       setIsThinking(false);

@@ -45,7 +45,16 @@ class Studio(Base):
     company_id: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
+    # УСТАРЕВШЕЕ: фиксированный сдвиг «UTC+2». Место им не описывается — у Праги
+    # зимой +1, летом +2, — поэтому считать по нему «сегодня» и «в 19:00» можно
+    # лишь приблизительно. Остаётся ради обратной совместимости: по нему до сих
+    # пор работают студии, не заполнившие tz_iana (services/studio_time).
     timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    # Зона IANA — «Europe/Prague». Единственный источник правды о локальном
+    # времени: правила перехода на летнее время приходят вместе с ней. Заполняет
+    # владелец в настройках; вывести её из сдвига нельзя, поэтому поле
+    # nullable и НИКОГДА не заполняется догадкой (см. scripts/timezones.py).
+    tz_iana: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     language: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     currency: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     date_format: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)

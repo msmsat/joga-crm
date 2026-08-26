@@ -134,6 +134,16 @@ class LLMReply:
     text: str | None                 # None, когда модель вернула только tool_calls
     tool_calls: list[dict]           # [{"id","name","arguments"}]
     usage: LLMUsage
+    # Почему модель остановилась: "stop" — договорила, "tool_calls" — зовёт
+    # инструмент, "length" — УПЁРЛАСЬ В ПОТОЛОК и оборвана на полуслове.
+    # Последнее обязано быть различимо: обрезанный ответ выглядит как обычный,
+    # и без этого поля он молча уезжает человеку как полный.
+    finish_reason: str | None = None
+
+
+def is_truncated(reply: LLMReply) -> bool:
+    """Ответ оборван потолком, а не закончен."""
+    return reply.finish_reason == "length"
 
 
 def is_configured() -> bool:
@@ -341,11 +351,13 @@ async def chat(
 
     body = _body(messages, tools, tier, cache_prefix_len, stream=False, think=think)
     data = await _request_json(body)
-    message = ((data.get("choices") or [{}])[0] or {}).get("message") or {}
+    choice = (data.get("choices") or [{}])[0] or {}
+    message = choice.get("message") or {}
     return LLMReply(
         text=message.get("content") or None,
         tool_calls=_parse_tool_calls(message.get("tool_calls")),
         usage=_usage(data.get("usage"), data.get("model") or body["model"]),
+        finish_reason=choice.get("finish_reason"),
     )
 
 
@@ -380,6 +392,7 @@ async def chat_stream(
     for attempt in (1, 2):
         calls: dict[int, dict] = {}
         usage_raw: dict = {}
+        finish: str | None = None
         model = body["model"]
         try:
             async with aiohttp.ClientSession(timeout=_timeout()) as session:
@@ -405,7 +418,12 @@ async def chat_stream(
                         model = chunk.get("model") or model
                         if chunk.get("usage"):
                             usage_raw = chunk["usage"]
-                        delta = ((chunk.get("choices") or [{}])[0] or {}).get("delta") or {}
+                        choice = (chunk.get("choices") or [{}])[0] or {}
+                        # Причина остановки приезжает в последнем чанке с
+                        # текстом, а usage — ещё позже, отдельным. Поэтому не
+                        # перезаписываем её пустым значением из хвоста.
+                        finish = choice.get("finish_reason") or finish
+                        delta = choice.get("delta") or {}
                         if delta.get("content"):
                             started = True
                             yield "token", delta["content"]
@@ -416,6 +434,10 @@ async def chat_stream(
                     {"id": c["id"], "function": {"name": c["name"], "arguments": c["arguments"]}}
                     for _, c in sorted(calls.items())
                 ])
+            # Почему модель остановилась — событием, а не полем usage: usage про
+            # деньги, а это про полноту ответа, и смешивать их значит однажды
+            # потерять одно вместе с другим.
+            yield "finish", finish
             yield "usage", _usage(usage_raw, model)
             return
         except (aiohttp.ClientError, asyncio.TimeoutError) as exc:
@@ -424,6 +446,7 @@ async def chat_stream(
                 # Часть текста человек уже увидел — повтор дописал бы ответ
                 # дважды. Отдаём то, что успели насчитать, и выходим.
                 logger.exception("llm stream: обрыв после начала генерации")
+                yield "finish", finish
                 yield "usage", _usage(usage_raw, model)
                 return
     raise HTTPException(status_code=503, detail="assistant_unavailable")

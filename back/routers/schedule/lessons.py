@@ -8,7 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
-from models import Client, ClientPayment, Hall, Lesson, Reservation, Service, StudioMember, User
+from services import lesson_time, studio_time
+from models import (
+    Client, ClientPayment, Hall, Lesson, Reservation, Service, Studio, StudioMember, User,
+)
 from schemas.schedule.lessons import (
     EligibleClient, LessonCancelRequest, LessonCreateRequest, LessonDaysResponse, LessonDetail,
     LessonRead, LessonUpdateRequest,
@@ -380,6 +383,35 @@ async def _notify_schedule_conflict(db: AsyncSession, studio_id: int, lesson: Le
     })
 
 
+async def _pin_timezone(db: AsyncSession, studio_id: int, local: datetime) -> str | None:
+    """Проверить местное время и вернуть снимок зоны для занятия (P1.2).
+
+    Две вещи разом, потому что обе зависят от одной и той же зоны студии:
+      - в ночь перевода стрелок часть местного времени не существует, а часть
+        случается дважды. Молча выбрать за человека нельзя: 02:30 превратится в
+        03:30, и клиент придёт к закрытой двери;
+      - снимок зоны фиксирует, чем это стенное время закреплено. Без него смена
+        настройки студии переносила бы все будущие занятия в другой момент.
+
+    Зона не подтверждена — проверять нечем и фиксировать нечего: возвращаем
+    None, поведение остаётся ровно тем, что было до P1.2.
+    """
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
+    try:
+        lesson_time.assert_representable(local, studio)
+    except studio_time.NonexistentLocalTime:
+        raise HTTPException(
+            status_code=400,
+            detail="В эту ночь переводят часы, и такого времени не существует. Выберите другое.",
+        )
+    except studio_time.AmbiguousLocalTime:
+        raise HTTPException(
+            status_code=400,
+            detail="В эту ночь переводят часы, и это время наступает дважды. Выберите другое.",
+        )
+    return lesson_time.snapshot_for(studio)
+
+
 @router.post("/lessons", response_model=LessonRead, status_code=status.HTTP_201_CREATED)
 async def create_lesson(
     body: LessonCreateRequest,
@@ -412,8 +444,11 @@ async def create_lesson(
         teacher_id=body.teacher_id, hall_id=body.hall_id,
     )
 
+    tz_snapshot = await _pin_timezone(db, ctx.studio_id, body.start_time)
+
     lesson = Lesson(
         studio_id=ctx.studio_id,
+        tz_iana=tz_snapshot,
         name=service.name,
         teacher_id=body.teacher_id,
         teacher_name=teacher_name,
@@ -519,6 +554,12 @@ async def update_lesson(
             teacher_id=fields.get("teacher_id", lesson.teacher_id),
             hall_id=fields.get("hall_id", lesson.hall_id),
         )
+
+    if "start_time" in fields:
+        # Занятие двигают: заново проверяем местное время и перезакрепляем
+        # снимок. Иначе перенесённое занятие осталось бы привязанным к зоне,
+        # действовавшей при создании.
+        lesson.tz_iana = await _pin_timezone(db, ctx.studio_id, fields["start_time"])
 
     reschedule_fields = {"start_time", "duration_min", "hall_id"}
     is_reschedule = reschedule_fields & fields.keys()

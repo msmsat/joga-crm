@@ -18,6 +18,7 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
+from services import catalog
 from services.booking_access import commit_reservation, next_free_spot, resolve_coverage
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
@@ -91,7 +92,10 @@ async def public_slots(
             Reservation.lesson_id.label("lesson_id"),
             func.count(Reservation.id).label("booked_count"),
         )
-        .where(Reservation.status != "cancelled")
+        # Кого считать занявшим место — одно выражение на весь продукт
+        # (services/catalog): виджет, мини-приложение и каталог обязаны давать
+        # одно и то же число свободных мест.
+        .where(catalog.OCCUPIES_SPOT)
         .group_by(Reservation.lesson_id)
         .subquery()
     )

@@ -37,7 +37,16 @@ class Lesson(Base):
     teacher_name: Mapped[str] = mapped_column(String(100))
     teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     hall_id: Mapped[Optional[int]] = mapped_column(ForeignKey("halls.id", ondelete="SET NULL"), nullable=True, index=True)
+    # МЕСТНОЕ СТЕННОЕ время студии, не UTC. Занятие — событие по часам на стене:
+    # «вторник, 19:00» обязано быть 19:00 и зимой, и летом.
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+    # Снимок зоны студии на момент создания. Он и превращает стенное время в
+    # абсолютный момент: без него смена настройки студии молча переносила бы
+    # все будущие занятия в другой момент реального времени, не тронув ни одной
+    # строки расписания. NULL — момент занятия НЕИЗВЕСТЕН (создано до P1.2 либо
+    # зона студии не подтверждена), и выдавать его за точный нельзя.
+    # Читать только через services/lesson_time.
+    tz_iana: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     duration_min: Mapped[int] = mapped_column(Integer, default=60)
     price: Mapped[int] = mapped_column(Integer)
     level: Mapped[str] = mapped_column(String(50))

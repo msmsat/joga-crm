@@ -33,6 +33,7 @@ from models import (
     Client, Lesson, Operation, Reservation, Studio, StudioBillingPlan, StudioIntegration,
     User, UserSession,
 )
+from services import studio_time
 from services.booking_rules import BookingRules, load_rules
 from services.notifier import lesson_context, notify
 
@@ -238,20 +239,23 @@ async def _run_billing_check(db: AsyncSession, studio_id: int, today: date) -> N
 
 
 def _studio_tz(value: str | None) -> timezone:
-    """Studio.timezone хранится как офсет-строка ('UTC+3', 'UTC-5', 'UTC+0'),
-    а не как IANA-ключ. Парсим в фиксированный офсет через stdlib — без ZoneInfo
-    и пакета tzdata (на Windows системной базы TZ нет)."""
-    if value and value.upper().startswith("UTC"):
-        try:
-            return timezone(timedelta(hours=int(value[3:] or 0)))
-        except ValueError:
-            pass
-    return timezone.utc
+    """УСТАРЕЛО (P1.1). Разбор старого поля-сдвига «UTC+3».
+
+    Оставлено только затем, чтобы не ломать вызывающих одним PR. Новый код берёт
+    время студии через services/studio_time — он знает про переходы на летнее
+    время, а фиксированный сдвиг про них не знает и знать не может.
+    """
+    from services.studio_time import _legacy_zone
+
+    return _legacy_zone(value)
 
 
 async def _process_studio(db: AsyncSession, studio: Studio) -> None:
-    tz = _studio_tz(studio.timezone)
-    now_local = datetime.now(tz).replace(tzinfo=None)
+    # Локальное время студии — только через канонический резолвер: у него есть
+    # правила перехода на летнее время, из-за которых «в 20:00 по студии» летом
+    # и зимой приходится на разные моменты UTC. По фиксированному сдвигу отчёт
+    # уезжал бы на час дважды в год.
+    now_local = studio_time.now(studio).replace(tzinfo=None)
     today = now_local.date()
 
     state_row, state = await _get_state(db, studio.id)

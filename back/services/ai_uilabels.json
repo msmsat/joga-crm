@@ -139,6 +139,27 @@
     "cs": "Zaplatit za {{count}} měs.",
     "de": "Für {{count}} Mon. bezahlen"
   },
+  "billing:paymentSchedule.total": {
+    "ru": "Итого к оплате",
+    "en": "Total due",
+    "uk": "Разом до сплати",
+    "cs": "Celkem k úhradě",
+    "de": "Gesamt fällig"
+  },
+  "billing:period.title": {
+    "ru": "Период оплаты",
+    "en": "Payment period",
+    "uk": "Період оплати",
+    "cs": "Období platby",
+    "de": "Zahlungszeitraum"
+  },
+  "billing:planCards.yourPrice": {
+    "ru": "Ваша цена",
+    "en": "Your price",
+    "uk": "Ваша ціна",
+    "cs": "Vaše cena",
+    "de": "Ihr Preis"
+  },
   "billing:profile.add": {
     "ru": "Добавить реквизиты",
     "en": "Add billing details",
@@ -159,6 +180,13 @@
     "uk": "Редагувати",
     "cs": "Upravit",
     "de": "Bearbeiten"
+  },
+  "billing:savings.title": {
+    "ru": "Ваша экономия",
+    "en": "Your savings",
+    "uk": "Ваша економія",
+    "cs": "Vaše úspora",
+    "de": "Ihre Ersparnis"
   },
   "billing:seats.title": {
     "ru": "Сколько сотрудников в студии",

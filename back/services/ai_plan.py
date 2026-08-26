@@ -315,6 +315,74 @@ async def make_step(
     }
 
 
+# Занятия, которые план СТАВИТ во времени. Проверяются шаги друг против друга:
+# каждый по отдельности законен, а вместе они накладываются.
+_PLACES_LESSON = ("create_lesson", "update_lesson")
+_DEFAULT_DURATION_MIN = 60
+
+
+def _interval(step: dict) -> tuple[datetime, datetime, dict] | None:
+    """Когда занятие занимает время тренера — из аргументов шага, без базы."""
+    if step.get("tool") not in _PLACES_LESSON:
+        return None
+    args = step.get("args") or {}
+    raw = args.get("start_time")
+    if not isinstance(raw, str):
+        return None
+    try:
+        start = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    minutes = args.get("duration_min")
+    if not isinstance(minutes, int) or minutes <= 0:
+        minutes = _DEFAULT_DURATION_MIN
+    return start, start + timedelta(minutes=minutes), args
+
+
+def plan_conflicts(steps: list[dict]) -> list[dict]:
+    """Накладки ВНУТРИ плана: шаги проверяются друг против друга.
+
+    Каждый шаг по отдельности проходит и схему, и precheck: precheck сверяет его
+    с тем, что УЖЕ стоит в базе, а соседних шагов того же плана там ещё нет. Так
+    «поставь в 10:00 и в 10:30» превращалось в два законных шага, два занятия
+    внахлёст у одного тренера и звонок администратору.
+
+    Чисто арифметическая проверка, без запросов: сравниваются отрезки времени и
+    идентификаторы. Тренер и зал считаются отдельно — «один тренер в двух
+    местах» и «два тренера в одном зале» это разные накладки, и человеку надо
+    сказать, какая именно.
+    """
+    found: list[dict] = []
+    seen: set[tuple[int, int]] = set()
+    parsed = [(step, _interval(step)) for step in steps]
+    for i, (left, li) in enumerate(parsed):
+        if li is None:
+            continue
+        for right, ri in parsed[i + 1:]:
+            if ri is None:
+                continue
+            l_start, l_end, l_args = li
+            r_start, r_end, r_args = ri
+            if not (l_start < r_end and r_start < l_end):
+                continue
+            for field, what in (("teacher_id", "тренера"), ("hall_id", "зала")):
+                mine, theirs = l_args.get(field), r_args.get(field)
+                if mine is None or mine != theirs:
+                    continue
+                key = (left["n"], right["n"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                found.append({
+                    "step": right["n"], "kind": "plan_conflict",
+                    "text": (f"Шаг {right['n']} накладывается на шаг {left['n']}: "
+                             f"{r_start.strftime('%d.%m %H:%M')} попадает во время "
+                             f"{l_start.strftime('%d.%m %H:%M')}–{l_end.strftime('%H:%M')} "
+                             f"у того же {what}."),
+                })
+    return found
+
+
 def finish_plan(
     steps: list[dict], ctx: StudioContext, session_id: int | None,
     dropped: list[str] | None = None,
@@ -331,6 +399,9 @@ def finish_plan(
         for step in steps for text in step.get("warnings") or []
     ]
     warnings += [{"step": 0, "kind": "dropped", "text": text} for text in dropped or []]
+    # Накладки ВНУТРИ плана — после сборки, потому что раньше соседних шагов
+    # ещё нет, а precheck каждого шага видит только базу.
+    warnings += plan_conflicts(steps)
     if extra:
         # Молча обрезать нельзя: человек попросил больше, чем увидит в окне, и
         # решит, что остальное тоже создалось.

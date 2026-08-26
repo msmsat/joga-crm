@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import './Staff.css';
 import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
@@ -121,6 +122,9 @@ export default function Staff() {
     : (selectableStaff.find(s => s.role === 'owner') ?? selectableStaff[0]).id;
 
   const { profile, monthData, isLoading: profileLoading, refetchProfile, fetchMonth, cancelLesson } = useStaffProfile(activeStaffId);
+  // Ассистенту: чей профиль открыт — та же фраза «покажи её расписание»
+  // здесь обязана означать тренера, а не клиента.
+  useAiEntity('staff', activeStaffId);
 
   // Создаем "Подготовленные данные для интерфейса" (ViewModel)
   const adaptedStaff = useMemo(() => rawStaff.map(item => {

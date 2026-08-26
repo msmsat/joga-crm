@@ -24,9 +24,10 @@ Language = Literal[
 DateFormat = Literal["DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD"]
 FirstDayOfWeek = Literal["monday", "sunday"]
 JournalTimeStep = Literal[5, 10, 15, 30, 60]
-# Studio.timezone хранится как офсет-строка ('UTC+3'), не IANA-ключ — см.
-# services/daily_notify.py:_studio_tz. Список офсетов совпадает с TIMEZONES
-# во front/src/components/UI.tsx (тот же, что выбирает онбординг).
+# УСТАРЕВШЕЕ поле: Studio.timezone хранит офсет-строку ('UTC+3'). Место она не
+# описывает и про переход на летнее время не знает; остаётся ради студий,
+# заполнивших её до P1.1. Точное время даёт tz_iana ниже.
+# Список офсетов совпадает с TIMEZONES во front/src/components/UI.tsx.
 Timezone = Literal[
     "UTC-11", "UTC-10", "UTC-9", "UTC-8", "UTC-7", "UTC-6", "UTC-5", "UTC-4",
     "UTC-3", "UTC-2", "UTC-1", "UTC+0", "UTC+1", "UTC+2", "UTC+3", "UTC+4",
@@ -50,6 +51,7 @@ class GeneralRead(BaseSchema):
     company_id: Optional[str] = None
     logo_url: Optional[str] = None
     timezone: Optional[str] = None
+    tz_iana: Optional[str] = None
     language: Optional[str] = None
     currency: Optional[str] = None
     date_format: Optional[str] = None
@@ -62,6 +64,7 @@ class GeneralReadPublic(BaseSchema):
     name: str
     logo_url: Optional[str] = None
     timezone: Optional[str] = None
+    tz_iana: Optional[str] = None
     language: Optional[str] = None
     currency: Optional[str] = None
     date_format: Optional[str] = None
@@ -92,6 +95,28 @@ class GeneralUpdate(BaseSchema):
     vat_id: Optional[str] = Field(None, max_length=50)
     company_id: Optional[str] = Field(None, max_length=30)
     currency: Optional[Currency] = None
+    # Зона IANA — «Europe/Prague». Единственное, по чему можно точно сказать,
+    # который сейчас час у студии: правила перехода на летнее время приходят
+    # вместе с зоной. Вывести её из офсета нельзя (у «UTC+2» десятки кандидатов
+    # с разными правилами), поэтому её задаёт владелец, а не догадка сервера.
+    tz_iana: Optional[str] = Field(None, max_length=64)
+
+    @field_validator("tz_iana")
+    @classmethod
+    def _valid_zone(cls, value):
+        """Пускаем только то, что реально грузится как зона IANA.
+
+        «UTC+2», «Prague», «Europe/Praha» и замороженные псевдонимы вроде «EST»
+        отклоняем: сохранить их значило бы вернуть ту же неоднозначность под
+        видом подтверждённой зоны.
+        """
+        if value in (None, ""):
+            return None
+        from services.studio_time import parse
+
+        if parse(value) is None:
+            raise ValueError("ожидается зона IANA, например Europe/Prague")
+        return value
     language: Optional[Language] = None
     date_format: Optional[DateFormat] = None
     first_day_of_week: Optional[FirstDayOfWeek] = None

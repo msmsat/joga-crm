@@ -28,7 +28,14 @@
     "title": "How many staff in the studio",
     "hint": "from {{amount}} a month",
     "stepNote": "Every extra seat adds {{amount}} a month",
-    "unlimitedNote": "No limit on staff"
+    "unlimitedNote": "No limit on staff",
+    "perSeat": "Per staff member"
+  },
+  "limits": {
+    "staff": "Staff",
+    "clients": "Client records",
+    "ai": "Velora AI requests",
+    "unlimited": "Unlimited"
   },
   "banner": {
     "trialEnds": "Your trial ends on {{date}} — pick a plan",
@@ -153,6 +160,7 @@
     "current": "Current",
     "perMonth": "/ mo.",
     "currentPlan": "Current plan",
+    "yourPrice": "Your price",
     "staffLimit": "Up to {{count}} staff",
     "staffUnlimited": "Unlimited staff"
   },
@@ -281,7 +289,7 @@
   "savings": {
     "title": "Your savings",
     "prepayTitle": "Your savings when paying upfront",
-    "emptyState": "Choose a period of 6+ months to start saving",
+    "emptyState": "Pick a longer period and you start saving",
     "youSave": "You save {{amount}} over {{months}} mo.",
     "freeMonths": "That's like {{count}} mo. free",
     "amountLabel": "{{amount}} savings",

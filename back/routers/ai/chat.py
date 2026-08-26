@@ -273,6 +273,7 @@ async def send_message(
         studio_language=studio.language,
         current_page=body.current_page,
         viewport=body.viewport,
+        current_entity=body.current_entity,
     )
 
     assistant_message = AIChatMessage(
@@ -301,7 +302,7 @@ def _sse(event: str, data: object) -> str:
 
 async def _agent_stream(
     session_id: int, text: str, current_page: str | None, user_id: int,
-    studio_id: int, role: str, viewport: str | None = None,
+    studio_id: int, role: str, viewport: str | None = None, current_entity=None,
 ):
     """Тело SSE-потока.
 
@@ -339,7 +340,8 @@ async def _agent_stream(
             async for kind, data in agent_events(
                 ctx, db, settings, history,
                 session_id=session.id, studio_language=studio.language,
-                current_page=current_page, viewport=viewport, stream=True,
+                current_page=current_page, viewport=viewport,
+                current_entity=current_entity, stream=True,
             ):
                 if kind == "result":
                     result = data
@@ -400,7 +402,7 @@ async def stream_message(
     return StreamingResponse(
         _agent_stream(
             session_id, text, body.current_page, ctx.user.id, ctx.studio_id, ctx.role,
-            viewport=body.viewport,
+            viewport=body.viewport, current_entity=body.current_entity,
         ),
         media_type="text/event-stream",
         headers={

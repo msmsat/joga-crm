@@ -193,7 +193,11 @@ async def push_lesson(db: AsyncSession, studio_id: int, lesson_id: int) -> bool:
         return False
 
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
-    timezone = (studio.timezone if studio else None) or "UTC"
+    # Google Calendar принимает ТОЛЬКО зону IANA: «UTC+1» из старого поля для
+    # него не часовой пояс, а мусор. Пока студия не подтвердила зону, честнее
+    # отдать UTC — событие встанет в правильный момент, просто подписано будет
+    # не местным поясом.
+    timezone = getattr(studio, "tz_iana", None) or "UTC"
     hall_name = lesson.hall.name if lesson.hall_id and lesson.hall else None
 
     try:

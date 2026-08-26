@@ -1,97 +1,314 @@
-/* ─── PREMIUM SLIDER ──────────────────────────────────────────────────────── */
-.premiumSlider {
+/* ═══ КАЛЬКУЛЯТОР ТАРИФА ═══════════════════════════════════════════════════
+   Тариф — это места, и выбирают их там же, где видно цену: ползунок по
+   ступеням каталога, период оплаты и панель итога живут одним блоком. Раньше
+   это были три карточки подряд (линия мест, период, выгода), и сумму
+   приходилось сводить глазами между ними.
+
+   Карточка тёмная в обеих темах — как блок доверия ниже по странице: это
+   витрина цены, а не рабочая поверхность кабинета. Поэтому белый и прозрачные
+   белые здесь литералами, а не токенами темы.
+   ═════════════════════════════════════════════════════════════════════════ */
+.calcCard {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  padding: 32px 36px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+/* Персиковое свечение в углу — тот же приём, что на лендинге. */
+.calcCard::before {
+  content: '';
+  position: absolute;
+  top: -45%;
+  right: -8%;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(ellipse, rgba(252, 174, 145, 0.16) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.calcGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 330px);
+  gap: 40px;
+}
+
+.calcEyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--peach);
+}
+
+.calcSeats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-top: 14px; }
+.calcSeatsNum {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2.4px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.calcSeatsLabel { font-size: 14px; color: rgba(255, 255, 255, 0.45); }
+.calcBadge {
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid rgba(252, 174, 145, 0.3);
+  background: rgba(252, 174, 145, 0.15);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--peach);
+}
+
+/* Ползунок ступеней. Нативный input[type=range]: перетаскивание, клавиатура и
+   роль слайдера уже есть у платформы — двадцать кнопок на телефоне пришлось бы
+   ещё и листать вбок. Дорожка залита до --fill, его ставит компонент. */
+.calcRange {
   -webkit-appearance: none;
+  appearance: none;
+  display: block;
   width: 100%;
-  height: 8px;
-  background: rgba(var(--ink), 0.06);
-  border-radius: 6px;
+  height: 6px;
+  margin-top: 26px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #f9a08b 0 var(--fill, 0%),
+    rgba(255, 255, 255, 0.14) var(--fill, 0%) 100%
+  );
+  cursor: pointer;
   outline: none;
-  transition: background 0.2s;
 }
-
-.premiumSlider:hover {
-  background: rgba(var(--ink), 0.1);
-}
-
-.premiumSlider::-webkit-slider-thumb {
+.calcRange::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--bg-card);
-  border: 2px solid var(--peach);
+  background: #fdfcfb;
+  border: 3px solid #f9a08b;
+  box-shadow: 0 6px 20px rgba(249, 160, 139, 0.45);
   cursor: grab;
-  box-shadow: 0 4px 12px rgba(252, 174, 145, 0.4), 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: transform 0.15s cubic-bezier(0.34, 1.5, 0.64, 1);
 }
-
-.premiumSlider::-webkit-slider-thumb:active {
-  cursor: grabbing;
-  transform: scale(1.15);
+.calcRange::-webkit-slider-thumb:active { transform: scale(1.12); cursor: grabbing; }
+/* Firefox рисует дорожку своим псевдоэлементом — иначе он лёг бы поверх заливки. */
+.calcRange::-moz-range-track { height: 6px; border-radius: 999px; background: transparent; }
+.calcRange::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f9a08b;
+  border-radius: 50%;
+  background: #fdfcfb;
+  box-shadow: 0 6px 20px rgba(249, 160, 139, 0.45);
+  cursor: grab;
 }
+.calcRange:focus-visible { outline: 2px solid #f9a08b; outline-offset: 6px; }
 
-/* ─── INTERACTIVE CHART ──────────────────────────────────────────────────── */
-.chartBarGroup {
+.calcTicks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+}
+.calcHint { margin: 18px 0 0; font-size: 13px; line-height: 1.7; color: rgba(255, 255, 255, 0.45); }
+.calcRule { height: 1px; margin: 28px 0; background: rgba(255, 255, 255, 0.1); }
+
+.calcPeriods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.calcPeriod {
   position: relative;
+  padding: 14px 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
-
-.chartBarGroup > .barFill {
-  transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
-  transform-origin: bottom;
+.calcPeriod:hover { border-color: rgba(255, 255, 255, 0.3); }
+.calcPeriod[aria-pressed='true'] {
+  border-color: transparent;
+  background: linear-gradient(135deg, #fcae91 0%, #f9a08b 100%);
+  box-shadow: 0 8px 22px rgba(249, 160, 139, 0.3);
 }
-
-.chartBarGroup:hover > .barFill {
-  filter: brightness(0.85);
-  transform: scaleY(1.03);
-}
-
-.chartTooltip {
+.calcPeriodName { display: block; font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, 0.72); }
+.calcPeriodOff { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; color: var(--pistachio); }
+.calcPeriod[aria-pressed='true'] .calcPeriodName,
+.calcPeriod[aria-pressed='true'] .calcPeriodOff { color: #fff; }
+/* Бейдж «Лучший выбор»: на залитой плитке инвертируется — иначе персик на персике. */
+.calcBest {
   position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  background: var(--onyx);
-  color: var(--bg);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, 10px);
-  transition: all 0.2s cubic-bezier(0.34, 1.5, 0.64, 1);
-  z-index: 10;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-}
-
-.chartTooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: var(--onyx) transparent transparent transparent;
+  padding: 2px 10px;
+  border-radius: 100px;
+  background: var(--peach);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.calcPeriod[aria-pressed='true'] .calcBest { background: #fff; color: #f9a08b; }
+
+/* Левая колонка — flex, чтобы столбики прайса внизу забрали ровно тот остаток
+   высоты, который остаётся от панели итога справа (она выше). */
+.calcPick { display: flex; flex-direction: column; }
+
+/* ── Блок выгоды ──────────────────────────────────────────────────────────
+   Два столбца настоящими деньгами: тот же срок помесячно против выбранного
+   периода, разница высот — экономия. Занимает всю ширину колонки: узкие
+   столбики читались как случайная декорация сбоку. Тянется по остатку высоты
+   (flex: 1), поэтому плитки периода прижаты к низу колонки. */
+.calcGain { display: flex; flex-direction: column; flex: 1; min-height: 150px; margin-top: 26px; }
+.calcGainBars { display: flex; align-items: stretch; gap: 14px; flex: 1; margin-top: 12px; }
+.calcGainCol {
+  display: grid;
+  /* Средняя строка — дорожка столбца: её высоту задаёт 1fr, от неё и считается
+     процент самого столбца. */
+  grid-template-rows: auto minmax(56px, 1fr) auto;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+.calcGainSum { font-size: 15px; font-weight: 800; color: rgba(255, 255, 255, 0.5); font-variant-numeric: tabular-nums; }
+.calcGainSumOn { color: #fff; }
+.calcGainTrack { display: flex; align-items: flex-end; }
+.calcGainBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  min-height: 10px;
+  padding-top: 7px;
+  border-radius: 10px 10px 3px 3px;
+  background: rgba(255, 255, 255, 0.09);
+  transition: height 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+.calcGainBarOn {
+  background: linear-gradient(180deg, #fcae91 0%, #f9a08b 100%);
+  box-shadow: 0 8px 22px rgba(249, 160, 139, 0.35);
+}
+/* Скидка печатается ВНУТРИ столбца — рядом с высотой, которую она и объясняет. */
+.calcGainTag { font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; }
+.calcGainCap { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.35); }
+.calcGainNote { margin: 12px 0 0; font-size: 11.5px; line-height: 1.5; color: rgba(255, 255, 255, 0.45); }
+
+.calcPanel {
+  /* Колонка с равномерным разбросом остатка: если выше окажется левая колонка,
+     лишняя высота растечётся по всем зазорам панели, а не соберётся дырой над
+     кнопкой или под ней. */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 26px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+.calcPrice { display: flex; align-items: baseline; gap: 8px; margin-top: 14px; }
+.calcPriceNum {
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -1.8px;
+  color: var(--peach);
+  font-variant-numeric: tabular-nums;
+}
+.calcPriceUnit { font-size: 13px; color: rgba(255, 255, 255, 0.4); }
+.calcOld { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; min-height: 20px; }
+.calcOldPrice { color: rgba(255, 255, 255, 0.3); text-decoration: line-through; }
+.calcOff { padding: 2px 8px; border-radius: 100px; background: rgba(163, 201, 168, 0.15); color: var(--pistachio); font-weight: 700; }
+
+/* Новая сумма приподнимается снизу вместо тихой подмены. Проигрывается заново
+   на каждом значении — узлу цены компонент меняет key. */
+@keyframes calcBump {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+.calcPriceNum, .calcTotalValue, .calcGainSum { animation: calcBump 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Полоса «сколько платите / сколько экономите»: доли едут шириной, поэтому
+   разница между 3 и 12 месяцами читается движением, а не сравнением чисел.
+   Экономия заштрихована — она не деньги на счету, а то, что не списали. */
+.calcMeter {
+  display: flex;
+  height: 8px;
+  margin-top: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+.calcMeterPaid, .calcMeterSaved { transition: width 0.55s cubic-bezier(0.34, 1.1, 0.64, 1); }
+.calcMeterPaid { background: linear-gradient(90deg, #fcae91 0%, #f9a08b 100%); }
+.calcMeterSaved {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(163, 201, 168, 0.6) 0 5px,
+    rgba(163, 201, 168, 0.25) 5px 10px
+  );
 }
 
-.chartBarGroup:hover .chartTooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(-50%, 0);
+.calcRows { margin-top: 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.calcRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12.5px;
 }
-
-/* ─── KEYFRAMES ──────────────────────────────────────────────────────────── */
-@keyframes cardLaserScan {
-  0% { transform: translateX(-100%) skewX(-15deg); }
-  100% { transform: translateX(200%) skewX(-15deg); }
+.calcRowLabel { color: rgba(255, 255, 255, 0.4); }
+.calcRowValue { font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.calcRowAccent { color: var(--pistachio); }
+/* ── Итог и оплата ────────────────────────────────────────────────────────
+   Кнопка стоит в панели цены — платят ровно за то, что в ней написано.
+   Отдельной карточки с графиком платежей больше нет: список из «мар. 2026 —
+   33 €» повторял одну и ту же сумму столько раз, сколько месяцев в периоде. */
+.calcCta { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.calcTotal { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.calcTotalLabel { font-size: 12.5px; color: rgba(255, 255, 255, 0.4); }
+.calcTotalValue { font-size: 20px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.calcVat { margin: 6px 0 0; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
+.calcPay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fcae91 0%, #f9a08b 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(249, 160, 139, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.calcPay:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(249, 160, 139, 0.45); }
+.calcPay:active { transform: translateY(0); }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
+/* «Уменьшить движение» в системе — оставляем только смену цифр. */
+@media (prefers-reduced-motion: reduce) {
+  .calcPriceNum, .calcTotalValue, .calcGainSum { animation: none; }
+  .calcMeterPaid, .calcMeterSaved, .calcGainBar,
+  .calcRange::-webkit-slider-thumb { transition: none; }
 }
 
 /* Корень страницы тарифа. Своей роли на десктопе нет — класс существует ради
@@ -102,6 +319,7 @@
 /* Описание выбранного метода оплаты печатается только на телефоне: на десктопе
    описания стоят в самих плитках. */
 .blPane :global(.bl-mode-pick) { display: none; }
+
 
 /* ══ ТЕЛЕФОН ═══════════════════════════════════════════════════════════════
    Страница-лендинг: крупная шапка, четыре плитки статистики в столбик, три
@@ -191,32 +409,32 @@
     color: var(--text2);
   }
 
-  /* ── Период оплаты: две плитки в ряд ──────────────────────────────────────
-     Бейдж «Лучший выбор» висит на −8px над своей плиткой (третьей, то есть во
-     втором ряду) — поэтому между рядами зазор вдвое больше, чем между
-     колонками, и есть отступ сверху: иначе бейдж ложится на плитку выше. */
-  .blPane :global(.bl-periods) {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    column-gap: 7px !important;
-    row-gap: 18px !important;
-    margin-top: 10px;
-  }
-  .blPane :global(.bl-periods) button { padding: 10px 6px !important; border-radius: 12px !important; }
-
-  /* Шапка секции раскладывается «сквозной»: плашка «скидка активна» становится
-     обычным элементом колонки и уезжает под плитки (order), а не жмётся в угол
-     над ними, где на неё наезжал бейдж «Лучший выбор». */
-  .blPane :global(.bl-period) { display: flex; flex-direction: column; }
-  .blPane :global(.bl-period-head) { display: contents; }
-  .blPane :global(.bl-period-title) { margin-bottom: 2px; }
-  .blPane :global(.bl-period-badge) {
-    order: 3;
-    align-self: flex-start;
-    margin-top: 10px;
-    font-size: 11px !important;
-  }
-  .blPane :global(.bl-periods) button > div:nth-last-child(2) { font-size: 12.5px !important; }
-  .blPane :global(.bl-periods) button > div:last-child { font-size: 10.5px !important; }
+  /* ── Калькулятор тарифа: одна колонка ────────────────────────────────────
+     Ползунок остаётся ползунком — двадцать ступеней пальцем перебираются
+     быстрее, чем листается рельс из кнопок; в две колонки на телефоне
+     раскладывать нечего, панель итога встаёт под выбором. Бейдж «Лучший
+     выбор» висит на −8px над своей плиткой, поэтому у ряда есть отступ
+     сверху: иначе он ложится на линейку выше. */
+  .calcCard { padding: 16px 15px 18px; border-radius: 20px; margin-bottom: 14px; }
+  .calcCard::before { width: 220px; height: 220px; top: -30%; right: -20%; }
+  .calcGrid { grid-template-columns: 1fr; gap: 20px; }
+  .calcSeatsNum { font-size: 44px; letter-spacing: -1.8px; }
+  .calcSeatsLabel { font-size: 13px; }
+  .calcRange { margin-top: 22px; }
+  .calcTicks { font-size: 10px; letter-spacing: 0.1em; }
+  .calcHint { margin-top: 14px; font-size: 12px; }
+  .calcRule { margin: 20px 0; }
+  .calcPeriods { gap: 6px; margin-top: 18px; }
+  .calcPeriod { padding: 11px 3px; border-radius: 12px; }
+  .calcPeriodName { font-size: 12px; }
+  .calcPeriodOff { font-size: 10px; }
+  /* Блок выгоды на телефоне не рисуем: заполнять там нечего (колонка одна), а
+     экран и без него держит ползунок, четыре плитки, панель цены и полосу
+     оплаты. Экономия остаётся строкой в панели. */
+  .calcGain { display: none; }
+  .calcPanel { padding: 15px 16px; border-radius: 16px; }
+  .calcPriceNum { font-size: 36px; }
+  .calcRows { margin-top: 16px; }
 
   /* «Активировать 3%» / «Активировать комбо» — единственное действие своей
      секции: тянется во всю ширину, чтобы не висеть узкой пилюлей по центру. */
@@ -225,25 +443,6 @@
      карточки (сама карточка на телефоне снята правилом .bl-card выше). */
   .blPane :global(.bl-combo-sum) { gap: 10px !important; }
   .blPane :global(.bl-combo-sum) > span { font-size: 12.5px !important; }
-
-  /* ── Линия мест: рельс вбок ──────────────────────────────────────────────
-     Двадцать кнопок по 36px не помещаются ни в какой телефон, а сжимать их до
-     нечитаемых точек бессмысленно: ряд листается пальцем, как ряды вкладок и
-     чипов по всему продукту. Дорожка под кнопками при этом снимается — она
-     позиционирована по КОНТЕЙНЕРУ и при прокрутке ряда разъехалась бы с ним. */
-  .blPane :global(.bl-seats-line) > div[style*="position: absolute"] { display: none !important; }
-  .blPane :global(.bl-seats) {
-    justify-content: flex-start !important;
-    gap: 6px !important;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding: 3px 2px;
-  }
-  .blPane :global(.bl-seats)::-webkit-scrollbar { display: none; }
-  .blPane :global(.bl-seats-head) { margin-bottom: 12px !important; }
-  .blPane :global(.bl-seats-sum) { margin-top: 14px !important; align-items: center !important; }
-  .blPane :global(.bl-seats-price) span:first-child { font-size: 30px !important; }
 
   /* ── Плашки над вкладками (триал, комиссия, возврат с оплаты) ────────────
      32px по бокам — десктопное поле страницы; на телефоне это 64px из 360,
@@ -257,69 +456,6 @@
   .blPane :global(.bl-banner) > div > div:nth-child(2) { font-size: 17px !important; }
   .blPane :global(.bl-banner) :global(.v-btn) { width: 100%; }
 
-  /* ── Выгода предоплаты и график платежей: одна колонка ───────────────────
-     Две колонки по ~130px ломали обе карточки: сумма «−40%» съезжала под свою
-     подпись, а строка графика (дата + сумма) переносилась в три этажа. Поля
-     карточек тоже режем — 28px вокруг 130px содержимого это рамка, а не воздух. */
-  .blPane :global(.bl-pay-grid) {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-    margin-bottom: 14px !important;
-  }
-  .blPane :global(.bl-pay-grid) > div { padding: 15px 16px !important; border-radius: 16px !important; }
-
-  /* ══ ПОДПИСКА И КОМБО НА ТЕЛЕФОНЕ ═════════════════════════════════════════
-     Два режима, где на телефоне действительно есть что выбирать (у процента —
-     одна карточка с кнопкой). Экран строится как в приложении покупки: герой
-     с ценой наверху, ленты выбора под ним, итог и оплата — на липкой панели
-     над нижней навигацией, а не в конце длинной прокрутки.
-     ═══════════════════════════════════════════════════════════════════════ */
-
-  /* Карточку линии мест, в отличие от остальных .bl-card, НЕ снимаем: это
-     главный блок экрана, и подложка отделяет выбор от всего, что под ним. */
-  .blPane :global(.bl-seats-card) {
-    padding: 15px 14px 17px !important;
-    background:
-      radial-gradient(130% 100% at 88% 0%, rgba(252, 174, 145, 0.22) 0%, rgba(252, 174, 145, 0) 62%),
-      var(--bg-card) !important;
-    border: 1px solid rgba(252, 174, 145, 0.3) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 12px 30px rgba(252, 174, 145, 0.16) !important;
-  }
-
-  /* Рельс мест: снап по центру и растворяющиеся края. Обрезанная кнопка у
-     границы сама говорит, что ряд листается, — стрелок и подписей не нужно. */
-  .blPane :global(.bl-seats) {
-    scroll-snap-type: x proximity;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
-            mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
-  }
-  .blPane :global(.bl-seats) button {
-    scroll-snap-align: center;
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 14px !important;
-  }
-  /* Невыбранные ступени — на лёгкой подложке: их инлайновый фон это var(--bg-card),
-     то есть фон самой карточки, и там, где персиковый градиент сходит на нет,
-     от кнопки оставалась одна волосяная рамка. */
-  .blPane :global(.bl-seats) button[aria-pressed='false'] { background: rgba(var(--ink), 0.04) !important; }
-
-  /* ── Период: выбранная плитка залита персиковым ──────────────────────────
-     Рамка + бледная заливка на 90px плитке почти не отличали выбранное от
-     соседей; на телефоне выбор должен читаться боковым зрением. */
-  .blPane :global(.bl-periods) button[aria-pressed='true'] {
-    background: linear-gradient(135deg, #fcae91 0%, #f9a08b 100%) !important;
-    border-color: transparent !important;
-    box-shadow: 0 8px 22px rgba(249, 160, 139, 0.32) !important;
-  }
-  .blPane :global(.bl-periods) button[aria-pressed='true'] > div { color: #fff !important; }
-  /* Бейдж «Лучший выбор» на залитой плитке инвертируется — иначе персик на персике. */
-  .blPane :global(.bl-periods) button[aria-pressed='true'] > div[style*="position: absolute"] {
-    background: #fff !important;
-    color: #f9a08b !important;
-  }
-
   /* ── Комбо: строка «половина фикса + 1.5%» ───────────────────────────────
      Это описание того, что покупаешь, а не примечание: возвращаем ему
      карточку с персиковой каймой (общее правило .bl-card её сняло). */
@@ -331,11 +467,11 @@
     align-items: stretch !important;
   }
 
-  /* ── Итог и оплата: липкая панель над нижней навигацией ──────────────────
-     Сумма меняется от каждого касания ступени и периода, а кнопка оплаты
-     лежала под графиком платежей и блоком отзывов — чтобы увидеть цену и
-     заплатить, приходилось листать туда-обратно. z-index ниже .mnav (150) и
-     модалок (1000): панель стоит НАД контентом, но под ними. */
+  /* ── Итог и оплата: липкая полоса над нижней навигацией ──────────────────
+     Тот же узел, что стоит в панели цены на десктопе, — и остаётся тёмным:
+     полоса выглядит куском той же карточки, который просто не уехал вверх
+     вместе с прокруткой. z-index ниже .mnav (150) и модалок (1000): полоса
+     стоит НАД контентом, но под ними. */
   .blPane :global(.bl-pay-cta) {
     position: fixed;
     left: 0;
@@ -346,34 +482,17 @@
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: 12px;
+    margin: 0;
     padding: 11px var(--content-pad) 13px;
-    background: var(--bg-card);
-    border-top: 1px solid var(--border);
+    border-top: none;
     border-radius: 18px 18px 0 0;
-    box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.12);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.28);
   }
-  /* Строка итога: плашка внутри панели не нужна — сама панель и есть плашка. */
-  .blPane :global(.bl-pay-cta) > div:first-child {
-    grid-area: 1 / 1;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: none !important;
-    justify-content: flex-start !important;
-    gap: 8px;
-  }
-  .blPane :global(.bl-pay-cta) > div:nth-child(2) {
-    grid-area: 2 / 1;
-    margin: 1px 0 0 !important;
-    text-align: left !important;
-    font-size: 10px !important;
-  }
-  .blPane :global(.bl-pay-cta) > button {
-    grid-area: 1 / 2 / 3 / 3;
-    width: auto !important;
-    margin: 0 !important;
-    padding: 12px 16px !important;
-    border-radius: 14px !important;
-  }
+  /* Итог — строкой слева, налоговая сноска под ним, кнопка справа во всю высоту. */
+  .calcTotal { grid-area: 1 / 1; justify-content: flex-start; gap: 8px; }
+  .calcVat { grid-area: 2 / 1; margin-top: 1px; font-size: 10px; }
+  .calcPay { grid-area: 1 / 2 / 3 / 3; width: auto; margin: 0; padding: 12px 16px; }
   /* Место под панель — только когда она есть: у процентной модели её не рисуют.
      К этим 44px снизу добавляются 60px самой страницы (Billing.tsx) — вместе
      они и есть высота полосы плюс воздух под последней карточкой. */

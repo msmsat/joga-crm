@@ -14,7 +14,7 @@
 и публичной записи (`routers/booking/public.py`): расхождение логики между
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -24,13 +24,15 @@ from sqlalchemy.future import select
 
 from database import get_db
 from ratelimit import limiter
-from models import Client, ClientPayment, Hall, Lesson, Reservation
+from models import Client, ClientPayment, Hall, Lesson, Reservation, Studio
 from schemas._base import BaseSchema
 from services.booking_access import (
     commit_reservation, coverage_gap, resolve_coverage, trial_applies,
 )
+from services import catalog, lesson_time
 from services.booking_rules import (
-    BookingRules, assert_bookable, booking_window, load_rules, within_widget_hours,
+    BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
+    within_widget_hours,
 )
 from services.notifier import _fmt_amount, _studio_prefs, lesson_context, notify
 from services.referral import fire_referral
@@ -141,15 +143,6 @@ def _badge(total_spots: int, taken: int) -> str:
     return "open"
 
 
-def _is_bookable(rules: BookingRules, lesson: Lesson) -> bool:
-    """Те же четыре правила, что проверяет assert_bookable при самой записи —
-    здесь без исключения, чтобы отдать флаг на карточку."""
-    if not rules.booking_active:
-        return False
-    lower, upper = booking_window(rules)
-    return lower <= lesson.start_time <= upper and within_widget_hours(rules, lesson.start_time)
-
-
 def _lesson_fields(
     lesson: Lesson,
     taken_spots: list[int],
@@ -180,7 +173,7 @@ def _lesson_fields(
         badge=_badge(lesson.total_spots, len(taken_spots)),
         taken_spots=taken_spots,
         is_booked_by_user=is_booked_by_user,
-        bookable=_is_bookable(rules, lesson),
+        bookable=is_bookable(rules, lesson),
         trial_available=trial_available,
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
@@ -196,7 +189,7 @@ async def _reservations_map(
         return {}, {}
     rows = (await db.execute(
         select(Reservation.lesson_id, Reservation.spot_number, Reservation.client_id)
-        .where(Reservation.lesson_id.in_(lesson_ids), Reservation.status != "cancelled")
+        .where(Reservation.lesson_id.in_(lesson_ids), catalog.OCCUPIES_SPOT)
     )).all()
     taken: dict[int, list[int]] = {}
     booked_clients: dict[int, set[int]] = {}
@@ -290,17 +283,13 @@ async def lessons_by_date(
     поля у него пустые — своей брони, кофе и подарка первого занятия нет
     ровно потому, что нет карточки; `None in set()` даёт это само собой."""
     client_id = viewer.client.id if viewer.client else None
-    day_start = datetime.combine(target_date, time.min)
-    day_end = day_start + timedelta(days=1)
+    day_start, day_end = lesson_time.local_day_bounds(target_date)
 
     lessons = (await db.execute(
         select(Lesson)
-        .where(
-            Lesson.studio_id == viewer.studio_id,
-            Lesson.status != "cancelled",
-            Lesson.start_time >= day_start,
-            Lesson.start_time < day_end,
-        )
+        # Условие видимости — общее с каталогом (services/catalog), а не своё:
+        # ассистент обязан видеть ровно то же расписание, что и клиент здесь.
+        .where(*catalog.visible_lessons(viewer.studio_id, day_start, day_end))
         .order_by(Lesson.start_time)
     )).scalars().all()
     if not lessons:
@@ -544,7 +533,11 @@ async def create_reservation(
         raise HTTPException(status_code=404, detail="Занятие не найдено")
 
     rules = await load_rules(db, client.studio_id)
-    assert_bookable(rules, lesson)
+    studio = (await db.execute(select(Studio).where(Studio.id == client.studio_id))).scalar_one_or_none()
+    # Стенное время студии — для горизонта записи в днях, настоящий момент —
+    # для «поздно записываться» (P1.2). Раньше обе границы брались от часов
+    # процесса и совпадали с реальностью только на сервере в зоне студии.
+    assert_bookable(rules, lesson, now=lesson_time.local_now(studio), studio=studio)
 
     if not (1 <= body.spot_number <= lesson.total_spots):
         raise HTTPException(status_code=400, detail="Неверный номер места")
@@ -663,7 +656,14 @@ async def cancel_reservation(
     lesson = await _studio_lesson(db, client, lesson_id)
 
     deadline_min = (await load_rules(db, client.studio_id)).cancellation_deadline_min
-    if lesson.start_time < datetime.now() + timedelta(minutes=deadline_min):
+    studio = (await db.execute(select(Studio).where(Studio.id == client.studio_id))).scalar_one_or_none()
+    # «Не позднее чем за N минут» — это N ПРОШЕДШИХ минут. Разность стенного
+    # времени в ночь перевода стрелок дала бы на час больше или меньше, а часы
+    # процесса вообще не имеют отношения к студии (P1.2).
+    left = lesson_time.until(lesson, studio)
+    too_late = (left < timedelta(minutes=deadline_min) if left is not None
+                else lesson.start_time < lesson_time.local_now(studio) + timedelta(minutes=deadline_min))
+    if too_late:
         raise HTTPException(
             status_code=400,
             detail=f"Отменить запись можно не позднее чем за {deadline_min} минут до начала",
@@ -684,7 +684,8 @@ async def cancel_reservation(
     # оттуда и убрал), а вот сам клиент отменяет по окну своей студии
     # (cancellation_deadline_min): выставила 30 минут — поздние отмены реальны,
     # оставила дефолтные 240 — эти два события просто не наступают.
-    hours_left = (lesson.start_time - datetime.now()).total_seconds() / 3600
+    hours_left = ((left if left is not None
+                   else lesson.start_time - lesson_time.local_now(studio)).total_seconds() / 3600)
     client_name = f"{client.name} {client.last_name or ''}".strip()
     if hours_left < 2 and lesson.teacher_id is not None:
         await notify(db, client.studio_id, "trainer", "t2", {

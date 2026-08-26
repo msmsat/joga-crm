@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import styles from './Clients.module.css';
 import type { ClientData } from './types';
@@ -39,6 +40,9 @@ export default function Clients() {
 
   const { profile: activeProfile } = useClientProfile(isPanelOpen ? activeClientId : null);
   const activeClient = activeProfile ? mapProfile(activeProfile) : (clients.find(c => c.id === activeClientId) ?? null);
+  // Ассистенту: чья карточка открыта. Без этого «покажи её расписание»
+  // резолвится догадкой — в адресе идентификатора уже нет (?client= стёрт выше).
+  useAiEntity('client', isPanelOpen ? activeClientId : null);
 
   // Переход по ссылке извне (лента событий дашборда, инсайты отчётов): /dashboard/clients?client=<id>
   // сразу открывает карточку клиента, даже если его ещё нет в загруженной странице списка.

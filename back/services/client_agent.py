@@ -22,13 +22,14 @@ import os
 import time
 import uuid
 from datetime import date, datetime, timedelta
+from types import SimpleNamespace
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker
 from models import Client, Studio, StudioAISettings
-from services import contacts, llm
+from services import ai_language, contacts, llm
 from services.ai_quota import check_ai_quota
 from services.ai_tools import as_tool_message, sanitize_external
 from services.ai_usage import record_usage
@@ -341,19 +342,35 @@ async def reply(
         return None
 
     from models import StudioWorkingHours
-    from services.daily_notify import _studio_tz
+    from services import studio_time
 
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
     # Дата по часам студии, а не UTC: ночью они расходятся на сутки, и на
     # «что сегодня» клиент получал вчерашнее расписание (в диалоге 19.08 в 01:29
-    # агент отвечал «на сегодня, 18 августа»).
-    today = datetime.now(_studio_tz(studio.timezone if studio else None)).date()
+    # агент отвечал «на сегодня, 18 августа»). Резолвер канонический — он же
+    # умеет переход на летнее время, чего фиксированный сдвиг не умел.
+    today = studio_time.today(studio)
     hours = (await db.execute(
         select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id)
     )).scalars().all()
 
+    # Язык ответа — тем же резолвером, что в CRM: две копии правила разошлись бы,
+    # и «почему в директе отвечает иначе» стало бы отдельным багом.
+    # settings.language сюда НЕ передаём намеренно: язык, выбранный студией для
+    # своего CRM-ассистента, к постороннему человеку в мессенджере отношения не
+    # имеет — он пишет на своём.
+    language = ai_language.resolve(
+        [SimpleNamespace(role="user", text=text)],
+        studio_language=studio.language if studio else None)
+    logger.info("client agent language: studio=%s channel=%s lang=%s source=%s",
+                studio_id, channel, language.code, language.source)
+
     messages = [
         {"role": "system", "content": _RULES + "\n\n" + channel_style(settings, channel)},
+        # Разрешённый язык отдельной строкой и по-английски: это указание
+        # системы, а не текст для человека.
+        {"role": "system",
+         "content": f"Response language: {ai_language.name(language.code)} ({language.code})."},
         # Инструкция студии — редактируемое владельцем поле (эпик AI-2), и до сих
         # пор её видел только CRM-ассистент: в мессенджерах студия не могла задать
         # своему боту ни характера, ни манеры. Идёт ПОСЛЕ правил и до контекста —
@@ -571,11 +588,14 @@ async def should_reply(db: AsyncSession, studio_id: int, settings: StudioAISetti
                        channel: str, sender: str) -> bool:
     """Отвечать ли вообще: нерабочие часы и антиспам."""
     from models import AIUsage, StudioWorkingHours
-    from services.daily_notify import _studio_tz
+    from services import studio_time
 
     if _channel_field(settings, channel, "off_hours_only", False):
         studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
-        now_local = datetime.now(_studio_tz(studio.timezone if studio else None)).replace(tzinfo=None)
+        # Часы работы — местное стенное время студии, и день недели у них тоже
+        # местный: в 23:30 UTC в Праге уже следующие сутки, и «понедельник» по
+        # серверу был бы воскресеньем по студии.
+        now_local = studio_time.now(studio).replace(tzinfo=None)
         hours = (await db.execute(
             select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id)
         )).scalars().all()

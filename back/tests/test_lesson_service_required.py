@@ -120,8 +120,9 @@ def test_create_denormalizes_name_from_service():
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
     # teacher, service, гейт рабочих часов (студия / отметка даты / недельный
-    # график тренера — графика нет, не ограничивает), a7 conflict-check → []
-    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога"), None, None, None, []])
+    # график тренера — графика нет, не ограничивает), студия для снимка зоны
+    # (P1.2: None → зона не подтверждена, снимок не ставится), a7 conflict → []
+    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True
@@ -133,7 +134,7 @@ def test_create_denormalizes_price_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, []])
+    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
 
 
@@ -141,7 +142,7 @@ def test_create_explicit_price_wins_over_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4), price=0,
     )
-    db = _DB([_Teacher(), _Service(id=1, price=1500), None, None, None, []])
+    db = _DB([_Teacher(), _Service(id=1, price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 

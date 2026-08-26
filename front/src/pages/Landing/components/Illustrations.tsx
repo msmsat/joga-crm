@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Variants } from "framer-motion";
+import type { ReactNode } from "react";
 import { usePhone } from "../../../hooks/usePhone";
 import { EASE } from "./tokens";
 
@@ -9,6 +10,9 @@ import { EASE } from "./tokens";
 
 const LINE = "rgba(255,255,255,0.22)";
 const LINE_SOFT = "rgba(255,255,255,0.12)";
+// Тёмная дорожка прогресса на бумажном фоне (FAQ) — та же система, но не
+// белая, а оникс с низкой непрозрачностью.
+const LINE_DARK_SOFT = "rgba(16,16,16,0.08)";
 
 const draw: Variants = {
   hidden: { opacity: 0, pathLength: 0 },
@@ -150,6 +154,143 @@ export function HeroArt() {
   );
 }
 
+const CARD = "rounded-[20px] border border-[#101010]/8 bg-white p-5 shadow-[0_20px_50px_-20px_rgba(26,26,26,0.18)]";
+
+/** Заголовок карточки: точка + подпись — тот же приём, что у Screen в Screens.tsx. */
+function CardLabel({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="h-2 w-2 shrink-0 rounded-full bg-[#F9A08B]" />
+      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#101010]/45">{children}</span>
+    </div>
+  );
+}
+
+/** Хero-карточка: недельная загрузка журнала. */
+function JournalCard() {
+  const bars = [62, 80, 45, 95, 70, 55, 88];
+  return (
+    <motion.div variants={pop} custom={0} className={`${CARD} rotate-[-1deg] lg:col-start-1 lg:row-start-1 lg:row-span-2 col-span-2 lg:col-span-1`}>
+      <CardLabel>Журнал</CardLabel>
+      <div className="mt-1.5 text-[13px] text-[#666]">Сегодня — 12 занятий</div>
+      <div className="mt-6 flex h-24 items-end gap-2">
+        {bars.map((h, i) => (
+          <motion.div
+            key={i}
+            variants={pop}
+            custom={1 + i}
+            style={{
+              height: `${h * 0.9}px`,
+              transformOrigin: "center bottom",
+              background: i === 3 ? "linear-gradient(180deg,#FCAE91,#F9A08B)" : `rgba(249,160,139,${0.15 + i * 0.03})`,
+            }}
+            className="flex-1 rounded-t-md"
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex justify-between text-[9px] font-bold uppercase tracking-wide text-[#101010]/25">
+        {"ПВСЧПСВ".split("").map((d, i) => <span key={i}>{d}</span>)}
+      </div>
+    </motion.div>
+  );
+}
+
+/** Выручка месяца с трендом. */
+function FinanceCard() {
+  return (
+    <motion.div variants={pop} custom={9} className={`${CARD} rotate-[2deg] lg:col-start-2 lg:row-start-1`}>
+      <CardLabel>Финансы</CardLabel>
+      <div className="mt-4 text-[26px] font-black tracking-[-0.02em] text-[#101010]">₽186K</div>
+      <div className="mt-1 text-[11px] text-[#666]">выручка за месяц</div>
+      <motion.div
+        variants={pop}
+        custom={10}
+        className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#A3C9A8]/18 px-2.5 py-1 text-[11px] font-bold text-[#4B8A63]"
+      >
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden>
+          <path d="M1 7L5 3L9 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        +12%
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/** Клиентская база: стопка аватаров + счётчик. */
+function ClientsCard() {
+  const avatars = ["#F9A08B", "#101010", "#7BA7D4"];
+  return (
+    <motion.div variants={pop} custom={11} className={`${CARD} rotate-[-2deg] lg:col-start-2 lg:row-start-2`}>
+      <CardLabel>Клиенты</CardLabel>
+      <div className="mt-4 flex -space-x-2.5">
+        {avatars.map((c, i) => (
+          <motion.span key={i} variants={pop} custom={12 + i} style={{ background: c }} className="h-7 w-7 rounded-full ring-2 ring-white" />
+        ))}
+        <motion.span
+          variants={pop}
+          custom={15}
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F4F2] text-[8px] font-bold text-[#666] ring-2 ring-white"
+        >
+          +245
+        </motion.span>
+      </div>
+      <div className="mt-3 text-[20px] font-black text-[#101010]">248</div>
+      <div className="text-[11px] text-[#666]">клиентов, +12 за неделю</div>
+    </motion.div>
+  );
+}
+
+/** Ассистент отвечает клиенту — мини-диалог с «печатающими» точками. */
+function AiCard() {
+  return (
+    <motion.div variants={pop} custom={16} className={`${CARD} rotate-[1deg] col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3`}>
+      <CardLabel>Velora AI</CardLabel>
+      <motion.div variants={pop} custom={17} className="mt-3 rounded-2xl bg-[#101010] p-3.5">
+        <div className="h-[7px] w-[78%] rounded-full bg-white/30" />
+        <div className="mt-2 h-[7px] w-[52%] rounded-full bg-white/18" />
+        <div className="mt-2.5 flex gap-1">
+          <span className="lp-typing-1 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+          <span className="lp-typing-2 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+          <span className="lp-typing-3 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/**
+ * «Одна платформа»: не мокап окна браузера, а бенто-кластер из четырёх
+ * самостоятельных карточек — по одной на «Записи, клиенты, деньги, …AI» из
+ * подзаголовка. На lg+ карточки встают в асимметричную сетку (Журнал — герой
+ * на две строки), ниже — просто складываются в столбик: явную сетку задают
+ * только числовые col/row-утилиты Tailwind, без строковых grid-template-areas
+ * (легко разъехаться, а линтер такую опечатку не ловит). Высоты строк —
+ * `minmax(мин, auto)`, а не жёсткий px: если контент карточки чуть выше
+ * расчёта, ряд растягивается сам, а не режет карточку — та же причина, по
+ * которой уже один раз резало иконки рельсы старой версии этого блока.
+ */
+export function PlatformArt() {
+  const isPhone = usePhone();
+
+  return (
+    <div className="relative">
+      <div aria-hidden className="lp-glow absolute -inset-16 -z-10" />
+
+      <motion.div
+        initial={isPhone ? "show" : "hidden"}
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="grid grid-cols-2 gap-4 lg:grid-rows-[minmax(168px,auto)_minmax(168px,auto)_minmax(128px,auto)]"
+      >
+        <JournalCard />
+        <FinanceCard />
+        <ClientsCard />
+        <AiCard />
+      </motion.div>
+    </div>
+  );
+}
+
 /** О нас: орбиты клиентов вокруг студии. */
 export function OrbitArt() {
   const nodes = [
@@ -215,5 +356,119 @@ export function OrbitArt() {
         })}
       </g>
     </motion.svg>
+  );
+}
+
+/**
+ * FAQ: компактный «пульс» вместо статичного макета — персиковое кольцо
+ * прогресса заполняется по мере того, какой вопрос открыт (`active`), номер
+ * в центре сменяется тем же приёмом, что счётчики цены/страниц. Живая часть
+ * привязана к состоянию аккордеона в Faq.tsx, а не декорация рядом с ним.
+ */
+export function FaqArt({ active, total }: { active: number | null; total: number }) {
+  const r = 92;
+  const c = 2 * Math.PI * r;
+  const progress = active === null ? 0 : (active + 1) / total;
+
+  return (
+    <div className="relative">
+      <motion.svg
+        viewBox="0 0 260 260"
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="h-auto w-full overflow-visible"
+        aria-hidden
+      >
+        <defs>
+          <radialGradient id="lpFaqGlow" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stopColor="#F9A08B" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#F9A08B" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="130" cy="130" rx="130" ry="126" fill="url(#lpFaqGlow)" />
+
+        <g className="lp-spin-slow" style={{ transformOrigin: "130px 130px" }}>
+          <motion.circle variants={pop} custom={0}
+            cx="130" cy="130" r="118" fill="none"
+            stroke="#F9A08B" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="2 12" />
+        </g>
+
+        {/* дорожка прогресса */}
+        <motion.circle variants={draw} custom={0}
+          cx="130" cy="130" r={r} fill="none" stroke={LINE_DARK_SOFT} strokeWidth="6" />
+
+        {/* заливка — сколько вопросов уже открыли, начиная с полуночи */}
+        <g transform="rotate(-90 130 130)">
+          <motion.circle
+            cx="130" cy="130" r={r} fill="none" stroke="#F9A08B" strokeWidth="6" strokeLinecap="round"
+            strokeDasharray={c}
+            initial={{ strokeDashoffset: c }}
+            animate={{ strokeDashoffset: c * (1 - progress) }}
+            transition={{ duration: 0.6, ease: EASE }}
+          />
+        </g>
+
+        {/* плавающий бейдж «?» */}
+        <g className="lp-float-a">
+          <motion.g variants={pop} custom={1}>
+            <circle cx="222" cy="46" r="22" fill="#101010" stroke="#F9A08B" strokeOpacity="0.55" strokeWidth="1.5" />
+            <path d="M216 39a6 6 0 1 1 8.5 5.4c-1.6 1-2.5 2.2-2.5 3.8" fill="none" stroke="#F9A08B" strokeWidth="1.8" strokeLinecap="round" />
+            <circle cx="222" cy="53.5" r="1.4" fill="#F9A08B" />
+          </motion.g>
+        </g>
+      </motion.svg>
+
+      {/* номер открытого вопроса — HTML поверх SVG, тот же приём, что нумерация в ChapterHead */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <AnimatePresence mode="wait">
+          {active === null ? (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: EASE }}
+              className="flex flex-col items-center"
+            >
+              {/* рисованный вопросительный знак: тлеющий пинг-ореол + мягкое дыхание, приглашают нажать */}
+              <div className="relative flex h-14 w-14 items-center justify-center">
+                <span className="lp-ping absolute h-9 w-9 rounded-full bg-[#F9A08B]/30" />
+                <svg width="30" height="30" viewBox="0 0 44 44" fill="none" className="lp-breathe relative" aria-hidden>
+                  <path d="M14 15c0-6 4.5-9.5 10-9.5s10 3.4 10 8c0 4.6-3.4 6.8-7 9-2.4 1.4-3.5 3-3.5 5.6"
+                    stroke="#F9A08B" strokeWidth="3" strokeLinecap="round" fill="none" />
+                  <circle cx="23.5" cy="34" r="2.6" fill="#F9A08B" />
+                </svg>
+              </div>
+              <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#666]">
+                {total} вопросов
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: EASE }}
+              className="text-center"
+            >
+              <div className="font-mono text-[38px] font-black tabular-nums leading-none text-[#101010]">
+                {String(active + 1).padStart(2, "0")}
+              </div>
+              <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#666]">
+                открыт
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className={`mt-3 flex gap-1.5 transition-opacity duration-300 ${active !== null ? "opacity-100" : "opacity-0"}`}>
+          <span className="lp-typing-1 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+          <span className="lp-typing-2 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+          <span className="lp-typing-3 h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
+        </div>
+      </div>
+    </div>
   );
 }

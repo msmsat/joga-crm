@@ -15,6 +15,7 @@ from fastapi import HTTPException
 
 from models import ClientSubscription, Lesson, Reservation, SubscriptionPackage
 from services.booking_rules import BookingRules
+from services.catalog import OCCUPIES_SPOT
 
 
 async def next_free_spot(db: AsyncSession, lesson: Lesson) -> Optional[int]:
@@ -31,7 +32,10 @@ async def next_free_spot(db: AsyncSession, lesson: Lesson) -> Optional[int]:
     taken = set((await db.execute(
         select(Reservation.spot_number).where(
             Reservation.lesson_id == lesson.id,
-            Reservation.status != "cancelled",
+            # Кого считать занявшим место — одно выражение на весь продукт
+            # (services/catalog): каталог, витрина и сама запись обязаны
+            # понимать «место занято» одинаково.
+            OCCUPIES_SPOT,
         )
     )).scalars().all())
     return next((n for n in range(1, lesson.total_spots + 1) if n not in taken), None)

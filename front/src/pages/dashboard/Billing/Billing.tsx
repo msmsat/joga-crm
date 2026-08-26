@@ -63,6 +63,7 @@ export default function Billing() {
           currentMonthly={h.currentMonthly}
           discountedPrice={h.discountedPrice}
           totalToPay={h.totalToPay}
+          savedTotal={h.savedTotal}
           startCheckout={h.startCheckout}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}

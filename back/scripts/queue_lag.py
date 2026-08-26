@@ -18,7 +18,7 @@ from sqlalchemy import func, select
 
 from database import async_session_maker
 from models import AgentJob
-from services import agent_jobs
+from services import agent_jobs, outbound
 
 _DEFAULT_THRESHOLD = 20
 
@@ -35,12 +35,32 @@ async def _report(threshold: int) -> int:
         print(f"  {status:<8} {by_status.get(status, 0)}")
     print(f"Ждут исполнителя: {'>' if len(waiting) > threshold else ''}{min(len(waiting), threshold)}")
 
+    stats = await outbound.pending_stats()
+    print()
+    print("Исходящие по статусам:")
+    for status in (outbound.QUEUED, outbound.SENDING, outbound.ACCEPTED, outbound.FAILED):
+        print(f"  {status:<9} {stats['by_status'].get(status, 0)}")
+    oldest = stats["oldest_queued_at"]
+    if oldest is not None:
+        print(f"Самое старое неотправленное: {oldest:%Y-%m-%d %H:%M}")
+    print(f"Зависших отправок: {stats['stale_sending']}")
+
+    alarm = 0
     if by_status.get(agent_jobs.FAILED):
         print("ВНИМАНИЕ: есть работы, исчерпавшие попытки, — их никто не переберёт")
+    if stats["by_status"].get(outbound.FAILED):
+        # accepted значит «провайдер принял запрос», а не «человек прочитал»;
+        # failed — что ответ не уйдёт никогда, и об этом должен узнать человек.
+        print("ВНИМАНИЕ: есть ответы, которые не будут доставлены (failed)")
+    if stats["stale_sending"]:
+        print("ВНИМАНИЕ: отправки зависли — воркер жив? они вернутся в очередь сами")
     if len(waiting) > threshold:
-        print(f"ТРЕВОГА: очередь длиннее {threshold}. Воркер поднят? `docker compose ps worker`")
-        return 1
-    return 0
+        print(f"ТРЕВОГА: очередь работ длиннее {threshold}. Воркер поднят? `docker compose ps worker`")
+        alarm = 1
+    if stats["by_status"].get(outbound.QUEUED, 0) > threshold:
+        print(f"ТРЕВОГА: очередь исходящих длиннее {threshold}")
+        alarm = 1
+    return alarm
 
 
 def main() -> None:

@@ -347,6 +347,32 @@ async def _due_job(job_id: int) -> None:
         await db.commit()
 
 
+def test_no_provider_send_outside_outbound():
+    """§30. Отправка провайдеру разрешена ровно одному слою.
+
+    Проверка по исходникам, а не по поведению: поведенческий тест ловит только
+    те пути, которые кто-то догадался вызвать, а регрессия сюда приезжает
+    ровно тогда, когда кто-то «просто быстренько» позовёт send из агента или
+    роутера. Индикатор набора (sendChatAction) — не сообщение и разрешён:
+    смысл он имеет только во время хода и доставлять его надёжно незачем.
+    """
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    allowed = {"services/outbound.py", "services/channels"}
+    offenders = []
+    for path in sorted(root.rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel.startswith(("venv/", "tests/", "workers/")) or any(rel.startswith(a) for a in allowed):
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for marker in ("channels.telegram.send(", "channels.instagram.send(",
+                       "channels.whatsapp.send(", "from services.channels import"):
+            if marker in text and "send_typing" not in text.split(marker)[1][:80]:
+                offenders.append(f"{rel}: {marker}")
+    assert not offenders, "отправка провайдеру вне слоя доставки: " + "; ".join(offenders)
+
+
 def test_outbound():
     asyncio.run(_run())
 

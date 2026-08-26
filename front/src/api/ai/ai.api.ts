@@ -1,3 +1,4 @@
+import type { AiEntity } from '../../hooks/useAiEntity'
 import { client, streamRequest } from '../client'
 import type {
   AIActionResult,
@@ -24,9 +25,14 @@ export const aiApi = {
 
   // viewport — ширина окна ступенью вёрстки (phone/tablet/desktop): от неё
   // зависит ответ «где эта кнопка», см. эпик AI-6, задача 7.
-  sendMessage: (sessionId: number, text: string, currentPage?: string, viewport?: string) =>
+  // current_entity — открытая карточка {type, id}: адреса мало, идентификатор
+  // в нём не живёт (см. hooks/useAiEntity).
+  sendMessage: (
+    sessionId: number, text: string, currentPage?: string, viewport?: string,
+    currentEntity?: AiEntity | null,
+  ) =>
     client.post<SendMessageResponse>(`/ai/sessions/${sessionId}/messages`, {
-      text, current_page: currentPage, viewport,
+      text, current_page: currentPage, viewport, current_entity: currentEntity ?? undefined,
     }),
 
   // Стрим ответа: события token / tool_status / navigate / plan_proposal /
@@ -35,11 +41,17 @@ export const aiApi = {
     sessionId: number,
     text: string,
     onEvent: (event: string, data: unknown) => void,
-    options?: { currentPage?: string; viewport?: string; signal?: AbortSignal },
+    options?: {
+      currentPage?: string; viewport?: string;
+      currentEntity?: AiEntity | null; signal?: AbortSignal;
+    },
   ) =>
     streamRequest(
       `/ai/sessions/${sessionId}/stream`,
-      { text, current_page: options?.currentPage, viewport: options?.viewport },
+      {
+        text, current_page: options?.currentPage, viewport: options?.viewport,
+        current_entity: options?.currentEntity ?? undefined,
+      },
       onEvent,
       options?.signal,
     ),

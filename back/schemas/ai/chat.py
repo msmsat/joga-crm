@@ -19,6 +19,17 @@ class ChatSessionRead(BaseSchema):
     updated_at: datetime
 
 
+class CurrentEntity(BaseSchema):
+    """Карточка, открытая в приложении прямо сейчас.
+
+    Тип и ЧИСЛОВОЙ идентификатор, без имени: имя приехало бы из браузера, и
+    доверять ему нельзя ни как ключу (тёзки), ни как факту. Название сервер
+    прочитает сам и под правами спрашивающего — см. services/ai_entity.
+    """
+    type: Literal["client", "staff", "lesson", "reservation", "hall"]
+    id: int = Field(..., gt=0)
+
+
 class ChatMessageCreate(BaseSchema):
     text: str = Field(..., min_length=1, max_length=4000)
     # Маршрут, на котором сейчас пользователь (/dashboard/clients?tab=halls) —
@@ -30,6 +41,11 @@ class ChatMessageCreate(BaseSchema):
     # половина разделов — в шите «Ещё». Необязательно: клиентский агент в
     # мессенджерах и старый фронт поля не шлют, и это не должно ломать запрос.
     viewport: Optional[Literal["phone", "tablet", "desktop"]] = None
+    # Открытая карточка. Маршрута мало: `?client=` фронт стирает из адреса
+    # сразу после открытия панели, поэтому «покажи её расписание» на карточке
+    # клиента до этого поля резолвилось догадкой. Необязательно: мессенджеры и
+    # прежний фронт его не шлют, и это не должно ломать запрос.
+    current_entity: Optional[CurrentEntity] = None
 
 
 class ChatMessageRead(BaseSchema):

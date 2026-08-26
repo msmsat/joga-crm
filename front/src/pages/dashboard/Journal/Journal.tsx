@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import './Journal.css';
 import type { Booking } from './types';
@@ -56,6 +57,9 @@ export default function Journal() {
   const [hiddenHalls, setHiddenHalls] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
+  // Ассистенту: какое занятие открыто — «сколько здесь мест» в журнале
+  // спрашивают про занятие, а в каталоге про зал.
+  useAiEntity('lesson', popupBooking?.id ?? null);
   // 🔥 Черновик редактирования живёт здесь — карточка в сетке рисует его живьём (задача 4 V4-4)
   const [isEditingBooking, setIsEditingBooking] = useState(false);
   const [editForm, setEditForm] = useState({ serviceId: null as number | null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0 });
