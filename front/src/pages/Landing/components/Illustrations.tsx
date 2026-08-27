@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import type { Variants } from "framer-motion";
 import type { ReactNode } from "react";
 import { usePhone } from "../../../hooks/usePhone";
@@ -168,11 +169,14 @@ function CardLabel({ children }: { children: ReactNode }) {
 
 /** Хero-карточка: недельная загрузка журнала. */
 function JournalCard() {
+  const { t } = useTranslation("landing");
   const bars = [62, 80, 45, 95, 70, 55, 88];
+  // Буквы дней недели — из локали: у чехов «PÚSČPSN», у немцев «MDMDFSS».
+  const weekdays = t("art.weekdays", { returnObjects: true }) as string[];
   return (
     <motion.div variants={pop} custom={0} className={`${CARD} rotate-[-1deg] lg:col-start-1 lg:row-start-1 lg:row-span-2 col-span-2 lg:col-span-1`}>
-      <CardLabel>Журнал</CardLabel>
-      <div className="mt-1.5 text-[13px] text-[#666]">Сегодня — 12 занятий</div>
+      <CardLabel>{t("art.journal")}</CardLabel>
+      <div className="mt-1.5 text-[13px] text-[#666]">{t("art.journalToday")}</div>
       <div className="mt-6 flex h-24 items-end gap-2">
         {bars.map((h, i) => (
           <motion.div
@@ -189,7 +193,7 @@ function JournalCard() {
         ))}
       </div>
       <div className="mt-2 flex justify-between text-[9px] font-bold uppercase tracking-wide text-[#101010]/25">
-        {"ПВСЧПСВ".split("").map((d, i) => <span key={i}>{d}</span>)}
+        {weekdays.map((d, i) => <span key={i}>{d}</span>)}
       </div>
     </motion.div>
   );
@@ -197,11 +201,12 @@ function JournalCard() {
 
 /** Выручка месяца с трендом. */
 function FinanceCard() {
+  const { t } = useTranslation("landing");
   return (
     <motion.div variants={pop} custom={9} className={`${CARD} rotate-[2deg] lg:col-start-2 lg:row-start-1`}>
-      <CardLabel>Финансы</CardLabel>
-      <div className="mt-4 text-[26px] font-black tracking-[-0.02em] text-[#101010]">₽186K</div>
-      <div className="mt-1 text-[11px] text-[#666]">выручка за месяц</div>
+      <CardLabel>{t("art.finance")}</CardLabel>
+      <div className="mt-4 text-[26px] font-black tracking-[-0.02em] text-[#101010]">{t("art.financeValue")}</div>
+      <div className="mt-1 text-[11px] text-[#666]">{t("art.financeLabel")}</div>
       <motion.div
         variants={pop}
         custom={10}
@@ -218,10 +223,11 @@ function FinanceCard() {
 
 /** Клиентская база: стопка аватаров + счётчик. */
 function ClientsCard() {
+  const { t } = useTranslation("landing");
   const avatars = ["#F9A08B", "#101010", "#7BA7D4"];
   return (
     <motion.div variants={pop} custom={11} className={`${CARD} rotate-[-2deg] lg:col-start-2 lg:row-start-2`}>
-      <CardLabel>Клиенты</CardLabel>
+      <CardLabel>{t("art.clients")}</CardLabel>
       <div className="mt-4 flex -space-x-2.5">
         {avatars.map((c, i) => (
           <motion.span key={i} variants={pop} custom={12 + i} style={{ background: c }} className="h-7 w-7 rounded-full ring-2 ring-white" />
@@ -235,7 +241,7 @@ function ClientsCard() {
         </motion.span>
       </div>
       <div className="mt-3 text-[20px] font-black text-[#101010]">248</div>
-      <div className="text-[11px] text-[#666]">клиентов, +12 за неделю</div>
+      <div className="text-[11px] text-[#666]">{t("art.clientsLabel")}</div>
     </motion.div>
   );
 }
@@ -366,6 +372,7 @@ export function OrbitArt() {
  * привязана к состоянию аккордеона в Faq.tsx, а не декорация рядом с ним.
  */
 export function FaqArt({ active, total }: { active: number | null; total: number }) {
+  const { t } = useTranslation("landing");
   const r = 92;
   const c = 2 * Math.PI * r;
   const progress = active === null ? 0 : (active + 1) / total;
@@ -441,7 +448,7 @@ export function FaqArt({ active, total }: { active: number | null; total: number
                 </svg>
               </div>
               <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#666]">
-                {total} вопросов
+                {t("art.questions", { count: total })}
               </div>
             </motion.div>
           ) : (
@@ -457,7 +464,7 @@ export function FaqArt({ active, total }: { active: number | null; total: number
                 {String(active + 1).padStart(2, "0")}
               </div>
               <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#666]">
-                открыт
+                {t("art.open")}
               </div>
             </motion.div>
           )}

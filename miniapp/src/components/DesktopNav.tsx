@@ -30,9 +30,21 @@ type Props = {
  * между разделами (layoutId). Тот же приём, что у «таблетки» переключателей,
  * поэтому переход читается как перемещение предмета, а не как перекраска.
  *
- * Ширина постоянная (260px): сворачиваемое меню — это состояние, которое надо
+ * Ширина постоянная (272px): сворачиваемое меню — это состояние, которое надо
  * хранить, объяснять иконкой и восстанавливать между сессиями, ради четырёх
  * пунктов.
+ *
+ * ── Три пояса, и двигается только средний ─────────────────────────────────
+ *
+ * Сверху марки, снизу язык с аккаунтом, между ними разделы. Прокрутка отдана
+ * ровно среднему поясу: марка студии — это ответ на «где я», а язык и выход из
+ * аккаунта — то, что ищут глазами в углу, а не прокруткой. Уезжай они вместе
+ * со списком, колонка теряла бы точку отсчёта и точку выхода разом.
+ *
+ * Внутри пояса интервалы плотные, между поясами — просторные: две марки
+ * читаются как одна подпись, «язык + аккаунт» — как один угол настроек, а
+ * разделы между ними дышат. Расстояние здесь и есть группировка — поэтому
+ * разделительных линий в колонке по-прежнему нет.
  */
 export default function DesktopNav({
   active,
@@ -48,24 +60,18 @@ export default function DesktopNav({
 
   return (
     /* sticky вместо собственной области прокрутки: страница листается целиком,
-       а меню просто остаётся на экране.
-       Колонка внутри разрезана надвое. Прокручивается только верх — марки и
-       разделы; аккаунт с языком закреплён у нижнего края и в прокрутке не
-       участвует. Раньше прокруткой заведовала сама колонка, и на низком окне
-       низ уезжал вместе со всем остальным: чтобы дотянуться до профиля,
-       приходилось сначала догадаться, что меню вообще листается. Выход из
-       аккаунта и смена языка — не то, что ищут прокруткой. */
-    <aside className="sticky top-0 z-20 flex h-screen w-[272px] shrink-0 flex-col overflow-hidden py-10">
-      {/* min-h-0 обязателен: flex-элемент по умолчанию не сжимается меньше
-          своего содержимого, и без него блок распирал бы колонку изнутри,
-          вытесняя закреплённый низ за край экрана вместо того, чтобы отдать
-          прокрутку себе. Поля колонки — здесь, а не на <aside>: иначе полоса
-          прокрутки (там, где система её рисует) встала бы в 24px от края. */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6">
-        {/* Две марки, одна под другой: сверху продукт, снизу студия, чей это
-            кабинет. Знак Velora — те же четыре окошка, что в меню CRM: клиент и
-            владелец должны узнавать один продукт. */}
-        <div className="flex min-w-0 shrink-0 items-center gap-2.5 px-3.5">
+       а меню просто остаётся на экране. `overflow-hidden` у самой колонки
+       обязателен — иначе прокруткой заведовала бы она, и закреплённые пояса
+       уезжали бы вместе с разделами. Полей на этом узле нет, их держат сами
+       пояса: так полоса прокрутки среднего идёт по краю колонки, а не в 24px
+       от него. */
+    <aside className="sticky top-0 z-20 flex h-screen w-[272px] shrink-0 flex-col overflow-hidden">
+      {/* ── Марки. Сверху продукт, снизу студия, чей это кабинет. Знак Velora —
+             те же четыре окошка, что в меню CRM: клиент и владелец должны
+             узнавать один продукт. Обе строки стоят вплотную друг к другу и к
+             верхнему краю: это одна подпись в два этажа, а не два блока. */}
+      <div className="shrink-0 px-6 pb-7 pt-7">
+        <div className="flex min-w-0 items-center gap-2.5 px-3.5">
           <span className="shrink-0 text-brand">
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-[18px] w-[18px]">
               <rect width="9" height="9" rx="2.6" />
@@ -78,8 +84,8 @@ export default function DesktopNav({
             Velora
           </span>
         </div>
-  
-        <div className="mt-9 flex min-w-0 shrink-0 items-center gap-3 px-3.5">
+
+        <div className="mt-4 flex min-w-0 items-center gap-3 px-3.5">
           {logoUrl ? (
             <img src={logoUrl} alt="" className="h-10 w-10 shrink-0 rounded-[13px] object-cover shadow-soft" />
           ) : (
@@ -98,7 +104,7 @@ export default function DesktopNav({
               </svg>
             </span>
           )}
-  
+
           <div className="min-w-0">
             <div className="truncate text-[14px] font-extrabold tracking-[-0.02em] text-foreground">
               {studioName || 'Velora'}
@@ -108,84 +114,88 @@ export default function DesktopNav({
             </div>
           </div>
         </div>
-  
-        <nav className="mt-12 flex shrink-0 flex-col gap-1.5 pb-2">
-          {items.map((item) => {
-            const isActive = active === item.id;
-  
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onSelect(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                className={cn(
-                  'group relative flex h-[50px] items-center gap-3.5 rounded-[16px] px-3.5 text-left transition-colors duration-200',
-                  // Подсветка наведения только у неактивных: под активным уже
-                  // лежит белая карточка, второй слой её бы только замутил.
-                  !isActive && 'hover:bg-foreground/[0.04]',
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="nav-active-dt"
-                    transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-                    className="absolute inset-0 rounded-[16px] bg-card shadow-soft"
-                  />
-                )}
-  
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  strokeWidth={1.8}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className={cn(
-                    'relative h-[19px] w-[19px] shrink-0 transition-colors duration-200',
-                    isActive
-                      ? 'stroke-brand'
-                      : 'stroke-muted-foreground group-hover:stroke-foreground',
-                  )}
-                >
-                  {item.icon}
-                </svg>
-  
-                <span
-                  className={cn(
-                    'relative truncate text-[13.5px] tracking-[-0.01em] transition-colors duration-200',
-                    isActive
-                      ? 'font-extrabold text-foreground'
-                      : 'font-bold text-muted-foreground group-hover:text-foreground',
-                  )}
-                >
-                  {t(item.labelKey)}
-                </span>
-  
-                {/* Персиковая засечка у активного: метка «вы здесь», которую
-                    видно и краем глаза, когда взгляд уже в контенте. */}
-                {isActive && (
-                  <motion.span
-                    layoutId="nav-active-tick"
-                    transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-                    className="absolute right-3.5 h-4 w-1 rounded-full bg-brand"
-                  />
-                )}
-              </button>
-            );
-          })}
-        </nav>
       </div>
 
-      {/* Клиент внизу колонки: на телефоне его инициал стоит в шапке главной,
-          на десктопе шапка от неё скрыта — иначе имя дублируется дважды.
-          В профиль карточка не ведёт: он и так стоит пунктом меню выше, а
-          здесь у неё своя работа — аккаунты устройства (см. AccountMenu).
-          Блок вынесен из прокручиваемой части и держится у нижнего края сам:
-          `mt-auto` тут больше не нужен — над ним стоит flex-1, который и
-          съедает всю свободную высоту. `shrink-0` — чтобы низкое окно сжимало
-          не аккаунт, а область прокрутки над ним. Отступ сверху отделяет его
-          от разделов, когда последний из них обрезан краем прокрутки. */}
-      <div className="flex shrink-0 flex-col gap-2.5 px-6 pt-4">
+      {/* ── Разделы. Единственный пояс с прокруткой, и включается она сама —
+             когда пунктов больше, чем осталось высоты.
+             `min-h-0` обязателен: flex-элемент по умолчанию не сжимается меньше
+             своего содержимого, и без него список распирал бы колонку изнутри,
+             выталкивая нижний пояс за край экрана вместо того, чтобы отдать
+             прокрутку себе. `shrink-0` на кнопках — та же грабля этажом ниже:
+             низкое окно обязано сжимать список, а не сами пункты. */}
+      <nav className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-6 pb-2">
+        {items.map((item) => {
+          const isActive = active === item.id;
+
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              aria-current={isActive ? 'page' : undefined}
+              className={cn(
+                'group relative flex h-[50px] shrink-0 items-center gap-3.5 rounded-[16px] px-3.5 text-left transition-colors duration-200',
+                // Подсветка наведения только у неактивных: под активным уже
+                // лежит белая карточка, второй слой её бы только замутил.
+                !isActive && 'hover:bg-foreground/[0.04]',
+              )}
+            >
+              {isActive && (
+                <motion.span
+                  layoutId="nav-active-dt"
+                  transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                  className="absolute inset-0 rounded-[16px] bg-card shadow-soft"
+                />
+              )}
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={cn(
+                  'relative h-[19px] w-[19px] shrink-0 transition-colors duration-200',
+                  isActive
+                    ? 'stroke-brand'
+                    : 'stroke-muted-foreground group-hover:stroke-foreground',
+                )}
+              >
+                {item.icon}
+              </svg>
+
+              <span
+                className={cn(
+                  'relative truncate text-[13.5px] tracking-[-0.01em] transition-colors duration-200',
+                  isActive
+                    ? 'font-extrabold text-foreground'
+                    : 'font-bold text-muted-foreground group-hover:text-foreground',
+                )}
+              >
+                {t(item.labelKey)}
+              </span>
+
+              {/* Персиковая засечка у активного: метка «вы здесь», которую
+                  видно и краем глаза, когда взгляд уже в контенте. */}
+              {isActive && (
+                <motion.span
+                  layoutId="nav-active-tick"
+                  transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                  className="absolute right-3.5 h-4 w-1 rounded-full bg-brand"
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* ── Язык и аккаунт. Клиент внизу колонки: на телефоне его инициал стоит
+             в шапке главной, на десктопе шапка от неё скрыта — иначе имя
+             дублируется дважды. В профиль карточка не ведёт: он и так стоит
+             пунктом меню выше, а здесь у неё своя работа — аккаунты устройства
+             (см. AccountMenu). Две карточки идут вплотную и прижаты к нижнему
+             краю: это один угол настроек, а не два отдельных блока. */}
+      <div className="flex shrink-0 flex-col gap-1.5 px-6 pb-7 pt-4">
         {isGuest && <LanguagePopover variant="card" />}
         <AccountMenu userName={userName} onAddAccount={onAddAccount} />
       </div>

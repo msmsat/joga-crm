@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { LogoMark } from "../../../components/Icons";
 import { getActiveToken } from "../../../utils/auth";
-import { LEGAL_DOC_LINKS, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
+import { PRIVACY_URL, TERMS_URL, DPA_URL, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
+import { LangSwitch } from "./LangSwitch";
 
 const LINKS = [
-  { href: "#product", label: "Продукт" },
-  { href: "#modules", label: "Модули" },
-  { href: "#pricing", label: "Тарифы" },
-  { href: "#faq", label: "Вопросы" },
+  { href: "#product", key: "product" },
+  { href: "#modules", key: "modules" },
+  { href: "#pricing", key: "pricing" },
+  { href: "#faq", key: "faq" },
 ];
 
 // Каждая ссылка ведёт в свой раздел страницы, а не наверх: якоря глав живут в
@@ -16,21 +18,29 @@ const LINKS = [
 // плавающую шапку. Пунктов-заглушек в подвале быть не должно — колонка
 // «Отрасли» из пяти таких и ушла. Документы — настоящие файлы на бэкенде,
 // они обязаны открываться без регистрации.
-const FOOTER_COLUMNS: [string, { label: string; href: string }[]][] = [
-  ["Продукт", [
-    { label: "Возможности", href: "#product" },
-    { label: "Модули", href: "#modules" },
-    { label: "Онлайн-запись", href: "#booking" },
-    { label: "Velora AI", href: "#ai" },
-    { label: "Тарифы", href: "#pricing" },
+//
+// Подписи берутся из локали (`footer.columns.*`), а не из LEGAL_DOC_LINKS:
+// тот список русский и обслуживает ещё непереведённые страницы входа.
+const FOOTER_COLUMNS: [string, { key: string; href: string }[]][] = [
+  ["product", [
+    { key: "features", href: "#product" },
+    { key: "modules", href: "#modules" },
+    { key: "booking", href: "#booking" },
+    { key: "ai", href: "#ai" },
+    { key: "pricing", href: "#pricing" },
   ]],
-  ["Компания", [
-    { label: "Чем отличаемся", href: "#difference" },
-    { label: "О нас", href: "#about" },
-    { label: "Вопросы и ответы", href: "#faq" },
-    { label: "Поддержка", href: SUPPORT_WHATSAPP_URL },
+  ["company", [
+    { key: "difference", href: "#difference" },
+    { key: "about", href: "#about" },
+    { key: "faq", href: "#faq" },
+    { key: "support", href: SUPPORT_WHATSAPP_URL },
   ]],
-  ["Документы", LEGAL_DOC_LINKS],
+  ["docs", [
+    { key: "terms", href: TERMS_URL },
+    { key: "privacy", href: PRIVACY_URL },
+    { key: "dpa", href: DPA_URL },
+    { key: "support", href: SUPPORT_WHATSAPP_URL },
+  ]],
 ];
 
 function Wordmark({ compact = false }: { compact?: boolean }) {
@@ -48,6 +58,7 @@ function Wordmark({ compact = false }: { compact?: boolean }) {
 
 export function LandingNav() {
   const navigate = useNavigate();
+  const { t } = useTranslation("landing");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -78,21 +89,25 @@ export function LandingNav() {
             href={l.href}
             className="group relative text-[14px] font-medium text-white/60 transition-colors hover:text-white"
           >
-            {l.label}
+            {t(`nav.${l.key}`)}
             <span className="absolute -bottom-1.5 left-0 h-[1.5px] w-0 bg-[#F9A08B] transition-all duration-300 group-hover:w-full" />
           </a>
         ))}
       </div>
 
       <div className="flex items-center gap-2">
+        <LangSwitch />
         <button
           onClick={() => navigate(getActiveToken() ? "/dashboard" : "/login")}
-          className="rounded-lg px-3 py-2.5 text-[14px] font-semibold text-white/70 transition-colors hover:text-white sm:px-4"
+          className="rounded-lg px-2.5 py-2.5 text-[14px] font-semibold text-white/70 transition-colors hover:text-white sm:px-4"
         >
-          Войти
+          {t("nav.login")}
         </button>
         <button className="btn btn-primary btn-size-normal" onClick={() => navigate("/register")}>
-          Начать<span className="hidden sm:inline">&nbsp;бесплатно</span>
+          {/* Две подписи вместо «Начать» + приклеенного суффикса: по-немецки
+              короткая форма — начало фразы, а не её обрезок. */}
+          <span className="sm:hidden">{t("nav.startShort")}</span>
+          <span className="hidden sm:inline">{t("nav.startFull")}</span>
         </button>
       </div>
     </nav>
@@ -100,6 +115,8 @@ export function LandingNav() {
 }
 
 export function LandingFooter() {
+  const { t } = useTranslation("landing");
+
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#101010]">
       <div className="mx-auto max-w-[1200px] px-6 py-16 lg:px-12">
@@ -107,8 +124,7 @@ export function LandingFooter() {
           <div>
             <Wordmark />
             <p className="mt-5 max-w-[280px] text-[13px] leading-[1.7] text-white/40">
-              Премиальная CRM для студий йоги и пилатеса. Записи, клиенты,
-              деньги и AI — в одном пространстве.
+              {t("footer.tagline")}
             </p>
             {/* Здесь были кнопки Telegram / WhatsApp / Instagram, ведущие на
                 #top: аккаунтов за ними нет. Остался один канал, за которым
@@ -124,18 +140,20 @@ export function LandingFooter() {
           </div>
 
           <div className="grid gap-8 sm:grid-cols-3">
-            {FOOTER_COLUMNS.map(([title, items]) => (
-              <div key={title}>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#F9A08B]">{title}</p>
+            {FOOTER_COLUMNS.map(([column, items]) => (
+              <div key={column}>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#F9A08B]">
+                  {t(`footer.columns.${column}.title`)}
+                </p>
                 <ul className="mt-5 space-y-3">
-                  {items.map(({ label, href }) => (
-                    <li key={label}>
+                  {items.map(({ key, href }) => (
+                    <li key={key}>
                       <a
                         href={href}
                         {...(href.startsWith("#") ? {} : LEGAL_LINK_PROPS)}
                         className="text-[13px] text-white/45 transition-colors hover:text-white"
                       >
-                        {label}
+                        {t(`footer.columns.${column}.${key}`)}
                       </a>
                     </li>
                   ))}
@@ -148,7 +166,7 @@ export function LandingFooter() {
         {/* Индикатор «Все системы в норме» убран: статус-страницы, которая бы
             его подтверждала, у нас нет — это была картинка, а не показание. */}
         <div className="mt-14 border-t border-white/10 pt-8 text-[12px] text-white/30">
-          © 2026 Velora. Все права защищены.
+          {t("footer.copyright")}
         </div>
       </div>
 

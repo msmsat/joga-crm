@@ -1,8 +1,10 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
+import { bold } from "./rich";
 import { GridBg } from "./Illustrations";
 
 // Единственный источник истины о ценах и лимитах — back/routers/billing/plans.py
@@ -33,23 +35,22 @@ const PERIODS = [
   { months: 12, off: 0.4 },
 ];
 
-const MODELS = [
-  { title: "Подписка", price: "от 15 € / мес", desc: "Фиксированная сумма. Знаете расход заранее — никаких сюрпризов в конце месяца." },
-  { title: "3% с выручки", price: "минимум 15 € / мес", desc: "Платите с оборота. В пустой месяц доплачиваете только разницу до минимума." },
-  { title: "Комбо", price: "½ фикса + 1.5%", desc: "Половина подписки плюс небольшой процент — компромисс между двумя моделями." },
-];
-
-const money = (value: number) => value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
 const round2 = (value: number) => Math.round(value * 100) / 100;
-/** Мест на линии всего 2..20 — форм слова нужно ровно две. */
-const seatWord = (seats: number) => (seats < 5 ? "сотрудника" : "сотрудников");
 
 export function Pricing() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation("landing");
   // Открываем на середине линии: и цена входа, и потолок остаются в двух
   // движениях пальца, а не «ползунок в углу, крутите сами».
   const [pos, setPos] = useState(10);
   const [period, setPeriod] = useState(12);
+
+  // Разделитель тысяч и десятичная запятая — по языку страницы, а не по
+  // фиксированному 'ru-RU': немцу «1.234,5» читается, «1 234.5» — нет.
+  const locale = i18n.language || "en";
+  const money = (value: number) => value.toLocaleString(locale, { maximumFractionDigits: 2 });
+  const count = (value: number) => value.toLocaleString(locale);
+  const amount = (value: number) => t("pricing.amount", { value: money(value) });
 
   const seats = pos > MAX_SEATS ? null : pos;
   const monthly = seats === null ? UNLIMITED_PRICE : SEAT_BASE + (seats - MIN_SEATS) * SEAT_STEP;
@@ -59,29 +60,31 @@ export function Pricing() {
   const saved = round2(monthly * period - total);
   const fill = ((pos - MIN_SEATS) / (UNLIMITED_POS - MIN_SEATS)) * 100;
 
+  const models = t("pricing.models", { returnObjects: true }) as { title: string; price: string; desc: string }[];
+
   // Что именно даёт выбранная ступень — теми же числами, что считает _limits().
   const rows: [string, string, boolean?][] = [
     seats === null
-      ? ["Сотрудники", "без ограничений"]
-      : ["За одного сотрудника", `${money(round2(perMonth / seats))} € / мес`],
-    ["Клиентов в базе", seats === null ? "без ограничений" : `до ${(seats * CLIENTS_PER_SEAT).toLocaleString("ru-RU")}`],
-    ["Обращений к Velora AI", `${(seats === null ? UNLIMITED_AI : seats * AI_PER_SEAT).toLocaleString("ru-RU")} / мес`],
-    ["Модулей", "все 16"],
+      ? [t("pricing.rows.seats"), t("pricing.unlimited")]
+      : [t("pricing.rows.perSeat"), t("pricing.amountPerMonth", { value: money(round2(perMonth / seats)) })],
+    [t("pricing.rows.clients"), seats === null ? t("pricing.unlimited") : t("pricing.rows.clientsUpTo", { value: count(seats * CLIENTS_PER_SEAT) })],
+    [t("pricing.rows.ai"), t("pricing.rows.aiPerMonth", { value: count(seats === null ? UNLIMITED_AI : seats * AI_PER_SEAT) })],
+    [t("pricing.rows.modules"), t("pricing.rows.modulesAll")],
   ];
   if (period > 1) {
-    rows.push([`К оплате за ${period} мес.`, `${money(total)} €`]);
-    rows.push(["Экономия", `${money(saved)} €`, true]);
+    rows.push([t("pricing.rows.total", { count: period }), amount(total)]);
+    rows.push([t("pricing.rows.saved"), amount(saved), true]);
   }
 
   return (
     <section id="pricing" className="scroll-mt-24 bg-[#FDFCFB] py-24 lg:py-32">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
         <ChapterHead
-          label="тарифы"
+          label={t("pricing.label")}
           index={4}
           tone="light"
-          title={<>Тариф — это<br />число сотрудников</>}
-          lead="15 € за двоих, каждое следующее место +5 €, безлимит — 120 €. Все 16 модулей и Velora AI входят в любую ступень: вы платите за размер команды, а не за разблокировку кнопок. Три модели оплаты на выбор, при оплате вперёд — скидка до 40%."
+          title={t("pricing.title")}
+          lead={t("pricing.lead")}
         />
 
         {/* Калькулятор: та же линия мест, что в кабинете, — только здесь она и
@@ -95,14 +98,16 @@ export function Pricing() {
             <div className="relative grid gap-7 sm:gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(280px,350px)] lg:gap-14">
               {/* ── Выбор: места и период ── */}
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">команда</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">{t("pricing.team")}</span>
 
                 <div className="mt-4 flex items-baseline gap-3">
                   <span className="text-[clamp(46px,8vw,64px)] font-black leading-none tracking-[-0.045em] text-white tabular-nums">
                     {seats ?? "∞"}
                   </span>
                   <span className="text-[14px] font-medium text-white/40">
-                    {seats === null ? "без ограничений" : seatWord(seats)}
+                    {/* Форму слова выбирает i18next по count: на линии 2..20 у
+                        русского и чешского их три, у английского две. */}
+                    {seats === null ? t("pricing.unlimited") : t("pricing.seats", { count: seats })}
                   </span>
                 </div>
 
@@ -113,24 +118,22 @@ export function Pricing() {
                   step={1}
                   value={pos}
                   onChange={e => setPos(Number(e.target.value))}
-                  aria-label="Сколько сотрудников в студии"
+                  aria-label={t("pricing.sliderAria")}
                   className="lp-range mt-8"
                   style={{ "--fill": `${fill}%` } as CSSProperties}
                 />
                 <div className="mt-3 flex justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-white/25">
-                  <span>2 места</span>
-                  <span>∞ безлимит</span>
+                  <span>{t("pricing.scaleMin")}</span>
+                  <span>{t("pricing.scaleMax")}</span>
                 </div>
 
                 <p className="mt-6 text-[13px] leading-[1.7] text-white/45">
-                  <span className="font-bold text-white">15 €</span> за двоих, каждое следующее место{" "}
-                  <span className="font-bold text-white">+5 €</span>. Безлимит —{" "}
-                  <span className="font-bold text-white">120 €</span> в месяц.
+                  {bold(t("pricing.hint"))}
                 </p>
 
                 <div className="mt-9 h-px w-full bg-white/10" />
 
-                <span className="mt-9 block text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">период оплаты</span>
+                <span className="mt-9 block text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">{t("pricing.period")}</span>
                 <div className="mt-4 grid grid-cols-4 gap-2">
                   {PERIODS.map(p => {
                     const active = p.months === period;
@@ -144,10 +147,10 @@ export function Pricing() {
                         }`}
                       >
                         <span className={`block text-[12px] font-bold sm:text-[13px] ${active ? "text-white" : "text-white/70"}`}>
-                          {p.months} мес
+                          {t("pricing.months", { count: p.months })}
                         </span>
                         <span className={`mt-1 block text-[10.5px] font-bold ${p.off ? "text-[#A3C9A8]" : "text-white/25"}`}>
-                          {p.off ? `−${p.off * 100}%` : "—"}
+                          {p.off ? `−${p.off * 100}%` : t("pricing.noDiscount")}
                         </span>
                       </button>
                     );
@@ -157,17 +160,17 @@ export function Pricing() {
 
               {/* ── Итог: цена выбранной ступени ── */}
               <div className="rounded-[20px] border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">ваша цена</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#F9A08B]">{t("pricing.yourPrice")}</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-[clamp(38px,6vw,50px)] font-black leading-none tracking-[-0.04em] text-[#F9A08B] tabular-nums">
-                    {money(perMonth)} €
+                    {amount(perMonth)}
                   </span>
-                  <span className="text-[13px] text-white/40">/ мес</span>
+                  <span className="text-[13px] text-white/40">{t("pricing.perMonth")}</span>
                 </div>
 
                 {off > 0 && (
                   <div className="mt-3 flex items-center gap-2 text-[12px]">
-                    <span className="text-white/30 line-through">{money(monthly)} €</span>
+                    <span className="text-white/30 line-through">{amount(monthly)}</span>
                     <span className="rounded-full bg-[#A3C9A8]/15 px-2 py-0.5 font-bold text-[#A3C9A8]">
                       −{off * 100}%
                     </span>
@@ -187,9 +190,9 @@ export function Pricing() {
                   onClick={() => navigate("/register")}
                   className="mt-6 w-full rounded-xl bg-[#F9A08B] py-3.5 text-[14px] font-bold text-[#101010] transition-transform duration-300 hover:-translate-y-0.5"
                 >
-                  Попробовать 14 дней
+                  {t("pricing.cta")}
                 </button>
-                <p className="mt-3 text-center text-[11.5px] text-white/35">Без карты · отмена в один клик</p>
+                <p className="mt-3 text-center text-[11.5px] text-white/35">{t("pricing.note")}</p>
               </div>
             </div>
           </div>
@@ -197,7 +200,7 @@ export function Pricing() {
 
         {/* ── Три модели оплаты ── */}
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          {MODELS.map((m, i) => (
+          {models.map((m, i) => (
             <Reveal key={m.title} delay={i * 0.08} className="h-full">
               <div className="h-full rounded-2xl border border-[#101010]/8 bg-white p-6 lg:p-7">
                 <div className="flex items-baseline justify-between gap-3">
@@ -212,8 +215,7 @@ export function Pricing() {
 
         <Reveal delay={0.15}>
           <p className="mt-6 text-center text-[13px] leading-[1.7] text-[#888]">
-            Пробный период — без карты. Модель оплаты и число мест меняются в кабинете в любой момент.
-            Цены без НДС: налог считается при оплате по вашей стране.
+            {t("pricing.footnote")}
           </p>
         </Reveal>
       </div>

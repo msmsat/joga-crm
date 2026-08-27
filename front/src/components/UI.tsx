@@ -5,6 +5,7 @@ import type { ReactNode, FocusEvent } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { placePopover } from "./ui/popoverPosition";
+import { LANGUAGES } from "../utils/lang";
 
 import PhoneInput from 'react-phone-number-input/input';
 import 'react-phone-number-input/style.css';
@@ -477,18 +478,9 @@ export const browserTimezone = (): string => {
 // странах, а остальные переводы лежат в locales/ машинными и не вычитаны —
 // студия, выбравшая их, увидела бы кривой интерфейс. Возвращать по одному, по
 // мере вычитки перевода: папка в src/locales + строка здесь.
-// Коды — ISO 639-1 (важно для Intl.*: 'cz' не существует, чешский — 'cs').
-// Подписи — на самих языках, а не переводы: человек ищет в списке ту строку,
-// которую узнаёт, — «Čeština», а не «Чешский».
-// Порядок — по алфавиту подписи, кроме английского и русского: они первые,
-// потому что на них написан продукт и ими пользуется большинство студий.
-export const LANGUAGES = [
-  { value: "en", label: "English", flag: "🇬🇧" },
-  { value: "ru", label: "Русский", flag: "🇷🇺" },
-  { value: "cs", label: "Čeština", flag: "🇨🇿" },
-  { value: "de", label: "Deutsch", flag: "🇩🇪" },
-  { value: "uk", label: "Українська", flag: "🇺🇦" },
-];
+// Список языков переехал в utils/lang.ts — его читает ещё и лендинг, которому
+// весь UI.tsx не нужен. Реэкспорт оставлен, чтобы импорты по проекту не менять.
+export { LANGUAGES } from "../utils/lang";
 
 // Таблица символов — полная и такой остаётся: getCurrencySymbol() рисует
 // деньги во всём продукте, и студия, выбравшая злотый, пока список был

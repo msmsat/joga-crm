@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { EASE } from "./tokens";
+import { heroWords } from "./rich";
 import { GridBg, HeroArt } from "./Illustrations";
-
-const WORDS = ["CRM,", "которой", "хочется", "пользоваться"];
 
 export function Hero() {
   const navigate = useNavigate();
+  const { t } = useTranslation("landing");
+
+  // Заголовок приходит строкой («CRM, которой\n*хочется* пользоваться») и
+  // разбирается на слова: они выезжают по очереди, а место переноса и
+  // акцентное слово у каждого языка своё.
+  const words = heroWords(t("hero.title"));
+  const perks = t("hero.perks", { returnObjects: true }) as string[];
 
   return (
     <section id="top" className="relative flex items-center overflow-hidden bg-[#101010] pb-20 pt-28 lg:min-h-screen lg:pb-24 lg:pt-32">
@@ -22,21 +29,21 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-[12px] font-semibold text-white/70"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-[#F9A08B]" />
-            Новый стандарт CRM в 2026
+            {t("hero.badge")}
           </motion.span>
 
           <h1 className="mt-7 text-[clamp(38px,7.2vw,74px)] font-black leading-[1.02] tracking-[-0.035em] text-white">
-            {WORDS.map((w, i) => (
+            {words.map((w, i) => (
               <motion.span
-                key={w}
+                key={`${w.text}-${i}`}
                 initial={{ opacity: 0, y: 26 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.09, ease: EASE }}
-                className={`mr-[0.26em] inline-block ${i === 1 ? "lg:mr-0 lg:block" : ""}`}
+                className={`mr-[0.26em] inline-block ${w.br ? "lg:mr-0 lg:block" : ""}`}
               >
-                {i === 2 ? (
+                {w.accent ? (
                   <span className="relative inline-block text-[#F9A08B]">
-                    {w}
+                    {w.text}
                     {/* Персиковый росчерк дорисовывается после появления слова. */}
                     <motion.svg
                       viewBox="0 0 200 14" preserveAspectRatio="none" fill="none" aria-hidden
@@ -51,7 +58,7 @@ export function Hero() {
                     </motion.svg>
                   </span>
                 ) : (
-                  w
+                  w.text
                 )}
               </motion.span>
             ))}
@@ -63,8 +70,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.6, ease: EASE }}
             className="mt-7 max-w-[520px] text-[16px] leading-[1.75] text-white/55 lg:text-[17px]"
           >
-            Премиальная B2B CRM для студий йоги и пилатеса. Записи, клиенты,
-            команда и деньги — в одном пространстве. Без лишних кликов, без боли.
+            {t("hero.lead")}
           </motion.p>
 
           <motion.div
@@ -74,7 +80,7 @@ export function Hero() {
             className="mt-10 flex flex-wrap gap-3"
           >
             <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
-              Попробовать 14 дней бесплатно
+              {t("hero.cta")}
             </button>
           </motion.div>
 
@@ -87,13 +93,13 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.95 }}
             className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"
           >
-            {["14 дней бесплатно", "Без банковской карты", "Отмена в один клик"].map((t) => (
-              <span key={t} className="flex items-center gap-2 text-[13px] text-white/45">
+            {perks.map((text) => (
+              <span key={text} className="flex items-center gap-2 text-[13px] text-white/45">
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
                   <circle cx="7" cy="7" r="6.25" stroke="#F9A08B" strokeWidth="1.2" />
                   <path d="m4.4 7.2 1.9 1.9L9.8 5.6" stroke="#F9A08B" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                {t}
+                {text}
               </span>
             ))}
           </motion.div>

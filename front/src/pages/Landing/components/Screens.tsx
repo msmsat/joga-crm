@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 /* Контурные «экраны продукта» для глав-разборов. Светлые — как настоящий
    кабинет: белая карточка, тонкая рамка, персиковый только на акценте.
@@ -10,12 +11,13 @@ const SOFT = "rgba(26,26,26,0.05)";
 const MUTE = "rgba(26,26,26,0.22)";
 const PEACH = "#F9A08B";
 
-function Screen({ title, children }: { title: string; children: ReactNode }) {
+function Screen({ titleKey, children }: { titleKey: string; children: ReactNode }) {
+  const { t } = useTranslation("landing");
   return (
     <div className="rounded-[22px] border border-[#101010]/8 bg-white p-5 shadow-[0_28px_70px_-28px_rgba(26,26,26,0.22)]">
       <div className="mb-4 flex items-center gap-2 px-1">
         <span className="h-2 w-2 rounded-full bg-[#F9A08B]" />
-        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#101010]/45">{title}</span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#101010]/45">{t(`screens.${titleKey}`)}</span>
       </div>
       <svg viewBox="0 0 360 230" className="h-auto w-full" aria-hidden>{children}</svg>
     </div>
@@ -25,7 +27,7 @@ function Screen({ title, children }: { title: string; children: ReactNode }) {
 /** Журнал: колонки тренеров, часовая сетка, занятие в переносе. */
 export function JournalScreen() {
   return (
-    <Screen title="Журнал дня">
+    <Screen titleKey="journal">
       {[0, 1, 2].map((i) => (
         <g key={i}>
           <rect x={30 + i * 112} y="0" width="104" height="22" rx="8" fill={SOFT} />
@@ -65,7 +67,7 @@ export function JournalScreen() {
 export function BookingScreen() {
   const slots = ["9:00", "10:30", "12:00", "14:00", "17:30", "19:00"];
   return (
-    <Screen title="Онлайн-запись">
+    <Screen titleKey="booking">
       {[0, 1, 2].map((i) => (
         <g key={i}>
           <rect x="0" y={i * 52} width="360" height="44" rx="12"
@@ -97,7 +99,7 @@ export function FinanceScreen() {
     [150, 46, false], [120, 40, false], [176, 52, true], [138, 44, false],
   ];
   return (
-    <Screen title="Оплата визита">
+    <Screen titleKey="finance">
       {rows.map(([w, aw, minus], i) => (
         <g key={i}>
           <rect x="0" y={i * 34} width={w} height="8" rx="4" fill={MUTE} opacity="0.7" />
@@ -129,7 +131,7 @@ export function NotifyScreen() {
   const colX = (c: number) => 236 + c * 44;
 
   return (
-    <Screen title="Событие × канал">
+    <Screen titleKey="notify">
       {[0, 1, 2].map((c) => (
         <circle key={c} cx={colX(c) + 14} cy="10" r="9" fill={SOFT} stroke={LINE} />
       ))}
@@ -156,7 +158,7 @@ export function NotifyScreen() {
 /** Velora AI: диалог ассистента с владельцем. */
 export function AiScreen() {
   return (
-    <Screen title="Velora AI">
+    <Screen titleKey="ai">
       <rect x="120" y="0" width="240" height="46" rx="14" fill={SOFT} />
       <rect x="138" y="14" width="182" height="7" rx="3.5" fill={MUTE} opacity="0.75" />
       <rect x="138" y="27" width="118" height="6" rx="3" fill={MUTE} opacity="0.5" />

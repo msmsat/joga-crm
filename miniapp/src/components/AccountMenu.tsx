@@ -73,7 +73,7 @@ export default function AccountMenu({ userName, onAddAccount }: Props) {
   const initial = (name?: string) => (name || 'A').charAt(0).toUpperCase();
 
   return (
-    <div ref={anchor} className="relative mt-auto">
+    <div ref={anchor} className="relative">
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}

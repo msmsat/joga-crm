@@ -93,10 +93,13 @@ function loadLocale(lang, ns) {
   return JSON.parse(readFileSync(path.join(SRC, 'locales', lang, `${ns}.json`), 'utf8'));
 }
 
+// Массивы разворачиваются по индексу (`hero.perks.0`), а не пропускаются:
+// список строк — такой же текст продукта, как и объект. Пока их выбрасывали,
+// подпись из массива не попадала в корпус и карта падала на живой строке.
 function flatten(obj, prefix = '', out = {}) {
   for (const [k, v] of Object.entries(obj)) {
     const key = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) flatten(v, key, out);
+    if (v && typeof v === 'object') flatten(v, key, out);
     else if (typeof v === 'string') out[key] = v;
   }
   return out;

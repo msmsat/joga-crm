@@ -1,0 +1,385 @@
+{
+  "nav": {
+    "product": "Produkt",
+    "modules": "Moduly",
+    "pricing": "Ceník",
+    "faq": "Otázky",
+    "login": "Přihlásit",
+    "startShort": "Začít",
+    "startFull": "Začít zdarma",
+    "language": "Jazyk"
+  },
+  "hero": {
+    "badge": "Nový standard CRM v roce 2026",
+    "title": "CRM, které vás\n*baví* používat",
+    "lead": "Prémiové B2B CRM pro studia jógy a pilates. Rezervace, klienti, tým a peníze na jednom místě. Bez zbytečných kliknutí, bez bolesti.",
+    "cta": "Vyzkoušet 14 dní zdarma",
+    "perks": [
+      "14 dní zdarma",
+      "Bez platební karty",
+      "Zrušení jedním kliknutím"
+    ]
+  },
+  "marquee": [
+    "Rozvrh",
+    "Klienti",
+    "Permanentky",
+    "Online rezervace",
+    "Finance",
+    "Mzdy",
+    "Notifikace",
+    "Věrnostní program",
+    "Reporty",
+    "Velora AI",
+    "Klientská aplikace",
+    "Role a přístupy"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "14 dní",
+        "label": "Zdarma, bez karty"
+      },
+      {
+        "value": "16",
+        "label": "Modulů v každém tarifu"
+      },
+      {
+        "value": "4",
+        "label": "Kanály online rezervace"
+      },
+      {
+        "value": "od 15 €",
+        "label": "Měsíčně za studio"
+      }
+    ],
+    "trust": [
+      "Data patří vám",
+      "Role a přístupy na serveru",
+      "Export do CSV kdykoli",
+      "Smazání na vyžádání"
+    ]
+  },
+  "compare": {
+    "label": "rozdíl",
+    "title": "Odstranili jsme to,\nco překáželo v práci",
+    "lead": "Velora vyrostla z vlastní bolesti: vedli jsme studia a každý den naráželi na CRM, kde jednoduchá rezervace klienta stála devět kliknutí. Tohle se změnilo.",
+    "usual": "Jak to bývá",
+    "velora": "Ve Veloře",
+    "pairs": [
+      {
+        "bad": "Kvůli rezervaci klienta musíte z rozvrhu do jiné sekce a zpátky",
+        "good": "Rezervace i nový klient vznikají přímo v rozvrhu, bez opuštění obrazovky"
+      },
+      {
+        "bad": "Reporty exportujete do Excelu a skládáte ručně",
+        "good": "Živé reporty podle trenérů a služeb, export za libovolné období"
+      },
+      {
+        "bad": "Notifikace jsou zvláštní služba za zvláštní peníze",
+        "good": "Telegram, e-mail a WhatsApp uvnitř, s maticí „událost × kanál“"
+      },
+      {
+        "bad": "Trenér vidí cizí rozvrh i cizí klientskou databázi",
+        "good": "Role omezují přístup v rozhraní i na serveru"
+      },
+      {
+        "bad": "Asistent? Maximálně vyhledávání v klientech",
+        "good": "Velora AI odpovídá na otázky o podnikání i klientům na Telegramu a Instagramu"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "vše v jednom",
+    "title": "Jedna platforma\nmísto deseti služeb",
+    "lead": "Rezervace, klienti, peníze, komunikace a AI v jednom rozhraní. Ani jeden zbytečný modul: každá obrazovka řeší skutečný úkol majitele.",
+    "blocks": {
+      "journal": {
+        "title": "Váš rozvrh",
+        "lead": "Denní mřížka, kde trenéři jsou sloupce a hodiny řádky. Všechno, co dělá administrátor, se děje tady.",
+        "points": [
+          "Přesun lekce tažením — na jiný čas nebo k jinému trenérovi",
+          "Nová lekce i nový klient vznikají bez odchodu z rozvrhu",
+          "Souhrn dne vedle: vytížení sálů a tržby"
+        ]
+      },
+      "booking": {
+        "title": "Vaše online rezervace",
+        "lead": "Čtyři kanály, přes které se klient objedná sám — nonstop a bez administrátora.",
+        "points": [
+          "Webový widget, Telegram, WhatsApp a Instagram — každý se nastavuje zvlášť",
+          "Pravidla: kolik hodin před začátkem se rezervace uzavírá a dokdy lze zrušit",
+          "Branding klientské aplikace s živým náhledem — barva a jazyk podle vaší značky"
+        ]
+      },
+      "finance": {
+        "title": "Vaše finance",
+        "lead": "Účty, transakce, mzdy a dokumenty na jednom místě, bez exportů do tabulek.",
+        "points": [
+          "Pokladna, bankovní účet a akvizice s zůstatky a pohybem za den",
+          "Permanentky, certifikáty a vratky navázané na klienta a účet",
+          "Mzdy trenérů se počítají podle vašich pravidel"
+        ]
+      },
+      "notify": {
+        "title": "Vaše notifikace",
+        "lead": "Tři doručovací kanály a matice, kde sami rozhodujete, co a kam odchází.",
+        "points": [
+          "Telegram, e-mail a WhatsApp — každý se připojuje vlastním klíčem studia",
+          "Vlastní sada událostí pro klienta, trenéra, administrátora a majitele",
+          "Připomínky 24 hodin a 2 hodiny předem, „zbývají 1–2 lekce“, narozeniny, žádost o hodnocení"
+        ]
+      },
+      "ai": {
+        "title": "Vaše AI vrstva",
+        "lead": "Asistent zná kontext vašeho podnikání a je dostupný z každé stránky — a agenti odpovídají klientům sami.",
+        "points": [
+          "Otázky o studiu přímo z horního panelu, bez přechodu do jiné sekce",
+          "AI agenti na Telegramu a Instagramu: tón komunikace a režim „jen mimo pracovní dobu“",
+          "Statistika: kolik dotazů bylo vyřízeno a jak byly hodnoceny"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Vyzkoušejte to — data migrovat ani hned platit nemusíte",
+    "button": "Začít zdarma",
+    "note": "14 dní zdarma • Bez karty • Pomoc na startu"
+  },
+  "modules": {
+    "label": "moduly",
+    "title": "16 modulů,\nkteré už jsou v ceně",
+    "lead": "Ne sada záslepek „do budoucna“ — všechno uvedené funguje a je součástí tarifu. Role rozhodují, kdo jakou sekci vidí.",
+    "items": {
+      "dashboard": {
+        "title": "Přehled",
+        "desc": "Tržby, aktivní klienti, rezervace a retence — s trendem"
+      },
+      "journal": {
+        "title": "Rozvrh",
+        "desc": "Denní mřížka podle trenérů a sálů, přesun tažením"
+      },
+      "clients": {
+        "title": "Klienti",
+        "desc": "Karta, permanentka, body, historie, poznámky, štítky"
+      },
+      "staff": {
+        "title": "Tým",
+        "desc": "Profily, ukazatele, pracovní doba, vazba na sály"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Pobočky, sály s barvou a kapacitou, služby studia"
+      },
+      "booking": {
+        "title": "Online rezervace",
+        "desc": "Widget, Telegram, WhatsApp, Instagram a pravidla rezervace"
+      },
+      "finance": {
+        "title": "Finance",
+        "desc": "Účty, transakce, protistrany, dokumenty, cíle, mzdy"
+      },
+      "notify": {
+        "title": "Notifikace",
+        "desc": "Telegram, e-mail, WhatsApp a matice „událost × kanál“"
+      },
+      "loyalty": {
+        "title": "Věrnost",
+        "desc": "Karty, slevy, certifikáty, permanentky, doporučení"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Asistent pro podnikání a agenti pro klienty"
+      },
+      "reports": {
+        "title": "Reporty",
+        "desc": "Podle prodejů, trenérů a služeb — s exportem"
+      },
+      "miniapp": {
+        "title": "Klientská aplikace",
+        "desc": "Účet klienta: rezervace, permanentka, body"
+      },
+      "multistudio": {
+        "title": "Více studií",
+        "desc": "Několik studií v jednom účtu, přepínání kdykoli"
+      },
+      "roles": {
+        "title": "Role a přístupy",
+        "desc": "Majitel, administrátor, trenér — v UI i na serveru"
+      },
+      "settings": {
+        "title": "Nastavení",
+        "desc": "Otevírací doba, motiv, tým, bezpečnost, relace"
+      },
+      "data": {
+        "title": "Data",
+        "desc": "Export do CSV, smazání na vyžádání"
+      }
+    },
+    "integrations": "Integrace",
+    "integrationsNote": "připojují se v nastavení studia"
+  },
+  "pricing": {
+    "label": "ceník",
+    "title": "Tarif je\nvelikost týmu",
+    "lead": "15 € za dva lidi, každé další místo +5 €, neomezeně — 120 €. Všech 16 modulů i Velora AI patří ke každému stupni: platíte za velikost týmu, ne za odemykání tlačítek. Tři modely platby na výběr, při platbě dopředu sleva až 40 %.",
+    "team": "tým",
+    "seats_one": "člověk",
+    "seats_few": "lidé",
+    "seats_many": "lidí",
+    "seats_other": "lidí",
+    "unlimited": "bez omezení",
+    "scaleMin": "2 místa",
+    "scaleMax": "∞ neomezeně",
+    "sliderAria": "Kolik lidí pracuje ve studiu",
+    "hint": "**15 €** za dva, každé další místo **+5 €**. Neomezeně — **120 €** měsíčně.",
+    "period": "období platby",
+    "months_one": "{{count}} měs",
+    "months_few": "{{count}} měs",
+    "months_many": "{{count}} měs",
+    "months_other": "{{count}} měs",
+    "noDiscount": "—",
+    "yourPrice": "vaše cena",
+    "perMonth": "/ měs",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / měs",
+    "rows": {
+      "seats": "Tým",
+      "perSeat": "Za jednoho člověka",
+      "clients": "Klientů v databázi",
+      "clientsUpTo": "až {{value}}",
+      "ai": "Dotazů na Velora AI",
+      "aiPerMonth": "{{value}} / měs",
+      "modules": "Modulů",
+      "modulesAll": "všech 16",
+      "total": "K úhradě za {{count}} měs.",
+      "saved": "Úspora"
+    },
+    "cta": "Vyzkoušet 14 dní",
+    "note": "Bez karty · zrušení jedním kliknutím",
+    "models": [
+      {
+        "title": "Předplatné",
+        "price": "od 15 € / měs",
+        "desc": "Pevná částka. Náklad znáte dopředu — žádná překvapení na konci měsíce."
+      },
+      {
+        "title": "3 % z tržeb",
+        "price": "minimálně 15 € / měs",
+        "desc": "Platíte z obratu. V prázdném měsíci doplácíte jen rozdíl do minima."
+      },
+      {
+        "title": "Kombinace",
+        "price": "½ fixu + 1,5 %",
+        "desc": "Polovina předplatného plus malé procento — kompromis mezi oběma modely."
+      }
+    ],
+    "footnote": "Zkušební období je bez karty. Model platby i počet míst lze kdykoli změnit v aplikaci. Ceny jsou bez DPH: daň se počítá při platbě podle vaší země."
+  },
+  "faq": {
+    "label": "otázky",
+    "title": "Na co se obvykle ptají",
+    "items": [
+      {
+        "q": "Co patří do zkušebního období?",
+        "a": "Plný přístup ke všem modulům na 14 dní. Platební karta není potřeba — pokud vám to nesedne, prostě neprodlužujte."
+      },
+      {
+        "q": "Uvidí moji klienti reklamu jiných studií?",
+        "a": "Ne. Klient se objednává přes widget na vašem webu, váš Telegram, WhatsApp nebo Instagram — a přes klientskou aplikaci s vaší barvou a logem. Společný katalog s cizími studii neexistuje."
+      },
+      {
+        "q": "Kdo z týmu co vidí?",
+        "a": "Tři role. Majitel vidí vše. Administrátor rozvrh, klienty a přehled. Trenér jen své lekce a své klienty. Omezení platí v rozhraní i na serveru: k cizím datům se mimo rozhraní dostat nelze."
+      },
+      {
+        "q": "Lze vést několik studií nebo poboček?",
+        "a": "Ano, a nezávisí to na tarifu. Jeden účet může patřit do několika studií s přepínáním mezi nimi a uvnitř studia se zakládají pobočky a sály."
+      },
+      {
+        "q": "Je tmavý motiv a další jazyky?",
+        "a": "Ano, rozhraní přepíná mezi světlým a tmavým motivem a mluví anglicky, rusky, ukrajinsky, česky a německy. Časové pásmo, měnu a jazyk nastavíte během onboardingu."
+      },
+      {
+        "q": "Co se stane s daty, když se rozhodnu odejít?",
+        "a": "Data jsou vaše. V nastavení je export do CSV — klienti, rozvrh, finance, permanentky — a smazání proběhne na vaši žádost."
+      }
+    ],
+    "notFoundTitle": "Nenašli jste odpověď?",
+    "notFoundLead": "Napište nám — odpovídáme sami, bez botů a bez fronty.",
+    "copied": "Zkopírováno"
+  },
+  "about": {
+    "label": "o nás",
+    "title": "Za Velorou stojí lidé,\nkteří sami vedli studia",
+    "lead": "Neděláme „CRM pro všechny“. Děláme nástroj pro konkrétní práci: rozvrh, klienti, peníze, komunikace — a na otázky odpovídáme sami, ne šablonou.",
+    "p1": "Klienti studia zůstávají klienty studia. Velora nestaví společný katalog, neukazuje vašim klientům cizí reklamu a nebere provizi za to, že se k vám člověk vrátil.",
+    "p2": "Produkt je teď zaměřený na studia jógy a pilates — na to, jak v nich rozvrh, permanentky a práce trenérů skutečně fungují. Další obory přibudou později a stejně cíleně."
+  },
+  "cta": {
+    "eyebrow": "Začněte dnes",
+    "titleTop": "Připraveni posunout se",
+    "titleAccent": "na novou úroveň?",
+    "lead": "14 dní zdarma. Bez karty. Bez závazků. Prostě to zkuste — rozdíl poznáte.",
+    "register": "Zaregistrovat se zdarma",
+    "whatsapp": "Napsat na WhatsApp"
+  },
+  "footer": {
+    "tagline": "Prémiové CRM pro studia jógy a pilates. Rezervace, klienti, peníze a AI na jednom místě.",
+    "columns": {
+      "product": {
+        "title": "Produkt",
+        "features": "Možnosti",
+        "modules": "Moduly",
+        "booking": "Online rezervace",
+        "ai": "Velora AI",
+        "pricing": "Ceník"
+      },
+      "company": {
+        "title": "Společnost",
+        "difference": "Čím se lišíme",
+        "about": "O nás",
+        "faq": "Otázky a odpovědi",
+        "support": "Podpora"
+      },
+      "docs": {
+        "title": "Dokumenty",
+        "terms": "Podmínky použití",
+        "privacy": "Zásady ochrany osobních údajů",
+        "dpa": "Zpracování údajů",
+        "support": "Podpora"
+      }
+    },
+    "copyright": "© 2026 Velora. Všechna práva vyhrazena."
+  },
+  "screens": {
+    "journal": "Rozvrh dne",
+    "booking": "Online rezervace",
+    "finance": "Platba za návštěvu",
+    "notify": "Událost × kanál",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Rozvrh",
+    "journalToday": "Dnes — 12 lekcí",
+    "weekdays": [
+      "P",
+      "Ú",
+      "S",
+      "Č",
+      "P",
+      "S",
+      "N"
+    ],
+    "finance": "Finance",
+    "financeValue": "46K Kč",
+    "financeLabel": "tržby za měsíc",
+    "clients": "Klienti",
+    "clientsLabel": "klientů, +12 za týden",
+    "questions_one": "{{count}} otázka",
+    "questions_few": "{{count}} otázky",
+    "questions_many": "{{count}} otázek",
+    "questions_other": "{{count}} otázek",
+    "open": "otevřeno"
+  }
+}

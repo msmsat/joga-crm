@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import type { Resource, ResourceLanguage } from 'i18next';
+import { DEFAULT_LANG, storedLang } from './utils/lang';
 
 // Словари подхватываются по структуре папок: locales/<язык>/<неймспейс>.json.
 // Раньше здесь лежало по строке import на каждый файл — при 22 языках и 18
@@ -31,8 +32,11 @@ i18n
   .use(initReactI18next) // Передаем i18n внутрь React
   .init({
     resources,
-    lng: 'en', // Язык по умолчанию
-    fallbackLng: 'en', // Если слова нет в языке студии, покажет английское
+    // Английский — язык по умолчанию для всех, кто ещё не выбирал: продукт
+    // международный, и первый экран не должен зависеть от того, на каком языке
+    // его писали. Выбор с лендинга переживает перезагрузку (utils/lang.ts).
+    lng: storedLang(),
+    fallbackLng: DEFAULT_LANG, // Если слова нет в языке студии, покажет английское
     // 'en-US'/'pt-BR' (могли прийти из старой записи в БД) должны находить
     // 'en' и 'pt', а не проваливаться в fallback целиком. supportedLngs не
     // задаём намеренно: i18next и так отдаёт только то, что есть в resources,
@@ -49,5 +53,12 @@ i18n
 // ПОСЛЕ init, иначе {{weekday, weekday}} тихо выводит сырое число.
 i18n.services.formatter?.add('weekday', value => i18n.t(`common:days.${DOW_KEYS[Number(value)] ?? 'mon'}`));
 i18n.services.formatter?.add('isodowWeekday', value => i18n.t(`common:days.${ISODOW_KEYS[Number(value) % 7] ?? 'mon'}`));
+
+// <html lang> должен ехать за языком интерфейса: по нему браузер выбирает
+// перенос слов и озвучку в скринридере, а поисковик — язык страницы.
+i18n.on('languageChanged', lng => {
+  document.documentElement.lang = lng;
+});
+document.documentElement.lang = i18n.language;
 
 export default i18n;

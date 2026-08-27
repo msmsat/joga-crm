@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Product",
+    "modules": "Modules",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "login": "Log in",
+    "startShort": "Start",
+    "startFull": "Start free",
+    "language": "Language"
+  },
+  "hero": {
+    "badge": "The new CRM standard in 2026",
+    "title": "A CRM you'll\n*love* using",
+    "lead": "A premium B2B CRM for yoga and pilates studios. Bookings, clients, your team and your money in one place. No extra clicks, no pain.",
+    "cta": "Try 14 days free",
+    "perks": [
+      "14 days free",
+      "No bank card",
+      "Cancel in one click"
+    ]
+  },
+  "marquee": [
+    "Schedule",
+    "Clients",
+    "Memberships",
+    "Online booking",
+    "Finance",
+    "Payroll",
+    "Notifications",
+    "Loyalty",
+    "Reports",
+    "Velora AI",
+    "Client app",
+    "Roles & access"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "14 days",
+        "label": "Free, no card required"
+      },
+      {
+        "value": "16",
+        "label": "Modules in every plan"
+      },
+      {
+        "value": "4",
+        "label": "Online booking channels"
+      },
+      {
+        "value": "from €15",
+        "label": "Per month, per studio"
+      }
+    ],
+    "trust": [
+      "Your data stays yours",
+      "Roles enforced on the server",
+      "CSV export at any time",
+      "Deletion on request"
+    ]
+  },
+  "compare": {
+    "label": "the difference",
+    "title": "We removed what\ngot in the way",
+    "lead": "Velora grew out of our own pain: we ran studios and hit the same wall every day — a CRM where booking one client cost nine clicks. Here is what changed.",
+    "usual": "The usual way",
+    "velora": "In Velora",
+    "pairs": [
+      {
+        "bad": "To book a client you leave the schedule for another screen and back again",
+        "good": "Bookings and new clients happen right inside the schedule"
+      },
+      {
+        "bad": "Reports get exported to Excel and reconciled by hand",
+        "good": "Live reports by trainer and service, export for any period"
+      },
+      {
+        "bad": "Notifications are a separate service you pay for separately",
+        "good": "Telegram, email and WhatsApp built in, with an event × channel matrix"
+      },
+      {
+        "bad": "A trainer can see everyone else's schedule and client base",
+        "good": "Roles limit access both in the interface and on the server"
+      },
+      {
+        "bad": "An assistant? Client search at best",
+        "good": "Velora AI answers questions about your business — and answers your clients on Telegram and Instagram"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "all in one",
+    "title": "One platform instead\nof a dozen services",
+    "lead": "Bookings, clients, money, communication and AI in a single interface. Not one spare module: every screen solves a real owner's problem.",
+    "blocks": {
+      "journal": {
+        "title": "Your schedule",
+        "lead": "A day grid where trainers are columns and hours are rows. Everything an admin does happens here.",
+        "points": [
+          "Drag a class to another time — or to another trainer",
+          "New classes and new clients are created without leaving the schedule",
+          "The day summary sits alongside: room load and revenue"
+        ]
+      },
+      "booking": {
+        "title": "Your online booking",
+        "lead": "Four channels through which clients book themselves — around the clock, with no admin involved.",
+        "points": [
+          "Web widget, Telegram, WhatsApp and Instagram — each configured separately",
+          "Rules: how many hours before the start booking closes and until when a client can cancel",
+          "Client app branding with a live preview — colour and language to match your brand"
+        ]
+      },
+      "finance": {
+        "title": "Your finances",
+        "lead": "Accounts, transactions, payroll and documents in one place, with no exports into spreadsheets.",
+        "points": [
+          "Cash, bank account and acquiring with balances and daily movement",
+          "Memberships, certificates and refunds tied to a client and an account",
+          "Trainer payroll calculated by your own rules"
+        ]
+      },
+      "notify": {
+        "title": "Your notifications",
+        "lead": "Three delivery channels and a matrix where you decide what goes where.",
+        "points": [
+          "Telegram, email and WhatsApp — each connected with your studio's own key",
+          "A separate set of events for the client, trainer, admin and owner",
+          "Reminders 24 hours and 2 hours ahead, “1–2 classes left”, birthdays, review requests"
+        ]
+      },
+      "ai": {
+        "title": "Your AI layer",
+        "lead": "The assistant knows your business context and is available on every page — and the agents reply to clients on their own.",
+        "points": [
+          "Questions about the studio straight from the top bar, without opening another section",
+          "AI agents on Telegram and Instagram: tone of voice and an “after hours only” mode",
+          "Stats: how many conversations were handled and how they were rated"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Give it a try — no data migration and no payment up front",
+    "button": "Start free",
+    "note": "14 days free • No card • Help getting started"
+  },
+  "modules": {
+    "label": "modules",
+    "title": "16 modules,\nalready included",
+    "lead": "Not a set of “coming soon” placeholders — everything listed works and is part of the plan. Roles decide who sees which section.",
+    "items": {
+      "dashboard": {
+        "title": "Dashboard",
+        "desc": "Revenue, active clients, bookings and retention — with trends"
+      },
+      "journal": {
+        "title": "Schedule",
+        "desc": "A day grid by trainer and room, drag to reschedule"
+      },
+      "clients": {
+        "title": "Clients",
+        "desc": "Profile, membership, points, history, notes, tags"
+      },
+      "staff": {
+        "title": "Team",
+        "desc": "Profiles, metrics, working hours, room assignments"
+      },
+      "catalog": {
+        "title": "Catalog",
+        "desc": "Locations, rooms with colour and capacity, studio services"
+      },
+      "booking": {
+        "title": "Online booking",
+        "desc": "Widget, Telegram, WhatsApp, Instagram and booking rules"
+      },
+      "finance": {
+        "title": "Finance",
+        "desc": "Accounts, transactions, counterparties, documents, goals, payroll"
+      },
+      "notify": {
+        "title": "Notifications",
+        "desc": "Telegram, email, WhatsApp and an event × channel matrix"
+      },
+      "loyalty": {
+        "title": "Loyalty",
+        "desc": "Cards, discounts, certificates, memberships, referrals"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "A business assistant and agents for your clients"
+      },
+      "reports": {
+        "title": "Reports",
+        "desc": "By sales, trainers and services — with export"
+      },
+      "miniapp": {
+        "title": "Client app",
+        "desc": "The client's own account: bookings, membership, points"
+      },
+      "multistudio": {
+        "title": "Multi-studio",
+        "desc": "Several studios in one account, switch any time"
+      },
+      "roles": {
+        "title": "Roles & access",
+        "desc": "Owner, admin, trainer — in the UI and on the server"
+      },
+      "settings": {
+        "title": "Settings",
+        "desc": "Working hours, theme, team, security, sessions"
+      },
+      "data": {
+        "title": "Data",
+        "desc": "CSV export, deletion on request"
+      }
+    },
+    "integrations": "Integrations",
+    "integrationsNote": "connected in the studio settings"
+  },
+  "pricing": {
+    "label": "pricing",
+    "title": "Your plan is\nyour team size",
+    "lead": "€15 for two people, every next seat +€5, unlimited — €120. All 16 modules and Velora AI are in every step: you pay for the size of your team, not to unlock buttons. Three payment models to choose from, and up to 40% off when you pay ahead.",
+    "team": "team",
+    "seats_one": "person",
+    "seats_other": "people",
+    "unlimited": "no limit",
+    "scaleMin": "2 seats",
+    "scaleMax": "∞ unlimited",
+    "sliderAria": "How many people work at your studio",
+    "hint": "**€15** for two, every next seat **+€5**. Unlimited — **€120** a month.",
+    "period": "billing period",
+    "months": "{{count}} mo",
+    "noDiscount": "—",
+    "yourPrice": "your price",
+    "perMonth": "/ mo",
+    "amount": "€{{value}}",
+    "amountPerMonth": "€{{value}} / mo",
+    "rows": {
+      "seats": "Team",
+      "perSeat": "Per person",
+      "clients": "Clients in the base",
+      "clientsUpTo": "up to {{value}}",
+      "ai": "Velora AI requests",
+      "aiPerMonth": "{{value}} / mo",
+      "modules": "Modules",
+      "modulesAll": "all 16",
+      "total": "Due for {{count}} months",
+      "saved": "You save"
+    },
+    "cta": "Try 14 days",
+    "note": "No card · cancel in one click",
+    "models": [
+      {
+        "title": "Subscription",
+        "price": "from €15 / mo",
+        "desc": "A fixed amount. You know the cost up front — no surprises at the end of the month."
+      },
+      {
+        "title": "3% of revenue",
+        "price": "minimum €15 / mo",
+        "desc": "Pay from turnover. In a quiet month you only top up the difference to the minimum."
+      },
+      {
+        "title": "Combo",
+        "price": "½ fixed + 1.5%",
+        "desc": "Half the subscription plus a small percentage — a middle ground between the two models."
+      }
+    ],
+    "footnote": "The trial needs no card. The payment model and the number of seats can be changed in the app at any time. Prices exclude VAT: tax is calculated at checkout for your country."
+  },
+  "faq": {
+    "label": "questions",
+    "title": "What people usually ask",
+    "items": [
+      {
+        "q": "What does the trial include?",
+        "a": "Full access to every module for 14 days. No bank card needed — if it isn't for you, simply don't renew."
+      },
+      {
+        "q": "Will my clients see ads for other studios?",
+        "a": "No. Clients book through the widget on your site, your Telegram, WhatsApp or Instagram — and through a client app in your colour and with your logo. There is no shared catalogue with other studios."
+      },
+      {
+        "q": "Who on my team sees what?",
+        "a": "Three roles. The owner sees everything. The admin sees the schedule, clients and the dashboard. The trainer sees only their own classes and their own clients. The limit works in the interface and on the server: there is no way around it to reach someone else's data."
+      },
+      {
+        "q": "Can I run several studios or locations?",
+        "a": "Yes, and it doesn't depend on the plan. One account can belong to several studios and switch between them, and inside a studio you set up locations and rooms."
+      },
+      {
+        "q": "Is there a dark theme and other languages?",
+        "a": "Yes, the interface switches between light and dark and speaks English, Russian, Ukrainian, Czech and German. Time zone, currency and language are set during onboarding."
+      },
+      {
+        "q": "What happens to my data if I decide to leave?",
+        "a": "The data is yours. Settings has a CSV export — clients, schedule, finances, memberships — and deletion is done at your request."
+      }
+    ],
+    "notFoundTitle": "Didn't find your answer?",
+    "notFoundLead": "Write to us — we answer ourselves, no bots and no queue.",
+    "copied": "Copied"
+  },
+  "about": {
+    "label": "about us",
+    "title": "Velora is built by people\nwho ran studios themselves",
+    "lead": "We are not making a “CRM for everyone”. We are making a tool for a specific job — schedule, clients, money, communication — and we answer questions ourselves instead of sending a templated reply.",
+    "p1": "A studio's clients stay the studio's clients. Velora does not build a shared catalogue, does not show your clients someone else's ads and does not take a cut because a person came back to you.",
+    "p2": "Right now the product is built for yoga and pilates studios — for how their schedule, memberships and trainers actually work. Other verticals will follow, and just as deliberately."
+  },
+  "cta": {
+    "eyebrow": "Start today",
+    "titleTop": "Ready to move",
+    "titleAccent": "to the next level?",
+    "lead": "14 days free. No card. No commitment. Just try it — you'll feel the difference.",
+    "register": "Sign up for free",
+    "whatsapp": "Message us on WhatsApp"
+  },
+  "footer": {
+    "tagline": "A premium CRM for yoga and pilates studios. Bookings, clients, money and AI in one place.",
+    "columns": {
+      "product": {
+        "title": "Product",
+        "features": "Features",
+        "modules": "Modules",
+        "booking": "Online booking",
+        "ai": "Velora AI",
+        "pricing": "Pricing"
+      },
+      "company": {
+        "title": "Company",
+        "difference": "How we differ",
+        "about": "About us",
+        "faq": "Questions & answers",
+        "support": "Support"
+      },
+      "docs": {
+        "title": "Documents",
+        "terms": "Terms of use",
+        "privacy": "Privacy policy",
+        "dpa": "Data processing",
+        "support": "Support"
+      }
+    },
+    "copyright": "© 2026 Velora. All rights reserved."
+  },
+  "screens": {
+    "journal": "Day schedule",
+    "booking": "Online booking",
+    "finance": "Visit payment",
+    "notify": "Event × channel",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Schedule",
+    "journalToday": "Today — 12 classes",
+    "weekdays": [
+      "M",
+      "T",
+      "W",
+      "T",
+      "F",
+      "S",
+      "S"
+    ],
+    "finance": "Finance",
+    "financeValue": "€1.8K",
+    "financeLabel": "revenue this month",
+    "clients": "Clients",
+    "clientsLabel": "clients, +12 this week",
+    "questions_one": "{{count}} question",
+    "questions_other": "{{count}} questions",
+    "open": "open"
+  }
+}

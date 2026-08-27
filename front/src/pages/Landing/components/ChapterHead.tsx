@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./primitives";
+import { lines } from "./rich";
 
 // Глав шесть: «что говорят» ушла вместе с выдуманными отзывами.
 export const CHAPTERS = 6;
@@ -14,7 +15,9 @@ export function ChapterHead({
 }: {
   label: string;
   index: number;
-  title: ReactNode;
+  /** Строка из локали: `
+` — перенос строки (см. rich.tsx). */
+  title: string;
   lead?: ReactNode;
   tone?: "dark" | "light";
   align?: "left" | "center";
@@ -37,7 +40,7 @@ export function ChapterHead({
       <div className={`mt-4 h-px w-full ${dark ? "bg-white/12" : "bg-[#101010]/10"}`} />
 
       <h2 className={`mt-8 text-[clamp(30px,4.2vw,50px)] font-black leading-[1.06] tracking-[-0.035em] ${dark ? "text-white" : "text-[#101010]"}`}>
-        {title}
+        {lines(title)}
       </h2>
 
       {lead && (

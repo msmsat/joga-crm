@@ -1,4 +1,5 @@
 import { MotionConfig } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import "../../App.css"; // Manrope + классы кнопок .btn/.btn-primary из ДС
 import "./landing.css"; // непрерывные анимации и подложки лендинга
 import { LandingNav, LandingFooter } from "./components/Chrome";
@@ -14,15 +15,6 @@ import { Faq } from "./components/Faq";
 import { About } from "./components/About";
 import { Cta } from "./components/Cta";
 
-// В ленте — то, что в продукте уже есть. Был список ниш (барбершоп, SPA,
-// ногтевой сервис, кроссфит): текущий фокус — студии йоги и пилатеса
-// (docs/TZ/audience.md), остальные вертикали добавятся позже, и обещать их
-// бегущей строкой раньше времени не надо.
-const FEATURES = [
-  "Журнал записи", "Клиенты", "Абонементы", "Онлайн-запись", "Финансы",
-  "Зарплаты", "Уведомления", "Лояльность", "Отчёты", "Velora AI",
-  "Мини-приложение", "Роли и доступы",
-];
 
 /**
  * Лендинг: шесть пронумерованных глав, между ними чередуются чёрные и
@@ -34,6 +26,13 @@ const FEATURES = [
  * (см. tokens.ts), потому что маркетинговая обложка всегда одна и та же.
  */
 export default function Landing() {
+  const { t } = useTranslation("landing");
+  // В ленте — то, что в продукте уже есть. Был список ниш (барбершоп, SPA,
+  // ногтевой сервис, кроссфит): текущий фокус — студии йоги и пилатеса
+  // (docs/TZ/audience.md), остальные вертикали добавятся позже, и обещать их
+  // бегущей строкой раньше времени не надо.
+  const features = t("marquee", { returnObjects: true }) as string[];
+
   return (
     // reducedMotion="user" — одной строкой глушит все анимации страницы тем,
     // у кого в системе включено «уменьшить движение».
@@ -42,7 +41,7 @@ export default function Landing() {
         <LandingNav />
         <main>
           <Hero />
-          <Marquee items={FEATURES} />
+          <Marquee items={features} />
           <Stats />
           <Compare />
           <Showcase />

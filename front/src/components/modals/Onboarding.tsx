@@ -15,6 +15,7 @@ import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
+import { storedLang } from "../../utils/lang";
 import { setActiveToken } from '../../utils/auth';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -48,7 +49,7 @@ export default function OnboardingPage() {
     email: "",
     website: "",
     timezone: browserTimezone(),
-    language: localStorage.getItem(ONBOARDING_LANG_KEY) || "en",
+    language: localStorage.getItem(ONBOARDING_LANG_KEY) || storedLang(),
     currency: "RUB",
     dateFormat: "DD.MM.YYYY",
     firstDayOfWeek: "monday",

@@ -1,19 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
 import { GridBg } from "./Illustrations";
-
-const PAIRS: [string, string][] = [
-  ["Чтобы записать клиента — уйти из расписания в другой раздел и обратно",
-   "Запись и новый клиент — прямо из журнала, не выходя с экрана"],
-  ["Отчёты выгружаешь в Excel и сводишь руками",
-   "Живые отчёты по тренерам и услугам, экспорт за любой период"],
-  ["Уведомления — отдельный сервис за отдельные деньги",
-   "Telegram, Email и WhatsApp внутри, с матрицей «событие × канал»"],
-  ["Тренер видит чужое расписание и чужую клиентскую базу",
-   "Роли ограничивают доступ и в интерфейсе, и на сервере"],
-  ["Ассистент? Максимум — поиск по клиентам",
-   "Velora AI отвечает на вопросы о бизнесе и клиентам в Telegram и Instagram"],
-];
 
 function Cross() {
   return (
@@ -53,16 +41,19 @@ function PathArt({ tangled }: { tangled: boolean }) {
 }
 
 export function Compare() {
+  const { t } = useTranslation("landing");
+  const pairs = t("compare.pairs", { returnObjects: true }) as { bad: string; good: string }[];
+
   return (
     <section id="difference" className="relative scroll-mt-24 overflow-hidden bg-[#101010] py-24 lg:py-32">
       <GridBg />
 
       <div className="relative mx-auto max-w-[1200px] px-6 lg:px-12">
         <ChapterHead
-          label="разница"
+          label={t("compare.label")}
           index={1}
-          title={<>Мы убрали то,<br />что мешало работать</>}
-          lead="Velora выросла из собственной боли: мы вели студии и каждый день упирались в CRM, где простая запись клиента стоила девяти кликов. Вот что изменилось."
+          title={t("compare.title")}
+          lead={t("compare.lead")}
         />
 
         <div className="mt-16 grid gap-4 lg:grid-cols-2">
@@ -70,9 +61,9 @@ export function Compare() {
           <Reveal className="h-full">
             <div className="flex h-full flex-col rounded-[24px] border border-white/10 bg-white/[0.02] p-8 text-white/40 lg:p-10">
               <PathArt tangled />
-              <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.18em] text-white/35">Как обычно</p>
+              <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.18em] text-white/35">{t("compare.usual")}</p>
               <ul className="mt-7 space-y-5">
-                {PAIRS.map(([bad]) => (
+                {pairs.map(({ bad }) => (
                   <li key={bad} className="flex gap-3 text-[14px] leading-[1.6]">
                     <Cross />
                     <span>{bad}</span>
@@ -86,9 +77,9 @@ export function Compare() {
           <Reveal delay={0.12} className="h-full">
             <div className="flex h-full flex-col rounded-[24px] border border-[#F9A08B]/40 bg-[#F9A08B]/[0.06] p-8 lg:p-10">
               <PathArt tangled={false} />
-              <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.18em] text-[#F9A08B]">В Velora</p>
+              <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.18em] text-[#F9A08B]">{t("compare.velora")}</p>
               <ul className="mt-7 space-y-5">
-                {PAIRS.map(([, good]) => (
+                {pairs.map(({ good }) => (
                   <li key={good} className="flex gap-3 text-[14px] leading-[1.6] text-white/85">
                     <Tick />
                     <span>{good}</span>

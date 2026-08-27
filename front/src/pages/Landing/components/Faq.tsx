@@ -1,26 +1,13 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
 import { FaqArt } from "./Illustrations";
 import { EASE } from "./tokens";
 import { LEGAL_LINK_PROPS, SUPPORT_EMAIL, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 
-const QA: [string, string][] = [
-  ["Что входит в пробный период?",
-   "Полный доступ ко всем модулям на 14 дней. Банковская карта не нужна — если не подойдёт, просто не продлевайте."],
-  ["Мои клиенты увидят рекламу других студий?",
-   "Нет. Клиент записывается через виджет на вашем сайте, ваш Telegram, WhatsApp или Instagram — и через мини-приложение с вашим цветом и логотипом. Общего каталога с чужими студиями не существует."],
-  ["Кто из сотрудников что видит?",
-   "Три роли. Владелец — всё. Администратор — журнал, клиентов и дашборд. Тренер — только свои занятия и своих клиентов. Ограничение работает и в интерфейсе, и на сервере: получить чужие данные в обход интерфейса нельзя."],
-  ["Можно вести несколько студий или филиалов?",
-   "Да, и это не зависит от тарифа. Один аккаунт может состоять в нескольких студиях с переключением между ними, а внутри студии заводятся филиалы и залы."],
-  ["Есть тёмная тема и другие языки?",
-   "Да, интерфейс переключается между светлой и тёмной темой и говорит по-русски и по-английски. Часовой пояс, валюта и язык задаются при онбординге."],
-  ["Что будет с данными, если я решу уйти?",
-   "Данные ваши. В настройках есть экспорт в CSV — клиенты, расписание, финансы, абонементы, — а удаление выполняется по вашему запросу."],
-];
 
 /** Один вопрос: плавная высота вместо нативного `<details>` (тот дёргает
     контент без анимации) и спринговая иконка +/×. Открыт — один за раз. */
@@ -73,8 +60,8 @@ function FaqItem({ q, a, index, open, onToggle }: {
  * гадания по таймауту клик ВСЕГДА параллельно копирует адрес в буфер — рабочий
  * способ остаётся, даже если mailto: открыть было нечем.
  */
-function ContactLink({ href, icon, label, copyValue }: {
-  href: string; icon: ReactNode; label: string; copyValue?: string;
+function ContactLink({ href, icon, label, copiedLabel, copyValue }: {
+  href: string; icon: ReactNode; label: string; copiedLabel: string; copyValue?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -97,7 +84,7 @@ function ContactLink({ href, icon, label, copyValue }: {
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F9A08B]/12 text-[#F9A08B] transition-colors duration-300 group-hover:bg-[#F9A08B] group-hover:text-white">
         {copied ? CheckIcon : icon}
       </span>
-      {copied ? "Скопировано" : label}
+      {copied ? copiedLabel : label}
     </a>
   );
 }
@@ -123,21 +110,23 @@ const CheckIcon = (
 );
 
 export function Faq() {
+  const { t } = useTranslation("landing");
   const [open, setOpen] = useState<number | null>(null);
+  const items = t("faq.items", { returnObjects: true }) as { q: string; a: string }[];
 
   return (
     <section id="faq" className="scroll-mt-24 bg-[#FDFCFB] pb-24 pt-8 lg:pb-32">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
         <ChapterHead
-          label="вопросы"
+          label={t("faq.label")}
           index={5}
           tone="light"
-          title="Что обычно спрашивают"
+          title={t("faq.title")}
         />
 
         <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_260px] lg:items-start">
           <div className="space-y-3">
-            {QA.map(([q, a], i) => (
+            {items.map(({ q, a }, i) => (
               <Reveal key={q} delay={(i % 2) * 0.06}>
                 <FaqItem
                   q={q} a={a} index={i}
@@ -150,7 +139,7 @@ export function Faq() {
 
           <Reveal delay={0.15} className="hidden lg:block">
             <div className="sticky top-28 mx-auto w-full max-w-[220px]">
-              <FaqArt active={open} total={QA.length} />
+              <FaqArt active={open} total={items.length} />
             </div>
           </Reveal>
         </div>
@@ -158,12 +147,12 @@ export function Faq() {
         <Reveal delay={0.1}>
           <div className="mt-8 flex flex-col items-center justify-between gap-6 rounded-[24px] border border-[#101010]/8 bg-[#F9A08B]/[0.05] px-8 py-9 sm:flex-row lg:px-10">
             <div>
-              <p className="text-[16px] font-bold text-[#101010]">Не нашли ответ?</p>
-              <p className="mt-1.5 text-[14px] leading-[1.6] text-[#666]">Напишите нам — отвечаем сами, без ботов и очереди.</p>
+              <p className="text-[16px] font-bold text-[#101010]">{t("faq.notFoundTitle")}</p>
+              <p className="mt-1.5 text-[14px] leading-[1.6] text-[#666]">{t("faq.notFoundLead")}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <ContactLink href={`mailto:${SUPPORT_EMAIL}`} icon={MailIcon} label={SUPPORT_EMAIL} copyValue={SUPPORT_EMAIL} />
-              <ContactLink href={SUPPORT_WHATSAPP_URL} icon={ChatIcon} label={`WhatsApp ${SUPPORT_WHATSAPP}`} />
+              <ContactLink href={`mailto:${SUPPORT_EMAIL}`} icon={MailIcon} label={SUPPORT_EMAIL} copiedLabel={t("faq.copied")} copyValue={SUPPORT_EMAIL} />
+              <ContactLink href={SUPPORT_WHATSAPP_URL} icon={ChatIcon} label={`WhatsApp ${SUPPORT_WHATSAPP}`} copiedLabel={t("faq.copied")} />
             </div>
           </div>
         </Reveal>
