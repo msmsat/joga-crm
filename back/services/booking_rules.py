@@ -112,7 +112,7 @@ def within_widget_hours(rules: BookingRules, start_time: datetime) -> bool:
     return at >= start or at < end  # интервал через полночь (22:00–06:00)
 
 
-def is_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = None) -> bool:
+def is_bookable(rules: BookingRules, lesson: Lesson, now: datetime) -> bool:
     """Те же правила окна, что проверяет `assert_bookable`, но флагом, а не
     исключением: карточка расписания рисуется и для занятия вне окна.
 
@@ -120,7 +120,10 @@ def is_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = None
     модуле: спрашивать «можно ли записаться» будет не одна поверхность, и
     второй список из четырёх правил разъедется с первым.
 
-    `now` — стенное время СТУДИИ; про значение по умолчанию см. booking_window.
+    `now` — стенное время СТУДИИ, и оно ОБЯЗАТЕЛЬНО. Умолчания здесь намеренно
+    нет, хотя у `booking_window` оно есть: молчаливые часы процесса — ровно тот
+    долг, который P1.2 записал в остаток, и новый код (поиск P1.4) не должен
+    иметь возможности его унаследовать, просто забыв аргумент.
     """
     if not rules.booking_active:
         return False

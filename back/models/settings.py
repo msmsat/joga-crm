@@ -355,6 +355,56 @@ class ChannelThread(Base):
     lease_seq: Mapped[int] = mapped_column(BigInteger, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
+    # ── Состояние поиска в разговоре (P1.5) ──────────────────────────────────
+    # Растёт с каждым новым полным поиском. Ссылки на показанные варианты
+    # привязаны к версии: «второй» из прошлого списка не должен выбрать вариант
+    # из нового.
+    search_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # РАЗРЕШЁННЫЕ условия разговора (services/search_state.CanonicalState):
+    # идентификаторы и календарные границы, которые сервер уже признал сам.
+    # Ответ модели сюда не попадает — он лишь изменение к этому состоянию.
+    search_state: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # Когда состояние обновлено. От него считается срок: разговор недельной
+    # давности не должен позволять выбрать вариант из тогдашнего списка.
+    search_state_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True)
+
+
+class ThreadOption(Base):
+    """Показанный человеку вариант занятия — под непрозрачной ссылкой (P1.5).
+
+    ЗАЧЕМ НЕ lesson_id. Модель не имеет права называть занятие (P1.4), но
+    человеку надо уметь сказать «второй» и нажать кнопку. Токен решает обе
+    задачи, ничего не раскрывая: по нему не угадать соседнее занятие, он не
+    работает в чужом треде и в чужой студии, и он перестаёт действовать, когда
+    список сменился.
+
+    Строки появляются ТОЙ ЖЕ транзакцией, что и исходящее сообщение: иначе
+    возможно состояние «сервер считает варианты показанными, а человек их не
+    получил».
+    """
+    __tablename__ = "thread_options"
+    __table_args__ = (
+        # Выбор варианта: по токену, но всегда вместе со студией и тредом —
+        # чужую ссылку запрос просто не находит.
+        Index("ix_thread_options_pick", "thread_id", "search_version", "ordinal"),
+        Index("ix_thread_options_expires", "expires_at"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    thread_id: Mapped[int] = mapped_column(
+        ForeignKey("channel_threads.id", ondelete="CASCADE"), index=True)
+    # 32 символа из secrets.token_urlsafe(24). Уникален глобально, но искать по
+    # нему можно только вместе со студией и тредом.
+    token: Mapped[str] = mapped_column(String(64), unique=True)
+    search_version: Mapped[int] = mapped_column(Integer)
+    # Номер в показанном списке, с единицы. Именно его называет человек.
+    ordinal: Mapped[int] = mapped_column(Integer)
+    lesson_id: Mapped[int] = mapped_column(ForeignKey("lessons.id", ondelete="CASCADE"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+
 
 class StudioBookingSettings(Base):
     __tablename__ = "studio_booking_settings"

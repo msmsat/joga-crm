@@ -31,6 +31,8 @@ async def record_usage(
     escalation_reason: str | None = None,
     escalation_from_model: str | None = None,
     request_id: str | None = None,
+    response_language: str | None = None,
+    language_source: str | None = None,
 ) -> None:
     """Пишет строку расхода своей сессией и коммитит сразу.
 
@@ -74,6 +76,8 @@ async def record_usage(
                 escalation_reason=escalation_reason,
                 escalation_from_model=escalation_from_model,
                 request_id=request_id,
+                response_language=response_language,
+                language_source=language_source,
             ))
             await db.commit()
     except Exception:

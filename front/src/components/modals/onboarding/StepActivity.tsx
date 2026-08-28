@@ -87,10 +87,6 @@ export default function StepActivity({ data, onChange }: Props) {
           );
         })}
       </div>
-
-      <p style={{ fontSize: "12px", color: "#CCCCCC", marginTop: "20px", textAlign: "center" }}>
-        {t("onboarding:activity.comingSoon")}
-      </p>
     </div>
   );
 }

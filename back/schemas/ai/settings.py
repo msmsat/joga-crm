@@ -48,7 +48,12 @@ class AISettingsRead(BaseSchema):
 
 class AISettingsUpdate(BaseSchema):
     model: Optional[Literal["velora-3.5"]] = None
-    # Языки продукта (services/i18n) + «auto» — отвечать на языке студии.
+    # ПРЕДПОЧТЕНИЕ, а не приказ. Ассистент отвечает на языке человека, который
+    # ему пишет; это поле применяется, только когда языка в разговоре не видно
+    # вовсе — первая реплика вида «ОК» и никакой истории. Стояло выше
+    # распознавания, и владелец, однажды выбравший русский, обрекал своего
+    # чешского тренера на русские ответы (services/ai_language.resolve).
+    # «auto» — умолчание: язык целиком за человеком.
     language: Optional[Literal["auto", "ru", "en", "uk", "cs", "de"]] = None
     system_prompt: Optional[str] = Field(None, max_length=2000)
     tg_enabled: Optional[bool] = None

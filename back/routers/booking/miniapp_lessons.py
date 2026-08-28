@@ -173,7 +173,11 @@ def _lesson_fields(
         badge=_badge(lesson.total_spots, len(taken_spots)),
         taken_spots=taken_spots,
         is_booked_by_user=is_booked_by_user,
-        bookable=is_bookable(rules, lesson),
+        # Часы передаются явно — у is_bookable умолчания нет. Здесь это
+        # по-прежнему часы ПРОЦЕССА: поведение витрины не меняем, это
+        # остаток P1.2, и чинить его вместе с поиском значит смешивать
+        # два изменения в одном релизе.
+        bookable=is_bookable(rules, lesson, datetime.now()),
         trial_available=trial_available,
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.

@@ -38,10 +38,20 @@
   "activity": {
     "title": "Type of activity",
     "subtitle": "Choose a direction — we'll tailor the CRM for you",
-    "comingSoon": "Coming soon: barbershop, fitness, dance and more",
     "types": {
       "yoga": { "label": "Yoga", "description": "Hatha, Ashtanga, Vinyasa" },
-      "pilates": { "label": "Pilates", "description": "Reformer, mat Pilates" }
+      "pilates": { "label": "Pilates", "description": "Reformer, mat Pilates" },
+      "stretching": { "label": "Stretching", "description": "Flexibility, splits" },
+      "bodybar": { "label": "Bodybar", "description": "Gymnastic stick workouts" },
+      "fitness": { "label": "Fitness & gym", "description": "Strength training, group classes" },
+      "crossfit": { "label": "CrossFit", "description": "Functional training" },
+      "dance": { "label": "Dance", "description": "Choreography, modern styles" },
+      "martial_arts": { "label": "Martial arts", "description": "Boxing, MMA, wrestling" },
+      "swimming": { "label": "Swimming", "description": "Pool, aqua fitness" },
+      "massage_spa": { "label": "Massage & spa", "description": "Massage, bodywork" },
+      "beauty": { "label": "Beauty", "description": "Barbershop, salon, nails" },
+      "meditation": { "label": "Meditation", "description": "Breathwork, mindfulness" },
+      "other": { "label": "Other", "description": "Your own format" }
     }
   },
   "contact": {

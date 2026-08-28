@@ -38,10 +38,20 @@
   "activity": {
     "title": "Вид деятельности",
     "subtitle": "Выберите направление — мы настроим CRM под вас",
-    "comingSoon": "Скоро: барбершоп, фитнес, танцы и другие направления",
     "types": {
       "yoga": { "label": "Йога", "description": "Хатха, аштанга, виньяса" },
-      "pilates": { "label": "Пилатес", "description": "Реформер, матовый пилатес" }
+      "pilates": { "label": "Пилатес", "description": "Реформер, матовый пилатес" },
+      "stretching": { "label": "Стретчинг", "description": "Растяжка, гибкость, шпагат" },
+      "bodybar": { "label": "Работа с палкой", "description": "Бодибар, гимнастическая палка" },
+      "fitness": { "label": "Фитнес и тренажёрный зал", "description": "Силовые и групповые программы" },
+      "crossfit": { "label": "Кроссфит", "description": "Функциональный тренинг" },
+      "dance": { "label": "Танцы", "description": "Хореография, современные направления" },
+      "martial_arts": { "label": "Единоборства", "description": "Бокс, ММА, борьба" },
+      "swimming": { "label": "Плавание", "description": "Бассейн, аквафитнес" },
+      "massage_spa": { "label": "Массаж и SPA", "description": "Массаж, телесные практики" },
+      "beauty": { "label": "Красота", "description": "Барбершоп, салон, ногтевой сервис" },
+      "meditation": { "label": "Медитация", "description": "Дыхательные практики, майндфулнес" },
+      "other": { "label": "Другое", "description": "Свой формат занятий" }
     }
   },
   "contact": {

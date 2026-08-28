@@ -51,10 +51,12 @@ _CACHE_PREFIX_LEN = 0
 
 _RULES = """Ты — ассистент студии, отвечаешь ЕЁ КЛИЕНТУ в мессенджере.
 
-ПРАВИЛО 1. Отвечай НА ЯЗЫКЕ КЛИЕНТА — том, на котором написано его последнее
-сообщение. Написал по-английски — весь ответ по-английски, українською —
-українською. Эта инструкция на русском, но она к языку ответа отношения не
-имеет: язык выбирает клиент, а не она.
+RESPONSE LANGUAGE (rule 1, highest priority). Write all prose in the language
+named "Response language" in the system block below. Do not choose it yourself:
+it is already resolved from this client's own words, including the language they
+used in earlier messages of this conversation. Do not switch because these
+instructions, a tool result or a database value are written in another language.
+Keep names and identifiers exactly as they are.
 
 ПРАВИЛО 2. Отвечай на заданный вопрос. Спросили часы работы — назови часы.
 Спросили цены — назови цены. Отправить человека в приложение вместо ответа —
@@ -323,6 +325,35 @@ def _context_prompt(studio: Studio | None, client: Client | None, today: date, s
     return "\n".join(lines)
 
 
+async def _last_language(db: AsyncSession, studio_id: int, channel: str,
+                         sender_ref: str | None) -> str | None:
+    """Последний надёжный язык ЭТОГО разговора.
+
+    Мессенджер зовёт агента по одному сообщению, истории у него нет, поэтому
+    «ОК» после чешского вопроса иначе падало бы на язык студии. Границы выборки
+    те же, что у антиспама: студия + канал + отправитель. Без sender_ref
+    выборка вернула бы чужой разговор — и один чешский клиент навязал бы свой
+    язык всем остальным клиентам студии.
+
+    Берём только строки, где язык был узнан из речи человека: locale_fallback и
+    settings_fallback — это не «язык разговора», а умолчание, и повторять его
+    как установленный значило бы закреплять первую же случайность.
+    """
+    if not sender_ref:
+        return None
+    from models import AIUsage
+    return (await db.execute(
+        select(AIUsage.response_language).where(
+            AIUsage.studio_id == studio_id,
+            AIUsage.surface == channel,
+            AIUsage.sender_ref == sender_ref[:64],
+            AIUsage.response_language.is_not(None),
+            AIUsage.language_source.in_(
+                ("explicit_request", "latest_user_message", "previous_user_message")),
+        ).order_by(AIUsage.id.desc()).limit(1)
+    )).scalar_one_or_none()
+
+
 async def reply(
     db: AsyncSession,
     studio_id: int,
@@ -359,9 +390,15 @@ async def reply(
     # settings.language сюда НЕ передаём намеренно: язык, выбранный студией для
     # своего CRM-ассистента, к постороннему человеку в мессенджере отношения не
     # имеет — он пишет на своём.
+    #
+    # Истории диалога у агента нет — его зовут по одному сообщению, — поэтому
+    # прежний язык РАЗГОВОРА читается из телеметрии. Выборка сужена той же
+    # тройкой, что и антиспам: студия, канал, отправитель. Без sender_ref
+    # чешский клиент навязал бы свой язык всем остальным клиентам студии.
     language = ai_language.resolve(
         [SimpleNamespace(role="user", text=text)],
-        studio_language=studio.language if studio else None)
+        studio_language=studio.language if studio else None,
+        previous_language=await _last_language(db, studio_id, channel, sender_ref))
     logger.info("client agent language: studio=%s channel=%s lang=%s source=%s",
                 studio_id, channel, language.code, language.source)
 
@@ -410,6 +447,7 @@ async def reply(
             # iterations — порядковый номер вызова внутри вопроса; в CRM-цикле
             # он пишется с самого начала, здесь его не хватало.
             iterations=step + 1, request_id=request_id,
+            response_language=language.code, language_source=language.source,
         )
         if answer.text:
             last_text = answer.text
@@ -619,6 +657,11 @@ async def should_reply(db: AsyncSession, studio_id: int, settings: StudioAISetti
             AIUsage.created_at >= now - timedelta(days=1),
         ).order_by(AIUsage.created_at.desc())
     )).scalars().all()
+
+    # После старого запуска с локальным часовым поясом в БД могли остаться
+    # записи «из будущего» относительно UTC-процесса. Их нельзя учитывать ни в
+    # лимите, ни в паузе, иначе один ответ способен заморозить диалог на часы.
+    rows = [created_at for created_at in rows if created_at <= now]
 
     if len(rows) >= _MAX_PER_DAY:
         logger.info("client agent silent, daily cap: studio=%s channel=%s", studio_id, channel)

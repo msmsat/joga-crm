@@ -71,15 +71,41 @@ def test_locale_is_used_only_when_the_message_says_nothing():
     assert (got.code, got.source) == ("cs", "locale_fallback")
     # Языка студии тоже нет — язык продукта по умолчанию.
     assert _lang(("user", "123")).code == "ru"
+    assert _lang(("user", "123")).source == "default_fallback"
 
 
-def test_settings_pin_is_an_explicit_choice_and_wins_over_detection():
-    """«auto» — умолчание, и тогда решает человек. Владелец, выбравший язык
-    руками, тоже дал прямое указание — просто в настройках, а не в реплике."""
-    got = _lang(("user", "Kolik klientů máme?"), settings="en")
-    assert (got.code, got.source) == ("en", "settings_pin")
-    # …но прямая просьба в самой реплике сильнее настройки.
+def test_settings_are_a_preference_not_an_order():
+    """ГЛАВНАЯ регрессия задачи. Настройка стояла ВЫШЕ распознавания, и
+    владелец, однажды выбравший русский, обрекал своего чешского тренера на
+    русские ответы. Настройка — предпочтение: она работает, только когда в
+    разговоре языка не видно вовсе."""
+    assert _lang(("user", "Ukaž mi dnešní rozvrh."), settings="ru").code == "cs"
+    assert _lang(("user", "How many clients do we have?"), settings="cs").code == "en"
+    assert _lang(("user", "Скільки в нас клієнтів?"), settings="en").code == "uk"
+    # Языка в реплике не видно — вот теперь настройка и пригодилась.
+    got = _lang(("user", "OK"), settings="en", studio="ru")
+    assert (got.code, got.source) == ("en", "settings_fallback")
+    # …и всё равно уступает прямой просьбе.
     assert _lang(("user", "Ответь по-чешски: сколько клиентов?"), settings="en").code == "cs"
+
+
+def test_every_precedence_step_beats_the_next_one():
+    """Порядок приоритетов целиком, ступень за ступенью."""
+    # explicit > latest
+    assert _lang(("user", "Answer in English: Kolik klientů máme?")).source == "explicit_request"
+    # latest > previous
+    assert _lang(("user", "Kolik klientů máme?"), ("user", "Сколько у нас клиентов?")).code == "ru"
+    # previous > settings
+    got = _lang(("user", "Kolik klientů máme?"), ("user", "OK"), settings="ru")
+    assert (got.code, got.source) == ("cs", "previous_user_message")
+    # settings > locale
+    got = _lang(("user", "OK"), settings="de", studio="ru")
+    assert (got.code, got.source) == ("de", "settings_fallback")
+    # locale > default
+    got = _lang(("user", "OK"), studio="cs")
+    assert (got.code, got.source) == ("cs", "locale_fallback")
+    # default последний
+    assert _lang(("user", "OK")).source == "default_fallback"
 
 
 # ── Смешанная лексика ─────────────────────────────────────────────────────────
@@ -90,10 +116,13 @@ def test_technical_terms_do_not_switch_the_language():
     assert detect("Zeige mir das revenue für diesen Monat") == "de"
 
 
-def test_dominant_script_decides_a_mixed_sentence():
-    """«Show me загрузку тренеров» — букв кириллицы больше, речь русская.
-    Правило одно и объяснимое, а не «как повезёт»."""
-    assert detect("Show me загрузку тренеров по неделям") == "ru"
+def test_grammar_decides_a_mixed_sentence_not_letter_count():
+    """Язык несут служебные слова, а не содержательные существительные.
+    «Show me загрузку тренеров» — английская команда с русским термином,
+    «Покажи revenue» — русская с английским. Считать буквы здесь нельзя: в
+    обоих случаях их поровну, а ответы разные."""
+    assert detect("Show me загрузку тренеров по неделям") == "en"
+    assert detect("Покажи revenue за последний месяц.") == "ru"
     assert detect("Show me the trainer load") == "en"
 
 
@@ -234,7 +263,7 @@ async def _run_rule_present() -> None:
         # Правило запрещает переключаться из-за служебных текстов — именно этот
         # запрет и отличает его от «отвечай на языке пользователя». Якоря без
         # пробелов на границе строк: правило свёрстано по 80 колонок.
-        assert "Never switch language" in _RULES
+        assert "Do not switch because" in _RULES
         assert "quoted client message" in _RULES
         text = await _prompt(ids, ("user", "Show me today's schedule"), studio_lang="cs")
         assert "Response language: English (en)." in text
@@ -331,7 +360,7 @@ def test_no_diacritics_still_resolves_by_stopwords():
 
 def test_empty_and_missing_input_never_crash():
     assert detect("") is None and detect(None) is None
-    assert resolve([]).source == "locale_fallback"
+    assert resolve([]).source == "default_fallback"
     assert resolve(None).code == "ru"
     assert ai_language.name("cs") == "Czech" and ai_language.name("zz") == "zz"
 
@@ -383,3 +412,197 @@ def test_messenger_ignores_the_crm_assistant_language_pin():
     from services.ai_language import resolve as _resolve
     got = _resolve(_hist(("user", "Kolik stojí lekce?")), studio_language="ru")
     assert got.code == "cs" and got.source == "latest_user_message"
+
+
+# ── Языки шире набора локалей интерфейса ──────────────────────────────────────
+#
+# У продукта нет польских и словацких словарей интерфейса — и это не повод
+# отвечать польскому клиенту по-английски. Язык ОТВЕТА и язык интерфейса разные
+# вещи: модель говорит на большем числе языков, чем продукт переведён.
+
+def test_languages_without_a_ui_translation_still_work():
+    beyond = {
+        "pl": "Ilu mamy klientów w tym miesiącu?",
+        "sk": "Koľko klientov máme tento mesiac?",
+        "fr": "Combien de clients avons-nous ce mois-ci?",
+        "it": "Quanti clienti abbiamo questo mese?",
+    }
+    for code, text in beyond.items():
+        assert detect(text) == code, (code, text, detect(text))
+        assert _lang(("user", text)).code == code
+
+
+def test_polish_short_followup_keeps_polish():
+    got = _lang(("user", "Ilu mamy klientów w tym miesiącu?"), ("user", "?"), studio="ru")
+    assert (got.code, got.source) == ("pl", "previous_user_message")
+
+
+def test_a_name_alone_never_switches_the_language():
+    """Диакритика в фамилии — не язык говорящего."""
+    assert detect("Anna Nováková") is None
+    got = _lang(("user", "Покажи расписание на завтра."), ("user", "Anna Nováková"))
+    assert got.code == "ru", got
+
+
+def test_confidence_is_reported():
+    assert ai_language.classify("Kolik klientů máme tento měsíc?").confidence == "strong"
+    assert ai_language.classify("OK").confidence == "none"
+
+
+# ── Мессенджеры: непрерывность языка внутри ОДНОГО разговора ──────────────────
+
+async def _run_messenger_continuity() -> None:
+    """«ОК» после чешского вопроса обязано остаться чешским, а язык одного
+    клиента не должен протекать в разговор другого."""
+    from models import AIUsage
+    from services import client_agent
+
+    ids = await _seed("ru")
+    sid = ids["sid"]
+    try:
+        async with async_session_maker() as db:
+            db.add_all([
+                AIUsage(studio_id=sid, surface="instagram", sender_ref="igsid-cz",
+                        model="m", cost_micro=1, billable=True,
+                        response_language="cs", language_source="latest_user_message"),
+                AIUsage(studio_id=sid, surface="instagram", sender_ref="igsid-en",
+                        model="m", cost_micro=1, billable=True,
+                        response_language="en", language_source="latest_user_message"),
+            ])
+            await db.commit()
+
+            # Каждый клиент помнит СВОЙ язык.
+            assert await client_agent._last_language(db, sid, "instagram", "igsid-cz") == "cs"
+            assert await client_agent._last_language(db, sid, "instagram", "igsid-en") == "en"
+            # Незнакомый отправитель чужого не получает.
+            assert await client_agent._last_language(db, sid, "instagram", "igsid-new") is None
+            # Другой канал — другой разговор.
+            assert await client_agent._last_language(db, sid, "telegram", "igsid-cz") is None
+            # Без отправителя выборки нет вовсе: иначе один клиент навязал бы
+            # свой язык всей студии.
+            assert await client_agent._last_language(db, sid, "instagram", None) is None
+
+            # И вот теперь «ОК» от чешского клиента остаётся чешским.
+            got = resolve(_hist(("user", "OK")), studio_language="ru",
+                          previous_language=await client_agent._last_language(
+                              db, sid, "instagram", "igsid-cz"))
+            assert (got.code, got.source) == ("cs", "previous_user_message")
+
+            await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+            await db.commit()
+    finally:
+        await _cleanup(sid)
+
+
+def test_messenger_language_is_scoped_to_one_conversation():
+    asyncio.run(_run_messenger_continuity())
+
+
+async def _run_messenger_fallback_not_remembered() -> None:
+    """Запоминаем только язык, УЗНАННЫЙ из речи. Умолчание студии — не «язык
+    разговора», и закреплять его значило бы навсегда зафиксировать первую
+    случайность."""
+    from models import AIUsage
+    from services import client_agent
+
+    ids = await _seed("ru")
+    sid = ids["sid"]
+    try:
+        async with async_session_maker() as db:
+            db.add(AIUsage(studio_id=sid, surface="instagram", sender_ref="igsid-x",
+                           model="m", cost_micro=1, billable=True,
+                           response_language="ru", language_source="locale_fallback"))
+            await db.commit()
+            assert await client_agent._last_language(db, sid, "instagram", "igsid-x") is None
+            await db.execute(delete(AIUsage).where(AIUsage.studio_id == sid))
+            await db.commit()
+    finally:
+        await _cleanup(sid)
+
+
+def test_messenger_does_not_remember_a_fallback_as_conversation_language():
+    asyncio.run(_run_messenger_fallback_not_remembered())
+
+
+# ── Неудачные пути: язык не течёт из ошибок и обрывов ─────────────────────────
+
+async def _run_truncation_language() -> None:
+    from services import llm
+    from services.assistant import run_agent
+
+    ids = await _seed("ru")
+    sid = ids["sid"]
+    real_chat = llm.chat
+    try:
+        async def _cut(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0, **_):
+            return llm.LLMReply(text="Mamy 60 klientów i", tool_calls=[],
+                                usage=llm.LLMUsage("m", 1, 0, 1, 1), finish_reason="length")
+
+        llm.chat = _cut
+        async with async_session_maker() as db:
+            user = (await db.execute(
+                select(User).where(User.id == ids["owner_id"]))).scalar_one()
+            ctx = StudioContext(user=user, studio_id=sid, role="owner")
+            settings = (await db.execute(
+                select(StudioAISettings).where(StudioAISettings.studio_id == sid)
+            )).scalar_one()
+            got = await run_agent(ctx, db, settings,
+                                  _hist(("user", "Ilu mamy klientów w tym miesiącu?")),
+                                  studio_language="ru")
+        # Приписка об обрыве — на языке ответа, а не английская в конце
+        # польского текста.
+        assert got.response_language == "pl", got.response_language
+        assert "ucięta" in got.text, got.text
+        assert "cut off" not in got.text
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_truncation_notice_follows_the_response_language():
+    asyncio.run(_run_truncation_language())
+
+
+async def _run_concurrent_turns() -> None:
+    """Два одновременных разговора на разных языках. Язык — состояние ХОДА, а не
+    модуля: общий изменяемый глобал означал бы чешский ответ англичанину раз в
+    сто вопросов, и поймать это в проде было бы нечем."""
+    from services import llm
+    from services.assistant import run_agent
+
+    ids = await _seed("ru")
+    sid = ids["sid"]
+    real_chat = llm.chat
+    barrier = asyncio.Barrier(2)
+    try:
+        async def _chat(messages, tools=None, tier=llm.TIER_FAST, cache_prefix_len=0, **_):
+            await barrier.wait()
+            return llm.LLMReply(text="Готово.", tool_calls=[],
+                                usage=llm.LLMUsage("m", 1, 0, 1, 1))
+
+        llm.chat = _chat
+
+        async def one(text: str):
+            async with async_session_maker() as db:
+                user = (await db.execute(
+                    select(User).where(User.id == ids["owner_id"]))).scalar_one()
+                ctx = StudioContext(user=user, studio_id=sid, role="owner")
+                settings = (await db.execute(
+                    select(StudioAISettings).where(StudioAISettings.studio_id == sid)
+                )).scalar_one()
+                return await run_agent(ctx, db, settings, _hist(("user", text)),
+                                       studio_language="ru")
+
+        czech, english = await asyncio.wait_for(asyncio.gather(
+            one("Kolik klientů máme tento měsíc?"),
+            one("How many clients do we have this month?"),
+        ), timeout=30)
+        assert czech.response_language == "cs", czech.response_language
+        assert english.response_language == "en", english.response_language
+    finally:
+        llm.chat = real_chat
+        await _cleanup(sid)
+
+
+def test_two_simultaneous_turns_keep_their_own_languages():
+    asyncio.run(_run_concurrent_turns())

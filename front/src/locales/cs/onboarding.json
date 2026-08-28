@@ -53,7 +53,6 @@
   "activity": {
     "title": "Typ činnosti",
     "subtitle": "Vyberte zaměření — CRM vám přizpůsobíme",
-    "comingSoon": "Brzy: barbershop, fitness, tanec a další",
     "types": {
       "yoga": {
         "label": "Jóga",
@@ -62,6 +61,50 @@
       "pilates": {
         "label": "Pilates",
         "description": "Reformer, pilates na podložce"
+      },
+      "stretching": {
+        "label": "Strečink",
+        "description": "Flexibilita, provazec"
+      },
+      "bodybar": {
+        "label": "Bodybar",
+        "description": "Cvičení s gymnastickou tyčí"
+      },
+      "fitness": {
+        "label": "Fitness a posilovna",
+        "description": "Silový trénink, skupinové lekce"
+      },
+      "crossfit": {
+        "label": "CrossFit",
+        "description": "Funkční trénink"
+      },
+      "dance": {
+        "label": "Tanec",
+        "description": "Choreografie, moderní styly"
+      },
+      "martial_arts": {
+        "label": "Bojové sporty",
+        "description": "Box, MMA, zápas"
+      },
+      "swimming": {
+        "label": "Plavání",
+        "description": "Bazén, aquafitness"
+      },
+      "massage_spa": {
+        "label": "Masáže a SPA",
+        "description": "Masáže, tělesné praktiky"
+      },
+      "beauty": {
+        "label": "Krása",
+        "description": "Barbershop, salon, nehty"
+      },
+      "meditation": {
+        "label": "Meditace",
+        "description": "Dechová cvičení, mindfulness"
+      },
+      "other": {
+        "label": "Jiné",
+        "description": "Vlastní formát"
       }
     }
   },

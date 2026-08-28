@@ -28,7 +28,15 @@ if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
 # импортирован, и договариваться с деплоем о лишнем флаге не нужно. В проде пул
 # по-прежнему обычный — это переключатель, а не замена.
 _POOL_KWARGS = {"poolclass": NullPool} if "pytest" in sys.modules else {}
-engine = create_async_engine(DATABASE_URL, echo=False, **_POOL_KWARGS)
+# Все временные метки в моделях — `timestamp without time zone`, а часть из них
+# заполняется через server_default=now(). Фиксируем UTC на КАЖДОМ соединении,
+# чтобы БД и Python не записывали одно событие с разницей в часовых поясах.
+_CONNECT_KWARGS = (
+    {"connect_args": {"server_settings": {"timezone": "UTC"}}}
+    if DATABASE_URL and DATABASE_URL.startswith("postgresql+asyncpg://")
+    else {}
+)
+engine = create_async_engine(DATABASE_URL, echo=False, **_POOL_KWARGS, **_CONNECT_KWARGS)
 
 # Фабрика для асинхронных сессий
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

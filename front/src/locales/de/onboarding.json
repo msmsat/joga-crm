@@ -53,7 +53,6 @@
   "activity": {
     "title": "Art der Tätigkeit",
     "subtitle": "Wählen Sie eine Richtung — wir passen das CRM für Sie an",
-    "comingSoon": "Bald: Barbershop, Fitness, Tanz und mehr",
     "types": {
       "yoga": {
         "label": "Yoga",
@@ -62,6 +61,50 @@
       "pilates": {
         "label": "Pilates",
         "description": "Reformer, Matten-Pilates"
+      },
+      "stretching": {
+        "label": "Stretching",
+        "description": "Flexibilität, Spagat"
+      },
+      "bodybar": {
+        "label": "Bodybar",
+        "description": "Training mit Gymnastikstab"
+      },
+      "fitness": {
+        "label": "Fitness & Gym",
+        "description": "Krafttraining, Gruppenkurse"
+      },
+      "crossfit": {
+        "label": "CrossFit",
+        "description": "Funktionelles Training"
+      },
+      "dance": {
+        "label": "Tanz",
+        "description": "Choreografie, moderne Stile"
+      },
+      "martial_arts": {
+        "label": "Kampfsport",
+        "description": "Boxen, MMA, Ringen"
+      },
+      "swimming": {
+        "label": "Schwimmen",
+        "description": "Pool, Aquafitness"
+      },
+      "massage_spa": {
+        "label": "Massage & SPA",
+        "description": "Massage, Körperarbeit"
+      },
+      "beauty": {
+        "label": "Beauty",
+        "description": "Barbershop, Salon, Nägel"
+      },
+      "meditation": {
+        "label": "Meditation",
+        "description": "Atemübungen, Achtsamkeit"
+      },
+      "other": {
+        "label": "Sonstiges",
+        "description": "Eigenes Format"
       }
     }
   },

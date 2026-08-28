@@ -37,6 +37,22 @@ const pop: Variants = {
 };
 
 /**
+ * Та же «выщёлкивающая» пружина, что `pop`, но без его базовой паузы в 0.75с:
+ * там она держала темп заодно с контурной обводкой панели (1.1с), которой у
+ * бенто-карточек PlatformArt нет — с тем же таймингом их появление читалось
+ * как «зависло», а не как оживление. Шаг тоже меньше, чтобы последняя
+ * карточка не ждала лишнего.
+ */
+const cardPop: Variants = {
+  hidden: { opacity: 0, scale: 0.85 },
+  show: (i: number = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { delay: i * 0.035, type: "spring", stiffness: 300, damping: 22 },
+  }),
+};
+
+/**
  * Сетка-подложка для чёрных секций — два CSS-градиента под радиальной маской
  * (`.lp-grid` в landing.css). Был SVG с `<pattern>` и `<mask>`: шесть секций
  * страницы растрировали его во всю свою высоту, и это была самая дорогая
@@ -174,14 +190,14 @@ function JournalCard() {
   // Буквы дней недели — из локали: у чехов «PÚSČPSN», у немцев «MDMDFSS».
   const weekdays = t("art.weekdays", { returnObjects: true }) as string[];
   return (
-    <motion.div variants={pop} custom={0} className={`${CARD} rotate-[-1deg] lg:col-start-1 lg:row-start-1 lg:row-span-2 col-span-2 lg:col-span-1`}>
+    <motion.div variants={cardPop} custom={0} className={`${CARD} rotate-[-1deg] lg:col-start-1 lg:row-start-1 lg:row-span-2 col-span-2 lg:col-span-1`}>
       <CardLabel>{t("art.journal")}</CardLabel>
       <div className="mt-1.5 text-[13px] text-[#666]">{t("art.journalToday")}</div>
       <div className="mt-6 flex h-24 items-end gap-2">
         {bars.map((h, i) => (
           <motion.div
             key={i}
-            variants={pop}
+            variants={cardPop}
             custom={1 + i}
             style={{
               height: `${h * 0.9}px`,
@@ -203,12 +219,12 @@ function JournalCard() {
 function FinanceCard() {
   const { t } = useTranslation("landing");
   return (
-    <motion.div variants={pop} custom={9} className={`${CARD} rotate-[2deg] lg:col-start-2 lg:row-start-1`}>
+    <motion.div variants={cardPop} custom={9} className={`${CARD} rotate-[2deg] lg:col-start-2 lg:row-start-1`}>
       <CardLabel>{t("art.finance")}</CardLabel>
       <div className="mt-4 text-[26px] font-black tracking-[-0.02em] text-[#101010]">{t("art.financeValue")}</div>
       <div className="mt-1 text-[11px] text-[#666]">{t("art.financeLabel")}</div>
       <motion.div
-        variants={pop}
+        variants={cardPop}
         custom={10}
         className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#A3C9A8]/18 px-2.5 py-1 text-[11px] font-bold text-[#4B8A63]"
       >
@@ -226,14 +242,14 @@ function ClientsCard() {
   const { t } = useTranslation("landing");
   const avatars = ["#F9A08B", "#101010", "#7BA7D4"];
   return (
-    <motion.div variants={pop} custom={11} className={`${CARD} rotate-[-2deg] lg:col-start-2 lg:row-start-2`}>
+    <motion.div variants={cardPop} custom={11} className={`${CARD} rotate-[-2deg] lg:col-start-2 lg:row-start-2`}>
       <CardLabel>{t("art.clients")}</CardLabel>
       <div className="mt-4 flex -space-x-2.5">
         {avatars.map((c, i) => (
-          <motion.span key={i} variants={pop} custom={12 + i} style={{ background: c }} className="h-7 w-7 rounded-full ring-2 ring-white" />
+          <motion.span key={i} variants={cardPop} custom={12 + i} style={{ background: c }} className="h-7 w-7 rounded-full ring-2 ring-white" />
         ))}
         <motion.span
-          variants={pop}
+          variants={cardPop}
           custom={15}
           className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F4F2] text-[8px] font-bold text-[#666] ring-2 ring-white"
         >
@@ -249,9 +265,9 @@ function ClientsCard() {
 /** Ассистент отвечает клиенту — мини-диалог с «печатающими» точками. */
 function AiCard() {
   return (
-    <motion.div variants={pop} custom={16} className={`${CARD} rotate-[1deg] col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3`}>
+    <motion.div variants={cardPop} custom={16} className={`${CARD} rotate-[1deg] col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3`}>
       <CardLabel>Velora AI</CardLabel>
-      <motion.div variants={pop} custom={17} className="mt-3 rounded-2xl bg-[#101010] p-3.5">
+      <motion.div variants={cardPop} custom={17} className="mt-3 rounded-2xl bg-[#101010] p-3.5">
         <div className="h-[7px] w-[78%] rounded-full bg-white/30" />
         <div className="mt-2 h-[7px] w-[52%] rounded-full bg-white/18" />
         <div className="mt-2.5 flex gap-1">

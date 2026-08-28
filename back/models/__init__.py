@@ -14,6 +14,7 @@ from .settings import (
     InboundEvent,
     AgentJob,
     ChannelThread,
+    ThreadOption,
     OutboundMessage,
     StudioFeatureFlag,
     UserNotificationPreference,
