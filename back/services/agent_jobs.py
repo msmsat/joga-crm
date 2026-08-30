@@ -302,7 +302,8 @@ async def _search_turn(work: Claim, thread_id: int):
                 db, work.studio_id, feature_flags.StudioFeature.AGENT_SEARCH_V2):
             return None
 
-    raw = await agent_search.parse(work.text)
+    raw = await agent_search.parse(work.text, studio_id=work.studio_id,
+                                   surface=work.channel, sender_ref=work.sender)
     if raw is None:
         return None
 

@@ -286,7 +286,7 @@ async def _agent_commit_atomicity(studio_id: int) -> None:
     real_handle = agent_jobs._handle
     try:
         # ── A. Падение ДО финального коммита: ни работы done, ни строки в очереди.
-        async def _boom(work):
+        async def _boom(work, *_):
             raise RuntimeError("процесс умер после ответа модели")
 
         agent_jobs._handle = _boom
@@ -309,8 +309,8 @@ async def _agent_commit_atomicity(studio_id: int) -> None:
 
         # ── B. Повтор доходит до коммита: работа done, ОДНА строка в очереди,
         # и отправки при этом всё ещё не было.
-        async def _ok(work):
-            return {"text": "ответ агента"}
+        async def _ok(work, *_):
+            return agent_jobs.AgentTurn({"text": "ответ агента"})
 
         agent_jobs._handle = _ok
         await _due_job(crash.job_id)

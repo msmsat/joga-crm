@@ -83,10 +83,15 @@ def fmt_duration(minutes: int, lang: str) -> str:
 
 
 def fmt_spots(free: int, lang: str) -> str:
-    """«4 места» либо «мест нет». Число — из каталога, слово — из перевода."""
+    """«4 места» либо «мест нет». Число — из каталога, слово — из перевода.
+
+    Форма множественного числа выбирается по языку: «4 мест» выдаёт машину, а
+    ответ должен читаться так, будто его написал человек.
+    """
     if free <= 0:
         return pick(T.SPOTS_NONE, lang)
-    return pick(T.SPOTS_LEFT, lang).format(n=free)
+    forms = pick(T.SPOTS_FORMS, lang)
+    return forms[T.spots_form(free, lang)].format(n=free)
 
 
 def option_lines(option: ResponseOption, lang: str, *, numbered: bool) -> str:
@@ -189,7 +194,7 @@ if __name__ == "__main__":
     text = render(plan, lang="uk")["text"]
     assert "13 травня, 18:30" in text, text
     assert "Стретчинг" in text and "Валерия Ким" in text
-    assert "60 хв" in text and "4 місць" in text
+    assert "60 хв" in text and "4 місця" in text
     assert "Вацлавская" in text
 
     # Тот же факт на другом языке — те же числа, другие слова.

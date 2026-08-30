@@ -26,6 +26,7 @@ import services.email_layout as email_layout
 import services.invites as invites
 import services.notifier as notifier
 import services.notify_texts as texts
+import services.response_texts as reply_texts
 import services.otp as otp
 from services.i18n import LANGS, pick, resolve
 
@@ -78,7 +79,16 @@ _FLAT_TABLES = {
     "security._ARCHIVE_BUTTON": security._ARCHIVE_BUTTON,
     "integrations._SENDER_SUBJECT": integrations._SENDER_SUBJECT,
     "integrations._SENDER_INTRO": integrations._SENDER_INTRO,
+    # Слова ассистента в мессенджере (P1.5). Перечисляются по одной, а не
+    # обходом модуля: забытый язык должен падать с именем таблицы, а не
+    # «где-то в response_texts».
+    **{f"response_texts.{name}": table
+       for name, table in vars(reply_texts).items()
+       if name.isupper() and isinstance(table, dict) and name != "SPOTS_FORMS"},
 }
+
+# Формы множественного числа: не «язык → строка», а «язык → три строки».
+_FORM_TABLES = {"response_texts.SPOTS_FORMS": reply_texts.SPOTS_FORMS}
 
 # Таблицы «ключ → (язык → значение)»: событие, действие, вид выгрузки.
 _NESTED_TABLES = {
@@ -99,6 +109,12 @@ def test_every_table_knows_every_language():
     for name, table in _NESTED_TABLES.items():
         for key, by_lang in table.items():
             assert set(by_lang) == set(LANGS), f"{name}[{key}]: языки {sorted(by_lang)}"
+    for name, table in _FORM_TABLES.items():
+        assert set(table) == set(LANGS), f"{name}: языки {sorted(table)}"
+        for lang, forms in table.items():
+            assert len(forms) == 3, f"{name}[{lang}]: нужно три формы, а не {len(forms)}"
+            fields = {frozenset(_FIELD.findall(f)) for f in forms}
+            assert len(fields) == 1, f"{name}[{lang}]: подстановки разошлись — {fields}"
 
 
 def test_templates_keep_the_same_placeholders_in_every_language():

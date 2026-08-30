@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import secrets
 from dataclasses import asdict, dataclass, field
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Optional, Sequence
 
 from sqlalchemy import delete, select, update
@@ -52,6 +52,16 @@ PAGE_SIZE = 5
 # 32 символа из secrets.token_urlsafe — 24 случайных байта. Угадывать нечего, и
 # порядковой связи между соседними ссылками нет (см. §26 задания).
 _TOKEN_BYTES = 24
+
+
+def _naive(now: datetime) -> datetime:
+    """Момент к виду, в котором его хранит БД: naive UTC.
+
+    Колонки времени в проекте без зоны, и сравнивать их с aware-значением
+    Python отказывается. Приводим ОДИН раз на входе, а не в каждом сравнении:
+    забытое приведение здесь — это падение на живом сообщении.
+    """
+    return now.astimezone(timezone.utc).replace(tzinfo=None) if now.tzinfo else now
 
 
 @dataclass(frozen=True)
@@ -125,6 +135,7 @@ class Loaded:
 async def load(db, thread_id: int, *, now: datetime) -> Loaded:
     """Условия прошлого поиска. Просроченные не возвращаются: «а второй?» через
     сутки обязано означать «поищите заново», а не выбор из вчерашнего списка."""
+    now = _naive(now)
     row = (await db.execute(
         select(ChannelThread.search_version, ChannelThread.search_state,
                ChannelThread.search_state_at)
@@ -158,6 +169,7 @@ async def commit(db, *, studio_id: int, thread_id: int, state: CanonicalState,
     `new_search` увеличивает версию: старые ссылки после этого недействительны,
     и «второй» из прошлого списка не выберет вариант из нового.
     """
+    now = _naive(now)
     row = (await db.execute(
         select(ChannelThread.search_version).where(ChannelThread.id == thread_id)
     )).scalar_one_or_none()
@@ -191,6 +203,7 @@ async def by_token(db, *, studio_id: int, thread_id: int, token: str,
                    now: datetime) -> Pick:
     """Вариант по нажатой кнопке. Чужой студии и чужого треда для нас не
     существует — и это условие в самом запросе, а не проверка после."""
+    now = _naive(now)
     row = (await db.execute(
         select(ThreadOption).where(
             ThreadOption.token == token,
@@ -215,6 +228,7 @@ async def by_token(db, *, studio_id: int, thread_id: int, token: str,
 async def by_ordinal(db, *, studio_id: int, thread_id: int, ordinal: int,
                      now: datetime) -> Pick:
     """«Второй» — из ПОСЛЕДНЕГО показанного списка, а не из нового поиска."""
+    now = _naive(now)
     version = (await db.execute(
         select(ChannelThread.search_version).where(ChannelThread.id == thread_id)
     )).scalar_one_or_none() or 0
@@ -263,6 +277,7 @@ async def forget(db, *, studio_id: Optional[int] = None,
 async def purge(db, *, now: datetime) -> int:
     """Убрать просроченные ссылки. Состояние в треде обнуляем тем же заходом —
     иначе просроченные условия жили бы вечно в JSON."""
+    now = _naive(now)
     result = await db.execute(
         delete(ThreadOption).where(ThreadOption.expires_at <= now))
     await db.execute(

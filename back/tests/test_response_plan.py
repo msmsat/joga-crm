@@ -258,12 +258,12 @@ async def _provenance(ids: dict) -> None:
 
 async def _plans(ids: dict) -> None:
     # R1: один результат — ровно один вариант, и все факты равны каталогу.
-    one, plan = await _plan(ids, "стретчинг завтра вечером",
-                            raw(date="tomorrow", daypart="evening",
-                                service_mentions=[{"surface": "стретчинг"}]))
+    one, plan = await _plan(ids, "йога завтра после 15",
+                            raw(date="tomorrow", time_from="15:00",
+                                service_mentions=[{"surface": "йога"}]))
     assert plan.kind is PlanKind.SEARCH_RESULTS
-    assert plan.copy_intent is CopyIntent.SEARCH_FOUND_ONE
-    assert len(plan.options) == 2 or len(plan.options) == 1
+    assert plan.copy_intent is CopyIntent.SEARCH_FOUND_ONE, [o.lesson_id for o in plan.options]
+    assert len(plan.options) == 1
     async with async_session_maker() as db:
         facts = await catalog.lesson(db, ids["a"], plan.options[0].lesson_id)
     option = plan.options[0]
@@ -980,14 +980,25 @@ def test_f_option_lookup_is_always_scoped():
 
 def test_copy_intent_is_server_owned():
     """Каждый исход поиска имеет ровно одно серверное решение, что сказать."""
+    amb = [R.Ambiguity(R.EntityKind.TRAINER, "Валерия",
+                       [R.Candidate(1, "Валерия Ким"), R.Candidate(2, "Валерия Новак")])]
+    missing = [R.NotFound(R.EntityKind.SERVICE, "бокс")]
     for outcome in R.Outcome:
-        result = R.SearchResult(outcome, selection_reason="expired",
-                                selected=None, not_found=[], ambiguities=[])
         if outcome in (R.Outcome.OK, R.Outcome.SELECTION):
             continue          # им нужны занятия, они проверены на базе
+        result = R.SearchResult(outcome, selection_reason="expired",
+                                not_found=missing, ambiguities=amb)
         plan = response_plan.build(result)
         assert isinstance(plan.copy_intent, CopyIntent), outcome
         assert plan.copy_intent in response_render._COPY, outcome
+        # Ни один исход, кроме показа вариантов, не приносит занятий.
+        assert plan.options == [], outcome
+
+    # Каждая причина недоступности варианта названа своими словами.
+    for reason in ("expired", "superseded", "gone", "none_shown", "unknown"):
+        plan = response_plan.build(
+            R.SearchResult(R.Outcome.SELECTION_NOT_AVAILABLE, selection_reason=reason))
+        assert plan.copy_intent in response_render._COPY, reason
 
 
 def test_texts_have_no_technical_words():
@@ -996,7 +1007,10 @@ def test_texts_have_no_technical_words():
               if n.isupper() and isinstance(v, dict)}
     assert len(tables) >= 20
     for name, table in tables.items():
-        for text in table.values():
+        # SPOTS_FORMS хранит по три формы на язык — разворачиваем.
+        phrases = [p for value in table.values()
+                   for p in (value if isinstance(value, tuple) else (value,))]
+        for text in phrases:
             for banned in ("timezone", "iana", "parse", "ambiguous", "null", "error"):
                 assert banned not in text.lower(), (name, text)
 

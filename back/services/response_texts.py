@@ -222,11 +222,31 @@ BUTTON_RESET = {
 
 MINUTES = {"ru": "мин", "en": "min", "uk": "хв", "cs": "min", "de": "Min."}
 
-# Мест свободно. Формы множественного числа — по языкам, где они есть.
-SPOTS_LEFT = {
-    "ru": "{n} мест", "en": "{n} spots", "uk": "{n} місць",
-    "cs": "{n} míst", "de": "{n} Plätze",
+# Мест свободно. Три формы там, где язык их требует: «4 мест» вместо «4 места»
+# читается машиной, а мы разговариваем с человеком.
+#   [одно, 2-4, много]
+SPOTS_FORMS = {
+    "ru": ("{n} место", "{n} места", "{n} мест"),
+    "uk": ("{n} місце", "{n} місця", "{n} місць"),
+    "cs": ("{n} místo", "{n} místa", "{n} míst"),
+    "en": ("{n} spot", "{n} spots", "{n} spots"),
+    "de": ("{n} Platz", "{n} Plätze", "{n} Plätze"),
 }
+
+# Языки с тремя формами по славянскому правилу; остальным хватает «один/много».
+_SLAVIC = ("ru", "uk", "cs")
+
+
+def spots_form(n: int, lang: str) -> int:
+    """Какую из трёх форм взять. Правило славянское и общеизвестное; для
+    английского и немецкого хватает первых двух."""
+    if lang not in _SLAVIC:
+        return 0 if n == 1 else 1
+    if n % 10 == 1 and n % 100 != 11:
+        return 0
+    if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14):
+        return 1
+    return 2
 
 SPOTS_NONE = {
     "ru": "мест нет", "en": "full", "uk": "місць немає",
@@ -239,6 +259,14 @@ if __name__ == "__main__":
 
     tables = {name: value for name, value in list(globals().items())
               if name.isupper() and isinstance(value, dict)}
+    forms = tables.pop("SPOTS_FORMS")
+    assert set(forms) == set(LANGS)
+    assert all(len(v) == 3 for v in forms.values())
+    for n, want in ((1, "1 место"), (2, "2 места"), (4, "4 места"), (5, "5 мест"),
+                    (11, "11 мест"), (21, "21 место"), (22, "22 места")):
+        assert forms["ru"][spots_form(n, "ru")].format(n=n) == want, (n, want)
+    assert forms["en"][spots_form(1, "en")].format(n=1) == "1 spot"
+    assert forms["en"][spots_form(4, "en")].format(n=4) == "4 spots"
     for name, table in tables.items():
         assert set(table) == set(LANGS), f"{name}: {sorted(set(LANGS) - set(table))}"
     # Технических слов в тексте для человека быть не может.

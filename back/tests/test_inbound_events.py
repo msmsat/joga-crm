@@ -86,10 +86,11 @@ class _Handler:
         self._original = agent_jobs._handle
 
     def install(self):
-        async def _fake(work):
+        async def _fake(work, *_):
             self.calls.append((work.studio_id, work.channel, work.sender, work.text))
             if len(self.calls) <= self.fail_times:
                 raise RuntimeError("обработка не удалась")
+            return agent_jobs.AgentTurn()
         agent_jobs._handle = _fake
         return self
 
@@ -455,13 +456,13 @@ async def _run():
         try:
             greet = await admit(inbound.TELEGRAM, f"{a}:9100", a, inbound.MESSAGE, "555", "/start", {})
             work = await _claim(greet.job_id)
-            intent = await agent_jobs._handle(work)
+            intent = (await agent_jobs._handle(work, 0)).payload
             assert intent["button"]["url"].endswith(f"/s/{a}"), intent
             assert "text" in intent and intent["text"]
 
             ask = await admit(inbound.TELEGRAM, f"{a}:9101", a, inbound.MESSAGE, "555", "цены?", {})
             work = await _claim(ask.job_id)
-            assert await agent_jobs._handle(work) == {"text": "ответ на цены?"}
+            assert (await agent_jobs._handle(work, 0)).payload == {"text": "ответ на цены?"}
         finally:
             CA.produce_reply = real_produce
             handler.install()

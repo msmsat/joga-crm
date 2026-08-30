@@ -62,6 +62,25 @@ def worker_name() -> str:
     return f"{socket.gethostname()}:{os.getpid()}"[:64]
 
 
+async def _purge_search_state() -> None:
+    """Просроченные ссылки на показанные варианты и остывшие условия разговора.
+
+    Тем же проходом, что и остальная уборка: это производные данные переписки,
+    и жить вечно они не должны. Брони и платежи это не трогает — там свои сроки
+    хранения (services/search_state.forget о том же).
+    """
+    from datetime import datetime, timezone
+
+    from services import search_state
+
+    async with async_session_maker() as db:
+        removed = await search_state.purge(db, now=datetime.now(timezone.utc))
+        await db.commit()
+    if removed:
+        logger.info("option_ref_expired removed=%s ttl_minutes=%s",
+                    removed, search_state.TTL_MINUTES)
+
+
 class Worker:
     def __init__(self, owner: str = None):
         self.owner = owner or worker_name()
@@ -140,6 +159,7 @@ class Worker:
                     purge_due = now + _PURGE_EVERY_SECONDS
                     await agent_jobs.purge()
                     await outbound.purge()
+                    await _purge_search_state()
                     # Попытки, чей процесс умер, возвращаем в очередь. Отдельного
                     # лока не нужно: это один идемпотентный UPDATE по сроку.
                     await outbound.reclaim_stale()

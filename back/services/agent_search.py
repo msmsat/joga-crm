@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
@@ -25,6 +26,7 @@ from services import (
     ai_language, catalog, llm, response_plan, response_render, search_intent,
     search_resolver, search_state,
 )
+from services.ai_usage import record_usage
 from services.search_state import CanonicalState
 
 logger = logging.getLogger(__name__)
@@ -83,12 +85,18 @@ def tool_schema() -> dict:
     }
 
 
-async def parse(text: str, *, history: Optional[list] = None) -> Optional[dict]:
+async def parse(text: str, *, studio_id: int, surface: str = "telegram",
+                sender_ref: Optional[str] = None,
+                history: Optional[list] = None) -> Optional[dict]:
     """Единственный вызов модели за ход. None — не ответила или ответила мимо.
 
     Историю показываем, чтобы модель поняла «а после 18?», но условия из неё она
     восстанавливать НЕ должна: их помнит сервер. Её дело — сказать, что нового
     прозвучало сейчас.
+
+    Расход пишется в общий журнал (`ai_usage`) — второго счётчика в продукте
+    нет и не будет. Один ход = ОДНА строка: цикла инструментов здесь не бывает,
+    и стоимость ответа считается умножением, а не выгрузкой.
     """
     if not llm.is_configured():
         return None
@@ -96,12 +104,19 @@ async def parse(text: str, *, history: Optional[list] = None) -> Optional[dict]:
     for item in (history or [])[-6:]:
         messages.append({"role": item["role"], "content": item["text"]})
     messages.append({"role": "user", "content": text})
+    started = time.monotonic()
     try:
         reply = await llm.chat(messages, tools=[tool_schema()], think=False)
     except Exception:
         logger.exception("search parse: модель не ответила")
         return None
+    latency_ms = int((time.monotonic() - started) * 1000)
+    if reply.usage is not None:
+        await record_usage(studio_id, reply.usage, surface=surface, billable=True,
+                           sender_ref=sender_ref, tools=_TOOL_NAME, iterations=1)
     call = next((c for c in (reply.tool_calls or []) if c.name == _TOOL_NAME), None)
+    logger.info("search_parse studio_id=%s parsed=%s latency_ms=%s",
+                studio_id, call is not None, latency_ms)
     if call is None:
         return None
     try:

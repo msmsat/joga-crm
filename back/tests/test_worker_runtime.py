@@ -64,7 +64,9 @@ class _Handler:
         self._original = agent_jobs._handle
 
     def install(self):
-        async def _fake(work):
+        # Второй аргумент — тред разговора (P1.5): заглушке он не нужен, но
+        # подпись обязана его принимать.
+        async def _fake(work, *_):
             self.calls.append((work.studio_id, work.channel, work.sender, work.text))
             self.active += 1
             self.max_active = max(self.max_active, self.active)
@@ -75,6 +77,8 @@ class _Handler:
                     raise RuntimeError("ход не удался")
             finally:
                 self.active -= 1
+            # Пустой ход: отвечать нечего, но контракт тот же.
+            return agent_jobs.AgentTurn()
         agent_jobs._handle = _fake
         return self
 
